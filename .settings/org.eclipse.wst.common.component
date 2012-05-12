@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="org.openworm.simulationengine.frontend">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/" source-path="/WebContent/WEB-INF"/>
+        <wb-resource deploy-path="/js/" source-path="/WebContent/WEB-INF/js"/>
+        <property name="context-root" value="org.openworm.simulationengine.frontend"/>
+        <property name="java-output-path" value="/org.openworm.simulationengine.frontend/bin"/>
+    </wb-module>
+</project-modules>

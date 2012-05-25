@@ -8,7 +8,7 @@
 
 <style type="text/css">
 body {
-	background-color: #000000;
+	background-color: #92be23;
 	margin: 0px;
 	overflow: hidden;
 }
@@ -159,7 +159,7 @@ body {
 </script>
 </head>
 <body>
-	<img src="http://www.openworm.org/imgs/OpenWormLogo.png">
+	<center><img src="http://www.openworm.org/imgs/OpenWormLogo.png"></center>
 
 </body>
 </html>

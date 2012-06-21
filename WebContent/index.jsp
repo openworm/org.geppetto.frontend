@@ -16,14 +16,24 @@ body {
 
 <script>
 	// the main three.js components
-	var camera, scene, renderer,
-
+	var camera, scene, renderer;
+	//var HEIGHT = ;
+	//var WIDHT = ;
+	
+	var XMIN = 0;
+	var XMAX = 100;
+	var YMIN = 0;
+	var YMAX = 40;
+	var ZMIN = 0;
+	var ZMAX = 40;
+	var PARTICLE_COUNT = 32 * 32;
+	show = false;
 	// to keep track of the mouse position
 	mouseX = 0, mouseY = 0,
 
 	// an array to store our particles in
 	particles = [];
-
+	iteration = 0;
 	$(document).ready(function() {
 
 		// let's get going! 
@@ -40,7 +50,8 @@ body {
 
 		// move the camera backwards so we can see stuff! 
 		// default position is 0,0,0. 
-		camera.position.z = 1000;
+		camera.position.z = 100;
+		//camera.rotation.z = 10 * Math.PI / 180
 
 		// the scene contains all the 3D object data
 		scene = new THREE.Scene();
@@ -58,13 +69,15 @@ body {
 		document.body.appendChild(renderer.domElement);
 
 		makeParticles();
+		createReservoir();
 
 		// add the mouse move listener
 		document.addEventListener('mousemove', onMouseMove, false);
+		document.addEventListener("mousedown", onMouseClick, false);
 
 		// render 30 times a second (should also look 
 		// at requestAnimationFrame) 
-		setInterval(update, 1000 / 30);
+		setInterval(update, 1000 / 15);
 
 	}
 
@@ -72,51 +85,129 @@ body {
 
 	function update() {
 
-		updateParticles();
-
+		/*$.post("url", {'iteration':iteration}, function(newPosition){
+			updateParticles(newPosition);
+		},"text");*/
+		updateParticles(null);
 		// and render the scene from the perspective of the camera
 		renderer.render(scene, camera);
-
+		iteration++;
 	}
 
 	// creates a random field of Particle objects
-
+	function createReservoir(){
+		var material = new THREE.LineBasicMaterial({
+        color: 0x0000ff,
+		});
+		var v1 = new THREE.Vector3( -XMAX/2, -YMAX/2, -ZMAX/2);
+		var v2 = new THREE.Vector3(XMAX/2, -YMAX/2, -ZMAX/2);
+		var v3 = new THREE.Vector3( XMAX/2, YMAX/2, -ZMAX/2);
+		var v4 = new THREE.Vector3(-XMAX/2,  YMAX/2, -ZMAX/2)
+		var v5 = new THREE.Vector3(-XMAX/2, -YMAX/2,  ZMAX/2);
+		var v6 = new THREE.Vector3(XMAX/2, -YMAX/2,  ZMAX/2);
+		var v7 = new THREE.Vector3(XMAX/2,  YMAX/2,  ZMAX/2);
+		var v8 = new THREE.Vector3(-XMAX/2,  YMAX/2,  ZMAX/2)
+		var geometry1 = new THREE.Geometry();
+		var geometry2 = new THREE.Geometry();
+		var geometry3 = new THREE.Geometry();
+		var geometry4 = new THREE.Geometry();
+		var geometry5 = new THREE.Geometry();
+		var geometry6 = new THREE.Geometry();
+		var geometry7 = new THREE.Geometry();
+		var geometry8 = new THREE.Geometry();
+		var geometry9 = new THREE.Geometry();
+		var geometry10 = new THREE.Geometry();
+		var geometry11 = new THREE.Geometry();
+		var geometry12 = new THREE.Geometry();
+		geometry1.vertices.push(v1);
+		geometry1.vertices.push(v2);
+		var line1 = new THREE.Line(geometry1, material);
+		geometry2.vertices.push(v2);
+		geometry2.vertices.push(v3);
+		var line2 = new THREE.Line(geometry2, material);
+		geometry3.vertices.push(v3);
+		geometry3.vertices.push(v4);
+		var line3 = new THREE.Line(geometry3, material);
+		geometry4.vertices.push(v4);
+		geometry4.vertices.push(v1);
+		var line4 = new THREE.Line(geometry4, material);
+		geometry5.vertices.push(v1);
+		geometry5.vertices.push(v5);
+		var line5 = new THREE.Line(geometry5, material);
+		geometry6.vertices.push(v2);
+		geometry6.vertices.push(v6);
+		var line6 = new THREE.Line(geometry6, material);
+		geometry7.vertices.push(v3);
+		geometry7.vertices.push(v7);
+		var line7 = new THREE.Line(geometry7, material);
+		geometry8.vertices.push(v4);
+		geometry8.vertices.push(v8);
+		var line8 = new THREE.Line(geometry8, material);
+		geometry9.vertices.push(v5);
+		geometry9.vertices.push(v6);
+		var line9 = new THREE.Line(geometry9, material);
+		geometry10.vertices.push(v6);
+		geometry10.vertices.push(v7);
+		var line10 = new THREE.Line(geometry10, material);
+		geometry11.vertices.push(v7);
+		geometry11.vertices.push(v8);
+		var line11 = new THREE.Line(geometry11, material);
+		geometry12.vertices.push(v8);
+		geometry12.vertices.push(v5);
+		var line12 = new THREE.Line(geometry12, material);
+		scene.add(line1);
+		scene.add(line2);
+		scene.add(line3);
+		scene.add(line4);
+		scene.add(line5);
+		scene.add(line6);
+		scene.add(line7);
+		scene.add(line8);
+		scene.add(line9);
+		scene.add(line10);
+		scene.add(line11);
+		scene.add(line12);
+		renderer.render(scene,camera);
+	}
 	function makeParticles() {
 
 		var particle, material;
 
 		// we're gonna move from z position -1000 (far away) 
-		// to 1000 (where the camera is) and add a random particle at every pos. 
-		for ( var zpos = -1000; zpos < 1000; zpos += 20) {
-
-			// we make a particle material and pass through the 
-			// colour and custom particle render function we defined. 
-			material = new THREE.ParticleCanvasMaterial({
+		// to 1000 (where the camera is) and add a random particle at every pos.
+		var r = 0;
+		var x,y,z
+		material = new THREE.ParticleCanvasMaterial({
 				color : 0xffffff,
 				program : particleRender
 			});
-			// make the particle
-			particle = new THREE.Particle(material);
-
-			// give it a random x and y position between -500 and 500
-			particle.position.x = Math.random() * 1000 - 500;
-			particle.position.y = Math.random() * 1000 - 500;
-
-			// set its z position
-			particle.position.z = zpos;
-
-			// scale it up a bit
-			particle.scale.x = particle.scale.y = 10;
-
-			// add it to the scene
-			scene.add(particle);
-
-			// and to the array of particles. 
-			particles.push(particle);
-		}
+		var sc = 0.04;
+	/**/var p=0;
+		for( var i = 0; (i < 16)&&(p<PARTICLE_COUNT); i++ )
+			for( var j = 0; (j < 16)&&(p<PARTICLE_COUNT); j++ )
+				for( var k = 0; (k < 16)&&(p<PARTICLE_COUNT); k++ )
+				{
+					particle = new THREE.Particle(material);
+					var x, y, z;
+					var r = 2.076;//2.47;
+					x = (r * i -XMAX/2)*1;
+					y = (r * j -YMAX/2)*1;
+					z = (r * k - ZMAX/2)*1;
+					
+					particle.position.x = x;
+					particle.position.y = y;
+					particle.position.z = z;
+					particle.scale.x = particle.scale.y = 0.3;
+					scene.add(particle);
+					particles.push(particle);
+					p++;
+				}/**/
+				
 
 	}
-
+	function scale(min, max, x){
+		return min+x *(max-min);
+	}
 	// there isn't a built in circle particle renderer 
 	// so we have to define our own. 
 
@@ -125,28 +216,31 @@ body {
 		// we get passed a reference to the canvas context
 		context.beginPath();
 		// and we just have to draw our shape at 0,0 - in this
-		// case an arc from 0 to 2Pi radians or 360º - a full circle!
+		// case an arc from 0 to 2Pi radians or 360? - a full circle!
 		context.arc(0, 0, 1, 0, Math.PI * 2, true);
 		context.fill();
 	};
 
 	// moves all the particles dependent on mouse position
 
-	function updateParticles() {
+	function updateParticles(data) {
 
 		// iterate through every particle
-		for ( var i = 0; i < particles.length; i++) {
+		if(show)
+			for ( var i = 0; i < particles.length; i++) {
 
-			particle = particles[i];
+				particle = particles[i];
 
-			// and move it forward dependent on the mouseY position. 
-			particle.position.z += mouseY * 0.1;
+				// and move it forward dependent on the mouseY position. 
+				x = (scale(XMIN, (XMAX), Math.random()) -XMAX/2)*1;
+				y = (scale(YMIN, (YMAX), Math.random()) -YMAX/2)*1;
+				z = (scale(ZMIN, (ZMAX), Math.random()) - ZMAX/2)*1;
+				
+				particle.position.x = x;
+				particle.position.y = y;
+				particle.position.z = z;
 
-			// if the particle is too close move it to the back
-			if (particle.position.z > 1000)
-				particle.position.z -= 2000;
-
-		}
+			}
 
 	}
 
@@ -155,6 +249,14 @@ body {
 		// store the mouseX and mouseY position 
 		mouseX = event.clientX;
 		mouseY = event.clientY;
+	}
+	
+	function onMouseClick(event) {
+		if(!show)
+			show = true;
+			
+		else
+			show = false;
 	}
 </script>
 </head>

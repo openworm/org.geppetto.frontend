@@ -2,6 +2,7 @@
 <head>
 <script src="js/Three.js"></script>
 <script src="js/jquery-1.7.2.min.js"></script>
+<!--<script type="text/javascript" src="js/ThreeCanvas.js"></script>-->
 
 
 <meta charset="utf-8">
@@ -29,8 +30,12 @@ body {
 	var PARTICLE_COUNT = 32 * 32;
 	show = false;
 	// to keep track of the mouse position
-	mouseX = 0, mouseY = 0,
-
+	mouseX = 0, mouseY = 0;
+	isMouseDown = false;
+	var radious = 100, theta = 45, onMouseDownTheta = 45, phi = 60, onMouseDownPhi = 60;
+	var onMouseDownPosition;
+	var	mouse3D;
+	var projector, ray;
 	// an array to store our particles in
 	particles = [];
 	iteration = 0;
@@ -51,29 +56,36 @@ body {
 		// move the camera backwards so we can see stuff! 
 		// default position is 0,0,0. 
 		camera.position.z = 100;
+		//camera.target.position.y = 200;
+		//camera.position.y = 100;
 		//camera.rotation.z = 10 * Math.PI / 180
-
 		// the scene contains all the 3D object data
 		scene = new THREE.Scene();
 
 		// camera needs to go in the scene 
-		scene.add(camera);
+		//scene.add(camera);
 
 		// and the CanvasRenderer figures out what the 
 		// stuff in the scene looks like and draws it!
+		onMouseDownPosition = new THREE.Vector2();
+		
 
+		
 		renderer = new THREE.CanvasRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 
 		// the renderer's canvas domElement is added to the body
 		document.body.appendChild(renderer.domElement);
-
+		projector = new THREE.Projector();
+		ray = new THREE.Ray( camera.position, null );
 		makeParticles();
 		createReservoir();
 
 		// add the mouse move listener
 		document.addEventListener('mousemove', onMouseMove, false);
 		document.addEventListener("mousedown", onMouseClick, false);
+		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+		document.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
 
 		// render 30 times a second (should also look 
 		// at requestAnimationFrame) 
@@ -243,20 +255,70 @@ body {
 			}
 
 	}
-
 	// called when the mouse moves
 	function onMouseMove(event) {
 		// store the mouseX and mouseY position 
-		mouseX = event.clientX;
-		mouseY = event.clientY;
+		event.preventDefault();
+
+		if ( isMouseDown ) {
+			theta = - ( ( event.clientX - onMouseDownPosition.x ) * 0.5 )
+					+ onMouseDownTheta;
+			phi = ( ( event.clientY - onMouseDownPosition.y ) * 0.5 )
+				  + onMouseDownPhi;
+
+			phi = Math.min( 180, Math.max( 0, phi ) );
+
+			camera.position.x = radious * Math.sin( theta * Math.PI / 360 )
+								* Math.cos( phi * Math.PI / 360 );
+			camera.position.y = radious * Math.sin( phi * Math.PI / 360 );
+			camera.position.z = radious * Math.cos( theta * Math.PI / 360 )
+								* Math.cos( phi * Math.PI / 360 );
+			camera.lookAt( scene.position );
+		}
+		render();
 	}
-	
+	function render() {
+		renderer.render( scene, camera );
+
+	}
 	function onMouseClick(event) {
-		if(!show)
-			show = true;
+		event.preventDefault();
+		if(event.button == 0){
+			isMouseDown = true;
+			onMouseDownTheta = theta;
+			onMouseDownPhi = phi;
+			onMouseDownPosition.x = event.clientX;
+			onMouseDownPosition.y = event.clientY;
+		}
+		if(event.button == 2)
+			if(show)
+				show = false;
+			else
+				show = true;
+		//else
 			
+	}
+	function onDocumentMouseWheel( event ) {
+
+		if(event.wheelDeltaY>0)
+			radious += 10;//event.wheelDeltaY;
 		else
-			show = false;
+			radious -= 10;
+
+		camera.position.x = radious * Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+		camera.position.y = radious * Math.sin( phi * Math.PI / 360 );
+		camera.position.z = radious * Math.cos( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+		camera.updateMatrix();
+
+		render();
+	
+	}
+	function onDocumentMouseUp( event ) {
+		event.preventDefault();
+		isMouseDown = false;
+		onMouseDownPosition.x = event.clientX - onMouseDownPosition.x;
+		onMouseDownPosition.y = event.clientY - onMouseDownPosition.y;
+		
 	}
 </script>
 </head>

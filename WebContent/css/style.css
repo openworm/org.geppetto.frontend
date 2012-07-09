@@ -1,0 +1,15 @@
+body {
+  background-color: #92be23;
+  margin: 0px;
+  overflow: hidden;
+}
+
+#logo-container {
+  margin: 10px auto 0 auto;
+  width: 100px;
+}
+
+#logo-image {
+  height: 98px;
+  width: 100px;
+}

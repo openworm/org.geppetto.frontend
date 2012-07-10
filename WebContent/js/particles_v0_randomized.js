@@ -82,7 +82,8 @@
     document.body.appendChild(renderer.domElement);
 
     makeParticles();
-    createReservoir();
+    // createReservoirFromLines();
+    createReservoirFromCubeGeometry();
 
     // add the mouse move listener
     renderer.domElement.addEventListener('mousemove', onMouseMove, false);
@@ -115,7 +116,7 @@
 
 
   // creates a random field of Particle objects
-  function createReservoir(){
+  function createReservoirFromLines() {
     var material = new THREE.LineBasicMaterial({
         color: 0x0000ff,
     });
@@ -187,7 +188,24 @@
     scene.add(line10);
     scene.add(line11);
     scene.add(line12);
-    renderer.render(scene,camera);
+
+    render();
+  }
+
+
+  function createReservoirFromCubeGeometry() {
+    var cubeWidth = XMAX - XMIN;
+    var cubeDepth = YMAX - YMIN;
+    var cubeHeight = ZMAX - ZMIN;
+    var geometry = new THREE.CubeGeometry(cubeWidth, cubeDepth, cubeHeight);
+    var material = new THREE.MeshBasicMaterial({
+      color: 0xff0000,
+      wireframe: true,
+    });
+    var mesh = new THREE.Mesh( geometry, material );
+    scene.add(mesh);
+
+    render();
   }
 
 
@@ -259,7 +277,6 @@
 
         particle = particles[i];
 
-        // and move it forward dependent on the mouseY position. 
         x = (scale(XMIN, (XMAX), Math.random()) -XMAX/2)*1;
         y = (scale(YMIN, (YMAX), Math.random()) -YMAX/2)*1;
         z = (scale(ZMIN, (ZMAX), Math.random()) - ZMAX/2)*1;

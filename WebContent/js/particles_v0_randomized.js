@@ -10,93 +10,109 @@
 (function() {
   // the main three.js components
   var camera, scene, renderer;
-  //var HEIGHT = ;
-  //var WIDHT = ;
 
+  var HEIGHT;
+  var WIDTH;
+
+  var CAMERA_NEAR = 1;
+  var CAMERA_FAR = 4000;
+
+  // Reservoir bounds.
   var XMIN = 0;
   var XMAX = 100;
   var YMIN = 0;
   var YMAX = 40;
   var ZMIN = 0;
   var ZMAX = 40;
+
   var PARTICLE_COUNT = 32 * 32;
-  show = false;
-  // to keep track of the mouse position
-  mouseX = 0, mouseY = 0;
-  isMouseDown = false;
-  var radious = 100, theta = 45, onMouseDownTheta = 45, phi = 60, onMouseDownPhi = 60;
-  var onMouseDownPosition;
+
+  // Whether the animation is playing.
+  var show = false;
+
+  // Track mouse state.
+  var isMouseDown = false;
+  var onMouseDownPosition = new THREE.Vector2();
+
+  // Camera-related params.
+  var radius = 100;
+  var theta = 45;
+  var onMouseDownTheta = 45;
+  var phi = 60;
+  var onMouseDownPhi = 60;
   var	mouse3D;
-  var projector, ray;
-  // an array to store our particles in
+
+  // An array to store our particles in.
   particles = [];
   iteration = 0;
+
   $(document).ready(function() {
-
-    // let's get going! 
     init();
-
   });
 
+
   function init() {
+    HEIGHT = window.innerHeight;
+    WIDTH = window.innerWidth;
 
-    // Camera params : 
-    // field of view, aspect ratio for render output, near and far clipping plane. 
-    camera = new THREE.PerspectiveCamera(80, window.innerWidth
-        / window.innerHeight, 1, 4000);
+    // Camera params:
+    // field of view, aspect ratio for render output, near and far clipping plane.
+    camera = new THREE.PerspectiveCamera(80, WIDTH / HEIGHT, 1, 4000);
 
-    // move the camera backwards so we can see stuff! 
-    // default position is 0,0,0. 
+    // Start the camera back a bit so we can see stuff!
+    // default position is 0,0,0.
     camera.position.z = 100;
+
     //camera.target.position.y = 200;
     //camera.position.y = 100;
     //camera.rotation.z = 10 * Math.PI / 180
-    // the scene contains all the 3D object data
+
+    // The scene contains all the 3D object data.
     scene = new THREE.Scene();
 
-    // camera needs to go in the scene 
-    //scene.add(camera);
+    // The camera must be added to the scene.
+    scene.add(camera);
 
-    // and the CanvasRenderer figures out what the 
+    // and the CanvasRenderer figures out what the
     // stuff in the scene looks like and draws it!
-    onMouseDownPosition = new THREE.Vector2();
-    
-
-    
     renderer = new THREE.CanvasRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(WIDTH, HEIGHT);
 
     // the renderer's canvas domElement is added to the body
     document.body.appendChild(renderer.domElement);
-    projector = new THREE.Projector();
-    ray = new THREE.Ray( camera.position, null );
+
     makeParticles();
     createReservoir();
 
     // add the mouse move listener
-    document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener("mousedown", onMouseClick, false);
-    document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-    document.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
+    renderer.domElement.addEventListener('mousemove', onMouseMove, false);
+    renderer.domElement.addEventListener('mousedown', onMouseClick, false);
+    renderer.domElement.addEventListener('mouseup', onDocumentMouseUp, false );
+    renderer.domElement.addEventListener('mousewheel', onDocumentMouseWheel, false);
 
-    // render 30 times a second (should also look 
-    // at requestAnimationFrame) 
+    // render 30 times a second (should also look at requestAnimationFrame)
     setInterval(update, 1000 / 15);
-
   }
 
-  // the main update function, called 30 times a second
 
+  /**
+   * The main update function, called 30 times a second.
+   */
   function update() {
-
     /*$.post("url", {'iteration':iteration}, function(newPosition){
       updateParticles(newPosition);
     },"text");*/
     updateParticles(null);
     // and render the scene from the perspective of the camera
-    renderer.render(scene, camera);
+    render();
     iteration++;
   }
+
+
+  function render() {
+    renderer.render(scene, camera);
+  }
+
 
   // creates a random field of Particle objects
   function createReservoir(){
@@ -173,11 +189,13 @@
     scene.add(line12);
     renderer.render(scene,camera);
   }
+
+
   function makeParticles() {
 
     var particle, material;
 
-    // we're gonna move from z position -1000 (far away) 
+    // we're gonna move from z position -1000 (far away)
     // to 1000 (where the camera is) and add a random particle at every pos.
     var r = 0;
     var x,y,z
@@ -197,7 +215,7 @@
           x = (r * i -XMAX/2)*1;
           y = (r * j -YMAX/2)*1;
           z = (r * k - ZMAX/2)*1;
-          
+
           particle.position.x = x;
           particle.position.y = y;
           particle.position.z = z;
@@ -206,27 +224,33 @@
           particles.push(particle);
           p++;
         }/**/
-        
-
   }
+
+
   function scale(min, max, x){
     return min+x *(max-min);
   }
-  // there isn't a built in circle particle renderer 
-  // so we have to define our own. 
 
+
+  /**
+   * There isn't a built in circle particle renderer
+   * so we have to define our own.
+   */
   function particleRender(context) {
 
     // we get passed a reference to the canvas context
     context.beginPath();
+
     // and we just have to draw our shape at 0,0 - in this
     // case an arc from 0 to 2Pi radians or 360? - a full circle!
     context.arc(0, 0, 1, 0, Math.PI * 2, true);
     context.fill();
   };
 
-  // moves all the particles dependent on mouse position
 
+  /**
+   * Moves all the particles dependent on mouse position.
+   */
   function updateParticles(data) {
 
     // iterate through every particle
@@ -239,15 +263,17 @@
         x = (scale(XMIN, (XMAX), Math.random()) -XMAX/2)*1;
         y = (scale(YMIN, (YMAX), Math.random()) -YMAX/2)*1;
         z = (scale(ZMIN, (ZMAX), Math.random()) - ZMAX/2)*1;
-        
+
         particle.position.x = x;
         particle.position.y = y;
         particle.position.z = z;
-
       }
-
   }
-  // called when the mouse moves
+
+
+  /**
+   * Called when the mouse moves.
+   */
   function onMouseMove(event) {
     // store the mouseX and mouseY position 
     event.preventDefault();
@@ -260,21 +286,20 @@
 
       phi = Math.min( 180, Math.max( 0, phi ) );
 
-      camera.position.x = radious * Math.sin( theta * Math.PI / 360 )
+      camera.position.x = radius * Math.sin( theta * Math.PI / 360 )
                 * Math.cos( phi * Math.PI / 360 );
-      camera.position.y = radious * Math.sin( phi * Math.PI / 360 );
-      camera.position.z = radious * Math.cos( theta * Math.PI / 360 )
+      camera.position.y = radius * Math.sin( phi * Math.PI / 360 );
+      camera.position.z = radius * Math.cos( theta * Math.PI / 360 )
                 * Math.cos( phi * Math.PI / 360 );
       camera.lookAt( scene.position );
     }
     render();
   }
-  function render() {
-    renderer.render( scene, camera );
 
-  }
+
   function onMouseClick(event) {
     event.preventDefault();
+
     if(event.button == 0){
       isMouseDown = true;
       onMouseDownTheta = theta;
@@ -282,34 +307,33 @@
       onMouseDownPosition.x = event.clientX;
       onMouseDownPosition.y = event.clientY;
     }
-    if(event.button == 2)
-      if(show)
-        show = false;
-      else
-        show = true;
-    //else
-      
+
+    if(event.button == 2) {
+      show = !show;
+    }
   }
+
+
   function onDocumentMouseWheel( event ) {
+    if(event.wheelDeltaY>0) {
+      radius += 10; //event.wheelDeltaY;
+    } else {
+      radius -= 10;
+    }
 
-    if(event.wheelDeltaY>0)
-      radious += 10;//event.wheelDeltaY;
-    else
-      radious -= 10;
-
-    camera.position.x = radious * Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
-    camera.position.y = radious * Math.sin( phi * Math.PI / 360 );
-    camera.position.z = radious * Math.cos( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+    camera.position.x = radius * Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+    camera.position.y = radius * Math.sin( phi * Math.PI / 360 );
+    camera.position.z = radius * Math.cos( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
     camera.updateMatrix();
 
     render();
-
   }
-  function onDocumentMouseUp( event ) {
+
+
+  function onDocumentMouseUp(event) {
     event.preventDefault();
     isMouseDown = false;
     onMouseDownPosition.x = event.clientX - onMouseDownPosition.x;
     onMouseDownPosition.y = event.clientY - onMouseDownPosition.y;
-    
   }
 }());

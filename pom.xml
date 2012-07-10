@@ -3,4 +3,26 @@
   <groupId>org.openworm.simulationengine.frontend</groupId>
   <artifactId>org.openworm.simulationengine.frontend</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <name>webGL SPH test</name>
+  <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<bundleVersion>1.2.3</bundleVersion>
+  </properties>
+  <build>
+    <plugins>
+	<plugin>
+		<groupId>org.apache.felix</groupId>
+		<artifactId>maven-bundle-plugin</artifactId>
+		<version>2.3.6</version>
+		<extensions>true</extensions>
+		<configuration>
+			<instructions>
+				<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+				<Bundle-Name>${project.name}</Bundle-Name>
+				<Bundle-Version>${bundleVersion}</Bundle-Version>
+			</instructions>
+		</configuration>
+	</plugin>
+    </plugins>
+  </build>
 </project>

@@ -2,10 +2,19 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="css/style.css" />
-  <script src="js/Three.js"></script>
-  <script src="js/jquery-1.7.2.min.js"></script>
-  <!--<script type="text/javascript" src="js/ThreeCanvas.js"></script>-->
-  <script src="js/particles_v0_randomized.js"></script>
+
+  <!-- Third-party js libraries -->
+  <script src="js/vendor/jquery-1.7.2.min.js"></script>
+  <script src="js/vendor/underscore.js"></script>
+  <script src="js/vendor/Three.js"></script>
+  <!-- <script type="text/javascript" src="js/ThreeCanvas.js"></script> -->
+
+  <!-- Openworm js -->
+  <script src="js/openworm_base.js"></script>
+  <script src="js/fake_simulation_server.js"></script>
+  <script src="js/fake_websocket_client.js"></script>
+  <!-- <script src="js/particles_v0_randomized.js"></script> -->
+  <script src="js/particles_v1_fake_websocket.js"></script>
 </head>
 <body>
   <div id="logo-container">

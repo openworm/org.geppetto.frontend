@@ -7,3 +7,4 @@
 
 # Editor byproducts
 *.swp
+/target

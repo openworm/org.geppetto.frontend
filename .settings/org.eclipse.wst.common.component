@@ -5,6 +5,7 @@
         <wb-resource deploy-path="/" source-path="/WebContent/WEB-INF"/>
         <wb-resource deploy-path="/js/" source-path="/WebContent/js"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
         <property name="java-output-path" value="/org.openworm.simulationengine.frontend/bin"/>
         <property name="context-root"/>
     </wb-module>

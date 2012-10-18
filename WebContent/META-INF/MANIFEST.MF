@@ -1,7 +1,11 @@
 Manifest-Version: 1.0
-Class-Path: 
-Bundle-Version: 1.0.0
-Bundle-Name: Frontend
+Bnd-LastModified: 1350473239635
+Build-Jdk: 1.6.0_35
+Built-By: matteocantarelli
 Bundle-ManifestVersion: 2
+Bundle-Name: OpenWorm Simulation Engine Frontend
 Bundle-SymbolicName: org.openworm.simulationengine.frontend
-
+Bundle-Version: 1.0.0
+Created-By: Apache Maven Bundle Plugin
+Export-Package: org.openworm.simulationengine.frontend;version="1.0.0"
+Tool: Bnd-1.50.0

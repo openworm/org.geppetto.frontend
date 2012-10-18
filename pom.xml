@@ -1,28 +1,40 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openworm.simulationengine.frontend</groupId>
-  <artifactId>org.openworm.simulationengine.frontend</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>webGL SPH test</name>
-  <properties>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<bundleVersion>1.2.3</bundleVersion>
-  </properties>
-  <build>
-    <plugins>
-	<plugin>
-		<groupId>org.apache.felix</groupId>
-		<artifactId>maven-bundle-plugin</artifactId>
-		<version>2.3.6</version>
-		<extensions>true</extensions>
-		<configuration>
-			<instructions>
-				<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-				<Bundle-Name>${project.name}</Bundle-Name>
-				<Bundle-Version>${bundleVersion}</Bundle-Version>
-			</instructions>
-		</configuration>
-	</plugin>
-    </plugins>
-  </build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openworm</groupId>
+	<artifactId>simulationengine.frontend</artifactId>
+	<version>1.0.0</version>
+	<name>OpenWorm Simulation Engine Frontend</name>
+	<packaging>bundle</packaging>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<manifestLocation>WebContent/META-INF</manifestLocation>
+					<instructions>
+						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.name}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
+
+

@@ -1,0 +1,5 @@
+BUNDLE_ROOT_PATH=WebContent
+eclipse.preferences.version=1
+manifest.launchShortcuts=org.eclipse.pde.ui.EquinoxLaunchShortcut,org.eclipse.wst.server.launchShortcut
+pluginProject.extensions=false
+resolve.requirebundle=false

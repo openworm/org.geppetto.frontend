@@ -92,7 +92,7 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 				String msg = message.toString();
 				if (msg.startsWith("init$"))
 				{
-					String url = msg.substring(msg.indexOf("$"), msg.length());
+					String url = msg.substring(msg.indexOf("$")+1, msg.length());
 					simulationService.init(new URL(url), SimulationServlet.this);
 				}
 				else if (msg.equals("start"))

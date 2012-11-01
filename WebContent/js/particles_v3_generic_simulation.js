@@ -10,59 +10,46 @@
 // Setup the WebSocket Stuff.
 // ============================================================================
 // Construct the WebSocket connection.
-var websocket = new WebSocket('');
 
-websocket.initialize = function()
-{
-	websocket.connect('ws://' + window.location.host + '/org.openworm.simulationengine.simulation/SimulationServlet');
-	websocket.send("init$https://www.dropbox.com/s/iyr085zcegyis0n/sph-sim-config.xml?dl=1");
+var Simulation = {};
+
+Simulation.initialize = function() {
+	Simulation.connect('ws://' + window.location.host + '/org.openworm.simulationengine.frontend/SimulationServlet');
+	
 	Console.log('Simulation initialised');
 };
 
-websocket.stop = function()
-{
-	websocket.send("stop");
+Simulation.stop = function() {
+	Simulation.socket.send("stop");
 	Console.log('Sent: Stop simulation');
 };
 
-websocket.start = function()
-{
-	websocket.socket.send("start");
+Simulation.start = function() {
+	Simulation.socket.send("start");
 	Console.log('Sent: Start simulation');
 };
 
-websocket.onopen = function(e)
-{
-	onOpen(e);
-};
-websocket.onclose = function(e)
-{
-	onClose(e);
-};
-websocket.onmessage = function(e)
-{
-	onMessage(e);
-};
-websocket.onerror = function(e)
-{
-	onError(e);
-};
+Simulation.connect = (function(host) {
+	if ('WebSocket' in window) {
+		Simulation.socket = new WebSocket(host);
+	} else if ('MozWebSocket' in window) {
+		Simulation.socket = new MozWebSocket(host);
+	} else {
+		Console.log('Error: WebSocket is not supported by this browser.');
+		return;
+	}
 
-function onOpen(e)
-{
-	window.console.log('CONNECTED');
-}
+	Simulation.socket.onopen = function() {
+		Console.log('Info: WebSocket connection opened.');
+		Simulation.socket.send("init$https://www.dropbox.com/s/iyr085zcegyis0n/sph-sim-config.xml?dl=1");
+	};
 
-function onClose(e)
-{
-	window.console.log('DISCONNECTED');
-}
+	Simulation.socket.onclose = function() {
+		Console.log('Info: WebSocket closed.');
+		Simulation.stop();
+	};
 
-function onMessage(e)
-{
-	switch (msg.type)
-	{
-	case 'scene_updated':
+	Simulation.socket.onmessage = function(msg) {
 		if (!OW.jsonscene)
 		{
 			OW.init(FE.createContainer(), msg.data, FE.update);
@@ -72,17 +59,23 @@ function onMessage(e)
 		{
 			OW.updateJSONScene(msg.data);
 		}
-		break;
-	default:
-		window.console.log('Client does not understand message from server', msg);
-		break;
-	}
-}
+	};
+});
 
-function onError(e)
-{
-	window.console.log('WebSockets error.');
-}
+var Console = {};
+
+Console.log = (function(message) {
+	var console = document.getElementById('console');
+	var p = document.createElement('p');
+	p.style.wordWrap = 'break-word';
+	p.innerHTML = message;
+	console.appendChild(p);
+	while (console.childNodes.length > 25) {
+		console.removeChild(console.firstChild);
+	}
+	console.scrollTop = console.scrollHeight;
+});
+
 
 var FE = FE || {};
 
@@ -114,15 +107,15 @@ $(document).ready(function()
 	{
 		$('#start').attr('disabled', 'disabled');
 		$('#stop').removeAttr('disabled');
-		websocket.start();
+		Simulation.start();
 	});
 
 	$('#stop').click(function()
 	{
 		$('#start').removeAttr('disabled');
 		$('#stop').attr('disabled', 'disabled');
-		websocket.stop();
+		Simulation.stop();
 	});
 
-	websocket.initialize();
+	Simulation.initialize();
 });

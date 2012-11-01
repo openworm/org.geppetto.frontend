@@ -9,4 +9,22 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+    <servlet>
+    <servlet-name>SimulationServlet</servlet-name>
+    <servlet-class>org.openworm.simulationengine.frontend.SimulationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SimulationServlet</servlet-name>
+    <url-pattern>/SimulationServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+  <description></description>
+    <display-name>TestServlet</display-name>
+    <servlet-name>TestServlet</servlet-name>
+    <servlet-class>org.openworm.simulationengine.frontend.TestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TestServlet</servlet-name>
+    <url-pattern>/TestServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -9,20 +9,24 @@
 // ============================================================================
 // Setup the WebSocket Stuff.
 // ============================================================================
-
 // Construct the WebSocket connection.
 var websocket = new WebSocket('');
 
-websocket.initialize = function() {
+websocket.initialize = function()
+{
 	websocket.connect('ws://' + window.location.host + '/org.openworm.simulationengine.simulation/SimulationServlet');
+	websocket.send("init$https://www.dropbox.com/s/iyr085zcegyis0n/sph-sim-config.xml?dl=1");
+	Console.log('Simulation initialised');
 };
 
-websocket.stop = function() {
+websocket.stop = function()
+{
 	websocket.send("stop");
 	Console.log('Sent: Stop simulation');
 };
 
-websocket.start = function() {
+websocket.start = function()
+{
 	websocket.socket.send("start");
 	Console.log('Sent: Start simulation');
 };
@@ -95,28 +99,30 @@ FE.createContainer = function()
  */
 FE.update = function()
 {
-	//OW.setupScene(); //Bold, recreating the scene, maybe will do for now.
+	// OW.setupScene(); //Bold, recreating the scene, maybe will do for now.
 };
 
-//============================================================================
+// ============================================================================
 // Application logic.
-//============================================================================
+// ============================================================================
 
 $(document).ready(function()
 {
 	$('#stop').attr('disabled', 'disabled');
 
-	$('#start').click(function() {
+	$('#start').click(function()
+	{
 		$('#start').attr('disabled', 'disabled');
 		$('#stop').removeAttr('disabled');
 		websocket.start();
 	});
 
-	$('#stop').click(function() {
+	$('#stop').click(function()
+	{
 		$('#start').removeAttr('disabled');
 		$('#stop').attr('disabled', 'disabled');
 		websocket.stop();
 	});
-	
+
 	websocket.initialize();
 });

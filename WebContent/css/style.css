@@ -5,6 +5,26 @@ body {
   overflow: hidden;
 }
 
+.button {
+	border:0px;
+	width: 142px;
+	height: 33px;
+	margin-right: 10px;
+	background-color: #5E8F22;
+	padding-top: 4px;
+	font-size: 15px;
+	color: white;
+	cursor: pointer;
+}
+
+.button:HOVER {
+	background-color: #456919;
+}
+
+.button:disabled{
+	background-color: #333333;
+}
+
 #logo-container {
   margin: 10px auto 0 auto;
   width: 100px;

@@ -27,14 +27,23 @@ public class TestServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 
-			String discoveryID = "sphModelInterpreter";
-			IModelInterpreter modelInterpreter = this.<IModelInterpreter>getService(discoveryID, IModelInterpreter.class.getName());
+			String interpreterDiscoveryID = "sphModelInterpreter";
+			String simulatorDiscoveryID = "sphSimulator";
+			IModelInterpreter modelInterpreter = this.<IModelInterpreter>getService(interpreterDiscoveryID, IModelInterpreter.class.getName());
+			ISimulator simulator = this.<ISimulator>getService(simulatorDiscoveryID, ISimulator.class.getName());
 			
 			if(modelInterpreter == null){
 				response.getWriter().println("modelInterpreter is null");
 			}
 			else{
 				response.getWriter().println("modelInterpreter found: " + modelInterpreter.toString());
+			}
+			
+			if(simulator == null){
+				response.getWriter().println("simulator is null");
+			}
+			else{
+				response.getWriter().println("simulator found: " + modelInterpreter.toString());
 			}
 		} catch (Exception e) {
 			response.getWriter().println("error: " + e.getMessage());

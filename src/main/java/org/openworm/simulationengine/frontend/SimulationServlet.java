@@ -21,6 +21,7 @@ import org.openworm.simulationengine.core.simulation.ISimulation;
 import org.openworm.simulationengine.core.simulation.ISimulationCallbackListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 @Configurable
 public class SimulationServlet extends WebSocketServlet implements ISimulationCallbackListener
@@ -48,6 +49,7 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 	public void init() throws ServletException
 	{
 		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 	}
 
 	private Collection<SimDataInbound> getConnections()

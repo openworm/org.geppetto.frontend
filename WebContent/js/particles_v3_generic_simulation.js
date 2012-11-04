@@ -52,7 +52,7 @@ Simulation.connect = (function(host) {
 	Simulation.socket.onmessage = function(msg) {
 		if (!OW.jsonscene)
 		{
-			OW.init(FE.createContainer(), msg.data, FE.update);
+			OW.init(FE.createContainer(), JSON.parse(msg.data), FE.update);
 			OW.animate();
 		}
 		else

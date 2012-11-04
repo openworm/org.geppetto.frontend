@@ -1,8 +1,8 @@
 body {
-  background-color: #ffffff;
-  margin: 0px;
-  margin-top:20px;
-  overflow: hidden;
+	background-color: #000000;
+	margin: 0px;
+	margin-top: 20px;
+	overflow: hidden;
 }
 
 .button {
@@ -26,11 +26,21 @@ body {
 }
 
 #logo-container {
-  margin: 10px auto 0 auto;
-  width: 100px;
+	margin: 10px auto 0 auto;
+	width: 100px;
 }
 
 #logo-image {
-  height: 98px;
-  width: 100px;
+	height: 98px;
+	width: 100px;
+}
+
+#console-container {
+	font-family: "Courier New";
+	font-size: 8px;
+	color: white;
+}
+p {
+	text-align: center;
+	margin: .5em 2em;
 }

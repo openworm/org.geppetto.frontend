@@ -57,7 +57,7 @@ Simulation.connect = (function(host) {
 		}
 		else
 		{
-			OW.updateJSONScene(msg.data);
+			OW.updateJSONScene(JSON.parse(msg.data));
 		}
 	};
 });
@@ -82,8 +82,7 @@ var FE = FE || {};
 FE.createContainer = function()
 {
 	// create the container
-	container = document.createElement('div');
-	document.body.appendChild(container);
+	container = document.getElementById('sim');
 	return container;
 };
 

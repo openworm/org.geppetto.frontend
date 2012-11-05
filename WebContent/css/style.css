@@ -36,6 +36,8 @@ body {
 }
 
 #console-container {
+	margin: 0 auto;
+	width:315px;
 	font-family: "Courier New";
 	font-size: 8px;
 	color: white;
@@ -43,4 +45,17 @@ body {
 p {
 	text-align: center;
 	margin: .5em 2em;
+}
+#openwormlogo{
+	background-image:URL("http://www.openworm.org/imgs/OpenWormLogo.png");
+	width:100px;
+	height:98px;
+	margin-left:20px;
+	float:left;	
+}
+
+#toolbar{
+	width:315px;
+	margin:0 auto;
+	margin-bottom:5px;
 }

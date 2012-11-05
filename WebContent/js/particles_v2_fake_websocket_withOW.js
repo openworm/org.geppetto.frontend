@@ -86,8 +86,7 @@ var FE = FE || {};
 FE.createContainer = function()
 {
 	// create the container
-	container = document.createElement('div');
-	document.body.appendChild(container);
+	container = document.getElementById('sim');
 	return container;
 };
 

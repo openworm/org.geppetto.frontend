@@ -27,6 +27,8 @@ OW.jsonscene = null;
 OW.needsUpdate = false;
 OW.metadata = {};
 OW.customUpdate = null;
+OW.mouseClickListener = null;
+OW.rotationMode = false;
 OW.mouse = {
 	x : 0,
 	y : 0
@@ -48,6 +50,25 @@ OW.init = function(containerp, jsonscenep, updatep)
 	OW.setupStats();
 	OW.setupRenderer();
 	OW.setupListeners();
+};
+
+/**
+ * Set a listener for mouse clicks
+ * 
+ * @param listener
+ */
+OW.setMouseClickListener = function(listener)
+{
+	OW.mouseClickListener = listener;
+};
+
+/**
+ * Remove the mouse listener (it's expensive don't add it when you don't need
+ * it!)
+ */
+OW.removeMouseClickListener = function()
+{
+	OW.mouseClickListener = null;
 };
 
 /**
@@ -105,8 +126,8 @@ OW.updateScene = function()
 			var entityGeometry = OW.geometriesMap[entities[eindex].id];
 			if (entityGeometry)
 			{
-				//if an entity is represented by a particle system we need to 
-				//mark it as dirty for it to be updated
+				// if an entity is represented by a particle system we need to
+				// mark it as dirty for it to be updated
 				if (entityGeometry instanceof THREE.ParticleSystem)
 				{
 					entityGeometry.geometry.verticesNeedUpdate = true;
@@ -293,25 +314,140 @@ OW.setupScene = function()
 
 	for ( var eindex in entities)
 	{
-		var geometries = entities[eindex].geometries;
+		OW.scene.add(OW.getThreeObjectFromJSONEntity(entities[eindex], eindex, true));
+	}
+};
+
+/**
+ * @param entity
+ * @returns the subentities in which the entity was decomposed
+ */
+OW.divideEntity = function(entity)
+{
+	var jsonEntities = OW.jsonscene.entities;
+	var jsonEntity = jsonEntities[entity.eindex];
+	var newEntities = [];
+	OW.scene.remove(entity);
+
+	var entityObject = OW.getThreeObjectFromJSONEntity(jsonEntity, entity.eindex, false);
+	if (entityObject instanceof Array)
+	{
+		for ( var e in entityObject)
+		{
+			OW.scene.add(entityObject[e]);
+			newEntities.push(entityObject[e]);
+		}
+	}
+	else
+	{
+		OW.scene.add(entityObject);
+		newEntities.push(entityObject);
+	}
+
+	return newEntities;
+};
+
+/**
+ * @param entities
+ *            the subentities
+ * @returns the resulting parent entity in which the subentities were assembled
+ */
+OW.mergeEntities = function(entities)
+{
+	var entityObject = null;
+	if (entities[0].hasOwnProperty("parentEntityIndex"))
+	{
+		var jsonEntities = OW.jsonscene.entities;
+		var entityIndex = entities[0].parentEntityIndex;
+
+		for ( var e in entities)
+		{
+			OW.scene.remove(entities[e]);
+		}
+
+		entityObject = OW.getThreeObjectFromJSONEntity(jsonEntities[entityIndex], entityIndex, true);
+		OW.scene.add(entityObject);
+	}
+	return entityObject;
+};
+
+/**
+ * @param jsonEntity
+ *            the json entity
+ * @param eindex
+ *            the entity index within the json scene
+ * @param mergeSubentities
+ *            true if subentities have to be merged
+ * @returns the resulting parent entity in which the subentities were assembled
+ */
+OW.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubentities)
+{
+	var entityObject = null;
+	if (jsonEntity.subentities && jsonEntity.subentities.length > 0)
+	{
+		// this entity is made of many subentities
+		if (mergeSubentities)
+		{
+			// if mergeSubentities is true then only one resulting entity is
+			// created
+			// by merging all geometries of the different subentities together
+			var material = new THREE.MeshLambertMaterial();
+			material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
+			var combined = new THREE.Geometry();
+			for ( var seindex in jsonEntity.subentities)
+			{
+				var threeObject = OW.getThreeObjectFromJSONEntity(jsonEntity.subentities[seindex], mergeSubentities);
+				THREE.GeometryUtils.merge(combined, threeObject);
+			}
+			entityObject = new THREE.Mesh(combined, material);
+			entityObject.eindex = eindex;
+		}
+		else
+		{
+			entityObject = [];
+			for ( var seindex in jsonEntity.subentities)
+			{
+				subentity = OW.getThreeObjectFromJSONEntity(jsonEntity.subentities[seindex], mergeSubentities);
+				subentity.parentEntityIndex = eindex;
+				entityObject.push(subentity);
+			}
+		}
+	}
+	else
+	{
+		// leaf entity it only contains geometries
+		var geometries = jsonEntity.geometries;
 		if (geometries[0].type == "Particle")
 		{
-			// assumes all geometries in an entity are particles
-			var material = new THREE.ParticleBasicMaterial({
-				size : 1
-			});
-			material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
+			// assumes there are no particles mixed with other kind of
+			// geometrie hence if the first one is a particle then they all are
+			// create the particle variables
+			var pMaterial =
+			  new THREE.ParticleBasicMaterial({
+			    color: 0x81b621,
+			    size: 5,
+			    map: THREE.ImageUtils.loadTexture(
+			      "images/ball.png"
+			    ),
+			    blending: THREE.AdditiveBlending,
+			    transparent: true
+			  });
+
+
+			
 			geometry = new THREE.Geometry();
 			for ( var gindex in geometries)
 			{
-				var threeObject = OW.getThreeObjectFromJSONGeometry(geometries[gindex], material);
+				var threeObject = OW.getThreeObjectFromJSONGeometry(geometries[gindex], pMaterial);
 				geometry.vertices.push(threeObject);
-
 			}
-			particles = new THREE.ParticleSystem(geometry, material);
-			OW.geometriesMap[entities[eindex].id] = particles;
-			OW.scene.add(particles);
-
+			entityObject = new THREE.ParticleSystem(geometry, pMaterial);
+			entityObject.eid=jsonEntity.id;
+			// also update the particle system to
+			// sort the particles which enables
+			// the behaviour we want
+			entityObject.sortParticles = true;
+			OW.geometriesMap[jsonEntity.id] = entityObject;
 		}
 		else
 		{
@@ -323,14 +459,13 @@ OW.setupScene = function()
 				var threeObject = OW.getThreeObjectFromJSONGeometry(geometries[gindex], material);
 				THREE.GeometryUtils.merge(combined, threeObject);
 			}
-			var entityMesh = new THREE.Mesh(combined, material);
-			OW.scene.add(entityMesh);
-			entityMesh.eindex = eindex;
+			entityObject = new THREE.Mesh(combined, material);
+			entityObject.eindex = eindex;
+			entityObject.eid=jsonEntity.id;
 		}
-
 	}
+	return entityObject;
 };
-
 /**
  * 
  */
@@ -358,7 +493,7 @@ OW.setupControls = function()
 	OW.controls.noZoom = false;
 	OW.controls.noPan = false;
 	OW.controls.staticMoving = true;
-	OW.controls.dynamicDampingFactor = 0;
+	OW.controls.dynamicDampingFactor = 0.3;
 	OW.controls.keys = [ 65, 83, 68 ];
 	OW.controls.addEventListener('change', OW.render);
 };
@@ -509,6 +644,7 @@ OW.setupListeners = function()
 {
 	// when the mouse moves, call the given function
 	document.addEventListener('mousemove', OW.onDocumentMouseMove, false);
+	document.addEventListener('mousedown', OW.onDocumentMouseDown, false);
 };
 
 /**
@@ -533,6 +669,20 @@ OW.onDocumentMouseMove = function(event)
 	// update the mouse variable
 	OW.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 	OW.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+};
+
+/**
+ * If a listener for click events was defined we call it
+ * 
+ * @param event
+ */
+OW.onDocumentMouseDown = function(event)
+{
+	if (OW.mouseClickListener)
+	{
+		OW.mouseClickListener(OW.getIntersectedObjects(), event.which);
+	}
 };
 
 /**
@@ -570,12 +720,17 @@ OW.showMetadataForEntity = function(entityIndex)
 	if (!OW.gui)
 	{
 		OW.metadata = OW.jsonscene.entities[entityIndex].metadata;
+		OW.metadata.ID=OW.jsonscene.entities[entityIndex].id;
 		OW.setupGUI();
 	}
 	else
 	{
-		OW.updateMetaData(OW.metadata, OW.jsonscene.entities[entityIndex].metadata);
-		OW.updateGUI();
+		if (OW.jsonscene.entities[entityIndex])
+		{
+			OW.updateMetaData(OW.metadata, OW.jsonscene.entities[entityIndex].metadata);
+			OW.metadata.ID=OW.jsonscene.entities[entityIndex].id;
+			OW.updateGUI();
+		}
 	}
 };
 
@@ -599,5 +754,26 @@ OW.animate = function()
 	OW.stats.update();
 	OW.controls.update();
 	requestAnimationFrame(OW.animate);
+	if (OW.rotationMode)
+	{
+		var timer = new Date().getTime() * 0.0005;
+		OW.camera.position.x = Math.floor(Math.cos(timer) * 200);
+		OW.camera.position.z = Math.floor(Math.sin(timer) * 200);
+	}
 	OW.render();
+};
+
+OW.enterRotationMode = function(aroundObject)
+
+{
+	OW.rotationMode = true;
+	if (aroundObject)
+	{
+		OW.camera.lookAt(aroundObject);
+	}
+};
+
+OW.exitRotationMode = function()
+{
+	OW.rotationMode = false;
 };

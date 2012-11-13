@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1352818931197
+Build-Jdk: 1.6.0_37
+Built-By: matteocantarelli
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenWorm Simulation Engine Frontend
+Bundle-SymbolicName: org.openworm.simulationengine.frontend
+Bundle-Version: 1.0.0
+Created-By: Apache Maven Bundle Plugin
+Export-Package: org.openworm.simulationengine.frontend;uses:="org.openwo
+ rm.simulationengine.core.simulation,org.apache.catalina.websocket,org.s
+ pringframework.beans.factory.annotation,javax.servlet,org.springframewo
+ rk.web.context.support,javax.servlet.http,org.openworm.simulationengine
+ .core.simulator,org.osgi.framework,org.openworm.simulationengine.core.m
+ odel";version="1.0.0"
+Import-Library: org.springframework.spring;version="3.0.0.RELEASE"
+Import-Package: javax.servlet,javax.servlet.http,org.apache.catalina.web
+ socket,org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",org.openworm.si
+ mulationengine.core.model;version="[1.0,2)",org.openworm.simulationengi
+ ne.core.simulation;version="[1.0,2)",org.openworm.simulationengine.core
+ .simulator;version="[1.0,2)",org.osgi.framework;version="[1.6,2)",org.s
+ pringframework.beans.factory.annotation;version="[3.0,4)",org.springfra
+ mework.web.context.support;version="[3.0,4)"
+Tool: Bnd-1.50.0

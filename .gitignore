@@ -1,6 +1,6 @@
 *.class
 *.DS_Store
-WebContent/META-INF/MANIFEST.MF
+src/main/webapp/META-INF/MANIFEST.MF
 
 # Package Files #
 *.jar

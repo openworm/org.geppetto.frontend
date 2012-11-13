@@ -5,7 +5,7 @@
 	<artifactId>simulationengine.frontend</artifactId>
 	<version>1.0.0</version>
 	<name>OpenWorm Simulation Engine Frontend</name>
-	<packaging>bundle</packaging>
+	<packaging>war</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>3.0.0.RELEASE</spring.version>
@@ -109,7 +109,7 @@
 				<version>2.3.7</version>
 				<extensions>true</extensions>
 				<configuration>
-					<manifestLocation>WebContent/META-INF</manifestLocation>
+					<manifestLocation>src/main/webapp/META-INF</manifestLocation>
 					<supportedProjectTypes>
 						<supportedProjectType>war</supportedProjectType>
 						<supportedProjectType>bundle</supportedProjectType>
@@ -122,14 +122,25 @@
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
 					</instructions>
 				</configuration>
+				<executions>
+					<execution>
+						<id>bundle</id>
+						<goals>
+							<goal>manifest</goal>
+						</goals>
+						<phase>prepare-package</phase>
+						<inherited>true</inherited>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
+					<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
 					<warName>org.openworm.simulationengine.frontend</warName>
 					<archive>
-						<manifestFile>WebContent/META-INF/MANIFEST.MF</manifestFile>
+						<manifestFile>src/main/webapp/META-INF/MANIFEST.MF</manifestFile>
 					</archive>
 				</configuration>
 			</plugin>

@@ -2,10 +2,10 @@
 <project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="org.openworm.simulationengine.frontend">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
-        <wb-resource deploy-path="/" source-path="/WebContent/WEB-INF"/>
-        <wb-resource deploy-path="/js/" source-path="/WebContent/js"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp/WEB-INF"/>
+        <wb-resource deploy-path="/js/" source-path="/src/main/webapp/js"/>
         <property name="java-output-path" value="/org.openworm.simulationengine.frontend/bin"/>
         <property name="context-root" value="org.openworm.simulationengine.frontend"/>
     </wb-module>

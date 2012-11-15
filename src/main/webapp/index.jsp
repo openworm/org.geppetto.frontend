@@ -6,7 +6,7 @@
   <!-- Third-party js libraries -->
   <script src="js/vendor/jquery-1.8.2.min.js"></script>
   <script src="js/vendor/underscore.js"></script>
-  <script src="js/vendor/Three.min.js"></script>
+  <script src="js/vendor/three.min.js"></script>
   <!-- <script type="text/javascript" src="js/ThreeCanvas.js"></script> -->
 
   <!-- Openworm js -->

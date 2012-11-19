@@ -107,7 +107,7 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 				}
 				else
 				{
-					// NOTE: doesn't necessarily need to do smt here - could be
+					// TODO: add a reset simulation function
 					// just start/stop
 				}
 			}

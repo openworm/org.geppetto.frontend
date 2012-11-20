@@ -105,10 +105,13 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 				{
 					simulationService.stop();
 				}
+				else if (msg.equals("reset"))
+				{
+					simulationService.reset();
+				}
 				else
 				{
-					// TODO: add a reset simulation function
-					// just start/stop
+					// NOTE: no other messages expected for now
 				}
 			}
 			catch (MalformedURLException e)

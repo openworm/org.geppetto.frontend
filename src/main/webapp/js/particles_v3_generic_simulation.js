@@ -29,6 +29,11 @@ Simulation.start = function() {
 	Console.log('Sent: Start simulation');
 };
 
+Simulation.start = function() {
+	Simulation.socket.send("reset");
+	Console.log('Sent: Reset simulation');
+};
+
 Simulation.connect = (function(host) {
 	if ('WebSocket' in window) {
 		Simulation.socket = new WebSocket(host);
@@ -101,11 +106,13 @@ FE.update = function()
 $(document).ready(function()
 {
 	$('#stop').attr('disabled', 'disabled');
+	$('#reset').attr('disabled', 'disabled');
 
 	$('#start').click(function()
 	{
 		$('#start').attr('disabled', 'disabled');
 		$('#stop').removeAttr('disabled');
+		$('#reset').attr('disabled', 'disabled');
 		Simulation.start();
 	});
 
@@ -113,7 +120,16 @@ $(document).ready(function()
 	{
 		$('#start').removeAttr('disabled');
 		$('#stop').attr('disabled', 'disabled');
+		$('#reset').removeAttr('disabled');
 		Simulation.stop();
+	});
+	
+	$('#reset').click(function()
+	{
+		$('#start').removeAttr('disabled');
+		$('#stop').attr('disabled', 'disabled');
+		$('#reset').attr('disabled', 'disabled');
+		Simulation.reset();
 	});
 
 	Simulation.initialize();

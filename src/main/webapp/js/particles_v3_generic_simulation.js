@@ -29,7 +29,7 @@ Simulation.start = function() {
 	Console.log('Sent: Start simulation');
 };
 
-Simulation.start = function() {
+Simulation.reset = function() {
 	Simulation.socket.send("reset");
 	Console.log('Sent: Reset simulation');
 };

@@ -348,8 +348,7 @@ OW.divideEntity = function(entity)
 };
 
 /**
- * @param entities
- *            the subentities
+ * @param entities: the subentities
  * @returns the resulting parent entity in which the subentities were assembled
  */
 OW.mergeEntities = function(entities)
@@ -372,12 +371,9 @@ OW.mergeEntities = function(entities)
 };
 
 /**
- * @param jsonEntity
- *            the json entity
- * @param eindex
- *            the entity index within the json scene
- * @param mergeSubentities
- *            true if subentities have to be merged
+ * @param jsonEntity: the json entity
+ * @param eindex: the entity index within the json scene
+ * @param mergeSubentities: true if subentities have to be merged
  * @returns the resulting parent entity in which the subentities were assembled
  */
 OW.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubentities)
@@ -426,14 +422,10 @@ OW.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubentities)
 			  new THREE.ParticleBasicMaterial({
 			    color: 0x81b621,
 			    size: 5,
-			    map: THREE.ImageUtils.loadTexture(
-			      "images/ball.png"
-			    ),
+			    map: THREE.ImageUtils.loadTexture("images/ball.png"),
 			    blending: THREE.AdditiveBlending,
 			    transparent: true
 			  });
-
-
 			
 			geometry = new THREE.Geometry();
 			for ( var gindex in geometries)
@@ -466,6 +458,7 @@ OW.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubentities)
 	}
 	return entityObject;
 };
+
 /**
  * 
  */
@@ -518,7 +511,6 @@ OW.setupStats = function()
 OW.setupLights = function()
 {
 	// Lights
-
 	light = new THREE.DirectionalLight(0xffffff);
 	light.position.set(1, 1, 1);
 	OW.scene.add(light);
@@ -764,7 +756,6 @@ OW.animate = function()
 };
 
 OW.enterRotationMode = function(aroundObject)
-
 {
 	OW.rotationMode = true;
 	if (aroundObject)

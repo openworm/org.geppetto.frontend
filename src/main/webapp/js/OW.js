@@ -8,7 +8,8 @@
 /**
  * Base class
  */
-var OW = OW || {};
+var OW = OW ||
+{};
 
 /**
  * Global variables
@@ -25,15 +26,18 @@ OW.keyboard = new THREEx.KeyboardState();
 OW.guiToUpdate = [];
 OW.jsonscene = null;
 OW.needsUpdate = false;
-OW.metadata = {};
+OW.metadata =
+{};
 OW.customUpdate = null;
 OW.mouseClickListener = null;
 OW.rotationMode = false;
-OW.mouse = {
+OW.mouse =
+{
 	x : 0,
 	y : 0
 };
-OW.geometriesMap = {};
+OW.geometriesMap =
+{};
 
 /**
  * Initialize the engine
@@ -63,8 +67,7 @@ OW.setMouseClickListener = function(listener)
 };
 
 /**
- * Remove the mouse listener (it's expensive don't add it when you don't need
- * it!)
+ * Remove the mouse listener (it's expensive don't add it when you don't need it!)
  */
 OW.removeMouseClickListener = function()
 {
@@ -172,8 +175,7 @@ OW.updateGeometry = function(g)
  * @param radiusTop
  * @param radiusBottom
  * @param material
- * @returns a Cylinder translated and rotated in the scene according to the
- *          cartesian coordinated that describe it
+ * @returns a Cylinder translated and rotated in the scene according to the cartesian coordinated that describe it
  */
 OW.getCylinder = function(bottomBasePos, topBasePos, radiusTop, radiusBottom, material)
 {
@@ -243,8 +245,7 @@ OW.printPoint = function(string, point)
 /**
  * 
  * @param proj
- * @returns Angle between x axis and the projection of the position vector on
- *          the XZ plane
+ * @returns Angle between x axis and the projection of the position vector on the XZ plane
  */
 OW.compTheta = function(proj)
 {
@@ -348,7 +349,8 @@ OW.divideEntity = function(entity)
 };
 
 /**
- * @param entities: the subentities
+ * @param entities:
+ *            the subentities
  * @returns the resulting parent entity in which the subentities were assembled
  */
 OW.mergeEntities = function(entities)
@@ -371,9 +373,12 @@ OW.mergeEntities = function(entities)
 };
 
 /**
- * @param jsonEntity: the json entity
- * @param eindex: the entity index within the json scene
- * @param mergeSubentities: true if subentities have to be merged
+ * @param jsonEntity:
+ *            the json entity
+ * @param eindex:
+ *            the entity index within the json scene
+ * @param mergeSubentities:
+ *            true if subentities have to be merged
  * @returns the resulting parent entity in which the subentities were assembled
  */
 OW.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubentities)
@@ -413,47 +418,80 @@ OW.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubentities)
 	{
 		// leaf entity it only contains geometries
 		var geometries = jsonEntity.geometries;
-		if (geometries[0].type == "Particle")
+		if (geometries.length > 0)
 		{
-			// assumes there are no particles mixed with other kind of
-			// geometrie hence if the first one is a particle then they all are
-			// create the particle variables
-			var pMaterial =
-			  new THREE.ParticleBasicMaterial({
-			    color: 0x81b621,
-			    size: 5,
-			    map: THREE.ImageUtils.loadTexture("images/ball.png"),
-			    blending: THREE.AdditiveBlending,
-			    transparent: true
-			  });
-			
-			geometry = new THREE.Geometry();
-			for ( var gindex in geometries)
+			if (geometries[0].type == "Particle")
 			{
-				var threeObject = OW.getThreeObjectFromJSONGeometry(geometries[gindex], pMaterial);
-				geometry.vertices.push(threeObject);
+				// assumes there are no particles mixed with other kind of
+				// geometrie hence if the first one is a particle then they all are
+				// create the particle variables
+				var eMaterial = new THREE.ParticleBasicMaterial(
+				{
+					color : 0x0000FF,
+					size : 5,
+					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					blending : THREE.AdditiveBlending,
+					transparent : true
+				});
+				var bMaterial = new THREE.ParticleBasicMaterial(
+				{
+					color : 0x00FF00,
+					size : 1,
+					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					blending : THREE.AdditiveBlending,
+					transparent : true
+				});
+				var lMaterial = new THREE.ParticleBasicMaterial(
+				{
+					color : 0xFF0000,
+					size : 5,
+					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					blending : THREE.AdditiveBlending,
+					transparent : true
+				});
+
+				var pMaterial = null;
+				if (jsonEntity.id.indexOf("LIQUID")!=-1)
+				{
+					pMaterial = lMaterial;
+				}
+				else if (jsonEntity.id.indexOf("ELASTIC")!=-1)
+				{
+					pMaterial = eMaterial;
+				}
+				else if (jsonEntity.id.indexOf("BOUNDARY")!=-1)
+				{
+					//pMaterial = bMaterial; swap this line with return to render boundary particles
+					return entityObject;
+				}
+				geometry = new THREE.Geometry();
+				for ( var gindex in geometries)
+				{
+					var threeObject = OW.getThreeObjectFromJSONGeometry(geometries[gindex], pMaterial);
+					geometry.vertices.push(threeObject);
+				}
+				entityObject = new THREE.ParticleSystem(geometry, pMaterial);
+				entityObject.eid = jsonEntity.id;
+				// also update the particle system to
+				// sort the particles which enables
+				// the behaviour we want
+				entityObject.sortParticles = true;
+				OW.geometriesMap[jsonEntity.id] = entityObject;
 			}
-			entityObject = new THREE.ParticleSystem(geometry, pMaterial);
-			entityObject.eid=jsonEntity.id;
-			// also update the particle system to
-			// sort the particles which enables
-			// the behaviour we want
-			entityObject.sortParticles = true;
-			OW.geometriesMap[jsonEntity.id] = entityObject;
-		}
-		else
-		{
-			var material = new THREE.MeshLambertMaterial();
-			material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
-			var combined = new THREE.Geometry();
-			for ( var gindex in geometries)
+			else
 			{
-				var threeObject = OW.getThreeObjectFromJSONGeometry(geometries[gindex], material);
-				THREE.GeometryUtils.merge(combined, threeObject);
+				var material = new THREE.MeshLambertMaterial();
+				material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
+				var combined = new THREE.Geometry();
+				for ( var gindex in geometries)
+				{
+					var threeObject = OW.getThreeObjectFromJSONGeometry(geometries[gindex], material);
+					THREE.GeometryUtils.merge(combined, threeObject);
+				}
+				entityObject = new THREE.Mesh(combined, material);
+				entityObject.eindex = eindex;
+				entityObject.eid = jsonEntity.id;
 			}
-			entityObject = new THREE.Mesh(combined, material);
-			entityObject.eindex = eindex;
-			entityObject.eid=jsonEntity.id;
 		}
 	}
 	return entityObject;
@@ -583,9 +621,7 @@ OW.addGUIControls = function(parent, current_metadata)
 };
 
 /**
- * This method updates the available metadata. This method is required since to
- * update a GUI element we have to overwrite the properties in the same object
- * without changing the object itself.
+ * This method updates the available metadata. This method is required since to update a GUI element we have to overwrite the properties in the same object without changing the object itself.
  * 
  * @param metadatatoupdate
  * @param metadatanew
@@ -612,7 +648,8 @@ OW.setupRenderer = function()
 {
 	// and the CanvasRenderer figures out what the
 	// stuff in the scene looks like and draws it!
-	OW.renderer = new THREE.WebGLRenderer({
+	OW.renderer = new THREE.WebGLRenderer(
+	{
 		antialias : true
 	});
 	OW.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -712,7 +749,7 @@ OW.showMetadataForEntity = function(entityIndex)
 	if (!OW.gui)
 	{
 		OW.metadata = OW.jsonscene.entities[entityIndex].metadata;
-		OW.metadata.ID=OW.jsonscene.entities[entityIndex].id;
+		OW.metadata.ID = OW.jsonscene.entities[entityIndex].id;
 		OW.setupGUI();
 	}
 	else
@@ -720,7 +757,7 @@ OW.showMetadataForEntity = function(entityIndex)
 		if (OW.jsonscene.entities[entityIndex])
 		{
 			OW.updateMetaData(OW.metadata, OW.jsonscene.entities[entityIndex].metadata);
-			OW.metadata.ID=OW.jsonscene.entities[entityIndex].id;
+			OW.metadata.ID = OW.jsonscene.entities[entityIndex].id;
 			OW.updateGUI();
 		}
 	}

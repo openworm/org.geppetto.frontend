@@ -46,8 +46,7 @@ Simulation.connect = (function(host) {
 
 	Simulation.socket.onopen = function() {
 		Console.log('Info: WebSocket connection opened.');
-		Simulation.socket.send("init$https://www.dropbox.com/s/72efwkb9nm7mo27/sph-sim-config-test.xml?dl=1");
-		// https://www.dropbox.com/s/iyr085zcegyis0n/sph-sim-config.xml?dl=1
+		Simulation.socket.send("init$https://www.dropbox.com/s/iyr085zcegyis0n/sph-sim-config.xml?dl=1");
 	};
 
 	Simulation.socket.onclose = function() {

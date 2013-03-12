@@ -5,8 +5,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,6 +20,8 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openworm.simulationengine.core.simulation.ISimulation;
 import org.openworm.simulationengine.core.simulation.ISimulationCallbackListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +36,8 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static Log logger = LogFactory.getLog(SimulationServlet.class);
 
 	@Autowired
 	private ISimulation simulationService;
@@ -120,8 +127,7 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 			}
 			catch (MalformedURLException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage());
 			}
 		}
 	}
@@ -129,6 +135,10 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 	@Override
 	public void updateReady(String update)
 	{
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
+		String dateFormatted = formatter.format(date);
+		logger.info("Simulation Update Ready: "+dateFormatted);
 		for (SimDataInbound connection : getConnections())
 		{
 			try
@@ -138,7 +148,7 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 			}
 			catch (IOException ignore)
 			{
-				// Ignore
+				logger.error(ignore.getMessage());
 			}
 		}
 	}

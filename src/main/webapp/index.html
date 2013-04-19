@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Geppetto Frontend</title>
+		
+		<!-- Third-party js libraries -->
+		<script src="js/vendor/jquery-1.9.1.js"></script>
+		<script src="js/vendor/jquery-ui-1.10.2.custom.min.js"></script>
+		<script src="js/vendor/three.js"></script>
+		<script src="js/vendor/TrackballControls.js"></script>
+		<script src="js/vendor/dat.gui.js"></script>
+		<script src="js/vendor/stats.min.js"></script>
+		<script src="js/vendor/THREEx.KeyboardState.js"></script>
+		<script src="js/vendor/Detector.js"></script>		
+		<script src="js/vendor/bootstrap.min.js"></script>
+		
+		<!-- Geppetto -->
+		<script src="js/GEPPETTO.js"></script>
+		<script src="js/GEPPETTO.Simulation.js"></script>
+
+		<!-- CSS -->
+		<link rel="stylesheet" href="css/jquery.fancybox.css"/>
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/font-awesome.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/custom-theme/jquery-ui-1.10.0.custom.css" />
+	</head>
+	<body>
+
+<div id="geppettologo"></div>
+		<div id="controls">
+			
+			<div id="sim_toolbar">
+				<a  href="#loadSimModal" role="button" class="btn" data-toggle="modal" id="openload"><icon class="icon-folder-open-alt"></icon> Load Simulation</a>
+				<button class="btn" id="start"><icon class="icon-play"></icon> Start</button>
+				<button class="btn" id="pause" ><icon class="icon-pause"></icon> Pause</button>
+				<button class="btn" id="reset"><icon class="icon-reply"></icon> Reset</button>
+			</div>
+			<div id="position_toolbar">
+				<button class="btn squareB icon-chevron-left" id="w"></button>
+				<button class="btn squareB icon-chevron-up" id="n"></button>
+				<button class="btn squareB icon-chevron-right" id="e"></button>
+				<button class="btn squareB icon-chevron-down" id="s"></button>
+				<button class="btn squareB icon-home" id="h"></button>
+
+				<button class="btn squareB icon-undo" id="rw"></button>
+				<button class="btn squareB icon-repeat rotate90" id="rn"></button>
+				<button class="btn squareB icon-repeat" id="re"></button>
+				<button class="btn squareB icon-undo rotate90" id="rs"></button>
+				<button class="btn squareB icon-home" id="rh"></button>
+
+				<button class="btn squareB icon-zoom-in" id="zi"></button>
+				<button class="btn squareB icon-zoom-out" id="zo"></button>
+				<br />
+			</div>
+			<div id="toolbar">
+				<div id="mode" class="btn-group" data-toggle="buttons-radio">
+					<button class="btn active" id="normalMode" checked="checked">Normal mode</button>
+					<button class="btn"  id="selectionMode" checked="checked">Selection mode</button>
+				</div>
+				<div id="io" class="btn-group" data-toggle="buttons-checkbox">
+					<button class="btn squareB icon-signin active" id="showinputs"   ></button>
+					<button class="btn squareB icon-signout active" id="showoutputs"></button>
+					<button class="btn squareB icon-filter active" id="showdeselected" ></button>
+				</div>
+				<div>
+					<button class="btn squareB icon-refresh" data-toggle="button" id="rotationMode"></button>
+					<button class="btn squareB icon-info-sign" id="helpbutton" href="#help" data-toggle="modal"></button>
+				</div>
+			</div>
+		</div>
+		
+		<div id="sim"></div>
+		
+		<div id="consolealert" class="alert alert-info">
+		  <button type="button" class="close" data-dismiss="alert">&times;</button>
+		  <div id="console"></div>
+		</div>
+
+		
+		
+		<div id="loadSimModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-header">
+		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		    <h3 id="myModalLabel">Load Simulation</h3>
+		  </div>
+		  <div class="modal-body">
+		    <label>URL</label>
+		    <input class="input-xlarge" id="url" type="text" placeholder="Paste the URL of the simulation file...">
+		  </div>
+		  <div class="modal-footer">
+		    <a href="#" data-dismiss="modal" class="btn">Close</a>
+		    <button id="load" class="btn btn-warning">Load</button>
+		  </div>
+		</div>
+		
+		
+	</body>
+</html>

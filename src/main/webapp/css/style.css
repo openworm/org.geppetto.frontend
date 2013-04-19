@@ -5,25 +5,6 @@ body {
 	overflow: hidden;
 }
 
-.button {
-	border:0px;
-	width: 142px;
-	height: 33px;
-	margin-right: 10px;
-	background-color: #5E8F22;
-	padding-top: 4px;
-	font-size: 15px;
-	color: white;
-	cursor: pointer;
-}
-
-.button:HOVER {
-	background-color: #456919;
-}
-
-.button:disabled{
-	background-color: #333333;
-}
 
 #logo-container {
 	margin: 10px auto 0 auto;
@@ -35,27 +16,160 @@ body {
 	width: 100px;
 }
 
-#console-container {
+#consolealert {
 	margin: 0 auto;
+	margin-top: -10px;
 	width:315px;
-	font-family: "Courier New";
-	font-size: 8px;
-	color: white;
+	font-size: 10px;
+	line-height:10px;
+	font-weight:200;
 }
 p {
 	text-align: center;
 	margin: .5em 2em;
 }
-#openwormlogo{
-	background-image:URL("http://www.openworm.org/imgs/OpenWormLogo.png");
-	width:100px;
-	height:98px;
-	margin-left:20px;
-	float:left;	
+#geppettologo{
+	background-image:URL("../images/geppetto.png");
+	width:200px;
+	height:66px;
+	left:5px;
+		
+	bottom:10px;
+	position:absolute;
 }
 
-#toolbar{
-	width:467px;
-	margin:0 auto;
-	margin-bottom:5px;
+
+
+#position_toolbar {
+	left: 10px;
+	top: 10px;
+	position: absolute;
+	width: 100px;
+	height: 150px;
 }
+
+#toolbar {
+	position: absolute;
+	left: 100px;
+	top: 10px;
+	width: 330px;
+	height: 100px;
+}
+
+#sim_toolbar {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 400px;
+	height: 100px;
+}
+
+
+.rotate90
+{
+transform: rotate(90deg);
+-ms-transform: rotate(90deg); /* IE 9 */
+-webkit-transform: rotate(90deg); /* Safari and Chrome */
+-o-transform: rotate(90deg); /* Opera */
+-moz-transform: rotate(90deg); /* Firefox */
+}
+
+.rotate180
+{
+transform: rotate(180deg);
+-ms-transform: rotate(180deg); /* IE 9 */
+-webkit-transform: rotate(180deg); /* Safari and Chrome */
+-o-transform: rotate(180deg); /* Opera */
+-moz-transform: rotate(180deg); /* Firefox */
+}
+
+.dg{
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-weight:200;
+}
+
+input{
+	font-weight:200;
+}
+.ui-widget {
+}
+
+.squareB {
+	width:25px!important;
+	height:25px!important;
+	position:absolute;
+	padding:0;
+}
+
+#error {
+}
+
+#w {
+	left: 0px;
+	top: 25px;
+}
+#n {
+	left: 25px;
+	top: 0px;
+}
+#h {
+	left: 25px;
+	top: 25px;
+}
+#e {
+	left: 50px;
+	top: 25px;
+}
+#s {
+	left: 25px;
+	top: 50px;
+}
+
+#rw {
+	left: 0px;
+	top: 110px;
+}
+#rn {
+	left: 25px;
+	top: 85px;
+}
+#rh {
+	left: 25px;
+	top: 110px;
+}
+#re {
+	left: 50px;
+	top: 110px;
+}
+#rs {
+	left: 25px;
+	top: 135px;
+}
+
+#zo {
+	left: 25px;
+	top: 200px;
+}
+#zi {
+	left: 25px;
+	top: 175px;
+}
+#mode {
+	margin-bottom: 10px;
+	margin-left: 5px;
+}
+
+#io {
+	width: 90px;
+	float: left;
+}
+
+.square {
+	height: 25px;
+	width: 25px;
+}
+
+#rotationmode {
+	float: left;
+}
+

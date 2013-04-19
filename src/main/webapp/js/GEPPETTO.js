@@ -9,7 +9,10 @@
  * Base class
  */
 
-var GEPPETTO = GEPPETTO || { REVISION: '2' };
+var GEPPETTO = GEPPETTO ||
+{
+	REVISION : '2'
+};
 
 /**
  * Global variables
@@ -200,13 +203,12 @@ GEPPETTO.getCylinder = function(bottomBasePos, topBasePos, radiusTop, radiusBott
 	threeObject = new THREE.Mesh(c, material);
 
 	GEPPETTO.lookAt(threeObject, cylinderAxis);
-	var distance=midPoint.length();
-	
+	var distance = midPoint.length();
 
-	midPoint.transformDirection( threeObject.matrix );
-	midPoint.multiplyScalar( distance );
+	midPoint.transformDirection(threeObject.matrix);
+	midPoint.multiplyScalar(distance);
 
-	threeObject.position.add( midPoint );
+	threeObject.position.add(midPoint);
 	return threeObject;
 };
 
@@ -475,17 +477,17 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				});
 
 				var pMaterial = null;
-				if (jsonEntity.id.indexOf("LIQUID")!=-1)
+				if (jsonEntity.id.indexOf("LIQUID") != -1)
 				{
 					pMaterial = lMaterial;
 				}
-				else if (jsonEntity.id.indexOf("ELASTIC")!=-1)
+				else if (jsonEntity.id.indexOf("ELASTIC") != -1)
 				{
 					pMaterial = eMaterial;
 				}
-				else if (jsonEntity.id.indexOf("BOUNDARY")!=-1)
+				else if (jsonEntity.id.indexOf("BOUNDARY") != -1)
 				{
-					//pMaterial = bMaterial; swap this line with return to render boundary particles
+					// pMaterial = bMaterial; swap this line with return to render boundary particles
 					return entityObject;
 				}
 				geometry = new THREE.Geometry();
@@ -568,7 +570,7 @@ GEPPETTO.setupStats = function()
 	GEPPETTO.stats.domElement.style.right = '0px';
 	GEPPETTO.stats.domElement.style.zIndex = 100;
 	GEPPETTO.container.appendChild(GEPPETTO.stats.domElement);
-	
+
 };
 
 /**
@@ -604,8 +606,9 @@ GEPPETTO.setupGUI = function()
 	// GUI
 	if (!GEPPETTO.gui && data)
 	{
-		GEPPETTO.gui = new dat.GUI({
-				width : 400
+		GEPPETTO.gui = new dat.GUI(
+		{
+			width : 400
 		});
 		GEPPETTO.addGUIControls(GEPPETTO.gui, GEPPETTO.metadata);
 	}
@@ -644,7 +647,6 @@ GEPPETTO.addGUIControls = function(parent, current_metadata)
 		}
 	}
 };
-
 
 /**
  * 
@@ -739,9 +741,8 @@ GEPPETTO.getIntersectedObjects = function()
 	// scene (camera direction)
 	var vector = new THREE.Vector3(GEPPETTO.mouse.x, GEPPETTO.mouse.y, 1);
 	GEPPETTO.projector.unprojectVector(vector, GEPPETTO.camera);
-	
-	var raycaster = new THREE.Raycaster(GEPPETTO.camera.position, vector.sub(GEPPETTO.camera.position).normalize());
 
+	var raycaster = new THREE.Raycaster(GEPPETTO.camera.position, vector.sub(GEPPETTO.camera.position).normalize());
 
 	var visibleChildren = [];
 	GEPPETTO.scene.traverse(function(child)
@@ -803,7 +804,7 @@ GEPPETTO.animate = function()
 {
 	GEPPETTO.updateScene();
 	GEPPETTO.customUpdate();
-	if(GEPPETTO.stats)
+	if (GEPPETTO.stats)
 	{
 		GEPPETTO.stats.update();
 	}
@@ -907,7 +908,93 @@ GEPPETTO.isIn = function(e, array)
 
 GEPPETTO.resetScene = function()
 {
-	GEPPETTO.jsonscene=null;
-	GEPPETTO.scene=null;
+	GEPPETTO.jsonscene = null;
+	GEPPETTO.scene = null;
 	GEPPETTO.needsUpdate = true;
 };
+
+// ============================================================================
+// Application logic.
+// ============================================================================
+
+$(document).ready(function()
+{
+	// Toolbar controls
+
+	$("#w").click(function(event)
+	{
+		GEPPETTO.controls.incrementPanEnd(-0.01, 0);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	}).next().click(function(event)
+	{
+		GEPPETTO.controls.incrementPanEnd(0, -0.01);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	}).next().click(function(event)
+	{
+		GEPPETTO.controls.incrementPanEnd(0.01, 0);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	}).next().click(function(event)
+	{
+		GEPPETTO.controls.incrementPanEnd(0, 0.01);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	}).next().click(function(event)
+	{
+		GEPPETTO.setupCamera();
+		GEPPETTO.setupControls();
+	});
+
+	$("#rw").click(function(event)
+	{
+		GEPPETTO.controls.incrementRotationEnd(-0.01, 0, 0);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	}).next().click(function(event)
+	{
+		GEPPETTO.controls.incrementRotationEnd(0, 0, 0.01);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	}).next().click(function(event)
+	{
+		GEPPETTO.controls.incrementRotationEnd(0.01, 0, 0);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	}).next().click(function(event)
+	{
+		GEPPETTO.controls.incrementRotationEnd(0, 0, -0.01);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	}).next().click(function(event)
+	{
+		GEPPETTO.setupCamera();
+		GEPPETTO.setupControls();
+	});
+
+	$("#zo").click(function(event)
+	{
+		GEPPETTO.controls.incrementZoomEnd(+0.01);
+
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	});
+
+	$("#zi").click(function(event)
+	{
+		GEPPETTO.controls.incrementZoomEnd(-0.01);
+	}).mouseup(function(event)
+	{
+		GEPPETTO.controls.resetSTATE();
+	});
+});

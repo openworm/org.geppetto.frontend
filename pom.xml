@@ -74,30 +74,14 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.outputDirectory}/lib</outputDirectory>
-					<includeScope>runtime</includeScope>
-					<excludeScope>provided</excludeScope>
-				</configuration>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
@@ -129,9 +113,11 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
 				<configuration>
 					<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
 					<warName>org.openworm.simulationengine.frontend</warName>
@@ -140,10 +126,23 @@
 					</archive>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.outputDirectory}/lib</outputDirectory>
+							<includeScope>runtime</includeScope>
+							<excludeScope>provided</excludeScope>
+						</configuration>
+					</execution>
 					<execution>
 						<id>install</id>
 						<phase>install</phase>

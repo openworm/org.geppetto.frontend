@@ -5,7 +5,6 @@ body {
 	overflow: hidden;
 }
 
-
 #logo-container {
 	margin: 10px auto 0 auto;
 	width: 100px;
@@ -19,26 +18,23 @@ body {
 #consolealert {
 	margin: 0 auto;
 	margin-top: -10px;
-	width:315px;
+	width: 315px;
 	font-size: 10px;
-	line-height:10px;
-	font-weight:200;
+	line-height: 10px;
+	font-weight: 200;
 }
 p {
 	text-align: center;
 	margin: .5em 2em;
 }
-#geppettologo{
-	background-image:URL("../images/geppetto.png");
-	width:200px;
-	height:66px;
-	left:5px;
-		
-	bottom:10px;
-	position:absolute;
+#geppettologo {
+	background-image: URL("../images/geppetto.png");
+	width: 200px;
+	height: 66px;
+	left: 5px;
+	bottom: 10px;
+	position: absolute;
 }
-
-
 
 #position_toolbar {
 	left: 10px;
@@ -64,41 +60,38 @@ p {
 	height: 100px;
 }
 
-
-.rotate90
-{
-transform: rotate(90deg);
--ms-transform: rotate(90deg); /* IE 9 */
--webkit-transform: rotate(90deg); /* Safari and Chrome */
--o-transform: rotate(90deg); /* Opera */
--moz-transform: rotate(90deg); /* Firefox */
+.rotate90 {
+	transform: rotate(90deg);
+	-ms-transform: rotate(90deg); /* IE 9 */
+	-webkit-transform: rotate(90deg); /* Safari and Chrome */
+	-o-transform: rotate(90deg); /* Opera */
+	-moz-transform: rotate(90deg); /* Firefox */
 }
 
-.rotate180
-{
-transform: rotate(180deg);
--ms-transform: rotate(180deg); /* IE 9 */
--webkit-transform: rotate(180deg); /* Safari and Chrome */
--o-transform: rotate(180deg); /* Opera */
--moz-transform: rotate(180deg); /* Firefox */
+.rotate180 {
+	transform: rotate(180deg);
+	-ms-transform: rotate(180deg); /* IE 9 */
+	-webkit-transform: rotate(180deg); /* Safari and Chrome */
+	-o-transform: rotate(180deg); /* Opera */
+	-moz-transform: rotate(180deg); /* Firefox */
 }
 
-.dg{
-	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-	font-weight:200;
+.dg {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: 200;
 }
 
-input{
-	font-weight:200;
+input {
+	font-weight: 200;
 }
 .ui-widget {
 }
 
 .squareB {
-	width:25px!important;
-	height:25px!important;
-	position:absolute;
-	padding:0;
+	width: 25px !important;
+	height: 25px !important;
+	position: absolute;
+	padding: 0;
 }
 
 #error {
@@ -173,3 +166,34 @@ input{
 	float: left;
 }
 
+.dialog {
+	width: 500px;
+	height: 300px;
+}
+.plot {
+	width: 400px;
+	height: 280px;
+}
+
+.ui-dialog-titlebar-close:before {
+	font-family: FontAwesome;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 12px;
+	text-decoration: inherit;
+	-webkit-font-smoothing: antialiased;
+	/* sprites.less reset */
+	display: inline;
+	width: auto;
+	height: auto;
+	line-height: normal;
+	vertical-align: baseline;
+	background-image: none;
+	background-position: 0% 0%;
+	background-repeat: repeat;
+	margin-top: 0;
+	content: "\f00d";
+}
+.ui-dialog {
+	opacity: 0.8
+};

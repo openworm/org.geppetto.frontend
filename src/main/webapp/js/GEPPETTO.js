@@ -11,7 +11,7 @@
 
 var GEPPETTO = GEPPETTO ||
 {
-	REVISION : '2'
+	REVISION : '4dev'
 };
 
 /**
@@ -40,6 +40,7 @@ GEPPETTO.mouse =
 };
 GEPPETTO.geometriesMap =
 {};
+GEPPETTO.plots = new Array();
 
 /**
  * Initialize the engine
@@ -200,9 +201,12 @@ GEPPETTO.getCylinder = function(bottomBasePos, topBasePos, radiusTop, radiusBott
 	midPoint.multiplyScalar(0.5);
 
 	var c = new THREE.CylinderGeometry(radiusTop, radiusBottom, cylHeight, 6, 1, false);
+	
+	c.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
+	
 	threeObject = new THREE.Mesh(c, material);
 
-	GEPPETTO.lookAt(threeObject, cylinderAxis);
+	threeObject.lookAt(cylinderAxis);
 	var distance = midPoint.length();
 
 	midPoint.transformDirection(threeObject.matrix);
@@ -212,39 +216,6 @@ GEPPETTO.getCylinder = function(bottomBasePos, topBasePos, radiusTop, radiusBott
 	return threeObject;
 };
 
-/**
- * Orients an object obj so that it looks at a point in space
- * 
- * @param obj
- * @param point
- */
-GEPPETTO.lookAt = function(obj, point)
-{
-
-	// Y Coordinate axis
-	var yAxis = new THREE.Vector3(0, 1, 0);
-
-	// Projection of the position vector on the XZ plane
-	var projXZ = new THREE.Vector3();
-	projXZ.subVectors(point, yAxis.multiplyScalar(point.dot(yAxis)));
-
-	// Angle between the position vetor and the Y axis
-	var phi = GEPPETTO.compPhi(point);
-
-	// Angle between x axis and the projection of the position vector on the XZ
-	// plane
-	var theta = GEPPETTO.compTheta(projXZ);
-
-	// Rotation matrix
-	var transfMat = new THREE.Matrix4();
-	transfMat.identity(); // initialize to identity
-
-	transfMat.rotateY(theta); // multiply by rotation around Y by theta
-	transfMat.rotateZ(phi); // multiply by rotation around Z by phy
-
-	obj.rotation.setEulerFromRotationMatrix(transfMat); // apply the rotation to
-	// the object
-};
 
 /**
  * Print a point coordinates on console
@@ -255,68 +226,6 @@ GEPPETTO.lookAt = function(obj, point)
 GEPPETTO.printPoint = function(string, point)
 {
 	console.log(string + " (" + point.x + ", " + point.y + ", " + point.z + ")");
-};
-
-/**
- * 
- * @param proj
- * @returns Angle between x axis and the projection of the position vector on the XZ plane
- */
-GEPPETTO.compTheta = function(proj)
-{
-	var v = proj;
-
-	v.normalize();
-
-	var cos = v.x;
-
-	var sign = v.x * v.z;
-
-	var angle = Math.acos(cos);
-
-	// Correct the fact that the reference system is right handed
-	// and that acos returns only values between 0 and PI
-	// ignoring angles in the third and fourth quadrant
-	if (sign != 0)
-	{
-		if ((cos >= 0 && sign >= 0) || (cos < 0 && sign < 0))
-			return -angle;
-		else if (cos < 0 && sign >= 0)
-			return (angle + Math.PI);
-		else if (cos >= 0 && sign < 0)
-			return angle;
-	}
-	else
-	{
-		if (v.z > 0 || v.x < 0)
-		{
-			return -angle;
-		}
-		else if (v.x >= 0 || v.z < 0)
-		{
-			return angle;
-		}
-	}
-};
-
-/**
- * @param point
- * @returns Angle between the position vetor and the Y axis
- */
-GEPPETTO.compPhi = function(point)
-{
-	var v = point;
-	v.normalize();
-
-	var cos = v.y;
-	var angle = Math.acos(cos);
-
-	// Correction for right handed reference system and
-	// acos return values
-	if (point.x < 0 && point.z < 0)
-		return angle;
-	else
-		return -angle;
 };
 
 /**
@@ -659,7 +568,7 @@ GEPPETTO.setupRenderer = function()
 	{
 		antialias : true
 	});
-	GEPPETTO.renderer.setClearColorHex(0x000000, 1);
+	GEPPETTO.renderer.setClearColor(0x000000, 1);
 	GEPPETTO.renderer.setSize(window.innerWidth, window.innerHeight);
 	GEPPETTO.container.appendChild(GEPPETTO.renderer.domElement);
 };
@@ -766,6 +675,110 @@ GEPPETTO.getIntersectedObjects = function()
 GEPPETTO.isKeyPressed = function(key)
 {
 	return GEPPETTO.keyboard.pressed(key);
+};
+
+PLOT = function(entityId, variable)
+{
+	this.entityId = entityId;
+	this.variable = variable;
+	this.values = new Array();
+	this.defaultBuffer = 500;// 500 values are stored by default
+	this.dialog = null;
+	this.flot = null;
+	this.addValue = function()
+	{
+		/*
+		 * if (values.length >= 500) { value.splice(0, 1); } values[values.length + 1] = value;
+		 */
+		this.flot.setData([ this.getRandomData() ]);
+		this.flot.draw();
+		with (this) {setTimeout(function() { addValue(); }, 30);}
+	};
+	this.show = function()
+	{
+		this.dialog = GEPPETTO.createDialog("dialog" + this.entityId + this.variable,this.entityId+"."+this.variable);
+		this.dialog.append("<div class='plot' id='plot" + this.entityId + this.variable + "'></div>");
+		this.flot = $.plot("#plot" + this.entityId + this.variable, [ this.getRandomData() ],
+		{
+			series :
+			{
+				shadowSize : 0
+			// Drawing is faster without shadows
+			},
+			yaxis :
+			{
+				min : 0,
+				max : 100
+			},
+			xaxis :
+			{
+				show : false
+			}
+		});
+	};
+	this.dispose = function()
+	{
+		this.values = null;
+	};
+	this.getRandomData = function()
+	{
+
+		if (this.values.length > 0)
+			this.values = this.values.slice(1);
+
+		// Do a random walk
+
+		while (this.values.length < this.defaultBuffer)
+		{
+
+			var prev = this.values.length > 0 ? this.values[this.values.length - 1] : 50, y = prev + Math.random() * 10 - 5;
+
+			if (y < 0)
+			{
+				y = 0;
+			}
+			else if (y > 100)
+			{
+				y = 100;
+			}
+
+			this.values.push(y);
+		}
+
+		// Zip the generated y values with the x values
+
+		var res = [];
+		for ( var i = 0; i < this.values.length; ++i)
+		{
+			res.push([ i, this.values[i] ]);
+		}
+
+		return res;
+	};
+};
+
+GEPPETTO.createDialog = function(id, title)
+{
+	return $("<div id=" + id + " class='dialog' title='" + title + "'></div>").dialog(
+	{
+		resizable : true,
+		draggable : true,
+		height : 370,
+		width: 430,
+		modal : false
+	});
+};
+
+GEPPETTO.addPlot = function(entityId, variable)
+{
+	var plot = new PLOT(entityId, variable);
+	GEPPETTO.plots.push(plot);
+	plot.show();
+	plot.addValue();
+};
+
+GEPPETTO.removePlot = function(entityId, variable)
+{
 };
 
 /**
@@ -997,4 +1010,5 @@ $(document).ready(function()
 	{
 		GEPPETTO.controls.resetSTATE();
 	});
+	
 });

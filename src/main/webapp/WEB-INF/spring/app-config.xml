@@ -9,6 +9,6 @@
 	<!--  <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>--> 
 	<!-- Instructs Spring to scan for internal service components to instantiate and configure -->
 		
-	<context:component-scan base-package="org.openworm.simulationengine.frontend" />
+	<context:component-scan base-package="org.geppetto.frontend" />
 		
 </beans>

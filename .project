@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.openworm.simulationengine.frontend</name>
+	<name>org.geppetto.frontend</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -37,6 +37,16 @@
 				<dictionary>
 					<key>LaunchConfigHandle</key>
 					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.m2e.core.maven2Builder (4).launch</value>
+				</dictionary>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
+			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.m2e.core.maven2Builder (12).launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

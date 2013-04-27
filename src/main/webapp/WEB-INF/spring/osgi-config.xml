@@ -9,5 +9,5 @@
 
 	<!-- Exports the service implementation to other bundles by its service interface -->
 
-	<osgi:reference bean-name="simulationService" id="Simulation" interface="org.openworm.simulationengine.core.simulation.ISimulation"/>
+	<osgi:reference bean-name="simulationService" id="Simulation" interface="org.geppetto.core.simulation.ISimulation"/>
 </beans>

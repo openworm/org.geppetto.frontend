@@ -1,6 +1,6 @@
 /**
  * @fileoverview GEPPETTO Visualisation engine built on top of THREE.js. Displays
- * a scene as defined on org.openworm.simulationengine.core
+ * a scene as defined on org.geppetto.core
  *
  * @author matteo@openworm.org (Matteo Cantarelli)
  */

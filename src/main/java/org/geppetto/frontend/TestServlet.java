@@ -1,4 +1,4 @@
-package org.openworm.simulationengine.frontend;
+package org.geppetto.frontend;
 
 import java.io.IOException;
 
@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openworm.simulationengine.core.model.IModelInterpreter;
-import org.openworm.simulationengine.core.simulator.ISimulator;
+import org.geppetto.core.model.IModelInterpreter;
+import org.geppetto.core.simulator.ISimulator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;

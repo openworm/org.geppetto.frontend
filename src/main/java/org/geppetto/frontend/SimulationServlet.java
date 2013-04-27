@@ -1,4 +1,4 @@
-package org.openworm.simulationengine.frontend;
+package org.geppetto.frontend;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -22,8 +22,8 @@ import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openworm.simulationengine.core.simulation.ISimulation;
-import org.openworm.simulationengine.core.simulation.ISimulationCallbackListener;
+import org.geppetto.core.simulation.ISimulation;
+import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;

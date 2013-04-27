@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openworm</groupId>
-	<artifactId>simulationengine.frontend</artifactId>
-	<version>1.0.0</version>
-	<name>OpenWorm Simulation Engine Frontend</name>
+	<groupId>org.geppetto</groupId>
+	<artifactId>frontend</artifactId>
+	<version>0.0.1</version>
+	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -33,9 +33,9 @@
 			<version>2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openworm</groupId>
-			<artifactId>simulationengine.core</artifactId>
-			<version>1.0.0</version>
+			<groupId>org.geppetto</groupId>
+			<artifactId>core</artifactId>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -98,7 +98,7 @@
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-ClassPath>.,{maven-dependencies},WEB-INF/classes</Bundle-ClassPath>
-						<Web-ContextPath>org.openworm.simulationengine.frontend</Web-ContextPath>
+						<Web-ContextPath>org.geppetto.frontend</Web-ContextPath>
 						<Import-Package>org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
 					</instructions>
@@ -121,7 +121,7 @@
 				<version>2.3</version>
 				<configuration>
 					<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
-					<warName>org.openworm.simulationengine.frontend</warName>
+					<warName>org.geppetto.frontend</warName>
 					<archive>
 						<manifestFile>src/main/webapp/META-INF/MANIFEST.MF</manifestFile>
 					</archive>

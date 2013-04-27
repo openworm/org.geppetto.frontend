@@ -18,7 +18,7 @@ GEPPETTO.Simulation.StatusEnum = {
 };
 
 GEPPETTO.Simulation.init = function() {
-	GEPPETTO.Simulation.connect('ws://' + window.location.host + '/org.openworm.simulationengine.frontend/SimulationServlet');
+	GEPPETTO.Simulation.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.INIT;
 	Console.log('Geppetto Simulation Initialised');
 };

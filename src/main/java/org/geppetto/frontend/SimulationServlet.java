@@ -22,6 +22,8 @@ import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.common.GeppettoExecutionException;
+import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,20 +107,48 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 					if(_connections.size() == 1)
 					{
 						String url = msg.substring(msg.indexOf("$")+1, msg.length());
-						simulationService.init(new URL(url), SimulationServlet.this);
+						try
+						{
+							simulationService.init(new URL(url), SimulationServlet.this);
+						}
+						catch(GeppettoInitializationException e)
+						{
+							throw new RuntimeException(e);
+						}
 					}
 				}
 				else if (msg.equals("start"))
 				{
-					simulationService.start();
+					try
+					{
+						simulationService.start();
+					}
+					catch(GeppettoExecutionException e)
+					{
+						throw new RuntimeException(e);
+					}
 				}
 				else if (msg.equals("stop"))
 				{
-					simulationService.stop();
+					try
+					{
+						simulationService.stop();
+					}
+					catch(GeppettoExecutionException e)
+					{
+						throw new RuntimeException(e);
+					}
 				}
 				else if (msg.equals("reset"))
 				{
-					simulationService.reset();
+					try
+					{
+						simulationService.reset();
+					}
+					catch(GeppettoExecutionException e)
+					{
+						throw new RuntimeException(e);
+					}
 				}
 				else
 				{

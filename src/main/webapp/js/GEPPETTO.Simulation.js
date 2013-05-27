@@ -2,6 +2,7 @@
  * @fileoverview Simulation layer of Geppetto frontend
  *
  * @author matteo@openworm.org (Matteo Cantarelli)
+ * @author giovanni@openworm.org (Giovanni Idili)
  */
 
 /**
@@ -43,12 +44,6 @@ GEPPETTO.Simulation.stop = function() {
 	GEPPETTO.Simulation.socket.send("stop");
 	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.LOADED;
 	Console.log('Sent: Simulation stopped');
-};
-
-GEPPETTO.Simulation.reset = function() {
-	GEPPETTO.Simulation.socket.send("reset");
-	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.LOADED;
-	Console.log('Sent: Simulation reset');
 };
 
 GEPPETTO.Simulation.load = function(url) {

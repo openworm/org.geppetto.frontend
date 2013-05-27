@@ -150,17 +150,6 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 						throw new RuntimeException(e);
 					}
 				}
-				else if (msg.equals("reset"))
-				{
-					try
-					{
-						simulationService.reset();
-					}
-					catch(GeppettoExecutionException e)
-					{
-						throw new RuntimeException(e);
-					}
-				}
 				else
 				{
 					// NOTE: no other messages expected for now

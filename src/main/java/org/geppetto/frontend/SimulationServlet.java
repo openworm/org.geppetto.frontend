@@ -128,6 +128,17 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 						throw new RuntimeException(e);
 					}
 				}
+				else if (msg.equals("pause"))
+				{
+					try
+					{
+						simulationService.pause();
+					}
+					catch(GeppettoExecutionException e)
+					{
+						throw new RuntimeException(e);
+					}
+				}
 				else if (msg.equals("stop"))
 				{
 					try

@@ -27,16 +27,22 @@ GEPPETTO.Simulation.getStatus = function() {
 	return  GEPPETTO.Simulation.status;
 };
 
-GEPPETTO.Simulation.pause = function() {
-	GEPPETTO.Simulation.socket.send("stop");
-	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.PAUSED;
-	Console.log('Sent: Simulation paused');
-};
-
 GEPPETTO.Simulation.start = function() {
 	GEPPETTO.Simulation.socket.send("start");
 	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.STARTED;
 	Console.log('Sent: Simulation started');
+};
+
+GEPPETTO.Simulation.pause = function() {
+	GEPPETTO.Simulation.socket.send("pause");
+	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.PAUSED;
+	Console.log('Sent: Simulation paused');
+};
+
+GEPPETTO.Simulation.stop = function() {
+	GEPPETTO.Simulation.socket.send("stop");
+	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.LOADED;
+	Console.log('Sent: Simulation stopped');
 };
 
 GEPPETTO.Simulation.reset = function() {
@@ -119,7 +125,7 @@ FE.createContainer = function()
  */
 FE.update = function()
 {
-	// OW.setupScene(); //Bold, recreating the scene, maybe will do for now.
+	// OW.setupScene(); // recreating the scene, maybe will do for now.
 };
 
 // ============================================================================
@@ -130,13 +136,13 @@ $(document).ready(function()
 {
 	$('#start').attr('disabled', 'disabled');
 	$('#pause').attr('disabled', 'disabled');
-	$('#reset').attr('disabled', 'disabled');
+	$('#stop').attr('disabled', 'disabled');
 
 	$('#start').click(function()
 	{
 		$('#start').attr('disabled', 'disabled');
 		$('#pause').removeAttr('disabled');
-		$('#reset').attr('disabled', 'disabled');
+		$('#stop').attr('disabled', 'disabled');
 		GEPPETTO.Simulation.start();
 	});
 
@@ -144,23 +150,23 @@ $(document).ready(function()
 	{
 		$('#start').removeAttr('disabled');
 		$('#pause').attr('disabled', 'disabled');
-		$('#reset').removeAttr('disabled');
+		$('#stop').removeAttr('disabled');
 		GEPPETTO.Simulation.pause();
 	});
 	
-	$('#reset').click(function()
+	$('#stop').click(function()
 	{
 		$('#start').removeAttr('disabled');
 		$('#pause').attr('disabled', 'disabled');
-		$('#reset').attr('disabled', 'disabled');
-		GEPPETTO.Simulation.reset();
+		$('#stop').attr('disabled', 'disabled');
+		GEPPETTO.Simulation.stop();
 	});
 	
 	$('#load').click(function()
 	{
 		$('#start').removeAttr('disabled');
 		$('#pause').attr('disabled', 'disabled');
-		$('#reset').attr('disabled', 'disabled');
+		$('#stop').attr('disabled', 'disabled');
 		$('#loadSimModal').modal("hide");
 		GEPPETTO.Simulation.load($('#url').val());
 	});

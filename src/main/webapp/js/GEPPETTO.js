@@ -17,6 +17,7 @@ var GEPPETTO = GEPPETTO ||
 /**
  * Global variables
  */
+GEPPETTO.debug = true;
 GEPPETTO.camera = null;
 GEPPETTO.container = null;
 GEPPETTO.controls = null;
@@ -64,6 +65,7 @@ GEPPETTO.init = function(containerp, jsonscenep, updatep)
 		GEPPETTO.setupStats();
 		GEPPETTO.setupControls();
 		GEPPETTO.setupListeners();
+		GEPPETTO.startTime = (new Date()).getTime();
 		return true;
 	}
 };
@@ -201,9 +203,9 @@ GEPPETTO.getCylinder = function(bottomBasePos, topBasePos, radiusTop, radiusBott
 	midPoint.multiplyScalar(0.5);
 
 	var c = new THREE.CylinderGeometry(radiusTop, radiusBottom, cylHeight, 6, 1, false);
-	
-	c.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
-	
+
+	c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+
 	threeObject = new THREE.Mesh(c, material);
 
 	threeObject.lookAt(cylinderAxis);
@@ -215,7 +217,6 @@ GEPPETTO.getCylinder = function(bottomBasePos, topBasePos, radiusTop, radiusBott
 	threeObject.position.add(midPoint);
 	return threeObject;
 };
-
 
 /**
  * Print a point coordinates on console
@@ -692,11 +693,17 @@ PLOT = function(entityId, variable)
 		 */
 		this.flot.setData([ this.getRandomData() ]);
 		this.flot.draw();
-		with (this) {setTimeout(function() { addValue(); }, 30);}
+		with (this)
+		{
+			setTimeout(function()
+			{
+				addValue();
+			}, 30);
+		}
 	};
 	this.show = function()
 	{
-		this.dialog = GEPPETTO.createDialog("dialog" + this.entityId + this.variable,this.entityId+"."+this.variable);
+		this.dialog = GEPPETTO.createDialog("dialog" + this.entityId + this.variable, this.entityId + "." + this.variable);
 		this.dialog.append("<div class='plot' id='plot" + this.entityId + this.variable + "'></div>");
 		this.flot = $.plot("#plot" + this.entityId + this.variable, [ this.getRandomData() ],
 		{
@@ -764,7 +771,7 @@ GEPPETTO.createDialog = function(id, title)
 		resizable : true,
 		draggable : true,
 		height : 370,
-		width: 430,
+		width : 430,
 		modal : false
 	});
 };
@@ -815,6 +822,11 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
  */
 GEPPETTO.animate = function()
 {
+	debugUpdate=GEPPETTO.needsUpdate; //so that we log only the cycles when we are updating the scene
+	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
+	{
+		GEPPETTO.log("Starting update frame");
+	}
 	GEPPETTO.updateScene();
 	GEPPETTO.customUpdate();
 	if (GEPPETTO.stats)
@@ -830,6 +842,10 @@ GEPPETTO.animate = function()
 		GEPPETTO.camera.position.z = Math.floor(Math.sin(timer) * 200);
 	}
 	GEPPETTO.render();
+	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
+	{
+		GEPPETTO.log("End update frame");
+	}
 };
 
 /**
@@ -926,6 +942,22 @@ GEPPETTO.resetScene = function()
 	GEPPETTO.needsUpdate = true;
 };
 
+GEPPETTO.log = function(msg)
+{
+	if (GEPPETTO.debug)
+	{
+		var d = new Date();
+		var curr_hour = d.getHours();
+		var curr_min = d.getMinutes();
+		var curr_sec = d.getSeconds();
+		var curr_msec = d.getMilliseconds();
+
+		console.log(curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec+ ' - ' + msg, "");
+
+	}
+};
+
+
 // ============================================================================
 // Application logic.
 // ============================================================================
@@ -1010,5 +1042,7 @@ $(document).ready(function()
 	{
 		GEPPETTO.controls.resetSTATE();
 	});
-	
+
 });
+
+

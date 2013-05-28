@@ -29,6 +29,7 @@ GEPPETTO.Simulation.getStatus = function() {
 };
 
 GEPPETTO.Simulation.start = function() {
+	GEPPETTO.startTime = (new Date()).getTime();
 	GEPPETTO.Simulation.socket.send("start");
 	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.STARTED;
 	Console.log('Sent: Simulation started');

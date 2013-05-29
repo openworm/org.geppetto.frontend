@@ -80,14 +80,17 @@ GEPPETTO.Simulation.connect = (function(host) {
 	};
 
 	GEPPETTO.Simulation.socket.onmessage = function(msg) {
+		GEPPETTO.log("Start parsing data");
+		var parsedScene=JSON.parse(msg.data);
+		GEPPETTO.log("End parsing data");
 		if (!GEPPETTO.jsonscene)
 		{
-			GEPPETTO.init(FE.createContainer(), JSON.parse(msg.data), FE.update);
+			GEPPETTO.init(FE.createContainer(),parsedScene , FE.update);
 			GEPPETTO.animate();
 		}
 		else
 		{
-			GEPPETTO.updateJSONScene(JSON.parse(msg.data));
+			GEPPETTO.updateJSONScene(parsedScene);
 		}
 	};
 });

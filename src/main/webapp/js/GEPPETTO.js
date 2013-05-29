@@ -361,31 +361,36 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				// assumes there are no particles mixed with other kind of
 				// geometrie hence if the first one is a particle then they all are
 				// create the particle variables
-				var eMaterial = new THREE.ParticleBasicMaterial(
-				{
-					color : 0x0000FF,
+				var sprite1 = THREE.ImageUtils.loadTexture("images/particle.png");
+				var eMaterial = new THREE.ParticleBasicMaterial({
 					size : 5,
-					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					map : sprite1,
 					blending : THREE.AdditiveBlending,
-					transparent : true
+					depthTest : false,
+					transparent:true
 				});
+				eMaterial.color = new THREE.Color(0xffffff);
+				THREE.ColorConverter.setHSV( eMaterial.color, Math.random(), 1.0, 1.0);
 				var bMaterial = new THREE.ParticleBasicMaterial(
 				{
-					color : 0x00FF00,
-					size : 1,
-					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					size : 5,
+					map : sprite1,
 					blending : THREE.AdditiveBlending,
-					transparent : true
+					depthTest : false,
+					transparent:true
 				});
+				bMaterial.color = new THREE.Color(0xffffff);
+				THREE.ColorConverter.setHSV( bMaterial.color, Math.random(), 1.0, 1.0);
 				var lMaterial = new THREE.ParticleBasicMaterial(
 				{
-					color : 0xFF0000,
 					size : 5,
-					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					map : sprite1,
 					blending : THREE.AdditiveBlending,
-					transparent : true
+					depthTest : false,
+					transparent:true
 				});
-
+				lMaterial.color = new THREE.Color(0xffffff);				
+				THREE.ColorConverter.setHSV( lMaterial.color, Math.random(), 1.0, 1.0);
 				var pMaterial = null;
 				if (jsonEntity.id.indexOf("LIQUID") != -1)
 				{
@@ -397,7 +402,7 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				}
 				else if (jsonEntity.id.indexOf("BOUNDARY") != -1)
 				{
-					// pMaterial = bMaterial; swap this line with return to render boundary particles
+					pMaterial = bMaterial; 
 					return entityObject;
 				}
 				geometry = new THREE.Geometry();
@@ -815,6 +820,8 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
 {
 	GEPPETTO.jsonscene = newJSONScene;
 	GEPPETTO.needsUpdate = true;
+	GEPPETTO.updateScene();
+	GEPPETTO.customUpdate();
 };
 
 /**
@@ -822,16 +829,10 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
  */
 GEPPETTO.animate = function()
 {
-	debugUpdate=GEPPETTO.needsUpdate; //so that we log only the cycles when we are updating the scene
+	debugUpdate=true;//GEPPETTO.needsUpdate; //so that we log only the cycles when we are updating the scene
 	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
 	{
 		GEPPETTO.log("Starting update frame");
-	}
-	GEPPETTO.updateScene();
-	GEPPETTO.customUpdate();
-	if (GEPPETTO.stats)
-	{
-		GEPPETTO.stats.update();
 	}
 	GEPPETTO.controls.update();
 	requestAnimationFrame(GEPPETTO.animate);
@@ -842,6 +843,10 @@ GEPPETTO.animate = function()
 		GEPPETTO.camera.position.z = Math.floor(Math.sin(timer) * 200);
 	}
 	GEPPETTO.render();
+	if (GEPPETTO.stats)
+	{
+		GEPPETTO.stats.update();
+	}
 	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
 	{
 		GEPPETTO.log("End update frame");

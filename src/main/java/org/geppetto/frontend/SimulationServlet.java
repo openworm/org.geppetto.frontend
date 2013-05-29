@@ -165,10 +165,11 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 	@Override
 	public void updateReady(String update)
 	{
-		Date date = new Date(System.currentTimeMillis());
+		long start=System.currentTimeMillis();
+		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
 		String dateFormatted = formatter.format(date);
-		logger.info("Simulation Update Ready: "+dateFormatted);
+		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
 		for (SimDataInbound connection : getConnections())
 		{
 			try
@@ -181,6 +182,7 @@ public class SimulationServlet extends WebSocketServlet implements ISimulationCa
 				logger.error(ignore.getMessage());
 			}
 		}
+		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
 	}
 
 }

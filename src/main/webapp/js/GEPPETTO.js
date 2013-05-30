@@ -65,7 +65,6 @@ GEPPETTO.init = function(containerp, jsonscenep, updatep)
 		GEPPETTO.setupStats();
 		GEPPETTO.setupControls();
 		GEPPETTO.setupListeners();
-		GEPPETTO.startTime = (new Date()).getTime();
 		return true;
 	}
 };
@@ -568,8 +567,6 @@ GEPPETTO.addGUIControls = function(parent, current_metadata)
  */
 GEPPETTO.setupRenderer = function()
 {
-	// and the CanvasRenderer figures out what the
-	// stuff in the scene looks like and draws it!
 	GEPPETTO.renderer = new THREE.WebGLRenderer(
 	{
 		antialias : true
@@ -945,6 +942,7 @@ GEPPETTO.resetScene = function()
 	GEPPETTO.jsonscene = null;
 	GEPPETTO.scene = null;
 	GEPPETTO.needsUpdate = true;
+	GEPPETTO.geometriesMap = {};
 };
 
 GEPPETTO.log = function(msg)

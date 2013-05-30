@@ -29,7 +29,6 @@ GEPPETTO.Simulation.getStatus = function() {
 };
 
 GEPPETTO.Simulation.start = function() {
-	GEPPETTO.startTime = (new Date()).getTime();
 	GEPPETTO.Simulation.socket.send("start");
 	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.STARTED;
 	Console.log('Sent: Simulation started');
@@ -48,11 +47,8 @@ GEPPETTO.Simulation.stop = function() {
 };
 
 GEPPETTO.Simulation.load = function(url) {
-	if(GEPPETTO.Simulation.getStatus()==GEPPETTO.Simulation.StatusEnum.STARTED)
-	{
-		GEPPETTO.Simulation.reset();
-		GEPPETTO.resetScene();
-	}
+	GEPPETTO.Simulation.reset();
+	GEPPETTO.resetScene();
 	GEPPETTO.Simulation.status=GEPPETTO.Simulation.StatusEnum.LOADED;
 	GEPPETTO.Simulation.simulationURL=url;
 	GEPPETTO.Simulation.socket.send("init$"+url);

@@ -39,14 +39,13 @@ GEPPETTO.mouse =
 	x : 0,
 	y : 0
 };
-GEPPETTO.geometriesMap =
-{};
+GEPPETTO.geometriesMap = null;
 GEPPETTO.plots = new Array();
 
 /**
  * Initialize the engine
  */
-GEPPETTO.init = function(containerp, jsonscenep, updatep)
+GEPPETTO.init = function(containerp, updatep)
 {
 	if (!Detector.webgl)
 	{
@@ -56,7 +55,6 @@ GEPPETTO.init = function(containerp, jsonscenep, updatep)
 	else
 	{
 		GEPPETTO.container = containerp;
-		GEPPETTO.jsonscene = jsonscenep;
 		GEPPETTO.customUpdate = updatep;
 		GEPPETTO.setupRenderer();
 		GEPPETTO.setupScene();
@@ -234,12 +232,27 @@ GEPPETTO.printPoint = function(string, point)
 GEPPETTO.setupScene = function()
 {
 	GEPPETTO.scene = new THREE.Scene();
+	GEPPETTO.geometriesMap =
+	{};
+};
 
+GEPPETTO.populateScene = function(jsonscene)
+{
+	GEPPETTO.jsonscene = jsonscene;
 	var entities = GEPPETTO.jsonscene.entities;
 	for ( var eindex in entities)
 	{
 		GEPPETTO.scene.add(GEPPETTO.getThreeObjectFromJSONEntity(entities[eindex], eindex, true));
 	}
+};
+
+GEPPETTO.isScenePopulated = function()
+{
+	for ( var g in GEPPETTO.geometriesMap)
+	{
+		return true;
+	}
+	return false;
 };
 
 /**
@@ -361,35 +374,36 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				// geometrie hence if the first one is a particle then they all are
 				// create the particle variables
 				var sprite1 = THREE.ImageUtils.loadTexture("images/particle.png");
-				var eMaterial = new THREE.ParticleBasicMaterial({
+				var eMaterial = new THREE.ParticleBasicMaterial(
+				{
 					size : 5,
 					map : sprite1,
 					blending : THREE.AdditiveBlending,
 					depthTest : false,
-					transparent:true
+					transparent : true
 				});
 				eMaterial.color = new THREE.Color(0xffffff);
-				THREE.ColorConverter.setHSV( eMaterial.color, Math.random(), 1.0, 1.0);
+				THREE.ColorConverter.setHSV(eMaterial.color, Math.random(), 1.0, 1.0);
 				var bMaterial = new THREE.ParticleBasicMaterial(
 				{
 					size : 5,
 					map : sprite1,
 					blending : THREE.AdditiveBlending,
 					depthTest : false,
-					transparent:true
+					transparent : true
 				});
 				bMaterial.color = new THREE.Color(0xffffff);
-				THREE.ColorConverter.setHSV( bMaterial.color, Math.random(), 1.0, 1.0);
+				THREE.ColorConverter.setHSV(bMaterial.color, Math.random(), 1.0, 1.0);
 				var lMaterial = new THREE.ParticleBasicMaterial(
 				{
 					size : 5,
 					map : sprite1,
 					blending : THREE.AdditiveBlending,
 					depthTest : false,
-					transparent:true
+					transparent : true
 				});
-				lMaterial.color = new THREE.Color(0xffffff);				
-				THREE.ColorConverter.setHSV( lMaterial.color, Math.random(), 1.0, 1.0);
+				lMaterial.color = new THREE.Color(0xffffff);
+				THREE.ColorConverter.setHSV(lMaterial.color, Math.random(), 1.0, 1.0);
 				var pMaterial = null;
 				if (jsonEntity.id.indexOf("LIQUID") != -1)
 				{
@@ -401,7 +415,7 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				}
 				else if (jsonEntity.id.indexOf("BOUNDARY") != -1)
 				{
-					pMaterial = bMaterial; 
+					pMaterial = bMaterial;
 					return entityObject;
 				}
 				geometry = new THREE.Geometry();
@@ -478,12 +492,15 @@ GEPPETTO.setupControls = function()
 GEPPETTO.setupStats = function()
 {
 	// Stats
-	GEPPETTO.stats = new Stats();
-	GEPPETTO.stats.domElement.style.position = 'absolute';
-	GEPPETTO.stats.domElement.style.bottom = '0px';
-	GEPPETTO.stats.domElement.style.right = '0px';
-	GEPPETTO.stats.domElement.style.zIndex = 100;
-	GEPPETTO.container.appendChild(GEPPETTO.stats.domElement);
+	if ($("#stats").length == 0)
+	{
+		GEPPETTO.stats = new Stats();
+		GEPPETTO.stats.domElement.style.position = 'absolute';
+		GEPPETTO.stats.domElement.style.bottom = '0px';
+		GEPPETTO.stats.domElement.style.right = '0px';
+		GEPPETTO.stats.domElement.style.zIndex = 100;
+		GEPPETTO.container.appendChild(GEPPETTO.stats.domElement);
+	}
 
 };
 
@@ -826,7 +843,7 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
  */
 GEPPETTO.animate = function()
 {
-	debugUpdate=true;//GEPPETTO.needsUpdate; //so that we log only the cycles when we are updating the scene
+	debugUpdate = true;// GEPPETTO.needsUpdate; //so that we log only the cycles when we are updating the scene
 	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
 	{
 		GEPPETTO.log("Starting update frame");
@@ -937,14 +954,6 @@ GEPPETTO.isIn = function(e, array)
 	return found;
 };
 
-GEPPETTO.resetScene = function()
-{
-	GEPPETTO.jsonscene = null;
-	GEPPETTO.scene = null;
-	GEPPETTO.needsUpdate = true;
-	GEPPETTO.geometriesMap = {};
-};
-
 GEPPETTO.log = function(msg)
 {
 	if (GEPPETTO.debug)
@@ -955,11 +964,10 @@ GEPPETTO.log = function(msg)
 		var curr_sec = d.getSeconds();
 		var curr_msec = d.getMilliseconds();
 
-		console.log(curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec+ ' - ' + msg, "");
+		console.log(curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec + ' - ' + msg, "");
 
 	}
 };
-
 
 // ============================================================================
 // Application logic.
@@ -1047,5 +1055,3 @@ $(document).ready(function()
 	});
 
 });
-
-

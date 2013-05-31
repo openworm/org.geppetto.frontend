@@ -13,8 +13,10 @@
 		<script src="js/vendor/stats.min.js"></script>
 		<script src="js/vendor/THREEx.KeyboardState.js"></script>
 		<script src="js/vendor/Detector.js"></script>		
+		<script src="js/vendor/ColorConverter.js"></script>		
 		<script src="js/vendor/bootstrap.min.js"></script>
 		<script src="js/vendor/jquery.flot.min.js"></script>
+		<script src="js/vendor/rAF.js"></script>
 		
 		<!-- Geppetto -->
 		<script src="js/GEPPETTO.js"></script>
@@ -36,7 +38,7 @@
 				<a  href="#loadSimModal" role="button" class="btn" data-toggle="modal" id="openload"><icon class="icon-folder-open-alt"></icon> Load Simulation</a>
 				<button class="btn" id="start"><icon class="icon-play"></icon> Start</button>
 				<button class="btn" id="pause" ><icon class="icon-pause"></icon> Pause</button>
-				<button class="btn" id="reset"><icon class="icon-reply"></icon> Reset</button>
+				<button class="btn" id="stop"><icon class="icon-stop"></icon> Stop</button>
 			</div>
 			<div id="position_toolbar">
 				<button class="btn squareB icon-chevron-left" id="w"></button>
@@ -55,6 +57,7 @@
 				<button class="btn squareB icon-zoom-out" id="zo"></button>
 				<br />
 			</div>
+		</div>
 			<!--
 			<div id="toolbar">
 				<div id="mode" class="btn-group" data-toggle="buttons-radio">
@@ -73,15 +76,14 @@
 			</div>
 		</div>
 		-->
-		
-		<div id="sim"></div>
-		
 		<div id="consolealert" class="alert alert-info">
 		  <button type="button" class="close" data-dismiss="alert">&times;</button>
 		  <div id="console"></div>
 		</div>
 
-		
+		<div id="sim">
+		</div>
+	
 		
 		<div id="loadSimModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-header">

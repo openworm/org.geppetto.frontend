@@ -17,6 +17,7 @@ var GEPPETTO = GEPPETTO ||
 /**
  * Global variables
  */
+GEPPETTO.debug = true;
 GEPPETTO.camera = null;
 GEPPETTO.container = null;
 GEPPETTO.controls = null;
@@ -38,14 +39,13 @@ GEPPETTO.mouse =
 	x : 0,
 	y : 0
 };
-GEPPETTO.geometriesMap =
-{};
+GEPPETTO.geometriesMap = null;
 GEPPETTO.plots = new Array();
 
 /**
  * Initialize the engine
  */
-GEPPETTO.init = function(containerp, jsonscenep, updatep)
+GEPPETTO.init = function(containerp, updatep)
 {
 	if (!Detector.webgl)
 	{
@@ -55,7 +55,6 @@ GEPPETTO.init = function(containerp, jsonscenep, updatep)
 	else
 	{
 		GEPPETTO.container = containerp;
-		GEPPETTO.jsonscene = jsonscenep;
 		GEPPETTO.customUpdate = updatep;
 		GEPPETTO.setupRenderer();
 		GEPPETTO.setupScene();
@@ -201,9 +200,9 @@ GEPPETTO.getCylinder = function(bottomBasePos, topBasePos, radiusTop, radiusBott
 	midPoint.multiplyScalar(0.5);
 
 	var c = new THREE.CylinderGeometry(radiusTop, radiusBottom, cylHeight, 6, 1, false);
-	
-	c.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
-	
+
+	c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+
 	threeObject = new THREE.Mesh(c, material);
 
 	threeObject.lookAt(cylinderAxis);
@@ -215,7 +214,6 @@ GEPPETTO.getCylinder = function(bottomBasePos, topBasePos, radiusTop, radiusBott
 	threeObject.position.add(midPoint);
 	return threeObject;
 };
-
 
 /**
  * Print a point coordinates on console
@@ -234,12 +232,27 @@ GEPPETTO.printPoint = function(string, point)
 GEPPETTO.setupScene = function()
 {
 	GEPPETTO.scene = new THREE.Scene();
+	GEPPETTO.geometriesMap =
+	{};
+};
 
+GEPPETTO.populateScene = function(jsonscene)
+{
+	GEPPETTO.jsonscene = jsonscene;
 	var entities = GEPPETTO.jsonscene.entities;
 	for ( var eindex in entities)
 	{
 		GEPPETTO.scene.add(GEPPETTO.getThreeObjectFromJSONEntity(entities[eindex], eindex, true));
 	}
+};
+
+GEPPETTO.isScenePopulated = function()
+{
+	for ( var g in GEPPETTO.geometriesMap)
+	{
+		return true;
+	}
+	return false;
 };
 
 /**
@@ -360,31 +373,37 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				// assumes there are no particles mixed with other kind of
 				// geometrie hence if the first one is a particle then they all are
 				// create the particle variables
+				var sprite1 = THREE.ImageUtils.loadTexture("images/particle.png");
 				var eMaterial = new THREE.ParticleBasicMaterial(
 				{
-					color : 0x0000FF,
 					size : 5,
-					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					map : sprite1,
 					blending : THREE.AdditiveBlending,
+					depthTest : false,
 					transparent : true
 				});
+				eMaterial.color = new THREE.Color(0xffffff);
+				THREE.ColorConverter.setHSV(eMaterial.color, Math.random(), 1.0, 1.0);
 				var bMaterial = new THREE.ParticleBasicMaterial(
 				{
-					color : 0x00FF00,
-					size : 1,
-					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					size : 5,
+					map : sprite1,
 					blending : THREE.AdditiveBlending,
+					depthTest : false,
 					transparent : true
 				});
+				bMaterial.color = new THREE.Color(0xffffff);
+				THREE.ColorConverter.setHSV(bMaterial.color, Math.random(), 1.0, 1.0);
 				var lMaterial = new THREE.ParticleBasicMaterial(
 				{
-					color : 0xFF0000,
 					size : 5,
-					map : THREE.ImageUtils.loadTexture("images/ball.png"),
+					map : sprite1,
 					blending : THREE.AdditiveBlending,
+					depthTest : false,
 					transparent : true
 				});
-
+				lMaterial.color = new THREE.Color(0xffffff);
+				THREE.ColorConverter.setHSV(lMaterial.color, Math.random(), 1.0, 1.0);
 				var pMaterial = null;
 				if (jsonEntity.id.indexOf("LIQUID") != -1)
 				{
@@ -396,7 +415,7 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				}
 				else if (jsonEntity.id.indexOf("BOUNDARY") != -1)
 				{
-					// pMaterial = bMaterial; swap this line with return to render boundary particles
+					pMaterial = bMaterial;
 					return entityObject;
 				}
 				geometry = new THREE.Geometry();
@@ -473,12 +492,15 @@ GEPPETTO.setupControls = function()
 GEPPETTO.setupStats = function()
 {
 	// Stats
-	GEPPETTO.stats = new Stats();
-	GEPPETTO.stats.domElement.style.position = 'absolute';
-	GEPPETTO.stats.domElement.style.bottom = '0px';
-	GEPPETTO.stats.domElement.style.right = '0px';
-	GEPPETTO.stats.domElement.style.zIndex = 100;
-	GEPPETTO.container.appendChild(GEPPETTO.stats.domElement);
+	if ($("#stats").length == 0)
+	{
+		GEPPETTO.stats = new Stats();
+		GEPPETTO.stats.domElement.style.position = 'absolute';
+		GEPPETTO.stats.domElement.style.bottom = '0px';
+		GEPPETTO.stats.domElement.style.right = '0px';
+		GEPPETTO.stats.domElement.style.zIndex = 100;
+		GEPPETTO.container.appendChild(GEPPETTO.stats.domElement);
+	}
 
 };
 
@@ -562,8 +584,6 @@ GEPPETTO.addGUIControls = function(parent, current_metadata)
  */
 GEPPETTO.setupRenderer = function()
 {
-	// and the CanvasRenderer figures out what the
-	// stuff in the scene looks like and draws it!
 	GEPPETTO.renderer = new THREE.WebGLRenderer(
 	{
 		antialias : true
@@ -692,11 +712,17 @@ PLOT = function(entityId, variable)
 		 */
 		this.flot.setData([ this.getRandomData() ]);
 		this.flot.draw();
-		with (this) {setTimeout(function() { addValue(); }, 30);}
+		with (this)
+		{
+			setTimeout(function()
+			{
+				addValue();
+			}, 30);
+		}
 	};
 	this.show = function()
 	{
-		this.dialog = GEPPETTO.createDialog("dialog" + this.entityId + this.variable,this.entityId+"."+this.variable);
+		this.dialog = GEPPETTO.createDialog("dialog" + this.entityId + this.variable, this.entityId + "." + this.variable);
 		this.dialog.append("<div class='plot' id='plot" + this.entityId + this.variable + "'></div>");
 		this.flot = $.plot("#plot" + this.entityId + this.variable, [ this.getRandomData() ],
 		{
@@ -764,7 +790,7 @@ GEPPETTO.createDialog = function(id, title)
 		resizable : true,
 		draggable : true,
 		height : 370,
-		width: 430,
+		width : 430,
 		modal : false
 	});
 };
@@ -808,6 +834,8 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
 {
 	GEPPETTO.jsonscene = newJSONScene;
 	GEPPETTO.needsUpdate = true;
+	GEPPETTO.updateScene();
+	GEPPETTO.customUpdate();
 };
 
 /**
@@ -815,11 +843,10 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
  */
 GEPPETTO.animate = function()
 {
-	GEPPETTO.updateScene();
-	GEPPETTO.customUpdate();
-	if (GEPPETTO.stats)
+	debugUpdate = true;// GEPPETTO.needsUpdate; //so that we log only the cycles when we are updating the scene
+	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
 	{
-		GEPPETTO.stats.update();
+		GEPPETTO.log("Starting update frame");
 	}
 	GEPPETTO.controls.update();
 	requestAnimationFrame(GEPPETTO.animate);
@@ -830,6 +857,14 @@ GEPPETTO.animate = function()
 		GEPPETTO.camera.position.z = Math.floor(Math.sin(timer) * 200);
 	}
 	GEPPETTO.render();
+	if (GEPPETTO.stats)
+	{
+		GEPPETTO.stats.update();
+	}
+	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
+	{
+		GEPPETTO.log("End update frame");
+	}
 };
 
 /**
@@ -919,11 +954,19 @@ GEPPETTO.isIn = function(e, array)
 	return found;
 };
 
-GEPPETTO.resetScene = function()
+GEPPETTO.log = function(msg)
 {
-	GEPPETTO.jsonscene = null;
-	GEPPETTO.scene = null;
-	GEPPETTO.needsUpdate = true;
+	if (GEPPETTO.debug)
+	{
+		var d = new Date();
+		var curr_hour = d.getHours();
+		var curr_min = d.getMinutes();
+		var curr_sec = d.getSeconds();
+		var curr_msec = d.getMilliseconds();
+
+		console.log(curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec + ' - ' + msg, "");
+
+	}
 };
 
 // ============================================================================
@@ -1010,5 +1053,5 @@ $(document).ready(function()
 	{
 		GEPPETTO.controls.resetSTATE();
 	});
-	
+
 });

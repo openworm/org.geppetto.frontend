@@ -42,15 +42,47 @@
  * Base class
  */
 
-var GEPPETTO = GEPPETTO ||
+var /**
+	 * @author matteocantarelli
+	 * 
+	 */
+/**
+ * @author matteocantarelli
+ * 
+ */
+/**
+ * @author matteocantarelli
+ * 
+ */
+/**
+ * @author matteocantarelli
+ * 
+ */
+/**
+ * @author matteocantarelli
+ * 
+ */
+/**
+ * @author matteocantarelli
+ * 
+ */
+/**
+ * @author matteocantarelli
+ * 
+ */
+/**
+ * @author matteocantarelli
+ * 
+ */
+GEPPETTO = GEPPETTO ||
 {
-	REVISION : '4dev'
+	REVISION : '5'
 };
 
 /**
  * Global variables
  */
-GEPPETTO.debug = true;
+GEPPETTO.debug = false;
 GEPPETTO.camera = null;
 GEPPETTO.container = null;
 GEPPETTO.controls = null;
@@ -74,11 +106,12 @@ GEPPETTO.mouse =
 };
 GEPPETTO.geometriesMap = null;
 GEPPETTO.plots = new Array();
+GEPPETTO.idCounter = 0;
 
 /**
  * Initialize the engine
  */
-GEPPETTO.init = function(containerp, updatep)
+GEPPETTO.init = function(containerp)
 {
 	if (!Detector.webgl)
 	{
@@ -88,7 +121,6 @@ GEPPETTO.init = function(containerp, updatep)
 	else
 	{
 		GEPPETTO.container = containerp;
-		GEPPETTO.customUpdate = updatep;
 		GEPPETTO.setupRenderer();
 		GEPPETTO.setupScene();
 		GEPPETTO.setupCamera();
@@ -269,6 +301,9 @@ GEPPETTO.setupScene = function()
 	{};
 };
 
+/**
+ * @param jsonscene
+ */
 GEPPETTO.populateScene = function(jsonscene)
 {
 	GEPPETTO.jsonscene = jsonscene;
@@ -279,6 +314,9 @@ GEPPETTO.populateScene = function(jsonscene)
 	}
 };
 
+/**
+ * @returns {Boolean}
+ */
 GEPPETTO.isScenePopulated = function()
 {
 	for ( var g in GEPPETTO.geometriesMap)
@@ -646,6 +684,9 @@ GEPPETTO.setupListeners = function()
 	window.addEventListener('resize', GEPPETTO.onWindowResize, false);
 };
 
+/**
+ * 
+ */
 GEPPETTO.onWindowResize = function()
 {
 
@@ -661,6 +702,10 @@ GEPPETTO.onWindowResize = function()
  */
 GEPPETTO.render = function()
 {
+	for (p in GEPPETTO.plots)
+	{
+		GEPPETTO.plots[p].flot.draw();
+	}
 	GEPPETTO.renderer.render(GEPPETTO.scene, GEPPETTO.camera);
 };
 
@@ -730,34 +775,76 @@ GEPPETTO.isKeyPressed = function(key)
 	return GEPPETTO.keyboard.pressed(key);
 };
 
-PLOT = function(entityId, variable)
+/**
+ * @returns {Number} A new id
+ */
+GEPPETTO.getNewId = function()
 {
+	return GEPPETTO.idCounter++;
+};
+
+/**
+ * @param entityId
+ * @param variables
+ * @param ymin
+ * @param ymax
+ * @returns {PLOT}
+ */
+PLOT = function(entityId, variables, ymin, ymax)
+{
+	this.id = GEPPETTO.getNewId();
 	this.entityId = entityId;
-	this.variable = variable;
-	this.values = new Array();
-	this.defaultBuffer = 500;// 500 values are stored by default
+	this.variables = variables;
+	this.ymin = ymin;
+	this.ymax = ymax;
+	this.values =
+	{};
+	this.defaultBuffer = 1600;
 	this.dialog = null;
 	this.flot = null;
 	this.addValue = function()
 	{
-		/*
-		 * if (values.length >= 500) { value.splice(0, 1); } values[values.length + 1] = value;
-		 */
-		this.flot.setData([ this.getRandomData() ]);
-		this.flot.draw();
-		with (this)
+		for (v in this.variables)
 		{
-			setTimeout(function()
+			varval = this.values[this.variables[v]];
+			if (!varval)
 			{
-				addValue();
-			}, 30);
+				varval = new Array();
+				this.values[this.variables[v]] = varval;
+			}
+			if (varval.length > this.defaultBuffer)
+				varval.splice(0, 1);
+
+			if (GEPPETTO.jsonscene)
+			{
+				if (GEPPETTO.jsonscene.entities[0])
+				{
+					value = GEPPETTO.jsonscene.entities[entityId].metadata[this.variables[v]];
+					varval.push(value);
+				}
+			}
+			// Zip the generated y values with the x values
+
 		}
+
+		var resArray = [];
+		for (k in this.values)
+		{
+			var res = [];
+			for ( var i = 0; i < this.values[k].length; ++i)
+			{
+				res.push([ i, this.values[k][i] ]);
+			}
+			resArray.push(res);
+		}
+		this.flot.setData(resArray);
 	};
+
 	this.show = function()
 	{
-		this.dialog = GEPPETTO.createDialog("dialog" + this.entityId + this.variable, this.entityId + "." + this.variable);
-		this.dialog.append("<div class='plot' id='plot" + this.entityId + this.variable + "'></div>");
-		this.flot = $.plot("#plot" + this.entityId + this.variable, [ this.getRandomData() ],
+		this.dialog = GEPPETTO.createDialog("dialog" + this.id, "");
+		this.dialog.append("<div class='plot' id='plot" + this.id + "'></div>");
+		this.flot = $.plot("#plot" + this.id, [ [] ],
 		{
 			series :
 			{
@@ -766,56 +853,32 @@ PLOT = function(entityId, variable)
 			},
 			yaxis :
 			{
-				min : 0,
-				max : 100
+				min : this.ymin,
+				max : this.ymax
 			},
 			xaxis :
 			{
+				min : 0,
+				max : 1600,
 				show : false
 			}
 		});
 	};
 	this.dispose = function()
 	{
+		$("#plot" + this.id).remove();
+		$("#dialog" + this.id).remove();
 		this.values = null;
+		GEPPETTO.plots.splice(GEPPETTO.plots.indexOf(this), 1);
 	};
-	this.getRandomData = function()
-	{
 
-		if (this.values.length > 0)
-			this.values = this.values.slice(1);
-
-		// Do a random walk
-
-		while (this.values.length < this.defaultBuffer)
-		{
-
-			var prev = this.values.length > 0 ? this.values[this.values.length - 1] : 50, y = prev + Math.random() * 10 - 5;
-
-			if (y < 0)
-			{
-				y = 0;
-			}
-			else if (y > 100)
-			{
-				y = 100;
-			}
-
-			this.values.push(y);
-		}
-
-		// Zip the generated y values with the x values
-
-		var res = [];
-		for ( var i = 0; i < this.values.length; ++i)
-		{
-			res.push([ i, this.values[i] ]);
-		}
-
-		return res;
-	};
 };
 
+/**
+ * @param id
+ * @param title
+ * @returns
+ */
 GEPPETTO.createDialog = function(id, title)
 {
 	return $("<div id=" + id + " class='dialog' title='" + title + "'></div>").dialog(
@@ -828,16 +891,32 @@ GEPPETTO.createDialog = function(id, title)
 	});
 };
 
-GEPPETTO.addPlot = function(entityId, variable)
+/**
+ * @param entityId
+ * @param variable
+ * @param ymin
+ * @param ymax
+ */
+GEPPETTO.addPlot = function(entityId, variable, ymin, ymax)
 {
-	var plot = new PLOT(entityId, variable);
+	var plot = new PLOT(entityId, variable, ymin, ymax);
 	GEPPETTO.plots.push(plot);
 	plot.show();
-	plot.addValue();
 };
 
-GEPPETTO.removePlot = function(entityId, variable)
+/**
+ * @param plotId
+ */
+GEPPETTO.removePlot = function(plotId)
 {
+	for (p in GEPPETTO.plots)
+	{
+		if (GEPPETTO.plots[p].id == plotId)
+		{
+			GEPPETTO.plots[p].dispose();
+			break;
+		}
+	}
 };
 
 /**
@@ -868,7 +947,19 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
 	GEPPETTO.jsonscene = newJSONScene;
 	GEPPETTO.needsUpdate = true;
 	GEPPETTO.updateScene();
+	GEPPETTO.updatePlots();
 	GEPPETTO.customUpdate();
+};
+
+/**
+ * 
+ */
+GEPPETTO.updatePlots = function()
+{
+	for (p in GEPPETTO.plots)
+	{
+		GEPPETTO.plots[p].addValue();
+	}
 };
 
 /**
@@ -876,7 +967,7 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
  */
 GEPPETTO.animate = function()
 {
-	debugUpdate = true;// GEPPETTO.needsUpdate; //so that we log only the cycles when we are updating the scene
+	debugUpdate = GEPPETTO.needsUpdate; // so that we log only the cycles when we are updating the scene
 	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
 	{
 		GEPPETTO.log("Starting update frame");
@@ -987,6 +1078,9 @@ GEPPETTO.isIn = function(e, array)
 	return found;
 };
 
+/**
+ * @param msg
+ */
 GEPPETTO.log = function(msg)
 {
 	if (GEPPETTO.debug)

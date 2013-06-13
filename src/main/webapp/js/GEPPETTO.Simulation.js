@@ -133,9 +133,9 @@ GEPPETTO.Simulation.connect = (function(host)
 
 	GEPPETTO.Simulation.socket.onmessage = function(msg)
 	{
-		GEPPETTO.log("Start parsing data");
+		//GEPPETTO.log("Start parsing data");
 		var parsedScene = JSON.parse(msg.data);
-		GEPPETTO.log("End parsing data");
+		//GEPPETTO.log("End parsing data");
 		if (!GEPPETTO.isScenePopulated())
 		{
 			// the first time we need to create the objects

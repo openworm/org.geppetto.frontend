@@ -42,39 +42,7 @@
  * Base class
  */
 
-var /**
-	 * @author matteocantarelli
-	 * 
-	 */
-/**
- * @author matteocantarelli
- * 
- */
-/**
- * @author matteocantarelli
- * 
- */
-/**
- * @author matteocantarelli
- * 
- */
-/**
- * @author matteocantarelli
- * 
- */
-/**
- * @author matteocantarelli
- * 
- */
-/**
- * @author matteocantarelli
- * 
- */
-/**
- * @author matteocantarelli
- * 
- */
-GEPPETTO = GEPPETTO ||
+var GEPPETTO = GEPPETTO ||
 {
 	REVISION : '5'
 };
@@ -948,7 +916,10 @@ GEPPETTO.updateJSONScene = function(newJSONScene)
 	GEPPETTO.needsUpdate = true;
 	GEPPETTO.updateScene();
 	GEPPETTO.updatePlots();
-	GEPPETTO.customUpdate();
+	if (GEPPETTO.customUpdate != null)
+	{
+		GEPPETTO.customUpdate();
+	}
 };
 
 /**

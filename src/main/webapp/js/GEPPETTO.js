@@ -812,7 +812,12 @@ PLOT = function(entityId, variables, ymin, ymax)
 	{
 		this.dialog = GEPPETTO.createDialog("dialog" + this.id, "");
 		this.dialog.append("<div class='plot' id='plot" + this.id + "'></div>");
-		this.flot = $.plot("#plot" + this.id, [ [] ],
+		datal = [];
+		for (v in this.variables)
+		{
+			datal.push({label:this.variables[v], data:[]});
+		}
+		this.flot = $.plot("#plot" + this.id, datal,
 		{
 			series :
 			{

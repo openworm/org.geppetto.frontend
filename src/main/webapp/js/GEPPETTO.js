@@ -373,8 +373,7 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 			{
 				opacity : 1,
 				ambient : 0x777777,
-				specular : 0xbbbb9b,
-				shininess : 50,
+				shininess : 2,
 				shading : THREE.SmoothShading
 			});
 			material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
@@ -477,8 +476,7 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				{
 					opacity : 1,
 					ambient : 0x777777,
-					specular : 0xbbbb9b,
-					shininess : 50,
+					shininess : 2,
 					shading : THREE.SmoothShading
 				});
 				material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
@@ -551,11 +549,12 @@ GEPPETTO.setupLights = function()
 	// Lights
 
 	light = new THREE.DirectionalLight(0xffffff);
-	light.position.set(1, 1, 1);
+	light.position.set(100, 100, 100);
 	GEPPETTO.scene.add(light);
 	light = new THREE.DirectionalLight(0xffffff);
-	light.position.set(-1, -1, -1);
+	light.position.set(-100, -100, -100);
 	GEPPETTO.scene.add(light);
+
 	light = new THREE.AmbientLight(0x222222);
 	GEPPETTO.scene.add(light);
 

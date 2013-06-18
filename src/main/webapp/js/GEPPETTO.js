@@ -442,12 +442,8 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				});
 				lMaterial.color = new THREE.Color(0xffffff);
 				THREE.ColorConverter.setHSV(lMaterial.color, Math.random(), 1.0, 1.0);
-				var pMaterial = null;
-				if (jsonEntity.id.indexOf("LIQUID") != -1)
-				{
-					pMaterial = lMaterial;
-				}
-				else if (jsonEntity.id.indexOf("ELASTIC") != -1)
+				var pMaterial = lMaterial;
+				if (jsonEntity.id.indexOf("ELASTIC") != -1)
 				{
 					pMaterial = eMaterial;
 				}

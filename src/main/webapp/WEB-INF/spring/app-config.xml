@@ -8,7 +8,11 @@
 
 	<!--  <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>--> 
 	<!-- Instructs Spring to scan for internal service components to instantiate and configure -->
-		
+	<context:annotation-config/>	
 	<context:component-scan base-package="org.geppetto.frontend" />
 		
+	<!-- Add flag for Simulation Run Mode --> 
+	<bean id="config" class="org.geppetto.frontend.GeppettoVisitorConfig"> 
+		<property name="currentRunMode" value="DEFAULT" /> 
+	</bean>
 </beans>

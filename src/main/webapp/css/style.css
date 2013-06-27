@@ -23,6 +23,21 @@ body {
 	line-height: 10px;
 	font-weight: 200;
 }
+
+#infoalert {
+	margin-top: 20px;
+	width: 330px;
+	font-size: 15px;
+	line-height: 20px;
+	font-weight: 200;
+}
+
+#dialog-message {
+	font-size: 15px;
+	line-height: 20px;
+	font-weight: 300;
+}
+
 p {
 	text-align: center;
 	margin: .5em 2em;

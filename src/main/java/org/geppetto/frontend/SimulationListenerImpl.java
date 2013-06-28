@@ -34,14 +34,16 @@ public class SimulationListenerImpl implements ISimulationCallbackListener{
 		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
 		for (GeppettoVisitorWebSocket connection : simConnectionHandler.getConnections())
 		{
-			try
-			{
-				CharBuffer buffer = CharBuffer.wrap(update);
-				connection.getWsOutbound().writeTextMessage(buffer);
-			}
-			catch (IOException ignore)
-			{
-				logger.error(ignore.getMessage());
+			if(connection.getCurrentRunMode() != GeppettoVisitorConfig.RunMode.DEFAULT){
+				try
+				{
+					CharBuffer buffer = CharBuffer.wrap(update);
+					connection.getWsOutbound().writeTextMessage(buffer);
+				}
+				catch (IOException ignore)
+				{
+					logger.error(ignore.getMessage());
+				}
 			}
 		}
 		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));

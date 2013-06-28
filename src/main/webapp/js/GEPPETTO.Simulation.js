@@ -152,7 +152,7 @@ GEPPETTO.Simulation.connect = (function(host)
 				break;
 			//Simulation server became available
 			case "server_available":
-				FE.infoDialog("Simulation Server Available", parsedServerMessage.text);
+				FE.infoDialog("Server Available", parsedServerMessage.text);
 				break;
 			case "observer_mode_alert":
 				FE.observersAlert("Geppetto Simulation Information", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
@@ -241,7 +241,7 @@ FE.observersDialog = function(msg)
 FE.infoDialog = function(title, msg)
 {
 	//Create a div to display the message
-	var infoMessage = $('<div id="dialog-message" title='+title+'><p>'+msg+'</p></div>');
+	var infoMessage = $('<div id="dialog-message" title="Server Available"><p>'+msg+'</p></div>');
 	
 	//Show the dialog
 	$(infoMessage).dialog({

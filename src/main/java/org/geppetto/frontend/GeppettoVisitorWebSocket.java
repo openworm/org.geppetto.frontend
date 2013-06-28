@@ -31,12 +31,12 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 
 	private RunMode currentMode = RunMode.DEFAULT;
 	
-	public GeppettoVisitorWebSocket(int id, SimulationVisitorsHandler simConnections)
+	public GeppettoVisitorWebSocket(int id, SimulationVisitorsHandler simulatoinVisitorsHandler)
 	{
 		super();
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 		this.id = id;
-		this.simulationVisitorsHandler = simConnections;
+		simulationVisitorsHandler = simulatoinVisitorsHandler;
 	}
 
 	@Override
@@ -64,11 +64,14 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		if (msg.startsWith("init$"))
 		{
 			// NOTE: we need to init only when the first connection is established
-			if(simulationVisitorsHandler.getConnections().size() == 1)
+			if(!simulationVisitorsHandler.isSimulationInUse())
 			{
 				String url = msg.substring(msg.indexOf("$")+1, msg.length());
-				simulationVisitorsHandler.initializeSimulation(url);
+				simulationVisitorsHandler.initializeSimulation(url,this);
 				setRunMode(GeppettoVisitorConfig.RunMode.CONTROLLING);
+			}
+			else{
+				simulationVisitorsHandler.simulationControlsUnavailable(this);
 			}
 		}
 		else if (msg.equals("start"))

@@ -73,7 +73,10 @@ public class SimulationVisitorsHandler {
 	public void addConnection(GeppettoVisitorWebSocket newVisitor){
 		_connections.put(Integer.valueOf(newVisitor.getConnectionID()), newVisitor);
 		
-		handleSimulationInUse(newVisitor);
+		//Simulation is being used, notify new user controls are unavailable
+		if(isSimulationInUse()){
+			simulationControlsUnavailable(newVisitor);
+		}
 	}
 	
 	/**
@@ -84,7 +87,7 @@ public class SimulationVisitorsHandler {
 	public void removeConnection(GeppettoVisitorWebSocket exitingVisitor){
 		_connections.remove(Integer.valueOf(exitingVisitor.getConnectionID()));
 		
-		simulationAndObserversCheck(exitingVisitor);
+		postClosingConnectionCheck(exitingVisitor);
 	}
 	
 	/**
@@ -102,11 +105,21 @@ public class SimulationVisitorsHandler {
 	 * 
 	 * @param url - model to simulate
 	 */
-	public void initializeSimulation(String url){
+	public void initializeSimulation(String url, GeppettoVisitorWebSocket controllingUser){
 		try
 		{
 			simulationService.init(new URL(url), getSimulationListener());
 			setSimulationInUse(true);
+			
+			//Simulation just got someone to control it, notify everyone else
+			//connected that simulation controls are unavailable.
+			if(getConnections().size()>1){
+				for(GeppettoVisitorWebSocket user : getConnections()){
+					if(user != controllingUser){
+						simulationControlsUnavailable(user);
+					}
+				}
+			}
 		}
 		catch(MalformedURLException e)
 		{
@@ -186,16 +199,15 @@ public class SimulationVisitorsHandler {
 	}
 	
 	/**
-	 * Checks if the simulation is being controlled by another user.
-	 * If it is, user that just loaded Geppetto Simulation in browser 
+	 * Simulation is bein controlled by another user, new visitor that just loaded Geppetto Simulation in browser 
 	 * is notified with an alert message of status of simulation.
 	 * 
 	 * @param id - ID of new Websocket connection. 
 	 */
-	public void handleSimulationInUse(GeppettoVisitorWebSocket visitor)
+	public void simulationControlsUnavailable(GeppettoVisitorWebSocket visitor)
 	{
-		//Notify new user(s), new websocket connections, if server is in use.
-		if(isSimulationInUse()){
+		if(visitor.getCurrentRunMode() != GeppettoVisitorConfig.RunMode.OBSERVING){
+			//Notify new user(s), new websocket connections, if server is in use.
 			//Simulation is in use, message to alert user(s)
 			String msg = "The server is currently in use and this " +
 					"instance of Geppetto does not support shared mode access" +
@@ -218,7 +230,7 @@ public class SimulationVisitorsHandler {
 	 * 
 	 * @param id - WebSocket ID of user closing connection
 	 */
-	public void simulationAndObserversCheck(GeppettoVisitorWebSocket exitingVisitor){
+	public void postClosingConnectionCheck(GeppettoVisitorWebSocket exitingVisitor){
 		
 		/*
 		 * If the exiting visitor was running the simulation, notify all the observing

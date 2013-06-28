@@ -450,7 +450,6 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 				else if (jsonEntity.id.indexOf("BOUNDARY") != -1)
 				{
 					pMaterial = bMaterial;
-					return entityObject;
 				}
 				geometry = new THREE.Geometry();
 				for ( var gindex in geometries)

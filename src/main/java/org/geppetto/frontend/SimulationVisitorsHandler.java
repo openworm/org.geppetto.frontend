@@ -321,4 +321,15 @@ public class SimulationVisitorsHandler {
 	public boolean isSimulationInUse(){
 		return this.simulationInUse;
 	}
+	
+	public void updateObserversScenes() {
+		//JSON object used to send message to observer(s)' clients
+		JsonObject json = new JsonObject();
+		json.addProperty("type", "clean_canvas");
+
+		//Notify all observers
+		for(GeppettoVisitorWebSocket visitor : observers){
+			messageClient(visitor,json.toString());
+		}
+	}
 }

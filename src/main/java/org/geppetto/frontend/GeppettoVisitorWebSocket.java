@@ -12,6 +12,8 @@ import org.geppetto.frontend.GeppettoVisitorConfig.RunMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.google.gson.JsonObject;
+
 /**
  * Class used to process Web Socket Connections. 
  * Messages sent from the connecting clients, web socket connections,
@@ -63,15 +65,39 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		String msg = message.toString();
 		if (msg.startsWith("init$"))
 		{
-			// NOTE: we need to init only when the first connection is established
-			if(!simulationVisitorsHandler.isSimulationInUse())
-			{
+			//Couple of scenarios could initialize the simulation
+			//Keep flag to initialize simulation later
+			boolean canInitializeSim = false;
+			
+			switch(currentMode){
+							
+				case CONTROLLING:
+					//User in control loading another model, clean canvas before doing so
+					canInitializeSim = true;
+					updateControllerScene();
+					break;
+				
+				case OBSERVING:
+					//Notify simulation controls are not available
+					simulationVisitorsHandler.simulationControlsUnavailable(this);
+					break;
+					
+				case DEFAULT:
+					//Default user can only initialize it if it's not already in use
+					if(!simulationVisitorsHandler.isSimulationInUse()){
+						canInitializeSim = true;
+					}
+					break;
+			}
+			
+			//Only visitors in default or controlling mode can initialize the simulation 
+			if(canInitializeSim){
 				String url = msg.substring(msg.indexOf("$")+1, msg.length());
 				simulationVisitorsHandler.initializeSimulation(url,this);
 				setRunMode(GeppettoVisitorConfig.RunMode.CONTROLLING);
-			}
-			else{
-				simulationVisitorsHandler.simulationControlsUnavailable(this);
+				
+				//notify any observers that simulation has been re started
+				simulationVisitorsHandler.updateObserversScenes();
 			}
 		}
 		else if (msg.equals("start"))
@@ -108,5 +134,17 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 	public void setRunMode(GeppettoVisitorConfig.RunMode mode){
 		currentMode = mode;
 		geppettoVisitorConfig.setCurrentRunMode(currentMode);
+	}
+	
+	/**
+	 * Clear the canvas of scene. Used when loading another model
+	 */
+	public void updateControllerScene(){
+		//JSON object used to send message to observer(s)' clients
+		JsonObject json = new JsonObject();
+		json.addProperty("type", "clean_canvas");
+
+		//Notify all observers
+		simulationVisitorsHandler.messageClient(this,json.toString());
 	}
 }

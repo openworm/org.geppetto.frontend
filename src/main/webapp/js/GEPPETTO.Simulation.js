@@ -56,6 +56,7 @@ GEPPETTO.Simulation.StatusEnum =
 	OBSERVED: 4
 };
 
+
 GEPPETTO.Simulation.init = function()
 {
 	GEPPETTO.Simulation.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
@@ -148,14 +149,20 @@ GEPPETTO.Simulation.connect = (function(host)
 		switch(parsedServerMessage.type){
 			//Simulation server already in use
 			case "server_unavailable":
-				FE.observersDialog(parsedServerMessage.text);
+			    FE.disableSimulationControls();
+				FE.observersDialog("Server Unavailable", parsedServerMessage.text);
 				break;
 			//Simulation server became available
 			case "server_available":
 				FE.infoDialog("Server Available", parsedServerMessage.text);
 				break;
+			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":
 				FE.observersAlert("Geppetto Simulation Information", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
+				break;
+			//Clean the canvas, used after loading different model
+			case "clean_canvas":
+				GEPPETTO.init(FE.createContainer(), FE.update);
 				break;
 			default:
 				//GEPPETTO.log("End parsing data");
@@ -214,22 +221,19 @@ FE.update = function()
  * 
  * @param msg
  */
-FE.observersDialog = function(msg)
+FE.observersDialog = function(title, msg)
 {
-	var messageDiv=$('<div id="dialog-message" title="Server Unavailable"><p>'+msg+'</p></div>');
+	var messageDiv= FE.createDialogDiv(title,msg);
 	$(messageDiv).dialog({
 	      modal: true,
 	      buttons: {
 	        Observe: function() {
-	          $( this ).dialog( "close" );
-	          //Gray out simulation controls for start/stop/pause/load simulation
-	          FE.setObserverWorkspace();
-	          //Send observe message
+	          $( this ).dialog("close");
+	          //Send observe message on click
 	          GEPPETTO.Simulation.observe();
 	        }
 	      }
-	    });
-		                             
+	    });		                             
 };
 
 /**
@@ -241,10 +245,9 @@ FE.observersDialog = function(msg)
 FE.infoDialog = function(title, msg)
 {
 	//Create a div to display the message
-	var infoMessage = $('<div id="dialog-message" title="Server Available"><p>'+msg+'</p></div>');
-	
+	var div = FE.createDialogDiv(title,msg);	
 	//Show the dialog
-	$(infoMessage).dialog({
+	$(div).dialog({
 	      modal: true,
 	      buttons: {
 	        Ok: function() {
@@ -253,7 +256,22 @@ FE.infoDialog = function(title, msg)
 	      }
 	});
 };
+
+/**
+ * Create div element to be used for dialogs.
+ * 
+ * @param title
+ * @param msg
+ * @returns
+ */
+FE.createDialogDiv = function(title, msg)
+{
+	//Create a div to display the message
+	var div = $('<div id="dialog-message" title="'+ title +'"><p>'+msg+'</p></div>');
 	
+	return div;
+};
+
 /**
  * Create bootstrap alert to notify users
  * 
@@ -282,8 +300,9 @@ FE.observersAlert = function(titleMsg, alertMsg, popoverMsg)
  * If simulation is being controlled by another user, hide the 
  * control and load buttons. Show "Observe" button only.
  */
-FE.setObserverWorkspace = function()
+FE.disableSimulationControls = function()
 {
+	$('#loadSimModal').attr('disabled','disabled');
 	$('#openload').attr('disabled', 'disabled');
 	$('#start').attr('disabled', 'disabled');
 	$('#pause').attr('disabled', 'disabled');

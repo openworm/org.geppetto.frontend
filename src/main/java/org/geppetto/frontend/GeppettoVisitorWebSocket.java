@@ -133,7 +133,6 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 	
 	public void setRunMode(GeppettoVisitorConfig.RunMode mode){
 		currentMode = mode;
-		geppettoVisitorConfig.setCurrentRunMode(currentMode);
 	}
 	
 	/**

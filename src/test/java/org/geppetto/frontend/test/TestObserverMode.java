@@ -8,12 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.geppetto.core.simulator.ISimulator;
 import org.geppetto.frontend.GeppettoVisitorConfig.RunMode;
 import org.geppetto.frontend.GeppettoVisitorWebSocket;
 import org.geppetto.frontend.SimulationVisitorsHandler;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Test Unit class to test Observer Mode functionality
@@ -26,9 +24,6 @@ public class TestObserverMode {
 	
 	//Define a test servlet 
 	private TestSimulationServlet testSimulationServlet = new TestSimulationServlet();
-	
-	@Autowired
-	private ISimulator service;
 	
 	/*
 	 * Create two connections to represent multiple visitors to geppetto

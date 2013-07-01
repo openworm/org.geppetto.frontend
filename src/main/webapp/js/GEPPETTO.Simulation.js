@@ -52,8 +52,10 @@ GEPPETTO.Simulation.StatusEnum =
 	INIT : 0,
 	LOADED : 1,
 	STARTED : 2,
-	PAUSED : 3
+	PAUSED : 3,
+	OBSERVED: 4
 };
+
 
 GEPPETTO.Simulation.init = function()
 {
@@ -89,6 +91,16 @@ GEPPETTO.Simulation.stop = function()
 	Console.log('Sent: Simulation stopped');
 };
 
+GEPPETTO.Simulation.observe = function()
+{
+	//Create canvas for observing visitor
+	GEPPETTO.init(FE.createContainer(), FE.update);
+	GEPPETTO.animate();	
+	GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.OBSERVED;
+	GEPPETTO.Simulation.socket.send("observe");
+	Console.log('Sent: Simulation being observed');
+};
+
 GEPPETTO.Simulation.load = function(url)
 {
 	GEPPETTO.init(FE.createContainer(), FE.update);
@@ -122,29 +134,49 @@ GEPPETTO.Simulation.connect = (function(host)
 	GEPPETTO.Simulation.socket.onopen = function()
 	{
 		Console.log('Info: WebSocket connection opened.');
-
 	};
 
 	GEPPETTO.Simulation.socket.onclose = function()
 	{
 		Console.log('Info: WebSocket closed.');
-		GEPPETTO.Simulation.pause();
 	};
 
 	GEPPETTO.Simulation.socket.onmessage = function(msg)
 	{
-		//GEPPETTO.log("Start parsing data");
-		var parsedScene = JSON.parse(msg.data);
-		//GEPPETTO.log("End parsing data");
-		if (!GEPPETTO.isScenePopulated())
-		{
-			// the first time we need to create the objects
-			GEPPETTO.populateScene(parsedScene);
-		}
-		else
-		{
-			// any other time we just update them
-			GEPPETTO.updateJSONScene(parsedScene);
+		var parsedServerMessage = JSON.parse(msg.data);
+		
+		//Parsed incoming message
+		switch(parsedServerMessage.type){
+			//Simulation server already in use
+			case "server_unavailable":
+			    FE.disableSimulationControls();
+				FE.observersDialog("Server Unavailable", parsedServerMessage.text);
+				break;
+			//Simulation server became available
+			case "server_available":
+				FE.infoDialog("Server Available", parsedServerMessage.text);
+				break;
+			//Notify user with alert they are now in Observer mode
+			case "observer_mode_alert":
+				FE.observersAlert("Geppetto Simulation Information", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
+				break;
+			//Clean the canvas, used after loading different model
+			case "clean_canvas":
+				GEPPETTO.init(FE.createContainer(), FE.update);
+				break;
+			default:
+				//GEPPETTO.log("End parsing data");
+				if (!GEPPETTO.isScenePopulated())
+				{
+					// the first time we need to create the objects
+					GEPPETTO.populateScene(parsedServerMessage);
+				}
+				else
+				{
+					// any other time we just update them
+					GEPPETTO.updateJSONScene(parsedServerMessage);
+				}
+				break;
 		}
 	};
 });
@@ -180,7 +212,103 @@ FE.createContainer = function()
  */
 FE.update = function()
 {
+
 };
+
+/**
+ * Show dialog informing users of server being used and
+ * gives them the option to Observer ongoing simulation.
+ * 
+ * @param msg
+ */
+FE.observersDialog = function(title, msg)
+{
+	var messageDiv= FE.createDialogDiv(title,msg);
+	$(messageDiv).dialog({
+	      modal: true,
+	      buttons: {
+	        Observe: function() {
+	          $( this ).dialog("close");
+	          //Send observe message on click
+	          GEPPETTO.Simulation.observe();
+	        }
+	      }
+	    });		                             
+};
+
+/**
+ * Basic Dialog box with message to display.
+ * 
+ * @param title - Title of message
+ * @param msg - Message to display
+ */
+FE.infoDialog = function(title, msg)
+{
+	//Create a div to display the message
+	var div = FE.createDialogDiv(title,msg);	
+	//Show the dialog
+	$(div).dialog({
+	      modal: true,
+	      buttons: {
+	        Ok: function() {
+	          $( this ).dialog( "close" );
+	        }
+	      }
+	});
+};
+
+/**
+ * Create div element to be used for dialogs.
+ * 
+ * @param title
+ * @param msg
+ * @returns
+ */
+FE.createDialogDiv = function(title, msg)
+{
+	//Create a div to display the message
+	var div = $('<div id="dialog-message" title="'+ title +'"><p>'+msg+'</p></div>');
+	
+	return div;
+};
+
+/**
+ * Create bootstrap alert to notify users
+ * 
+ * @param titleMsg
+ * @param alertMsg
+ * @param popoverMsg
+ */
+FE.observersAlert = function(titleMsg, alertMsg, popoverMsg)
+{
+	var alertDiv = $('<div id="infoalert" class="alert alert-block">'+
+						'<a class="close" data-dismiss="alert">×</a>'+
+						'<h4 class="alert-heading" align="center">Observing Simulation Mode</h4>'+
+						'<p><img src="images/icons/info-icon.png" id="infopopover" rel="popover" align="left" width="42" height="42">'+
+						alertMsg+'</p>'+
+					'</div>');
+	$(alertDiv).appendTo('#sim_toolbar');
+	
+	$("#infopopover").popover({title: titleMsg, 
+							   content: popoverMsg, 
+							   placement: 'left', 
+							   trigger:'hover'});  
+};
+
+
+/**
+ * If simulation is being controlled by another user, hide the 
+ * control and load buttons. Show "Observe" button only.
+ */
+FE.disableSimulationControls = function()
+{
+	$('#loadSimModal').attr('disabled','disabled');
+	$('#openload').attr('disabled', 'disabled');
+	$('#start').attr('disabled', 'disabled');
+	$('#pause').attr('disabled', 'disabled');
+	$('#stop').attr('disabled', 'disabled');
+};
+
 
 // ============================================================================
 // Application logic.
@@ -191,7 +319,7 @@ $(document).ready(function()
 	$('#start').attr('disabled', 'disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').attr('disabled', 'disabled');
-
+	
 	$('#start').click(function()
 	{
 		$('#start').attr('disabled', 'disabled');
@@ -215,7 +343,7 @@ $(document).ready(function()
 		$('#stop').attr('disabled', 'disabled');
 		GEPPETTO.Simulation.stop();
 	});
-
+	
 	$('#load').click(function()
 	{
 		$('#start').removeAttr('disabled');

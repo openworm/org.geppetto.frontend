@@ -223,17 +223,13 @@ FE.update = function()
  */
 FE.observersDialog = function(title, msg)
 {
-	var messageDiv= FE.createDialogDiv(title,msg);
-	$(messageDiv).dialog({
-	      modal: true,
-	      buttons: {
-	        Observe: function() {
-	          $( this ).dialog("close");
-	          //Send observe message on click
-	          GEPPETTO.Simulation.observe();
-	        }
-	      }
-	    });		                             
+	$('#infomodal-title').html(title);
+	$('#infomodal-text').html(msg);
+	$('#infomodal-btn').html("<i class='icon-eye-open '></i> Observe").click(function() {
+		GEPPETTO.Simulation.observe();
+	});
+	$('#infomodal').modal();   
+            
 };
 
 /**
@@ -244,33 +240,13 @@ FE.observersDialog = function(title, msg)
  */
 FE.infoDialog = function(title, msg)
 {
-	//Create a div to display the message
-	var div = FE.createDialogDiv(title,msg);	
-	//Show the dialog
-	$(div).dialog({
-	      modal: true,
-	      buttons: {
-	        Ok: function() {
-	          $( this ).dialog( "close" );
-	        }
-	      }
-	});
+	$('#infomodal-title').html(title);
+	$('#infomodal-text').html(msg);
+	$('#infomodal-btn').html("OK").click(function() {});;
+	$('#infomodal').modal();   
 };
 
-/**
- * Create div element to be used for dialogs.
- * 
- * @param title
- * @param msg
- * @returns
- */
-FE.createDialogDiv = function(title, msg)
-{
-	//Create a div to display the message
-	var div = $('<div id="dialog-message" title="'+ title +'"><p>'+msg+'</p></div>');
-	
-	return div;
-};
+
 
 /**
  * Create bootstrap alert to notify users
@@ -283,9 +259,8 @@ FE.observersAlert = function(titleMsg, alertMsg, popoverMsg)
 {
 	var alertDiv = $('<div id="infoalert" class="alert alert-block">'+
 						'<a class="close" data-dismiss="alert">×</a>'+
-						'<h4 class="alert-heading" align="center">Observing Simulation Mode</h4>'+
-						'<p><img src="images/icons/info-icon.png" id="infopopover" rel="popover" align="left" width="42" height="42">'+
-						alertMsg+'</p>'+
+						'<h4 class="alert-heading" align="center"><i class="icon-info-sign icon-2x" id="infopopover" rel="popover"></i> Observing Simulation Mode</h4>'+
+						'<p>'+ alertMsg+'</p>'+
 					'</div>');
 	$(alertDiv).appendTo('#sim_toolbar');
 	

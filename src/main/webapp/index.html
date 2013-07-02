@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Geppetto Frontend</title>
-		
+
 		<!-- Third-party js libraries -->
 		<script src="js/vendor/jquery-1.9.1.js"></script>
 		<script src="js/vendor/jquery-ui-1.10.2.custom.min.js"></script>
@@ -12,12 +12,12 @@
 		<script src="js/vendor/dat.gui.js"></script>
 		<script src="js/vendor/stats.min.js"></script>
 		<script src="js/vendor/THREEx.KeyboardState.js"></script>
-		<script src="js/vendor/Detector.js"></script>		
-		<script src="js/vendor/ColorConverter.js"></script>		
+		<script src="js/vendor/Detector.js"></script>
+		<script src="js/vendor/ColorConverter.js"></script>
 		<script src="js/vendor/bootstrap.min.js"></script>
 		<script src="js/vendor/jquery.flot.min.js"></script>
 		<script src="js/vendor/rAF.js"></script>
-		
+
 		<!-- Geppetto -->
 		<script src="js/GEPPETTO.js"></script>
 		<script src="js/GEPPETTO.Simulation.js"></script>
@@ -32,14 +32,23 @@
 	</head>
 	<body>
 
-<div id="geppettologo"></div>
+		<div id="geppettologo"></div>
 		<div id="controls">
-			
+
 			<div id="sim_toolbar">
 				<a  href="#loadSimModal" role="button" class="btn" data-toggle="modal" id="openload"><icon class="icon-folder-open-alt"></icon> Load Simulation</a>
-				<button class="btn" id="start"><icon class="icon-play"></icon> Start</button>
-				<button class="btn" id="pause" ><icon class="icon-pause"></icon> Pause</button>
-				<button class="btn" id="stop"><icon class="icon-stop"></icon> Stop</button>
+				<button class="btn" id="start">
+					<icon class="icon-play"></icon>
+					Start
+				</button>
+				<button class="btn" id="pause" >
+					<icon class="icon-pause"></icon>
+					Pause
+				</button>
+				<button class="btn" id="stop">
+					<icon class="icon-stop"></icon>
+					Stop
+				</button>
 			</div>
 			<div id="position_toolbar">
 				<button class="btn squareB icon-chevron-left" id="w"></button>
@@ -59,48 +68,71 @@
 				<br />
 			</div>
 		</div>
-			<!--
-			<div id="toolbar">
-				<div id="mode" class="btn-group" data-toggle="buttons-radio">
-					<button class="btn active" id="normalMode" checked="checked">Normal mode</button>
-					<button class="btn"  id="selectionMode" checked="checked">Selection mode</button>
-				</div>
-				<div id="io" class="btn-group" data-toggle="buttons-checkbox">
-					<button class="btn squareB icon-signin active" id="showinputs"   ></button>
-					<button class="btn squareB icon-signout active" id="showoutputs"></button>
-					<button class="btn squareB icon-filter active" id="showdeselected" ></button>
-				</div>
-				<div>
-					<button class="btn squareB icon-refresh" data-toggle="button" id="rotationMode"></button>
-					<button class="btn squareB icon-info-sign" id="helpbutton" href="#help" data-toggle="modal"></button>
-				</div>
-			</div>
+		<!--
+		<div id="toolbar">
+		<div id="mode" class="btn-group" data-toggle="buttons-radio">
+		<button class="btn active" id="normalMode" checked="checked">Normal mode</button>
+		<button class="btn"  id="selectionMode" checked="checked">Selection mode</button>
+		</div>
+		<div id="io" class="btn-group" data-toggle="buttons-checkbox">
+		<button class="btn squareB icon-signin active" id="showinputs"   ></button>
+		<button class="btn squareB icon-signout active" id="showoutputs"></button>
+		<button class="btn squareB icon-filter active" id="showdeselected" ></button>
+		</div>
+		<div>
+		<button class="btn squareB icon-refresh" data-toggle="button" id="rotationMode"></button>
+		<button class="btn squareB icon-info-sign" id="helpbutton" href="#help" data-toggle="modal"></button>
+		</div>
+		</div>
 		</div>
 		-->
 		<div id="consolealert" class="alert alert-info">
-		  <button type="button" class="close" data-dismiss="alert">&times;</button>
-		  <div id="console"></div>
+			<button type="button" class="close" data-dismiss="alert">
+				&times;
+			</button>
+			<div id="console"></div>
 		</div>
 
-		<div id="sim">
-		</div>
-	
-		
+		<div id="sim"></div>
+
 		<div id="loadSimModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-header">
-		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		    <h3 id="myModalLabel">Load Simulation</h3>
-		  </div>
-		  <div class="modal-body">
-		    <label>URL</label>
-		    <input class="input-xlarge" id="url" type="text" placeholder="Paste the URL of the simulation file...">
-		  </div>
-		  <div class="modal-footer">
-		    <a href="#" data-dismiss="modal" class="btn">Close</a>
-		    <button id="load" class="btn btn-warning">Load</button>
-		  </div>
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h3 id="myModalLabel">Load Simulation</h3>
+			</div>
+			<div class="modal-body">
+				<label>URL</label>
+				<input class="input-xlarge" id="url" type="text" placeholder="Paste the URL of the simulation file...">
+			</div>
+			<div class="modal-footer">
+				<a href="#" data-dismiss="modal" class="btn">Close</a>
+				<button id="load" class="btn btn-warning">
+					Load
+				</button>
+			</div>
+		</div>
+		
+		<div id="infomodal"  class="modal hide fade" tabindex="-1"  aria-labelledby="infomodal-title" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					×
+				</button>
+				<h3 id="infomodal-title"></h3>
+			</div>
+			<div class="modal-body">
+				<p id="infomodal-text">
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button  id="infomodal-btn" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
+					Ok
+				</button>
+			</div>
 		</div>
 		
 		
+
 	</body>
 </html>

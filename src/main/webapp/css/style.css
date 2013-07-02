@@ -24,6 +24,10 @@ body {
 	font-weight: 200;
 }
 
+.popover {
+	font-size: 14px;
+	font-weight:200;
+}
 #infoalert {
 	margin-top: 20px;
 	width: 330px;
@@ -33,7 +37,7 @@ body {
 }
 
 #dialog-message {
-	font-size: 15px;
+	font-size: 14px;
 	line-height: 20px;
 	font-weight: 300;
 }

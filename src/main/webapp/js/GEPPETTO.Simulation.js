@@ -242,7 +242,7 @@ FE.infoDialog = function(title, msg)
 {
 	$('#infomodal-title').html(title);
 	$('#infomodal-text').html(msg);
-	$('#infomodal-btn').html("OK").click(function() {});;
+	$('#infomodal-btn').html("OK").off('click');
 	$('#infomodal').modal();   
 };
 

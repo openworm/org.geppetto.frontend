@@ -158,7 +158,7 @@ GEPPETTO.Simulation.connect = (function(host)
 				break;
 			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":
-				FE.observersAlert("Geppetto Simulation Information", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
+				FE.observersAlert("Observing Simulation Mode", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
 				break;
 			//Clean the canvas, used after loading different model
 			case "clean_canvas":
@@ -186,7 +186,7 @@ var Console =
 
 Console.log = (function(message)
 {
-	var console = document.getElementById('console');
+	var console = document.getElementById('consolealert');
 	var p = document.createElement('p');
 	p.style.wordWrap = 'break-word';
 	p.innerHTML = message;
@@ -249,22 +249,17 @@ FE.infoDialog = function(title, msg)
 
 
 /**
- * Create bootstrap alert to notify users
+ * Create bootstrap alert to notify users they are in observer mode
  * 
- * @param titleMsg
+ * @param title
  * @param alertMsg
  * @param popoverMsg
  */
-FE.observersAlert = function(titleMsg, alertMsg, popoverMsg)
+FE.observersAlert = function(title, alertMsg, popoverMsg)
 {
-	var alertDiv = $('<div id="infoalert" class="alert alert-block">'+
-						'<a class="close" data-dismiss="alert">×</a>'+
-						'<h4 class="alert-heading" align="center"><i class="icon-info-sign icon-2x" id="infopopover" rel="popover"></i> Observing Simulation Mode</h4>'+
-						'<p>'+ alertMsg+'</p>'+
-					'</div>');
-	$(alertDiv).appendTo('#sim_toolbar');
-	
-	$("#infopopover").popover({title: titleMsg, 
+	$('#alertbox-text').html(alertMsg);
+	$('#alertbox').show();
+	$("#infopopover").popover({title: title, 
 							   content: popoverMsg, 
 							   placement: 'left', 
 							   trigger:'hover'});  
@@ -277,8 +272,10 @@ FE.observersAlert = function(titleMsg, alertMsg, popoverMsg)
  */
 FE.disableSimulationControls = function()
 {
-	$('#loadSimModal').attr('disabled','disabled');
 	$('#openload').attr('disabled', 'disabled');
+	$('#openload').click(function(e){return false;});
+	
+	
 	$('#start').attr('disabled', 'disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').attr('disabled', 'disabled');

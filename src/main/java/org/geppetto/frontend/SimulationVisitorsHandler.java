@@ -1,3 +1,35 @@
+/*******************************************************************************
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2011, 2013 OpenWorm.
+ * http://openworm.org
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *     	OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights 
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+ * copies of the Software, and to permit persons to whom the Software is 
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in 
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 package org.geppetto.frontend;
 
 import java.io.IOException;
@@ -14,6 +46,7 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
+import org.geppetto.frontend.SimulationServerConfig.ServerModes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -30,6 +63,9 @@ public class SimulationVisitorsHandler {
 	
 	@Autowired
 	private ISimulation simulationService;
+	
+	@Autowired
+	private SimulationServerConfig simulationServerConfig;
 
 	private ISimulationCallbackListener simulationListener;
 	
@@ -110,6 +146,7 @@ public class SimulationVisitorsHandler {
 		{
 			simulationService.init(new URL(url), getSimulationListener());
 			setSimulationInUse(true);
+			simulationServerConfig.setServerBehavior(ServerModes.CONTROLLED);
 			
 			//Simulation just got someone to control it, notify everyone else
 			//connected that simulation controls are unavailable.
@@ -206,7 +243,7 @@ public class SimulationVisitorsHandler {
 	 */
 	public void simulationControlsUnavailable(GeppettoVisitorWebSocket visitor)
 	{
-		if(visitor.getCurrentRunMode() != GeppettoVisitorConfig.RunMode.OBSERVING){
+		if(visitor.getCurrentRunMode() != GeppettoVisitorWebSocket.RunMode.OBSERVING){
 			//Notify new user(s), new websocket connections, if server is in use.
 			//Simulation is in use, message to alert user(s)
 			String msg = "The server is currently in use and this " +
@@ -236,7 +273,7 @@ public class SimulationVisitorsHandler {
 		 * If the exiting visitor was running the simulation, notify all the observing
 		 * visitors that the controls for the simulation became available
 		 */
-		if(exitingVisitor.getCurrentRunMode() == GeppettoVisitorConfig.RunMode.CONTROLLING){
+		if(exitingVisitor.getCurrentRunMode() == GeppettoVisitorWebSocket.RunMode.CONTROLLING){
 			
 			//Simulation no longer in use since controlling user is leaving
 			setSimulationInUse(false);
@@ -272,7 +309,7 @@ public class SimulationVisitorsHandler {
 		 * Closing connection is that of a visitor in OBSERVE mode, remove the 
 		 * visitor from the list of observers. 
 		 */
-		else if (exitingVisitor.getCurrentRunMode() == GeppettoVisitorConfig.RunMode.OBSERVING){
+		else if (exitingVisitor.getCurrentRunMode() == GeppettoVisitorWebSocket.RunMode.OBSERVING){
 			//User observing simulation is closing the connection
 			if(observers.contains(exitingVisitor)){
 				//Remove user from observers list

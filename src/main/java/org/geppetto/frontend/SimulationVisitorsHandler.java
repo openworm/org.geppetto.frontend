@@ -141,7 +141,7 @@ public class SimulationVisitorsHandler {
 	 * 
 	 * @param url - model to simulate
 	 */
-	public void initializeSimulation(String url, GeppettoVisitorWebSocket controllingUser){
+	public void initializeSimulation(String url, GeppettoVisitorWebSocket visitor){
 		try
 		{
 			simulationService.init(new URL(url), getSimulationListener());
@@ -150,21 +150,41 @@ public class SimulationVisitorsHandler {
 			
 			//Simulation just got someone to control it, notify everyone else
 			//connected that simulation controls are unavailable.
-			if(getConnections().size()>1){
-				for(GeppettoVisitorWebSocket user : getConnections()){
-					if(user != controllingUser){
-						simulationControlsUnavailable(user);
-					}
+			for(GeppettoVisitorWebSocket connection : getConnections()){
+				if(connection != visitor){
+					simulationControlsUnavailable(connection);
 				}
 			}
 		}
+		//Catch any Malformed URL file entered by the user. 
+		//Send back to client a message to display to user.
 		catch(MalformedURLException e)
 		{
-			throw new RuntimeException(e);
-		} catch (GeppettoInitializationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+			String msg = "A URL with invalid format has been entered."+
+					"Please make sure you enter a valid URL in the input field and try again.";
+			
+			//JSON object used to send message to observer(s)' clients
+			JsonObject json = new JsonObject();
+			json.addProperty("type", "dialog_message");
+			json.addProperty("title", "Invalid URL");
+			json.addProperty("body", msg);
+			
+			messageClient(visitor, json.toString());
+			
+		}
+		//Catch any errors happening while attempting to read simulation
+		catch (GeppettoInitializationException e) {
+			String msg = "URL does not correspond to valid Simulation file."+
+					"Make sure you enter a valid Simulation file and try again.";
+
+			//JSON object used to send message to observer(s)' clients
+			JsonObject json = new JsonObject();
+			json.addProperty("type", "dialog_message");
+			json.addProperty("title", "Invalid Simulation File");
+			json.addProperty("body", msg);
+
+			messageClient(visitor, json.toString());
+		}
 	}
 	
 	/**
@@ -244,7 +264,6 @@ public class SimulationVisitorsHandler {
 	public void simulationControlsUnavailable(GeppettoVisitorWebSocket visitor)
 	{
 		if(visitor.getCurrentRunMode() != GeppettoVisitorWebSocket.RunMode.OBSERVING){
-			//Notify new user(s), new websocket connections, if server is in use.
 			//Simulation is in use, message to alert user(s)
 			String msg = "The server is currently in use and this " +
 					"instance of Geppetto does not support shared mode access" +
@@ -295,8 +314,9 @@ public class SimulationVisitorsHandler {
 
 			//JSON object used to send message to observer(s)' clients
 			JsonObject json = new JsonObject();
-			json.addProperty("type", "server_available");
-			json.addProperty("text", msg);
+			json.addProperty("type", "dialog_message");
+			json.addProperty("title","Server Available");
+			json.addProperty("body", msg);
 
 			//Notify all observers
 			for(GeppettoVisitorWebSocket visitor : observers){

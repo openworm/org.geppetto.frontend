@@ -109,9 +109,19 @@
 				<h3 id="myModalLabel">Load Simulation</h3>
 			</div>
 			<div class="modal-body">
-				<label>URL</label>
-				<input class="input-xlarge" id="url" type="text" placeholder="Paste the URL of the simulation file...">
-			</div>
+				<div class="modal-input">
+					<label>URL</label>
+					<input class="input-xlarge" id="url" type="text" placeholder="Paste the URL of the simulation file...">
+	            </div>
+	            <div class="modal-input">
+	            	<label>Samples</label>
+	            	<div class="btn-group">
+	            		<a class="btn dropdown-toggle" id="dLabel" data-toggle="dropdown" href="#"><span id="text">Select simulation from list...</span><b class="caret"></b></a>
+						<ul class="dropdown-menu" id="dropdownmenu" aria-labelledby="dLabel">
+						</ul>
+					</div>
+				</div>
+			</div>			
 			<div class="modal-footer">
 				<a href="#" data-dismiss="modal" class="btn">Close</a>
 				<button id="load" class="btn btn-warning">

@@ -1,0 +1,10 @@
+{"simulations":[
+        {
+            "name" : "Sample Simulation 1",
+            "url" : "https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA"
+        },
+        {
+        	"name" : "Sample Simulation 2",
+            "url" : "https://dl.dropboxusercontent.com/s/72efwkb9nm7mo27/sph-sim-config-test.xml?token_hash=AAFws3E84ZaNjs4wGQid36I_g4PprBY6zSXo2sKrIlOyUQ"
+        }
+]}

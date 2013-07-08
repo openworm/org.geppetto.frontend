@@ -134,6 +134,8 @@ GEPPETTO.Simulation.connect = (function(host)
 	GEPPETTO.Simulation.socket.onopen = function()
 	{
 		Console.log('Info: WebSocket connection opened.');
+		//Look for simulation file passed as parameter in geppetto's url
+		FE.searchForURLEmbeddedSimulation();
 	};
 
 	GEPPETTO.Simulation.socket.onclose = function()
@@ -152,10 +154,6 @@ GEPPETTO.Simulation.connect = (function(host)
 			    FE.disableSimulationControls();
 				FE.observersDialog("Server Unavailable", parsedServerMessage.text);
 				break;
-			//Simulation server became available
-			case "server_available":
-				FE.infoDialog("Server Available", parsedServerMessage.text);
-				break;
 			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":
 				FE.observersAlert("Observing Simulation Mode", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
@@ -163,6 +161,10 @@ GEPPETTO.Simulation.connect = (function(host)
 			//Clean the canvas, used after loading different model
 			case "clean_canvas":
 				GEPPETTO.init(FE.createContainer(), FE.update);
+				break;
+			//Display dialog explaining URL/Simulation file error when loading simulation
+			case "dialog_message":
+				FE.infoDialog(parsedServerMessage.title, parsedServerMessage.body);
 				break;
 			default:
 				//GEPPETTO.log("End parsing data");
@@ -246,8 +248,6 @@ FE.infoDialog = function(title, msg)
 	$('#infomodal').modal();   
 };
 
-
-
 /**
  * Create bootstrap alert to notify users they are in observer mode
  * 
@@ -265,6 +265,69 @@ FE.observersAlert = function(title, alertMsg, popoverMsg)
 							   trigger:'hover'});  
 };
 
+/**
+ * Look for Simulations that may have been embedded as parameter in the URL
+ */
+FE.searchForURLEmbeddedSimulation =  function()
+{
+	//Get the URL with which Geppetto was loaded
+	var urlLocation = window.location.href;
+	//Split url looking for simulation parameters
+	var vars = urlLocation.split("?sim=");
+	
+	//Load simulation if simulation parameters where found
+	if(vars.length > 1){
+		//Simulation found, load it
+		GEPPETTO.Simulation.load(decodeURIComponent(vars[1]));
+		//Enable start button
+		$('#start').removeAttr('disabled');
+	}
+		
+};
+
+/**
+ * Populate Load Modal with drop down menu of 
+ * predefined sample simulations stored in JSON file. 
+ * 
+ */
+FE.populatePredefinedSimulations = function()
+{
+	//Read JSON file storing predefined sample simulations
+	$.getJSON('resources/PredefinedSimulations.json', function(json) {
+		
+		//Get access to <ul> html element in load modal to add list items
+		var ul = document.getElementById('dropdownmenu');
+		
+		//Loop through simulations found in JSON file
+		for (var i in json.simulations) {
+			//Create <li> element and add url attribute storing simulation's url
+			var li = document.createElement('li');
+			li.setAttribute('url', json.simulations[i].url);
+			
+			//Create <a> element to add simulation name, add to <li> element
+			var a = document.createElement('a');
+			a.innerHTML = json.simulations[i].name;
+			li.appendChild(a);
+			
+			//Add <li> element to load modal's dropdownmenu
+			ul.appendChild(li);
+		}		
+		
+		//Add click listener to sample simulations dropdown menu
+		$('#dropdownmenu li').click(function () {
+			
+			//Get the name and url of selected simulation
+            var selectedURL = $(this).attr('url');
+            var selectedName =$(this).text();
+            
+            //Add selected simulation's url to URL input field
+            $('#url').val(selectedURL);
+            //Change drop down menu name to selected simulation's name
+            $('#text').html(selectedName);
+        });
+	});
+	
+};
 
 /**
  * If simulation is being controlled by another user, hide the 
@@ -272,13 +335,9 @@ FE.observersAlert = function(title, alertMsg, popoverMsg)
  */
 FE.disableSimulationControls = function()
 {
+	//Disable 'load simulation' button and click events
 	$('#openload').attr('disabled', 'disabled');
 	$('#openload').click(function(e){return false;});
-	
-	
-	$('#start').attr('disabled', 'disabled');
-	$('#pause').attr('disabled', 'disabled');
-	$('#stop').attr('disabled', 'disabled');
 };
 
 
@@ -288,6 +347,8 @@ FE.disableSimulationControls = function()
 
 $(document).ready(function()
 {
+	//Populate the 'loading simulation' modal's drop down menu with sample simulations
+	$('#loadSimModal').on('shown', FE.populatePredefinedSimulations());
 	$('#start').attr('disabled', 'disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').attr('disabled', 'disabled');

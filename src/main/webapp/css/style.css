@@ -24,18 +24,6 @@ body {
 	font-weight: 200;
 }
 
-.popover {
-	font-size: 14px;
-	font-weight:200;
-}
-#alertbox {
-	display: none;
-	margin-top: 20px;
-	width: 330px;
-	font-size: 14px;
-	line-height: 20px;
-	font-weight: 200;
-}
 
 #dialog-message {
 	font-size: 14px;
@@ -217,3 +205,59 @@ input {
 .ui-dialog {
 	opacity: 0.8
 };
+
+.popover {
+	font-size: 14px;
+	font-weight:200;
+}
+
+#alertbox {
+	display: none;
+	margin-top: 20px;
+	width: 330px;
+	font-size: 14px;
+	line-height: 20px;
+	font-weight: 200;
+}
+
+.modal-input label {
+	float: left;
+	font-family: FontAwesome;
+	font-weight: bold;
+	font-size: 16px;
+	margin-top: 5px;
+}
+
+.modal-body input{
+	float: center;
+	margin-left: 40px;
+}
+
+.btn-group{
+	float: center;
+	margin-left: 15px;
+}
+
+.btn-group .btn{
+	width: 260px;
+}
+
+.btn span{
+	float:left;
+}
+
+/* Overwrite Modal body overflow values.*/ 
+.modal { 
+	overflow: visible; 
+}
+
+.modal-body { 
+	overflow-y: visible; 
+	font-family: FontAwesome;
+	font-size: 18px;
+	line-height: 25px;
+}
+
+.dropdown-menu{ width: 285px; }
+
+.btn .caret{ float : right;}

@@ -41,41 +41,50 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.geppetto.frontend.GeppettoVisitorWebSocket;
-import org.geppetto.frontend.GeppettoVisitorWebSocket.RunMode;
+import org.geppetto.frontend.GeppettoVisitorWebSocket.VisitorRunMode;
+import org.geppetto.frontend.SimulationServerConfig;
+import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.geppetto.frontend.SimulationVisitorsHandler;
 import org.junit.Test;
-
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
  * Test Unit class to test Observer Mode functionality
  * 
  * @author Jesus R. Martinez (jesus@metacell.us)
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)  
+@ContextConfiguration("classpath:app-config.xml")  
 public class TestObserverMode {
 
 	
-	//Define a test servlet 
-	private TestSimulationServlet testSimulationServlet = new TestSimulationServlet();
-	
+	@Autowired
+	private SimulationServerConfig simulationServerConfig;
+		
 	/*
 	 * Create two connections to represent multiple visitors to geppetto
 	 */
 	private GeppettoVisitorWebSocket connection1 = new GeppettoVisitorWebSocket(0, SimulationVisitorsHandler.getInstance());
 	private GeppettoVisitorWebSocket connection2 = new GeppettoVisitorWebSocket(1, SimulationVisitorsHandler.getInstance());
 	
+	
 	@Test
-	public void testSetRunModes(){
+	public void testServerBehavior(){
+				
+		assertEquals(simulationServerConfig.getServerBehaviorMode(), SimulationServerConfig.ServerBehaviorModes.OBSERVE);
 		
-		assertEquals(connection1.getCurrentRunMode(), RunMode.DEFAULT);
-		assertEquals(connection2.getCurrentRunMode(), RunMode.DEFAULT);
+		connection1.setVisitorRunMode(VisitorRunMode.CONTROLLING);
+		connection2.setVisitorRunMode(VisitorRunMode.OBSERVING);
 		
-		connection1.setRunMode(RunMode.CONTROLLING);
+		assertEquals(connection1.getCurrentRunMode(), VisitorRunMode.CONTROLLING);
+		assertEquals(connection2.getCurrentRunMode(), VisitorRunMode.OBSERVING);
 		
-		assertEquals(connection1.getCurrentRunMode(), RunMode.CONTROLLING);
+		simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
 		
-		connection2.setRunMode(RunMode.OBSERVING);
-		
-		assertEquals(connection2.getCurrentRunMode(), RunMode.OBSERVING);
+		assertEquals(simulationServerConfig.getServerBehaviorMode(), SimulationServerConfig.ServerBehaviorModes.CONTROLLED);
 	}
 	
 	private class TestSimulationServlet extends WebSocketServlet{

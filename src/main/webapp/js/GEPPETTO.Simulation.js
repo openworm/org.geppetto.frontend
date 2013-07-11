@@ -144,37 +144,50 @@ GEPPETTO.Simulation.connect = (function(host)
 	};
 
 	GEPPETTO.Simulation.socket.onmessage = function(msg)
-	{
+	{		
 		var parsedServerMessage = JSON.parse(msg.data);
 		
 		//Parsed incoming message
 		switch(parsedServerMessage.type){
-			//Simulation server already in use
-			case "server_unavailable":
-			    FE.disableSimulationControls();
-				FE.observersDialog("Server Unavailable", parsedServerMessage.text);
+			//Clean the canvas, used after loading different model
+			case "clean_canvas":
+				GEPPETTO.init(FE.createContainer(), FE.update);
+				break;
+			//Display dialog with info message
+			case "info_message":
+				FE.infoDialog(parsedServerMessage.title, parsedServerMessage.body);
+				break;
+			//Error loading simulation, invalid url or simulation file 
+			case "error_loading_simulation":
+				$('#loadingmodal').modal('hide');
+				FE.infoDialog(parsedServerMessage.title, parsedServerMessage.body);
 				break;
 			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":
 				FE.observersAlert("Observing Simulation Mode", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
 				break;
-			//Clean the canvas, used after loading different model
-			case "clean_canvas":
-				GEPPETTO.init(FE.createContainer(), FE.update);
+			//Simulation server already in use
+			case "server_unavailable":
+			    FE.disableSimulationControls();
+				FE.observersDialog(parsedServerMessage.title, parsedServerMessage.body);
 				break;
-			//Display dialog explaining URL/Simulation file error when loading simulation
-			case "dialog_message":
-				FE.infoDialog(parsedServerMessage.title, parsedServerMessage.body);
+			case "simulation_loaded":
+				$('#start').removeAttr('disabled');
+				$('#loadingmodal').modal('hide');
+				break;
+			case "simulation_started":
+				$('#loadingmodal').modal('hide');
 				break;
 			default:
 				//GEPPETTO.log("End parsing data");
 				if (!GEPPETTO.isScenePopulated())
 				{
+					$('#loadingmodal').modal('hide');
 					// the first time we need to create the objects
 					GEPPETTO.populateScene(parsedServerMessage);
 				}
 				else
-				{
+				{					
 					// any other time we just update them
 					GEPPETTO.updateJSONScene(parsedServerMessage);
 				}
@@ -277,10 +290,9 @@ FE.searchForURLEmbeddedSimulation =  function()
 	
 	//Load simulation if simulation parameters where found
 	if(vars.length > 1){
+		FE.activateLoader("show", "Loading Simulation Model ...");
 		//Simulation found, load it
 		GEPPETTO.Simulation.load(decodeURIComponent(vars[1]));
-		//Enable start button
-		$('#start').removeAttr('disabled');
 	}
 		
 };
@@ -323,8 +335,12 @@ FE.populatePredefinedSimulations = function()
             //Add selected simulation's url to URL input field
             $('#url').val(selectedURL);
             //Change drop down menu name to selected simulation's name
-            $('#text').html(selectedName);
+            $('#dropdowndisplaytext').html(selectedName);
         });
+		
+		$('#url').keydown(function(){
+			$('#dropdowndisplaytext').html("Select simulation from list...");
+		});
 	});
 	
 };
@@ -340,6 +356,11 @@ FE.disableSimulationControls = function()
 	$('#openload').click(function(e){return false;});
 };
 
+FE.activateLoader = function(state, msg)
+{
+	$('#loadingmodal').html('<center><i class="icon-spinner icon-spin icon-large"></i>'+msg + '</center>');
+	$('#loadingmodal').modal(state);
+};
 
 // ============================================================================
 // Application logic.
@@ -355,6 +376,7 @@ $(document).ready(function()
 	
 	$('#start').click(function()
 	{
+		FE.activateLoader("show", "Starting Simulation ...");
 		$('#start').attr('disabled', 'disabled');
 		$('#pause').removeAttr('disabled');
 		$('#stop').attr('disabled', 'disabled');
@@ -379,7 +401,6 @@ $(document).ready(function()
 	
 	$('#load').click(function()
 	{
-		$('#start').removeAttr('disabled');
 		$('#pause').attr('disabled', 'disabled');
 		$('#stop').attr('disabled', 'disabled');
 		$('#loadSimModal').modal("hide");
@@ -387,6 +408,7 @@ $(document).ready(function()
 		{
 			GEPPETTO.Simulation.stop();
 		}
+		FE.activateLoader("show", "Loading Simulation Model ...");
 		GEPPETTO.Simulation.load($('#url').val());
 	});
 

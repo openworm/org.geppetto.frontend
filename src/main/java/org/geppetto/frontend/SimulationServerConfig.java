@@ -33,24 +33,24 @@
 package org.geppetto.frontend;
 
 /**
- * Configuration class to keep track of simulation run mode
+ * Configuration class to keep track of simulation server mode
  * 
  * @author  Jesus R. Martinez (jesus@metacell.us)
  *
  */
 public class SimulationServerConfig {
 	
-	public enum ServerModes {
+	public enum ServerBehaviorModes {
 		OBSERVE, CONTROLLED
 	}
 	
-	ServerModes serverBehavior;
+	ServerBehaviorModes serverBehaviorMode;
 	
-	public void setServerBehavior(ServerModes serverBehavior){
-		this.serverBehavior = serverBehavior;
+	public void setServerBehaviorMode(ServerBehaviorModes serverBehaviorMode){
+		this.serverBehaviorMode = serverBehaviorMode;
 	}
 	
-	public ServerModes getServerBehavior(){
-		return this.serverBehavior;
+	public ServerBehaviorModes getServerBehaviorMode(){
+		return this.serverBehaviorMode;
 	}
 }

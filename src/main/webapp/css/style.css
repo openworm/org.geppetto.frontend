@@ -261,3 +261,5 @@ input {
 .dropdown-menu{ width: 285px; }
 
 .btn .caret{ float : right;}
+ 
+.loading.modal.fade{top:-25%;-webkit-transition:opacity .8s linear,top .8s ease-out;-moz-transition:opacity .8s linear,top .8s ease-out;-o-transition:opacity .8s linear,top .8s ease-out;transition:opacity .8s linear,top .8s ease-out;}.loading.modal.fade.in{top:40%; -webkit-transition:opacity .1s linear,top .1s ease-in;-moz-transition:opacity .1s linear,top .1s ease-in;-o-transition:opacity .1s linear,top .1s ease-in;transition:opacity .1s linear,top .1s ease-in; background: lightgoldenrodyellow;}

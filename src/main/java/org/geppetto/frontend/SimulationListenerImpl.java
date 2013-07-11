@@ -42,6 +42,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 
+import com.google.gson.JsonObject;
+
 /**
  * Implementation of ISimulationCallbackListener interface. Receives updates from
  * the simulation, which are then sent to the running clients.  
@@ -65,20 +67,19 @@ public class SimulationListenerImpl implements ISimulationCallbackListener{
 		String dateFormatted = formatter.format(date);
 		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
 		for (GeppettoVisitorWebSocket connection : simConnectionHandler.getConnections())
-		{
-			if(connection.getCurrentRunMode() != GeppettoVisitorWebSocket.RunMode.DEFAULT){
-				try
-				{
-					CharBuffer buffer = CharBuffer.wrap(update);
-					connection.getWsOutbound().writeTextMessage(buffer);
-				}
-				catch (IOException ignore)
-				{
-					logger.error(ignore.getMessage());
-				}
+		{				
+			try
+			{
+				CharBuffer buffer = CharBuffer.wrap(update);
+				connection.getWsOutbound().writeTextMessage(buffer);
 			}
+			catch (IOException ignore)
+			{
+				logger.error(ignore.getMessage());
+			}
+			
+			logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
 		}
-		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
+		
 	}
-
 }

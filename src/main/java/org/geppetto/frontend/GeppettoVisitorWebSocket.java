@@ -38,10 +38,6 @@ import java.nio.CharBuffer;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.google.gson.JsonObject;
 
 /**
  * Class used to process Web Socket Connections. 
@@ -52,16 +48,14 @@ import com.google.gson.JsonObject;
 public class GeppettoVisitorWebSocket extends MessageInbound
 {
 	
-	public enum RunMode {
-		DEFAULT, CONTROLLING, OBSERVING
+	public enum VisitorRunMode {
+		DEFAULT, OBSERVING, CONTROLLING
 	}
-
-	private static Log logger = LogFactory.getLog(GeppettoVisitorWebSocket.class);
 	 
 	private SimulationVisitorsHandler simulationVisitorsHandler;
 	private final int id;
 
-	private RunMode currentMode = RunMode.DEFAULT;
+	private VisitorRunMode currentMode = VisitorRunMode.DEFAULT;
 	
 	public GeppettoVisitorWebSocket(int id, SimulationVisitorsHandler simulatoinVisitorsHandler)
 	{
@@ -94,44 +88,12 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		String msg = message.toString();
 		if (msg.startsWith("init$"))
 		{
-			//Couple of scenarios could initialize the simulation
-			//Keep flag to initialize simulation later
-			boolean canInitializeSim = false;
-			
-			switch(currentMode){
-							
-				case CONTROLLING:
-					//User in control loading another model, clean canvas before doing so
-					canInitializeSim = true;
-					updateControllerScene();
-					break;
-				
-				case OBSERVING:
-					//Notify simulation controls are not available
-					simulationVisitorsHandler.simulationControlsUnavailable(this);
-					break;
-					
-				case DEFAULT:
-					//Default user can only initialize it if it's not already in use
-					if(!simulationVisitorsHandler.isSimulationInUse()){
-						canInitializeSim = true;
-					}
-					break;
-			}
-			
-			//Only visitors in default or controlling mode can initialize the simulation 
-			if(canInitializeSim){
-				String url = msg.substring(msg.indexOf("$")+1, msg.length());
-				simulationVisitorsHandler.initializeSimulation(url,this);
-				setRunMode(RunMode.CONTROLLING);
-				
-				//notify any observers that simulation has been re started
-				simulationVisitorsHandler.updateObserversScenes();
-			}
+			String url = msg.substring(msg.indexOf("$")+1, msg.length());
+			simulationVisitorsHandler.initializeSimulation(url,this);
 		}
 		else if (msg.equals("start"))
 		{
-			simulationVisitorsHandler.startSimulation();
+			simulationVisitorsHandler.startSimulation(this);
 		}
 		else if (msg.equals("pause"))
 		{
@@ -144,7 +106,6 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		else if (msg.equals("observe"))
 		{					
 			simulationVisitorsHandler.observeSimulation(this);
-			setRunMode(RunMode.OBSERVING);
 		}
 		else
 		{
@@ -156,23 +117,12 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		return id;
 	}
 	
-	public RunMode getCurrentRunMode(){
+	public VisitorRunMode getCurrentRunMode(){
 		return currentMode ;
 	}
 	
-	public void setRunMode(RunMode mode){
+	public void setVisitorRunMode(VisitorRunMode mode){
 		currentMode = mode;
 	}
 	
-	/**
-	 * Clear the canvas of scene. Used when loading another model
-	 */
-	public void updateControllerScene(){
-		//JSON object used to send message to observer(s)' clients
-		JsonObject json = new JsonObject();
-		json.addProperty("type", "clean_canvas");
-
-		//Notify all observers
-		simulationVisitorsHandler.messageClient(this,json.toString());
-	}
 }

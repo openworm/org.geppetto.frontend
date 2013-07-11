@@ -171,11 +171,9 @@ GEPPETTO.Simulation.connect = (function(host)
 			    FE.disableSimulationControls();
 				FE.observersDialog(parsedServerMessage.title, parsedServerMessage.body);
 				break;
+			//Simulation has been loaded, enable start button and remove loading panel
 			case "simulation_loaded":
 				$('#start').removeAttr('disabled');
-				$('#loadingmodal').modal('hide');
-				break;
-			case "simulation_started":
 				$('#loadingmodal').modal('hide');
 				break;
 			default:

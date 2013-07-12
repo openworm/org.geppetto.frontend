@@ -214,6 +214,8 @@ public class SimulationVisitorsHandler {
 		try
 		{
 			simulationService.start();
+			//notify user simulation has started
+			sendJSONAction(controllingUser, "simulation_started");
 		}
 		catch(GeppettoExecutionException e)
 		{

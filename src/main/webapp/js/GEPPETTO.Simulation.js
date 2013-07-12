@@ -176,11 +176,13 @@ GEPPETTO.Simulation.connect = (function(host)
 				$('#start').removeAttr('disabled');
 				$('#loadingmodal').modal('hide');
 				break;
+			case "simulation_started":
+				$('#loadingmodal').modal('hide');
+				break;
 			default:
 				//GEPPETTO.log("End parsing data");
 				if (!GEPPETTO.isScenePopulated())
 				{
-					$('#loadingmodal').modal('hide');
 					// the first time we need to create the objects
 					GEPPETTO.populateScene(parsedServerMessage);
 				}

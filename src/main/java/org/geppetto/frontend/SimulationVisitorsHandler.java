@@ -116,6 +116,10 @@ public class SimulationVisitorsHandler {
 		if(isSimulationInUse()){
 			simulationControlsUnavailable(newVisitor);
 		}
+		//Simulation not in use, let client now is safe to read simulation file from url
+		else{
+			sendJSONAction(newVisitor, "read_url_parameters");
+		}
 	}
 	
 	/**

@@ -134,8 +134,6 @@ GEPPETTO.Simulation.connect = (function(host)
 	GEPPETTO.Simulation.socket.onopen = function()
 	{
 		Console.log('Info: WebSocket connection opened.');
-		//Look for simulation file passed as parameter in geppetto's url
-		FE.searchForURLEmbeddedSimulation();
 	};
 
 	GEPPETTO.Simulation.socket.onclose = function()
@@ -165,6 +163,10 @@ GEPPETTO.Simulation.connect = (function(host)
 			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":
 				FE.observersAlert("Observing Simulation Mode", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
+				break;
+			//Read parameters passed in URL
+			case "read_url_parameters":
+				FE.searchForURLEmbeddedSimulation();
 				break;
 			//Simulation server already in use
 			case "server_unavailable":

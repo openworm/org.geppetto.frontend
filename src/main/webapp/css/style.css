@@ -237,11 +237,11 @@ input {
 
 .btn-group{
 	float: center;
-	margin-left: 15px;
+	margin-left: 17px;
 }
 
 .btn-group .btn{
-	width: 260px;
+	width: 255px;
 }
 
 .btn span{

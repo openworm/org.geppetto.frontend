@@ -192,7 +192,6 @@ GEPPETTO.Simulation.connect = (function(host)
 				//GEPPETTO.log("End parsing data");
 				if (!GEPPETTO.isScenePopulated())
 				{				
-					Console.log("Received: Populating Scene");
 					// the first time we need to create the object.s
 					GEPPETTO.populateScene(entities);
 				}

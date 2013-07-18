@@ -44,7 +44,7 @@ import org.geppetto.frontend.GeppettoVisitorWebSocket;
 import org.geppetto.frontend.GeppettoVisitorWebSocket.VisitorRunMode;
 import org.geppetto.frontend.SimulationServerConfig;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
-import org.geppetto.frontend.SimulationVisitorsHandler;
+import org.geppetto.frontend.SimulationListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)  
-@ContextConfiguration("classpath:app-config.xml")  
+@ContextConfiguration("classpath:test-app-config.xml")  
 public class TestObserverMode {
 
 	
@@ -67,8 +67,8 @@ public class TestObserverMode {
 	/*
 	 * Create two connections to represent multiple visitors to geppetto
 	 */
-	private GeppettoVisitorWebSocket connection1 = new GeppettoVisitorWebSocket(0, SimulationVisitorsHandler.getInstance());
-	private GeppettoVisitorWebSocket connection2 = new GeppettoVisitorWebSocket(1, SimulationVisitorsHandler.getInstance());
+	private GeppettoVisitorWebSocket connection1 = new GeppettoVisitorWebSocket(0, SimulationListener.getInstance());
+	private GeppettoVisitorWebSocket connection2 = new GeppettoVisitorWebSocket(1, SimulationListener.getInstance());
 	
 	
 	@Test
@@ -94,7 +94,7 @@ public class TestObserverMode {
 		@Override
 		protected StreamInbound createWebSocketInbound(String subProtocol,
 				HttpServletRequest request) {
-			return new GeppettoVisitorWebSocket(_connectionIds.incrementAndGet(), SimulationVisitorsHandler.getInstance());
+			return new GeppettoVisitorWebSocket(_connectionIds.incrementAndGet(), SimulationListener.getInstance());
 		}
 		
 	}

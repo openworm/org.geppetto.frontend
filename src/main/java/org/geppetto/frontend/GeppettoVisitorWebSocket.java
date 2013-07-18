@@ -47,33 +47,37 @@ import org.apache.catalina.websocket.WsOutbound;
  */
 public class GeppettoVisitorWebSocket extends MessageInbound
 {
-	
+
+	/*
+	 * Keeps track of mode visitor is in, either observing or controlling 
+	 * the simulation
+	 */
 	public enum VisitorRunMode {
-		DEFAULT, OBSERVING, CONTROLLING
+		OBSERVING, CONTROLLING
 	}
-	 
-	private SimulationVisitorsHandler simulationVisitorsHandler;
+
+	private SimulationListener simulationListener;
 	private final int id;
 
-	private VisitorRunMode currentMode = VisitorRunMode.DEFAULT;
-	
-	public GeppettoVisitorWebSocket(int id, SimulationVisitorsHandler simulatoinVisitorsHandler)
+	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
+
+	public GeppettoVisitorWebSocket(int id, SimulationListener simulatoinVisitorsHandler)
 	{
 		super();
 		this.id = id;
-		simulationVisitorsHandler = simulatoinVisitorsHandler;
+		simulationListener = simulatoinVisitorsHandler;
 	}
 
 	@Override
 	protected void onOpen(WsOutbound outbound)
 	{
-		simulationVisitorsHandler.addConnection(this);	
+		simulationListener.addConnection(this);	
 	}
 
 	@Override
 	protected void onClose(int status)
 	{
-		simulationVisitorsHandler.removeConnection(this);
+		simulationListener.removeConnection(this);
 	}
 
 	@Override
@@ -82,6 +86,9 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		throw new UnsupportedOperationException("Binary message not supported.");
 	}
 
+	/**
+	 * Receives message(s) from client. 
+	 */
 	@Override
 	protected void onTextMessage(CharBuffer message)
 	{
@@ -89,23 +96,23 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		if (msg.startsWith("init$"))
 		{
 			String url = msg.substring(msg.indexOf("$")+1, msg.length());
-			simulationVisitorsHandler.initializeSimulation(url,this);
+			simulationListener.initializeSimulation(url,this);
 		}
 		else if (msg.equals("start"))
 		{
-			simulationVisitorsHandler.startSimulation(this);
+			simulationListener.startSimulation(this);
 		}
 		else if (msg.equals("pause"))
 		{
-			simulationVisitorsHandler.pauseSimulation();
+			simulationListener.pauseSimulation();
 		}
 		else if (msg.equals("stop"))
 		{
-			simulationVisitorsHandler.stopSimulation();
+			simulationListener.stopSimulation();
 		}
 		else if (msg.equals("observe"))
 		{					
-			simulationVisitorsHandler.observeSimulation(this);
+			simulationListener.observeSimulation(this);
 		}
 		else
 		{
@@ -116,13 +123,13 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 	public int getConnectionID() {
 		return id;
 	}
-	
+
 	public VisitorRunMode getCurrentRunMode(){
 		return currentMode ;
 	}
-	
+
 	public void setVisitorRunMode(VisitorRunMode mode){
 		currentMode = mode;
 	}
-	
+
 }

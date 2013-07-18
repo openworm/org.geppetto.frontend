@@ -18,10 +18,12 @@ body {
 #consolealert {
 	margin: 0 auto;
 	margin-top: -10px;
-	width: 315px;
+	width: 300px;
+	height: 80px;
 	font-size: 10px;
 	line-height: 10px;
 	font-weight: 200;
+	overflow: auto;
 }
 
 
@@ -266,3 +268,4 @@ input {
 .loading.modal.fade.in{top:40%; -webkit-transition:opacity .1s linear,top .1s ease-in;-moz-transition:opacity .1s linear,top .1s ease-in;-o-transition:opacity .1s linear,top .1s ease-in;transition:opacity .1s linear,top .1s ease-in; background: rgba(255, 255, 255, 0);}
 .icon-4x{font-size:4em;}
 .orange{color:#fd6808;}
+.start.popover { background: orange; color:orange;}

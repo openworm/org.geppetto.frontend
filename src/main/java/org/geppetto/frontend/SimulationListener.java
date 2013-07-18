@@ -36,9 +36,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.CharBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,6 +52,7 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoVisitorWebSocket.VisitorRunMode;
+import org.geppetto.frontend.JSONUtility.MESSAGES_TYPES;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -62,48 +66,35 @@ import com.google.gson.JsonObject;
  * @author  Jesus R. Martinez (jesus@metacell.us)
  *
  */
-public class SimulationVisitorsHandler {
-	
-	private static Log logger = LogFactory.getLog(SimulationVisitorsHandler.class);
+public class SimulationListener implements ISimulationCallbackListener {
+
+	private static Log logger = LogFactory.getLog(SimulationListener.class);
 
 	@Autowired
 	private ISimulation simulationService;
-	
+
 	@Autowired
 	private SimulationServerConfig simulationServerConfig;
 
-	private ISimulationCallbackListener simulationListener;
-	
-	private final ConcurrentHashMap<Integer, GeppettoVisitorWebSocket> _connections = new ConcurrentHashMap<Integer, GeppettoVisitorWebSocket>();
+	private final ConcurrentHashMap<Integer, GeppettoVisitorWebSocket> _connections = 
+			new ConcurrentHashMap<Integer, GeppettoVisitorWebSocket>();
 
 	private List<GeppettoVisitorWebSocket> observers = new ArrayList<GeppettoVisitorWebSocket>();
-	
-	private static SimulationVisitorsHandler instance = null;
-	
-	protected SimulationVisitorsHandler(){
+
+	private static SimulationListener instance = null;
+
+	protected SimulationListener(){
 		//Access SimulationService via spring injection of autowired dependencies
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 	}
-	
-	public static SimulationVisitorsHandler getInstance() {
+
+	public static SimulationListener getInstance() {
 		if(instance == null) {
-			instance = new SimulationVisitorsHandler();
+			instance = new SimulationListener();
 		}
 		return instance;
 	}
-	
-	/**
-	 * Creates the listener for the simulation.
-	 * 
-	 * @return
-	 */
-	private ISimulationCallbackListener getSimulationListener() {
-		if(simulationListener == null){
-			simulationListener = new SimulationListenerImpl(this);
-		}
-		return simulationListener;
-	}
-	
+
 	/**
 	 * Add new connection to list of current ones
 	 * 
@@ -111,17 +102,18 @@ public class SimulationVisitorsHandler {
 	 */
 	public void addConnection(GeppettoVisitorWebSocket newVisitor){
 		_connections.put(Integer.valueOf(newVisitor.getConnectionID()), newVisitor);
-		
+
 		//Simulation is being used, notify new user controls are unavailable
 		if(isSimulationInUse()){
 			simulationControlsUnavailable(newVisitor);
 		}
-		//Simulation not in use, let client now is safe to read simulation file from url
+		//Simulation not in use, notify client is safe to read and load
+		//any simulation file embedded in url
 		else{
-			sendJSONAction(newVisitor, "read_url_parameters");
+			messageClient(newVisitor, MESSAGES_TYPES.READ_URL_PARAMETERS);
 		}
 	}
-	
+
 	/**
 	 * Remove connection from list of current ones.
 	 * 
@@ -129,10 +121,11 @@ public class SimulationVisitorsHandler {
 	 */
 	public void removeConnection(GeppettoVisitorWebSocket exitingVisitor){
 		_connections.remove(Integer.valueOf(exitingVisitor.getConnectionID()));
-		
+
+		//Handle operations after user closes connection
 		postClosingConnectionCheck(exitingVisitor);
 	}
-	
+
 	/**
 	 * Return all the current web socket connections
 	 * 
@@ -142,7 +135,7 @@ public class SimulationVisitorsHandler {
 	{
 		return Collections.unmodifiableCollection(_connections.values());
 	}
-	
+
 	/**
 	 * Initialize simulation with URL of model to load and listener
 	 * 
@@ -153,28 +146,30 @@ public class SimulationVisitorsHandler {
 		{			
 			switch(visitor.getCurrentRunMode()){
 
+			//User in control attempting to load another simulation
 			case CONTROLLING:
-				//User in control loading another model, clean canvas before doing so
-				sendJSONAction(visitor, "clean_canvas");
-
-				//load another simulation
-				simulationService.init(new URL(url), getSimulationListener());
-
-				sendJSONAction(visitor, "simulation_loaded");
-
-				//clear the canvas of users observing simulation as well
-				for(GeppettoVisitorWebSocket observer : observers){
-					sendJSONAction(observer, "clean_canvas");
+				
+				//Clear canvas of users connected for new model to be loaded
+				for(GeppettoVisitorWebSocket observer : getConnections()){
+					messageClient(observer, MESSAGES_TYPES.CLEAR_CANVAS);
 				}
+				
+				simulationServerConfig.setIsSimulationLoaded(false);
+				//load another simulation
+				simulationService.init(new URL(url), this);
 
+				messageClient(visitor,MESSAGES_TYPES.SIMULATION_LOADED);
 				break;
 
-			case DEFAULT:
-				//Default user can only initialize it if it's not already in use
+			default:
+				/*
+				 * Default user can only initialize it if it's not already in use.
+				 * 
+				 */
 				if(!isSimulationInUse()){
-
-					simulationService.init(new URL(url), getSimulationListener());
 					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
+					simulationServerConfig.setIsSimulationLoaded(false);
+					simulationService.init(new URL(url), this);
 					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
 
 					//Simulation just got someone to control it, notify everyone else
@@ -185,10 +180,11 @@ public class SimulationVisitorsHandler {
 						}
 					}
 
-					sendJSONAction(visitor, "simulation_loaded");
+					messageClient(visitor, MESSAGES_TYPES.SIMULATION_LOADED);
 				}
-				break;
-			default:
+				else{
+					simulationControlsUnavailable(visitor);
+				}
 				break;
 			}
 		}
@@ -196,21 +192,14 @@ public class SimulationVisitorsHandler {
 		//Send back to client a message to display to user.
 		catch(MalformedURLException e)
 		{
-			String msg = "A URL with invalid format has been entered."+
-					"Please make sure you enter a valid URL in the input field and try again.";
-
-			sendJSONMessage("error_loading_simulation", "Invalid URL", msg, visitor);
-
+			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
 		}
 		//Catch any errors happening while attempting to read simulation
 		catch (GeppettoInitializationException e) {
-			String msg = "URL does not correspond to valid Simulation file."+
-					"Make sure you enter a valid Simulation file and try again.";
-
-			sendJSONMessage("error_loading_simulation", "Invalid Simulation File", msg, visitor);
+			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
 		}
 	}
-	
+
 	/**
 	 * Start the simulation
 	 */
@@ -219,7 +208,7 @@ public class SimulationVisitorsHandler {
 		{
 			simulationService.start();
 			//notify user simulation has started
-			sendJSONAction(controllingUser, "simulation_started");
+			messageClient(controllingUser,MESSAGES_TYPES.SIMULATION_STARTED);
 		}
 		catch(GeppettoExecutionException e)
 		{
@@ -240,7 +229,7 @@ public class SimulationVisitorsHandler {
 			throw new RuntimeException(e);
 		}	
 	}
-	
+
 	/**
 	 * Stop the running simulation
 	 */
@@ -254,7 +243,7 @@ public class SimulationVisitorsHandler {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Add visitor to list users Observing simulation
 	 * 
@@ -262,41 +251,25 @@ public class SimulationVisitorsHandler {
 	 */
 	public void observeSimulation(GeppettoVisitorWebSocket observingVisitor){		
 		observers.add(observingVisitor);
-		
-		observingVisitor.setVisitorRunMode(VisitorRunMode.OBSERVING);
-		
-		//Simulation is in use, message to alert user(s)
-		String alertMessage = "Another user is in control of starting and stopping the simulation.\n "+
-							  "You are currently in observer mode.";
 
-		String infoIconMessage = "Multiple users can collaboratively view the output of a single \n" +
-								  "Geppetto simulation being run.  When the current user leaves the simulation, \n" +
-								  "the remaining users will be able to take control and continue using it.";
-		
-		//Create JsonObject to transmit message to client (JS)
-		JsonObject json = new JsonObject();			
-		json.addProperty("type", "observer_mode_alert");
-		json.addProperty("alertMessage", alertMessage);
-		json.addProperty("popoverMessage", infoIconMessage);
-		
+		observingVisitor.setVisitorRunMode(VisitorRunMode.OBSERVING);
+
+		if(!simulationService.isRunning()){
+			updateScene(observingVisitor,MESSAGES_TYPES.LOAD_MODEL, getSimulationServerConfig().getLoadedScene());
+		}
 		//Notify visitor they are now in Observe Mode
-		messageClient(observingVisitor, json.toString());
+		messageClient(observingVisitor, MESSAGES_TYPES.OBSERVER_MODE);
 	}
-	
+
 	/**
-	 * Simulation is bein controlled by another user, new visitor that just loaded Geppetto Simulation in browser 
+	 * Simulation is being controlled by another user, new visitor that just loaded Geppetto Simulation in browser 
 	 * is notified with an alert message of status of simulation.
 	 * 
 	 * @param id - ID of new Websocket connection. 
 	 */
 	public void simulationControlsUnavailable(GeppettoVisitorWebSocket visitor)
-	{
-		//Simulation is in use, message to alert user(s)
-		String msg = "The server is currently in use and this " +
-					"instance of Geppetto does not support shared mode access" +
-					" - you can join the ongoing simulation as an observer ";
-		
-		sendJSONMessage("server_unavailable", "Server Unavailable", msg, visitor);
+	{	
+		messageClient(visitor,MESSAGES_TYPES.SERVER_UNAVAILABLE);
 	}
 
 	/**
@@ -307,16 +280,16 @@ public class SimulationVisitorsHandler {
 	 * @param id - WebSocket ID of user closing connection
 	 */
 	public void postClosingConnectionCheck(GeppettoVisitorWebSocket exitingVisitor){
-		
+
 		/*
 		 * If the exiting visitor was running the simulation, notify all the observing
 		 * visitors that the controls for the simulation became available
 		 */
 		if(exitingVisitor.getCurrentRunMode() == GeppettoVisitorWebSocket.VisitorRunMode.CONTROLLING){
-			
+
 			//Simulation no longer in use since controlling user is leaving
 			simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
-			
+
 			//Controlling user is leaving, but simulation might still be running. 
 			try{
 				if(simulationService.isRunning()){
@@ -327,20 +300,16 @@ public class SimulationVisitorsHandler {
 			catch (GeppettoExecutionException e) {
 				e.printStackTrace();
 			}
-			
-			//Message to be displayed to observers waiting 
-			String msg = "The current operator left the control of Geppetto." +
-					" Refresh your browser to attempt to assume control (first come, first served).";
 
 			//Notify all observers
 			for(GeppettoVisitorWebSocket visitor : observers){
 				//visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
 				//send message to alert client of server availability
-				sendJSONMessage("info_message", "Server Available", msg, visitor);
+				messageClient(visitor,MESSAGES_TYPES.SERVER_AVAILABLE);
 			}
-			
+
 		}			
-		
+
 		/*
 		 * Closing connection is that of a visitor in OBSERVE mode, remove the 
 		 * visitor from the list of observers. 
@@ -353,29 +322,37 @@ public class SimulationVisitorsHandler {
 			}
 		}
 	}
-	
+
 	/**
-	 * Creates a JSON object with a message that is send to the client. 
-	 * Message is used by the client to alert user of event 
-	 * going on in the server such as; server's availability, invalid URL/simulation files.
+	 * Requests JSONUtility class for a json object with a message to send to the client
 	 * 
-	 * @param type - Type of message that is being sent
-	 * @param title - Title of message
-	 * @param msg - Body of message
-	 * @param visitor - Client receiving the message
+	 * @param visitor - client to receive the message
+	 * @param type - type of message to be send
 	 */
-	private void sendJSONMessage(String type, String title, String msg, GeppettoVisitorWebSocket visitor){
-		
-		//JSON object used to send message to client
-		JsonObject json = new JsonObject();
-		json.addProperty("type", type);
-		json.addProperty("title",title);
-		json.addProperty("body", msg);
-		
-		//call method that sends message to client
-		messageClient(visitor, json.toString());
+	public void messageClient(GeppettoVisitorWebSocket visitor, MESSAGES_TYPES type){
+		//Create a JSON object to be send to the client
+		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type);
+		String msg = jsonUpdate.toString();
+
+		//Send the message to the client
+		sendMessage(visitor, msg);
 	}
-	
+
+	/**
+	 * Requests JSONUtility class for a json object with simulation update to 
+	 * be send to the client
+	 * 
+	 * @param visitor - Client to receive the simulation update
+	 * @param type - Type of udpate to be send
+	 * @param update - update to be send
+	 */
+	private void updateScene(GeppettoVisitorWebSocket visitor, MESSAGES_TYPES type, String update){
+		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type, update);
+		String msg = jsonUpdate.toString();
+
+		sendMessage(visitor, msg);
+	}
+
 	/**
 	 * Sends a message to a specific user. The id of the 
 	 * WebSocket connection is used to contact the desired user.
@@ -383,7 +360,7 @@ public class SimulationVisitorsHandler {
 	 * @param id - ID of WebSocket connection that will be sent a message
 	 * @param msg - The message the user will be receiving
 	 */
-	public void messageClient(GeppettoVisitorWebSocket visitor, String msg){
+	public void sendMessage(GeppettoVisitorWebSocket visitor, String msg){
 		try
 		{				
 			CharBuffer buffer = CharBuffer.wrap(msg);
@@ -404,20 +381,47 @@ public class SimulationVisitorsHandler {
 		if(simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.CONTROLLED){
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
+
+	public SimulationServerConfig getSimulationServerConfig() {
+		return simulationServerConfig;
+	}
+
 	/**
-	 * Send client a JSON object with a type of action to handle. 
+	 * Receives update from simulation when there are new ones. 
+	 * From here the updates are send to the connected clients
 	 * 
 	 */
-	public void sendJSONAction(GeppettoVisitorWebSocket visitor, String type){
-		//JSON object used to send message to client
-		JsonObject json = new JsonObject();
-		json.addProperty("type", type);
+	@Override
+	public void updateReady(String update) {
+		long start=System.currentTimeMillis();
+		Date date = new Date(start);
+		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
+		String dateFormatted = formatter.format(date);
+		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
 
-		//Message the visitor
-		messageClient(visitor,json.toString());
+		MESSAGES_TYPES action = MESSAGES_TYPES.SCENE_UPDATE;
+
+		/*
+		 * Simulation is running but model has not yet been loaded. 
+		 */
+		if(!getSimulationServerConfig().isSimulationLoaded()){
+			action = MESSAGES_TYPES.LOAD_MODEL;
+
+			getSimulationServerConfig().setIsSimulationLoaded(true);
+		}
+
+		for (GeppettoVisitorWebSocket connection : getConnections())
+		{				
+			//Notify all connected clients about update either to load model or update current one.
+			updateScene(connection, action , update);
+		}
+
+		getSimulationServerConfig().setLoadedScene(update);
+
+		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
 	}
 }

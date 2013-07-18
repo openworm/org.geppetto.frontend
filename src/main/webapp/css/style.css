@@ -254,12 +254,15 @@ input {
 .modal-body { 
 	overflow-y: visible; 
 	font-family: FontAwesome;
-	font-size: 18px;
-	line-height: 25px;
+	font-size: 15px;
+	line-height: 24px;
 }
 
 .dropdown-menu{ width: 285px; }
 
 .btn .caret{ float : right;}
  
-.loading.modal.fade{top:-25%;-webkit-transition:opacity .8s linear,top .8s ease-out;-moz-transition:opacity .8s linear,top .8s ease-out;-o-transition:opacity .8s linear,top .8s ease-out;transition:opacity .8s linear,top .8s ease-out;}.loading.modal.fade.in{top:40%; -webkit-transition:opacity .1s linear,top .1s ease-in;-moz-transition:opacity .1s linear,top .1s ease-in;-o-transition:opacity .1s linear,top .1s ease-in;transition:opacity .1s linear,top .1s ease-in; background: lightgoldenrodyellow;}
+.loading.modal.fade{top:-25%;-webkit-transition:opacity .8s linear,top .8s ease-out;-moz-transition:opacity .8s linear,top .8s ease-out;-o-transition:opacity .8s linear,top .8s ease-out;transition:opacity .8s linear,top .8s ease-out; background: rgba(255, 255, 255, 0);}
+.loading.modal.fade.in{top:40%; -webkit-transition:opacity .1s linear,top .1s ease-in;-moz-transition:opacity .1s linear,top .1s ease-in;-o-transition:opacity .1s linear,top .1s ease-in;transition:opacity .1s linear,top .1s ease-in; background: rgba(255, 255, 255, 0);}
+.icon-4x{font-size:4em;}
+.orange{color:#fd6808;}

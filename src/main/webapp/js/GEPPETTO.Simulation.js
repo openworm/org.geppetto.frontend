@@ -292,7 +292,7 @@ FE.searchForURLEmbeddedSimulation =  function()
 	
 	//Load simulation if simulation parameters where found
 	if(vars.length > 1){
-		FE.activateLoader("show", "Loading Simulation Model ...");
+		FE.activateLoader("show", "Loading Simulation");
 		//Simulation found, load it
 		GEPPETTO.Simulation.load(decodeURIComponent(vars[1]));
 	}
@@ -360,7 +360,7 @@ FE.disableSimulationControls = function()
 
 FE.activateLoader = function(state, msg)
 {
-	$('#loadingmodal').html('<center><i class="icon-spinner icon-spin icon-large"></i>'+msg + '</center>');
+	$('#loadingmodaltext').html(msg);
 	$('#loadingmodal').modal(state);
 };
 
@@ -378,7 +378,7 @@ $(document).ready(function()
 	
 	$('#start').click(function()
 	{
-		FE.activateLoader("show", "Starting Simulation ...");
+		FE.activateLoader("show", "Starting Simulation");
 		$('#start').attr('disabled', 'disabled');
 		$('#pause').removeAttr('disabled');
 		$('#stop').attr('disabled', 'disabled');
@@ -410,7 +410,7 @@ $(document).ready(function()
 		{
 			GEPPETTO.Simulation.stop();
 		}
-		FE.activateLoader("show", "Loading Simulation Model ...");
+		FE.activateLoader("show", "Loading Simulation");
 		GEPPETTO.Simulation.load($('#url').val());
 	});
 

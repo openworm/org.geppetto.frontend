@@ -264,8 +264,12 @@ input {
 
 .btn .caret{ float : right;}
  
-.loading.modal.fade{top:-25%;-webkit-transition:opacity .8s linear,top .8s ease-out;-moz-transition:opacity .8s linear,top .8s ease-out;-o-transition:opacity .8s linear,top .8s ease-out;transition:opacity .8s linear,top .8s ease-out; background: rgba(255, 255, 255, 0);}
-.loading.modal.fade.in{top:40%; -webkit-transition:opacity .1s linear,top .1s ease-in;-moz-transition:opacity .1s linear,top .1s ease-in;-o-transition:opacity .1s linear,top .1s ease-in;transition:opacity .1s linear,top .1s ease-in; background: rgba(255, 255, 255, 0);}
+.loading.modal.fade{top:-25%; background: rgba(255, 255, 255, 0);}
+.loading.modal.fade.in{top:40%;background: rgba(255, 255, 255, 0);}
 .icon-4x{font-size:4em;}
 .orange{color:#fd6808;}
-.start.popover { background: orange; color:orange;}
+
+#sim_toolbar .popover { background: rgba(255, 255, 255, 0);}
+#sim_toolbar .bottom .arrow {display: none;}
+#sim_toolbar .popover-content { color: orange; font-weight: bold; font-size: 18px}
+#sim_toolbar .popover-content .icon-ok { padding-right: 10px;}

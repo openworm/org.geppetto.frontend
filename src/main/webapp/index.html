@@ -37,7 +37,7 @@
 
 			<div id="sim_toolbar">
 				<a  href="#loadSimModal" role="button" class="btn" data-toggle="modal" id="openload"><icon class="icon-folder-open-alt"></icon> Load Simulation</a>
-				<button class="btn" id="start"  rel="popover" data-content="Simulation Started" data-toggle="popover" data-placement="bottom" data-color="orange">
+				<button class="btn" id="start"  rel="popover" data-content="Simulation Started" data-toggle="popover" data-placement="bottom" >
 					<icon class="icon-play"></icon>
 					Start
 				</button>
@@ -49,13 +49,15 @@
 					<icon class="icon-stop"></icon>
 					Stop
 				</button>
+				
 				<!-- Alert box used when visitor in observing simulation -->
 				<div id="alertbox" class="alert alert-block">
 					<a class="close" data-dismiss="alert">×</a>
-					<h4 class="alert-heading" align="center"><i class="icon-info-sign icon-2x" id="infopopover" rel="popover"></i>Observing Simulation Mode</h4>
+					<h4 class="alert-heading" align="center"><i class="icon-info-sign icon-2x" id="infopopover" rel="popover" data-placement="left" data-trigger="hover"></i>Observing Simulation Mode</h4>
 					<p id="alertbox-text"></p>
 				</div>
 			</div>
+			
 			<div id="position_toolbar">
 				<button class="btn squareB icon-chevron-left" id="w"></button>
 				<button class="btn squareB icon-chevron-up" id="n"></button>

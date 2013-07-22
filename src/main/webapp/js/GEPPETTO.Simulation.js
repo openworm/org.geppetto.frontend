@@ -218,6 +218,7 @@ GEPPETTO.Simulation.connect = (function(host)
 			//Simulation has been started, enable pause button
 			case "simulation_started":
 				$('#start').popover('show');
+				$('.popover-content').prepend('<icon class="icon-ok"></icon>');
 				setTimeout(function() {
 		            $('#start').popover('hide');
 		        }, 1000);
@@ -312,9 +313,7 @@ FE.observersAlert = function(title, alertMsg, popoverMsg)
 	$('#alertbox-text').html(alertMsg);
 	$('#alertbox').show();
 	$("#infopopover").popover({title: title, 
-							   content: popoverMsg, 
-							   placement: 'left', 
-							   trigger:'hover'});  
+							   content: popoverMsg});  
 };
 
 /**

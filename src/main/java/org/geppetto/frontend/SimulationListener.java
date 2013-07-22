@@ -192,10 +192,12 @@ public class SimulationListener implements ISimulationCallbackListener {
 		//Send back to client a message to display to user.
 		catch(MalformedURLException e)
 		{
+			simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
 			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
 		}
 		//Catch any errors happening while attempting to read simulation
 		catch (GeppettoInitializationException e) {
+			simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
 			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
 		}
 	}

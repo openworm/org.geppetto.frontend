@@ -217,11 +217,13 @@ GEPPETTO.Simulation.connect = (function(host)
 				break;
 			//Simulation has been started, enable pause button
 			case "simulation_started":
-				$('#start').popover('show');
+				$('#sim').popover('show');
 				$('.popover-content').prepend('<icon class="icon-ok"></icon>');
+				
+				//Hide popover after a fraction of a second
 				setTimeout(function() {
-		            $('#start').popover('hide');
-		        }, 1000);
+		            $('#sim').popover('hide');
+		        }, 600);
 				
 				$('#pause').removeAttr('disabled');
 				break;

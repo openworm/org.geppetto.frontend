@@ -224,6 +224,7 @@ input {
 
 .modal-input label {
 	float: left;
+	font-family: FontAwesome;
 	font-weight: bold;
 	font-size: 16px;
 	margin-top: 5px;
@@ -254,6 +255,7 @@ input {
 
 .modal-body { 
 	overflow-y: visible; 
+	font-family: FontAwesome;
 	font-size: 15px;
 	line-height: 24px;
 }
@@ -267,7 +269,7 @@ input {
 .icon-4x{font-size:4em;}
 .orange{color:#fd6808;}
 
-#sim_toolbar .popover { background: rgba(255, 255, 255, 0);}
-#sim_toolbar .bottom .arrow {display: none;}
-#sim_toolbar .popover-content { color: orange; font-weight: bold; font-size: 18px}
-#sim_toolbar .popover-content .icon-ok { padding-right: 10px;}
+.popover.center { margin:30% 0 0 42%; background: rgba(255, 255, 255, 0);}
+.center .arrow {display: none;}
+.center .popover-content { color: orange; font-weight: bold; font-size: 22px; font-family: FontAwesome;}
+.center .popover-content .icon-ok { padding-right: 10px;}

@@ -224,7 +224,6 @@ input {
 
 .modal-input label {
 	float: left;
-	font-family: FontAwesome;
 	font-weight: bold;
 	font-size: 16px;
 	margin-top: 5px;
@@ -255,7 +254,6 @@ input {
 
 .modal-body { 
 	overflow-y: visible; 
-	font-family: FontAwesome;
 	font-size: 15px;
 	line-height: 24px;
 }

@@ -229,15 +229,6 @@ input {
 	margin-top: 5px;
 }
 
-.modal-body input{
-	float: center;
-	margin-left: 40px;
-}
-
-.btn-group{
-	float: center;
-	margin-left: 17px;
-}
 
 .btn-group .btn{
 	width: 255px;

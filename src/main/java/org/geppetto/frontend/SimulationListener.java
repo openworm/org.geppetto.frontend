@@ -150,8 +150,8 @@ public class SimulationListener implements ISimulationCallbackListener {
 			case CONTROLLING:
 				
 				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoVisitorWebSocket observer : getConnections()){
-					messageClient(observer, MESSAGES_TYPES.CLEAR_CANVAS);
+				for(GeppettoVisitorWebSocket connection : getConnections()){
+					messageClient(connection, MESSAGES_TYPES.CLEAR_CANVAS);
 				}
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
@@ -167,9 +167,9 @@ public class SimulationListener implements ISimulationCallbackListener {
 				 * 
 				 */
 				if(!isSimulationInUse()){
-					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
 					simulationServerConfig.setIsSimulationLoaded(false);
 					simulationService.init(new URL(url), this);
+					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
 					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
 
 					//Simulation just got someone to control it, notify everyone else
@@ -192,12 +192,10 @@ public class SimulationListener implements ISimulationCallbackListener {
 		//Send back to client a message to display to user.
 		catch(MalformedURLException e)
 		{
-			simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
 			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
 		}
 		//Catch any errors happening while attempting to read simulation
 		catch (GeppettoInitializationException e) {
-			simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
 			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
 		}
 	}
@@ -317,6 +315,10 @@ public class SimulationListener implements ISimulationCallbackListener {
 		 * visitor from the list of observers. 
 		 */
 		else if (exitingVisitor.getCurrentRunMode() == GeppettoVisitorWebSocket.VisitorRunMode.OBSERVING){
+			if(getConnections().size() ==0 && (simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.CONTROLLED)){
+				simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
+			}
+			
 			//User observing simulation is closing the connection
 			if(observers.contains(exitingVisitor)){
 				//Remove user from observers list
@@ -380,6 +382,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @return
 	 */
 	public boolean isSimulationInUse(){
+		
 		if(simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.CONTROLLED){
 			return true;
 		}

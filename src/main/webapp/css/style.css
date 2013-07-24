@@ -224,7 +224,6 @@ input {
 
 .modal-input label {
 	float: left;
-	font-family: FontAwesome;
 	font-weight: bold;
 	font-size: 16px;
 	margin-top: 5px;
@@ -255,7 +254,6 @@ input {
 
 .modal-body { 
 	overflow-y: visible; 
-	font-family: FontAwesome;
 	font-size: 15px;
 	line-height: 24px;
 }
@@ -271,5 +269,5 @@ input {
 
 .popover.center { margin:30% 0 0 42%; background: rgba(255, 255, 255, 0);}
 .center .arrow {display: none;}
-.center .popover-content { color: orange; font-weight: bold; font-size: 22px; font-family: FontAwesome;}
+.center .popover-content { color: orange; font-weight: bold; font-size: 22px;}
 .center .popover-content .icon-ok { padding-right: 10px;}

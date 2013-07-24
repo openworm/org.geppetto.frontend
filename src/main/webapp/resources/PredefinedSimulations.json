@@ -1,10 +1,18 @@
 {"simulations":[
         {
-            "name" : "Sample Simulation 1",
-            "url" : "https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA"
+            "name" : "LEMS Sample Hodgkin-Huxley Neuron",
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml"
         },
         {
-        	"name" : "Sample Simulation 2",
-            "url" : "https://dl.dropboxusercontent.com/s/72efwkb9nm7mo27/sph-sim-config-test.xml?token_hash=AAFws3E84ZaNjs4wGQid36I_g4PprBY6zSXo2sKrIlOyUQ"
+        	"name" : "PCISPH Small Liquid Scene",
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml"
+        },
+        {
+        	"name" : "PCISPH Small Elastic Scene",
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml"
+        },
+        {
+        	"name" : "PCISPH Big Liquid/Elastic Scene",
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidElasticBig/GEPPETTO.xml"
         }
 ]}

@@ -329,7 +329,6 @@ FE.searchForURLEmbeddedSimulation =  function()
 		//Simulation found, load it
 		GEPPETTO.Simulation.load(urlVal);
 	}
-		
 };
 
 /**
@@ -337,7 +336,7 @@ FE.searchForURLEmbeddedSimulation =  function()
  * predefined sample simulations stored in JSON file. 
  * 
  */
-FE.populatePredefinedSimulations = function()
+FE.loadingModalUIUpdate = function()
 {
 	//Read JSON file storing predefined sample simulations
 	$.getJSON('resources/PredefinedSimulations.json', function(json) {
@@ -376,8 +375,69 @@ FE.populatePredefinedSimulations = function()
 		$('#url').keydown(function(){
 			$('#dropdowndisplaytext').html("Select simulation from list...");
 		});
+		
+		
 	});
 	
+	//Responds to user selecting url radio button
+	$("#urlRadio").click(function() {
+		$('#customInputDiv').hide();
+		$('#urlInput').show();
+	});
+	
+	//Responds to user selecting Custom radio button
+	$("#customRadio").click(function() {
+		$('#urlInput').hide();
+		$('#customInputDiv').show();
+		FE.loadXML("resources/template.xml");
+	});
+};
+
+/**
+ * Load simulation template from resources. 
+ * 
+ * @param location
+ */
+FE.loadXML = function(location){
+	$.ajax({
+	      type: "GET",
+	      url: location,
+	      dataType: "xml",
+	      success: function(result) {
+	    	  
+	    	  //Populate Content area for template with file values
+	    	  var tns = '"' + $(result).find('simulation').attr("xmlns:tns") + '"';
+	    	  var xsi = '"' + $(result).find('simulation').attr("xmlns:xsi") + '"';
+	    	  var schemaLoc = '"' + $(result).find('simulation').attr("xsi:schemaLocation") + '"';
+	    	  
+	    	  $('#xmlns-tns').html(tns);
+	    	  $('#xmlns-xsi').html(xsi);
+	    	  $('#xsi-schemaLocation').html(schemaLoc);
+	    	  
+	    	  //Look for simualtion element
+	    	  $(result).find('simulation').each(function(){
+	    	      var outputFormat = $(this).find('configuration').text().trim();
+	    	      var simName = $(this).find('name').text().trim();
+	    
+	    	      $('#outputFormat').html(outputFormat);
+	    	      $('#simName').html(simName);
+	    	      
+	    	      //Looks for aspects elements and child elements 
+	    	      $(this).find('aspects').each(function(){
+	    	    	  var modelInterpreter = $(this).find('modelInterpreter').text().trim();
+		    	      var modelURL = $(this).find('modelURL').text().trim();
+		    	      var sphSimulator = $(this).find('sphSimulator').text().trim();
+		    	      var id = $(this).find('id').text().trim();
+		    	      
+		    	      //Set values in content are for user to see
+		    	      $('#modelInterpreter').val(modelInterpreter);
+		    	      $('#modelURL').html(modelURL);
+		    	      $('#sphSimulator').html(sphSimulator);
+		    	      $('#modelid').html(id);
+	    	      });
+	    	    });
+	      }
+	});
 };
 
 /**
@@ -404,7 +464,7 @@ FE.activateLoader = function(state, msg)
 $(document).ready(function()
 {
 	//Populate the 'loading simulation' modal's drop down menu with sample simulations
-	$('#loadSimModal').on('shown', FE.populatePredefinedSimulations());
+	$('#loadSimModal').on('shown', FE.loadingModalUIUpdate());
 	$('#start').attr('disabled', 'disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').attr('disabled', 'disabled');

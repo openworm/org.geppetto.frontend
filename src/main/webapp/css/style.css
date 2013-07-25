@@ -231,7 +231,7 @@ input {
 
 
 .btn-group .btn{
-	width: 255px;
+	width: 345px;
 }
 
 .btn span{
@@ -249,7 +249,7 @@ input {
 	line-height: 24px;
 }
 
-.dropdown-menu{ width: 285px; }
+.dropdown-menu{ width: 100%; }
 
 .btn .caret{ float : right;}
  
@@ -258,7 +258,24 @@ input {
 .icon-4x{font-size:4em;}
 .orange{color:#fd6808;}
 
-.popover.center { margin:30% 0 0 42%; background: rgba(255, 255, 255, 0);}
-.center .arrow {display: none;}
-.center .popover-content { color: orange; font-weight: bold; font-size: 22px;}
-.center .popover-content .icon-ok { padding-right: 10px;}
+#url{
+	width: 360px;
+}
+
+#prettyPrintedArea{
+	width: 360px;
+	height:250px;
+	resize: none;
+	overflow:auto;
+	white-space: pre-line;
+}
+
+#input label{
+	float: left;
+	width: 70px;
+	padding-top: 0px;
+}
+
+.form-horizontal .controls{
+	margin-left: 120px;
+}

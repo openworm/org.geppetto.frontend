@@ -17,6 +17,7 @@
 		<script src="js/vendor/bootstrap.min.js"></script>
 		<script src="js/vendor/jquery.flot.min.js"></script>
 		<script src="js/vendor/rAF.js"></script>
+		<script src="js/vendor/prettify.js"></script>
 
 		<!-- Geppetto -->
 		<script src="js/GEPPETTO.js"></script>
@@ -29,8 +30,10 @@
 		<link rel="stylesheet" href="css/font-awesome.css" />
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="css/custom-theme/jquery-ui-1.10.0.custom.css" />
+		<link rel="stylesheet" href="css/prettify.css" />
+
 	</head>
-	<body>
+	<body onload="prettyPrint()">
 
 		<div id="geppettologo"></div>
 		<div id="controls">
@@ -112,16 +115,43 @@
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal">
-  					<div class="control-group">
-						<div class="modal-input">
+					<div class="control-group">
+						<div id="radioDiv" class="modal-input">	
+							<div class="controls">
+								<label class="radio inline"> <input type="radio" name="optionsRadios" id="urlRadio" value="url" checked>URL</label>
+								<label class="radio inline"> <input type="radio" name="optionsRadios" id="customRadio" value="custom">Custom</label>
+							</div>
+						</div>
+		            </div>
+  					<div id="urlInput" class="control-group">
+						<div id="input" class="modal-input">
 							<label class="control-label" for="url">URL</label>
 							<div class="controls">
-								<input class="input-xlarge" id="url" type="text" placeholder="Paste the URL of the simulation file...">
+								<input class="input-d\xlarge" id="url" type="text" placeholder="Paste the URL of the simulation file...">
 							</div>
 			            </div>
 		           </div>
-		           <div class="control-group">
-			            <div class="modal-input">
+		           <div id="customInputDiv" class="control-group hide">
+		           		<div id="input" class="modal-input">
+	            			<label class="control-label">Content</label>
+							<pre id="prettyPrintedArea" class="controls prettyprint">
+								<span class="tag">&lt;tns:simulation </span><span class="attn">xmlns:tns</span><span class="pun">=</span><span id="xmlns-tns" class="dec"></span><span class="pln"> </span><span class="attn">xmlns:xsi</span><span class="pun">=</span><span id="xmlns-xsi" class="dec"></span><span class="pln"> </span><span class="attn">xsi:schemaLocation</span><span class="pun">=</span><span id="xsi-schemaLocation" class="dec"></span><span class="pln"> </span><span class="tag">&gt;</span>
+								<span class="tag">&nbsp&nbsp&lt;tns:configuration&gt;</span>
+								<span class="tag">&nbsp&nbsp&nbsp&nbsp&lt;tns:outputFormat&gt;</span><span id="outputFormat" class="atv"></span><span class="tag">&lt;/tns:outputFormat&gt;</span>
+								<span class="tag">&nbsp&nbsp&lt;/tns:configuration&gt;</span><span class="pln"></span>
+								<span class="tag">&nbsp&nbsp&lt;tns:aspects&gt;</span>
+								<span class="tag">&nbsp&nbsp&nbsp&nbsp&lt;tns:modelInterpreter&gt;</span><span id="modelInterpreter" class="atv"></span><input class="input-small hide" id="simNameInput" type="text" placeholder="modelInterpreterInput"><span class="tag">&lt;/tns:modelInterpreter&gt;</span>
+								<span class="tag">&nbsp&nbsp&nbsp&nbsp&lt;tns:modelURL&gt;</span><span id="modelURL" class="atv"></span><input class="input-small hide" id="modelURLInput" type="text" placeholder="simName"><span class="tag">&lt;/tns:modelURL&gt;</span>
+								<span class="tag">&nbsp&nbsp&nbsp&nbsp&lt;tns:sphSimulator&gt;</span><span id="sphSimulator" class="atv"></span><input class="input-small hide" id="simulationInput" type="text" placeholder="simName"><span class="tag">&lt;/tns:sphSimulator&gt;</span>
+								<span class="tag">&nbsp&nbsp&nbsp&nbsp&lt;tns:id&gt;</span><span id="modelid" class="atv"></span><input class="input-small hide" id="idInput" type="text" placeholder="simName"><span class="tag">&lt;/tns:id&gt;</span>
+								<span class="tag">&nbsp&nbsp&lt;/tns:aspects&gt;</span>
+								<span class="tag">&nbsp&nbsp&lt;tns:name&gt;</span><span id="simName" class="atv"></span><input class="input-small hide" id="simNameInput" type="text" placeholder="simName"><span class="tag">&lt;/tns:name&gt;</span>
+								<span class="tag">&lt;/tns:simulation&gt;</span>
+							</pre>
+					</div>
+	               </div>
+		           <div id="samplesDiv" class="control-group">
+			            <div id="input" class="modal-input">
 			            	<label class="control-label" for="dLabel">Samples</label>
 							<div class="controls">
 				            	<div class="btn-group">

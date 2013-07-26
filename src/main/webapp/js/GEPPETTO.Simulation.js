@@ -389,56 +389,12 @@ FE.loadingModalUIUpdate = function()
 	$("#customRadio").click(function() {
 		$('#urlInput').hide();
 		$('#customInputDiv').show();
-		FE.loadXML("resources/template.xml");
+		GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
 	});
+	
+	GEPPETTO.SimulationContentEditor.handleContentEdit();
 };
 
-/**
- * Load simulation template from resources. 
- * 
- * @param location
- */
-FE.loadXML = function(location){
-	$.ajax({
-	      type: "GET",
-	      url: location,
-	      dataType: "xml",
-	      success: function(result) {
-	    	  
-	    	  //Populate Content area for template with file values
-	    	  var tns = '"' + $(result).find('simulation').attr("xmlns:tns") + '"';
-	    	  var xsi = '"' + $(result).find('simulation').attr("xmlns:xsi") + '"';
-	    	  var schemaLoc = '"' + $(result).find('simulation').attr("xsi:schemaLocation") + '"';
-	    	  
-	    	  $('#xmlns-tns').html(tns);
-	    	  $('#xmlns-xsi').html(xsi);
-	    	  $('#xsi-schemaLocation').html(schemaLoc);
-	    	  
-	    	  //Look for simualtion element
-	    	  $(result).find('simulation').each(function(){
-	    	      var outputFormat = $(this).find('configuration').text().trim();
-	    	      var simName = $(this).find('name').text().trim();
-	    
-	    	      $('#outputFormat').html(outputFormat);
-	    	      $('#simName').html(simName);
-	    	      
-	    	      //Looks for aspects elements and child elements 
-	    	      $(this).find('aspects').each(function(){
-	    	    	  var modelInterpreter = $(this).find('modelInterpreter').text().trim();
-		    	      var modelURL = $(this).find('modelURL').text().trim();
-		    	      var sphSimulator = $(this).find('sphSimulator').text().trim();
-		    	      var id = $(this).find('id').text().trim();
-		    	      
-		    	      //Set values in content are for user to see
-		    	      $('#modelInterpreter').val(modelInterpreter);
-		    	      $('#modelURL').html(modelURL);
-		    	      $('#sphSimulator').html(sphSimulator);
-		    	      $('#modelid').html(id);
-	    	      });
-	    	    });
-	      }
-	});
-};
 
 /**
  * If simulation is being controlled by another user, hide the 

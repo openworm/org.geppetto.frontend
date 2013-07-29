@@ -117,7 +117,6 @@ GEPPETTO.SimulationContentEditor.handleContentEdit = function(){
 		});
 		
 		$('.editable').click(function (){
-			Console.log($('#editArea').text());
 			var id = $(this).attr("id");
 			
 			var label = document.getElementById(id);

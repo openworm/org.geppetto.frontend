@@ -133,31 +133,49 @@
 			            </div>
 		           </div>
 		           <div id="customInputDiv" class="control-group hide">
-		           		<div id="input" class="modal-input">
-	            			<label class="control-label">Content</label>
-							<div class="controls" id="editArea" contenteditable="true"></textarea>
-							<span id="element"><span class="tag">&lt;tns:simulation </span>
-								<span class="atv">xmlns:tns</span><span class="pun">=</span><span id="xmlns-tns" class="dec"></span><span class="pln"></span>
-								<span class="atv">xmlns:xsi</span><span class="pun">=</span><span id="xmlns-xsi" class="dec"></span><span class="pln"> </span>
-								<span class="atv">xsi:schemaLocation</span><span class="pun">=</span><span id="xsi-schemaLocation" class="dec"></span><span class="pln"> </span><span class="tag">&gt;</span>
-							</span>
-									<span id="element" class="tag">&#160&lt;tns:configuration&gt;</span>
-										<span id="element"><span class="tag">&#160&#160&lt;tns:outputFormat&gt;</span><span id="outputFormat" class="editable"></span>
-										<input class="input-small hide manualInput" id="outputFormat-input" type="text"></input><span class="tag">&lt;/tns:outputFormat&gt;</span>
-										</span>
-									<span id="element" class="tag">&#160&lt;/tns:configuration&gt;</span>
-									
-									<span id="element"><span class="tag">&#160&lt;tns:aspects&gt;</span></span>
-										<span id="element"><span class="tag">&#160&#160&lt;tns:modelInterpreter&gt;</span><span id="modelInterpreter" class="editable"></span><input class="input-small hide manualInput" id="modelInterpreter-input" type="text"><span class="tag">&lt;/tns:modelInterpreter&gt;</span></span>
-										<span id="element"><span class="tag">&#160&#160&lt;tns:modelURL&gt;</span><span id="modelURL" class="editable""></span><input class="input-small hide manualInput" id="modelURL-input" type="text" ><span class="tag">&lt;/tns:modelURL&gt;</span></span>
-										<span id="element"><span class="tag">&#160&#160&lt;tns:sphSimulator&gt;</span><span id="sphSimulator" class="editable"></span><input class="input-small hide manualInput" id="sphSimulator-input" type="text"><span class="tag">&lt;/tns:sphSimulator&gt;</span></span>
-										<span id="element"><span class="tag">&#160&#160&lt;tns:id&gt;</span><span id="simID" class="editable"></span><input class="input-small hide manualInput" id="simID-input" type="text"><span class="tag">&lt;/tns:id&gt;</span></span>
-									<span id="element"><span class="tag">&#160&lt;/tns:aspects&gt;</span></span>
-									<span id="element"><span class="tag">&#160&lt;tns:name&gt;</span><span id="simName" class="editable"></span><input class="input-small hide manualInput" id="simName-input" type="text"><span class="tag">&lt;/tns:name&gt;</span></span>
-									<span id="element"><span class="tag">&#160&lt;/tns:simulation&gt;</span></span>
-							</div>
+					<div id="input" class="modal-input">
+						<label class="control-label">Content</label>
+						<div class="controls" id="editArea" contenteditable="true">
+							<span id="simulation-element"><span class="tag">&lt;tns:simulation
+							</span> <span class="atv">xmlns:tns</span><span class="pun">=</span><span
+								id="xmlns-tns" class="dec"></span><span class="pln"></span> <span
+								class="atv">xmlns:xsi</span><span class="pun">=</span><span
+								id="xmlns-xsi" class="dec"></span><span class="pln"> </span> <span
+								class="atv">xsi:schemaLocation</span><span class="pun">=</span><span
+								id="xsi-schemaLocation" class="dec"></span><span class="pln">
+							</span><span class="tag">&gt;</span> </span> 							
+							<span id="element" class="tag">&lt;tns:configuration&gt;</span>
+							<span id="child"><span class="tag">&lt;tns:outputFormat&gt;</span><span
+								id="outputFormat" class="editable"></span> <input
+								class="input-small hide manualInput" id="outputFormat-input"
+								type="text"></input><span class="tag">&lt;/tns:outputFormat&gt;</span></span> 
+							<span id="element" class="tag">&lt;/tns:configuration&gt;</span><br>
+							<span id="element"><span class="tag">&lt;tns:aspects&gt;</span></span>
+							<span id="child"><span class="tag">&lt;tns:modelInterpreter&gt;</span><span
+								id="modelInterpreter" class="editable"></span><input
+								class="input-small hide manualInput" id="modelInterpreter-input"
+								type="text"><span class="tag">&lt;/tns:modelInterpreter&gt;</span></span>
+							<span id="child"><span class="tag">&lt;tns:modelURL&gt;</span><span
+								id="modelURL" class="editable"></span><input
+								class="input-small hide manualInput" id="modelURL-input"
+								type="text"><span class="tag">&lt;/tns:modelURL&gt;</span></span>
+							<span id="child"><span class="tag">&lt;tns:sphSimulator&gt;</span><span
+								id="sphSimulator" class="editable"></span><input
+								class="input-small hide manualInput" id="sphSimulator-input"
+								type="text"><span class="tag">&lt;/tns:sphSimulator&gt;</span></span>
+							<span id="child"><span class="tag">&lt;tns:id&gt;</span><span
+								id="simID" class="editable"></span><input
+								class="input-small hide manualInput" id="simID-input"
+								type="text"><span class="tag">&lt;/tns:id&gt;</span></span> 
+							<span id="element"><span class="tag">&lt;/tns:aspects&gt;</span></span>
+							<span id="element"><span class="tag">&lt;tns:name&gt;</span><span
+								id="simName" class="editable"></span><input
+								class="input-small hide manualInput" id="simName-input"
+								type="text"><span class="tag">&lt;/tns:name&gt;</span></span>
+							<span id="simulation-element"><span class="tag">&lt;/tns:simulation&gt;</span></span>
 						</div>
 					</div>
+				</div>
 					<div id="samplesDiv" class="control-group">
 			            <div id="input" class="modal-input">
 			            	<label class="control-label" for="dLabel">Samples</label>

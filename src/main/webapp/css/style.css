@@ -269,11 +269,22 @@ input {
 	overflow:auto;
 	white-space: normal;
 	word-wrap: normal !important;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 	outline: 1px dashed #0090D2; 
 }
+
+#simulation-element{
+	white-space: nowrap;
+}
+
 #element{
 	white-space: nowrap;
+	padding-left: 10px;
+}
+
+#child{
+	white-space: nowrap;
+	padding-left: 20px;
 }
 
 #input label{

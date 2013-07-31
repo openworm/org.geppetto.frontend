@@ -33,11 +33,14 @@
 package org.geppetto.frontend;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
+import org.geppetto.frontend.JSONUtility.MESSAGES_TYPES;
 
 /**
  * Class used to process Web Socket Connections. 
@@ -93,10 +96,26 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 	protected void onTextMessage(CharBuffer message)
 	{
 		String msg = message.toString();
-		if (msg.startsWith("init$"))
+		if (msg.startsWith("init_url$"))
+		{
+			String urlString = msg.substring(msg.indexOf("$")+1, msg.length());
+			URL url;
+			try {
+				url = new URL(urlString);
+				simulationListener.initializeSimulation(url,this);
+			} catch (MalformedURLException e) {
+				simulationListener.messageClient(this,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
+			}
+		}
+		else if (msg.startsWith("init_sim$"))
+		{
+			String simulation = msg.substring(msg.indexOf("$")+1, msg.length());
+			simulationListener.initializeSimulation(simulation, this);
+		}
+		else if (msg.startsWith("sim$"))
 		{
 			String url = msg.substring(msg.indexOf("$")+1, msg.length());
-			simulationListener.initializeSimulation(url,this);
+			simulationListener.getSimulationConfiguration(url, this);
 		}
 		else if (msg.equals("start"))
 		{

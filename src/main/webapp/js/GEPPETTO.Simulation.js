@@ -108,7 +108,7 @@ GEPPETTO.Simulation.observe = function()
 	FE.update(webGLStarted);
 };
 
-GEPPETTO.Simulation.load = function(url)
+GEPPETTO.Simulation.load = function(init_mode, init_value)
 {
 	var webGLStarted = GEPPETTO.init(FE.createContainer());
 	//Keep going with load of simulation only if webgl container was created
@@ -120,8 +120,8 @@ GEPPETTO.Simulation.load = function(url)
 			GEPPETTO.animate();
 		}
 		GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.LOADED;
-		GEPPETTO.Simulation.simulationURL = url;
-		GEPPETTO.Simulation.socket.send("init$" + url);
+		GEPPETTO.Simulation.simulationURL = init_value;
+		GEPPETTO.Simulation.socket.send(init_mode + init_value);
 		Console.log('Sent: Simulation loaded');
 	}
 	//update ui based on success of webgl
@@ -209,6 +209,9 @@ GEPPETTO.Simulation.connect = (function(host)
 			case "server_unavailable":
 			    FE.disableSimulationControls();
 				FE.observersDialog("Server Unavailable", parsedServerMessage.message);
+				break;
+			case "simulation_configuration":
+				GEPPETTO.SimulationContentEditor.loadSampleSimulationFile(parsedServerMessage.configuration);
 				break;
 			//Simulation has been loaded, enable start button and remove loading panel
 			case "simulation_loaded":
@@ -327,7 +330,7 @@ FE.searchForURLEmbeddedSimulation =  function()
 		var urlVal = decodeURIComponent(vars[1]);
 		$('#url').val(urlVal);
 		//Simulation found, load it
-		GEPPETTO.Simulation.load(urlVal);
+		GEPPETTO.Simulation.load("init_url$",urlVal);
 	}
 };
 
@@ -362,6 +365,8 @@ FE.loadingModalUIUpdate = function()
 		//Add click listener to sample simulations dropdown menu
 		$('#dropdownmenu li').click(function () {
 			
+			GEPPETTO.SimulationContentEditor.isEditing(false);
+			
 			//Get the name and url of selected simulation
             var selectedURL = $(this).attr('url');
             var selectedName =$(this).text();
@@ -370,28 +375,45 @@ FE.loadingModalUIUpdate = function()
             $('#url').val(selectedURL);
             //Change drop down menu name to selected simulation's name
             $('#dropdowndisplaytext').html(selectedName);
+            
+            if($('#customRadio').val()=="active"){
+            	GEPPETTO.Simulation.socket.send("sim$"+selectedURL);
+            }
+            if($('#customRadio').val()=="inactive"){
+            	GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
+            }
         });
 		
 		$('#url').keydown(function(){
 			$('#dropdowndisplaytext').html("Select simulation from list...");
 		});
-		
-		
+			
 	});
-	
+
 	//Responds to user selecting url radio button
 	$("#urlRadio").click(function() {
+		$('#customRadio').val("inactive");
 		$('#customInputDiv').hide();
-		$('#urlInput').show();
+		$('#urlInput').show();		
 	});
 	
 	//Responds to user selecting Custom radio button
 	$("#customRadio").click(function() {
+		$('#customRadio').val("active");
 		$('#urlInput').hide();
+		
+		if($('#url').val() == ""){
+			GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
+		}
+		
+		else{
+			var selectedURL = $('#url').val();
+			GEPPETTO.Simulation.socket.send("sim$"+selectedURL);
+		}		
 		$('#customInputDiv').show();
-		GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
 	});
 	
+	//Handles the events related the content edit area
 	GEPPETTO.SimulationContentEditor.handleContentEdit();
 };
 
@@ -459,7 +481,17 @@ $(document).ready(function()
 		{
 			GEPPETTO.Simulation.stop();
 		}
-		GEPPETTO.Simulation.load($('#url').val());
+		if(GEPPETTO.SimulationContentEditor.editing){
+			Console.log("Laoding from editing console");
+			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
+			
+			GEPPETTO.Simulation.load("init_sim$", simulation);
+			GEPPETTO.SimulationContentEditor.isEditing(false);
+		}
+		else{
+			Console.log("Loading from url");
+			GEPPETTO.Simulation.load("init_url$", $('#url').val());
+		}
 	});
 
 	GEPPETTO.Simulation.init();

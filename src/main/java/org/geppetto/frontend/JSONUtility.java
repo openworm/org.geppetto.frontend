@@ -58,7 +58,8 @@ public class JSONUtility {
 		SIMULATION_STARTED("simulation_started"), 
 		INFO_MESSAGE("info_message"),
 		SCENE_UPDATE("scene_update"), 
-		CLEAR_CANVAS("clear_canvas")
+		CLEAR_CANVAS("clear_canvas"),
+		SIMULATION_CONFIGURATION("simulation_configuration")
 		;
 
 		private MESSAGES_TYPES(final String text) {
@@ -78,8 +79,8 @@ public class JSONUtility {
 	 * Stores different messages that can be send to the client
 	 */
 	public enum MESSAGES {
-		ERROR_LOADING_SIMULATION_MESSAGE("URL does not correspond to valid Simulation file."+
-				"Double check the URL you have entered and try again."),
+		ERROR_LOADING_SIMULATION_MESSAGE("Invalid simulation file."+
+				"Double the information you have entered and try again."),
 		SIMULATION_CONTROLLED("Another user is in control of starting and stopping the simulation.\n "+
 						"You are currently in observer mode."),
 		GEPPETO_SIM_INFO("Another user is in control of starting and stopping the simulation.\n "+
@@ -182,6 +183,9 @@ public class JSONUtility {
 		case SCENE_UPDATE:
 			json = createJSONMessage(messageType, "entities", update);
 			break;
+			
+		case SIMULATION_CONFIGURATION:
+			json = createJSONMessage(messageType, "configuration", update);
 
 		default:
 			break;

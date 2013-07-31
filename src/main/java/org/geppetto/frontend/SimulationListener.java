@@ -141,7 +141,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param url - model to simulate
 	 */
-	public void initializeSimulation(String url, GeppettoVisitorWebSocket visitor){
+	public void initializeSimulation(URL url, GeppettoVisitorWebSocket visitor){
 		try
 		{			
 			switch(visitor.getCurrentRunMode()){
@@ -156,7 +156,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
 				//load another simulation
-				simulationService.init(new URL(url), this);
+				simulationService.init(url, this);
 
 				messageClient(visitor,MESSAGES_TYPES.SIMULATION_LOADED);
 				break;
@@ -168,7 +168,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 				 */
 				if(!isSimulationInUse()){
 					simulationServerConfig.setIsSimulationLoaded(false);
-					simulationService.init(new URL(url), this);
+					simulationService.init(url, this);
 					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
 					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
 
@@ -188,17 +188,72 @@ public class SimulationListener implements ISimulationCallbackListener {
 				break;
 			}
 		}
-		//Catch any Malformed URL file entered by the user. 
-		//Send back to client a message to display to user.
-		catch(MalformedURLException e)
-		{
+		//Catch any errors happening while attempting to read simulation
+		catch (GeppettoInitializationException e) {
 			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
+		}
+	}
+	
+	//TODO: Merge repeated code in above and below method for initializing simulations.
+	/**
+	 * Different way to initialize simulation using JSON object instead of URL.
+	 *
+	 * @param simulation
+	 * @param visitor
+	 */
+	public void initializeSimulation(String simulation, GeppettoVisitorWebSocket visitor){
+		try
+		{			
+			switch(visitor.getCurrentRunMode()){
+
+			//User in control attempting to load another simulation
+			case CONTROLLING:
+				
+				//Clear canvas of users connected for new model to be loaded
+				for(GeppettoVisitorWebSocket connection : getConnections()){
+					messageClient(connection, MESSAGES_TYPES.CLEAR_CANVAS);
+				}
+				
+				simulationServerConfig.setIsSimulationLoaded(false);
+				//load another simulation
+				simulationService.init(simulation, this);
+
+				messageClient(visitor,MESSAGES_TYPES.SIMULATION_LOADED);
+				break;
+
+			default:
+				/*
+				 * Default user can only initialize it if it's not already in use.
+				 * 
+				 */
+				if(!isSimulationInUse()){
+					simulationServerConfig.setIsSimulationLoaded(false);
+					simulationService.init(simulation, this);
+					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
+					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
+
+					//Simulation just got someone to control it, notify everyone else
+					//connected that simulation controls are unavailable.
+					for(GeppettoVisitorWebSocket connection : getConnections()){
+						if(connection != visitor){
+							simulationControlsUnavailable(connection);
+						}
+					}
+
+					messageClient(visitor, MESSAGES_TYPES.SIMULATION_LOADED);
+				}
+				else{
+					simulationControlsUnavailable(visitor);
+				}
+				break;
+			}
 		}
 		//Catch any errors happening while attempting to read simulation
 		catch (GeppettoInitializationException e) {
 			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
 		}
 	}
+
 
 	/**
 	 * Start the simulation
@@ -255,7 +310,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		observingVisitor.setVisitorRunMode(VisitorRunMode.OBSERVING);
 
 		if(!simulationService.isRunning()){
-			updateScene(observingVisitor,MESSAGES_TYPES.LOAD_MODEL, getSimulationServerConfig().getLoadedScene());
+			messageClient(observingVisitor,MESSAGES_TYPES.LOAD_MODEL, getSimulationServerConfig().getLoadedScene());
 		}
 		//Notify visitor they are now in Observe Mode
 		messageClient(observingVisitor, MESSAGES_TYPES.OBSERVER_MODE);
@@ -350,7 +405,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param type - Type of udpate to be send
 	 * @param update - update to be send
 	 */
-	private void updateScene(GeppettoVisitorWebSocket visitor, MESSAGES_TYPES type, String update){
+	private void messageClient(GeppettoVisitorWebSocket visitor, MESSAGES_TYPES type, String update){
 		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type, update);
 		String msg = jsonUpdate.toString();
 
@@ -422,11 +477,23 @@ public class SimulationListener implements ISimulationCallbackListener {
 		for (GeppettoVisitorWebSocket connection : getConnections())
 		{				
 			//Notify all connected clients about update either to load model or update current one.
-			updateScene(connection, action , update);
+			messageClient(connection, action , update);
 		}
 
 		getSimulationServerConfig().setLoadedScene(update);
 
 		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
+	}
+
+	public void getSimulationConfiguration(String url, GeppettoVisitorWebSocket visitor) {
+		String simulationConfiguration;
+		
+		try {
+			simulationConfiguration = simulationService.getSimulationConfig(new URL(url));
+			messageClient(visitor, MESSAGES_TYPES.SIMULATION_CONFIGURATION, simulationConfiguration);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

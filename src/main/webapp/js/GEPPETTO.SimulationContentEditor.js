@@ -46,6 +46,7 @@ GEPPETTO.SimulationContentEditor.editing = false;
 GEPPETTO.SimulationContentEditor.schemaLocation = null;
 GEPPETTO.SimulationContentEditor.xsi = null;
 GEPPETTO.SimulationContentEditor.tns = null;
+GEPPETTO.SimulationContentEditor.newAspects = [];
 
 /**
  * Load simulation template from resources. 
@@ -101,7 +102,7 @@ GEPPETTO.SimulationContentEditor.loadXML = function(location){
  */
 GEPPETTO.SimulationContentEditor.handleContentEdit = function(){	
 	$(document).ready(function()
-	{
+	{	
 		//Enter text becomes part of XML, hide input field
 		$('.manualInput').keyup(function (e) {
 			if (e.keyCode == 13) {
@@ -124,7 +125,7 @@ GEPPETTO.SimulationContentEditor.handleContentEdit = function(){
 			}
 		});
 		
-		$('#editArea').on('click', '.editable', function (){
+		$('.editable').click( function (){
 			var id = $(this).attr("id");
 			
 			var label = document.getElementById(id);
@@ -223,19 +224,18 @@ GEPPETTO.SimulationContentEditor.getEditedSimulation = function(){
 			name = idValue;
 		}
 		
-		//Add rest of editable components to aspects where they belong
 		else{
-			aspects[this.id] = idValue;			
+			aspects[this.id] = idValue;
 		}
 	});	
 	
 	//Aspects need to added as an array
-	var bracketAspects = [];
-	bracketAspects[0] = aspects;
+	var aspectsArray = [];
+	aspectsArray[0] = aspects;
 	
 	//add configuration, aspects and name to json object
 	jsonObj["configuration"] = config;
- 	jsonObj["aspects"] = bracketAspects;
+ 	jsonObj["aspects"] = aspectsArray;
 	jsonObj["name"] = name;
 	
 	//create string with json object

@@ -107,32 +107,37 @@
 
 		<div id="sim" ></div>
 
-		<div id="loadSimModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-					&times;
-				</button>
-				<h3 id="myModalLabel">Load Simulation</h3>
-			</div>
-			<div class="modal-body">
-				<form class="form-horizontal">
-					<div class="control-group">
-						<div id="radioDiv" class="modal-input">	
-							<div class="controls">
-								<label class="radio inline"> <input type="radio" name="optionsRadios" id="urlRadio" value="active" checked>URL</label>
-								<label class="radio inline"> <input type="radio" name="optionsRadios" id="customRadio" value="inactive">Custom</label>
-							</div>
+	<div id="loadSimModal" class="modal hide fade" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		data-backdrop="static">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">&times;</button>
+			<h3 id="myModalLabel">Load Simulation</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+				<div class="control-group">
+					<div id="radioDiv" class="modal-input">
+						<div class="controls">
+							<label class="radio inline"> <input type="radio"
+								name="optionsRadios" id="urlRadio" value="active" checked>URL
+							</label> <label class="radio inline"> <input type="radio"
+								name="optionsRadios" id="customRadio" value="inactive">Custom
+							</label>
 						</div>
-		            </div>
-  					<div id="urlInput" class="control-group">
-						<div id="input" class="modal-input">
-							<label class="control-label" for="url">URL</label>
-							<div class="controls">
-								<input class="input-d\xlarge" id="url" type="text" placeholder="Paste the URL of the simulation file...">
-							</div>
-			            </div>
-		           </div>
-		           <div id="customInputDiv" class="control-group hide">
+					</div>
+				</div>
+				<div id="urlInput" class="control-group">
+					<div id="input" class="modal-input">
+						<label class="control-label" for="url">URL</label>
+						<div class="controls">
+							<input class="input-d\xlarge" id="url" type="text"
+								placeholder="Paste the URL of the simulation file...">
+						</div>
+					</div>
+				</div>
+				<div id="customInputDiv" class="control-group hide">
 					<div id="input" class="modal-input">
 						<label class="control-label">Content</label>
 						<div class="controls" id="editArea" contenteditable="true">
@@ -143,62 +148,69 @@
 								id="xmlns-xsi" class="dec"></span><span class="pln"> </span> <span
 								class="atv">xsi:schemaLocation</span><span class="pun">=</span><span
 								id="xsi-schemaLocation" class="dec"></span><span class="pln">
-							</span><span class="tag">&gt;</span> </span> 							
-							<span id="element" class="tag">&lt;tns:configuration&gt;</span>
-							<span id="child"><span class="tag">&lt;tns:outputFormat&gt;</span><span
-								id="outputFormat" class="editable"></span> <input
-								class="input-small hide manualInput" id="outputFormat-input"
-								type="text"></input><span class="tag">&lt;/tns:outputFormat&gt;</span></span> 
-							<span id="element" class="tag">&lt;/tns:configuration&gt;</span><br>
-							<span id="element"><span class="tag">&lt;tns:aspects&gt;</span></span><br>
-							<span id="child"><span class="tag">&lt;tns:modelInterpreter&gt;</span><span
-								id="modelInterpreter" class="editable"></span><input
-								class="input-small hide manualInput" id="modelInterpreter-input"
-								type="text"><span class="tag">&lt;/tns:modelInterpreter&gt;</span></span><br>
-							<span id="child"><span class="tag">&lt;tns:modelURL&gt;</span><span
-								id="modelURL" class="editable"></span><input
-								class="input-small hide manualInput" id="modelURL-input"
-								type="text"><span class="tag">&lt;/tns:modelURL&gt;</span></span><br>
-							<span id="child"><span class="tag">&lt;tns:sphSimulator&gt;</span><span
-								id="simulator" class="editable"></span><input
-								class="input-small hide manualInput" id="simulator-input"
-								type="text"><span class="tag">&lt;/tns:sphSimulator&gt;</span></span><br>
-							<span id="child"><span class="tag">&lt;tns:id&gt;</span><span
-								id="id" class="editable"></span><input
-								class="input-small hide manualInput" id="id-input"
-								type="text"><span class="tag">&lt;/tns:id&gt;</span></span><br> 
-							<span id="element"><span class="tag">&lt;/tns:aspects&gt;</span></span><br>
-							<span id="element"><span class="tag">&lt;tns:name&gt;</span><span
-								id="name" class="editable"></span><input
-								class="input-small hide manualInput" id="name-input"
-								type="text"><span class="tag">&lt;/tns:name&gt;</span></span><br>
-							<span id="simulation-element"><span class="tag">&lt;/tns:simulation&gt;</span></span>
-						</div>
-					</div>
-				</div>
-					<div id="samplesDiv" class="control-group">
-			            <div id="input" class="modal-input">
-			            	<label class="control-label" for="dLabel">Samples</label>
-							<div class="controls">
-				            	<div class="btn-group">
-				            		<a class="btn dropdown-toggle" id="dLabel" data-toggle="dropdown" href="#"><span id="dropdowndisplaytext">Select simulation from list...</span><b class="caret"></b></a>
-									<ul class="dropdown-menu" id="dropdownmenu" aria-labelledby="dLabel">
-									</ul>
+							</span><span class="tag">&gt;</span> </span>
+							<div id="configuration">
+								<span id="element" class="tag">&lt;tns:configuration&gt;</span>
+								<span id="child"><span class="tag">&lt;tns:outputFormat&gt;</span><span
+									id="outputFormat" class="editable"></span> <input
+									class="input-small hide manualInput" id="outputFormat-input"
+									type="text"></input><span class="tag">&lt;/tns:outputFormat&gt;</span></span>
+								<span id="element" class="tag">&lt;/tns:configuration&gt;</span>
+								<div id="aspects">
+									<span id="element"><span class="tag">&lt;tns:aspects&gt;</span></span><br>
+									<span id="child"><span class="tag">&lt;tns:modelInterpreter&gt;</span><span
+										id="modelInterpreter" class="editable"></span><input
+										class="input-small hide manualInput"
+										id="modelInterpreter-input" type="text"><span
+										class="tag">&lt;/tns:modelInterpreter&gt;</span></span><br> <span
+										id="child"><span class="tag">&lt;tns:modelURL&gt;</span><span
+										id="modelURL" class="editable"></span><input
+										class="input-small hide manualInput" id="modelURL-input"
+										type="text"><span class="tag">&lt;/tns:modelURL&gt;</span></span><br>
+									<span id="child"><span class="tag">&lt;tns:sphSimulator&gt;</span><span
+										id="simulator" class="editable"></span><input
+										class="input-small hide manualInput" id="simulator-input"
+										type="text"><span class="tag">&lt;/tns:sphSimulator&gt;</span></span><br>
+									<span id="child"><span class="tag">&lt;tns:id&gt;</span><span
+										id="id" class="editable"></span><input
+										class="input-small hide manualInput" id="id-input" type="text"><span
+										class="tag">&lt;/tns:id&gt;</span></span><br> <span id="element"><span
+										class="tag">&lt;/tns:aspects&gt;</span></span>
 								</div>
+								<span id="element"><span class="tag">&lt;tns:name&gt;</span><span
+									id="name" class="editable"></span><input
+									class="input-small hide manualInput" id="name-input"
+									type="text"><span class="tag">&lt;/tns:name&gt;</span></span><br>
+								<span id="simulation-element"><span class="tag">&lt;/tns:simulation&gt;</span></span>
 							</div>
 						</div>
 					</div>
-					</form>
-				</div>			
-				<div class="modal-footer">
-					<a href="#" data-dismiss="modal" class="btn">Close</a>
-					<button id="load" class="btn btn-warning">
-						Load
-					</button>
 				</div>
-			</div>
-		
-		<div id="infomodal"  class="modal hide fade" tabindex="-1"  aria-labelledby="infomodal-title" aria-hidden="true" data-backdrop="static">
+				<div id="samplesDiv" class="control-group">
+					<div id="input" class="modal-input">
+						<label class="control-label" for="dLabel">Samples</label>
+						<div class="controls">
+							<div class="btn-group">
+								<a class="btn dropdown-toggle" id="dLabel"
+									data-toggle="dropdown" href="#"><span
+									id="dropdowndisplaytext">Select simulation from list...</span><b
+									class="caret"></b></a>
+								<ul class="dropdown-menu" id="dropdownmenu"
+									aria-labelledby="dLabel">
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<a href="#" data-dismiss="modal" class="btn">Close</a>
+			<button id="load" class="btn btn-warning">Load</button>
+		</div>
+	</div>
+
+	<div id="infomodal"  class="modal hide fade" tabindex="-1"  aria-labelledby="infomodal-title" aria-hidden="true" data-backdrop="static">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 					×

@@ -263,14 +263,30 @@ input {
 }
 
 #editArea{
-	width: 370px;
-	height:220px;
+	width: 360px;
+	height: 220px;
 	resize: none;
-	overflow:auto;
+	overflow: auto;
 	white-space: normal;
 	word-wrap: normal !important;
+	padding: 4px 6px;
 	margin-bottom: 10px;
-	outline: 1px dashed #0090D2; 
+	font-size: 14px;
+	line-height: 20px;
+	color: #555555;
+	background-color: #ffffff;
+	border: 1px solid #cccccc;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	-webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+	-moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+	-o-transition: border linear 0.2s, box-shadow linear 0.2s;
+	transition: border linear 0.2s, box-shadow linear 0.2s;
+	vertical-align: middle;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
 }
 
 #simulation-element{
@@ -299,20 +315,20 @@ input {
 
 [contenteditable="true"]:hover {
 	background: rgba(255, 255, 153, 1);
-	outline: 2px dashed #0090D2; 
 	}
 
 .editable{
 	text-decoration: underline;
-	font-size: 12px;
-	font-weight: bold;
-	color: rgb(0, 63, 0);
+	color: #fd6808;
+	cursor:pointer;
 }
 
 #editArea input{
+	margin-left:2px;
+	margin-right:2px;
 	width: auto;
 	height: 14px;
-	font-weight: bold;
+	font-size: 14px;
 	color: black;
 	margin-bottom: 0;
 }

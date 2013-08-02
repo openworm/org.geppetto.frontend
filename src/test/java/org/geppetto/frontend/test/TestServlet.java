@@ -31,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-package org.geppetto.frontend;
+package org.geppetto.frontend.test;
 
 import java.io.IOException;
 

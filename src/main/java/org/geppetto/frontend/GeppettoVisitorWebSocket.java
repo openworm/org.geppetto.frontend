@@ -1,18 +1,46 @@
+/*******************************************************************************
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2011, 2013 OpenWorm.
+ * http://openworm.org
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *     	OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights 
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+ * copies of the Software, and to permit persons to whom the Software is 
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in 
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 package org.geppetto.frontend;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.geppetto.frontend.GeppettoVisitorConfig.RunMode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
-import com.google.gson.JsonObject;
+import org.geppetto.frontend.JSONUtility.MESSAGES_TYPES;
 
 /**
  * Class used to process Web Socket Connections. 
@@ -23,34 +51,36 @@ import com.google.gson.JsonObject;
 public class GeppettoVisitorWebSocket extends MessageInbound
 {
 
-	private static Log logger = LogFactory.getLog(GeppettoVisitorWebSocket.class);
-	
-	@Autowired
-	private GeppettoVisitorConfig geppettoVisitorConfig;
-	 
-	private SimulationVisitorsHandler simulationVisitorsHandler;
+	/*
+	 * Keeps track of mode visitor is in, either observing or controlling 
+	 * the simulation
+	 */
+	public enum VisitorRunMode {
+		OBSERVING, CONTROLLING
+	}
+
+	private SimulationListener simulationListener;
 	private final int id;
 
-	private RunMode currentMode = RunMode.DEFAULT;
-	
-	public GeppettoVisitorWebSocket(int id, SimulationVisitorsHandler simulatoinVisitorsHandler)
+	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
+
+	public GeppettoVisitorWebSocket(int id, SimulationListener simulatoinVisitorsHandler)
 	{
 		super();
-		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 		this.id = id;
-		simulationVisitorsHandler = simulatoinVisitorsHandler;
+		simulationListener = simulatoinVisitorsHandler;
 	}
 
 	@Override
 	protected void onOpen(WsOutbound outbound)
 	{
-		simulationVisitorsHandler.addConnection(this);	
+		simulationListener.addConnection(this);	
 	}
 
 	@Override
 	protected void onClose(int status)
 	{
-		simulationVisitorsHandler.removeConnection(this);
+		simulationListener.removeConnection(this);
 	}
 
 	@Override
@@ -59,63 +89,49 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		throw new UnsupportedOperationException("Binary message not supported.");
 	}
 
+	/**
+	 * Receives message(s) from client. 
+	 */
 	@Override
 	protected void onTextMessage(CharBuffer message)
 	{
 		String msg = message.toString();
-		if (msg.startsWith("init$"))
+		if (msg.startsWith("init_url$"))
 		{
-			//Couple of scenarios could initialize the simulation
-			//Keep flag to initialize simulation later
-			boolean canInitializeSim = false;
-			
-			switch(currentMode){
-							
-				case CONTROLLING:
-					//User in control loading another model, clean canvas before doing so
-					canInitializeSim = true;
-					updateControllerScene();
-					break;
-				
-				case OBSERVING:
-					//Notify simulation controls are not available
-					simulationVisitorsHandler.simulationControlsUnavailable(this);
-					break;
-					
-				case DEFAULT:
-					//Default user can only initialize it if it's not already in use
-					if(!simulationVisitorsHandler.isSimulationInUse()){
-						canInitializeSim = true;
-					}
-					break;
+			String urlString = msg.substring(msg.indexOf("$")+1, msg.length());
+			URL url;
+			try {
+				url = new URL(urlString);
+				simulationListener.initializeSimulation(url,this);
+			} catch (MalformedURLException e) {
+				simulationListener.messageClient(this,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
 			}
-			
-			//Only visitors in default or controlling mode can initialize the simulation 
-			if(canInitializeSim){
-				String url = msg.substring(msg.indexOf("$")+1, msg.length());
-				simulationVisitorsHandler.initializeSimulation(url,this);
-				setRunMode(GeppettoVisitorConfig.RunMode.CONTROLLING);
-				
-				//notify any observers that simulation has been re started
-				simulationVisitorsHandler.updateObserversScenes();
-			}
+		}
+		else if (msg.startsWith("init_sim$"))
+		{
+			String simulation = msg.substring(msg.indexOf("$")+1, msg.length());
+			simulationListener.initializeSimulation(simulation, this);
+		}
+		else if (msg.startsWith("sim$"))
+		{
+			String url = msg.substring(msg.indexOf("$")+1, msg.length());
+			simulationListener.getSimulationConfiguration(url, this);
 		}
 		else if (msg.equals("start"))
 		{
-			simulationVisitorsHandler.startSimulation();
+			simulationListener.startSimulation(this);
 		}
 		else if (msg.equals("pause"))
 		{
-			simulationVisitorsHandler.pauseSimulation();
+			simulationListener.pauseSimulation();
 		}
 		else if (msg.equals("stop"))
 		{
-			simulationVisitorsHandler.stopSimulation();
+			simulationListener.stopSimulation();
 		}
 		else if (msg.equals("observe"))
 		{					
-			simulationVisitorsHandler.observeSimulation(this);
-			setRunMode(GeppettoVisitorConfig.RunMode.OBSERVING);
+			simulationListener.observeSimulation(this);
 		}
 		else
 		{
@@ -126,24 +142,13 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 	public int getConnectionID() {
 		return id;
 	}
-	
-	public GeppettoVisitorConfig.RunMode getCurrentRunMode(){
+
+	public VisitorRunMode getCurrentRunMode(){
 		return currentMode ;
 	}
-	
-	public void setRunMode(GeppettoVisitorConfig.RunMode mode){
+
+	public void setVisitorRunMode(VisitorRunMode mode){
 		currentMode = mode;
 	}
-	
-	/**
-	 * Clear the canvas of scene. Used when loading another model
-	 */
-	public void updateControllerScene(){
-		//JSON object used to send message to observer(s)' clients
-		JsonObject json = new JsonObject();
-		json.addProperty("type", "clean_canvas");
 
-		//Notify all observers
-		simulationVisitorsHandler.messageClient(this,json.toString());
-	}
 }

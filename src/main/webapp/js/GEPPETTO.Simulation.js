@@ -94,25 +94,38 @@ GEPPETTO.Simulation.stop = function()
 GEPPETTO.Simulation.observe = function()
 {
 	//Create canvas for observing visitor
-	GEPPETTO.init(FE.createContainer(), FE.update);
-	GEPPETTO.animate();	
-	GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.OBSERVED;
-	GEPPETTO.Simulation.socket.send("observe");
-	Console.log('Sent: Simulation being observed');
+	var webGLStarted = GEPPETTO.init(FE.createContainer());
+	
+	//Allow user to observe only if wegbl container was created
+	if(webGLStarted){
+		GEPPETTO.animate();	
+		GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.OBSERVED;
+		GEPPETTO.Simulation.socket.send("observe");
+		Console.log('Sent: Simulation being observed');
+	}
+	
+	//update the UI based on success of webgl 
+	FE.update(webGLStarted);
 };
 
-GEPPETTO.Simulation.load = function(url)
+GEPPETTO.Simulation.load = function(init_mode, init_value)
 {
-	GEPPETTO.init(FE.createContainer(), FE.update);
-	if (GEPPETTO.Simulation.status == GEPPETTO.Simulation.StatusEnum.INIT)
-	{
-		//we call it only the first time
-		GEPPETTO.animate();
+	var webGLStarted = GEPPETTO.init(FE.createContainer());
+	//Keep going with load of simulation only if webgl container was created
+	if(webGLStarted){
+		FE.activateLoader("show", "Loading Simulation");
+		if (GEPPETTO.Simulation.status == GEPPETTO.Simulation.StatusEnum.INIT)
+		{
+			//we call it only the first time
+			GEPPETTO.animate();
+		}
+		GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.LOADED;
+		GEPPETTO.Simulation.simulationURL = init_value;
+		GEPPETTO.Simulation.socket.send(init_mode + init_value);
+		Console.log('Sent: Simulation loaded');
 	}
-	GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.LOADED;
-	GEPPETTO.Simulation.simulationURL = url;
-	GEPPETTO.Simulation.socket.send("init$" + url);
-	Console.log('Sent: Simulation loaded');
+	//update ui based on success of webgl
+	FE.update(webGLStarted);
 };
 
 GEPPETTO.Simulation.connect = (function(host)
@@ -142,40 +155,75 @@ GEPPETTO.Simulation.connect = (function(host)
 	};
 
 	GEPPETTO.Simulation.socket.onmessage = function(msg)
-	{
+	{		
 		var parsedServerMessage = JSON.parse(msg.data);
 		
 		//Parsed incoming message
 		switch(parsedServerMessage.type){
-			//Simulation server already in use
-			case "server_unavailable":
-			    FE.disableSimulationControls();
-				FE.observersDialog("Server Unavailable", parsedServerMessage.text);
+			//clear canvas, used when loading a new model or re-loading previous one
+			case "clear_canvas":
+				var webGLStarted = GEPPETTO.init(FE.createContainer());
+				FE.update(webGLStarted);
+				GEPPETTO.animate();
 				break;
-			//Simulation server became available
-			case "server_available":
-				FE.infoDialog("Server Available", parsedServerMessage.text);
+			//Error loading simulation, invalid url or simulation file 
+			case "error_loading_simulation":
+				$('#loadingmodal').modal('hide');
+				$('#start').attr('disabled', 'disabled');
+				FE.infoDialog("Invalid Simulation File", parsedServerMessage.message);
+				break;
+			//Simulation has been loaded and model need to be loaded
+			case "load_model":
+				Console.log("Received: Loading Model");
+				var entities = JSON.parse(parsedServerMessage.entities);
+				GEPPETTO.populateScene(entities);
 				break;
 			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":
-				FE.observersAlert("Geppetto Simulation Information", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
+				FE.observersAlert("Observing Simulation Mode", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
 				break;
-			//Clean the canvas, used after loading different model
-			case "clean_canvas":
-				GEPPETTO.init(FE.createContainer(), FE.update);
+			//Read the Parameters passed in url
+			case "read_url_parameters":
+				FE.searchForURLEmbeddedSimulation();
 				break;
-			default:
+			//Event received to update the simulation
+			case "scene_update":
+				var entities = JSON.parse(parsedServerMessage.entities);
 				//GEPPETTO.log("End parsing data");
 				if (!GEPPETTO.isScenePopulated())
-				{
-					// the first time we need to create the objects
-					GEPPETTO.populateScene(parsedServerMessage);
+				{				
+					// the first time we need to create the object.s
+					GEPPETTO.populateScene(entities);
 				}
 				else
-				{
+				{					
 					// any other time we just update them
-					GEPPETTO.updateJSONScene(parsedServerMessage);
+					GEPPETTO.updateJSONScene(entities);
 				}
+				break;
+			//Simulation server became available
+			case "server_available":
+				FE.infoDialog("Server Available", parsedServerMessage.message);
+				break;
+			//Simulation server already in use
+			case "server_unavailable":
+			    FE.disableSimulationControls();
+				FE.observersDialog("Server Unavailable", parsedServerMessage.message);
+				break;
+			case "simulation_configuration":
+				GEPPETTO.SimulationContentEditor.loadSampleSimulationFile(parsedServerMessage.configuration);
+				break;
+			//Simulation has been loaded, enable start button and remove loading panel
+			case "simulation_loaded":
+				$('#start').removeAttr('disabled');
+				$('#loadingmodal').modal('hide');
+				break;
+			//Simulation has been started, enable pause button
+			case "simulation_started":
+				$('#pause').removeAttr('disabled');
+				break;
+			default:
+				
 				break;
 		}
 	};
@@ -186,7 +234,7 @@ var Console =
 
 Console.log = (function(message)
 {
-	var console = document.getElementById('console');
+	var console = document.getElementById('consolealert');
 	var p = document.createElement('p');
 	p.style.wordWrap = 'break-word';
 	p.innerHTML = message;
@@ -210,9 +258,13 @@ FE.createContainer = function()
 /**
  * update
  */
-FE.update = function()
+FE.update = function(webGLStarted)
 {
-
+	//
+	if(!webGLStarted){
+		Console.log("Unable to initialize WebGL");
+		FE.disableSimulationControls();
+	}
 };
 
 /**
@@ -246,28 +298,123 @@ FE.infoDialog = function(title, msg)
 	$('#infomodal').modal();   
 };
 
-
-
 /**
- * Create bootstrap alert to notify users
+ * Create bootstrap alert to notify users they are in observer mode
  * 
- * @param titleMsg
+ * @param title
  * @param alertMsg
  * @param popoverMsg
  */
-FE.observersAlert = function(titleMsg, alertMsg, popoverMsg)
+FE.observersAlert = function(title, alertMsg, popoverMsg)
 {
-	var alertDiv = $('<div id="infoalert" class="alert alert-block">'+
-						'<a class="close" data-dismiss="alert">×</a>'+
-						'<h4 class="alert-heading" align="center"><i class="icon-info-sign icon-2x" id="infopopover" rel="popover"></i> Observing Simulation Mode</h4>'+
-						'<p>'+ alertMsg+'</p>'+
-					'</div>');
-	$(alertDiv).appendTo('#sim_toolbar');
+	$('#alertbox-text').html(alertMsg);
+	$('#alertbox').show();
+	$("#infopopover").popover({title: title, 
+							   content: popoverMsg});  
+};
+
+/**
+ * Look for Simulations that may have been embedded as parameter in the URL
+ */
+FE.searchForURLEmbeddedSimulation =  function()
+{
+	Console.log("Reading embedded simulation file");
 	
-	$("#infopopover").popover({title: titleMsg, 
-							   content: popoverMsg, 
-							   placement: 'left', 
-							   trigger:'hover'});  
+	//Get the URL with which Geppetto was loaded
+	var urlLocation = window.location.href;
+	//Split url looking for simulation parameters
+	var vars = urlLocation.split("?sim=");
+	
+	//Load simulation if simulation parameters where found
+	if(vars.length > 1){
+		var urlVal = decodeURIComponent(vars[1]);
+		$('#url').val(urlVal);
+		//Simulation found, load it
+		GEPPETTO.Simulation.load("init_url$",urlVal);
+	}
+};
+
+/**
+ * Populate Load Modal with drop down menu of 
+ * predefined sample simulations stored in JSON file. 
+ * 
+ */
+FE.loadingModalUIUpdate = function()
+{
+	//Read JSON file storing predefined sample simulations
+	$.getJSON('resources/PredefinedSimulations.json', function(json) {
+		
+		//Get access to <ul> html element in load modal to add list items
+		var ul = document.getElementById('dropdownmenu');
+		
+		//Loop through simulations found in JSON file
+		for (var i in json.simulations) {
+			//Create <li> element and add url attribute storing simulation's url
+			var li = document.createElement('li');
+			li.setAttribute('url', json.simulations[i].url);
+			
+			//Create <a> element to add simulation name, add to <li> element
+			var a = document.createElement('a');
+			a.innerHTML = json.simulations[i].name;
+			li.appendChild(a);
+			
+			//Add <li> element to load modal's dropdownmenu
+			ul.appendChild(li);
+		}		
+		
+		//Add click listener to sample simulations dropdown menu
+		$('#dropdownmenu li').click(function () {
+			
+			GEPPETTO.SimulationContentEditor.isEditing(false);
+			
+			//Get the name and url of selected simulation
+            var selectedURL = $(this).attr('url');
+            var selectedName =$(this).text();
+            
+            //Add selected simulation's url to URL input field
+            $('#url').val(selectedURL);
+            //Change drop down menu name to selected simulation's name
+            $('#dropdowndisplaytext').html(selectedName);
+            
+            if($('#customRadio').val()=="active"){
+            	GEPPETTO.Simulation.socket.send("sim$"+selectedURL);
+            }
+            if($('#customRadio').val()=="inactive"){
+            	GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
+            }
+        });
+		
+		$('#url').keydown(function(){
+			$('#dropdowndisplaytext').html("Select simulation from list...");
+		});
+			
+	});
+
+	//Responds to user selecting url radio button
+	$("#urlRadio").click(function() {
+		$('#customRadio').val("inactive");
+		$('#customInputDiv').hide();
+		$('#urlInput').show();		
+	});
+	
+	//Responds to user selecting Custom radio button
+	$("#customRadio").click(function() {
+		$('#customRadio').val("active");
+		$('#urlInput').hide();
+		
+		if($('#url').val() == ""){
+			GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
+		}
+		
+		else{
+			var selectedURL = $('#url').val();
+			GEPPETTO.Simulation.socket.send("sim$"+selectedURL);
+		}		
+		$('#customInputDiv').show();
+	});
+	
+	//Handles the events related the content edit area
+	GEPPETTO.SimulationContentEditor.handleContentEdit();
 };
 
 
@@ -277,13 +424,16 @@ FE.observersAlert = function(titleMsg, alertMsg, popoverMsg)
  */
 FE.disableSimulationControls = function()
 {
-	$('#loadSimModal').attr('disabled','disabled');
+	//Disable 'load simulation' button and click events
 	$('#openload').attr('disabled', 'disabled');
-	$('#start').attr('disabled', 'disabled');
-	$('#pause').attr('disabled', 'disabled');
-	$('#stop').attr('disabled', 'disabled');
+	$('#openload').click(function(e){return false;});
 };
 
+FE.activateLoader = function(state, msg)
+{
+	$('#loadingmodaltext').html(msg);
+	$('#loadingmodal').modal(state);
+};
 
 // ============================================================================
 // Application logic.
@@ -291,14 +441,17 @@ FE.disableSimulationControls = function()
 
 $(document).ready(function()
 {
+	//Populate the 'loading simulation' modal's drop down menu with sample simulations
+	$('#loadSimModal').on('shown', FE.loadingModalUIUpdate());
 	$('#start').attr('disabled', 'disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').attr('disabled', 'disabled');
 	
 	$('#start').click(function()
 	{
+		//FE.activateLoader("show", "Starting Simulation ...");
+		
 		$('#start').attr('disabled', 'disabled');
-		$('#pause').removeAttr('disabled');
 		$('#stop').attr('disabled', 'disabled');
 		GEPPETTO.Simulation.start();
 	});
@@ -321,7 +474,6 @@ $(document).ready(function()
 	
 	$('#load').click(function()
 	{
-		$('#start').removeAttr('disabled');
 		$('#pause').attr('disabled', 'disabled');
 		$('#stop').attr('disabled', 'disabled');
 		$('#loadSimModal').modal("hide");
@@ -329,7 +481,17 @@ $(document).ready(function()
 		{
 			GEPPETTO.Simulation.stop();
 		}
-		GEPPETTO.Simulation.load($('#url').val());
+		if(GEPPETTO.SimulationContentEditor.editing){
+			Console.log("Laoding from editing console");
+			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
+			
+			GEPPETTO.Simulation.load("init_sim$", simulation);
+			GEPPETTO.SimulationContentEditor.isEditing(false);
+		}
+		else{
+			Console.log("Loading from url");
+			GEPPETTO.Simulation.load("init_url$", $('#url').val());
+		}
 	});
 
 	GEPPETTO.Simulation.init();

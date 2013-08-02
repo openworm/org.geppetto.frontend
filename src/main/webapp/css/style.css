@@ -251,6 +251,9 @@ input {
 
 .dropdown-menu{ width: 100%; }
 
+.dropdown-menu>li>a:hover{
+	cursor:pointer;
+}
 .btn .caret{ float : right;}
  
 .loading.modal.fade{top:-25%; background: rgba(255, 255, 255, 0);}

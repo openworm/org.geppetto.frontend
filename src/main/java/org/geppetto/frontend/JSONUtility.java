@@ -75,34 +75,6 @@ public class JSONUtility {
 
 	}
 
-	/*
-	 * Stores different messages that can be send to the client
-	 */
-	public enum MESSAGES {
-		ERROR_LOADING_SIMULATION_MESSAGE("Invalid simulation file."+
-				"Double the information you have entered and try again."),
-		SIMULATION_CONTROLLED("Another user is in control of starting and stopping the simulation.\n "+
-						"You are currently in observer mode."),
-		GEPPETO_SIM_INFO("Another user is in control of starting and stopping the simulation.\n "+
-						"You are currently in observer mode."),
-		SERVER_UNAVAILABLE("The server is currently in use and this " +
-							"instance of Geppetto does not support shared mode access" +
-							" - you can join the ongoing simulation as an observer "),
-		SERVER_AVAILABLE("The current operator left the control of Geppetto." +
-							" Refresh your browser to attempt to assume control (first come, first served).");
-
-		private MESSAGES(final String text) {
-			this.text = text;
-		}
-
-		private final String text;
-
-		@Override
-		public String toString() {
-			return text;
-		}
-	}
-
 	public static JSONUtility getInstance() {
 		if(instance == null) {
 			instance = new JSONUtility();
@@ -129,22 +101,22 @@ public class JSONUtility {
 			break;	
 		case ERROR_LOADING_SIMULATION:
 			json =
-			createJSONMessage(messageType, "message", MESSAGES.ERROR_LOADING_SIMULATION_MESSAGE.toString());
+			createJSONMessage(messageType, "message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString());
 			break;
 		case OBSERVER_MODE:
 			json =
-			createJSONMessage(messageType, "alertMessage", MESSAGES.SIMULATION_CONTROLLED.toString(), "popoverMessage", MESSAGES.GEPPETO_SIM_INFO.toString());
+			createJSONMessage(messageType, "alertMessage", Resources.SIMULATION_CONTROLLED.toString(), "popoverMessage", Resources.GEPPETO_SIM_INFO.toString());
 			break;
 		case READ_URL_PARAMETERS:
 			json = createJSONMessage(messageType);
 			break;
 		case SERVER_UNAVAILABLE:
 			json =
-			createJSONMessage(messageType, "message", MESSAGES.SERVER_UNAVAILABLE.toString());
+			createJSONMessage(messageType, "message", Resources.SERVER_UNAVAILABLE.toString());
 			break;
 		case SERVER_AVAILABLE:
 			json =
-			createJSONMessage(messageType, "message", MESSAGES.SERVER_AVAILABLE.toString());
+			createJSONMessage(messageType, "message", Resources.SERVER_AVAILABLE.toString());
 			break;
 		case SIMULATION_LOADED:
 			json =

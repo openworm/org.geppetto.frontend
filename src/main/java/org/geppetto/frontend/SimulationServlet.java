@@ -61,7 +61,7 @@ public class SimulationServlet extends WebSocketServlet
 	@Override
 	protected StreamInbound createWebSocketInbound(String subProtocol, HttpServletRequest request)
 	{
-		return new GeppettoVisitorWebSocket(_connectionIds.incrementAndGet(), SimulationVisitorsHandler.getInstance());
+		return new GeppettoVisitorWebSocket(_connectionIds.incrementAndGet(), SimulationListener.getInstance());
 	}
 
 	@Override

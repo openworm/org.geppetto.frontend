@@ -1,0 +1,12 @@
+<tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd ">
+<tns:configuration>
+<tns:outputFormat>$ENTER FORMAT</tns:outputFormat>
+</tns:configuration>
+<tns:aspects>
+<tns:modelInterpreter>$ENTER MODAL INTERPRETER</tns:modelInterpreter>
+<tns:modelURL>$ENTER MODEL URL</tns:modelURL>
+<tns:simulator>$ENTER SIMULATOR</tns:simulator>
+<tns:id>$ENTER ID</tns:id>
+</tns:aspects>
+<tns:name>$ENTER NAME</tns:name>
+</tns:simulation>

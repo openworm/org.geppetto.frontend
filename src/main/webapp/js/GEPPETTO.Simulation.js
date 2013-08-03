@@ -111,6 +111,8 @@ GEPPETTO.Simulation.observe = function()
 GEPPETTO.Simulation.load = function(init_mode, init_value)
 {
 	var webGLStarted = GEPPETTO.init(FE.createContainer());
+	//update ui based on success of webgl
+	FE.update(webGLStarted);
 	//Keep going with load of simulation only if webgl container was created
 	if(webGLStarted){
 		FE.activateLoader("show", "Loading Simulation");
@@ -124,8 +126,6 @@ GEPPETTO.Simulation.load = function(init_mode, init_value)
 		GEPPETTO.Simulation.socket.send(init_mode + init_value);
 		Console.log('Sent: Simulation loaded');
 	}
-	//update ui based on success of webgl
-	FE.update(webGLStarted);
 };
 
 GEPPETTO.Simulation.connect = (function(host)
@@ -164,7 +164,6 @@ GEPPETTO.Simulation.connect = (function(host)
 			case "clear_canvas":
 				var webGLStarted = GEPPETTO.init(FE.createContainer());
 				FE.update(webGLStarted);
-				GEPPETTO.animate();
 				break;
 			//Error loading simulation, invalid url or simulation file 
 			case "error_loading_simulation":
@@ -403,6 +402,7 @@ FE.loadingModalUIUpdate = function()
 		$('#urlInput').hide();
 		
 		if($('#url').val() == ""){
+			Console.log("Loading template xml ");
 			GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
 		}
 		
@@ -482,14 +482,14 @@ $(document).ready(function()
 			GEPPETTO.Simulation.stop();
 		}
 		if(GEPPETTO.SimulationContentEditor.editing){
-			Console.log("Laoding from editing console");
+			Console.log("Sent: Load Simulation from editing console");
 			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
 			
 			GEPPETTO.Simulation.load("init_sim$", simulation);
 			GEPPETTO.SimulationContentEditor.isEditing(false);
 		}
 		else{
-			Console.log("Loading from url");
+			Console.log("Sent: Load simulation from URL");
 			GEPPETTO.Simulation.load("init_url$", $('#url').val());
 		}
 	});

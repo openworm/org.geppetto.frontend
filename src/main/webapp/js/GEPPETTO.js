@@ -1,5 +1,4 @@
 /*******************************************************************************
- * The MIT License (MIT)
  *
  * Copyright (c) 2011, 2013 OpenWorm.
  * http://openworm.org
@@ -533,9 +532,7 @@ GEPPETTO.setupStats = function()
 		GEPPETTO.stats.domElement.style.zIndex = 100;
 		GEPPETTO.container.appendChild(GEPPETTO.stats.domElement);
 	}
-
 };
-
 /**
  * 
  */
@@ -623,6 +620,7 @@ GEPPETTO.setupRenderer = function()
 	});
 	GEPPETTO.renderer.setClearColor(0x000000, 1);
 	GEPPETTO.renderer.setSize(window.innerWidth, window.innerHeight);
+	GEPPETTO.renderer.autoClear = true;
 	GEPPETTO.container.appendChild(GEPPETTO.renderer.domElement);
 };
 

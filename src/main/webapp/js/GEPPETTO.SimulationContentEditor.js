@@ -103,6 +103,17 @@ GEPPETTO.SimulationContentEditor.loadXML = function(location){
 GEPPETTO.SimulationContentEditor.handleContentEdit = function(){	
 	$(document).ready(function()
 	{	
+		
+		$('#editArea').bind('paste', function(){
+			$(document).bind('DOMNodeInserted', function(event) {
+				var id = event.target.id;
+				if(id == "child"){
+					var children = event.target.children();
+					Console.log("New child added " + event.target.innerHTML);
+				}
+			});
+		});
+		
 		//Enter text becomes part of XML, hide input field
 		$('.manualInput').keyup(function (e) {
 			if (e.keyCode == 13) {
@@ -121,7 +132,7 @@ GEPPETTO.SimulationContentEditor.handleContentEdit = function(){
 				
 				$(label).show();
 				
-				GEPPETTO.SimulationContentEditor.editing = true;
+				GEPPETTO.SimulationContentEditor.simulationEdited(true);
 			}
 		});
 		
@@ -152,10 +163,16 @@ GEPPETTO.SimulationContentEditor.handleContentEdit = function(){
 			
 			$(label).show();
 
-			GEPPETTO.SimulationContentEditor.editing = true;
+			GEPPETTO.SimulationContentEditor.simulationEdited(true);
 		});
 	});
 
+};
+
+GEPPETTO.SimulationContentEditor.simulationEdited = function(edited){
+		
+	GEPPETTO.SimulationContentEditor.editing = edited;	
+	$('#dropdowndisplaytext').html("Select simulation from list...");
 };
 
 /**

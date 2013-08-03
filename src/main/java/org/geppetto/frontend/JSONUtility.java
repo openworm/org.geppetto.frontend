@@ -59,8 +59,8 @@ public class JSONUtility {
 		INFO_MESSAGE("info_message"),
 		SCENE_UPDATE("scene_update"), 
 		CLEAR_CANVAS("clear_canvas"),
-		SIMULATION_CONFIGURATION("simulation_configuration")
-		;
+		SIMULATION_CONFIGURATION("simulation_configuration"),
+		ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config");
 
 		private MESSAGES_TYPES(final String text) {
 			this.text = text;

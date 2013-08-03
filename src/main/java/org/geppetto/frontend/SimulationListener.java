@@ -492,8 +492,9 @@ public class SimulationListener implements ISimulationCallbackListener {
 			simulationConfiguration = simulationService.getSimulationConfig(new URL(url));
 			messageClient(visitor, MESSAGES_TYPES.SIMULATION_CONFIGURATION, simulationConfiguration);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
+		} catch (GeppettoInitializationException e) {
+			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
 		}
 	}
 }

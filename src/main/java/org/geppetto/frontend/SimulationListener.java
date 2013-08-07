@@ -421,9 +421,12 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void sendMessage(GeppettoVisitorWebSocket visitor, String msg){
 		try
-		{				
+		{	
+			long startTime=System.currentTimeMillis();
 			CharBuffer buffer = CharBuffer.wrap(msg);
 			visitor.getWsOutbound().writeTextMessage(buffer);
+			String debug=((long)System.currentTimeMillis()-startTime)+"ms were spent sending a message of "+msg.length()/1024+"KB to the client";
+			logger.info(debug); 
 		}
 		catch (IOException ignore)
 		{

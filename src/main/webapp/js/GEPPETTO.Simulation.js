@@ -53,7 +53,8 @@ GEPPETTO.Simulation.StatusEnum =
 	LOADED : 1,
 	STARTED : 2,
 	PAUSED : 3,
-	OBSERVED: 4
+	OBSERVED: 4,
+	STOPPED: 5
 };
 
 
@@ -87,7 +88,7 @@ GEPPETTO.Simulation.pause = function()
 GEPPETTO.Simulation.stop = function()
 {
 	GEPPETTO.Simulation.socket.send("stop");
-	GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.LOADED;
+	GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.STOPPED;
 	Console.log('Sent: Simulation stopped');
 };
 
@@ -121,7 +122,6 @@ GEPPETTO.Simulation.load = function(init_mode, init_value)
 			//we call it only the first time
 			GEPPETTO.animate();
 		}
-		GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.LOADED;
 		GEPPETTO.Simulation.simulationURL = init_value;
 		GEPPETTO.Simulation.socket.send(init_mode + init_value);
 		Console.log('Sent: Simulation loaded');
@@ -161,7 +161,7 @@ GEPPETTO.Simulation.connect = (function(host)
 		//Parsed incoming message
 		switch(parsedServerMessage.type){
 			//clear canvas, used when loading a new model or re-loading previous one
-			case "clear_canvas":
+			case "reload_canvas":
 				var webGLStarted = GEPPETTO.init(FE.createContainer());
 				FE.update(webGLStarted);
 				break;
@@ -176,6 +176,7 @@ GEPPETTO.Simulation.connect = (function(host)
 				Console.log("Received: Loading Model");
 				var entities = JSON.parse(parsedServerMessage.entities);
 				GEPPETTO.populateScene(entities);
+				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.LOADED;
 				break;
 			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":
@@ -188,16 +189,18 @@ GEPPETTO.Simulation.connect = (function(host)
 			//Event received to update the simulation
 			case "scene_update":
 				var entities = JSON.parse(parsedServerMessage.entities);
-				//GEPPETTO.log("End parsing data");
-				if (!GEPPETTO.isScenePopulated())
-				{				
-					// the first time we need to create the object.s
-					GEPPETTO.populateScene(entities);
-				}
-				else
-				{					
-					// any other time we just update them
-					GEPPETTO.updateJSONScene(entities);
+				//Update if simulation hasn't been stopped
+				if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED){
+					if (!GEPPETTO.isScenePopulated())
+					{				
+						// the first time we need to create the object.s
+						GEPPETTO.populateScene(entities);
+					}
+					else
+					{					
+						// any other time we just update them
+						GEPPETTO.updateJSONScene(entities);
+					}
 				}
 				break;
 			//Simulation server became available

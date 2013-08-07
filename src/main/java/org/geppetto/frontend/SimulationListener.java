@@ -150,8 +150,8 @@ public class SimulationListener implements ISimulationCallbackListener {
 			case CONTROLLING:
 				
 				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoVisitorWebSocket connection : getConnections()){
-					messageClient(connection, MESSAGES_TYPES.CLEAR_CANVAS);
+				for(GeppettoVisitorWebSocket observer : observers){
+					messageClient(observer, MESSAGES_TYPES.RELOAD_CANVAS);
 				}
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
@@ -210,8 +210,8 @@ public class SimulationListener implements ISimulationCallbackListener {
 			case CONTROLLING:
 				
 				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoVisitorWebSocket connection : getConnections()){
-					messageClient(connection, MESSAGES_TYPES.CLEAR_CANVAS);
+				for(GeppettoVisitorWebSocket observer : observers){
+					messageClient(observer, MESSAGES_TYPES.RELOAD_CANVAS);
 				}
 				
 				simulationServerConfig.setIsSimulationLoaded(false);

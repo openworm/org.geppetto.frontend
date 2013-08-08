@@ -43,224 +43,137 @@ GEPPETTO.SimulationContentEditor = GEPPETTO.SimulationContentEditor ||
 };
 
 GEPPETTO.SimulationContentEditor.editing = false;
-GEPPETTO.SimulationContentEditor.schemaLocation = null;
-GEPPETTO.SimulationContentEditor.xsi = null;
-GEPPETTO.SimulationContentEditor.tns = null;
-GEPPETTO.SimulationContentEditor.newAspects = [];
+GEPPETTO.SimulationContentEditor.editor = null;
 
 /**
- * Load simulation template from resources. 
+ * Load simulation template using ajax call. 
  * 
  * @param location
  */
-GEPPETTO.SimulationContentEditor.loadXML = function(location){
+GEPPETTO.SimulationContentEditor.loadTemplateSimulation = function(location){
 	$.ajax({
 	      type: "GET",
 	      url: location,
 	      dataType: "xml",
 	      success: function(result) {
 	    	  
-	    	  //Populate Content area for template with file values
-	    	  GEPPETTO.SimulationContentEditor.tns = '"' + $(result).find('simulation').attr("xmlns:tns") + '"';
-	    	  GEPPETTO.SimulationContentEditor.xsi = '"' + $(result).find('simulation').attr("xmlns:xsi") + '"';
-	    	  GEPPETTO.SimulationContentEditor.schemaLocation = 
-	    		  							'"' + $(result).find('simulation').attr("xsi:schemaLocation") + '"';
-	    	  
-	    	  $('#xmlns-tns').html(GEPPETTO.SimulationContentEditor.tns);
-	    	  $('#xmlns-xsi').html(GEPPETTO.SimulationContentEditor.xsi);
-	    	  $('#xsi-schemaLocation').html(GEPPETTO.SimulationContentEditor.schemaLocation);
-	    	  
-	    	  //Look for simualtion element
-	    	  $(result).find('simulation').each(function(){
-	    	      var outputFormat = $(this).find('configuration').text().trim();
-	    	      var simName = $(this).find('name').text().trim();
-	    
-	    	      $('#outputFormat').html(outputFormat);
-	    	      $('#name').html(simName);
-	    	      
-	    	      //Looks for aspects elements and child elements 
-	    	      $(this).find('aspects').each(function(){
-	    	    	  var modelInterpreter = $(this).find('modelInterpreter').text().trim();
-		    	      var modelURL = $(this).find('modelURL').text().trim();
-		    	      var sphSimulator = $(this).find('simulator').text().trim();
-		    	      var id = $(this).find('id').text().trim();
-		    	      
-		    	      //Set values in content are for user to see
-		    	      $('#modelInterpreter').html(modelInterpreter);
-		    	      $('#modelURL').html(modelURL);
-		    	      $('#simulator').html(sphSimulator);
-		    	      $('#id').html(id);
-	    	      });
-	    	    });
+	    	 var xmlString = GEPPETTO.SimulationContentEditor.xmlToString(result);
+
+	    	 GEPPETTO.SimulationContentEditor.loadSimulationInfo(xmlString);
 	      }
 	});
 };
 
+/**
+ * Set editor's code
+ */
+GEPPETTO.SimulationContentEditor.loadSimulationInfo = function(xmlSimulation){	
+	GEPPETTO.SimulationContentEditor.editor.setValue(xmlSimulation);
+};
 
 /**
- * Handles showing input fields when user edits values inside xml elements
+ * Transforms xml file to string
  */
-GEPPETTO.SimulationContentEditor.handleContentEdit = function(){	
-	$(document).ready(function()
-	{	
-		
-		$('#editArea').bind('paste', function(){
-			$(document).bind('DOMNodeInserted', function(event) {
-				var id = event.target.id;
-				if(id == "child"){
-					var children = event.target.children();
-					Console.log("New child added " + event.target.innerHTML);
-				}
-			});
-		});
-		
-		//Enter text becomes part of XML, hide input field
-		$('.manualInput').keyup(function (e) {
-			if (e.keyCode == 13) {
-				var id = $(this).attr("id");
-	        
-				var input =document.getElementById(id);				
-				var label = document.getElementById(id.replace("-input",""));
-				
-				var inputValue = $(input).val();
+GEPPETTO.SimulationContentEditor.xmlToString = function(xmlFile) { 
 
-				$(input).hide();
-				
-				if(inputValue != ""){
-					$(label).text(inputValue);
-				}
-				
-				$(label).show();
-				
-				GEPPETTO.SimulationContentEditor.simulationEdited(true);
-			}
-		});
+    var xmlString;
+    
+    //Internet Explorer
+    if (window.ActiveXObject){
+        xmlString = xmlFile.xml;
+    }
+    
+    // code for Mozilla, Chrome, Firefox, Opera
+    else{
+        xmlString = (new XMLSerializer()).serializeToString(xmlFile);
+    }
+    
+    return xmlString;
+};   
+
+/**
+ * Bind editor to certain events as user key events and new input events
+ */
+GEPPETTO.SimulationContentEditor.handleContentEdit = function(){
+
+	//detects keyboard events and sets 'editing' flag to true
+	GEPPETTO.SimulationContentEditor.editor.on("keyHandled", function(){
+		GEPPETTO.SimulationContentEditor.editing = true;
 		
-		$('.editable').click( function (){
-			var id = $(this).attr("id");
-			
-			var label = document.getElementById(id);
-			var input = document.getElementById(id+"-input");
-			
-			$(label).hide();
-			$(input).show();
-			$(input).focus();
-		});
-		
-		$('.manualInput').mouseout(function () {
-			var id = $(this).attr("id");
-
-			var input =document.getElementById(id);
-			var label = document.getElementById(id.replace("-input",""));
-
-			var inputValue = $(input).val();
-			
-			$(input).hide();
-			
-			if(inputValue != ""){
-				$(label).text(inputValue);
-			}
-			
-			$(label).show();
-
-			GEPPETTO.SimulationContentEditor.simulationEdited(true);
-		});
+		//Reset sample drop down menu to original value
+		if($('#dropdowndisplaytext').text() != "Select simulation from list..."){
+			$('#dropdowndisplaytext').html("Select simulation from list...");
+		}
 	});
-
-};
-
-GEPPETTO.SimulationContentEditor.simulationEdited = function(edited){
+	
+	//detects new input in editor
+	GEPPETTO.SimulationContentEditor.editor.on("inputRead", function(){
+		GEPPETTO.SimulationContentEditor.editing = true;
 		
-	GEPPETTO.SimulationContentEditor.editing = edited;	
-	$('#dropdowndisplaytext').html("Select simulation from list...");
+		if($('#dropdowndisplaytext').text() != "Select simulation from list..."){
+			$('#dropdowndisplaytext').html("Select simulation from list...");
+		}
+	});
 };
 
 /**
- * Modify the content area with the information of the simulation selected
- * from the samples drop down list.
+ * Load the editor, create it if it doesn't exist
  */
-GEPPETTO.SimulationContentEditor.loadSampleSimulationFile = function(result) {
-			
-	//selected simulation information
-	var simulation = jQuery.parseJSON(result);
-	
-	//get the output format from the selected simulation
-	var outputFormat = simulation.configuration.outputFormat;
-	
-	//apply outputformat of selected simulation to html label
-	$('#outputFormat').html(outputFormat);
-	$('#outputFormat-input').val(outputFormat);
-	
-	//apply aspects of selected simulation to html labels
-	for(var i in simulation.aspects){
-		var modelInterpreter = simulation.aspects[i].modelInterpreter;
-		var modelURL = simulation.aspects[i].modelURL;
-		var simulator = simulation.aspects[i].simulator;
-		var id = simulation.aspects[i].id;
-
-		$('#modelInterpreter').html(modelInterpreter);
-		$('#modelURL').html(modelURL);
-		$('#simulator').html(simulator);
-		$('#id').html(id);
-		
-		$('#modelInterpreter-input').val(modelInterpreter);
-		$('#modelURL-input').val(modelURL);
-		$('#simulator-input').val(simulator);
-		$('#id-input').val(id);
-		
-		
+GEPPETTO.SimulationContentEditor.loadEditor = function(){
+	if(GEPPETTO.SimulationContentEditor.editor == null){
+		GEPPETTO.SimulationContentEditor.createXMLEditor();
 	}
-	
-	//apply name of selected simulation to html divs
-	var name = simulation.name;
-	$('#name').html(name);
-	$('#name-input').val(name);
 };
 
 /**
- * Creates a JSON object string to send to servlet. JSON 
- * object contains simulation information read from edit area.
+ * Create XML Editor to display simulation file
+ */
+GEPPETTO.SimulationContentEditor.createXMLEditor = function(){
+	GEPPETTO.SimulationContentEditor.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+			mode: "xml",
+		    lineNumbers: false,
+		  });
+	
+	GEPPETTO.SimulationContentEditor.handleContentEdit();
+};
+
+/**
+ * Returns text inside editor, xml for edited simulation file
  */
 GEPPETTO.SimulationContentEditor.getEditedSimulation = function(){
-	var jsonObj = {};
-	var config = {};
-	var aspects = {};
-	var name=0;
+	var code = GEPPETTO.SimulationContentEditor.editor.getValue();
 	
-	//Get each element that was editable
-	$('.editable').each(function() {
-		var idValue = document.getElementById(this.id).innerHTML;
-
-		//Add output format to configuration object
-		if(this.id == "outputFormat"){			
-			config[this.id] = idValue;
-		}
-		
-		//Name is part of its own object
-		else if(this.id == "name"){
-			name = idValue;
-		}
-		
-		else{
-			aspects[this.id] = idValue;
-		}
-	});	
-	
-	//Aspects need to added as an array
-	var aspectsArray = [];
-	aspectsArray[0] = aspects;
-	
-	//add configuration, aspects and name to json object
-	jsonObj["configuration"] = config;
- 	jsonObj["aspects"] = aspectsArray;
-	jsonObj["name"] = name;
-	
-	//create string with json object
-	var json = JSON.stringify(jsonObj);
-	
-    return json;
+	return code;
 };
 
-GEPPETTO.SimulationContentEditor.isEditing = function(editing){
-	GEPPETTO.SimulationContentEditor.editing = editing;
+/**
+ * Returns true if editor is being used
+ */
+GEPPETTO.SimulationContentEditor.isEditing = function(mode){
+	GEPPETTO.SimulationContentEditor.editing = mode;
+};
+
+/**
+ * Auto formats content of editor
+ */
+GEPPETTO.SimulationContentEditor.autoFormat = function(){
+    var totalLines = GEPPETTO.SimulationContentEditor.editor.lineCount();
+    var totalChars = GEPPETTO.SimulationContentEditor.editor.getTextArea().value.length;
+    GEPPETTO.SimulationContentEditor.editor.autoFormatRange({line:0, ch:0}, {line:totalLines, ch:totalChars});
+    
+    var totalLines = GEPPETTO.SimulationContentEditor.editor.lineCount();
+    var totalChars = GEPPETTO.SimulationContentEditor.editor.getTextArea().value.length;
+    GEPPETTO.SimulationContentEditor.editor.commentRange(false, {line:0, ch:0}, {line:totalLines, ch:totalChars});
+    
+};
+
+/**
+ * Returns creation state of editor
+ */
+GEPPETTO.SimulationContentEditor.editorCreated = function(){
+	if(GEPPETTO.SimulationContentEditor.editor == null){
+		return false;
+	}
+	
+	return true;
 };

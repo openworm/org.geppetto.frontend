@@ -57,6 +57,7 @@ GEPPETTO.Simulation.StatusEnum =
 	STOPPED: 5
 };
 
+GEPPETTO.Simulation.simulationFile = "resources/template.xml";
 
 GEPPETTO.Simulation.init = function()
 {
@@ -175,6 +176,8 @@ GEPPETTO.Simulation.connect = (function(host)
 			case "load_model":
 				Console.log("Received: Loading Model");
 				var entities = JSON.parse(parsedServerMessage.entities);
+				
+				//Populate scene and set status to loaded
 				GEPPETTO.populateScene(entities);
 				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.LOADED;
 				break;
@@ -212,8 +215,12 @@ GEPPETTO.Simulation.connect = (function(host)
 			    FE.disableSimulationControls();
 				FE.observersDialog("Server Unavailable", parsedServerMessage.message);
 				break;
+			//Simulation configuration retrieved from server
 			case "simulation_configuration":
-				GEPPETTO.SimulationContentEditor.loadSampleSimulationFile(parsedServerMessage.configuration);
+				//Load simulation file into display area
+				GEPPETTO.SimulationContentEditor.loadSimulationInfo(parsedServerMessage.configuration);
+				//Auto Format Simulation FIle display
+				GEPPETTO.SimulationContentEditor.autoFormat();
 				break;
 			//Simulation has been loaded, enable start button and remove loading panel
 			case "simulation_loaded":
@@ -378,16 +385,20 @@ FE.loadingModalUIUpdate = function()
             //Change drop down menu name to selected simulation's name
             $('#dropdowndisplaytext').html(selectedName);
             
+            GEPPETTO.Simulation.simulationFile = selectedURL;
+            
+            //Custom Content editor is visible, update with new sample simulation chosen
             if($('#customRadio').val()=="active"){
-            	GEPPETTO.Simulation.socket.send("sim$"+selectedURL);
-            }
-            if($('#customRadio').val()=="inactive"){
-            	GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
+            	FE.updateEditor(selectedURL);
             }
         });
 		
 		$('#url').keydown(function(){
+			//reset sample drop down menu if url field modified
 			$('#dropdowndisplaytext').html("Select simulation from list...");
+			
+			//reset simulation file used in editor to template
+			GEPPETTO.Simulation.simulationFile = "resources/template.xml";
 		});
 			
 	});
@@ -401,25 +412,35 @@ FE.loadingModalUIUpdate = function()
 	
 	//Responds to user selecting Custom radio button
 	$("#customRadio").click(function() {
+		Console.log("Custom radio button clicked");
+		//Handles the events related the content edit area
 		$('#customRadio').val("active");
-		$('#urlInput').hide();
-		
-		if($('#url').val() == ""){
-			Console.log("Loading template xml ");
-			GEPPETTO.SimulationContentEditor.loadXML("resources/template.xml");
-		}
-		
-		else{
-			var selectedURL = $('#url').val();
-			GEPPETTO.Simulation.socket.send("sim$"+selectedURL);
-		}		
+		$('#urlInput').hide();	
 		$('#customInputDiv').show();
+		
+		//update editor with latest simulation file selected
+		FE.updateEditor(GEPPETTO.Simulation.simulationFile);
 	});
-	
-	//Handles the events related the content edit area
-	GEPPETTO.SimulationContentEditor.handleContentEdit();
 };
 
+/**
+ * Updates the editor with new simulation file
+ * 
+ * @param selectedSimulation
+ */
+FE.updateEditor = function(selectedSimulation)
+{
+	GEPPETTO.SimulationContentEditor.loadEditor();
+
+	//load template simulation
+	if(selectedSimulation == "resources/template.xml"){
+		GEPPETTO.SimulationContentEditor.loadTemplateSimulation(selectedSimulation);
+	}
+	//load sample simulation, request info from the servlet
+	else{
+		GEPPETTO.Simulation.socket.send("sim$"+selectedSimulation);
+	}
+};
 
 /**
  * If simulation is being controlled by another user, hide the 
@@ -443,7 +464,7 @@ FE.activateLoader = function(state, msg)
 // ============================================================================
 
 $(document).ready(function()
-{
+{	
 	//Populate the 'loading simulation' modal's drop down menu with sample simulations
 	$('#loadSimModal').on('shown', FE.loadingModalUIUpdate());
 	$('#start').attr('disabled', 'disabled');

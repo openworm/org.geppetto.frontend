@@ -263,6 +263,7 @@ input {
 
 #url{
 	width: 380px;
+	overflow: hidden;
 }
 
 #input label{

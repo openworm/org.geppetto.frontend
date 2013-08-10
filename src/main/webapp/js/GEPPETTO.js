@@ -134,6 +134,7 @@ GEPPETTO.getThreeObjectFromJSONGeometry = function(g, material)
 		threeObject.x = g.position.x;
 		threeObject.y = g.position.y;
 		threeObject.z = g.position.z;
+		
 		break;
 	case "Cylinder":
 		var lookAtV = new THREE.Vector3(g.distal.x, g.distal.y, g.distal.z);
@@ -279,6 +280,68 @@ GEPPETTO.populateScene = function(jsonscene)
 	{
 		GEPPETTO.scene.add(GEPPETTO.getThreeObjectFromJSONEntity(entities[eindex], eindex, true));
 	}
+	
+	GEPPETTO.centerCamera();
+};
+
+/**
+ * Compute the center of the scene.
+ */
+GEPPETTO.centerCamera = function()
+{   
+    var aabbMin = null;
+    var aabbMax = null;
+    
+    GEPPETTO.scene.traverse(function(child)
+    {
+    	if(child instanceof THREE.Mesh || child instanceof THREE.ParticleSystem){
+    		child.geometry.computeBoundingBox();
+    		
+    		//If min and max vectors are null, first values become default min and max
+    		if(aabbMin == null && aabbMax == null){
+    			aabbMin = child.geometry.boundingBox.min;
+    			aabbMax = child.geometry.boundingBox.max;
+    		}
+    		
+    		//Compare other meshes, particles BB's to find min and max
+    		else{
+    			aabbMin.x = Math.min(aabbMin.x, child.geometry.boundingBox.min.x);
+    			aabbMin.y = Math.min(aabbMin.y, child.geometry.boundingBox.min.y);
+    			aabbMin.z = Math.min(aabbMin.z, child.geometry.boundingBox.min.z);
+    			aabbMax.x = Math.max(aabbMax.x, child.geometry.boundingBox.max.x);
+    			aabbMax.y = Math.max(aabbMax.y, child.geometry.boundingBox.max.y);
+    			aabbMax.z = Math.max(aabbMax.z, child.geometry.boundingBox.max.z);
+    		}
+    	}
+    });
+
+    // Compute world AABB center
+    var aabbCenter = new THREE.Vector3();
+    aabbCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
+    aabbCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
+    aabbCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
+
+    // Compute world AABB "radius"
+    var diag = new THREE.Vector3();
+    diag = diag.subVectors(aabbMax, aabbMin);
+    var radius = diag.length() * 0.5;
+
+    // Compute offset needed to move the camera back that much needed to center AABB 
+    var offset = radius / Math.tan(Math.PI / 180.0 * GEPPETTO.camera.fov * 0.25);
+
+    var camDir = new THREE.Vector3( 0, 0, 1.0 );
+    
+    camDir.multiplyScalar(offset); 
+    var camPos = new THREE.Vector3();
+    camPos.addVectors(aabbCenter, camDir);
+
+    // Update camera 
+    GEPPETTO.camera.rotationAutoUpdate = false;
+    GEPPETTO.camera.position.set( camPos.x, camPos.y, camPos.z );
+    GEPPETTO.camera.lookAt(aabbCenter);  
+    GEPPETTO.camera.rotationAutoUpdate = true;
+    GEPPETTO.controls = new THREE.TrackballControls(GEPPETTO.camera,GEPPETTO.renderer.domElement);
+    GEPPETTO.controls.target = aabbCenter;
 };
 
 /**

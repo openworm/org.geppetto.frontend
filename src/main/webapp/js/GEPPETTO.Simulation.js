@@ -163,6 +163,7 @@ GEPPETTO.Simulation.connect = (function(host)
 		switch(parsedServerMessage.type){
 			//clear canvas, used when loading a new model or re-loading previous one
 			case "reload_canvas":
+				Console.log("Clear canvas");
 				var webGLStarted = GEPPETTO.init(FE.createContainer());
 				FE.update(webGLStarted);
 				break;
@@ -174,9 +175,9 @@ GEPPETTO.Simulation.connect = (function(host)
 				break;
 			//Simulation has been loaded and model need to be loaded
 			case "load_model":
-				Console.log("Received: Loading Model");
+				Console.log("Received: Loading Model " );
 				var entities = JSON.parse(parsedServerMessage.entities);
-				
+								
 				//Populate scene and set status to loaded
 				GEPPETTO.populateScene(entities);
 				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.LOADED;
@@ -244,15 +245,17 @@ var Console =
 Console.log = (function(message)
 {
 	var console = document.getElementById('consolealert');
-	var p = document.createElement('p');
-	p.style.wordWrap = 'break-word';
-	p.innerHTML = message;
-	console.appendChild(p);
-	while (console.childNodes.length > 25)
-	{
-		console.removeChild(console.firstChild);
+	if(console !=null){
+		var p = document.createElement('p');
+		p.style.wordWrap = 'break-word';
+		p.innerHTML = message;
+		console.appendChild(p);
+		while (console.childNodes.length > 25)
+		{
+			console.removeChild(console.firstChild);
+		}
+		console.scrollTop = console.scrollHeight;
 	}
-	console.scrollTop = console.scrollHeight;
 });
 
 var FE = FE ||
@@ -326,9 +329,7 @@ FE.observersAlert = function(title, alertMsg, popoverMsg)
  * Look for Simulations that may have been embedded as parameter in the URL
  */
 FE.searchForURLEmbeddedSimulation =  function()
-{
-	Console.log("Reading embedded simulation file");
-	
+{	
 	//Get the URL with which Geppetto was loaded
 	var urlLocation = window.location.href;
 	//Split url looking for simulation parameters
@@ -412,7 +413,6 @@ FE.loadingModalUIUpdate = function()
 	
 	//Responds to user selecting Custom radio button
 	$("#customRadio").click(function() {
-		Console.log("Custom radio button clicked");
 		//Handles the events related the content edit area
 		$('#customRadio').val("active");
 		$('#urlInput').hide();	

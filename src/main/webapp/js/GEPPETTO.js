@@ -75,6 +75,9 @@ GEPPETTO.geometriesMap = null;
 GEPPETTO.plots = new Array();
 GEPPETTO.idCounter = 0;
 
+GEPPETTO.sceneCenter = new THREE.Vector3();
+GEPPETTO.cameraPosition = new THREE.Vector3();
+
 /**
  * Initialize the engine
  */
@@ -281,13 +284,14 @@ GEPPETTO.populateScene = function(jsonscene)
 		GEPPETTO.scene.add(GEPPETTO.getThreeObjectFromJSONEntity(entities[eindex], eindex, true));
 	}
 	
-	GEPPETTO.centerCamera();
+	GEPPETTO.calculateSceneCenter();
+	GEPPETTO.updateCamera();
 };
 
 /**
  * Compute the center of the scene.
  */
-GEPPETTO.centerCamera = function()
+GEPPETTO.calculateSceneCenter = function()
 {   
     var aabbMin = null;
     var aabbMax = null;
@@ -316,10 +320,9 @@ GEPPETTO.centerCamera = function()
     });
 
     // Compute world AABB center
-    var aabbCenter = new THREE.Vector3();
-    aabbCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
-    aabbCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
-    aabbCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
+    GEPPETTO.sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
+    GEPPETTO.sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
+    GEPPETTO.sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
 
     // Compute world AABB "radius"
     var diag = new THREE.Vector3();
@@ -332,16 +335,25 @@ GEPPETTO.centerCamera = function()
     var camDir = new THREE.Vector3( 0, 0, 1.0 );
     
     camDir.multiplyScalar(offset); 
-    var camPos = new THREE.Vector3();
-    camPos.addVectors(aabbCenter, camDir);
+    
+    //Store camera position
+    GEPPETTO.cameraPosition = new THREE.Vector3();
+    GEPPETTO.cameraPosition.addVectors(GEPPETTO.sceneCenter, camDir);
+};
 
-    // Update camera 
+/**
+ * Update camera with new position and place to lookat
+ */
+GEPPETTO.updateCamera = function()
+{
+	// Update camera 
     GEPPETTO.camera.rotationAutoUpdate = false;
-    GEPPETTO.camera.position.set( camPos.x, camPos.y, camPos.z );
-    GEPPETTO.camera.lookAt(aabbCenter);  
+    GEPPETTO.camera.position.set( GEPPETTO.cameraPosition.x, GEPPETTO.cameraPosition.y, GEPPETTO.cameraPosition.z );
+    GEPPETTO.camera.lookAt(GEPPETTO.sceneCenter); 
+    GEPPETTO.camera.up = new THREE.Vector3(0,1,0);
     GEPPETTO.camera.rotationAutoUpdate = true;
     GEPPETTO.controls = new THREE.TrackballControls(GEPPETTO.camera,GEPPETTO.renderer.domElement);
-    GEPPETTO.controls.target = aabbCenter;
+    GEPPETTO.controls.target = GEPPETTO.sceneCenter;
 };
 
 /**
@@ -563,8 +575,8 @@ GEPPETTO.setupCamera = function()
 	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
 	GEPPETTO.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 	GEPPETTO.scene.add(GEPPETTO.camera);
-	GEPPETTO.camera.position.set(0, 150, 400);
-	GEPPETTO.camera.lookAt(GEPPETTO.scene.position);
+	GEPPETTO.camera.position.set(GEPPETTO.cameraPosition);
+	GEPPETTO.camera.lookAt(GEPPETTO.sceneCenter);
 	GEPPETTO.projector = new THREE.Projector();
 };
 
@@ -1161,8 +1173,7 @@ $(document).ready(function()
 		GEPPETTO.controls.resetSTATE();
 	}).next().click(function(event)
 	{
-		GEPPETTO.setupCamera();
-		GEPPETTO.setupControls();
+		GEPPETTO.updateCamera();
 	});
 
 	$("#rw").click(function(event)
@@ -1191,8 +1202,7 @@ $(document).ready(function()
 		GEPPETTO.controls.resetSTATE();
 	}).next().click(function(event)
 	{
-		GEPPETTO.setupCamera();
-		GEPPETTO.setupControls();
+		GEPPETTO.updateCamera();
 	});
 
 	$("#zo").click(function(event)

@@ -34,15 +34,20 @@
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="css/custom-theme/jquery-ui-1.10.0.custom.css" />
 		<link rel="stylesheet" href="css/codemirror.css" />
+		<link rel="stylesheet" href="css/lesser-dark.css" />
+
 
 	</head>
+	<link rel="icon" 
+      type="image/png" 
+      href="images/favicon.png"/>
 	<body>
 
 		<div id="geppettologo"></div>
 		<div id="controls">
 
 			<div id="sim_toolbar">
-				<a  href="#loadSimModal" role="button" class="btn" data-toggle="modal" id="openload"><icon class="icon-folder-open-alt"></icon> Load Simulation</a>
+				<a  href="#loadSimModal" role="button" class="btn" data-toggle="modal" data-keyboard="false" id="openload"><icon class="icon-folder-open-alt"></icon> Load Simulation</a>
 				<button class="btn" id="start">
 					<icon class="icon-play"></icon>
 					Start
@@ -144,6 +149,7 @@
 						<label class="control-label">Content</label>
 						<div class="controls">
 							<textarea id="code" name="code"></textarea>
+							<button id="fullscreen" type="button"  class="button icon-fullscreen"></button>
 						</div>
 					</div>
 				</div>

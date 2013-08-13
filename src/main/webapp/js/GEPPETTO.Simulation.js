@@ -421,6 +421,7 @@ FE.loadingModalUIUpdate = function()
 		//update editor with latest simulation file selected
 		FE.updateEditor(GEPPETTO.Simulation.simulationFile);
 	});
+	
 };
 
 /**

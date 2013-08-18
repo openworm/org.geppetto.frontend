@@ -1,8 +1,15 @@
+html{
+	height: 100%;
+	width: 100%;
+}
+
 body {
 	background-color: #000000;
 	margin: 0px;
 	margin-top: 20px;
 	overflow: hidden;
+	height: 100%;
+	width: 100%;
 }
 
 #logo-container {
@@ -41,8 +48,9 @@ p {
 	width: 200px;
 	height: 66px;
 	left: 5px;
-	bottom: 10px;
-	position: absolute;
+	float: left;
+	position: relative;
+	bottom: 0px;
 }
 
 #position_toolbar {
@@ -320,4 +328,36 @@ input {
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
+}
+
+#bottomLayout {
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+	float: left;
+}
+
+#jsConsoleButton {
+	background: transparent;
+	color: rgb(102, 255, 0);
+	bottom: -10px;
+	right: 5px;
+	border-color: rgb(102, 255, 0);
+	position: relative;
+	left: 35%;
+	bottom: -10px;
+}
+
+#jsConsoleButton .icon-terminal{
+	margin-right: 15px;
+}
+
+#sim {
+	width: 100%;
+	height: 80%;
+	float: left;
+}
+
+#mainContainer {
+	height: 100%;
 }

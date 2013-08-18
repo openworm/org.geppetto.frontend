@@ -488,7 +488,7 @@ $(document).ready(function()
 		$('#stop').removeAttr('disabled');
 		GEPPETTO.Simulation.pause();
 	});
-
+	
 	$('#stop').click(function()
 	{
 		$('#start').removeAttr('disabled');
@@ -517,6 +517,10 @@ $(document).ready(function()
 			Console.log("Sent: Load simulation from URL");
 			GEPPETTO.Simulation.load("init_url$", $('#url').val());
 		}
+	});
+	$('#jsConsoleButton').click(function()
+	{	
+		GEPPETTO.JSConsole.toggleConsole();
 	});
 
 	GEPPETTO.Simulation.init();

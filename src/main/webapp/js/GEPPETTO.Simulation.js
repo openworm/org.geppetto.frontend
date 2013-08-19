@@ -264,6 +264,11 @@ var FE = FE ||
 FE.createContainer = function()
 {
 	$("#sim canvas").remove();
+	
+	//Get appropriate height for canvas so it's not under js console.
+	var height = ($('#mainContainer').height() - $('#footerLayout').height())/$('#mainContainer').height();
+	var percentage = (height * 100).toString() + "%";
+	document.getElementById('sim').style.height = percentage;
 	return $("#sim").get(0);
 };
 
@@ -517,10 +522,6 @@ $(document).ready(function()
 			Console.log("Sent: Load simulation from URL");
 			GEPPETTO.Simulation.load("init_url$", $('#url').val());
 		}
-	});
-	$('#jsConsoleButton').click(function()
-	{	
-		GEPPETTO.JSConsole.toggleConsole();
 	});
 
 	GEPPETTO.Simulation.init();

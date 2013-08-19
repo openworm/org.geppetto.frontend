@@ -570,12 +570,11 @@ GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubent
 GEPPETTO.setupCamera = function()
 {
 	// Camera
-	var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+	var SCREEN_WIDTH = $(GEPPETTO.container).width(), SCREEN_HEIGHT = $(GEPPETTO.container).height();
 	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
 	GEPPETTO.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 	GEPPETTO.scene.add(GEPPETTO.camera);
 	GEPPETTO.camera.position.set( GEPPETTO.cameraPosition.x, GEPPETTO.cameraPosition.y, GEPPETTO.cameraPosition.z );
-    GEPPETTO.camera.rotation.set(0.0,0.0,0.0);
 	GEPPETTO.camera.lookAt(GEPPETTO.sceneCenter);
 	GEPPETTO.projector = new THREE.Projector();
 };
@@ -601,11 +600,12 @@ GEPPETTO.setupStats = function()
 	if ($("#stats").length == 0)
 	{
 		GEPPETTO.stats = new Stats();
-		GEPPETTO.stats.domElement.style.position = 'absolute';
+		GEPPETTO.stats.domElement.style.float = 'right';
+		GEPPETTO.stats.domElement.style.position = 'relative';
 		GEPPETTO.stats.domElement.style.bottom = '0px';
 		GEPPETTO.stats.domElement.style.right = '0px';
 		GEPPETTO.stats.domElement.style.zIndex = 100;
-		GEPPETTO.container.appendChild(GEPPETTO.stats.domElement);
+		$(GEPPETTO.stats.domElement).insertBefore('#jsConsole');
 	}
 };
 /**
@@ -694,7 +694,9 @@ GEPPETTO.setupRenderer = function()
 		antialias : true
 	});
 	GEPPETTO.renderer.setClearColor(0x000000, 1);
-	GEPPETTO.renderer.setSize(window.innerWidth, window.innerHeight);
+	var width = $(GEPPETTO.container).width();
+	var height = $(GEPPETTO.container).height();
+	GEPPETTO.renderer.setSize(width, height);
 	GEPPETTO.renderer.autoClear = true;
 	GEPPETTO.container.appendChild(GEPPETTO.renderer.domElement);
 };
@@ -725,10 +727,10 @@ GEPPETTO.setupListeners = function()
 GEPPETTO.onWindowResize = function()
 {
 
-	GEPPETTO.camera.aspect = window.innerWidth / window.innerHeight;
+	GEPPETTO.camera.aspect = ($(GEPPETTO.container).width())/($(GEPPETTO.container).height());;
 	GEPPETTO.camera.updateProjectionMatrix();
 
-	GEPPETTO.renderer.setSize(window.innerWidth, window.innerHeight);
+	GEPPETTO.renderer.setSize($(GEPPETTO.container).width(), $(GEPPETTO.container).height());
 
 };
 

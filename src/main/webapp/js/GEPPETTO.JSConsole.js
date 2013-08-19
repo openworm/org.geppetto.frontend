@@ -33,6 +33,9 @@
 
 /**
  * 
+ * Class that handles creationg and loading of JS Console.
+ * Handles events associated with the console as well.
+ * 
  * @author Jesus Martinez (jesus@metacell.us)
  */
 GEPPETTO.JSConsole = GEPPETTO.JSConsole ||
@@ -43,40 +46,94 @@ GEPPETTO.JSConsole = GEPPETTO.JSConsole ||
 GEPPETTO.JSConsole.jsConsole = null;
 GEPPETTO.JSConsole.consoleVisible = false;
 
+/**
+ * Toggle js console visibility via button 
+ */
 GEPPETTO.JSConsole.toggleConsole = function(){
+	//toggle button class
 	$('#jsConsoleButton').toggleClass('clicked');
 	
-	if($('#jsConsoleButton').hasClass('clicked')) {		
+	//user has clicked the console button
+	if($('#jsConsoleButton').hasClass('clicked')) {	
+		//load the console
 		GEPPETTO.JSConsole.loadConsole();
-		$('#jsConsole').show();
-		GEPPETTO.JSConsole.consoleVisible = true;
+		//toggle console
+		$('#jsConsole').slideToggle(200,function(){
+			//update canvas size as is now sharing screen with console
+			GEPPETTO.JSConsole.updateCanvasHeight();
+		});
     } else {
-    	$('#jsConsole').hide();
-    	GEPPETTO.JSConsole.consoleVisible = false;
+		$('#jsConsole').slideToggle(200,function(){
+			//Get appropriate height for canvas so it's not under js console.
+			GEPPETTO.JSConsole.updateCanvasHeight();
+		});		
     }
 };
 
+/**
+ * Update the canvas height after toggling JS Console
+ */
+GEPPETTO.JSConsole.updateCanvasHeight = function(){
+	//New height of canvas. Calculate percentage
+	var height = ($('#mainContainer').height() - $('#footerLayout').height())/$('#mainContainer').height();
+	//Make string w/ percentage to set to canvas
+	var percentage = (height * 100).toString() + "%";
+	//set the new height percentage to canvas div
+	document.getElementById('sim').style.height = percentage;
+};
+
+/**
+ * Load Console, create if it doesn't exist
+ */
 GEPPETTO.JSConsole.loadConsole = function(){
 	if(GEPPETTO.JSConsole.jsConsole == null){
 		GEPPETTO.JSConsole.createConsole();
 	}
 };
 
+/**
+ * Creates JS Console
+ */
 GEPPETTO.JSConsole.createConsole = function(){	
-	// Create the sandbox:
+	// Create the sandbox console:
 	GEPPETTO.JSConsole.jsConsole = new Sandbox.View({
 		el : $('#jsConsole'),
 		model : new Sandbox.Model(),
-		// these are optional (defaults are given here):
 		resultPrefix : "  => ",
 		helpText : "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.",
 		tabCharacter : "\t",
 		placeholder : "// type some javascript and hit enter (:help for info)"
 	});
 	
-	$( "#jsConsole" ).resizable({ handles: 'n', containment: "#bottomLayout" });
+	//allow console to be resizable
+	$( "#jsConsole" ).resizable({ handles: 'n', containment: "#footerLayout" });
 };
 
-GEPPETTO.JSConsole.consoleVisible = function(){
-	
-}
+/**
+ * Returns visibility of console
+ */
+GEPPETTO.JSConsole.isConsoleVisible = function(){
+	if($('#jsConsoleButton').hasClass('clicked')) {	
+		return true;
+    } else {
+		return false;	
+    }
+};
+
+//============================================================================
+//Application logic.
+//============================================================================
+$(document).ready(function()
+{	
+	//JS Console Button clicked
+	$('#jsConsoleButton').click(function()
+	{	
+		GEPPETTO.JSConsole.toggleConsole();
+		
+		//if simulation has not been intialized don't attempt to resize canvas
+		if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
+			GEPPETTO.onWindowResize();
+		}
+	});
+});
+

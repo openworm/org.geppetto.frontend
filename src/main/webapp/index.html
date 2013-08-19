@@ -110,22 +110,26 @@
 		</div>
 		</div>
 		-->
-		<div id="consolealert" class="alert alert-info">
-			<button type="button" class="close" data-dismiss="alert">
-				&times;
-			</button>
-			<div id="console"></div>
-		</div>
+	<div id="consolealert" class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">
+			&times;</button>
+		<div id="console"></div>
+	</div>
 
+	<div id="mainContainer">
 		<div id="sim"></div>
-		<div id="bottomLayout">
+
+		<div id="footerLayout" class="pagination-centered">
 			<div id="geppettologo"></div>
-			<button class="btn pagination-right" id="jsConsoleButton">
-			<icon class="icon-terminal"></icon>
-			JS Console
+			
+			<button class="btn" id="jsConsoleButton">
+				<icon class="icon-terminal"></icon>
+				JS Console
 			</button>
-				<div id="jsConsole" class="hide">Console Loading...</div>
+			<div id="jsConsole">Console Loading...</div>
 		</div>
+	</div>
+	
 	<div id="loadSimModal" class="modal hide fade" tabindex="-1"
 		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
 		data-backdrop="static">

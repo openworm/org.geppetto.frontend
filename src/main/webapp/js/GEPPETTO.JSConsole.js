@@ -60,7 +60,7 @@ GEPPETTO.JSConsole.toggleConsole = function(){
 		//toggle console
 		$('#jsConsole').slideToggle(200,function(){
 			//update canvas size as is now sharing screen with console
-			GEPPETTO.JSConsole.updateCanvasHeight();
+			FE.updateCanvasContainerSize();
 			//if simulation has not been intialized don't attempt to resize canvas
 			if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
 				GEPPETTO.onWindowResize();
@@ -69,25 +69,13 @@ GEPPETTO.JSConsole.toggleConsole = function(){
     } else {
 		$('#jsConsole').slideToggle(200,function(){
 			//Get appropriate height for canvas so it's not under js console.
-			GEPPETTO.JSConsole.updateCanvasHeight();
+			FE.updateCanvasContainerSize();
 			//if simulation has not been intialized don't attempt to resize canvas
 			if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
 				GEPPETTO.onWindowResize();
 			}
 		});		
     }
-};
-
-/**
- * Update the canvas height after toggling JS Console
- */
-GEPPETTO.JSConsole.updateCanvasHeight = function(){
-	//New height of canvas. Calculate percentage
-	var height = ($('#mainContainer').height() - $('#footerLayout').height())/$('#mainContainer').height();
-	//Make string w/ percentage to set to canvas
-	var percentage = (height * 100).toString() + "%";
-	//set the new height percentage to canvas div
-	document.getElementById('sim').style.height = percentage;
 };
 
 /**
@@ -114,7 +102,11 @@ GEPPETTO.JSConsole.createConsole = function(){
 	});
 	
 	//allow console to be resizable
-	$( "#jsConsole" ).resizable({ handles: 'n', containment: "#footerLayout" });
+	$( "#jsConsole" ).resizable({ 
+		handles: 'n', 
+		containment: "#footerLayout",
+		minHeight: 150
+	});
 };
 
 /**

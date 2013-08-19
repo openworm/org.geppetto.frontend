@@ -273,6 +273,18 @@ FE.createContainer = function()
 };
 
 /**
+ * Update the canvas height after toggling JS Console
+ */
+FE.updateCanvasContainerSize = function(){
+	//New height of canvas. Calculate percentage
+	var height = ($('#mainContainer').height() - $('#footerLayout').height())/$('#mainContainer').height();
+	//Make string w/ percentage to set to canvas
+	var percentage = (height * 100).toString() + "%";
+	//set the new height percentage to canvas div
+	document.getElementById('sim').style.height = percentage;
+};
+
+/**
  * update
  */
 FE.update = function(webGLStarted)
@@ -521,6 +533,15 @@ $(document).ready(function()
 		else{
 			Console.log("Sent: Load simulation from URL");
 			GEPPETTO.Simulation.load("init_url$", $('#url').val());
+		}
+	});
+	
+	$('#alertboxclose').click(function(){
+		$('#mainContainer').height("100%");
+		FE.updateCanvasContainerSize();
+		//if simulation has not been intialized don't attempt to resize canvas
+		if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
+			GEPPETTO.onWindowResize();
 		}
 	});
 

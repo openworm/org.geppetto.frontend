@@ -61,11 +61,19 @@ GEPPETTO.JSConsole.toggleConsole = function(){
 		$('#jsConsole').slideToggle(200,function(){
 			//update canvas size as is now sharing screen with console
 			GEPPETTO.JSConsole.updateCanvasHeight();
+			//if simulation has not been intialized don't attempt to resize canvas
+			if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
+				GEPPETTO.onWindowResize();
+			}
 		});
     } else {
 		$('#jsConsole').slideToggle(200,function(){
 			//Get appropriate height for canvas so it's not under js console.
 			GEPPETTO.JSConsole.updateCanvasHeight();
+			//if simulation has not been intialized don't attempt to resize canvas
+			if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
+				GEPPETTO.onWindowResize();
+			}
 		});		
     }
 };
@@ -129,11 +137,6 @@ $(document).ready(function()
 	$('#jsConsoleButton').click(function()
 	{	
 		GEPPETTO.JSConsole.toggleConsole();
-		
-		//if simulation has not been intialized don't attempt to resize canvas
-		if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
-			GEPPETTO.onWindowResize();
-		}
 	});
 });
 

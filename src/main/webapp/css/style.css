@@ -339,11 +339,11 @@ input {
 }
 
 #jsConsoleButton {
+	position: relative;
 	background: transparent;
 	color: rgb(102, 255, 0);
 	bottom: -10px;
 	border-color: rgb(102, 255, 0);
-	position: relative;
 	right: 50px;
 }
 

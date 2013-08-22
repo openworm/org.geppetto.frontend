@@ -62,16 +62,21 @@ GEPPETTO.JSConsole.toggleConsole = function(){
 			//update canvas size as is now sharing screen with console
 			FE.updateCanvasContainerSize();
 			//if simulation has not been intialized don't attempt to resize canvas
-			if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
+			if(Simulation.isLoaded()){
 				GEPPETTO.onWindowResize();
 			}
 		});
     } else {
+    	if($('#footerLayout').height()!=null){
+			$('#footerLayout').height('');
+			
+		}
+    	$('#toplayer').css("bottom","0px");
 		$('#jsConsole').slideToggle(200,function(){
 			//Get appropriate height for canvas so it's not under js console.
 			FE.updateCanvasContainerSize();
 			//if simulation has not been intialized don't attempt to resize canvas
-			if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.INIT){
+			if(Simulation.isLoaded()){
 				GEPPETTO.onWindowResize();
 			}
 		});		
@@ -104,8 +109,26 @@ GEPPETTO.JSConsole.createConsole = function(){
 	//allow console to be resizable
 	$( "#jsConsole" ).resizable({ 
 		handles: 'n', 
-		containment: "#footerLayout",
-		minHeight: 150
+		containment: "#mainContainer",
+		minHeight: 100,
+		maxHeight: 500,
+		resize: function(event,ui){
+			document.getElementById('jsConsole').style.top = "0px";
+			$(document.getElementById('footerLayout')).height(ui.size.height + 86);
+			if(Simulation.isLoaded()){
+				FE.updateCanvasContainerSize();
+				GEPPETTO.onWindowResize();
+			}
+		},
+	});
+	
+	//handles resizing the JS console when the windows is resized
+	$(window).resize(function(){
+		if(Simulation.isLoaded()){
+			FE.updateCanvasContainerSize();
+			GEPPETTO.onWindowResize();
+		}
+		$('#jsConsole').css("width", $("#footerLayout").width()-40);
 	});
 };
 

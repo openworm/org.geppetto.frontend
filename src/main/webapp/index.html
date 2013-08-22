@@ -23,10 +23,11 @@
 
 		<!-- Geppetto -->
 		<script src="js/GEPPETTO.js"></script>
-		<script src="js/GEPPETTO.Simulation.js"></script>
+		<script src="js/GEPPETTO.Main.js"></script>
 		<script src="js/GEPPETTO.Vanilla.js"></script>
 		<script src="js/GEPPETTO.SimulationContentEditor.js"></script>
 		<script src="js/GEPPETTO.JSConsole.js"></script>
+		<script src="js/geppetto-objects/Simulation.js"></script>
 		
 		<!-- CSS -->
 		<link rel="stylesheet" href="css/jquery.fancybox.css"/>
@@ -120,12 +121,14 @@
 		<div id="sim"></div>
 
 		<div id="footerLayout" class="pagination-centered">
+			<div id="toplayer">
 			<div id="geppettologo"></div>
 			
 			<button class="btn" id="jsConsoleButton">
 				<icon class="icon-terminal"></icon>
 				JavaScript Console
 			</button>
+			</div>
 			<div id="jsConsole">Console Loading...</div>
 		</div>
 	</div>

@@ -32,7 +32,8 @@
  *******************************************************************************/
 
 /**
- * @fileoverview GEPPETTO Visualisation engine built on top of THREE.js. Displays a scene as defined on org.geppetto.core
+ *
+ * Class that handles user interaction with the Simulation File editor.
  * 
  * @author Jesus Martinez (jesus@metacell.us)
  */
@@ -47,10 +48,11 @@ GEPPETTO.SimulationContentEditor.editor = null;
 /**
  * Load simulation template using ajax call.
  * 
- * @param location
+ * @param location - location of the simulation template file
  */
 GEPPETTO.SimulationContentEditor.loadTemplateSimulation = function(location)
 {
+	//ajax call to request xml of template file
 	$.ajax(
 	{
 		type : "GET",
@@ -58,16 +60,17 @@ GEPPETTO.SimulationContentEditor.loadTemplateSimulation = function(location)
 		dataType : "xml",
 		success : function(result)
 		{
-
+			//convert xml file contents to string
 			var xmlString = GEPPETTO.SimulationContentEditor.xmlToString(result);
 
+			//load the simulation template file to the editor
 			GEPPETTO.SimulationContentEditor.loadSimulationInfo(xmlString);
 		}
 	});
 };
 
 /**
- * Set editor's code
+ * Set the code that is display on the editor
  */
 GEPPETTO.SimulationContentEditor.loadSimulationInfo = function(xmlSimulation)
 {
@@ -120,6 +123,7 @@ GEPPETTO.SimulationContentEditor.handleContentEdit = function()
 	{
 		GEPPETTO.SimulationContentEditor.editing = true;
 
+		//if simulation file is edited, reset sample menu dropdown
 		if ($('#dropdowndisplaytext').text() != "Select simulation from list...")
 		{
 			$('#dropdowndisplaytext').html("Select simulation from list...");
@@ -162,8 +166,10 @@ GEPPETTO.SimulationContentEditor.createXMLEditor = function()
 		}
 	});
 
+	//binds editor to events to detect changes within
 	GEPPETTO.SimulationContentEditor.handleContentEdit();
-	
+
+	//Toggles fullscreen mode on editor
 	$("#fullscreen").click(function(){
 		cm=GEPPETTO.SimulationContentEditor.editor;
 		GEPPETTO.SimulationContentEditor.setFullScreen(cm, !GEPPETTO.SimulationContentEditor.isFullScreen(cm));

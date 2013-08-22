@@ -601,11 +601,11 @@ GEPPETTO.setupStats = function()
 	{
 		GEPPETTO.stats = new Stats();
 		GEPPETTO.stats.domElement.style.float = 'right';
-		GEPPETTO.stats.domElement.style.position = 'relative';
+		GEPPETTO.stats.domElement.style.position = 'absolute';
 		GEPPETTO.stats.domElement.style.bottom = '0px';
 		GEPPETTO.stats.domElement.style.right = '0px';
 		GEPPETTO.stats.domElement.style.zIndex = 100;
-		$(GEPPETTO.stats.domElement).insertBefore('#jsConsole');
+		$('#toplayer').append(GEPPETTO.stats.domElement);
 	}
 };
 /**
@@ -916,7 +916,7 @@ PLOT = function(entityId, variables, ymin, ymax)
 
 };
 
-/**
+/*
  * @param id
  * @param title
  * @returns
@@ -1013,7 +1013,7 @@ GEPPETTO.updatePlots = function()
 GEPPETTO.animate = function()
 {
 	debugUpdate = GEPPETTO.needsUpdate; // so that we log only the cycles when we are updating the scene
-	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
+	if (Simulation.getStatus() == 2 && debugUpdate)
 	{
 		GEPPETTO.log("Starting update frame");
 	}
@@ -1030,7 +1030,7 @@ GEPPETTO.animate = function()
 	{
 		GEPPETTO.stats.update();
 	}
-	if (GEPPETTO.Simulation.getStatus() == 2 && debugUpdate)
+	if (Simulation.getStatus() == 2 && debugUpdate)
 	{
 		GEPPETTO.log("End update frame");
 	}

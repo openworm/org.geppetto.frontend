@@ -167,7 +167,33 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+			<plugin>
+				<groupId>com.github.phasebash</groupId>
+				<artifactId>jsdoc3-maven-plugin</artifactId>
+				<version>1.0.4</version>
+				<configuration>
+					<recursive>true</recursive>
+					<directoryRoots>
+						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
+					</directoryRoots>
+					<sourceFiles>
+						<sourceFile>src/main/webapp/js/GEPPETTO.js</sourceFile>
+						<sourceFile>src/main/webapp/js/GEPPETTO.Main.js</sourceFile>
+						<sourceFile>src/main/webapp/js/GEPPETTO.SimulationContentEditor.js</sourceFile>
+						<sourceFile>src/main/webapp/js/GEPPETTO.JSConsole.js</sourceFile>
+					</sourceFiles>
+					<outputDirectory>${basedir}/jdocs</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>jsdoc3</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -194,6 +220,7 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+	
 			</plugins>
 		</pluginManagement>
 	</build>

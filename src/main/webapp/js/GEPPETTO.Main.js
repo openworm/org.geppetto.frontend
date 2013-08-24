@@ -238,7 +238,10 @@ FE.createContainer = function()
 {
 	$("#sim canvas").remove();
 	
-	FE.updateCanvasContainerSize();
+	//Get appropriate height for canvas so it's not under js console.
+	var height = ($('#mainContainer').height() - $('#footerLayout').height())/$('#mainContainer').height();
+	var percentage = (height * 100).toString() + "%";
+	document.getElementById('sim').style.height = percentage;
 	
 	return $("#sim").get(0);
 };
@@ -248,13 +251,9 @@ FE.createContainer = function()
  */
 FE.updateCanvasContainerSize = function(){
 	//New height of canvas. Calculate percentage
-	//alert($('#mainContainer').height() + " : " + ($('#footerLayout').height() + $('#toplayer').height() + $('#consolealert').outerHeight()));
-	var height = 
-		($('#mainContainer').height() - ($('#footerLayout').height() + $('#toplayer').height() + $('#consolealert').outerHeight()))/$('#mainContainer').height();
-	//alert(height);
+	var height = ($('#mainContainer').height() - $('#footerLayout').height())/$('#mainContainer').height();
 	//Make string w/ percentage to set to canvas
 	var percentage = (height * 100).toString() + "%";
-	//alert($('#consolealert').outerHeight());
 	//set the new height percentage to canvas div
 	document.getElementById('sim').style.height = percentage;
 };
@@ -510,7 +509,6 @@ $(document).ready(function()
 	$('#start').attr('disabled', 'disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').attr('disabled', 'disabled');
-	FE.updateCanvasContainerSize();
 	
 	$('#start').click(function()
 	{
@@ -544,8 +542,8 @@ $(document).ready(function()
 		}
 	});
 	
-	$('#consoleClose').click(function(){
-		$('#consolealert').remove();
+	$('#alertboxclose').click(function(){
+		$('#mainContainer').height("100%");
 		FE.updateCanvasContainerSize();
 		//if simulation has not been intialized don't attempt to resize canvas
 		if(Simulation.isLoaded()){

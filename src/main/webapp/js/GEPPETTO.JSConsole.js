@@ -73,7 +73,7 @@ GEPPETTO.JSConsole.toggleConsole = function(){
 			$('#footerLayout').height('');
 			
 		}
-    	//$('#toplayer').css("bottom","0px");
+    	$('#toplayer').css("bottom","0px");
 		$('#jsConsole').slideToggle(200,function(){
 			//Get appropriate height for canvas so it's not under js console.
 			FE.updateCanvasContainerSize();
@@ -114,14 +114,11 @@ GEPPETTO.JSConsole.createConsole = function(){
 		containment: "#mainContainer",
 		minHeight: 100,
 		maxHeight: 500,
-		start: function(event, ui){
-			
-		},
 		resize: function(event,ui){
 			document.getElementById('jsConsole').style.top = "0px";
-			$(document.getElementById('footerLayout')).height(ui.size.height + 40);
-			FE.updateCanvasContainerSize();
+			$(document.getElementById('footerLayout')).height(ui.size.height + 86);
 			if(Simulation.isLoaded()){
+				FE.updateCanvasContainerSize();
 				GEPPETTO.onWindowResize();
 			}
 		},
@@ -129,8 +126,8 @@ GEPPETTO.JSConsole.createConsole = function(){
 	
 	//handles resizing the JS console when the windows is resized
 	$(window).resize(function(){
-		FE.updateCanvasContainerSize();
 		if(Simulation.isLoaded()){
+			FE.updateCanvasContainerSize();
 			GEPPETTO.onWindowResize();
 		}
 		$('#jsConsole').css("width", $("#footerLayout").width()-40);

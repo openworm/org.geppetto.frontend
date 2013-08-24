@@ -330,11 +330,10 @@ input {
 	border-radius: 4px;
 }
 
-#footerLayout {
+#footer {
 	position: fixed;
 	bottom: 0px;
 	width: 100%;
-	max-height: 100%;
 }
 
 #jsConsoleButton {
@@ -360,7 +359,7 @@ input {
 	height: 90%
 }
 
-#toplayer {
+#footerHeader {
 	position: relative;
 	width: 100%;
 	float: left;

@@ -239,7 +239,7 @@ FE.createContainer = function()
 	$("#sim canvas").remove();
 	
 	//Get appropriate height for canvas so it's not under js console.
-	var height = ($('#mainContainer').height() - $('#footerLayout').height())/$('#mainContainer').height();
+	var height = ($('#mainContainer').height() - $('#footer').height())/$('#mainContainer').height();
 	var percentage = (height * 100).toString() + "%";
 	document.getElementById('sim').style.height = percentage;
 	
@@ -251,7 +251,7 @@ FE.createContainer = function()
  */
 FE.updateCanvasContainerSize = function(){
 	//New height of canvas. Calculate percentage
-	var height = ($('#mainContainer').height() - $('#footerLayout').height())/$('#mainContainer').height();
+	var height = ($('#mainContainer').height() - $('#footer').height())/$('#mainContainer').height();
 	//Make string w/ percentage to set to canvas
 	var percentage = (height * 100).toString() + "%";
 	//set the new height percentage to canvas div

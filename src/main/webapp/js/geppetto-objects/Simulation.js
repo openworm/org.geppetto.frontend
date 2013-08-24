@@ -65,6 +65,7 @@ Simulation.status = Simulation.StatusEnum.INIT;
  */
 Simulation.start = function()
 {
+	if(Simulation.isLoaded()){
 	//Update the simulation controls visibility
 	FE.updateStartEvent();
 	
@@ -73,6 +74,10 @@ Simulation.start = function()
 	Console.log('Sent: Simulation started');
 	
 	return "Simulation Started";
+	}
+	else{
+		return "Simulation not loaded, must load simulation first";
+	}
 };
 
 /**
@@ -83,14 +88,19 @@ Simulation.start = function()
  */
 Simulation.pause = function()
 {
-	//Updates the simulation controls visibility
-	FE.updatePauseEvent();
-	
-	GEPPETTO.Main.socket.send("pause");
-	Simulation.status = Simulation.StatusEnum.PAUSED;
-	Console.log('Sent: Simulation paused');
-	
-	return "Simulation Paused";
+	if(Simulation.isLoaded()){
+		//Updates the simulation controls visibility
+		FE.updatePauseEvent();
+
+		GEPPETTO.Main.socket.send("pause");
+		Simulation.status = Simulation.StatusEnum.PAUSED;
+		Console.log('Sent: Simulation paused');
+
+		return "Simulation Paused";
+	}
+	else{
+		return "Simulation not loaded, must load simulation first";
+	}
 };
 
 /**
@@ -100,14 +110,22 @@ Simulation.pause = function()
  */
 Simulation.stop = function()
 {
-	//Updates the simulation controls visibility
-	FE.updateStopEvent();
-	
-	GEPPETTO.Main.socket.send("stop");
-	Simulation.status = Simulation.StatusEnum.STOPPED;
-	Console.log('Sent: Simulation stopped');
-	
-	return "Simulation Stopped";
+	if(Simulation.status == (Simulation.StatusEnum.PAUSED || Simulation.StatusEnum.STARTED)){
+		//Updates the simulation controls visibility
+		FE.updateStopEvent();
+
+		GEPPETTO.Main.socket.send("stop");
+		Simulation.status = Simulation.StatusEnum.STOPPED;
+		Console.log('Sent: Simulation stopped');
+
+		return "Simulation Stopped";
+	}
+	else if(Simulation.status == Simulation.StatusEnum.LOADED){
+		return "Unable to stop simulation, loaded but not running";
+	}
+	else{
+		return "Unable to stop simulation that hasn't been loaded";
+	}
 };
 
 /**

@@ -598,7 +598,7 @@ GEPPETTO.setupStats = function()
 		GEPPETTO.stats.domElement.style.bottom = '0px';
 		GEPPETTO.stats.domElement.style.right = '0px';
 		GEPPETTO.stats.domElement.style.zIndex = 100;
-		$('#toplayer').append(GEPPETTO.stats.domElement);
+		$('#footerHeader').append(GEPPETTO.stats.domElement);
 	}
 };
 

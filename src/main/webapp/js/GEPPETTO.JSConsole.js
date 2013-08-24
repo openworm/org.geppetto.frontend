@@ -69,11 +69,10 @@ GEPPETTO.JSConsole.toggleConsole = function(){
 			}
 		});
     } else {
-    	if($('#footerLayout').height()!=null){
-			$('#footerLayout').height('');
-			
+    	if($('#footer').height()!=null){
+			$('#footer').height('');
 		}
-    	$('#toplayer').css("bottom","0px");
+    	$('#footerHeader').css("bottom","0px");
 		$('#jsConsole').slideToggle(200,function(){
 			//Get appropriate height for canvas so it's not under js console.
 			FE.updateCanvasContainerSize();
@@ -111,12 +110,11 @@ GEPPETTO.JSConsole.createConsole = function(){
 	//allow console to be resizable
 	$( "#jsConsole" ).resizable({ 
 		handles: 'n', 
-		containment: "#mainContainer",
 		minHeight: 100,
-		maxHeight: 500,
+		maxHeight: 400,
 		resize: function(event,ui){
 			document.getElementById('jsConsole').style.top = "0px";
-			$(document.getElementById('footerLayout')).height(ui.size.height + 86);
+			$(document.getElementById('footer')).height(ui.size.height + 86);
 			if(Simulation.isLoaded()){
 				FE.updateCanvasContainerSize();
 				GEPPETTO.onWindowResize();
@@ -130,7 +128,7 @@ GEPPETTO.JSConsole.createConsole = function(){
 			FE.updateCanvasContainerSize();
 			GEPPETTO.onWindowResize();
 		}
-		$('#jsConsole').css("width", $("#footerLayout").width()-40);
+		$('#jsConsole').css("width", $("#footer").width()-40);
 	});
 };
 

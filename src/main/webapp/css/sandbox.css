@@ -20,9 +20,8 @@
 	        box-shadow:none;
 }
 #jsConsole {
-	background:#333;
+	background:rgba(66,59,59,0.15);
 	color: #ccc;
-	background: transparent;
 	padding:20px;
 	-webkit-border-radius: 5px;
 	   -moz-border-radius: 5px;
@@ -117,5 +116,5 @@
 .ui-resizable-n {
 	height: 4px;
 	top: 0px;
-	background : rgb(66, 59, 59);
+	background : rgba(66, 59, 59,0.65);
 }

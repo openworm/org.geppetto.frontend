@@ -62,9 +62,7 @@ GEPPETTO.JSConsole.toggleConsole = function(){
 		//toggle console
 		$('#jsConsole').slideToggle(200);
     } else {
-    	if($('#footer').height()!=null){
-			$('#footer').height('');
-		}
+		$('#footer').height('');
     	$('#footerHeader').css("bottom","0px");
 		$('#jsConsole').slideToggle(200);		
     }

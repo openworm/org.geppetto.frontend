@@ -88,7 +88,7 @@ Simulation.start = function()
  */
 Simulation.pause = function()
 {
-	if(Simulation.isLoaded()){
+	if(Simulation.status == Simulation.StatusEnum.STARTED){
 		//Updates the simulation controls visibility
 		FE.updatePauseEvent();
 
@@ -110,7 +110,7 @@ Simulation.pause = function()
  */
 Simulation.stop = function()
 {
-	if(Simulation.status == (Simulation.StatusEnum.PAUSED || Simulation.StatusEnum.STARTED)){
+	if(Simulation.status == Simulation.StatusEnum.PAUSED || Simulation.status == Simulation.StatusEnum.STARTED){
 		//Updates the simulation controls visibility
 		FE.updateStopEvent();
 
@@ -151,7 +151,6 @@ Simulation.load = function(simulationURL)
 			GEPPETTO.animate();
 		}
 		GEPPETTO.Main.socket.send("init_url$" + simulationURL);
-		Console.log('Sent: Simulation loaded');
 	}
 	
 	return "Simulation Loaded";
@@ -180,7 +179,6 @@ Simulation.loadEditedSimulationFile = function(simulation)
 			GEPPETTO.animate();
 		}
 		GEPPETTO.Main.socket.send("init_sim$" + simulation);
-		Console.log('Sent: Simulation loaded');
 	}
 	
 	return "Simulation Loaded";

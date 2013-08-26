@@ -22,7 +22,7 @@
 #jsConsole {
 	background:#333;
 	color: #ccc;
-	background: #333;
+	background: transparent;
 	padding:20px;
 	-webkit-border-radius: 5px;
 	   -moz-border-radius: 5px;
@@ -45,7 +45,7 @@
 	padding:0;
 	margin:0 0 10px;
 	border:0 none;
-	background:#333
+	background:transparent
 }
 
 #jsConsole pre.output span           { color:#f7f7f7; }
@@ -72,7 +72,7 @@
 }
 #jsConsole textarea {
 	color:#f7f7f7;
-	background:#333;
+	background:transparent;
 	border:0 none;
 	outline:0 none;
 	padding:0;
@@ -112,4 +112,10 @@
 #jsConsole pre.output::-webkit-scrollbar-button {
 	width:0;
 	height:0;
+}
+
+.ui-resizable-n {
+	height: 4px;
+	top: 0px;
+	background : rgb(66, 59, 59);
 }

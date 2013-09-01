@@ -40,7 +40,9 @@ import java.nio.CharBuffer;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
-import org.geppetto.frontend.JSONUtility.MESSAGES_TYPES;
+import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+
+import com.google.gson.Gson;
 
 /**
  * Class used to process Web Socket Connections. 
@@ -96,46 +98,62 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 	protected void onTextMessage(CharBuffer message)
 	{
 		String msg = message.toString();
-		if (msg.startsWith("init_url$"))
+		
+		// de-serialize JSON
+		GeppettoMessage gmsg = new Gson().fromJson(msg, GeppettoMessage.class);
+		
+		// switch on message type
+		// NOTE: each message handler knows how to interpret the GeppettoMessage data field
+		switch(INBOUND_MESSAGE_TYPES.valueOf(gmsg.type.toUpperCase()))
 		{
-			String urlString = msg.substring(msg.indexOf("$")+1, msg.length());
-			URL url;
-			try {
-				url = new URL(urlString);
-				simulationListener.initializeSimulation(url,this);
-			} catch (MalformedURLException e) {
-				simulationListener.messageClient(this,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
+			case INIT_URL:
+			{
+				String urlString = gmsg.data;
+				URL url;
+				try {
+					url = new URL(urlString);
+					simulationListener.initializeSimulation(url,this);
+				} catch (MalformedURLException e) {
+					simulationListener.messageClient(this,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+				}
+				break;
 			}
-		}
-		else if (msg.startsWith("init_sim$"))
-		{
-			String simulation = msg.substring(msg.indexOf("$")+1, msg.length());
-			simulationListener.initializeSimulation(simulation, this);
-		}
-		else if (msg.startsWith("sim$"))
-		{
-			String url = msg.substring(msg.indexOf("$")+1, msg.length());
-			simulationListener.getSimulationConfiguration(url, this);
-		}
-		else if (msg.equals("start"))
-		{
-			simulationListener.startSimulation(this);
-		}
-		else if (msg.equals("pause"))
-		{
-			simulationListener.pauseSimulation();
-		}
-		else if (msg.equals("stop"))
-		{
-			simulationListener.stopSimulation();
-		}
-		else if (msg.equals("observe"))
-		{					
-			simulationListener.observeSimulation(this);
-		}
-		else
-		{
-			// NOTE: no other messages expected for now
+			case INIT_SIM:
+			{
+				String simulation = gmsg.data;
+				simulationListener.initializeSimulation(simulation, this);
+				break;
+			}
+			case SIM:
+			{
+				String url = gmsg.data;
+				simulationListener.getSimulationConfiguration(url, this);
+				break;
+			}
+			case START:
+			{
+				simulationListener.startSimulation(this);
+				break;
+			}
+			case PAUSE:
+			{
+				simulationListener.pauseSimulation();
+				break;
+			}
+			case STOP:
+			{
+				simulationListener.stopSimulation();
+				break;
+			}
+			case OBSERVE:
+			{
+				simulationListener.observeSimulation(this);
+				break;
+			}
+			default:
+			{
+				// NOTE: no other messages expected for now
+			}
 		}
 	}
 

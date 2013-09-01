@@ -52,7 +52,7 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoVisitorWebSocket.VisitorRunMode;
-import org.geppetto.frontend.JSONUtility.MESSAGES_TYPES;
+import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -110,7 +110,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		//Simulation not in use, notify client is safe to read and load
 		//any simulation file embedded in url
 		else{
-			messageClient(newVisitor, MESSAGES_TYPES.READ_URL_PARAMETERS);
+			messageClient(newVisitor, OUTBOUND_MESSAGE_TYPES.READ_URL_PARAMETERS);
 		}
 	}
 
@@ -151,14 +151,14 @@ public class SimulationListener implements ISimulationCallbackListener {
 				
 				//Clear canvas of users connected for new model to be loaded
 				for(GeppettoVisitorWebSocket observer : observers){
-					messageClient(observer, MESSAGES_TYPES.RELOAD_CANVAS);
+					messageClient(observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
 				}
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
 				//load another simulation
 				simulationService.init(url, this);
 
-				messageClient(visitor,MESSAGES_TYPES.SIMULATION_LOADED);
+				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
 				break;
 
 			default:
@@ -180,7 +180,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 						}
 					}
 
-					messageClient(visitor, MESSAGES_TYPES.SIMULATION_LOADED);
+					messageClient(visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
 				}
 				else{
 					simulationControlsUnavailable(visitor);
@@ -190,7 +190,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		}
 		//Catch any errors happening while attempting to read simulation
 		catch (GeppettoInitializationException e) {
-			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
+			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 		}
 	}
 	
@@ -211,14 +211,14 @@ public class SimulationListener implements ISimulationCallbackListener {
 				
 				//Clear canvas of users connected for new model to be loaded
 				for(GeppettoVisitorWebSocket observer : observers){
-					messageClient(observer, MESSAGES_TYPES.RELOAD_CANVAS);
+					messageClient(observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
 				}
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
 				//load another simulation
 				simulationService.init(simulation, this);
 
-				messageClient(visitor,MESSAGES_TYPES.SIMULATION_LOADED);
+				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
 				break;
 
 			default:
@@ -240,7 +240,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 						}
 					}
 
-					messageClient(visitor, MESSAGES_TYPES.SIMULATION_LOADED);
+					messageClient(visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
 				}
 				else{
 					simulationControlsUnavailable(visitor);
@@ -250,7 +250,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		}
 		//Catch any errors happening while attempting to read simulation
 		catch (GeppettoInitializationException e) {
-			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION);
+			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 		}
 	}
 
@@ -263,7 +263,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		{
 			simulationService.start();
 			//notify user simulation has started
-			messageClient(controllingUser,MESSAGES_TYPES.SIMULATION_STARTED);
+			messageClient(controllingUser,OUTBOUND_MESSAGE_TYPES.SIMULATION_STARTED);
 		}
 		catch(GeppettoExecutionException e)
 		{
@@ -310,10 +310,10 @@ public class SimulationListener implements ISimulationCallbackListener {
 		observingVisitor.setVisitorRunMode(VisitorRunMode.OBSERVING);
 
 		if(!simulationService.isRunning()){
-			messageClient(observingVisitor,MESSAGES_TYPES.LOAD_MODEL, getSimulationServerConfig().getLoadedScene());
+			messageClient(observingVisitor,OUTBOUND_MESSAGE_TYPES.LOAD_MODEL, getSimulationServerConfig().getLoadedScene());
 		}
 		//Notify visitor they are now in Observe Mode
-		messageClient(observingVisitor, MESSAGES_TYPES.OBSERVER_MODE);
+		messageClient(observingVisitor, OUTBOUND_MESSAGE_TYPES.OBSERVER_MODE);
 	}
 
 	/**
@@ -324,7 +324,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void simulationControlsUnavailable(GeppettoVisitorWebSocket visitor)
 	{	
-		messageClient(visitor,MESSAGES_TYPES.SERVER_UNAVAILABLE);
+		messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SERVER_UNAVAILABLE);
 	}
 
 	/**
@@ -360,7 +360,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 			for(GeppettoVisitorWebSocket visitor : observers){
 				//visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
 				//send message to alert client of server availability
-				messageClient(visitor,MESSAGES_TYPES.SERVER_AVAILABLE);
+				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
 			}
 
 		}			
@@ -388,7 +388,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param visitor - client to receive the message
 	 * @param type - type of message to be send
 	 */
-	public void messageClient(GeppettoVisitorWebSocket visitor, MESSAGES_TYPES type){
+	public void messageClient(GeppettoVisitorWebSocket visitor, OUTBOUND_MESSAGE_TYPES type){
 		//Create a JSON object to be send to the client
 		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type);
 		String msg = jsonUpdate.toString();
@@ -405,7 +405,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param type - Type of udpate to be send
 	 * @param update - update to be send
 	 */
-	private void messageClient(GeppettoVisitorWebSocket visitor, MESSAGES_TYPES type, String update){
+	private void messageClient(GeppettoVisitorWebSocket visitor, OUTBOUND_MESSAGE_TYPES type, String update){
 		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type, update);
 		String msg = jsonUpdate.toString();
 
@@ -466,13 +466,13 @@ public class SimulationListener implements ISimulationCallbackListener {
 		String dateFormatted = formatter.format(date);
 		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
 
-		MESSAGES_TYPES action = MESSAGES_TYPES.SCENE_UPDATE;
+		OUTBOUND_MESSAGE_TYPES action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
 
 		/*
 		 * Simulation is running but model has not yet been loaded. 
 		 */
 		if(!getSimulationServerConfig().isSimulationLoaded()){
-			action = MESSAGES_TYPES.LOAD_MODEL;
+			action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
 
 			getSimulationServerConfig().setIsSimulationLoaded(true);
 		}
@@ -493,11 +493,11 @@ public class SimulationListener implements ISimulationCallbackListener {
 		
 		try {
 			simulationConfiguration = simulationService.getSimulationConfig(new URL(url));
-			messageClient(visitor, MESSAGES_TYPES.SIMULATION_CONFIGURATION, simulationConfiguration);
+			messageClient(visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_CONFIGURATION, simulationConfiguration);
 		} catch (MalformedURLException e) {
-			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
+			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
 		} catch (GeppettoInitializationException e) {
-			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
+			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
 		}
 	}
 }

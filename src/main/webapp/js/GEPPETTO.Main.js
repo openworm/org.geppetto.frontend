@@ -71,7 +71,7 @@ GEPPETTO.Main.observe = function()
 	//Allow user to observe only if wegbl container was created
 	if(webGLStarted){
 		GEPPETTO.animate();	
-		GEPPETTO.Main.socket.send("observe");
+		GEPPETTO.Main.socket.send(messageTemplate("observe", null));
 		Console.log('Sent: Simulation being observed');
 	}
 	
@@ -415,7 +415,7 @@ FE.updateEditor = function(selectedSimulation)
 	}
 	//load sample simulation, request info from the servlet
 	else{
-		GEPPETTO.Main.socket.send("sim$"+ selectedSimulation);
+		GEPPETTO.Main.socket.send(messageTemplate("sim", selectedSimulation));
 	}
 };
 

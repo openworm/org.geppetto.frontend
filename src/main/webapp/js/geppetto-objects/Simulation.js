@@ -66,14 +66,15 @@ Simulation.status = Simulation.StatusEnum.INIT;
 Simulation.start = function()
 {
 	if(Simulation.isLoaded()){
-	//Update the simulation controls visibility
-	FE.updateStartEvent();
-	
-	GEPPETTO.Main.socket.send("start");
-	Simulation.status = Simulation.StatusEnum.STARTED;
-	Console.log('Sent: Simulation started');
-	
-	return "Simulation Started";
+		//Update the simulation controls visibility
+		FE.updateStartEvent();
+		
+		GEPPETTO.Main.socket.send(messageTemplate("start", null));
+		
+		Simulation.status = Simulation.StatusEnum.STARTED;
+		Console.log('Sent: Simulation started');
+		
+		return "Simulation Started";
 	}
 	else{
 		return "Simulation not loaded, must load simulation first";
@@ -91,8 +92,9 @@ Simulation.pause = function()
 	if(Simulation.status == Simulation.StatusEnum.STARTED){
 		//Updates the simulation controls visibility
 		FE.updatePauseEvent();
-
-		GEPPETTO.Main.socket.send("pause");
+		
+		GEPPETTO.Main.socket.send(messageTemplate("pause", null));
+		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
 		Console.log('Sent: Simulation paused');
 
@@ -114,7 +116,8 @@ Simulation.stop = function()
 		//Updates the simulation controls visibility
 		FE.updateStopEvent();
 
-		GEPPETTO.Main.socket.send("stop");
+		GEPPETTO.Main.socket.send(messageTemplate("stop", null));
+		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
 		Console.log('Sent: Simulation stopped');
 
@@ -150,7 +153,8 @@ Simulation.load = function(simulationURL)
 			//we call it only the first time
 			GEPPETTO.animate();
 		}
-		GEPPETTO.Main.socket.send("init_url$" + simulationURL);
+		
+		GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
 	}
 	
 	return "Simulation Loaded";
@@ -178,7 +182,8 @@ Simulation.loadEditedSimulationFile = function(simulation)
 			//we call it only the first time
 			GEPPETTO.animate();
 		}
-		GEPPETTO.Main.socket.send("init_sim$" + simulation);
+		
+		GEPPETTO.Main.socket.send(messageTemplate("init_sim", simulation));
 	}
 	
 	return "Simulation Loaded";
@@ -204,3 +209,19 @@ Simulation.getStatus = function()
 {
 	return Simulation.status;
 };
+
+/**
+* Template for Geppetto message 
+* NOTE: move from here under global G object once in place
+* 
+* @param msgtype - messaga type
+* @param payload - message payload, can be anything
+* @returns JSON stringified object
+*/
+function messageTemplate(msgtype, payload) {
+	var object = {
+		type: msgtype,
+	    data: payload
+	};
+	return JSON.stringify(object);
+}

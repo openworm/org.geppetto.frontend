@@ -43,38 +43,7 @@ import com.google.gson.JsonObject;
 public class JSONUtility {
 
 	private static JSONUtility instance;
-
-	/*
-	 * Stores different types of messages that can be send to the clients
-	 */
-	public enum MESSAGES_TYPES {
-		OBSERVER_MODE("observer_mode_alert"), 
-		LOAD_MODEL("load_model"), 
-		READ_URL_PARAMETERS("read_url_parameters"), 
-		SIMULATION_LOADED("simulation_loaded"), 
-		ERROR_LOADING_SIMULATION("error_loading_simulation"), 
-		SERVER_UNAVAILABLE("server_unavailable"), 
-		SERVER_AVAILABLE("server_available"),
-		SIMULATION_STARTED("simulation_started"), 
-		INFO_MESSAGE("info_message"),
-		SCENE_UPDATE("scene_update"), 
-		RELOAD_CANVAS("reload_canvas"),
-		SIMULATION_CONFIGURATION("simulation_configuration"),
-		ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config");
-
-		private MESSAGES_TYPES(final String text) {
-			this.text = text;
-		}
-
-		private final String text;
-
-		@Override
-		public String toString() {
-			return text;
-		}
-
-	}
-
+	
 	public static JSONUtility getInstance() {
 		if(instance == null) {
 			instance = new JSONUtility();
@@ -88,7 +57,7 @@ public class JSONUtility {
 	 * @param type - Type of message of requested
 	 * @return
 	 */
-	public JsonObject getJSONObject(MESSAGES_TYPES type){
+	public JsonObject getJSONObject(OUTBOUND_MESSAGE_TYPES type){
 
 		JsonObject json = null;
 
@@ -141,7 +110,7 @@ public class JSONUtility {
 	 * @param update - Parameter requested to be part of JSON object
 	 * @return
 	 */
-	public JsonObject getJSONObject(MESSAGES_TYPES type, String update) {
+	public JsonObject getJSONObject(OUTBOUND_MESSAGE_TYPES type, String update) {
 		JsonObject json = null;
 
 		String messageType = type.toString();

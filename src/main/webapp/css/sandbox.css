@@ -54,6 +54,7 @@
 #jsConsole pre.output span.string    { color:#99f; }
 #jsConsole pre.output span.number    { color:#7f7; }
 #jsConsole pre.output span.error     { color:#f77; }
+#jsConsole pre.output span.debug     { color: gold; }
 
 #jsConsole .input {
 	padding:0 0 0 15px;

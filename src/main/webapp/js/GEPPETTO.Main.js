@@ -207,17 +207,10 @@ var Console =
  */
 Console.log = (function(message)
 {
-	var console = document.getElementById('consolealert');
-	if(console !=null){
-		var p = document.createElement('p');
-		p.style.wordWrap = 'break-word';
-		p.innerHTML = message;
-		console.appendChild(p);
-		while (console.childNodes.length > 25)
-		{
-			console.removeChild(console.firstChild);
-		}
-		console.scrollTop = console.scrollHeight;
+	var jsConsole = GEPPETTO.JSConsole.jsConsole;
+	
+	if(G.isDebugOn()){
+		jsConsole.log(message);
 	}
 });
 
@@ -522,15 +515,6 @@ $(document).ready(function()
 		else{
 			Console.log("Sent: Load simulation from URL");
 			Simulation.load($('#url').val());
-		}
-	});
-	
-	$('#alertboxclose').click(function(){
-		$('#mainContainer').height("100%");
-		document.getElementById('sim').style.height = "100%";
-		//if simulation has not been intialized don't attempt to resize canvas
-		if(Simulation.isLoaded()){
-			GEPPETTO.onWindowResize();
 		}
 	});
 

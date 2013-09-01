@@ -21,18 +21,6 @@ body {
 	width: 100px;
 }
 
-#consolealert {
-	margin: 0 auto;
-	width: 300px;
-	height: 9%;
-	font-size: 10px;
-	line-height: 10px;
-	font-weight: 200;
-	overflow: auto;
-	position: relative;
-	top: 10px;
-}
-
 #dialog-message {
 	font-size: 14px;
 	line-height: 20px;
@@ -356,7 +344,7 @@ input {
 }
 
 #mainContainer {
-	height: 90%
+	height: 100%
 }
 
 #footerHeader {

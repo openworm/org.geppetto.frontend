@@ -88,7 +88,7 @@ GEPPETTO.JSConsole.createConsole = function(){
 		resultPrefix : "  => ",
 		helpText : "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.",
 		tabCharacter : "\t",
-		placeholder : "// type some javascript and hit enter (:help for info)"
+		placeholder : "// type a javascript command and hit enter (help() for info)"
 	});
 	
 	//allow console to be resizable

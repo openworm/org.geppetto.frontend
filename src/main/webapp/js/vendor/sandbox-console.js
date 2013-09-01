@@ -18,6 +18,7 @@ var Sandbox = {
 			iframe : false, // if true, run `eval` inside a sandboxed iframe
 			fallback : true // if true, use native `eval` if the iframe method fails
 		},
+		
 		initialize: function() {
 			_.bindAll(this);
 
@@ -84,6 +85,14 @@ var Sandbox = {
 			// Update the history state and save the model
 			this.set({ history : history }).change();
 			this.save();
+
+			return this;
+		},
+		
+		addDebugHistory: function(item) {
+			item._class = "debug";
+			
+			this.addHistory(item);
 
 			return this;
 		},
@@ -225,7 +234,14 @@ var Sandbox = {
 				this.output[0].scrollHeight - this.output.height()
 			);
 		},
-
+		
+		log : function(message) {
+			return this.model.addDebugHistory({
+				command : 'Debug statement',
+				result : message
+			});
+		},
+		
 		// Manually set the value in the sandbox textarea and focus it ready to submit:
 		setValue : function(command) {
 			this.currentHistory = command;
@@ -366,13 +382,13 @@ var Sandbox = {
 		
 		// Checks for special commands. If any are found, performs their action and returns true
 		specialCommands: function(command) {
-			if (command === ":clear") {
+			if (command === "G.clear()" || command === "G.clear();") {
 				this.model.destroy();
 				return true;
 			}
-			if ( command === ":help" ) {
+			if ( command === "help()" ) {
 				return this.model.addHistory({
-					command : ':help',
+					command : 'help()',
 					result : this.helpText
 				});
 			}

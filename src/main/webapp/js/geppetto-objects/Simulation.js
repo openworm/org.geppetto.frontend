@@ -139,25 +139,33 @@ Simulation.stop = function()
  */
 Simulation.load = function(simulationURL)
 {
-	//Updates the simulation controls visibility
-	FE.updateLoadEvent();
+	var loadStatus = "Loading Simulation";
 	
-	var webGLStarted = GEPPETTO.init(FE.createContainer());
-	//update ui based on success of webgl
-	FE.update(webGLStarted);
-	//Keep going with load of simulation only if webgl container was created
-	if(webGLStarted){
-		FE.activateLoader("show", "Loading Simulation");
-		if (Simulation.status == Simulation.StatusEnum.INIT)
-		{
-			//we call it only the first time
-			GEPPETTO.animate();
+	if(simulationURL != null){
+		//Updates the simulation controls visibility
+		FE.updateLoadEvent();
+
+		var webGLStarted = GEPPETTO.init(FE.createContainer());
+		//update ui based on success of webgl
+		FE.update(webGLStarted);
+		//Keep going with load of simulation only if webgl container was created
+		if(webGLStarted){
+			FE.activateLoader("show", "Loading Simulation");
+			if (Simulation.status == Simulation.StatusEnum.INIT)
+			{
+				//we call it only the first time
+				GEPPETTO.animate();
+			}
+			GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
 		}
-		
-		GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
 	}
 	
-	return "Simulation Loaded";
+	else{
+		loadStatus = "Simulation not specified";
+		//TODO: Check for selected url in input field or simulation in editor
+	}
+	
+	return loadStatus;
 };
 
 /**
@@ -224,4 +232,4 @@ function messageTemplate(msgtype, payload) {
 	    data: payload
 	};
 	return JSON.stringify(object);
-}
+};

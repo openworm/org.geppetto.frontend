@@ -32,6 +32,10 @@
  *******************************************************************************/
 package org.geppetto.frontend;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.JsonObject;
 
 /**
@@ -62,43 +66,38 @@ public class JSONUtility {
 		JsonObject json = null;
 
 		String messageType = type.toString();
+		
+		List<SimpleEntry<String, String>> params = new ArrayList<SimpleEntry<String, String>>();
 
 		switch(type){
-
-		case RELOAD_CANVAS:
-			json = createJSONMessage(messageType);
-			break;	
-		case ERROR_LOADING_SIMULATION:
-			json =
-			createJSONMessage(messageType, "message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString());
-			break;
-		case OBSERVER_MODE:
-			json =
-			createJSONMessage(messageType, "alertMessage", Resources.SIMULATION_CONTROLLED.toString(), "popoverMessage", Resources.GEPPETO_SIM_INFO.toString());
-			break;
-		case READ_URL_PARAMETERS:
-			json = createJSONMessage(messageType);
-			break;
-		case SERVER_UNAVAILABLE:
-			json =
-			createJSONMessage(messageType, "message", Resources.SERVER_UNAVAILABLE.toString());
-			break;
-		case SERVER_AVAILABLE:
-			json =
-			createJSONMessage(messageType, "message", Resources.SERVER_AVAILABLE.toString());
-			break;
-		case SIMULATION_LOADED:
-			json =
-			createJSONMessage(messageType);
-			break;
-		case SIMULATION_STARTED:
-			json =
-			createJSONMessage(messageType);
-			break;
-		default:
-			break;
+			case RELOAD_CANVAS:
+				break;	
+			case ERROR_LOADING_SIMULATION:
+				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString()));
+				break;
+			case OBSERVER_MODE:
+				params.add(new SimpleEntry<String, String>("alertMessage", Resources.SIMULATION_CONTROLLED.toString()));
+				params.add(new SimpleEntry<String, String>("popoverMessage", Resources.GEPPETO_SIM_INFO.toString()));
+				break;
+			case READ_URL_PARAMETERS:
+				break;
+			case SERVER_UNAVAILABLE:
+				params.add(new SimpleEntry<String, String>("message", Resources.SERVER_UNAVAILABLE.toString()));
+				break;
+			case SERVER_AVAILABLE:
+				params.add(new SimpleEntry<String, String>("message", Resources.SERVER_AVAILABLE.toString()));
+				break;
+			case SIMULATION_LOADED:
+				break;
+			case SIMULATION_STARTED:
+				break;
+			default:
+				break;
 		}
-
+		
+		// keep this as separate statement to facilitate debug
+		json = createJSONMessage(messageType, params);
+		
 		return json;
 	}
 
@@ -114,37 +113,25 @@ public class JSONUtility {
 		JsonObject json = null;
 
 		String messageType = type.toString();
+		
+		List<SimpleEntry<String, String>> params = new ArrayList<SimpleEntry<String, String>>();
 
 		switch(type){
-		
-		case LOAD_MODEL:
-			json = createJSONMessage(messageType, "entities", update);
-			break;
-
-		case SCENE_UPDATE:
-			json = createJSONMessage(messageType, "entities", update);
-			break;
-			
-		case SIMULATION_CONFIGURATION:
-			json = createJSONMessage(messageType, "configuration", update);
-
-		default:
-			break;
-
+			case LOAD_MODEL:
+				params.add(new SimpleEntry<String, String>("entities", update));
+				break;
+			case SCENE_UPDATE:
+				params.add(new SimpleEntry<String, String>("entities", update));
+				break;
+			case SIMULATION_CONFIGURATION:
+				params.add(new SimpleEntry<String, String>("configuration", update));
+			default:
+				break;
 		}
-
-		return json;
-	}
-
-	/**
-	 * Create JSON object with no parameters only type
-	 * 
-	 */
-	public JsonObject createJSONMessage(String type){
-		//JSON object used to send message to client
-		JsonObject json = new JsonObject();
-		json.addProperty("type", type);
-
+		
+		// keep this as separate statement to facilitate debug
+		json = createJSONMessage(messageType, params);
+		
 		return json;
 	}
 
@@ -156,33 +143,15 @@ public class JSONUtility {
 	 * @param param - actual parameter
 	 * @return
 	 */
-	public JsonObject createJSONMessage(String type, String name, String param){
+	public JsonObject createJSONMessage(String type, List<SimpleEntry<String, String>> params){
 		//JSON object used to send message to client
 		JsonObject json = new JsonObject();
 		json.addProperty("type", type);
-		json.addProperty(name, param);	
-
-		return json;
-	}
-
-
-	/**
-	 * Creates a JSONObject for type with two parameters.
-	 * 
-	 * @param type - Type of message
-	 * @param name1 - name of first parameter
-	 * @param param1 - first parameter
-	 * @param name2 - name of second parameter
-	 * @param param2 - second parameter
-	 * @return
-	 */
-	public JsonObject createJSONMessage(String type, String name1, String param1, String name2, String param2){
-
-		//JSON object used to send message to client
-		JsonObject json = new JsonObject();
-		json.addProperty("type", type);
-		json.addProperty(name1,param1);
-		json.addProperty(name2, param2);
+		
+		for(SimpleEntry<String, String> param : params)
+		{
+			json.addProperty(param.getKey(), param.getValue());
+		}
 
 		return json;
 	}

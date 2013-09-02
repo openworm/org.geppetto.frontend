@@ -38,7 +38,6 @@ p {
 	left: 5px;
 	float: left;
 	bottom: 0px;
-	margin-bottom: -15px;
 }
 
 #position_toolbar {
@@ -325,16 +324,24 @@ input {
 }
 
 #jsConsoleButton {
+	margin: 0 auto;
 	position: relative;
-	background: rgba(66,59,59,0.30);
-	color: rgb(102, 255, 0);
-	bottom: -10px;
-	border-color: rgb(102, 255, 0);
-	right: 100px;
+	background: rgba(66,59,59,0.50);
+	color: #fd6808;
+	bottom: -36px;
+	border-color: #2e2828;
+	border-width: 3px;
+	box-shadow:none;
+	text-shadow: none;
+}
+
+#consoleButtonContainer{
+	width:115px;
+	margin: 0 auto;
 }
 
 #jsConsoleButton .icon-terminal{
-	margin-right: 15px;
+	margin-right: 5px;
 }
 
 #sim {

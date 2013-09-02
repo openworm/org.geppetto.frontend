@@ -20,7 +20,7 @@
 	        box-shadow:none;
 }
 #jsConsole {
-	background:rgba(66,59,59,0.15);
+	background:rgba(66,59,59,0.50);
 	color: #ccc;
 	padding:20px;
 	-webkit-border-radius: 5px;

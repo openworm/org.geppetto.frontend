@@ -51,7 +51,7 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
-import org.geppetto.frontend.GeppettoVisitorWebSocket.VisitorRunMode;
+import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,10 +76,9 @@ public class SimulationListener implements ISimulationCallbackListener {
 	@Autowired
 	private SimulationServerConfig simulationServerConfig;
 
-	private final ConcurrentHashMap<Integer, GeppettoVisitorWebSocket> _connections = 
-			new ConcurrentHashMap<Integer, GeppettoVisitorWebSocket>();
+	private final ConcurrentHashMap<Integer, GeppettoMessageInbound> _connections = new ConcurrentHashMap<Integer, GeppettoMessageInbound>();
 
-	private List<GeppettoVisitorWebSocket> observers = new ArrayList<GeppettoVisitorWebSocket>();
+	private List<GeppettoMessageInbound> observers = new ArrayList<GeppettoMessageInbound>();
 
 	private static SimulationListener instance = null;
 
@@ -100,7 +99,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param newVisitor - New connection to be added to current ones
 	 */
-	public void addConnection(GeppettoVisitorWebSocket newVisitor){
+	public void addConnection(GeppettoMessageInbound newVisitor){
 		_connections.put(Integer.valueOf(newVisitor.getConnectionID()), newVisitor);
 
 		//Simulation is being used, notify new user controls are unavailable
@@ -119,7 +118,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param exitingVisitor - Connection to be removed
 	 */
-	public void removeConnection(GeppettoVisitorWebSocket exitingVisitor){
+	public void removeConnection(GeppettoMessageInbound exitingVisitor){
 		_connections.remove(Integer.valueOf(exitingVisitor.getConnectionID()));
 
 		//Handle operations after user closes connection
@@ -131,7 +130,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @return
 	 */
-	public Collection<GeppettoVisitorWebSocket> getConnections()
+	public Collection<GeppettoMessageInbound> getConnections()
 	{
 		return Collections.unmodifiableCollection(_connections.values());
 	}
@@ -141,7 +140,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param url - model to simulate
 	 */
-	public void initializeSimulation(URL url, GeppettoVisitorWebSocket visitor){
+	public void initializeSimulation(URL url, GeppettoMessageInbound visitor){
 		try
 		{			
 			switch(visitor.getCurrentRunMode()){
@@ -150,7 +149,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 			case CONTROLLING:
 				
 				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoVisitorWebSocket observer : observers){
+				for(GeppettoMessageInbound observer : observers){
 					messageClient(observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
 				}
 				
@@ -174,7 +173,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 
 					//Simulation just got someone to control it, notify everyone else
 					//connected that simulation controls are unavailable.
-					for(GeppettoVisitorWebSocket connection : getConnections()){
+					for(GeppettoMessageInbound connection : getConnections()){
 						if(connection != visitor){
 							simulationControlsUnavailable(connection);
 						}
@@ -201,7 +200,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param simulation
 	 * @param visitor
 	 */
-	public void initializeSimulation(String simulation, GeppettoVisitorWebSocket visitor){
+	public void initializeSimulation(String simulation, GeppettoMessageInbound visitor){
 		try
 		{			
 			switch(visitor.getCurrentRunMode()){
@@ -210,7 +209,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 			case CONTROLLING:
 				
 				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoVisitorWebSocket observer : observers){
+				for(GeppettoMessageInbound observer : observers){
 					messageClient(observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
 				}
 				
@@ -234,7 +233,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 
 					//Simulation just got someone to control it, notify everyone else
 					//connected that simulation controls are unavailable.
-					for(GeppettoVisitorWebSocket connection : getConnections()){
+					for(GeppettoMessageInbound connection : getConnections()){
 						if(connection != visitor){
 							simulationControlsUnavailable(connection);
 						}
@@ -258,7 +257,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	/**
 	 * Start the simulation
 	 */
-	public void startSimulation(GeppettoVisitorWebSocket controllingUser){
+	public void startSimulation(GeppettoMessageInbound controllingUser){
 		try
 		{
 			simulationService.start();
@@ -304,7 +303,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param observingVisitor - Geppetto visitor joining list of simulation observers
 	 */
-	public void observeSimulation(GeppettoVisitorWebSocket observingVisitor){		
+	public void observeSimulation(GeppettoMessageInbound observingVisitor){		
 		observers.add(observingVisitor);
 
 		observingVisitor.setVisitorRunMode(VisitorRunMode.OBSERVING);
@@ -322,7 +321,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param id - ID of new Websocket connection. 
 	 */
-	public void simulationControlsUnavailable(GeppettoVisitorWebSocket visitor)
+	public void simulationControlsUnavailable(GeppettoMessageInbound visitor)
 	{	
 		messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SERVER_UNAVAILABLE);
 	}
@@ -334,13 +333,13 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param id - WebSocket ID of user closing connection
 	 */
-	public void postClosingConnectionCheck(GeppettoVisitorWebSocket exitingVisitor){
+	public void postClosingConnectionCheck(GeppettoMessageInbound exitingVisitor){
 
 		/*
 		 * If the exiting visitor was running the simulation, notify all the observing
 		 * visitors that the controls for the simulation became available
 		 */
-		if(exitingVisitor.getCurrentRunMode() == GeppettoVisitorWebSocket.VisitorRunMode.CONTROLLING){
+		if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING){
 
 			//Simulation no longer in use since controlling user is leaving
 			simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
@@ -357,7 +356,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 			}
 
 			//Notify all observers
-			for(GeppettoVisitorWebSocket visitor : observers){
+			for(GeppettoMessageInbound visitor : observers){
 				//visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
 				//send message to alert client of server availability
 				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
@@ -369,7 +368,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		 * Closing connection is that of a visitor in OBSERVE mode, remove the 
 		 * visitor from the list of observers. 
 		 */
-		else if (exitingVisitor.getCurrentRunMode() == GeppettoVisitorWebSocket.VisitorRunMode.OBSERVING){
+		else if (exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING){
 			if(getConnections().size() ==0 && (simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.CONTROLLED)){
 				simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
 			}
@@ -388,7 +387,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param visitor - client to receive the message
 	 * @param type - type of message to be send
 	 */
-	public void messageClient(GeppettoVisitorWebSocket visitor, OUTBOUND_MESSAGE_TYPES type){
+	public void messageClient(GeppettoMessageInbound visitor, OUTBOUND_MESSAGE_TYPES type){
 		//Create a JSON object to be send to the client
 		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type);
 		String msg = jsonUpdate.toString();
@@ -405,7 +404,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param type - Type of udpate to be send
 	 * @param update - update to be send
 	 */
-	private void messageClient(GeppettoVisitorWebSocket visitor, OUTBOUND_MESSAGE_TYPES type, String update){
+	private void messageClient(GeppettoMessageInbound visitor, OUTBOUND_MESSAGE_TYPES type, String update){
 		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type, update);
 		String msg = jsonUpdate.toString();
 
@@ -419,7 +418,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param id - ID of WebSocket connection that will be sent a message
 	 * @param msg - The message the user will be receiving
 	 */
-	public void sendMessage(GeppettoVisitorWebSocket visitor, String msg){
+	public void sendMessage(GeppettoMessageInbound visitor, String msg){
 		try
 		{	
 			long startTime=System.currentTimeMillis();
@@ -477,7 +476,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 			getSimulationServerConfig().setIsSimulationLoaded(true);
 		}
 
-		for (GeppettoVisitorWebSocket connection : getConnections())
+		for (GeppettoMessageInbound connection : getConnections())
 		{				
 			//Notify all connected clients about update either to load model or update current one.
 			messageClient(connection, action , update);
@@ -488,7 +487,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
 	}
 
-	public void getSimulationConfiguration(String url, GeppettoVisitorWebSocket visitor) {
+	public void getSimulationConfiguration(String url, GeppettoMessageInbound visitor) {
 		String simulationConfiguration;
 		
 		try {

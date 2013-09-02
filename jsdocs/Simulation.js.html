@@ -93,14 +93,15 @@ Simulation.status = Simulation.StatusEnum.INIT;
 Simulation.start = function()
 {
 	if(Simulation.isLoaded()){
-	//Update the simulation controls visibility
-	FE.updateStartEvent();
-	
-	GEPPETTO.Main.socket.send("start");
-	Simulation.status = Simulation.StatusEnum.STARTED;
-	Console.log('Sent: Simulation started');
-	
-	return "Simulation Started";
+		//Update the simulation controls visibility
+		FE.updateStartEvent();
+		
+		GEPPETTO.Main.socket.send(messageTemplate("start", null));
+		
+		Simulation.status = Simulation.StatusEnum.STARTED;
+		Console.log('Sent: Simulation started');
+		
+		return "Simulation Started";
 	}
 	else{
 		return "Simulation not loaded, must load simulation first";
@@ -118,8 +119,9 @@ Simulation.pause = function()
 	if(Simulation.status == Simulation.StatusEnum.STARTED){
 		//Updates the simulation controls visibility
 		FE.updatePauseEvent();
-
-		GEPPETTO.Main.socket.send("pause");
+		
+		GEPPETTO.Main.socket.send(messageTemplate("pause", null));
+		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
 		Console.log('Sent: Simulation paused');
 
@@ -141,7 +143,8 @@ Simulation.stop = function()
 		//Updates the simulation controls visibility
 		FE.updateStopEvent();
 
-		GEPPETTO.Main.socket.send("stop");
+		GEPPETTO.Main.socket.send(messageTemplate("stop", null));
+		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
 		Console.log('Sent: Simulation stopped');
 
@@ -163,24 +166,33 @@ Simulation.stop = function()
  */
 Simulation.load = function(simulationURL)
 {
-	//Updates the simulation controls visibility
-	FE.updateLoadEvent();
+	var loadStatus = "Loading Simulation";
 	
-	var webGLStarted = GEPPETTO.init(FE.createContainer());
-	//update ui based on success of webgl
-	FE.update(webGLStarted);
-	//Keep going with load of simulation only if webgl container was created
-	if(webGLStarted){
-		FE.activateLoader("show", "Loading Simulation");
-		if (Simulation.status == Simulation.StatusEnum.INIT)
-		{
-			//we call it only the first time
-			GEPPETTO.animate();
+	if(simulationURL != null){
+		//Updates the simulation controls visibility
+		FE.updateLoadEvent();
+
+		var webGLStarted = GEPPETTO.init(FE.createContainer());
+		//update ui based on success of webgl
+		FE.update(webGLStarted);
+		//Keep going with load of simulation only if webgl container was created
+		if(webGLStarted){
+			FE.activateLoader("show", "Loading Simulation");
+			if (Simulation.status == Simulation.StatusEnum.INIT)
+			{
+				//we call it only the first time
+				GEPPETTO.animate();
+			}
+			GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
 		}
-		GEPPETTO.Main.socket.send("init_url$" + simulationURL);
 	}
 	
-	return "Simulation Loaded";
+	else{
+		loadStatus = "Simulation not specified";
+		//TODO: Check for selected url in input field or simulation in editor
+	}
+	
+	return loadStatus;
 };
 
 /**
@@ -205,7 +217,8 @@ Simulation.loadEditedSimulationFile = function(simulation)
 			//we call it only the first time
 			GEPPETTO.animate();
 		}
-		GEPPETTO.Main.socket.send("init_sim$" + simulation);
+		
+		GEPPETTO.Main.socket.send(messageTemplate("init_sim", simulation));
 	}
 	
 	return "Simulation Loaded";
@@ -230,6 +243,22 @@ Simulation.isLoaded = function()
 Simulation.getStatus = function()
 {
 	return Simulation.status;
+};
+
+/**
+* Template for Geppetto message 
+* NOTE: move from here under global G object once in place
+* 
+* @param msgtype - messaga type
+* @param payload - message payload, can be anything
+* @returns JSON stringified object
+*/
+function messageTemplate(msgtype, payload) {
+	var object = {
+		type: msgtype,
+	    data: payload
+	};
+	return JSON.stringify(object);
 };</code></pre>
         </article>
     </section>
@@ -240,13 +269,13 @@ Simulation.getStatus = function()
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="GEPPETTO.JSConsole.html">JSConsole</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Console">Console</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#PLOT">PLOT</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.JSConsole.html">JSConsole</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Console">Console</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Aug 30 2013 15:19:19 GMT+0100 (IST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Sep 02 2013 13:56:24 GMT+0100 (IST)
 </footer>
 
 <script> prettyPrint(); </script>

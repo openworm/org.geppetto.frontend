@@ -9,7 +9,7 @@
 #jsConsole pre.output span,
 #jsConsole textarea,
 #jsConsole textarea:focus {
-	font-size:14px;
+	font-size:12px;
 	line-height:1.3;
 	font-weight: normal;
 	font-family:"Consolas", "Andale Mono", "Courier New", "Courier", monospace;

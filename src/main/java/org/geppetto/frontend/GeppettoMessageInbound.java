@@ -50,7 +50,7 @@ import com.google.gson.Gson;
  * are received in here.
  *
  */
-public class GeppettoVisitorWebSocket extends MessageInbound
+public class GeppettoMessageInbound extends MessageInbound
 {
 
 	/*
@@ -66,11 +66,11 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 
 	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
 
-	public GeppettoVisitorWebSocket(int id, SimulationListener simulatoinVisitorsHandler)
+	public GeppettoMessageInbound(int id, SimulationListener listener)
 	{
 		super();
 		this.id = id;
-		simulationListener = simulatoinVisitorsHandler;
+		simulationListener = listener;
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class GeppettoVisitorWebSocket extends MessageInbound
 		String msg = message.toString();
 		
 		// de-serialize JSON
-		GeppettoMessage gmsg = new Gson().fromJson(msg, GeppettoMessage.class);
+		GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);
 		
 		// switch on message type
 		// NOTE: each message handler knows how to interpret the GeppettoMessage data field

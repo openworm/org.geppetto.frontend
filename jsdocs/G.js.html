@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: GEPPETTO.JSConsole.js</title>
+    <title>JSDoc: Source: geppetto-objects/G.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: GEPPETTO.JSConsole.js</h1>
+    <h1 class="page-title">Source: geppetto-objects/G.js</h1>
     
     
 
@@ -60,107 +60,82 @@
 
 /**
  * 
- * Class that handles creationg and loading of JS Console.
- * Handles events associated with the console as well.
+ * Global objects. Handles global operations; clearing js console history commands, 
+ * turning on/off debug statements, copying history commands, help info, etc.
  * 
  * @constructor
- * 
- * @author Jesus Martinez (jesus@metacell.us)
+
+ * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-GEPPETTO.JSConsole = GEPPETTO.JSConsole ||
+var G = G ||
 {
 	REVISION : '1'
 };
 
-GEPPETTO.JSConsole.jsConsole = null;
-GEPPETTO.JSConsole.consoleVisible = false;
+G.debugMode = false;
 
-/**
- * Toggle javascript console's visibility via button 
- */
-GEPPETTO.JSConsole.toggleConsole = function(){
-	//toggle button class
-	$('#jsConsoleButton').toggleClass('clicked');
+G.clear = function(){
 	
-	//user has clicked the console button
-	if($('#jsConsoleButton').hasClass('clicked')) {	
-		//load the console
-		GEPPETTO.JSConsole.loadConsole();
-		//toggle console
-		$('#jsConsole').slideToggle(200);
-    } else {
-		$('#footer').height('');
-    	$('#footerHeader').css("bottom","0px");
-		$('#jsConsole').slideToggle(200);		
-    }
+	GEPPETTO.JSConsole.jsConsole.clear();
 };
 
-/**
- * Load Javascript Console, create it if it doesn't exist
- */
-GEPPETTO.JSConsole.loadConsole = function(){
-	if(GEPPETTO.JSConsole.jsConsole == null){
-		GEPPETTO.JSConsole.createConsole();
+G.copyHistoryToClipboard = function(){
+	
+	var text =  JSON.stringify(GEPPETTO.JSConsole.jsConsole.model.get('history'), 0, 4);
+	
+	if (window.clipboardData) // Internet Explorer
+    {  
+        window.clipboardData.setData("Text", text);
+    }
+    else
+    {  
+        unsafeWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");  
+        const clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);  
+        clipboardHelper.copyString(text);
+    }
+	
+	return text;
+};
+
+G.debug = function(toggle){
+	G.debugMode = toggle;
+	
+	if(toggle){
+		return "Debug log statements on";
+	}
+	else{
+		return "Debug log statements off";
 	}
 };
 
-/**
- * Creates Javascript Console
- */
-GEPPETTO.JSConsole.createConsole = function(){	
-	// Create the sandbox console:
-	GEPPETTO.JSConsole.jsConsole = new Sandbox.View({
-		el : $('#jsConsole'),
-		model : new Sandbox.Model(),
-		resultPrefix : "  => ",
-		helpText : "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.",
-		tabCharacter : "\t",
-		placeholder : "// type a javascript command and hit enter (help() for info)"
-	});
-	
-	//allow console to be resizable
-	$( "#jsConsole" ).resizable({ 
-		handles: 'n', 
-		minHeight: 100,
-		autoHide: true,
-		maxHeight: 400,
-		resize: function(event,ui){
-			document.getElementById('jsConsole').style.top = "0px";
-			$(document.getElementById('footer')).height(ui.size.height + 86);
-		},
-	});
-	
-	//handles resizing the JS console when the windows is resized
-	$(window).resize(function(){
-		$('#jsConsole').css("width", $("#footer").width()-40);
-	});
+G.isDebugOn = function(){
+	return G.debugMode;
 };
 
-/**
- * Returns visibility of Javascript console
- */
-GEPPETTO.JSConsole.isConsoleVisible = function(){
-	if($('#jsConsoleButton').hasClass('clicked')) {	
-		return true;
-    } else {
-		return false;	
-    }
+G.getCurrentSimulation = function(){
+	return Simulation;
 };
 
-/**
- * Handles user clicking the "Javascript Console" button, which 
- * toggles the console. 
- */
-$(document).ready(function()
-{	
-	//JS Console Button clicked
-	$('#jsConsoleButton').click(function()
-	{	
-		GEPPETTO.JSConsole.toggleConsole();
-	});
-});
+G.help = function(){
+	var ret = [];
 
-</code></pre>
+	  for ( var prop in G ) {
+		  if(typeof G[prop] === "function") {
+		      // its a function if you get here
+			  ret.push(prop);
+		    };
+	  }
+
+	  return ret;
+};
+
+G.runScript = function(url){
+	return "Function under construction";
+};
+
+G.wait = function(ms){
+	return "Function under construction";
+};</code></pre>
         </article>
     </section>
 

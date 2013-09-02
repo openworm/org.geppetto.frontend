@@ -139,8 +139,7 @@ public class JSONUtility {
 	 * Create JSON object with type and parameters
 	 * 
 	 * @param type - Type of message 
-	 * @param name - name of first parameter
-	 * @param param - actual parameter
+	 * @param params - list of name-value pairs representing parameter names and values
 	 * @return
 	 */
 	public JsonObject createJSONMessage(String type, List<SimpleEntry<String, String>> params){

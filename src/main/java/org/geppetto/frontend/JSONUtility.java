@@ -58,9 +58,9 @@ public class JSONUtility {
 		SIMULATION_STARTED("simulation_started"), 
 		INFO_MESSAGE("info_message"),
 		SCENE_UPDATE("scene_update"), 
-		CLEAR_CANVAS("clear_canvas"),
-		SIMULATION_CONFIGURATION("simulation_configuration")
-		;
+		RELOAD_CANVAS("reload_canvas"),
+		SIMULATION_CONFIGURATION("simulation_configuration"),
+		ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config");
 
 		private MESSAGES_TYPES(final String text) {
 			this.text = text;
@@ -96,7 +96,7 @@ public class JSONUtility {
 
 		switch(type){
 
-		case CLEAR_CANVAS:
+		case RELOAD_CANVAS:
 			json = createJSONMessage(messageType);
 			break;	
 		case ERROR_LOADING_SIMULATION:

@@ -56,16 +56,7 @@ G.copyHistoryToClipboard = function(){
 	
 	var text =  JSON.stringify(GEPPETTO.JSConsole.jsConsole.model.get('history'), 0, 4);
 	
-	if (window.clipboardData) // Internet Explorer
-    {  
-        window.clipboardData.setData("Text", text);
-    }
-    else
-    {  
-        unsafeWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");  
-        const clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);  
-        clipboardHelper.copyString(text);
-    }
+	window.clipboardData.setData("Text", text);
 	
 	return text;
 };
@@ -90,16 +81,18 @@ G.getCurrentSimulation = function(){
 };
 
 G.help = function(){
-	var ret = [];
+	var commands = "List of Commands for G: \n\n";
 
 	  for ( var prop in G ) {
 		  if(typeof G[prop] === "function") {
+			  var f = G[prop].toString();
+			  var match = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
 		      // its a function if you get here
-			  ret.push(prop);
+			  commands += ("G."+prop+"("+match+");" + "\n");
 		    };
 	  }
-
-	  return ret;
+	  	  
+	  return commands.substring(0,commands.length-1);
 };
 
 G.runScript = function(url){

@@ -237,7 +237,6 @@ var Sandbox = {
 		
 		log : function(message) {
 			return this.model.addDebugHistory({
-				command : 'Debug statement',
 				result : message
 			});
 		},

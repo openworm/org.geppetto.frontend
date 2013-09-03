@@ -38,6 +38,7 @@ p {
 	left: 5px;
 	float: left;
 	bottom: 0px;
+	margin-bottom: -10px;
 }
 
 #position_toolbar {
@@ -328,7 +329,7 @@ input {
 	position: relative;
 	background: rgba(66,59,59,0.50);
 	color: #fd6808;
-	bottom: -36px;
+	bottom: -22px;
 	border-color: #2e2828;
 	border-width: 3px;
 	box-shadow:none;

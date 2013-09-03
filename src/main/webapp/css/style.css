@@ -26,7 +26,6 @@ body {
 	overflow: auto;
 }
 
-
 #dialog-message {
 	font-size: 14px;
 	line-height: 20px;
@@ -210,7 +209,7 @@ input {
 
 .popover {
 	font-size: 14px;
-	font-weight:200;
+	font-weight: 200;
 }
 
 #alertbox {
@@ -229,109 +228,96 @@ input {
 	margin-top: 5px;
 }
 
-
-.btn-group .btn{
-	width: 345px;
+.btn-group .btn {
+	width: 500px;
 }
 
-.btn span{
-	float:left;
+.btn span {
+	float: left;
 }
 
-/* Overwrite Modal body overflow values.*/ 
-.modal { 
-	overflow: visible; 
+/* Overwrite Modal body overflow values.*/
+.modal {
+	overflow: visible;
 }
 
-.modal-body { 
-	overflow-y: visible; 
+.modal-body {
+	overflow-y: visible;
 	font-size: 15px;
 	line-height: 24px;
 }
 
-.dropdown-menu{ width: 100%; }
-
-.dropdown-menu>li>a:hover{
-	cursor:pointer;
-}
-.btn .caret{ float : right;}
- 
-.loading.modal.fade{top:-25%; background: rgba(255, 255, 255, 0);}
-.loading.modal.fade.in{top:40%;background: rgba(255, 255, 255, 0);}
-.icon-4x{font-size:4em;}
-.orange{color:#fd6808;}
-
-#url{
-	width: 360px;
+.dropdown-menu {
+	width: 100%;
 }
 
-#editArea{
-	width: 360px;
-	height: 220px;
-	resize: none;
-	overflow: auto;
-	white-space: normal;
-	word-wrap: normal !important;
-	padding: 4px 6px;
-	margin-bottom: 10px;
-	font-size: 14px;
-	line-height: 20px;
-	color: #555555;
-	background-color: #ffffff;
-	border: 1px solid #cccccc;
-	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-	-webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
-	-moz-transition: border linear 0.2s, box-shadow linear 0.2s;
-	-o-transition: border linear 0.2s, box-shadow linear 0.2s;
-	transition: border linear 0.2s, box-shadow linear 0.2s;
-	vertical-align: middle;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
+.dropdown-menu > li > a:hover {
+	cursor: pointer;
+}
+.btn .caret {
+	float: right;
 }
 
-#simulation-element{
-	white-space: nowrap;
+.loading.modal.fade {
+	top: -25%;
+	background: rgba(255, 255, 255, 0);
+}
+.loading.modal.fade.in {
+	top: 40%;
+	background: rgba(255, 255, 255, 0);
+}
+.icon-4x {
+	font-size: 4em;
+}
+.orange {
+	color: #fd6808;
 }
 
-#element{
-	white-space: nowrap;
-	padding-left: 10px;
+#loadSimModal {
+	width: 700px;
+}
+#url {
+	width: 515px;
+	overflow: hidden;
 }
 
-#child{
-	white-space: nowrap;
-	padding-left: 20px;
-}
-
-#input label{
+#input label {
 	float: left;
 	width: 70px;
 	padding-top: 0px;
 }
 
-.form-horizontal .controls{
+.form-horizontal .controls {
 	margin-left: 120px;
 }
 
-[contenteditable="true"]:hover {
-	background: rgba(255, 255, 153, 1);
-	}
-
-.editable{
-	text-decoration: underline;
-	color: #fd6808;
-	cursor:pointer;
+#fullscreen {
+	position: absolute;
+	top: 66px;
+	right: 38px;
+	cursor: pointer;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	-webkit-appearance: none;
 }
 
-#editArea input{
-	margin-left:2px;
-	margin-right:2px;
-	width: auto;
-	height: 14px;
-	font-size: 14px;
-	color: black;
-	margin-bottom: 0;
+.CodeMirror-fullscreen {
+	display: block;
+	position: fixed!important;
+	top: 0!important;
+	left: 0!important;
+	width: 100%!important;
+	z-index: 9999!important;
+}
+
+#fullscreen:hover {
+	color: gray;
+}
+.CodeMirror {
+	border: 1px solid #cccccc;
+	width: 500px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
 }

@@ -150,8 +150,8 @@ public class SimulationListener implements ISimulationCallbackListener {
 			case CONTROLLING:
 				
 				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoVisitorWebSocket connection : getConnections()){
-					messageClient(connection, MESSAGES_TYPES.CLEAR_CANVAS);
+				for(GeppettoVisitorWebSocket observer : observers){
+					messageClient(observer, MESSAGES_TYPES.RELOAD_CANVAS);
 				}
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
@@ -210,8 +210,8 @@ public class SimulationListener implements ISimulationCallbackListener {
 			case CONTROLLING:
 				
 				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoVisitorWebSocket connection : getConnections()){
-					messageClient(connection, MESSAGES_TYPES.CLEAR_CANVAS);
+				for(GeppettoVisitorWebSocket observer : observers){
+					messageClient(observer, MESSAGES_TYPES.RELOAD_CANVAS);
 				}
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
@@ -421,9 +421,12 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void sendMessage(GeppettoVisitorWebSocket visitor, String msg){
 		try
-		{				
+		{	
+			long startTime=System.currentTimeMillis();
 			CharBuffer buffer = CharBuffer.wrap(msg);
 			visitor.getWsOutbound().writeTextMessage(buffer);
+			String debug=((long)System.currentTimeMillis()-startTime)+"ms were spent sending a message of "+msg.length()/1024+"KB to the client";
+			logger.info(debug); 
 		}
 		catch (IOException ignore)
 		{
@@ -492,8 +495,9 @@ public class SimulationListener implements ISimulationCallbackListener {
 			simulationConfiguration = simulationService.getSimulationConfig(new URL(url));
 			messageClient(visitor, MESSAGES_TYPES.SIMULATION_CONFIGURATION, simulationConfiguration);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
+		} catch (GeppettoInitializationException e) {
+			messageClient(visitor,MESSAGES_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
 		}
 	}
 }

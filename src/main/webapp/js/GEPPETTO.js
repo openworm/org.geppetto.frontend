@@ -1008,7 +1008,7 @@ GEPPETTO.updatePlots = function()
 GEPPETTO.animate = function()
 {
 	debugUpdate = GEPPETTO.needsUpdate; // so that we log only the cycles when we are updating the scene
-	if (Simulation.getStatus() == 2 && debugUpdate)
+	if (getSimulationStatus() == 2 && debugUpdate)
 	{
 		GEPPETTO.log("Starting update frame");
 	}
@@ -1025,7 +1025,7 @@ GEPPETTO.animate = function()
 	{
 		GEPPETTO.stats.update();
 	}
-	if (Simulation.getStatus() == 2 && debugUpdate)
+	if (getSimulationStatus() == 2 && debugUpdate)
 	{
 		GEPPETTO.log("End update frame");
 	}

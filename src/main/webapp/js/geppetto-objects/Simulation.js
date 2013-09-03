@@ -72,7 +72,7 @@ Simulation.start = function()
 		GEPPETTO.Main.socket.send(messageTemplate("start", null));
 		
 		Simulation.status = Simulation.StatusEnum.STARTED;
-		Console.log('Sent: Simulation started');
+		Console.log('Outbund Message Sent','Sent: Simulation started');
 		
 		return "Simulation Started";
 	}
@@ -96,7 +96,7 @@ Simulation.pause = function()
 		GEPPETTO.Main.socket.send(messageTemplate("pause", null));
 		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
-		Console.log('Sent: Simulation paused');
+		Console.log('Outbund Message Sent','Sent: Simulation paused');
 
 		return "Simulation Paused";
 	}
@@ -119,7 +119,7 @@ Simulation.stop = function()
 		GEPPETTO.Main.socket.send(messageTemplate("stop", null));
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
-		Console.log('Sent: Simulation stopped');
+		Console.log('Outbund Message Sent', 'Sent: Simulation stopped');
 
 		return "Simulation Stopped";
 	}
@@ -157,12 +157,27 @@ Simulation.load = function(simulationURL)
 				GEPPETTO.animate();
 			}
 			GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
+			Console.log('Outbound Message Sent', 'Load Simulation');			
 		}
 	}
 	
-	else{
-		loadStatus = "Simulation not specified";
-		//TODO: Check for selected url in input field or simulation in editor
+	else{		
+		var simulationURL = $('#url').val();
+		
+		if(simulationURL != null){
+			Simulation.load(simulationURL);	
+		}
+		
+		else if(GEPPETTO.SimulationContentEditor.editing){
+			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
+			
+			loadEditedSimulationFile(simulation);
+			GEPPETTO.SimulationContentEditor.isEditing(false);
+		}
+		
+		else{
+			loadStatus = "Simulation not specified";
+		}
 	}
 	
 	return loadStatus;
@@ -174,7 +189,7 @@ Simulation.load = function(simulationURL)
  * @param simulation - Simulation to be loaded
  * @returns {String}
  */
-Simulation.loadEditedSimulationFile = function(simulation)
+ function loadEditedSimulationFile(simulation)
 {
 	//Update the simulation controls visibility
 	FE.updateLoadEvent();
@@ -192,6 +207,7 @@ Simulation.loadEditedSimulationFile = function(simulation)
 		}
 		
 		GEPPETTO.Main.socket.send(messageTemplate("init_sim", simulation));
+		Console.log('Outbound Message Sent',"Sent: Load Simulation from editing console");
 	}
 	
 	return "Simulation Loaded";
@@ -210,10 +226,25 @@ Simulation.isLoaded = function()
 	return false;
 };
 
+Simulation.help = function(){
+	var commands = "Simulation control commands: \n\n";
+
+	  for ( var prop in Simulation ) {
+		  if(typeof Simulation[prop] === "function") {
+			  var f = Simulation[prop].toString();
+			  var match = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
+		      // its a function if you get here
+			  commands += ("      Simulation."+prop+"("+match+");" + "\n");
+		    };
+	  }
+	  	  
+	  return commands.substring(0,commands.length-1);
+};
+
 /**
  * Return status of simulation
  */
-Simulation.getStatus = function()
+function getSimulationStatus()
 {
 	return Simulation.status;
 };

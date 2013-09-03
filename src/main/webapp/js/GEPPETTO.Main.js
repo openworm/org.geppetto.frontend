@@ -116,7 +116,7 @@ GEPPETTO.Main.connect = (function(host)
 		switch(parsedServerMessage.type){
 			//clear canvas, used when loading a new model or re-loading previous one
 			case "reload_canvas":
-				Console.log("Clear canvas");
+				Console.log('Inbound Message Received',"Clear canvas");
 				var webGLStarted = GEPPETTO.init(FE.createContainer());
 				FE.update(webGLStarted);
 				break;
@@ -128,7 +128,7 @@ GEPPETTO.Main.connect = (function(host)
 				break;
 			//Simulation has been loaded and model need to be loaded
 			case "load_model":
-				Console.log("Received: Loading Model " );
+				Console.log('Inbound Message Received',"Received: Loading Model " );
 				var entities = JSON.parse(parsedServerMessage.entities);
 								
 				//Populate scene and set status to loaded
@@ -193,28 +193,6 @@ GEPPETTO.Main.connect = (function(host)
 });
 
 /**
- * Geppetto's console.
- * 
- * @global
- */
-var Console =
-{};
-
-/**
- * Log message to Geppetto's console
- * 
- * @global
- */
-Console.log = (function(message)
-{
-	var jsConsole = GEPPETTO.JSConsole.jsConsole;
-	
-	if(G.isDebugOn()){
-		jsConsole.log(message);
-	}
-});
-
-/**
  * Front end, user interface, methods for handling updates to the UI
  * 
  * @constructor
@@ -241,7 +219,7 @@ FE.update = function(webGLStarted)
 {
 	//
 	if(!webGLStarted){
-		Console.log("Unable to initialize WebGL");
+		Console.log("Initializing error:" ,"Unable to initialize WebGL");
 		FE.disableSimulationControls();
 	}
 };
@@ -505,15 +483,13 @@ $(document).ready(function()
 	{
 		//loading from simulation file editor's
 		if(GEPPETTO.SimulationContentEditor.editing){
-			Console.log("Sent: Load Simulation from editing console");
 			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
 			
-			Simulation.loadEditedSimulationFile(simulation);
+			loadEditedSimulationFile(simulation);
 			GEPPETTO.SimulationContentEditor.isEditing(false);
 		}
 		//loading simulation url
 		else{
-			Console.log("Sent: Load simulation from URL");
 			Simulation.load($('#url').val());
 		}
 	});

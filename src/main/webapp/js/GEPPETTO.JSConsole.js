@@ -86,10 +86,12 @@ GEPPETTO.JSConsole.createConsole = function(){
 		el : $('#jsConsole'),
 		model : new Sandbox.Model(),
 		resultPrefix : "  => ",
-		helpText : "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.",
 		tabCharacter : "\t",
-		placeholder : "// type a javascript command and hit enter (help() for info)"
+		placeholder : "// type a javascript command and hit enter (help() for info)",
+		helpText :  "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help()
 	});
+	
+	$('#jsConsole').css("width", $("#footer").width()-40);
 	
 	//allow console to be resizable
 	$( "#jsConsole" ).resizable({ 
@@ -133,3 +135,24 @@ $(document).ready(function()
 	});
 });
 
+/**
+ * Geppetto's console.
+ * 
+ * @global
+ */
+var Console =
+{};
+
+/**
+ * Log message to Geppetto's console
+ * 
+ * @global
+ */
+Console.log = (function(command,message)
+{
+	var jsConsole = GEPPETTO.JSConsole.jsConsole;
+	
+	if(isDebugOn()){
+		jsConsole.log(command,message);
+	}
+});

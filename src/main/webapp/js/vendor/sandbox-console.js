@@ -89,10 +89,16 @@ var Sandbox = {
 			return this;
 		},
 		
-		addDebugHistory: function(item) {
+		addDebugHistory: function(item) {			
+			var history = this.get('history');
+			
 			item._class = "debug";
 			
-			this.addHistory(item);
+			history.push(item);
+			
+			// Update the history state and save the model
+			this.set({ history : history }).change();
+			this.save();
 
 			return this;
 		},
@@ -235,9 +241,10 @@ var Sandbox = {
 			);
 		},
 		
-		log : function(message) {
+		log : function(command,message) {
 			return this.model.addDebugHistory({
-				result : message
+				command : command,
+				result : message,
 			});
 		},
 		
@@ -388,7 +395,8 @@ var Sandbox = {
 			if ( command === "help()" ) {
 				return this.model.addHistory({
 					command : 'help()',
-					result : this.helpText
+					result : this.helpText,
+					_class : "string"
 				});
 			}
 			// `:load <script src>`

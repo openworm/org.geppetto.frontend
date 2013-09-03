@@ -72,23 +72,24 @@ G.debug = function(toggle){
 	}
 };
 
-G.isDebugOn = function(){
-	return G.debugMode;
-};
-
 G.getCurrentSimulation = function(){
-	return Simulation;
+	if(Simulation.isLoaded()){
+		return console.log(Simulation);
+	}
+	else{
+		return "No Simulation to get as none is running";
+	}
 };
 
 G.help = function(){
-	var commands = "List of Commands for G: \n\n";
+	var commands = "Global commands: \n\n";
 
 	  for ( var prop in G ) {
 		  if(typeof G[prop] === "function") {
 			  var f = G[prop].toString();
 			  var match = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
 		      // its a function if you get here
-			  commands += ("G."+prop+"("+match+");" + "\n");
+			  commands += ("      G."+prop+"("+match+");" + "\n");
 		    };
 	  }
 	  	  
@@ -101,4 +102,9 @@ G.runScript = function(url){
 
 G.wait = function(ms){
 	return "Function under construction";
+};
+
+
+function isDebugOn(){
+	return G.debugMode;
 };

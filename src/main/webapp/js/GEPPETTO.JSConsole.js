@@ -148,11 +148,20 @@ var Console =
  * 
  * @global
  */
-Console.log = (function(command,message)
+Console.debugLog = (function(command,message)
 {
 	var jsConsole = GEPPETTO.JSConsole.jsConsole;
 	
 	if(isDebugOn()){
+		jsConsole.debugStatement(command,message);
+	}
+});
+
+Console.log = (function(command,message)
+{
+	var jsConsole = GEPPETTO.JSConsole.jsConsole;
+
+	if(GEPPETTO.JSConsole.isConsoleVisible()){
 		jsConsole.log(command,message);
 	}
 });

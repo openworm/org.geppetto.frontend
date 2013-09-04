@@ -72,7 +72,7 @@ Simulation.start = function()
 		GEPPETTO.Main.socket.send(messageTemplate("start", null));
 		
 		Simulation.status = Simulation.StatusEnum.STARTED;
-		Console.log('Outbund Message Sent','Sent: Simulation started');
+		Console.debugLog('Outbund Message Sent','Sent: Simulation started');
 		
 		return "Simulation Started";
 	}
@@ -96,7 +96,7 @@ Simulation.pause = function()
 		GEPPETTO.Main.socket.send(messageTemplate("pause", null));
 		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
-		Console.log('Outbund Message Sent','Sent: Simulation paused');
+		Console.debugLog('Outbund Message Sent','Sent: Simulation paused');
 
 		return "Simulation Paused";
 	}
@@ -119,7 +119,7 @@ Simulation.stop = function()
 		GEPPETTO.Main.socket.send(messageTemplate("stop", null));
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
-		Console.log('Outbund Message Sent', 'Sent: Simulation stopped');
+		Console.debugLog('Outbund Message Sent', 'Sent: Simulation stopped');
 
 		return "Simulation Stopped";
 	}
@@ -141,10 +141,8 @@ Simulation.load = function(simulationURL)
 {
 	var loadStatus = "Loading Simulation";
 	
-	if(simulationURL != null){
+	if(simulationURL != null && simulationURL != ""){
 		//Updates the simulation controls visibility
-		FE.updateLoadEvent();
-
 		var webGLStarted = GEPPETTO.init(FE.createContainer());
 		//update ui based on success of webgl
 		FE.update(webGLStarted);
@@ -157,14 +155,14 @@ Simulation.load = function(simulationURL)
 				GEPPETTO.animate();
 			}
 			GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
-			Console.log('Outbound Message Sent', 'Load Simulation');			
+			Console.debugLog('Outbound Message Sent', 'Load Simulation');			
 		}
 	}
 	
 	else{		
 		var simulationURL = $('#url').val();
 		
-		if(simulationURL != null){
+		if(simulationURL != ""){
 			Simulation.load(simulationURL);	
 		}
 		
@@ -207,7 +205,7 @@ Simulation.load = function(simulationURL)
 		}
 		
 		GEPPETTO.Main.socket.send(messageTemplate("init_sim", simulation));
-		Console.log('Outbound Message Sent',"Sent: Load Simulation from editing console");
+		Console.debugLog('Outbound Message Sent',"Sent: Load Simulation from editing console");
 	}
 	
 	return "Simulation Loaded";

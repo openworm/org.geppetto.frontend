@@ -97,7 +97,7 @@ G.help = function(){
 };
 
 G.runScript = function(url){
-	return "Function under construction";
+	return "Loading script " + url;
 };
 
 G.wait = function(ms){

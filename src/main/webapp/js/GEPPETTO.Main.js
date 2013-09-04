@@ -56,7 +56,7 @@ GEPPETTO.Main.init = function()
 {
 	GEPPETTO.Main.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 	Simulation.status = Simulation.StatusEnum.INIT;
-	Console.log('Geppetto Initialised');	
+	Console.debugLog('Geppetto Initialised');	
 };
 
 /**
@@ -72,7 +72,7 @@ GEPPETTO.Main.observe = function()
 	if(webGLStarted){
 		GEPPETTO.animate();	
 		GEPPETTO.Main.socket.send(messageTemplate("observe", null));
-		Console.log('Sent: Simulation being observed');
+		Console.debugLog('Sent: Simulation being observed');
 	}
 	
 	//update the UI based on success of webgl 
@@ -94,18 +94,18 @@ GEPPETTO.Main.connect = (function(host)
 	}
 	else
 	{
-		Console.log('Error: WebSocket is not supported by this browser.');
+		Console.debugLog('Error: WebSocket is not supported by this browser.');
 		return;
 	}
 
 	GEPPETTO.Main.socket.onopen = function()
 	{
-		Console.log('Info: WebSocket connection opened.');
+		Console.debugLog('Info: WebSocket connection opened.');
 	};
 
 	GEPPETTO.Main.socket.onclose = function()
 	{
-		Console.log('Info: WebSocket closed.');
+		Console.debugLog('Info: WebSocket closed.');
 	};
 
 	GEPPETTO.Main.socket.onmessage = function(msg)
@@ -116,7 +116,7 @@ GEPPETTO.Main.connect = (function(host)
 		switch(parsedServerMessage.type){
 			//clear canvas, used when loading a new model or re-loading previous one
 			case "reload_canvas":
-				Console.log('Inbound Message Received',"Clear canvas");
+				Console.debugLog('Inbound Message Received',"Clear canvas");
 				var webGLStarted = GEPPETTO.init(FE.createContainer());
 				FE.update(webGLStarted);
 				break;
@@ -128,7 +128,7 @@ GEPPETTO.Main.connect = (function(host)
 				break;
 			//Simulation has been loaded and model need to be loaded
 			case "load_model":
-				Console.log('Inbound Message Received',"Received: Loading Model " );
+				Console.debugLog('Inbound Message Received',"Received: Loading Model " );
 				var entities = JSON.parse(parsedServerMessage.entities);
 								
 				//Populate scene and set status to loaded
@@ -219,7 +219,7 @@ FE.update = function(webGLStarted)
 {
 	//
 	if(!webGLStarted){
-		Console.log("Initializing error:" ,"Unable to initialize WebGL");
+		Console.debugLog("Initializing error:" ,"Unable to initialize WebGL");
 		FE.disableSimulationControls();
 	}
 };
@@ -466,21 +466,28 @@ $(document).ready(function()
 	
 	$('#start').click(function()
 	{
+		Console.log("Simulation.start()","Simulation started");
 		Simulation.start();
 	});
 
 	$('#pause').click(function()
 	{
+		Console.log("Simulation.pause()","Simulation paused");
 		Simulation.pause();
 	});
 	
 	$('#stop').click(function()
 	{
+		Console.log("Simulation.stop()","Simulation stopped");
 		Simulation.stop();
 	});
 	
 	$('#load').click(function()
 	{
+		Console.log("Simulation.load()","Loading Simulation");
+		
+		FE.updateLoadEvent();
+		
 		//loading from simulation file editor's
 		if(GEPPETTO.SimulationContentEditor.editing){
 			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
@@ -490,7 +497,7 @@ $(document).ready(function()
 		}
 		//loading simulation url
 		else{
-			Simulation.load($('#url').val());
+			Simulation.load($('#url').val().toString());
 		}
 	});
 

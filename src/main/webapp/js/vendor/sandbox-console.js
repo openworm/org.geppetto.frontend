@@ -98,7 +98,7 @@ var Sandbox = {
 			
 			// Update the history state and save the model
 			this.set({ history : history }).change();
-			this.save();
+			//this.save();
 
 			return this;
 		},
@@ -241,10 +241,18 @@ var Sandbox = {
 			);
 		},
 		
-		log : function(command,message) {
+		debugLog : function(command,message) {
 			return this.model.addDebugHistory({
 				command : command,
 				result : message,
+			});
+		},
+		
+		log : function(command,message) {
+			return this.model.addHistory({
+				command : command,
+				result : message,
+				_class : "string"
 			});
 		},
 		
@@ -400,10 +408,15 @@ var Sandbox = {
 				});
 			}
 			// `:load <script src>`
-			if ( command.indexOf(":load") > -1 ) {
+			if ( command.indexOf("G.runScript") > -1 ) {
+				var regex =  /\(([^)]+)\)/;
+				var matches = regex.exec(command);
+				var match = matches[1];
+				
+				alert(match);
 				return this.model.addHistory({
 					command : command,
-					result : this.model.load( command.substring(6) )
+					result : this.model.load(match)
 				});
 			} 
 

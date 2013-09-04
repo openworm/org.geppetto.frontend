@@ -56,7 +56,7 @@ GEPPETTO.Main.init = function()
 {
 	GEPPETTO.Main.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 	Simulation.status = Simulation.StatusEnum.INIT;
-	Console.log('Geppetto Initialised');
+	Console.log('Geppetto Initialised');	
 };
 
 /**

@@ -361,3 +361,8 @@ input {
 	float: left;
 	clear: none;
 }
+
+#infomodal .modal-body{
+	overflow: auto;
+	max-height: 50%;
+}

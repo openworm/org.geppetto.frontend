@@ -98,6 +98,7 @@ var Sandbox = {
 			
 			// Update the history state and save the model
 			this.set({ history : history }).change();
+			
 			//this.save();
 
 			return this;
@@ -158,7 +159,7 @@ var Sandbox = {
 			}
 
 			// Add the item to the history
-			return this.addHistory(item);
+			this.addHistory(item);
 		}
 	}),
 
@@ -254,6 +255,26 @@ var Sandbox = {
 				result : message,
 				_class : "string"
 			});
+		},
+		
+		executeCommand : function(command) {
+			
+			// If submitting a command, set the currentHistory to blank (empties the textarea on update)
+			this.currentHistory = "";
+
+			// Run the command past the special commands to check for ':help' and ':clear' etc.
+			if ( !this.specialCommands( command ) ) {
+
+				// If if wasn't a special command, pass off to the Sandbox Model to evaluate and save
+				this.model.evaluate( command );
+			}
+
+			// Update the View's history state to reflect the latest history item
+			this.historyState = this.model.get('history').length;
+		},
+		
+		loadScript : function(url){
+			this.model.load(url);
 		},
 		
 		// Manually set the value in the sandbox textarea and focus it ready to submit:
@@ -407,18 +428,6 @@ var Sandbox = {
 					_class : "string"
 				});
 			}
-			// `:load <script src>`
-			if ( command.indexOf("G.runScript") > -1 ) {
-				var regex =  /\(([^)]+)\)/;
-				var matches = regex.exec(command);
-				var match = matches[1];
-				
-				alert(match);
-				return this.model.addHistory({
-					command : command,
-					result : this.model.load(match)
-				});
-			} 
 
 			// If no special commands, return false so the command gets evaluated
 			return false;

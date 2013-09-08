@@ -486,8 +486,6 @@ $(document).ready(function()
 	{
 		Console.log("Simulation.load()","Loading Simulation");
 		
-		FE.updateLoadEvent();
-		
 		//loading from simulation file editor's
 		if(GEPPETTO.SimulationContentEditor.editing){
 			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();

@@ -121,7 +121,6 @@ GEPPETTO.JSConsole.isConsoleVisible = function(){
 		return false;	
     }
 };
-
 /**
  * Handles user clicking the "Javascript Console" button, which 
  * toggles the console. 
@@ -134,6 +133,10 @@ $(document).ready(function()
 		GEPPETTO.JSConsole.toggleConsole();
 	});
 });
+
+function loadScript(url){
+	GEPPETTO.JSConsole.jsConsole.loadScript(url);
+};
 
 /**
  * Geppetto's console.
@@ -153,7 +156,7 @@ Console.debugLog = (function(command,message)
 	var jsConsole = GEPPETTO.JSConsole.jsConsole;
 	
 	if(isDebugOn()){
-		jsConsole.debugStatement(command,message);
+		jsConsole.debugLog(command,message);
 	}
 });
 
@@ -163,5 +166,14 @@ Console.log = (function(command,message)
 
 	if(GEPPETTO.JSConsole.isConsoleVisible()){
 		jsConsole.log(command,message);
+	}
+});
+
+Console.executeCommand = (function(command)
+{
+	var jsConsole = GEPPETTO.JSConsole.jsConsole;
+
+	if(GEPPETTO.JSConsole.isConsoleVisible()){
+		jsConsole.executeCommand(command);
 	}
 });

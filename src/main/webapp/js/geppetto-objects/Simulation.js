@@ -58,6 +58,8 @@ Simulation.StatusEnum =
 
 Simulation.status = Simulation.StatusEnum.INIT;
 
+Simulation.simulationURL = "";
+
 /**
  * Start the simulation.
  * 
@@ -139,6 +141,11 @@ Simulation.stop = function()
  */
 Simulation.load = function(simulationURL)
 {
+	
+	FE.updateLoadEvent();
+	
+	Simulation.simulationURL = simulationURL;
+	
 	var loadStatus = "Loading Simulation";
 	
 	if(simulationURL != null && simulationURL != ""){
@@ -224,19 +231,26 @@ Simulation.isLoaded = function()
 	return false;
 };
 
+/**
+ * Returns list of all commands associated with Simulation object
+ * 
+ * @returns
+ */
 Simulation.help = function(){
 	var commands = "Simulation control commands: \n\n";
 
-	  for ( var prop in Simulation ) {
-		  if(typeof Simulation[prop] === "function") {
-			  var f = Simulation[prop].toString();
-			  var match = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
-		      // its a function if you get here
-			  commands += ("      Simulation."+prop+"("+match+");" + "\n");
-		    };
-	  }
-	  	  
-	  return commands.substring(0,commands.length-1);
+	//find all functions of object Simulation
+	for ( var prop in Simulation ) {
+		if(typeof Simulation[prop] === "function") {
+			var f = Simulation[prop].toString();
+			//get the argument for this function
+			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
+			//format and keep track of all commands available
+			commands += ("      -- Simulation."+prop+"("+parameter+");" + "\n");
+		};
+	}
+
+	return commands.substring(0,commands.length-1);
 };
 
 /**

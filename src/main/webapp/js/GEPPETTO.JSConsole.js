@@ -74,12 +74,46 @@ GEPPETTO.JSConsole.toggleConsole = function(){
 GEPPETTO.JSConsole.loadConsole = function(){
 	if(GEPPETTO.JSConsole.jsConsole == null){
 		GEPPETTO.JSConsole.createConsole();
-	}
+	}	
+};
+
+/**
+ * Creates Javascript Console
+ */
+GEPPETTO.JSConsole.createConsole = function(){	
+	// Create the sandbox console:
+	GEPPETTO.JSConsole.jsConsole = new Sandbox.View({
+		el : $('#jsConsole'),
+		model : new Sandbox.Model(),
+		resultPrefix : "  => ",
+		tabCharacter : "\t",
+		placeholder : "// type a javascript command and hit enter (help() for info)",
+		helpText :  "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help()
+	});
 	
+	$('#jsConsole').css("width", $("#footer").width()-40);
+	
+	//allow console to be resizable
+	$( "#jsConsole" ).resizable({ 
+		handles: 'n', 
+		minHeight: 100,
+		autoHide: true,
+		maxHeight: 400,
+		resize: function(event,ui){
+			document.getElementById('jsConsole').style.top = "0px";
+			$(document.getElementById('footer')).height(ui.size.height + 86);
+		},
+	});
+	
+	//handles resizing the JS console when the windows is resized
+	$(window).resize(function(){
+		$('#jsConsole').css("width", $("#footer").width()-40);
+	});
+	
+	//get the available tags for autocompletion in console
 	var tags = availableTags();
-	alert(tags);
-	
-	// don't navigate away from the field on tab when selecting an item
+
+	//bind console input area to autocomplete event
 	$( "#commandInputArea" ).bind( "keydown", function( event ) {
       if ( event.keyCode === $.ui.keyCode.TAB &&
           $( this ).data( "ui-autocomplete" ).menu.active ) {
@@ -116,43 +150,9 @@ GEPPETTO.JSConsole.loadConsole = function(){
       }
     });
 	
+	//remove drop down menu that comes automatically with autocomplete
 	$('#commandInputArea').focus(function(){
 		$('.ui-menu').remove();
-	});
-	
-};
-
-/**
- * Creates Javascript Console
- */
-GEPPETTO.JSConsole.createConsole = function(){	
-	// Create the sandbox console:
-	GEPPETTO.JSConsole.jsConsole = new Sandbox.View({
-		el : $('#jsConsole'),
-		model : new Sandbox.Model(),
-		resultPrefix : "  => ",
-		tabCharacter : "\t",
-		placeholder : "// type a javascript command and hit enter (help() for info)",
-		helpText :  "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help()
-	});
-	
-	$('#jsConsole').css("width", $("#footer").width()-40);
-	
-	//allow console to be resizable
-	$( "#jsConsole" ).resizable({ 
-		handles: 'n', 
-		minHeight: 100,
-		autoHide: true,
-		maxHeight: 400,
-		resize: function(event,ui){
-			document.getElementById('jsConsole').style.top = "0px";
-			$(document.getElementById('footer')).height(ui.size.height + 86);
-		},
-	});
-	
-	//handles resizing the JS console when the windows is resized
-	$(window).resize(function(){
-		$('#jsConsole').css("width", $("#footer").width()-40);
 	});
 };
 
@@ -179,16 +179,28 @@ $(document).ready(function()
 	});	
 });
 
+/**
+ * internal function for loading script from console
+ */
 function loadScript(url){
 	GEPPETTO.JSConsole.jsConsole.loadScript(url);
 };
 
+/**
+ * 
+ */
 function split( val ) {
     return val.split( /,\s*/ );
-  }
-  function extractLast( term ) {
+};
+
+/**
+ * 
+ * @param term
+ * @returns
+ */
+function extractLast( term ) {
     return split( term ).pop();
-  }
+};
   
 /**
  * Geppetto's console.

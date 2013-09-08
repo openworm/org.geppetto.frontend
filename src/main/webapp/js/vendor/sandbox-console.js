@@ -339,7 +339,7 @@ var Sandbox = {
 			// Enter submits the command
 			if (e.which === 13) {
 				e.preventDefault();
-				var val = this.textarea.val();
+				var val = this.textarea.val().trim();
 
 				// If shift is down, do a carriage return
 				if ( this.ctrl ) {
@@ -391,19 +391,10 @@ var Sandbox = {
 
 				// Get the value, and the parts between which the tab character will be inserted
 				var value = this.textarea.val(),
-					caret = this.getCaret(),
-					parts = [
-						value.slice(0, caret),
-						value.slice(caret, value.length)
-					];
-				
-				// Insert the tab character into the value and update the textarea
-				this.textarea.val(
-					parts[0] + this.tabCharacter + parts[1]
-				);
+					caret = this.getCaret();
 
 				// Set the caret (cursor) position to just after the inserted tab character
-				this.setCaret(caret + this.tabCharacter.length);
+				this.setCaret(caret + value.length);
 
 				return false;
 			}

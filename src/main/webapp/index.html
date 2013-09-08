@@ -6,7 +6,7 @@
 
 		<!-- Third-party js libraries -->
 		<script src="js/vendor/jquery-1.9.1.js"></script>
-		<script src="js/vendor/jquery-ui-1.10.2.custom.min.js"></script>
+		<script src="js/vendor/jquery-ui-1.10.3.custom.js"></script>
 		<script src="js/vendor/three.min.js"></script>
 		<script src="js/vendor/TrackballControls.js"></script>
 		<script src="js/vendor/dat.gui.js"></script>
@@ -19,7 +19,7 @@
 		<script src="js/vendor/rAF.js"></script>
 		<script src="js/vendor/codemirror.js"></script>
 		<script src="js/vendor/xml.js"></script>
-		<script src="js/vendor/formatting.js"></script>
+		<script src="js/vendor/formatting.js"></script>		
 
 		<!-- Geppetto -->
 		<script src="js/GEPPETTO.js"></script>
@@ -118,7 +118,7 @@
 			<div id="footerHeader">
 				<div id="geppettologo"></div>
 				<div id="consoleButtonContainer">		
-					<button class="btn" id="jsConsoleButton">
+					<button class="btn" data-clipboard-target="clipboard_text" id="jsConsoleButton">
 						<icon class="icon-terminal"></icon>
 						Console
 					</button>
@@ -217,7 +217,7 @@
 		<script type="text/template" id="tplSandbox">
 		<pre class="output"></pre>
 		<div class="input">
-			<textarea rows="1" placeholder="<%= placeholder %>"></textarea>
+			<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
 		</div>
 	</script>
 	

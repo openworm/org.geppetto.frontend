@@ -53,6 +53,8 @@ G.debugMode = false;
 G.clear = function(){
 
 	GEPPETTO.JSConsole.jsConsole.clear();
+	
+	return "Console history cleared";
 };
 
 /**

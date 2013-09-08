@@ -75,6 +75,51 @@ GEPPETTO.JSConsole.loadConsole = function(){
 	if(GEPPETTO.JSConsole.jsConsole == null){
 		GEPPETTO.JSConsole.createConsole();
 	}
+	
+	var tags = availableTags();
+	alert(tags);
+	
+	// don't navigate away from the field on tab when selecting an item
+	$( "#commandInputArea" ).bind( "keydown", function( event ) {
+      if ( event.keyCode === $.ui.keyCode.TAB &&
+          $( this ).data( "ui-autocomplete" ).menu.active ) {
+        event.preventDefault();
+      }
+    })
+    .autocomplete({
+      minLength: 0,
+      source: function( request, response ) {
+        // delegate back to autocomplete, but extract the last term
+        response( $.ui.autocomplete.filter(
+          tags, extractLast( request.term ) ) );
+      },
+      focus: function() {
+        // prevent value inserted on focus
+        return false;
+      },
+      open: function( event, ui ) {
+    	  var firstElement = $(this).data("uiAutocomplete").menu.element[0].children[0]
+          , inpt = $('#commandInputArea')
+          , original = inpt.val()
+          , firstElementText = $(firstElement).text();
+      
+       /*
+          here we want to make sure that we're not matching something that doesn't start
+          with what was typed in 
+       */
+       if(firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0){
+           inpt.val(firstElementText);//change the input to the first match
+   
+           inpt[0].selectionStart = original.length; //highlight from end of input
+           inpt[0].selectionEnd = firstElementText.length;//highlight to the end
+       }
+      }
+    });
+	
+	$('#commandInputArea').focus(function(){
+		$('.ui-menu').remove();
+	});
+	
 };
 
 /**
@@ -131,13 +176,20 @@ $(document).ready(function()
 	$('#jsConsoleButton').click(function()
 	{	
 		GEPPETTO.JSConsole.toggleConsole();
-	});
+	});	
 });
 
 function loadScript(url){
 	GEPPETTO.JSConsole.jsConsole.loadScript(url);
 };
 
+function split( val ) {
+    return val.split( /,\s*/ );
+  }
+  function extractLast( term ) {
+    return split( term ).pop();
+  }
+  
 /**
  * Geppetto's console.
  * 
@@ -177,3 +229,33 @@ Console.executeCommand = (function(command)
 		jsConsole.executeCommand(command);
 	}
 });
+
+function split( val ) {
+    return val.split( /,\s*/ );
+  }
+  function extractLast( term ) {
+    return split( term ).pop();
+  }
+  
+  function availableTags(){
+		
+		var availableTags = [];
+		
+		var commands = G.help() + "\n" +  Simulation.help();
+		
+		var commandsSplitByLine = commands.split("\n");
+		
+		var tagsCount = 0;
+		
+		for(var i =0; i<commandsSplitByLine.length; i++){
+			var line = commandsSplitByLine[i].trim();
+			
+			if(line.substring(0,2) == "--"){
+				var command = line.substring(3, line.length);
+				availableTags[tagsCount] = command;
+				tagsCount++;
+			}
+		}
+				
+		return availableTags;
+	};

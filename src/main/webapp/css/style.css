@@ -38,7 +38,7 @@ p {
 	left: 5px;
 	float: left;
 	bottom: 0px;
-	margin-bottom: -10px;
+	margin-bottom: -8px;
 }
 
 #position_toolbar {
@@ -329,15 +329,18 @@ input {
 	position: relative;
 	background: rgba(66,59,59,0.50);
 	color: #fd6808;
-	bottom: -22px;
+	bottom: -23px;
 	border-color: #2e2828;
-	border-width: 3px;
+	border-width: 0;
 	box-shadow:none;
 	text-shadow: none;
+	border-radius: 0;
+	width: 120px;
+	height: 35px;
 }
 
 #consoleButtonContainer{
-	width:115px;
+	width:120px;
 	margin: 0 auto;
 }
 

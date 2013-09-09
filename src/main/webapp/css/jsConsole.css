@@ -115,7 +115,7 @@
 }
 
 .ui-resizable-n {
-	height: 4px;
+	height: 0px;
 	top: 0px;
 	background : rgba(66, 59, 59,0.65);
 }

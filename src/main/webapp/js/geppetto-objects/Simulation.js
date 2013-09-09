@@ -141,9 +141,11 @@ Simulation.stop = function()
  */
 Simulation.load = function(simulationURL)
 {
-	
-	FE.updateLoadEvent();
-	
+	if (Simulation.status == Simulation.StatusEnum.STARTED || Simulation.status == Simulation.StatusEnum.PAUSED)
+	{
+		Simulation.stop();
+	}
+		
 	Simulation.simulationURL = simulationURL;
 	
 	var loadStatus = "Loading Simulation";
@@ -167,22 +169,7 @@ Simulation.load = function(simulationURL)
 	}
 	
 	else{		
-		var simulationURL = $('#url').val();
-		
-		if(simulationURL != ""){
-			Simulation.load(simulationURL);	
-		}
-		
-		else if(GEPPETTO.SimulationContentEditor.editing){
-			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
-			
-			loadEditedSimulationFile(simulation);
-			GEPPETTO.SimulationContentEditor.isEditing(false);
-		}
-		
-		else{
-			loadStatus = "Simulation not specified";
-		}
+		loadStatus = "Simulation not specified";
 	}
 	
 	return loadStatus;
@@ -196,9 +183,11 @@ Simulation.load = function(simulationURL)
  */
  function loadEditedSimulationFile(simulation)
 {
-	//Update the simulation controls visibility
-	FE.updateLoadEvent();
-	
+	 if (Simulation.status == Simulation.StatusEnum.STARTED || Simulation.status == Simulation.StatusEnum.PAUSED)
+	 {
+		 Simulation.stop();
+	 }
+
 	var webGLStarted = GEPPETTO.init(FE.createContainer());
 	//update ui based on success of webgl
 	FE.update(webGLStarted);

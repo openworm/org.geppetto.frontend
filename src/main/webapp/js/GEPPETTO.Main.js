@@ -417,11 +417,7 @@ FE.activateLoader = function(state, msg)
 FE.updateLoadEvent = function(){
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').attr('disabled', 'disabled');
-	$('#loadSimModal').modal("hide");
-	if (Simulation.status == Simulation.StatusEnum.STARTED || Simulation.status == Simulation.StatusEnum.PAUSED)
-	{
-		Simulation.stop();
-	}	
+	$('#loadSimModal').modal("hide");	
 };
 
 /**
@@ -485,6 +481,9 @@ $(document).ready(function()
 	$('#load').click(function()
 	{
 		Console.log("Simulation.load()","Loading Simulation");
+	
+		//Update the simulation controls visibility
+		FE.updateLoadEvent();
 		
 		//loading from simulation file editor's
 		if(GEPPETTO.SimulationContentEditor.editing){

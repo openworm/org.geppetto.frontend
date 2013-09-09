@@ -243,31 +243,37 @@ Console.executeCommand = (function(command)
 });
 
 function split( val ) {
-    return val.split( /,\s*/ );
-  }
-  function extractLast( term ) {
-    return split( term ).pop();
-  }
-  
-  function availableTags(){
-		
-		var availableTags = [];
-		
-		var commands = G.help() + "\n" +  Simulation.help();
-		
-		var commandsSplitByLine = commands.split("\n");
-		
-		var tagsCount = 0;
-		
-		for(var i =0; i<commandsSplitByLine.length; i++){
-			var line = commandsSplitByLine[i].trim();
-			
-			if(line.substring(0,2) == "--"){
-				var command = line.substring(3, line.length);
-				availableTags[tagsCount] = command;
-				tagsCount++;
-			}
+	return val.split( /,\s*/ );
+};
+
+function extractLast( term ) {
+	return split( term ).pop();
+};
+
+/**
+ * Available commands stored in an array, used for autocomplete
+ * 
+ * @returns {Array}
+ */
+function availableTags(){
+
+	var availableTags = [];
+
+	var commands = G.help() + "\n" +  Simulation.help();
+
+	var commandsSplitByLine = commands.split("\n");
+
+	var tagsCount = 0;
+
+	for(var i =0; i<commandsSplitByLine.length; i++){
+		var line = commandsSplitByLine[i].trim();
+
+		if(line.substring(0,2) == "--"){
+			var command = line.substring(3, line.length);
+			availableTags[tagsCount] = command;
+			tagsCount++;
 		}
-				
-		return availableTags;
-	};
+	}
+
+	return availableTags;
+};

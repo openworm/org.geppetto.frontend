@@ -186,9 +186,6 @@ function loadScript(url){
 	GEPPETTO.JSConsole.jsConsole.loadScript(url);
 };
 
-/**
- * 
- */
 function split( val ) {
     return val.split( /,\s*/ );
 };
@@ -259,7 +256,7 @@ function availableTags(){
 
 	var availableTags = [];
 
-	var commands = G.help() + "\n" +  Simulation.help();
+	var commands = Simulation.help() + "\n" +  G.help();
 
 	var commandsSplitByLine = commands.split("\n");
 

@@ -15,7 +15,7 @@ test( "Global Object Test", function() {
 
 test( "Simulation Test", function() {
 	equal(getSimulationStatus(), Simulation.StatusEnum.INIT, "Simulation in initial conditions, passed.");
-	Simulation.load();
+	Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
 	equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
 	Simulation.start();
 	equal( getSimulationStatus(),Simulation.StatusEnum.STARTED, "Simulation Started, passed");

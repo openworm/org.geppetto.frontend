@@ -40,50 +40,50 @@
  * 
  * @author Jesus Martinez (jesus@metacell.us)
  */
-GEPPETTO.JSConsole = GEPPETTO.JSConsole ||
+GEPPETTO.Console = GEPPETTO.Console ||
 {
 	REVISION : '1'
 };
 
-GEPPETTO.JSConsole.jsConsole = null;
-GEPPETTO.JSConsole.consoleVisible = false;
+GEPPETTO.Console.console = null;
+GEPPETTO.Console.consoleVisible = false;
 
 /**
  * Toggle javascript console's visibility via button 
  */
-GEPPETTO.JSConsole.toggleConsole = function(){
+GEPPETTO.Console.toggleConsole = function(){
 	//toggle button class
-	$('#jsConsoleButton').toggleClass('clicked');
+	$('#consoleButton').toggleClass('clicked');
 	
 	//user has clicked the console button
-	if($('#jsConsoleButton').hasClass('clicked')) {	
+	if($('#consoleButton').hasClass('clicked')) {	
 		//load the console
-		GEPPETTO.JSConsole.loadConsole();
+		GEPPETTO.Console.loadConsole();
 		//toggle console
-		$('#jsConsole').slideToggle(200);
+		$('#console').slideToggle(200);
     } else {
 		$('#footer').height('');
     	$('#footerHeader').css("bottom","0px");
-		$('#jsConsole').slideToggle(200);		
+		$('#console').slideToggle(200);		
     }
 };
 
 /**
  * Load Javascript Console, create it if it doesn't exist
  */
-GEPPETTO.JSConsole.loadConsole = function(){
-	if(GEPPETTO.JSConsole.jsConsole == null){
-		GEPPETTO.JSConsole.createConsole();
+GEPPETTO.Console.loadConsole = function(){
+	if(GEPPETTO.Console.console == null){
+		GEPPETTO.Console.createConsole();
 	}	
 };
 
 /**
  * Creates Javascript Console
  */
-GEPPETTO.JSConsole.createConsole = function(){	
+GEPPETTO.Console.createConsole = function(){	
 	// Create the sandbox console:
-	GEPPETTO.JSConsole.jsConsole = new Sandbox.View({
-		el : $('#jsConsole'),
+	GEPPETTO.Console.console = new Sandbox.View({
+		el : $('#console'),
 		model : new Sandbox.Model(),
 		resultPrefix : "  => ",
 		tabCharacter : "\t",
@@ -91,23 +91,23 @@ GEPPETTO.JSConsole.createConsole = function(){
 		helpText :  "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help()
 	});
 	
-	$('#jsConsole').css("width", $("#footer").width()-40);
+	$('#console').css("width", $("#footer").width()-40);
 	
 	//allow console to be resizable
-	$( "#jsConsole" ).resizable({ 
+	$( "#console" ).resizable({ 
 		handles: 'n', 
 		minHeight: 100,
 		autoHide: true,
 		maxHeight: 400,
 		resize: function(event,ui){
-			document.getElementById('jsConsole').style.top = "0px";
+			document.getElementById('console').style.top = "0px";
 			$(document.getElementById('footer')).height(ui.size.height + 86);
 		},
 	});
 	
 	//handles resizing the JS console when the windows is resized
 	$(window).resize(function(){
-		$('#jsConsole').css("width", $("#footer").width()-40);
+		$('#console').css("width", $("#footer").width()-40);
 	});
 	
 	//get the available tags for autocompletion in console
@@ -159,8 +159,8 @@ GEPPETTO.JSConsole.createConsole = function(){
 /**
  * Returns visibility of Javascript console
  */
-GEPPETTO.JSConsole.isConsoleVisible = function(){
-	if($('#jsConsoleButton').hasClass('clicked')) {	
+GEPPETTO.Console.isConsoleVisible = function(){
+	if($('#consoleButton').hasClass('clicked')) {	
 		return true;
     } else {
 		return false;	
@@ -173,9 +173,9 @@ GEPPETTO.JSConsole.isConsoleVisible = function(){
 $(document).ready(function()
 {	
 	//JS Console Button clicked
-	$('#jsConsoleButton').click(function()
+	$('#consoleButton').click(function()
 	{	
-		GEPPETTO.JSConsole.toggleConsole();
+		GEPPETTO.Console.toggleConsole();
 	});	
 });
 
@@ -183,7 +183,7 @@ $(document).ready(function()
  * internal function for loading script from console
  */
 function loadScript(url){
-	GEPPETTO.JSConsole.jsConsole.loadScript(url);
+	GEPPETTO.Console.console.loadScript(url);
 };
 
 function split( val ) {
@@ -200,42 +200,25 @@ function extractLast( term ) {
 };
   
 /**
- * Geppetto's console.
- * 
- * @global
- */
-var Console =
-{};
-
-/**
  * Log message to Geppetto's console
  * 
  * @global
  */
-Console.debugLog = (function(command,message)
+GEPPETTO.Console.debugLog = (function(message)
 {
-	var jsConsole = GEPPETTO.JSConsole.jsConsole;
+	var console = GEPPETTO.Console.console;
 	
 	if(isDebugOn()){
-		jsConsole.debugLog(command,message);
+		console.debugLog(message);
 	}
 });
 
-Console.log = (function(command,message)
+GEPPETTO.Console.executeCommand = (function(command)
 {
-	var jsConsole = GEPPETTO.JSConsole.jsConsole;
+	var console = GEPPETTO.Console.console;
 
-	if(GEPPETTO.JSConsole.isConsoleVisible()){
-		jsConsole.log(command,message);
-	}
-});
-
-Console.executeCommand = (function(command)
-{
-	var jsConsole = GEPPETTO.JSConsole.jsConsole;
-
-	if(GEPPETTO.JSConsole.isConsoleVisible()){
-		jsConsole.executeCommand(command);
+	if(GEPPETTO.Console.isConsoleVisible()){
+		console.executeCommand(command);
 	}
 });
 
@@ -256,7 +239,7 @@ function availableTags(){
 
 	var availableTags = [];
 
-	var commands = Simulation.help() + "\n" +  G.help();
+	var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
 
 	var commandsSplitByLine = commands.split("\n");
 

@@ -25,7 +25,7 @@
 		<script src="js/GEPPETTO.js"></script>
 		<script src="js/GEPPETTO.Vanilla.js"></script>
 		<script src="js/GEPPETTO.SimulationContentEditor.js"></script>
-		<script src="js/GEPPETTO.JSConsole.js"></script>
+		<script src="js/GEPPETTO.Console.js"></script>
 		<script src="js/GEPPETTO.Main.js"></script>
 		<script src="js/geppetto-objects/Simulation.js"></script>
 		<script src="js/geppetto-objects/G.js"></script>
@@ -118,13 +118,13 @@
 			<div id="footerHeader">
 				<div id="geppettologo"></div>
 				<div id="consoleButtonContainer">		
-					<button class="btn" data-clipboard-target="clipboard_text" id="jsConsoleButton">
+					<button class="btn" data-clipboard-target="clipboard_text" id="consoleButton">
 						<icon class="icon-terminal"></icon>
 						Console
 					</button>
 				</div>
 			</div>
-			<div id="jsConsole">Console Loading...</div>
+			<div id="console">Console Loading...</div>
 		</div>
 	</div>
 	
@@ -225,6 +225,8 @@
 	<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
 <span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
 <% } %></script>
+
+<script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
 
 		<!-- The sandbox template: -->
 		<script src="js/vendor/underscore.min.js"></script>

@@ -74,7 +74,7 @@ Simulation.start = function()
 		GEPPETTO.Main.socket.send(messageTemplate("start", null));
 		
 		Simulation.status = Simulation.StatusEnum.STARTED;
-		Console.debugLog('Outbund Message Sent','Sent: Simulation started');
+		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation started');
 		
 		return "Simulation Started";
 	}
@@ -98,7 +98,7 @@ Simulation.pause = function()
 		GEPPETTO.Main.socket.send(messageTemplate("pause", null));
 		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
-		Console.debugLog('Outbund Message Sent','Sent: Simulation paused');
+		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation paused');
 
 		return "Simulation Paused";
 	}
@@ -121,7 +121,7 @@ Simulation.stop = function()
 		GEPPETTO.Main.socket.send(messageTemplate("stop", null));
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
-		Console.debugLog('Outbund Message Sent', 'Sent: Simulation stopped');
+		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation stopped');
 
 		return "Simulation Stopped";
 	}
@@ -164,7 +164,7 @@ Simulation.load = function(simulationURL)
 				GEPPETTO.animate();
 			}
 			GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
-			Console.debugLog('Outbound Message Sent', 'Load Simulation');			
+			GEPPETTO.Console.debugLog('Outbound Message Sent: Load Simulation');			
 		}
 	}
 	
@@ -201,7 +201,7 @@ Simulation.load = function(simulationURL)
 		}
 		
 		GEPPETTO.Main.socket.send(messageTemplate("init_sim", simulation));
-		Console.debugLog('Outbound Message Sent',"Sent: Load Simulation from editing console");
+		GEPPETTO.Console.debugLog("Outbound Message Sent: Load Simulation from editing console");
 	}
 	
 	return "Simulation Loaded";

@@ -205,6 +205,7 @@ var Sandbox = {
 		// The templating functions for the View and each history item
 		template: _.template( $('#tplSandbox').html() ),
 		format : _.template( $('#tplCommand').html() ),
+		formatDebug : _.template( $('#tplDebug').html() ),
 
 		// Renders the Sandbox View initially and stores references to the elements
 		render: function() {
@@ -220,16 +221,37 @@ var Sandbox = {
 		
 		// Updates the Sandbox View, redrawing the output and checking the input's value
 		update : function() {
+
 			this.output.html(
-				// Reduce the Model's history into HTML, using the command format templating function
-				_.reduce(this.model.get('history'), function(memo, command) {
-					return memo + this.format({
-						_hidden : command._hidden,
-						_class : command._class,
-						command : this.toEscaped(command.command),
-						result :  this.toEscaped(command.result)
-					});
-				}, "", this)
+					// Reduce the Model's history into HTML, using the command format templating function
+					_.reduce(this.model.get('history'), function(memo, command) {
+
+						var result; 
+
+						if(command.command == null){						
+							if(command.result != null){
+								result = this.formatDebug({
+									_hidden : command._hidden,
+									_class : command._class,
+									result :  this.toEscaped(command.result) + "\n"
+								});
+								return memo + result;
+
+							}
+						}
+
+						else{
+							result = this.format({
+								_hidden : command._hidden,
+								_class : command._class,
+								command : command.command,
+								result :  this.toEscaped(command.result)
+							});
+							return memo + result;
+
+						}
+
+					}, "", this)
 			);
 			
 			// Set the textarea to the value of the currently selected history item
@@ -242,9 +264,8 @@ var Sandbox = {
 			);
 		},
 		
-		debugLog : function(command,message) {
+		debugLog : function(message) {
 			return this.model.addDebugHistory({
-				command : command,
 				result : message,
 			});
 		},

@@ -52,7 +52,7 @@ G.debugMode = false;
  */
 G.clear = function(){
 
-	GEPPETTO.JSConsole.jsConsole.clear();
+	GEPPETTO.Console.console.clear();
 	
 	return "Console history cleared";
 };
@@ -64,13 +64,13 @@ G.clear = function(){
  */
 G.copyHistoryToClipboard = function(){
 
-	var text =  JSON.stringify(GEPPETTO.JSConsole.jsConsole.model.get('history'), 0, 4);
+	var text =  JSON.stringify(GEPPETTO.Console.console.model.get('history'), 0, 4);
 	var commands = JSON.parse(text);	
 	var commandsString = "";
 
 	for(var i=0; i<commands.length; i++){
 		var n = commands[i];
-		commandsString += n.command +'\n';
+		commandsString += n.command.trim() +'<br>';
 	}
 	
 	
@@ -209,7 +209,7 @@ G.runScript = function(scriptURL){
 	return "Running Script"; 
 };
 
-G.wait = function(){
+G.wait = function(ms){
 	return "G.wait(ms) command must be used inside script";
 };
 
@@ -225,6 +225,8 @@ G.wait = function(commands, ms){
 		//execute commands after ms milliseconds
 		Console.executeCommand(executeScriptCommands(commands));
 	}, ms);
+	
+	return "Waiting ms";
 };
 
 /**
@@ -264,7 +266,7 @@ function executeScriptCommands(commands){
 
 			//execute commands, except the wait one
 			else{
-				Console.executeCommand(command);
+				GEPPETTO.Console.executeCommand(command);
 			}
 		}
 	}

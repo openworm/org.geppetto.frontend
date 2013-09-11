@@ -324,7 +324,7 @@ input {
 	width: 100%;
 }
 
-#jsConsoleButton {
+#consoleButton {
 	margin: 0 auto;
 	position: relative;
 	background: rgba(66,59,59,0.50);
@@ -344,7 +344,7 @@ input {
 	margin: 0 auto;
 }
 
-#jsConsoleButton .icon-terminal{
+#consoleButton .icon-terminal{
 	margin-right: 5px;
 }
 

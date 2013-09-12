@@ -69,7 +69,7 @@ GEPPETTO.Vanilla.checkKeyboard = function()
 	}
 	
 	else if(GEPPETTO.isKeyPressed("ctrl+alt+j")){
-		GEPPETTO.JSConsole.toggleConsole();
+		GEPPETTO.Console.toggleConsole();
 	}
 };
 

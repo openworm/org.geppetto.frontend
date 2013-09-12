@@ -137,7 +137,7 @@ Simulation.stop = function()
  * Loads a simulation from a URL.
  * 
  * @param simulationURL - URL of simulation file
- * @returns {String}
+ * @returns {String} Returned status by the command
  */
 Simulation.load = function(simulationURL)
 {
@@ -221,9 +221,8 @@ Simulation.isLoaded = function()
 };
 
 /**
- * Returns list of all commands associated with Simulation object
- * 
- * @returns
+ *
+ * @returns  Returns list of all commands associated with Simulation object
  */
 Simulation.help = function(){
 	var commands = "Simulation control commands: \n\n";

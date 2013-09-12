@@ -83,7 +83,7 @@ GEPPETTO.Main.init = function()
 {
 	GEPPETTO.Main.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 	Simulation.status = Simulation.StatusEnum.INIT;
-	Console.log('Geppetto Initialised');
+	GEPPETTO.Console.debugLog('Geppetto Initialised');	
 };
 
 /**
@@ -99,7 +99,7 @@ GEPPETTO.Main.observe = function()
 	if(webGLStarted){
 		GEPPETTO.animate();	
 		GEPPETTO.Main.socket.send(messageTemplate("observe", null));
-		Console.log('Sent: Simulation being observed');
+		GEPPETTO.Console.debugLog('Sent: Simulation being observed');
 	}
 	
 	//update the UI based on success of webgl 
@@ -121,18 +121,18 @@ GEPPETTO.Main.connect = (function(host)
 	}
 	else
 	{
-		Console.log('Error: WebSocket is not supported by this browser.');
+		GEPPETTO.Console.debugLog('Error: WebSocket is not supported by this browser.');
 		return;
 	}
 
 	GEPPETTO.Main.socket.onopen = function()
 	{
-		Console.log('Info: WebSocket connection opened.');
+		GEPPETTO.Console.debugLog('Info: WebSocket connection opened.');
 	};
 
 	GEPPETTO.Main.socket.onclose = function()
 	{
-		Console.log('Info: WebSocket closed.');
+		GEPPETTO.Console.debugLog('Info: WebSocket closed.');
 	};
 
 	GEPPETTO.Main.socket.onmessage = function(msg)
@@ -143,7 +143,7 @@ GEPPETTO.Main.connect = (function(host)
 		switch(parsedServerMessage.type){
 			//clear canvas, used when loading a new model or re-loading previous one
 			case "reload_canvas":
-				Console.log("Clear canvas");
+				GEPPETTO.Console.debugLog("Inbound Message Received: Clear canvas");
 				var webGLStarted = GEPPETTO.init(FE.createContainer());
 				FE.update(webGLStarted);
 				break;
@@ -155,7 +155,7 @@ GEPPETTO.Main.connect = (function(host)
 				break;
 			//Simulation has been loaded and model need to be loaded
 			case "load_model":
-				Console.log("Received: Loading Model " );
+				GEPPETTO.Console.debugLog("Inbound Message Received: Loading Model " );
 				var entities = JSON.parse(parsedServerMessage.entities);
 								
 				//Populate scene and set status to loaded
@@ -220,28 +220,6 @@ GEPPETTO.Main.connect = (function(host)
 });
 
 /**
- * Geppetto's console.
- * 
- * @global
- */
-var Console =
-{};
-
-/**
- * Log message to Geppetto's console
- * 
- * @global
- */
-Console.log = (function(message)
-{
-	var jsConsole = GEPPETTO.JSConsole.jsConsole;
-	
-	if(G.isDebugOn()){
-		jsConsole.log(message);
-	}
-});
-
-/**
  * Front end, user interface, methods for handling updates to the UI
  * 
  * @constructor
@@ -268,7 +246,7 @@ FE.update = function(webGLStarted)
 {
 	//
 	if(!webGLStarted){
-		Console.log("Unable to initialize WebGL");
+		GEPPETTO.Console.debugLog("Initializing error: Unable to initialize WebGL");
 		FE.disableSimulationControls();
 	}
 };
@@ -466,11 +444,7 @@ FE.activateLoader = function(state, msg)
 FE.updateLoadEvent = function(){
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').attr('disabled', 'disabled');
-	$('#loadSimModal').modal("hide");
-	if (Simulation.status == Simulation.StatusEnum.STARTED || Simulation.status == Simulation.StatusEnum.PAUSED)
-	{
-		Simulation.stop();
-	}	
+	$('#loadSimModal').modal("hide");	
 };
 
 /**
@@ -529,19 +503,20 @@ $(document).ready(function()
 	});
 	
 	$('#load').click(function()
-	{
+	{	
+		//Update the simulation controls visibility
+		FE.updateLoadEvent();
+		
 		//loading from simulation file editor's
 		if(GEPPETTO.SimulationContentEditor.editing){
-			Console.log("Sent: Load Simulation from editing console");
 			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
 			
-			Simulation.loadEditedSimulationFile(simulation);
+			loadEditedSimulationFile(simulation);
 			GEPPETTO.SimulationContentEditor.isEditing(false);
 		}
 		//loading simulation url
 		else{
-			Console.log("Sent: Load simulation from URL");
-			Simulation.load($('#url').val());
+			Simulation.load($('#url').val().toString());
 		}
 	});
 
@@ -558,13 +533,13 @@ $(document).ready(function()
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.JSConsole.html">JSConsole</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Console">Console</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Console.html">Console</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#executeScriptCommands">executeScriptCommands</a></li><li><a href="global.html#extractLast">extractLast</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#loadEditedSimulationFile">loadEditedSimulationFile</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#SelectText">SelectText</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Sep 02 2013 16:26:35 GMT+0100 (IST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu Sep 12 2013 15:15:05 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>

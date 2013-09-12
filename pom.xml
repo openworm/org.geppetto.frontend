@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
@@ -180,7 +180,7 @@
 						<sourceFile>src/main/webapp/js/GEPPETTO.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.Main.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.SimulationContentEditor.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.JSConsole.js</sourceFile>
+						<sourceFile>src/main/webapp/js/GEPPETTO.Console.js</sourceFile>
 					</sourceFiles>
 					<outputDirectory>${basedir}/jsdocs</outputDirectory>
 				</configuration>

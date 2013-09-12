@@ -74,32 +74,87 @@ var G = G ||
 
 G.debugMode = false;
 
+/**
+ * Clears the console history
+ */
 G.clear = function(){
+
+	GEPPETTO.Console.console.clear();
 	
-	GEPPETTO.JSConsole.jsConsole.clear();
+	return "Console history cleared";
 };
 
+/**
+ * Copies console history to OS clipboard 
+ * 
+ * @returns {String}
+ */
 G.copyHistoryToClipboard = function(){
+
+	var text =  JSON.stringify(GEPPETTO.Console.console.model.get('history'), 0, 4);
+	var commands = JSON.parse(text);	
+	var commandsString = "";
+
+	for(var i=0; i&lt;commands.length; i++){
+		var n = commands[i];
+		commandsString += n.command.trim() +'&lt;br>';
+	}
 	
-	var text =  JSON.stringify(GEPPETTO.JSConsole.jsConsole.model.get('history'), 0, 4);
 	
-	if (window.clipboardData) // Internet Explorer
-    {  
-        window.clipboardData.setData("Text", text);
+	var message = "Copy to Clipboard: Ctrl+C , OK";
+	
+	//different command for copying in macs means different message
+	var mac=navigator.userAgent.match(/(Mac|iPhone|iPod|iPad)/i)?true:false;
+    
+    if(mac){
+        message = "Copy to Clipboard: Cmd+C , OK";
     }
-    else
-    {  
-        unsafeWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");  
-        const clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);  
-        clipboardHelper.copyString(text);
-    }
+    
+    //show alert window with clipboard history
+	$('#infomodal-title').html(message);
+	$('#infomodal-text').html(commandsString);
+	$('#infomodal').css('height', 200);
+	$('#infomodal').modal();
 	
-	return text;
+	//auto select text for user
+	$('#infomodal').on('shown', function(){
+		SelectText('infomodal-text');
+	});
+	
+	return "Copying history to clipboard";
 };
 
+/**
+ * Takes an html element and selects all text within
+ * 
+ * @param element - element whose text will be auto selected
+ */
+function SelectText(element) {
+    var doc = document;
+    var text = doc.getElementById(element);    
+    if (doc.body.createTextRange) {
+        var range = document.body.createTextRange();
+        range.moveToElementText(text);
+        range.select();
+    } else if (window.getSelection) {
+        var selection = window.getSelection();
+        var range = document.createRange();
+        range.selectNodeContents(text);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+}
+
+/**
+ * Toggles debug statement on/off
+ * 
+ * @param toggle - toggles debug statements
+ * 
+ * @returns {String}
+ */
 G.debug = function(toggle){
 	G.debugMode = toggle;
-	
+
 	if(toggle){
 		return "Debug log statements on";
 	}
@@ -108,33 +163,139 @@ G.debug = function(toggle){
 	}
 };
 
-G.isDebugOn = function(){
-	return G.debugMode;
-};
-
+/**
+ * 
+ * @returns Returns current Simulation object if it exists
+ */
 G.getCurrentSimulation = function(){
-	return Simulation;
+	//return simulation object if one has been loaded
+	if(Simulation.isLoaded()){
+		return JSON.stringify(Simulation);
+	}
+	else{
+		return "No Simulation to get as none is running";
+	}
 };
 
+/**
+ * Get all commands available for object G
+ * 
+ * @returns {String}
+ */
 G.help = function(){
-	var ret = [];
+	var header = "Global commands: \n\n";
+	var commands = "";
 
-	  for ( var prop in G ) {
-		  if(typeof G[prop] === "function") {
-		      // its a function if you get here
-			  ret.push(prop);
-		    };
-	  }
+	//Find all available functions inside objectG
+	for ( var prop in G ) {
+		//match function
+		if(typeof G[prop] === "function") {
+			var f = G[prop].toString();
+			//get function parameter
+			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
+			// keep track of commands,format a little
+			commands += ("      -- G."+prop+"("+parameter+");" + "\n");
+		};
+	}
 
-	  return ret;
+	//return list of commands, remove empty line from the end
+	return header + commands.substring(0,commands.length-1);
 };
 
-G.runScript = function(url){
-	return "Function under construction";
+/**
+ * Takes the URL corresponding to a script, executes 
+ * commnands inside the script.
+ * 
+ * @param scriptURL - URL of script to execute
+ */
+G.runScript = function(scriptURL){	
+
+	//retrieve the script
+	$.ajax({ 
+		async:false,
+		type:'GET',
+		url:scriptURL,
+		dataType:"text",
+		//at success, read the file and extract the commands
+		success:function(data) {
+			var commands = data.split("\n");
+			
+			//format the commands, remove white spaces
+			for(var c = 0; c&lt;commands.length; c++){
+				commands[c] = commands[c].replace(/\s/g,"");
+				var lineC = commands[c];
+				if(lineC.toString() === ""){
+					commands.splice(c,1);
+				}
+			}
+			//execute the commands found inside script
+			executeScriptCommands(commands);
+		}, });	
+	
+	return "Running Script"; 
 };
 
 G.wait = function(ms){
-	return "Function under construction";
+	return "G.wait(ms) command must be used inside script";
+};
+
+/**
+ * Waits some amount of time before executing a set of commands
+ * 
+ * @param commands - commands to execute
+ * @param ms - milliseconds to wait before executing commands
+ */
+G.wait = function(commands, ms){
+	setTimeout(function()
+	{
+		//execute commands after ms milliseconds
+		Console.executeCommand(executeScriptCommands(commands));
+	}, ms);
+	
+	return "Waiting ms";
+};
+
+/**
+ * 
+ * 
+ * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
+ */
+function isDebugOn(){
+	return G.debugMode;
+};
+
+/**
+ * Executes a set of commands from a script 
+ * 
+ * @param commands - commands to execute
+ */
+function executeScriptCommands(commands){
+	for (var i = 0, len = commands.length; i &lt; len; i++) {
+		var command = commands[i].toString().trim();
+
+		if(command != ""){
+			//if it's the wait command,  call the the wait function 
+			//with all remanining commands left to execute as parameter.
+			if ( command.indexOf("G.wait") > -1 ) {
+				//get the ms time for waiting
+				var parameter = command.match(/\((.*?)\)/);
+				var ms = parameter[1];
+				
+				//get the remaining commands
+				var remainingCommands = commands.splice(i+1,commands.length);
+				
+				//call wait function with ms, and remaining commands to execute when done
+				G.wait(remainingCommands, ms);
+				
+				return;
+			}
+
+			//execute commands, except the wait one
+			else{
+				GEPPETTO.Console.executeCommand(command);
+			}
+		}
+	}
 };</code></pre>
         </article>
     </section>
@@ -145,13 +306,13 @@ G.wait = function(ms){
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.JSConsole.html">JSConsole</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Console">Console</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Console.html">Console</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#executeScriptCommands">executeScriptCommands</a></li><li><a href="global.html#extractLast">extractLast</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#loadEditedSimulationFile">loadEditedSimulationFile</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#SelectText">SelectText</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Sep 02 2013 16:26:35 GMT+0100 (IST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu Sep 12 2013 15:15:05 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>

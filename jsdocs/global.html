@@ -89,14 +89,14 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="Console"><span class="type-signature"></span>Console<span class="type-signature"></span></h4>
+    <h4 class="name" id="debugLog"><span class="type-signature"></span>debugLog<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
     <div class="description">
-        Geppetto's console.
+        Log message to Geppetto's console
     </div>
     
     
@@ -125,7 +125,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GEPPETTO.Main.js.html">GEPPETTO.Main.js</a>, <a href="GEPPETTO.Main.js.html#line200">line 200</a>
+        <a href="GEPPETTO.Console.js.html">GEPPETTO.Console.js</a>, <a href="GEPPETTO.Console.js.html#line206">line 206</a>
     </li></ul></dd>
     
     
@@ -202,22 +202,33 @@ a scene as defined on org.geppetto.core
     
 </dd>
 
+        </dl>
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
         
+        <dl>
             
 <dt>
-    <h4 class="name" id="log"><span class="type-signature"></span>log<span class="type-signature"></span></h4>
+    <h4 class="name" id="availableTags"><span class="type-signature"></span>availableTags<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
 <dd>
     
+    
     <div class="description">
-        Log message to Geppetto's console
+        Available commands stored in an array, used for autocomplete
     </div>
     
-    
-    
 
+    
+    
+    
+    
+    
+    
     
 <dl class="details">
     
@@ -241,7 +252,7 @@ a scene as defined on org.geppetto.core
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GEPPETTO.Main.js.html">GEPPETTO.Main.js</a>, <a href="GEPPETTO.Main.js.html#line208">line 208</a>
+        <a href="GEPPETTO.Console.js.html">GEPPETTO.Console.js</a>, <a href="GEPPETTO.Console.js.html#line237">line 237</a>
     </li></ul></dd>
     
     
@@ -254,15 +265,612 @@ a scene as defined on org.geppetto.core
 
     
     
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Array</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
 </dd>
 
-        </dl>
-    
-    
-    
-        <h3 class="subsection-title">Methods</h3>
         
-        <dl>
+            
+<dt>
+    <h4 class="name" id="executeScriptCommands"><span class="type-signature"></span>executeScriptCommands<span class="signature">(commands)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Executes a set of commands from a script
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>commands</code></td>
+            
+            
+            <td class="type">
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">commands to execute</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="G.js.html">geppetto-objects/G.js</a>, <a href="G.js.html#line245">line 245</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="extractLast"><span class="type-signature"></span>extractLast<span class="signature">(term)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>term</code></td>
+            
+            
+            <td class="type">
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="GEPPETTO.Console.js.html">GEPPETTO.Console.js</a>, <a href="GEPPETTO.Console.js.html#line197">line 197</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getSimulationStatus"><span class="type-signature"></span>getSimulationStatus<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Return status of simulation
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line247">line 247</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isDebugOn"><span class="type-signature"></span>isDebugOn<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="G.js.html">geppetto-objects/G.js</a>, <a href="G.js.html#line236">line 236</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns true or false depending if debug statements are turned on or off.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">boolean</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="loadEditedSimulationFile"><span class="type-signature"></span>loadEditedSimulationFile<span class="signature">(simulation)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Loads a simulation using the content's from the simulation file editor
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>simulation</code></td>
+            
+            
+            <td class="type">
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Simulation to be loaded</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line184">line 184</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="loadScript"><span class="type-signature"></span>loadScript<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        internal function for loading script from console
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="GEPPETTO.Console.js.html">GEPPETTO.Console.js</a>, <a href="GEPPETTO.Console.js.html#line185">line 185</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
             
 <dt>
     <h4 class="name" id="messageTemplate"><span class="type-signature"></span>messageTemplate<span class="signature">(msgtype, payload)</span><span class="type-signature"></span></h4>
@@ -367,7 +975,7 @@ a scene as defined on org.geppetto.core
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line229">line 229</a>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line260">line 260</a>
     </li></ul></dd>
     
     
@@ -582,6 +1190,118 @@ a scene as defined on org.geppetto.core
     
 </dd>
 
+        
+            
+<dt>
+    <h4 class="name" id="SelectText"><span class="type-signature"></span>SelectText<span class="signature">(element)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Takes an html element and selects all text within
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>element</code></td>
+            
+            
+            <td class="type">
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">element whose text will be auto selected</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="G.js.html">geppetto-objects/G.js</a>, <a href="G.js.html#line105">line 105</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
         </dl>
     
     
@@ -598,13 +1318,13 @@ a scene as defined on org.geppetto.core
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.JSConsole.html">JSConsole</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Console">Console</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Console.html">Console</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#executeScriptCommands">executeScriptCommands</a></li><li><a href="global.html#extractLast">extractLast</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#loadEditedSimulationFile">loadEditedSimulationFile</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#SelectText">SelectText</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Sep 02 2013 16:26:35 GMT+0100 (IST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu Sep 12 2013 15:15:05 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>

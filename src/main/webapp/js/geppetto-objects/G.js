@@ -139,9 +139,8 @@ G.debug = function(toggle){
 };
 
 /**
- * Returns current Simulation object if it exists
  * 
- * @returns
+ * @returns Returns current Simulation object if it exists
  */
 G.getCurrentSimulation = function(){
 	//return simulation object if one has been loaded
@@ -232,9 +231,9 @@ G.wait = function(commands, ms){
 };
 
 /**
- * Returns true/false depending if debug statements are turn on/off.
  * 
- * @returns
+ * 
+ * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
  */
 function isDebugOn(){
 	return G.debugMode;

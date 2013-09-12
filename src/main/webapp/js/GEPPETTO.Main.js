@@ -462,17 +462,17 @@ $(document).ready(function()
 	
 	$('#start').click(function()
 	{
-		Simulation.start();
+		GEPPETTO.Console.executeCommand("Simulation.start()");
 	});
 
 	$('#pause').click(function()
 	{
-		Simulation.pause();
+		GEPPETTO.Console.executeCommand("Simulation.pause()");
 	});
 	
 	$('#stop').click(function()
 	{
-		Simulation.stop();
+		GEPPETTO.Console.executeCommand("Simulation.stop()");
 	});
 	
 	$('#load').click(function()
@@ -482,14 +482,14 @@ $(document).ready(function()
 		
 		//loading from simulation file editor's
 		if(GEPPETTO.SimulationContentEditor.editing){
-			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation();
+			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');;
 			
-			loadEditedSimulationFile(simulation);
+			GEPPETTO.Console.executeCommand('Simulation.loadFromContent("'+simulation+'")');
 			GEPPETTO.SimulationContentEditor.isEditing(false);
 		}
 		//loading simulation url
 		else{
-			Simulation.load($('#url').val().toString());
+			GEPPETTO.Console.executeCommand('Simulation.load("'+$('#url').val()+'")');
 		}
 	});
 

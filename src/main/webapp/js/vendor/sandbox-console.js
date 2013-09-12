@@ -228,39 +228,45 @@ var Sandbox = {
 
 						var result; 
 
-						if(command.command == null){						
-							if(command.result != null){
-								result = this.formatDebug({
+							if(command.command == null){						
+								if(command.result != null){
+									result = this.formatDebug({
+										_hidden : command._hidden,
+										_class : command._class,
+										result :  this.toEscaped(command.result) + "\n"
+									});
+									return memo + result;
+
+								}
+							}
+
+							else{
+								result = this.format({
 									_hidden : command._hidden,
 									_class : command._class,
-									result :  this.toEscaped(command.result) + "\n"
+									command : command.command,
+									result :  this.toEscaped(command.result)
 								});
+
+								if(typeof memo == "undefined"){
+									memo = "";
+								}
+								
 								return memo + result;
 
 							}
-						}
-
-						else{
-							result = this.format({
-								_hidden : command._hidden,
-								_class : command._class,
-								command : command.command,
-								result :  this.toEscaped(command.result)
-							});
-							return memo + result;
-
-						}
+						
 
 					}, "", this)
 			);
-			
+
 			// Set the textarea to the value of the currently selected history item
 			// Update the textarea's `rows` attribute, as history items may be multiple lines
 			this.textarea.val(this.currentHistory).attr('rows', this.currentHistory.split("\n").length);
 
 			// Scroll the output to the bottom, so that new commands are visible
 			this.output.scrollTop(
-				this.output[0].scrollHeight - this.output.height()
+					this.output[0].scrollHeight - this.output.height()
 			);
 		},
 		
@@ -433,7 +439,7 @@ var Sandbox = {
 				this.model.destroy();
 				return true;
 			}
-			if ( command === "help()" ) {
+			if ( command === "help()" || command === "help();" ) {
 				return this.model.addHistory({
 					command : 'help()',
 					result : this.helpText,

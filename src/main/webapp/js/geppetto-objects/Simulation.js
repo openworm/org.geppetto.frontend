@@ -181,7 +181,7 @@ Simulation.load = function(simulationURL)
  * @param simulation - Simulation to be loaded
  * @returns {String}
  */
- function loadEditedSimulationFile(simulation)
+Simulation.loadFromContent = function(content)
 {
 	 if (Simulation.status == Simulation.StatusEnum.STARTED || Simulation.status == Simulation.StatusEnum.PAUSED)
 	 {

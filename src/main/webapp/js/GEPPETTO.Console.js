@@ -72,9 +72,7 @@ GEPPETTO.Console.toggleConsole = function(){
  * Load Javascript Console, create it if it doesn't exist
  */
 GEPPETTO.Console.loadConsole = function(){
-	if(GEPPETTO.Console.console == null){
-		GEPPETTO.Console.createConsole();
-	}	
+	
 };
 
 /**
@@ -172,6 +170,8 @@ GEPPETTO.Console.isConsoleVisible = function(){
  */
 $(document).ready(function()
 {	
+	GEPPETTO.Console.createConsole();
+	
 	//JS Console Button clicked
 	$('#consoleButton').click(function()
 	{	
@@ -217,9 +217,9 @@ GEPPETTO.Console.executeCommand = (function(command)
 {
 	var console = GEPPETTO.Console.console;
 
-	if(GEPPETTO.Console.isConsoleVisible()){
+	//if(GEPPETTO.Console.isConsoleVisible()){
 		console.executeCommand(command);
-	}
+	//}
 });
 
 function split( val ) {

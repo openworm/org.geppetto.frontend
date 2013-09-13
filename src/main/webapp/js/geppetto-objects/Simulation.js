@@ -204,7 +204,7 @@ Simulation.loadFromContent = function(content)
 		GEPPETTO.Console.debugLog("Outbound Message Sent: Load Simulation from editing console");
 	}
 	
-	return SIMULATION_LOADED;
+	return SIMULATION_LOADING;
 };
 
 /**

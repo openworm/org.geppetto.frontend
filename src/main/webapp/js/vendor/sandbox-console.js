@@ -162,6 +162,13 @@ var Sandbox = {
 				item._class = "error";
 			}
 
+			//Replace < and > tags with html equivalent in order to 
+			//display in console area
+			var str = command.replace(/\</g,"&lt;");
+			var formattedCommand = str.replace(/\>/g,"&gt;");
+			
+			item.command = formattedCommand;
+			
 			// Add the item to the history
 			this.addHistory(item);
 		}

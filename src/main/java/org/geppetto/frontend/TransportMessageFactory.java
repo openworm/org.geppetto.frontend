@@ -43,19 +43,20 @@ import com.google.gson.JsonObject;
  * NOTE: this utility class has knowledge of what the messages looks like to communicate with the client
  * 
  * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @author  Giovanni Idili (giovanni@openworm.org)
  *
  */
-public class JSONUtility {
-
+public class TransportMessageFactory {
+	
+	private static final String EMPTY_STRING = "";
+	
 	/**
 	 * Create JSON object with appropriate message for its type
 	 * 
 	 * @param type - Type of message of requested
 	 * @return
 	 */
-	public static JsonObject getJSONObject(OUTBOUND_MESSAGE_TYPES type){
-
-		JsonObject json = null;
+	public static GeppettoTransportMessage getTransportMessage(OUTBOUND_MESSAGE_TYPES type, String update){
 
 		String messageType = type.toString();
 		
@@ -83,52 +84,23 @@ public class JSONUtility {
 				break;
 			case SIMULATION_STARTED:
 				break;
-			default:
-				break;
-		}
-		
-		// keep this as separate statement to facilitate debug
-		json = createJSONMessage(messageType, params);
-		
-		return json;
-	}
-
-	/**
-	 * Create JSON object for appropriate message type, overloaded with extra parameter
-	 * to add to JSON object.
-	 * 
-	 * @param type - Type of message requested
-	 * @param update - Parameter requested to be part of JSON object
-	 * @return
-	 */
-	public static JsonObject getJSONObject(OUTBOUND_MESSAGE_TYPES type, String update) {
-		JsonObject json = null;
-
-		String messageType = type.toString();
-		
-		List<SimpleEntry<String, String>> params = new ArrayList<SimpleEntry<String, String>>();
-
-		switch(type){
 			case LOAD_MODEL:
-				params.add(new SimpleEntry<String, String>("entities", update));
-				break;
 			case SCENE_UPDATE:
-				params.add(new SimpleEntry<String, String>("entities", update));
+				params.add(new SimpleEntry<String, String>("entities", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_CONFIGURATION:
-				params.add(new SimpleEntry<String, String>("configuration", update));
+				params.add(new SimpleEntry<String, String>("configuration", (update!=null) ? update : EMPTY_STRING));
+				break;
 			case GEPPETTO_VERSION:
-				params.add(new SimpleEntry<String, String>("geppetto_version", update));
+				params.add(new SimpleEntry<String, String>("geppetto_version", (update!=null) ? update : EMPTY_STRING));
+				break;
 			default:
 				break;
 		}
 		
-		// keep this as separate statement to facilitate debug
-		json = createJSONMessage(messageType, params);
-		
-		return json;
+		return createTransportMessage(messageType, params);
 	}
-
+	
 	/**
 	 * Create JSON object with type and parameters
 	 * 
@@ -136,16 +108,20 @@ public class JSONUtility {
 	 * @param params - list of name-value pairs representing parameter names and values
 	 * @return
 	 */
-	private static JsonObject createJSONMessage(String type, List<SimpleEntry<String, String>> params){
-		//JSON object used to send message to client
-		JsonObject json = new JsonObject();
-		json.addProperty("type", type);
+	private static GeppettoTransportMessage createTransportMessage(String type, List<SimpleEntry<String, String>> params){
+		GeppettoTransportMessage msg = new GeppettoTransportMessage();
 		
+		//JSON nested object stored in the data field of the transport message
+		JsonObject json = new JsonObject();
 		for(SimpleEntry<String, String> param : params)
 		{
 			json.addProperty(param.getKey(), param.getValue());
 		}
 
-		return json;
+		msg.type = type;
+		// data stored as a string (could be anything) - will be interpreted by the client as a json object
+		msg.data = json.toString();
+		
+		return msg;
 	}
 }

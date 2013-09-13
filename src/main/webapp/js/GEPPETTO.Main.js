@@ -111,8 +111,10 @@ GEPPETTO.Main.connect = (function(host)
 	GEPPETTO.Main.socket.onmessage = function(msg)
 	{		
 		var parsedServerMessage = JSON.parse(msg.data);
+		// parsed message has a type and data fields - data contains the payload of the message
+		var payload = JSON.parse(parsedServerMessage.data);
 		
-		//Parsed incoming message
+		// Switch based on parsed incoming message type
 		switch(parsedServerMessage.type){
 			//clear canvas, used when loading a new model or re-loading previous one
 			case "reload_canvas":
@@ -124,17 +126,17 @@ GEPPETTO.Main.connect = (function(host)
 			case "error_loading_simulation":
 				$('#loadingmodal').modal('hide');
 				$('#start').attr('disabled', 'disabled');
-				FE.infoDialog("Invalid Simulation File", parsedServerMessage.message);
+				FE.infoDialog("Invalid Simulation File", payload.message);
 				break;
 			case "geppetto_version":
-				var version = parsedServerMessage.geppetto_version;
+				var version = payload.geppetto_version;
 				
 				GEPPETTO.Console.Log("Geppetto v" + version + " is Ready");
 				break;
 			//Simulation has been loaded and model need to be loaded
 			case "load_model":
 				GEPPETTO.Console.debugLog("Inbound Message Received: Loading Model " );
-				var entities = JSON.parse(parsedServerMessage.entities);
+				var entities = JSON.parse(payload.entities);
 								
 				//Populate scene and set status to loaded
 				GEPPETTO.populateScene(entities);
@@ -142,7 +144,7 @@ GEPPETTO.Main.connect = (function(host)
 				break;
 			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":
-				FE.observersAlert("Observing Simulation Mode", parsedServerMessage.alertMessage, parsedServerMessage.popoverMessage);
+				FE.observersAlert("Observing Simulation Mode", payload.alertMessage, payload.popoverMessage);
 				break;
 			//Read the Parameters passed in url
 			case "read_url_parameters":
@@ -150,7 +152,7 @@ GEPPETTO.Main.connect = (function(host)
 				break;
 			//Event received to update the simulation
 			case "scene_update":
-				var entities = JSON.parse(parsedServerMessage.entities);
+				var entities = JSON.parse(payload.entities);
 				//Update if simulation hasn't been stopped
 				if(Simulation.status != Simulation.StatusEnum.STOPPED){
 					if (!GEPPETTO.isScenePopulated())
@@ -167,17 +169,17 @@ GEPPETTO.Main.connect = (function(host)
 				break;
 			//Simulation server became available
 			case "server_available":
-				FE.infoDialog("Server Available", parsedServerMessage.message);
+				FE.infoDialog("Server Available", payload.message);
 				break;
 			//Simulation server already in use
 			case "server_unavailable":
 			    FE.disableSimulationControls();
-				FE.observersDialog("Server Unavailable", parsedServerMessage.message);
+				FE.observersDialog("Server Unavailable", payload.message);
 				break;
 			//Simulation configuration retrieved from server
 			case "simulation_configuration":
 				//Load simulation file into display area
-				GEPPETTO.SimulationContentEditor.loadSimulationInfo(parsedServerMessage.configuration);
+				GEPPETTO.SimulationContentEditor.loadSimulationInfo(payload.configuration);
 				//Auto Format Simulation FIle display
 				GEPPETTO.SimulationContentEditor.autoFormat();
 				break;

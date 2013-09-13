@@ -59,6 +59,7 @@ import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
@@ -386,31 +387,32 @@ public class SimulationListener implements ISimulationCallbackListener {
 	/**
 	 * Requests JSONUtility class for a json object with a message to send to the client
 	 * 
-	 * @param visitor - client to receive the message
+	 * @param connection - client to receive the message
 	 * @param type - type of message to be send
 	 */
-	public void messageClient(GeppettoMessageInbound visitor, OUTBOUND_MESSAGE_TYPES type){
-		//Create a JSON object to be send to the client
-		JsonObject jsonUpdate = JSONUtility.getJSONObject(type);
-		String msg = jsonUpdate.toString();
+	public void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type){
+		// get transport message to be sent to the client
+		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(type, null);
+		String msg = new Gson().toJson(transportMsg);
 
 		//Send the message to the client
-		sendMessage(visitor, msg);
+		sendMessage(connection, msg);
 	}
 
 	/**
 	 * Requests JSONUtility class for a json object with simulation update to 
 	 * be send to the client
 	 * 
-	 * @param visitor - Client to receive the simulation update
+	 * @param connection - client to receive the simulation update
 	 * @param type - Type of udpate to be send
 	 * @param update - update to be send
 	 */
-	private void messageClient(GeppettoMessageInbound visitor, OUTBOUND_MESSAGE_TYPES type, String update){
-		JsonObject jsonUpdate = JSONUtility.getJSONObject(type, update);
-		String msg = jsonUpdate.toString();
+	private void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type, String update){
+		// get transport message to be sent to the client
+		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(type, update);
+		String msg = new Gson().toJson(transportMsg);
 
-		sendMessage(visitor, msg);
+		sendMessage(connection, msg);
 	}
 
 	/**

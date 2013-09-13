@@ -48,7 +48,8 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	SCENE_UPDATE("scene_update"), 
 	RELOAD_CANVAS("reload_canvas"),
 	SIMULATION_CONFIGURATION("simulation_configuration"),
-	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config");
+	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config"),
+	GEPPETTO_VERSION("geppetto_version");
 
 	private OUTBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

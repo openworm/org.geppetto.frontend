@@ -38,7 +38,7 @@ p {
 	left: 5px;
 	float: left;
 	bottom: 0px;
-	margin-bottom: -8px;
+	margin-bottom: -12px;
 }
 
 #position_toolbar {
@@ -329,7 +329,7 @@ input {
 	position: relative;
 	background: rgba(66,59,59,0.50);
 	color: #fd6808;
-	bottom: -23px;
+	bottom: -19px;
 	border-color: #2e2828;
 	border-width: 0;
 	box-shadow:none;
@@ -351,7 +351,7 @@ input {
 #sim {
 	width: 100%;
 	float: left;
-	height: 91%;
+	height: 100%;
 }
 
 #mainContainer {

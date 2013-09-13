@@ -125,6 +125,8 @@ public class JSONUtility {
 				break;
 			case SIMULATION_CONFIGURATION:
 				params.add(new SimpleEntry<String, String>("configuration", update));
+			case GEPPETTO_VERSION:
+				params.add(new SimpleEntry<String, String>("version", update));
 			default:
 				break;
 		}

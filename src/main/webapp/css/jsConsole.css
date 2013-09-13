@@ -22,16 +22,15 @@
 #console {
 	background:rgba(66,59,59,0.50);
 	color: #ccc;
-	padding:20px;
-	-webkit-border-radius: 5px;
-	   -moz-border-radius: 5px;
-	        border-radius: 5px;
+	padding:20px 20px 18px 20px;
 	height: 250px;
 	width: 100%;
 	max-height: 100%;
 	display: none;
 	float: left;
 	clear: none;
+	bottom: -2px;
+	top : 0px;
 }
 #console pre.output {
 	display:block;
@@ -55,6 +54,7 @@
 #console pre.output span.number    { color:#7f7; }
 #console pre.output span.error     { color:#f77; }
 #console pre.output span.debug     { color: gold; }
+#console pre.output span.message     { color: #fd6808; }
 
 #console .input {
 	padding:0 0 0 15px;

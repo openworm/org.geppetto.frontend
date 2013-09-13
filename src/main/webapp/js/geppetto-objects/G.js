@@ -54,7 +54,7 @@ G.clear = function(){
 
 	GEPPETTO.Console.console.clear();
 	
-	return "Console history cleared";
+	return CLEAR_HISTORY;
 };
 
 /**
@@ -70,33 +70,36 @@ G.copyHistoryToClipboard = function(){
 
 	for(var i=0; i<commands.length; i++){
 		var n = commands[i];
-		if(n != ""){
+		if(n.command != null || typeof n.command != "undefined"){
 			commandsString += n.command.trim() +'<br>';
 		}
 	}
-	
-	
-	var message = "Copy to Clipboard: Ctrl+C , OK";
-	
-	//different command for copying in macs means different message
-	var mac=navigator.userAgent.match(/(Mac|iPhone|iPod|iPad)/i)?true:false;
-    
-    if(mac){
-        message = "Copy to Clipboard: Cmd+C , OK";
-    }
-    
-    //show alert window with clipboard history
-	$('#infomodal-title').html(message);
-	$('#infomodal-text').html(commandsString);
-	$('#infomodal').css('height', 200);
-	$('#infomodal').modal();
-	
-	//auto select text for user
-	$('#infomodal').on('shown', function(){
-		SelectText('infomodal-text');
-	});
-	
-	return "Copying history to clipboard";
+
+	if(commandsString != ""){
+		var message = "Copy to Clipboard: Ctrl+C , OK";
+
+		//different command for copying in macs means different message
+		var mac=navigator.userAgent.match(/(Mac|iPhone|iPod|iPad)/i)?true:false;
+
+		if(mac){
+			message = "Copy to Clipboard: Cmd+C , OK";
+		}
+
+		//show alert window with clipboard history
+		$('#infomodal-title').html(message);
+		$('#infomodal-text').html(commandsString);
+		$('#infomodal').css('height', 200);
+		$('#infomodal').modal();
+
+		//auto select text for user
+		$('#infomodal').on('shown', function(){
+			SelectText('infomodal-text');
+		});
+
+	}
+	else{
+		return EMPTY_CONSOLE_HISTORY;
+	}
 };
 
 /**
@@ -131,10 +134,10 @@ G.debug = function(toggle){
 	G.debugMode = toggle;
 
 	if(toggle){
-		return "Debug log statements on";
+		return DEBUG_ON;
 	}
 	else{
-		return "Debug log statements off";
+		return DEBUG_OFF;
 	}
 };
 
@@ -148,7 +151,7 @@ G.getCurrentSimulation = function(){
 		return JSON.stringify(Simulation);
 	}
 	else{
-		return "No Simulation to get as none is running";
+		return NO_SIMULATION_TO_GET;
 	}
 };
 
@@ -207,7 +210,7 @@ G.runScript = function(scriptURL){
 			executeScriptCommands(commands);
 		}, });	
 	
-	return "Running Script"; 
+	return RUNNING_SCRIPT; 
 };
 
 G.wait = function(ms){

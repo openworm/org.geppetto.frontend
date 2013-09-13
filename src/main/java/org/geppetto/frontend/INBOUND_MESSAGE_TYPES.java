@@ -42,7 +42,8 @@ public enum INBOUND_MESSAGE_TYPES {
 	OBSERVE("observe"), 
 	INIT_URL("init_url"), 
 	INIT_SIM("init_sim"), 
-	SIM("sim");
+	SIM("sim"),
+	GEPPETTO_VERSION("geppetto_version");
 
 	private INBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

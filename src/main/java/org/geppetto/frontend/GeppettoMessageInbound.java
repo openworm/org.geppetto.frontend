@@ -106,6 +106,11 @@ public class GeppettoMessageInbound extends MessageInbound
 		// NOTE: each message handler knows how to interpret the GeppettoMessage data field
 		switch(INBOUND_MESSAGE_TYPES.valueOf(gmsg.type.toUpperCase()))
 		{
+			case GEPPETTO_VERSION:
+			{				
+				simulationListener.getVersionNumber(this);
+				break;
+			}
 			case INIT_URL:
 			{
 				String urlString = gmsg.data;

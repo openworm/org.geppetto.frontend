@@ -126,6 +126,11 @@ GEPPETTO.Main.connect = (function(host)
 				$('#start').attr('disabled', 'disabled');
 				FE.infoDialog("Invalid Simulation File", parsedServerMessage.message);
 				break;
+			case "geppetto_version":
+				var version = parsedServerMessage.version;
+				
+				GEPPETTO.Console.Log("Geppetto v " + version + " is Ready");
+				break;
 			//Simulation has been loaded and model need to be loaded
 			case "load_model":
 				GEPPETTO.Console.debugLog("Inbound Message Received: Loading Model " );
@@ -484,7 +489,7 @@ $(document).ready(function()
 		if(GEPPETTO.SimulationContentEditor.editing){
 			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');;
 			
-			GEPPETTO.Console.executeCommand('Simulation.loadFromContent("'+simulation+'")');
+			GEPPETTO.Console.executeCommand("Simulation.loadFromContent('"+simulation+"')");
 			GEPPETTO.SimulationContentEditor.isEditing(false);
 		}
 		//loading simulation url

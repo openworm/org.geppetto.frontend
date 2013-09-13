@@ -27,11 +27,12 @@ var Sandbox = {
 
 			// Set up the iframe sandbox if needed
 			if ( this.get('iframe') ) this.iframeSetup();
-
+			
 			// When the Model is destroyed (eg. via ':clear'), erase the current history as well
 			this.bind("destroy", function(model) {
 				model.set({history:[]});
 			});
+			
 		},
 
 		// The Sandbox Model tries to use the localStorage adapter to save the command history
@@ -89,18 +90,21 @@ var Sandbox = {
 			return this;
 		},
 		
-		addDebugHistory: function(item) {			
+		addMessageHistory: function(message, item) {			
 			var history = this.get('history');
 			
-			item._class = "debug";
+			if(message == "debugMessage"){
+				item._class = "debug";
+			}
+			else if (message == "logMessage"){
+				item._class = "message";
+			}
 			
 			history.push(item);
 			
 			// Update the history state and save the model
 			this.set({ history : history }).change();
 			
-			//this.save();
-
 			return this;
 		},
 
@@ -173,6 +177,8 @@ var Sandbox = {
 	View : Backbone.View.extend({
 		initialize: function(opts) {
 			_.bindAll(this);
+
+			this.model.set({history:[]});
 
 			// Set up the history state (the up/down access to command history)
 			this.historyState = this.model.get('history').length;
@@ -260,9 +266,11 @@ var Sandbox = {
 					}, "", this)
 			);
 
-			// Set the textarea to the value of the currently selected history item
-			// Update the textarea's `rows` attribute, as history items may be multiple lines
-			this.textarea.val(this.currentHistory).attr('rows', this.currentHistory.split("\n").length);
+			if(typeof this.currentHistory != "undefined"){
+				// Set the textarea to the value of the currently selected history item
+				// Update the textarea's `rows` attribute, as history items may be multiple lines
+				this.textarea.val(this.currentHistory).attr('rows', this.currentHistory.split("\n").length);
+			}
 
 			// Scroll the output to the bottom, so that new commands are visible
 			this.output.scrollTop(
@@ -271,14 +279,13 @@ var Sandbox = {
 		},
 		
 		debugLog : function(message) {
-			return this.model.addDebugHistory({
+			return this.model.addMessageHistory("debugMessage",{
 				result : message,
 			});
 		},
 		
-		log : function(command,message) {
-			return this.model.addHistory({
-				command : command,
+		showMessage : function(message) {
+			return this.model.addMessageHistory("logMessage",{
 				result : message,
 				_class : "string"
 			});

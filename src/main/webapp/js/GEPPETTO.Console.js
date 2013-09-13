@@ -57,22 +57,15 @@ GEPPETTO.Console.toggleConsole = function(){
 	
 	//user has clicked the console button
 	if($('#consoleButton').hasClass('clicked')) {	
-		//load the console
-		GEPPETTO.Console.loadConsole();
 		//toggle console
 		$('#console').slideToggle(200);
+		
+		$('#commandInputArea').focus();
     } else {
 		$('#footer').height('');
     	$('#footerHeader').css("bottom","0px");
 		$('#console').slideToggle(200);		
     }
-};
-
-/**
- * Load Javascript Console, create it if it doesn't exist
- */
-GEPPETTO.Console.loadConsole = function(){
-	
 };
 
 /**
@@ -88,7 +81,7 @@ GEPPETTO.Console.createConsole = function(){
 		placeholder : "// type a javascript command and hit enter (help() for info)",
 		helpText :  "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help()
 	});
-	
+		
 	$('#console').css("width", $("#footer").width()-40);
 	
 	//allow console to be resizable
@@ -108,50 +101,14 @@ GEPPETTO.Console.createConsole = function(){
 		$('#console').css("width", $("#footer").width()-40);
 	});
 	
-	//get the available tags for autocompletion in console
-	var tags = availableTags();
-
-	//bind console input area to autocomplete event
-	$( "#commandInputArea" ).bind( "keydown", function( event ) {
-      if ( event.keyCode === $.ui.keyCode.TAB &&
-          $( this ).data( "ui-autocomplete" ).menu.active ) {
-        event.preventDefault();
-      }
-    })
-    .autocomplete({
-      minLength: 0,
-      source: function( request, response ) {
-        // delegate back to autocomplete, but extract the last term
-        response( $.ui.autocomplete.filter(
-          tags, extractLast( request.term ) ) );
-      },
-      focus: function() {
-        // prevent value inserted on focus
-        return false;
-      },
-      open: function( event, ui ) {
-    	  var firstElement = $(this).data("uiAutocomplete").menu.element[0].children[0]
-          , inpt = $('#commandInputArea')
-          , original = inpt.val()
-          , firstElementText = $(firstElement).text();
-      
-       /*
-          here we want to make sure that we're not matching something that doesn't start
-          with what was typed in 
-       */
-       if(firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0){
-           inpt.val(firstElementText);//change the input to the first match
-   
-           inpt[0].selectionStart = original.length; //highlight from end of input
-           inpt[0].selectionEnd = firstElementText.length;//highlight to the end
-       }
-      }
-    });
+	autoComplete();
 	
 	//remove drop down menu that comes automatically with autocomplete
 	$('#commandInputArea').focus(function(){
 		$('.ui-menu').remove();
-	});
+	});	
+	
+	//GEPPETTO.Main.socket.send(messageTemplate("geppetto_version", null));
 };
 
 /**
@@ -212,13 +169,19 @@ GEPPETTO.Console.debugLog = (function(message)
 	}
 });
 
+GEPPETTO.Console.Log = (function(message)
+{
+	var console = GEPPETTO.Console.console;
+
+	console.showMessage(message);
+
+});
+
 GEPPETTO.Console.executeCommand = (function(command)
 {
 	var console = GEPPETTO.Console.console;
 
-	//if(GEPPETTO.Console.isConsoleVisible()){
-		console.executeCommand(command);
-	//}
+	console.executeCommand(command);
 });
 
 function split( val ) {
@@ -228,6 +191,48 @@ function split( val ) {
 function extractLast( term ) {
 	return split( term ).pop();
 };
+
+function autoComplete(){
+	//get the available tags for autocompletion in console
+	var tags = availableTags();
+
+	//bind console input area to autocomplete event
+	$( "#commandInputArea" ).bind( "keydown", function( event ) {
+      if ( event.keyCode === $.ui.keyCode.TAB &&
+          $( this ).data( "ui-autocomplete" ).menu.active ) {
+        event.preventDefault();
+      }
+    })
+    .autocomplete({
+      minLength: 0,
+      source: function( request, response ) {
+        // delegate back to autocomplete, but extract the last term
+        response( $.ui.autocomplete.filter(
+          tags, extractLast( request.term ) ) );
+      },
+      focus: function() {
+        // prevent value inserted on focus
+        return false;
+      },
+      open: function( event, ui ) {
+    	  var firstElement = $(this).data("uiAutocomplete").menu.element[0].children[0]
+          , inpt = $('#commandInputArea')
+          , original = inpt.val()
+          , firstElementText = $(firstElement).text();
+      
+       /*
+          here we want to make sure that we're not matching something that doesn't start
+          with what was typed in 
+       */
+       if(firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0){
+           inpt.val(firstElementText);//change the input to the first match
+   
+           inpt[0].selectionStart = original.length; //highlight from end of input
+           inpt[0].selectionEnd = firstElementText.length;//highlight to the end
+       }
+      }
+    });
+}
 
 /**
  * Available commands stored in an array, used for autocomplete

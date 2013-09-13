@@ -499,4 +499,8 @@ public class SimulationListener implements ISimulationCallbackListener {
 			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
 		}
 	}
+	
+	public void getVersionNumber(GeppettoMessageInbound visitor){
+		messageClient(visitor, OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION, "0.0.4");
+	}
 }

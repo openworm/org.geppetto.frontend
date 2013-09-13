@@ -76,10 +76,10 @@ Simulation.start = function()
 		Simulation.status = Simulation.StatusEnum.STARTED;
 		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation started');
 		
-		return "Simulation Started";
+		return SIMULATION_STARTED;
 	}
 	else{
-		return "Simulation not loaded, must load simulation first";
+		return UNABLE_TO_START_SIMULATION;
 	}
 };
 
@@ -100,10 +100,10 @@ Simulation.pause = function()
 		Simulation.status = Simulation.StatusEnum.PAUSED;
 		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation paused');
 
-		return "Simulation Paused";
+		return SIMULATION_PAUSED;
 	}
 	else{
-		return "Simulation not loaded, must load simulation first";
+		return UNABLE_TO_PAUSE_SIMULATION;
 	}
 };
 
@@ -123,13 +123,13 @@ Simulation.stop = function()
 		Simulation.status = Simulation.StatusEnum.STOPPED;
 		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation stopped');
 
-		return "Simulation Stopped";
+		return SIMULATION_STOP;
 	}
 	else if(Simulation.status == Simulation.StatusEnum.LOADED){
-		return "Unable to stop simulation, loaded but not running";
+		return SIMULATION_NOT_RUNNING;
 	}
 	else{
-		return "Unable to stop simulation that hasn't been loaded";
+		return SIMULATION_NOT_LOADED;
 	}
 };
 
@@ -148,7 +148,7 @@ Simulation.load = function(simulationURL)
 		
 	Simulation.simulationURL = simulationURL;
 	
-	var loadStatus = "Loading Simulation";
+	var loadStatus = SIMULATION_LOADING;
 	
 	if(simulationURL != null && simulationURL != ""){
 		//Updates the simulation controls visibility
@@ -169,7 +169,7 @@ Simulation.load = function(simulationURL)
 	}
 	
 	else{		
-		loadStatus = "Simulation not specified";
+		loadStatus = SIMULATION_UNSPECIFIED;
 	}
 	
 	return loadStatus;
@@ -200,11 +200,11 @@ Simulation.loadFromContent = function(content)
 			GEPPETTO.animate();
 		}
 		
-		GEPPETTO.Main.socket.send(messageTemplate("init_sim", simulation));
+		GEPPETTO.Main.socket.send(messageTemplate("init_sim", content));
 		GEPPETTO.Console.debugLog("Outbound Message Sent: Load Simulation from editing console");
 	}
 	
-	return "Simulation Loaded";
+	return SIMULATION_LOADED;
 };
 
 /**

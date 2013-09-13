@@ -391,7 +391,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void messageClient(GeppettoMessageInbound visitor, OUTBOUND_MESSAGE_TYPES type){
 		//Create a JSON object to be send to the client
-		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type);
+		JsonObject jsonUpdate = JSONUtility.getJSONObject(type);
 		String msg = jsonUpdate.toString();
 
 		//Send the message to the client
@@ -407,7 +407,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param update - update to be send
 	 */
 	private void messageClient(GeppettoMessageInbound visitor, OUTBOUND_MESSAGE_TYPES type, String update){
-		JsonObject jsonUpdate = JSONUtility.getInstance().getJSONObject(type, update);
+		JsonObject jsonUpdate = JSONUtility.getJSONObject(type, update);
 		String msg = jsonUpdate.toString();
 
 		sendMessage(visitor, msg);

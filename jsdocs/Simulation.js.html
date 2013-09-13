@@ -103,10 +103,10 @@ Simulation.start = function()
 		Simulation.status = Simulation.StatusEnum.STARTED;
 		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation started');
 		
-		return "Simulation Started";
+		return SIMULATION_STARTED;
 	}
 	else{
-		return "Simulation not loaded, must load simulation first";
+		return UNABLE_TO_START_SIMULATION;
 	}
 };
 
@@ -127,10 +127,10 @@ Simulation.pause = function()
 		Simulation.status = Simulation.StatusEnum.PAUSED;
 		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation paused');
 
-		return "Simulation Paused";
+		return SIMULATION_PAUSED;
 	}
 	else{
-		return "Simulation not loaded, must load simulation first";
+		return UNABLE_TO_PAUSE_SIMULATION;
 	}
 };
 
@@ -150,13 +150,13 @@ Simulation.stop = function()
 		Simulation.status = Simulation.StatusEnum.STOPPED;
 		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation stopped');
 
-		return "Simulation Stopped";
+		return SIMULATION_STOP;
 	}
 	else if(Simulation.status == Simulation.StatusEnum.LOADED){
-		return "Unable to stop simulation, loaded but not running";
+		return SIMULATION_NOT_RUNNING;
 	}
 	else{
-		return "Unable to stop simulation that hasn't been loaded";
+		return SIMULATION_NOT_LOADED;
 	}
 };
 
@@ -175,7 +175,7 @@ Simulation.load = function(simulationURL)
 		
 	Simulation.simulationURL = simulationURL;
 	
-	var loadStatus = "Loading Simulation";
+	var loadStatus = SIMULATION_LOADING;
 	
 	if(simulationURL != null && simulationURL != ""){
 		//Updates the simulation controls visibility
@@ -196,7 +196,7 @@ Simulation.load = function(simulationURL)
 	}
 	
 	else{		
-		loadStatus = "Simulation not specified";
+		loadStatus = SIMULATION_UNSPECIFIED;
 	}
 	
 	return loadStatus;
@@ -208,7 +208,7 @@ Simulation.load = function(simulationURL)
  * @param simulation - Simulation to be loaded
  * @returns {String}
  */
- function loadEditedSimulationFile(simulation)
+Simulation.loadFromContent = function(content)
 {
 	 if (Simulation.status == Simulation.StatusEnum.STARTED || Simulation.status == Simulation.StatusEnum.PAUSED)
 	 {
@@ -227,11 +227,11 @@ Simulation.load = function(simulationURL)
 			GEPPETTO.animate();
 		}
 		
-		GEPPETTO.Main.socket.send(messageTemplate("init_sim", simulation));
+		GEPPETTO.Main.socket.send(messageTemplate("init_sim", content));
 		GEPPETTO.Console.debugLog("Outbound Message Sent: Load Simulation from editing console");
 	}
 	
-	return "Simulation Loaded";
+	return SIMULATION_LOADED;
 };
 
 /**
@@ -290,7 +290,8 @@ function messageTemplate(msgtype, payload) {
 	    data: payload
 	};
 	return JSON.stringify(object);
-};</code></pre>
+};
+</code></pre>
         </article>
     </section>
 
@@ -300,13 +301,13 @@ function messageTemplate(msgtype, payload) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Console.html">Console</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#executeScriptCommands">executeScriptCommands</a></li><li><a href="global.html#extractLast">extractLast</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#loadEditedSimulationFile">loadEditedSimulationFile</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#SelectText">SelectText</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Console.html">Console</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#executeScriptCommands">executeScriptCommands</a></li><li><a href="global.html#extractLast">extractLast</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#SelectText">SelectText</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu Sep 12 2013 15:15:05 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Sep 13 2013 11:05:01 GMT+0100 (IST)
 </footer>
 
 <script> prettyPrint(); </script>

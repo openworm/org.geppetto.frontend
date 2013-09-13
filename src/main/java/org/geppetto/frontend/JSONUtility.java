@@ -40,20 +40,12 @@ import com.google.gson.JsonObject;
 
 /**
  * Utility class to create JSON objects to be send to the clients. 
+ * NOTE: this utility class has knowledge of what the messages looks like to communicate with the client
  * 
  * @author  Jesus R. Martinez (jesus@metacell.us)
  *
  */
 public class JSONUtility {
-
-	private static JSONUtility instance;
-	
-	public static JSONUtility getInstance() {
-		if(instance == null) {
-			instance = new JSONUtility();
-		}
-		return instance;
-	}
 
 	/**
 	 * Create JSON object with appropriate message for its type
@@ -61,7 +53,7 @@ public class JSONUtility {
 	 * @param type - Type of message of requested
 	 * @return
 	 */
-	public JsonObject getJSONObject(OUTBOUND_MESSAGE_TYPES type){
+	public static JsonObject getJSONObject(OUTBOUND_MESSAGE_TYPES type){
 
 		JsonObject json = null;
 
@@ -109,7 +101,7 @@ public class JSONUtility {
 	 * @param update - Parameter requested to be part of JSON object
 	 * @return
 	 */
-	public JsonObject getJSONObject(OUTBOUND_MESSAGE_TYPES type, String update) {
+	public static JsonObject getJSONObject(OUTBOUND_MESSAGE_TYPES type, String update) {
 		JsonObject json = null;
 
 		String messageType = type.toString();
@@ -144,7 +136,7 @@ public class JSONUtility {
 	 * @param params - list of name-value pairs representing parameter names and values
 	 * @return
 	 */
-	public JsonObject createJSONMessage(String type, List<SimpleEntry<String, String>> params){
+	private static JsonObject createJSONMessage(String type, List<SimpleEntry<String, String>> params){
 		//JSON object used to send message to client
 		JsonObject json = new JsonObject();
 		json.addProperty("type", type);

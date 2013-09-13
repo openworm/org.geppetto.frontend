@@ -32,6 +32,7 @@
  *******************************************************************************/
 package org.geppetto.frontend;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -501,6 +503,15 @@ public class SimulationListener implements ISimulationCallbackListener {
 	}
 	
 	public void getVersionNumber(GeppettoMessageInbound visitor){
-		messageClient(visitor, OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION, "0.0.4");
+		
+		Properties prop = new Properties();
+		
+		try{
+			prop.load(SimulationListener.class.getResourceAsStream("/Geppetto.properties"));
+			messageClient(visitor, OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION, prop.getProperty("Geppetto.version"));
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 }

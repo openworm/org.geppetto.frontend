@@ -126,7 +126,7 @@ public class JSONUtility {
 			case SIMULATION_CONFIGURATION:
 				params.add(new SimpleEntry<String, String>("configuration", update));
 			case GEPPETTO_VERSION:
-				params.add(new SimpleEntry<String, String>("version", update));
+				params.add(new SimpleEntry<String, String>("geppetto_version", update));
 			default:
 				break;
 		}

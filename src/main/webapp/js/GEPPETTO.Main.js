@@ -127,9 +127,9 @@ GEPPETTO.Main.connect = (function(host)
 				FE.infoDialog("Invalid Simulation File", parsedServerMessage.message);
 				break;
 			case "geppetto_version":
-				var version = parsedServerMessage.version;
+				var version = parsedServerMessage.geppetto_version;
 				
-				GEPPETTO.Console.Log("Geppetto v " + version + " is Ready");
+				GEPPETTO.Console.Log("Geppetto v" + version + " is Ready");
 				break;
 			//Simulation has been loaded and model need to be loaded
 			case "load_model":

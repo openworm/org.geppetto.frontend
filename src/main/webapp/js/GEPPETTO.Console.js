@@ -60,6 +60,8 @@ GEPPETTO.Console.toggleConsole = function(){
 		//toggle console
 		$('#console').slideToggle(200);
 		
+		GEPPETTO.Console.loadConsole();
+		
 		$('#commandInputArea').focus();
     } else {
 		$('#footer').height('');
@@ -68,6 +70,12 @@ GEPPETTO.Console.toggleConsole = function(){
     }
 };
 
+GEPPETTO.Console.loadConsole = function(){
+	if(GEPPETTO.Console.console == null){
+		GEPPETTO.Console.createConsole();
+		GEPPETTO.Main.socket.send(messageTemplate("geppetto_version", null));
+	}
+};
 /**
  * Creates Javascript Console
  */
@@ -107,8 +115,6 @@ GEPPETTO.Console.createConsole = function(){
 	$('#commandInputArea').focus(function(){
 		$('.ui-menu').remove();
 	});	
-	
-	//GEPPETTO.Main.socket.send(messageTemplate("geppetto_version", null));
 };
 
 /**
@@ -127,8 +133,6 @@ GEPPETTO.Console.isConsoleVisible = function(){
  */
 $(document).ready(function()
 {	
-	GEPPETTO.Console.createConsole();
-	
 	//JS Console Button clicked
 	$('#consoleButton').click(function()
 	{	

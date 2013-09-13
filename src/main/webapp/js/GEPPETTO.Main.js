@@ -101,6 +101,10 @@ GEPPETTO.Main.connect = (function(host)
 	GEPPETTO.Main.socket.onopen = function()
 	{
 		GEPPETTO.Console.debugLog('Info: WebSocket connection opened.');
+		
+		//Create console until web socket is opened/ready. This because the welcome message
+		//in console needs to obtained geppetto's version number via sockets.  
+		GEPPETTO.Console.createConsole();
 	};
 
 	GEPPETTO.Main.socket.onclose = function()
@@ -461,6 +465,9 @@ FE.updatePauseEvent = function(){
 // ============================================================================
 $(document).ready(function()
 {	
+	//Initialize websocket functionality
+	GEPPETTO.Main.init();
+	
 	//Populate the 'loading simulation' modal's drop down menu with sample simulations
 	$('#loadSimModal').on('shown', FE.loadingModalUIUpdate());
 	$('#start').attr('disabled', 'disabled');
@@ -500,6 +507,4 @@ $(document).ready(function()
 		}
 	});
 
-	//Initialize websocket functionality
-	GEPPETTO.Main.init();
 });

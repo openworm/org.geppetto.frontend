@@ -51,7 +51,7 @@ var UNABLE_TO_START_SIMULATION = "Simulation not loaded, must load simulation fi
 
 var SIMULATION_PAUSED = "Simulation Paused";
 
-var UNABLE_TO_PAUSE_SIMULATION = "Simulation not loaded, must load simulation first";
+var UNABLE_TO_PAUSE_SIMULATION = "Simulation not running, must run simulation first";
 
 var SIMULATION_STOP = "Simulation Stopped"; 
 
@@ -62,6 +62,8 @@ var SIMULATION_NOT_RUNNING = "Unable to stop simulation, loaded but not running"
 var SIMULATION_NOT_LOADED = "Unable to stop simulation that hasn't been loaded";
 
 var SIMULATION_UNSPECIFIED = "Simulation not specified";
+
+var SIMULATION_ALREADY_STOPPED = "Simulation was already stopped";
 
 /**
  * Object G resources

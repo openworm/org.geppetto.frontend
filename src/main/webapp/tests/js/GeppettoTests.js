@@ -1,16 +1,28 @@
 module( "Commands Test", {
     setup: function() {
-        //ok( true, "one extra assert per test" );
     }, teardown: function() {
-        //ok( true, "and one extra assert after each test" );
     }
 });
 
 test( "Global Object Test", function() {
-	
-	equal(G.getCurrentSimulation(), "No Simulation to get as none is running", "No simulation, passed.");
+	GEPPETTO.Main.init();
+	equal(G.getCurrentSimulation(), NO_SIMULATION_TO_GET, "No simulation, passed.");
 	    
-	equal(G.clear(), "Console history cleared", "Console cleared");
+	equal(isDebugOn(), false, "Debug Mode Off, passed.");
+	
+	G.debug(true);
+	
+	equal(isDebugOn(), true, "Debug Mode on, passed");
+	
+	notEqual(G.help(), null, "Help command for object G is available, passed.");
+	
+	notEqual(help(), null, "Global help() command available, passed");
+	
+	//GEPPETTO.Console.createConsole();
+	equal(G.clear(),CLEAR_HISTORY, "Console cleared");
+	
+	equal(G.copyToClipboard(), EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
+
 });
 
 test( "Simulation Test", function() {

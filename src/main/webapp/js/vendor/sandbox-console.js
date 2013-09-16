@@ -147,9 +147,13 @@ var Sandbox = {
 			if ( !command )
 				return false;
 
+			var str = command.replace(/&lt;/g,"<");
+			var command = str.replace(/&gt;/g,">");
+			
 			var item = {
 				command : command
 			};
+			
 			
 			// Evaluate the command and store the eval result, adding some basic classes for syntax-highlighting
 			try {

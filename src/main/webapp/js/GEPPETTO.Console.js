@@ -40,222 +40,223 @@
  * 
  * @author Jesus Martinez (jesus@metacell.us)
  */
-GEPPETTO.Console = GEPPETTO.Console ||
-{
-	REVISION : '1'
-};
 
-GEPPETTO.Console.console = null;
-GEPPETTO.Console.consoleVisible = false;
 
-/**
- * Toggle javascript console's visibility via button 
- */
-GEPPETTO.Console.toggleConsole = function(){
-	//toggle button class
-	$('#consoleButton').toggleClass('clicked');
-	
-	//user has clicked the console button
-	if($('#consoleButton').hasClass('clicked')) {	
-		//toggle console
-		$('#console').slideToggle(200);
-				
-		$('#commandInputArea').focus();
-    } else {
-		$('#footer').height('');
-    	$('#footerHeader').css("bottom","0px");
-		$('#console').slideToggle(200);		
-    }
-};
+(function(){
 
-/**
- * Creates Javascript Console
- */
-GEPPETTO.Console.createConsole = function(){	
-	// Create the sandbox console:
-	GEPPETTO.Console.console = new Sandbox.View({
-		el : $('#console'),
-		model : new Sandbox.Model(),
-		resultPrefix : "  => ",
-		tabCharacter : "\t",
-		placeholder : "// type a javascript command and hit enter (help() for info)",
-		helpText :  "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help()
-	});
-		
-	$('#console').css("width", $("#footer").width()-40);
-	
-	//allow console to be resizable
-	$( "#console" ).resizable({ 
-		handles: 'n', 
-		minHeight: 100,
-		autoHide: true,
-		maxHeight: 400,
-		resize: function(event,ui){
-			document.getElementById('console').style.top = "0px";
-			$(document.getElementById('footer')).height(ui.size.height + 86);
-		},
-	});
-	
-	//handles resizing the JS console when the windows is resized
-	$(window).resize(function(){
+	var console = null;
+
+	GEPPETTO.Console = GEPPETTO.Console ||
+	{
+		REVISION : '1'
+	};
+
+
+
+	/**
+	 * Toggle javascript console's visibility via button 
+	 */
+	GEPPETTO.Console.toggleConsole = function(){
+		//toggle button class
+		$('#consoleButton').toggleClass('clicked');
+
+		//user has clicked the console button
+		if($('#consoleButton').hasClass('clicked')) {	
+			//toggle console
+			$('#console').slideToggle(200);
+
+			$('#commandInputArea').focus();
+		} else {
+			$('#footer').height('');
+			$('#footerHeader').css("bottom","0px");
+			$('#console').slideToggle(200);		
+		}
+	};
+
+	/**
+	 * Creates Javascript Console
+	 */
+	GEPPETTO.Console.createConsole = function(){	
+		// Create the sandbox console:
+		console = new Sandbox.View({
+			el : $('#console'),
+			model : new Sandbox.Model(),
+			resultPrefix : "  => ",
+			tabCharacter : "\t",
+			placeholder : "// type a javascript command and hit enter (help() for info)",
+			helpText :  "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help()
+		});
+
 		$('#console').css("width", $("#footer").width()-40);
-	});
-	
-	autoComplete();
-	
-	//remove drop down menu that comes automatically with autocomplete
-	$('#commandInputArea').focus(function(){
-		$('.ui-menu').remove();
-	});
-	
-	GEPPETTO.Main.socket.send(messageTemplate("geppetto_version", null));
-};
 
-/**
- * Returns visibility of Javascript console
- */
-GEPPETTO.Console.isConsoleVisible = function(){
-	if($('#consoleButton').hasClass('clicked')) {	
-		return true;
-    } else {
-		return false;	
-    }
-};
-/**
- * Handles user clicking the "Javascript Console" button, which 
- * toggles the console. 
- */
-$(document).ready(function()
-{			
-	//JS Console Button clicked
-	$('#consoleButton').click(function()
-	{	
-		GEPPETTO.Console.toggleConsole();
-	});	
-});
+		//allow console to be resizable
+		$( "#console" ).resizable({ 
+			handles: 'n', 
+			minHeight: 100,
+			autoHide: true,
+			maxHeight: 400,
+			resize: function(event,ui){
+				document.getElementById('console').style.top = "0px";
+				$(document.getElementById('footer')).height(ui.size.height + 86);
+			},
+		});
 
-/**
- * internal function for loading script from console
- */
-function loadScript(url){
-	GEPPETTO.Console.console.loadScript(url);
-};
+		//handles resizing the JS console when the windows is resized
+		$(window).resize(function(){
+			$('#console').css("width", $("#footer").width()-40);
+		});
 
-function split( val ) {
-    return val.split( /,\s*/ );
-};
+		autoComplete();
 
-/**
- * 
- * @param term
- */
-function extractLast( term ) {
-    return split( term ).pop();
-};
-  
-/**
- * Log message to Geppetto's console
- * 
- * @global
- */
-GEPPETTO.Console.debugLog = (function(message)
-{
-	var console = GEPPETTO.Console.console;
-	
-	if(isDebugOn()){
-		console.debugLog(message);
-	}
-});
+		//remove drop down menu that comes automatically with autocomplete
+		$('#commandInputArea').focus(function(){
+			$('.ui-menu').remove();
+		});
 
-GEPPETTO.Console.Log = (function(message)
-{
-	var console = GEPPETTO.Console.console;
+		GEPPETTO.Main.socket.send(messageTemplate("geppetto_version", null));
+	};
 
-	console.showMessage(message);
+	/**
+	 * Returns visibility of Javascript console
+	 */
+	GEPPETTO.Console.isConsoleVisible = function(){
+		if($('#consoleButton').hasClass('clicked')) {	
+			return true;
+		} else {
+			return false;	
+		}
+	};
+	/**
+	 * Handles user clicking the "Javascript Console" button, which 
+	 * toggles the console. 
+	 */
+	$(document).ready(function()
+			{			
+		//JS Console Button clicked
+		$('#consoleButton').click(function()
+				{	
+			GEPPETTO.Console.toggleConsole();
+				});	
+			});
 
-});
+	/**
+	 * internal function for loading script from console
+	 */
+	function loadScript(url){
+		console.loadScript(url);
+	};
 
-GEPPETTO.Console.executeCommand = (function(command)
-{
-	var console = GEPPETTO.Console.console;
+	function split( val ) {
+		return val.split( /,\s*/ );
+	};
 
-	console.executeCommand(command);
-});
+	/**
+	 * 
+	 * @param term
+	 */
+	function extractLast( term ) {
+		return split( term ).pop();
+	};
 
-function split( val ) {
-	return val.split( /,\s*/ );
-};
+	/**
+	 * Log message to Geppetto's console
+	 * 
+	 * @global
+	 */
+	GEPPETTO.Console.debugLog = (function(message)
+			{	
+		if(isDebugOn()){
+			console.debugLog(message);
+		}
+			});
 
-function extractLast( term ) {
-	return split( term ).pop();
-};
+	GEPPETTO.Console.Log = (function(message)
+			{
+		console.showMessage(message);
 
-function autoComplete(){
-	//get the available tags for autocompletion in console
-	var tags = availableTags();
+			});
 
-	//bind console input area to autocomplete event
-	$( "#commandInputArea" ).bind( "keydown", function( event ) {
-      if ( event.keyCode === $.ui.keyCode.TAB &&
-          $( this ).data( "ui-autocomplete" ).menu.active ) {
-        event.preventDefault();
-      }
-    })
-    .autocomplete({
-      minLength: 0,
-      source: function( request, response ) {
-        // delegate back to autocomplete, but extract the last term
-        response( $.ui.autocomplete.filter(
-          tags, extractLast( request.term ) ) );
-      },
-      focus: function() {
-        // prevent value inserted on focus
-        return false;
-      },
-      open: function( event, ui ) {
-    	  var firstElement = $(this).data("uiAutocomplete").menu.element[0].children[0]
-          , inpt = $('#commandInputArea')
-          , original = inpt.val()
-          , firstElementText = $(firstElement).text();
-      
-       /*
+	GEPPETTO.Console.executeCommand = (function(command)
+			{
+		console.executeCommand(command);
+			});
+
+	function split( val ) {
+		return val.split( /,\s*/ );
+	};
+
+	function extractLast( term ) {
+		return split( term ).pop();
+	};
+
+	function autoComplete(){
+		//get the available tags for autocompletion in console
+		var tags = availableTags();
+
+		//bind console input area to autocomplete event
+		$( "#commandInputArea" ).bind( "keydown", function( event ) {
+			if ( event.keyCode === $.ui.keyCode.TAB &&
+					$( this ).data( "ui-autocomplete" ).menu.active ) {
+				event.preventDefault();
+			}
+		})
+		.autocomplete({
+			minLength: 0,
+			source: function( request, response ) {
+				// delegate back to autocomplete, but extract the last term
+				response( $.ui.autocomplete.filter(
+						tags, extractLast( request.term ) ) );
+			},
+			focus: function() {
+				// prevent value inserted on focus
+				return false;
+			},
+			open: function( event, ui ) {
+				var firstElement = $(this).data("uiAutocomplete").menu.element[0].children[0]
+				, inpt = $('#commandInputArea')
+				, original = inpt.val()
+				, firstElementText = $(firstElement).text();
+
+				/*
           here we want to make sure that we're not matching something that doesn't start
           with what was typed in 
-       */
-       if(firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0){
-           inpt.val(firstElementText);//change the input to the first match
-   
-           inpt[0].selectionStart = original.length; //highlight from end of input
-           inpt[0].selectionEnd = firstElementText.length;//highlight to the end
-       }
-      }
-    });
-}
+				 */
+				if(firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0){
+					inpt.val(firstElementText);//change the input to the first match
 
-/**
- * Available commands stored in an array, used for autocomplete
- * 
- * @returns {Array}
- */
-function availableTags(){
-
-	var availableTags = [];
-
-	var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
-
-	var commandsSplitByLine = commands.split("\n");
-
-	var tagsCount = 0;
-
-	for(var i =0; i<commandsSplitByLine.length; i++){
-		var line = commandsSplitByLine[i].trim();
-
-		if(line.substring(0,2) == "--"){
-			var command = line.substring(3, line.length);
-			availableTags[tagsCount] = command;
-			tagsCount++;
-		}
+					inpt[0].selectionStart = original.length; //highlight from end of input
+					inpt[0].selectionEnd = firstElementText.length;//highlight to the end
+				}
+			}
+		});
 	}
 
-	return availableTags;
-};
+	/**
+	 * Available commands stored in an array, used for autocomplete
+	 * 
+	 * @returns {Array}
+	 */
+	function availableTags(){
+
+		var availableTags = [];
+
+		var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
+
+		var commandsSplitByLine = commands.split("\n");
+
+		var tagsCount = 0;
+
+		for(var i =0; i<commandsSplitByLine.length; i++){
+			var line = commandsSplitByLine[i].trim();
+
+			if(line.substring(0,2) == "--"){
+				var command = line.substring(3, line.length);
+				availableTags[tagsCount] = command;
+				tagsCount++;
+			}
+		}
+
+		return availableTags;
+	};
+
+})();

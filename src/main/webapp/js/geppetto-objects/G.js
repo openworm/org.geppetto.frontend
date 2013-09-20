@@ -49,6 +49,8 @@ G.debugMode = false;
 
 /**
  * Clears the console history
+ * 
+ * @name G.clear()
  */
 G.clear = function(){
 
@@ -60,11 +62,11 @@ G.clear = function(){
 /**
  * Copies console history to OS clipboard 
  * 
- * @returns {String}
+ * @name G.copyHistoryToClipboard()
  */
 G.copyHistoryToClipboard = function(){
 
-	var text =  JSON.stringify(GEPPETTO.Console.console.model.get('history'), 0, 4);
+	var text =  JSON.stringify(GEPPETTO.Console.consoleHistory(), 0, 4);
 	var commands = JSON.parse(text);	
 	var commandsString = "";
 
@@ -126,9 +128,9 @@ function SelectText(element) {
 /**
  * Toggles debug statement on/off
  * 
+ * @name G.debug(toggle)
  * @param toggle - toggles debug statements
  * 
- * @returns {String}
  */
 G.debug = function(toggle){
 	G.debugMode = toggle;
@@ -142,7 +144,9 @@ G.debug = function(toggle){
 };
 
 /**
+ * Gets the object for the current Simulation, if any. 
  * 
+ * @name G.getCurrentSimulation()
  * @returns Returns current Simulation object if it exists
  */
 G.getCurrentSimulation = function(){
@@ -156,34 +160,79 @@ G.getCurrentSimulation = function(){
 };
 
 /**
- * Get all commands available for object G
+ * Get all commands and descriptions available for object G. 
  * 
- * @returns {String}
+ * @name G.help()
+ * @returns {String} - All commands and descriptions for G.
  */
 G.help = function(){
-	var header = "Global commands: \n\n";
-	var commands = "";
+	var commands = "G object commands: \n\n";
 
-	//Find all available functions inside objectG
+	var descriptions = [];
+
+	//retrieve the script to get the comments for all the methods
+	$.ajax({ 
+		async:false,
+		type:'GET',
+		url: "js/geppetto-objects/G.js",
+		dataType:"text",
+		//at success, read the file and extract the comments
+		success:function(data) {			
+			var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+			descriptions = data.match(STRIP_COMMENTS);
+		},
+	});
+
+	//find all functions of object Simulation
 	for ( var prop in G ) {
-		//match function
 		if(typeof G[prop] === "function") {
 			var f = G[prop].toString();
-			//get function parameter
+			//get the argument for this function
 			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
-			// keep track of commands,format a little
-			commands += ("      -- G."+prop+"("+parameter+");" + "\n");
-		};
-	}
 
-	//return list of commands, remove empty line from the end
-	return header + commands.substring(0,commands.length-1);
+			var functionName = "G."+prop+"("+parameter+")";
+			
+			//match the function to comment
+			var matchedDescription = "";
+			for(var i = 0; i<descriptions.length; i++){
+				var description = descriptions[i].toString();
+				
+				//items matched
+				if(description.indexOf("G."+prop)!=-1){
+
+					/*series of formatting of the comments for the function, removes unnecessary 
+					 * blank and special characters.
+					 */
+					var splitComments = description.replace(/\*/g, "").split("\n");
+					splitComments.splice(0,1);
+					splitComments.splice(splitComments.length-1,1);
+					for(var s = 0; s<splitComments.length; s++){
+						var line = splitComments[s].trim();
+						if(line != ""){
+							//ignore the name line, already have it
+							if(line.indexOf("@name")==-1){
+								//build description for function
+								matchedDescription += "         " + line + "\n";
+							}
+						}
+					}
+				}
+			}
+
+			//format and keep track of all commands available
+			commands += ("      -- "+functionName + "\n" + matchedDescription + "\n");
+		};
+	}	
+
+	//returned formatted string with commands and description, remove last two blank lines
+	return commands.substring(0,commands.length-2);
 };
 
 /**
  * Takes the URL corresponding to a script, executes 
- * commnands inside the script.
+ * commands inside the script.
  * 
+ * @name G.runScript(scriptURL)
  * @param scriptURL - URL of script to execute
  */
 G.runScript = function(scriptURL){	
@@ -194,6 +243,7 @@ G.runScript = function(scriptURL){
 		type:'GET',
 		url:scriptURL,
 		dataType:"text",
+		crossDomain : true,
 		//at success, read the file and extract the commands
 		success:function(data) {
 			var commands = data.split("\n");
@@ -213,6 +263,14 @@ G.runScript = function(scriptURL){
 	return RUNNING_SCRIPT; 
 };
 
+/**
+ * 
+ * Waits certain amount of time before running next command. Must be 
+ * used inside a script. 
+ * 
+ * @name G.wait(ms)
+ * @param ms - Amount of time to wait.
+ */
 G.wait = function(ms){
 	return "G.wait(ms) command must be used inside script";
 };
@@ -220,6 +278,7 @@ G.wait = function(ms){
 /**
  * Waits some amount of time before executing a set of commands
  * 
+ * @name G.wait(commands,ms)
  * @param commands - commands to execute
  * @param ms - milliseconds to wait before executing commands
  */
@@ -234,7 +293,7 @@ G.wait = function(commands, ms){
 };
 
 /**
- * 
+ * State of debug statements, whether they are turned on or off.
  * 
  * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
  */

@@ -55,6 +55,7 @@
 #console pre.output span.error     { color:#f77; }
 #console pre.output span.debug     { color: gold; }
 #console pre.output span.message     { color: #fd6808; }
+#console pre.output span.commandsSuggestions     { color: grey; }
 
 #console .input {
 	padding:0 0 0 15px;

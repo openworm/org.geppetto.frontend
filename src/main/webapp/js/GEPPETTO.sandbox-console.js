@@ -5,6 +5,11 @@
  * 
  * http://josscrowcroft.github.com/javascript-sandbox-console/
  */
+
+var delta = 500;
+var lastKeypressTime = 0;
+var doubleTab = false;
+
 var Sandbox = {
 
 	/**
@@ -98,6 +103,9 @@ var Sandbox = {
 			}
 			else if (message == "logMessage"){
 				item._class = "message";
+			}
+			else if(message == "commandsSuggestions"){
+				item._class = "commandsSuggestions";
 			}
 			
 			history.push(item);
@@ -236,6 +244,14 @@ var Sandbox = {
 			return this;
 		},
 		
+		updateInputArea : function(){
+			if(typeof this.currentHistory != "undefined"){
+				// Set the textarea to the value of the currently selected history item
+				// Update the textarea's `rows` attribute, as history items may be multiple lines
+				this.textarea.val(this.currentHistory).attr('rows', this.currentHistory.split("\n").length);
+			}
+		},
+		
 		// Updates the Sandbox View, redrawing the output and checking the input's value
 		update : function() {
 
@@ -277,11 +293,6 @@ var Sandbox = {
 					}, "", this)
 			);
 
-			if(typeof this.currentHistory != "undefined"){
-				// Set the textarea to the value of the currently selected history item
-				// Update the textarea's `rows` attribute, as history items may be multiple lines
-				this.textarea.val(this.currentHistory).attr('rows', this.currentHistory.split("\n").length);
-			}
 
 			// Scroll the output to the bottom, so that new commands are visible
 			this.output.scrollTop(
@@ -291,6 +302,12 @@ var Sandbox = {
 		
 		debugLog : function(message) {
 			return this.model.addMessageHistory("debugMessage",{
+				result : message,
+			});
+		},
+		
+		showCommandsSuggestions : function(message) {
+			return this.model.addMessageHistory("commandsSuggestions",{
 				result : message,
 			});
 		},
@@ -390,12 +407,14 @@ var Sandbox = {
 				if ( this.ctrl ) {
 					this.currentHistory = val + "\n";
 					this.update();
+					this.updateInputArea();
 					return false;
 				}
 				
 				// If submitting a command, set the currentHistory to blank (empties the textarea on update)
 				this.currentHistory = "";
-	
+				this.updateInputArea();
+				
 				// Run the command past the special commands to check for ':help' and ':clear' etc.
 				if ( !this.specialCommands( val ) ) {
 
@@ -426,6 +445,7 @@ var Sandbox = {
 				// Update the currentHistory value and update the View
 				this.currentHistory = history[this.historyState] ? history[this.historyState].command : "";
 				this.update();
+				this.updateInputArea();
 
 				return false;
 			}
@@ -434,12 +454,42 @@ var Sandbox = {
 			if ( e.which === 9 ) {
 				e.preventDefault();
 
-				// Get the value, and the parts between which the tab character will be inserted
-				var value = this.textarea.val(),
-					caret = this.getCaret();
+				 var thisKeypressTime = new Date();
+					
+					//detects double tab
+					if ( thisKeypressTime - lastKeypressTime <= delta )
+					{
+						var tags = availableTags();
+						var suggestions = "";
+						for(var i =0; i<tags.length; i++){
+						    var tag = tags[i];
+							if(tag.indexOf($('#commandInputArea').val())!=-1){
+							if((i+1)%3== 0){
+							    suggestions = suggestions + tag + "\n";
+							}
+							else{
+							    var formatSpaceAmount = 60 - tag.length;
+							    var spacing = "";
+							    for(var x =0; x<formatSpaceAmount; x++){
+							        spacing = spacing + " ";
+							    }
+								suggestions = suggestions + tag + spacing;
+							}
+							}
+						}
+						this.showCommandsSuggestions(suggestions + "\n");
+						thisKeypressTime = 0;
+						doubleTab = true;
+					}
+					else{
+						// Get the value, and the parts between which the tab character will be inserted
+						var value = this.textarea.val(),
+							caret = this.getCaret();
 
-				// Set the caret (cursor) position to just after the inserted tab character
-				this.setCaret(caret + value.length);
+						// Set the caret (cursor) position to just after the inserted tab character
+						this.setCaret(caret + value.length);
+					}
+					lastKeypressTime = thisKeypressTime;
 
 				return false;
 			}

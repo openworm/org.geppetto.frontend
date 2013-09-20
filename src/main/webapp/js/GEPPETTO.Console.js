@@ -126,6 +126,11 @@
 			return false;	
 		}
 	};
+	
+	GEPPETTO.Console.consoleHistory = function(){
+		return console.model.get('history');
+	};
+	
 	/**
 	 * Handles user clicking the "Javascript Console" button, which 
 	 * toggles the console. 
@@ -134,10 +139,10 @@
 			{			
 		//JS Console Button clicked
 		$('#consoleButton').click(function()
-				{	
+		{	
 			GEPPETTO.Console.toggleConsole();
-				});	
-			});
+		});
+	});
 
 	/**
 	 * internal function for loading script from console
@@ -217,46 +222,49 @@
 				, original = inpt.val()
 				, firstElementText = $(firstElement).text();
 
+				var suggestionsSize = $(this).data("uiAutocomplete").menu.element[0].children.length;
 				/*
           here we want to make sure that we're not matching something that doesn't start
           with what was typed in 
 				 */
 				if(firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0){
-					inpt.val(firstElementText);//change the input to the first match
+					
+					if(suggestionsSize == 1){
+						inpt.val(firstElementText);//change the input to the first match
 
-					inpt[0].selectionStart = original.length; //highlight from end of input
-					inpt[0].selectionEnd = firstElementText.length;//highlight to the end
+						inpt[0].selectionStart = original.length; //highlight from end of input
+						inpt[0].selectionEnd = firstElementText.length;//highlight to the end
+					}
 				}
 			}
 		});
 	}
-
-	/**
-	 * Available commands stored in an array, used for autocomplete
-	 * 
-	 * @returns {Array}
-	 */
-	function availableTags(){
-
-		var availableTags = [];
-
-		var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
-
-		var commandsSplitByLine = commands.split("\n");
-
-		var tagsCount = 0;
-
-		for(var i =0; i<commandsSplitByLine.length; i++){
-			var line = commandsSplitByLine[i].trim();
-
-			if(line.substring(0,2) == "--"){
-				var command = line.substring(3, line.length);
-				availableTags[tagsCount] = command;
-				tagsCount++;
-			}
-		}
-
-		return availableTags;
-	};
-
 })();
+
+/**
+ * Available commands stored in an array, used for autocomplete
+ * 
+ * @returns {Array}
+ */
+function availableTags(){
+
+	var availableTags = [];
+
+	var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
+
+	var commandsSplitByLine = commands.split("\n");
+
+	var tagsCount = 0;
+
+	for(var i =0; i<commandsSplitByLine.length; i++){
+		var line = commandsSplitByLine[i].trim();
+
+		if(line.substring(0,2) == "--"){
+			var command = line.substring(3, line.length);
+			availableTags[tagsCount] = command;
+			tagsCount++;
+		}
+	}
+
+	return availableTags;
+};

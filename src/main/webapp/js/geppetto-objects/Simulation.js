@@ -63,7 +63,8 @@ Simulation.simulationURL = "";
 /**
  * Start the simulation.
  * 
- * @returns {String}
+ * @name Simulation.start()
+ * @returns {String} - Simulation status after starting it.
  */
 Simulation.start = function()
 {
@@ -86,7 +87,8 @@ Simulation.start = function()
 /**
  * Pauses the simulation
  * 
- * @returns {String}
+ * @name Simulation.pause()
+ * @returns {String} - Status of Simulation after pausing it.
  * 
  */
 Simulation.pause = function()
@@ -108,9 +110,10 @@ Simulation.pause = function()
 };
 
 /**
- * Stops the simulation 
+ * Stops the simulation. 
  * 
- * @returns {String}
+ * @name Simulation.stop()
+ * @returns {String} - Status of simulation after stopping it.
  */
 Simulation.stop = function()
 {
@@ -139,8 +142,9 @@ Simulation.stop = function()
 /**
  * Loads a simulation from a URL.
  * 
- * @param simulationURL - URL of simulation file
- * @returns {String} Returned status by the command
+ * @name Simulation.load(simulationURL)
+ * @param simulationURL - URL of simulation file to be loaded.
+ * @returns {String} - Status of attempt to load simulation using url. 
  */
 Simulation.load = function(simulationURL)
 {
@@ -179,10 +183,11 @@ Simulation.load = function(simulationURL)
 };
 
 /**
- * Loads a simulation using the content's from the simulation file editor
+ * Loads a simulation using the content's from the simulation file editor.
  * 
- * @param simulation - Simulation to be loaded
- * @returns {String}
+ * @name Simulation.loadFromContent(content)
+ * @param content - Content of simulation to be loaded. 
+ * @returns {String} - Status of attempt to load simulation from content window.
  */
 Simulation.loadFromContent = function(content)
 {
@@ -211,8 +216,10 @@ Simulation.loadFromContent = function(content)
 };
 
 /**
- * Returns true or false, depending if simulations is loaded or not
- * @returns {Boolean}
+ * Checks status of the simulation, whether it has been loaded or not.
+ * 
+ * @name Simulation.isLoaded()
+ * @returns {Boolean} - True if simulation has been loaded, false if not.
  */
 Simulation.isLoaded = function()
 {
@@ -225,10 +232,28 @@ Simulation.isLoaded = function()
 
 /**
  *
- * @returns  Returns list of all commands associated with Simulation object
+ * Outputs list of commands with descriptions associated with the Simulation object.
+ * 
+ * @name Simulation.help()
+ * @returns  Returns list of all commands for the Simulation object
  */
 Simulation.help = function(){
 	var commands = "Simulation control commands: \n\n";
+
+	var descriptions = [];
+
+	//retrieve the script to get the comments for all the methods
+	$.ajax({ 
+		async:false,
+		type:'GET',
+		url: "js/geppetto-objects/Simulation.js",
+		dataType:"text",
+		//at success, read the file and extract the comments
+		success:function(data) {			
+			var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+			descriptions = data.match(STRIP_COMMENTS);
+		},
+	});
 
 	//find all functions of object Simulation
 	for ( var prop in Simulation ) {
@@ -236,12 +261,42 @@ Simulation.help = function(){
 			var f = Simulation[prop].toString();
 			//get the argument for this function
 			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
-			//format and keep track of all commands available
-			commands += ("      -- Simulation."+prop+"("+parameter+");" + "\n");
-		};
-	}
 
-	return commands.substring(0,commands.length-1);
+			var functionName = "Simulation."+prop+"("+parameter+")";
+			//match the function to comment
+			var matchedDescription = "";
+			for(var i = 0; i<descriptions.length; i++){
+				var description = descriptions[i].toString();
+				
+				//items matched
+				if(description.indexOf(functionName)!=-1){
+
+					/*series of formatting of the comments for the function, removes unnecessary 
+					 * blank and special characters.
+					 */
+					var splitComments = description.replace(/\*/g, "").split("\n");
+					splitComments.splice(0,1);
+					splitComments.splice(splitComments.length-1,1);
+					for(var s = 0; s<splitComments.length; s++){
+						var line = splitComments[s].trim();
+						if(line != ""){
+							//ignore the name line, already have it
+							if(line.indexOf("@name")==-1){
+								//build description for function
+								matchedDescription += "         " + line + "\n";
+							}
+						}
+					}
+				}
+			}
+
+			//format and keep track of all commands available
+			commands += ("      -- " + functionName + "\n" + matchedDescription + "\n");
+		};
+	}	
+
+	//returned formatted string with commands and description, remove last two blank lines
+	return commands.substring(0,commands.length-2);
 };
 
 /**

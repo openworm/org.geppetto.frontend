@@ -130,106 +130,24 @@
     
     
     
-    
-    
-        <h3 class="subsection-title">Methods</h3>
+        <h3 class="subsection-title">Members</h3>
         
         <dl>
             
 <dt>
-    <h4 class="name" id="help"><span class="type-signature">&lt;static> </span>help<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="help()"><span class="type-signature">&lt;static> </span>help()<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line227">line 227</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Returns list of all commands associated with Simulation object
-</div>
-
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="isLoaded"><span class="type-signature">&lt;static> </span>isLoaded<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
-    
-    
-</dt>
-<dd>
-    
     
     <div class="description">
-        Returns true or false, depending if simulations is loaded or not
+        Outputs list of commands with descriptions associated with the Simulation object.
     </div>
     
+    
+    
 
-    
-    
-    
-    
-    
-    
     
 <dl class="details">
     
@@ -253,7 +171,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line214">line 214</a>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line233">line 233</a>
     </li></ul></dd>
     
     
@@ -266,32 +184,58 @@
 
     
     
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Boolean</span>
-
-
-	</dd>
-</dl>
+</dd>
 
         
+            
+<dt>
+    <h4 class="name" id="isLoaded()"><span class="type-signature">&lt;static> </span>isLoaded()<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Checks status of the simulation, whether it has been loaded or not.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line218">line 218</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
     
     
 </dd>
@@ -299,67 +243,19 @@
         
             
 <dt>
-    <h4 class="name" id="load"><span class="type-signature">&lt;static> </span>load<span class="signature">(simulationURL)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="load"><span class="type-signature">&lt;static> </span>load<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
-    
     
     <div class="description">
         Loads a simulation from a URL.
     </div>
     
+    
+    
 
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>simulationURL</code></td>
-            
-            
-            <td class="type">
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">URL of simulation file</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
     
 <dl class="details">
     
@@ -396,104 +292,24 @@
 
     
     
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Returned status by the command
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">String</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="loadFromContent"><span class="type-signature">&lt;static> </span>loadFromContent<span class="signature">(simulation)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="loadFromContent"><span class="type-signature">&lt;static> </span>loadFromContent<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
-    
     <div class="description">
-        Loads a simulation using the content's from the simulation file editor
+        Loads a simulation using the content's from the simulation file editor.
     </div>
     
+    
+    
 
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>simulation</code></td>
-            
-            
-            <td class="type">
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Simulation to be loaded</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
     
 <dl class="details">
     
@@ -517,7 +333,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line184">line 184</a>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line185">line 185</a>
     </li></ul></dd>
     
     
@@ -530,57 +346,24 @@
 
     
     
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">String</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="pause"><span class="type-signature">&lt;static> </span>pause<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="pause()"><span class="type-signature">&lt;static> </span>pause()<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
-    
     
     <div class="description">
         Pauses the simulation
     </div>
     
+    
+    
 
-    
-    
-    
-    
-    
-    
     
 <dl class="details">
     
@@ -604,7 +387,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line92">line 92</a>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line87">line 87</a>
     </li></ul></dd>
     
     
@@ -617,57 +400,24 @@
 
     
     
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">String</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="start"><span class="type-signature">&lt;static> </span>start<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="start()"><span class="type-signature">&lt;static> </span>start()<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
-    
     
     <div class="description">
         Start the simulation.
     </div>
     
+    
+    
 
-    
-    
-    
-    
-    
-    
     
 <dl class="details">
     
@@ -691,7 +441,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line68">line 68</a>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line63">line 63</a>
     </li></ul></dd>
     
     
@@ -702,34 +452,6 @@
     
 </dl>
 
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">String</span>
-
-
-	</dd>
-</dl>
-
-        
     
     
 </dd>
@@ -737,24 +459,19 @@
         
             
 <dt>
-    <h4 class="name" id="stop"><span class="type-signature">&lt;static> </span>stop<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="stop()"><span class="type-signature">&lt;static> </span>stop()<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
-    
     <div class="description">
-        Stops the simulation
+        Stops the simulation.
     </div>
     
+    
+    
 
-    
-    
-    
-    
-    
-    
     
 <dl class="details">
     
@@ -778,7 +495,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line115">line 115</a>
+        <a href="Simulation.js.html">geppetto-objects/Simulation.js</a>, <a href="Simulation.js.html#line112">line 112</a>
     </li></ul></dd>
     
     
@@ -791,37 +508,11 @@
 
     
     
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">String</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
 </dd>
 
         </dl>
+    
+    
     
     
     
@@ -837,13 +528,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Console.html">Console</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="GEPPETTO.SimulationContentEditor.html">SimulationContentEditor</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#executeScriptCommands">executeScriptCommands</a></li><li><a href="global.html#extractLast">extractLast</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#SelectText">SelectText</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#executeScriptCommands">executeScriptCommands</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#SelectText">SelectText</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Sep 13 2013 15:19:49 GMT+0100 (IST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Sep 20 2013 13:48:36 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

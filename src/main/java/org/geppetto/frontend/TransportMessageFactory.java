@@ -94,6 +94,9 @@ public class TransportMessageFactory {
 			case GEPPETTO_VERSION:
 				params.add(new SimpleEntry<String, String>("geppetto_version", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case RUN_SCRIPT:
+				params.add(new SimpleEntry<String, String>("run_script", (update!=null) ? update : EMPTY_STRING));
+				break;
 			default:
 				break;
 		}

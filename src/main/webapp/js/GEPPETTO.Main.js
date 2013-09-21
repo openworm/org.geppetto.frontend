@@ -153,6 +153,10 @@ GEPPETTO.Main.connect = (function(host)
 			//Read the Parameters passed in url
 			case "read_url_parameters":
 				FE.searchForURLEmbeddedSimulation();
+				break;		
+				//Run script
+			case "run_script":
+				runScript(payload.run_script);
 				break;
 			//Event received to update the simulation
 			case "scene_update":

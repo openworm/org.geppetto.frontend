@@ -32,8 +32,10 @@
  *******************************************************************************/
 package org.geppetto.frontend;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.CharBuffer;
@@ -514,6 +516,26 @@ public class SimulationListener implements ISimulationCallbackListener {
 		}
 		catch(IOException e){
 			e.printStackTrace();
+		}
+	}
+
+	public void getScriptData(URL url, GeppettoMessageInbound visitor) {
+		String line = null;
+		StringBuilder sb = new StringBuilder();
+		
+		try {
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+			
+			while((line=br.readLine())!= null){
+			    sb.append(line+"\n");
+			}
+			 String script = sb.toString();
+			 
+			 messageClient(visitor, OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT, script );
+		} 
+		catch (IOException e) {
+			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 		}
 	}
 }

@@ -68,7 +68,7 @@ var SIMULATION_ALREADY_STOPPED = "Simulation was already stopped";
 /**
  * Object G resources
  */
-var RUNNING_SCRIPT = "Running Script";
+var RUNNING_SCRIPT = "Running script";
 
 var NO_SIMULATION_TO_GET = "No Simulation to get as none is running";
 

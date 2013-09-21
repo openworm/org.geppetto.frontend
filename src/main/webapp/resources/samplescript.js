@@ -1,6 +1,6 @@
 Simulation.load("https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml");
 
-G.wait(5000);
+G.wait(8000);
 
 Simulation.start();
 

@@ -237,31 +237,29 @@ G.help = function(){
  */
 G.runScript = function(scriptURL){	
 
-	//retrieve the script
-	$.ajax({ 
-		async:false,
-		type:'GET',
-		url:scriptURL,
-		dataType:"text",
-		crossDomain : true,
-		//at success, read the file and extract the commands
-		success:function(data) {
-			var commands = data.split("\n");
-			
-			//format the commands, remove white spaces
-			for(var c = 0; c<commands.length; c++){
-				commands[c] = commands[c].replace(/\s/g,"");
-				var lineC = commands[c];
-				if(lineC.toString() === ""){
-					commands.splice(c,1);
-				}
-			}
-			//execute the commands found inside script
-			executeScriptCommands(commands);
-		}, });	
+	GEPPETTO.Main.socket.send(messageTemplate("run_script", scriptURL));
 	
 	return RUNNING_SCRIPT; 
 };
+
+/**
+ * Runs script data
+ */
+function runScript(scriptData){
+
+	var commands = scriptData.split("\n");
+
+	//format the commands, remove white spaces
+	for(var c = 0; c<commands.length; c++){
+		commands[c] = commands[c].replace(/\s/g,"");
+		var lineC = commands[c];
+		if(lineC.toString() === ""){
+			commands.splice(c,1);
+		}
+	}
+	//execute the commands found inside script
+	executeScriptCommands(commands);
+}
 
 /**
  * 
@@ -286,7 +284,7 @@ G.wait = function(commands, ms){
 	setTimeout(function()
 	{
 		//execute commands after ms milliseconds
-		Console.executeCommand(executeScriptCommands(commands));
+		GEPPETTO.Console.executeCommand(executeScriptCommands(commands));
 	}, ms);
 	
 	return "Waiting ms";

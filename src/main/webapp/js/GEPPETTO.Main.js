@@ -337,7 +337,7 @@ FE.loadingModalUIUpdate = function()
 		//Add click listener to sample simulations dropdown menu
 		$('#dropdownmenu li').click(function () {
 			
-			GEPPETTO.SimulationContentEditor.isEditing(false);
+			GEPPETTO.SimulationContentEditor.setEditing(false);
 			
 			//Get the name and url of selected simulation
             var selectedURL = $(this).attr('url');
@@ -415,7 +415,7 @@ FE.disableSimulationControls = function()
 	$('#openload').attr('disabled', 'disabled');
 	$('#openload').click(function(e){return false;});
 	
-	$('#jsConsoleButton').attr('disabled', 'disabled');
+	$('#consoleButton').attr('disabled', 'disabled');
 };
 
 FE.activateLoader = function(state, msg)
@@ -499,11 +499,11 @@ $(document).ready(function()
 		FE.updateLoadEvent();
 		
 		//loading from simulation file editor's
-		if(GEPPETTO.SimulationContentEditor.editing){
+		if(GEPPETTO.SimulationContentEditor.isEditing()){
 			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');;
 			
 			GEPPETTO.Console.executeCommand("Simulation.loadFromContent('"+simulation+"')");
-			GEPPETTO.SimulationContentEditor.isEditing(false);
+			GEPPETTO.SimulationContentEditor.setEditing(false);
 		}
 		//loading simulation url
 		else{

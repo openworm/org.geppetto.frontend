@@ -192,10 +192,20 @@
 	/**
 	 * Returns true if editor is being used
 	 */
-	GEPPETTO.SimulationContentEditor.isEditing = function(mode)
+	GEPPETTO.SimulationContentEditor.setEditing = function(mode)
 	{
 		editing = mode;
 	};
+	
+
+	/**
+	 * Returns true if editor is being used
+	 */
+	GEPPETTO.SimulationContentEditor.isEditing = function()
+	{
+		return editing;
+	};
+
 
 	/**
 	 * Auto formats content of editor

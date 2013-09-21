@@ -229,11 +229,26 @@
 				 */
 				if(firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0){
 					
+					//only one suggestion
 					if(suggestionsSize == 1){
 						inpt.val(firstElementText);//change the input to the first match
 
 						inpt[0].selectionStart = original.length; //highlight from end of input
 						inpt[0].selectionEnd = firstElementText.length;//highlight to the end
+					}
+					//match multiple suggestions 
+					else{
+						if(inpt.val() != ""){
+							//match up to dot for most common part
+							var mostCommon = firstElementText.split(".")[0] + ".";
+
+							if(inpt.val().indexOf(mostCommon)==-1){
+								inpt.val(mostCommon);//change the input to the first match
+
+								inpt[0].selectionStart = original.length; //highlight from end of input
+								inpt[0].selectionEnd = mostCommon.length;//highlight to the end
+							}
+						}
 					}
 				}
 			}

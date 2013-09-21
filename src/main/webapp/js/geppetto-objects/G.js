@@ -73,7 +73,7 @@ G.copyHistoryToClipboard = function(){
 	for(var i=0; i<commands.length; i++){
 		var n = commands[i];
 		if(n.command != null || typeof n.command != "undefined"){
-			commandsString += n.command.trim() +'<br>';
+			commandsString += n.command.trim() +'";" + <br>';
 		}
 	}
 
@@ -97,7 +97,8 @@ G.copyHistoryToClipboard = function(){
 		$('#infomodal').on('shown', function(){
 			SelectText('infomodal-text');
 		});
-
+		
+		return COPY_CONSOLE_HISTORY;
 	}
 	else{
 		return EMPTY_CONSOLE_HISTORY;

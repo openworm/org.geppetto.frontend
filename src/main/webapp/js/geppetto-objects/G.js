@@ -199,7 +199,7 @@ G.help = function(){
 				var description = descriptions[i].toString();
 				
 				//items matched
-				if(description.indexOf("G."+prop)!=-1){
+				if(description.indexOf(functionName)!=-1){
 
 					/*series of formatting of the comments for the function, removes unnecessary 
 					 * blank and special characters.

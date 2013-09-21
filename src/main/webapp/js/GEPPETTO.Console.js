@@ -84,7 +84,7 @@
 			resultPrefix : "  => ",
 			tabCharacter : "\t",
 			placeholder : "// type a javascript command and hit enter (help() for info)",
-			helpText :  "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help()
+			helpText :  help()
 		});
 
 		$('#console').css("width", $("#footer").width()-40);

@@ -512,3 +512,12 @@ $(document).ready(function()
 	});
 
 });
+
+/**
+ * Global help function with all commands in global objects. 
+ * 
+ * @returns {String}
+ */
+function help(){
+	return "The following commands are available in the Geppetto console.\n\n"+G.help() + '\n\n' + Simulation.help();
+};

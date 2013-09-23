@@ -1,6 +1,6 @@
 org.geppetto.frontend
 ======================================
 
-Geppetto Frontend Web Application Bundle [OpenWorm Project](http://openworm.org)
+[Geppetto](http://geppetto.org) Frontend Web Application Bundle 
 
-Please see installation information [available online](https://github.com/openworm/OpenWorm/wiki).
+Please see installation information [available online](https://github.com/openworm/OpenWorm/wiki/Geppetto---Install-instructions).

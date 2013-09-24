@@ -51,7 +51,7 @@ GEPPETTO.Vanilla = GEPPETTO.Vanilla ||
  */
 GEPPETTO.Vanilla.checkKeyboard = function()
 {
-	if (GEPPETTO.isKeyPressed("p"))
+	if (GEPPETTO.isKeyPressed("ctrl+alt+p"))
 	{
 		if (GEPPETTO.plots.length == 0)
 		{
@@ -66,6 +66,10 @@ GEPPETTO.Vanilla.checkKeyboard = function()
 				GEPPETTO.plots[0].dispose();
 			}
 		}
+	}
+	
+	else if(GEPPETTO.isKeyPressed("ctrl+alt+j")){
+		GEPPETTO.Console.toggleConsole();
 	}
 };
 

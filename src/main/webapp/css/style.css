@@ -38,7 +38,16 @@ p {
 	left: 5px;
 	float: left;
 	bottom: 0px;
-	margin-bottom: -12px;
+	margin-bottom: -5px;
+}
+
+@media 
+(-webkit-min-device-pixel-ratio: 2), 
+(min-resolution: 192dpi) { 
+#geppettologo {
+	background-image: url("../images/geppetto@2x.png");
+	background-size: 200px 66px;
+}
 }
 
 #position_toolbar {
@@ -329,7 +338,7 @@ input {
 	position: relative;
 	background: rgba(66,59,59,0.50);
 	color: #fd6808;
-	bottom: -19px;
+	bottom: -26px;
 	border-color: #2e2828;
 	border-width: 0;
 	box-shadow:none;

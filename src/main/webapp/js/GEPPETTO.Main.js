@@ -135,7 +135,7 @@ GEPPETTO.Main.connect = (function(host)
 			case "geppetto_version":
 				var version = payload.geppetto_version;
 				
-				GEPPETTO.Console.Log("Geppetto v" + version + " is Ready");
+				GEPPETTO.Console.Log("Geppetto v" + version + " is ready");
 				break;
 			//Simulation has been loaded and model need to be loaded
 			case "load_model":

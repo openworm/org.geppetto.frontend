@@ -182,7 +182,7 @@
 						<sourceFile>src/main/webapp/js/GEPPETTO.SimulationContentEditor.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.Console.js</sourceFile>
 					</sourceFiles>
-					<outputDirectory>${basedir}/jsdocs</outputDirectory>
+					<outputDirectory>${basedir}/src/main/webapp/jsdocs</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>

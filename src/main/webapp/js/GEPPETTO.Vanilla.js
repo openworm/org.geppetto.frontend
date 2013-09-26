@@ -51,9 +51,9 @@ GEPPETTO.Vanilla = GEPPETTO.Vanilla ||
  */
 GEPPETTO.Vanilla.checkKeyboard = function()
 {
-	if (GEPPETTO.isKeyPressed("p"))
+	if (GEPPETTO.isKeyPressed("ctrl+alt+p"))
 	{
-		if (GEPPETTO.plots.length == 0)
+		if (GEPPETTO.getPlots().length == 0)
 		{
 			GEPPETTO.addPlot("0", [ "hhpop[0].v", "hhpop[0].spiking", "hhpop[0].debugVal" ], -0.08, 0.05);
 			GEPPETTO.addPlot("0", [ "hhpop[0].bioPhys1.membraneProperties.naChans.na.m.q", "hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q", "hhpop[0].bioPhys1.membraneProperties.kChans.k.n.q" ], -0.1, 1.1);
@@ -61,11 +61,15 @@ GEPPETTO.Vanilla.checkKeyboard = function()
 		}
 		else
 		{
-			while (GEPPETTO.plots.length > 0)
+			while (GEPPETTO.getPlots().length > 0)
 			{
-				GEPPETTO.plots[0].dispose();
+				GEPPETTO.getPlots()[0].dispose();
 			}
 		}
+	}
+	
+	else if(GEPPETTO.isKeyPressed("ctrl+alt+j")){
+		GEPPETTO.Console.toggleConsole();
 	}
 };
 

@@ -40,8 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.geppetto.frontend.GeppettoVisitorWebSocket;
-import org.geppetto.frontend.GeppettoVisitorWebSocket.VisitorRunMode;
+import org.geppetto.frontend.GeppettoMessageInbound;
+import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
 import org.geppetto.frontend.SimulationServerConfig;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.geppetto.frontend.SimulationListener;
@@ -67,8 +67,8 @@ public class TestObserverMode {
 	/*
 	 * Create two connections to represent multiple visitors to geppetto
 	 */
-	private GeppettoVisitorWebSocket connection1 = new GeppettoVisitorWebSocket(0, SimulationListener.getInstance());
-	private GeppettoVisitorWebSocket connection2 = new GeppettoVisitorWebSocket(1, SimulationListener.getInstance());
+	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound(0, SimulationListener.getInstance());
+	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound(1, SimulationListener.getInstance());
 	
 	
 	@Test
@@ -94,7 +94,7 @@ public class TestObserverMode {
 		@Override
 		protected StreamInbound createWebSocketInbound(String subProtocol,
 				HttpServletRequest request) {
-			return new GeppettoVisitorWebSocket(_connectionIds.incrementAndGet(), SimulationListener.getInstance());
+			return new GeppettoMessageInbound(_connectionIds.incrementAndGet(), SimulationListener.getInstance());
 		}
 		
 	}

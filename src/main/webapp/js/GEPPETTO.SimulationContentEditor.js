@@ -32,240 +32,260 @@
  *******************************************************************************/
 
 /**
- * @fileoverview GEPPETTO Visualisation engine built on top of THREE.js. Displays a scene as defined on org.geppetto.core
+ *
+ * Class that handles user interaction with the Simulation File editor.
+ * 
+ * @constructor
  * 
  * @author Jesus Martinez (jesus@metacell.us)
  */
-GEPPETTO.SimulationContentEditor = GEPPETTO.SimulationContentEditor ||
-{
-	REVISION : '1'
-};
+(function(){
 
-GEPPETTO.SimulationContentEditor.editing = false;
-GEPPETTO.SimulationContentEditor.editor = null;
+	var editing = false;
+	var editor = null;
 
-/**
- * Load simulation template using ajax call.
- * 
- * @param location
- */
-GEPPETTO.SimulationContentEditor.loadTemplateSimulation = function(location)
-{
-	$.ajax(
+	GEPPETTO.SimulationContentEditor = GEPPETTO.SimulationContentEditor ||
 	{
-		type : "GET",
-		url : location,
-		dataType : "xml",
-		success : function(result)
+		REVISION : '1'
+	};
+	/**
+	 * Load simulation template using ajax call.
+	 * 
+	 * @param location - location of the simulation template file
+	 */
+	GEPPETTO.SimulationContentEditor.loadTemplateSimulation = function(location)
+	{
+		//ajax call to request xml of template file
+		$.ajax(
+				{
+					type : "GET",
+					url : location,
+					dataType : "xml",
+					success : function(result)
+					{
+						//convert xml file contents to string
+						var xmlString = GEPPETTO.SimulationContentEditor.xmlToString(result);
+
+						//load the simulation template file to the editor
+						GEPPETTO.SimulationContentEditor.loadSimulationInfo(xmlString);
+					}
+				});
+	};
+
+	/**
+	 * Set the code that is display on the editor
+	 */
+	GEPPETTO.SimulationContentEditor.loadSimulationInfo = function(xmlSimulation)
+	{
+		editor.setValue(xmlSimulation);
+	};
+
+	/**
+	 * Transforms xml file to string
+	 */
+	GEPPETTO.SimulationContentEditor.xmlToString = function(xmlFile)
+	{
+
+		var xmlString;
+
+		// Internet Explorer
+		if (window.ActiveXObject)
 		{
-
-			var xmlString = GEPPETTO.SimulationContentEditor.xmlToString(result);
-
-			GEPPETTO.SimulationContentEditor.loadSimulationInfo(xmlString);
+			xmlString = xmlFile.xml;
 		}
-	});
-};
 
-/**
- * Set editor's code
- */
-GEPPETTO.SimulationContentEditor.loadSimulationInfo = function(xmlSimulation)
-{
-	GEPPETTO.SimulationContentEditor.editor.setValue(xmlSimulation);
-};
-
-/**
- * Transforms xml file to string
- */
-GEPPETTO.SimulationContentEditor.xmlToString = function(xmlFile)
-{
-
-	var xmlString;
-
-	// Internet Explorer
-	if (window.ActiveXObject)
-	{
-		xmlString = xmlFile.xml;
-	}
-
-	// code for Mozilla, Chrome, Firefox, Opera
-	else
-	{
-		xmlString = (new XMLSerializer()).serializeToString(xmlFile);
-	}
-
-	return xmlString;
-};
-
-/**
- * Bind editor to certain events as user key events and new input events
- */
-GEPPETTO.SimulationContentEditor.handleContentEdit = function()
-{
-
-	// detects keyboard events and sets 'editing' flag to true
-	GEPPETTO.SimulationContentEditor.editor.on("keyHandled", function()
-	{
-		GEPPETTO.SimulationContentEditor.editing = true;
-
-		// Reset sample drop down menu to original value
-		if ($('#dropdowndisplaytext').text() != "Select simulation from list...")
+		// code for Mozilla, Chrome, Firefox, Opera
+		else
 		{
-			$('#dropdowndisplaytext').html("Select simulation from list...");
+			xmlString = (new XMLSerializer()).serializeToString(xmlFile);
 		}
-	});
 
-	// detects new input in editor
-	GEPPETTO.SimulationContentEditor.editor.on("inputRead", function()
+		return xmlString;
+	};
+
+	/**
+	 * Bind editor to certain events as user key events and new input events
+	 */
+	GEPPETTO.SimulationContentEditor.handleContentEdit = function()
 	{
-		GEPPETTO.SimulationContentEditor.editing = true;
 
-		if ($('#dropdowndisplaytext').text() != "Select simulation from list...")
-		{
-			$('#dropdowndisplaytext').html("Select simulation from list...");
-		}
-	});
-};
+		// detects keyboard events and sets 'editing' flag to true
+		editor.on("keyHandled", function()
+				{
+			editing = true;
 
-/**
- * Load the editor, create it if it doesn't exist
- */
-GEPPETTO.SimulationContentEditor.loadEditor = function()
-{
-	if (GEPPETTO.SimulationContentEditor.editor == null)
-	{
-		GEPPETTO.SimulationContentEditor.createXMLEditor();
-	}
-};
-
-/**
- * Create XML Editor to display simulation file
- */
-GEPPETTO.SimulationContentEditor.createXMLEditor = function()
-{
-	GEPPETTO.SimulationContentEditor.editor = CodeMirror.fromTextArea(document.getElementById("code"),
-	{
-		mode : "xml",
-		lineNumbers : true,
-		theme : "lesser-dark",
-		extraKeys :
-		{
-			"F11" : function(cm)
+			// Reset sample drop down menu to original value
+			if ($('#dropdowndisplaytext').text() != "Select simulation from list...")
 			{
-				GEPPETTO.SimulationContentEditor.setFullScreen(cm, !GEPPETTO.SimulationContentEditor.isFullScreen(cm));
-			},
-			"Esc" : function(cm)
-			{
-				if (GEPPETTO.SimulationContentEditor.isFullScreen(cm))
-					GEPPETTO.SimulationContentEditor.setFullScreen(cm, false);
+				$('#dropdowndisplaytext').html("Select simulation from list...");
 			}
+				});
+
+		// detects new input in editor
+		editor.on("inputRead", function()
+				{
+			editing = true;
+
+			//if simulation file is edited, reset sample menu dropdown
+			if ($('#dropdowndisplaytext').text() != "Select simulation from list...")
+			{
+				$('#dropdowndisplaytext').html("Select simulation from list...");
+			}
+				});
+	};
+
+	/**
+	 * Load the editor, create it if it doesn't exist
+	 */
+	GEPPETTO.SimulationContentEditor.loadEditor = function()
+	{
+		if (editor == null)
+		{
+			GEPPETTO.SimulationContentEditor.createXMLEditor();
 		}
-	});
+	};
 
-	GEPPETTO.SimulationContentEditor.handleContentEdit();
+	/**
+	 * Create XML Editor to display simulation file
+	 */
+	GEPPETTO.SimulationContentEditor.createXMLEditor = function()
+	{
+		editor = CodeMirror.fromTextArea(document.getElementById("code"),
+				{
+			mode : "xml",
+			lineNumbers : true,
+			theme : "lesser-dark",
+			extraKeys :
+			{
+				"F11" : function(cm)
+				{
+					GEPPETTO.SimulationContentEditor.setFullScreen(cm, !GEPPETTO.SimulationContentEditor.isFullScreen(cm));
+				},
+				"Esc" : function(cm)
+				{
+					if (GEPPETTO.SimulationContentEditor.isFullScreen(cm))
+						GEPPETTO.SimulationContentEditor.setFullScreen(cm, false);
+				}
+			}
+				});
+
+		//binds editor to events to detect changes within
+		GEPPETTO.SimulationContentEditor.handleContentEdit();
+
+		//Toggles fullscreen mode on editor
+		$("#fullscreen").click(function(){
+			cm=editor;
+			GEPPETTO.SimulationContentEditor.setFullScreen(cm, !GEPPETTO.SimulationContentEditor.isFullScreen(cm));
+		});
+	};
+
+	/**
+	 * Returns text inside editor, xml for edited simulation file
+	 */
+	GEPPETTO.SimulationContentEditor.getEditedSimulation = function()
+	{
+		var code = editor.getValue();
+
+		return code;
+	};
+
+	/**
+	 * Returns true if editor is being used
+	 */
+	GEPPETTO.SimulationContentEditor.setEditing = function(mode)
+	{
+		editing = mode;
+	};
 	
-	$("#fullscreen").click(function(){
-		cm=GEPPETTO.SimulationContentEditor.editor;
-		GEPPETTO.SimulationContentEditor.setFullScreen(cm, !GEPPETTO.SimulationContentEditor.isFullScreen(cm));
-	});
-};
 
-/**
- * Returns text inside editor, xml for edited simulation file
- */
-GEPPETTO.SimulationContentEditor.getEditedSimulation = function()
-{
-	var code = GEPPETTO.SimulationContentEditor.editor.getValue();
-
-	return code;
-};
-
-/**
- * Returns true if editor is being used
- */
-GEPPETTO.SimulationContentEditor.isEditing = function(mode)
-{
-	GEPPETTO.SimulationContentEditor.editing = mode;
-};
-
-/**
- * Auto formats content of editor
- */
-GEPPETTO.SimulationContentEditor.autoFormat = function()
-{
-	var totalLines = GEPPETTO.SimulationContentEditor.editor.lineCount();
-	var totalChars = GEPPETTO.SimulationContentEditor.editor.getTextArea().value.length;
-	GEPPETTO.SimulationContentEditor.editor.autoFormatRange(
+	/**
+	 * Returns true if editor is being used
+	 */
+	GEPPETTO.SimulationContentEditor.isEditing = function()
 	{
-		line : 0,
-		ch : 0
-	},
+		return editing;
+	};
+
+
+	/**
+	 * Auto formats content of editor
+	 */
+	GEPPETTO.SimulationContentEditor.autoFormat = function()
 	{
-		line : totalLines,
-		ch : totalChars
-	});
+		var totalLines = editor.lineCount();
+		var totalChars = editor.getTextArea().value.length;
+		editor.autoFormatRange(
+				{
+					line : 0,
+					ch : 0
+				},
+				{
+					line : totalLines,
+					ch : totalChars
+				});
 
-	var totalLines = GEPPETTO.SimulationContentEditor.editor.lineCount();
-	var totalChars = GEPPETTO.SimulationContentEditor.editor.getTextArea().value.length;
-	GEPPETTO.SimulationContentEditor.editor.commentRange(false,
+		var totalLines = editor.lineCount();
+		var totalChars = editor.getTextArea().value.length;
+		editor.commentRange(false,
+				{
+			line : 0,
+			ch : 0
+				},
+				{
+					line : totalLines,
+					ch : totalChars
+				});
+
+	};
+
+	/**
+	 * Returns creation state of editor
+	 */
+	GEPPETTO.SimulationContentEditor.editorCreated = function()
 	{
-		line : 0,
-		ch : 0
-	},
+		if (editor == null)
+		{
+			return false;
+		}
+
+		return true;
+	};
+
+	GEPPETTO.SimulationContentEditor.isFullScreen =function(cm)
 	{
-		line : totalLines,
-		ch : totalChars
-	});
+		return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
+	};
 
-};
-
-/**
- * Returns creation state of editor
- */
-GEPPETTO.SimulationContentEditor.editorCreated = function()
-{
-	if (GEPPETTO.SimulationContentEditor.editor == null)
+	GEPPETTO.winHeight = function ()
 	{
-		return false;
-	}
+		return window.innerHeight || (document.documentElement || document.body).clientHeight;
+	};
 
-	return true;
-};
-
-GEPPETTO.SimulationContentEditor.isFullScreen =function(cm)
-{
-	return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
-};
-
-GEPPETTO.winHeight = function ()
-{
-	return window.innerHeight || (document.documentElement || document.body).clientHeight;
-};
-
-GEPPETTO.SimulationContentEditor.setFullScreen=function(cm, full)
-{
-	var wrap = cm.getWrapperElement();
-	if (full)
+	GEPPETTO.SimulationContentEditor.setFullScreen=function(cm, full)
 	{
-		wrap.className += " CodeMirror-fullscreen";
-		wrap.style.height = GEPPETTO.winHeight() + "px";
-		document.documentElement.style.overflow = "hidden";
-		cm.focus();
-	}
-	else
-	{
-		wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
-		wrap.style.height = "";
-		document.documentElement.style.overflow = "";
-		cm.focus();
-	}
-	cm.refresh();
-};
+		var wrap = cm.getWrapperElement();
+		if (full)
+		{
+			wrap.className += " CodeMirror-fullscreen";
+			wrap.style.height = GEPPETTO.winHeight() + "px";
+			document.documentElement.style.overflow = "hidden";
+			cm.focus();
+		}
+		else
+		{
+			wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
+			wrap.style.height = "";
+			document.documentElement.style.overflow = "";
+			cm.focus();
+		}
+		cm.refresh();
+	};
 
-CodeMirror.on(window, "resize", function()
-{
-	var showing = document.body.getElementsByClassName("CodeMirror-fullscreen")[0];
-	if (!showing)
-		return;
-	showing.CodeMirror.getWrapperElement().style.height = GEPPETTO.winHeight() + "px";
-});
+	CodeMirror.on(window, "resize", function()
+			{
+		var showing = document.body.getElementsByClassName("CodeMirror-fullscreen")[0];
+		if (!showing)
+			return;
+		showing.CodeMirror.getWrapperElement().style.height = GEPPETTO.winHeight() + "px";
+			});
+})();

@@ -930,6 +930,14 @@ var GEPPETTO = GEPPETTO ||
 					modal : false
 				});
 	};
+	
+	
+	/**
+	 */
+	GEPPETTO.getPlots = function()
+	{
+		return plots;
+	};
 
 	/**
 	 * @param entityId

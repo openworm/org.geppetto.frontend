@@ -6,7 +6,7 @@
 
 		<!-- Third-party js libraries -->
 		<script src="js/vendor/jquery-1.9.1.js"></script>
-		<script src="js/vendor/jquery-ui-1.10.2.custom.min.js"></script>
+		<script src="js/vendor/jquery-ui-1.10.3.custom.js"></script>
 		<script src="js/vendor/three.min.js"></script>
 		<script src="js/vendor/TrackballControls.js"></script>
 		<script src="js/vendor/dat.gui.js"></script>
@@ -19,75 +19,82 @@
 		<script src="js/vendor/rAF.js"></script>
 		<script src="js/vendor/codemirror.js"></script>
 		<script src="js/vendor/xml.js"></script>
-		<script src="js/vendor/formatting.js"></script>
+		<script src="js/vendor/formatting.js"></script>	
 
 		<!-- Geppetto -->
 		<script src="js/GEPPETTO.js"></script>
-		<script src="js/GEPPETTO.Simulation.js"></script>
 		<script src="js/GEPPETTO.Vanilla.js"></script>
+		<script src="js/GEPPETTO.Main.js"></script>
 		<script src="js/GEPPETTO.SimulationContentEditor.js"></script>
+		<script src="js/GEPPETTO.Console.js"></script>
+		<script src="js/GEPPETTO.Resources.js"></script>
+		<script src="js/geppetto-objects/Simulation.js"></script>
+		<script src="js/geppetto-objects/G.js"></script>
 		
 		<!-- CSS -->
-		<link rel="stylesheet" href="css/jquery.fancybox.css"/>
 		<link rel="stylesheet" href="css/bootstrap.min.css" />
 		<link rel="stylesheet" href="css/font-awesome.css" />
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="css/custom-theme/jquery-ui-1.10.0.custom.css" />
 		<link rel="stylesheet" href="css/codemirror.css" />
 		<link rel="stylesheet" href="css/lesser-dark.css" />
-
+		<link rel="stylesheet" href="css/jsConsole.css" />
 
 	</head>
 	<link rel="icon" 
       type="image/png" 
       href="images/favicon.png"/>
 	<body>
+	<div id="controls">
 
-		<div id="geppettologo"></div>
-		<div id="controls">
+		<div id="sim_toolbar">
+			<a href="#loadSimModal" role="button" class="btn" data-toggle="modal"
+				data-keyboard="false" id="openload"><icon
+					class="icon-folder-open-alt"></icon> Load Simulation</a>
+			<button class="btn" id="start">
+				<icon class="icon-play"></icon>
+				Start
+			</button>
+			<button class="btn" id="pause">
+				<icon class="icon-pause"></icon>
+				Pause
+			</button>
+			<button class="btn" id="stop">
+				<icon class="icon-stop"></icon>
+				Stop
+			</button>
 
-			<div id="sim_toolbar">
-				<a  href="#loadSimModal" role="button" class="btn" data-toggle="modal" data-keyboard="false" id="openload"><icon class="icon-folder-open-alt"></icon> Load Simulation</a>
-				<button class="btn" id="start">
-					<icon class="icon-play"></icon>
-					Start
-				</button>
-				<button class="btn" id="pause" >
-					<icon class="icon-pause"></icon>
-					Pause
-				</button>
-				<button class="btn" id="stop">
-					<icon class="icon-stop"></icon>
-					Stop
-				</button>
-				
-				<!-- Alert box used when visitor in observing simulation -->
-				<div id="alertbox" class="alert alert-block">
-					<a class="close" data-dismiss="alert">×</a>
-					<h4 class="alert-heading" align="center"><i class="icon-info-sign icon-2x" id="infopopover" rel="popover" data-placement="left" data-trigger="hover"></i>Observing Simulation Mode</h4>
-					<p id="alertbox-text"></p>
-				</div>
-			</div>
-			
-			<div id="position_toolbar">
-				<button class="btn squareB icon-chevron-left" id="w"></button>
-				<button class="btn squareB icon-chevron-up" id="n"></button>
-				<button class="btn squareB icon-chevron-right" id="e"></button>
-				<button class="btn squareB icon-chevron-down" id="s"></button>
-				<button class="btn squareB icon-home" id="h"></button>
-
-				<button class="btn squareB icon-undo" id="rw"></button>
-				<button class="btn squareB icon-repeat rotate90" id="rn"></button>
-				<button class="btn squareB icon-repeat" id="re"></button>
-				<button class="btn squareB icon-undo rotate90" id="rs"></button>
-				<button class="btn squareB icon-home" id="rh"></button>
-
-				<button class="btn squareB icon-zoom-in" id="zi"></button>
-				<button class="btn squareB icon-zoom-out" id="zo"></button>
-				<br />
+			<!-- Alert box used when visitor in observing simulation -->
+			<div id="alertbox" class="alert alert-block">
+				<a class="close" data-dismiss="alert">×</a>
+				<h4 class="alert-heading" align="center">
+					<i class="icon-info-sign icon-2x" id="infopopover" rel="popover"
+						data-placement="left" data-trigger="hover"></i>Observing
+					Simulation Mode
+				</h4>
+				<p id="alertbox-text"></p>
 			</div>
 		</div>
-		<!--
+
+		<div id="position_toolbar">
+			<button class="btn squareB icon-chevron-left" id="w"></button>
+			<button class="btn squareB icon-chevron-up" id="n"></button>
+			<button class="btn squareB icon-chevron-right" id="e"></button>
+			<button class="btn squareB icon-chevron-down" id="s"></button>
+			<button class="btn squareB icon-home" id="h"></button>
+
+			<button class="btn squareB icon-undo" id="rw"></button>
+			<button class="btn squareB icon-repeat rotate90" id="rn"></button>
+			<button class="btn squareB icon-repeat" id="re"></button>
+			<button class="btn squareB icon-undo rotate90" id="rs"></button>
+			<button class="btn squareB icon-home" id="rh"></button>
+
+			<button class="btn squareB icon-zoom-in" id="zi"></button>
+			<button class="btn squareB icon-zoom-out" id="zo"></button>
+			<br />
+		</div>
+	</div>
+	<!--
 		<div id="toolbar">
 		<div id="mode" class="btn-group" data-toggle="buttons-radio">
 		<button class="btn active" id="normalMode" checked="checked">Normal mode</button>
@@ -105,15 +112,23 @@
 		</div>
 		</div>
 		-->
-		<div id="consolealert" class="alert alert-info">
-			<button type="button" class="close" data-dismiss="alert">
-				&times;
-			</button>
-			<div id="console"></div>
+	<div id="mainContainer">
+		<div id="sim"></div>
+
+		<div id="footer">
+			<div id="footerHeader">
+				<div id="geppettologo"></div>
+				<div id="consoleButtonContainer">		
+					<button class="btn" data-clipboard-target="clipboard_text" id="consoleButton">
+						<icon class="icon-terminal"></icon>
+						Console
+					</button>
+				</div>
+			</div>
+			<div id="console">Console Loading...</div>
 		</div>
-
-		<div id="sim" ></div>
-
+	</div>
+	
 	<div id="loadSimModal" class="modal hide fade" tabindex="-1"
 		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
 		data-backdrop="static">
@@ -149,7 +164,8 @@
 						<label class="control-label">Content</label>
 						<div class="controls">
 							<textarea id="code" name="code"></textarea>
-							<button id="fullscreen" type="button"  class="button icon-fullscreen"></button>
+							<button id="fullscreen" type="button"
+								class="button icon-fullscreen"></button>
 						</div>
 					</div>
 				</div>
@@ -198,6 +214,25 @@
 		<div id="loadingmodal" class="loading modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
 			<i class="icon-asterisk icon-4x icon-spin orange"></i>
 			<p id="loadingmodaltext" class="orange"></p>
+		</div>		
+		<script type="text/template" id="tplSandbox">
+		<pre class="output"></pre>
+		<div class="input">
+			<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
 		</div>
-	</body>
+	</script>
+	
+	<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
+	<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
+<span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
+<% } %></script>
+
+<script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
+
+		<!-- The sandbox template: -->
+		<script src="js/vendor/underscore.min.js"></script>
+		<script src="js/vendor/backbone.min.js"></script>
+		<script src="js/vendor/backbone-localStorage.min.js"></script>
+		<script src="js/GEPPETTO.sandbox-console.js"></script>
+</body>
 </html>

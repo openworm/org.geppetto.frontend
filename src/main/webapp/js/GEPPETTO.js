@@ -933,6 +933,7 @@ var GEPPETTO = GEPPETTO ||
 	
 	
 	/**
+	 * Return plots
 	 */
 	GEPPETTO.getPlots = function()
 	{

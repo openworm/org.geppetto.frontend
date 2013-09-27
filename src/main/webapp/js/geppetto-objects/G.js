@@ -78,13 +78,13 @@ G.copyHistoryToClipboard = function(){
 	}
 
 	if(commandsString != ""){
-		var message = "Copy to Clipboard: Ctrl+C , OK";
+		var message = COPY_TO_CLIPBOARD_WINDOWS;
 
 		//different command for copying in macs means different message
 		var mac=navigator.userAgent.match(/(Mac|iPhone|iPod|iPad)/i)?true:false;
 
 		if(mac){
-			message = "Copy to Clipboard: Cmd+C , OK";
+			message = COPY_TO_CLIPBOARD_MAC ;
 		}
 
 		//show alert window with clipboard history
@@ -167,7 +167,7 @@ G.getCurrentSimulation = function(){
  * @returns {String} - All commands and descriptions for G.
  */
 G.help = function(){
-	var commands = "G object commands: \n\n";
+	var commands = G_COMMANDS;
 
 	var descriptions = [];
 
@@ -271,7 +271,7 @@ function runScript(scriptData){
  * @param ms - Amount of time to wait.
  */
 G.wait = function(ms){
-	return "G.wait(ms) command must be used inside script";
+	return INVALID_WAIT_USE;
 };
 
 /**
@@ -288,7 +288,7 @@ G.wait = function(commands, ms){
 		GEPPETTO.Console.executeCommand(executeScriptCommands(commands));
 	}, ms);
 	
-	return "Waiting ms";
+	return WAITING;
 };
 
 /**

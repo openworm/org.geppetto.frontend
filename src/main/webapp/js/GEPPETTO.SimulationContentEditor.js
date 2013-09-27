@@ -115,9 +115,9 @@
 			editing = true;
 
 			// Reset sample drop down menu to original value
-			if ($('#dropdowndisplaytext').text() != "Select simulation from list...")
+			if ($('#dropdowndisplaytext').text() != SAMPLES_DROPDOWN_PLACEHOLDER)
 			{
-				$('#dropdowndisplaytext').html("Select simulation from list...");
+				$('#dropdowndisplaytext').html(SAMPLES_DROPDOWN_PLACEHOLDER);
 			}
 				});
 
@@ -127,9 +127,9 @@
 			editing = true;
 
 			//if simulation file is edited, reset sample menu dropdown
-			if ($('#dropdowndisplaytext').text() != "Select simulation from list...")
+			if ($('#dropdowndisplaytext').text() != SAMPLES_DROPDOWN_PLACEHOLDER)
 			{
-				$('#dropdowndisplaytext').html("Select simulation from list...");
+				$('#dropdowndisplaytext').html(SAMPLES_DROPDOWN_PLACEHOLDER);
 			}
 				});
 	};

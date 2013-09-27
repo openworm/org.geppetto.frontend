@@ -1022,7 +1022,7 @@ var GEPPETTO = GEPPETTO ||
 		debugUpdate = needsUpdate; // so that we log only the cycles when we are updating the scene
 		if (getSimulationStatus() == 2 && debugUpdate)
 		{
-			GEPPETTO.log("Starting update frame");
+			GEPPETTO.log(UPDATE_FRAME_STARTING);
 		}
 		controls.update();
 		requestAnimationFrame(GEPPETTO.animate);
@@ -1039,7 +1039,7 @@ var GEPPETTO = GEPPETTO ||
 		}
 		if (getSimulationStatus() == 2 && debugUpdate)
 		{
-			GEPPETTO.log("End update frame");
+			GEPPETTO.log(UPDATE_FRAME_ENDING);
 		}
 	};
 

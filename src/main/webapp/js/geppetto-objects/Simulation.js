@@ -75,7 +75,7 @@ Simulation.start = function()
 		GEPPETTO.Main.socket.send(messageTemplate("start", null));
 		
 		Simulation.status = Simulation.StatusEnum.STARTED;
-		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation started');
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_START);
 		
 		return SIMULATION_STARTED;
 	}
@@ -100,7 +100,7 @@ Simulation.pause = function()
 		GEPPETTO.Main.socket.send(messageTemplate("pause", null));
 		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
-		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation paused');
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_PAUSE);
 
 		return SIMULATION_PAUSED;
 	}
@@ -124,7 +124,7 @@ Simulation.stop = function()
 		GEPPETTO.Main.socket.send(messageTemplate("stop", null));
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
-		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation stopped');
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_STOP);
 
 		return SIMULATION_STOP;
 	}
@@ -155,7 +155,7 @@ Simulation.load = function(simulationURL)
 		
 	Simulation.simulationURL = simulationURL;
 	
-	var loadStatus = SIMULATION_LOADING;
+	var loadStatus = LOADING_SIMULATION;
 	
 	if(simulationURL != null && simulationURL != ""){
 		//Updates the simulation controls visibility
@@ -164,14 +164,14 @@ Simulation.load = function(simulationURL)
 		FE.update(webGLStarted);
 		//Keep going with load of simulation only if webgl container was created
 		if(webGLStarted){
-			FE.activateLoader("show", "Loading Simulation");
+			FE.activateLoader("show", LOADING_SIMULATION);
 			if (Simulation.status == Simulation.StatusEnum.INIT)
 			{
 				//we call it only the first time
 				GEPPETTO.animate();
 			}
 			GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
-			GEPPETTO.Console.debugLog('Outbound Message Sent: Load Simulation');			
+			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);			
 		}
 	}
 	
@@ -201,7 +201,7 @@ Simulation.loadFromContent = function(content)
 	FE.update(webGLStarted);
 	//Keep going with load of simulation only if webgl container was created
 	if(webGLStarted){
-		FE.activateLoader("show", "Loading Simulation");
+		FE.activateLoader("show", LOADING_SIMULATION);
 		if (Simulation.status == Simulation.StatusEnum.INIT)
 		{
 			//we call it only the first time
@@ -209,10 +209,10 @@ Simulation.loadFromContent = function(content)
 		}
 		
 		GEPPETTO.Main.socket.send(messageTemplate("init_sim", content));
-		GEPPETTO.Console.debugLog("Outbound Message Sent: Load Simulation from editing console");
+		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
 	}
 	
-	return SIMULATION_LOADING;
+	return LOADING_SIMULATION;
 };
 
 /**
@@ -238,7 +238,7 @@ Simulation.isLoaded = function()
  * @returns  Returns list of all commands for the Simulation object
  */
 Simulation.help = function(){
-	var commands = "Simulation control commands: \n\n";
+	var commands = SIMULATION_COMMANDS;
 
 	var descriptions = [];
 

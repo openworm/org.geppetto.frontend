@@ -163,10 +163,8 @@
 		return split( term ).pop();
 	};
 
-	/**
-	 * Log message to Geppetto's console
-	 * 
-	 * @global
+	/*
+	 * Log debug messages to Geppetto's console if debug mode is on 
 	 */
 	GEPPETTO.Console.debugLog = (function(message)
 			{	
@@ -175,12 +173,18 @@
 		}
 			});
 
-	GEPPETTO.Console.Log = (function(message)
+	/*
+	 * Logs messages to console without need for debug mode to be on
+	 */
+	GEPPETTO.Console.log = (function(message)
 			{
 		console.showMessage(message);
 
 			});
 
+	/*
+	 * Executes commands to console
+	 */
 	GEPPETTO.Console.executeCommand = (function(command)
 			{
 		console.executeCommand(command);
@@ -194,6 +198,9 @@
 		return split( term ).pop();
 	};
 
+	/**
+	 * Handles autocomplete functionality for the console
+	 */
 	function autoComplete(){
 		//get the available tags for autocompletion in console
 		var tags = availableTags();

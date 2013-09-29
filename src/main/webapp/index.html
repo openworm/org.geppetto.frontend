@@ -19,6 +19,7 @@
 		<script src="js/vendor/rAF.js"></script>
 		<script src="js/vendor/codemirror.js"></script>
 		<script src="js/vendor/xml.js"></script>
+		<script src ="js/vendor/javascript.js"></script>
 		<script src="js/vendor/formatting.js"></script>	
 
 		<!-- Geppetto -->
@@ -27,6 +28,7 @@
 		<script src="js/GEPPETTO.Vanilla.js"></script>
 		<script src="js/GEPPETTO.Main.js"></script>
 		<script src="js/GEPPETTO.SimulationContentEditor.js"></script>
+		<script src="js/GEPPETTO.JSEditor.js"></script>
 		<script src="js/GEPPETTO.Console.js"></script>
 		<script src="js/geppetto-objects/Simulation.js"></script>
 		<script src="js/geppetto-objects/G.js"></script>
@@ -163,7 +165,7 @@
 					<div id="input" class="modal-input">
 						<label class="control-label">Content</label>
 						<div class="controls">
-							<textarea id="code" name="code"></textarea>
+							<textarea id="xmlCode" name="xmlCode"></textarea>
 							<button id="fullscreen" type="button"
 								class="button icon-fullscreen"></button>
 						</div>
@@ -192,7 +194,26 @@
 			<button id="load" class="btn btn-warning">Load</button>
 		</div>
 	</div>
-
+	
+	<div id="javascriptEditor" class="modal hide fade" tabindex="-1"
+		role="dialog" aria-labelledby="jsEditor-title" aria-hidden="true"
+		data-backdrop="static" data-keyboard="false" >
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">x</button>
+			<h3 id="jsEditor-title"></h3>
+		</div>
+		<div class="modal-body">
+			<div class="controls">
+				<textarea id="javascriptCode" name="javascriptCode"></textarea>
+				<button id="javascriptFullscreen" type="button" class="button icon-fullscreen"></button>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button id="jsEditor-btn" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">OK</button>
+		</div>
+	</div>
+	
 	<div id="infomodal"  class="modal hide fade" tabindex="-1"  aria-labelledby="infomodal-title" aria-hidden="true" data-backdrop="static">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">

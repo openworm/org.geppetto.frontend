@@ -73,7 +73,10 @@ G.copyHistoryToClipboard = function(){
 	for(var i=0; i<commands.length; i++){
 		var n = commands[i];
 		if(n.command != null || typeof n.command != "undefined"){
-			commandsString += n.command.trim() +";" + '<br>';
+			commandsString += n.command.trim() +";";
+			if(i != commands.length -1){
+				commandsString += '\n\n';
+			}
 		}
 	}
 
@@ -86,17 +89,15 @@ G.copyHistoryToClipboard = function(){
 		if(mac){
 			message = COPY_TO_CLIPBOARD_MAC ;
 		}
-
-		//show alert window with clipboard history
-		$('#infomodal-title').html(message);
-		$('#infomodal-text').html(commandsString);
-		$('#infomodal').css('height', 200);
-		$('#infomodal').modal();
-
-		//auto select text for user
-		$('#infomodal').on('shown', function(){
-			SelectText('infomodal-text');
-		});
+		
+		GEPPETTO.JSEditor.loadEditor();
+		
+		$('#jsEditor-title').html(message);
+		$('#javascriptEditor').modal();
+		
+		$('#javascriptEditor').on('shown', function() {
+			GEPPETTO.JSEditor.loadCode(commandsString);
+	    });
 		
 		return COPY_CONSOLE_HISTORY;
 	}
@@ -104,27 +105,6 @@ G.copyHistoryToClipboard = function(){
 		return EMPTY_CONSOLE_HISTORY;
 	}
 };
-
-/**
- * Takes an html element and selects all text within
- * 
- * @param element - element whose text will be auto selected
- */
-function SelectText(element) {
-    var doc = document;
-    var text = doc.getElementById(element);    
-    if (doc.body.createTextRange) {
-        var range = document.body.createTextRange();
-        range.moveToElementText(text);
-        range.select();
-    } else if (window.getSelection) {
-        var selection = window.getSelection();
-        var range = document.createRange();
-        range.selectNodeContents(text);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    }
-}
 
 /**
  * Toggles debug statement on/off

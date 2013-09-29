@@ -131,7 +131,7 @@ Simulation.stop = function()
 	else if(Simulation.status == Simulation.StatusEnum.LOADED){
 		return SIMULATION_NOT_RUNNING;
 	}
-	else if(Simulations.status == Simulation.StatusEnum.STOPPED){
+	else if(Simulation.status == Simulation.StatusEnum.STOPPED){
 		return SIMULATION_ALREADY_STOPPED;
 	}
 	else{

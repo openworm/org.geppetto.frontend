@@ -126,7 +126,7 @@ var LOADING_MODEL = "Inbound Message Received: Loading Model ";
 
 var OBSERVING_MODE = "Observing Simulation Mode";
 
-var SERVER_AVAILABLE = "Server Unavailable";
+var SERVER_UNAVAILABLE = "Server Unavailable";
 
 var SERVER_AVAILABLE = "Server available";
 
@@ -148,3 +148,12 @@ var UPDATE_FRAME_END = "Ending update frame";
  * GEPPETTO.SimulationContentEditor resources
  */
 var SAMPLES_DROPDOWN_PLACEHOLDER = "Select simulation from list...";
+
+/**
+ * Global help function with all commands in global objects. 
+ * 
+ * @returns {String}
+ */
+function help(){
+	return ALL_COMMANDS_AVAILABLE_MESSAGE+G.help() + '\n\n' + Simulation.help();
+};

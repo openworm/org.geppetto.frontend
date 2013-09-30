@@ -113,7 +113,7 @@
 			$('.ui-menu').remove();
 		});
 
-		GEPPETTO.Main.socket.send(messageTemplate("geppetto_version", null));
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
 	};
 
 	/**

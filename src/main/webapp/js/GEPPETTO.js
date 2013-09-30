@@ -76,6 +76,8 @@ var GEPPETTO = GEPPETTO ||
 	var sceneCenter = new THREE.Vector3();
 	var cameraPosition = new THREE.Vector3();
 
+	var canvasCreated = false;
+	
 	/**
 	 * Initialize the engine
 	 */
@@ -96,6 +98,7 @@ var GEPPETTO = GEPPETTO ||
 			GEPPETTO.setupStats();
 			GEPPETTO.setupControls();
 			GEPPETTO.setupListeners();
+			
 			return true;
 		}
 	};
@@ -360,6 +363,11 @@ var GEPPETTO = GEPPETTO ||
 			return true;
 		}
 		return false;
+	};
+	
+	GEPPETTO.isCanvasCreated = function()
+	{
+		return canvasCreated;
 	};
 
 	/**
@@ -696,6 +704,8 @@ var GEPPETTO = GEPPETTO ||
 		renderer.setSize(width, height);
 		renderer.autoClear = true;
 		container.appendChild(renderer.domElement);
+		
+		canvasCreated = true;
 	};
 
 	/**

@@ -192,7 +192,7 @@ GEPPETTO.FE.updateEditor = function(selectedSimulation)
 	}
 	//load sample simulation, request info from the servlet
 	else{
-		GEPPETTO.Main.socket.send(messageTemplate("sim", selectedSimulation));
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("sim", selectedSimulation));
 	}
 };
 

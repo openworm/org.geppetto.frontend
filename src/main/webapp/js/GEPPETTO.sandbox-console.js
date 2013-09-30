@@ -155,6 +155,15 @@ var Sandbox = {
 			if ( !command )
 				return false;
 
+			//check if command are multiple commands instead of single one
+			var multipleCommands = command.split("\n");
+			if(multipleCommands.length > 1){
+				//run script if multiple commands
+				runScript(command);
+				//exit function
+				return false;
+			}
+			
 			var str = command.replace(/&lt;/g,"<");
 			var command = str.replace(/&gt;/g,">");
 			

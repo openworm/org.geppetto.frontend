@@ -215,9 +215,12 @@
 		.autocomplete({
 			minLength: 0,
 			source: function( request, response ) {
-				// delegate back to autocomplete, but extract the last term
-				response( $.ui.autocomplete.filter(
-						tags, extractLast( request.term ) ) );
+				var matches = $.map( tags, function(tag) {
+				      if ( tag.toUpperCase().indexOf(request.term.toUpperCase()) === 0 ) {
+				        return tag;
+				      }
+				    });
+				response(matches);
 			},
 			focus: function() {
 				// prevent value inserted on focus
@@ -246,8 +249,18 @@
 					//match multiple suggestions 
 					else{
 						if(inpt.val() != ""){
+							
+							var elementsText = [];
+							for(var i =0; i<suggestionsSize; i++){
+								elementsText[i] = $($(this).data("uiAutocomplete").menu.element[0].children[i]).text();
+							}
+							var A= elementsText.slice(0).sort(), 
+							word1= A[0], word2= A[A.length-1], 
+							i= 0;
+							while(word1.charAt(i)== word2.charAt(i))++i;
+							    
 							//match up to dot for most common part
-							var mostCommon = firstElementText.split(".")[0] + ".";
+							var mostCommon = word1.substring(0, i);
 
 							if(inpt.val().indexOf(mostCommon)==-1){
 								inpt.val(mostCommon);//change the input to the first match

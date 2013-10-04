@@ -45,6 +45,8 @@
 (function(){
 
 	var console = null;
+	
+	var versionNumberReceived = false;
 
 	GEPPETTO.Console = GEPPETTO.Console ||
 	{
@@ -57,6 +59,12 @@
 	 * Toggle javascript console's visibility via button 
 	 */
 	GEPPETTO.Console.toggleConsole = function(){
+		
+		if(!versionNumberReceived){
+			GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
+			versionNumberReceived = true;
+		}
+		
 		//toggle button class
 		$('#consoleButton').toggleClass('clicked');
 
@@ -112,8 +120,8 @@
 		$('#commandInputArea').focus(function(){
 			$('.ui-menu').remove();
 		});
-
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
+		
+		return console;
 	};
 
 	/**
@@ -129,6 +137,10 @@
 	
 	GEPPETTO.Console.consoleHistory = function(){
 		return console.model.get('history');
+	};
+	
+	GEPPETTO.Console.getConsole = function(){
+		return console;
 	};
 	
 	/**
@@ -179,8 +191,7 @@
 	GEPPETTO.Console.log = (function(message)
 			{
 		console.showMessage(message);
-
-			});
+	});
 
 	/*
 	 * Executes commands to console

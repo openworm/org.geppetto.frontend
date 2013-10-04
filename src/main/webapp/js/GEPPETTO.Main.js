@@ -141,4 +141,5 @@ $(document).ready(function()
 		$('#loadSimModal').modal("hide");
 	});
 
+	GEPPETTO.Console.createConsole();
 });

@@ -54,7 +54,7 @@ G.debugMode = false;
  */
 G.clear = function(){
 
-	GEPPETTO.Console.console.clear();
+	GEPPETTO.Console.getConsole().clear();
 	
 	return CLEAR_HISTORY;
 };

@@ -348,6 +348,10 @@ var Sandbox = {
 			this.model.load(url);
 		},
 		
+		clear : function(){
+			this.model.destroy();
+		},
+		
 		// Manually set the value in the sandbox textarea and focus it ready to submit:
 		setValue : function(command) {
 			this.currentHistory = command;
@@ -465,10 +469,11 @@ var Sandbox = {
 
 				 var thisKeypressTime = new Date();
 					
-					//detects double tab
+				 	var tags = availableTags();
+					
+				 	//detects double tab
 					if ( thisKeypressTime - lastKeypressTime <= delta )
 					{
-						var tags = availableTags();
 						var suggestions = "";
 						for(var i =0; i<tags.length; i++){
 						    var tag = tags[i];
@@ -513,7 +518,7 @@ var Sandbox = {
 		// Checks for special commands. If any are found, performs their action and returns true
 		specialCommands: function(command) {
 			if (command === "G.clear()" || command === "G.clear();") {
-				this.model.destroy();
+				this.clear();
 				return true;
 			}
 			if ( command === "help()" || command === "help();" ) {

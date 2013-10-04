@@ -26,9 +26,6 @@ GEPPETTO.MessageSocket.connect = (function(host)
 	{
 		GEPPETTO.Console.debugLog(WEBSOCKET_OPENED);
 		
-		//Create console until web socket is opened/ready. This because the welcome message
-		//in console needs to obtained geppetto's version number via sockets.  
-		GEPPETTO.Console.createConsole();
 	};
 
 	GEPPETTO.MessageSocket.socket.onclose = function()
@@ -66,9 +63,8 @@ GEPPETTO.MessageSocket.connect = (function(host)
 				GEPPETTO.Console.debugLog(LOADING_MODEL);
 				var entities = JSON.parse(payload.entities);
 								
-				//Populate scene and set status to loaded
+				//Populate scene
 				GEPPETTO.populateScene(entities);
-				Simulation.status = Simulation.StatusEnum.LOADED;
 				break;
 			//Notify user with alert they are now in Observer mode
 			case "observer_mode_alert":

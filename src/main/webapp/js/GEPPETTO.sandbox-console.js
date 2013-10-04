@@ -496,6 +496,26 @@ var Sandbox = {
 						doubleTab = true;
 					}
 					else{
+						
+						var textAreaValue = this.textarea.val();
+						
+						//narrow down the matches found from commands
+						var matches = $.map( tags, function(tag) {
+						      if ( tag.toUpperCase().indexOf(textAreaValue.toUpperCase()) === 0 ) {
+						        return tag;
+						      }
+						    });
+						
+						var A= matches.slice(0).sort(), 
+						word1= A[0], word2= A[A.length-1], 
+						i= 0;
+						while(word1.charAt(i)== word2.charAt(i))++i;
+						    
+						//match up most common part
+						var mostCommon = word1.substring(0, i);
+						
+						this.textarea.val(mostCommon);//change the input to the first match
+							
 						// Get the value, and the parts between which the tab character will be inserted
 						var value = this.textarea.val(),
 							caret = this.getCaret();

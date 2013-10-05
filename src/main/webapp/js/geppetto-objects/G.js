@@ -218,7 +218,7 @@ G.help = function(){
  */
 G.runScript = function(scriptURL){	
 
-	GEPPETTO.Main.socket.send(messageTemplate("run_script", scriptURL));
+	GEPPETTO.MessageSocket.socket.send(messageTemplate("run_script", scriptURL));
 	
 	return RUNNING_SCRIPT; 
 };
@@ -239,7 +239,7 @@ function runScript(scriptData){
 		}
 	}
 	//execute the commands found inside script
-	executeScriptCommands(commands);
+	GEPPETTO.Console.executeScriptCommands(commands);
 }
 
 /**
@@ -265,7 +265,7 @@ G.wait = function(commands, ms){
 	setTimeout(function()
 	{
 		//execute commands after ms milliseconds
-		GEPPETTO.Console.executeCommand(executeScriptCommands(commands));
+		GEPPETTO.Console.executeCommand(GEPPETTO.Console.executeScriptCommands(commands));
 	}, ms);
 	
 	return WAITING;
@@ -278,38 +278,4 @@ G.wait = function(commands, ms){
  */
 function isDebugOn(){
 	return G.debugMode;
-};
-
-/**
- * Executes a set of commands from a script 
- * 
- * @param commands - commands to execute
- */
-function executeScriptCommands(commands){
-	for (var i = 0, len = commands.length; i < len; i++) {
-		var command = commands[i].toString().trim();
-
-		if(command != ""){
-			//if it's the wait command,  call the the wait function 
-			//with all remanining commands left to execute as parameter.
-			if ( command.indexOf("G.wait") > -1 ) {
-				//get the ms time for waiting
-				var parameter = command.match(/\((.*?)\)/);
-				var ms = parameter[1];
-				
-				//get the remaining commands
-				var remainingCommands = commands.splice(i+1,commands.length);
-				
-				//call wait function with ms, and remaining commands to execute when done
-				G.wait(remainingCommands, ms);
-				
-				return;
-			}
-
-			//execute commands, except the wait one
-			else{
-				GEPPETTO.Console.executeCommand(command);
-			}
-		}
-	}
 };

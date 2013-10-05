@@ -47,6 +47,8 @@
 	var console = null;
 	
 	var versionNumberReceived = false;
+	
+	var executingScript = false;
 
 	GEPPETTO.Console = GEPPETTO.Console ||
 	{
@@ -134,6 +136,10 @@
 			return false;	
 		}
 	};
+
+	GEPPETTO.Console.isExecutingScript = function(){
+		return executingScript;
+	};
 	
 	GEPPETTO.Console.consoleHistory = function(){
 		return console.model.get('history');
@@ -142,6 +148,43 @@
 	GEPPETTO.Console.getConsole = function(){
 		return console;
 	};
+	
+	/**
+	 * Executes a set of commands from a script 
+	 * 
+	 * @param commands - commands to execute
+	 */
+	GEPPETTO.Console.executeScriptCommands = function(commands){
+			executingScript = true;
+			for (var i = 0, len = commands.length; i < len; i++) {
+				var command = commands[i].toString().trim();
+
+				if(command != ""){
+					//if it's the wait command,  call the the wait function 
+					//with all remanining commands left to execute as parameter.
+					if ( command.indexOf("G.wait") > -1 ) {
+						//get the ms time for waiting
+						var parameter = command.match(/\((.*?)\)/);
+						var ms = parameter[1];
+						
+						//get the remaining commands
+						var remainingCommands = commands.splice(i+1,commands.length);
+						
+						//call wait function with ms, and remaining commands to execute when done
+						G.wait(remainingCommands, ms);
+						
+						return;
+					}
+
+					//execute commands, except the wait one
+					else{
+						GEPPETTO.Console.executeCommand(command);
+					}
+				}
+			}
+			
+			executingScript = false;
+		};
 	
 	/**
 	 * Handles user clicking the "Javascript Console" button, which 

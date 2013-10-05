@@ -506,14 +506,21 @@ var Sandbox = {
 						      }
 						    });
 						
-						var A= matches.slice(0).sort(), 
-						word1= A[0], word2= A[A.length-1], 
-						i= 0;
-						while(word1.charAt(i)== word2.charAt(i))++i;
-						    
-						//match up most common part
-						var mostCommon = word1.substring(0, i);
+						var mostCommon = null;
 						
+						if(matches.length > 1){
+							var A= matches.slice(0).sort(), 
+							word1= A[0], word2= A[A.length-1], 
+							i= 0;
+							while(word1.charAt(i)== word2.charAt(i))++i;
+
+							//match up most common part
+							mostCommon = word1.substring(0, i);
+
+						}
+						else if(matches.length == 1){
+							mostCommon = matches[0];
+						}
 						this.textarea.val(mostCommon);//change the input to the first match
 							
 						// Get the value, and the parts between which the tab character will be inserted

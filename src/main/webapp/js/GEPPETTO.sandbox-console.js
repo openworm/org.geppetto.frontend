@@ -521,14 +521,17 @@ var Sandbox = {
 						else if(matches.length == 1){
 							mostCommon = matches[0];
 						}
-						this.textarea.val(mostCommon);//change the input to the first match
-							
-						// Get the value, and the parts between which the tab character will be inserted
-						var value = this.textarea.val(),
+						
+						if(mostCommon != null){
+							this.textarea.val(mostCommon);//change the input to the first match
+
+							// Get the value, and the parts between which the tab character will be inserted
+							var value = this.textarea.val(),
 							caret = this.getCaret();
 
-						// Set the caret (cursor) position to just after the inserted tab character
-						this.setCaret(caret + value.length);
+							// Set the caret (cursor) position to just after the inserted tab character
+							this.setCaret(caret + value.length);
+						}
 					}
 					lastKeypressTime = thisKeypressTime;
 

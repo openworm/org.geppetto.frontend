@@ -73,7 +73,13 @@ G.copyHistoryToClipboard = function(){
 	for(var i=0; i<commands.length; i++){
 		var n = commands[i];
 		if(n.command != null || typeof n.command != "undefined"){
-			commandsString += n.command.trim() +";";
+			
+			var command = n.command.trim();
+			if(command.indexOf(";") == -1){
+				command = command + ";";
+			}
+			
+			commandsString += command;
 			if(i != commands.length -1){
 				commandsString += '\n\n';
 			}

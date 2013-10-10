@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5</version>
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.geppetto</groupId>
 			<artifactId>core</artifactId>
-			<version>0.0.3</version>
+			<version>0.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -182,7 +182,7 @@
 						<sourceFile>src/main/webapp/js/GEPPETTO.SimulationContentEditor.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.Console.js</sourceFile>
 					</sourceFiles>
-					<outputDirectory>${basedir}/jsdocs</outputDirectory>
+					<outputDirectory>${basedir}/src/main/webapp/jsdocs</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>

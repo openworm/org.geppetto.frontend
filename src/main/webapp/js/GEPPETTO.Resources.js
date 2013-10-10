@@ -55,7 +55,7 @@ var UNABLE_TO_PAUSE_SIMULATION = "Simulation not running, must run simulation fi
 
 var SIMULATION_STOP = "Simulation Stopped"; 
 
-var SIMULATION_LOADING = "Loading Simulation";
+var LOADING_SIMULATION = "Loading Simulation";
 
 var SIMULATION_NOT_RUNNING = "Unable to stop simulation, loaded but not running";
 
@@ -64,6 +64,19 @@ var SIMULATION_NOT_LOADED = "Unable to stop simulation that hasn't been loaded";
 var SIMULATION_UNSPECIFIED = "Simulation not specified";
 
 var SIMULATION_ALREADY_STOPPED = "Simulation was already stopped";
+
+var SIMULATION_COMMANDS = "Simulation control commands: \n\n";
+
+var LOADING_FROM_CONTENT= "Outbound Message Sent: Load Simulation from editing console";
+
+var MESSAGE_OUTBOUND_LOAD = 'Outbound Message Sent: Loading Simulation';
+
+var MESSAGE_OUTBOUND_STOP = 'Outbund Message Sent: Simulation stopped';
+
+var MESSAGE_OUTBOUND_PAUSE = 'Outbund Message Sent: Simulation paused';
+
+var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation started';
+
 
 /**
  * Object G resources
@@ -81,3 +94,66 @@ var CLEAR_HISTORY = "Console history cleared";
 var COPY_CONSOLE_HISTORY = "Copying history to clipboard";
 
 var EMPTY_CONSOLE_HISTORY = "No console history to copy to clipboard";
+
+var COPY_TO_CLIPBOARD_WINDOWS = "Copy to Clipboard: CTRL+C , OK";
+
+var COPY_TO_CLIPBOARD_MAC = "Copy to Clipboard: Cmd+C , OK";
+	
+var INVALID_WAIT_USE = "G.wait(ms) command must be used inside script";
+
+var WAITING = "Waiting ms";
+
+var G_COMMANDS = "G object commands: \n\n";
+
+/**
+ * GEPPETTO.Main resources
+ */
+var GEPPETTO_INITIALIZED = 'Geppetto Initialised';
+
+var SIMULATION_OBSERVED = 'Sent: Simulation being observed';
+
+var WEBSOCKET_NOT_SUPPORTED = 'Error: WebSocket is not supported by this browser.';
+
+var WEBSOCKET_OPENED = 'Info: WebSocket connection opened.';
+
+var WEBSOCKET_CLOSED = "Info: WebSocket connection closed";
+	
+var CLEAR_CANVAS = "Inbound Message Received: Clear canvas";
+
+var INVALID_SIMULATION_FILE = "Invalid Simulation File";
+
+var LOADING_MODEL = "Inbound Message Received: Loading Model ";
+
+var OBSERVING_MODE = "Observing Simulation Mode";
+
+var SERVER_UNAVAILABLE = "Server Unavailable";
+
+var SERVER_AVAILABLE = "Server available";
+
+var WEBGL_FAILED = "Initializing error: Unable to initialize WebGL";
+
+var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.\n\n";
+
+var GEPPETTO_VERSION_HOLDER = "Geppetto v$1 is ready";
+
+
+/**
+ * GEPPETTO resources
+ */
+var UPDATE_FRAME_STARTING = "Starting update frame";
+
+var UPDATE_FRAME_END = "Ending update frame";
+
+/**
+ * GEPPETTO.SimulationContentEditor resources
+ */
+var SAMPLES_DROPDOWN_PLACEHOLDER = "Select simulation from list...";
+
+/**
+ * Global help function with all commands in global objects. 
+ * 
+ * @returns {String}
+ */
+function help(){
+	return ALL_COMMANDS_AVAILABLE_MESSAGE+G.help() + '\n\n' + Simulation.help();
+};

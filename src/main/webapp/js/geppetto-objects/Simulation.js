@@ -68,14 +68,11 @@ Simulation.simulationURL = "";
  */
 Simulation.start = function()
 {
-	if(Simulation.isLoaded()){
-		//Update the simulation controls visibility
-		FE.updateStartEvent();
-		
-		GEPPETTO.Main.socket.send(messageTemplate("start", null));
+	if(Simulation.isLoaded()){		
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("start", null));
 		
 		Simulation.status = Simulation.StatusEnum.STARTED;
-		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation started');
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_START);
 		
 		return SIMULATION_STARTED;
 	}
@@ -95,12 +92,12 @@ Simulation.pause = function()
 {
 	if(Simulation.status == Simulation.StatusEnum.STARTED){
 		//Updates the simulation controls visibility
-		FE.updatePauseEvent();
+		GEPPETTO.FE.updatePauseEvent();
 		
-		GEPPETTO.Main.socket.send(messageTemplate("pause", null));
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("pause", null));
 		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
-		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation paused');
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_PAUSE);
 
 		return SIMULATION_PAUSED;
 	}
@@ -119,19 +116,19 @@ Simulation.stop = function()
 {
 	if(Simulation.status == Simulation.StatusEnum.PAUSED || Simulation.status == Simulation.StatusEnum.STARTED){
 		//Updates the simulation controls visibility
-		FE.updateStopEvent();
+		GEPPETTO.FE.updateStopEvent();
 
-		GEPPETTO.Main.socket.send(messageTemplate("stop", null));
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("stop", null));
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
-		GEPPETTO.Console.debugLog('Outbund Message Sent: Simulation stopped');
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_STOP);
 
 		return SIMULATION_STOP;
 	}
 	else if(Simulation.status == Simulation.StatusEnum.LOADED){
 		return SIMULATION_NOT_RUNNING;
 	}
-	else if(Simulations.status == Simulation.StatusEnum.STOPPED){
+	else if(Simulation.status == Simulation.StatusEnum.STOPPED){
 		return SIMULATION_ALREADY_STOPPED;
 	}
 	else{
@@ -155,23 +152,24 @@ Simulation.load = function(simulationURL)
 		
 	Simulation.simulationURL = simulationURL;
 	
-	var loadStatus = SIMULATION_LOADING;
+	var loadStatus = LOADING_SIMULATION;
 	
 	if(simulationURL != null && simulationURL != ""){
 		//Updates the simulation controls visibility
-		var webGLStarted = GEPPETTO.init(FE.createContainer());
+		var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 		//update ui based on success of webgl
-		FE.update(webGLStarted);
+		GEPPETTO.FE.update(webGLStarted);
 		//Keep going with load of simulation only if webgl container was created
 		if(webGLStarted){
-			FE.activateLoader("show", "Loading Simulation");
+			GEPPETTO.FE.activateLoader("show", LOADING_SIMULATION);
 			if (Simulation.status == Simulation.StatusEnum.INIT)
 			{
 				//we call it only the first time
 				GEPPETTO.animate();
 			}
-			GEPPETTO.Main.socket.send(messageTemplate("init_url", simulationURL));
-			GEPPETTO.Console.debugLog('Outbound Message Sent: Load Simulation');			
+			GEPPETTO.MessageSocket.socket.send(messageTemplate("init_url", simulationURL));
+			Simulation.status = Simulation.StatusEnum.LOADED;
+			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);			
 		}
 	}
 	
@@ -196,23 +194,24 @@ Simulation.loadFromContent = function(content)
 		 Simulation.stop();
 	 }
 
-	var webGLStarted = GEPPETTO.init(FE.createContainer());
+	var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 	//update ui based on success of webgl
-	FE.update(webGLStarted);
+	GEPPETTO.FE.update(webGLStarted);
 	//Keep going with load of simulation only if webgl container was created
 	if(webGLStarted){
-		FE.activateLoader("show", "Loading Simulation");
+		GEPPETTO.FE.activateLoader("show", LOADING_SIMULATION);
 		if (Simulation.status == Simulation.StatusEnum.INIT)
 		{
 			//we call it only the first time
 			GEPPETTO.animate();
 		}
 		
-		GEPPETTO.Main.socket.send(messageTemplate("init_sim", content));
-		GEPPETTO.Console.debugLog("Outbound Message Sent: Load Simulation from editing console");
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("init_sim", content));
+		Simulation.status = Simulation.StatusEnum.LOADED;
+		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
 	}
 	
-	return SIMULATION_LOADING;
+	return LOADING_SIMULATION;
 };
 
 /**
@@ -238,7 +237,7 @@ Simulation.isLoaded = function()
  * @returns  Returns list of all commands for the Simulation object
  */
 Simulation.help = function(){
-	var commands = "Simulation control commands: \n\n";
+	var commands = SIMULATION_COMMANDS;
 
 	var descriptions = [];
 

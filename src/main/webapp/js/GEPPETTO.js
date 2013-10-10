@@ -76,6 +76,8 @@ var GEPPETTO = GEPPETTO ||
 	var sceneCenter = new THREE.Vector3();
 	var cameraPosition = new THREE.Vector3();
 
+	var canvasCreated = false;
+	
 	/**
 	 * Initialize the engine
 	 */
@@ -96,6 +98,7 @@ var GEPPETTO = GEPPETTO ||
 			GEPPETTO.setupStats();
 			GEPPETTO.setupControls();
 			GEPPETTO.setupListeners();
+			
 			return true;
 		}
 	};
@@ -360,6 +363,11 @@ var GEPPETTO = GEPPETTO ||
 			return true;
 		}
 		return false;
+	};
+	
+	GEPPETTO.isCanvasCreated = function()
+	{
+		return canvasCreated;
 	};
 
 	/**
@@ -696,6 +704,8 @@ var GEPPETTO = GEPPETTO ||
 		renderer.setSize(width, height);
 		renderer.autoClear = true;
 		container.appendChild(renderer.domElement);
+		
+		canvasCreated = true;
 	};
 
 	/**
@@ -930,6 +940,15 @@ var GEPPETTO = GEPPETTO ||
 					modal : false
 				});
 	};
+	
+	
+	/**
+	 * Return plots
+	 */
+	GEPPETTO.getPlots = function()
+	{
+		return plots;
+	};
 
 	/**
 	 * @param entityId
@@ -1013,7 +1032,7 @@ var GEPPETTO = GEPPETTO ||
 		debugUpdate = needsUpdate; // so that we log only the cycles when we are updating the scene
 		if (getSimulationStatus() == 2 && debugUpdate)
 		{
-			GEPPETTO.log("Starting update frame");
+			GEPPETTO.log(UPDATE_FRAME_STARTING);
 		}
 		controls.update();
 		requestAnimationFrame(GEPPETTO.animate);
@@ -1030,7 +1049,7 @@ var GEPPETTO = GEPPETTO ||
 		}
 		if (getSimulationStatus() == 2 && debugUpdate)
 		{
-			GEPPETTO.log("End update frame");
+			GEPPETTO.log(UPDATE_FRAME_ENDING);
 		}
 	};
 

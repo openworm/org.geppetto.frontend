@@ -81,7 +81,7 @@ G.debugMode = false;
  */
 G.clear = function(){
 
-	GEPPETTO.Console.console.clear();
+	GEPPETTO.Console.getConsole().clear();
 	
 	return CLEAR_HISTORY;
 };
@@ -100,30 +100,37 @@ G.copyHistoryToClipboard = function(){
 	for(var i=0; i&lt;commands.length; i++){
 		var n = commands[i];
 		if(n.command != null || typeof n.command != "undefined"){
-			commandsString += n.command.trim() +";" + '&lt;br>';
+			
+			var command = n.command.trim();
+			if(command.indexOf(";") == -1){
+				command = command + ";";
+			}
+			
+			commandsString += command;
+			if(i != commands.length -1){
+				commandsString += '\n\n';
+			}
 		}
 	}
 
 	if(commandsString != ""){
-		var message = "Copy to Clipboard: Ctrl+C , OK";
+		var message = COPY_TO_CLIPBOARD_WINDOWS;
 
 		//different command for copying in macs means different message
 		var mac=navigator.userAgent.match(/(Mac|iPhone|iPod|iPad)/i)?true:false;
 
 		if(mac){
-			message = "Copy to Clipboard: Cmd+C , OK";
+			message = COPY_TO_CLIPBOARD_MAC ;
 		}
-
-		//show alert window with clipboard history
-		$('#infomodal-title').html(message);
-		$('#infomodal-text').html(commandsString);
-		$('#infomodal').css('height', 200);
-		$('#infomodal').modal();
-
-		//auto select text for user
-		$('#infomodal').on('shown', function(){
-			SelectText('infomodal-text');
-		});
+		
+		GEPPETTO.JSEditor.loadEditor();
+		
+		$('#jsEditor-title').html(message);
+		$('#javascriptEditor').modal();
+		
+		$('#javascriptEditor').on('shown', function() {
+			GEPPETTO.JSEditor.loadCode(commandsString);
+	    });
 		
 		return COPY_CONSOLE_HISTORY;
 	}
@@ -131,27 +138,6 @@ G.copyHistoryToClipboard = function(){
 		return EMPTY_CONSOLE_HISTORY;
 	}
 };
-
-/**
- * Takes an html element and selects all text within
- * 
- * @param element - element whose text will be auto selected
- */
-function SelectText(element) {
-    var doc = document;
-    var text = doc.getElementById(element);    
-    if (doc.body.createTextRange) {
-        var range = document.body.createTextRange();
-        range.moveToElementText(text);
-        range.select();
-    } else if (window.getSelection) {
-        var selection = window.getSelection();
-        var range = document.createRange();
-        range.selectNodeContents(text);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    }
-}
 
 /**
  * Toggles debug statement on/off
@@ -194,7 +180,7 @@ G.getCurrentSimulation = function(){
  * @returns {String} - All commands and descriptions for G.
  */
 G.help = function(){
-	var commands = "G object commands: \n\n";
+	var commands = G_COMMANDS;
 
 	var descriptions = [];
 
@@ -265,7 +251,7 @@ G.help = function(){
  */
 G.runScript = function(scriptURL){	
 
-	GEPPETTO.Main.socket.send(messageTemplate("run_script", scriptURL));
+	GEPPETTO.MessageSocket.socket.send(messageTemplate("run_script", scriptURL));
 	
 	return RUNNING_SCRIPT; 
 };
@@ -286,7 +272,7 @@ function runScript(scriptData){
 		}
 	}
 	//execute the commands found inside script
-	executeScriptCommands(commands);
+	GEPPETTO.Console.executeScriptCommands(commands);
 }
 
 /**
@@ -298,7 +284,7 @@ function runScript(scriptData){
  * @param ms - Amount of time to wait.
  */
 G.wait = function(ms){
-	return "G.wait(ms) command must be used inside script";
+	return INVALID_WAIT_USE;
 };
 
 /**
@@ -312,10 +298,10 @@ G.wait = function(commands, ms){
 	setTimeout(function()
 	{
 		//execute commands after ms milliseconds
-		GEPPETTO.Console.executeCommand(executeScriptCommands(commands));
+		GEPPETTO.Console.executeCommand(GEPPETTO.Console.executeScriptCommands(commands));
 	}, ms);
 	
-	return "Waiting ms";
+	return WAITING;
 };
 
 /**
@@ -325,40 +311,6 @@ G.wait = function(commands, ms){
  */
 function isDebugOn(){
 	return G.debugMode;
-};
-
-/**
- * Executes a set of commands from a script 
- * 
- * @param commands - commands to execute
- */
-function executeScriptCommands(commands){
-	for (var i = 0, len = commands.length; i &lt; len; i++) {
-		var command = commands[i].toString().trim();
-
-		if(command != ""){
-			//if it's the wait command,  call the the wait function 
-			//with all remanining commands left to execute as parameter.
-			if ( command.indexOf("G.wait") > -1 ) {
-				//get the ms time for waiting
-				var parameter = command.match(/\((.*?)\)/);
-				var ms = parameter[1];
-				
-				//get the remaining commands
-				var remainingCommands = commands.splice(i+1,commands.length);
-				
-				//call wait function with ms, and remaining commands to execute when done
-				G.wait(remainingCommands, ms);
-				
-				return;
-			}
-
-			//execute commands, except the wait one
-			else{
-				GEPPETTO.Console.executeCommand(command);
-			}
-		}
-	}
 };
 </code></pre>
         </article>
@@ -370,13 +322,13 @@ function executeScriptCommands(commands){
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="FE.html">FE</a></li><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#executeScriptCommands">executeScriptCommands</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#help">help</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#runScript">runScript</a></li><li><a href="global.html#SelectText">SelectText</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="G.html">G</a></li><li><a href="GEPPETTO.Main.html">Main</a></li><li><a href="Simulation.html">Simulation</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableTags">availableTags</a></li><li><a href="global.html#GEPPETTO">GEPPETTO</a></li><li><a href="global.html#getSimulationStatus">getSimulationStatus</a></li><li><a href="global.html#isDebugOn">isDebugOn</a></li><li><a href="global.html#messageTemplate">messageTemplate</a></li><li><a href="global.html#PLOT">PLOT</a></li><li><a href="global.html#runScript">runScript</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Tue Oct 01 2013 15:28:24 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed Oct 09 2013 10:07:31 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

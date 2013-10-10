@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>GEPPETTO Client Unit Test</title>
 <link rel="stylesheet" href="css/qunit-1.12.0.css">
+<link rel="stylesheet" href="css/custom-theme/jquery-ui-1.10.0.custom.css" />
 <script src="js/vendor/jquery-1.9.1.js"></script>
 <script src="js/vendor/jquery-ui-1.10.3.custom.js"></script>
 <script src="js/vendor/three.min.js"></script>
@@ -42,17 +43,40 @@
 <script src="js/geppetto-objects/Simulation.js"></script>
 <script src="js/geppetto-objects/G.js"></script>
 <script src="js/GEPPETTO.js"></script>
-<script src="js/GEPPETTO.Main.js"></script>
+<script src="js/GEPPETTO.JSEditor.js"></script>
+<script src="js/GEPPETTO.FE.js"></script>
+<script src="js/GEPPETTO.MessageSocket.js"></script>
 <script src="js/GEPPETTO.Console.js"></script>
 <script src="js/GEPPETTO.Resources.js"></script>
+<script src="js/vendor/qunit-1.12.0.js"></script>
+
+	<script src="js/tests/GeppettoTests.js"></script>
 </head>
 <body>
 	<div id="qunit"></div>
-	<div id="qunit-fixture"></div>
-	<script src="js/vendor/qunit-1.12.0.js"></script>
-
-	<script src="js/tests/GeppettoTests.js"></script>
-
-
+	<div id="qunit-fixture">
+		<div id="sim"></div>	
+		<div id="console">Console Loading...</div>
+		
+		<div id="javascriptEditor" class="modal hide fade" tabindex="-1"
+		role="dialog" aria-labelledby="jsEditor-title" aria-hidden="true"
+		data-backdrop="static" data-keyboard="false" >
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">x</button>
+			<h3 id="jsEditor-title"></h3>
+		</div>
+		<div class="modal-body">
+			<div class="controls">
+				<textarea id="javascriptCode" name="javascriptCode"></textarea>
+				<button id="javascriptFullscreen" type="button" class="button icon-fullscreen"></button>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button id="jsEditor-btn" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">OK</button>
+		</div>
+	</div>
+	</div>
+	
 </body>
 </html>

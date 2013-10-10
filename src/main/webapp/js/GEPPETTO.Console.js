@@ -45,6 +45,10 @@
 (function(){
 
 	var console = null;
+	
+	var versionNumberReceived = false;
+	
+	var executingScript = false;
 
 	GEPPETTO.Console = GEPPETTO.Console ||
 	{
@@ -57,6 +61,12 @@
 	 * Toggle javascript console's visibility via button 
 	 */
 	GEPPETTO.Console.toggleConsole = function(){
+		
+		if(!versionNumberReceived){
+			GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
+			versionNumberReceived = true;
+		}
+		
 		//toggle button class
 		$('#consoleButton').toggleClass('clicked');
 
@@ -112,8 +122,8 @@
 		$('#commandInputArea').focus(function(){
 			$('.ui-menu').remove();
 		});
-
-		GEPPETTO.Main.socket.send(messageTemplate("geppetto_version", null));
+		
+		return console;
 	};
 
 	/**
@@ -126,10 +136,55 @@
 			return false;	
 		}
 	};
+
+	GEPPETTO.Console.isExecutingScript = function(){
+		return executingScript;
+	};
 	
 	GEPPETTO.Console.consoleHistory = function(){
 		return console.model.get('history');
 	};
+	
+	GEPPETTO.Console.getConsole = function(){
+		return console;
+	};
+	
+	/**
+	 * Executes a set of commands from a script 
+	 * 
+	 * @param commands - commands to execute
+	 */
+	GEPPETTO.Console.executeScriptCommands = function(commands){
+			executingScript = true;
+			for (var i = 0, len = commands.length; i < len; i++) {
+				var command = commands[i].toString().trim();
+
+				if(command != ""){
+					//if it's the wait command,  call the the wait function 
+					//with all remanining commands left to execute as parameter.
+					if ( command.indexOf("G.wait") > -1 ) {
+						//get the ms time for waiting
+						var parameter = command.match(/\((.*?)\)/);
+						var ms = parameter[1];
+						
+						//get the remaining commands
+						var remainingCommands = commands.splice(i+1,commands.length);
+						
+						//call wait function with ms, and remaining commands to execute when done
+						G.wait(remainingCommands, ms);
+						
+						return;
+					}
+
+					//execute commands, except the wait one
+					else{
+						GEPPETTO.Console.executeCommand(command);
+					}
+				}
+			}
+			
+			executingScript = false;
+		};
 	
 	/**
 	 * Handles user clicking the "Javascript Console" button, which 
@@ -163,10 +218,8 @@
 		return split( term ).pop();
 	};
 
-	/**
-	 * Log message to Geppetto's console
-	 * 
-	 * @global
+	/*
+	 * Log debug messages to Geppetto's console if debug mode is on 
 	 */
 	GEPPETTO.Console.debugLog = (function(message)
 			{	
@@ -175,12 +228,17 @@
 		}
 			});
 
-	GEPPETTO.Console.Log = (function(message)
+	/*
+	 * Logs messages to console without need for debug mode to be on
+	 */
+	GEPPETTO.Console.log = (function(message)
 			{
 		console.showMessage(message);
+	});
 
-			});
-
+	/*
+	 * Executes commands to console
+	 */
 	GEPPETTO.Console.executeCommand = (function(command)
 			{
 		console.executeCommand(command);
@@ -194,6 +252,9 @@
 		return split( term ).pop();
 	};
 
+	/**
+	 * Handles autocomplete functionality for the console
+	 */
 	function autoComplete(){
 		//get the available tags for autocompletion in console
 		var tags = availableTags();
@@ -208,9 +269,12 @@
 		.autocomplete({
 			minLength: 0,
 			source: function( request, response ) {
-				// delegate back to autocomplete, but extract the last term
-				response( $.ui.autocomplete.filter(
-						tags, extractLast( request.term ) ) );
+				var matches = $.map( tags, function(tag) {
+				      if ( tag.toUpperCase().indexOf(request.term.toUpperCase()) === 0 ) {
+				        return tag;
+				      }
+				    });
+				response(matches);
 			},
 			focus: function() {
 				// prevent value inserted on focus
@@ -239,8 +303,18 @@
 					//match multiple suggestions 
 					else{
 						if(inpt.val() != ""){
+							
+							var elementsText = [];
+							for(var i =0; i<suggestionsSize; i++){
+								elementsText[i] = $($(this).data("uiAutocomplete").menu.element[0].children[i]).text();
+							}
+							var A= elementsText.slice(0).sort(), 
+							word1= A[0], word2= A[A.length-1], 
+							i= 0;
+							while(word1.charAt(i)== word2.charAt(i))++i;
+							    
 							//match up to dot for most common part
-							var mostCommon = firstElementText.split(".")[0] + ".";
+							var mostCommon = word1.substring(0, i);
 
 							if(inpt.val().indexOf(mostCommon)==-1){
 								inpt.val(mostCommon);//change the input to the first match

@@ -620,15 +620,28 @@ var GEPPETTO = GEPPETTO ||
 	{
 		// Lights
 
-		light = new THREE.DirectionalLight(0xffffff);
-		light.position.set(100, 100, 100);
-		scene.add(light);
-		light = new THREE.DirectionalLight(0xffffff);
-		light.position.set(-100, -100, -100);
-		scene.add(light);
+		ambientLight = new THREE.AmbientLight( 0x000000 );
+		scene.add( ambientLight );
 
-		light = new THREE.AmbientLight(0x222222);
-		scene.add(light);
+		hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 1.1);
+		scene.add( hemisphereLight );
+
+		directionalLight = new THREE.DirectionalLight(0xffffff, 0.09);
+		directionalLight.position.set( 0, 1, 0 );
+		directionalLight.castShadow = true;
+		scene.add( directionalLight );
+
+		spotLight1 = new THREE.SpotLight( 0xffffff, 0.1 );
+		spotLight1.position.set( 100, 1000, 100 );
+		spotLight1.castShadow = true;
+		spotLight1.shadowDarkness = 0.2;
+		scene.add( spotLight1 );
+
+		spotLight2 = new THREE.SpotLight( 0xffffff, 0.22 );
+		spotLight2.position.set( 100, 1000, 100 );
+		spotLight2.castShadow = true;
+		spotLight2.shadowDarkness = 0.2;
+		scene.add( spotLight2 );
 
 	};
 

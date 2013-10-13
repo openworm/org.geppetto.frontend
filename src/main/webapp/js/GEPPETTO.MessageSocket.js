@@ -26,6 +26,8 @@ GEPPETTO.MessageSocket.connect = (function(host)
 	{
 		GEPPETTO.Console.debugLog(WEBSOCKET_OPENED);
 		
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
+		
 	};
 
 	GEPPETTO.MessageSocket.socket.onclose = function()

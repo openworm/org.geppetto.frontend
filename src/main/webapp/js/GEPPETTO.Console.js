@@ -45,9 +45,7 @@
 (function(){
 
 	var console = null;
-	
-	var versionNumberReceived = false;
-	
+		
 	var executingScript = false;
 
 	GEPPETTO.Console = GEPPETTO.Console ||
@@ -61,11 +59,6 @@
 	 * Toggle javascript console's visibility via button 
 	 */
 	GEPPETTO.Console.toggleConsole = function(){
-		
-		if(!versionNumberReceived){
-			GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
-			versionNumberReceived = true;
-		}
 		
 		//toggle button class
 		$('#consoleButton').toggleClass('clicked');

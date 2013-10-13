@@ -10,3 +10,5 @@ src/main/webapp/META-INF/MANIFEST.MF
 # Editor byproducts
 *.swp
 /target
+
+src/main/webapp/js/jsdocs

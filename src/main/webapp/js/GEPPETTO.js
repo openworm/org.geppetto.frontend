@@ -95,7 +95,6 @@ var GEPPETTO = GEPPETTO ||
 			GEPPETTO.setupScene();
 			GEPPETTO.setupCamera();
 			GEPPETTO.setupLights();
-			GEPPETTO.setupStats();
 			GEPPETTO.setupControls();
 			GEPPETTO.setupListeners();
 			
@@ -611,6 +610,21 @@ var GEPPETTO = GEPPETTO ||
 			stats.domElement.style.zIndex = 100;
 			$('#footerHeader').append(stats.domElement);
 		}
+	};
+	
+	GEPPETTO.showStats = function()
+	{
+		if ($("#stats").length == 0)
+		{
+			GEPPETTO.setupStats();
+		}else{
+			$("#stats").show();
+		}
+	};
+	
+	GEPPETTO.hideStats = function()
+	{
+		$("#stats").hide();
 	};
 
 	/**

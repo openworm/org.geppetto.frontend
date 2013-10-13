@@ -81,7 +81,7 @@ G.copyHistoryToClipboard = function(){
 			
 			commandsString += command;
 			if(i != commands.length -1){
-				commandsString += '\n\n';
+				commandsString += '\n';
 			}
 		}
 	}
@@ -123,9 +123,11 @@ G.debug = function(toggle){
 	G.debugMode = toggle;
 
 	if(toggle){
+		GEPPETTO.showStats();
 		return DEBUG_ON;
 	}
 	else{
+		GEPPETTO.hideStats();
 		return DEBUG_OFF;
 	}
 };

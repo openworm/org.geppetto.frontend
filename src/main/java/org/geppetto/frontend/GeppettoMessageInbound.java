@@ -169,6 +169,16 @@ public class GeppettoMessageInbound extends MessageInbound
 				simulationListener.observeSimulation(this);
 				break;
 			}
+			case LIST_WATCH_VARS:
+			{
+				simulationListener.listWatchableVariables();
+				break;
+			}
+			case LIST_FORCE_VARS:
+			{
+				simulationListener.listForceableVariables();
+				break;
+			}
 			default:
 			{
 				// NOTE: no other messages expected for now

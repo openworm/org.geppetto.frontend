@@ -317,6 +317,24 @@ public class SimulationListener implements ISimulationCallbackListener {
 		//Notify visitor they are now in Observe Mode
 		messageClient(observingVisitor, OUTBOUND_MESSAGE_TYPES.OBSERVER_MODE);
 	}
+	
+	/**
+	 * Request list of watchable variables for the simulation
+	 */
+	public void listWatchableVariables(){		
+		// TODO: get watchable variables for the entire simulation
+		
+		// TODO: message the client with results
+	}
+	
+	/**
+	 * Request list of forceable variables for the simulation
+	 */
+	public void listForceableVariables(){		
+		// TODO: get forceable variables for the entire simulation
+		
+		// TODO: message the client with results
+	}
 
 	/**
 	 * Simulation is being controlled by another user, new visitor that just loaded Geppetto Simulation in browser 

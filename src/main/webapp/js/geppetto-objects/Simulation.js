@@ -60,6 +60,8 @@ Simulation.status = Simulation.StatusEnum.INIT;
 
 Simulation.simulationURL = "";
 
+var loading = false;
+
 /**
  * Start the simulation.
  * 
@@ -168,7 +170,7 @@ Simulation.load = function(simulationURL)
 				GEPPETTO.animate();
 			}
 			GEPPETTO.MessageSocket.socket.send(messageTemplate("init_url", simulationURL));
-			Simulation.status = Simulation.StatusEnum.LOADED;
+			loading = true;
 			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);			
 		}
 	}
@@ -207,7 +209,7 @@ Simulation.loadFromContent = function(content)
 		}
 		
 		GEPPETTO.MessageSocket.socket.send(messageTemplate("init_sim", content));
-		Simulation.status = Simulation.StatusEnum.LOADED;
+		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
 	}
 	
@@ -227,6 +229,11 @@ Simulation.isLoaded = function()
 	}
 	
 	return false;
+};
+
+Simulation.isLoading = function()
+{
+	return loading;
 };
 
 /**
@@ -304,6 +311,12 @@ Simulation.help = function(){
 function getSimulationStatus()
 {
 	return Simulation.status;
+};
+
+function setSimulationLoaded()
+{
+	Simulation.status = Simulation.StatusEnum.LOADED;
+	loading = false;
 };
 
 /**

@@ -64,6 +64,8 @@ GEPPETTO.MessageSocket.connect = (function(host)
 			case "load_model":
 				GEPPETTO.Console.debugLog(LOADING_MODEL);
 				var entities = JSON.parse(payload.entities);
+				
+				setSimulationLoaded();
 								
 				//Populate scene
 				GEPPETTO.populateScene(entities);

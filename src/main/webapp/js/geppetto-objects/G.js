@@ -272,8 +272,13 @@ G.wait = function(ms){
 G.wait = function(commands, ms){
 	setTimeout(function()
 	{
-		//execute commands after ms milliseconds
-		GEPPETTO.Console.executeCommand(GEPPETTO.Console.executeScriptCommands(commands));
+		if(Simulation.isLoading()){
+			G.wait(commands, 500);
+		}
+		else{
+			//execute commands after ms milliseconds
+			GEPPETTO.Console.executeCommand(GEPPETTO.Console.executeScriptCommands(commands));
+		}
 	}, ms);
 	
 	return WAITING;

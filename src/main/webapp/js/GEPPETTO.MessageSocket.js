@@ -120,8 +120,16 @@ GEPPETTO.MessageSocket.connect = (function(host)
 			case "simulation_started":
 				GEPPETTO.FE.updateStartEvent();
 				break;
+				//Simulation has been started, enable pause button
+			case "list_watch_vars":
+				GEPPETTO.Console.debugLog(LISTING_WATCH_VARS);
+				GEPPETTO.Console.log(JSON.stringify(payload));
+				break;
+			case "list_force_vars":
+				GEPPETTO.Console.debugLog(LISTING_FORCE_VARS);
+				GEPPETTO.Console.log(JSON.stringify(payload));
+				break;
 			default:
-				
 				break;
 		}
 	};

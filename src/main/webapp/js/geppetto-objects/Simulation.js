@@ -230,6 +230,46 @@ Simulation.isLoaded = function()
 };
 
 /**
+ * LIst watchable variables for the simulation.
+ * 
+ * @name Simulation.listWatchableVariables()
+ * @returns {String} - status after requesting list of watchable variables.
+ */
+Simulation.listWatchableVariables = function()
+{
+	if(Simulation.isLoaded()){		
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_watch_vars", null));
+		
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_WATCH);
+		
+		return SIMULATION_VARS_LIST;
+	}
+	else{
+		return SIMULATION_NOT_LOADED_LIST;
+	}
+};
+
+/**
+ * List forceable variables for the simulation.
+ * 
+ * @name Simulation.listForceableVariables()
+ * @returns {String} - status after requesting list of forceable variables.
+ */
+Simulation.listForceableVariables = function()
+{
+	if(Simulation.isLoaded()){		
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_force_vars", null));
+		
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_FORCE);
+		
+		return SIMULATION_VARS_LIST;
+	}
+	else{
+		return SIMULATION_NOT_LOADED_LIST;
+	}
+};
+
+/**
  *
  * Outputs list of commands with descriptions associated with the Simulation object.
  * 

@@ -97,6 +97,12 @@ public class TransportMessageFactory {
 			case RUN_SCRIPT:
 				params.add(new SimpleEntry<String, String>("run_script", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case LIST_WATCH_VARS:
+				params.add(new SimpleEntry<String, String>("list_watch_vars", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case LIST_FORCE_VARS:
+				params.add(new SimpleEntry<String, String>("list_force_vars", (update!=null) ? update : EMPTY_STRING));
+				break;
 			default:
 				break;
 		}

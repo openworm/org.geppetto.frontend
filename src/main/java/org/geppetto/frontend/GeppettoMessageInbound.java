@@ -171,12 +171,12 @@ public class GeppettoMessageInbound extends MessageInbound
 			}
 			case LIST_WATCH_VARS:
 			{
-				simulationListener.listWatchableVariables();
+				simulationListener.listWatchableVariables(this);
 				break;
 			}
 			case LIST_FORCE_VARS:
 			{
-				simulationListener.listForceableVariables();
+				simulationListener.listForceableVariables(this);
 				break;
 			}
 			default:

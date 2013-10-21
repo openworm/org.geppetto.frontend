@@ -52,6 +52,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.common.IVariable;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
@@ -321,19 +322,27 @@ public class SimulationListener implements ISimulationCallbackListener {
 	/**
 	 * Request list of watchable variables for the simulation
 	 */
-	public void listWatchableVariables(){		
-		// TODO: get watchable variables for the entire simulation
+	public void listWatchableVariables(GeppettoMessageInbound connection){		
+		// get watchable variables for the entire simulation
+		List<IVariable> vars = this.simulationService.listWatchableVariables();
 		
-		// TODO: message the client with results
+		String variableList = new Gson().toJson(vars);
+		
+		// message the client with results
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, variableList);
 	}
 	
 	/**
 	 * Request list of forceable variables for the simulation
 	 */
-	public void listForceableVariables(){		
-		// TODO: get forceable variables for the entire simulation
+	public void listForceableVariables(GeppettoMessageInbound connection){		
+		// get forceable variables for the entire simulation
+		List<IVariable> vars = simulationService.listForceableVariables();
 		
-		// TODO: message the client with results
+		String variableList = new Gson().toJson(vars);
+		
+		// message the client with results
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, variableList);
 	}
 
 	/**
@@ -423,7 +432,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param connection - client to receive the simulation update
 	 * @param type - Type of udpate to be send
-	 * @param update - update to be send
+	 * @param update - update to be sent
 	 */
 	private void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type, String update){
 		// get transport message to be sent to the client

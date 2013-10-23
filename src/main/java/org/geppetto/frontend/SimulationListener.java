@@ -52,9 +52,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
-import org.geppetto.core.common.IVariable;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
+import org.geppetto.core.pojo.model.VariableList;
 import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
@@ -324,12 +324,13 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void listWatchableVariables(GeppettoMessageInbound connection){		
 		// get watchable variables for the entire simulation
-		List<IVariable> vars = this.simulationService.listWatchableVariables();
+		VariableList vars = this.simulationService.listWatchableVariables();
 		
-		String variableList = new Gson().toJson(vars);
+		// TODO: serialize
+		// String variableList = new Gson().toJson(vars);
 		
 		// message the client with results
-		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, variableList);
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, null);
 	}
 	
 	/**
@@ -337,12 +338,13 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void listForceableVariables(GeppettoMessageInbound connection){		
 		// get forceable variables for the entire simulation
-		List<IVariable> vars = simulationService.listForceableVariables();
+		VariableList vars = simulationService.listForceableVariables();
 		
-		String variableList = new Gson().toJson(vars);
+		// TODO: serialize
+		// String variableList = new Gson().toJson(vars);
 		
 		// message the client with results
-		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, variableList);
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, null);
 	}
 
 	/**

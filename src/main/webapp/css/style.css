@@ -307,6 +307,17 @@ input {
 	-webkit-appearance: none;
 }
 
+#javascriptFullscreen {
+	position: absolute;
+	top: 16px;
+	right: 18px;
+	cursor: pointer;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	-webkit-appearance: none;
+}
+
 .CodeMirror-fullscreen {
 	display: block;
 	position: fixed!important;

@@ -1,3 +1,35 @@
+/*******************************************************************************
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011, 2013 OpenWorm.
+ * http://openworm.org
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *     	OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 /**
  * javascript sandbox console 0.1.5 - joss crowcroft
  * 
@@ -155,6 +187,15 @@ var Sandbox = {
 			if ( !command )
 				return false;
 
+			//check if command are multiple commands instead of single one
+			var multipleCommands = command.split("\n");
+			if(multipleCommands.length > 1){
+				//run script if multiple commands
+				runScript(command);
+				//exit function
+				return false;
+			}
+			
 			var str = command.replace(/&lt;/g,"<");
 			var command = str.replace(/&gt;/g,">");
 			
@@ -339,6 +380,10 @@ var Sandbox = {
 			this.model.load(url);
 		},
 		
+		clear : function(){
+			this.model.destroy();
+		},
+		
 		// Manually set the value in the sandbox textarea and focus it ready to submit:
 		setValue : function(command) {
 			this.currentHistory = command;
@@ -456,10 +501,11 @@ var Sandbox = {
 
 				 var thisKeypressTime = new Date();
 					
-					//detects double tab
+				 	var tags = availableTags();
+					
+				 	//detects double tab
 					if ( thisKeypressTime - lastKeypressTime <= delta )
 					{
-						var tags = availableTags();
 						var suggestions = "";
 						for(var i =0; i<tags.length; i++){
 						    var tag = tags[i];
@@ -482,12 +528,42 @@ var Sandbox = {
 						doubleTab = true;
 					}
 					else{
-						// Get the value, and the parts between which the tab character will be inserted
-						var value = this.textarea.val(),
+						
+						var textAreaValue = this.textarea.val();
+						
+						//narrow down the matches found from commands
+						var matches = $.map( tags, function(tag) {
+						      if ( tag.toUpperCase().indexOf(textAreaValue.toUpperCase()) === 0 ) {
+						        return tag;
+						      }
+						    });
+						
+						var mostCommon = null;
+						
+						if(matches.length > 1){
+							var A= matches.slice(0).sort(), 
+							word1= A[0], word2= A[A.length-1], 
+							i= 0;
+							while(word1.charAt(i)== word2.charAt(i))++i;
+
+							//match up most common part
+							mostCommon = word1.substring(0, i);
+
+						}
+						else if(matches.length == 1){
+							mostCommon = matches[0];
+						}
+						
+						if(mostCommon != null){
+							this.textarea.val(mostCommon);//change the input to the first match
+
+							// Get the value, and the parts between which the tab character will be inserted
+							var value = this.textarea.val(),
 							caret = this.getCaret();
 
-						// Set the caret (cursor) position to just after the inserted tab character
-						this.setCaret(caret + value.length);
+							// Set the caret (cursor) position to just after the inserted tab character
+							this.setCaret(caret + value.length);
+						}
 					}
 					lastKeypressTime = thisKeypressTime;
 
@@ -504,7 +580,7 @@ var Sandbox = {
 		// Checks for special commands. If any are found, performs their action and returns true
 		specialCommands: function(command) {
 			if (command === "G.clear()" || command === "G.clear();") {
-				this.model.destroy();
+				this.clear();
 				return true;
 			}
 			if ( command === "help()" || command === "help();" ) {

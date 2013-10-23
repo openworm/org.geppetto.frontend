@@ -1,6 +1,7 @@
 *.class
 *.DS_Store
-src/main/webapp/META-INF/MANIFEST.MF
+src/main/webapp/META-INF
+src/main/webapp/js/jsdocs
 
 # Package Files #
 *.jar
@@ -10,3 +11,4 @@ src/main/webapp/META-INF/MANIFEST.MF
 # Editor byproducts
 *.swp
 /target
+

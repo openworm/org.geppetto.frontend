@@ -76,6 +76,8 @@ var GEPPETTO = GEPPETTO ||
 	var sceneCenter = new THREE.Vector3();
 	var cameraPosition = new THREE.Vector3();
 
+	var canvasCreated = false;
+	
 	/**
 	 * Initialize the engine
 	 */
@@ -93,9 +95,9 @@ var GEPPETTO = GEPPETTO ||
 			GEPPETTO.setupScene();
 			GEPPETTO.setupCamera();
 			GEPPETTO.setupLights();
-			GEPPETTO.setupStats();
 			GEPPETTO.setupControls();
 			GEPPETTO.setupListeners();
+			
 			return true;
 		}
 	};
@@ -361,6 +363,11 @@ var GEPPETTO = GEPPETTO ||
 		}
 		return false;
 	};
+	
+	GEPPETTO.isCanvasCreated = function()
+	{
+		return canvasCreated;
+	};
 
 	/**
 	 * 
@@ -604,6 +611,21 @@ var GEPPETTO = GEPPETTO ||
 			$('#footerHeader').append(stats.domElement);
 		}
 	};
+	
+	GEPPETTO.showStats = function()
+	{
+		if ($("#stats").length == 0)
+		{
+			GEPPETTO.setupStats();
+		}else{
+			$("#stats").show();
+		}
+	};
+	
+	GEPPETTO.hideStats = function()
+	{
+		$("#stats").hide();
+	};
 
 	/**
 	 * Light up the scene
@@ -612,15 +634,28 @@ var GEPPETTO = GEPPETTO ||
 	{
 		// Lights
 
-		light = new THREE.DirectionalLight(0xffffff);
-		light.position.set(100, 100, 100);
-		scene.add(light);
-		light = new THREE.DirectionalLight(0xffffff);
-		light.position.set(-100, -100, -100);
-		scene.add(light);
+		ambientLight = new THREE.AmbientLight( 0x000000 );
+		scene.add( ambientLight );
 
-		light = new THREE.AmbientLight(0x222222);
-		scene.add(light);
+		hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 1.1);
+		scene.add( hemisphereLight );
+
+		directionalLight = new THREE.DirectionalLight(0xffffff, 0.09);
+		directionalLight.position.set( 0, 1, 0 );
+		directionalLight.castShadow = true;
+		scene.add( directionalLight );
+
+		spotLight1 = new THREE.SpotLight( 0xffffff, 0.1 );
+		spotLight1.position.set( 100, 1000, 100 );
+		spotLight1.castShadow = true;
+		spotLight1.shadowDarkness = 0.2;
+		scene.add( spotLight1 );
+
+		spotLight2 = new THREE.SpotLight( 0xffffff, 0.22 );
+		spotLight2.position.set( 100, 1000, 100 );
+		spotLight2.castShadow = true;
+		spotLight2.shadowDarkness = 0.2;
+		scene.add( spotLight2 );
 
 	};
 
@@ -696,6 +731,8 @@ var GEPPETTO = GEPPETTO ||
 		renderer.setSize(width, height);
 		renderer.autoClear = true;
 		container.appendChild(renderer.domElement);
+		
+		canvasCreated = true;
 	};
 
 	/**
@@ -1022,7 +1059,7 @@ var GEPPETTO = GEPPETTO ||
 		debugUpdate = needsUpdate; // so that we log only the cycles when we are updating the scene
 		if (getSimulationStatus() == 2 && debugUpdate)
 		{
-			GEPPETTO.log("Starting update frame");
+			GEPPETTO.log(UPDATE_FRAME_STARTING);
 		}
 		controls.update();
 		requestAnimationFrame(GEPPETTO.animate);
@@ -1039,7 +1076,7 @@ var GEPPETTO = GEPPETTO ||
 		}
 		if (getSimulationStatus() == 2 && debugUpdate)
 		{
-			GEPPETTO.log("End update frame");
+			GEPPETTO.log(UPDATE_FRAME_ENDING);
 		}
 	};
 

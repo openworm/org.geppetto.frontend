@@ -61,6 +61,8 @@ import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 /**
@@ -321,30 +323,34 @@ public class SimulationListener implements ISimulationCallbackListener {
 	
 	/**
 	 * Request list of watchable variables for the simulation
+	 * @throws JsonProcessingException 
 	 */
-	public void listWatchableVariables(GeppettoMessageInbound connection){		
+	public void listWatchableVariables(GeppettoMessageInbound connection) throws JsonProcessingException{		
 		// get watchable variables for the entire simulation
 		VariableList vars = this.simulationService.listWatchableVariables();
 		
-		// TODO: serialize
-		// String variableList = new Gson().toJson(vars);
+		// serialize
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedVars = mapper.writer().writeValueAsString(vars);
 		
 		// message the client with results
-		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, null);
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, serializedVars);
 	}
 	
 	/**
 	 * Request list of forceable variables for the simulation
+	 * @throws JsonProcessingException 
 	 */
-	public void listForceableVariables(GeppettoMessageInbound connection){		
+	public void listForceableVariables(GeppettoMessageInbound connection) throws JsonProcessingException{		
 		// get forceable variables for the entire simulation
 		VariableList vars = simulationService.listForceableVariables();
 		
-		// TODO: serialize
-		// String variableList = new Gson().toJson(vars);
+		// serialize
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedVars = mapper.writer().writeValueAsString(vars);
 		
 		// message the client with results
-		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, null);
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, serializedVars);
 	}
 
 	/**

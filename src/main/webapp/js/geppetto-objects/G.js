@@ -226,29 +226,10 @@ G.help = function(){
  */
 G.runScript = function(scriptURL){	
 
-	GEPPETTO.MessageSocket.socket.send(messageTemplate("run_script", scriptURL));
+	GEPPETTO.MessageSocket.send("run_script", scriptURL);
 	
 	return RUNNING_SCRIPT; 
 };
-
-/**
- * Runs script data
- */
-function runScript(scriptData){
-
-	var commands = scriptData.split("\n");
-
-	//format the commands, remove white spaces
-	for(var c = 0; c<commands.length; c++){
-		commands[c] = commands[c].replace(/\s/g,"");
-		var lineC = commands[c];
-		if(lineC.toString() === ""){
-			commands.splice(c,1);
-		}
-	}
-	//execute the commands found inside script
-	GEPPETTO.Console.executeScriptCommands(commands);
-}
 
 /**
  * 
@@ -272,13 +253,8 @@ G.wait = function(ms){
 G.wait = function(commands, ms){
 	setTimeout(function()
 	{
-		if(Simulation.isLoading()){
-			G.wait(commands, 500);
-		}
-		else{
-			//execute commands after ms milliseconds
-			GEPPETTO.Console.executeCommand(GEPPETTO.Console.executeScriptCommands(commands));
-		}
+		//execute commands after ms milliseconds
+		GEPPETTO.ScriptRunner.executeScriptCommands(commands);
 	}, ms);
 	
 	return WAITING;

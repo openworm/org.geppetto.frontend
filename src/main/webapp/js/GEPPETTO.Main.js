@@ -83,7 +83,7 @@ GEPPETTO.Main.observe = function()
 	//Allow user to observe only if wegbl container was created
 	if(webGLStarted){
 		GEPPETTO.animate();	
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("observe", null));
+		GEPPETTO.MessageSocket.send("observe", null);
 		GEPPETTO.Console.debugLog(SIMULATION_OBSERVED);
 	}
 	

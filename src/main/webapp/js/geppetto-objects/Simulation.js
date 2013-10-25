@@ -71,7 +71,7 @@ var loading = false;
 Simulation.start = function()
 {
 	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("start", null));
+		GEPPETTO.MessageSocket.send("start", null);
 		
 		Simulation.status = Simulation.StatusEnum.STARTED;
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_START);
@@ -96,7 +96,7 @@ Simulation.pause = function()
 		//Updates the simulation controls visibility
 		GEPPETTO.FE.updatePauseEvent();
 		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("pause", null));
+		GEPPETTO.MessageSocket.send("pause", null);
 		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_PAUSE);
@@ -120,7 +120,7 @@ Simulation.stop = function()
 		//Updates the simulation controls visibility
 		GEPPETTO.FE.updateStopEvent();
 
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("stop", null));
+		GEPPETTO.MessageSocket.send("stop", null);
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_STOP);
@@ -169,7 +169,7 @@ Simulation.load = function(simulationURL)
 				//we call it only the first time
 				GEPPETTO.animate();
 			}
-			GEPPETTO.MessageSocket.socket.send(messageTemplate("init_url", simulationURL));
+			GEPPETTO.MessageSocket.send("init_url", simulationURL);
 			loading = true;
 			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);			
 		}
@@ -208,7 +208,7 @@ Simulation.loadFromContent = function(content)
 			GEPPETTO.animate();
 		}
 		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("init_sim", content));
+		GEPPETTO.MessageSocket.send("init_sim", content);
 		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
 	}

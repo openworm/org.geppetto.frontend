@@ -191,7 +191,7 @@ var Sandbox = {
 			var multipleCommands = command.split("\n");
 			if(multipleCommands.length > 1){
 				//run script if multiple commands
-				runScript(command);
+				GEPPETTO.ScriptRunner.runScript(command);
 				//exit function
 				return false;
 			}

@@ -85,6 +85,37 @@ test("Test Copy History To Clipboard", function(){
 	equal(G.copyHistoryToClipboard(), COPY_CONSOLE_HISTORY, "Commands copied, test passed");
 });
 
+//module("Run Script Test",
+//		{
+//	setup : function(){
+//		//create socket connection before each test
+//		var newSocket = GEPPETTO.MessageSocket;
+//
+//		newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');		
+//	},
+//	teardown: function(){
+//
+//	}
+//});
+//asyncTest("Run Script Test 1", function(){
+//	//wait half a second before testing, allows for socket connection to be established
+//	setTimeout(function(){
+//		G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
+//		equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");	
+//	},500);
+//	
+//	
+//});
+//
+//asyncTest("Run Script Test 2", function(){	
+//	//wait half a second before testing, allows for socket connection to be established
+//	setTimeout(function(){
+//		G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript2.js");
+//		equal( getSimulationStatus(),Simulation.StatusEnum.STARTED, "Simulation Loaded, passed");	
+//	},2000);
+//	
+//});
+
 
 module("Simulation commands test");
 test( "Test Simulation Help Command", function() {
@@ -98,6 +129,13 @@ module("Simulation Load Tests",
 		var newSocket = GEPPETTO.MessageSocket;
 
 		newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+		
+		//wait half a second before testing, allows for socket connection to be established
+		setTimeout(function(){
+			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
+			equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");	
+			start();
+		},500);
 	},
 	teardown: function(){
 
@@ -108,8 +146,8 @@ asyncTest("Test Load Simulation", function(){
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
 		Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
-		equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");	
-		start();
+		equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
+		Simulation.start();
 	},500);
 });
 
@@ -118,7 +156,7 @@ asyncTest("Test Load Simulation from content", function(){
 	setTimeout(function(){
 		Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
 		equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");	
-		start();
+		Simulation.start();
 	},500);
 });
 

@@ -209,8 +209,8 @@ input {
 	content: "\f00d";
 }
 .ui-dialog {
-	opacity: 0.8
-};
+	opacity: 0.8;
+}
 
 .popover {
 	font-size: 14px;

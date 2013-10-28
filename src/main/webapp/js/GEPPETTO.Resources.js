@@ -47,17 +47,17 @@ var SIMULATION_LOADED = "Simulation Loaded";
 
 var SIMULATION_STARTED = "Simulation Started";
 
-var UNABLE_TO_START_SIMULATION = "Simulation not loaded, must load simulation first";
+var UNABLE_TO_START_SIMULATION = "Simulation not loaded; must load simulation first";
 
 var SIMULATION_PAUSED = "Simulation Paused";
 
-var UNABLE_TO_PAUSE_SIMULATION = "Simulation not running, must run simulation first";
+var UNABLE_TO_PAUSE_SIMULATION = "Simulation not running; must run simulation first";
 
 var SIMULATION_STOP = "Simulation Stopped"; 
 
 var LOADING_SIMULATION = "Loading Simulation";
 
-var SIMULATION_NOT_RUNNING = "Unable to stop simulation, loaded but not running";
+var SIMULATION_NOT_RUNNING = "Unable to stop simulation; loaded but not running";
 
 var SIMULATION_NOT_LOADED = "Unable to stop simulation that hasn't been loaded";
 
@@ -71,11 +71,11 @@ var LOADING_FROM_CONTENT= "Outbound Message Sent: Load Simulation from editing c
 
 var MESSAGE_OUTBOUND_LOAD = 'Outbound Message Sent: Loading Simulation';
 
-var MESSAGE_OUTBOUND_STOP = 'Outbund Message Sent: Simulation stopped';
+var MESSAGE_OUTBOUND_STOP = 'Outbund Message Sent: Simulation Stopped';
 
-var MESSAGE_OUTBOUND_PAUSE = 'Outbund Message Sent: Simulation paused';
+var MESSAGE_OUTBOUND_PAUSE = 'Outbund Message Sent: Simulation Paused';
 
-var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation started';
+var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation Started';
 
 
 /**
@@ -83,7 +83,7 @@ var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation started';
  */
 var RUNNING_SCRIPT = "Running script";
 
-var NO_SIMULATION_TO_GET = "No Simulation to get as none is running";
+var NO_SIMULATION_TO_GET = "No Simulation to get as no simulation is running";
 
 var DEBUG_ON = "Debug log statements on";
 
@@ -114,7 +114,7 @@ var SIMULATION_OBSERVED = 'Sent: Simulation being observed';
 
 var WEBSOCKET_NOT_SUPPORTED = 'Error: WebSocket is not supported by this browser.';
 
-var WEBSOCKET_OPENED = 'Info: WebSocket connection opened.';
+var WEBSOCKET_OPENED = 'Info: WebSocket connection opened';
 
 var WEBSOCKET_CLOSED = "Info: WebSocket connection closed";
 	
@@ -128,9 +128,9 @@ var OBSERVING_MODE = "Observing Simulation Mode";
 
 var SERVER_UNAVAILABLE = "Server Unavailable";
 
-var SERVER_AVAILABLE = "Server available";
+var SERVER_AVAILABLE = "Server Available";
 
-var WEBGL_FAILED = "Initializing error: Unable to initialize WebGL";
+var WEBGL_FAILED = "Initializing Error: Unable to initialize WebGL";
 
 var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.\n\n";
 

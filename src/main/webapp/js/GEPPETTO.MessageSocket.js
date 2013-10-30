@@ -176,7 +176,7 @@ function formatListVariableOutput(vars, indent)
 		// print node
 		var arrayPart = (size!=null) ? "[" + size + "]" : "";
 		var indentation = "";
-		for(var j=0; j<indent; j++){ indentation += "\t"; }
+		for(var j=0; j<indent; j++){ indentation=indentation.replace("↪"," ") + "   ↪ "; }
 		var formattedNode = indentation + name + arrayPart;
 		
 		// is type simple variable? print type

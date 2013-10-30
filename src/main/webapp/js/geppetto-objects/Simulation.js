@@ -345,19 +345,3 @@ function getSimulationStatus()
 {
 	return Simulation.status;
 };
-
-/**
-* Template for Geppetto message 
-* NOTE: move from here under global G object once in place
-* 
-* @param msgtype - messaga type
-* @param payload - message payload, can be anything
-* @returns JSON stringified object
-*/
-function messageTemplate(msgtype, payload) {
-	var object = {
-		type: msgtype,
-	    data: payload
-	};
-	return JSON.stringify(object);
-};

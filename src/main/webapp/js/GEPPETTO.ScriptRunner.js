@@ -41,9 +41,6 @@
  */
 (function(){
 
-
-	var executingScript = false;
-
 	GEPPETTO.ScriptRunner = GEPPETTO.ScriptRunner ||
 	{
 		REVISION : '1'

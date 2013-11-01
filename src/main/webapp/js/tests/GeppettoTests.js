@@ -176,3 +176,29 @@ asyncTest("Test Stop Simulation", function(){
 		
 	},500);
 });
+
+module("Get simulation variables test",
+		{
+			setup : function(){
+				//create socket connection before each test
+				var newSocket = GEPPETTO.MessageSocket;
+
+				newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+			}
+});
+
+asyncTest("Test list simulation variables - SPH", function(){
+	// wait a bit and then load SPH sample
+	setTimeout(function(){
+		GEPPETTO.Console.createConsole();
+		equal(G.clear(),CLEAR_HISTORY, "Console is clear");
+		
+		Simulation.load("https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml");
+		equal(getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
+		start();
+		
+		Simulation.listWatchableVariables();
+		
+		// TODO: compare output to expected output - need to refactor messaging to be able to do this
+	},500);
+});

@@ -187,7 +187,7 @@ module("Get simulation variables test",
 			}
 });
 
-asyncTest("Test list simulation variables - SPH", function(){
+asyncTest("Test list simulation variables no crash - SPH", function(){
 	// wait a bit and then load SPH sample
 	setTimeout(function(){
 		GEPPETTO.Console.createConsole();
@@ -197,7 +197,11 @@ asyncTest("Test list simulation variables - SPH", function(){
 		equal(getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
 		start();
 		
+		// list watchable
 		Simulation.listWatchableVariables();
+		
+		// list forceable
+		Simulation.listForceableVariables();
 		
 		// TODO: compare output to expected output - need to refactor messaging to be able to do this
 	},500);

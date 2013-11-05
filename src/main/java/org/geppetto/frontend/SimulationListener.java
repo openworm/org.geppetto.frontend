@@ -52,14 +52,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.data.model.VariableList;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
-import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 /**
@@ -317,6 +319,38 @@ public class SimulationListener implements ISimulationCallbackListener {
 		//Notify visitor they are now in Observe Mode
 		messageClient(observingVisitor, OUTBOUND_MESSAGE_TYPES.OBSERVER_MODE);
 	}
+	
+	/**
+	 * Request list of watchable variables for the simulation
+	 * @throws JsonProcessingException 
+	 */
+	public void listWatchableVariables(GeppettoMessageInbound connection) throws JsonProcessingException{		
+		// get watchable variables for the entire simulation
+		VariableList vars = this.simulationService.listWatchableVariables();
+		
+		// serialize
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedVars = mapper.writer().writeValueAsString(vars);
+		
+		// message the client with results
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, serializedVars);
+	}
+	
+	/**
+	 * Request list of forceable variables for the simulation
+	 * @throws JsonProcessingException 
+	 */
+	public void listForceableVariables(GeppettoMessageInbound connection) throws JsonProcessingException{		
+		// get forceable variables for the entire simulation
+		VariableList vars = simulationService.listForceableVariables();
+		
+		// serialize
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedVars = mapper.writer().writeValueAsString(vars);
+		
+		// message the client with results
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, serializedVars);
+	}
 
 	/**
 	 * Simulation is being controlled by another user, new visitor that just loaded Geppetto Simulation in browser 
@@ -405,7 +439,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 * @param connection - client to receive the simulation update
 	 * @param type - Type of udpate to be send
-	 * @param update - update to be send
+	 * @param update - update to be sent
 	 */
 	private void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type, String update){
 		// get transport message to be sent to the client

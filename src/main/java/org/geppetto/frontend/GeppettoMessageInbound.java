@@ -42,6 +42,7 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 
 /**
@@ -93,9 +94,10 @@ public class GeppettoMessageInbound extends MessageInbound
 
 	/**
 	 * Receives message(s) from client. 
+	 * @throws JsonProcessingException 
 	 */
 	@Override
-	protected void onTextMessage(CharBuffer message)
+	protected void onTextMessage(CharBuffer message) throws JsonProcessingException
 	{
 		String msg = message.toString();
 		
@@ -167,6 +169,16 @@ public class GeppettoMessageInbound extends MessageInbound
 			case OBSERVE:
 			{
 				simulationListener.observeSimulation(this);
+				break;
+			}
+			case LIST_WATCH_VARS:
+			{
+				simulationListener.listWatchableVariables(this);
+				break;
+			}
+			case LIST_FORCE_VARS:
+			{
+				simulationListener.listForceableVariables(this);
 				break;
 			}
 			default:

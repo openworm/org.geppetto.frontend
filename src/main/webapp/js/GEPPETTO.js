@@ -350,6 +350,10 @@ var GEPPETTO = GEPPETTO ||
 		camera.up = new THREE.Vector3(0,1,0);
 		camera.rotationAutoUpdate = true;
 		controls.target = sceneCenter;
+		
+//		GEPPETTO.Console.log("psoition " + cameraPosition.x + " y " +  cameraPosition.y + " z "+ cameraPosition.z);
+//		GEPPETTO.Console.log("scene center " + sceneCenter.x + " y " +  sceneCenter.y + " z "+ sceneCenter.z);
+
 	};
 
 	/**

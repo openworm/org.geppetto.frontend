@@ -190,6 +190,7 @@ var Sandbox = {
 			//check if command are multiple commands instead of single one
 			var multipleCommands = command.split("\n");
 			if(multipleCommands.length > 1){
+				console.log("Multiple commands " + command);
 				//run script if multiple commands
 				GEPPETTO.ScriptRunner.runScript(command);
 				//exit function

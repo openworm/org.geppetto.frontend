@@ -301,7 +301,7 @@ function availableTags(){
 
 	var availableTags = [];
 
-	var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
+	var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help() + "\n" + W.help();
 
 	var commandsSplitByLine = commands.split("\n");
 

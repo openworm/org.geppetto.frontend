@@ -30,13 +30,37 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-GEPPETTO.WidgetsControllers = GEPPETTO.WidgetsControllers ||
+GEPPETTO.PlotsController = GEPPETTO.PlotsController ||
 {
 	REVISION : '1'
 };
 
 var plots = new Array();
 
-GEPPETTO.WidgetsControllers.togglePlotWidget = function(){
-	W.addWidget(Widgets.PLOT);
+GEPPETTO.PlotsController.toggle = function(){
+	if(plots.length==0){
+		GEPPETTO.Console.executeCommand('W.addWidget(Widgets.PLOT)');
+	}
+	else{
+		GEPPETTO.Console.executeCommand('W.removeWidget(Widgets.PLOT)');
+	}
+};
+
+GEPPETTO.PlotsController.getPlotWidgets = function(){
+	return plots;
+};
+
+GEPPETTO.PlotsController.addPlotWidget = function(){
+	window.plot1 = new Plot("plot", "Plot");
+	plots.push(window.plot1);
+	
+	return window.plot1;
+};
+
+GEPPETTO.PlotsController.removePlotWidgets = function(){
+	for(p in plots){
+		plots[p].destroy();
+	}
+	
+	plots = new Array();
 };

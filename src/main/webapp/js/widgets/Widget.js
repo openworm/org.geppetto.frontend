@@ -56,18 +56,21 @@
 		},
 
 		destroy : function(){
-			GEPPETTO.Console.log("Destroying widget " + this.id);
-			$(this.id).remove();
+			$("#"+this.id).remove();
+			
+			return this.name + " destroyed";
 		},
 
 		hide : function(){
-			GEPPETTO.Console.log("Hiding widget " + this.id);
-			$("#"+this.id).hide();;
+			$("#"+this.id).dialog('close');;
+			
+			return "Hiding " + this.name + " widget";
 		},
 
 		show : function(){
-			GEPPETTO.Console.log("Showing widget " + this.id);
-			$("#"+this.id).show();
+			$("#"+this.id).dialog('open');
+			
+			return "Shwoing " + this.name + " widget";
 		}, 
 
 		// Create the widget

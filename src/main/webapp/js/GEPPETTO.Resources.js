@@ -150,10 +150,16 @@ var UPDATE_FRAME_END = "Ending update frame";
 var SAMPLES_DROPDOWN_PLACEHOLDER = "Select simulation from list...";
 
 /**
+ * W object resources
+ */
+var W_COMMANDS = "W object control commands: \n\n";
+var PLOT_COMMANDS = "W object control commands: \n\n";
+
+/**
  * Global help function with all commands in global objects. 
  * 
  * @returns {String}
  */
 function help(){
-	return ALL_COMMANDS_AVAILABLE_MESSAGE+G.help() + '\n\n' + Simulation.help();
+	return ALL_COMMANDS_AVAILABLE_MESSAGE + G.help() + '\n\n' + Simulation.help() + '\n\n' + W.help();
 };

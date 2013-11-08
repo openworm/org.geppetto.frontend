@@ -46,9 +46,10 @@
 		
 		id : null,
 		dialog : null,
+		visible : true, 
 		
 		constructor: function(id, name) {
-			this.id = id + "-widget";
+			this.id = id;
 			this.name = name;
 
 			// Call the original constructor
@@ -63,19 +64,32 @@
 
 		hide : function(){
 			$("#"+this.id).dialog('close');;
+			this.visible = false;
 			
 			return "Hiding " + this.name + " widget";
 		},
 
 		show : function(){
 			$("#"+this.id).dialog('open');
+			this.visible = true;
 			
-			return "Shwoing " + this.name + " widget";
+			return "Showing " + this.name + " widget";
 		}, 
+		
+		isVisible : function(){
+			return this.visible;
+		},
+		
+		getName : function(){
+			return this.name;
+		},
+		
+		getId : function(){
+			return this.id;
+		},
 
 		// Create the widget
 		render: function() {
-			GEPPETTO.Console.log("Rendering widget " + this.id);
 			this.dialog = this.createWidgetFrame(this.id, "");
 
 			return this;

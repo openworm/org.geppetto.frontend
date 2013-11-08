@@ -60,7 +60,7 @@ W.addWidget = function(widgetType){
 	
 	case Widgets.PLOT:
 		var p = GEPPETTO.PlotsController.addPlotWidget();
-		return p.name + " widget created";
+		return p.getName() + " widget created";
 		break;
 	default: 
 		break;

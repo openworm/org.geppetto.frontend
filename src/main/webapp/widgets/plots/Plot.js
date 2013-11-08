@@ -39,9 +39,8 @@
 var Plot = Widget.View.extend({
 
 	initialize : function(options){
-		GEPPETTO.Console.log("Initialize widget " + options);
 		this.render();
-		this.dialog.append("<div class='plot' id='plot'></div>");
+		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
 		this.addLinePlot();
 	},
 	

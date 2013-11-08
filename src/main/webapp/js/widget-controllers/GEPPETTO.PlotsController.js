@@ -41,8 +41,8 @@ GEPPETTO.PlotsController.toggle = function(){
 	if(plots.length==0){
 		GEPPETTO.Console.executeCommand('W.addWidget(Widgets.PLOT)');
 	}
-	else{
-		GEPPETTO.Console.executeCommand('W.removeWidget(Widgets.PLOT)');
+	else if(plots.length > 0){
+		GEPPETTO.PlotsController.togglePlots();
 	}
 };
 
@@ -51,16 +51,38 @@ GEPPETTO.PlotsController.getPlotWidgets = function(){
 };
 
 GEPPETTO.PlotsController.addPlotWidget = function(){
-	window.plot1 = new Plot("plot", "Plot");
-	plots.push(window.plot1);
 	
-	return window.plot1;
+	var index = (plots.length+1);
+	
+	var name = "Plot"+ index;
+	
+	var p = window[name] = new Plot("plot-widget"+ index, name);
+
+	plots.push(p);
+	
+	return p;
 };
 
 GEPPETTO.PlotsController.removePlotWidgets = function(){
 	for(p in plots){
-		plots[p].destroy();
-	}
+		var plot = plots[p];
+		
+		plot.destroy();
+		
+		delete window[plot.getName()];
+	}	
 	
 	plots = new Array();
+};
+
+GEPPETTO.PlotsController.togglePlots = function(){
+	for(p in plots){
+		var plot = plots[p];
+		if(plot.isVisible()){
+			plot.hide();
+		}
+		else{
+			plot.show();
+		}
+	}	
 };

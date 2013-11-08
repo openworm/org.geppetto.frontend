@@ -114,9 +114,14 @@
 			$('.ui-menu').remove();
 		});
 		
-		setTimeout(function(){
-			GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
-		}, 500);
+		var sendMessage = null;
+		
+		sendMessage = setInterval(function(){
+			if(GEPPETTO.MessageSocket.socket.readyState == 1 ){
+				GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
+				clearInterval(sendMessage);
+			}
+		}, 100);
 		return console;
 	};
 

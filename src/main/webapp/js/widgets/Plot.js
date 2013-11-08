@@ -32,15 +32,81 @@
  *******************************************************************************/
 /**
  * Plot Widget class
+ * 
+ * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 
-var Plot = Widget.extend({
-	
-	initialize : function(element, options){
-		
+var Plot = Widget.View.extend({
+
+	initialize : function(options){
+		GEPPETTO.Console.log("Initialize widget " + options);
+		this.render();
+		this.dialog.append("<div class='plot' id='plot'></div>");
+		this.addLinePlot();
 	},
 	
-	options : {
+	attributes: { class: 'graph' },
+
+	seriesColumn: 'year',
+	xaxisColumn: 'studio',
+	yaxisColumn: 'gross',
+
+	plotOptions: {
+		yaxis: {},
+		xaxis: {},
+		legend: { show: true, container: '.legend' },
+		grid: { hoverable: true, clickable: true, autoHighlight: true },
+		series: {
+			stack: true,
+			bars: { show: true, fill: 0.7, barWidth: 0.8, align: 'center' }
+		}
+	},
+	
+	addValue : function(){
+		for (v in this.variables)
+		{
+			varval = this.values[this.variables[v]];
+			if (!varval)
+			{
+				varval = new Array();
+				this.values[this.variables[v]] = varval;
+			}
+			if (varval.length > this.defaultBuffer)
+				varval.splice(0, 1);
+
+			if (jsonscene)
+			{
+				if (jsonscene.entities[0])
+				{
+					value = jsonscene.entities[entityId].metadata[this.variables[v]];
+					varval.push(value);
+				}
+			}
+			// Zip the generated y values with the x values
+
+		}
+
+		var resArray = [];
+		for (k in this.values)
+		{
+			var res = [];
+			for ( var i = 0; i < this.values[k].length; ++i)
+			{
+				res.push([ i, this.values[k][i] ]);
+			}
+			resArray.push(res);
+		}
+		this.flot.setData(resArray);
+	},
+	
+	addLinePlot : function(state1){		
+	}, 
+	
+	addLinePlot : function(state1, state2){
 		
+	}, 
+	
+	renderGraph: function() {
+		GEPPETTO.Console.log("Rendering Graph");
 	}
 });

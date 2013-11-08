@@ -33,13 +33,17 @@
 
 /**
  * 
- * Global objects. Handles global operations; clearing js console history commands, 
- * turning on/off debug statements, copying history commands, help info, etc.
+ * Handles commands for widgets. 
  * 
  * @constructor
 
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
+
+var W = W ||
+{
+	REVISION : '1'
+};
 
 /**
  * Adds widget to Geppetto

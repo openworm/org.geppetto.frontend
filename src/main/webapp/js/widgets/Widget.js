@@ -32,35 +32,62 @@
  *******************************************************************************/
 /**
  * 
- * Global objects. Handles global operations; clearing js console history commands, 
- * turning on/off debug statements, copying history commands, help info, etc.
+ * Base Widget Class, all widgets extend this class.
  * 
- * @constructor
-
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-/**
- * Parent Widget Base class
- */
-var Widget = Backbone.View.extend({
 
-	initialize : function(element, options){
-		
-	},
+	/**
+	 * Parent Widget Base class
+	 */
+	var Widget ={
 	
-	options : {
+		View : Backbone.View.extend({
 		
-	},
-	
-	destroy : function(){
+		id : null,
+		dialog : null,
 		
-	},
-	 
-	hide : function(){
+		constructor: function(id, name) {
+			this.id = id + "-widget";
+			this.name = name;
+
+			// Call the original constructor
+			Backbone.View.apply(this, arguments);
+		},
+
+		destroy : function(){
+			GEPPETTO.Console.log("Destroying widget " + this.id);
+			$(this.id).remove();
+		},
+
+		hide : function(){
+			GEPPETTO.Console.log("Hiding widget " + this.id);
+			$("#"+this.id).hide();;
+		},
+
+		show : function(){
+			GEPPETTO.Console.log("Showing widget " + this.id);
+			$("#"+this.id).show();
+		}, 
+
+		// Create the widget
+		render: function() {
+			GEPPETTO.Console.log("Rendering widget " + this.id);
+			this.dialog = this.createWidgetFrame(this.id, "");
+
+			return this;
+		},
 		
-	},
-	
-	show : function(){
-		
-	}
-});
+		createWidgetFrame : function(id, title)
+		{
+			return $("<div id=" + id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
+					{
+						resizable : true,
+						draggable : true,
+						height : 370,
+						width : 430,
+						modal : false
+					});
+		},
+		}),
+	};

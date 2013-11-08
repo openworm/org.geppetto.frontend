@@ -30,15 +30,54 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * 
- * Global objects. Handles global operations; clearing js console history commands, 
- * turning on/off debug statements, copying history commands, help info, etc.
- * 
- * @constructor
+var Widgets = {
+			PLOT : 0
+		};
 
- * @author  Jesus R. Martinez (jesus@metacell.us)
- */
-/**
- * Parent Widget Base class
- */
+(function(){
+	
+	
+
+	GEPPETTO.WidgetFactory = GEPPETTO.WidgetFactory ||
+	{
+		REVISION : '1'
+	};
+		
+	GEPPETTO.WidgetFactory.installWidget = function(){
+		
+	};
+	
+	GEPPETTO.WidgetFactory.uninstallWidget = function(){
+		
+	};
+	
+	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
+		switch(widgetType){
+		
+			case Widgets.PLOT:
+				var plot = new Plot("plot", "Plot");
+				plot.show();
+				break;
+			default: 
+				break;
+		}
+	};
+	
+	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
+		switch(widgetType){
+		
+			case PLOT:
+				for (p in plots)
+				{
+					if (plots[p].id == plotId)
+					{
+						plots[p].dispose();
+						break;
+					}
+				}
+				break;
+			default: 
+				break;
+		}
+	};	
+})();	

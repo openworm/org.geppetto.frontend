@@ -65,8 +65,6 @@ var SIMULATION_UNSPECIFIED = "Simulation not specified";
 
 var SIMULATION_ALREADY_STOPPED = "Simulation was already stopped";
 
-var SIMULATION_COMMANDS = "Simulation control commands: \n\n";
-
 var LOADING_FROM_CONTENT= "Outbound Message Sent: Load Simulation from editing console";
 
 var MESSAGE_OUTBOUND_LOAD = 'Outbound Message Sent: Loading Simulation';
@@ -103,7 +101,6 @@ var INVALID_WAIT_USE = "G.wait(ms) command must be used inside script";
 
 var WAITING = "Waiting ms";
 
-var G_COMMANDS = "G object commands: \n\n";
 
 /**
  * GEPPETTO.Main resources
@@ -150,16 +147,12 @@ var UPDATE_FRAME_END = "Ending update frame";
 var SAMPLES_DROPDOWN_PLACEHOLDER = "Select simulation from list...";
 
 /**
- * W object resources
+ * Global resources
  */
-var W_COMMANDS = "W object control commands: \n\n";
-var PLOT_COMMANDS = "W object control commands: \n\n";
+var COMMANDS = " commands: \n\n";
 
 /**
- * Global help function with all commands in global objects. 
- * 
- * @returns {String}
+ * Widget resources
  */
-function help(){
-	return ALL_COMMANDS_AVAILABLE_MESSAGE + G.help() + '\n\n' + Simulation.help() + '\n\n' + W.help();
-};
+var WIDGET_CREATED = " widget created";
+var REMOVE_PLOT_WIDGETS = "Plotting widget(s) removed";

@@ -155,66 +155,7 @@ G.getCurrentSimulation = function(){
  * @returns {String} - All commands and descriptions for G.
  */
 G.help = function(){
-	var commands = G_COMMANDS;
-
-	var descriptions = [];
-
-	//retrieve the script to get the comments for all the methods
-	$.ajax({ 
-		async:false,
-		type:'GET',
-		url: "js/geppetto-objects/G.js",
-		dataType:"text",
-		//at success, read the file and extract the comments
-		success:function(data) {			
-			var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-			descriptions = data.match(STRIP_COMMENTS);
-		},
-	});
-
-	//find all functions of object Simulation
-	for ( var prop in G ) {
-		if(typeof G[prop] === "function") {
-			var f = G[prop].toString();
-			//get the argument for this function
-			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
-
-			var functionName = "G."+prop+"("+parameter+")";
-			
-			//match the function to comment
-			var matchedDescription = "";
-			for(var i = 0; i<descriptions.length; i++){
-				var description = descriptions[i].toString();
-				
-				//items matched
-				if(description.indexOf(functionName)!=-1){
-
-					/*series of formatting of the comments for the function, removes unnecessary 
-					 * blank and special characters.
-					 */
-					var splitComments = description.replace(/\*/g, "").split("\n");
-					splitComments.splice(0,1);
-					splitComments.splice(splitComments.length-1,1);
-					for(var s = 0; s<splitComments.length; s++){
-						var line = splitComments[s].trim();
-						if(line != ""){
-							//ignore the name line, already have it
-							if(line.indexOf("@name")==-1){
-								//build description for function
-								matchedDescription += "         " + line + "\n";
-							}
-						}
-					}
-				}
-			}
-
-			//format and keep track of all commands available
-			commands += ("      -- "+functionName + "\n" + matchedDescription + "\n");
-		};
-	}	
-
-	//returned formatted string with commands and description, remove last two blank lines
-	return commands.substring(0,commands.length-2);
+	return extractCommandsFromFile("js/geppetto-objects/G.js", G, "G");
 };
 
 /**
@@ -258,6 +199,39 @@ G.wait = function(commands, ms){
 	}, ms);
 	
 	return WAITING;
+};
+
+/**
+ * Adds widget to Geppetto
+ * 
+ * @name G.addWidget(widgetType)
+ * @param widgetType - Type of widget to add
+ */
+G.addWidget = function(widgetType){
+	var newWidget = GEPPETTO.WidgetFactory.addWidget(widgetType);
+	
+	return newWidget.getName() + WIDGET_CREATED;
+};
+
+/**
+ * Removes widget from Geppetto
+ * 
+ * @name G.removeWidget(widgetType)
+ * @param widgetType - Type of widget to remove
+ */
+G.removeWidget = function(widgetType){
+	GEPPETTO.WidgetFactory.removeWidget(widgetType);
+};
+
+/**
+ * Gets list of available widgets 
+ * 
+ * @name G.availableWidgets()
+ * @returns {List} - List of available widgets
+ */
+G.availableWidgets = function(){
+
+	return widgetsList;
 };
 
 /**

@@ -31,6 +31,6 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 .plot {
-	width: 400px;
-	height: 280px;
+	width: 100%;
+	height: 100%;
 }

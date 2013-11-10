@@ -244,65 +244,7 @@ Simulation.isLoading = function()
  * @returns  Returns list of all commands for the Simulation object
  */
 Simulation.help = function(){
-	var commands = SIMULATION_COMMANDS;
-
-	var descriptions = [];
-
-	//retrieve the script to get the comments for all the methods
-	$.ajax({ 
-		async:false,
-		type:'GET',
-		url: "js/geppetto-objects/Simulation.js",
-		dataType:"text",
-		//at success, read the file and extract the comments
-		success:function(data) {			
-			var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-			descriptions = data.match(STRIP_COMMENTS);
-		},
-	});
-
-	//find all functions of object Simulation
-	for ( var prop in Simulation ) {
-		if(typeof Simulation[prop] === "function") {
-			var f = Simulation[prop].toString();
-			//get the argument for this function
-			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
-
-			var functionName = "Simulation."+prop+"("+parameter+")";
-			//match the function to comment
-			var matchedDescription = "";
-			for(var i = 0; i<descriptions.length; i++){
-				var description = descriptions[i].toString();
-				
-				//items matched
-				if(description.indexOf(functionName)!=-1){
-
-					/*series of formatting of the comments for the function, removes unnecessary 
-					 * blank and special characters.
-					 */
-					var splitComments = description.replace(/\*/g, "").split("\n");
-					splitComments.splice(0,1);
-					splitComments.splice(splitComments.length-1,1);
-					for(var s = 0; s<splitComments.length; s++){
-						var line = splitComments[s].trim();
-						if(line != ""){
-							//ignore the name line, already have it
-							if(line.indexOf("@name")==-1){
-								//build description for function
-								matchedDescription += "         " + line + "\n";
-							}
-						}
-					}
-				}
-			}
-
-			//format and keep track of all commands available
-			commands += ("      -- " + functionName + "\n" + matchedDescription + "\n");
-		};
-	}	
-
-	//returned formatted string with commands and description, remove last two blank lines
-	return commands.substring(0,commands.length-2);
+	return extractCommandsFromFile("js/geppetto-objects/Simulation.js", Simulation, "Simulation");
 };
 
 /**

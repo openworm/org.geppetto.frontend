@@ -30,63 +30,45 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Plot Widget class
- * 
- * @author  Jesus R. Martinez (jesus@metacell.us)
- */
+var Widgets = {
+			PLOT : 0
+};
 
-var Plot = Widget.View.extend({
-
-	plot : null,
-	plotData : [],
+(function(){
+	GEPPETTO.WidgetFactory = GEPPETTO.WidgetFactory ||
+	{
+		REVISION : '1'
+	};
 	
-	initialize : function(options){
-		this.render();
-		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
-	},
-
-	defaultPlotOptions: {
-		yaxis: { min : 0,max : 15},
-		xaxis: {min : 0, max : 15},
-		series: {
-	        lines: { show: true },
-	        points: { show: true }
-	    }, 
-	    legend: { show: true},
-	    grid: { hoverable: true, clickable: true, autoHighlight: true },	    
-	}, 
-	
-	resetPlot : function(){
-		if(this.plot != null){
-			this.data = [];
-			this.plot.setData(this.data);
-			this.plot.draw();
-		}
-	},
-	
-	addLinePlots : function(data, options){	
-		//If no options specify by user, use default options
-		if(options == null){options = this.defaultPlotOptions;}
+	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
+		var widget = null;
 		
-		//plot  reference not yet created, make it for first time
-		if(this.plot ==null){
-			this.plotData = data;
-			
-			this.plot = $.plot($("#"+this.name), this.plotData,options);		
+		switch(widgetType){
+		
+		case Widgets.PLOT:
+			widget = GEPPETTO.PlotsController.addPlotWidget();
+			break;
+		default: 
+			break;
 		}
 		
-		//plot exists, get existing plot series before adding new one
-		else{
-			for(var d = 0; d < data.length ; d++){
-				this.plotData.push(data[d]);
-			}
-			this.plot.setData(this.plotData);	
-			this.plot.draw();
-		}
-	},
+		return widget;
+	};
 	
-	plotFunction : function(){
+	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
+		switch(widgetType){
 		
-	}
-});
+		case Widgets.PLOT:
+			GEPPETTO.PlotsController.removePlotWidgets();
+			return REMOVE_PLOT_WIDGET;
+			break;
+		default: 
+			break;
+		}
+	};	
+})();	
+
+Plot.help = function(){
+	var p = new Plot();
+	return extractCommandsFromFile("widgets/Widget.js", p, "Plot");
+};

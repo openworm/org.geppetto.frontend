@@ -37,12 +37,15 @@ GEPPETTO.PlotsController = GEPPETTO.PlotsController ||
 
 var plots = new Array();
 
+var plotsON = false;
+
 GEPPETTO.PlotsController.toggle = function(){
 	if(plots.length==0){
-		GEPPETTO.Console.executeCommand('W.addWidget(Widgets.PLOT)');
+		GEPPETTO.Console.executeCommand('G.addWidget(Widgets.PLOT)');
 	}
 	else if(plots.length > 0){
-		GEPPETTO.PlotsController.togglePlots();
+		plotsON = !plotsON;
+		GEPPETTO.PlotsController.togglePlots(plotsON);
 	}
 };
 
@@ -59,7 +62,7 @@ GEPPETTO.PlotsController.addPlotWidget = function(){
 	var p = window[name] = new Plot("plot-widget"+ index, name);
 
 	plots.push(p);
-	
+		
 	return p;
 };
 
@@ -75,10 +78,10 @@ GEPPETTO.PlotsController.removePlotWidgets = function(){
 	plots = new Array();
 };
 
-GEPPETTO.PlotsController.togglePlots = function(){
+GEPPETTO.PlotsController.togglePlots = function(ON){
 	for(p in plots){
 		var plot = plots[p];
-		if(plot.isVisible()){
+		if(ON){
 			plot.hide();
 		}
 		else{

@@ -41,12 +41,11 @@
 	 * Parent Widget Base class
 	 */
 	var Widget ={
-	
 		View : Backbone.View.extend({
 		
 		id : null,
 		dialog : null,
-		visible : true, 
+		visibility : true,
 		
 		constructor: function(id, name) {
 			this.id = id;
@@ -64,21 +63,17 @@
 
 		hide : function(){
 			$("#"+this.id).dialog('close');;
-			this.visible = false;
+			this.visibility = false;
 			
 			return "Hiding " + this.name + " widget";
 		},
 
 		show : function(){
 			$("#"+this.id).dialog('open');
-			this.visible = true;
+			this.visibility = true;
 			
 			return "Showing " + this.name + " widget";
 		}, 
-		
-		isVisible : function(){
-			return this.visible;
-		},
 		
 		getName : function(){
 			return this.name;
@@ -88,6 +83,10 @@
 			return this.id;
 		},
 
+		isVisible : function(){
+			return this.visibility;
+		},
+		
 		// Create the widget
 		render: function() {
 			this.dialog = this.createWidgetFrame(this.id, "");
@@ -99,7 +98,7 @@
 		{
 			return $("<div id=" + id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
 					{
-						resizable : true,
+						resizable :  true,
 						draggable : true,
 						height : 370,
 						width : 430,

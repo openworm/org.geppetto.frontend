@@ -30,6 +30,14 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
+/**
+ * Class used to create widgets. 
+ */
+
+/**
+ * Enum use to hold different types of widgets
+ */
 var Widgets = {
 			PLOT : 0
 };
@@ -40,35 +48,36 @@ var Widgets = {
 		REVISION : '1'
 	};
 	
+	/**
+	 * Adds widget to Geppetto
+	 */
 	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
 		var widget = null;
 		
 		switch(widgetType){
-		
-		case Widgets.PLOT:
-			widget = GEPPETTO.PlotsController.addPlotWidget();
-			break;
-		default: 
-			break;
+			//create plotting widget
+			case Widgets.PLOT:
+				widget = GEPPETTO.PlotsController.addPlotWidget();
+				break;
+			default: 
+				break;
 		}
 		
 		return widget;
 	};
 	
+	/**
+	 * Removes widget from Geppetto
+	 */
 	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
 		switch(widgetType){
-		
-		case Widgets.PLOT:
-			GEPPETTO.PlotsController.removePlotWidgets();
-			return REMOVE_PLOT_WIDGET;
-			break;
-		default: 
-			break;
+			//removes plotting widget from geppetto
+			case Widgets.PLOT:
+				GEPPETTO.PlotsController.removePlotWidgets();
+				return REMOVE_PLOT_WIDGET;
+				break;
+			default: 
+				break;
 		}
 	};	
 })();	
-
-Plot.help = function(){
-	var p = new Plot();
-	return extractCommandsFromFile("widgets/Widget.js", p, "Plot");
-};

@@ -31,15 +31,29 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
  
+/**
+ * Utility class for helper functions
+ */
+
+
  /**
- * Global help function with all commands in global objects. 
+ * Global help functions with all commands in global objects. 
  * 
- * @returns {String}
+ * @returns {String} - Message with help notes.
  */
 function help(){
 	return ALL_COMMANDS_AVAILABLE_MESSAGE + G.help() + '\n\n' + Simulation.help();
 };
 
+/**
+ * Extracts commands from Javascript files 
+ * 
+ * @param script - Script from where to read the commands and comments
+ * @param Object - Object from where to extract the commands
+ * @param objectName - Name of the object holding commands
+ * 
+ * @returns - Formmatted commands with descriptions
+ */
 function extractCommandsFromFile(script, Object, objectName){
 	var commands = objectName + COMMANDS;
 

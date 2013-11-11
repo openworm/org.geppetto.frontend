@@ -30,6 +30,13 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Controller class for plotting widget. Use to make calls to widget from inside Geppetto.
+ * 
+ * @constructor
+ * 
+ * @author Jesus R Martinez (jesus@metacell.us)
+ */
 GEPPETTO.PlotsController = GEPPETTO.PlotsController ||
 {
 	REVISION : '1'
@@ -39,53 +46,71 @@ var plots = new Array();
 
 var plotsON = false;
 
+/**
+ * Toggles plotting widget on and off
+ */
 GEPPETTO.PlotsController.toggle = function(){
+	//if there aren't plotting widgets to toggle, create one
 	if(plots.length==0){
 		GEPPETTO.Console.executeCommand('G.addWidget(Widgets.PLOT)');
 	}
+	//plot widgets exist, toggle them
 	else if(plots.length > 0){
 		plotsON = !plotsON;
-		GEPPETTO.PlotsController.togglePlots(plotsON);
+		
+		for(p in plots){
+			var plot = plots[p];
+			if(plotsON){
+				plot.hide();
+			}
+			else{
+				plot.show();
+			}
+		}	
 	}
 };
 
+/**
+ * Returns all plotting widgets objects
+ */
 GEPPETTO.PlotsController.getPlotWidgets = function(){
 	return plots;
 };
 
+/**
+ * Creates plotting widget
+ * 
+ * @ return {Widget} - Plotting widget
+ */
 GEPPETTO.PlotsController.addPlotWidget = function(){
-	
-	var index = (plots.length+1);
-	
-	var name = "Plot"+ index;
-	
-	var p = window[name] = new Plot("plot-widget"+ index, name);
 
+	//Plot widget number
+	var index = (plots.length+1);
+
+	//Name of plotting widget
+	var name = "Plot"+ index;
+
+	//create plotting widget
+	var p = window[name] = new Plot("plot-widget"+ index, name,true);
+
+	//store in local stack
 	plots.push(p);
-		
+
 	return p;
 };
 
+/**
+ * Removes existing plotting widgets
+ */
 GEPPETTO.PlotsController.removePlotWidgets = function(){
+	//remove all existing plotting widgets
 	for(p in plots){
 		var plot = plots[p];
-		
+
 		plot.destroy();
-		
+
 		delete window[plot.getName()];
 	}	
-	
-	plots = new Array();
-};
 
-GEPPETTO.PlotsController.togglePlots = function(ON){
-	for(p in plots){
-		var plot = plots[p];
-		if(ON){
-			plot.hide();
-		}
-		else{
-			plot.show();
-		}
-	}	
+	plots = new Array();
 };

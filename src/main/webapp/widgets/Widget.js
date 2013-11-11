@@ -37,73 +37,119 @@
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 
-	/**
-	 * Parent Widget Base class
-	 */
-	var Widget ={
-		View : Backbone.View.extend({
+/**
+ * Parent Widget Base class
+ */
+var Widget ={
 		
-		id : null,
-		dialog : null,
-		visibility : true,
-		
-		constructor: function(id, name) {
-			this.id = id;
-			this.name = name;
-
-			// Call the original constructor
-			Backbone.View.apply(this, arguments);
-		},
-
-		destroy : function(){
-			$("#"+this.id).remove();
+		/**
+		 * Not yet implemented, used for local storage and history. 
+		 */
+		Model : Backbone.Model.extend({
 			
-			return this.name + " destroyed";
-		},
-
-		hide : function(){
-			$("#"+this.id).dialog('close');;
-			this.visibility = false;
-			
-			return "Hiding " + this.name + " widget";
-		},
-
-		show : function(){
-			$("#"+this.id).dialog('open');
-			this.visibility = true;
-			
-			return "Showing " + this.name + " widget";
-		}, 
-		
-		getName : function(){
-			return this.name;
-		},
-		
-		getId : function(){
-			return this.id;
-		},
-
-		isVisible : function(){
-			return this.visibility;
-		},
-		
-		// Create the widget
-		render: function() {
-			this.dialog = this.createWidgetFrame(this.id, "");
-
-			return this;
-		},
-		
-		createWidgetFrame : function(id, title)
-		{
-			return $("<div id=" + id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
-					{
-						resizable :  true,
-						draggable : true,
-						height : 370,
-						width : 430,
-						modal : false
-					});
-		},
 		}),
-	};
+		
+		/**
+		 * Creates base view for widget
+		 */
+		View : Backbone.View.extend({
+
+			id : null,
+			dialog : null,
+			visibility : true,
+
+			/**
+			 * Initializes the widget
+			 * 
+			 * @param id - id of widget
+			 * @param name - name of widget
+			 * @param visibility - visibility of widget window
+			 */
+			constructor: function(id, name, visibility) {
+				this.id = id;
+				this.name = name;
+				this.visibility = visibility;
+
+				// Call the original constructor
+				Backbone.View.apply(this, arguments);
+			},
+
+			/**
+			 * Destroy the widget, remove it from DOM
+			 * 
+			 * @returns {String} - Action Message
+			 */
+			destroy : function(){
+				$("#"+this.id).remove();
+
+				return this.name + " destroyed";
+			},
+
+			/**
+			 * 
+			 * Hides the widget 
+			 * 
+			 * @returns {String} - Action Message
+			 */
+			hide : function(){
+				$("#"+this.id).dialog('close');;
+				this.visibility = false;
+
+				return "Hiding " + this.name + " widget";
+			},
+
+			/**
+			 *  Opens widget dialog
+			 *  
+			 * @returns {String} - Action Message
+			 */
+			show : function(){
+				$("#"+this.id).dialog('open');
+				this.visibility = true;
+
+				return "Showing " + this.name + " widget";
+			}, 
+
+			/**
+			 * Gets the name of the widget
+			 * 
+			 * @returns {String} - Name of widget
+			 */
+			getName : function(){
+				return this.name;
+			},
+
+			/**
+			 * Gets the ID of the widget
+			 * 
+			 * @returns {String} - ID of widget
+			 */
+			getId : function(){
+				return this.id;
+			},
+
+			/**
+			 * Returns whether widget is visible or not
+			 * 
+			 * @returns {Boolean} - Widget visibility state
+			 */
+			isVisible : function(){
+				return this.visibility;
+			},
+
+			/**
+			 * Renders the widget dialog window
+			 */
+			render: function() {
+				//creat the dialog window for the widget
+				this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
+						{
+							resizable :  true,
+							draggable : true,
+							height : 370,
+							width : 430,
+							modal : false
+						});
+			},
+		}),
+};

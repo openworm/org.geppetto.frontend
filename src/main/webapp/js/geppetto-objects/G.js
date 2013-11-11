@@ -45,7 +45,30 @@ var G = G ||
 	REVISION : '1'
 };
 
-G.debugMode = false;
+debugMode = false;
+
+/**
+ * Adds widget to Geppetto
+ * 
+ * @name G.addWidget(widgetType)
+ * @param widgetType - Type of widget to add
+ */
+G.addWidget = function(widgetType){
+	var newWidget = GEPPETTO.WidgetFactory.addWidget(widgetType);
+	
+	return newWidget.getName() + WIDGET_CREATED;
+};
+
+/**
+ * Gets list of available widgets 
+ * 
+ * @name G.availableWidgets()
+ * @returns {List} - List of available widget types
+ */
+G.availableWidgets = function(){
+
+	return Widgets;
+};
 
 /**
  * Clears the console history
@@ -120,7 +143,7 @@ G.copyHistoryToClipboard = function(){
  * 
  */
 G.debug = function(toggle){
-	G.debugMode = toggle;
+	debugMode = toggle;
 
 	if(toggle){
 		GEPPETTO.showStats();
@@ -156,6 +179,16 @@ G.getCurrentSimulation = function(){
  */
 G.help = function(){
 	return extractCommandsFromFile("js/geppetto-objects/G.js", G, "G");
+};
+
+/**
+ * Removes widget from Geppetto
+ * 
+ * @name G.removeWidget(widgetType)
+ * @param widgetType - Type of widget to remove
+ */
+G.removeWidget = function(widgetType){
+	GEPPETTO.WidgetFactory.removeWidget(widgetType);
 };
 
 /**
@@ -202,43 +235,10 @@ G.wait = function(commands, ms){
 };
 
 /**
- * Adds widget to Geppetto
- * 
- * @name G.addWidget(widgetType)
- * @param widgetType - Type of widget to add
- */
-G.addWidget = function(widgetType){
-	var newWidget = GEPPETTO.WidgetFactory.addWidget(widgetType);
-	
-	return newWidget.getName() + WIDGET_CREATED;
-};
-
-/**
- * Removes widget from Geppetto
- * 
- * @name G.removeWidget(widgetType)
- * @param widgetType - Type of widget to remove
- */
-G.removeWidget = function(widgetType){
-	GEPPETTO.WidgetFactory.removeWidget(widgetType);
-};
-
-/**
- * Gets list of available widgets 
- * 
- * @name G.availableWidgets()
- * @returns {List} - List of available widgets
- */
-G.availableWidgets = function(){
-
-	return widgetsList;
-};
-
-/**
  * State of debug statements, whether they are turned on or off.
  * 
  * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
  */
 function isDebugOn(){
-	return G.debugMode;
+	return debugMode;
 };

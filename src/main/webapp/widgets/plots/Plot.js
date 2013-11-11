@@ -35,17 +35,23 @@
  * 
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-
 var Plot = Widget.View.extend({
 
 	plot : null,
 	plotData : [],
 	
-	initialize : function(options){
+	/**
+	 * Initializes the plot widget
+	 */
+	initialize : function(){
 		this.render();
 		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
 	},
 
+	/**
+	 * Default options for plot widget, used if none specified 
+	 * when plot is created
+	 */
 	defaultPlotOptions: {
 		yaxis: { min : 0,max : 15},
 		xaxis: {min : 0, max : 15},
@@ -57,15 +63,13 @@ var Plot = Widget.View.extend({
 	    grid: { hoverable: true, clickable: true, autoHighlight: true },	    
 	}, 
 	
-	resetPlot : function(){
-		if(this.plot != null){
-			this.data = [];
-			this.plot.setData(this.data);
-			this.plot.draw();
-		}
-	},
-	
-	addLinePlots : function(data, options){	
+	/**
+	 * Takes data series and plots them. 
+	 * 
+	 * @param data - series to plot
+	 * @param options - options for the plotting widget
+	 */
+	plotData : function(data, options){	
 		//If no options specify by user, use default options
 		if(options == null){options = this.defaultPlotOptions;}
 		
@@ -73,7 +77,11 @@ var Plot = Widget.View.extend({
 		if(this.plot ==null){
 			this.plotData = data;
 			
-			this.plot = $.plot($("#"+this.name), this.plotData,options);		
+			var plotHolder = $("#"+this.name);
+			
+			this.plot = $.plot(plotHolder, this.plotData,options);
+			
+			plotHolder.resize();
 		}
 		
 		//plot exists, get existing plot series before adding new one
@@ -86,7 +94,30 @@ var Plot = Widget.View.extend({
 		}
 	},
 	
-	plotFunction : function(){
+	/**
+	 * Plots a function against a data series
+	 * 
+	 * @param func - function to plot vs data
+	 * @param data - data series to plot against function
+	 * @param options - options for plotting widget
+	 */
+	plotDataFunction : function(func,data,options){
 		
+	},
+	
+	/**
+	 * Resets the plot widget, deletes all the data series but does not
+	 * destroy the widget window.
+	 */
+	resetPlot : function(){
+		if(this.plot != null){
+			this.data = [];
+			this.plot.setData(this.data);
+			this.plot.draw();
+		}
+	},
+	
+	setOptions : function(options){
+		this.defaultPlotOptions = options;
 	}
 });

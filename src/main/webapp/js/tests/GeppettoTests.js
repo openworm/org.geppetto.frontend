@@ -85,6 +85,46 @@ test("Test Copy History To Clipboard", function(){
 	equal(G.copyHistoryToClipboard(), COPY_CONSOLE_HISTORY, "Commands copied, test passed");
 });
 
+test("Test Add Widget", function(){
+	G.addWidget(Widgets.PLOT);
+	
+	equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created, test passed");
+	
+	G.removeWidget(Widgets.PLOT);
+});
+
+test("Test Remove Widget", function(){
+	G.addWidget(Widgets.PLOT);
+	
+	equal(GEPPETTO.PlotsController.getPlotWidgets().length,  1, "Plot widget created");
+	
+	G.removeWidget(Widgets.PLOT);
+	
+	equal(GEPPETTO.PlotsController.getPlotWidgets().length, 0, "Plot widget removed, test passed");
+});
+
+test("Test Widget", function(){
+	G.addWidget(Widgets.PLOT);
+	
+	equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created");
+	
+	var plot = GEPPETTO.PlotsController.getPlotWidgets()[0];
+	
+	equal(plot.isVisible(), true, "Default visibility test passed");
+	
+	plot.hide();
+	
+	equal(plot.isVisible(), false, "Hide test passed");
+	
+	plot.show();
+	
+	equal(plot.isVisible(), true, "Show test passed");
+	
+	plot.destroy();
+	
+	equal($("#"+plot.getId()).html(), null , "Widget successfully destroyed, passed");
+});
+
 module("Run Script Test",
 		{
 	setup : function(){

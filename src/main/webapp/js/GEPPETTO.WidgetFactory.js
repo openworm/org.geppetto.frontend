@@ -74,10 +74,18 @@ var Widgets = {
 			//removes plotting widget from geppetto
 			case Widgets.PLOT:
 				GEPPETTO.PlotsController.removePlotWidgets();
-				return REMOVE_PLOT_WIDGET;
+				return REMOVE_PLOT_WIDGETS;
 				break;
 			default: 
 				break;
 		}
 	};	
 })();	
+
+Plot.help = function(){
+	
+	var nonCommands = ["initialize()", "constructor()", "render()", "bind(a,b,c)", "unbind(a,b)","trigger(a)",
+	                   "$(a)", "make(a)", "remove()", "delegateEvents(a)", "_configure(a)", "ensureElement(a)"];
+	
+	return extractCommandsFromFile("widgets/Plot.js", Plot1, "Plot1");
+};

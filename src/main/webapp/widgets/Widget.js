@@ -56,7 +56,7 @@ var Widget ={
 
 			id : null,
 			dialog : null,
-			visibility : true,
+			visible : true,
 
 			/**
 			 * Initializes the widget
@@ -65,10 +65,10 @@ var Widget ={
 			 * @param name - name of widget
 			 * @param visibility - visibility of widget window
 			 */
-			constructor: function(id, name, visibility) {
+			constructor: function(id, name, visible) {
 				this.id = id;
 				this.name = name;
-				this.visibility = visibility;
+				this.visible = visible;
 
 				// Call the original constructor
 				Backbone.View.apply(this, arguments);
@@ -93,7 +93,7 @@ var Widget ={
 			 */
 			hide : function(){
 				$("#"+this.id).dialog('close');;
-				this.visibility = false;
+				this.visible = false;
 
 				return "Hiding " + this.name + " widget";
 			},
@@ -105,7 +105,7 @@ var Widget ={
 			 */
 			show : function(){
 				$("#"+this.id).dialog('open');
-				this.visibility = true;
+				this.visible = true;
 
 				return "Showing " + this.name + " widget";
 			}, 
@@ -134,7 +134,7 @@ var Widget ={
 			 * @returns {Boolean} - Widget visibility state
 			 */
 			isVisible : function(){
-				return this.visibility;
+				return this.visible;
 			},
 
 			/**

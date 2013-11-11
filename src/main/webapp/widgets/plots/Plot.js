@@ -82,6 +82,8 @@ var Plot = Widget.View.extend({
 			this.plot = $.plot(plotHolder, this.plotData,options);
 			
 			plotHolder.resize();
+			
+			return "Line plot added to widget";
 		}
 		
 		//plot exists, get existing plot series before adding new one
@@ -111,13 +113,15 @@ var Plot = Widget.View.extend({
 	 */
 	resetPlot : function(){
 		if(this.plot != null){
-			this.data = [];
-			this.plot.setData(this.data);
+			this.plotData = [];
+			this.plot.setData(this.plotData);
 			this.plot.draw();
 		}
 	},
 	
 	setOptions : function(options){
 		this.defaultPlotOptions = options;
+		
+		$.plot($("#"+this.name), this.plotData,this.defaultPlotOptions);
 	}
 });

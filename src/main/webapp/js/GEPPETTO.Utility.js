@@ -35,6 +35,9 @@
  * Utility class for helper functions
  */
 
+var tags = [];
+
+var helpMsg = null;
 
  /**
  * Global help functions with all commands in global objects. 
@@ -42,7 +45,17 @@
  * @returns {String} - Message with help notes.
  */
 function help(){
-	return ALL_COMMANDS_AVAILABLE_MESSAGE + G.help() + '\n\n' + Simulation.help();
+	if(helpMsg == null){
+		helpMsg = ALL_COMMANDS_AVAILABLE_MESSAGE + G.help() + '\n\n' + Simulation.help();
+	}
+	
+	return helpMsg;
+};
+
+function updateHelp(newObjectCommands){
+	helpMsg = helpMsg + '\n\n' + newObjectCommands;
+	
+	GEPPETTO.Console.log("New help " + helpMsg);
 };
 
 /**
@@ -117,3 +130,144 @@ function extractCommandsFromFile(script, Object, objectName){
 	return commands.substring(0,commands.length-2);
 }
  
+/**
+ * Available commands stored in an array, used for autocomplete
+ * 
+ * @returns {Array}
+ */
+function availableTags(){
+
+	var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
+
+	var commandsSplitByLine = commands.split("\n");
+
+	var tagsCount = 0;
+
+	for(var i =0; i<commandsSplitByLine.length; i++){
+		var line = commandsSplitByLine[i].trim();
+
+		if(line.substring(0,2) == "--"){
+			var command = line.substring(3, line.length);
+			tags[tagsCount] = command;
+			tagsCount++;
+		}
+	}
+
+	return tags;
+};
+
+function addTags(scriptLocation, object, name){
+	var nonCommands = ["initialize()", "constructor()", "render()", "bind(a,b,c)", "unbind(a,b)","trigger(a)",
+	                   "$(a)", "make(a)", "remove()", "delegateEvents(a)", "_configure(a)", "_ensureElement()"];
+
+	var commands = name + COMMANDS;
+
+	var tagsCount = tags.length;
+	
+//	find all functions of object Simulation
+	for ( var prop in object ) {
+		if(typeof object[prop] === "function") {
+			var f = object[prop].toString();
+			//get the argument for this function
+			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
+
+			var functionName = name + "."+prop+"("+parameter+")";
+
+			var isCommand = true;
+			for(var c =0; c<nonCommands.length; c++){
+				if(functionName.indexOf(nonCommands[c])!=-1){
+					isCommand = false;
+				}
+			}		
+
+			if(isCommand){
+				tags[tagsCount] = functionName;
+				tagsCount++;
+				//format and keep track of all commands available
+				commands += ("      -- "+functionName + "\n\n");
+			}
+		};
+	}	
+
+	//update help message
+	updateHelp(commands.substring(0,commands.length-2));
+}
+
+function removeTags(name, object){
+	
+}
+//function addTags(scriptLocation, object, name){
+//	var nonCommands = ["initialize()", "constructor()", "render()", "bind(a,b,c)", "unbind(a,b)","trigger(a)",
+//	                   "$(a)", "make(a)", "remove()", "delegateEvents(a)", "_configure(a)", "_ensureElement()"];
+//	
+//	var commands = name + COMMANDS;
+//
+//	var descriptions = [];
+//
+//	//retrieve the script to get the comments for all the methods
+//	$.ajax({ 
+//		async:false,
+//		type:'GET',
+//		url: scriptLocation,
+//		dataType:"text",
+//		//at success, read the file and extract the comments
+//		success:function(data) {			
+//			var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+//			descriptions = data.match(STRIP_COMMENTS);
+//		},
+//	});
+//
+//	//find all functions of object Simulation
+//	for ( var prop in object ) {
+//		if(typeof object[prop] === "function") {
+//			var f = object[prop].toString();
+//			//get the argument for this function
+//			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
+//
+//			var functionName = name + "."+prop+"("+parameter+")";
+//			
+//			var isCommand = true;
+//			for(var c =0; c<nonCommands.length; c++){
+//				if(functionName.indexOf(nonCommands[c])!=-1){
+//					isCommand = false;
+//				}
+//			}		
+//
+//			if(isCommand){
+//			//match the function to comment
+//			var matchedDescription = "";
+//			for(var i = 0; i<descriptions.length; i++){
+//				var description = descriptions[i].toString();
+//				
+//				GEPPETTO.Console.log("is command " + description);
+//				//items matched
+//				if(description.indexOf(prop)!=-1){
+//
+//					/*series of formatting of the comments for the function, removes unnecessary 
+//					 * blank and special characters.
+//					 */
+//					var splitComments = description.replace(/\*/g, "").split("\n");
+//					splitComments.splice(0,1);
+//					splitComments.splice(splitComments.length-1,1);
+//					for(var s = 0; s<splitComments.length; s++){
+//						var line = splitComments[s].trim();
+//						if(line != ""){
+//							//ignore the name line, already have it
+//							if(line.indexOf("@name")==-1){
+//								//build description for function
+//								matchedDescription += "         " + line + "\n";
+//							}
+//						}
+//					}
+//				}
+//			}
+//				
+//			//format and keep track of all commands available
+//			commands += ("      -- "+functionName + "\n" + matchedDescription + "\n");
+//			}
+//		};
+//	}	
+//
+//	//returned formatted string with commands and description, remove last two blank lines
+//	updateHelp(commands.substring(0,commands.length-2));
+//}

@@ -81,11 +81,3 @@ var Widgets = {
 		}
 	};	
 })();	
-
-Plot.help = function(){
-	
-	var nonCommands = ["initialize()", "constructor()", "render()", "bind(a,b,c)", "unbind(a,b)","trigger(a)",
-	                   "$(a)", "make(a)", "remove()", "delegateEvents(a)", "_configure(a)", "ensureElement(a)"];
-	
-	return extractCommandsFromFile("widgets/Plot.js", Plot1, "Plot1");
-};

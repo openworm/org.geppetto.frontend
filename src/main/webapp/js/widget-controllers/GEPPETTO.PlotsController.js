@@ -95,6 +95,9 @@ GEPPETTO.PlotsController.addPlotWidget = function(){
 
 	//store in local stack
 	plots.push(p);
+	
+	//add commands to console autocomplete and help option
+	addTags("widgets/plots/Plot.js", p, name);
 
 	return p;
 };

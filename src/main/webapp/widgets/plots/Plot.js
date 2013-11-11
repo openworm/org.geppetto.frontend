@@ -66,6 +66,7 @@ var Plot = Widget.View.extend({
 	/**
 	 * Takes data series and plots them. 
 	 * 
+	 * @name plotData(data, options)
 	 * @param data - series to plot
 	 * @param options - options for the plotting widget
 	 */

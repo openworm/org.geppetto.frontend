@@ -49,8 +49,6 @@
 		REVISION : '1'
 	};
 
-
-
 	/**
 	 * Toggle javascript console's visibility via button 
 	 */

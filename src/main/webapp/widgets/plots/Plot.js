@@ -100,6 +100,7 @@ var Plot = Widget.View.extend({
 	/**
 	 * Plots a function against a data series
 	 * 
+	 * @name plotDataFunction(func, data, options)
 	 * @param func - function to plot vs data
 	 * @param data - data series to plot against function
 	 * @param options - options for plotting widget
@@ -111,6 +112,8 @@ var Plot = Widget.View.extend({
 	/**
 	 * Resets the plot widget, deletes all the data series but does not
 	 * destroy the widget window.
+	 * 
+	 * @name resetPlot()
 	 */
 	resetPlot : function(){
 		if(this.plot != null){
@@ -120,6 +123,13 @@ var Plot = Widget.View.extend({
 		}
 	},
 	
+	/**
+	 * 
+	 * Set the options for the plotting widget
+	 * 
+	 * @name setOptions(options)
+	 * @param options
+	 */
 	setOptions : function(options){
 		this.defaultPlotOptions = options;
 		

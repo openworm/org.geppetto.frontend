@@ -77,6 +77,7 @@ var Widget ={
 			/**
 			 * Destroy the widget, remove it from DOM
 			 * 
+			 * @name destroy()
 			 * @returns {String} - Action Message
 			 */
 			destroy : function(){
@@ -89,6 +90,7 @@ var Widget ={
 			 * 
 			 * Hides the widget 
 			 * 
+			 * @name hide()
 			 * @returns {String} - Action Message
 			 */
 			hide : function(){
@@ -101,6 +103,7 @@ var Widget ={
 			/**
 			 *  Opens widget dialog
 			 *  
+			 * @name show()
 			 * @returns {String} - Action Message
 			 */
 			show : function(){
@@ -113,6 +116,7 @@ var Widget ={
 			/**
 			 * Gets the name of the widget
 			 * 
+			 * @getName()
 			 * @returns {String} - Name of widget
 			 */
 			getName : function(){
@@ -122,6 +126,7 @@ var Widget ={
 			/**
 			 * Gets the ID of the widget
 			 * 
+			 * @name getId()
 			 * @returns {String} - ID of widget
 			 */
 			getId : function(){
@@ -131,6 +136,7 @@ var Widget ={
 			/**
 			 * Returns whether widget is visible or not
 			 * 
+			 * @name isVisible()
 			 * @returns {Boolean} - Widget visibility state
 			 */
 			isVisible : function(){

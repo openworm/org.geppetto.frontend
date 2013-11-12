@@ -41,10 +41,14 @@ public enum INBOUND_MESSAGE_TYPES {
 	STOP("stop"), 
 	OBSERVE("observe"), 
 	INIT_URL("init_url"), 
-	INIT_SIM("init_sim"), 
+	INIT_SIM("init_sim"),
+	LIST_WATCH_VARS("list_watch_vars"),
+	LIST_FORCE_VARS("list_force_vars"),
 	SIM("sim"),
 	GEPPETTO_VERSION("geppetto_version"),
-	RUN_SCRIPT("run_script");
+	RUN_SCRIPT("run_script"),
+	SET_WATCH("set_watch"),
+	START_WATCH("start_watch");
 
 	private INBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

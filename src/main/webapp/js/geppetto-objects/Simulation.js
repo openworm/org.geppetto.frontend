@@ -237,6 +237,46 @@ Simulation.isLoading = function()
 };
 
 /**
+ * LIst watchable variables for the simulation.
+ * 
+ * @name Simulation.listWatchableVariables()
+ * @returns {String} - status after requesting list of watchable variables.
+ */
+Simulation.listWatchableVariables = function()
+{
+	if(Simulation.isLoaded()){		
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_watch_vars", null));
+		
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_WATCH);
+		
+		return SIMULATION_VARS_LIST;
+	}
+	else{
+		return SIMULATION_NOT_LOADED_LIST;
+	}
+};
+
+/**
+ * List forceable variables for the simulation.
+ * 
+ * @name Simulation.listForceableVariables()
+ * @returns {String} - status after requesting list of forceable variables.
+ */
+Simulation.listForceableVariables = function()
+{
+	if(Simulation.isLoaded()){		
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_force_vars", null));
+		
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_FORCE);
+		
+		return SIMULATION_VARS_LIST;
+	}
+	else{
+		return SIMULATION_NOT_LOADED_LIST;
+	}
+};
+
+/**
  *
  * Outputs list of commands with descriptions associated with the Simulation object.
  * 
@@ -261,18 +301,3 @@ function setSimulationLoaded()
 	loading = false;
 };
 
-/**
-* Template for Geppetto message 
-* NOTE: move from here under global G object once in place
-* 
-* @param msgtype - messaga type
-* @param payload - message payload, can be anything
-* @returns JSON stringified object
-*/
-function messageTemplate(msgtype, payload) {
-	var object = {
-		type: msgtype,
-	    data: payload
-	};
-	return JSON.stringify(object);
-};

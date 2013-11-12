@@ -75,6 +75,14 @@ var MESSAGE_OUTBOUND_PAUSE = 'Outbund Message Sent: Simulation Paused';
 
 var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation Started';
 
+var MESSAGE_OUTBOUND_LIST_WATCH = 'Outbund Message Sent: List watchable variables';
+
+var MESSAGE_OUTBOUND_LIST_FORCE = 'Outbund Message Sent: List forceable variables';
+
+var SIMULATION_NOT_LOADED_LIST = "Unable to list variables, the simulation hasn't been loaded";
+
+var SIMULATION_VARS_LIST = "Simulation Variables List requested";
+
 
 /**
  * Object G resources
@@ -132,6 +140,10 @@ var WEBGL_FAILED = "Initializing Error: Unable to initialize WebGL";
 var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.\n\n";
 
 var GEPPETTO_VERSION_HOLDER = "Geppetto v$1 is ready";
+
+var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
+
+var LISTING_FORCE_VARS = "Inbound Message Received: List force variables";
 
 
 /**

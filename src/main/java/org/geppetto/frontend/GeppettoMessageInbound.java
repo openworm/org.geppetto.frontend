@@ -181,6 +181,16 @@ public class GeppettoMessageInbound extends MessageInbound
 				simulationListener.listForceableVariables(this);
 				break;
 			}
+			case SET_WATCH:
+			{
+				// TODO: set watch
+				break;
+			}
+			case START_WATCH:
+			{
+				// TODO: start watch
+				break;
+			}
 			default:
 			{
 				// NOTE: no other messages expected for now

@@ -351,6 +351,20 @@ public class SimulationListener implements ISimulationCallbackListener {
 		// message the client with results
 		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, serializedVars);
 	}
+	
+	/**
+	 * Adds watch lists with variables to be watched
+	 */
+	public void addWatchList(){		
+		// TODO: implement
+	}
+	
+	/**
+	 * instructs simulation to start sending watched variables value to the client 
+	 */
+	public void startWatch(){		
+		// TODO: implement
+	}
 
 	/**
 	 * Simulation is being controlled by another user, new visitor that just loaded Geppetto Simulation in browser 

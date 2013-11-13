@@ -38,7 +38,7 @@
 var Plot = Widget.View.extend({
 
 	plot : null,
-	plotData : [],
+	data : [],
 	
 	/**
 	 * Initializes the plot widget
@@ -76,31 +76,31 @@ var Plot = Widget.View.extend({
 		
 		//plot  reference not yet created, make it for first time
 		if(this.plot ==null){
-			this.plotData = data;
+			this.data = data;
 			
 			var plotHolder = $("#"+this.name);
 			
-			this.plot = $.plot(plotHolder, this.plotData,options);
+			this.plot = $.plot(plotHolder, this.data,options);
 			
-			plotHolder.resize();
-			
-			return "Line plot added to widget";
+			plotHolder.resize();			
 		}
 		
 		//plot exists, get existing plot series before adding new one
 		else{
 			for(var d = 0; d < data.length ; d++){
-				this.plotData.push(data[d]);
+				this.data.push(data[d]);
 			}
-			this.plot.setData(this.plotData);	
+			this.plot.setData(this.data);	
 			this.plot.draw();
 		}
+		
+		return "Line plot added to widget";
 	},
 	
 	/**
 	 * Plots a function against a data series
 	 * 
-	 * @name plotDataFunction(func, data, options)
+	 * @name dataFunction(func, data, options)
 	 * @param func - function to plot vs data
 	 * @param data - data series to plot against function
 	 * @param options - options for plotting widget
@@ -117,8 +117,8 @@ var Plot = Widget.View.extend({
 	 */
 	resetPlot : function(){
 		if(this.plot != null){
-			this.plotData = [];
-			this.plot.setData(this.plotData);
+			this.data = [];
+			this.plot.setData(this.data);
 			this.plot.draw();
 		}
 	},
@@ -133,6 +133,6 @@ var Plot = Widget.View.extend({
 	setOptions : function(options){
 		this.defaultPlotOptions = options;
 		
-		$.plot($("#"+this.name), this.plotData,this.defaultPlotOptions);
+		$.plot($("#"+this.name), this.data,this.defaultPlotOptions);
 	}
 });

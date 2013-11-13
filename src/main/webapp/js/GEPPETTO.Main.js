@@ -142,4 +142,7 @@ $(document).ready(function()
 	});
 
 	GEPPETTO.Console.createConsole();
+
+	GEPPETTO.FE.checkWelcomeMessageCookie();
+	
 });

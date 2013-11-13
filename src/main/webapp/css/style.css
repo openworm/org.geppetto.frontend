@@ -357,3 +357,30 @@ input {
 	overflow: auto;
 	max-height: 50%;
 }
+
+.welcomeTitle {
+	font-family : 'FontAwesome';
+	color : darkblue;	
+}
+.wmCheckBoxDiv {
+	float : left;
+}
+
+.welcomeMsgLogo {
+	float : left;
+	width: 40%;
+	height: 30%;
+}
+
+.messageBody {
+	font-family : 'FontAwesome';
+	overflow : hidden;
+}
+
+#welcomeMessageModal {
+	top : 25%;
+}
+
+#welcomeMessageModal .modal-header {
+	padding : 0px;
+}

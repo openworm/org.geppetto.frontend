@@ -16,6 +16,7 @@
 		<script src="js/vendor/ColorConverter.js"></script>
 		<script src="js/vendor/bootstrap.min.js"></script>
 		<script src="js/vendor/jquery.flot.min.js"></script>
+		<script src="js/vendor/jquery.cookie.js"></script>
 		<script src="js/vendor/jquery.flot.resize.min.js"></script>
 		<script src="js/vendor/rAF.js"></script>
 		<script src="js/vendor/codemirror.js"></script>
@@ -242,7 +243,37 @@
 		<div id="loadingmodal" class="loading modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
 			<i class="icon-asterisk icon-4x icon-spin orange"></i>
 			<p id="loadingmodaltext" class="orange"></p>
-		</div>		
+		</div>	
+		
+		<div id="welcomeMessageModal" class="modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					×
+				</button>
+				<h2 class="welcomeTitle">Welcome to Geppetto!</h2>
+			</div>
+		<div class="modal-body">
+			<div>
+				<img class="welcomeMsgLogo pull-left" src="images/geppetto-logo.png" alt="Geppetto">
+				<div class="messageBody">
+					Geppetto is a web-based multi-algorithm, multi-scale simulation platform engineered 
+					to support the simulation of complex biological systems and their surrounding environment.
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+				<div class="wmCheckBoxDiv">
+					<span class="input-group-addon">
+        				<input id="welcomeMsgCookie" type="checkbox">
+      				</span>
+      				<span class="label label-warning">Don't show next time I vist Geppetto</span>
+      			</div>
+				<button  id="close-welcomeMsg" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
+					Ok
+				</button>
+			</div>
+		</div>
+			
 		<script type="text/template" id="tplSandbox">
 		<pre class="output"></pre>
 		<div class="input">

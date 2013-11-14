@@ -580,18 +580,6 @@ var Sandbox = {
 		
 		// Checks for special commands. If any are found, performs their action and returns true
 		specialCommands: function(command) {
-			if (command === "G.clear()" || command === "G.clear();") {
-				this.clear();
-				return true;
-			}
-			if ( command === "help()" || command === "help();" ) {
-				return this.model.addHistory({
-					command : 'help()',
-					result : this.helpText,
-					_class : "string"
-				});
-			}
-
 			// If no special commands, return false so the command gets evaluated
 			return false;
 		}

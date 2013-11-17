@@ -226,6 +226,11 @@ function formatListVariableOutput(vars, indent)
 	for(var i = 0; i < vars.length; i++) {
 		var name  = vars[i].name;
 		
+		if(indent == 0)
+		{
+			name = vars[i].aspect + "." + name;
+		}
+		
 		var size = null;
 		if (typeof(vars[i].size) != "undefined")
 		{	
@@ -253,7 +258,7 @@ function formatListVariableOutput(vars, indent)
 		// recursion check
 		if (typeof(vars[i].type.variables) != "undefined")
 		{	
-			// we know it's a complex type - recurse! recurse!
+			// we know it's a complex type - recurse
 			formatListVariableOutput(vars[i].type.variables, indent + 1);
 		}
 	}

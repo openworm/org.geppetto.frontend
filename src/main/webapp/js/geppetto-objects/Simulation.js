@@ -237,7 +237,7 @@ Simulation.isLoading = function()
 };
 
 /**
- * LIst watchable variables for the simulation.
+ * List watchable variables for the simulation.
  * 
  * @name Simulation.listWatchableVariables()
  * @returns {String} - status after requesting list of watchable variables.
@@ -274,6 +274,50 @@ Simulation.listForceableVariables = function()
 	else{
 		return SIMULATION_NOT_LOADED_LIST;
 	}
+};
+
+/**
+ * List forceable variables for the simulation.
+ * 
+ * @name Simulation.addWatchLists()
+ * @returns {String} - status after request.
+ */
+Simulation.addWatchLists = function(watchLists)
+{
+	//TODO: 
+};
+
+/**
+ * Start watching variables for the simulation.
+ * 
+ * @name Simulation.startWatch()
+ * @returns {String} - status after request.
+ */
+Simulation.startWatch = function()
+{
+	//TODO: 
+};
+
+/**
+ * Stop watching variables for the simulation.
+ * 
+ * @name Simulation.stopWatch()
+ * @returns {String} - status after request.
+ */
+Simulation.stopWatch = function()
+{
+	//TODO: 
+};
+
+/**
+ * Clears all watch lists for the given simulation
+ * 
+ * @name Simulation.clearWatchLists()
+ * @returns {String} - status after request.
+ */
+Simulation.clearWatchLists = function()
+{
+	//TODO:
 };
 
 /**

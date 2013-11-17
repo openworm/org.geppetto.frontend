@@ -191,6 +191,16 @@ public class GeppettoMessageInbound extends MessageInbound
 				// TODO: start watch
 				break;
 			}
+			case STOP_WATCH:
+			{
+				// TODO: stop watch
+				break;
+			}
+			case CLEAR_WATCH:
+			{
+				// TODO: clear watch
+				break;
+			}
 			default:
 			{
 				// NOTE: no other messages expected for now

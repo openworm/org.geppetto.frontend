@@ -145,6 +145,8 @@ var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
 
 var LISTING_FORCE_VARS = "Inbound Message Received: List force variables";
 
+var SIMULATOR_UNAVAILABLE = " simulator is unavailable";
+
 
 /**
  * GEPPETTO resources

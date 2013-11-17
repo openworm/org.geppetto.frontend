@@ -80,6 +80,8 @@ public class TransportMessageFactory {
 			case SERVER_AVAILABLE:
 				params.add(new SimpleEntry<String, String>("message", Resources.SERVER_AVAILABLE.toString()));
 				break;
+			case SIMULATOR_FULL:
+				break;
 			case SIMULATION_LOADED:
 				break;
 			case SIMULATION_STARTED:

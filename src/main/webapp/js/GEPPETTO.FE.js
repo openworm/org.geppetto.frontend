@@ -320,3 +320,20 @@ GEPPETTO.FE.showWelcomeMessage = function(){
         	 $(this).toggleClass('checked');
 	});
 };
+
+/**
+ * Show Notification letting user now of full simulator
+ */
+GEPPETTO.FE.fullSimulatorNotification = function(simulatorName){
+	
+	$('#capacityNotificationTitle').html(simulatorName + SIMULATOR_UNAVAILABLE);
+
+	$('#multiUserNotification').modal(); 
+
+	$("#notifyMe").on("click", function(event){
+
+	});
+	
+	$("#notifyMe").on("click", function(event){
+	});
+};

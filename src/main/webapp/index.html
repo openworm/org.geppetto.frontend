@@ -273,6 +273,41 @@
 				</button>
 			</div>
 		</div>
+		
+		<div id="multiUserNotification" class="modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					×
+				</button>
+				<h4 id="capacityNotificationTitle"></h4>
+			</div>
+		<div class="modal-body">
+			<div>
+				<div class="messageBody">
+					This simulator is currently at full capacity. Leave your
+					email to be notified when the simulator becomes available again.”
+					
+				</div>
+				<form class="pagination-centered" role="form">
+					<div class="form-group">
+						<label for="inputName">Name</label>
+						<input type="text" class="form-control" id="inputName"
+								placeholder="Name">
+					</div>
+					<div class="form-group">
+						<label for="inputEmail">Email</label>
+						<input type="email" class="form-control" id="inputEmail"
+								placeholder="Email">
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button id="notifyMe" type="submit" class="btn btn-primary">Notify Me</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		</div>
 			
 		<script type="text/template" id="tplSandbox">
 		<pre class="output"></pre>

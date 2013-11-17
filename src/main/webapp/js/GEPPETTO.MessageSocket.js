@@ -158,6 +158,9 @@
 				//Auto Format Simulation FIle display
 				GEPPETTO.SimulationContentEditor.autoFormat();
 				break;
+			case "simulator_full":
+				GEPPETTO.FE.fullSimulatorNotification(payload.simulatorName);
+				break;
 				//Simulation has been loaded, enable start button and remove loading panel
 			case "simulation_loaded":
 				$('#start').removeAttr('disabled');

@@ -214,12 +214,6 @@ input {
 	overflow: visible;
 }
 
-.modal-body {
-	overflow-y: visible;
-	font-size: 15px;
-	line-height: 24px;
-}
-
 .dropdown-menu {
 	width: 100%;
 }
@@ -383,4 +377,20 @@ input {
 
 #welcomeMessageModal .modal-header {
 	padding : 0px;
+}
+
+#multiUserNotification .modal-header {
+	padding : 0px;
+}
+
+#capacityNotificationTitle {
+	color : darkblue;
+}
+
+#multiUserNotification label {
+	font-weight : bold;
+}
+
+#multiUserNotification{
+	opacity : 0.8;
 }

@@ -62,12 +62,12 @@ public class GeppettoMessageInbound extends MessageInbound
 		OBSERVING, CONTROLLING
 	}
 
-	private SimulationListener simulationListener;
+	private GeppettoServletController simulationListener;
 	private final int id;
 
 	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
 
-	public GeppettoMessageInbound(int id, SimulationListener listener)
+	public GeppettoMessageInbound(int id, GeppettoServletController listener)
 	{
 		super();
 		this.id = id;

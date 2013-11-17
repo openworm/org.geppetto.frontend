@@ -194,11 +194,15 @@ input {
 	font-weight: 200;
 }
 
-.modal-input label {
+#loadSimModal .modal-input label {
 	float: left;
 	font-weight: bold;
 	font-size: 16px;
 	margin-top: 5px;
+}
+
+#loadSimModal .modal-body {
+	overflow : visible;	
 }
 
 .btn-group .btn {
@@ -209,10 +213,6 @@ input {
 	float: left;
 }
 
-/* Overwrite Modal body overflow values.*/
-.modal {
-	overflow: visible;
-}
 
 .dropdown-menu {
 	width: 100%;

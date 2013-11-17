@@ -45,7 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
-public class SimulationServlet extends WebSocketServlet
+public class GeppettoServlet extends WebSocketServlet
 {
 
 	/**
@@ -53,7 +53,7 @@ public class SimulationServlet extends WebSocketServlet
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static Log logger = LogFactory.getLog(SimulationServlet.class);
+	private static Log logger = LogFactory.getLog(GeppettoServlet.class);
 
 	private final AtomicInteger _connectionIds = new AtomicInteger(0);
 			
@@ -61,7 +61,7 @@ public class SimulationServlet extends WebSocketServlet
 	@Override
 	protected StreamInbound createWebSocketInbound(String subProtocol, HttpServletRequest request)
 	{
-		return new GeppettoMessageInbound(_connectionIds.incrementAndGet(), SimulationListener.getInstance());
+		return new GeppettoMessageInbound(_connectionIds.incrementAndGet(), GeppettoServletController.getInstance());
 	}
 
 	@Override

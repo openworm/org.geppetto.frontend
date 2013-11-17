@@ -13,7 +13,7 @@
 		
 	<!-- Add flag for Simulation Run Mode --> 
 	<bean id="config" class="org.geppetto.frontend.SimulationServerConfig"> 
-		<property name="serverBehaviorMode" value="OBSERVE" />
+		<property name="serverBehaviorMode" value="MULTIUSER" />
 		<property name="loadedScene" value="#{ null }" />
 		<property name="isSimulationLoaded" value="false" />
 	</bean>

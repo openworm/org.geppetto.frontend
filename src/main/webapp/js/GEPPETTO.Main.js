@@ -66,7 +66,7 @@ GEPPETTO.Main.getVisitorStatus = function(){
  */
 GEPPETTO.Main.init = function()
 {
-	GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+	GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 	Simulation.status = Simulation.StatusEnum.INIT;
 	GEPPETTO.Console.debugLog(GEPPETTO_INITIALIZED);	
 };

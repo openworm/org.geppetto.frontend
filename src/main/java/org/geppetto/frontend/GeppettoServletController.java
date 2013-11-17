@@ -71,9 +71,9 @@ import com.google.gson.Gson;
  * @author  Jesus R. Martinez (jesus@metacell.us)
  *
  */
-public class SimulationListener implements ISimulationCallbackListener {
+public class GeppettoServletController{
 
-	private static Log logger = LogFactory.getLog(SimulationListener.class);
+	private static Log logger = LogFactory.getLog(GeppettoServletController.class);
 
 	@Autowired
 	private ISimulation simulationService;
@@ -85,16 +85,20 @@ public class SimulationListener implements ISimulationCallbackListener {
 
 	private List<GeppettoMessageInbound> observers = new ArrayList<GeppettoMessageInbound>();
 
-	private static SimulationListener instance = null;
+	private static GeppettoServletController instance = null;
+	
+	private ISimulationCallbackListener simulationCallbackListener; 
 
-	protected SimulationListener(){
+	protected GeppettoServletController(){
 		//Access SimulationService via spring injection of autowired dependencies
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+		
+		simulationCallbackListener = new SimulationCallbackListener(this);
 	}
 
-	public static SimulationListener getInstance() {
+	public static GeppettoServletController getInstance() {
 		if(instance == null) {
-			instance = new SimulationListener();
+			instance = new GeppettoServletController();
 		}
 		return instance;
 	}
@@ -160,7 +164,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
 				//load another simulation
-				simulationService.init(url, this);
+				simulationService.init(url, simulationCallbackListener);
 
 				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
 				break;
@@ -172,7 +176,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 				 */
 				if(!isSimulationInUse()){
 					simulationServerConfig.setIsSimulationLoaded(false);
-					simulationService.init(url, this);
+					simulationService.init(url, simulationCallbackListener);
 					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
 					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
 
@@ -220,7 +224,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 				
 				simulationServerConfig.setIsSimulationLoaded(false);
 				//load another simulation
-				simulationService.init(simulation, this);
+				simulationService.init(simulation, simulationCallbackListener);
 
 				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
 				break;
@@ -232,7 +236,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 				 */
 				if(!isSimulationInUse()){
 					simulationServerConfig.setIsSimulationLoaded(false);
-					simulationService.init(simulation, this);
+					simulationService.init(simulation, simulationCallbackListener);
 					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
 					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
 
@@ -455,7 +459,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param type - Type of udpate to be send
 	 * @param update - update to be sent
 	 */
-	private void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type, String update){
+	public void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type, String update){
 		// get transport message to be sent to the client
 		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(type, update);
 		String msg = new Gson().toJson(transportMsg);
@@ -504,41 +508,6 @@ public class SimulationListener implements ISimulationCallbackListener {
 		return simulationServerConfig;
 	}
 
-	/**
-	 * Receives update from simulation when there are new ones. 
-	 * From here the updates are send to the connected clients
-	 * 
-	 */
-	@Override
-	public void updateReady(String update) {
-		long start=System.currentTimeMillis();
-		Date date = new Date(start);
-		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
-		String dateFormatted = formatter.format(date);
-		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
-
-		OUTBOUND_MESSAGE_TYPES action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
-
-		/*
-		 * Simulation is running but model has not yet been loaded. 
-		 */
-		if(!getSimulationServerConfig().isSimulationLoaded()){
-			action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
-
-			getSimulationServerConfig().setIsSimulationLoaded(true);
-		}
-
-		for (GeppettoMessageInbound connection : getConnections())
-		{				
-			//Notify all connected clients about update either to load model or update current one.
-			messageClient(connection, action , update);
-		}
-
-		getSimulationServerConfig().setLoadedScene(update);
-
-		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
-	}
-
 	public void getSimulationConfiguration(String url, GeppettoMessageInbound visitor) {
 		String simulationConfiguration;
 		
@@ -557,7 +526,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		Properties prop = new Properties();
 		
 		try{
-			prop.load(SimulationListener.class.getResourceAsStream("/Geppetto.properties"));
+			prop.load(GeppettoServletController.class.getResourceAsStream("/Geppetto.properties"));
 			messageClient(visitor, OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION, prop.getProperty("Geppetto.version"));
 		}
 		catch(IOException e){

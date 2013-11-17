@@ -21,12 +21,12 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   <servlet>
-    <servlet-name>SimulationServlet</servlet-name>
-    <servlet-class>org.geppetto.frontend.SimulationServlet</servlet-class>
+    <servlet-name>GeppettoServlet</servlet-name>
+    <servlet-class>org.geppetto.frontend.GeppettoServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>SimulationServlet</servlet-name>
-    <url-pattern>/SimulationServlet</url-pattern>
+    <servlet-name>GeppettoServlet</servlet-name>
+    <url-pattern>/GeppettoServlet</url-pattern>
   </servlet-mapping>
   <servlet>
     <description></description>

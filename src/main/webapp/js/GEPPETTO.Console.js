@@ -200,6 +200,9 @@
 	GEPPETTO.Console.executeCommand = (function(command)
 			{
 		console.executeCommand(command);
+		var justCommand=command.substring(0,command.indexOf("("));
+		var commandParams=command.substring(command.indexOf("(")+1,command.lastIndexOf(")"));
+		GEPPETTO.trackActivity("Console",justCommand,commandParams);
 			});
 
 	function split( val ) {

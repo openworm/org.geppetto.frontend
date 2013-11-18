@@ -1037,6 +1037,20 @@ var GEPPETTO = GEPPETTO ||
 
 		}
 	};
+	
+
+	/**
+	 * @param category
+	 * @param action
+	 * @param opt_label
+	 * @param opt_value
+	 * @param opt_noninteraction
+	 */
+	GEPPETTO.trackActivity = function(category, action, opt_label, opt_value, opt_noninteraction)
+	{
+		_gaq.push(['_trackEvent', category, action, opt_label, opt_value, opt_noninteraction]);
+	};
+	
 
 //	============================================================================
 //	Application logic.

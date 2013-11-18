@@ -159,6 +159,7 @@
 				GEPPETTO.SimulationContentEditor.autoFormat();
 				break;
 			case "simulator_full":
+				GEPPETTO.FE.disableSimulationControls();
 				GEPPETTO.FE.fullSimulatorNotification(payload.simulatorName);
 				break;
 				//Simulation has been loaded, enable start button and remove loading panel

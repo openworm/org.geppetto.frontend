@@ -125,8 +125,8 @@ public class GeppettoServletController{
 				simulationControlsUnavailable(newVisitor);
 			}
 			else if(this.simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
-				if(this.getConnections().size() >= simulationService.getSimulatorCapacity()){
-					messageClient(newVisitor,OUTBOUND_MESSAGE_TYPES.SIMULATOR_FULL);
+				if(this.getConnections().size() > simulationService.getSimulatorCapacity()){
+					messageClient(newVisitor,OUTBOUND_MESSAGE_TYPES.SIMULATOR_FULL, simulationService.getSimulatorName());
 				}
 			}
 		}
@@ -202,9 +202,7 @@ public class GeppettoServletController{
 					break;
 				//user attempting load is observing
 				case OBSERVING:
-					if(this.getConnections().size() >= simulationService.getSimulatorCapacity()){
-						messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATOR_FULL,  simulationService.getSimulatorName());
-					}
+					loadSimulation(simulation, visitor);
 					break;
 			}
 		}

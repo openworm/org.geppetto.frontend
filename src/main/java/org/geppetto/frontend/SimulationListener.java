@@ -53,6 +53,7 @@ import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.model.VariableList;
+import org.geppetto.core.data.model.WatchList;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
@@ -66,7 +67,6 @@ import com.google.gson.Gson;
 
 /**
  * Class that handles the Web Socket connections the servlet is receiving.
- * 
  * 
  * @author  Jesus R. Martinez (jesus@metacell.us)
  *
@@ -355,31 +355,46 @@ public class SimulationListener implements ISimulationCallbackListener {
 	/**
 	 * Adds watch lists with variables to be watched
 	 */
-	public void addWatchLists(){		
-		// TODO: pass watch lists
-		simulationService.addWatchLists();
+	public void addWatchLists(String jsonLists, GeppettoMessageInbound connection){
+		List<WatchList> lists = new ArrayList<WatchList>();
+		
+		// TODO: 1. un-marshall jsonLists into WatchLists objects
+		// TODO: 2. do a check that variables with those names actually exists for the current simulation
+		
+		simulationService.addWatchLists(lists);
 	}
 	
 	/**
 	 * instructs simulation to start sending watched variables value to the client 
 	 */
-	public void startWatch(){		
+	public void startWatch(GeppettoMessageInbound connection){		
 		simulationService.startWatch();
 	}
 	
 	/**
 	 * instructs simulation to stop sending watched variables value to the client 
 	 */
-	public void stopWatch(){		
+	public void stopWatch(GeppettoMessageInbound connection){		
 		simulationService.stopWatch();
 	}
 	
 	/**
 	 * instructs simulation to clear watch lists 
 	 */
-	public void clearWatchLists(){		
+	public void clearWatchLists(GeppettoMessageInbound connection){		
 		simulationService.clearWatchLists();
 	}
+	
+	/**
+	 * instructs simulation to clear watch lists 
+	 */
+	public void getWatchLists(GeppettoMessageInbound connection){		
+		List<WatchList> watchLists = simulationService.getWatchLists();
+		
+		// TODO: serialize watch-lists
+		
+		// TODO: send results to the server
+	} 
 
 	/**
 	 * Simulation is being controlled by another user, new visitor that just loaded Geppetto Simulation in browser 

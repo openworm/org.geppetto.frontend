@@ -183,23 +183,24 @@ public class GeppettoMessageInbound extends MessageInbound
 			}
 			case SET_WATCH:
 			{
-				// TODO: pass watch list parameter
-				simulationListener.addWatchLists();
+				String watchListsString = gmsg.data;
+				
+				simulationListener.addWatchLists(watchListsString, this);
 				break;
 			}
 			case START_WATCH:
 			{
-				simulationListener.startWatch();
+				simulationListener.startWatch(this);
 				break;
 			}
 			case STOP_WATCH:
 			{
-				simulationListener.stopWatch();
+				simulationListener.stopWatch(this);
 				break;
 			}
 			case CLEAR_WATCH:
 			{
-				simulationListener.clearWatchLists();
+				simulationListener.clearWatchLists(this);
 				break;
 			}
 			default:

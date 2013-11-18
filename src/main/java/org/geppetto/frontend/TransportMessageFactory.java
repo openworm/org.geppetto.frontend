@@ -81,6 +81,7 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("message", Resources.SERVER_AVAILABLE.toString()));
 				break;
 			case SIMULATOR_FULL:
+				params.add(new SimpleEntry<String, String>("simulatorName",  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_LOADED:
 				break;

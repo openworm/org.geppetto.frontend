@@ -80,11 +80,7 @@ public class TestObserverMode {
 		connection2.setVisitorRunMode(VisitorRunMode.OBSERVING);
 		
 		assertEquals(connection1.getCurrentRunMode(), VisitorRunMode.CONTROLLING);
-		assertEquals(connection2.getCurrentRunMode(), VisitorRunMode.OBSERVING);
-		
-		simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
-		
-		assertEquals(simulationServerConfig.getServerBehaviorMode(), SimulationServerConfig.ServerBehaviorModes.CONTROLLED);
+		assertEquals(connection2.getCurrentRunMode(), VisitorRunMode.OBSERVING);		
 	}
 	
 	private class TestSimulationServlet extends WebSocketServlet{

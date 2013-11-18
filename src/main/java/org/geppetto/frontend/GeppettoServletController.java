@@ -38,12 +38,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.CharBuffer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -87,7 +84,9 @@ public class GeppettoServletController{
 
 	private static GeppettoServletController instance = null;
 	
-	private ISimulationCallbackListener simulationCallbackListener; 
+	private ISimulationCallbackListener simulationCallbackListener;
+
+	private boolean simulationInUse = false; 
 
 	protected GeppettoServletController(){
 		//Access SimulationService via spring injection of autowired dependencies
@@ -111,15 +110,31 @@ public class GeppettoServletController{
 	public void addConnection(GeppettoMessageInbound newVisitor){
 		_connections.put(Integer.valueOf(newVisitor.getConnectionID()), newVisitor);
 
+		performStartUpCheck(newVisitor);
+	}
+
+	/**
+	 * Performs start up check when new connection is established. 
+	 * 
+	 * @param newVisitor - New visitor 
+	 */
+	private void performStartUpCheck(GeppettoMessageInbound newVisitor) {
 		//Simulation is being used, notify new user controls are unavailable
 		if(isSimulationInUse()){
-			simulationControlsUnavailable(newVisitor);
+			if(this.simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.OBSERVE){
+				simulationControlsUnavailable(newVisitor);
+			}
+			else if(this.simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
+				if(this.getConnections().size() >= simulationService.getSimulatorCapacity()){
+					messageClient(newVisitor,OUTBOUND_MESSAGE_TYPES.SIMULATOR_FULL);
+				}
+			}
 		}
 		//Simulation not in use, notify client is safe to read and load
 		//any simulation file embedded in url
 		else{
 			messageClient(newVisitor, OUTBOUND_MESSAGE_TYPES.READ_URL_PARAMETERS);
-		}
+		}		
 	}
 
 	/**
@@ -145,123 +160,147 @@ public class GeppettoServletController{
 	}
 
 	/**
-	 * Initialize simulation with URL of model to load and listener
+	 * Attempt to load simulation
 	 * 
-	 * @param url - model to simulate
+	 * @param simulation - Simulation to load
+	 * @param visitor - Visitor doing the loading
 	 */
-	public void initializeSimulation(URL url, GeppettoMessageInbound visitor){
-		try
-		{			
-			switch(visitor.getCurrentRunMode()){
-
-			//User in control attempting to load another simulation
-			case CONTROLLING:
-				
-				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoMessageInbound observer : observers){
-					messageClient(observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
-				}
-				
-				simulationServerConfig.setIsSimulationLoaded(false);
-				//load another simulation
-				simulationService.init(url, simulationCallbackListener);
-
-				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+	public void load(String simulation, GeppettoMessageInbound visitor){
+		
+		//Determine current mode of Geppetto
+		switch(simulationServerConfig.getServerBehaviorMode()){
+			//Handle multi user mode
+			case MULTIUSER:
+				loadInMultiUserMode(simulation, visitor);
 				break;
-
-			default:
-				/*
-				 * Default user can only initialize it if it's not already in use.
-				 * 
-				 */
-				if(!isSimulationInUse()){
-					simulationServerConfig.setIsSimulationLoaded(false);
-					simulationService.init(url, simulationCallbackListener);
-					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
-					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
-
-					//Simulation just got someone to control it, notify everyone else
-					//connected that simulation controls are unavailable.
-					for(GeppettoMessageInbound connection : getConnections()){
-						if(connection != visitor){
-							simulationControlsUnavailable(connection);
-						}
-					}
-
-					messageClient(visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
-				}
-				else{
-					simulationControlsUnavailable(visitor);
-				}
+				
+			//Handle observe mode
+			case OBSERVE:
+				loadInObserverMode(simulation, visitor);
 				break;
-			}
-		}
-		//Catch any errors happening while attempting to read simulation
-		catch (GeppettoInitializationException e) {
-			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+				default:
+					break;
 		}
 	}
 	
-	//TODO: Merge repeated code in above and below method for initializing simulations.
 	/**
-	 * Different way to initialize simulation using JSON object instead of URL.
-	 *
-	 * @param simulation
-	 * @param visitor
+	 * Handle multiuser mode 
+	 *  
+	 * @param simulation - Simulation to be loaded
+	 * @param visitor - Visitor doing the loading of simulation
 	 */
-	public void initializeSimulation(String simulation, GeppettoMessageInbound visitor){
-		try
-		{			
+	private void loadInMultiUserMode(String simulation, GeppettoMessageInbound visitor){
+		//Simulation already in use
+		if(isSimulationInUse()){
 			switch(visitor.getCurrentRunMode()){
-
-			//User in control attempting to load another simulation
-			case CONTROLLING:
-				
-				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoMessageInbound observer : observers){
-					messageClient(observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
-				}
-				
-				simulationServerConfig.setIsSimulationLoaded(false);
-				//load another simulation
-				simulationService.init(simulation, simulationCallbackListener);
-
-				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
-				break;
-
-			default:
-				/*
-				 * Default user can only initialize it if it's not already in use.
-				 * 
-				 */
-				if(!isSimulationInUse()){
-					simulationServerConfig.setIsSimulationLoaded(false);
-					simulationService.init(simulation, simulationCallbackListener);
-					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
-					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
-
-					//Simulation just got someone to control it, notify everyone else
-					//connected that simulation controls are unavailable.
-					for(GeppettoMessageInbound connection : getConnections()){
-						if(connection != visitor){
-							simulationControlsUnavailable(connection);
-						}
+				//user attempting load is already in control of simulation servlet
+				case CONTROLLING:
+					loadSimulation(simulation, visitor);
+					break;
+				//user attempting load is in waiting list
+				case WAITING:				
+					break;
+				//user attempting load is observing
+				case OBSERVING:
+					if(this.getConnections().size() >= simulationService.getSimulatorCapacity()){
+						messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATOR_FULL,  simulationService.getSimulatorName());
 					}
-
-					messageClient(visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
-				}
-				else{
-					simulationControlsUnavailable(visitor);
-				}
-				break;
+					break;
 			}
 		}
-		//Catch any errors happening while attempting to read simulation
-		catch (GeppettoInitializationException e) {
-			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+		//simulation is not in use, allow to load
+		else{
+			simulationInUse = loadSimulation(simulation, visitor);
 		}
 	}
-
+	
+	/**
+	 * Handle observer mode 
+	 *  
+	 * @param simulation - Simulation to be loaded
+	 * @param visitor - Visitor doing the loading of simulation
+	 */
+	private void loadInObserverMode(String simulation, GeppettoMessageInbound visitor){
+		//Simulation already in use
+		if(isSimulationInUse()){
+			switch(visitor.getCurrentRunMode()){
+				//user attempting load is already in control of simulation servlet
+				case CONTROLLING:
+					//Clear canvas of users connected for new model to be loaded
+					for(GeppettoMessageInbound observer : observers){
+						messageClient(observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
+					}
+					loadSimulation(simulation, visitor);
+					break;
+				case WAITING:	
+					//Do Nothing
+					break;
+				//user attempting to load can't do so since it's not user in control
+				case OBSERVING:
+					simulationControlsUnavailable(visitor);
+					break;
+			}
+		}
+		//simulation not in use 
+		else{
+			//load simulation
+			simulationInUse = loadSimulation(simulation, visitor);
+			
+			//Simulation just got someone to control it, notify everyone else
+			//connected that simulation controls are unavailable.
+			for(GeppettoMessageInbound connection : getConnections()){
+				if(connection != visitor){
+					simulationControlsUnavailable(connection);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Load simulation 
+	 * 
+	 * @param simulation - Simulation to load
+	 * @param visitor - Visitor doing the loading of simulation
+	 * 
+	 * @return {boolean} - Success or failure
+	 */
+	private boolean loadSimulation(String simulation, GeppettoMessageInbound visitor){
+		
+		boolean loaded = false;
+		
+		simulationServerConfig.setIsSimulationLoaded(false);
+		URL url = null;
+		
+		//attempt to convert simulation to URL
+		try{
+			url = new URL(simulation);
+			//simulation is URL, initialize simulation services
+			simulationService.init(url, simulationCallbackListener);
+			loaded = true;
+		}
+		 /* Unable to make url from simulation, must be simulation content.
+		  * URL validity checked in GeppettoMessageInbound prior to call here
+		 */
+		catch(MalformedURLException e){
+			try {
+				simulationService.init(simulation, simulationCallbackListener);
+				loaded = true;
+			} catch (GeppettoInitializationException e1) {
+				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+				loaded = false;
+			}
+		} catch (GeppettoInitializationException e) {
+			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+			loaded = false;
+		}
+		
+		//set user as controlling
+		visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
+		//notify user that simulation was loaded
+		messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+		
+		return loaded;
+	}
 
 	/**
 	 * Start the simulation
@@ -396,9 +435,6 @@ public class GeppettoServletController{
 		 */
 		if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING){
 
-			//Simulation no longer in use since controlling user is leaving
-			simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
-
 			//Controlling user is leaving, but simulation might still be running. 
 			try{
 				if(simulationService.isRunning()){
@@ -416,6 +452,8 @@ public class GeppettoServletController{
 				//send message to alert client of server availability
 				messageClient(visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
 			}
+			
+			simulationInUse = false;
 
 		}			
 
@@ -424,10 +462,6 @@ public class GeppettoServletController{
 		 * visitor from the list of observers. 
 		 */
 		else if (exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING){
-			if(getConnections().size() ==0 && (simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.CONTROLLED)){
-				simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
-			}
-			
 			//User observing simulation is closing the connection
 			if(observers.contains(exitingVisitor)){
 				//Remove user from observers list
@@ -496,11 +530,7 @@ public class GeppettoServletController{
 	 */
 	public boolean isSimulationInUse(){
 		
-		if(simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.CONTROLLED){
-			return true;
-		}
-
-		return false;
+		return simulationInUse ;
 	}
 
 
@@ -521,6 +551,11 @@ public class GeppettoServletController{
 		}
 	}
 	
+	/**
+	 * Gets geppetto version number
+	 * 
+	 * @param visitor - Geppetto visitor requesting the version number
+	 */
 	public void getVersionNumber(GeppettoMessageInbound visitor){
 		
 		Properties prop = new Properties();
@@ -534,6 +569,12 @@ public class GeppettoServletController{
 		}
 	}
 
+	/**
+	 * Extracts script from its url location
+	 * 
+	 * @param url -Location of script
+	 * @param visitor - Visitor requesting script data
+	 */
 	public void getScriptData(URL url, GeppettoMessageInbound visitor) {
 		String line = null;
 		StringBuilder sb = new StringBuilder();

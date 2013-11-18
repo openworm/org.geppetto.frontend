@@ -48,7 +48,8 @@ public enum INBOUND_MESSAGE_TYPES {
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),
 	SET_WATCH("set_watch"),
-	START_WATCH("start_watch");
+	START_WATCH("start_watch"),
+	NOTIFY_USER("notify_user");
 
 	private INBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

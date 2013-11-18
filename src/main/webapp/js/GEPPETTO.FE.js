@@ -331,9 +331,20 @@ GEPPETTO.FE.fullSimulatorNotification = function(simulatorName){
 	$('#multiUserNotification').modal(); 
 
 	$("#notifyMe").on("click", function(event){
-
-	});
-	
-	$("#notifyMe").on("click", function(event){
+				
+		$('#multiUserNotification').modal('hide'); 
+		
+		var name = $('#waitingName').val();
+		var email = $('#waitingEmail').val();
+		var waitingUser = name + "," + email;
+				
+		var sendMessage = null;
+		sendMessage = setInterval(function(){
+			if(GEPPETTO.MessageSocket.socket.readyState == 1 ){
+				GEPPETTO.MessageSocket.socket.send(messageTemplate("notify_user", waitingUser));		
+				clearInterval(sendMessage);
+			}
+		}, 100);
+		
 	});
 };

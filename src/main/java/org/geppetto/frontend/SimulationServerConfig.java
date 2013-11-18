@@ -44,7 +44,7 @@ public class SimulationServerConfig {
 	 * Different states the simulation server can be in
 	 */
 	public enum ServerBehaviorModes {
-		OBSERVE, CONTROLLED, MULTIUSER
+		OBSERVE, MULTIUSER
 	}
 	
 	private ServerBehaviorModes serverBehaviorMode;

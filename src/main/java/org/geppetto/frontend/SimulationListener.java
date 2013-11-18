@@ -355,15 +355,30 @@ public class SimulationListener implements ISimulationCallbackListener {
 	/**
 	 * Adds watch lists with variables to be watched
 	 */
-	public void addWatchList(){		
-		// TODO: implement
+	public void addWatchLists(){		
+		// TODO: pass watch lists
+		simulationService.addWatchLists();
 	}
 	
 	/**
 	 * instructs simulation to start sending watched variables value to the client 
 	 */
 	public void startWatch(){		
-		// TODO: implement
+		simulationService.startWatch();
+	}
+	
+	/**
+	 * instructs simulation to stop sending watched variables value to the client 
+	 */
+	public void stopWatch(){		
+		simulationService.stopWatch();
+	}
+	
+	/**
+	 * instructs simulation to clear watch lists 
+	 */
+	public void clearWatchLists(){		
+		simulationService.clearWatchLists();
 	}
 
 	/**

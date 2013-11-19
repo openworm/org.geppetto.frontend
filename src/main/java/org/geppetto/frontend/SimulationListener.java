@@ -62,6 +62,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
@@ -356,10 +357,16 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * Adds watch lists with variables to be watched
 	 */
 	public void addWatchLists(String jsonLists, GeppettoMessageInbound connection){
-		List<WatchList> lists = new ArrayList<WatchList>();
+		List<WatchList> lists;
 		
-		// TODO: 1. un-marshall jsonLists into WatchLists objects
-		// TODO: 2. do a check that variables with those names actually exists for the current simulation
+		try {
+			lists = fromJSON(new TypeReference<List<WatchList>>() {}, jsonLists);
+		} catch (GeppettoExecutionException e) {
+			throw new RuntimeException(e);
+		}
+		
+		// TODO: do a check that variables with those names actually exists for the current simulation
+		// TODO: throw exception if not
 		
 		simulationService.addWatchLists(lists);
 	}
@@ -613,5 +620,16 @@ public class SimulationListener implements ISimulationCallbackListener {
 		catch (IOException e) {
 			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 		}
+	}
+	
+	public static <T> T fromJSON(final TypeReference<T> type, String jsonPacket) throws GeppettoExecutionException {
+		   T data = null;
+
+		   try {
+		      data = new ObjectMapper().readValue(jsonPacket, type);
+		   } catch (Exception e) {
+		      throw new GeppettoExecutionException("could not de-serialize json");
+		   }
+		   return data;
 	}
 }

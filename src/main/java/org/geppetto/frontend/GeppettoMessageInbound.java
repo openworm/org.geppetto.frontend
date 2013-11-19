@@ -188,6 +188,11 @@ public class GeppettoMessageInbound extends MessageInbound
 				simulationListener.addWatchLists(watchListsString, this);
 				break;
 			}
+			case GET_WATCH:
+			{				
+				simulationListener.getWatchLists(this);
+				break;
+			}
 			case START_WATCH:
 			{
 				simulationListener.startWatch(this);

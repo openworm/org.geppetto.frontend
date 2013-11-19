@@ -81,9 +81,29 @@ var MESSAGE_OUTBOUND_LIST_WATCH = 'Outbund Message Sent: List watchable variable
 
 var MESSAGE_OUTBOUND_LIST_FORCE = 'Outbund Message Sent: List forceable variables';
 
-var SIMULATION_NOT_LOADED_LIST = "Unable to list variables, the simulation hasn't been loaded";
+var MESSAGE_OUTBOUND_SET_WATCH = 'Outbund Message Sent: add watch lists';
+
+var MESSAGE_OUTBOUND_GET_WATCH = 'Outbund Message Sent: get watch lists';
+
+var MESSAGE_OUTBOUND_START_WATCH = 'Outbund Message Sent: start watch lists';
+
+var MESSAGE_OUTBOUND_STOP_WATCH = 'Outbund Message Sent: stop watch lists';
+
+var MESSAGE_OUTBOUND_CLEAR_WATCH = 'Outbund Message Sent: clear watch lists';
+
+var SIMULATION_NOT_LOADED_ERROR = "Unable to perform operation, the simulation hasn't been loaded";
 
 var SIMULATION_VARS_LIST = "Simulation Variables List requested";
+
+var SIMULATION_SET_WATCH = "Simulation add watchlists requested";
+
+var SIMULATION_GET_WATCH = 'Simulation get watchlists requested';
+
+var SIMULATION_START_WATCH = 'Simulation start watch requested';
+
+var SIMULATION_STOP_WATCH = 'Simulation stop watch requested';
+
+var SIMULATION_CLEAR_WATCH = 'Simulation clear watchlists requested';
 
 
 /**

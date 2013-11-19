@@ -298,3 +298,63 @@ asyncTest("Test list simulation variables no crash - SPH", function(){
 		// TODO: compare output to expected output - need to refactor messaging to be able to do this
 	},500);
 });
+
+module("Watch variables test",
+		{
+			setup : function(){
+				//create socket connection before each test
+				var newSocket = GEPPETTO.MessageSocket;
+
+				newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+			}
+});
+
+asyncTest("Test add / get watchlists no crash - SPH", function(){
+	// wait a bit and then load SPH sample
+	setTimeout(function(){
+		GEPPETTO.Console.createConsole();
+		equal(G.clear(),CLEAR_HISTORY, "Console is clear");
+		
+		Simulation.load("https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml");
+		equal(getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
+		start();
+		
+		Simulation.addWatchLists([]);
+		
+		// TODO: check expected output - need to refactor messaging to be able to do this
+		Simulation.getWatchLists();
+	},500);
+});
+
+asyncTest("Test watch Simulation variables", function(){
+	//check every few seconds before checking assertions
+	interval = setInterval(function(){
+		if(!Simulation.isLoading()){
+			Simulation.start();
+			
+			// TODO: try to retrieve some values and check they are not there 'cause we are not watching yet
+			
+			Simulation.startWatch();
+			
+			// TODO: retrieve some values and check they are changing
+			
+			Simulation.stopWatch();
+			
+			// TODO: retrieve some values and check they are not changing changing anymore
+			
+			Simulation.stop();
+		}
+	},1000);
+});
+
+asyncTest("Test clear watch Simulation variables", function(){
+	//check every few seconds before checking assertions
+	interval = setInterval(function(){
+		if(!Simulation.isLoading()){
+			Simulation.clearWatchLists();
+			
+			Simulation.getWatchLists();
+			// TODO: test that watchlists have been cleared
+		}
+	},1000);
+});

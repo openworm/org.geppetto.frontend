@@ -48,6 +48,7 @@ public enum INBOUND_MESSAGE_TYPES {
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),
 	SET_WATCH("set_watch"),
+	GET_WATCH("get_watch"),
 	START_WATCH("start_watch"),
 	STOP_WATCH("stop_watch"),
 	CLEAR_WATCH("clear_watch");

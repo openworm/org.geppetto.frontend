@@ -170,15 +170,11 @@
 				//Simulation has been started, enable pause button
 			case "list_watch_vars":
 				GEPPETTO.Console.debugLog(LISTING_WATCH_VARS);
-				// TODO: format output 
 				formatListVariableOutput(JSON.parse(payload.list_watch_vars).variables, 0);
-				//GEPPETTO.Console.log(JSON.stringify(payload));
 				break;
 			case "list_force_vars":
 				GEPPETTO.Console.debugLog(LISTING_FORCE_VARS);
-				// TODO: format output
 				formatListVariableOutput(JSON.parse(payload.list_force_vars).variables, 0);
-				//GEPPETTO.Console.log(JSON.stringify(payload));
 				break;
 			default:
 

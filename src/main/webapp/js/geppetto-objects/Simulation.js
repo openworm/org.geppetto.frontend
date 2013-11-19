@@ -252,7 +252,7 @@ Simulation.listWatchableVariables = function()
 		return SIMULATION_VARS_LIST;
 	}
 	else{
-		return SIMULATION_NOT_LOADED_LIST;
+		return SIMULATION_NOT_LOADED_ERROR;
 	}
 };
 
@@ -272,19 +272,30 @@ Simulation.listForceableVariables = function()
 		return SIMULATION_VARS_LIST;
 	}
 	else{
-		return SIMULATION_NOT_LOADED_LIST;
+		return SIMULATION_NOT_LOADED_ERROR;
 	}
 };
 
 /**
- * List forceable variables for the simulation.
+ * Add watchlists to the simulation.
  * 
  * @name Simulation.addWatchLists()
  * @returns {String} - status after request.
  */
 Simulation.addWatchLists = function(watchLists)
 {
-	//TODO: 
+	santasLittleHelper("set_watch", SIMULATION_SET_WATCH, MESSAGE_OUTBOUND_SET_WATCH, watchLists);
+};
+
+/**
+ * Retrieve watchlists available the simulation.
+ * 
+ * @name Simulation.getWatchLists()
+ * @returns {String} - status after request.
+ */
+Simulation.getWatchLists = function()
+{
+	santasLittleHelper("get_watch", SIMULATION_GET_WATCH, MESSAGE_OUTBOUND_GET_WATCH, null);
 };
 
 /**
@@ -295,7 +306,7 @@ Simulation.addWatchLists = function(watchLists)
  */
 Simulation.startWatch = function()
 {
-	//TODO: 
+	santasLittleHelper("start_watch", SIMULATION_START_WATCH, MESSAGE_OUTBOUND_START_WATCH, null);
 };
 
 /**
@@ -306,7 +317,7 @@ Simulation.startWatch = function()
  */
 Simulation.stopWatch = function()
 {
-	//TODO: 
+	santasLittleHelper("stop_watch", SIMULATION_STOP_WATCH, MESSAGE_OUTBOUND_STOP_WATCH, null);
 };
 
 /**
@@ -317,7 +328,7 @@ Simulation.stopWatch = function()
  */
 Simulation.clearWatchLists = function()
 {
-	//TODO:
+	santasLittleHelper("clear_watch", SIMULATION_CLEAR_WATCH, MESSAGE_OUTBOUND_CLEAR_WATCH, null);
 };
 
 /**
@@ -401,5 +412,20 @@ function setSimulationLoaded()
 {
 	Simulation.status = Simulation.StatusEnum.LOADED;
 	loading = false;
+};
+
+
+function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
+{
+	if(Simulation.isLoaded()){
+		GEPPETTO.MessageSocket.socket.send(messageTemplate(msg, payload));
+		
+		GEPPETTO.Console.debugLog(outbound_msg_log);
+		
+		return return_msg;
+	}
+	else{
+		return SIMULATION_NOT_LOADED_ERROR;
+	} 
 };
 

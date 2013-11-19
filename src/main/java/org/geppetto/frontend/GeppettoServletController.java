@@ -195,6 +195,10 @@ public class GeppettoServletController{
 			switch(visitor.getCurrentRunMode()){
 				//user attempting load is already in control of simulation servlet
 				case CONTROLLING:
+					//Clear canvas of users connected for new model to be loaded
+					for(GeppettoMessageInbound connection : this.getConnections()){
+						messageClient(connection, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
+					}
 					loadSimulation(simulation, visitor);
 					break;
 				//user attempting load is in waiting list
@@ -202,6 +206,10 @@ public class GeppettoServletController{
 					break;
 				//user attempting load is observing
 				case OBSERVING:
+					//Clear canvas of users connected for new model to be loaded
+					for(GeppettoMessageInbound connection : this.getConnections()){
+						messageClient(connection, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
+					}
 					loadSimulation(simulation, visitor);
 					break;
 			}

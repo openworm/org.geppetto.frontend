@@ -34,7 +34,7 @@
 	font-family: FontAwesome;
 	font-weight: normal;
 	font-style: normal;
-	font-size: 12px;
+	font-size: 13px;
 	text-decoration: inherit;
 	-webkit-font-smoothing: antialiased;
 	/* sprites.less reset */
@@ -46,14 +46,66 @@
 	background-image: none;
 	background-position: 0% 0%;
 	background-repeat: repeat;
-	margin-top: 0;
-	content: "\f00d";
+	content: "×";
+	color:#fd6808;
 }
+
+.ui-dialog .ui-dialog-titlebar-close {
+	margin-top: -10px!important;
+	text-shadow: none;
+	opacity:0.60;
+	right:0;
+}	
+
+.ui-dialog .ui-dialog-titlebar {
+	padding:0!important;
+	border-top:0!important;
+	border-left:0!important;
+	border-right:0!important;
+	border-bottom:1px solid rgba(66,59,59,0.80)!important;
+	
+}
+
+.ui-dialog .ui-dialog-title:before {
+	font-family: FontAwesome;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 10px;
+	text-decoration: inherit;
+	-webkit-font-smoothing: antialiased;
+	/* sprites.less reset */
+	display: inline;
+	width: auto;
+	height: auto;
+	line-height: normal;
+	vertical-align: baseline;
+	background-image: none;
+	background-position: 0% 0%;
+	background-repeat: repeat;
+	content: "\f111";
+	color:#fd6808;
+	margin-left:2px;
+	margin-right:4px;
+	margin-bottom:2px;
+
+}
+
+.ui-dialog .ui-dialog-title {
+	padding:0!important;
+	margin:0!important;
+	font-size:12px;
+	font-weight:200;
+	color:#fd6808;
+	margin-left:5px;
+}
+
 .ui-dialog {
-	opacity: 0.8;
+	border-radius: 3px;
+	background:rgba(66,59,59,0.90)!important;
+	color:white;
 }
 
 .dialog {
-	width: 500px;
+	width: 350px;
 	height: 300px;
 }

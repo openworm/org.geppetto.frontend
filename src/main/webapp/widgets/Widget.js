@@ -152,8 +152,8 @@ var Widget ={
 						{
 							resizable :  true,
 							draggable : true,
-							height : 370,
-							width : 430,
+							height : 300,
+							width : 350,
 							modal : false
 						});
 			},

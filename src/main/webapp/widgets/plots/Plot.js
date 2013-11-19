@@ -82,6 +82,9 @@ var Plot = Widget.View.extend({
 			
 			this.plot = $.plot(plotHolder, this.data,options);
 			
+			$('.flot-x-axis').css('color','white');
+			$('.flot-y-axis').css('color','white');
+			
 			plotHolder.resize();			
 		}
 		

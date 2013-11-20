@@ -139,7 +139,7 @@ var WEBGL_FAILED = "Initializing Error: Unable to initialize WebGL";
 
 var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.\n\n";
 
-var GEPPETTO_VERSION_HOLDER = "*Geppetto v$1 is ready";
+var GEPPETTO_VERSION_HOLDER = "geppetto v$1 is ready";
 
 var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
 

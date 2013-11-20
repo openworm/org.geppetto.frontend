@@ -33,12 +33,13 @@ p {
 }
 #geppettologo {
 	background-image: URL("../images/geppetto.png");
-	width: 200px;
-	height: 66px;
-	left: 5px;
+	width: 170px;
+	height: 37px;
+	left:2px;
 	float: left;
 	bottom: 0px;
-	margin-bottom: -5px;
+	margin-bottom: 5px;
+	position:absolute;
 }
 
 @media 
@@ -46,7 +47,7 @@ p {
 (min-resolution: 192dpi) { 
 #geppettologo {
 	background-image: url("../images/geppetto@2x.png");
-	background-size: 200px 66px;
+	background-size: 170px 37px;
 }
 }
 
@@ -314,6 +315,7 @@ input {
 
 #consoleButton {
 	margin: 0 auto;
+	margin-bottom:26px;
 	position: relative;
 	background: rgba(66,59,59,0.50);
 	color: #fd6808;
@@ -370,8 +372,6 @@ input {
 
 .welcomeMsgLogo {
 	float : left;
-	width: 40%;
-	height: 30%;
 }
 
 .messageBody {

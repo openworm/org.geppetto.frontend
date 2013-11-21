@@ -35,9 +35,9 @@ p {
 	background-image: URL("../images/geppetto.png");
 	width: 170px;
 	height: 37px;
-	left:2px;
+	left:5px;
 	float: left;
-	bottom: 0px;
+	bottom: 5px;
 	margin-bottom: 5px;
 	position:absolute;
 }
@@ -362,25 +362,143 @@ input {
 	max-height: 50%;
 }
 
-.welcomeTitle {
-	font-family : 'FontAwesome';
-	color : darkblue;	
+.smallText{
+	margin-top:5px;
+	font-size:10px;
+	line-height:13px;
 }
-.wmCheckBoxDiv {
-	float : left;
+.sr-only{
+	left: 25px;
+	position: absolute;
+	font-size: 10px;
+	top: 135px;
+}
+#welcomeBody .progress{
+	margin-top:5px;
+	margin-bottom:30px;
 }
 
-.welcomeMsgLogo {
-	float : left;
+.progress-warning .bar,
+.progress .bar-warning {
+  background-color: #fc6120;
+  background-image: -moz-linear-gradient(top, #fd7c23, #fc6120);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fd7c23), to(#fc6120));
+  background-image: -webkit-linear-gradient(top, #fd7c23, #fc6120);
+  background-image: -o-linear-gradient(top, #fd7c23, #fc6120);
+  background-image: linear-gradient(to bottom, #fd7c23, #fc6120);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffd7c23', endColorstr='#fffc6120', GradientType=0);
+}
+
+.btn-info {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #27d5db;
+  *background-color: #0e6c6f;
+  background-image: -moz-linear-gradient(top, #27d5db, #0e6c6f);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#27d5db), to(#0e6c6f));
+  background-image: -webkit-linear-gradient(top, #27d5db, #0e6c6f);
+  background-image: -o-linear-gradient(top, #27d5db, #0e6c6f);
+  background-image: linear-gradient(to bottom, #27d5db, #0e6c6f);
+  background-repeat: repeat-x;
+  border-color: #0e6c6f #0e6c6f #1f6377;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff27d5db', endColorstr='#ff0e6c6f', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active,
+.btn-info.disabled,
+.btn-info[disabled] {
+  color: #ffffff;
+  background-color: #0e6c6f;
+  *background-color: #2a85a0;
+}
+
+.btn-info:active,
+.btn-info.active {
+  background-color: #24748c \9;
+}
+
+.btn-warning {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #fc6320;
+  *background-color: #fc6320;
+  background-image: -moz-linear-gradient(top, #fd7c23, #fc6320);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fd7c23), to(#fc6320));
+  background-image: -webkit-linear-gradient(top, #fd7c23, #fc6320);
+  background-image: -o-linear-gradient(top, #fd7c23, #fc6320);
+  background-image: linear-gradient(to bottom, #fd7c23, #fc6320);
+  background-repeat: repeat-x;
+  border-color: #fc6320 #fc6320 #ad6704;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffd7c23', endColorstr='#fffc6320', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active,
+.btn-warning.disabled,
+.btn-warning[disabled] {
+  color: #ffffff;
+  background-color: #fc6320;
+  *background-color: #df8505;
+}
+
+.btn-warning:active,
+.btn-warning.active {
+  background-color: #c67605 \9;
+}
+
+
+#close-welcomeMsg{
+	width:120px;
+}
+#welcomeMessageModal {
+	background-image: URL("../images/welcomebckg.png");
+	width: 600px;
+	height: 370px;
+	top : 25%;
+	padding:0;
+}
+
+@media 
+(-webkit-min-device-pixel-ratio: 2), 
+(min-resolution: 192dpi) { 
+#welcomeMessageModal {
+	background-image: url("../images/welcomebckg@2x.png");
+	background-size: 600px 370px;
+}
+}
+
+.wmCheckBoxDiv {
+	position:relative;
+	margin-top:10px;
+}
+.wmCheckBoxDiv .label{
+	background:none;
+	text-shadow:none;
+	font-weight:200;
 }
 
 .messageBody {
-	font-family : 'FontAwesome';
-	overflow : hidden;
+	margin-bottom:20px;
 }
 
-#welcomeMessageModal {
-	top : 25%;
+#welcomeBody{
+	font-family : 'Helvetica Neue';
+	color: white;
+	overflow : hidden;
+	top:80px;
+	background:rgba(0,0,0,0.7);
+	height:230px;
+	margin:0 auto;
 }
 
 #welcomeMessageModal .modal-header {

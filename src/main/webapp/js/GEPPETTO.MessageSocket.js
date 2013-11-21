@@ -203,6 +203,12 @@
 * @returns JSON stringified object
 */
 function messageTemplate(msgtype, payload) {
+	
+	if (!(typeof payload == 'string' || payload instanceof String))
+	{
+		payload = JSON.stringify(payload);
+	}
+	
 	var object = {
 		type: msgtype,
 	    data: payload

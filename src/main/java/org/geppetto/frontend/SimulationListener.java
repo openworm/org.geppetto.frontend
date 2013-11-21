@@ -357,7 +357,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * Adds watch lists with variables to be watched
 	 */
 	public void addWatchLists(String jsonLists, GeppettoMessageInbound connection){
-		List<WatchList> lists;
+		List<WatchList> lists = null;
 		
 		try {
 			lists = fromJSON(new TypeReference<List<WatchList>>() {}, jsonLists);

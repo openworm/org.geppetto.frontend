@@ -47,17 +47,17 @@ var SIMULATION_LOADED = "Simulation Loaded";
 
 var SIMULATION_STARTED = "Simulation Started";
 
-var UNABLE_TO_START_SIMULATION = "Simulation not loaded, must load simulation first";
+var UNABLE_TO_START_SIMULATION = "Simulation not loaded; must load simulation first";
 
 var SIMULATION_PAUSED = "Simulation Paused";
 
-var UNABLE_TO_PAUSE_SIMULATION = "Simulation not running, must run simulation first";
+var UNABLE_TO_PAUSE_SIMULATION = "Simulation not running; must run simulation first";
 
 var SIMULATION_STOP = "Simulation Stopped"; 
 
 var LOADING_SIMULATION = "Loading Simulation";
 
-var SIMULATION_NOT_RUNNING = "Unable to stop simulation, loaded but not running";
+var SIMULATION_NOT_RUNNING = "Unable to stop simulation; loaded but not running";
 
 var SIMULATION_NOT_LOADED = "Unable to stop simulation that hasn't been loaded";
 
@@ -65,17 +65,23 @@ var SIMULATION_UNSPECIFIED = "Simulation not specified";
 
 var SIMULATION_ALREADY_STOPPED = "Simulation was already stopped";
 
-var SIMULATION_COMMANDS = "Simulation control commands: \n\n";
-
 var LOADING_FROM_CONTENT= "Outbound Message Sent: Load Simulation from editing console";
 
 var MESSAGE_OUTBOUND_LOAD = 'Outbound Message Sent: Loading Simulation';
 
-var MESSAGE_OUTBOUND_STOP = 'Outbund Message Sent: Simulation stopped';
+var MESSAGE_OUTBOUND_STOP = 'Outbund Message Sent: Simulation Stopped';
 
-var MESSAGE_OUTBOUND_PAUSE = 'Outbund Message Sent: Simulation paused';
+var MESSAGE_OUTBOUND_PAUSE = 'Outbund Message Sent: Simulation Paused';
 
-var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation started';
+var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation Started';
+
+var MESSAGE_OUTBOUND_LIST_WATCH = 'Outbund Message Sent: List watchable variables';
+
+var MESSAGE_OUTBOUND_LIST_FORCE = 'Outbund Message Sent: List forceable variables';
+
+var SIMULATION_NOT_LOADED_LIST = "Unable to list variables, the simulation hasn't been loaded";
+
+var SIMULATION_VARS_LIST = "Simulation Variables List requested";
 
 
 /**
@@ -83,7 +89,7 @@ var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation started';
  */
 var RUNNING_SCRIPT = "Running script";
 
-var NO_SIMULATION_TO_GET = "No Simulation to get as none is running";
+var NO_SIMULATION_TO_GET = "No Simulation to get as no simulation is running";
 
 var DEBUG_ON = "Debug log statements on";
 
@@ -103,7 +109,6 @@ var INVALID_WAIT_USE = "G.wait(ms) command must be used inside script";
 
 var WAITING = "Waiting ms";
 
-var G_COMMANDS = "G object commands: \n\n";
 
 /**
  * GEPPETTO.Main resources
@@ -114,7 +119,7 @@ var SIMULATION_OBSERVED = 'Sent: Simulation being observed';
 
 var WEBSOCKET_NOT_SUPPORTED = 'Error: WebSocket is not supported by this browser.';
 
-var WEBSOCKET_OPENED = 'Info: WebSocket connection opened.';
+var WEBSOCKET_OPENED = 'Info: WebSocket connection opened';
 
 var WEBSOCKET_CLOSED = "Info: WebSocket connection closed";
 	
@@ -128,13 +133,17 @@ var OBSERVING_MODE = "Observing Simulation Mode";
 
 var SERVER_UNAVAILABLE = "Server Unavailable";
 
-var SERVER_AVAILABLE = "Server available";
+var SERVER_AVAILABLE = "Server Available";
 
-var WEBGL_FAILED = "Initializing error: Unable to initialize WebGL";
+var WEBGL_FAILED = "Initializing Error: Unable to initialize WebGL";
 
 var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.\n\n";
 
-var GEPPETTO_VERSION_HOLDER = "Geppetto v$1 is ready";
+var GEPPETTO_VERSION_HOLDER = "geppetto v$1 is ready";
+
+var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
+
+var LISTING_FORCE_VARS = "Inbound Message Received: List force variables";
 
 
 /**
@@ -150,10 +159,12 @@ var UPDATE_FRAME_END = "Ending update frame";
 var SAMPLES_DROPDOWN_PLACEHOLDER = "Select simulation from list...";
 
 /**
- * Global help function with all commands in global objects. 
- * 
- * @returns {String}
+ * Global resources
  */
-function help(){
-	return ALL_COMMANDS_AVAILABLE_MESSAGE+G.help() + '\n\n' + Simulation.help();
-};
+var COMMANDS = " commands: \n\n";
+
+/**
+ * Widget resources
+ */
+var WIDGET_CREATED = " widget created";
+var REMOVE_PLOT_WIDGETS = "Plotting widget(s) removed";

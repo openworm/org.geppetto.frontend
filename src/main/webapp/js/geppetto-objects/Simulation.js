@@ -71,7 +71,7 @@ var loading = false;
 Simulation.start = function()
 {
 	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("start", null));
+		GEPPETTO.MessageSocket.send("start", null);
 		
 		Simulation.status = Simulation.StatusEnum.STARTED;
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_START);
@@ -96,7 +96,7 @@ Simulation.pause = function()
 		//Updates the simulation controls visibility
 		GEPPETTO.FE.updatePauseEvent();
 		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("pause", null));
+		GEPPETTO.MessageSocket.send("pause", null);
 		
 		Simulation.status = Simulation.StatusEnum.PAUSED;
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_PAUSE);
@@ -120,7 +120,7 @@ Simulation.stop = function()
 		//Updates the simulation controls visibility
 		GEPPETTO.FE.updateStopEvent();
 
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("stop", null));
+		GEPPETTO.MessageSocket.send("stop", null);
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_STOP);
@@ -169,7 +169,7 @@ Simulation.load = function(simulationURL)
 				//we call it only the first time
 				GEPPETTO.animate();
 			}
-			GEPPETTO.MessageSocket.socket.send(messageTemplate("init_url", simulationURL));
+			GEPPETTO.MessageSocket.send("init_url", simulationURL);
 			loading = true;
 			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);			
 		}
@@ -208,7 +208,7 @@ Simulation.loadFromContent = function(content)
 			GEPPETTO.animate();
 		}
 		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("init_sim", content));
+		GEPPETTO.MessageSocket.send("init_sim", content);
 		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
 	}
@@ -237,6 +237,46 @@ Simulation.isLoading = function()
 };
 
 /**
+ * LIst watchable variables for the simulation.
+ * 
+ * @name Simulation.listWatchableVariables()
+ * @returns {String} - status after requesting list of watchable variables.
+ */
+Simulation.listWatchableVariables = function()
+{
+	if(Simulation.isLoaded()){		
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_watch_vars", null));
+		
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_WATCH);
+		
+		return SIMULATION_VARS_LIST;
+	}
+	else{
+		return SIMULATION_NOT_LOADED_LIST;
+	}
+};
+
+/**
+ * List forceable variables for the simulation.
+ * 
+ * @name Simulation.listForceableVariables()
+ * @returns {String} - status after requesting list of forceable variables.
+ */
+Simulation.listForceableVariables = function()
+{
+	if(Simulation.isLoaded()){		
+		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_force_vars", null));
+		
+		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_FORCE);
+		
+		return SIMULATION_VARS_LIST;
+	}
+	else{
+		return SIMULATION_NOT_LOADED_LIST;
+	}
+};
+
+/**
  *
  * Outputs list of commands with descriptions associated with the Simulation object.
  * 
@@ -244,65 +284,7 @@ Simulation.isLoading = function()
  * @returns  Returns list of all commands for the Simulation object
  */
 Simulation.help = function(){
-	var commands = SIMULATION_COMMANDS;
-
-	var descriptions = [];
-
-	//retrieve the script to get the comments for all the methods
-	$.ajax({ 
-		async:false,
-		type:'GET',
-		url: "js/geppetto-objects/Simulation.js",
-		dataType:"text",
-		//at success, read the file and extract the comments
-		success:function(data) {			
-			var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-			descriptions = data.match(STRIP_COMMENTS);
-		},
-	});
-
-	//find all functions of object Simulation
-	for ( var prop in Simulation ) {
-		if(typeof Simulation[prop] === "function") {
-			var f = Simulation[prop].toString();
-			//get the argument for this function
-			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
-
-			var functionName = "Simulation."+prop+"("+parameter+")";
-			//match the function to comment
-			var matchedDescription = "";
-			for(var i = 0; i<descriptions.length; i++){
-				var description = descriptions[i].toString();
-				
-				//items matched
-				if(description.indexOf(functionName)!=-1){
-
-					/*series of formatting of the comments for the function, removes unnecessary 
-					 * blank and special characters.
-					 */
-					var splitComments = description.replace(/\*/g, "").split("\n");
-					splitComments.splice(0,1);
-					splitComments.splice(splitComments.length-1,1);
-					for(var s = 0; s<splitComments.length; s++){
-						var line = splitComments[s].trim();
-						if(line != ""){
-							//ignore the name line, already have it
-							if(line.indexOf("@name")==-1){
-								//build description for function
-								matchedDescription += "         " + line + "\n";
-							}
-						}
-					}
-				}
-			}
-
-			//format and keep track of all commands available
-			commands += ("      -- " + functionName + "\n" + matchedDescription + "\n");
-		};
-	}	
-
-	//returned formatted string with commands and description, remove last two blank lines
-	return commands.substring(0,commands.length-2);
+	return extractCommandsFromFile("js/geppetto-objects/Simulation.js", Simulation, "Simulation");
 };
 
 /**
@@ -319,18 +301,3 @@ function setSimulationLoaded()
 	loading = false;
 };
 
-/**
-* Template for Geppetto message 
-* NOTE: move from here under global G object once in place
-* 
-* @param msgtype - messaga type
-* @param payload - message payload, can be anything
-* @returns JSON stringified object
-*/
-function messageTemplate(msgtype, payload) {
-	var object = {
-		type: msgtype,
-	    data: payload
-	};
-	return JSON.stringify(object);
-};

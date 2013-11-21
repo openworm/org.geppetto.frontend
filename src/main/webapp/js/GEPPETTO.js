@@ -70,7 +70,6 @@ var GEPPETTO = GEPPETTO ||
 			y : 0
 	};
 	var geometriesMap = null;
-	var plots = new Array();
 	var idCounter = 0;
 
 	var sceneCenter = new THREE.Vector3();
@@ -350,6 +349,10 @@ var GEPPETTO = GEPPETTO ||
 		camera.up = new THREE.Vector3(0,1,0);
 		camera.rotationAutoUpdate = true;
 		controls.target = sceneCenter;
+		
+//		GEPPETTO.Console.log("psoition " + cameraPosition.x + " y " +  cameraPosition.y + " z "+ cameraPosition.z);
+//		GEPPETTO.Console.log("scene center " + sceneCenter.x + " y " +  sceneCenter.y + " z "+ sceneCenter.z);
+
 	};
 
 	/**
@@ -773,10 +776,10 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.render = function()
 	{
-		for (p in plots)
-		{
-			plots[p].flot.draw();
-		}
+//		for (p in plots)
+//		{
+//			plots[p].flot.draw();
+//		}
 		renderer.render(scene, camera);
 	};
 
@@ -853,157 +856,7 @@ var GEPPETTO = GEPPETTO ||
 	GEPPETTO.getNewId = function()
 	{
 		return idCounter++;
-	};
-
-	/**
-	 * @param entityId
-	 * @param variables
-	 * @param ymin
-	 * @param ymax
-	 * @returns {PLOT}
-	 */
-	PLOT = function(entityId, variables, ymin, ymax)
-	{
-		this.id = GEPPETTO.getNewId();
-		this.entityId = entityId;
-		this.variables = variables;
-		this.ymin = ymin;
-		this.ymax = ymax;
-		this.values =
-		{};
-		this.defaultBuffer = 1600;
-		this.dialog = null;
-		this.flot = null;
-		this.addValue = function()
-		{
-			for (v in this.variables)
-			{
-				varval = this.values[this.variables[v]];
-				if (!varval)
-				{
-					varval = new Array();
-					this.values[this.variables[v]] = varval;
-				}
-				if (varval.length > this.defaultBuffer)
-					varval.splice(0, 1);
-
-				if (jsonscene)
-				{
-					if (jsonscene.entities[0])
-					{
-						value = jsonscene.entities[entityId].metadata[this.variables[v]];
-						varval.push(value);
-					}
-				}
-				// Zip the generated y values with the x values
-
-			}
-
-			var resArray = [];
-			for (k in this.values)
-			{
-				var res = [];
-				for ( var i = 0; i < this.values[k].length; ++i)
-				{
-					res.push([ i, this.values[k][i] ]);
-				}
-				resArray.push(res);
-			}
-			this.flot.setData(resArray);
-		};
-
-		this.show = function()
-		{
-			this.dialog = GEPPETTO.createDialog("dialog" + this.id, "");
-			this.dialog.append("<div class='plot' id='plot" + this.id + "'></div>");
-			datal = [];
-			for (v in this.variables)
-			{
-				datal.push({label:this.variables[v], data:[]});
-			}
-			this.flot = $.plot("#plot" + this.id, datal,
-					{
-				series :
-				{
-					shadowSize : 0
-					// Drawing is faster without shadows
-				},
-				yaxis :
-				{
-					min : this.ymin,
-					max : this.ymax
-				},
-				xaxis :
-				{
-					min : 0,
-					max : 1600,
-					show : false
-				}
-					});
-		};
-		this.dispose = function()
-		{
-			$("#plot" + this.id).remove();
-			$("#dialog" + this.id).remove();
-			this.values = null;
-			plots.splice(plots.indexOf(this), 1);
-		};
-
-	};
-
-	/**
-	 * @param id
-	 * @param title
-	 * @returns {HMLElement}
-	 */
-	GEPPETTO.createDialog = function(id, title)
-	{
-		return $("<div id=" + id + " class='dialog' title='" + title + "'></div>").dialog(
-				{
-					resizable : true,
-					draggable : true,
-					height : 370,
-					width : 430,
-					modal : false
-				});
-	};
-	
-	
-	/**
-	 * Return plots
-	 */
-	GEPPETTO.getPlots = function()
-	{
-		return plots;
-	};
-
-	/**
-	 * @param entityId
-	 * @param variable
-	 * @param ymin
-	 * @param ymax
-	 */
-	GEPPETTO.addPlot = function(entityId, variable, ymin, ymax)
-	{
-		var plot = new PLOT(entityId, variable, ymin, ymax);
-		plots.push(plot);
-		plot.show();
-	};
-
-	/**
-	 * @param plotId
-	 */
-	GEPPETTO.removePlot = function(plotId)
-	{
-		for (p in plots)
-		{
-			if (plots[p].id == plotId)
-			{
-				plots[p].dispose();
-				break;
-			}
-		}
-	};
+	};	
 
 	/**
 	 * @param entityIndex
@@ -1033,7 +886,7 @@ var GEPPETTO = GEPPETTO ||
 		jsonscene = newJSONScene;
 		needsUpdate = true;
 		GEPPETTO.updateScene();
-		GEPPETTO.updatePlots();
+		//GEPPETTO.updatePlots();
 		if (customUpdate != null)
 		{
 			GEPPETTO.customUpdate();
@@ -1184,6 +1037,23 @@ var GEPPETTO = GEPPETTO ||
 
 		}
 	};
+	
+
+	/**
+	 * @param category
+	 * @param action
+	 * @param opt_label
+	 * @param opt_value
+	 * @param opt_noninteraction
+	 */
+	GEPPETTO.trackActivity = function(category, action, opt_label, opt_value, opt_noninteraction)
+	{
+		if(typeof _gaq != 'undefined')
+		{
+			_gaq.push(['_trackEvent', category, action, opt_label, opt_value, opt_noninteraction]);
+		}
+	};
+	
 
 //	============================================================================
 //	Application logic.

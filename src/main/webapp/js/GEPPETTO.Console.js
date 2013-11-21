@@ -40,20 +40,14 @@
  * 
  * @author Jesus Martinez (jesus@metacell.us)
  */
-
-
 (function(){
 
 	var console = null;
 		
-	var executingScript = false;
-
 	GEPPETTO.Console = GEPPETTO.Console ||
 	{
 		REVISION : '1'
 	};
-
-
 
 	/**
 	 * Toggle javascript console's visibility via button 
@@ -116,6 +110,14 @@
 			$('.ui-menu').remove();
 		});
 		
+		var sendMessage = null;
+		
+		sendMessage = setInterval(function(){
+			if(GEPPETTO.MessageSocket.socket.readyState == 1 ){
+				GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
+				clearInterval(sendMessage);
+			}
+		}, 100);
 		return console;
 	};
 
@@ -141,44 +143,7 @@
 	GEPPETTO.Console.getConsole = function(){
 		return console;
 	};
-	
-	/**
-	 * Executes a set of commands from a script 
-	 * 
-	 * @param commands - commands to execute
-	 */
-	GEPPETTO.Console.executeScriptCommands = function(commands){
-			executingScript = true;
-			for (var i = 0, len = commands.length; i < len; i++) {
-				var command = commands[i].toString().trim();
-
-				if(command != ""){
-					//if it's the wait command,  call the the wait function 
-					//with all remanining commands left to execute as parameter.
-					if ( command.indexOf("G.wait") > -1 ) {
-						//get the ms time for waiting
-						var parameter = command.match(/\((.*?)\)/);
-						var ms = parameter[1];
-						
-						//get the remaining commands
-						var remainingCommands = commands.splice(i+1,commands.length);
-						
-						//call wait function with ms, and remaining commands to execute when done
-						G.wait(remainingCommands, ms);
-						
-						return;
-					}
-
-					//execute commands, except the wait one
-					else{
-						GEPPETTO.Console.executeCommand(command);
-					}
-				}
-			}
-			
-			executingScript = false;
-		};
-	
+		
 	/**
 	 * Handles user clicking the "Javascript Console" button, which 
 	 * toggles the console. 
@@ -235,6 +200,9 @@
 	GEPPETTO.Console.executeCommand = (function(command)
 			{
 		console.executeCommand(command);
+		var justCommand=command.substring(0,command.indexOf("("));
+		var commandParams=command.substring(command.indexOf("(")+1,command.lastIndexOf(")"));
+		GEPPETTO.trackActivity("Console",justCommand,commandParams);
 			});
 
 	function split( val ) {
@@ -322,31 +290,3 @@
 		});
 	}
 })();
-
-/**
- * Available commands stored in an array, used for autocomplete
- * 
- * @returns {Array}
- */
-function availableTags(){
-
-	var availableTags = [];
-
-	var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
-
-	var commandsSplitByLine = commands.split("\n");
-
-	var tagsCount = 0;
-
-	for(var i =0; i<commandsSplitByLine.length; i++){
-		var line = commandsSplitByLine[i].trim();
-
-		if(line.substring(0,2) == "--"){
-			var command = line.substring(3, line.length);
-			availableTags[tagsCount] = command;
-			tagsCount++;
-		}
-	}
-
-	return availableTags;
-};

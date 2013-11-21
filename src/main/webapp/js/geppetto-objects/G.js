@@ -45,7 +45,30 @@ var G = G ||
 	REVISION : '1'
 };
 
-G.debugMode = false;
+debugMode = false;
+
+/**
+ * Adds widget to Geppetto
+ * 
+ * @name G.addWidget(widgetType)
+ * @param widgetType - Type of widget to add
+ */
+G.addWidget = function(widgetType){
+	var newWidget = GEPPETTO.WidgetFactory.addWidget(widgetType);
+	
+	return newWidget.getName() + WIDGET_CREATED;
+};
+
+/**
+ * Gets list of available widgets 
+ * 
+ * @name G.availableWidgets()
+ * @returns {List} - List of available widget types
+ */
+G.availableWidgets = function(){
+
+	return Widgets;
+};
 
 /**
  * Clears the console history
@@ -120,7 +143,7 @@ G.copyHistoryToClipboard = function(){
  * 
  */
 G.debug = function(toggle){
-	G.debugMode = toggle;
+	debugMode = toggle;
 
 	if(toggle){
 		GEPPETTO.showStats();
@@ -155,66 +178,17 @@ G.getCurrentSimulation = function(){
  * @returns {String} - All commands and descriptions for G.
  */
 G.help = function(){
-	var commands = G_COMMANDS;
+	return extractCommandsFromFile("js/geppetto-objects/G.js", G, "G");
+};
 
-	var descriptions = [];
-
-	//retrieve the script to get the comments for all the methods
-	$.ajax({ 
-		async:false,
-		type:'GET',
-		url: "js/geppetto-objects/G.js",
-		dataType:"text",
-		//at success, read the file and extract the comments
-		success:function(data) {			
-			var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-			descriptions = data.match(STRIP_COMMENTS);
-		},
-	});
-
-	//find all functions of object Simulation
-	for ( var prop in G ) {
-		if(typeof G[prop] === "function") {
-			var f = G[prop].toString();
-			//get the argument for this function
-			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
-
-			var functionName = "G."+prop+"("+parameter+")";
-			
-			//match the function to comment
-			var matchedDescription = "";
-			for(var i = 0; i<descriptions.length; i++){
-				var description = descriptions[i].toString();
-				
-				//items matched
-				if(description.indexOf(functionName)!=-1){
-
-					/*series of formatting of the comments for the function, removes unnecessary 
-					 * blank and special characters.
-					 */
-					var splitComments = description.replace(/\*/g, "").split("\n");
-					splitComments.splice(0,1);
-					splitComments.splice(splitComments.length-1,1);
-					for(var s = 0; s<splitComments.length; s++){
-						var line = splitComments[s].trim();
-						if(line != ""){
-							//ignore the name line, already have it
-							if(line.indexOf("@name")==-1){
-								//build description for function
-								matchedDescription += "         " + line + "\n";
-							}
-						}
-					}
-				}
-			}
-
-			//format and keep track of all commands available
-			commands += ("      -- "+functionName + "\n" + matchedDescription + "\n");
-		};
-	}	
-
-	//returned formatted string with commands and description, remove last two blank lines
-	return commands.substring(0,commands.length-2);
+/**
+ * Removes widget from Geppetto
+ * 
+ * @name G.removeWidget(widgetType)
+ * @param widgetType - Type of widget to remove
+ */
+G.removeWidget = function(widgetType){
+	GEPPETTO.WidgetFactory.removeWidget(widgetType);
 };
 
 /**
@@ -226,29 +200,10 @@ G.help = function(){
  */
 G.runScript = function(scriptURL){	
 
-	GEPPETTO.MessageSocket.socket.send(messageTemplate("run_script", scriptURL));
+	GEPPETTO.MessageSocket.send("run_script", scriptURL);
 	
 	return RUNNING_SCRIPT; 
 };
-
-/**
- * Runs script data
- */
-function runScript(scriptData){
-
-	var commands = scriptData.split("\n");
-
-	//format the commands, remove white spaces
-	for(var c = 0; c<commands.length; c++){
-		commands[c] = commands[c].replace(/\s/g,"");
-		var lineC = commands[c];
-		if(lineC.toString() === ""){
-			commands.splice(c,1);
-		}
-	}
-	//execute the commands found inside script
-	GEPPETTO.Console.executeScriptCommands(commands);
-}
 
 /**
  * 
@@ -272,13 +227,8 @@ G.wait = function(ms){
 G.wait = function(commands, ms){
 	setTimeout(function()
 	{
-		if(Simulation.isLoading()){
-			G.wait(commands, 500);
-		}
-		else{
-			//execute commands after ms milliseconds
-			GEPPETTO.Console.executeCommand(GEPPETTO.Console.executeScriptCommands(commands));
-		}
+		//execute commands after ms milliseconds
+		GEPPETTO.ScriptRunner.executeScriptCommands(commands);
 	}, ms);
 	
 	return WAITING;
@@ -290,5 +240,5 @@ G.wait = function(commands, ms){
  * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
  */
 function isDebugOn(){
-	return G.debugMode;
+	return debugMode;
 };

@@ -115,7 +115,7 @@
 	height:0;
 }
 
-.ui-resizable-n {
+#console .ui-resizable-n {
 	height: 4px;
 	top: 0px;
 	background : #211d1d;

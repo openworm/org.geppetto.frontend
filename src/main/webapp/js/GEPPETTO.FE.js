@@ -224,7 +224,7 @@ GEPPETTO.FE.updateEditor = function(selectedSimulation)
 	}
 	//load sample simulation, request info from the servlet
 	else{
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("sim", selectedSimulation));
+		GEPPETTO.MessageSocket.send("sim", selectedSimulation);
 	}
 };
 
@@ -285,4 +285,38 @@ GEPPETTO.FE.updatePauseEvent = function(){
 	$('#start').removeAttr('disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').removeAttr('disabled');
+};
+
+/**
+ * Checks cookie for flag to hide welcome message at startup.
+ */
+GEPPETTO.FE.checkWelcomeMessageCookie = function(){
+	var welcomeMessageCookie = $.cookie("hideWelcomeMessage");
+	
+	if(welcomeMessageCookie!=null){
+		if(!welcomeMessageCookie){
+			GEPPETTO.FE.showWelcomeMessage();
+		}
+	}
+	
+	else{
+		GEPPETTO.FE.showWelcomeMessage();
+	}
+};
+
+/**
+ * Show Welcome Message window.
+ */
+GEPPETTO.FE.showWelcomeMessage = function(){
+	$('#welcomeMessageModal').modal(); 
+
+	$("#close-welcomeMsg").on("click", function(event){
+		if($('#welcomeMsgCookie').hasClass("checked")){
+        	$.cookie("hideWelcomeMessage", true);
+        }
+	});
+	
+	$("#welcomeMsgCookie").on("click", function(event){
+        	 $(this).toggleClass('checked');
+	});
 };

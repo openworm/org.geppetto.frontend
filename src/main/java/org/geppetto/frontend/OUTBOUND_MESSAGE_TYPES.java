@@ -51,7 +51,9 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config"),
 	ERROR_READING_SCRIPT("error_reading_script"),
 	GEPPETTO_VERSION("geppetto_version"),
-	RUN_SCRIPT("run_script");
+	RUN_SCRIPT("run_script"),
+	LIST_WATCH_VARS("list_watch_vars"),
+	LIST_FORCE_VARS("list_force_vars");
 
 	private OUTBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

@@ -1,7 +1,7 @@
 *.class
 *.DS_Store
 src/main/webapp/META-INF
-src/main/webapp/js/jsdocs
+src/main/webapp/js/jsdocs 
 
 # Package Files #
 *.jar

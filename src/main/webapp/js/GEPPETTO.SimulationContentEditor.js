@@ -278,7 +278,7 @@
 			document.documentElement.style.overflow = "";
 			cm.focus();
 		}
-		cm.refresh();
+		setTimeout(function(){cm.refresh();}, 20);
 	};
 
 	CodeMirror.on(window, "resize", function()

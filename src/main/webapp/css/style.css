@@ -31,6 +31,23 @@ p {
 	text-align: center;
 	margin: .5em 2em;
 }
+
+
+.asterisk {
+	background-image: URL("../images/asterisk.png");
+	width: 100px;
+	height: 100px;
+}
+
+@media 
+(-webkit-min-device-pixel-ratio: 2), 
+(min-resolution: 192dpi) { 
+.asterisk {
+	background-image: url("../images/asterisk@2x.png");
+	background-size: 100px 100px;
+}
+}
+
 #geppettologo {
 	background-image: URL("../images/geppetto.png");
 	width: 170px;
@@ -294,6 +311,8 @@ input {
 	left: 0!important;
 	width: 100%!important;
 	z-index: 9999!important;
+	-webkit-backface-visibility: hidden; 
+	-webkit-transform: translateZ(0);
 }
 
 #fullscreen:hover {

@@ -1048,7 +1048,10 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.trackActivity = function(category, action, opt_label, opt_value, opt_noninteraction)
 	{
-		_gaq.push(['_trackEvent', category, action, opt_label, opt_value, opt_noninteraction]);
+		if(typeof _gaq != 'undefined')
+		{
+			_gaq.push(['_trackEvent', category, action, opt_label, opt_value, opt_noninteraction]);
+		}
 	};
 	
 

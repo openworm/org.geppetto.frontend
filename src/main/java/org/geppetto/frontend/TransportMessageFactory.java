@@ -103,6 +103,9 @@ public class TransportMessageFactory {
 			case LIST_FORCE_VARS:
 				params.add(new SimpleEntry<String, String>("list_force_vars", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case GET_WATCH_LISTS:
+				params.add(new SimpleEntry<String, String>("get_watch_lists", (update!=null) ? update : EMPTY_STRING));
+				break;
 			default:
 				break;
 		}

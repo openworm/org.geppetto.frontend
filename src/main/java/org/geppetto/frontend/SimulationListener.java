@@ -393,14 +393,18 @@ public class SimulationListener implements ISimulationCallbackListener {
 	}
 	
 	/**
-	 * instructs simulation to clear watch lists 
+	 * Get simulation watch lists 
+	 * @throws JsonProcessingException 
 	 */
-	public void getWatchLists(GeppettoMessageInbound connection){		
+	public void getWatchLists(GeppettoMessageInbound connection) throws JsonProcessingException{		
 		List<WatchList> watchLists = simulationService.getWatchLists();
 		
-		// TODO: serialize watch-lists
+		// serialize watch-lists
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedLists = mapper.writer().writeValueAsString(watchLists);
 		
-		// TODO: send results to the server
+		// message the client with results
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS, serializedLists);
 	} 
 
 	/**

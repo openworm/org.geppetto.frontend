@@ -53,7 +53,8 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),
 	LIST_WATCH_VARS("list_watch_vars"),
-	LIST_FORCE_VARS("list_force_vars");
+	LIST_FORCE_VARS("list_force_vars"),
+	GET_WATCH_LISTS("get_watch_lists");
 
 	private OUTBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

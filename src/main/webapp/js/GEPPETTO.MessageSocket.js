@@ -176,6 +176,10 @@
 				GEPPETTO.Console.debugLog(LISTING_FORCE_VARS);
 				formatListVariableOutput(JSON.parse(payload.list_force_vars).variables, 0);
 				break;
+			case "get_watch_lists":
+				GEPPETTO.Console.debugLog(LISTING_FORCE_VARS);
+				GEPPETTO.Console.log(payload.get_watch_lists);
+				break;
 			default:
 
 				break;

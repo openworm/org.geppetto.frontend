@@ -110,6 +110,9 @@ var Widget ={
 				$("#"+this.id).dialog('open');
 				this.visible = true;
 
+				//Unfocused close button 
+				$(".ui-dialog-titlebar-close").blur();
+				
 				return "Showing " + this.name + " widget";
 			}, 
 
@@ -123,6 +126,20 @@ var Widget ={
 				return this.name;
 			},
 
+			/**
+			 * Sets the name of the widget 
+			 * 
+			 * @param name - Name of widget
+			 */
+			setName : function(name){
+				this.name = name;
+				
+				// set name to widget window
+				$( "#"+this.id).dialog( "option", "title", this.name );
+				
+				return "Widget has been renamed to " + this.name;
+			},
+			
 			/**
 			 * Gets the ID of the widget
 			 * 
@@ -147,15 +164,17 @@ var Widget ={
 			 * Renders the widget dialog window
 			 */
 			render: function() {
-				//creat the dialog window for the widget
+				//create the dialog window for the widget
 				this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
 						{
 							resizable :  true,
 							draggable : true,
 							height : 300,
-							width : 350,
-							modal : false
-						});
+							width : 350							
+						});	
+				
+				//Take focus away from close button
+				$(".ui-dialog-titlebar-close").blur();
 			},
 		}),
 };

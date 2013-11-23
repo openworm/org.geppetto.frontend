@@ -89,9 +89,10 @@ GEPPETTO.PlotsController.addPlotWidget = function(){
 
 	//Name of plotting widget
 	var name = "Plot"+ index;
-
+	var id = name;
+	
 	//create plotting widget
-	var p = window[name] = new Plot("plot-widget"+ index, name,true);
+	var p = window[name] = new Plot(id, name,true);
 
 	//store in local stack
 	plots.push(p);

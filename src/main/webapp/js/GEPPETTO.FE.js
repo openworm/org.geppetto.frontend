@@ -310,6 +310,14 @@ GEPPETTO.FE.checkWelcomeMessageCookie = function(){
 GEPPETTO.FE.showWelcomeMessage = function(){
 	$('#welcomeMessageModal').modal(); 
 
+	//Closes welcome modal window when pressing enter
+	$('#welcomeMessageModal').keydown(function(event){
+	    if(event.keyCode == 13) {
+	    	$('#welcomeMessageModal').modal('hide'); 
+	    	return false;
+	    }
+	  });
+	
 	$("#close-welcomeMsg").on("click", function(event){
 		if($('#welcomeMsgCookie').hasClass("checked")){
         	$.cookie("hideWelcomeMessage", true);

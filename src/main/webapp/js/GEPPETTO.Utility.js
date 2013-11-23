@@ -37,7 +37,9 @@
 
 var tags = [];
 
-var helpMsg = null;
+var helpObjectsMap = null;
+
+var helpMsg = ALL_COMMANDS_AVAILABLE_MESSAGE;
 
  /**
  * Global help functions with all commands in global objects. 
@@ -45,15 +47,18 @@ var helpMsg = null;
  * @returns {String} - Message with help notes.
  */
 function help(){
-	if(helpMsg == null){
-		helpMsg = ALL_COMMANDS_AVAILABLE_MESSAGE + G.help() + '\n\n' + Simulation.help();
+
+	if(helpObjectsMap == null){
+		helpObjectsMap = {};
+		helpObjectsMap["G"] = G.help();
+		helpObjectsMap["Simulation"] = Simulation.help();
+	}
+	
+	for(var g in helpObjectsMap){
+		helpMsg += '\n\n' + helpObjectsMap[g];
 	}
 	
 	return helpMsg;
-};
-
-function updateHelp(newObjectCommands){
-	helpMsg = helpMsg + '\n\n' + newObjectCommands;	
 };
 
 /**
@@ -135,8 +140,12 @@ function extractCommandsFromFile(script, Object, objectName){
  */
 function availableTags(){
 
-	var commands = "\n" +  "Simulation" + "\n" + Simulation.help() + "\n" +  G.help();
-
+	var commands = "\n";
+		
+	for(var g in helpObjectsMap){
+		commands += '\n' + helpObjectsMap[g];
+	}
+	
 	var commandsSplitByLine = commands.split("\n");
 
 	var tagsCount = 0;
@@ -154,7 +163,43 @@ function availableTags(){
 	return tags;
 };
 
-function addTags(scriptLocation, object, name){
+/**
+ * Remove tags that correspond to target object
+ * 
+ * @param targetObject - Object whose command should no longer exist
+ */
+function removeAutocompleteTags(targetObject){
+	
+	//loop through tags and match the commands for object
+	for(var index = 0; index < tags.length; index++){
+		if(tags[index].indexOf(targetObject+".")!==-1){
+			tags.splice(index,1);
+			//go back one index spot after deletion
+			index--;
+		}
+	}
+}
+
+/**
+ * Returns the commands associated with the object
+ * 
+ * @param id - Id of object for commands
+ * @returns
+ */
+function getObjectCommands(id){
+	return helpObjectsMap[id];
+}
+
+/**
+ * Update commands for help option. Usually called after widget
+ * is created.
+ * 
+ * @param scriptLocation - Location of files from where to read the comments
+ * @param object - Object whose commands will be added
+ * @param id - Id of object
+ * @returns
+ */
+function updateCommands(scriptLocation, object, id){
 	var nonCommands = ["initialize()", "constructor()", "render()", "bind(a,b,c)", "unbind(a,b)","trigger(a)",
 	                   "$(a)", "make(a)", "remove()", "delegateEvents(a)", "_configure(a)", "_ensureElement()"];
 
@@ -173,7 +218,7 @@ function addTags(scriptLocation, object, name){
 			},
 		});
 		
-	var commands = name + COMMANDS;
+	var commands = id + COMMANDS;
 
 	var tagsCount = tags.length;
 	
@@ -184,7 +229,7 @@ function addTags(scriptLocation, object, name){
 			//get the argument for this function
 			var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
 
-			var functionName = name + "."+prop+"("+parameter+")";
+			var functionName = id + "."+prop+"("+parameter+")";
 
 			var isCommand = true;
 			for(var c =0; c<nonCommands.length; c++){
@@ -227,11 +272,14 @@ function addTags(scriptLocation, object, name){
 			}
 		};
 	}	
-
-	//update help message
-	updateHelp(commands.substring(0,commands.length-2));
+	
+	//after commands and comments are extract, update global help option
+	helpObjectsMap[id] =  commands.substring(0,commands.length-2);		
 };
 
-function removeTags(name, object){
+function removeTags(id){
+	
+	removeAutocompleteTags(id);
+	delete helpObjectsMap[id];
 	
 };

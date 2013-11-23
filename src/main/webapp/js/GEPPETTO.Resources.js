@@ -137,7 +137,7 @@ var SERVER_AVAILABLE = "Server Available";
 
 var WEBGL_FAILED = "Initializing Error: Unable to initialize WebGL";
 
-var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.\n\n";
+var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.";
 
 var GEPPETTO_VERSION_HOLDER = "geppetto v$1 is ready";
 

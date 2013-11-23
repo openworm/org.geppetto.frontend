@@ -90,18 +90,23 @@ GEPPETTO.PlotsController.addPlotWidget = function(){
 	//Name of plotting widget
 	var name = "Plot"+ index;
 	var id = name;
-	
+			
 	//create plotting widget
 	var p = window[name] = new Plot(id, name,true);
+
+	//create help command for plot
+	Plot.prototype.help = function widgetHelp(){return getObjectCommands(id);};
 
 	//store in local stack
 	plots.push(p);
 	
 	//add commands to console autocomplete and help option
-	addTags("widgets/plots/Plot.js", p, name);
+	updateCommands("widgets/plots/Plot.js", p, id);
 
 	return p;
 };
+
+function widgetHelp(){return extractCommandsFromFile("widgets/plots/Plot.js", Plot, "Plot");};
 
 /**
  * Removes existing plotting widgets
@@ -112,6 +117,8 @@ GEPPETTO.PlotsController.removePlotWidgets = function(){
 		var plot = plots[p];
 
 		plot.destroy();
+		
+		removeTags(plot.getId());
 
 		delete window[plot.getName()];
 	}	

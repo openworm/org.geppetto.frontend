@@ -150,6 +150,8 @@ var CLEAR_CANVAS = "Inbound Message Received: Clear canvas";
 
 var INVALID_SIMULATION_FILE = "Invalid Simulation File";
 
+var INVALID_WATCH_LIST = "Invalid Watch List";
+
 var LOADING_MODEL = "Inbound Message Received: Loading Model ";
 
 var OBSERVING_MODE = "Observing Simulation Mode";

@@ -98,6 +98,9 @@
 				$('#start').attr('disabled', 'disabled');
 				GEPPETTO.FE.infoDialog(INVALID_SIMULATION_FILE, payload.message);
 				break;
+			case "error_adding_watch":
+				GEPPETTO.FE.infoDialog(INVALID_WATCH_LIST, payload.message);
+				break;
 			case "geppetto_version":
 				var version = payload.geppetto_version;
 				var geppettoVersion = GEPPETTO_VERSION_HOLDER.replace("$1", version);

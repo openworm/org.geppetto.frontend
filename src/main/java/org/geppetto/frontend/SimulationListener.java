@@ -355,8 +355,9 @@ public class SimulationListener implements ISimulationCallbackListener {
 	
 	/**
 	 * Adds watch lists with variables to be watched
+	 * @throws GeppettoExecutionException 
 	 */
-	public void addWatchLists(String jsonLists, GeppettoMessageInbound connection){
+	public void addWatchLists(String jsonLists, GeppettoMessageInbound connection) throws GeppettoExecutionException{
 		List<WatchList> lists = null;
 		
 		try {

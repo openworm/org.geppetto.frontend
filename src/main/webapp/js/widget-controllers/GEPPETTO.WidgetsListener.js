@@ -30,57 +30,66 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Class used to create widgets and handle widget events from parent class. 
+ * Listener class for widgets. Receives updates from Geppetto that need to be transmitted to all widgets. 
+ * 
+ * @constructor
+ * 
+ * @author Jesus R Martinez (jesus@metacell.us)
  */
+GEPPETTO.WidgetsListener =  {
 
-/**
- * Enum use to hold different types of widgets
- */
-var Widgets = {
-			PLOT : 0
+		_subscribers : [],
+
+		/**
+		 * Subscribes widget controller class to listener
+		 * 
+		 * @param obj - Controller Class subscribing
+		 * @returns {Boolean}
+		 */
+		subscribe : function(obj){
+			
+			//loop through list of subscribers not to add it again
+			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
+				if( this._subscribers[ i ] === obj ) {
+					this._subscribers.splice( i, 1 );				 
+					return false;
+				}
+			}
+
+			this._subscribers.push( obj );
+			
+			GEPPETTO.Console.debugLog( 'added new observer' );
+		},
+
+		/**
+		 * Unsubscribe widget controller class
+		 * 
+		 * @param obj - Controller class to be unsubscribed from listener
+		 * 
+		 * @returns {Boolean}
+		 */
+		unsubscribe : function(obj){
+			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
+				if( this._subscribers[ i ] === obj ) {
+					this._subscribers.splice( i, 1 );
+					GEPPETTO.Console.log( 'removed existing observer' );
+					return true;
+				}
+			}
+			return false;
+		},
+
+		/**
+		 * Update all subscribed controller classes of the changes
+		 * 
+		 * @param newData 
+		 */
+		updateSubscribedWidgets : function(){
+			var args = Array.prototype.slice.call( arguments, 0 );
+			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
+				this._subscribers[ i ].update.apply( args );
+			}
+		}
+
 };
-
-(function(){
-	GEPPETTO.WidgetFactory = GEPPETTO.WidgetFactory ||
-	{
-		REVISION : '1'
-	};
-	
-	/**
-	 * Adds widget to Geppetto
-	 */
-	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
-		var widget = null;
-		
-		switch(widgetType){
-			//create plotting widget
-			case Widgets.PLOT:
-				//subscribe controller to widget listener
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PlotsController);
-				widget = GEPPETTO.PlotsController.addPlotWidget();
-				break;
-			default: 
-				break;
-		}
-				
-		return widget;
-	};
-	
-	/**
-	 * Removes widget from Geppetto
-	 */
-	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
-		switch(widgetType){
-			//removes plotting widget from geppetto
-			case Widgets.PLOT:
-				GEPPETTO.WidgetsListener.unsubscribe(GEPPETTO.PlotsController);
-				GEPPETTO.PlotsController.removePlotWidgets();
-				return REMOVE_PLOT_WIDGETS;
-				break;
-			default: 
-				break;
-		}
-	};	
-})();	

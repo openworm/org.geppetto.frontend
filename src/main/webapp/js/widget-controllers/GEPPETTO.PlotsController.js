@@ -37,91 +37,116 @@
  * 
  * @author Jesus R Martinez (jesus@metacell.us)
  */
-GEPPETTO.PlotsController = GEPPETTO.PlotsController ||
-{
-	REVISION : '1'
-};
 
 var plots = new Array();
 
 var plotsON = false;
 
-/**
- * Toggles plotting widget on and off
- */
-GEPPETTO.PlotsController.toggle = function(){
-	//if there aren't plotting widgets to toggle, create one
-	if(plots.length==0){
-		GEPPETTO.Console.executeCommand('G.addWidget(Widgets.PLOT)');
-	}
-	//plot widgets exist, toggle them
-	else if(plots.length > 0){
-		plotsON = !plotsON;
-		
-		for(p in plots){
-			var plot = plots[p];
-			if(plotsON){
-				plot.hide();
+GEPPETTO.PlotsController = {
+
+		/**
+		 * Toggles plotting widget on and off
+		 */
+		toggle : function(){
+			//if there aren't plotting widgets to toggle, create one
+			if(plots.length==0){
+				GEPPETTO.Console.executeCommand('G.addWidget(Widgets.PLOT)');
 			}
-			else{
-				plot.show();
+			//plot widgets exist, toggle them
+			else if(plots.length > 0){
+				plotsON = !plotsON;
+
+				for(p in plots){
+					var plot = plots[p];
+					if(plotsON){
+						plot.hide();
+					}
+					else{
+						plot.show();
+					}
+				}	
 			}
-		}	
-	}
-};
+		},
 
-/**
- * Returns all plotting widgets objects
- */
-GEPPETTO.PlotsController.getPlotWidgets = function(){
-	return plots;
-};
+		/**
+		 * Returns all plotting widgets objects
+		 */
+		getPlotWidgets : function(){
+			return plots;
+		},
 
-/**
- * Creates plotting widget
- * 
- * @ return {Widget} - Plotting widget
- */
-GEPPETTO.PlotsController.addPlotWidget = function(){
+		/**
+		 * Creates plotting widget
+		 * 
+		 * @ return {Widget} - Plotting widget
+		 */
+		addPlotWidget : function(){
 
-	//Plot widget number
-	var index = (plots.length+1);
+			//Plot widget number
+			var index = (plots.length+1);
 
-	//Name of plotting widget
-	var name = "Plot"+ index;
-	var id = name;
+			//Name of plotting widget
+			var name = "Plot"+ index;
+			var id = name;
+
+			//create plotting widget
+			var p = window[name] = new Plot(id, name,true);
+
+			//create help command for plot
+			Plot.prototype.help = function widgetHelp(){return getObjectCommands(id);};
+
+			//store in local stack
+			plots.push(p);
 			
-	//create plotting widget
-	var p = window[name] = new Plot(id, name,true);
+			this.registerHandler(id);
 
-	//create help command for plot
-	Plot.prototype.help = function widgetHelp(){return getObjectCommands(id);};
+			//add commands to console autocomplete and help option
+			updateCommands("widgets/plots/Plot.js", p, id);
 
-	//store in local stack
-	plots.push(p);
-	
-	//add commands to console autocomplete and help option
-	updateCommands("widgets/plots/Plot.js", p, id);
-
-	return p;
-};
-
-function widgetHelp(){return extractCommandsFromFile("widgets/plots/Plot.js", Plot, "Plot");};
-
-/**
- * Removes existing plotting widgets
- */
-GEPPETTO.PlotsController.removePlotWidgets = function(){
-	//remove all existing plotting widgets
-	for(p in plots){
-		var plot = plots[p];
-
-		plot.destroy();
+			return p;
+		},
 		
-		removeTags(plot.getId());
+		/**
+		 * Registers widget events to detect and execute following actions. 
+		 * Used when widget is destroyed. 
+		 * 
+		 * @param plotID
+		 */
+		registerHandler : function(plotID){
+			//registers remove handler for widget
+			$("#" +plotID).on("remove", function () {
+				//remove tags and delete object upon destroying widget
+				removeTags(this.id);
 
-		delete window[plot.getName()];
-	}	
+				for (p in plots)
+				{
+					if (plots[p].getId() == this.id)
+					{
+						plots.splice(plots[p],1);
+						break;
+					}
+				}
 
-	plots = new Array();
+				delete window[this.id];
+			});
+		},
+
+		/**
+		 * Removes existing plotting widgets
+		 */
+		removePlotWidgets : function(){
+			//remove all existing plotting widgets
+			for(p in plots){
+				var plot = plots[p];
+
+				plot.destroy();
+			}	
+
+			plots = new Array();
+		},
+
+		//receives updates from widget listener class
+		update : function(newData){
+			GEPPETTO.Console.log(" New Data " + newData);
+		}
 };

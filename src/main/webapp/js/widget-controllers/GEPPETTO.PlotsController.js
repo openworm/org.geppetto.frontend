@@ -147,6 +147,5 @@ GEPPETTO.PlotsController = {
 
 		//receives updates from widget listener class
 		update : function(newData){
-			GEPPETTO.Console.log(" New Data " + newData);
 		}
 };

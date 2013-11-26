@@ -53,8 +53,8 @@ debugMode = false;
  * @name G.addWidget(widgetType)
  * @param widgetType - Type of widget to add
  */
-G.addWidget = function(widgetType){
-	var newWidget = GEPPETTO.WidgetFactory.addWidget(widgetType);
+G.addWidget = function(type){
+	var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
 	
 	return newWidget.getName() + WIDGET_CREATED;
 };
@@ -142,10 +142,10 @@ G.copyHistoryToClipboard = function(){
  * @param toggle - toggles debug statements
  * 
  */
-G.debug = function(toggle){
-	debugMode = toggle;
+G.debug = function(mode){
+	debugMode = mode;
 
-	if(toggle){
+	if(mode){
 		GEPPETTO.showStats();
 		return DEBUG_ON;
 	}
@@ -187,8 +187,8 @@ G.help = function(){
  * @name G.removeWidget(widgetType)
  * @param widgetType - Type of widget to remove
  */
-G.removeWidget = function(widgetType){
-	return GEPPETTO.WidgetFactory.removeWidget(widgetType);
+G.removeWidget = function(type){
+	return GEPPETTO.WidgetFactory.removeWidget(type);
 };
 
 /**

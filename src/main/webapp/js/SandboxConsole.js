@@ -463,6 +463,10 @@ var Sandbox = {
 				return false;
 			}
 	
+			if ((e.which === 20 || e.which === 16) ) 
+			{
+				e.preventDefault();
+			}	
 			// Up / down keys cycle through past history or move up/down
 			if ( !this.ctrl && (e.which === 38 || e.which === 40) ) {
 				e.preventDefault();

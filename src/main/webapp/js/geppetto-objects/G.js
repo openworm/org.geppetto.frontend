@@ -188,7 +188,7 @@ G.help = function(){
  * @param widgetType - Type of widget to remove
  */
 G.removeWidget = function(widgetType){
-	GEPPETTO.WidgetFactory.removeWidget(widgetType);
+	return GEPPETTO.WidgetFactory.removeWidget(widgetType);
 };
 
 /**

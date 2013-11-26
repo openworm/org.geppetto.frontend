@@ -136,10 +136,11 @@ GEPPETTO.PlotsController = {
 		 */
 		removePlotWidgets : function(){
 			//remove all existing plotting widgets
-			for(p in plots){
-				var plot = plots[p];
+			for(var i =0; i<plots.length; i++){
+				var plot = plots[i];
 
 				plot.destroy();
+				i--;
 			}	
 
 			plots = new Array();

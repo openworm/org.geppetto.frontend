@@ -95,6 +95,14 @@
 				messageHandlers[ i ].onMessage( parsedServerMessage );
 			}
 		};
+		
+		//Detects problems when connecting to Geppetto server
+		GEPPETTO.MessageSocket.socket.onerror = function(evt){
+			var message = "Error communicating with Geppetto servlet \n" +
+						"Reload page if problems persits";
+			
+			GEPPETTO.FE.infoDialog(WEBSOCKET_CONNECTION_ERROR, message);
+		};
 	});
 	
 	GEPPETTO.MessageSocket.send = function(command, parameter){

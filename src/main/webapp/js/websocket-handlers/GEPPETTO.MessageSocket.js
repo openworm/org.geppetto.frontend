@@ -112,6 +112,10 @@
 		}
 	};
 	
+	GEPPETTO.MessageSocket.addHandler = function(handler){
+		messageHandlers.push(handler);
+	};
+	
 	GEPPETTO.MessageSocket.isServletBusy = function(){
 		return waitingForServletResponse;
 	};

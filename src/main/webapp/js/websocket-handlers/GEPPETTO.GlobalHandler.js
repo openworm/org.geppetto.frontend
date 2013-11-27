@@ -46,6 +46,10 @@ GEPPETTO.GlobalHandler = GEPPETTO.GlobalHandler ||
 
 		// Switch based on parsed incoming message type
 		switch(parsedServerMessage.type){
+		//sets client id
+		case MESSAGE_TYPE.CLIENT_ID:
+			GEPPETTO.MessageSocket.setClientID(payload.clientID);
+			break;
 		//clear canvas, used when loading a new model or re-loading previous one
 		case MESSAGE_TYPE.RELOAD_CANVAS:
 			GEPPETTO.Console.debugLog(CLEAR_CANVAS);

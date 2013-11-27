@@ -42,6 +42,8 @@
 	var waitingForServletResponse = false;
 	
 	var messageHandlers = [];
+
+	var clientID = null;
 	
 	GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 	{
@@ -105,6 +107,14 @@
 	GEPPETTO.MessageSocket.isServletBusy = function(){
 		return waitingForServletResponse;
 	};
+	
+	GEPPETTO.MessageSocket.setClientID = function(id){
+		clientID = id;
+	};
+	
+	GEPPETTO.MessageSocket.getClientID = function(){
+		return clientID;
+	};
 })();
 
 /**
@@ -115,7 +125,9 @@
 * @returns JSON stringified object
 */
 function messageTemplate(msgtype, payload) {
+	var clientID = GEPPETTO.MessageSocket.getClientID();
 	var object = {
+		id : clientID,
 		type: msgtype,
 	    data: payload
 	};

@@ -81,7 +81,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	@Autowired
 	private SimulationServerConfig simulationServerConfig;
 
-	private final ConcurrentHashMap<Integer, GeppettoMessageInbound> _connections = new ConcurrentHashMap<Integer, GeppettoMessageInbound>();
+	private final ConcurrentHashMap<String, GeppettoMessageInbound> _connections = new ConcurrentHashMap<String, GeppettoMessageInbound>();
 
 	private List<GeppettoMessageInbound> observers = new ArrayList<GeppettoMessageInbound>();
 
@@ -105,7 +105,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param newVisitor - New connection to be added to current ones
 	 */
 	public void addConnection(GeppettoMessageInbound newVisitor){
-		_connections.put(Integer.valueOf(newVisitor.getConnectionID()), newVisitor);
+		_connections.put(newVisitor.getConnectionID(), newVisitor);
 
 		//Simulation is being used, notify new user controls are unavailable
 		if(isSimulationInUse()){
@@ -124,7 +124,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param exitingVisitor - Connection to be removed
 	 */
 	public void removeConnection(GeppettoMessageInbound exitingVisitor){
-		_connections.remove(Integer.valueOf(exitingVisitor.getConnectionID()));
+		_connections.remove(exitingVisitor.getConnectionID());
 
 		//Handle operations after user closes connection
 		postClosingConnectionCheck(exitingVisitor);
@@ -440,7 +440,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type){
 		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(type, null);
+		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(connection.getConnectionID(),type, null);
 		String msg = new Gson().toJson(transportMsg);
 
 		//Send the message to the client
@@ -455,9 +455,9 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param type - Type of udpate to be send
 	 * @param update - update to be sent
 	 */
-	private void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type, String update){
+	public void messageClient(GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type, String update){
 		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(type, update);
+		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(connection.getConnectionID(),type, update);
 		String msg = new Gson().toJson(transportMsg);
 
 		sendMessage(connection, msg);

@@ -63,14 +63,14 @@ public class GeppettoMessageInbound extends MessageInbound
 	}
 
 	private SimulationListener simulationListener;
-	private final int id;
+	private final String client_id;
 
 	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
 
-	public GeppettoMessageInbound(int id, SimulationListener listener)
+	public GeppettoMessageInbound(String client_id, SimulationListener listener)
 	{
 		super();
-		this.id = id;
+		this.client_id = client_id;
 		simulationListener = listener;
 	}
 
@@ -78,6 +78,8 @@ public class GeppettoMessageInbound extends MessageInbound
 	protected void onOpen(WsOutbound outbound)
 	{
 		simulationListener.addConnection(this);	
+		
+		simulationListener.messageClient(this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID,this.client_id);
 	}
 
 	@Override
@@ -198,8 +200,8 @@ public class GeppettoMessageInbound extends MessageInbound
 		}
 	}
 
-	public int getConnectionID() {
-		return id;
+	public String getConnectionID() {
+		return client_id;
 	}
 
 	public VisitorRunMode getCurrentRunMode(){

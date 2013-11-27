@@ -41,6 +41,7 @@ var MESSAGE_TYPE = {
 	/*
 	 * Messages handle by GlobalHandler
 	 */
+	CLIENT_ID : "client_id",
 	RELOAD_CANVAS : "reload_canvas",
 	ERROR_LOADING_SIM : "error_loading_simulation",
 	GEPPETTO_VERSION : "geppetto_version",

@@ -52,11 +52,12 @@ public class TransportMessageFactory {
 	
 	/**
 	 * Create JSON object with appropriate message for its type
+	 * @param id 
 	 * 
 	 * @param type - Type of message of requested
 	 * @return
 	 */
-	public static GeppettoTransportMessage getTransportMessage(OUTBOUND_MESSAGE_TYPES type, String update){
+	public static GeppettoTransportMessage getTransportMessage(String clientID, OUTBOUND_MESSAGE_TYPES type, String update){
 
 		String messageType = type.toString();
 		
@@ -103,11 +104,14 @@ public class TransportMessageFactory {
 			case LIST_FORCE_VARS:
 				params.add(new SimpleEntry<String, String>("list_force_vars", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case CLIENT_ID:
+				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
+				break;
 			default:
 				break;
 		}
 		
-		return createTransportMessage(messageType, params);
+		return createTransportMessage(clientID,messageType, params);
 	}
 	
 	/**
@@ -117,7 +121,7 @@ public class TransportMessageFactory {
 	 * @param params - list of name-value pairs representing parameter names and values
 	 * @return
 	 */
-	private static GeppettoTransportMessage createTransportMessage(String type, List<SimpleEntry<String, String>> params){
+	private static GeppettoTransportMessage createTransportMessage(String clientID,String type, List<SimpleEntry<String, String>> params){
 		GeppettoTransportMessage msg = new GeppettoTransportMessage();
 		
 		//JSON nested object stored in the data field of the transport message
@@ -127,6 +131,7 @@ public class TransportMessageFactory {
 			json.addProperty(param.getKey(), param.getValue());
 		}
 
+		msg.clientID = clientID;
 		msg.type = type;
 		// data stored as a string (could be anything) - will be interpreted by the client as a json object
 		msg.data = json.toString();

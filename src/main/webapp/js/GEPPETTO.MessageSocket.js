@@ -131,6 +131,8 @@
 				//Event received to update the simulation
 			case "scene_update":
 				var entities = JSON.parse(payload.update).entities;
+				Simulation.watchTree = JSON.parse(payload.update).variable_watch;
+				
 				//Update if simulation hasn't been stopped
 				if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()){
 					if (!GEPPETTO.isScenePopulated())

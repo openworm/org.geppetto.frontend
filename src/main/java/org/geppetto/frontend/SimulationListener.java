@@ -574,7 +574,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		for (GeppettoMessageInbound connection : getConnections())
 		{				
 			// pack sceneUpdate and variableWatchTree in the same JSON string
-			String update = "{ \"entities\":" + sceneUpdate  + ", \"variable-watch\": " + variableWatchTree + "}";
+			String update = "{ \"entities\":" + sceneUpdate  + ", \"variable_watch\": " + variableWatchTree + "}";
 			
 			// Notify all connected clients about update either to load model or update current one.
 			messageClient(connection, action , update);

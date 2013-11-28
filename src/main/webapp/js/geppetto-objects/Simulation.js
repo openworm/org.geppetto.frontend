@@ -60,6 +60,8 @@ Simulation.status = Simulation.StatusEnum.INIT;
 
 Simulation.simulationURL = "";
 
+Simulation.watchTree = null;
+
 var loading = false;
 
 /**
@@ -329,6 +331,17 @@ Simulation.stopWatch = function()
 Simulation.clearWatchLists = function()
 {
 	santasLittleHelper("clear_watch", SIMULATION_CLEAR_WATCH, MESSAGE_OUTBOUND_CLEAR_WATCH, null);
+};
+
+/**
+ * Gets tree for variables being watched if any.
+ * 
+ * @name Simulation.getWatchTree()
+ * @returns {String} - status after request.
+ */
+Simulation.getWatchTree = function()
+{
+	return Simulation.watchTree;
 };
 
 /**

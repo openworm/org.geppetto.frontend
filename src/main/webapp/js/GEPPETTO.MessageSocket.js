@@ -109,7 +109,7 @@
 				//Simulation has been loaded and model need to be loaded
 			case "load_model":
 				GEPPETTO.Console.debugLog(LOADING_MODEL);
-				var entities = JSON.parse(payload.entities);
+				var entities = JSON.parse(payload.update).entities;
 
 				setSimulationLoaded();
 
@@ -130,7 +130,7 @@
 				break;
 				//Event received to update the simulation
 			case "scene_update":
-				var entities = JSON.parse(payload.entities);
+				var entities = JSON.parse(payload.update).entities;
 				//Update if simulation hasn't been stopped
 				if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()){
 					if (!GEPPETTO.isScenePopulated())
@@ -144,6 +144,8 @@
 						GEPPETTO.updateJSONScene(entities);
 					}
 				}
+				
+				// TODO: store variable-watch tree
 				break;
 				//Simulation server became available
 			case "server_available":

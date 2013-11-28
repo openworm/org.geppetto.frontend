@@ -89,7 +89,7 @@ public class TransportMessageFactory {
 				break;
 			case LOAD_MODEL:
 			case SCENE_UPDATE:
-				params.add(new SimpleEntry<String, String>("entities", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_CONFIGURATION:
 				params.add(new SimpleEntry<String, String>("configuration", (update!=null) ? update : EMPTY_STRING));
@@ -126,7 +126,7 @@ public class TransportMessageFactory {
 	private static GeppettoTransportMessage createTransportMessage(String type, List<SimpleEntry<String, String>> params){
 		GeppettoTransportMessage msg = new GeppettoTransportMessage();
 		
-		//JSON nested object stored in the data field of the transport message
+		// JSON nested object stored in the data field of the transport message
 		JsonObject json = new JsonObject();
 		for(SimpleEntry<String, String> param : params)
 		{

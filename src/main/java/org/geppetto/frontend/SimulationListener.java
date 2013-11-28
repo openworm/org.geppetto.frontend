@@ -65,6 +65,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * Class that handles the Web Socket connections the servlet is receiving.
@@ -485,7 +486,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(type, null);
 		String msg = new Gson().toJson(transportMsg);
 
-		//Send the message to the client
+		// Send the message to the client
 		sendMessage(connection, msg);
 	}
 
@@ -552,7 +553,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 */
 	@Override
-	public void updateReady(String update) {
+	public void updateReady(String sceneUpdate, String variableWatchTree) {
 		long start=System.currentTimeMillis();
 		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -572,11 +573,14 @@ public class SimulationListener implements ISimulationCallbackListener {
 
 		for (GeppettoMessageInbound connection : getConnections())
 		{				
-			//Notify all connected clients about update either to load model or update current one.
+			// pack sceneUpdate and variableWatchTree in the same JSON string
+			String update = "{ \"entities\":" + sceneUpdate  + ", \"variable-watch\": " + variableWatchTree + "}";
+			
+			// Notify all connected clients about update either to load model or update current one.
 			messageClient(connection, action , update);
 		}
 
-		getSimulationServerConfig().setLoadedScene(update);
+		getSimulationServerConfig().setLoadedScene(sceneUpdate);
 
 		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
 	}

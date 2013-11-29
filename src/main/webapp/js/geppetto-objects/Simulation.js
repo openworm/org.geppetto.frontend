@@ -282,11 +282,14 @@ Simulation.listForceableVariables = function()
  * Add watchlists to the simulation.
  * 
  * @name Simulation.addWatchLists()
+ * @param watchLists - listing variables to be watched. Example: [{name:"LIST_NAME", variablePaths:["ASPECT_ID.VARIABLE_ID"]}]
  * @returns {String} - status after request.
  */
 Simulation.addWatchLists = function(watchLists)
 {
 	santasLittleHelper("set_watch", SIMULATION_SET_WATCH, MESSAGE_OUTBOUND_SET_WATCH, watchLists);
+	
+	return SIMULATION_SET_WATCH;
 };
 
 /**
@@ -298,6 +301,8 @@ Simulation.addWatchLists = function(watchLists)
 Simulation.getWatchLists = function()
 {
 	santasLittleHelper("get_watch", SIMULATION_GET_WATCH, MESSAGE_OUTBOUND_GET_WATCH, null);
+	
+	return SIMULATION_GET_WATCH;
 };
 
 /**
@@ -309,6 +314,8 @@ Simulation.getWatchLists = function()
 Simulation.startWatch = function()
 {
 	santasLittleHelper("start_watch", SIMULATION_START_WATCH, MESSAGE_OUTBOUND_START_WATCH, null);
+	
+	return SIMULATION_START_WATCH;
 };
 
 /**
@@ -320,6 +327,8 @@ Simulation.startWatch = function()
 Simulation.stopWatch = function()
 {
 	santasLittleHelper("stop_watch", SIMULATION_STOP_WATCH, MESSAGE_OUTBOUND_STOP_WATCH, null);
+	
+	return SIMULATION_STOP_WATCH;
 };
 
 /**
@@ -331,6 +340,8 @@ Simulation.stopWatch = function()
 Simulation.clearWatchLists = function()
 {
 	santasLittleHelper("clear_watch", SIMULATION_CLEAR_WATCH, MESSAGE_OUTBOUND_CLEAR_WATCH, null);
+	
+	return SIMULATION_CLEAR_WATCH;
 };
 
 /**

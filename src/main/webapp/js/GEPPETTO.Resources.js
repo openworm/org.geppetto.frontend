@@ -103,7 +103,6 @@ var SIMULATION_STOP_WATCH = 'Simulation stop watch requested';
 
 var SIMULATION_CLEAR_WATCH = 'Simulation clear watchlists requested';
 
-
 /**
  * Object G resources
  */

@@ -81,7 +81,6 @@
 			resultPrefix : "  => ",
 			tabCharacter : "\t",
 			placeholder : "// type a javascript command and hit enter (help() for info)",
-			helpText :  help()
 		});
 
 		$('#console').css("width", $("#footer").width()-40);
@@ -137,10 +136,14 @@
 	};
 	
 	GEPPETTO.Console.consoleHistory = function(){
-		return console.model.get('history');
+		return GEPPETTO.Console.getConsole().model.get('history');
 	};
 	
 	GEPPETTO.Console.getConsole = function(){
+		if(console == null){
+			GEPPETTO.Console.createConsole();
+		}
+		
 		return console;
 	};
 		
@@ -161,7 +164,7 @@
 	 * internal function for loading script from console
 	 */
 	function loadScript(url){
-		console.loadScript(url);
+		GEPPETTO.Console.getConsole().loadScript(url);
 	};
 
 	function split( val ) {
@@ -182,7 +185,7 @@
 	GEPPETTO.Console.debugLog = (function(message)
 			{	
 		if(isDebugOn()){
-			console.debugLog(message);
+			GEPPETTO.Console.getConsole().debugLog(message);
 		}
 			});
 
@@ -191,19 +194,18 @@
 	 */
 	GEPPETTO.Console.log = (function(message)
 			{
-		console.showMessage(message);
+		GEPPETTO.Console.getConsole().showMessage(message);
 	});
 
 	/*
 	 * Executes commands to console
 	 */
-	GEPPETTO.Console.executeCommand = (function(command)
-			{
-		console.executeCommand(command);
+	GEPPETTO.Console.executeCommand = (function(command){
+		GEPPETTO.Console.getConsole().executeCommand(command);
 		var justCommand=command.substring(0,command.indexOf("("));
 		var commandParams=command.substring(command.indexOf("(")+1,command.lastIndexOf(")"));
 		GEPPETTO.trackActivity("Console",justCommand,commandParams);
-			});
+	});
 
 	function split( val ) {
 		return val.split( /,\s*/ );

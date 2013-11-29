@@ -37,7 +37,7 @@
 
 var tags = [];
 
-var helpObjectsMap = null;
+var helpObjectsMap = {"G": G.help() , "Simulation" : Simulation.help()};
 
 var helpMsg = ALL_COMMANDS_AVAILABLE_MESSAGE;
 
@@ -47,12 +47,6 @@ var helpMsg = ALL_COMMANDS_AVAILABLE_MESSAGE;
  * @returns {String} - Message with help notes.
  */
 function help(){
-
-	if(helpObjectsMap == null){
-		helpObjectsMap = {};
-		helpObjectsMap["G"] = G.help();
-		helpObjectsMap["Simulation"] = Simulation.help();
-	}
 	
 	for(var g in helpObjectsMap){
 		helpMsg += '\n\n' + helpObjectsMap[g];

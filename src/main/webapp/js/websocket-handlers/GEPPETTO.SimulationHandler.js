@@ -50,7 +50,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 		//Simulation has been loaded and model need to be loaded
 		case MESSAGE_TYPE.LOAD_MODEL:
 			GEPPETTO.Console.debugLog(LOADING_MODEL);
-			var entities = JSON.parse(payload.entities);
+			var entities = JSON.parse(payload.update).entities;
 
 			setSimulationLoaded();
 
@@ -59,21 +59,27 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			break;
 			//Event received to update the simulation
 		case MESSAGE_TYPE.SCENE_UPDATE:
-			var entities = JSON.parse(payload.entities);
-			//Update if simulation hasn't been stopped
-			if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()){
-				if (!GEPPETTO.isScenePopulated())
-				{				
-					// the first time we need to create the object.s
-					GEPPETTO.populateScene(entities);
-				}
-				else
-				{					
-					// any other time we just update them
-					GEPPETTO.updateJSONScene(entities);
-				}
-			}
-			break;
+            var entities = JSON.parse(payload.update).entities;
+            Simulation.watchTree = JSON.parse(payload.update).variable_watch;
+            
+            //Update if simulation hasn't been stopped
+            if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated())
+            {
+                if (!GEPPETTO.isScenePopulated())
+                {                                
+                    // the first time we need to create the object.s
+                    GEPPETTO.populateScene(entities);
+                }
+                else
+                {                                        
+                    // any other time we just update them
+                    GEPPETTO.updateJSONScene(entities);
+                }
+            }
+            
+            // TODO: store variable-watch tree
+            break;
+            //Simulation server became available
 			//Simulation configuration retrieved from server
 		case MESSAGE_TYPE.SIMULATION_CONFIGURATION:
 			//Load simulation file into display area
@@ -103,8 +109,11 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			formatListVariableOutput(JSON.parse(payload.list_force_vars).variables, 0);
 			//GEPPETTO.Console.log(JSON.stringify(payload));
 			break;
+		case MESSAGE_TYPE.GET_WATCH_LISTS:
+			GEPPETTO.Console.debugLog(LISTING_FORCE_VARS);
+			GEPPETTO.Console.log(payload.get_watch_lists);
+			break;
 		default:
-
 			break;
 		}
 	};

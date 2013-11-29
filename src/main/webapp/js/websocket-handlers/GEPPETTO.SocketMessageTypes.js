@@ -61,4 +61,5 @@ var MESSAGE_TYPE = {
 	SIMULATION_STARTED : "simulation_started",
 	LIST_WATCH_VARS : "list_watch_vars",
 	LIST_FORCE_VARS : "list_force_vars",
+	GET_WATCH_LISTS : "get_watch_lists"
 };

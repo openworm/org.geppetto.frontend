@@ -62,7 +62,7 @@
 		else if ('MozWebSocket' in window)
 		{
 			GEPPETTO.MessageSocket.socket = new MozWebSocket(host);
-		}
+		} 
 		else
 		{
 			GEPPETTO.Console.debugLog(WEBSOCKET_NOT_SUPPORTED);
@@ -137,11 +137,15 @@
 * @returns JSON stringified object
 */
 function messageTemplate(msgtype, payload) {
-	var clientID = GEPPETTO.MessageSocket.getClientID();
-	var object = {
-		id : clientID,
-		type: msgtype,
-	    data: payload
-	};
-	return JSON.stringify(object);
+        
+        if (!(typeof payload == 'string' || payload instanceof String))
+        {
+                payload = JSON.stringify(payload);
+        }
+        
+        var object = {
+                type: msgtype,
+            data: payload
+        };
+        return JSON.stringify(object);
 };

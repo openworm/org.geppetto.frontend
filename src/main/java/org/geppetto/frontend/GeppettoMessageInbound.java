@@ -40,6 +40,7 @@ import java.nio.CharBuffer;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
+import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -185,12 +186,33 @@ public class GeppettoMessageInbound extends MessageInbound
 			}
 			case SET_WATCH:
 			{
-				// TODO: set watch
+				String watchListsString = gmsg.data;
+				
+				try {
+					simulationListener.addWatchLists(watchListsString, this);
+				} catch (GeppettoExecutionException e) {
+					simulationListener.messageClient(this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+				}
+				break;
+			}
+			case GET_WATCH:
+			{				
+				simulationListener.getWatchLists(this);
 				break;
 			}
 			case START_WATCH:
 			{
-				// TODO: start watch
+				simulationListener.startWatch(this);
+				break;
+			}
+			case STOP_WATCH:
+			{
+				simulationListener.stopWatch(this);
+				break;
+			}
+			case CLEAR_WATCH:
+			{
+				simulationListener.clearWatchLists(this);
 				break;
 			}
 			default:

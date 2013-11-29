@@ -69,6 +69,9 @@ public class TransportMessageFactory {
 			case ERROR_LOADING_SIMULATION:
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString()));
 				break;
+			case ERROR_ADDING_WATCH_LIST:
+				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_ADDING_WATCH_MESSAGE.toString()));
+				break;
 			case OBSERVER_MODE:
 				params.add(new SimpleEntry<String, String>("alertMessage", Resources.SIMULATION_CONTROLLED.toString()));
 				params.add(new SimpleEntry<String, String>("popoverMessage", Resources.GEPPETO_SIM_INFO.toString()));
@@ -87,7 +90,7 @@ public class TransportMessageFactory {
 				break;
 			case LOAD_MODEL:
 			case SCENE_UPDATE:
-				params.add(new SimpleEntry<String, String>("entities", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_CONFIGURATION:
 				params.add(new SimpleEntry<String, String>("configuration", (update!=null) ? update : EMPTY_STRING));
@@ -103,6 +106,9 @@ public class TransportMessageFactory {
 				break;
 			case LIST_FORCE_VARS:
 				params.add(new SimpleEntry<String, String>("list_force_vars", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case GET_WATCH_LISTS:
+				params.add(new SimpleEntry<String, String>("get_watch_lists", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
@@ -124,7 +130,7 @@ public class TransportMessageFactory {
 	private static GeppettoTransportMessage createTransportMessage(String clientID,String type, List<SimpleEntry<String, String>> params){
 		GeppettoTransportMessage msg = new GeppettoTransportMessage();
 		
-		//JSON nested object stored in the data field of the transport message
+		// JSON nested object stored in the data field of the transport message
 		JsonObject json = new JsonObject();
 		for(SimpleEntry<String, String> param : params)
 		{

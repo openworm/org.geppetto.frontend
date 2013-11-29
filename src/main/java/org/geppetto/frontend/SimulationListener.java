@@ -53,6 +53,7 @@ import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.model.VariableList;
+import org.geppetto.core.data.model.WatchList;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
@@ -61,12 +62,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * Class that handles the Web Socket connections the servlet is receiving.
- * 
  * 
  * @author  Jesus R. Martinez (jesus@metacell.us)
  *
@@ -354,17 +356,58 @@ public class SimulationListener implements ISimulationCallbackListener {
 	
 	/**
 	 * Adds watch lists with variables to be watched
+	 * @throws GeppettoExecutionException 
 	 */
-	public void addWatchList(){		
-		// TODO: implement
+	public void addWatchLists(String jsonLists, GeppettoMessageInbound connection) throws GeppettoExecutionException{
+		List<WatchList> lists = null;
+		
+		try {
+			lists = fromJSON(new TypeReference<List<WatchList>>() {}, jsonLists);
+		} catch (GeppettoExecutionException e) {
+			throw new RuntimeException(e);
+		}
+		
+		// TODO: do a check that variables with those names actually exists for the current simulation
+		// TODO: throw exception if not
+		
+		simulationService.addWatchLists(lists);
 	}
 	
 	/**
 	 * instructs simulation to start sending watched variables value to the client 
 	 */
-	public void startWatch(){		
-		// TODO: implement
+	public void startWatch(GeppettoMessageInbound connection){		
+		simulationService.startWatch();
 	}
+	
+	/**
+	 * instructs simulation to stop sending watched variables value to the client 
+	 */
+	public void stopWatch(GeppettoMessageInbound connection){		
+		simulationService.stopWatch();
+	}
+	
+	/**
+	 * instructs simulation to clear watch lists 
+	 */
+	public void clearWatchLists(GeppettoMessageInbound connection){		
+		simulationService.clearWatchLists();
+	}
+	
+	/**
+	 * Get simulation watch lists 
+	 * @throws JsonProcessingException 
+	 */
+	public void getWatchLists(GeppettoMessageInbound connection) throws JsonProcessingException{		
+		List<WatchList> watchLists = simulationService.getWatchLists();
+		
+		// serialize watch-lists
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedLists = mapper.writer().writeValueAsString(watchLists);
+		
+		// message the client with results
+		this.messageClient(connection, OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS, serializedLists);
+	} 
 
 	/**
 	 * Simulation is being controlled by another user, new visitor that just loaded Geppetto Simulation in browser 
@@ -443,7 +486,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(connection.getConnectionID(),type, null);
 		String msg = new Gson().toJson(transportMsg);
 
-		//Send the message to the client
+		// Send the message to the client
 		sendMessage(connection, msg);
 	}
 
@@ -510,7 +553,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * 
 	 */
 	@Override
-	public void updateReady(String update) {
+	public void updateReady(String sceneUpdate, String variableWatchTree) {
 		long start=System.currentTimeMillis();
 		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -530,11 +573,14 @@ public class SimulationListener implements ISimulationCallbackListener {
 
 		for (GeppettoMessageInbound connection : getConnections())
 		{				
-			//Notify all connected clients about update either to load model or update current one.
+			// pack sceneUpdate and variableWatchTree in the same JSON string
+			String update = "{ \"entities\":" + sceneUpdate  + ", \"variable_watch\": " + variableWatchTree + "}";
+			
+			// Notify all connected clients about update either to load model or update current one.
 			messageClient(connection, action , update);
 		}
 
-		getSimulationServerConfig().setLoadedScene(update);
+		getSimulationServerConfig().setLoadedScene(sceneUpdate);
 
 		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
 	}
@@ -583,5 +629,16 @@ public class SimulationListener implements ISimulationCallbackListener {
 		catch (IOException e) {
 			messageClient(visitor,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 		}
+	}
+	
+	public static <T> T fromJSON(final TypeReference<T> type, String jsonPacket) throws GeppettoExecutionException {
+		   T data = null;
+
+		   try {
+		      data = new ObjectMapper().readValue(jsonPacket, type);
+		   } catch (Exception e) {
+		      throw new GeppettoExecutionException("could not de-serialize json");
+		   }
+		   return data;
 	}
 }

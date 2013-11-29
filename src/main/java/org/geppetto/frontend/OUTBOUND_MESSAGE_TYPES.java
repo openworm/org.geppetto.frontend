@@ -50,10 +50,12 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	SIMULATION_CONFIGURATION("simulation_configuration"),
 	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config"),
 	ERROR_READING_SCRIPT("error_reading_script"),
+	ERROR_ADDING_WATCH_LIST("error_adding_watch"),
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),
 	LIST_WATCH_VARS("list_watch_vars"),
-	LIST_FORCE_VARS("list_force_vars"), 
+	LIST_FORCE_VARS("list_force_vars"),
+	GET_WATCH_LISTS("get_watch_lists"), 
 	CLIENT_ID("client_id");
 
 	private OUTBOUND_MESSAGE_TYPES(final String text) {

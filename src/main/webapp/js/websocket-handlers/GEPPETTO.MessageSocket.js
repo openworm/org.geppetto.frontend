@@ -144,7 +144,8 @@ function messageTemplate(msgtype, payload) {
         }
         
         var object = {
-                type: msgtype,
+            id : clientID,
+            type: msgtype,
             data: payload
         };
         return JSON.stringify(object);

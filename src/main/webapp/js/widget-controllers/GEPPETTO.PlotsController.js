@@ -148,5 +148,11 @@ GEPPETTO.PlotsController = {
 
 		//receives updates from widget listener class
 		update : function(newData){
+			for(var i =0; i<plots.length; i++){
+				var plot = plots[i];
+
+				plot.resetPlot();
+				plot.plotData([newData]);
+			}	
 		}
 };

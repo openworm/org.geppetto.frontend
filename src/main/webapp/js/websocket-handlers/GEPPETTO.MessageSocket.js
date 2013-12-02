@@ -144,7 +144,7 @@ function messageTemplate(msgtype, payload) {
         }
         
         var object = {
-            id : clientID,
+            id : GEPPETTO.MessageSocket.getClientID(),
             type: msgtype,
             data: payload
         };

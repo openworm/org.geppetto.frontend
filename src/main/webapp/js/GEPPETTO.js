@@ -882,7 +882,6 @@ var GEPPETTO = GEPPETTO ||
 		jsonscene = newJSONScene;
 		needsUpdate = true;
 		GEPPETTO.updateScene();
-		GEPPETTO.WidgetsListener.updateSubscribedWidgets();
 		if (customUpdate != null)
 		{
 			GEPPETTO.customUpdate();

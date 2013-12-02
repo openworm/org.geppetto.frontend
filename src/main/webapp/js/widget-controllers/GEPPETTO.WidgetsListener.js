@@ -48,14 +48,6 @@ GEPPETTO.WidgetsListener =  {
 		 * @returns {Boolean}
 		 */
 		subscribe : function(obj){
-			
-			//loop through list of subscribers not to add it again
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				if( this._subscribers[ i ] === obj ) {
-					this._subscribers.splice( i, 1 );				 
-					return false;
-				}
-			}
 
 			this._subscribers.push( obj );
 			
@@ -85,10 +77,10 @@ GEPPETTO.WidgetsListener =  {
 		 * 
 		 * @param newData 
 		 */
-		updateSubscribedWidgets : function(){
+		updateSubscribedWidgets : function(arguments){
 			var args = Array.prototype.slice.call( arguments, 0 );
 			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				this._subscribers[ i ].update.apply( args );
+				this._subscribers[ i ].update( args );
 			}
 		}
 

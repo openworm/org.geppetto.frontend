@@ -170,43 +170,56 @@ asyncTest("Test Stop Simulation", function(){
 
 module("Get simulation variables test",
 		{
-			setup : function(){
-				//create socket connection before each test
-				var newSocket = GEPPETTO.MessageSocket;
+	setup : function(){
+		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 
-				newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
-			}
+		//wait half a second before testing, allows for socket connection to be established
+		setTimeout(function(){
+			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
+		},500);
+	},
+	teardown: function(){
+		GEPPETTO.MessageSocket.socket.close();
+	}
 });
 
 asyncTest("Test list simulation variables no crash - SPH", function(){
-	// wait a bit and then load SPH sample
-	setTimeout(function(){
-		GEPPETTO.Console.createConsole();
-		equal(G.clear(),CLEAR_HISTORY, "Console is clear");
-		
-		//FIXME
-		//Simulation.load("https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml");
-		//equal(getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
-		start();
-		
-		// list watchable
-		Simulation.listWatchableVariables();
-		
-		// list forceable
-		Simulation.listForceableVariables();
-		
-		// TODO: compare output to expected output - need to refactor messaging to be able to do this
-	},500);
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been stopped successfully
+				case MESSAGE_TYPE.SIMULATION_LOADED:
+				ok("Simulation Stopped, passed");
+				Simulation.start();
+				Simulation.listWatchableVariables();
+				break;
+				case MESSAGE_TYPE.LIST_WATCH_VARS:
+					ok("Variables received");
+					break;
+				}
+				
+			}
+	};
+
+	GEPPETTO.MessageSocket.addHandler(handler);
 });
 
 module("Watch variables test",
 		{
-			setup : function(){
-				//create socket connection before each test
-				var newSocket = GEPPETTO.MessageSocket;
+	setup : function(){
+		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 
-				newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
-			}
+		//wait half a second before testing, allows for socket connection to be established
+		setTimeout(function(){
+			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
+		},500);
+	},
+	teardown: function(){
+		GEPPETTO.MessageSocket.socket.close();
+	}
 });
 
 asyncTest("Test add / get watchlists no crash - SPH", function(){

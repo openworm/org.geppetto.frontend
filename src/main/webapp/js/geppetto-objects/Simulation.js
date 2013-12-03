@@ -282,7 +282,7 @@ Simulation.listForceableVariables = function()
  * Add watchlists to the simulation.
  * 
  * @name Simulation.addWatchLists()
- * @param watchLists - listing variables to be watched. Example: [{name:"LIST_NAME", variablePaths:["ASPECT_ID.VARIABLE_ID"]}]
+ * @param watchLists - listing variables to be watched.
  * @returns {String} - status after request.
  */
 Simulation.addWatchLists = function(watchLists)

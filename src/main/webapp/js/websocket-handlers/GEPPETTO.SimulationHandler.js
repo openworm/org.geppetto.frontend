@@ -62,6 +62,8 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
             var entities = JSON.parse(payload.update).entities;
             Simulation.watchTree = JSON.parse(payload.update).variable_watch;
             
+            handleWatchTreeUpdates();
+            
             //Update if simulation hasn't been stopped
             if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated())
             {
@@ -161,5 +163,20 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 				formatListVariableOutput(vars[i].type.variables, indent + 1);
 			}
 		}
+	}
+	
+	function handleWatchTreeUpdates(){
+
+        if(Simulation.watchTree != null){
+        				
+        	var d = [];
+        	for(var v in Simulation.watchTree.WATCH_TREE){
+        		var val = Simulation.watchTree.WATCH_TREE[v].value;
+        		d[v] = val;
+        	}
+    		
+    		GEPPETTO.WidgetsListener.updateSubscribedWidgets([d]);
+
+        }
 	}
 })();

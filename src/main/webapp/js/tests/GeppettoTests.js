@@ -1,5 +1,6 @@
 /*******************************************************************************
- * The MIT License (MIT)
+
+\ * The MIT License (MIT)
  *
  * Copyright (c) 2011, 2013 OpenWorm.
  * http://openworm.org
@@ -65,16 +66,12 @@ test("Test G Object help method", function(){
 });
 
 test("Test Clear Console", function(){
-
-	GEPPETTO.Console.createConsole();
 	
 	equal(G.clear(),CLEAR_HISTORY, "Console cleared");
 });
 
 test("Test Copy History To Clipboard", function(){
 	
-	GEPPETTO.Console.createConsole();
-
 	equal(G.copyHistoryToClipboard(), EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
 	
 	//add some commands to history
@@ -128,15 +125,18 @@ test("Test Widget", function(){
 module("Run Script Test",
 		{
 	setup : function(){
-		//create socket connection before each test
-		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');		
-	
+		
+		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+
 		setTimeout(function(){
+			console.log("attempting to run script"+GEPPETTO.MessageSocket.isReady());
 			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
 		}, 1000);
+	
 	},
 	teardown: function(){
-		GEPPETTO.MessageSocket.socket.close();
+		GEPPETTO.MessageSocket.close();
+		console.log("socket closed");
 	}
 });
 

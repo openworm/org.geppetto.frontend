@@ -86,6 +86,7 @@
 
 		GEPPETTO.MessageSocket.socket.onmessage = function(msg)
 		{
+
 			waitingForServletResponse = false;
 			
 			var parsedServerMessage = JSON.parse(msg.data);
@@ -110,6 +111,16 @@
 		if(command.indexOf("init")>-1){
 		waitingForServletResponse = true;
 		}
+	};
+	
+	GEPPETTO.MessageSocket.isReady = function(){
+		return GEPPETTO.MessageSocket.socket.readyState;
+	};
+	
+	GEPPETTO.MessageSocket.close = function(){
+		
+		//reset handles
+		messageHandlers = [];
 	};
 	
 	GEPPETTO.MessageSocket.addHandler = function(handler){

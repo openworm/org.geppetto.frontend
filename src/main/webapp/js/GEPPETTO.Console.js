@@ -112,8 +112,8 @@
 		var sendMessage = null;
 		
 		sendMessage = setInterval(function(){
-			if(GEPPETTO.MessageSocket.socket.readyState == 1 ){
-				GEPPETTO.MessageSocket.socket.send(messageTemplate("geppetto_version", null));
+			if(GEPPETTO.MessageSocket.isReady() == 1 ){
+				GEPPETTO.MessageSocket.send("geppetto_version", null);
 				clearInterval(sendMessage);
 			}
 		}, 100);

@@ -31,24 +31,20 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-module("Simulation commands test");
-test( "Test Simulation Help Command", function() {
-	notEqual(Simulation.help(), null, "Help command for Simulation object is available, passed.");
-});
-
 module("Simulation Load From Content Tests",
 		{
 	setup : function(){
+		
 		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 	
 	},
 	teardown: function(){
-		GEPPETTO.MessageSocket.socket.close();
+		GEPPETTO.MessageSocket.close();
 	}
 });
 
 asyncTest("Test Load Simulation from content", function(){	
-	
+		
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
 		//GEPPETTO.Console.createConsole();
@@ -62,7 +58,7 @@ asyncTest("Test Load Simulation from content", function(){
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded and model need to be loaded
 				case MESSAGE_TYPE.LOAD_MODEL:
-				ok("Simulation Loaded, passed");
+				ok(true,"Simulation content Loaded, passed");
 				start();
 				break;
 				}
@@ -74,6 +70,7 @@ asyncTest("Test Load Simulation from content", function(){
 });
 
 asyncTest("Test Load Simulation", function(){		
+		
 	
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
@@ -88,7 +85,8 @@ asyncTest("Test Load Simulation", function(){
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded and model need to be loaded
 				case MESSAGE_TYPE.LOAD_MODEL:
-				ok("Simulation Loaded, passed");
+				ok(true,"Simulation Loaded, passed");
+				start();
 				break;
 				}
 				
@@ -100,8 +98,10 @@ asyncTest("Test Load Simulation", function(){
 
 module("Simulation controls Test",
 {
+	newSocket : GEPPETTO.MessageSocket,
+
 	setup : function(){
-		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
@@ -109,7 +109,7 @@ module("Simulation controls Test",
 		},500);
 	},
 	teardown: function(){
-		GEPPETTO.MessageSocket.socket.close();
+		this.newSocket.close();
 	}
 });
 
@@ -129,7 +129,7 @@ asyncTest("Test Start Simulation", function(){
 			}
 	};
 
-	GEPPETTO.MessageSocket.addHandler(handler);
+	this.newSocket.addHandler(handler);
 });
 
 asyncTest("Test Pause Simulation", function(){
@@ -147,7 +147,7 @@ asyncTest("Test Pause Simulation", function(){
 			}
 	};
 
-	GEPPETTO.MessageSocket.addHandler(handler);
+	this.newSocket.addHandler(handler);
 });
 
 asyncTest("Test Stop Simulation", function(){
@@ -165,7 +165,7 @@ asyncTest("Test Stop Simulation", function(){
 			}
 	};
 
-	GEPPETTO.MessageSocket.addHandler(handler);
+	this.newSocket.addHandler(handler);
 });
 
 module("Get simulation variables test",
@@ -190,14 +190,15 @@ asyncTest("Test list simulation variables no crash - SPH", function(){
 
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
-				//Simulation has been stopped successfully
+				//Simulation has been loaded successfully
 				case MESSAGE_TYPE.SIMULATION_LOADED:
-				ok("Simulation Stopped, passed");
+				ok("Simulation loaded, passed");
 				Simulation.start();
 				Simulation.listWatchableVariables();
 				break;
 				case MESSAGE_TYPE.LIST_WATCH_VARS:
 					ok("Variables received");
+					stop();
 					break;
 				}
 				
@@ -223,51 +224,81 @@ module("Watch variables test",
 });
 
 asyncTest("Test add / get watchlists no crash - SPH", function(){
-	// wait a bit and then load SPH sample
-	setTimeout(function(){
-		GEPPETTO.Console.createConsole();
-		equal(G.clear(),CLEAR_HISTORY, "Console is clear");
-		
-		Simulation.load("https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml");
-		equal(getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
-		start();
-		
-		Simulation.addWatchLists([]);
-		
-		// TODO: check expected output - need to refactor messaging to be able to do this
-		Simulation.getWatchLists();
-	},500);
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been loaded successfully
+				case MESSAGE_TYPE.SIMULATION_LOADED:
+				ok("Simulation loaded, passed");
+				Simulation.start();
+				Simulation.addWatchLists([]);
+				Simulation.getWatchLists();
+				break;
+				case MESSAGE_TYPE.GET_WATCH_LISTS:
+					ok("Variables received");
+					break;
+				}
+				
+			}
+	};
+
+	GEPPETTO.MessageSocket.addHandler(handler);
 });
 
 asyncTest("Test watch Simulation variables", function(){
-	//check every few seconds before checking assertions
-	interval = setInterval(function(){
-		if(!Simulation.isLoading()){
-			Simulation.start();
-			
-			// TODO: try to retrieve some values and check they are not there 'cause we are not watching yet
-			
-			Simulation.startWatch();
-			
-			// TODO: retrieve some values and check they are changing
-			
-			Simulation.stopWatch();
-			
-			// TODO: retrieve some values and check they are not changing changing anymore
-			
-			Simulation.stop();
-		}
-	},1000);
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been loaded successfully
+				case MESSAGE_TYPE.SIMULATION_LOADED:
+				ok("Simulation loaded, passed");
+				Simulation.start();
+				// TODO: try to retrieve some values and check they are not there 'cause we are not watching yet
+				
+				Simulation.startWatch();
+				
+				// TODO: retrieve some values and check they are changing
+				
+				Simulation.stopWatch();
+				
+				// TODO: retrieve some values and check they are not changing changing anymore
+				
+				Simulation.stop();
+				break;	
+				}
+			}
+	};
+
+	GEPPETTO.MessageSocket.addHandler(handler);
+	
 });
 
 asyncTest("Test clear watch Simulation variables", function(){
-	//check every few seconds before checking assertions
-	interval = setInterval(function(){
-		if(!Simulation.isLoading()){
-			Simulation.clearWatchLists();
-			
-			Simulation.getWatchLists();
-			// TODO: test that watchlists have been cleared
-		}
-	},1000);
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been loaded successfully
+				case MESSAGE_TYPE.SIMULATION_LOADED:
+				ok("Simulation loaded, passed");
+				Simulation.start();
+				// TODO: try to retrieve some values and check they are not there 'cause we are not watching yet
+				
+				Simulation.clearWatchLists();
+				
+				Simulation.getWatchLists();
+				break;	
+				}
+			}
+	};
+
+	GEPPETTO.MessageSocket.addHandler(handler);
 });

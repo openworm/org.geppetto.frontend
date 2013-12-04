@@ -150,9 +150,11 @@ GEPPETTO.PlotsController = {
 		update : function(newData){
 			for(var i =0; i<plots.length; i++){
 				var plot = plots[i];
-
-				plot.resetPlot();
-				plot.plotData([newData]);
+				
+				if(plot.isVisible()){
+					plot.resetPlot();
+					plot.plotData([newData]);
+				}
 			}	
 		}
 };

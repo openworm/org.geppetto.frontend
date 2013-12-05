@@ -59,6 +59,8 @@ var MESSAGE_TYPE = {
 	SIMULATION_CONFIGURATION : "simulation_configuration",
 	SIMULATION_LOADED : "simulation_loaded",
 	SIMULATION_STARTED : "simulation_started",
+	SIMULATION_PAUSED : "simulation_paused",
+	SIMULATION_STOPPED : "simulation_stopped",
 	LIST_WATCH_VARS : "list_watch_vars",
 	LIST_FORCE_VARS : "list_force_vars",
 	GET_WATCH_LISTS : "get_watch_lists"

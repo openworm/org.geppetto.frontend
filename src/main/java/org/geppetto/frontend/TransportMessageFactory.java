@@ -57,7 +57,7 @@ public class TransportMessageFactory {
 	 * @param type - Type of message of requested
 	 * @return
 	 */
-	public static GeppettoTransportMessage getTransportMessage(String clientID, OUTBOUND_MESSAGE_TYPES type, String update){
+	public static GeppettoTransportMessage getTransportMessage(String requestID, OUTBOUND_MESSAGE_TYPES type, String update){
 
 		String messageType = type.toString();
 		
@@ -117,7 +117,7 @@ public class TransportMessageFactory {
 				break;
 		}
 		
-		return createTransportMessage(clientID,messageType, params);
+		return createTransportMessage(requestID,messageType, params);
 	}
 	
 	/**
@@ -127,7 +127,7 @@ public class TransportMessageFactory {
 	 * @param params - list of name-value pairs representing parameter names and values
 	 * @return
 	 */
-	private static GeppettoTransportMessage createTransportMessage(String clientID,String type, List<SimpleEntry<String, String>> params){
+	private static GeppettoTransportMessage createTransportMessage(String requestID,String type, List<SimpleEntry<String, String>> params){
 		GeppettoTransportMessage msg = new GeppettoTransportMessage();
 		
 		// JSON nested object stored in the data field of the transport message
@@ -137,7 +137,7 @@ public class TransportMessageFactory {
 			json.addProperty(param.getKey(), param.getValue());
 		}
 
-		msg.clientID = clientID;
+		msg.requestID = requestID;
 		msg.type = type;
 		// data stored as a string (could be anything) - will be interpreted by the client as a json object
 		msg.data = json.toString();

@@ -45,6 +45,8 @@
 
 	var clientID = null;
 	
+	var nextID = 0;
+	
 	GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 	{
 		REVISION : '1'
@@ -133,8 +135,8 @@
 		clientID = id;
 	};
 	
-	GEPPETTO.MessageSocket.getClientID = function(){
-		return clientID;
+	GEPPETTO.MessageSocket.getRequestID = function(){
+		return clientID + "-" + (nextID++);
 	};
 })();
 
@@ -153,9 +155,10 @@ function messageTemplate(msgtype, payload) {
         }
         
         var object = {
-            id : GEPPETTO.MessageSocket.getClientID(),
+            requestID : GEPPETTO.MessageSocket.getRequestID(),
             type: msgtype,
             data: payload
         };
+        
         return JSON.stringify(object);
 };

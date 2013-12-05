@@ -95,8 +95,6 @@ Simulation.start = function()
 Simulation.pause = function()
 {
 	if(Simulation.status == Simulation.StatusEnum.STARTED){
-		//Updates the simulation controls visibility
-		GEPPETTO.FE.updatePauseEvent();
 		
 		GEPPETTO.MessageSocket.send("pause", null);
 		
@@ -119,9 +117,6 @@ Simulation.pause = function()
 Simulation.stop = function()
 {
 	if(Simulation.status == Simulation.StatusEnum.PAUSED || Simulation.status == Simulation.StatusEnum.STARTED){
-		//Updates the simulation controls visibility
-		GEPPETTO.FE.updateStopEvent();
-
 		GEPPETTO.MessageSocket.send("stop", null);
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;

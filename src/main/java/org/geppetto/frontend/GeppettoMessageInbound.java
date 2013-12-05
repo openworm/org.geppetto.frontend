@@ -80,7 +80,7 @@ public class GeppettoMessageInbound extends MessageInbound
 	{
 		simulationListener.addConnection(this);	
 		
-		simulationListener.messageClient(this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID,this.client_id);
+		simulationListener.messageClient(null,this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID,this.client_id);
 	}
 
 	@Override
@@ -107,13 +107,15 @@ public class GeppettoMessageInbound extends MessageInbound
 		// de-serialize JSON
 		GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);
 		
+		String requestID = gmsg.requestID; 
+		
 		// switch on message type
 		// NOTE: each message handler knows how to interpret the GeppettoMessage data field
 		switch(INBOUND_MESSAGE_TYPES.valueOf(gmsg.type.toUpperCase()))
 		{
 			case GEPPETTO_VERSION:
 			{				
-				simulationListener.getVersionNumber(this);
+				simulationListener.getVersionNumber(requestID,this);
 				break;
 			}
 			case INIT_URL:
@@ -122,16 +124,16 @@ public class GeppettoMessageInbound extends MessageInbound
 				URL url;
 				try {
 					url = new URL(urlString);
-					simulationListener.initializeSimulation(url,this);
+					simulationListener.initializeSimulation(requestID,url,this);
 				} catch (MalformedURLException e) {
-					simulationListener.messageClient(this,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+					simulationListener.messageClient(requestID, this,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 				}
 				break;
 			}
 			case INIT_SIM:
 			{
 				String simulation = gmsg.data;
-				simulationListener.initializeSimulation(simulation, this);
+				simulationListener.initializeSimulation(requestID,simulation, this);
 				break;
 			}
 			case RUN_SCRIPT:
@@ -142,46 +144,46 @@ public class GeppettoMessageInbound extends MessageInbound
 					url = new URL(urlString);
 				}
 				catch(MalformedURLException e){
-					simulationListener.messageClient(this,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+					simulationListener.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 				}
 				
-				simulationListener.getScriptData(url,this);
+				simulationListener.getScriptData(requestID,url,this);
 				break;
 			}
 			case SIM:
 			{
 				String url = gmsg.data;
-				simulationListener.getSimulationConfiguration(url, this);
+				simulationListener.getSimulationConfiguration(requestID,url, this);
 				break;
 			}
 			case START:
 			{
-				simulationListener.startSimulation(this);
+				simulationListener.startSimulation(requestID,this);
 				break;
 			}
 			case PAUSE:
 			{
-				simulationListener.pauseSimulation();
+				simulationListener.pauseSimulation(requestID,this);
 				break;
 			}
 			case STOP:
 			{
-				simulationListener.stopSimulation();
+				simulationListener.stopSimulation(requestID,this);
 				break;
 			}
 			case OBSERVE:
 			{
-				simulationListener.observeSimulation(this);
+				simulationListener.observeSimulation(requestID,this);
 				break;
 			}
 			case LIST_WATCH_VARS:
 			{
-				simulationListener.listWatchableVariables(this);
+				simulationListener.listWatchableVariables(requestID,this);
 				break;
 			}
 			case LIST_FORCE_VARS:
 			{
-				simulationListener.listForceableVariables(this);
+				simulationListener.listForceableVariables(requestID,this);
 				break;
 			}
 			case SET_WATCH:
@@ -189,30 +191,30 @@ public class GeppettoMessageInbound extends MessageInbound
 				String watchListsString = gmsg.data;
 				
 				try {
-					simulationListener.addWatchLists(watchListsString, this);
+					simulationListener.addWatchLists(requestID,watchListsString, this);
 				} catch (GeppettoExecutionException e) {
-					simulationListener.messageClient(this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					simulationListener.messageClient(requestID,this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
 				}
 				break;
 			}
 			case GET_WATCH:
 			{				
-				simulationListener.getWatchLists(this);
+				simulationListener.getWatchLists(requestID,this);
 				break;
 			}
 			case START_WATCH:
 			{
-				simulationListener.startWatch(this);
+				simulationListener.startWatch(requestID,this);
 				break;
 			}
 			case STOP_WATCH:
 			{
-				simulationListener.stopWatch(this);
+				simulationListener.stopWatch(requestID,this);
 				break;
 			}
 			case CLEAR_WATCH:
 			{
-				simulationListener.clearWatchLists(this);
+				simulationListener.clearWatchLists(requestID,this);
 				break;
 			}
 			default:

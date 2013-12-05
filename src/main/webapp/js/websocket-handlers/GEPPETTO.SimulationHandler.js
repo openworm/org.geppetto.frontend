@@ -98,6 +98,14 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 		case MESSAGE_TYPE.SIMULATION_STARTED:
 			GEPPETTO.FE.updateStartEvent();
 			break;
+		case MESSAGE_TYPE.SIMULATION_STOPPED:
+			//Updates the simulation controls visibility
+			GEPPETTO.FE.updateStopEvent();
+			break;
+		case MESSAGE_TYPE.SIMULATION_PAUSED:
+			//Updates the simulation controls visibility
+			GEPPETTO.FE.updatePauseEvent();
+			break;
 			//Simulation has been started, enable pause button
 		case MESSAGE_TYPE.LIST_WATCH_VARS:
 			GEPPETTO.Console.debugLog(LISTING_WATCH_VARS);

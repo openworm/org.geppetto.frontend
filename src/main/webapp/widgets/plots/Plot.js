@@ -53,11 +53,12 @@ var Plot = Widget.View.extend({
 	 * when plot is created
 	 */
 	defaultPlotOptions: {
-		yaxis: { min : 0,max : 15},
-		xaxis: {min : 0, max : 15},
+		yaxis: { min : 0,max : 1},
+		xaxis: {min : 0, max : 1},
 		series: {
 	        lines: { show: true },
-	        points: { show: true }
+	        points: { show: true },
+	    	shadowSize : 0,
 	    }, 
 	    legend: { show: true},
 	    grid: { hoverable: true, clickable: true, autoHighlight: true },	    

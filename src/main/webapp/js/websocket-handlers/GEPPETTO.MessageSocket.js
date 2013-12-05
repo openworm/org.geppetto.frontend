@@ -119,8 +119,6 @@
 	
 	GEPPETTO.MessageSocket.close = function(){
 		
-		//reset handles
-		messageHandlers = [];
 	};
 	
 	GEPPETTO.MessageSocket.addHandler = function(handler){

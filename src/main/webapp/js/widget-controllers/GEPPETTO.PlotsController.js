@@ -42,6 +42,8 @@ var plots = new Array();
 
 var plotsON = false;
 
+var limit = 0;
+
 GEPPETTO.PlotsController = {
 
 		/**
@@ -129,6 +131,17 @@ GEPPETTO.PlotsController = {
 
 				delete window[this.id];
 			});
+			
+			$("#" +plotID).bind('dialogclose', function(event) {
+				for (p in plots)
+				{
+					if (plots[p].getId() == this.id)
+					{
+						plots[p].destroy();
+						break;
+					}
+				}
+			 });
 		},
 
 		/**
@@ -148,6 +161,8 @@ GEPPETTO.PlotsController = {
 
 		//receives updates from widget listener class
 		update : function(newData){
+			
+			
 			for(var i =0; i<plots.length; i++){
 				var plot = plots[i];
 				
@@ -155,6 +170,6 @@ GEPPETTO.PlotsController = {
 					plot.resetPlot();
 					plot.plotData([newData]);
 				}
-			}	
+			}			
 		}
 };

@@ -64,6 +64,10 @@ var Plot = Widget.View.extend({
 	    grid: { hoverable: true, clickable: true, autoHighlight: true },	    
 	}, 
 	
+	getPlotData : function(){
+		return this.plot.getData();
+	},
+	
 	/**
 	 * Takes data series and plots them. 
 	 * 

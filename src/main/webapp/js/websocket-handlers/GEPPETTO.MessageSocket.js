@@ -31,6 +31,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
+GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
+	{
+		REVISION : '1'
+	};
+	
 /**
  * 
  * WebSocket class use for communication between client and server 
@@ -46,11 +51,6 @@
 	var clientID = null;
 	
 	var nextID = 0;
-	
-	GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
-	{
-		REVISION : '1'
-	};
 
 	/**
 	 * Web socket creation and communication
@@ -120,7 +120,8 @@
 	};
 	
 	GEPPETTO.MessageSocket.close = function(){
-		
+		GEPPETTO.MessageSocket.socket.close();
+		messageHandlers = [];
 	};
 	
 	GEPPETTO.MessageSocket.addHandler = function(handler){
@@ -158,7 +159,6 @@ function messageTemplate(msgtype, payload) {
             requestID : GEPPETTO.MessageSocket.getRequestID(),
             type: msgtype,
             data: payload
-        };
-        
+        };        
         return JSON.stringify(object);
 };

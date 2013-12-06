@@ -122,43 +122,40 @@ test("Test Widget", function(){
 	equal($("#"+plot.getId()).html(), null , "Widget successfully destroyed, passed");
 });
 
-//module("Run Script Test",
-//		{
-//	newSocket : GEPPETTO.MessageSocket,
-//	setup : function(){
-//		
-//		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
-//
-//		setTimeout(function(){
-//			console.log("attempting to run script"+GEPPETTO.MessageSocket.isReady());
-//			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
-//		}, 1000);
-//	
-//	},
-//	teardown: function(){
-//		this.newSocket.close();
-//		console.log("socket closed");
-//	}
-//});
-//
-//asyncTest("Run Script Test 1", function(){
-//	
-//	
-//	var handler = {
-//			onMessage : function(parsedServerMessage){
-//
-//				// Switch based on parsed incoming message type
-//				switch(parsedServerMessage.type){
-//				//Simulation has been loaded and model need to be loaded
-//				case MESSAGE_TYPE.RUN_SCRIPT:
-//				ok("Simulation Loaded, passed");
-//				start();
-//				break;
-//				}
-//				
-//			}
-//	};
-//
-//	this.newSocket.addHandler(handler);
-//	
-//});
+module("Run Script Test",
+		{
+	newSocket : GEPPETTO.MessageSocket,
+	setup : function(){
+		
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+
+		setTimeout(function(){
+			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
+		}, 1000);
+	
+	},
+	teardown: function(){
+		this.newSocket.close();
+	}
+});
+
+asyncTest("Run Script Test 1", function(){	
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been loaded and model need to be loaded
+				case MESSAGE_TYPE.RUN_SCRIPT:
+				ok(true, "Script parsed, passed");
+				start();
+				break;
+				}
+				
+			}
+	};
+
+	this.newSocket.addHandler(handler);
+	
+});

@@ -65,7 +65,7 @@ var Plot = Widget.View.extend({
 	}, 
 	
 	getPlotData : function(){
-		return this.plot.getData();
+		return this.data;
 	},
 	
 	/**

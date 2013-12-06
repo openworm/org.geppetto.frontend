@@ -104,6 +104,10 @@ module("Simulation controls Test",
 	setup : function(){
 		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
 
+		//wait half a second before testing, allows for socket connection to be established
+		setTimeout(function(){
+			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
+		},500);
 	},
 	teardown: function(){
 		this.newSocket.close();
@@ -111,11 +115,6 @@ module("Simulation controls Test",
 });
 
 asyncTest("Test Simulation Controls", function(){
-	
-	//wait half a second before testing, allows for socket connection to be established
-	setTimeout(function(){
-		Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
-	},500);
 	
 	var handler = {
 			onMessage : function(parsedServerMessage){
@@ -138,6 +137,41 @@ asyncTest("Test Simulation Controls", function(){
 					break;
 				case MESSAGE_TYPE.SIMULATION_STOPPED:
 					ok(true,"Simulation Stopped, passed");
+					start();
+					break;
+				}
+				
+			}
+	};
+
+	this.newSocket.addHandler(handler);
+
+});
+
+asyncTest("Test Variable Watch in Plot", function(){
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been started successfully
+				case MESSAGE_TYPE.LOAD_MODEL:
+				setSimulationLoaded();
+				ok(true, "Simulation loaded, passed");
+				Simulation.start();
+				break;
+				case MESSAGE_TYPE.SIMULATION_STARTED:
+					ok(true,"Simulation Started, passed");
+					
+					G.addWidget(Widgets.PLOT);
+					
+					equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created, passed");
+					
+					var plot = GEPPETTO.PlotsController.getPlotWidgets()[0];
+					plot.hide();
+					
+					notEqual(plot.getPlotData(),null,"Plot has variable data, passed");
 					start();
 					break;
 				}

@@ -271,6 +271,10 @@ function updateCommands(scriptLocation, object, id){
 	helpObjectsMap[id] =  commands.substring(0,commands.length-2);		
 };
 
+function addTag(tagName){
+	tags[tags.length] = tagName;
+}
+
 function removeTags(id){
 	
 	removeAutocompleteTags(id);

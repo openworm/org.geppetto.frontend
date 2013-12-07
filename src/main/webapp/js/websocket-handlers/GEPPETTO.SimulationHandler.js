@@ -60,9 +60,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			//Event received to update the simulation
 		case MESSAGE_TYPE.SCENE_UPDATE:
             var entities = JSON.parse(payload.update).entities;
-            Simulation.watchTree = JSON.parse(payload.update).variable_watch;
-            
-            handleWatchTreeUpdates();
+            updateSimulationWatchTree(JSON.parse(payload.update).variable_watch);
             
             //Update if simulation hasn't been stopped
             if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated())
@@ -171,20 +169,5 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 				formatListVariableOutput(vars[i].type.variables, indent + 1);
 			}
 		}
-	}
-	
-	function handleWatchTreeUpdates(){
-
-        if(Simulation.watchTree != null){
-        				
-        	var d = [];
-        	for(var v in Simulation.watchTree.WATCH_TREE){
-        		var val = Simulation.watchTree.WATCH_TREE[v].value;
-        		d[v] = val;
-        	}
-    		
-    		GEPPETTO.WidgetsListener.updateSubscribedWidgets([d]);
-
-        }
 	}
 })();

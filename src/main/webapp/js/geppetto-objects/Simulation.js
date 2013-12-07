@@ -62,6 +62,8 @@ Simulation.simulationURL = "";
 
 Simulation.watchTree = null;
 
+var simulationStates = {};
+
 var loading = false;
 
 /**
@@ -336,6 +338,8 @@ Simulation.clearWatchLists = function()
 {
 	santasLittleHelper("clear_watch", SIMULATION_CLEAR_WATCH, MESSAGE_OUTBOUND_CLEAR_WATCH, null);
 	
+	simulationStates = {};
+	
 	return SIMULATION_CLEAR_WATCH;
 };
 
@@ -347,8 +351,47 @@ Simulation.clearWatchLists = function()
  */
 Simulation.getWatchTree = function()
 {
-	return Simulation.watchTree;
+	var watched_variables = "";
+	
+	for(var key in simulationStates){
+		watched_variables +=  "\n" + "      -- " + key;
+	}
+	return WATCHED_SIMULATION_STATES + watched_variables;
 };
+
+/**
+ * Updates the simulation states with new watched variables
+ */
+function updateSimulationWatchTree(variable){
+	Simulation.watchTree = variable;
+
+	if(Simulation.watchTree != null){
+
+		for(var v in Simulation.watchTree.WATCH_TREE){
+			//get name and value
+			var stateName = Simulation.watchTree.WATCH_TREE[v].name;
+			var stateValue = Simulation.watchTree.WATCH_TREE[v].value;
+			
+			//asign name and value to new state
+			var state = {
+					name : stateName,
+					value: stateValue,
+			};
+
+			//If it's a new state add to tags
+			if(!(stateName in simulationStates)){
+				addTag(stateName);
+			}
+
+			//assign state to window object of same name
+			window[stateName] = state;
+			
+			//update simulation state value
+			simulationStates[stateName] = stateValue; 
+
+		}		
+	}
+}
 
 /**
  *

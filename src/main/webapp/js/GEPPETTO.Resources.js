@@ -103,6 +103,8 @@ var SIMULATION_STOP_WATCH = 'Simulation stop watch requested';
 
 var SIMULATION_CLEAR_WATCH = 'Simulation clear watchlists requested';
 
+var WATCHED_SIMULATION_STATES = "You are currently watching the following states : \n";
+
 /**
  * Object G resources
  */

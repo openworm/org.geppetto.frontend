@@ -118,7 +118,7 @@ GEPPETTO.PlotsController = {
 			//registers remove handler for widget
 			$("#" +plotID).on("remove", function () {
 				//remove tags and delete object upon destroying widget
-				removeTags(this.id);
+				removeTags(plotID);
 
 				for (p in plots)
 				{
@@ -129,7 +129,38 @@ GEPPETTO.PlotsController = {
 					}
 				}
 
-				delete window[this.id];
+				var simStates = getSimulationStates();
+				for(var state in simStates){
+					if(window[state].isSubscribed(window[plotID])){
+						window[state].unsubscribe(window[plotID]);
+					}
+				}
+				
+				delete window[plotID];
+			});
+			
+			//subscribe widget to simulation state 
+			$("#" +plotID).on("subscribe", function (event, param1) {
+				//param1 corresponds to simulation state, subscribe widget to it
+				window[param1].subscribe(window[plotID]);				
+			});
+			
+			//register resize handler for widget
+			$("#"+plotID).on("dialogresizestop", function(event, ui){
+				
+				var height = ui.size.height;
+				var width = ui.size.width;
+				
+				GEPPETTO.Console.executeCommand(plotID+".setSize(" + height +"," +  width + ")");
+			});
+			
+			//register drag handler for widget
+			$("#" +plotID).on("dialogdrag", function(event,ui){
+				
+				var left = ui.position.left;
+				var top = ui.position.top;
+				
+				GEPPETTO.Console.executeCommand(plotID+".setPosition(" + top +"," +  left + ")");
 			});
 			
 			$("#" +plotID).bind('dialogclose', function(event) {
@@ -162,14 +193,5 @@ GEPPETTO.PlotsController = {
 		//receives updates from widget listener class
 		update : function(newData){
 			
-			
-			for(var i =0; i<plots.length; i++){
-				var plot = plots[i];
-				
-				if(plot.isVisible()){
-					plot.resetPlot();
-					plot.plotData([newData]);
-				}
-			}			
 		}
 };

@@ -30,54 +30,71 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Class used to create widgets and handle widget events from parent class. 
+ * Simulation State object, keeps track of new values for state and receives updates for it. 
+ * Subscribe objects received new data. 
+ * 
+ * @author Jesus R Martinez (jesus@metacel.us)
  */
-
-/**
- * Enum use to hold different types of widgets
- */
-var Widgets = {
-			PLOT : 0
+function State(stateName, stateValue) {
+	this.name = stateName;
+	this.value = stateValue;	
+	this._subscribers = [];	
 };
 
-(function(){
-	GEPPETTO.WidgetFactory = GEPPETTO.WidgetFactory ||
-	{
-		REVISION : '1'
-	};
+/**
+ * Update subscribed widgets to state with new values
+ * 
+ * @param newValue - new value for simulation state
+ */
+State.prototype.update = function(newValue){
+	this.value = newValue;
 	
-	/**
-	 * Adds widget to Geppetto
-	 */
-	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
-		var widget = null;
-		
-		switch(widgetType){
-			//create plotting widget
-			case Widgets.PLOT:
-				widget = GEPPETTO.PlotsController.addPlotWidget();
-				break;
-			default: 
-				break;
-		}
-				
-		return widget;
+	//var args = Array.prototype.slice.call( this.value, 0 );
+	for( var i = 0, len = this._subscribers.length; i < len; i++ ) {		
+		this._subscribers[ i ].updateDataSet(this.name, [this.value]);
 	};
-	
-	/**
-	 * Removes widget from Geppetto
-	 */
-	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
-		switch(widgetType){
-			//removes plotting widget from geppetto
-			case Widgets.PLOT:
-				GEPPETTO.PlotsController.removePlotWidgets();
-				return REMOVE_PLOT_WIDGETS;
-				break;
-			default: 
-				break;
+};
+
+/**
+ * Confirm widget is subscribed to state
+ * 
+ * @param object - widget to confirm subscription
+ * @returns {Boolean} - True if subscribed, false otherwise
+ */
+State.prototype.isSubscribed = function(object){
+	for(var i =0, len = this._subscribers.length; i<len; i++){
+		if(this._subscribers[i] == object){
+			return true;
 		}
-	};	
-})();	
+	}
+	
+	return false;
+};
+/**
+ * Subscribes widget controller class to listener
+ * 
+ * @param obj - Controller Class subscribing
+ * @returns {Boolean}
+ */
+State.prototype.subscribe = function(obj){
+
+	this._subscribers.push( obj );	
+};
+
+/**
+ * Unsubscribe widget controller class
+ * 
+ * @param obj - Controller class to be unsubscribed from listener
+ * 
+ * @returns {Boolean}
+ */
+State.prototype.unsubscribe = function(obj){
+	for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
+		if( this._subscribers[ i ] === obj ) {
+			this._subscribers.splice( i, 1 );
+			return true;
+		};
+	}
+	return false;
+};

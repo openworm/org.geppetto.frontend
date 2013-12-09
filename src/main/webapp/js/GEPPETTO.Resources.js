@@ -105,6 +105,8 @@ var SIMULATION_CLEAR_WATCH = 'Simulation clear watchlists requested';
 
 var WATCHED_SIMULATION_STATES = "You are currently watching the following states : \n";
 
+var EMPTY_WATCH_TREE = "There are no simulation states to watch";
+
 /**
  * Object G resources
  */

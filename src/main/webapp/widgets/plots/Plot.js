@@ -38,12 +38,14 @@
 var Plot = Widget.View.extend({
 
 	plot : null,
-	data : [],
+	datasets : [],
+	limit : 100,
 	
 	/**
 	 * Initializes the plot widget
 	 */
 	initialize : function(){
+		this.data = [];
 		this.render();
 		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
 	},
@@ -54,7 +56,8 @@ var Plot = Widget.View.extend({
 	 */
 	defaultPlotOptions: {
 		yaxis: { min : 0,max : 1},
-		xaxis: {min : 0, max : 1},
+		xaxis: {min : 0, max : 100},
+		xaxis : { show : false},
 		series: {
 	        lines: { show: true },
 	        points: { show: true },
@@ -75,34 +78,71 @@ var Plot = Widget.View.extend({
 	 * @param data - series to plot
 	 * @param options - options for the plotting widget
 	 */
-	plotData : function(data, options){	
+	plotData : function(newData, options){	
 		//If no options specify by user, use default options
 		if(options == null){options = this.defaultPlotOptions;}
 		
-		//plot  reference not yet created, make it for first time
-		if(this.plot ==null){
-			this.data = data;
+		if(newData.name != null){
+			for(var set in this.datasets){
+				if(newData.name == this.datasets[set].label ){
+					return this.name + " widget is already plotting object " + newData.name;
+				}
+			}
+				this.datasets.push({label : newData.name, data : [[newData.value]]});
+				$("#"+this.getId()).trigger("subscribe", [newData.name]);		
+		}
+		else{
+			this.datasets.push({label : "", data : newData.value});
 			
-			var plotHolder = $("#"+this.name);
-			
-			this.plot = $.plot(plotHolder, this.data,options);
-			
-			$('.flot-x-axis').css('color','white');
-			$('.flot-y-axis').css('color','white');
-			
-			plotHolder.resize();			
 		}
 		
-		//plot exists, get existing plot series before adding new one
+		var updatedData = [];
+		
+		for(var i =0; i<this.datasets.length ; i++){
+			updatedData.push(this.datasets[i]); 
+		}
+		
+		if(this.plot == null){
+			var plotHolder = $("#"+this.name);
+			this.plot = $.plot(plotHolder,updatedData,options);
+			plotHolder.resize();	
+		}
 		else{
-			for(var d = 0; d < data.length ; d++){
-				this.data.push(data[d]);
-			}
-			this.plot.setData(this.data);	
-			this.plot.draw();
+			this.plot.setData(updatedData);	
+			this.plot.draw();	
 		}
 		
 		return "Line plot added to widget";
+	},
+	
+	
+	updateDataSet : function(label,newValue){
+		if(label != null){
+			var newData = null;
+			
+			for(var key in this.datasets){
+				if(label ==  this.datasets[key].label){
+					newData = this.datasets[key].data;
+				}
+			}
+			
+			for(var d =0; d < newValue.length ; d++){
+				if(newData.length > this.limit){
+					newData.splice(0,1);
+				}
+				
+				newData.push(newValue[d]);
+			}
+		}
+		
+		var data = [];
+		
+		for(var i =0; i<data.length ; i++){
+			data.push(this.datasets[i]); 
+		}
+		
+		this.plot.setData(data);	
+		this.plot.draw();
 	},
 	
 	/**
@@ -126,7 +166,7 @@ var Plot = Widget.View.extend({
 	resetPlot : function(){
 		if(this.plot != null){
 			this.data = [];
-			this.plot.setData(this.data);
+			this.plot.setData([{label : "" , data: this.data}]);
 			this.plot.draw();
 		}
 	},

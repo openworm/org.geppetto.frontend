@@ -351,12 +351,19 @@ Simulation.clearWatchLists = function()
  */
 Simulation.getWatchTree = function()
 {
-	var watched_variables = "";
+	var watched_variables = WATCHED_SIMULATION_STATES + "";
 	
 	for(var key in simulationStates){
-		watched_variables +=  "\n" + "      -- " + key;
+		watched_variables +=  "\n" + "      -- " + key + "\n"
+						  + "      -- Value : " + simulatioStates[key];
 	}
-	return WATCHED_SIMULATION_STATES + watched_variables;
+	
+	if(Simulation.watchTree == null){
+		return EMPTY_WATCH_TREE;
+	}
+	else{
+		return watched_variables;
+	}
 };
 
 /**
@@ -371,20 +378,19 @@ function updateSimulationWatchTree(variable){
 			//get name and value
 			var stateName = Simulation.watchTree.WATCH_TREE[v].name;
 			var stateValue = Simulation.watchTree.WATCH_TREE[v].value;
-			
-			//asign name and value to new state
-			var state = {
-					name : stateName,
-					value: stateValue,
-			};
 
 			//If it's a new state add to tags
 			if(!(stateName in simulationStates)){
 				addTag(stateName);
+				
+				//assign state to window object of same name
+				window[stateName] = new State(stateName, stateValue);
 			}
-
-			//assign state to window object of same name
-			window[stateName] = state;
+			
+			else{
+				var state = window[stateName];
+				state.update(stateValue);
+			}
 			
 			//update simulation state value
 			simulationStates[stateName] = stateValue; 
@@ -410,6 +416,11 @@ Simulation.help = function(){
 function getSimulationStatus()
 {
 	return Simulation.status;
+};
+
+function getSimulationStates()
+{
+	return simulationStates;
 };
 
 function setSimulationLoaded()

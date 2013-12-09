@@ -39,13 +39,15 @@ var Plot = Widget.View.extend({
 
 	plot : null,
 	datasets : [],
-	limit : 100,
+	limit : 20,
+	updateGrid : false,
 	
 	/**
 	 * Initializes the plot widget
 	 */
 	initialize : function(){
 		this.data = [];
+		this.datasets = [];
 		this.render();
 		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
 	},
@@ -56,8 +58,7 @@ var Plot = Widget.View.extend({
 	 */
 	defaultPlotOptions: {
 		yaxis: { min : 0,max : 1},
-		xaxis: {min : 0, max : 100},
-		xaxis : { show : false},
+		xaxis: {min : 0, max : 20},
 		series: {
 	        lines: { show: true },
 	        points: { show: true },
@@ -73,10 +74,14 @@ var Plot = Widget.View.extend({
 	
 	/**
 	 * Takes data series and plots them. 
+	 * To plot array(s) , use it as plotData([[1,2],[2,3]])
+	 * To plot an object , use it as plotData(objectName)
+	 * Multiples arrays can be specified at once in this method, but only one object 
+	 * at a time.
 	 * 
 	 * @name plotData(data, options)
-	 * @param data - series to plot
-	 * @param options - options for the plotting widget
+	 * @param newData - series to plot, can be array or an object
+	 * @param options - options for the plotting widget, if null uses default
 	 */
 	plotData : function(newData, options){	
 		//If no options specify by user, use default options
@@ -88,56 +93,102 @@ var Plot = Widget.View.extend({
 					return this.name + " widget is already plotting object " + newData.name;
 				}
 			}
-				this.datasets.push({label : newData.name, data : [[newData.value]]});
-				$("#"+this.getId()).trigger("subscribe", [newData.name]);		
+			this.datasets.push({label : newData.name, data : [[0,newData.value]]});
+			$("#"+this.getId()).trigger("subscribe", [newData.name]);	
+			updateGrid = true;
 		}
 		else{
-			this.datasets.push({label : "", data : newData.value});
-			
+			this.datasets.push({label : "", data : newData});
+			updateGrid = false;
 		}
-		
-		var updatedData = [];
-		
-		for(var i =0; i<this.datasets.length ; i++){
-			updatedData.push(this.datasets[i]); 
-		}
-		
 		if(this.plot == null){
 			var plotHolder = $("#"+this.name);
-			this.plot = $.plot(plotHolder,updatedData,options);
+			this.plot = $.plot(plotHolder,this.datasets,options);
 			plotHolder.resize();	
 		}
 		else{
-			this.plot.setData(updatedData);	
+			this.plot.setData(this.datasets);
+			if(updateGrid){this.plot.setupGrid();};
 			this.plot.draw();	
 		}
 		
 		return "Line plot added to widget";
 	},
 	
+	/**
+	 * Removes the data set from the plot. 
+	 * EX: removeDataSet(dummyDouble)
+	 * 
+	 * @param set - Data set to be removed from the plot
+	 */
+	removeDataSet : function(set){
+		if(set !=null){
+			for(var key in this.datasets){
+				if(set.name == this.datasets[key].label){
+					$("#"+this.getId()).trigger("unsubscribe", [set.name]);	
+					this.datasets.splice(key, 1);
+				}
+			}
+			
+			var data = [];
+			
+			for(var i =0; i<this.datasets.length ; i++){
+				data.push(this.datasets[i]); 
+			}
+			
+			this.plot.setData(data);	
+			this.plot.setupGrid();
+			this.plot.draw();
+		}
+	},
 	
+	/**
+	 * Updates a data set, use for time series
+	 * 
+	 * @param label - Name of new data set
+	 * @param newValue - Updated value for data set
+	 */
 	updateDataSet : function(label,newValue){
 		if(label != null){
 			var newData = null;
+			var matchedKey = 0;
+			var reIndex = false;
 			
+			//update corresponding data set
 			for(var key in this.datasets){
 				if(label ==  this.datasets[key].label){
 					newData = this.datasets[key].data;
+					matchedKey = key;
 				}
 			}
+			
 			
 			for(var d =0; d < newValue.length ; d++){
 				if(newData.length > this.limit){
 					newData.splice(0,1);
+					reIndex = true;
 				}
-				
-				newData.push(newValue[d]);
+
+				newData.push([newData.length, newValue[d]]);
+			}
+			
+			this.datasets[matchedKey].data = newData;
+			
+			if(reIndex){
+				//re-index data
+				var indexedData = [];
+				for(var index =0, len = this.datasets[matchedKey].data.length; index < len; index++){
+					var value = this.datasets[matchedKey].data[index][1];
+					indexedData.push([index, value]);
+				}
+
+				this.datasets[matchedKey].data = indexedData;
 			}
 		}
 		
 		var data = [];
 		
-		for(var i =0; i<data.length ; i++){
+		for(var i =0; i<this.datasets.length ; i++){
 			data.push(this.datasets[i]); 
 		}
 		
@@ -181,6 +232,6 @@ var Plot = Widget.View.extend({
 	setOptions : function(options){
 		this.defaultPlotOptions = options;
 		
-		$.plot($("#"+this.name), this.data,this.defaultPlotOptions);
+		$.plot($("#"+this.name), this.datasets,this.defaultPlotOptions);
 	}
 });

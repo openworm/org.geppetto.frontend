@@ -124,7 +124,7 @@ GEPPETTO.PlotsController = {
 				{
 					if (plots[p].getId() == this.id)
 					{
-						plots.splice(plots[p],1);
+						plots.splice(p,1);
 						break;
 					}
 				}
@@ -145,8 +145,14 @@ GEPPETTO.PlotsController = {
 				window[param1].subscribe(window[plotID]);				
 			});
 			
+			//subscribe widget to simulation state 
+			$("#" +plotID).on("unsubscribe", function (event, param1) {
+				//param1 corresponds to simulation state, subscribe widget to it
+				window[param1].unsubscribe(window[plotID]);				
+			});
+			
 			//register resize handler for widget
-			$("#"+plotID).on("dialogresizestop", function(event, ui){
+			$("#"+plotID).on("dialogresize", function(event, ui){
 				
 				var height = ui.size.height;
 				var width = ui.size.width;

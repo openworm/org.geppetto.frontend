@@ -355,7 +355,7 @@ Simulation.getWatchTree = function()
 	
 	for(var key in simulationStates){
 		watched_variables +=  "\n" + "      -- " + key + "\n"
-						  + "      -- Value : " + simulatioStates[key];
+						  + "      -- Value : " + simulationStates[key];
 	}
 	
 	if(Simulation.watchTree == null){
@@ -371,13 +371,26 @@ Simulation.getWatchTree = function()
  */
 function updateSimulationWatchTree(variable){
 	Simulation.watchTree = variable;
+	
+	searchTree();
+}
 
+function searchTree(){
 	if(Simulation.watchTree != null){
-
 		for(var v in Simulation.watchTree.WATCH_TREE){
+			
+			var state = Simulation.watchTree.WATCH_TREE[v];
+
+			
+			while(state.name == null){
+				var newState = state;
+				for(var i =0; i< newState.length ; i++){
+					state = newState[i];
+				}
+			}
 			//get name and value
-			var stateName = Simulation.watchTree.WATCH_TREE[v].name;
-			var stateValue = Simulation.watchTree.WATCH_TREE[v].value;
+			var stateName = state.name;
+			var stateValue = state.value;
 
 			//If it's a new state add to tags
 			if(!(stateName in simulationStates)){

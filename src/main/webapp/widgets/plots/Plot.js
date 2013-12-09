@@ -57,7 +57,7 @@ var Plot = Widget.View.extend({
 	 * when plot is created
 	 */
 	defaultPlotOptions: {
-		yaxis: { min : 0,max : 1},
+		yaxis: { min : -.5,max : 1},
 		xaxis: {min : 0, max : 20},
 		series: {
 	        lines: { show: true },

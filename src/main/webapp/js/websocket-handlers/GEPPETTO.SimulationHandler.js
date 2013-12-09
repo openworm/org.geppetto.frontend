@@ -60,8 +60,11 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			//Event received to update the simulation
 		case MESSAGE_TYPE.SCENE_UPDATE:
             var entities = JSON.parse(payload.update).entities;
-            updateSimulationWatchTree(JSON.parse(payload.update).variable_watch);
+            var variables = JSON.parse(payload.update).variable_watch;
             
+            if(variables != null){
+            	updateSimulationWatchTree(variables);
+            }
             //Update if simulation hasn't been stopped
             if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated())
             {

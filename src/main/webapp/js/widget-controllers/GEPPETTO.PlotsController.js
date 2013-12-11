@@ -158,6 +158,11 @@ GEPPETTO.PlotsController = {
 				var width = ui.size.width;
 				
 				GEPPETTO.Console.executeCommand(plotID+".setSize(" + height +"," +  width + ")");
+				
+				var left = ui.position.left;
+				var top = ui.position.top;
+				
+				window[plotID].setPosition(left, top);
 			});
 			
 			//register drag handler for widget

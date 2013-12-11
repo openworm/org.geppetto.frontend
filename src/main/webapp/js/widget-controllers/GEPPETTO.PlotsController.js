@@ -152,7 +152,7 @@ GEPPETTO.PlotsController = {
 			});
 			
 			//register resize handler for widget
-			$("#"+plotID).on("dialogresize", function(event, ui){
+			$("#"+plotID).on("dialogresizestop", function(event, ui){
 				
 				var height = ui.size.height;
 				var width = ui.size.width;
@@ -161,12 +161,12 @@ GEPPETTO.PlotsController = {
 			});
 			
 			//register drag handler for widget
-			$("#" +plotID).on("dialogdrag", function(event,ui){
+			$("#" +plotID).on("dialogdragstop", function(event,ui){
 				
 				var left = ui.position.left;
 				var top = ui.position.top;
 				
-				GEPPETTO.Console.executeCommand(plotID+".setPosition(" + top +"," +  left + ")");
+				GEPPETTO.Console.executeCommand(plotID+".setPosition(" + left +"," +  top + ")");
 			});
 			
 			$("#" +plotID).bind('dialogclose', function(event) {

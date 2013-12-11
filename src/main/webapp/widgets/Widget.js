@@ -57,8 +57,8 @@ var Widget ={
 			id : null,
 			dialog : null,
 			visible : true,
-			position : {height : 300, width : 350}, 
-			size : {left : "50%", top : "50%"},
+			size : {height : 300, width : 350}, 
+			position : {left : "50%", top : "50%"},
 
 			/**
 			 * Initializes the widget
@@ -142,19 +142,21 @@ var Widget ={
 				return "Widget has been renamed to " + this.name;
 			},
 			
-			setPosition : function(top,left){
-				this.position.top = top;
-				this.position.left = left;
-				$("#"+this.id).dialog({ position: [top, left]});
+			setPosition : function(left, top){
 				
+				this.position.left = left;
+				this.position.top = top;
+				$("#"+this.id).dialog('option', 'position',[this.position.left, this.position.top]);
+				
+
 				return this.name + " Widget's position has been updated";
 			},
 			
 			setSize : function(h,w){
 				this.size.height = h;
 				this.size.width = w;
-				$( "#"+this.id).dialog({ height: h, width: w });
-				
+				$( "#"+this.id).dialog({ height: this.size.height, width: this.size.width });
+			    
 				return this.name + " Widget has been resized";
 			},
 			
@@ -202,6 +204,8 @@ var Widget ={
 				
 				//Take focus away from close button
 				$(".ui-dialog-titlebar-close").blur();
+				
+				$("#"+this.id).dialog('option', 'position',[this.position.left, this.position.top]);
 				
 			},
 		}),

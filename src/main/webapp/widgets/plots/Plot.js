@@ -41,12 +41,14 @@ var Plot = Widget.View.extend({
 	datasets : [],
 	limit : 20,
 	updateGrid : false,
+	options : null,
 	
 	/**
 	 * Initializes the plot widget
 	 */
 	initialize : function(){
 		this.datasets = [];
+		this.options = this.defaultPlotOptions;
 		this.render();
 		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
 	},
@@ -76,7 +78,7 @@ var Plot = Widget.View.extend({
 	 */
 	plotData : function(newData, options){	
 		//If no options specify by user, use default options
-		if(options == null){options = this.defaultPlotOptions;}
+		if(options != null){this.options = options;}
 		
 		if(newData.name != null){
 			for(var set in this.datasets){
@@ -92,15 +94,14 @@ var Plot = Widget.View.extend({
 			this.datasets.push({label : "", data : newData});
 			updateGrid = false;
 		}
+		
+		var plotHolder = $("#"+this.name);
 		if(this.plot == null){
-			var plotHolder = $("#"+this.name);
-			this.plot = $.plot(plotHolder,this.datasets,options);
+			this.plot = $.plot(plotHolder,this.datasets,this.options);
 			plotHolder.resize();	
 		}
 		else{
-			this.plot.setData(this.datasets);
-			if(updateGrid){this.plot.setupGrid();};
-			this.plot.draw();	
+			this.plot = $.plot(plotHolder,this.datasets,this.options);	
 		}
 		
 		return "Line plot added to widget";
@@ -130,6 +131,10 @@ var Plot = Widget.View.extend({
 			this.plot.setData(data);	
 			this.plot.setupGrid();
 			this.plot.draw();
+		}
+		
+		if(this.datasets.length == 0){
+			this.resetPlot();
 		}
 	},
 	
@@ -201,9 +206,10 @@ var Plot = Widget.View.extend({
 	 */
 	resetPlot : function(){
 		if(this.plot != null){
-			this.data = [];
-			this.plot.setData([{label : "" , data: this.data}]);
-			this.plot.draw();
+			this.datasets = [];
+			this.options = this.defaultPlotOptions;
+			var plotHolder = $("#"+this.name);
+			this.plot = $.plot(plotHolder,this.datasets,this.options);	
 		}
 	},
 	
@@ -215,10 +221,10 @@ var Plot = Widget.View.extend({
 	 * @param options
 	 */
 	setOptions : function(options){
-		this.defaultPlotOptions = options;
+		this.options = options;
 		if(options.xaxis.max > this.limit){
 			this.limit = options.xaxis.max;
 		}
-		this.plot = $.plot($("#"+this.name), this.datasets,this.defaultPlotOptions);
+		this.plot = $.plot($("#"+this.name), this.datasets,this.options);
 	}
 });

@@ -46,7 +46,6 @@ var Plot = Widget.View.extend({
 	 * Initializes the plot widget
 	 */
 	initialize : function(){
-		this.data = [];
 		this.datasets = [];
 		this.render();
 		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
@@ -57,20 +56,12 @@ var Plot = Widget.View.extend({
 	 * when plot is created
 	 */
 	defaultPlotOptions: {
-		yaxis: { min : -.5,max : 1},
-		xaxis: {min : 0, max : 20},
 		series: {
-	        lines: { show: true },
-	        points: { show: true },
 	    	shadowSize : 0,
-	    }, 
-	    legend: { show: true},
-	    grid: { hoverable: true, clickable: true, autoHighlight: true },	    
+	    },
+		yaxis: { min : -.1,max : 1},
+		xaxis: {min: 0, max : this.limit, show : false},
 	}, 
-	
-	getPlotData : function(){
-		return this.data;
-	},
 	
 	/**
 	 * Takes data series and plots them. 
@@ -163,37 +154,31 @@ var Plot = Widget.View.extend({
 			}
 			
 			
-			for(var d =0; d < newValue.length ; d++){
-				if(newData.length > this.limit){
-					newData.splice(0,1);
-					reIndex = true;
-				}
-
-				newData.push([newData.length, newValue[d]]);
+			if(newData.length > this.limit){
+				newData.splice(0,1);
+				reIndex = true;
 			}
 			
-			this.datasets[matchedKey].data = newData;
+			newData.push([newData.length, newValue[0]]);
+			
 			
 			if(reIndex){
 				//re-index data
 				var indexedData = [];
-				for(var index =0, len = this.datasets[matchedKey].data.length; index < len; index++){
-					var value = this.datasets[matchedKey].data[index][1];
+				for(var index =0, len = newData.length; index < len; index++){
+					var value = newData[index][1];
 					indexedData.push([index, value]);
 				}
 
 				this.datasets[matchedKey].data = indexedData;
 			}
+			else{
+				this.datasets[matchedKey].data = newData;
+			}
+			
+			this.plot.setData(this.datasets);	
+			this.plot.draw();
 		}
-		
-		var data = [];
-		
-		for(var i =0; i<this.datasets.length ; i++){
-			data.push(this.datasets[i]); 
-		}
-		
-		this.plot.setData(data);	
-		this.plot.draw();
 	},
 	
 	/**
@@ -231,7 +216,9 @@ var Plot = Widget.View.extend({
 	 */
 	setOptions : function(options){
 		this.defaultPlotOptions = options;
-		
-		$.plot($("#"+this.name), this.datasets,this.defaultPlotOptions);
+		if(options.xaxis.max > this.limit){
+			this.limit = options.xaxis.max;
+		}
+		this.plot = $.plot($("#"+this.name), this.datasets,this.defaultPlotOptions);
 	}
 });

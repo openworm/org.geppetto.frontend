@@ -436,8 +436,7 @@ function updateState(state){
 	}
 	
 	else{
-		var state = window[stateName];
-		state.update(stateValue);
+		 window[stateName].update(stateValue);
 	}
 	
 	//update simulation state value

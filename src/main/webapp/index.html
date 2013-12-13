@@ -81,7 +81,7 @@
 			<div id="alertbox" class="alert alert-block">
 				<a class="close" data-dismiss="alert">×</a>
 				<h4 class="alert-heading" align="center">
-					<i class="icon-info-sign icon-2x" id="infopopover" rel="popover" 
+					<i class="icon-info-sign icon-2x" id="infopopover" rel="popover"
 						data-placement="left" data-trigger="hover"></i>Observing
 					Simulation Mode
 				</h4>
@@ -106,6 +106,75 @@
 			<button class="btn squareB icon-zoom-out" id="zo"></button>
 			<br />
 		</div>
+
+		<div id="menu">
+			<button class="btn" id="helpButton" data-toggle="modal" data-target="#helpmodal">
+				<icon class="icon-info-sign"></icon>
+				Help
+			</button>
+		</div>
+		<div class="modal fade" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<i class="icon-info-sign icon-4x pull-right" id="helpmodalheader"></i>
+							<h2 class="modal-title pagination-centered" id="helpmodalheader">Geppetto User Guide</h4>
+						</div>
+						<div class="modal-body">
+							<h4>Navigation Controls</h4>
+							<p>
+							<strong>Rotation</strong>
+							<br>Left click and drag with the mouse to rotate.<br>
+							<strong>Pan</strong>
+							<br>Right click and drag with the mouse to pan.<br>
+							<strong>Zoom</strong>
+							<br>Wheel click and move your mouse up and down to zoom in and out.
+							<br>In addition, you can use the buttons in the upper left corner. The
+							Home button resets the view.<br>
+							<h4>Shortcuts List</h4>
+							<p>
+							Press <a class="btn btn-default">Ctrl</a><a class="btn btn-default">Alt</a><a class="btn btn-default">J</a> 
+							to toggle the Javascript Console<br>
+							<br>Press <a class="btn btn-default">Ctrl</a><a class="btn btn-default">Alt</a><a class="btn btn-default">P</a> 
+							to bring up a plogttin widget<br>
+							<br>
+							</p>
+							<h4>Geppetto Console</h4>
+							<p>
+							The console provides a way to interact with Geppetto without having to use the UI controls. 
+							Through the console, user can control the simulation and use the other features available.<br> 
+							<br><strong>Commands</strong>
+							<br>Open the console and type help() in it to view list of available commands, a description on 
+							how to use each one of them is also provided.<br>
+							<br><strong>Autocompletion</strong>
+							<br>Console autcompletes command once you are start typing, pressing double <a class="btn btn-default">Tab</a>
+							provides list of available commands that match the entered input.<br> 
+							<br>
+							<h4>Loading a Simulation</h4>
+							<p>
+							<strong>Using Controls</strong>
+							<br>Use <a class="btn btn-default">Load Simulation</a> button on top right corner to 
+							load a simulation, a drop down menu with simulation samples ready to load is available. 
+							The content of the simulation file can be seen by selecting the Custom option after selecting or entering
+							a simulation, using this feature the contents of the simulation file can be modified prior to loading. <br>
+							<br><strong>Using console</strong>
+							<br>Simulations can be loaded via console using commands
+							<a class="label label-default">Simulation.load(simulationURL)</a> and
+							<a class="label label-default">Simulation.loadFromContent(simulationContent)</a>.<br>
+							<br><strong>Passing as parameter in URL</strong>
+							<br>A simulation can be specified as a paramater in the Geppetto URL, this will automatically load the simulation 
+							when Geppetto is launched. To use this feature add "?sim=simulationURL" to the end of Geppetto's url, where 
+							simulationURL corresponds to the location of the simulation you want to load.<br>
+							</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn-danger" data-dismiss="modal"
+								aria-hidden="true">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 	</div>
 	<!--
 		<div id="toolbar">

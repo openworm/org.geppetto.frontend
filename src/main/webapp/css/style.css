@@ -27,11 +27,26 @@ body {
 	font-weight: 300;
 }
 
-p {
+#infomodal p {
 	text-align: center;
 	margin: .5em 2em;
 }
 
+#helpmodal {
+	overflow : auto;	
+}
+
+#helpmodalheader {
+	color : midnightblue;
+}
+
+#helpmodal p {
+	margin: .5em 2em;
+}
+
+#helpmodal h4 {
+	color : rgb(29, 112, 29);
+}
 
 .asterisk {
 	background-image: URL("../images/asterisk.png");
@@ -90,6 +105,25 @@ p {
 	top: 10px;
 	width: 400px;
 	height: 100px;
+}
+
+#menu {
+	position: absolute;
+	left: 100px;
+	top: 10px;
+}
+
+#helpButton {
+	background: rgba(66, 59, 59, 0.50);
+	text-shadow: none;
+	box-shadow: none;
+	color: white;
+	opacity : .7;
+	border-width: 0;
+}
+
+#helpInfoIcon {
+	float : left;
 }
 
 .rotate90 {
@@ -232,7 +266,7 @@ input {
 	overflow: visible;
 }
 
-.modal-body {
+#loadSimModal .modal-body {
 	overflow-y: visible;
 	font-size: 15px;
 	line-height: 24px;

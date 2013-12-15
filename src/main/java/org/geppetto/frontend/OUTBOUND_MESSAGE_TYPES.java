@@ -55,6 +55,7 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	ERROR_ADDING_WATCH_LIST("error_adding_watch"),
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),
+	GET_SCRIPTS("get_scripts"),
 	LIST_WATCH_VARS("list_watch_vars"),
 	LIST_FORCE_VARS("list_force_vars"),
 	GET_WATCH_LISTS("get_watch_lists"), 

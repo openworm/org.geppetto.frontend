@@ -65,6 +65,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * Class that handles the Web Socket connections the servlet is receiving.
@@ -148,7 +149,9 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void initializeSimulation(String requestID, URL url, GeppettoMessageInbound visitor){
 		try
-		{			
+		{		
+			JsonObject scriptsJSON = new JsonObject();
+
 			switch(visitor.getCurrentRunMode()){
 
 			//User in control attempting to load another simulation
@@ -163,7 +166,12 @@ public class SimulationListener implements ISimulationCallbackListener {
 				//load another simulation
 				simulationService.init(url, this);
 
-				messageClient(requestID,visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+				for(URL scriptURL : simulationService.getScripts()){						
+					scriptsJSON.addProperty("script", scriptURL.toString());
+				}
+				
+				messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, "{ \"scripts\":" + scriptsJSON.toString() + "}");
+				
 				break;
 
 			default:
@@ -185,7 +193,11 @@ public class SimulationListener implements ISimulationCallbackListener {
 						}
 					}
 
-					messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+					for(URL scriptURL : simulationService.getScripts()){						
+						scriptsJSON.addProperty("script", scriptURL.toString());
+					}
+					
+					messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, "{ \"scripts\":" + scriptsJSON.toString() + "}");
 				}
 				else{
 					simulationControlsUnavailable(visitor);
@@ -575,6 +587,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 			action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
 
 			getSimulationServerConfig().setIsSimulationLoaded(true);
+			
 		}
 
 		for (GeppettoMessageInbound connection : getConnections())
@@ -617,25 +630,32 @@ public class SimulationListener implements ISimulationCallbackListener {
 		}
 	}
 
-	public void getScriptData(String requestID, URL url, GeppettoMessageInbound visitor) {
-		String line = null;
-		StringBuilder sb = new StringBuilder();
-		
-		try {
-			
+	/**
+	 * Sends parsed data from script to visitor client
+	 * 
+	 * @param requestID - Requested ID for process
+	 * @param url - URL of script location
+	 * @param visitor - Client doing the operation
+	 */
+	public void sendScriptData(String requestID, URL url, GeppettoMessageInbound visitor) {		
+		try {			 
+			String line = null;
+			StringBuilder sb = new StringBuilder();
+
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-			
+
 			while((line=br.readLine())!= null){
-			    sb.append(line+"\n");
+				sb.append(line+"\n");
 			}
-			 String script = sb.toString();
-			 
-			 messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT, script );
+			String script = sb.toString();	
+
+			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT, script );
 		} 
 		catch (IOException e) {
 			messageClient(requestID, visitor,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 		}
 	}
+	
 	
 	public static <T> T fromJSON(final TypeReference<T> type, String jsonPacket) throws GeppettoExecutionException {
 		   T data = null;

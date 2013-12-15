@@ -44,16 +44,6 @@ var Plot = Widget.View.extend({
 	options : null,
 	
 	/**
-	 * Initializes the plot widget
-	 */
-	initialize : function(){
-		this.datasets = [];
-		this.options = this.defaultPlotOptions;
-		this.render();
-		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
-	},
-
-	/**
 	 * Default options for plot widget, used if none specified 
 	 * when plot is created
 	 */
@@ -62,7 +52,17 @@ var Plot = Widget.View.extend({
 	    	shadowSize : 0,
 	    },
 		yaxis: { min : -.1,max : 1},
-		xaxis: {min: 0, max : this.limit, show : false},
+		xaxis: {min: 0, max : 20, show : true},
+	},
+	
+	/**
+	 * Initializes the plot widget
+	 */
+	initialize : function(){
+		this.datasets = [];
+		this.options = this.defaultPlotOptions;
+		this.render();
+		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
 	}, 
 	
 	/**

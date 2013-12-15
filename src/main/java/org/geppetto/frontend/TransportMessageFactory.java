@@ -85,6 +85,7 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("message", Resources.SERVER_AVAILABLE.toString()));
 				break;
 			case SIMULATION_LOADED:
+				params.add(new SimpleEntry<String, String>("get_scripts", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_STARTED:
 				break;

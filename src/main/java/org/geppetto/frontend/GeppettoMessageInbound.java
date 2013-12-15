@@ -142,12 +142,14 @@ public class GeppettoMessageInbound extends MessageInbound
 				URL url = null; 
 				try{
 					url = new URL(urlString);
+					
+					simulationListener.sendScriptData(requestID,url,this);
+
 				}
 				catch(MalformedURLException e){
 					simulationListener.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 				}
 				
-				simulationListener.getScriptData(requestID,url,this);
 				break;
 			}
 			case SIM:

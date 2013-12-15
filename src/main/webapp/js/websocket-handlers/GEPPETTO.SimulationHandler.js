@@ -94,6 +94,11 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 		case MESSAGE_TYPE.SIMULATION_LOADED:
 			$('#start').removeAttr('disabled');
 			$('#loadingmodal').modal('hide');
+			
+			var scripts = JSON.parse(payload.get_scripts).scripts;
+			
+			GEPPETTO.ScriptRunner.setSimulationScripts(scripts);
+			GEPPETTO.ScriptRunner.fireScripts();
 			break;
 			//Simulation has been started, enable pause button
 		case MESSAGE_TYPE.SIMULATION_STARTED:

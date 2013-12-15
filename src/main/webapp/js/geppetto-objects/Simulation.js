@@ -487,4 +487,3 @@ function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
 		return SIMULATION_NOT_LOADED_ERROR;
 	} 
 };
-

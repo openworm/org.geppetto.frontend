@@ -43,9 +43,7 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 (function(){
-	
-	var waitingForServletResponse = false;
-	
+		
 	var messageHandlers = [];
 
 	var clientID = null;
@@ -87,10 +85,7 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 		};
 
 		GEPPETTO.MessageSocket.socket.onmessage = function(msg)
-		{
-
-			waitingForServletResponse = false;
-			
+		{			
 			var parsedServerMessage = JSON.parse(msg.data);
 			
 			//notify all handlers 
@@ -110,9 +105,6 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 	
 	GEPPETTO.MessageSocket.send = function(command, parameter){
 		GEPPETTO.MessageSocket.socket.send(messageTemplate(command, parameter));
-		if(command.indexOf("init")>-1){
-		waitingForServletResponse = true;
-		}
 	};
 	
 	GEPPETTO.MessageSocket.isReady = function(){
@@ -128,16 +120,17 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 		messageHandlers.push(handler);
 	};
 	
-	GEPPETTO.MessageSocket.isServletBusy = function(){
-		return waitingForServletResponse;
-	};
 	
 	GEPPETTO.MessageSocket.setClientID = function(id){
 		clientID = id;
 	};
 	
-	GEPPETTO.MessageSocket.getRequestID = function(){
-		return clientID + "-" + (nextID++);
+	GEPPETTO.MessageSocket.getNextRequestID = function(){
+		return clientID + "-" + (nextID + 1);
+	};
+	
+	GEPPETTO.MessageSocket.createRequestID = function(){
+		return clientID  + "-" + (nextID++);
 	};
 })();
 
@@ -156,7 +149,7 @@ function messageTemplate(msgtype, payload) {
         }
         
         var object = {
-            requestID : GEPPETTO.MessageSocket.getRequestID(),
+            requestID : GEPPETTO.MessageSocket.createRequestID(),
             type: msgtype,
             data: payload
         };        

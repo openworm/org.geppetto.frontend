@@ -96,6 +96,49 @@ asyncTest("Test Load Simulation", function(){
 	this.newSocket.addHandler(handler);
 });
 
+module("Simulation with Scripts",
+		{
+	newSocket : GEPPETTO.MessageSocket,
+	setup : function(){
+		
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+	
+	},
+	teardown: function(){
+		this.newSocket.close();
+		
+		G.removeWidget(Widgets.PLOT);
+	}
+});
+
+asyncTest("Test Simulation with Script", function(){	
+	
+	//wait half a second before testing, allows for socket connection to be established
+	setTimeout(function(){
+		//GEPPETTO.Console.createConsole();
+		Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/development/src/main/resources/Test1.xml');
+	},500);
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been loaded and model need to be loaded
+				case MESSAGE_TYPE.LOAD_MODEL:
+				ok(true,"Simulation content Loaded, passed");
+				break;
+				//We are not starting simulation from here, must come from associated scrip
+				case MESSAGE_TYPE.SIMULATION_STARTED:
+				ok(true, "Simulation started, script read");
+				start();	
+				break;
+				}
+				
+			}
+	};
+
+	this.newSocket.addHandler(handler);
+});
 
 module("Simulation controls Test",
 {
@@ -171,7 +214,7 @@ asyncTest("Test Variable Watch in Plot", function(){
 					var plot = GEPPETTO.PlotsController.getPlotWidgets()[0];
 					plot.hide();
 					
-					notEqual(plot.getPlotData(),null,"Plot has variable data, passed");
+					notEqual(plot.getDataSets(),null,"Plot has variable data, passed");
 					start();
 					break;
 				}

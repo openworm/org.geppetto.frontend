@@ -226,5 +226,9 @@ var Plot = Widget.View.extend({
 			this.limit = options.xaxis.max;
 		}
 		this.plot = $.plot($("#"+this.name), this.datasets,this.options);
+	},
+	
+	getDataSets : function(){
+		return this.datasets;
 	}
 });

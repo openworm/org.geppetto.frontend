@@ -47,19 +47,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 
 /**
- * Class used to process Web Socket Connections. 
- * Messages sent from the connecting clients, web socket connections,
- * are received in here.
- *
+ * Class used to process Web Socket Connections. Messages sent from the connecting clients, web socket connections, are received in here.
+ * 
  */
 public class GeppettoMessageInbound extends MessageInbound
 {
 
 	/*
-	 * Keeps track of mode visitor is in, either observing or controlling 
-	 * the simulation
+	 * Keeps track of mode visitor is in, either observing or controlling the simulation
 	 */
-	public enum VisitorRunMode {
+	public enum VisitorRunMode
+	{
 		OBSERVING, CONTROLLING
 	}
 
@@ -78,15 +76,30 @@ public class GeppettoMessageInbound extends MessageInbound
 	@Override
 	protected void onOpen(WsOutbound outbound)
 	{
-		simulationListener.addConnection(this);	
+		try
+		{
+			simulationListener.addConnection(this);
+			simulationListener.messageClient(null, this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID, this.client_id);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			throw new RuntimeException(e);
+		}
+
 		
-		simulationListener.messageClient(null,this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID,this.client_id);
 	}
 
 	@Override
 	protected void onClose(int status)
 	{
-		simulationListener.removeConnection(this);
+		try
+		{
+			simulationListener.removeConnection(this);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -96,143 +109,164 @@ public class GeppettoMessageInbound extends MessageInbound
 	}
 
 	/**
-	 * Receives message(s) from client. 
-	 * @throws JsonProcessingException 
+	 * Receives message(s) from client.
+	 * 
+	 * @throws JsonProcessingException
 	 */
 	@Override
-	protected void onTextMessage(CharBuffer message) throws JsonProcessingException
+	protected void onTextMessage(CharBuffer message)
 	{
 		String msg = message.toString();
-		
+
 		// de-serialize JSON
 		GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);
-		
-		String requestID = gmsg.requestID; 
-		
+
+		String requestID = gmsg.requestID;
+
 		// switch on message type
 		// NOTE: each message handler knows how to interpret the GeppettoMessage data field
-		switch(INBOUND_MESSAGE_TYPES.valueOf(gmsg.type.toUpperCase()))
+		try
 		{
-			case GEPPETTO_VERSION:
-			{				
-				simulationListener.getVersionNumber(requestID,this);
-				break;
-			}
-			case INIT_URL:
+			switch(INBOUND_MESSAGE_TYPES.valueOf(gmsg.type.toUpperCase()))
 			{
-				String urlString = gmsg.data;
-				URL url;
-				try {
-					url = new URL(urlString);
-					simulationListener.initializeSimulation(requestID,url,this);
-				} catch (MalformedURLException e) {
-					simulationListener.messageClient(requestID, this,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+				case GEPPETTO_VERSION:
+				{
+
+					simulationListener.getVersionNumber(requestID, this);
+
+					break;
 				}
-				break;
-			}
-			case INIT_SIM:
-			{
-				String simulation = gmsg.data;
-				simulationListener.initializeSimulation(requestID,simulation, this);
-				break;
-			}
-			case RUN_SCRIPT:
-			{
-				String urlString = gmsg.data;
-				URL url = null; 
-				try{
-					url = new URL(urlString);
+				case INIT_URL:
+				{
+					String urlString = gmsg.data;
+					URL url;
+					try
+					{
+						url = new URL(urlString);
+						simulationListener.initializeSimulation(requestID, url, this);
+					}
+					catch(MalformedURLException e)
+					{
+						simulationListener.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+					}
+					break;
 				}
-				catch(MalformedURLException e){
-					simulationListener.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+				case INIT_SIM:
+				{
+					String simulation = gmsg.data;
+					simulationListener.initializeSimulation(requestID, simulation, this);
+					break;
 				}
-				
-				simulationListener.getScriptData(requestID,url,this);
-				break;
-			}
-			case SIM:
-			{
-				String url = gmsg.data;
-				simulationListener.getSimulationConfiguration(requestID,url, this);
-				break;
-			}
-			case START:
-			{
-				simulationListener.startSimulation(requestID,this);
-				break;
-			}
-			case PAUSE:
-			{
-				simulationListener.pauseSimulation(requestID,this);
-				break;
-			}
-			case STOP:
-			{
-				simulationListener.stopSimulation(requestID,this);
-				break;
-			}
-			case OBSERVE:
-			{
-				simulationListener.observeSimulation(requestID,this);
-				break;
-			}
-			case LIST_WATCH_VARS:
-			{
-				simulationListener.listWatchableVariables(requestID,this);
-				break;
-			}
-			case LIST_FORCE_VARS:
-			{
-				simulationListener.listForceableVariables(requestID,this);
-				break;
-			}
-			case SET_WATCH:
-			{
-				String watchListsString = gmsg.data;
-				
-				try {
-					simulationListener.addWatchLists(requestID,watchListsString, this);
-				} catch (GeppettoExecutionException e) {
-					simulationListener.messageClient(requestID,this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+				case RUN_SCRIPT:
+				{
+					String urlString = gmsg.data;
+					URL url = null;
+					try
+					{
+						url = new URL(urlString);
+					}
+					catch(MalformedURLException e)
+					{
+						simulationListener.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+					}
+
+					simulationListener.getScriptData(requestID, url, this);
+					break;
 				}
-				break;
+				case SIM:
+				{
+					String url = gmsg.data;
+					simulationListener.getSimulationConfiguration(requestID, url, this);
+					break;
+				}
+				case START:
+				{
+					simulationListener.startSimulation(requestID, this);
+					break;
+				}
+				case PAUSE:
+				{
+					simulationListener.pauseSimulation(requestID, this);
+					break;
+				}
+				case STOP:
+				{
+					simulationListener.stopSimulation(requestID, this);
+					break;
+				}
+				case OBSERVE:
+				{
+					simulationListener.observeSimulation(requestID, this);
+					break;
+				}
+				case LIST_WATCH_VARS:
+				{
+					simulationListener.listWatchableVariables(requestID, this);
+					break;
+				}
+				case LIST_FORCE_VARS:
+				{
+					simulationListener.listForceableVariables(requestID, this);
+					break;
+				}
+				case SET_WATCH:
+				{
+					String watchListsString = gmsg.data;
+
+					try
+					{
+						simulationListener.addWatchLists(requestID, watchListsString, this);
+					}
+					catch(GeppettoExecutionException e)
+					{
+						simulationListener.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					}
+					break;
+				}
+				case GET_WATCH:
+				{
+					simulationListener.getWatchLists(requestID, this);
+					break;
+				}
+				case START_WATCH:
+				{
+					simulationListener.startWatch(requestID, this);
+					break;
+				}
+				case STOP_WATCH:
+				{
+					simulationListener.stopWatch(requestID, this);
+					break;
+				}
+				case CLEAR_WATCH:
+				{
+					simulationListener.clearWatchLists(requestID, this);
+					break;
+				}
+				default:
+				{
+					// NOTE: no other messages expected for now
+				}
 			}
-			case GET_WATCH:
-			{				
-				simulationListener.getWatchLists(requestID,this);
-				break;
-			}
-			case START_WATCH:
-			{
-				simulationListener.startWatch(requestID,this);
-				break;
-			}
-			case STOP_WATCH:
-			{
-				simulationListener.stopWatch(requestID,this);
-				break;
-			}
-			case CLEAR_WATCH:
-			{
-				simulationListener.clearWatchLists(requestID,this);
-				break;
-			}
-			default:
-			{
-				// NOTE: no other messages expected for now
-			}
+		}
+		catch(GeppettoExecutionException e)
+		{
+			throw new RuntimeException(e);
 		}
 	}
 
-	public String getConnectionID() {
+	public String getConnectionID()
+	{
 		return client_id;
 	}
 
-	public VisitorRunMode getCurrentRunMode(){
-		return currentMode ;
+	public VisitorRunMode getCurrentRunMode()
+	{
+		return currentMode;
 	}
 
-	public void setVisitorRunMode(VisitorRunMode mode){
+	public void setVisitorRunMode(VisitorRunMode mode)
+	{
 		currentMode = mode;
 	}
 

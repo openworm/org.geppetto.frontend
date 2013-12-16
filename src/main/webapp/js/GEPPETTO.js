@@ -133,19 +133,19 @@ var GEPPETTO = GEPPETTO ||
 		{
 		case "Particle":
 			threeObject = new THREE.Vector3();
-			threeObject.x = g.position.x;
-			threeObject.y = g.position.y;
-			threeObject.z = g.position.z;
+			threeObject.x = g.p.x;
+			threeObject.y = g.p.y;
+			threeObject.z = g.p.z;
 
 			break;
 		case "Cylinder":
 			var lookAtV = new THREE.Vector3(g.distal.x, g.distal.y, g.distal.z);
-			var positionV = new THREE.Vector3(g.position.x, g.position.y, g.position.z);
+			var positionV = new THREE.Vector3(g.p.x, g.p.y, g.p.z);
 			threeObject = GEPPETTO.getCylinder(positionV, lookAtV, g.radiusTop, g.radiusBottom, material);
 			break;
 		case "Sphere":
 			threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius, 20, 20), material);
-			threeObject.position.set(g.position.x, g.position.y, g.position.z);
+			threeObject.position.set(g.p.x, g.p.y, g.p.z);
 			break;
 		}
 		// add the geometry to a map indexed by the geometry id so we can find it
@@ -200,14 +200,14 @@ var GEPPETTO = GEPPETTO ||
 		{
 			if (threeObject instanceof THREE.Vector3)
 			{
-				threeObject.x = g.position.x;
-				threeObject.y = g.position.y;
-				threeObject.z = g.position.z;
+				threeObject.x = g.p.x;
+				threeObject.y = g.p.y;
+				threeObject.z = g.p.z;
 			}
 			else
 			{
 				// update the position
-				threeObject.position.set(g.position.x, g.position.y, g.position.z);
+				threeObject.position.set(g.p.x, g.p.y, g.p.z);
 			}
 		}
 

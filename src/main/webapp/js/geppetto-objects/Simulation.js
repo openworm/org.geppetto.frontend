@@ -396,7 +396,7 @@ function searchTreeArray(variables){
 		}
 
 		else{
-			searchTree(state);
+			searchTreeObject(state);
 		}	
 	}		
 }

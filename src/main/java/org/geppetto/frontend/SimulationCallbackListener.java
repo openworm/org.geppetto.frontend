@@ -56,7 +56,7 @@ public class SimulationCallbackListener implements ISimulationCallbackListener{
 	 * 
 	 */
 	@Override
-	public void updateReady(String update) {
+	public void updateReady(String sceneUpdate, String variableWatchTree) {
 		long start=System.currentTimeMillis();
 		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -72,18 +72,21 @@ public class SimulationCallbackListener implements ISimulationCallbackListener{
 			action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
 
 			controller.getSimulationServerConfig().setIsSimulationLoaded(true);
+			
 		}
 
 		for (GeppettoMessageInbound connection : controller.getConnections())
 		{				
-			//Notify all connected clients about update either to load model or update current one.
-			controller.messageClient(connection, action , update);
+			// pack sceneUpdate and variableWatchTree in the same JSON string
+			String update = "{ \"entities\":" + sceneUpdate  + ", \"variable_watch\": " + variableWatchTree + "}";
+			
+			// Notify all connected clients about update either to load model or update current one.
+			controller.messageClient(null,connection, action , update);
 		}
 
-		controller.getSimulationServerConfig().setLoadedScene(update);
+		controller.getSimulationServerConfig().setLoadedScene(sceneUpdate);
 
 		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
-		
 	}
 
 }

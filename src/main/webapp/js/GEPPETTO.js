@@ -776,10 +776,6 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.render = function()
 	{
-//		for (p in plots)
-//		{
-//			plots[p].flot.draw();
-//		}
 		renderer.render(scene, camera);
 	};
 
@@ -886,21 +882,9 @@ var GEPPETTO = GEPPETTO ||
 		jsonscene = newJSONScene;
 		needsUpdate = true;
 		GEPPETTO.updateScene();
-		//GEPPETTO.updatePlots();
 		if (customUpdate != null)
 		{
 			GEPPETTO.customUpdate();
-		}
-	};
-
-	/**
-	 * Update plots
-	 */
-	GEPPETTO.updatePlots = function()
-	{
-		for (p in plots)
-		{
-			plots[p].addValue();
 		}
 	};
 
@@ -1037,6 +1021,23 @@ var GEPPETTO = GEPPETTO ||
 
 		}
 	};
+	
+
+	/**
+	 * @param category
+	 * @param action
+	 * @param opt_label
+	 * @param opt_value
+	 * @param opt_noninteraction
+	 */
+	GEPPETTO.trackActivity = function(category, action, opt_label, opt_value, opt_noninteraction)
+	{
+		if(typeof _gaq != 'undefined')
+		{
+			_gaq.push(['_trackEvent', category, action, opt_label, opt_value, opt_noninteraction]);
+		}
+	};
+	
 
 //	============================================================================
 //	Application logic.

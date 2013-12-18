@@ -61,7 +61,8 @@ public class GeppettoServlet extends WebSocketServlet
 	@Override
 	protected StreamInbound createWebSocketInbound(String subProtocol, HttpServletRequest request)
 	{
-		return new GeppettoMessageInbound(_connectionIds.incrementAndGet(), GeppettoServletController.getInstance());
+		String connectionID = "Visitor"+_connectionIds.incrementAndGet();
+		return new GeppettoMessageInbound(connectionID, GeppettoServletController.getInstance());
 	}
 
 	@Override

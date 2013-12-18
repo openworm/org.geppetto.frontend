@@ -33,6 +33,7 @@
 package org.geppetto.frontend;
 
 public class GeppettoTransportMessage {
+	public String requestID;
 	public String type;
 	public String data;
 }

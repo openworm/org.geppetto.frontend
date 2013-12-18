@@ -30,82 +30,39 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.ui-dialog-titlebar-close:before {
-	font-family: FontAwesome;
-	font-weight: normal;
-	font-style: normal;
-	font-size: 13px;
-	text-decoration: inherit;
-	-webkit-font-smoothing: antialiased;
-	/* sprites.less reset */
-	display: inline;
-	width: auto;
-	height: auto;
-	line-height: normal;
-	vertical-align: baseline;
-	background-image: none;
-	background-position: 0% 0%;
-	background-repeat: repeat;
-	content: "×";
-	color:#fd6808;
-}
 
-.ui-dialog .ui-dialog-titlebar-close {
-	margin-top: -10px!important;
-	text-shadow: none;
-	opacity:0.60;
-	right:0;
-}	
+/**
+ * 
+ * Enum that holds different message types for socket
 
-.ui-dialog .ui-dialog-titlebar {
-	padding:0!important;
-	border-top:0!important;
-	border-left:0!important;
-	border-right:0!important;
-	border-bottom:1px solid rgba(66,59,59,0.80)!important;
+ * @author  Jesus R. Martinez (jesus@metacell.us)
+ */
+var MESSAGE_TYPE = {
+	/*
+	 * Messages handle by GlobalHandler
+	 */
+	CLIENT_ID : "client_id",
+	RELOAD_CANVAS : "reload_canvas",
+	ERROR_LOADING_SIM : "error_loading_simulation",
+	GEPPETTO_VERSION : "geppetto_version",
+	OBSERVER_MODE : "observer_mode_alert",
+	READ_URL_PARAMS : "read_url_parameters",
+	RUN_SCRIPT : "run_script",
+	SERVER_AVAILABLE : "server_available",
+	SERVER_UNAVAILABLE : "server_unavailable",
 	
-}
-
-.ui-dialog .ui-dialog-title:before {
-	font-family: FontAwesome;
-	font-weight: normal;
-	font-style: normal;
-	font-size: 10px;
-	text-decoration: inherit;
-	-webkit-font-smoothing: antialiased;
-	/* sprites.less reset */
-	display: inline;
-	width: auto;
-	height: auto;
-	line-height: normal;
-	vertical-align: baseline;
-	background-image: none;
-	background-position: 0% 0%;
-	background-repeat: repeat;
-	content: "\f111";
-	color:#fe4807;
-	margin-left:2px;
-	margin-right:4px;
-	margin-bottom:2px;
-
-}
-
-.ui-dialog .ui-dialog-title {
-	padding:0!important;
-	margin:0!important;
-	font-size:12px;
-	font-weight:200;
-	color:#fd6808;
-	margin-left:5px;
-}
-
-.ui-dialog {
-	border-radius: 3px;
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-}
-
-.dialog {
-	width: 350px;
-	height: 300px;
-}
+	/*
+	 * Messages handle by SimulatorHandle
+	 */
+	LOAD_MODEL : "load_model",
+	SCENE_UPDATE : "scene_update",
+	SIMULATION_CONFIGURATION : "simulation_configuration",
+	SIMULATION_LOADED : "simulation_loaded",
+	SIMULATION_STARTED : "simulation_started",
+	SIMULATION_PAUSED : "simulation_paused",
+	SIMULATION_STOPPED : "simulation_stopped",
+	LIST_WATCH_VARS : "list_watch_vars",
+	LIST_FORCE_VARS : "list_force_vars",
+	GET_WATCH_LISTS : "get_watch_lists",
+	SIMULATOR_FULL : "simulator_full"
+};

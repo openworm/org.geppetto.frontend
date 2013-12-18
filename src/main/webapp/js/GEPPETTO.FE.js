@@ -281,7 +281,7 @@ GEPPETTO.FE.updateStopEvent = function(){
  * Update the simulation controls button's visibility after
  * user's interaction.
  */
-GEPPETTO.FE.updatePauseEvent = function(){
+GEPPETTO.FE.updatePauseEnt = function(){
 	$('#start').removeAttr('disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').removeAttr('disabled');
@@ -310,6 +310,14 @@ GEPPETTO.FE.checkWelcomeMessageCookie = function(){
 GEPPETTO.FE.showWelcomeMessage = function(){
 	$('#welcomeMessageModal').modal(); 
 
+	//Closes welcome modal window when pressing enter
+	$('#welcomeMessageModal').keydown(function(event){
+	    if(event.keyCode == 13) {
+	    	$('#welcomeMessageModal').modal('hide'); 
+	    	return false;
+	    }
+	  });
+	
 	$("#close-welcomeMsg").on("click", function(event){
 		if($('#welcomeMsgCookie').hasClass("checked")){
         	$.cookie("hideWelcomeMessage", true);
@@ -340,8 +348,8 @@ GEPPETTO.FE.fullSimulatorNotification = function(simulatorName){
 				
 		var sendMessage = null;
 		sendMessage = setInterval(function(){
-			if(GEPPETTO.MessageSocket.socket.readyState == 1 ){
-				GEPPETTO.MessageSocket.socket.send(messageTemplate("notify_user", waitingUser));		
+			if(GEPPETTO.MessageSocket.isReady()){
+				GEPPETTO.MessageSocket.send("notify_user", waitingUser);		
 				clearInterval(sendMessage);
 			}
 		}, 100);

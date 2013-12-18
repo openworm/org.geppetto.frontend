@@ -30,82 +30,58 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.ui-dialog-titlebar-close:before {
-	font-family: FontAwesome;
-	font-weight: normal;
-	font-style: normal;
-	font-size: 13px;
-	text-decoration: inherit;
-	-webkit-font-smoothing: antialiased;
-	/* sprites.less reset */
-	display: inline;
-	width: auto;
-	height: auto;
-	line-height: normal;
-	vertical-align: baseline;
-	background-image: none;
-	background-position: 0% 0%;
-	background-repeat: repeat;
-	content: "×";
-	color:#fd6808;
-}
+/**
+ * Listener class for widgets. Receives updates from Geppetto that need to be transmitted to all widgets. 
+ * 
+ * @constructor
+ * 
+ * @author Jesus R Martinez (jesus@metacell.us)
+ */
+GEPPETTO.WidgetsListener =  {
 
-.ui-dialog .ui-dialog-titlebar-close {
-	margin-top: -10px!important;
-	text-shadow: none;
-	opacity:0.60;
-	right:0;
-}	
+		_subscribers : [],
 
-.ui-dialog .ui-dialog-titlebar {
-	padding:0!important;
-	border-top:0!important;
-	border-left:0!important;
-	border-right:0!important;
-	border-bottom:1px solid rgba(66,59,59,0.80)!important;
-	
-}
+		/**
+		 * Subscribes widget controller class to listener
+		 * 
+		 * @param obj - Controller Class subscribing
+		 * @returns {Boolean}
+		 */
+		subscribe : function(obj){
 
-.ui-dialog .ui-dialog-title:before {
-	font-family: FontAwesome;
-	font-weight: normal;
-	font-style: normal;
-	font-size: 10px;
-	text-decoration: inherit;
-	-webkit-font-smoothing: antialiased;
-	/* sprites.less reset */
-	display: inline;
-	width: auto;
-	height: auto;
-	line-height: normal;
-	vertical-align: baseline;
-	background-image: none;
-	background-position: 0% 0%;
-	background-repeat: repeat;
-	content: "\f111";
-	color:#fe4807;
-	margin-left:2px;
-	margin-right:4px;
-	margin-bottom:2px;
+			this._subscribers.push( obj );
+			
+			GEPPETTO.Console.debugLog( 'added new observer' );
+		},
 
-}
+		/**
+		 * Unsubscribe widget controller class
+		 * 
+		 * @param obj - Controller class to be unsubscribed from listener
+		 * 
+		 * @returns {Boolean}
+		 */
+		unsubscribe : function(obj){
+			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
+				if( this._subscribers[ i ] === obj ) {
+					this._subscribers.splice( i, 1 );
+					GEPPETTO.Console.log( 'removed existing observer' );
+					return true;
+				}
+			}
+			return false;
+		},
 
-.ui-dialog .ui-dialog-title {
-	padding:0!important;
-	margin:0!important;
-	font-size:12px;
-	font-weight:200;
-	color:#fd6808;
-	margin-left:5px;
-}
+		/**
+		 * Update all subscribed controller classes of the changes
+		 * 
+		 * @param newData 
+		 */
+		updateSubscribedWidgets : function(arguments){
+			var args = Array.prototype.slice.call( arguments, 0 );
+			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
+				this._subscribers[ i ].update( args );
+			}
+		}
 
-.ui-dialog {
-	border-radius: 3px;
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-}
-
-.dialog {
-	width: 350px;
-	height: 300px;
-}
+};

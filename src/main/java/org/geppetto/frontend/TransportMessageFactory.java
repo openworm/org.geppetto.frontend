@@ -52,11 +52,12 @@ public class TransportMessageFactory {
 	
 	/**
 	 * Create JSON object with appropriate message for its type
+	 * @param id 
 	 * 
 	 * @param type - Type of message of requested
 	 * @return
 	 */
-	public static GeppettoTransportMessage getTransportMessage(OUTBOUND_MESSAGE_TYPES type, String update){
+	public static GeppettoTransportMessage getTransportMessage(String requestID, OUTBOUND_MESSAGE_TYPES type, String update){
 
 		String messageType = type.toString();
 		
@@ -67,6 +68,9 @@ public class TransportMessageFactory {
 				break;	
 			case ERROR_LOADING_SIMULATION:
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString()));
+				break;
+			case ERROR_ADDING_WATCH_LIST:
+				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_ADDING_WATCH_MESSAGE.toString()));
 				break;
 			case OBSERVER_MODE:
 				params.add(new SimpleEntry<String, String>("alertMessage", Resources.SIMULATION_CONTROLLED.toString()));
@@ -84,12 +88,13 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("simulatorName",  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_LOADED:
+				params.add(new SimpleEntry<String, String>("get_scripts", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_STARTED:
 				break;
 			case LOAD_MODEL:
 			case SCENE_UPDATE:
-				params.add(new SimpleEntry<String, String>("entities", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_CONFIGURATION:
 				params.add(new SimpleEntry<String, String>("configuration", (update!=null) ? update : EMPTY_STRING));
@@ -106,11 +111,17 @@ public class TransportMessageFactory {
 			case LIST_FORCE_VARS:
 				params.add(new SimpleEntry<String, String>("list_force_vars", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case GET_WATCH_LISTS:
+				params.add(new SimpleEntry<String, String>("get_watch_lists", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case CLIENT_ID:
+				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
+				break;
 			default:
 				break;
 		}
 		
-		return createTransportMessage(messageType, params);
+		return createTransportMessage(requestID,messageType, params);
 	}
 	
 	/**
@@ -120,16 +131,17 @@ public class TransportMessageFactory {
 	 * @param params - list of name-value pairs representing parameter names and values
 	 * @return
 	 */
-	private static GeppettoTransportMessage createTransportMessage(String type, List<SimpleEntry<String, String>> params){
+	private static GeppettoTransportMessage createTransportMessage(String requestID,String type, List<SimpleEntry<String, String>> params){
 		GeppettoTransportMessage msg = new GeppettoTransportMessage();
 		
-		//JSON nested object stored in the data field of the transport message
+		// JSON nested object stored in the data field of the transport message
 		JsonObject json = new JsonObject();
 		for(SimpleEntry<String, String> param : params)
 		{
 			json.addProperty(param.getKey(), param.getValue());
 		}
 
+		msg.requestID = requestID;
 		msg.type = type;
 		// data stored as a string (could be anything) - will be interpreted by the client as a json object
 		msg.data = json.toString();

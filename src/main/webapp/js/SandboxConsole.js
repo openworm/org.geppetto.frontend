@@ -441,21 +441,10 @@ var Sandbox = {
 		
 		// The keydown handler, that controls all the input
 		keydown: function(e) {
-			// Register shift, control and alt keydown
-			if ( _([16,17,18]).indexOf(e.which, true) > -1 ) this.ctrl = true;
-
 			// Enter submits the command
 			if (e.which === 13) {
 				e.preventDefault();
 				var val = this.textarea.val().trim();
-
-				// If shift is down, do a carriage return
-				if ( this.ctrl ) {
-					this.currentHistory = val + "\n";
-					this.update();
-					this.updateInputArea();
-					return false;
-				}
 				
 				// If submitting a command, set the currentHistory to blank (empties the textarea on update)
 				this.currentHistory = "";
@@ -474,6 +463,10 @@ var Sandbox = {
 				return false;
 			}
 	
+			if ((e.which === 20 || e.which === 16) ) 
+			{
+				e.preventDefault();
+			}	
 			// Up / down keys cycle through past history or move up/down
 			if ( !this.ctrl && (e.which === 38 || e.which === 40) ) {
 				e.preventDefault();
@@ -574,8 +567,6 @@ var Sandbox = {
 		
 		// The keyup handler, used to switch off shift/alt keys
 		keyup: function(e) {
-			// Register shift, alt and control keyup
-			if ( _([16,17,18]).indexOf(e.which, true) > -1 ) this.ctrl = false;
 		},
 		
 		// Checks for special commands. If any are found, performs their action and returns true

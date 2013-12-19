@@ -79,10 +79,33 @@ var MESSAGE_OUTBOUND_LIST_WATCH = 'Outbund Message Sent: List watchable variable
 
 var MESSAGE_OUTBOUND_LIST_FORCE = 'Outbund Message Sent: List forceable variables';
 
-var SIMULATION_NOT_LOADED_LIST = "Unable to list variables, the simulation hasn't been loaded";
+var MESSAGE_OUTBOUND_SET_WATCH = 'Outbund Message Sent: add watch lists';
+
+var MESSAGE_OUTBOUND_GET_WATCH = 'Outbund Message Sent: get watch lists';
+
+var MESSAGE_OUTBOUND_START_WATCH = 'Outbund Message Sent: start watch lists';
+
+var MESSAGE_OUTBOUND_STOP_WATCH = 'Outbund Message Sent: stop watch lists';
+
+var MESSAGE_OUTBOUND_CLEAR_WATCH = 'Outbund Message Sent: clear watch lists';
+
+var SIMULATION_NOT_LOADED_ERROR = "Unable to perform operation, the simulation hasn't been loaded";
 
 var SIMULATION_VARS_LIST = "Simulation Variables List requested";
 
+var SIMULATION_SET_WATCH = "Simulation add watchlists requested";
+
+var SIMULATION_GET_WATCH = 'Simulation get watchlists requested';
+
+var SIMULATION_START_WATCH = 'Simulation start watch requested';
+
+var SIMULATION_STOP_WATCH = 'Simulation stop watch requested';
+
+var SIMULATION_CLEAR_WATCH = 'Simulation clear watchlists requested';
+
+var WATCHED_SIMULATION_STATES = "You are currently watching the following states : \n";
+
+var EMPTY_WATCH_TREE = "There are no simulation states to watch";
 
 /**
  * Object G resources
@@ -127,6 +150,8 @@ var CLEAR_CANVAS = "Inbound Message Received: Clear canvas";
 
 var INVALID_SIMULATION_FILE = "Invalid Simulation File";
 
+var INVALID_WATCH_LIST = "Invalid Watch List";
+
 var LOADING_MODEL = "Inbound Message Received: Loading Model ";
 
 var OBSERVING_MODE = "Observing Simulation Mode";
@@ -137,7 +162,7 @@ var SERVER_AVAILABLE = "Server Available";
 
 var WEBGL_FAILED = "Initializing Error: Unable to initialize WebGL";
 
-var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.\n\n";
+var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.";
 
 var GEPPETTO_VERSION_HOLDER = "geppetto v$1 is ready";
 
@@ -145,6 +170,7 @@ var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
 
 var LISTING_FORCE_VARS = "Inbound Message Received: List force variables";
 
+var WEBSOCKET_CONNECTION_ERROR = "Server Connection Error";
 
 /**
  * GEPPETTO resources

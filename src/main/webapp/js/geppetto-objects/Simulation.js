@@ -60,6 +60,10 @@ Simulation.status = Simulation.StatusEnum.INIT;
 
 Simulation.simulationURL = "";
 
+Simulation.watchTree = null;
+
+var simulationStates = {};
+
 var loading = false;
 
 /**
@@ -93,8 +97,6 @@ Simulation.start = function()
 Simulation.pause = function()
 {
 	if(Simulation.status == Simulation.StatusEnum.STARTED){
-		//Updates the simulation controls visibility
-		GEPPETTO.FE.updatePauseEvent();
 		
 		GEPPETTO.MessageSocket.send("pause", null);
 		
@@ -117,9 +119,6 @@ Simulation.pause = function()
 Simulation.stop = function()
 {
 	if(Simulation.status == Simulation.StatusEnum.PAUSED || Simulation.status == Simulation.StatusEnum.STARTED){
-		//Updates the simulation controls visibility
-		GEPPETTO.FE.updateStopEvent();
-
 		GEPPETTO.MessageSocket.send("stop", null);
 		
 		Simulation.status = Simulation.StatusEnum.STOPPED;
@@ -237,7 +236,7 @@ Simulation.isLoading = function()
 };
 
 /**
- * LIst watchable variables for the simulation.
+ * List watchable variables for the simulation.
  * 
  * @name Simulation.listWatchableVariables()
  * @returns {String} - status after requesting list of watchable variables.
@@ -252,7 +251,7 @@ Simulation.listWatchableVariables = function()
 		return SIMULATION_VARS_LIST;
 	}
 	else{
-		return SIMULATION_NOT_LOADED_LIST;
+		return SIMULATION_NOT_LOADED_ERROR;
 	}
 };
 
@@ -272,9 +271,177 @@ Simulation.listForceableVariables = function()
 		return SIMULATION_VARS_LIST;
 	}
 	else{
-		return SIMULATION_NOT_LOADED_LIST;
+		return SIMULATION_NOT_LOADED_ERROR;
 	}
 };
+
+/**
+ * Add watchlists to the simulation.
+ * 
+ * @name Simulation.addWatchLists()
+ * @param watchLists - listing variables to be watched.
+ * @returns {String} - status after request.
+ */
+Simulation.addWatchLists = function(watchLists)
+{
+	santasLittleHelper("set_watch", SIMULATION_SET_WATCH, MESSAGE_OUTBOUND_SET_WATCH, watchLists);
+	
+	return SIMULATION_SET_WATCH;
+};
+
+/**
+ * Retrieve watchlists available the simulation.
+ * 
+ * @name Simulation.getWatchLists()
+ * @returns {String} - status after request.
+ */
+Simulation.getWatchLists = function()
+{
+	santasLittleHelper("get_watch", SIMULATION_GET_WATCH, MESSAGE_OUTBOUND_GET_WATCH, null);
+	
+	return SIMULATION_GET_WATCH;
+};
+
+/**
+ * Start watching variables for the simulation.
+ * 
+ * @name Simulation.startWatch()
+ * @returns {String} - status after request.
+ */
+Simulation.startWatch = function()
+{
+	santasLittleHelper("start_watch", SIMULATION_START_WATCH, MESSAGE_OUTBOUND_START_WATCH, null);
+	
+	return SIMULATION_START_WATCH;
+};
+
+/**
+ * Stop watching variables for the simulation.
+ * 
+ * @name Simulation.stopWatch()
+ * @returns {String} - status after request.
+ */
+Simulation.stopWatch = function()
+{
+	santasLittleHelper("stop_watch", SIMULATION_STOP_WATCH, MESSAGE_OUTBOUND_STOP_WATCH, null);
+	
+	return SIMULATION_STOP_WATCH;
+};
+
+/**
+ * Clears all watch lists for the given simulation
+ * 
+ * @name Simulation.clearWatchLists()
+ * @returns {String} - status after request.
+ */
+Simulation.clearWatchLists = function()
+{
+	santasLittleHelper("clear_watch", SIMULATION_CLEAR_WATCH, MESSAGE_OUTBOUND_CLEAR_WATCH, null);
+	
+	simulationStates = {};
+	
+	return SIMULATION_CLEAR_WATCH;
+};
+
+/**
+ * Gets tree for variables being watched if any.
+ * 
+ * @name Simulation.getWatchTree()
+ * @returns {String} - status after request.
+ */
+Simulation.getWatchTree = function()
+{
+	var watched_variables = WATCHED_SIMULATION_STATES + "";
+	
+	for(var key in simulationStates){
+		watched_variables +=  "\n" + "      -- " + key + "\n"
+						  + "         Value : " + simulationStates[key];
+	}
+	
+	if(Simulation.watchTree == null){
+		return EMPTY_WATCH_TREE;
+	}
+	else{
+		return watched_variables;
+	}
+};
+
+/**
+ * Updates the simulation states with new watched variables
+ */
+function updateSimulationWatchTree(variable){
+	Simulation.watchTree = variable;
+
+	var tree = Simulation.watchTree.WATCH_TREE;
+	
+	//figure out what the server is returning, either an object structure 
+	// or an array 
+	if(tree.length == null){
+		searchTreeObject(tree);
+	}
+	else{
+		searchTreeArray(tree);
+	}
+}
+
+/**
+ * Search through array looking for simulation states
+ */
+function searchTreeArray(variables){
+	for(var v =0; v < variables.length; v++){
+		var state = Simulation.watchTree.WATCH_TREE[v];
+
+		if(state.name != null){
+			updateState(state);
+		}
+
+		else{
+			searchTreeObject(state);
+		}	
+	}		
+}
+
+/**
+ * Search through object structure for object with value and name
+ */
+function searchTreeObject(obj){
+	    for (var prop in obj) {
+	    	var state = obj[prop];
+	    	
+	    	//state found, create or update its state
+	    	if(state.name != null){
+	    		updateState(state);
+	    	}
+	    	//recursively look through object structure for state
+	    	else{
+	    		searchTreeObject(state);
+	    	}
+	    }
+}
+
+/**
+ * Update or create a simulation state
+ */
+function updateState(state){
+	//get name and value
+	var stateName = state.name;
+	var stateValue = state.value;
+
+	//If it's a new state add to tags
+	if(!(stateName in simulationStates)){
+		addTag(stateName);
+		
+		//assign state to window object of same name
+		window[stateName] = new State(stateName, stateValue);
+	}
+	
+	else{
+		 window[stateName].update(stateValue);
+	}
+	
+	//update simulation state value
+	simulationStates[stateName] = stateValue; 
+}
 
 /**
  *
@@ -295,9 +462,28 @@ function getSimulationStatus()
 	return Simulation.status;
 };
 
+function getSimulationStates()
+{
+	return simulationStates;
+};
+
 function setSimulationLoaded()
 {
 	Simulation.status = Simulation.StatusEnum.LOADED;
 	loading = false;
 };
 
+
+function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
+{
+	if(Simulation.isLoaded()){
+		GEPPETTO.MessageSocket.socket.send(messageTemplate(msg, payload));
+		
+		GEPPETTO.Console.debugLog(outbound_msg_log);
+		
+		return return_msg;
+	}
+	else{
+		return SIMULATION_NOT_LOADED_ERROR;
+	} 
+};

@@ -1,5 +1,6 @@
 /*******************************************************************************
- * The MIT License (MIT)
+
+\ * The MIT License (MIT)
  *
  * Copyright (c) 2011, 2013 OpenWorm.
  * http://openworm.org
@@ -65,16 +66,12 @@ test("Test G Object help method", function(){
 });
 
 test("Test Clear Console", function(){
-
-	GEPPETTO.Console.createConsole();
 	
 	equal(G.clear(),CLEAR_HISTORY, "Console cleared");
 });
 
 test("Test Copy History To Clipboard", function(){
 	
-	GEPPETTO.Console.createConsole();
-
 	equal(G.copyHistoryToClipboard(), EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
 	
 	//add some commands to history
@@ -127,215 +124,38 @@ test("Test Widget", function(){
 
 module("Run Script Test",
 		{
+	newSocket : GEPPETTO.MessageSocket,
 	setup : function(){
-		//create socket connection before each test
-		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');		
 		
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+
 		setTimeout(function(){
-			GEPPETTO.Console.createConsole();
 			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
-		}, 500);
+		}, 1000);
 	
 	},
 	teardown: function(){
-		GEPPETTO.MessageSocket.socket.close();
+		this.newSocket.close();
 	}
 });
 
-asyncTest("Run Script Test 1", function(){
-	var interval = null;
-	interval = setInterval(function(){
-		if(!Simulation.isLoading()){
-			equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
-			start();
-			clearInterval(interval);
-		}
-	},2000);
+asyncTest("Run Script Test 1", function(){	
 	
-	
-});
+	var handler = {
+			onMessage : function(parsedServerMessage){
 
-module("Run Script Test",
-		{
-	setup : function(){
-		//create socket connection before each test
-		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');		
-		
-		setTimeout(function(){
-			GEPPETTO.Console.createConsole();
-			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript2.js");
-		}, 500);
-	
-	},
-	teardown: function(){
-		GEPPETTO.MessageSocket.socket.close();
-	}
-});
-
-asyncTest("Run Script Test 2", function(){	
-	var interval = null;
-	interval = setInterval(function(){
-		if(!Simulation.isLoading()){
-			equal( getSimulationStatus(),Simulation.StatusEnum.STARTED, "Simulation Loaded, passed");
-			start();
-			clearInterval(interval);
-		}
-	},4000);
-	
-});
-
-
-module("Simulation commands test");
-test( "Test Simulation Help Command", function() {
-	notEqual(Simulation.help(), null, "Help command for Simulation object is available, passed.");
-});
-
-module("Simulation Load Tests",
-		{
-	setup : function(){
-		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
-		
-		//wait half a second before testing, allows for socket connection to be established
-		setTimeout(function(){
-			GEPPETTO.Console.createConsole();
-			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");		
-		},500);
-	},
-	teardown: function(){
-		GEPPETTO.MessageSocket.socket.close();
-	}
-});
-
-asyncTest("Test Load Simulation", function(){			
-	//check every few seconds before checking assertions
-	var interval = null;
-	interval = setInterval(function(){
-		if(!Simulation.isLoading()){
-			equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
-			start();
-			clearInterval(interval);
-		}
-	},4000);
-});
-
-module("Simulation Load From Content Tests",
-		{
-	setup : function(){
-		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
-		
-		//wait half a second before testing, allows for socket connection to be established
-		setTimeout(function(){
-			//GEPPETTO.Console.createConsole();
-			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
-		},500);
-	},
-	teardown: function(){
-		GEPPETTO.MessageSocket.socket.close();
-	}
-});
-
-asyncTest("Test Load Simulation from content", function(){		
-	//check every few seconds before checking assertions
-	var interval2 = null;
-	interval2 = setInterval(function(){
-		if(!Simulation.isLoading()){
-			equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
-			start();
-			clearInterval(interval2);
-		}
-	},2000);
-});
-
-module("Simulation controls Test",
-{
-	setup : function(){
-		GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
-
-		//wait half a second before testing, allows for socket connection to be established
-		setTimeout(function(){
-			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
-		},500);
-	},
-	teardown: function(){
-		GEPPETTO.MessageSocket.socket.close();
-	}
-});
-
-asyncTest("Test Start Simulation", function(){
-	//check every few seconds before checking assertions
-	var interval = null; 
-	interval = setInterval(function(){
-		if(!Simulation.isLoading()){
-			equal( getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");	
-			Simulation.start();
-			equal( getSimulationStatus(),Simulation.StatusEnum.STARTED, "Simulation Started, passed");
-			start();
-			clearInterval(interval);
-		}
-	},1000);
-});
-
-asyncTest("Test Pause Simulation", function(){
-	//check every few seconds before checking assertions
-	var interval = null;
-	interval = setInterval(function(){
-		if(!Simulation.isLoading()){
-			Simulation.start();
-			equal( getSimulationStatus(),Simulation.StatusEnum.STARTED, "Simulation Started, passed");
-			Simulation.pause();
-			equal( getSimulationStatus(),Simulation.StatusEnum.PAUSED, "Simulation Paused, passed");
-		
-			start();
-			clearInterval(interval);
-		}
-	},1000);
-});
-
-asyncTest("Test Stop Simulation", function(){
-	//check every few seconds before checking assertions
-	var interval = null;
-	interval = setInterval(function(){		
-		if(!Simulation.isLoading()){
-			Simulation.start();
-			equal( getSimulationStatus(),Simulation.StatusEnum.STARTED, "Simulation Started, passed");
-			Simulation.stop();
-			equal( getSimulationStatus(),Simulation.StatusEnum.STOPPED, "Simulation Stopped, passed");
-		
-			equal(Simulation.stop(), SIMULATION_ALREADY_STOPPED, "Unable to stop already stopped simulation, passed");
-		
-			start();
-			clearInterval(interval);
-		}	
-	},1000);
-});
-
-module("Get simulation variables test",
-		{
-			setup : function(){
-				//create socket connection before each test
-				var newSocket = GEPPETTO.MessageSocket;
-
-				newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been loaded and model need to be loaded
+				case MESSAGE_TYPE.RUN_SCRIPT:
+				ok(true, "Script parsed, passed");
+				start();
+				break;
+				}
+				
 			}
-});
+	};
 
-asyncTest("Test list simulation variables no crash - SPH", function(){
-	// wait a bit and then load SPH sample
-	setTimeout(function(){
-		GEPPETTO.Console.createConsole();
-		equal(G.clear(),CLEAR_HISTORY, "Console is clear");
-		
-		//FIXME
-		//Simulation.load("https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml");
-		//equal(getSimulationStatus(),Simulation.StatusEnum.LOADED, "Simulation Loaded, passed");
-		start();
-		
-		// list watchable
-		Simulation.listWatchableVariables();
-		
-		// list forceable
-		Simulation.listForceableVariables();
-		
-		// TODO: compare output to expected output - need to refactor messaging to be able to do this
-	},500);
+	this.newSocket.addHandler(handler);
+	
 });

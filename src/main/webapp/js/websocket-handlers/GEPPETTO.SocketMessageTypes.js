@@ -32,52 +32,36 @@
  *******************************************************************************/
 
 /**
- * Class used to create widgets and handle widget events from parent class. 
- */
+ * 
+ * Enum that holds different message types for socket
 
-/**
- * Enum use to hold different types of widgets
+ * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-var Widgets = {
-			PLOT : 0
+var MESSAGE_TYPE = {
+	/*
+	 * Messages handle by GlobalHandler
+	 */
+	CLIENT_ID : "client_id",
+	RELOAD_CANVAS : "reload_canvas",
+	ERROR_LOADING_SIM : "error_loading_simulation",
+	GEPPETTO_VERSION : "geppetto_version",
+	OBSERVER_MODE : "observer_mode_alert",
+	READ_URL_PARAMS : "read_url_parameters",
+	RUN_SCRIPT : "run_script",
+	SERVER_AVAILABLE : "server_available",
+	SERVER_UNAVAILABLE : "server_unavailable",
+	
+	/*
+	 * Messages handle by SimulatorHandle
+	 */
+	LOAD_MODEL : "load_model",
+	SCENE_UPDATE : "scene_update",
+	SIMULATION_CONFIGURATION : "simulation_configuration",
+	SIMULATION_LOADED : "simulation_loaded",
+	SIMULATION_STARTED : "simulation_started",
+	SIMULATION_PAUSED : "simulation_paused",
+	SIMULATION_STOPPED : "simulation_stopped",
+	LIST_WATCH_VARS : "list_watch_vars",
+	LIST_FORCE_VARS : "list_force_vars",
+	GET_WATCH_LISTS : "get_watch_lists"
 };
-
-(function(){
-	GEPPETTO.WidgetFactory = GEPPETTO.WidgetFactory ||
-	{
-		REVISION : '1'
-	};
-	
-	/**
-	 * Adds widget to Geppetto
-	 */
-	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
-		var widget = null;
-		
-		switch(widgetType){
-			//create plotting widget
-			case Widgets.PLOT:
-				widget = GEPPETTO.PlotsController.addPlotWidget();
-				break;
-			default: 
-				break;
-		}
-				
-		return widget;
-	};
-	
-	/**
-	 * Removes widget from Geppetto
-	 */
-	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
-		switch(widgetType){
-			//removes plotting widget from geppetto
-			case Widgets.PLOT:
-				GEPPETTO.PlotsController.removePlotWidgets();
-				return REMOVE_PLOT_WIDGETS;
-				break;
-			default: 
-				break;
-		}
-	};	
-})();	

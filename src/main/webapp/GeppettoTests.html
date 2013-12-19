@@ -37,14 +37,17 @@
 <script src="js/vendor/underscore.min.js"></script>
 <script src="js/vendor/backbone.min.js"></script>
 <script src="js/vendor/backbone-localStorage.min.js"></script>
-<script src="js/GEPPETTO.sandbox-console.js"></script>
+<script src="js/SandboxConsole.js"></script>
 
 <script src="js/geppetto-objects/Simulation.js"></script>
 <script src="js/geppetto-objects/G.js"></script>
 <script src="js/GEPPETTO.js"></script>
 <script src="js/GEPPETTO.JSEditor.js"></script>
 <script src="js/GEPPETTO.FE.js"></script>
-<script src="js/GEPPETTO.MessageSocket.js"></script>
+<script src="js/websocket-handlers/GEPPETTO.MessageSocket.js"></script>
+<script src="js/websocket-handlers/GEPPETTO.GlobalHandler.js"></script>
+<script src="js/websocket-handlers/GEPPETTO.SimulationHandler.js"></script>
+<script src="js/websocket-handlers/GEPPETTO.SocketMessageTypes.js"></script>
 <script src="js/GEPPETTO.Console.js"></script>
 <script src="js/GEPPETTO.ScriptRunner.js"></script>
 <script src="js/GEPPETTO.Resources.js"></script>
@@ -53,9 +56,12 @@
 
 <script src="widgets/Widget.js"></script>
 <script src="widgets/plots/Plot.js"></script>
+<script src="js/widget-controllers/GEPPETTO.WidgetsListener.js"></script>		
 <script src="js/widget-controllers/GEPPETTO.PlotsController.js"></script>
+<script src="js/widget-controllers/GEPPETTO.SimState.js"></script>
 <script src="js/GEPPETTO.WidgetFactory.js"></script>
-	<script src="js/tests/GeppettoTests.js"></script>
+<script src="js/tests/GeppettoTests.js"></script>
+<script src="js/tests/SimulationTest.js"></script>
 </head>
 <body>
 	<div id="qunit"></div>

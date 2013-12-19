@@ -776,10 +776,6 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.render = function()
 	{
-//		for (p in plots)
-//		{
-//			plots[p].flot.draw();
-//		}
 		renderer.render(scene, camera);
 	};
 
@@ -886,21 +882,9 @@ var GEPPETTO = GEPPETTO ||
 		jsonscene = newJSONScene;
 		needsUpdate = true;
 		GEPPETTO.updateScene();
-		//GEPPETTO.updatePlots();
 		if (customUpdate != null)
 		{
 			GEPPETTO.customUpdate();
-		}
-	};
-
-	/**
-	 * Update plots
-	 */
-	GEPPETTO.updatePlots = function()
-	{
-		for (p in plots)
-		{
-			plots[p].addValue();
 		}
 	};
 

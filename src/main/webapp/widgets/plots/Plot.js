@@ -38,66 +38,152 @@
 var Plot = Widget.View.extend({
 
 	plot : null,
-	data : [],
+	datasets : [],
+	limit : 20,
+	updateGrid : false,
+	options : null,
 	
-	/**
-	 * Initializes the plot widget
-	 */
-	initialize : function(){
-		this.render();
-		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
-	},
-
 	/**
 	 * Default options for plot widget, used if none specified 
 	 * when plot is created
 	 */
 	defaultPlotOptions: {
-		yaxis: { min : 0,max : 15},
-		xaxis: {min : 0, max : 15},
 		series: {
-	        lines: { show: true },
-	        points: { show: true }
-	    }, 
-	    legend: { show: true},
-	    grid: { hoverable: true, clickable: true, autoHighlight: true },	    
+	    	shadowSize : 0,
+	    },
+		yaxis: { min : -.1,max : 1},
+		xaxis: {min: 0, max : 20, show : true},
+	},
+	
+	/**
+	 * Initializes the plot widget
+	 */
+	initialize : function(){
+		this.datasets = [];
+		this.options = this.defaultPlotOptions;
+		this.render();
+		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
 	}, 
 	
 	/**
 	 * Takes data series and plots them. 
+	 * To plot array(s) , use it as plotData([[1,2],[2,3]])
+	 * To plot an object , use it as plotData(objectName)
+	 * Multiples arrays can be specified at once in this method, but only one object 
+	 * at a time.
 	 * 
 	 * @name plotData(data, options)
-	 * @param data - series to plot
-	 * @param options - options for the plotting widget
+	 * @param newData - series to plot, can be array or an object
+	 * @param options - options for the plotting widget, if null uses default
 	 */
-	plotData : function(data, options){	
+	plotData : function(newData, options){	
 		//If no options specify by user, use default options
-		if(options == null){options = this.defaultPlotOptions;}
+		if(options != null){this.options = options;}
 		
-		//plot  reference not yet created, make it for first time
-		if(this.plot ==null){
-			this.data = data;
-			
-			var plotHolder = $("#"+this.name);
-			
-			this.plot = $.plot(plotHolder, this.data,options);
-			
-			$('.flot-x-axis').css('color','white');
-			$('.flot-y-axis').css('color','white');
-			
-			plotHolder.resize();			
+		if(newData.name != null){
+			for(var set in this.datasets){
+				if(newData.name == this.datasets[set].label ){
+					return this.name + " widget is already plotting object " + newData.name;
+				}
+			}
+			this.datasets.push({label : newData.name, data : [[0,newData.value]]});
+			$("#"+this.getId()).trigger("subscribe", [newData.name]);	
+			updateGrid = true;
+		}
+		else{
+			this.datasets.push({label : "", data : newData});
+			updateGrid = false;
 		}
 		
-		//plot exists, get existing plot series before adding new one
+		var plotHolder = $("#"+this.name);
+		if(this.plot == null){
+			this.plot = $.plot(plotHolder,this.datasets,this.options);
+			plotHolder.resize();	
+		}
 		else{
-			for(var d = 0; d < data.length ; d++){
-				this.data.push(data[d]);
-			}
-			this.plot.setData(this.data);	
-			this.plot.draw();
+			this.plot = $.plot(plotHolder,this.datasets,this.options);	
 		}
 		
 		return "Line plot added to widget";
+	},
+	
+	/**
+	 * Removes the data set from the plot. 
+	 * EX: removeDataSet(dummyDouble)
+	 * 
+	 * @param set - Data set to be removed from the plot
+	 */
+	removeDataSet : function(set){
+		if(set !=null){
+			for(var key in this.datasets){
+				if(set.name == this.datasets[key].label){
+					$("#"+this.getId()).trigger("unsubscribe", [set.name]);	
+					this.datasets.splice(key, 1);
+				}
+			}
+			
+			var data = [];
+			
+			for(var i =0; i<this.datasets.length ; i++){
+				data.push(this.datasets[i]); 
+			}
+			
+			this.plot.setData(data);	
+			this.plot.setupGrid();
+			this.plot.draw();
+		}
+		
+		if(this.datasets.length == 0){
+			this.resetPlot();
+		}
+	},
+	
+	/**
+	 * Updates a data set, use for time series
+	 * 
+	 * @param label - Name of new data set
+	 * @param newValue - Updated value for data set
+	 */
+	updateDataSet : function(label,newValue){
+		if(label != null){
+			var newData = null;
+			var matchedKey = 0;
+			var reIndex = false;
+			
+			//update corresponding data set
+			for(var key in this.datasets){
+				if(label ==  this.datasets[key].label){
+					newData = this.datasets[key].data;
+					matchedKey = key;
+				}
+			}
+			
+			
+			if(newData.length > this.limit){
+				newData.splice(0,1);
+				reIndex = true;
+			}
+			
+			newData.push([newData.length, newValue[0]]);
+			
+			
+			if(reIndex){
+				//re-index data
+				var indexedData = [];
+				for(var index =0, len = newData.length; index < len; index++){
+					var value = newData[index][1];
+					indexedData.push([index, value]);
+				}
+
+				this.datasets[matchedKey].data = indexedData;
+			}
+			else{
+				this.datasets[matchedKey].data = newData;
+			}
+			
+			this.plot.setData(this.datasets);	
+			this.plot.draw();
+		}
 	},
 	
 	/**
@@ -120,9 +206,10 @@ var Plot = Widget.View.extend({
 	 */
 	resetPlot : function(){
 		if(this.plot != null){
-			this.data = [];
-			this.plot.setData(this.data);
-			this.plot.draw();
+			this.datasets = [];
+			this.options = this.defaultPlotOptions;
+			var plotHolder = $("#"+this.name);
+			this.plot = $.plot(plotHolder,this.datasets,this.options);	
 		}
 	},
 	
@@ -134,8 +221,14 @@ var Plot = Widget.View.extend({
 	 * @param options
 	 */
 	setOptions : function(options){
-		this.defaultPlotOptions = options;
-		
-		$.plot($("#"+this.name), this.data,this.defaultPlotOptions);
+		this.options = options;
+		if(options.xaxis.max > this.limit){
+			this.limit = options.xaxis.max;
+		}
+		this.plot = $.plot($("#"+this.name), this.datasets,this.options);
+	},
+	
+	getDataSets : function(){
+		return this.datasets;
 	}
 });

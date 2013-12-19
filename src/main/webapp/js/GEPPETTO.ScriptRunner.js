@@ -46,6 +46,8 @@
 		REVISION : '1'
 	};
 
+	var simulationScripts = {};
+
 	/**
 	 * Executes a set of commands from a script 
 	 * 
@@ -54,49 +56,29 @@
 	GEPPETTO.ScriptRunner.executeScriptCommands = function(commands){
 		for (var i = 0, len = commands.length; i < len; i++) {
 			var command = commands[i].toString().trim();
-			var waitingPeriod = 0;
 			
-			if(GEPPETTO.MessageSocket.isServletBusy()){
-				waitingPeriod = setInterval(function(){
-					if(!GEPPETTO.MessageSocket.isServletBusy()){
-						
-						//get the remaining commands
-						var remainingCommands = commands.splice(i,commands.length);
+			if(command != ""){
+				//if it's the wait command,  call the the wait function 
+				//with all remanining commands left to execute as parameter.
+				if ( command.indexOf("G.wait") > -1 ) {
+					//get the ms time for waiting
+					var parameter = command.match(/\((.*?)\)/);
+					var ms = parameter[1];
 
-						GEPPETTO.ScriptRunner.executeScriptCommands(remainingCommands);
-						
-						clearInterval(waitingPeriod);
-						
-						return;
-					}
-				},500);
-				
-				return;
-			}
-			else{	
-				if(command != ""){
-					//if it's the wait command,  call the the wait function 
-					//with all remanining commands left to execute as parameter.
-					if ( command.indexOf("G.wait") > -1 ) {
-						//get the ms time for waiting
-						var parameter = command.match(/\((.*?)\)/);
-						var ms = parameter[1];
+					//get the remaining commands
+					var remainingCommands = commands.splice(i+1,commands.length);
 
-						//get the remaining commands
-						var remainingCommands = commands.splice(i+1,commands.length);
-
-						//call wait function with ms, and remaining commands to execute when done
-						G.wait(remainingCommands, ms);
-						return;
-					}
-
-					//execute commands, except the wait one
-					else{
-						GEPPETTO.Console.executeCommand(command);
-					}
+					//call wait function with ms, and remaining commands to execute when done
+					G.wait(remainingCommands, ms);
+					return;
 				}
-			}		
-		}
+
+				//execute commands, except the wait one
+				else{
+					GEPPETTO.Console.executeCommand(command);
+				}
+			}
+		}		
 	};
 	
 	/**
@@ -116,5 +98,16 @@
 		}
 		//execute the commands found inside script
 		GEPPETTO.ScriptRunner.executeScriptCommands(commands);
+	};
+	
+	GEPPETTO.ScriptRunner.setSimulationScripts = function(scripts){
+		this.simulationScripts =scripts;	
+	};
+	
+	GEPPETTO.ScriptRunner.fireScripts = function(){
+		for(var key in this.simulationScripts){
+			var script = this.simulationScripts[key];
+			GEPPETTO.Console.executeCommand('G.runScript("'+script+'")');
+		}
 	};
 })();

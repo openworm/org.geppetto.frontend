@@ -32,6 +32,20 @@ p {
 	margin: .5em 2em;
 }
 
+#helpmodal {
+	overflow : auto;	
+	font-family : 'Helvetica Neue';
+	z-index:9999;
+}
+
+#helpmodal p {
+	margin: .5em 2em;
+	text-align: left;
+}
+
+#helpmodal h4 {
+	color: #fd6808;
+}
 
 .asterisk {
 	background-image: URL("../images/asterisk.png");
@@ -88,8 +102,19 @@ p {
 	position: absolute;
 	right: 10px;
 	top: 10px;
-	width: 400px;
+	width: 460px;
 	height: 100px;
+}
+
+#menu {
+	position: absolute;
+	left: 100px;
+	top: 10px;
+}
+
+
+#helpInfoIcon {
+	float : left;
 }
 
 .rotate90 {
@@ -230,6 +255,10 @@ input {
 /* Overwrite Modal body overflow values.*/
 .modal {
 	overflow: visible;
+}
+
+#helpmodal .modal-body{
+	overflow-y: auto;
 }
 
 .modal-body {

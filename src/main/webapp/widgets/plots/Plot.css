@@ -34,3 +34,21 @@
 	width: 100%;
 	height: 100%;
 }
+
+.flot-x-axis {
+	color:white;
+}
+
+.flot-y-axis {
+	color:white;
+}
+
+.legendColorBox {
+	background:rgba(66,59,59,0.90)!important;
+	color:white;
+}
+
+.legendLabel {
+	background:rgba(66,59,59,0.90)!important;
+	color:white;
+}

@@ -26,18 +26,21 @@
 
 		<!-- Geppetto -->
 		<script src="js/GEPPETTO.Resources.js"></script>
-		<script src="js/GEPPETTO.Utility.js"></script>
 		<script src="js/GEPPETTO.js"></script>
 		<script src="js/GEPPETTO.Vanilla.js"></script>
 		<script src="js/GEPPETTO.Main.js"></script>
 		<script src="js/GEPPETTO.FE.js"></script>
 		<script src="js/GEPPETTO.ScriptRunner.js"></script>
-		<script src="js/GEPPETTO.MessageSocket.js"></script>
+		<script src="js/websocket-handlers/GEPPETTO.MessageSocket.js"></script>
+		<script src="js/websocket-handlers/GEPPETTO.GlobalHandler.js"></script>
+		<script src="js/websocket-handlers/GEPPETTO.SimulationHandler.js"></script>
+		<script src="js/websocket-handlers/GEPPETTO.SocketMessageTypes.js"></script>		
 		<script src="js/GEPPETTO.SimulationContentEditor.js"></script>
 		<script src="js/GEPPETTO.JSEditor.js"></script>
 		<script src="js/GEPPETTO.Console.js"></script>
 		<script src="js/geppetto-objects/Simulation.js"></script>
 		<script src="js/geppetto-objects/G.js"></script>
+		<script src="js/GEPPETTO.Utility.js"></script>
 		
 		<!-- CSS -->
 		<link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -73,7 +76,10 @@
 				<icon class="icon-stop"></icon>
 				Stop
 			</button>
-
+			<button class="btn btn-info" id="helpButton" data-toggle="modal" data-target="#helpmodal">
+				<icon class="icon-info-sign"></icon>
+				Help
+			</button>
 			<!-- Alert box used when visitor in observing simulation -->
 			<div id="alertbox" class="alert alert-block">
 				<a class="close" data-dismiss="alert">×</a>
@@ -103,6 +109,72 @@
 			<button class="btn squareB icon-zoom-out" id="zo"></button>
 			<br />
 		</div>
+
+		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="btn btn-info pull-right"
+								aria-hidden="true" onClick="window.open('http://docs.geppetto.org');">
+								<icon class="icon-file-text"></icon>
+								Docs</button>
+							<h4 class="modal-title pagination-centered" id="helpmodalheader">Quick help</h4>
+						</div>
+						<div class="modal-body">
+							<h4>Navigation Controls</h4>
+							<p>
+							<strong>Rotation</strong>
+							<br>Left click and drag with the mouse to rotate.<br>
+							<strong>Pan</strong>
+							<br>Right click and drag with the mouse to pan.<br>
+							<strong>Zoom</strong>
+							<br>Wheel click and move your mouse up and down to zoom in and out.
+							<br>In addition, you can use the buttons in the upper left corner. The
+							Home button resets the view.<br>
+							<h4>Shortcuts List</h4>
+							<p>
+							Press <a class="btn btn-default">Ctrl</a><a class="btn btn-default">Alt</a><a class="btn btn-default">J</a> 
+							to toggle the Javascript Console<br>
+							<br>Press <a class="btn btn-default">Ctrl</a><a class="btn btn-default">Alt</a><a class="btn btn-default">P</a> 
+							to bring up a plogttin widget<br>
+							<br>
+							</p>
+							<h4>Geppetto Console</h4>
+							<p>
+							The console provides a way to interact with Geppetto without having to use the UI controls. 
+							Through the console, user can control the simulation and use the other features available.<br> 
+							<br><strong>Commands</strong>
+							<br>Open the console and type help() in it to view list of available commands, a description on 
+							how to use each one of them is also provided.<br>
+							<br><strong>Autocompletion</strong>
+							<br>Console autcompletes command once you are start typing, pressing double <a class="btn btn-default">Tab</a>
+							provides list of available commands that match the entered input.<br> 
+							<br>
+							<h4>Loading a Simulation</h4>
+							<p>
+							<strong>Using Controls</strong>
+							<br>Use <a class="btn btn-default">Load Simulation</a> button on top right corner to 
+							load a simulation, a drop down menu with simulation samples ready to load is available. 
+							The content of the simulation file can be seen by selecting the Custom option after selecting or entering
+							a simulation, using this feature the contents of the simulation file can be modified prior to loading. <br>
+							<br><strong>Using console</strong>
+							<br>Simulations can be loaded via console using commands
+							<a class="label label-default">Simulation.load(simulationURL)</a> and
+							<a class="label label-default">Simulation.loadFromContent(simulationContent)</a>.<br>
+							<br><strong>Passing as parameter in URL</strong>
+							<br>A simulation can be specified as a paramater in the Geppetto URL, this will automatically load the simulation 
+							when Geppetto is launched. To use this feature add "?sim=simulationURL" to the end of Geppetto's url, where 
+							simulationURL corresponds to the location of the simulation you want to load.<br>
+							</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-warning" data-dismiss="modal"
+								aria-hidden="true">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 	</div>
 	<!--
 		<div id="toolbar">
@@ -245,7 +317,7 @@
 			<p id="loadingmodaltext" class="orange"></p>
 		</div>	
 		
-		<div id="welcomeMessageModal" class="modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
+		<div id="welcomeMessageModal" class="modal hide well fade lead pagination-centered" data-backdrop="static data-keyboard="true" tabindex="-1">
 			<div id="welcomeBody" class="modal-body">
 				<div class="messageBody">
 					<strong>Welcome to geppetto!</strong> geppetto is an open-source platform designed by engineers together with scientists to 
@@ -256,8 +328,8 @@
 					In fact we reckon this only represents about 15% of what you can expect in the end. We hope you'll enjoy it.</div>
 				</div>
 				<div class="progress progress-warning">
-				  <div class="bar" style="width: 16%"></div>
-				  <span class="sr-only">16% Complete</span>
+				  <div class="bar" style="width: 17%"></div>
+				  <span class="sr-only">17% Complete</span>
 				</div>
 
 				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">
@@ -267,7 +339,7 @@
 					<span class="input-group-addon">
 	    				<input id="welcomeMsgCookie" type="checkbox">
 	  				</span>
-	  				<span class="label">Don't show next time I vist Geppetto</span>
+	  				<span class="label">Don't show next time I visit Geppetto</span>
 	  			</div>
 			</div>
 
@@ -291,11 +363,13 @@
 		<script src="js/vendor/underscore.min.js"></script>
 		<script src="js/vendor/backbone.min.js"></script>
 		<script src="js/vendor/backbone-localStorage.min.js"></script>
-		<script src="js/GEPPETTO.sandbox-console.js"></script>
+		<script src="js/SandboxConsole.js"></script>
 		
 		<script src="widgets/Widget.js"></script>
 		<script src="widgets/plots/Plot.js"></script>
+		<script src="js/widget-controllers/GEPPETTO.WidgetsListener.js"></script>		
 		<script src="js/widget-controllers/GEPPETTO.PlotsController.js"></script>
+		<script src="js/widget-controllers/GEPPETTO.SimState.js"></script>
 		<script src="js/GEPPETTO.WidgetFactory.js"></script>
 		<script>
 		  var _gaq = _gaq || [];

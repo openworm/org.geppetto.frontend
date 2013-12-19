@@ -102,7 +102,7 @@ p {
 	position: absolute;
 	right: 10px;
 	top: 10px;
-	width: 400px;
+	width: 460px;
 	height: 100px;
 }
 
@@ -112,14 +112,6 @@ p {
 	top: 10px;
 }
 
-#helpButton {
-	background: rgba(66, 59, 59, 0.50);
-	text-shadow: none;
-	box-shadow: none;
-	color: white;
-	opacity : .7;
-	border-width: 0;
-}
 
 #helpInfoIcon {
 	float : left;

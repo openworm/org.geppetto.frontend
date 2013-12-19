@@ -76,7 +76,10 @@
 				<icon class="icon-stop"></icon>
 				Stop
 			</button>
-
+			<button class="btn btn-info" id="helpButton" data-toggle="modal" data-target="#helpmodal">
+				<icon class="icon-info-sign"></icon>
+				Help
+			</button>
 			<!-- Alert box used when visitor in observing simulation -->
 			<div id="alertbox" class="alert alert-block">
 				<a class="close" data-dismiss="alert">×</a>
@@ -107,16 +110,14 @@
 			<br />
 		</div>
 
-		<div id="menu">
-			<button class="btn" id="helpButton" data-toggle="modal" data-target="#helpmodal">
-				<icon class="icon-info-sign"></icon>
-				Help
-			</button>
-		</div>
 		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
+							<button type="button" class="btn btn-info pull-right"
+								aria-hidden="true" onClick="window.open('http://docs.geppetto.org');">
+								<icon class="icon-file-text"></icon>
+								Docs</button>
 							<h4 class="modal-title pagination-centered" id="helpmodalheader">Quick help</h4>
 						</div>
 						<div class="modal-body">
@@ -327,8 +328,8 @@
 					In fact we reckon this only represents about 15% of what you can expect in the end. We hope you'll enjoy it.</div>
 				</div>
 				<div class="progress progress-warning">
-				  <div class="bar" style="width: 16%"></div>
-				  <span class="sr-only">16% Complete</span>
+				  <div class="bar" style="width: 17%"></div>
+				  <span class="sr-only">17% Complete</span>
 				</div>
 
 				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">

@@ -27,7 +27,7 @@ body {
 	font-weight: 300;
 }
 
-#infomodal p {
+p {
 	text-align: center;
 	margin: .5em 2em;
 }
@@ -266,7 +266,11 @@ input {
 	overflow: visible;
 }
 
-#loadSimModal .modal-body {
+#helpmodal .modal-body{
+	overflow-y: auto;
+}
+
+.modal-body {
 	overflow-y: visible;
 	font-size: 15px;
 	line-height: 24px;

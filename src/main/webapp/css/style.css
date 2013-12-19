@@ -34,18 +34,17 @@ p {
 
 #helpmodal {
 	overflow : auto;	
-}
-
-#helpmodalheader {
-	color : midnightblue;
+	font-family : 'Helvetica Neue';
+	z-index:9999;
 }
 
 #helpmodal p {
 	margin: .5em 2em;
+	text-align: left;
 }
 
 #helpmodal h4 {
-	color : rgb(29, 112, 29);
+	color: #fd6808;
 }
 
 .asterisk {

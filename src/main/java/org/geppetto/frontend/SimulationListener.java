@@ -219,6 +219,9 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param visitor
 	 */
 	public void initializeSimulation(String requestID, String simulation, GeppettoMessageInbound visitor){
+		
+		JsonObject scriptsJSON = new JsonObject();
+		
 		try
 		{			
 			switch(visitor.getCurrentRunMode()){
@@ -235,7 +238,12 @@ public class SimulationListener implements ISimulationCallbackListener {
 				//load another simulation
 				simulationService.init(simulation, this);
 
-				messageClient(requestID,visitor,OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+				for(URL scriptURL : simulationService.getScripts()){						
+					scriptsJSON.addProperty("script", scriptURL.toString());
+				}
+				
+				messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, "{ \"scripts\":" + scriptsJSON.toString() + "}");
+				
 				break;
 
 			default:
@@ -257,7 +265,12 @@ public class SimulationListener implements ISimulationCallbackListener {
 						}
 					}
 
-					messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+					for(URL scriptURL : simulationService.getScripts()){						
+						scriptsJSON.addProperty("script", scriptURL.toString());
+					}
+					
+					messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, "{ \"scripts\":" + scriptsJSON.toString() + "}");
+					
 				}
 				else{
 					simulationControlsUnavailable(visitor);

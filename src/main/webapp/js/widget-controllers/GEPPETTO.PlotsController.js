@@ -115,6 +115,9 @@ GEPPETTO.PlotsController = {
 		 * @param plotID
 		 */
 		registerHandler : function(plotID){
+			
+			GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PlotsController);
+			
 			//registers remove handler for widget
 			$("#" +plotID).on("remove", function () {
 				//remove tags and delete object upon destroying widget
@@ -191,7 +194,9 @@ GEPPETTO.PlotsController = {
 		},
 
 		//receives updates from widget listener class
-		update : function(newData){
-			
+		update : function(event){
+			if(event == WIDGET_EVENT_TYPE.DELETE){
+				this.removePlotWidgets();
+			}
 		}
 };

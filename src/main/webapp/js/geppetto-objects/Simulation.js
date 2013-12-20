@@ -170,7 +170,8 @@ Simulation.load = function(simulationURL)
 			}
 			GEPPETTO.MessageSocket.send("init_url", simulationURL);
 			loading = true;
-			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);			
+			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);
+			GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
 		}
 	}
 	
@@ -210,6 +211,7 @@ Simulation.loadFromContent = function(content)
 		GEPPETTO.MessageSocket.send("init_sim", content);
 		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
+		GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
 	}
 	
 	return LOADING_SIMULATION;

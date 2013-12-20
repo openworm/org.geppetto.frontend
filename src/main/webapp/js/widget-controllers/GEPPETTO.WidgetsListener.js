@@ -37,6 +37,11 @@
  * 
  * @author Jesus R Martinez (jesus@metacell.us)
  */
+
+var WIDGET_EVENT_TYPE = {
+		DELETE : "delete",
+};
+
 GEPPETTO.WidgetsListener =  {
 
 		_subscribers : [],
@@ -49,9 +54,17 @@ GEPPETTO.WidgetsListener =  {
 		 */
 		subscribe : function(obj){
 
-			this._subscribers.push( obj );
-			
-			GEPPETTO.Console.debugLog( 'added new observer' );
+			var addController = true;
+			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
+				if( this._subscribers[ i ] === obj ) {
+					addController = false;
+				}
+			}
+			if(addController){
+				this._subscribers.push( obj );
+
+				GEPPETTO.Console.debugLog( 'added new observer' );
+			}
 		},
 
 		/**
@@ -77,10 +90,9 @@ GEPPETTO.WidgetsListener =  {
 		 * 
 		 * @param newData 
 		 */
-		updateSubscribedWidgets : function(arguments){
-			var args = Array.prototype.slice.call( arguments, 0 );
+		update : function(arguments){
 			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				this._subscribers[ i ].update( args );
+				this._subscribers[ i ].update( arguments );
 			}
 		}
 

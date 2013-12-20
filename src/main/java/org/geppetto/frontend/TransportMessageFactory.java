@@ -85,7 +85,7 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("message", Resources.SERVER_AVAILABLE.toString()));
 				break;
 			case SIMULATION_LOADED:
-				params.add(new SimpleEntry<String, String>("get_scripts", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_SCRIPTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_STARTED:
 				break;
@@ -97,19 +97,22 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("configuration", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GEPPETTO_VERSION:
-				params.add(new SimpleEntry<String, String>("geppetto_version", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case RUN_SCRIPT:
-				params.add(new SimpleEntry<String, String>("run_script", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case LIST_WATCH_VARS:
-				params.add(new SimpleEntry<String, String>("list_watch_vars", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case LIST_FORCE_VARS:
-				params.add(new SimpleEntry<String, String>("list_force_vars", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_WATCH_LISTS:
-				params.add(new SimpleEntry<String, String>("get_watch_lists", (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS.toString(), (update!=null) ? update : EMPTY_STRING));
+				break;
+			case START_WATCH:
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));

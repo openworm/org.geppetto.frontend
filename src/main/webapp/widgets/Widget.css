@@ -105,6 +105,10 @@
 	color:white;
 }
 
+.ui-dialog .ui-dialog-content {
+	overflow : visible;
+}
+
 .dialog {
 	width: 350px;
 	height: 300px;

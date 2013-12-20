@@ -173,17 +173,6 @@ GEPPETTO.PlotsController = {
 				
 				GEPPETTO.Console.executeCommand(plotID+".setPosition(" + left +"," +  top + ")");
 			});
-			
-			$("#" +plotID).bind('dialogclose', function(event) {
-				for (p in plots)
-				{
-					if (plots[p].getId() == this.id)
-					{
-						plots[p].destroy();
-						break;
-					}
-				}
-			 });
 		},
 
 		/**

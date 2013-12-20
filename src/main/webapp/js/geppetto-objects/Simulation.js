@@ -477,7 +477,7 @@ function setSimulationLoaded()
 function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
 {
 	if(Simulation.isLoaded()){
-		GEPPETTO.MessageSocket.socket.send(messageTemplate(msg, payload));
+		GEPPETTO.MessageSocket.send(msg, payload);
 		
 		GEPPETTO.Console.debugLog(outbound_msg_log);
 		

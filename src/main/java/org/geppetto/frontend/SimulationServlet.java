@@ -53,7 +53,7 @@ public class SimulationServlet extends WebSocketServlet
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static Log logger = LogFactory.getLog(SimulationServlet.class);
+	private static Log _logger = LogFactory.getLog(SimulationServlet.class);
 
 	private final AtomicInteger _connectionIds = new AtomicInteger(0);
 			

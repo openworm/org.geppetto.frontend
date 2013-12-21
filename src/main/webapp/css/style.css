@@ -405,6 +405,10 @@ input {
 	clear: none;
 }
 
+#infomodal {
+	z-index : 9999;
+}
+
 #infomodal .modal-body{
 	overflow: auto;
 	max-height: 50%;

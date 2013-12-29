@@ -145,4 +145,8 @@ $(document).ready(function()
 
 	GEPPETTO.FE.checkWelcomeMessageCookie();
 	
+	$("#share").click(function(){
+        $(".share-panel").slideToggle();
+        $(this).toggleClass("active"); return false;
+    });
 });

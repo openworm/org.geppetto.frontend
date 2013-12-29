@@ -556,3 +556,47 @@ input {
 #welcomeMessageModal .modal-header {
 	padding : 0px;
 }
+
+#shareTab {
+	top : 70px;
+	right : 23px;
+	position : absolute;
+	z-index : 10;
+}
+
+#share {
+	box-shadow: none;
+	text-shadow: none;
+	background: rgba(66,59,59,0.50);
+	color : #fd6808;
+	width : 57px;
+	border : 0px;
+}
+
+#geppetto-share p {
+	margin: 1em 0em;
+}
+
+#geppetto-share a {
+	width: 30px;
+}
+
+.btn:focus {
+	outline : none;
+}
+
+#geppetto-share {
+	border: 1px solid #fd6808;
+	background: rgba(66, 59, 59, 0.50);
+	position: absolute;
+	top: 60px;
+	right: 10px;
+	display: none;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	width: 80px;
+	height: auto;
+	filter: alpha(opacity = 85);
+	opacity: .85;
+	padding-top : 30px;
+}

@@ -246,7 +246,7 @@ Simulation.isLoading = function()
 Simulation.listWatchableVariables = function()
 {
 	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_watch_vars", null));
+		GEPPETTO.MessageSocket.send("list_watch_vars", null);
 		
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_WATCH);
 		
@@ -266,7 +266,7 @@ Simulation.listWatchableVariables = function()
 Simulation.listForceableVariables = function()
 {
 	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_force_vars", null));
+		GEPPETTO.MessageSocket.send("list_force_vars", null);
 		
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_FORCE);
 		

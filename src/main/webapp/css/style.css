@@ -235,6 +235,7 @@ input {
 	font-size: 14px;
 	line-height: 20px;
 	font-weight: 200;
+	margin-left : -10px;
 }
 
 .modal-input label {
@@ -558,7 +559,7 @@ input {
 }
 
 #shareTab {
-	top : 70px;
+	top : 60px;
 	right : 23px;
 	position : absolute;
 	z-index : 10;
@@ -589,7 +590,7 @@ input {
 	border: 1px solid #fd6808;
 	background: rgba(66, 59, 59, 0.50);
 	position: absolute;
-	top: 60px;
+	top: 50px;
 	right: 10px;
 	display: none;
 	-webkit-border-radius: 5px;

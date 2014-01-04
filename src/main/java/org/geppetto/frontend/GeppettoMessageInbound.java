@@ -63,30 +63,30 @@ public class GeppettoMessageInbound extends MessageInbound
 		OBSERVING, CONTROLLING, WAITING
 	}
 
-	private GeppettoServletController servletController;
-	private final String client_id;
+	private GeppettoServletController _servletController;
+	private final String _client_id;
 
 	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
 
 	public GeppettoMessageInbound(String client_id, GeppettoServletController servletController)
 	{
 		super();
-		this.servletController = servletController;
-		this.client_id = client_id;
+		this._servletController = servletController;
+		this._client_id = client_id;
 	}
 
 	@Override
 	protected void onOpen(WsOutbound outbound)
 	{
-		servletController.addConnection(this);	
+		_servletController.addConnection(this);	
 		
-		servletController.messageClient(null,this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID,this.client_id);
+		_servletController.messageClient(null,this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID,this._client_id);
 	}
 
 	@Override
 	protected void onClose(int status)
 	{
-		servletController.removeConnection(this);
+		_servletController.removeConnection(this);
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class GeppettoMessageInbound extends MessageInbound
 		{
 			case GEPPETTO_VERSION:
 			{				
-				servletController.getVersionNumber(requestID,this);
+				_servletController.getVersionNumber(requestID,this);
 				break;
 			}
 			case INIT_URL:
@@ -124,16 +124,16 @@ public class GeppettoMessageInbound extends MessageInbound
 				URL url;
 				try {
 					url = new URL(urlString);
-					servletController.load(requestID,urlString,this);
+					_servletController.load(requestID,urlString,this);
 				} catch (MalformedURLException e) {
-					servletController.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+					_servletController.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 				}
 				break;
 			}
 			case INIT_SIM:
 			{
 				String simulation = gmsg.data;
-				servletController.load(requestID,simulation, this);
+				_servletController.load(requestID,simulation, this);
 				break;
 			}
 			case RUN_SCRIPT:
@@ -143,48 +143,48 @@ public class GeppettoMessageInbound extends MessageInbound
 				try{
 					url = new URL(urlString);
 					
-					servletController.sendScriptData(requestID,url,this);
+					_servletController.sendScriptData(requestID,url,this);
 
 				}
 				catch(MalformedURLException e){
-					servletController.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+					_servletController.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 				}				
 				break;
 			}
 			case SIM:
 			{
 				String url = gmsg.data;
-				servletController.getSimulationConfiguration(requestID,url, this);
+				_servletController.getSimulationConfiguration(requestID,url, this);
 				break;
 			}
 			case START:
 			{
-				servletController.startSimulation(requestID,this);
+				_servletController.startSimulation(requestID,this);
 				break;
 			}
 			case PAUSE:
 			{
-				servletController.pauseSimulation(requestID, this);
+				_servletController.pauseSimulation(requestID, this);
 				break;
 			}
 			case STOP:
 			{
-				servletController.stopSimulation(requestID,this);
+				_servletController.stopSimulation(requestID,this);
 				break;
 			}
 			case OBSERVE:
 			{
-				servletController.observeSimulation(requestID,this);
+				_servletController.observeSimulation(requestID,this);
 				break;
 			}
 			case LIST_WATCH_VARS:
 			{
-				servletController.listWatchableVariables(requestID,this);
+				_servletController.listWatchableVariables(requestID,this);
 				break;
 			}
 			case LIST_FORCE_VARS:
 			{
-				servletController.listForceableVariables(requestID,this);
+				_servletController.listForceableVariables(requestID,this);
 				break;
 			}
 			case SET_WATCH:
@@ -192,43 +192,34 @@ public class GeppettoMessageInbound extends MessageInbound
 				String watchListsString = gmsg.data;
 				
 				try {
-					servletController.addWatchLists(requestID,watchListsString, this);
+					_servletController.addWatchLists(requestID,watchListsString, this);
 				} catch (GeppettoExecutionException e) {
-					servletController.messageClient(requestID,this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					_servletController.messageClient(requestID,this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
 				}
 				break;
 			}
 			case GET_WATCH:
 			{				
-				servletController.getWatchLists(requestID,this);
+				_servletController.getWatchLists(requestID,this);
 				break;
 			}
 			case START_WATCH:
 			{
-				servletController.startWatch(requestID,this);
+				_servletController.startWatch(requestID,this);
 				break;
 			}
 			case STOP_WATCH:
 			{
-				servletController.stopWatch(requestID,this);
+				_servletController.stopWatch(requestID,this);
 				break;
 			}
 			case CLEAR_WATCH:
 			{
-				servletController.clearWatchLists(requestID,this);
+				_servletController.clearWatchLists(requestID,this);
 				break;
 			}
 			case NOTIFY_USER:
 			{
-				String userInfo = gmsg.data;
-				
-				String[] data = userInfo.split(",");
-				String name = data[0];
-				String email = data[1];
-				
-				servletController.addEmail(name,email);
-				
-				//TODO : Send Email via EC2 Amazon
 				break;
 			}
 			default:
@@ -239,7 +230,7 @@ public class GeppettoMessageInbound extends MessageInbound
 	}
 
 	public String getConnectionID() {
-		return client_id;
+		return _client_id;
 	}
 
 	public VisitorRunMode getCurrentRunMode(){

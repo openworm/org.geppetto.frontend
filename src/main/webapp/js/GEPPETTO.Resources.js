@@ -170,7 +170,7 @@ var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
 
 var LISTING_FORCE_VARS = "Inbound Message Received: List force variables";
 
-var SIMULATOR_UNAVAILABLE = " simulator is unavailable";
+var SIMULATOR_UNAVAILABLE = " Simulator is Unavailable";
 
 var WEBSOCKET_CONNECTION_ERROR = "Server Connection Error";
 
@@ -196,3 +196,4 @@ var COMMANDS = " commands: \n\n";
  */
 var WIDGET_CREATED = " widget created";
 var REMOVE_PLOT_WIDGETS = "Plotting widget(s) removed";
+var NON_EXISTENT_WIDGETS = "Unable to remove widgets, type doesn't exist";

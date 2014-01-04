@@ -170,7 +170,8 @@ Simulation.load = function(simulationURL)
 			}
 			GEPPETTO.MessageSocket.send("init_url", simulationURL);
 			loading = true;
-			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);			
+			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);
+			GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
 		}
 	}
 	
@@ -210,6 +211,7 @@ Simulation.loadFromContent = function(content)
 		GEPPETTO.MessageSocket.send("init_sim", content);
 		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
+		GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
 	}
 	
 	return LOADING_SIMULATION;
@@ -244,7 +246,7 @@ Simulation.isLoading = function()
 Simulation.listWatchableVariables = function()
 {
 	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_watch_vars", null));
+		GEPPETTO.MessageSocket.send("list_watch_vars", null);
 		
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_WATCH);
 		
@@ -264,7 +266,7 @@ Simulation.listWatchableVariables = function()
 Simulation.listForceableVariables = function()
 {
 	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_force_vars", null));
+		GEPPETTO.MessageSocket.send("list_force_vars", null);
 		
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_FORCE);
 		
@@ -477,7 +479,7 @@ function setSimulationLoaded()
 function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
 {
 	if(Simulation.isLoaded()){
-		GEPPETTO.MessageSocket.socket.send(messageTemplate(msg, payload));
+		GEPPETTO.MessageSocket.send(msg, payload);
 		
 		GEPPETTO.Console.debugLog(outbound_msg_log);
 		

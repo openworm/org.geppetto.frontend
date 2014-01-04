@@ -91,15 +91,20 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			GEPPETTO.SimulationContentEditor.autoFormat();
 			break;
 			//Simulation has been loaded, enable start button and remove loading panel
-		case MESSAGE_TYPE.SIMULATION_LOADED:
+		case MESSAGE_TYPE.SIMULATION_LOADED:			
 			$('#start').removeAttr('disabled');
-			$('#loadingmodal').modal('hide');
+
+			//Reads scripts received for the simulation
+			var scripts = JSON.parse(payload.get_scripts).scripts;
 			
-			if(payload.get_scripts != ""){
-				var scripts = JSON.parse(payload.get_scripts).scripts;
-			
-				GEPPETTO.ScriptRunner.setSimulationScripts(scripts);
-				GEPPETTO.ScriptRunner.fireScripts();
+			//make sure object isn't empty
+			if(!jQuery.isEmptyObject(scripts)){
+				//run the received scripts
+				GEPPETTO.ScriptRunner.fireScripts(scripts);
+			}
+			else{
+				//hide loading modal, no scripts associated with simulation
+				$('#loadingmodal').modal('hide');
 			}
 			break;
 			//Simulation has been started, enable pause button
@@ -132,8 +137,35 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			GEPPETTO.Console.log(payload.get_watch_lists);
 			break;
 		case MESSAGE_TYPE.SIMULATOR_FULL:
+			var simulatorInfo = JSON.parse(payload.simulatorFull);
+			
+			var simulatorName = simulatorInfo.simulatorName;
+			var queuePosition = simulatorInfo.queuePosition;
+			
 			GEPPETTO.FE.disableSimulationControls();
-			GEPPETTO.FE.fullSimulatorNotification(payload.simulatorName);
+			GEPPETTO.FE.fullSimulatorNotification(simulatorName, queuePosition);
+			break;
+		//Starts the watch of requested variables
+		case MESSAGE_TYPE.START_WATCH:
+			//variables watching
+			var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
+			
+			//create objects for the variables to watch
+			for(var v in variables){
+				var splitVariableName = variables[v].split(".");
+				
+				//format name of the variable
+				var name = variables[v];
+				if(splitVariableName.length > 0){
+					name = variables[v].replace(splitVariableName[0]+".", "");
+				}
+				
+				//create object with varible name and 0 as value
+				if(window[name]==null){
+					window[name] = new State(name, 0);
+					simulationStates[name] = 0;
+				}
+			}
 			break;
 		default:
 			break;

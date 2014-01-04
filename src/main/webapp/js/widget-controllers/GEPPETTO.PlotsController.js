@@ -115,6 +115,9 @@ GEPPETTO.PlotsController = {
 		 * @param plotID
 		 */
 		registerHandler : function(plotID){
+			
+			GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PlotsController);
+			
 			//registers remove handler for widget
 			$("#" +plotID).on("remove", function () {
 				//remove tags and delete object upon destroying widget
@@ -173,17 +176,6 @@ GEPPETTO.PlotsController = {
 				
 				GEPPETTO.Console.executeCommand(plotID+".setPosition(" + left +"," +  top + ")");
 			});
-			
-			$("#" +plotID).bind('dialogclose', function(event) {
-				for (p in plots)
-				{
-					if (plots[p].getId() == this.id)
-					{
-						plots[p].destroy();
-						break;
-					}
-				}
-			 });
 		},
 
 		/**
@@ -202,7 +194,9 @@ GEPPETTO.PlotsController = {
 		},
 
 		//receives updates from widget listener class
-		update : function(newData){
-			
+		update : function(event){
+			if(event == WIDGET_EVENT_TYPE.DELETE){
+				this.removePlotWidgets();
+			}
 		}
 };

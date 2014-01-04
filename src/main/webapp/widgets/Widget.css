@@ -103,6 +103,11 @@
 	border-radius: 3px;
 	background:rgba(66,59,59,0.90)!important;
 	color:white;
+	z-index : 1;
+}
+
+.ui-dialog .ui-dialog-content {
+	overflow : visible;
 }
 
 .dialog {

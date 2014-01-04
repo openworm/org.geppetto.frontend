@@ -281,7 +281,7 @@ GEPPETTO.FE.updateStopEvent = function(){
  * Update the simulation controls button's visibility after
  * user's interaction.
  */
-GEPPETTO.FE.updatePauseEnt = function(){
+GEPPETTO.FE.updatePauseEvent = function(){
 	$('#start').removeAttr('disabled');
 	$('#pause').attr('disabled', 'disabled');
 	$('#stop').removeAttr('disabled');
@@ -332,27 +332,11 @@ GEPPETTO.FE.showWelcomeMessage = function(){
 /**
  * Show Notification letting user now of full simulator
  */
-GEPPETTO.FE.fullSimulatorNotification = function(simulatorName){
+GEPPETTO.FE.fullSimulatorNotification = function(simulatorName, queuePosition){
 	
 	$('#capacityNotificationTitle').html(simulatorName + SIMULATOR_UNAVAILABLE);
 
+	$('#queuePosition').html(queuePosition);
+	
 	$('#multiUserNotification').modal(); 
-
-	$("#notifyMe").on("click", function(event){
-				
-		$('#multiUserNotification').modal('hide'); 
-		
-		var name = $('#waitingName').val();
-		var email = $('#waitingEmail').val();
-		var waitingUser = name + "," + email;
-				
-		var sendMessage = null;
-		sendMessage = setInterval(function(){
-			if(GEPPETTO.MessageSocket.isReady()){
-				GEPPETTO.MessageSocket.send("notify_user", waitingUser);		
-				clearInterval(sendMessage);
-			}
-		}, 100);
-		
-	});
 };

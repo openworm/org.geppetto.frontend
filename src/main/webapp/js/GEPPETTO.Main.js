@@ -143,5 +143,10 @@ $(document).ready(function()
 
 	GEPPETTO.Console.createConsole();
 
-	GEPPETTO.FE.checkWelcomeMessageCookie();	
+	GEPPETTO.FE.checkWelcomeMessageCookie();
+	
+	$("#share").click(function(){
+        $(".share-panel").slideToggle();
+        $(this).toggleClass("active"); return false;
+    });
 });

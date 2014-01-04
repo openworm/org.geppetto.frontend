@@ -103,8 +103,19 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 		};
 	});
 	
+	/**
+	 * Sends messages to the server
+	 */
 	GEPPETTO.MessageSocket.send = function(command, parameter){
-		GEPPETTO.MessageSocket.socket.send(messageTemplate(command, parameter));
+		
+		var requestID = GEPPETTO.MessageSocket.createRequestID();
+		
+		//if there's a script running let it know the requestID it's using to send one of it's commands
+		if(GEPPETTO.ScriptRunner.isScriptRunning()){
+			GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
+		}
+				
+		GEPPETTO.MessageSocket.socket.send(messageTemplate(requestID,command,parameter));
 	};
 	
 	GEPPETTO.MessageSocket.isReady = function(){
@@ -113,22 +124,38 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 	
 	GEPPETTO.MessageSocket.close = function(){
 		GEPPETTO.MessageSocket.socket.close();
+		//dispose of handlers upon closing connection
 		messageHandlers = [];
 	};
 	
+	/**
+	 * Add handler to receive updates from server
+	 */
 	GEPPETTO.MessageSocket.addHandler = function(handler){
 		messageHandlers.push(handler);
 	};
 	
+	/**
+	 * Removes a handler from the socket
+	 */
+	GEPPETTO.MessageSocket.removeHandler = function(handler){
+		var index = messageHandlers.indexOf(handler);
+		
+		if(index > -1 ){
+			messageHandlers.splice(index, 1);
+		}
+	};
 	
+	/**
+	 * Sets the id of the client
+	 */
 	GEPPETTO.MessageSocket.setClientID = function(id){
 		clientID = id;
 	};
 	
-	GEPPETTO.MessageSocket.getNextRequestID = function(){
-		return clientID + "-" + (nextID + 1);
-	};
-	
+	/**
+	 * Creates a request id to send with the message to the server
+	 */
 	GEPPETTO.MessageSocket.createRequestID = function(){
 		return clientID  + "-" + (nextID++);
 	};
@@ -141,7 +168,7 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 * @param payload - message payload, can be anything
 * @returns JSON stringified object
 */
-function messageTemplate(msgtype, payload) {
+function messageTemplate(id, msgtype, payload) {
         
         if (!(typeof payload == 'string' || payload instanceof String))
         {
@@ -149,9 +176,9 @@ function messageTemplate(msgtype, payload) {
         }
         
         var object = {
-            requestID : GEPPETTO.MessageSocket.createRequestID(),
+            requestID : id,
             type: msgtype,
             data: payload
-        };        
-        return JSON.stringify(object);
+        };         
+        return  JSON.stringify(object);
 };

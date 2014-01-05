@@ -86,6 +86,8 @@ public class GeppettoServletController{
 
 	private List<GeppettoMessageInbound> _observers = new ArrayList<GeppettoMessageInbound>();
 
+	private List<GeppettoMessageInbound> _queueUsers = new ArrayList<GeppettoMessageInbound>();
+	
 	private static GeppettoServletController _instance = null;
 	
 	private ISimulationCallbackListener _simulationCallbackListener;
@@ -135,6 +137,7 @@ public class GeppettoServletController{
 					String update = "{ \"simulatorName\":" + '"' +_simulationService.getSimulatorName() + 
 							'"' + ", \"queuePosition\": " + position + "}";
 
+					_queueUsers.add(newVisitor);
 					messageClient(null, newVisitor,OUTBOUND_MESSAGE_TYPES.SIMULATOR_FULL, update);
 				}
 			}
@@ -152,10 +155,11 @@ public class GeppettoServletController{
 	 * @param exitingVisitor - Connection to be removed
 	 */
 	public void removeConnection(GeppettoMessageInbound exitingVisitor){
-		_connections.remove(exitingVisitor.getConnectionID());
-
-		//Handle operations after user closes connection
-		postClosingConnectionCheck(exitingVisitor);
+		if(_connections.contains(exitingVisitor.getConnectionID())){
+			_connections.remove(exitingVisitor.getConnectionID());
+			//Handle operations after user closes connection
+			postClosingConnectionCheck(exitingVisitor);
+		}
 	}
 
 	/**
@@ -537,7 +541,8 @@ public class GeppettoServletController{
 		int simulatorCapacity = _simulationService.getSimulatorCapacity();
 		
 		if(this.getConnections().size() == simulatorCapacity){
-			
+			GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
+			messageClient(null,nextVisitorInLine,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
 		}
 		
 		/*
@@ -577,6 +582,11 @@ public class GeppettoServletController{
 			if(_observers.contains(exitingVisitor)){
 				//Remove user from observers list
 				_observers.remove(exitingVisitor);
+			}
+			//User observing simulation is closing the connection
+			if(_queueUsers.contains(exitingVisitor)){
+				//Remove user from observers list
+				_queueUsers.remove(exitingVisitor);
 			}
 		}
 	}
@@ -707,5 +717,10 @@ public class GeppettoServletController{
 		      throw new GeppettoExecutionException("could not de-serialize json");
 		   }
 		   return data;
+	}
+
+	public void disableUser(String requestID,GeppettoMessageInbound visitor) {
+		_connections.remove(visitor.getConnectionID());
+		postClosingConnectionCheck(visitor);
 	}
 }

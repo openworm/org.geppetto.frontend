@@ -52,7 +52,8 @@ public enum INBOUND_MESSAGE_TYPES {
 	START_WATCH("start_watch"),
 	STOP_WATCH("stop_watch"),
 	CLEAR_WATCH("clear_watch"),
-	NOTIFY_USER("notify_user");
+	NOTIFY_USER("notify_user"),
+	IDLE_USER("idle_user");
 
 	private INBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

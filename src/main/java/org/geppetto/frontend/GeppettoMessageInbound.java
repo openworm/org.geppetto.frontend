@@ -218,8 +218,9 @@ public class GeppettoMessageInbound extends MessageInbound
 				_servletController.clearWatchLists(requestID,this);
 				break;
 			}
-			case NOTIFY_USER:
+			case IDLE_USER:
 			{
+				_servletController.disableUser(requestID, this);
 				break;
 			}
 			default:

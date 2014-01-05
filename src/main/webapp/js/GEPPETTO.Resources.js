@@ -197,3 +197,12 @@ var COMMANDS = " commands: \n\n";
 var WIDGET_CREATED = " widget created";
 var REMOVE_PLOT_WIDGETS = "Plotting widget(s) removed";
 var NON_EXISTENT_WIDGETS = "Unable to remove widgets, type doesn't exist";
+
+/**
+ * Idle messages
+ */
+var idleMessage = "Are you still there?";
+
+var disconnectMessage = "A prolonged inactivity has been detected" +
+          " and you have been disconnected from Geppetto. Please refresh" +
+          " your browser if you wish to continue";

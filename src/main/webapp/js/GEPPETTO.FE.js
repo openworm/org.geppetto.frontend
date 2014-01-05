@@ -239,6 +239,9 @@ GEPPETTO.FE.disableSimulationControls = function()
 	$('#openload').click(function(e){return false;});
 	
 	$('#consoleButton').attr('disabled', 'disabled');
+	
+	//disable keyboard 
+	document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
 };
 
 GEPPETTO.FE.activateLoader = function(state, msg)

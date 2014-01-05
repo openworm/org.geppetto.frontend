@@ -61,6 +61,9 @@ GEPPETTO.Main.getVisitorStatus = function(){
 	return GEPPETTO.Main.status;
 };
 
+GEPPETTO.Main.idleTime = 0;
+GEPPETTO.Main.disconnected = false;
+
 /**
  * Initialize web socket communication
  */
@@ -90,6 +93,36 @@ GEPPETTO.Main.observe = function()
 	//update the UI based on success of webgl 
 	GEPPETTO.FE.update(webGLStarted);
 };
+
+function timerIncrement() {
+	if(!GEPPETTO.Main.disconnected){
+		GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
+		//first time check, asks if user is still there
+		if (GEPPETTO.Main.idleTime > 1) { // 5 minutes
+			$('#infomodal-title').html("Zzz");
+			$('#infomodal-text').html(idleMessage);
+			$('#infomodal-btn').html("Yes").click(function() {
+				$('#infomodal').modal('hide');
+				GEPPETTO.Main.idleTime = 0; 
+			});
+			$('#infomodal').modal(); 
+		}
+
+		//second check, user isn't there or didn't click yes, disconnect
+		if(GEPPETTO.Main.idleTime > 2) {
+			$('#infomodal-title').html("");
+			$('#infomodal-text').html(disconnectMessage);
+			$('#infomodal-btn').html("Ok").click(function() {
+				$('#infomodal').modal('hide');
+				GEPPETTO.Main.idleTime = 0;
+				GEPPETTO.Main.disconnected = true;
+				GEPPETTO.FE.disableSimulationControls();
+				GEPPETTO.MessageSocket.send("idle_user",null);
+			});
+			$('#infomodal').modal(); 
+		}
+	}
+}
 
 
 // ============================================================================
@@ -148,5 +181,16 @@ $(document).ready(function()
 	$("#share").click(function(){
         $(".share-panel").slideToggle();
         $(this).toggleClass("active"); return false;
+    });
+	
+	 //Increment the idle time counter every minute.
+    var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+    //Zero the idle timer on mouse movement.
+    $(this).mousemove(function (e) {
+        GEPPETTO.Main.idleTime = 0;
+    });
+    $(this).keypress(function (e) {
+        GEPPETTO.Main.idleTime = 0;
     });
 });

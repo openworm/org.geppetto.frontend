@@ -82,6 +82,7 @@ GEPPETTO.GlobalHandler = GEPPETTO.GlobalHandler ||
 			//Simulation server became available
 		case MESSAGE_TYPE.SERVER_AVAILABLE:
 			GEPPETTO.FE.infoDialog(SERVER_AVAILABLE, payload.message);
+			$("#multiUserNotification").modal('hide');
 			break;
 			//Simulation server already in use
 		case MESSAGE_TYPE.SERVER_UNAVAILABLE:

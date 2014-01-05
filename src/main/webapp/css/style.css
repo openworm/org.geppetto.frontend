@@ -412,6 +412,7 @@ input {
 
 #infomodal {
 	z-index : 9999;
+	top : 35%;
 }
 
 #infomodal .modal-body{

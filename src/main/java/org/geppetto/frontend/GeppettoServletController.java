@@ -155,7 +155,7 @@ public class GeppettoServletController{
 	 * @param exitingVisitor - Connection to be removed
 	 */
 	public void removeConnection(GeppettoMessageInbound exitingVisitor){
-		if(_connections.contains(exitingVisitor.getConnectionID())){
+		if(_connections.contains(exitingVisitor)){
 			_connections.remove(exitingVisitor.getConnectionID());
 			//Handle operations after user closes connection
 			postClosingConnectionCheck(exitingVisitor);

@@ -68,9 +68,8 @@ p {
 	height: 37px;
 	left:5px;
 	float: left;
-	bottom: 5px;
-	margin-bottom: 5px;
-	position:absolute;
+	margin-bottom: -50px;
+	position: relative;
 }
 
 @media 
@@ -559,8 +558,8 @@ input {
 }
 
 #shareTab {
-	top : 60px;
-	right : 23px;
+	bottom : 0px;
+	right : 280px;
 	position : absolute;
 	z-index : 10;
 }
@@ -569,8 +568,12 @@ input {
 	box-shadow: none;
 	text-shadow: none;
 	background: rgba(66,59,59,0.50);
+	border-radius: 0px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 	color : #fd6808;
-	width : 57px;
+	width : 55px;
+	height:32px;
 	border : 0px;
 }
 
@@ -579,7 +582,7 @@ input {
 }
 
 #geppetto-share a {
-	width: 30px;
+	width: 15px;
 }
 
 .btn:focus {
@@ -587,17 +590,17 @@ input {
 }
 
 #geppetto-share {
-	border: 1px solid #fd6808;
 	background: rgba(66, 59, 59, 0.50);
 	position: absolute;
-	top: 50px;
-	right: 10px;
+	bottom: 0px;
+	right: 280px;
 	display: none;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	width: 80px;
+	border-radius: 0px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	width: 55px;
 	height: auto;
 	filter: alpha(opacity = 85);
 	opacity: .85;
-	padding-top : 30px;
+	padding-bottom : 30px;
 }

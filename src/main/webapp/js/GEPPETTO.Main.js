@@ -94,7 +94,7 @@ GEPPETTO.Main.observe = function()
 	GEPPETTO.FE.update(webGLStarted);
 };
 
-function timerIncrement() {
+function idleCheck() {
 	if(!GEPPETTO.Main.disconnected){
 		GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 		//first time check, asks if user is still there
@@ -112,14 +112,16 @@ function timerIncrement() {
 		if(GEPPETTO.Main.idleTime > 2) {
 			$('#infomodal-title').html("");
 			$('#infomodal-text').html(disconnectMessage);
-			$('#infomodal-btn').html("Ok").click(function() {
-				$('#infomodal').modal('hide');
-				GEPPETTO.Main.idleTime = 0;
-				GEPPETTO.Main.disconnected = true;
-				GEPPETTO.FE.disableSimulationControls();
-				GEPPETTO.MessageSocket.send("idle_user",null);
-			});
+			$('#infomodal-footer').remove();
+			$('#infomodal-header').remove();
 			$('#infomodal').modal(); 
+			
+			GEPPETTO.Main.idleTime = 0;
+			GEPPETTO.Main.disconnected = true;
+			GEPPETTO.FE.disableSimulationControls();
+			GEPPETTO.MessageSocket.send("idle_user",null);
+			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+			GEPPETTO.FE.update(webGLStarted);
 		}
 	}
 }
@@ -184,7 +186,7 @@ $(document).ready(function()
     });
 	
 	 //Increment the idle time counter every minute.
-    var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+    var idleInterval = setInterval(idleCheck, 60000); // 1 minute
 
     //Zero the idle timer on mouse movement.
     $(this).mousemove(function (e) {

@@ -41,7 +41,14 @@ import java.nio.CharBuffer;
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.core.common.GeppettoExecutionException;
+import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
@@ -52,7 +59,7 @@ import com.google.gson.Gson;
  * are received in here.
  *
  */
-public class GeppettoMessageInbound extends MessageInbound
+public class GeppettoMessageInbound extends MessageInbound 
 {
 
 	/*
@@ -63,16 +70,22 @@ public class GeppettoMessageInbound extends MessageInbound
 		OBSERVING, CONTROLLING, WAITING
 	}
 
+	@Autowired
+	private ISimulation _simulationService;	
 	private GeppettoServletController _servletController;
 	private final String _client_id;
 
-	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
+	protected ApplicationContext applicationContext;
 
-	public GeppettoMessageInbound(String client_id, GeppettoServletController servletController)
+	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
+	private boolean _isSimulationLoaded;
+
+	public GeppettoMessageInbound(String client_id)
 	{
 		super();
-		this._servletController = servletController;
+		this._servletController = GeppettoServletController.getInstance();
 		this._client_id = client_id;
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);		
 	}
 
 	@Override
@@ -240,6 +253,18 @@ public class GeppettoMessageInbound extends MessageInbound
 
 	public void setVisitorRunMode(VisitorRunMode mode){
 		currentMode = mode;
+	}
+
+	public ISimulation getSimulationService(){
+		return this._simulationService;
+	}
+	
+	public boolean isSimulationLoaded(){
+		return _isSimulationLoaded;
+	}
+
+	public void setIsSimulationLoaded(boolean loaded) {
+		this._isSimulationLoaded = loaded;
 	}
 
 }

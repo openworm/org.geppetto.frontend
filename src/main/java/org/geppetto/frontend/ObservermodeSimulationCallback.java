@@ -40,16 +40,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 
-public class SimulationCallbackListener implements ISimulationCallbackListener{
+public class ObservermodeSimulationCallback implements ISimulationCallbackListener{
 
-	private static Log logger = LogFactory.getLog(SimulationCallbackListener.class);
+	private static Log logger = LogFactory.getLog(ObservermodeSimulationCallback.class);
 	
 	private GeppettoServletController controller;
+	
+	private static ObservermodeSimulationCallback _instance = null;
 
-	public SimulationCallbackListener(GeppettoServletController controller){
-		this.controller = controller;
+	public static ObservermodeSimulationCallback getInstance() {
+		if(_instance == null) {
+			_instance = new ObservermodeSimulationCallback();
+		}
+		return _instance;
 	}
 	
+	
+	protected ObservermodeSimulationCallback() {
+		controller = GeppettoServletController.getInstance();
+	}
+
 	/**
 	 * Receives update from simulation when there are new ones. 
 	 * From here the updates are send to the connected clients
@@ -73,6 +83,9 @@ public class SimulationCallbackListener implements ISimulationCallbackListener{
 
 			controller.getSimulationServerConfig().setIsSimulationLoaded(true);
 			
+			String storedScene = "{ \"entities\":" + sceneUpdate + "}";
+			
+			controller.getSimulationServerConfig().setLoadedScene(storedScene);
 		}
 
 		for (GeppettoMessageInbound connection : controller.getConnections())
@@ -83,8 +96,6 @@ public class SimulationCallbackListener implements ISimulationCallbackListener{
 			// Notify all connected clients about update either to load model or update current one.
 			controller.messageClient(null,connection, action , update);
 		}
-
-		controller.getSimulationServerConfig().setLoadedScene(sceneUpdate);
 
 		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
 	}

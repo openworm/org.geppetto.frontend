@@ -64,15 +64,15 @@ public class TestMultiUserMode {
 	@Autowired
 	private SimulationServerConfig simulationServerConfig;
 		
-	private GeppettoServlet servlet = new GeppettoServlet();
+	//private GeppettoServlet servlet = new GeppettoServlet();
 	
 	/*
 	 * Create fours connections to represent multiple visitors to geppetto
 	 */
-	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound("Visitor1", GeppettoServletController.getInstance());
-	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound("Visitor2", GeppettoServletController.getInstance());
-	private GeppettoMessageInbound connection3 = new GeppettoMessageInbound("Visitor3", GeppettoServletController.getInstance());
-	private GeppettoMessageInbound connection4 = new GeppettoMessageInbound("Visitor4", GeppettoServletController.getInstance());
+	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound("Visitor1");
+	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound("Visitor2");
+	private GeppettoMessageInbound connection3 = new GeppettoMessageInbound("Visitor3");
+	private GeppettoMessageInbound connection4 = new GeppettoMessageInbound("Visitor4");
 	
 	@Test
 	public void testInitialServerBehaviorMode(){

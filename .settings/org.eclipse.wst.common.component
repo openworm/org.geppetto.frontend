@@ -5,9 +5,9 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp/WEB-INF"/>
         <wb-resource deploy-path="/js/" source-path="/src/main/webapp/js"/>
-        <wb-resource deploy-path="/font/" source-path="/src/main/webapp/font"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/font/" source-path="/src/main/webapp/font"/>
         <property name="java-output-path" value="/org.geppetto.frontend/bin"/>
         <property name="context-root"/>
     </wb-module>

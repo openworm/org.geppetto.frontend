@@ -70,13 +70,15 @@ GEPPETTO.FE.update = function(webGLStarted)
  */
 GEPPETTO.FE.observersDialog = function(title, msg)
 {
+	
+	$('#welcomeMessageModal').modal('hide');
+
 	$('#infomodal-title').html(title);
 	$('#infomodal-text').html(msg);
 	$('#infomodal-btn').html("<i class='icon-eye-open '></i> Observe").click(function() {
 		GEPPETTO.Main.observe();
 	});
-	$('#infomodal').modal();   
-            
+	$('#infomodal').modal();         
 };
 
 /**
@@ -104,10 +106,13 @@ GEPPETTO.FE.infoDialog = function(title, msg)
  */
 GEPPETTO.FE.observersAlert = function(title, alertMsg, popoverMsg)
 {
+	
+	$('#welcomeMessageModal').modal('show');
+
 	$('#alertbox-text').html(alertMsg);
 	$('#alertbox').show();
 	$("#infopopover").popover({title: title, 
-							   content: popoverMsg});  
+							   content: popoverMsg});  	
 };
 
 /**

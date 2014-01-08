@@ -111,20 +111,6 @@
 		</div>
 
 	
-  
-		<div id="shareTab">
-			<button class="btn" id="share">
-				<icon class="icon-share icon-xlarge"></icon>
-			</button>
-		</div>
-		
-		<div id="geppetto-share" class="col-md-1 share-panel">
-            	<p>
-            	<a class="btn btn-warning" onclick="Share.facebook('http://www.geppetto.org','Experience Geppetto!','http://www.geppetto.org/images/sph9.png','')">
-            	<i class="icon-xlarge icon-facebook"></i></a></p>
-				<p><a class="btn btn-warning" onclick="Share.twitter('https://www.geppetto.org','Check out Geppetto! ')"><i class="icon-xlarge icon-twitter"></i></a></p>
-				<p><a class="btn btn-warning" href="#email"><i class="icon-xlarge icon-envelope"></i></a><p>
-       	</div>
 
 		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog">
@@ -222,10 +208,24 @@
 						Console
 					</button>
 				</div>
+
+				<div id="console">Console Loading...</div>
 			</div>
-			<div id="console">Console Loading...</div>
 		</div>
 	</div>
+	<div id="shareTab">
+		<button class="btn" id="share">
+			<icon class="icon-share icon-xlarge"></icon>
+		</button>
+	</div>
+
+	<div id="geppetto-share" class="col-md-1 share-panel">
+        	<p>
+        	<a class="btn btn-warning" onclick="Share.facebook('https://www.geppetto.org','Experience Geppetto!','http://www.geppetto.org/images/sph9.png','')">
+        	<i class="icon-xlarge icon-facebook"></i></a></p>
+			<p><a class="btn btn-warning" onclick="Share.twitter('https://www.geppetto.org','Check out Geppetto! ')"><i class="icon-xlarge icon-twitter"></i></a></p>
+			<!-- Commented until fully implemented <p><a class="btn btn-warning" href="#email"><i class="icon-xlarge icon-envelope"></i></a><p>-->
+   	</div>
 	
 	<div id="loadSimModal" class="modal hide fade" tabindex="-1"
 		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
@@ -441,6 +441,6 @@
 		/* custom configuration goes here (www.olark.com/documentation) */
 		olark.identify('3330-945-10-6280');/*]]>*/</script>
 		<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
-<!-- end olark code -->
+		<!-- end olark code -->
 </body>
 </html>

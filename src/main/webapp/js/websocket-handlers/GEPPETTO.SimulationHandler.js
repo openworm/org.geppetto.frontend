@@ -157,7 +157,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 				//format name of the variable
 				var name = variables[v];
 				if(splitVariableName.length > 0){
-					name = variables[v].replace(splitVariableName[0]+".", "");
+					name = splitVariableName[splitVariableName.length-1];
 				}
 				
 				//create object with varible name and 0 as value

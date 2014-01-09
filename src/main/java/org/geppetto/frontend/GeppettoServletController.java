@@ -317,7 +317,10 @@ public class GeppettoServletController{
             }
             scriptsJSON.add("scripts", scriptsArray);
             
-            messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, scriptsJSON.toString() );
+            //notify client if there are scripts
+            if(visitor.getSimulationService().getScripts().size() > 0 ){
+            	messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, scriptsJSON.toString() );
+            }
     }
     
 	/**

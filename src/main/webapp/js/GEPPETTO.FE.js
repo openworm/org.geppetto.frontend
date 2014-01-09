@@ -93,7 +93,7 @@ GEPPETTO.FE.observersDialog = function(title, msg)
  * @param msg - Message to display
  */
 GEPPETTO.FE.infoDialog = function(title, msg)
-{
+{	
 	$('#infomodal-title').html(title);
 	$('#infomodal-text').html(msg);
 	$('#infomodal-btn').html("OK").off('click');

@@ -57,6 +57,9 @@ GEPPETTO.Main.status = GEPPETTO.Main.StatusEnum.DEFAULT;
 
 GEPPETTO.Main.simulationFileTemplate = "resources/template.xml";
 
+var allowedTime = 1;
+var timeOut = 2;
+
 GEPPETTO.Main.getVisitorStatus = function(){
 	return GEPPETTO.Main.status;
 };
@@ -98,7 +101,7 @@ function idleCheck() {
 	if(!GEPPETTO.Main.disconnected){
 		GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 		//first time check, asks if user is still there
-		if (GEPPETTO.Main.idleTime > 1) { // 5 minutes
+		if (GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
 			$('#infomodal-title').html("Zzz");
 			$('#infomodal-text').html(idleMessage);
 			$('#infomodal-btn').html("Yes");
@@ -115,7 +118,7 @@ function idleCheck() {
 		}
 
 		//second check, user isn't there or didn't click yes, disconnect
-		if(GEPPETTO.Main.idleTime > 2) {
+		if(GEPPETTO.Main.idleTime > timeOut) {
 			$('#infomodal-title').html("");
 			$('#infomodal-text').html(disconnectMessage);
 			$('#infomodal-footer').remove();

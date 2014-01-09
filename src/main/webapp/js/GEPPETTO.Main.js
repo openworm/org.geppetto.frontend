@@ -57,8 +57,8 @@ GEPPETTO.Main.status = GEPPETTO.Main.StatusEnum.DEFAULT;
 
 GEPPETTO.Main.simulationFileTemplate = "resources/template.xml";
 
-var allowedTime = 1;
-var timeOut = 2;
+var allowedTime = 5;
+var timeOut = 6;
 
 GEPPETTO.Main.getVisitorStatus = function(){
 	return GEPPETTO.Main.status;

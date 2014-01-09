@@ -69,4 +69,5 @@ var MESSAGE_TYPE = {
 	START_WATCH : "start_watch",
 	STOP_WATCH : "stop_watch",
 	CLEAR_WATCH : "clear_watch",
+	FIRE_SIM_SCRIPTS : "fire_sim_scripts"
 };

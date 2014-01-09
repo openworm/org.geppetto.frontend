@@ -191,9 +191,7 @@ public class GeppettoServletController{
 				break;
 				default:
 					break;
-		}
-		
-		fireSimulationScripts(requestID, visitor);
+		}		
 	}
 	
 	/**
@@ -271,6 +269,7 @@ public class GeppettoServletController{
 			url = new URL(simulation);
 			//simulation is URL, initialize simulation services
 			visitor.getSimulationService().init(url, _simulationCallbackListener);
+			postLoadSimulation(requestID, visitor);
 			loaded = true;
 		}
 		 /* Unable to make url from simulation, must be simulation content.
@@ -279,6 +278,7 @@ public class GeppettoServletController{
 		catch(MalformedURLException e){
 			try {
 				visitor.getSimulationService().init(simulation, _simulationCallbackListener);
+				postLoadSimulation(requestID, visitor);
 				loaded = true;
 			} catch (GeppettoInitializationException e1) {
 				messageClient(requestID, visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
@@ -305,7 +305,10 @@ public class GeppettoServletController{
      * @param requestID - requestID received from client
      * @param visitor - Visitor loading the simulation
      */
-    private void fireSimulationScripts(String requestID, GeppettoMessageInbound visitor){
+    private void postLoadSimulation(String requestID, GeppettoMessageInbound visitor){
+    	
+    		messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+    	
             JsonObject scriptsJSON = new JsonObject();
 
             JsonArray scriptsArray = new JsonArray();
@@ -319,7 +322,7 @@ public class GeppettoServletController{
             
             //notify client if there are scripts
             if(visitor.getSimulationService().getScripts().size() > 0 ){
-            	messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, scriptsJSON.toString() );
+            	messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.FIRE_SIM_SCRIPTS, scriptsJSON.toString() );
             }
     }
     

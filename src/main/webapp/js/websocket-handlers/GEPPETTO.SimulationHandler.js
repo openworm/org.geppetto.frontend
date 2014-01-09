@@ -93,6 +93,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			//Simulation has been loaded, enable start button and remove loading panel
 		case MESSAGE_TYPE.SIMULATION_LOADED:			
 			$('#start').removeAttr('disabled');
+			$('#loadingmodal').modal('hide');
 			break;			
 		case MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
 			//Reads scripts received for the simulation

@@ -101,10 +101,16 @@ function idleCheck() {
 		if (GEPPETTO.Main.idleTime > 1) { // 5 minutes
 			$('#infomodal-title').html("Zzz");
 			$('#infomodal-text').html(idleMessage);
+			$('#infomodal-btn').html("Yes");
+			
 			$('#infomodal-btn').html("Yes").click(function() {
 				$('#infomodal').modal('hide');
 				GEPPETTO.Main.idleTime = 0; 
+				
+				//unbind click event so we can reuse same modal for other alerts
+				$('#infomodal-btn').unbind('click');
 			});
+			
 			$('#infomodal').modal(); 
 		}
 
@@ -132,6 +138,12 @@ function idleCheck() {
 // ============================================================================
 $(document).ready(function()
 {	
+	/*
+	 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows 
+	 * multiple modals to be open simultaneously without going in an infinite loop. 
+	 */
+	$.fn.modal.Constructor.prototype.enforceFocus = function () {};
+	
 	//Initialize websocket functionality
 	GEPPETTO.Main.init();
 	

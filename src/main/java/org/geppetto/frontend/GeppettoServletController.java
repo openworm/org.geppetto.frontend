@@ -143,7 +143,9 @@ public class GeppettoServletController{
 			}
 		}
 		else if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
-			if(this.getConnections().size() > newVisitor.getSimulationService().getSimulatorCapacity()){
+			int simulatorCapacity = newVisitor.getSimulationService().getSimulatorCapacity();
+			
+			if((this.getConnections().size() > simulatorCapacity) &&(simulatorCapacity>1)){
 
 				int position = (this.getConnections().size() - newVisitor.getSimulationService().getSimulatorCapacity());
 				String update = "{ \"simulatorName\":" + '"' +newVisitor.getSimulationService().getSimulatorName() + 

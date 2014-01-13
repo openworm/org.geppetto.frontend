@@ -103,7 +103,7 @@ function idleCheck() {
 		//first time check, asks if user is still there
 		if (GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
 			$('#infomodal-title').html("Zzz");
-			$('#infomodal-text').html(idleMessage);
+			$('#infomodal-text').html(IDLE_MESSAGE);
 			$('#infomodal-btn').html("Yes");
 			
 			$('#infomodal-btn').html("Yes").click(function() {
@@ -120,7 +120,7 @@ function idleCheck() {
 		//second check, user isn't there or didn't click yes, disconnect
 		if(GEPPETTO.Main.idleTime > timeOut) {
 			$('#infomodal-title').html("");
-			$('#infomodal-text').html(disconnectMessage);
+			$('#infomodal-text').html(DISCONNECT_MESSAGE);
 			$('#infomodal-footer').remove();
 			$('#infomodal-header').remove();
 			$('#infomodal').modal(); 

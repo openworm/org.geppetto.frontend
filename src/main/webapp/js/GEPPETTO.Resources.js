@@ -201,8 +201,14 @@ var NON_EXISTENT_WIDGETS = "Unable to remove widgets, type doesn't exist";
 /**
  * Idle messages
  */
-var idleMessage = "Are you still there?";
+var IDLE_MESSAGE = "Are you still there?";
 
-var disconnectMessage = "A prolonged inactivity has been detected" +
+var DISCONNECT_MESSAGE = "A prolonged inactivity has been detected" +
           " and you have been disconnected from Geppetto. Please refresh" +
           " your browser if you wish to continue";
+
+/**
+ * Socket Messages
+ */
+var SERVER_CONNECTION_ERROR = "Error communicating with Geppetto servlet. \n" +
+"Reload page if problems persits";

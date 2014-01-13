@@ -96,8 +96,7 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 		
 		//Detects problems when connecting to Geppetto server
 		GEPPETTO.MessageSocket.socket.onerror = function(evt){
-			var message = "Error communicating with Geppetto servlet \n" +
-						"Reload page if problems persits";
+			var message = SERVER_CONNECTION_ERROR;
 			
 			GEPPETTO.FE.infoDialog(WEBSOCKET_CONNECTION_ERROR, message);
 		};

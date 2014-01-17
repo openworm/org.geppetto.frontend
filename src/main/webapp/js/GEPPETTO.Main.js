@@ -125,11 +125,10 @@ $(document).ready(function()
 	{	
 		//Update the simulation controls visibility
 		GEPPETTO.FE.updateLoadEvent();
-		
+
+		var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');
 		//loading from simulation file editor's
-		if(GEPPETTO.SimulationContentEditor.isEditing()){
-			var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');;
-			
+		if(simulation){
 			GEPPETTO.Console.executeCommand("Simulation.loadFromContent('"+simulation+"')");
 			GEPPETTO.SimulationContentEditor.setEditing(false);
 		}

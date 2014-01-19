@@ -371,6 +371,8 @@ Simulation.getWatchTree = function()
  * Updates the simulation states with new watched variables
  */
 function updateSimulationWatchTree(variable){
+	var starttime=(new Date()).getTime();
+	  
 	Simulation.watchTree = variable;
 
 	tree = Simulation.watchTree.WATCH_TREE;
@@ -383,6 +385,9 @@ function updateSimulationWatchTree(variable){
 	else{
 		searchTreeArray(tree);
 	}
+	
+	var endtime=(new Date()).getTime();
+	console.log("took " + (endtime-starttime) + " to traverse tree");
 }
 
 /**

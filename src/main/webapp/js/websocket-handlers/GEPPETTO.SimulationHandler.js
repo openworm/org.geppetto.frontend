@@ -38,8 +38,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 		REVISION : '1'
 	};
 	
-var globalObject = null;
-var watchedVariables = new Object();
+var lastMessageTime=(new Date()).getTime();
 
 (function(){
 
@@ -62,6 +61,11 @@ var watchedVariables = new Object();
 			break;
 			//Event received to update the simulation
 		case MESSAGE_TYPE.SCENE_UPDATE:
+			var newMessageTime=(new Date()).getTime();
+			//testing time to compare against variable update
+			console.log("new message time " + (newMessageTime - lastMessageTime));
+			lastMessageTime = newMessageTime;
+			
             var entities = JSON.parse(payload.update).entities;
             var variables = JSON.parse(payload.update).variable_watch;
             
@@ -162,9 +166,11 @@ var watchedVariables = new Object();
 
 				splitVariableName.splice(0,1);
 				
+				//create object from variables
 				if(splitVariableName.length > 1 ){
 					var parent = splitVariableName[0];
 					
+					//get index if array
 					var index = parent.match(/ *\[[^]]*\] */g);
 
 					parent = parent.replace(/ *\[[^]]*\] */g, "");

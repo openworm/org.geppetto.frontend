@@ -153,7 +153,7 @@ GEPPETTO.PlotsController = {
 			//subscribe widget to simulation state 
 			$("#" +plotID).on("unsubscribe", function (event, param1) {
 				//param1 corresponds to simulation state, subscribe widget to it
-				window[param1].unsubscribe(window[plotID]);				
+				simulationStates[param1].unsubscribe(window[plotID]);				
 			});
 			
 			//register resize handler for widget

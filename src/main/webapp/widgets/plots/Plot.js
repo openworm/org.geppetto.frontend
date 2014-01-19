@@ -78,7 +78,12 @@ var Plot = Widget.View.extend({
 	 */
 	plotData : function(newData, options){	
 		//If no options specify by user, use default options
-		if(options != null){this.options = options;}
+		if(options != null){
+			this.options = options;
+			if(options.xaxis.max > this.limit){
+				this.limit = options.xaxis.max;
+			}
+		}
 		
 		if(newData.name != null){
 			for(var set in this.datasets){
@@ -88,11 +93,9 @@ var Plot = Widget.View.extend({
 			}
 			this.datasets.push({label : newData.name, data : [[0,newData.value]]});
 			$("#"+this.getId()).trigger("subscribe", [newData.name]);	
-			updateGrid = true;
 		}
 		else{
 			this.datasets.push({label : "", data : newData});
-			updateGrid = false;
 		}
 		
 		var plotHolder = $("#"+this.id);

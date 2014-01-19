@@ -44,6 +44,8 @@ var plotsON = false;
 
 var limit = 0;
 
+var watchedVariables = {};
+
 GEPPETTO.PlotsController = {
 
 		/**
@@ -145,7 +147,7 @@ GEPPETTO.PlotsController = {
 			//subscribe widget to simulation state 
 			$("#" +plotID).on("subscribe", function (event, param1) {
 				//param1 corresponds to simulation state, subscribe widget to it
-				window[param1].subscribe(window[plotID]);				
+				simulationStates[param1].subscribe(window[plotID]);				
 			});
 			
 			//subscribe widget to simulation state 
@@ -196,6 +198,9 @@ GEPPETTO.PlotsController = {
 		//receives updates from widget listener class
 		update : function(event){
 			if(event == WIDGET_EVENT_TYPE.DELETE){
+				this.removePlotWidgets();
+			}
+			else if(event == WIDGET_EVENT_TYPE.UPDATE_DATA){
 				this.removePlotWidgets();
 			}
 		}

@@ -356,8 +356,7 @@ Simulation.getWatchTree = function()
 	var watched_variables = WATCHED_SIMULATION_STATES + "";
 	
 	for(var key in simulationStates){
-		watched_variables +=  "\n" + "      -- " + key + "\n"
-						  + "         Value : " + simulationStates[key];
+		watched_variables +=  "\n" + "      -- " + key + "\n";
 	}
 	
 	if(Simulation.watchTree == null){
@@ -374,17 +373,42 @@ Simulation.getWatchTree = function()
 function updateSimulationWatchTree(variable){
 	Simulation.watchTree = variable;
 
-	var tree = Simulation.watchTree.WATCH_TREE;
+	tree = Simulation.watchTree.WATCH_TREE;
 	
 	//figure out what the server is returning, either an object structure 
 	// or an array 
 	if(tree.length == null){
-		searchTreeObject(tree);
+		searchTreePath(tree);
 	}
 	else{
 		searchTreeArray(tree);
 	}
 }
+
+/**
+ * Create name of variable from tree.
+ */
+function searchTreePath(a) {
+	  var list = [];
+	  (function(o, r) {
+	    r = r || '';
+	    if (typeof o != 'object') {
+	      return true;
+	    }
+	    for (var c in o) {
+	        if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
+	        	var val  = 0;
+	        	if(o[c]!=null){
+	        		val = o[c];
+	        	}
+	        	simulationStates[r + "." + c].update(val);
+	        }
+	      }
+	    return false;
+	  })(a);
+	  return list;
+	}
+
 
 /**
  * Search through array looking for simulation states
@@ -407,42 +431,27 @@ function searchTreeArray(variables){
  * Search through object structure for object with value and name
  */
 function searchTreeObject(obj){
-	    for (var prop in obj) {
-	    	var state = obj[prop];
+	    for (var name in obj) {
+	    	var value = obj[name];
 	    	
 	    	//state found, create or update its state
-	    	if(state.name != null){
-	    		updateState(state);
-	    	}
-	    	//recursively look through object structure for state
-	    	else{
-	    		searchTreeObject(state);
-	    	}
+	    	updateState(name,value);
 	    }
 }
 
 /**
  * Update or create a simulation state
  */
-function updateState(state){
-	//get name and value
-	var stateName = state.name;
-	var stateValue = state.value;
-
+function updateState(name,value){
 	//If it's a new state add to tags
-	if(!(stateName in simulationStates)){
-		addTag(stateName);
-		
-		//assign state to window object of same name
-		window[stateName] = new State(stateName, stateValue);
+	if(!(name in simulationStates)){
+		addTag(name);
 	}
 	
 	else{
-		 window[stateName].update(stateValue);
+		 var variable = simulationStates[name];
+		 variable.update(value);
 	}
-	
-	//update simulation state value
-	simulationStates[stateName] = stateValue; 
 }
 
 /**

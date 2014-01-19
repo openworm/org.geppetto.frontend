@@ -78,7 +78,12 @@ var Plot = Widget.View.extend({
 	 */
 	plotData : function(newData, options){	
 		//If no options specify by user, use default options
-		if(options != null){this.options = options;}
+		if(options != null){
+			this.options = options;
+			if(options.xaxis.max > this.limit){
+				 this.limit = options.xaxis.max;
+			}
+		}
 		
 		if(newData.name != null){
 			for(var set in this.datasets){

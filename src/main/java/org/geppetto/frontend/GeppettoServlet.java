@@ -40,12 +40,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.simulation.ISimulation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @Configurable
-public class SimulationServlet extends WebSocketServlet
+public class GeppettoServlet extends WebSocketServlet
 {
 
 	/**
@@ -53,21 +56,30 @@ public class SimulationServlet extends WebSocketServlet
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static Log logger = LogFactory.getLog(SimulationServlet.class);
-
-	private final AtomicInteger _connectionIds = new AtomicInteger(0);
-			
+	private final AtomicInteger _connectionIds = new AtomicInteger(0);		
 		
+	@Autowired
+	private ISimulation _simulationService;	
+	
+    protected ApplicationContext applicationContext;
+
 	@Override
 	protected StreamInbound createWebSocketInbound(String subProtocol, HttpServletRequest request)
 	{
 		String connectionID = "Visitor"+_connectionIds.incrementAndGet();
-		return new GeppettoMessageInbound(connectionID, SimulationListener.getInstance());
+		return new GeppettoMessageInbound(connectionID, getSimulationService());
 	}
 
 	@Override
 	public void init() throws ServletException
 	{
-		super.init();	
+		super.init();
+		//SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);		
+		this.applicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 	}
+
+	public ISimulation getSimulationService() {
+        ISimulation s =  (ISimulation) this.applicationContext.getBean("Simulation");
+        return s;
+    }
 }

@@ -68,9 +68,8 @@ p {
 	height: 37px;
 	left:5px;
 	float: left;
-	bottom: 5px;
-	margin-bottom: 5px;
-	position:absolute;
+	margin-bottom: -50px;
+	position: relative;
 }
 
 @media 
@@ -237,11 +236,15 @@ input {
 	font-weight: 200;
 }
 
-.modal-input label {
+#loadSimModal .modal-input label {
 	float: left;
 	font-weight: bold;
 	font-size: 16px;
 	margin-top: 5px;
+}
+
+#loadSimModal .modal-body {
+	overflow : visible;	
 }
 
 .btn-group .btn {
@@ -405,6 +408,12 @@ input {
 	clear: none;
 }
 
+#infomodal {
+	z-index : 9999;
+	top : 35%;
+	width : 500px;
+}
+
 #infomodal .modal-body{
 	overflow: auto;
 	max-height: 50%;
@@ -551,4 +560,70 @@ input {
 
 #welcomeMessageModal .modal-header {
 	padding : 0px;
+}
+
+#multiUserNotification .modal-header {
+	padding : 0px;
+}
+
+#capacityNotificationTitle {
+	color : darkblue;
+}
+
+#multiUserNotification label {
+	font-weight : bold;
+}
+
+#multiUserNotification{
+	opacity : 0.9;
+	width : 450px;
+	top : 35%;	
+}
+
+#shareTab {
+	bottom : 0px;
+	right : 280px;
+	position : absolute;
+	z-index : 10;
+}
+
+#share {
+	box-shadow: none;
+	text-shadow: none;
+	background: rgba(66,59,59,0.50);
+	border-radius: 0px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	color : #fd6808;
+	width : 55px;
+	height:32px;
+	border : 0px;
+}
+
+#geppetto-share p {
+	margin: 1em 0em;
+}
+
+#geppetto-share a {
+	width: 15px;
+}
+
+.btn:focus {
+	outline : none;
+}
+
+#geppetto-share {
+	background: rgba(66, 59, 59, 0.50);
+	position: absolute;
+	bottom: 0px;
+	right: 280px;
+	display: none;
+	border-radius: 0px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	width: 55px;
+	height: auto;
+	filter: alpha(opacity = 85);
+	opacity: .85;
+	padding-bottom : 30px;
 }

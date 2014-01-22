@@ -14,6 +14,7 @@
 	<!-- Add flag for Simulation Run Mode --> 
 	<bean id="config" class="org.geppetto.frontend.SimulationServerConfig"> 
 		<property name="serverBehaviorMode" value="OBSERVE" />
+		<!-- Flags used for observer mode -->
 		<property name="loadedScene" value="#{ null }" />
 		<property name="isSimulationLoaded" value="false" />
 	</bean>

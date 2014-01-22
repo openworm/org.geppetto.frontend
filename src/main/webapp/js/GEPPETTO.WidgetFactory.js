@@ -77,6 +77,7 @@ var Widgets = {
 				return REMOVE_PLOT_WIDGETS;
 				break;
 			default: 
+				return NON_EXISTENT_WIDGETS;
 				break;
 		}
 	};	

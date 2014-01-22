@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.0.8</version>
+	<version>0.0.9</version>
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
@@ -35,11 +35,16 @@
 		<dependency>
 			<groupId>org.geppetto</groupId>
 			<artifactId>core</artifactId>
-			<version>0.0.8</version>
+			<version>0.0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>org.springframework.core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.context</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
@@ -73,6 +78,11 @@
 			<version>4.5.0</version>
 			<scope>test</scope>
 		</dependency>
+<dependency>
+      <groupId>org.apache.geronimo.javamail</groupId>
+      <artifactId>geronimo-javamail_1.4_mail</artifactId>
+      <version>1.8.2</version>
+    </dependency>
 	</dependencies>
 	<build>
 

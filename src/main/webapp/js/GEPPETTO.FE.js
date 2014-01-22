@@ -69,14 +69,19 @@ GEPPETTO.FE.update = function(webGLStarted)
  * @param msg
  */
 GEPPETTO.FE.observersDialog = function(title, msg)
-{
+{	
 	$('#infomodal-title').html(title);
 	$('#infomodal-text').html(msg);
 	$('#infomodal-btn').html("<i class='icon-eye-open '></i> Observe").click(function() {
 		GEPPETTO.Main.observe();
+		
+		//unbind click event so we can reuse same modal for other alerts
+		$('#infomodal-btn').unbind('click');
 	});
-	$('#infomodal').modal();   
-            
+	$('#infomodal').modal();         
+	
+	//black out welcome message 
+	$('#welcomeMessageModal').css('opacity', '0.0');
 };
 
 /**
@@ -88,7 +93,7 @@ GEPPETTO.FE.observersDialog = function(title, msg)
  * @param msg - Message to display
  */
 GEPPETTO.FE.infoDialog = function(title, msg)
-{
+{	
 	$('#infomodal-title').html(title);
 	$('#infomodal-text').html(msg);
 	$('#infomodal-btn').html("OK").off('click');
@@ -104,10 +109,14 @@ GEPPETTO.FE.infoDialog = function(title, msg)
  */
 GEPPETTO.FE.observersAlert = function(title, alertMsg, popoverMsg)
 {
+	//if welcome message is open, return normal opacity after user clicked observed
+	if(($('#welcomeMessageModal').hasClass('in'))){
+		$('#welcomeMessageModal').css('opacity', '1.0');
+	}
 	$('#alertbox-text').html(alertMsg);
 	$('#alertbox').show();
 	$("#infopopover").popover({title: title, 
-							   content: popoverMsg});  
+							   content: popoverMsg});  	
 };
 
 /**
@@ -239,6 +248,9 @@ GEPPETTO.FE.disableSimulationControls = function()
 	$('#openload').click(function(e){return false;});
 	
 	$('#consoleButton').attr('disabled', 'disabled');
+	
+	//disable keyboard 
+	document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
 };
 
 GEPPETTO.FE.activateLoader = function(state, msg)
@@ -308,7 +320,7 @@ GEPPETTO.FE.checkWelcomeMessageCookie = function(){
  * Show Welcome Message window.
  */
 GEPPETTO.FE.showWelcomeMessage = function(){
-	$('#welcomeMessageModal').modal(); 
+	$('#welcomeMessageModal').modal('show'); 
 
 	//Closes welcome modal window when pressing enter
 	$('#welcomeMessageModal').keydown(function(event){
@@ -327,4 +339,16 @@ GEPPETTO.FE.showWelcomeMessage = function(){
 	$("#welcomeMsgCookie").on("click", function(event){
         	 $(this).toggleClass('checked');
 	});
+};
+
+/**
+ * Show Notification letting user now of full simulator
+ */
+GEPPETTO.FE.fullSimulatorNotification = function(simulatorName, queuePosition){
+	
+	$('#capacityNotificationTitle').html(simulatorName + SIMULATOR_UNAVAILABLE);
+
+	$('#queuePosition').html(queuePosition);
+	
+	$('#multiUserNotification').modal(); 
 };

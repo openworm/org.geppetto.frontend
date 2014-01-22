@@ -58,6 +58,10 @@ GEPPETTO.GlobalHandler = GEPPETTO.GlobalHandler ||
 			break;
 			//Error loading simulation, invalid url or simulation file 
 		case MESSAGE_TYPE.ERROR_LOADING_SIM:
+			//if welcome message is open, return normal opacity after user clicked observed
+			if(($('#welcomeMessageModal').hasClass('in'))){
+				$('#welcomeMessageModal').modal('hide');
+			}
 			$('#loadingmodal').modal('hide');
 			$('#start').attr('disabled', 'disabled');
 			GEPPETTO.FE.infoDialog(INVALID_SIMULATION_FILE, payload.message);
@@ -81,10 +85,19 @@ GEPPETTO.GlobalHandler = GEPPETTO.GlobalHandler ||
 			break;
 			//Simulation server became available
 		case MESSAGE_TYPE.SERVER_AVAILABLE:
+			//if welcome message is open, return normal opacity after user clicked observed
+			if(($('#welcomeMessageModal').hasClass('in'))){
+				$('#welcomeMessageModal').modal('hide');
+			}
 			GEPPETTO.FE.infoDialog(SERVER_AVAILABLE, payload.message);
+			$("#multiUserNotification").modal('hide');
 			break;
 			//Simulation server already in use
 		case MESSAGE_TYPE.SERVER_UNAVAILABLE:
+			//if welcome message is open, return normal opacity after user clicked observed
+			if(($('#welcomeMessageModal').hasClass('in'))){
+				$('#welcomeMessageModal').modal('hide');
+			}
 			GEPPETTO.FE.disableSimulationControls();
 			GEPPETTO.FE.observersDialog(SERVER_UNAVAILABLE, payload.message);
 			break;

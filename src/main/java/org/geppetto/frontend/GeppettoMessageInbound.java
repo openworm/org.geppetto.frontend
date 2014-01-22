@@ -41,7 +41,14 @@ import java.nio.CharBuffer;
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.core.common.GeppettoExecutionException;
+import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
@@ -52,7 +59,7 @@ import com.google.gson.Gson;
  * are received in here.
  *
  */
-public class GeppettoMessageInbound extends MessageInbound
+public class GeppettoMessageInbound extends MessageInbound 
 {
 
 	/*
@@ -60,33 +67,38 @@ public class GeppettoMessageInbound extends MessageInbound
 	 * the simulation
 	 */
 	public enum VisitorRunMode {
-		OBSERVING, CONTROLLING
+		OBSERVING, CONTROLLING, WAITING
 	}
 
-	private SimulationListener simulationListener;
-	private final String client_id;
+	private ISimulation _simulationService;	
+	private GeppettoServletController _servletController;
+	private final String _client_id;
+
+	protected ApplicationContext applicationContext;
 
 	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
+	private boolean _isSimulationLoaded;
 
-	public GeppettoMessageInbound(String client_id, SimulationListener listener)
+	public GeppettoMessageInbound(String client_id, ISimulation simulationService)
 	{
 		super();
-		this.client_id = client_id;
-		simulationListener = listener;
+		this._servletController = GeppettoServletController.getInstance();
+		this._client_id = client_id;
+		this._simulationService = simulationService;
 	}
 
 	@Override
 	protected void onOpen(WsOutbound outbound)
 	{
-		simulationListener.addConnection(this);	
+		_servletController.addConnection(this);	
 		
-		simulationListener.messageClient(null,this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID,this.client_id);
+		_servletController.messageClient(null,this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID,this._client_id);
 	}
 
 	@Override
 	protected void onClose(int status)
 	{
-		simulationListener.removeConnection(this);
+		_servletController.removeConnection(this);
 	}
 
 	@Override
@@ -115,7 +127,7 @@ public class GeppettoMessageInbound extends MessageInbound
 		{
 			case GEPPETTO_VERSION:
 			{				
-				simulationListener.getVersionNumber(requestID,this);
+				_servletController.getVersionNumber(requestID,this);
 				break;
 			}
 			case INIT_URL:
@@ -124,16 +136,16 @@ public class GeppettoMessageInbound extends MessageInbound
 				URL url;
 				try {
 					url = new URL(urlString);
-					simulationListener.initializeSimulation(requestID,url,this);
+					_servletController.load(requestID,urlString,this);
 				} catch (MalformedURLException e) {
-					simulationListener.messageClient(requestID, this,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+					_servletController.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 				}
 				break;
 			}
 			case INIT_SIM:
 			{
 				String simulation = gmsg.data;
-				simulationListener.initializeSimulation(requestID,simulation, this);
+				_servletController.load(requestID,simulation, this);
 				break;
 			}
 			case RUN_SCRIPT:
@@ -143,49 +155,48 @@ public class GeppettoMessageInbound extends MessageInbound
 				try{
 					url = new URL(urlString);
 					
-					simulationListener.sendScriptData(requestID,url,this);
+					_servletController.sendScriptData(requestID,url,this);
 
 				}
 				catch(MalformedURLException e){
-					simulationListener.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
-				}
-				
+					_servletController.messageClient(requestID,this,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+				}				
 				break;
 			}
 			case SIM:
 			{
 				String url = gmsg.data;
-				simulationListener.getSimulationConfiguration(requestID,url, this);
+				_servletController.getSimulationConfiguration(requestID,url, this);
 				break;
 			}
 			case START:
 			{
-				simulationListener.startSimulation(requestID,this);
+				_servletController.startSimulation(requestID,this);
 				break;
 			}
 			case PAUSE:
 			{
-				simulationListener.pauseSimulation(requestID,this);
+				_servletController.pauseSimulation(requestID, this);
 				break;
 			}
 			case STOP:
 			{
-				simulationListener.stopSimulation(requestID,this);
+				_servletController.stopSimulation(requestID,this);
 				break;
 			}
 			case OBSERVE:
 			{
-				simulationListener.observeSimulation(requestID,this);
+				_servletController.observeSimulation(requestID,this);
 				break;
 			}
 			case LIST_WATCH_VARS:
 			{
-				simulationListener.listWatchableVariables(requestID,this);
+				_servletController.listWatchableVariables(requestID,this);
 				break;
 			}
 			case LIST_FORCE_VARS:
 			{
-				simulationListener.listForceableVariables(requestID,this);
+				_servletController.listForceableVariables(requestID,this);
 				break;
 			}
 			case SET_WATCH:
@@ -193,30 +204,35 @@ public class GeppettoMessageInbound extends MessageInbound
 				String watchListsString = gmsg.data;
 				
 				try {
-					simulationListener.addWatchLists(requestID,watchListsString, this);
+					_servletController.addWatchLists(requestID,watchListsString, this);
 				} catch (GeppettoExecutionException e) {
-					simulationListener.messageClient(requestID,this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					_servletController.messageClient(requestID,this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
 				}
 				break;
 			}
 			case GET_WATCH:
 			{				
-				simulationListener.getWatchLists(requestID,this);
+				_servletController.getWatchLists(requestID,this);
 				break;
 			}
 			case START_WATCH:
 			{
-				simulationListener.startWatch(requestID,this);
+				_servletController.startWatch(requestID,this);
 				break;
 			}
 			case STOP_WATCH:
 			{
-				simulationListener.stopWatch(requestID,this);
+				_servletController.stopWatch(requestID,this);
 				break;
 			}
 			case CLEAR_WATCH:
 			{
-				simulationListener.clearWatchLists(requestID,this);
+				_servletController.clearWatchLists(requestID,this);
+				break;
+			}
+			case IDLE_USER:
+			{
+				_servletController.disableUser(requestID, this);
 				break;
 			}
 			default:
@@ -227,7 +243,7 @@ public class GeppettoMessageInbound extends MessageInbound
 	}
 
 	public String getConnectionID() {
-		return client_id;
+		return _client_id;
 	}
 
 	public VisitorRunMode getCurrentRunMode(){
@@ -236,6 +252,18 @@ public class GeppettoMessageInbound extends MessageInbound
 
 	public void setVisitorRunMode(VisitorRunMode mode){
 		currentMode = mode;
+	}
+
+	public ISimulation getSimulationService(){
+		return this._simulationService;
+	}
+	
+	public boolean isSimulationLoaded(){
+		return _isSimulationLoaded;
+	}
+
+	public void setIsSimulationLoaded(boolean loaded) {
+		this._isSimulationLoaded = loaded;
 	}
 
 }

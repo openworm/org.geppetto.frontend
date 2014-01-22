@@ -38,12 +38,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.CharBuffer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,7 +51,6 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.model.VariableList;
 import org.geppetto.core.data.model.WatchList;
-import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
@@ -65,40 +61,45 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
  * Class that handles the Web Socket connections the servlet is receiving.
  * 
+ * 
  * @author  Jesus R. Martinez (jesus@metacell.us)
  *
  */
-public class SimulationListener implements ISimulationCallbackListener {
+public class GeppettoServletController{
 
-	private static Log logger = LogFactory.getLog(SimulationListener.class);
-
+	private static Log _logger = LogFactory.getLog(GeppettoServletController.class);
+	
 	@Autowired
-	private ISimulation simulationService;
-
-	@Autowired
-	private SimulationServerConfig simulationServerConfig;
+	private SimulationServerConfig _simulationServerConfig;	
+	
+	private static GeppettoServletController _instance = null;
+	
+	private ISimulationCallbackListener _simulationCallbackListener;
 
 	private final ConcurrentHashMap<String, GeppettoMessageInbound> _connections = new ConcurrentHashMap<String, GeppettoMessageInbound>();
 
-	private List<GeppettoMessageInbound> observers = new ArrayList<GeppettoMessageInbound>();
+	private List<GeppettoMessageInbound> _queueUsers = new ArrayList<GeppettoMessageInbound>();
 
-	private static SimulationListener instance = null;
+	private List<GeppettoMessageInbound> _observers = new ArrayList<GeppettoMessageInbound>();
 
-	protected SimulationListener(){
-		//Access SimulationService via spring injection of autowired dependencies
-		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+	private boolean _simulationInUse = false; 
+
+	protected GeppettoServletController(){
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);		
+
 	}
-
-	public static SimulationListener getInstance() {
-		if(instance == null) {
-			instance = new SimulationListener();
+	
+	public static GeppettoServletController getInstance() {
+		if(_instance == null) {
+			_instance = new GeppettoServletController();
 		}
-		return instance;
+		return _instance;
 	}
 
 	/**
@@ -107,31 +108,58 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param newVisitor - New connection to be added to current ones
 	 */
 	public void addConnection(GeppettoMessageInbound newVisitor){
-		_connections.put(newVisitor.getConnectionID(), newVisitor);
-
-		//Simulation is being used, notify new user controls are unavailable
-		if(isSimulationInUse()){
-			simulationControlsUnavailable(newVisitor);
-		}
-		//Simulation not in use, notify client is safe to read and load
-		//any simulation file embedded in url
-		else{
-			messageClient(null,newVisitor, OUTBOUND_MESSAGE_TYPES.READ_URL_PARAMETERS);
-		}
+		 _connections.put(newVisitor.getConnectionID(), newVisitor);
+         
+		performStartUpCheck(newVisitor);
 	}
-
+	
 	/**
 	 * Remove connection from list of current ones.
 	 * 
 	 * @param exitingVisitor - Connection to be removed
 	 */
 	public void removeConnection(GeppettoMessageInbound exitingVisitor){
-		_connections.remove(exitingVisitor.getConnectionID());
-
-		//Handle operations after user closes connection
-		postClosingConnectionCheck(exitingVisitor);
+		if(_connections.contains(exitingVisitor)){
+			_connections.remove(exitingVisitor.getConnectionID());
+			//Handle operations after user closes connection
+			postClosingConnectionCheck(exitingVisitor);
+		}
 	}
+	
+	/**
+	 * Performs start up check when new connection is established. 
+	 * 
+	 * @param newVisitor - New visitor 
+	 */
+	private void performStartUpCheck(GeppettoMessageInbound newVisitor) {
 
+		if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.OBSERVE){
+			//Simulation is being used, notify new user controls are unavailable
+			if(isSimulationInUse()){
+				simulationControlsUnavailable(newVisitor);
+			}
+			else{
+				messageClient(null,newVisitor, OUTBOUND_MESSAGE_TYPES.READ_URL_PARAMETERS);
+			}
+		}
+		else if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
+			int simulatorCapacity = newVisitor.getSimulationService().getSimulatorCapacity();
+			
+			if((this.getConnections().size() > simulatorCapacity) &&(simulatorCapacity>1)){
+
+				int position = (this.getConnections().size() - newVisitor.getSimulationService().getSimulatorCapacity());
+				String update = "{ \"simulatorName\":" + '"' +newVisitor.getSimulationService().getSimulatorName() + 
+						'"' + ", \"queuePosition\": " + position + "}";
+
+				_queueUsers.add(newVisitor);
+				messageClient(null, newVisitor,OUTBOUND_MESSAGE_TYPES.SIMULATOR_FULL, update);
+			}
+			else{
+				messageClient(null,newVisitor, OUTBOUND_MESSAGE_TYPES.READ_URL_PARAMETERS);
+			}
+		}
+	}	
+	
 	/**
 	 * Return all the current web socket connections
 	 * 
@@ -143,155 +171,170 @@ public class SimulationListener implements ISimulationCallbackListener {
 	}
 
 	/**
-	 * Initialize simulation with URL of model to load and listener
+	 * Attempt to load simulation
 	 * 
-	 * @param url - model to simulate
+	 * @param simulation - Simulation to load
+	 * @param visitor - Visitor doing the loading
 	 */
-	public void initializeSimulation(String requestID, URL url, GeppettoMessageInbound visitor){
-		try
-		{		
-			JsonObject scriptsJSON = new JsonObject();
-
+	public void load(String requestID, String simulation, GeppettoMessageInbound visitor){
+		
+		//Determine current mode of Geppetto
+		switch(_simulationServerConfig.getServerBehaviorMode()){
+			//Handle multi user mode
+			case MULTIUSER:
+				_simulationCallbackListener = new MultiuserSimulationCallback(visitor);
+				loadInMultiUserMode(requestID, simulation, visitor);
+				break;
+				
+			//Handle observe mode
+			case OBSERVE:
+				_simulationCallbackListener = ObservermodeSimulationCallback.getInstance();
+				loadInObserverMode(requestID, simulation, visitor);
+				break;
+				default:
+					break;
+		}		
+	}
+	
+	/**
+	 * Handle multiuser mode 
+	 *  
+	 * @param simulation - Simulation to be loaded
+	 * @param visitor - Visitor doing the loading of simulation
+	 */
+	private void loadInMultiUserMode(String requestID, String simulation, GeppettoMessageInbound visitor){
+		visitor.setIsSimulationLoaded(false);
+		loadSimulation(requestID, simulation, visitor);
+	}
+	
+	/**
+	 * Handle observer mode 
+	 *  
+	 * @param simulation - Simulation to be loaded
+	 * @param visitor - Visitor doing the loading of simulation
+	 */
+	private void loadInObserverMode(String requestID, String simulation, GeppettoMessageInbound visitor){
+		//Simulation already in use
+		if(isSimulationInUse()){
 			switch(visitor.getCurrentRunMode()){
-
-			//User in control attempting to load another simulation
-			case CONTROLLING:
-				
-				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoMessageInbound observer : observers){
-					messageClient(requestID,observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
-				}
-				
-				simulationServerConfig.setIsSimulationLoaded(false);
-				//load another simulation
-				simulationService.init(url, this);
-
-				for(URL scriptURL : simulationService.getScripts()){						
-					scriptsJSON.addProperty("script", scriptURL.toString());
-				}
-				
-				messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, "{ \"scripts\":" + scriptsJSON.toString() + "}");
-				
-				break;
-
-			default:
-				/*
-				 * Default user can only initialize it if it's not already in use.
-				 * 
-				 */
-				if(!isSimulationInUse()){
-					simulationServerConfig.setIsSimulationLoaded(false);
-					simulationService.init(url, this);
-					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
-					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
-
-					//Simulation just got someone to control it, notify everyone else
-					//connected that simulation controls are unavailable.
-					for(GeppettoMessageInbound connection : getConnections()){
-						if(connection != visitor){
-							simulationControlsUnavailable(connection);
-						}
+				//user attempting load is already in control of simulation servlet
+				case CONTROLLING:
+					_simulationServerConfig.setIsSimulationLoaded(false);
+					//Clear canvas of users connected for new model to be loaded
+					for(GeppettoMessageInbound observer : _observers){
+						messageClient(null,observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
 					}
-
-					for(URL scriptURL : simulationService.getScripts()){						
-						scriptsJSON.addProperty("script", scriptURL.toString());
-					}
-					
-					messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, "{ \"scripts\":" + scriptsJSON.toString() + "}");
-				}
-				else{
+					loadSimulation(requestID, simulation, visitor);
+					break;
+				case WAITING:	
+					//Do Nothing
+					break;
+				//user attempting to load can't do so since it's not user in control
+				case OBSERVING:
 					simulationControlsUnavailable(visitor);
-				}
-				break;
+					break;
 			}
 		}
-		//Catch any errors happening while attempting to read simulation
-		catch (GeppettoInitializationException e) {
-			messageClient(requestID,visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+		//simulation not in use 
+		else{
+			_simulationServerConfig.setIsSimulationLoaded(false);
+
+			//load simulation
+			_simulationInUse = loadSimulation(requestID, simulation, visitor);
+			
+			//Simulation just got someone to control it, notify everyone else
+			//connected that simulation controls are unavailable.
+			for(GeppettoMessageInbound connection : getConnections()){
+				if(connection != visitor){
+					simulationControlsUnavailable(connection);
+				}
+			}
 		}
 	}
 	
-	//TODO: Merge repeated code in above and below method for initializing simulations.
 	/**
-	 * Different way to initialize simulation using JSON object instead of URL.
-	 *
-	 * @param simulation
-	 * @param visitor
+	 * Load simulation 
+	 * 
+	 * @param simulation - Simulation to load
+	 * @param visitor - Visitor doing the loading of simulation
+	 * 
+	 * @return {boolean} - Success or failure
 	 */
-	public void initializeSimulation(String requestID, String simulation, GeppettoMessageInbound visitor){
+	private boolean loadSimulation(String requestID, String simulation, GeppettoMessageInbound visitor){
 		
-		JsonObject scriptsJSON = new JsonObject();
+		boolean loaded = false;
 		
-		try
-		{			
-			switch(visitor.getCurrentRunMode()){
-
-			//User in control attempting to load another simulation
-			case CONTROLLING:
-				
-				//Clear canvas of users connected for new model to be loaded
-				for(GeppettoMessageInbound observer : observers){
-					messageClient(requestID, observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
-				}
-				
-				simulationServerConfig.setIsSimulationLoaded(false);
-				//load another simulation
-				simulationService.init(simulation, this);
-
-				for(URL scriptURL : simulationService.getScripts()){						
-					scriptsJSON.addProperty("script", scriptURL.toString());
-				}
-				
-				messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, "{ \"scripts\":" + scriptsJSON.toString() + "}");
-				
-				break;
-
-			default:
-				/*
-				 * Default user can only initialize it if it's not already in use.
-				 * 
-				 */
-				if(!isSimulationInUse()){
-					simulationServerConfig.setIsSimulationLoaded(false);
-					simulationService.init(simulation, this);
-					simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.CONTROLLED);
-					visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
-
-					//Simulation just got someone to control it, notify everyone else
-					//connected that simulation controls are unavailable.
-					for(GeppettoMessageInbound connection : getConnections()){
-						if(connection != visitor){
-							simulationControlsUnavailable(connection);
-						}
-					}
-
-					for(URL scriptURL : simulationService.getScripts()){						
-						scriptsJSON.addProperty("script", scriptURL.toString());
-					}
-					
-					messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED, "{ \"scripts\":" + scriptsJSON.toString() + "}");
-					
-				}
-				else{
-					simulationControlsUnavailable(visitor);
-				}
-				break;
+		URL url = null;
+		
+		//attempt to convert simulation to URL
+		try{
+			url = new URL(simulation);
+			//simulation is URL, initialize simulation services
+			visitor.getSimulationService().init(url, _simulationCallbackListener);
+			postLoadSimulation(requestID, visitor);
+			loaded = true;
+		}
+		 /* Unable to make url from simulation, must be simulation content.
+		  * URL validity checked in GeppettoMessageInbound prior to call here
+		 */
+		catch(MalformedURLException e){
+			try {
+				visitor.getSimulationService().init(simulation, _simulationCallbackListener);
+				postLoadSimulation(requestID, visitor);
+				loaded = true;
+			} catch (GeppettoInitializationException e1) {
+				messageClient(requestID, visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+				loaded = false;
 			}
-		}
-		//Catch any errors happening while attempting to read simulation
-		catch (GeppettoInitializationException e) {
+		} catch (GeppettoInitializationException e) {
 			messageClient(requestID,visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+			loaded = false;
 		}
+		
+		//set user as controlling
+		visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
+		
+		return loaded;
 	}
+	
+	public SimulationServerConfig getSimulationServerConfig() {
+		return _simulationServerConfig;
+	}
+	
+	/**
+     * Runs scripts that are specified in the simulation 
+     * 
+     * @param requestID - requestID received from client
+     * @param visitor - Visitor loading the simulation
+     */
+    private void postLoadSimulation(String requestID, GeppettoMessageInbound visitor){
+    	
+    		messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+    	
+            JsonObject scriptsJSON = new JsonObject();
 
+            JsonArray scriptsArray = new JsonArray();
+            for(URL scriptURL : visitor.getSimulationService().getScripts()){        
+                    JsonObject script = new JsonObject();
+                    script.addProperty("script", scriptURL.toString());
 
+                    scriptsArray.add(script);
+            }
+            scriptsJSON.add("scripts", scriptsArray);
+            
+            //notify client if there are scripts
+            if(visitor.getSimulationService().getScripts().size() > 0 ){
+            	messageClient(requestID,visitor, OUTBOUND_MESSAGE_TYPES.FIRE_SIM_SCRIPTS, scriptsJSON.toString() );
+            }
+    }
+    
 	/**
 	 * Start the simulation
 	 */
 	public void startSimulation(String requestID,GeppettoMessageInbound controllingUser){
 		try
 		{
-			simulationService.start();
+			controllingUser.getSimulationService().start();
 			//notify user simulation has started
 			messageClient(requestID,controllingUser,OUTBOUND_MESSAGE_TYPES.SIMULATION_STARTED);
 		}
@@ -307,7 +350,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	public void pauseSimulation(String requestID,GeppettoMessageInbound controllingUser){
 		try
 		{
-			simulationService.pause();
+			controllingUser.getSimulationService().pause();
 			//notify user simulation has been paused
 			messageClient(requestID,controllingUser,OUTBOUND_MESSAGE_TYPES.SIMULATION_PAUSED);
 		}
@@ -323,7 +366,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	public void stopSimulation(String requestID,GeppettoMessageInbound controllingUser){
 		try
 		{
-			simulationService.stop();
+			controllingUser.getSimulationService().stop();
 			//notify user simulation has been stopped
 			messageClient(requestID,controllingUser,OUTBOUND_MESSAGE_TYPES.SIMULATION_STOPPED);
 		}
@@ -339,11 +382,11 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @param observingVisitor - Geppetto visitor joining list of simulation observers
 	 */
 	public void observeSimulation(String requestID, GeppettoMessageInbound observingVisitor){		
-		observers.add(observingVisitor);
+		_observers.add(observingVisitor);
 
 		observingVisitor.setVisitorRunMode(VisitorRunMode.OBSERVING);
 
-		if(!simulationService.isRunning()){
+		if(!observingVisitor.getSimulationService().isRunning()){
 			messageClient(requestID,observingVisitor,OUTBOUND_MESSAGE_TYPES.LOAD_MODEL, getSimulationServerConfig().getLoadedScene());
 		}
 		//Notify visitor they are now in Observe Mode
@@ -354,39 +397,39 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * Request list of watchable variables for the simulation
 	 * @throws JsonProcessingException 
 	 */
-	public void listWatchableVariables(String requestID, GeppettoMessageInbound connection) throws JsonProcessingException{		
+	public void listWatchableVariables(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException{		
 		// get watchable variables for the entire simulation
-		VariableList vars = this.simulationService.listWatchableVariables();
+		VariableList vars = visitor.getSimulationService().listWatchableVariables();
 		
 		// serialize
 		ObjectMapper mapper = new ObjectMapper();
 		String serializedVars = mapper.writer().writeValueAsString(vars);
 		
 		// message the client with results
-		this.messageClient(requestID, connection, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, serializedVars);
+		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, serializedVars);
 	}
 	
 	/**
 	 * Request list of forceable variables for the simulation
 	 * @throws JsonProcessingException 
 	 */
-	public void listForceableVariables(String requestID, GeppettoMessageInbound connection) throws JsonProcessingException{		
+	public void listForceableVariables(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException{		
 		// get forceable variables for the entire simulation
-		VariableList vars = simulationService.listForceableVariables();
+		VariableList vars = visitor.getSimulationService().listForceableVariables();
 		
 		// serialize
 		ObjectMapper mapper = new ObjectMapper();
 		String serializedVars = mapper.writer().writeValueAsString(vars);
 		
 		// message the client with results
-		this.messageClient(requestID, connection, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, serializedVars);
+		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, serializedVars);
 	}
 	
 	/**
 	 * Adds watch lists with variables to be watched
 	 * @throws GeppettoExecutionException 
 	 */
-	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound connection) throws GeppettoExecutionException{
+	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException{
 		List<WatchList> lists = null;
 		
 		try {
@@ -398,44 +441,63 @@ public class SimulationListener implements ISimulationCallbackListener {
 		// TODO: do a check that variables with those names actually exists for the current simulation
 		// TODO: throw exception if not
 		
-		simulationService.addWatchLists(lists);
+		visitor.getSimulationService().addWatchLists(lists);
+		
+		// message the client the watch lists were added
+        messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS);
 	}
 	
 	/**
 	 * instructs simulation to start sending watched variables value to the client 
 	 * @param requestID 
+	 * @throws JsonProcessingException 
 	 */
-	public void startWatch(String requestID, GeppettoMessageInbound connection){		
-		simulationService.startWatch();
+	public void startWatch(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException{		
+		visitor.getSimulationService().startWatch();
+
+		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
+
+		// serialize watch-lists
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedLists = mapper.writer().writeValueAsString(watchLists);
+
+		// message the client the watch lists were started
+		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.START_WATCH, serializedLists);
 	}
 	
 	/**
 	 * instructs simulation to stop sending watched variables value to the client 
 	 */
-	public void stopWatch(String requestID, GeppettoMessageInbound connection){		
-		simulationService.stopWatch();
+	public void stopWatch(String requestID, GeppettoMessageInbound visitor){		
+		visitor.getSimulationService().stopWatch();
+		
+		 // message the client the watch lists were stopped
+		 messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.STOP_WATCH);
 	}
 	
 	/**
 	 * instructs simulation to clear watch lists 
 	 */
-	public void clearWatchLists(String requestID, GeppettoMessageInbound connection){		
-		simulationService.clearWatchLists();
+	public void clearWatchLists(String requestID, GeppettoMessageInbound visitor){		
+		visitor.getSimulationService().clearWatchLists();
+		
+		// message the client the watch lists were cleared
+		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.CLEAR_WATCH);
 	}
 	
 	/**
 	 * Get simulation watch lists 
 	 * @throws JsonProcessingException 
 	 */
-	public void getWatchLists(String requestID, GeppettoMessageInbound connection) throws JsonProcessingException{		
-		List<WatchList> watchLists = simulationService.getWatchLists();
+	public void getWatchLists(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException{		
+		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
 		
 		// serialize watch-lists
 		ObjectMapper mapper = new ObjectMapper();
 		String serializedLists = mapper.writer().writeValueAsString(watchLists);
 		
 		// message the client with results
-		this.messageClient(requestID, connection, OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS, serializedLists);
+		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS, serializedLists);
 	} 
 
 	/**
@@ -448,7 +510,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 	{	
 		messageClient(null,visitor,OUTBOUND_MESSAGE_TYPES.SERVER_UNAVAILABLE);
 	}
-
+	
 	/**
 	 * On closing a client connection (WebSocket Connection), 
 	 * perform check to see if user leaving was the one in control 
@@ -458,20 +520,26 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 */
 	public void postClosingConnectionCheck(GeppettoMessageInbound exitingVisitor){
 
+		if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
+			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulatorCapacity();
+
+			if(this.getConnections().size() == simulatorCapacity){
+				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
+				messageClient(null,nextVisitorInLine,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
+			}
+		}
+		
 		/*
 		 * If the exiting visitor was running the simulation, notify all the observing
 		 * visitors that the controls for the simulation became available
 		 */
 		if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING){
 
-			//Simulation no longer in use since controlling user is leaving
-			simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
-
 			//Controlling user is leaving, but simulation might still be running. 
 			try{
-				if(simulationService.isRunning()){
+				if(exitingVisitor.getSimulationService().isRunning()){
 					//Pause running simulation upon controlling user's exit
-					simulationService.stop();
+					exitingVisitor.getSimulationService().stop();
 				}
 			}
 			catch (GeppettoExecutionException e) {
@@ -479,11 +547,13 @@ public class SimulationListener implements ISimulationCallbackListener {
 			}
 
 			//Notify all observers
-			for(GeppettoMessageInbound visitor : observers){
+			for(GeppettoMessageInbound visitor : _observers){
 				//visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
 				//send message to alert client of server availability
 				messageClient(null,visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
 			}
+			
+			_simulationInUse = false;
 
 		}			
 
@@ -492,14 +562,15 @@ public class SimulationListener implements ISimulationCallbackListener {
 		 * visitor from the list of observers. 
 		 */
 		else if (exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING){
-			if(getConnections().size() ==0 && (simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.CONTROLLED)){
-				simulationServerConfig.setServerBehaviorMode(ServerBehaviorModes.OBSERVE);
-			}
-			
 			//User observing simulation is closing the connection
-			if(observers.contains(exitingVisitor)){
+			if(_observers.contains(exitingVisitor)){
 				//Remove user from observers list
-				observers.remove(exitingVisitor);
+				_observers.remove(exitingVisitor);
+			}
+			//User observing simulation is closing the connection
+			if(_queueUsers.contains(exitingVisitor)){
+				//Remove user from observers list
+				_queueUsers.remove(exitingVisitor);
 			}
 		}
 	}
@@ -551,11 +622,11 @@ public class SimulationListener implements ISimulationCallbackListener {
 			CharBuffer buffer = CharBuffer.wrap(msg);
 			visitor.getWsOutbound().writeTextMessage(buffer);
 			String debug=((long)System.currentTimeMillis()-startTime)+"ms were spent sending a message of "+msg.length()/1024+"KB to the client";
-			logger.info(debug); 
+			_logger.info(debug); 
 		}
 		catch (IOException ignore)
 		{
-			logger.error("Unable to communicate with client " + ignore.getMessage());
+			_logger.error("Unable to communicate with client " + ignore.getMessage());
 		}		
 	}
 
@@ -565,63 +636,14 @@ public class SimulationListener implements ISimulationCallbackListener {
 	 * @return
 	 */
 	public boolean isSimulationInUse(){
-		
-		if(simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.CONTROLLED){
-			return true;
-		}
-
-		return false;
+		return _simulationInUse;
 	}
-
-
-	public SimulationServerConfig getSimulationServerConfig() {
-		return simulationServerConfig;
-	}
-
-	/**
-	 * Receives update from simulation when there are new ones. 
-	 * From here the updates are send to the connected clients
-	 * 
-	 */
-	@Override
-	public void updateReady(String sceneUpdate, String variableWatchTree) {
-		long start=System.currentTimeMillis();
-		Date date = new Date(start);
-		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
-		String dateFormatted = formatter.format(date);
-		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
-
-		OUTBOUND_MESSAGE_TYPES action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
-
-		/*
-		 * Simulation is running but model has not yet been loaded. 
-		 */
-		if(!getSimulationServerConfig().isSimulationLoaded()){
-			action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
-
-			getSimulationServerConfig().setIsSimulationLoaded(true);
-			
-		}
-
-		for (GeppettoMessageInbound connection : getConnections())
-		{				
-			// pack sceneUpdate and variableWatchTree in the same JSON string
-			String update = "{ \"entities\":" + sceneUpdate  + ", \"variable_watch\": " + variableWatchTree + "}";
-			
-			// Notify all connected clients about update either to load model or update current one.
-			messageClient(null,connection, action , update);
-		}
-
-		getSimulationServerConfig().setLoadedScene(sceneUpdate);
-
-		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
-	}
-
+	
 	public void getSimulationConfiguration(String requestID, String url, GeppettoMessageInbound visitor) {
 		String simulationConfiguration;
 		
 		try {
-			simulationConfiguration = simulationService.getSimulationConfig(new URL(url));
+			simulationConfiguration = visitor.getSimulationService().getSimulationConfig(new URL(url));
 			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_CONFIGURATION, simulationConfiguration);
 		} catch (MalformedURLException e) {
 			messageClient(requestID, visitor,OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
@@ -635,7 +657,7 @@ public class SimulationListener implements ISimulationCallbackListener {
 		Properties prop = new Properties();
 		
 		try{
-			prop.load(SimulationListener.class.getResourceAsStream("/Geppetto.properties"));
+			prop.load(GeppettoServletController.class.getResourceAsStream("/Geppetto.properties"));
 			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION, prop.getProperty("Geppetto.version"));
 		}
 		catch(IOException e){
@@ -679,5 +701,10 @@ public class SimulationListener implements ISimulationCallbackListener {
 		      throw new GeppettoExecutionException("could not de-serialize json");
 		   }
 		   return data;
+	}
+
+	public void disableUser(String requestID,GeppettoMessageInbound visitor) {
+		_connections.remove(visitor.getConnectionID());
+		postClosingConnectionCheck(visitor);
 	}
 }

@@ -46,14 +46,27 @@
 		REVISION : '1'
 	};
 
-	var simulationScripts = {};
+	var simulationScripts = [];
 
+	var waitingForPreviousCommand = false; 
+	
+	var runningScript =false;
+	
+	var watchedRequestsIDS = [];
+	
+	var scriptMessageHandler = null;
+	
+	var remainingCommands = [];
+	
 	/**
 	 * Executes a set of commands from a script 
 	 * 
 	 * @param commands - commands to execute
 	 */
 	GEPPETTO.ScriptRunner.executeScriptCommands = function(commands){
+		
+		runningScript = true;
+		
 		for (var i = 0, len = commands.length; i < len; i++) {
 			var command = commands[i].toString().trim();
 			
@@ -66,7 +79,7 @@
 					var ms = parameter[1];
 
 					//get the remaining commands
-					var remainingCommands = commands.splice(i+1,commands.length);
+					remainingCommands = commands.splice(i+1,commands.length);
 
 					//call wait function with ms, and remaining commands to execute when done
 					G.wait(remainingCommands, ms);
@@ -76,8 +89,34 @@
 				//execute commands, except the wait one
 				else{
 					GEPPETTO.Console.executeCommand(command);
+					
+					//if last command executed it's waiting on server response, break from loop and 
+					//keep track of remaining commands to execute later
+					if(waitingForPreviousCommand){
+						//get the remaining commands
+						remainingCommands = commands.splice(i+1,commands.length);
+						break;
+					}
 				}
 			}
+			
+			//End of commands, check if there's more scripts waiting to be run
+			if(commands.length == (i+1) ){
+				//more scripts waiting to be run
+				if(simulationScripts.length > 0){
+					//run next script
+					var script = simulationScripts[0];
+					GEPPETTO.Console.executeCommand('G.runScript("'+script+'")');
+					
+					simulationScripts.splice(0,1);
+				}
+				//no more scripts waiting to be run, remove handler and loading panel
+				else{
+					GEPPETTO.MessageSocket.removeHandler(scriptMessageHandler);
+					runningScript = false;
+					$('#loadingmodal').modal('hide');
+				}
+			}		
 		}		
 	};
 	
@@ -85,6 +124,8 @@
 	 * Runs script data received from servlet
 	 */
 	GEPPETTO.ScriptRunner.runScript = function(scriptData){
+		//create handler to receive message form server after sending commands 
+		GEPPETTO.ScriptRunner.addScriptMessageHandler();
 
 		var commands = scriptData.split("\n");
 
@@ -99,14 +140,76 @@
 		//execute the commands found inside script
 		GEPPETTO.ScriptRunner.executeScriptCommands(commands);
 	};
-	
-	GEPPETTO.ScriptRunner.setSimulationScripts = function(scripts){
-		this.simulationScripts =scripts;	
+
+	/**
+	 * Creates handler to response to script commands. A command from the script that 
+	 * is send to the server is identified with this handler, once it's detected it 
+	 * fires subsequent commands in script
+	 */
+	GEPPETTO.ScriptRunner.addScriptMessageHandler = function(){
+		scriptMessageHandler = {
+				onMessage : function(parsedServerMessage){
+					//get index of received command
+					var index = watchedRequestsIDS.indexOf(parsedServerMessage.requestID);
+					
+					//make sure requestID received for command is one from the script
+					if (index > -1) {
+						//remove requestID from watched ids
+					    watchedRequestsIDS.splice(index, 1);
+					    if(watchedRequestsIDS.length <= 0 ){
+					    	//reset flag if no longer waiting for commands to process
+					    	waitingForPreviousCommand = false;
+					    }
+					    //execute remaining commands
+					    if(remainingCommands.length > 0){
+							GEPPETTO.ScriptRunner.executeScriptCommands (remainingCommands);
+						}
+					}
+				}
+		};
+
+		//adds the handler to the socket class
+		GEPPETTO.MessageSocket.addHandler(scriptMessageHandler);
 	};
 	
-	GEPPETTO.ScriptRunner.fireScripts = function(){
-		for(var key in this.simulationScripts){
-			var script = this.simulationScripts[key];
+	/**
+	 * Let's script class know a request to server was made from a command within the script
+	 */
+	GEPPETTO.ScriptRunner.waitingForServerResponse = function(requestID){
+		//flags that server is processing a command
+		waitingForPreviousCommand = true;
+		
+		//keep track of request for command
+		watchedRequestsIDS.push(requestID);		
+	};
+	
+	/**
+	 * Returns true if a script is already running
+	 */
+	GEPPETTO.ScriptRunner.isScriptRunning = function(){
+		return runningScript;
+	};
+	
+	/**
+	 * Fires the scripts , one at a time
+	 */
+	GEPPETTO.ScriptRunner.fireScripts = function(scripts){				
+		//More than one script, fire first one and hold the other ones to execute later
+		if(scripts.length > 1){
+			//fire first script
+			var script = scripts[0].script;
+			GEPPETTO.Console.executeCommand('G.runScript("'+script+'")');
+			
+			//store the other one, will fire once first one is done
+			for(var i =1; i< scripts.length; i++){
+				var script = scripts[i].script;
+				simulationScripts.push(script);
+			}
+			
+		}
+		//one script only, fire it
+		else{
+			var script = scripts[0].script;
 			GEPPETTO.Console.executeCommand('G.runScript("'+script+'")');
 		}
 	};

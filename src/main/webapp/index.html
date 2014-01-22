@@ -41,6 +41,7 @@
 		<script src="js/geppetto-objects/Simulation.js"></script>
 		<script src="js/geppetto-objects/G.js"></script>
 		<script src="js/GEPPETTO.Utility.js"></script>
+		<script src="js/GEPPETTO.Share.js"></script>
 		
 		<!-- CSS -->
 		<link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -51,8 +52,7 @@
 		<link rel="stylesheet" href="css/jsConsole.css" />
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="widgets/Widget.css" />
-		<link rel="stylesheet" href="widgets/plots/Plot.css" />
-		
+		<link rel="stylesheet" href="widgets/plots/Plot.css" />   	
 	</head>
 	<link rel="icon" 
       type="image/png" 
@@ -110,6 +110,8 @@
 			<br />
 		</div>
 
+	
+
 		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog">
 					<div class="modal-content">
@@ -136,7 +138,7 @@
 							Press <a class="btn btn-default">Ctrl</a><a class="btn btn-default">Alt</a><a class="btn btn-default">J</a> 
 							to toggle the Javascript Console<br>
 							<br>Press <a class="btn btn-default">Ctrl</a><a class="btn btn-default">Alt</a><a class="btn btn-default">P</a> 
-							to bring up a plogttin widget<br>
+							to bring up a plotting widget<br>
 							<br>
 							</p>
 							<h4>Geppetto Console</h4>
@@ -206,10 +208,24 @@
 						Console
 					</button>
 				</div>
+
+				<div id="console">Console Loading...</div>
 			</div>
-			<div id="console">Console Loading...</div>
 		</div>
 	</div>
+	<div id="shareTab">
+		<button class="btn" id="share">
+			<icon class="icon-share icon-xlarge"></icon>
+		</button>
+	</div>
+
+	<div id="geppetto-share" class="col-md-1 share-panel">
+        	<p>
+        	<a class="btn btn-warning" onclick="Share.facebook('https://www.geppetto.org','Experience Geppetto!','http://www.geppetto.org/images/sph9.png','')">
+        	<i class="icon-xlarge icon-facebook"></i></a></p>
+			<p><a class="btn btn-warning" onclick="Share.twitter('https://www.geppetto.org','Check out Geppetto! ')"><i class="icon-xlarge icon-twitter"></i></a></p>
+			<!-- Commented until fully implemented <p><a class="btn btn-warning" href="#email"><i class="icon-xlarge icon-envelope"></i></a><p>-->
+   	</div>
 	
 	<div id="loadSimModal" class="modal hide fade" tabindex="-1"
 		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
@@ -295,17 +311,17 @@
 	</div>
 	
 	<div id="infomodal"  class="modal hide fade" tabindex="-1"  aria-labelledby="infomodal-title" aria-hidden="true" data-backdrop="static">
-			<div class="modal-header">
+			<div class="modal-header" id="infomodal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 					×
 				</button>
-				<h3 id="infomodal-title"></h3>
+				<h3 id="infomodal-title" class="pagination-centered"></h3>
 			</div>
 			<div class="modal-body">
 				<p id="infomodal-text">
 				</p>
 			</div>
-			<div class="modal-footer">
+			<div class="modal-footer" id="infomodal-footer">
 				<button  id="infomodal-btn" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
 					Ok
 				</button>
@@ -328,8 +344,8 @@
 					In fact we reckon this only represents about 15% of what you can expect in the end. We hope you'll enjoy it.</div>
 				</div>
 				<div class="progress progress-warning">
-				  <div class="bar" style="width: 17%"></div>
-				  <span class="sr-only">17% Complete</span>
+				  <div class="bar" style="width: 18%"></div>
+				  <span class="sr-only">18% Complete</span>
 				</div>
 
 				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">
@@ -342,15 +358,30 @@
 	  				<span class="label">Don't show next time I visit Geppetto</span>
 	  			</div>
 			</div>
-
+		</div>		
+		<div id="multiUserNotification" class="modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					×
+				</button>
+				<h4 id="capacityNotificationTitle"></h4>
+			</div>
+		<div class="modal-body">
+			<div>
+				<div class="messageBody">
+					All the seats to drive Geppetto are currently taken. The number below shows your position 
+					in the waiting queue. If you close this window you will loose your waiting spot.
+				</div>
+				<h3 id="queuePosition"></h3>
+			</div>
 		</div>
-			
+		</div>
 		<script type="text/template" id="tplSandbox">
 		<pre class="output"></pre>
 		<div class="input">
 			<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
-		</div>
-	</script>
+			</div>
+		</script>
 	
 	<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
 	<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
@@ -390,5 +421,26 @@
 		  ga('create', 'UA-45841517-1', 'geppetto.org');
 		  ga('send', 'pageview');
 		</script>
+		<!-- begin olark code -->
+		<script data-cfasync="false" type='text/javascript'>/*<![CDATA[*/window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){
+		f[z]=function(){
+		(a.s=a.s||[]).push(arguments)};var a=f[z]._={
+		},q=c.methods.length;while(q--){(function(n){f[z][n]=function(){
+		f[z]("call",n,arguments)}})(c.methods[q])}a.l=c.loader;a.i=nt;a.p={
+		0:+new Date};a.P=function(u){
+		a.p[u]=new Date-a.p[0]};function s(){
+		a.P(r);f[z](r)}f.addEventListener?f.addEventListener(r,s,false):f.attachEvent("on"+r,s);var ld=function(){function p(hd){
+		hd="head";return["<",hd,"></",hd,"><",i,' onl' + 'oad="var d=',g,";d.getElementsByTagName('head')[0].",j,"(d.",h,"('script')).",k,"='",l,"//",a.l,"'",'"',"></",i,">"].join("")}var i="body",m=d[i];if(!m){
+		return setTimeout(ld,100)}a.P(1);var j="appendChild",h="createElement",k="src",n=d[h]("div"),v=n[j](d[h](z)),b=d[h]("iframe"),g="document",e="domain",o;n.style.display="none";m.insertBefore(n,m.firstChild).id=z;b.frameBorder="0";b.id=z+"-loader";if(/MSIE[ ]+6/.test(navigator.userAgent)){
+		b.src="javascript:false"}b.allowTransparency="true";v[j](b);try{
+		b.contentWindow[g].open()}catch(w){
+		c[e]=d[e];o="javascript:var d="+g+".open();d.domain='"+d.domain+"';";b[k]=o+"void(0);"}try{
+		var t=b.contentWindow[g];t.write(p());t.close()}catch(x){
+		b[k]=o+'d.write("'+p().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}a.P(2)};ld()};nt()})({
+		loader: "static.olark.com/jsclient/loader0.js",name:"olark",methods:["configure","extend","declare","identify"]});
+		/* custom configuration goes here (www.olark.com/documentation) */
+		olark.identify('3330-945-10-6280');/*]]>*/</script>
+		<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
+		<!-- end olark code -->
 </body>
 </html>

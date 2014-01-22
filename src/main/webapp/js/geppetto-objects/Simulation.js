@@ -170,7 +170,8 @@ Simulation.load = function(simulationURL)
 			}
 			GEPPETTO.MessageSocket.send("init_url", simulationURL);
 			loading = true;
-			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);			
+			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);
+			GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
 		}
 	}
 	
@@ -210,6 +211,7 @@ Simulation.loadFromContent = function(content)
 		GEPPETTO.MessageSocket.send("init_sim", content);
 		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
+		GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
 	}
 	
 	return LOADING_SIMULATION;
@@ -244,7 +246,7 @@ Simulation.isLoading = function()
 Simulation.listWatchableVariables = function()
 {
 	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_watch_vars", null));
+		GEPPETTO.MessageSocket.send("list_watch_vars", null);
 		
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_WATCH);
 		
@@ -264,7 +266,7 @@ Simulation.listWatchableVariables = function()
 Simulation.listForceableVariables = function()
 {
 	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.socket.send(messageTemplate("list_force_vars", null));
+		GEPPETTO.MessageSocket.send("list_force_vars", null);
 		
 		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_FORCE);
 		
@@ -354,8 +356,7 @@ Simulation.getWatchTree = function()
 	var watched_variables = WATCHED_SIMULATION_STATES + "";
 	
 	for(var key in simulationStates){
-		watched_variables +=  "\n" + "      -- " + key + "\n"
-						  + "         Value : " + simulationStates[key];
+		watched_variables +=  "\n" + "      -- " + key + "\n";
 	}
 	
 	if(Simulation.watchTree == null){
@@ -369,20 +370,45 @@ Simulation.getWatchTree = function()
 /**
  * Updates the simulation states with new watched variables
  */
-function updateSimulationWatchTree(variable){
+function updateSimulationWatchTree(variable){	  
 	Simulation.watchTree = variable;
 
-	var tree = Simulation.watchTree.WATCH_TREE;
+	tree = Simulation.watchTree.WATCH_TREE;
 	
 	//figure out what the server is returning, either an object structure 
 	// or an array 
 	if(tree.length == null){
-		searchTreeObject(tree);
+		searchTreePath(tree);
 	}
 	else{
 		searchTreeArray(tree);
 	}
 }
+
+/**
+ * Create name of variable from tree.
+ */
+function searchTreePath(a) {
+	  var list = [];
+	  (function(o, r) {
+	    r = r || '';
+	    if (typeof o != 'object') {
+	      return true;
+	    }
+	    for (var c in o) {
+	        if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
+	        	var val  = 0;
+	        	if(o[c]!=null){
+	        		val = o[c];
+	        	}
+	        	simulationStates[r + "." + c].update(val);
+	        }
+	      }
+	    return false;
+	  })(a);
+	  return list;
+	}
+
 
 /**
  * Search through array looking for simulation states
@@ -405,42 +431,27 @@ function searchTreeArray(variables){
  * Search through object structure for object with value and name
  */
 function searchTreeObject(obj){
-	    for (var prop in obj) {
-	    	var state = obj[prop];
+	    for (var name in obj) {
+	    	var value = obj[name];
 	    	
 	    	//state found, create or update its state
-	    	if(state.name != null){
-	    		updateState(state);
-	    	}
-	    	//recursively look through object structure for state
-	    	else{
-	    		searchTreeObject(state);
-	    	}
+	    	updateState(name,value);
 	    }
 }
 
 /**
  * Update or create a simulation state
  */
-function updateState(state){
-	//get name and value
-	var stateName = state.name;
-	var stateValue = state.value;
-
+function updateState(name,value){
 	//If it's a new state add to tags
-	if(!(stateName in simulationStates)){
-		addTag(stateName);
-		
-		//assign state to window object of same name
-		window[stateName] = new State(stateName, stateValue);
+	if(!(name in simulationStates)){
+		addTag(name);
 	}
 	
 	else{
-		 window[stateName].update(stateValue);
+		 var variable = simulationStates[name];
+		 variable.update(value);
 	}
-	
-	//update simulation state value
-	simulationStates[stateName] = stateValue; 
 }
 
 /**
@@ -477,7 +488,7 @@ function setSimulationLoaded()
 function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
 {
 	if(Simulation.isLoaded()){
-		GEPPETTO.MessageSocket.socket.send(messageTemplate(msg, payload));
+		GEPPETTO.MessageSocket.send(msg, payload);
 		
 		GEPPETTO.Console.debugLog(outbound_msg_log);
 		

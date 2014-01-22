@@ -93,11 +93,9 @@ var Plot = Widget.View.extend({
 			}
 			this.datasets.push({label : newData.name, data : [[0,newData.value]]});
 			$("#"+this.getId()).trigger("subscribe", [newData.name]);	
-			updateGrid = true;
 		}
 		else{
 			this.datasets.push({label : "", data : newData});
-			updateGrid = false;
 		}
 		
 		var plotHolder = $("#"+this.id);

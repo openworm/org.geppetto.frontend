@@ -76,7 +76,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener{
 		}
 		
 		// pack sceneUpdate and variableWatchTree in the same JSON string
-		String update = "{ \"entities\":" + sceneUpdate  + ", \"variable_watch\": " + variableWatchTree + "}";
+		String update = "{ \"entities\":" + sceneUpdate  + ", \"variable_watch\":" + variableWatchTree + "}";
 
 		// Notify all connected clients about update either to load model or update current one.
 		GeppettoServletController.getInstance().messageClient(null,_user, action , update);

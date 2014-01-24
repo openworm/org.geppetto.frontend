@@ -36,7 +36,7 @@ module("Simulation Load From Content Tests",
 	newSocket : GEPPETTO.MessageSocket,
 	setup : function(){
 		
-		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 	
 	},
 	teardown: function(){
@@ -101,7 +101,7 @@ module("Simulation with Scripts",
 	newSocket : GEPPETTO.MessageSocket,
 	setup : function(){
 		
-		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 	
 	},
 	teardown: function(){
@@ -145,7 +145,7 @@ module("Simulation controls Test",
 	newSocket : GEPPETTO.MessageSocket, 
 	
 	setup : function(){
-		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
@@ -231,7 +231,7 @@ module("Get simulation variables test",
 	newSocket : GEPPETTO.MessageSocket,
 	
 	setup : function(){
-		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
@@ -274,7 +274,7 @@ module("Watch variables test",
 	newSocket : GEPPETTO.MessageSocket,
 	
 	setup : function(){
-		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){

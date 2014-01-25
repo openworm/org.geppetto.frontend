@@ -225,8 +225,10 @@ var Plot = Widget.View.extend({
 	 */
 	setOptions : function(options){
 		this.options = options;
-		if(options.xaxis.max > this.limit){
-			this.limit = options.xaxis.max;
+		if(options.xaxis != null){		
+			if(options.xaxis.max > this.limit){
+				this.limit = options.xaxis.max;
+			}
 		}
 		this.plot = $.plot($("#"+this.id), this.datasets,this.options);
 	},

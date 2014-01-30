@@ -48,7 +48,6 @@ asyncTest("Test Load Simulation from content", function(){
 		
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
-		//GEPPETTO.Console.createConsole();
 		Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
 	},500);
 	
@@ -75,7 +74,7 @@ asyncTest("Test Load Simulation", function(){
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
 		//GEPPETTO.Console.createConsole();
-		Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");		
+		Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");		
 	},500);
 	
 	var handler = {
@@ -116,7 +115,7 @@ asyncTest("Test Simulation with Script", function(){
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
 		//GEPPETTO.Console.createConsole();
-		Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/development/src/main/resources/Test1.xml');
+		Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml');
 	},500);
 	
 	var handler = {
@@ -149,7 +148,7 @@ module("Simulation controls Test",
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
-			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		},500);
 	},
 	teardown: function(){
@@ -235,7 +234,7 @@ module("Get simulation variables test",
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
-			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		},500);
 	},
 	teardown: function(){
@@ -278,7 +277,7 @@ module("Watch variables test",
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
-			Simulation.load("https://dl.dropboxusercontent.com/s/2oczzgnheple0mk/sph-sim-config.xml?token_hash=AAGbu0cCNW8zK_2DUoc0BPuCpspGqcNRIfk-6uDCMVUiHA");
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		},500);
 	},
 	teardown: function(){

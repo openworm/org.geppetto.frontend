@@ -68,6 +68,11 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.aop</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 			<version>5.0.0</version>
@@ -125,6 +130,7 @@
 						<Web-ContextPath>org.geppetto.frontend</Web-ContextPath>
 						<Import-Package>org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
+						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>						
 					</instructions>
 				</configuration>
 				<executions>

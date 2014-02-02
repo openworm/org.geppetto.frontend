@@ -11,9 +11,19 @@
 	<context:annotation-config/>	
 	<context:component-scan base-package="org.geppetto.frontend" />
 		
+		<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+    <property name="scopes">
+        <map>
+            <entry key="session">
+                <bean class="org.springframework.context.support.SimpleThreadScope"/>
+            </entry>
+        </map>
+    </property>
+</bean>
+
 	<!-- Add flag for Simulation Run Mode --> 
 	<bean id="config" class="org.geppetto.frontend.SimulationServerConfig"> 
-		<property name="serverBehaviorMode" value="OBSERVE" />
+		<property name="serverBehaviorMode" value="MULTIUSER" />
 		<!-- Flags used for observer mode -->
 		<property name="loadedScene" value="#{ null }" />
 		<property name="isSimulationLoaded" value="false" />

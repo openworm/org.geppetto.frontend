@@ -59,7 +59,6 @@ import com.google.gson.Gson;
  * are received in here.
  *
  */
-@Configurable
 public class GeppettoMessageInbound extends MessageInbound 
 {
 

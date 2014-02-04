@@ -68,11 +68,6 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.aop</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 			<version>5.0.0</version>
@@ -83,11 +78,6 @@
 			<version>4.5.0</version>
 			<scope>test</scope>
 		</dependency>
-<dependency>
-      <groupId>org.apache.geronimo.javamail</groupId>
-      <artifactId>geronimo-javamail_1.4_mail</artifactId>
-      <version>1.8.2</version>
-    </dependency>
 	</dependencies>
 	<build>
 

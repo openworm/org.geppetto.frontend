@@ -10,16 +10,6 @@
 	<!-- Instructs Spring to scan for internal service components to instantiate and configure -->
 	<context:annotation-config/>	
 	<context:component-scan base-package="org.geppetto.frontend" />
-		
-		<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
-    <property name="scopes">
-        <map>
-            <entry key="session">
-                <bean class="org.springframework.context.support.SimpleThreadScope"/>
-            </entry>
-        </map>
-    </property>
-</bean>
 
 	<!-- Add flag for Simulation Run Mode --> 
 	<bean id="config" class="org.geppetto.frontend.SimulationServerConfig"> 

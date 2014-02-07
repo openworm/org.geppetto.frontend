@@ -57,16 +57,22 @@ GEPPETTO.Main.status = GEPPETTO.Main.StatusEnum.DEFAULT;
 
 GEPPETTO.Main.simulationFileTemplate = "resources/template.xml";
 
+var allowedTime = 5;
+var timeOut = 6;
+
 GEPPETTO.Main.getVisitorStatus = function(){
 	return GEPPETTO.Main.status;
 };
+
+GEPPETTO.Main.idleTime = 0;
+GEPPETTO.Main.disconnected = false;
 
 /**
  * Initialize web socket communication
  */
 GEPPETTO.Main.init = function()
 {
-	GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+	GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 	Simulation.status = Simulation.StatusEnum.INIT;
 	GEPPETTO.Console.debugLog(GEPPETTO_INITIALIZED);	
 };
@@ -91,12 +97,56 @@ GEPPETTO.Main.observe = function()
 	GEPPETTO.FE.update(webGLStarted);
 };
 
+function idleCheck() {
+	if(!GEPPETTO.Main.disconnected){
+		GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
+		//first time check, asks if user is still there
+		if (GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
+			$('#infomodal-title').html("Zzz");
+			$('#infomodal-text').html(IDLE_MESSAGE);
+			$('#infomodal-btn').html("Yes");
+			
+			$('#infomodal-btn').html("Yes").click(function() {
+				$('#infomodal').modal('hide');
+				GEPPETTO.Main.idleTime = 0; 
+				
+				//unbind click event so we can reuse same modal for other alerts
+				$('#infomodal-btn').unbind('click');
+			});
+			
+			$('#infomodal').modal(); 
+		}
+
+		//second check, user isn't there or didn't click yes, disconnect
+		if(GEPPETTO.Main.idleTime > timeOut) {
+			$('#infomodal-title').html("");
+			$('#infomodal-text').html(DISCONNECT_MESSAGE);
+			$('#infomodal-footer').remove();
+			$('#infomodal-header').remove();
+			$('#infomodal').modal(); 
+			
+			GEPPETTO.Main.idleTime = 0;
+			GEPPETTO.Main.disconnected = true;
+			GEPPETTO.FE.disableSimulationControls();
+			GEPPETTO.MessageSocket.send("idle_user",null);
+			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+			GEPPETTO.FE.update(webGLStarted);
+		}
+	}
+}
+
 
 // ============================================================================
 // Application logic.
 // ============================================================================
 $(document).ready(function()
 {	
+	/*
+	 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows 
+	 * multiple modals to be open simultaneously without going in an infinite loop. 
+	 */
+	$.fn.modal.Constructor.prototype.enforceFocus = function () {};
+	
 	//Initialize websocket functionality
 	GEPPETTO.Main.init();
 	
@@ -145,4 +195,19 @@ $(document).ready(function()
 
 	GEPPETTO.FE.checkWelcomeMessageCookie();
 	
+	$("#share").click(function(){
+        $(".share-panel").slideToggle();
+        $(this).toggleClass("active"); return false;
+    });
+	
+	 //Increment the idle time counter every minute.
+    var idleInterval = setInterval(idleCheck, 60000); // 1 minute
+
+    //Zero the idle timer on mouse movement.
+    $(this).mousemove(function (e) {
+        GEPPETTO.Main.idleTime = 0;
+    });
+    $(this).keypress(function (e) {
+        GEPPETTO.Main.idleTime = 0;
+    });
 });

@@ -42,10 +42,13 @@ import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 @Configurable
-public class SimulationServlet extends WebSocketServlet
+public class GeppettoServlet extends WebSocketServlet
 {
 
 	/**
@@ -53,16 +56,14 @@ public class SimulationServlet extends WebSocketServlet
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static Log logger = LogFactory.getLog(SimulationServlet.class);
-
-	private final AtomicInteger _connectionIds = new AtomicInteger(0);
-			
+	private final AtomicInteger _connectionIds = new AtomicInteger(0);		
 		
+	
 	@Override
 	protected StreamInbound createWebSocketInbound(String subProtocol, HttpServletRequest request)
 	{
 		String connectionID = "Visitor"+_connectionIds.incrementAndGet();
-		return new GeppettoMessageInbound(connectionID, SimulationListener.getInstance());
+		return new GeppettoMessageInbound(connectionID);
 	}
 
 	@Override

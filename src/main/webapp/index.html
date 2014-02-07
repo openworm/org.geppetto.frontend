@@ -43,6 +43,7 @@
 		<script src="js/geppetto-objects/Simulation.js"></script>
 		<script src="js/geppetto-objects/G.js"></script>
 		<script src="js/GEPPETTO.Utility.js"></script>
+		<script src="js/GEPPETTO.Share.js"></script>
 		
 		<!-- CSS -->
 		<link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -53,8 +54,7 @@
 		<link rel="stylesheet" href="css/jsConsole.css" />
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="widgets/Widget.css" />
-		<link rel="stylesheet" href="widgets/plots/Plot.css" />
-		
+		<link rel="stylesheet" href="widgets/plots/Plot.css" />   	
 	</head>
 	<link rel="icon" 
       type="image/png" 
@@ -78,12 +78,15 @@
 				<icon class="icon-stop"></icon>
 				Stop
 			</button>
-
+			<button class="btn btn-info" id="helpButton" data-toggle="modal" data-target="#helpmodal">
+				<icon class="icon-info-sign"></icon>
+				Help
+			</button>
 			<!-- Alert box used when visitor in observing simulation -->
 			<div id="alertbox" class="alert alert-block">
 				<a class="close" data-dismiss="alert">×</a>
 				<h4 class="alert-heading" align="center">
-					<i class="icon-info-sign icon-2x" id="infopopover" rel="popover" 
+					<i class="icon-info-sign icon-2x" id="infopopover" rel="popover"
 						data-placement="left" data-trigger="hover"></i>Observing
 					Simulation Mode
 				</h4>
@@ -108,6 +111,74 @@
 			<button class="btn squareB icon-zoom-out" id="zo"></button>
 			<br />
 		</div>
+
+	
+
+		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="btn btn-info pull-right"
+								aria-hidden="true" onClick="window.open('http://docs.geppetto.org');">
+								<icon class="icon-file-text"></icon>
+								Docs</button>
+							<h4 class="modal-title pagination-centered" id="helpmodalheader">Quick help</h4>
+						</div>
+						<div class="modal-body">
+							<h4>Navigation Controls</h4>
+							<p>
+							<strong>Rotation</strong>
+							<br>Left click and drag with the mouse to rotate.<br>
+							<strong>Pan</strong>
+							<br>Right click and drag with the mouse to pan.<br>
+							<strong>Zoom</strong>
+							<br>Wheel click and move your mouse up and down to zoom in and out.
+							<br>In addition, you can use the buttons in the upper left corner. The
+							Home button resets the view.<br>
+							<h4>Shortcuts List</h4>
+							<p>
+							Press <a class="btn btn-default">Ctrl</a><a class="btn btn-default">Alt</a><a class="btn btn-default">J</a> 
+							to toggle the Javascript Console<br>
+							<br>Press <a class="btn btn-default">Ctrl</a><a class="btn btn-default">Alt</a><a class="btn btn-default">P</a> 
+							to bring up a plotting widget<br>
+							<br>
+							</p>
+							<h4>Geppetto Console</h4>
+							<p>
+							The console provides a way to interact with Geppetto without having to use the UI controls. 
+							Through the console, user can control the simulation and use the other features available.<br> 
+							<br><strong>Commands</strong>
+							<br>Open the console and type help() in it to view list of available commands, a description on 
+							how to use each one of them is also provided.<br>
+							<br><strong>Autocompletion</strong>
+							<br>Console autcompletes command once you are start typing, pressing double <a class="btn btn-default">Tab</a>
+							provides list of available commands that match the entered input.<br> 
+							<br>
+							<h4>Loading a Simulation</h4>
+							<p>
+							<strong>Using Controls</strong>
+							<br>Use <a class="btn btn-default">Load Simulation</a> button on top right corner to 
+							load a simulation, a drop down menu with simulation samples ready to load is available. 
+							The content of the simulation file can be seen by selecting the Custom option after selecting or entering
+							a simulation, using this feature the contents of the simulation file can be modified prior to loading. <br>
+							<br><strong>Using console</strong>
+							<br>Simulations can be loaded via console using commands
+							<a class="label label-default">Simulation.load(simulationURL)</a> and
+							<a class="label label-default">Simulation.loadFromContent(simulationContent)</a>.<br>
+							<br><strong>Passing as parameter in URL</strong>
+							<br>A simulation can be specified as a paramater in the Geppetto URL, this will automatically load the simulation 
+							when Geppetto is launched. To use this feature add "?sim=simulationURL" to the end of Geppetto's url, where 
+							simulationURL corresponds to the location of the simulation you want to load.<br>
+							</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-warning" data-dismiss="modal"
+								aria-hidden="true">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 	</div>
 	<!--
 		<div id="toolbar">
@@ -139,10 +210,24 @@
 						Console
 					</button>
 				</div>
+
+				<div id="console">Console Loading...</div>
 			</div>
-			<div id="console">Console Loading...</div>
 		</div>
 	</div>
+	<div id="shareTab">
+		<button class="btn" id="share">
+			<icon class="icon-share icon-xlarge"></icon>
+		</button>
+	</div>
+
+	<div id="geppetto-share" class="col-md-1 share-panel">
+        	<p>
+        	<a class="btn btn-warning" onclick="Share.facebook('http://geppetto.org','Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','')">
+        	<i class="icon-xlarge icon-facebook"></i></a></p>
+			<p><a class="btn btn-warning" onclick="Share.twitter('http://geppetto.org','Check out Geppetto, the opensource simulation platform powering OpenWorm!')"><i class="icon-xlarge icon-twitter"></i></a></p>
+			<!-- Commented until fully implemented <p><a class="btn btn-warning" href="#email"><i class="icon-xlarge icon-envelope"></i></a><p>-->
+   	</div>
 	
 	<div id="loadSimModal" class="modal hide fade" tabindex="-1"
 		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
@@ -228,17 +313,17 @@
 	</div>
 	
 	<div id="infomodal"  class="modal hide fade" tabindex="-1"  aria-labelledby="infomodal-title" aria-hidden="true" data-backdrop="static">
-			<div class="modal-header">
+			<div class="modal-header" id="infomodal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 					×
 				</button>
-				<h3 id="infomodal-title"></h3>
+				<h3 id="infomodal-title" class="pagination-centered"></h3>
 			</div>
 			<div class="modal-body">
 				<p id="infomodal-text">
 				</p>
 			</div>
-			<div class="modal-footer">
+			<div class="modal-footer" id="infomodal-footer">
 				<button  id="infomodal-btn" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
 					Ok
 				</button>
@@ -261,8 +346,8 @@
 					In fact we reckon this only represents about 15% of what you can expect in the end. We hope you'll enjoy it.</div>
 				</div>
 				<div class="progress progress-warning">
-				  <div class="bar" style="width: 16%"></div>
-				  <span class="sr-only">16% Complete</span>
+				  <div class="bar" style="width: 18%"></div>
+				  <span class="sr-only">18% Complete</span>
 				</div>
 
 				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">
@@ -275,15 +360,30 @@
 	  				<span class="label">Don't show next time I visit Geppetto</span>
 	  			</div>
 			</div>
-
+		</div>		
+		<div id="multiUserNotification" class="modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					×
+				</button>
+				<h4 id="capacityNotificationTitle"></h4>
+			</div>
+		<div class="modal-body">
+			<div>
+				<div class="messageBody">
+					All the seats to drive Geppetto are currently taken. The number below shows your position 
+					in the waiting queue. If you close this window you will loose your waiting spot.
+				</div>
+				<h3 id="queuePosition"></h3>
+			</div>
 		</div>
-			
+		</div>
 		<script type="text/template" id="tplSandbox">
 		<pre class="output"></pre>
 		<div class="input">
 			<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
-		</div>
-	</script>
+			</div>
+		</script>
 	
 	<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
 	<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
@@ -323,5 +423,26 @@
 		  ga('create', 'UA-45841517-1', 'geppetto.org');
 		  ga('send', 'pageview');
 		</script>
+		<!-- begin olark code -->
+		<script data-cfasync="false" type='text/javascript'>/*<![CDATA[*/window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){
+		f[z]=function(){
+		(a.s=a.s||[]).push(arguments)};var a=f[z]._={
+		},q=c.methods.length;while(q--){(function(n){f[z][n]=function(){
+		f[z]("call",n,arguments)}})(c.methods[q])}a.l=c.loader;a.i=nt;a.p={
+		0:+new Date};a.P=function(u){
+		a.p[u]=new Date-a.p[0]};function s(){
+		a.P(r);f[z](r)}f.addEventListener?f.addEventListener(r,s,false):f.attachEvent("on"+r,s);var ld=function(){function p(hd){
+		hd="head";return["<",hd,"></",hd,"><",i,' onl' + 'oad="var d=',g,";d.getElementsByTagName('head')[0].",j,"(d.",h,"('script')).",k,"='",l,"//",a.l,"'",'"',"></",i,">"].join("")}var i="body",m=d[i];if(!m){
+		return setTimeout(ld,100)}a.P(1);var j="appendChild",h="createElement",k="src",n=d[h]("div"),v=n[j](d[h](z)),b=d[h]("iframe"),g="document",e="domain",o;n.style.display="none";m.insertBefore(n,m.firstChild).id=z;b.frameBorder="0";b.id=z+"-loader";if(/MSIE[ ]+6/.test(navigator.userAgent)){
+		b.src="javascript:false"}b.allowTransparency="true";v[j](b);try{
+		b.contentWindow[g].open()}catch(w){
+		c[e]=d[e];o="javascript:var d="+g+".open();d.domain='"+d.domain+"';";b[k]=o+"void(0);"}try{
+		var t=b.contentWindow[g];t.write(p());t.close()}catch(x){
+		b[k]=o+'d.write("'+p().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}a.P(2)};ld()};nt()})({
+		loader: "static.olark.com/jsclient/loader0.js",name:"olark",methods:["configure","extend","declare","identify"]});
+		/* custom configuration goes here (www.olark.com/documentation) */
+		olark.identify('3330-945-10-6280');/*]]>*/</script>
+		<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
+		<!-- end olark code -->
 </body>
 </html>

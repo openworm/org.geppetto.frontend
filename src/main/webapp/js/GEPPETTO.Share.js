@@ -30,70 +30,23 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Listener class for widgets. Receives updates from Geppetto that need to be transmitted to all widgets. 
- * 
- * @constructor
- * 
- * @author Jesus R Martinez (jesus@metacell.us)
- */
-
-var WIDGET_EVENT_TYPE = {
-		DELETE : "delete",
-};
-
-GEPPETTO.WidgetsListener =  {
-
-		_subscribers : [],
-
-		/**
-		 * Subscribes widget controller class to listener
-		 * 
-		 * @param obj - Controller Class subscribing
-		 * @returns {Boolean}
-		 */
-		subscribe : function(obj){
-
-			var addController = true;
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				if( this._subscribers[ i ] === obj ) {
-					addController = false;
-				}
-			}
-			if(addController){
-				this._subscribers.push( obj );
-
-				GEPPETTO.Console.debugLog( 'added new observer' );
-			}
+Share = {
+		facebook: function(linkURL, title, img, text) {
+			url = 'http://www.facebook.com/sharer.php?s=100';
+			url += '&p[title]=' + encodeURIComponent(title);
+			url += '&p[summary]=' + encodeURIComponent(text);
+			url += '&p[url]=' + encodeURIComponent(linkURL);
+			url += '&p[images][0]=' + encodeURIComponent(img);
+			Share.popup(url);
 		},
-
-		/**
-		 * Unsubscribe widget controller class
-		 * 
-		 * @param obj - Controller class to be unsubscribed from listener
-		 * 
-		 * @returns {Boolean}
-		 */
-		unsubscribe : function(obj){
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				if( this._subscribers[ i ] === obj ) {
-					this._subscribers.splice( i, 1 );
-					GEPPETTO.Console.log( 'removed existing observer' );
-					return true;
-				}
-			}
-			return false;
+		twitter: function(linkURL, title) {
+			url = 'http://twitter.com/share?';
+			url += 'text=' + encodeURIComponent(title);
+			url += '&url=' + encodeURIComponent(linkURL);
+			url += '&counturl=' + encodeURIComponent(linkURL);
+			Share.popup(url);
 		},
-
-		/**
-		 * Update all subscribed controller classes of the changes
-		 * 
-		 * @param newData 
-		 */
-		update : function(arguments){
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				this._subscribers[ i ].update( arguments );
-			}
+		popup: function(url) {
+			window.open(url,'','toolbar=0,status=0,width=626, height=436');
 		}
-
 };

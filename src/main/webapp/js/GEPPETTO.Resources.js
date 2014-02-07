@@ -170,6 +170,8 @@ var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
 
 var LISTING_FORCE_VARS = "Inbound Message Received: List force variables";
 
+var SIMULATOR_UNAVAILABLE = " Simulator is Unavailable";
+
 var WEBSOCKET_CONNECTION_ERROR = "Server Connection Error";
 
 /**
@@ -194,3 +196,19 @@ var COMMANDS = " commands: \n\n";
  */
 var WIDGET_CREATED = " widget created";
 var REMOVE_PLOT_WIDGETS = "Plotting widget(s) removed";
+var NON_EXISTENT_WIDGETS = "Unable to remove widgets, type doesn't exist";
+
+/**
+ * Idle messages
+ */
+var IDLE_MESSAGE = "Are you still there?";
+
+var DISCONNECT_MESSAGE = "A prolonged inactivity has been detected" +
+          " and you have been disconnected from Geppetto. Please refresh" +
+          " your browser if you wish to continue";
+
+/**
+ * Socket Messages
+ */
+var SERVER_CONNECTION_ERROR = "Error communicating with Geppetto servlet. \n" +
+"Reload page if problems persits";

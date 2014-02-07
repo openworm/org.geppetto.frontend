@@ -41,36 +41,29 @@ var Plot = Widget.View.extend({
 	datasets : [],
 	limit : 20,
 	updateGrid : false,
+	options : null,
 	
-	/**
-	 * Initializes the plot widget
-	 */
-	initialize : function(){
-		this.data = [];
-		this.datasets = [];
-		this.render();
-		this.dialog.append("<div class='plot' id='" + this.name + "'></div>");
-	},
-
 	/**
 	 * Default options for plot widget, used if none specified 
 	 * when plot is created
 	 */
 	defaultPlotOptions: {
-		yaxis: { min : -.5,max : 1},
-		xaxis: {min : 0, max : 20},
 		series: {
-	        lines: { show: true },
-	        points: { show: true },
 	    	shadowSize : 0,
-	    }, 
-	    legend: { show: true},
-	    grid: { hoverable: true, clickable: true, autoHighlight: true },	    
-	}, 
-	
-	getPlotData : function(){
-		return this.data;
+	    },
+		yaxis: { min : -.1,max : 1},
+		xaxis: {min: 0, max : 20, show : true},
 	},
+	
+	/**
+	 * Initializes the plot widget
+	 */
+	initialize : function(){
+		this.datasets = [];
+		this.options = this.defaultPlotOptions;
+		this.render();
+		this.dialog.append("<div class='plot' id='" + this.id + "'></div>");
+	}, 
 	
 	/**
 	 * Takes data series and plots them. 
@@ -85,7 +78,12 @@ var Plot = Widget.View.extend({
 	 */
 	plotData : function(newData, options){	
 		//If no options specify by user, use default options
-		if(options == null){options = this.defaultPlotOptions;}
+		if(options != null){
+			this.options = options;
+			if(options.xaxis.max > this.limit){
+				 this.limit = options.xaxis.max;
+			}
+		}
 		
 		if(newData.name != null){
 			for(var set in this.datasets){
@@ -95,21 +93,18 @@ var Plot = Widget.View.extend({
 			}
 			this.datasets.push({label : newData.name, data : [[0,newData.value]]});
 			$("#"+this.getId()).trigger("subscribe", [newData.name]);	
-			updateGrid = true;
 		}
 		else{
 			this.datasets.push({label : "", data : newData});
-			updateGrid = false;
 		}
+		
+		var plotHolder = $("#"+this.id);
 		if(this.plot == null){
-			var plotHolder = $("#"+this.name);
-			this.plot = $.plot(plotHolder,this.datasets,options);
+			this.plot = $.plot(plotHolder,this.datasets,this.options);
 			plotHolder.resize();	
 		}
 		else{
-			this.plot.setData(this.datasets);
-			if(updateGrid){this.plot.setupGrid();};
-			this.plot.draw();	
+			this.plot = $.plot(plotHolder,this.datasets,this.options);	
 		}
 		
 		return "Line plot added to widget";
@@ -140,6 +135,10 @@ var Plot = Widget.View.extend({
 			this.plot.setupGrid();
 			this.plot.draw();
 		}
+		
+		if(this.datasets.length == 0){
+			this.resetPlot();
+		}
 	},
 	
 	/**
@@ -163,37 +162,31 @@ var Plot = Widget.View.extend({
 			}
 			
 			
-			for(var d =0; d < newValue.length ; d++){
-				if(newData.length > this.limit){
-					newData.splice(0,1);
-					reIndex = true;
-				}
-
-				newData.push([newData.length, newValue[d]]);
+			if(newData.length > this.limit){
+				newData.splice(0,1);
+				reIndex = true;
 			}
 			
-			this.datasets[matchedKey].data = newData;
+			newData.push([newData.length, newValue[0]]);
+			
 			
 			if(reIndex){
 				//re-index data
 				var indexedData = [];
-				for(var index =0, len = this.datasets[matchedKey].data.length; index < len; index++){
-					var value = this.datasets[matchedKey].data[index][1];
+				for(var index =0, len = newData.length; index < len; index++){
+					var value = newData[index][1];
 					indexedData.push([index, value]);
 				}
 
 				this.datasets[matchedKey].data = indexedData;
 			}
+			else{
+				this.datasets[matchedKey].data = newData;
+			}
+			
+			this.plot.setData(this.datasets);	
+			this.plot.draw();
 		}
-		
-		var data = [];
-		
-		for(var i =0; i<this.datasets.length ; i++){
-			data.push(this.datasets[i]); 
-		}
-		
-		this.plot.setData(data);	
-		this.plot.draw();
 	},
 	
 	/**
@@ -216,9 +209,10 @@ var Plot = Widget.View.extend({
 	 */
 	resetPlot : function(){
 		if(this.plot != null){
-			this.data = [];
-			this.plot.setData([{label : "" , data: this.data}]);
-			this.plot.draw();
+			this.datasets = [];
+			this.options = this.defaultPlotOptions;
+			var plotHolder = $("#"+this.id);
+			this.plot = $.plot(plotHolder,this.datasets,this.options);	
 		}
 	},
 	
@@ -230,8 +224,16 @@ var Plot = Widget.View.extend({
 	 * @param options
 	 */
 	setOptions : function(options){
-		this.defaultPlotOptions = options;
-		
-		$.plot($("#"+this.name), this.datasets,this.defaultPlotOptions);
+		this.options = options;
+		if(options.xaxis != null){		
+			if(options.xaxis.max > this.limit){
+				this.limit = options.xaxis.max;
+			}
+		}
+		this.plot = $.plot($("#"+this.id), this.datasets,this.options);
+	},
+	
+	getDataSets : function(){
+		return this.datasets;
 	}
 });

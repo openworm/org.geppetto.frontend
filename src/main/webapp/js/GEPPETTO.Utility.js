@@ -134,23 +134,25 @@ function extractCommandsFromFile(script, Object, objectName){
  */
 function availableTags(){
 
-	var commands = "\n";
-		
-	for(var g in helpObjectsMap){
-		commands += '\n' + helpObjectsMap[g];
-	}
-	
-	var commandsSplitByLine = commands.split("\n");
+	if(tags.length == 0){
+		var commands = "\n";
 
-	var tagsCount = 0;
+		for(var g in helpObjectsMap){
+			commands += '\n' + helpObjectsMap[g];
+		}
 
-	for(var i =0; i<commandsSplitByLine.length; i++){
-		var line = commandsSplitByLine[i].trim();
+		var commandsSplitByLine = commands.split("\n");
 
-		if(line.substring(0,2) == "--"){
-			var command = line.substring(3, line.length);
-			tags[tagsCount] = command;
-			tagsCount++;
+		var tagsCount = 0;
+
+		for(var i =0; i<commandsSplitByLine.length; i++){
+			var line = commandsSplitByLine[i].trim();
+
+			if(line.substring(0,2) == "--"){
+				var command = line.substring(3, line.length);
+				tags[tagsCount] = command;
+				tagsCount++;
+			}
 		}
 	}
 

@@ -63,5 +63,11 @@ var MESSAGE_TYPE = {
 	SIMULATION_STOPPED : "simulation_stopped",
 	LIST_WATCH_VARS : "list_watch_vars",
 	LIST_FORCE_VARS : "list_force_vars",
-	GET_WATCH_LISTS : "get_watch_lists"
+	GET_WATCH_LISTS : "get_watch_lists",
+	SIMULATOR_FULL : "simulator_full",
+	SET_WATCH_VARS : "set_watch_vars",
+	START_WATCH : "start_watch",
+	STOP_WATCH : "stop_watch",
+	CLEAR_WATCH : "clear_watch",
+	FIRE_SIM_SCRIPTS : "fire_sim_scripts"
 };

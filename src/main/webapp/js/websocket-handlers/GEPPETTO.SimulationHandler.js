@@ -59,6 +59,8 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			break;
 			//Event received to update the simulation
 		case MESSAGE_TYPE.SCENE_UPDATE:
+			var starttime=(new Date()).getTime();
+
             var entities = JSON.parse(payload.update).entities;
             var variables = JSON.parse(payload.update).variable_watch;
             
@@ -80,6 +82,9 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
                 }
             }
             
+            var endtime=(new Date()).getTime();
+    		console.log("took " + (endtime-starttime) + " to UPDATE SCENE");
+    		
             // TODO: store variable-watch tree
             break;
             //Simulation server became available
@@ -91,9 +96,23 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			GEPPETTO.SimulationContentEditor.autoFormat();
 			break;
 			//Simulation has been loaded, enable start button and remove loading panel
-		case MESSAGE_TYPE.SIMULATION_LOADED:
+		case MESSAGE_TYPE.SIMULATION_LOADED:			
 			$('#start').removeAttr('disabled');
 			$('#loadingmodal').modal('hide');
+			break;			
+		case MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
+			//Reads scripts received for the simulation
+			var scripts = JSON.parse(payload.get_scripts).scripts;
+			
+			//make sure object isn't empty
+			if(!jQuery.isEmptyObject(scripts)){
+				//run the received scripts
+				GEPPETTO.ScriptRunner.fireScripts(scripts);
+			}
+			else{
+				//hide loading modal, no scripts associated with simulation
+				$('#loadingmodal').modal('hide');
+			}
 			break;
 			//Simulation has been started, enable pause button
 		case MESSAGE_TYPE.SIMULATION_STARTED:
@@ -117,12 +136,97 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 		case MESSAGE_TYPE.LIST_FORCE_VARS:
 			GEPPETTO.Console.debugLog(LISTING_FORCE_VARS);
 			// TODO: format output
-			formatListVariableOutput(JSON.parse(payload.list_force_vars).variables, 0);
+			formatListVariableOutput(JSON.parse(paylad.list_force_vars).variables, 0);
 			//GEPPETTO.Console.log(JSON.stringify(payload));
 			break;
 		case MESSAGE_TYPE.GET_WATCH_LISTS:
 			GEPPETTO.Console.debugLog(LISTING_FORCE_VARS);
 			GEPPETTO.Console.log(payload.get_watch_lists);
+			break;
+		case MESSAGE_TYPE.SIMULATOR_FULL:
+			var simulatorInfo = JSON.parse(payload.simulatorFull);
+			
+			var simulatorName = simulatorInfo.simulatorName;
+			var queuePosition = simulatorInfo.queuePosition;
+			
+			GEPPETTO.FE.disableSimulationControls();
+			GEPPETTO.FE.fullSimulatorNotification(simulatorName, queuePosition);
+			break;
+		//Starts the watch of requested variables
+		case MESSAGE_TYPE.START_WATCH:
+			//variables watching
+			var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
+			
+			//create objects for the variables to watch
+			for(var v in variables){
+				
+				var splitVariableName = variables[v].split(".");
+
+				splitVariableName.splice(0,1);
+				
+				//create object from variables
+				if(splitVariableName.length > 1 ){
+					var parent = splitVariableName[0];
+					
+					//get index if array
+					var index = parent.match(/ *\[[^]]*\] */g);
+
+					parent = parent.replace(/ *\[[^]]*\] */g, "");
+					
+					if(window[parent] == null){
+						if(index != null){
+							var iNumber =index[0].replace(/[\[\]']+/g,"");
+							
+							window[parent] = [];
+							window[parent][parseInt(iNumber)] = {};
+							
+							for(var x =1; x< splitVariableName.length; x++){
+								var child = splitVariableName[x];
+								var childName = parent+"["+parseInt(iNumber)+"]."+child;
+								
+								var c = window[parent][parseInt(iNumber)][child] =  new State(childName,0);
+								
+								simulationStates[childName] = c;
+							}
+						}
+						else{
+							window[parent] = new State(parent,0);
+							
+							for(var x =1; x< splitVariableName.length; x++){
+								var child = splitVariableName[x];
+								window[child] = new State(parent+child,0);
+								
+								window[parent].push(window[child]);
+							}
+						}
+					}
+					else{
+						if(index != null){
+							var iNumber =index[0].replace(/[\[\]']+/g,"");
+														
+							for(var x =1; x< splitVariableName.length; x++){
+								var child = splitVariableName[x];
+								var childName = parent+"["+parseInt(iNumber)+"]."+child;
+								
+								var c = window[parent][parseInt(iNumber)][child] =  new State(childName,0);
+								simulationStates[childName] = c;
+							}
+						}
+					}
+					
+				}
+				else{
+					//format name of the variable
+					var name = splitVariableName[0];
+
+					//create object with varible name and 0 as value
+					if(window[name]==null){
+						window[name] = new State(name, 0);
+						simulationStates[name] = window[name];
+					}
+				}
+			
+			}
 			break;
 		default:
 			break;

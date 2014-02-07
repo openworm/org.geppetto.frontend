@@ -42,8 +42,8 @@ import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.geppetto.frontend.GeppettoMessageInbound;
 import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
+import org.geppetto.frontend.GeppettoServlet;
 import org.geppetto.frontend.SimulationServerConfig;
-import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
 import org.geppetto.frontend.GeppettoServletController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,48 +51,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
- * Test Unit class to test Observer Mode functionality
+ * Test Unit class to test multi user Mode functionality
  * 
  * @author Jesus R. Martinez (jesus@metacell.us)
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)  
 @ContextConfiguration("classpath:test-app-config.xml")  
-public class TestObserverMode {
+public class TestMultiUserMode {
 
 	
 	@Autowired
 	private SimulationServerConfig simulationServerConfig;
 		
-	/*
-	 * Create two connections to represent multiple visitors to geppetto
-	 */
-	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound("Visitor0");
-	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound("Visitor1");
+	//private GeppettoServlet servlet = new GeppettoServlet();
 	
+	/*
+	 * Create fours connections to represent multiple visitors to geppetto
+	 */
+	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound("Visitor1");
+	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound("Visitor2");
+	private GeppettoMessageInbound connection3 = new GeppettoMessageInbound("Visitor3");
+	private GeppettoMessageInbound connection4 = new GeppettoMessageInbound("Visitor4");
 	
 	@Test
-	public void testServerBehavior(){
+	public void testInitialServerBehaviorMode(){
 				
-		assertEquals(simulationServerConfig.getServerBehaviorMode(), SimulationServerConfig.ServerBehaviorModes.OBSERVE);
-		
-		connection1.setVisitorRunMode(VisitorRunMode.CONTROLLING);
-		connection2.setVisitorRunMode(VisitorRunMode.OBSERVING);
-		
-		assertEquals(connection1.getCurrentRunMode(), VisitorRunMode.CONTROLLING);
-		assertEquals(connection2.getCurrentRunMode(), VisitorRunMode.OBSERVING);		
-	}
+		assertEquals(simulationServerConfig.getServerBehaviorMode(), SimulationServerConfig.ServerBehaviorModes.MULTIUSER);		
 	
-	private class TestSimulationServlet extends WebSocketServlet{
-
-		private final AtomicInteger _connectionIds = new AtomicInteger(0);
-		
-		@Override
-		protected StreamInbound createWebSocketInbound(String subProtocol,
-				HttpServletRequest request) {
-
-			return new GeppettoMessageInbound("Visitor1");
-		}
-		
+	
+		//TODO : Test against servlet by adding connections
 	}
 }

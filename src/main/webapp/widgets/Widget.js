@@ -199,7 +199,13 @@ var Widget ={
 							resizable :  true,
 							draggable : true,
 							height : 300,
-							width : 350
+							width : 350,
+							close: function(event, ui) {
+							    if ( event.originalEvent && 
+							                $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length ) {
+							    	$("#"+this.id).remove();
+							    }
+							}
 						});	
 				
 				//Take focus away from close button

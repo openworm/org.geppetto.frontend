@@ -55,10 +55,17 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	ERROR_ADDING_WATCH_LIST("error_adding_watch"),
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),
+	GET_SCRIPTS("get_scripts"),
+	SET_WATCH_LISTS("set_watch_vars"),
 	LIST_WATCH_VARS("list_watch_vars"),
 	LIST_FORCE_VARS("list_force_vars"),
+	SIMULATOR_FULL("simulator_full"),
 	GET_WATCH_LISTS("get_watch_lists"), 
-	CLIENT_ID("client_id");
+	START_WATCH("start_watch"),
+	STOP_WATCH("stop_watch"),
+	CLEAR_WATCH("clear_watch"),
+	CLIENT_ID("client_id"), 
+	FIRE_SIM_SCRIPTS("fire_sim_scripts");
 
 	private OUTBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

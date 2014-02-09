@@ -84,47 +84,13 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 			GEPPETTO.Console.debugLog(WEBSOCKET_CLOSED);
 		};
 
-		GEPPETTO.MessageSocket.bufferFromUTFString =function (str) {
-			  var bytes = []
-			    , tmp
-			    , ch;
-
-			  for(var i = 0, len = str.length; i < len; ++i) {
-			    ch = str.charCodeAt(i);
-			    if(ch & 0x80) {
-			      tmp = encodeURIComponent(str.charAt(i)).substr(1).split('%');
-			      for(var j = 0, jlen = tmp.length; j < jlen; ++j) {
-			        bytes[bytes.length] = parseInt(tmp[j], 16);
-			      }
-			    } else {
-			      bytes[bytes.length] = ch ;
-			    }
-			  }
-
-			  return new Uint8Array(bytes);
-			};
-
-		function uintToString(uintArray) {
-		    var encodedString = String.fromCharCode.apply(null, uintArray),
-		        decodedString = decodeURIComponent(escape(encodedString));
-		    return decodedString;
-		}
-		
+	
 		GEPPETTO.MessageSocket.socket.onmessage = function(msg)
 		{			
 			
-			var fileReader = new FileReader();
-			var arrayBuffer;
-			fileReader.onloadend = function(evt) {
-			      if (evt.target.readyState == FileReader.DONE) { 
-			    	  arrayBuffer=fileReader.result;
-			      }
-			};
-			fileReader.readAsArrayBuffer(msg.data);
-
-			var decompressedData = LZ4.decode(arrayBuffer);
+			var data= new Int8Array(msg.data);
+			var decompressedData = LZ4.decode(new Buffer(data));
 			var parsedServerMessage = JSON.parse(decompressedData);
-			
 			
 			//notify all handlers 
 			for( var i = 0, len = messageHandlers.length; i < len; i++ ) {

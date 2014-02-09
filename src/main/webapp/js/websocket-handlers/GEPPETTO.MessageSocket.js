@@ -68,7 +68,7 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 			GEPPETTO.Console.debugLog(WEBSOCKET_NOT_SUPPORTED);
 			return;
 		}
-
+		GEPPETTO.MessageSocket.socket.binaryType = 'arraybuffer';
 		GEPPETTO.MessageSocket.socket.onopen = function()
 		{
 			GEPPETTO.Console.debugLog(WEBSOCKET_OPENED);
@@ -112,10 +112,17 @@ GEPPETTO.MessageSocket = GEPPETTO.MessageSocket ||
 		
 		GEPPETTO.MessageSocket.socket.onmessage = function(msg)
 		{			
-			var uint8buf=GEPPETTO.MessageSocket.bufferFromUTFString(msg.data);
-			var inputBuffer = new Buffer(uint8buf,"UTF8");
+			
+			var fileReader = new FileReader();
+			var arrayBuffer;
+			fileReader.onloadend = function(evt) {
+			      if (evt.target.readyState == FileReader.DONE) { 
+			    	  arrayBuffer=fileReader.result;
+			      }
+			};
+			fileReader.readAsArrayBuffer(msg.data);
 
-			var decompressedData = lz4.LZ4_uncompress(inputBuffer);
+			var decompressedData = LZ4.decode(arrayBuffer);
 			var parsedServerMessage = JSON.parse(decompressedData);
 			
 			

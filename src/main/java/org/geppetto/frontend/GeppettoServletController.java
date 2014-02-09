@@ -38,7 +38,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.CharBuffer;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,9 +50,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.common.LZ4Compress;
 import org.geppetto.core.data.model.VariableList;
 import org.geppetto.core.data.model.WatchList;
-import org.geppetto.core.common.LZ4Compress;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
 import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
@@ -738,14 +738,15 @@ public class GeppettoServletController
 	 * @param msg
 	 *            - The message the user will be receiving
 	 */
-	public void sendMessage(GeppettoMessageInbound visitor, String msg)
+	public void sendMessage(GeppettoMessageInbound visitor, byte[] msg)
 	{
 		try
 		{
 			long startTime = System.currentTimeMillis();
-			CharBuffer buffer = CharBuffer.wrap(msg);
-			visitor.getWsOutbound().writeTextMessage(buffer);
-			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a message of " + msg.length() / 1024 + "KB to the client";
+			ByteBuffer buffer = ByteBuffer.wrap(msg);
+			visitor.getWsOutbound().writeBinaryMessage(buffer);
+			visitor.getWsOutbound().flush();
+			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a message of " + msg.length / 1024 + "KB to the client";
 			_logger.info(debug);
 		}
 		catch(IOException ignore)

@@ -143,11 +143,11 @@ public class GeppettoServletController{
 			}
 		}
 		else if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
-			int simulatorCapacity = newVisitor.getSimulationService().getSimulatorCapacity();
+			int simulatorCapacity = newVisitor.getSimulationService().getSimulationCapacity();
 			
 			if((this.getConnections().size() > simulatorCapacity) &&(simulatorCapacity>1)){
 
-				int position = (this.getConnections().size() - newVisitor.getSimulationService().getSimulatorCapacity());
+				int position = (this.getConnections().size() - newVisitor.getSimulationService().getSimulationCapacity());
 				String update = "{ \"simulatorName\":" + '"' +newVisitor.getSimulationService().getSimulatorName() + 
 						'"' + ", \"queuePosition\": " + position + "}";
 
@@ -501,7 +501,6 @@ public class GeppettoServletController{
 	} 
 
 	/**
-	 * Simulation is being controlled by another user, new visitor that just loaded Geppetto Simulation in browser 
 	 * is notified with an alert message of status of simulation.
 	 * 
 	 * @param id - ID of new Websocket connection. 
@@ -521,7 +520,7 @@ public class GeppettoServletController{
 	public void postClosingConnectionCheck(GeppettoMessageInbound exitingVisitor){
 
 		if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
-			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulatorCapacity();
+			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
 
 			if(this.getConnections().size() == simulatorCapacity){
 				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);

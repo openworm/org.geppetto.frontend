@@ -10,7 +10,7 @@
 	<!-- Instructs Spring to scan for internal service components to instantiate and configure -->
 	<context:annotation-config/>	
 	<context:component-scan base-package="org.geppetto.frontend" />
-		
+
 	<!-- Add flag for Simulation Run Mode --> 
 	<bean id="config" class="org.geppetto.frontend.SimulationServerConfig"> 
 		<property name="serverBehaviorMode" value="MULTIUSER" />

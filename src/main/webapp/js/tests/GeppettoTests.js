@@ -127,7 +127,7 @@ module("Run Script Test",
 	newSocket : GEPPETTO.MessageSocket,
 	setup : function(){
 		
-		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/SimulationServlet');
+		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 
 		setTimeout(function(){
 			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");

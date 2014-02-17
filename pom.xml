@@ -78,11 +78,6 @@
 			<version>4.5.0</version>
 			<scope>test</scope>
 		</dependency>
-<dependency>
-      <groupId>org.apache.geronimo.javamail</groupId>
-      <artifactId>geronimo-javamail_1.4_mail</artifactId>
-      <version>1.8.2</version>
-    </dependency>
 	</dependencies>
 	<build>
 
@@ -125,6 +120,7 @@
 						<Web-ContextPath>org.geppetto.frontend</Web-ContextPath>
 						<Import-Package>org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
+						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>						
 					</instructions>
 				</configuration>
 				<executions>

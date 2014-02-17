@@ -70,6 +70,7 @@ public class GeppettoMessageInbound extends MessageInbound
 		OBSERVING, CONTROLLING, WAITING
 	}
 
+	@Autowired
 	private ISimulation _simulationService;	
 	private GeppettoServletController _servletController;
 	private final String _client_id;
@@ -79,12 +80,12 @@ public class GeppettoMessageInbound extends MessageInbound
 	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
 	private boolean _isSimulationLoaded;
 
-	public GeppettoMessageInbound(String client_id, ISimulation simulationService)
+	public GeppettoMessageInbound(String client_id)
 	{
 		super();
 		this._servletController = GeppettoServletController.getInstance();
 		this._client_id = client_id;
-		this._simulationService = simulationService;
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);		
 	}
 
 	@Override

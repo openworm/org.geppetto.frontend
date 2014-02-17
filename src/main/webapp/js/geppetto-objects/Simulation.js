@@ -401,7 +401,9 @@ function searchTreePath(a) {
 	        	if(o[c]!=null){
 	        		val = o[c];
 	        	}
-	        	simulationStates[r + "." + c].update(val);
+	        	if(simulationStates[r + "." + c]!=null){
+	        		simulationStates[r + "." + c].update(val);
+	        	}
 	        }
 	      }
 	    return false;

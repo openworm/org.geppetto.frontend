@@ -69,10 +69,10 @@ public class TestMultiUserMode {
 	/*
 	 * Create fours connections to represent multiple visitors to geppetto
 	 */
-	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound("Visitor1", null);
-	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound("Visitor2", null);
-	private GeppettoMessageInbound connection3 = new GeppettoMessageInbound("Visitor3", null);
-	private GeppettoMessageInbound connection4 = new GeppettoMessageInbound("Visitor4", null);
+	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound("Visitor1");
+	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound("Visitor2");
+	private GeppettoMessageInbound connection3 = new GeppettoMessageInbound("Visitor3");
+	private GeppettoMessageInbound connection4 = new GeppettoMessageInbound("Visitor4");
 	
 	@Test
 	public void testInitialServerBehaviorMode(){

@@ -170,7 +170,7 @@ var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
 
 var LISTING_FORCE_VARS = "Inbound Message Received: List force variables";
 
-var SIMULATOR_UNAVAILABLE = " Simulator is Unavailable";
+var SIMULATOR_UNAVAILABLE = " is Unavailable";
 
 var WEBSOCKET_CONNECTION_ERROR = "Server Connection Error";
 

@@ -67,8 +67,8 @@ public class TestObserverMode {
 	/*
 	 * Create two connections to represent multiple visitors to geppetto
 	 */
-	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound("Visitor0", null);
-	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound("Visitor1", null);
+	private GeppettoMessageInbound connection1 = new GeppettoMessageInbound("Visitor0");
+	private GeppettoMessageInbound connection2 = new GeppettoMessageInbound("Visitor1");
 	
 	
 	@Test
@@ -91,7 +91,7 @@ public class TestObserverMode {
 		protected StreamInbound createWebSocketInbound(String subProtocol,
 				HttpServletRequest request) {
 
-			return new GeppettoMessageInbound("Visitor1", null);
+			return new GeppettoMessageInbound("Visitor1");
 		}
 		
 	}

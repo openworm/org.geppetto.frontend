@@ -15,9 +15,9 @@
 		<script src="js/vendor/Detector.js"></script>
 		<script src="js/vendor/ColorConverter.js"></script>
 		<script src="js/vendor/bootstrap.min.js"></script>
-		<script src="js/vendor/jquery.flot.min.js"></script>
 		<script src="js/vendor/jquery.cookie.js"></script>
-		<script src="js/vendor/jquery.flot.resize.min.js"></script>
+		<script src="widgets/plot/vendor/jquery.flot.min.js"></script>
+		<script src="widgets/plot/vendor/jquery.flot.resize.min.js"></script>
 		<script src="js/vendor/rAF.js"></script>
 		<script src="js/vendor/codemirror.js"></script>
 		<script src="js/vendor/xml.js"></script>
@@ -52,12 +52,16 @@
 		<link rel="stylesheet" href="css/jsConsole.css" />
 		<link rel="stylesheet" href="css/style.css" />
 		<link rel="stylesheet" href="widgets/Widget.css" />
-		<link rel="stylesheet" href="widgets/plots/Plot.css" />   	
+		<link rel="stylesheet" href="widgets/plot/Plot.css" />   	
 	</head>
 	<link rel="icon" 
       type="image/png" 
       href="images/favicon.png"/>
 	<body>
+	<div id="preloaded-images">
+            <img src="/img/welcomebckg.png" width="1" height="1" alt="" />
+            <img src="/img/welcomebckg@2x.png" width="1" height="1" alt="" />
+    </div>
 	<div id="controls">
 
 		<div id="sim_toolbar">
@@ -344,8 +348,8 @@
 					In fact we reckon this only represents about 15% of what you can expect in the end. We hope you'll enjoy it.</div>
 				</div>
 				<div class="progress progress-warning">
-				  <div class="bar" style="width: 18%"></div>
-				  <span class="sr-only">18% Complete</span>
+				  <div class="bar" style="width: 19%"></div>
+				  <span class="sr-only">19% Complete</span>
 				</div>
 
 				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">
@@ -397,10 +401,10 @@
 		<script src="js/SandboxConsole.js"></script>
 		
 		<script src="widgets/Widget.js"></script>
-		<script src="widgets/plots/Plot.js"></script>
-		<script src="js/widget-controllers/GEPPETTO.WidgetsListener.js"></script>		
-		<script src="js/widget-controllers/GEPPETTO.PlotsController.js"></script>
-		<script src="js/widget-controllers/GEPPETTO.SimState.js"></script>
+		<script src="widgets/plot/Plot.js"></script>
+		<script src="widgets/plot/controllers/GEPPETTO.WidgetsListener.js"></script>		
+		<script src="widgets/plot/controllers/GEPPETTO.PlotsController.js"></script>
+		<script src="widgets/plot/controllers/GEPPETTO.SimState.js"></script>
 		<script src="js/GEPPETTO.WidgetFactory.js"></script>
 		<script>
 		  var _gaq = _gaq || [];

@@ -11,6 +11,15 @@ body {
 	width: 100%;
 }
 
+div#preloaded-images {
+        position: absolute;
+        overflow: hidden;
+        left: -9999px;
+        top: -9999px;
+        height: 1px;
+        width: 1px;
+}
+
 #logo-container {
 	margin: 10px auto 0 auto;
 	width: 100px;

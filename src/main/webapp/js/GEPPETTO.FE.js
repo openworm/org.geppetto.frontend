@@ -336,6 +336,12 @@ GEPPETTO.FE.showWelcomeMessage = function(){
         }
 	});
 	
+	$('#welcomeMessageModal').on('hide', function(event){
+		if($('#welcomeMsgCookie').hasClass("checked")){
+        	$.cookie("hideWelcomeMessage", true);
+        }
+	});
+	
 	$("#welcomeMsgCookie").on("click", function(event){
         	 $(this).toggleClass('checked');
 	});

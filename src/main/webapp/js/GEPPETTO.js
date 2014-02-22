@@ -249,6 +249,17 @@ var GEPPETTO = GEPPETTO ||
 		threeObject.position.add(midPoint);
 		return threeObject;
 	};
+	
+	/**
+	 * @param jsonEntity the id of the entity to light up
+	 * @param intensity the lighting intensity from 0 (no illumination) to 1 (full illumination)
+	 */
+	GEPPETTO.lightUpEntity = function(jsonEntity, intensity)
+	{
+		//STUB
+		var threeObject=GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
+		threeObject.material.color.setHex(0xffffff);
+	};
 
 	/**
 	 * Print a point coordinates on console
@@ -939,6 +950,23 @@ var GEPPETTO = GEPPETTO ||
 		rotationMode = false;
 	};
 
+	/**
+	 * @param entityId
+	 *            the entity id
+	 */
+	GEPPETTO.getThreeObjectFromEntityId = function(entityId)
+	{
+		var threeObject=null;
+		scene.traverse(function(child)
+		{
+			if (child.hasOwnProperty("eid") && child.eid==entityId)
+			{
+				threeObject = child;
+			}
+		});
+		return threeObject;
+	};
+	
 	/**
 	 * @param entityId
 	 *            the entity id

@@ -16,8 +16,6 @@
 		<script src="js/vendor/ColorConverter.js"></script>
 		<script src="js/vendor/bootstrap.min.js"></script>
 		<script src="js/vendor/jquery.cookie.js"></script>
-		<script src="widgets/plot/vendor/jquery.flot.min.js"></script>
-		<script src="widgets/plot/vendor/jquery.flot.resize.min.js"></script>
 		<script src="js/vendor/rAF.js"></script>
 		<script src="js/vendor/codemirror.js"></script>
 		<script src="js/vendor/xml.js"></script>
@@ -51,16 +49,14 @@
 		<link rel="stylesheet" href="css/lesser-dark.css" />
 		<link rel="stylesheet" href="css/jsConsole.css" />
 		<link rel="stylesheet" href="css/style.css" />
-		<link rel="stylesheet" href="widgets/Widget.css" />
-		<link rel="stylesheet" href="widgets/plot/Plot.css" />   	
 	</head>
 	<link rel="icon" 
       type="image/png" 
       href="images/favicon.png"/>
 	<body>
 	<div id="preloaded-images">
-            <img src="/images/welcomebckg.png" width="1" height="1" alt="" />
-            <img src="/images/welcomebckg@2x.png" width="1" height="1" alt="" />
+            <img src="images/welcomebckg.png" width="1" height="1" alt="" />
+            <img src="images/welcomebckg@2x.png" width="1" height="1" alt="" />
     </div>
 	<div id="controls">
 
@@ -400,12 +396,11 @@
 		<script src="js/vendor/backbone-localStorage.min.js"></script>
 		<script src="js/SandboxConsole.js"></script>
 		
-		<script src="widgets/Widget.js"></script>
-		<script src="widgets/plot/Plot.js"></script>
-		<script src="widgets/GEPPETTO.WidgetsListener.js"></script>		
-		<script src="widgets/plot/controllers/GEPPETTO.PlotsController.js"></script>
 		<script src="js/GEPPETTO.SimState.js"></script>
 		<script src="js/GEPPETTO.WidgetFactory.js"></script>
+		
+		<script data-main="js/main.js" src="js/vendor/require.js"></script>
+		
 		<script>
 		  var _gaq = _gaq || [];
 		  _gaq.push(['_setAccount', 'UA-45841517-1']);

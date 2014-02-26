@@ -105,7 +105,7 @@ GEPPETTO.PlotsController = {
 			this.registerHandler(id);
 
 			//add commands to console autocomplete and help option
-			updateCommands("widgets/plot/Plot.js", p, id);
+			updateCommands("js/widgets/plot/Plot.js", p, id);
 
 			return p;
 		},

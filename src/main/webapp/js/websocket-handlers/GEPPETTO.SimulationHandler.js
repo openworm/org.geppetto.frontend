@@ -169,7 +169,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 					var parent = splitVariableName[0];
 					
 					//get index if array
-					var index = parent.match(/ *\[[^]]*\] */g);
+					var index = parent.match(/[^[\]]+(?=])/g);
 
 					parent = parent.replace(/ *\[[^]]*\] */g, "");
 					

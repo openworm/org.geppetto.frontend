@@ -40,6 +40,7 @@
 
 var WIDGET_EVENT_TYPE = {
 		DELETE : "delete",
+		UPDATE: "update"
 };
 
 GEPPETTO.WidgetsListener =  {

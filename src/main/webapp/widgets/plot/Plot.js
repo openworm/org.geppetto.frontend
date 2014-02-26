@@ -92,7 +92,6 @@ var Plot = Widget.View.extend({
 				}
 			}
 			this.datasets.push({label : newData.name, data : [[0,newData.value]]});
-			$("#"+this.getId()).trigger("subscribe", [newData.name]);	
 		}
 		else{
 			this.datasets.push({label : "", data : newData});
@@ -120,7 +119,6 @@ var Plot = Widget.View.extend({
 		if(set !=null){
 			for(var key in this.datasets){
 				if(set.name == this.datasets[key].label){
-					$("#"+this.getId()).trigger("unsubscribe", [set.name]);	
 					this.datasets.splice(key, 1);
 				}
 			}
@@ -144,49 +142,54 @@ var Plot = Widget.View.extend({
 	/**
 	 * Updates a data set, use for time series
 	 * 
-	 * @param label - Name of new data set
+	 * @param label - Name of data set
 	 * @param newValue - Updated value for data set
 	 */
-	updateDataSet : function(label,newValue){
-		if(label != null){
-			var newData = null;
-			var matchedKey = 0;
-			var reIndex = false;
+	updateDataSet : function(newValues){
+		for(var i =0; i < newValues.length; i++){
+			var label = newValues[i].label;
+			var newValue = newValues[i].data;
 			
-			//update corresponding data set
-			for(var key in this.datasets){
-				if(label ==  this.datasets[key].label){
-					newData = this.datasets[key].data;
-					matchedKey = key;
-				}
-			}
-			
-			
-			if(newData.length > this.limit){
-				newData.splice(0,1);
-				reIndex = true;
-			}
-			
-			newData.push([newData.length, newValue[0]]);
-			
-			
-			if(reIndex){
-				//re-index data
-				var indexedData = [];
-				for(var index =0, len = newData.length; index < len; index++){
-					var value = newData[index][1];
-					indexedData.push([index, value]);
+			if(label != null){
+				var newData = null;
+				var matchedKey = 0;
+				var reIndex = false;
+
+				//update corresponding data set
+				for(var key in this.datasets){
+					if(label ==  this.datasets[key].label){
+						newData = this.datasets[key].data;
+						matchedKey = key;
+					}
 				}
 
-				this.datasets[matchedKey].data = indexedData;
+
+				if(newData.length > this.limit){
+					newData.splice(0,1);
+					reIndex = true;
+				}
+
+				newData.push([newData.length, newValue[0]]);
+
+
+				if(reIndex){
+					//re-index data
+					var indexedData = [];
+					for(var index =0, len = newData.length; index < len; index++){
+						var value = newData[index][1];
+						indexedData.push([index, value]);
+					}
+
+					this.datasets[matchedKey].data = indexedData;
+				}
+				else{
+					this.datasets[matchedKey].data = newData;
+				}
 			}
-			else{
-				this.datasets[matchedKey].data = newData;
-			}
-			
-			this.plot.setData(this.datasets);	
-			this.plot.draw();
 		}
+		
+		this.plot.setData(this.datasets);	
+		this.plot.draw();
 	},
 	
 	/**
@@ -233,6 +236,10 @@ var Plot = Widget.View.extend({
 		this.plot = $.plot($("#"+this.id), this.datasets,this.options);
 	},
 	
+	/**
+	 * Retrieve the data sets for the plot
+	 * @returns {Array}
+	 */
 	getDataSets : function(){
 		return this.datasets;
 	}

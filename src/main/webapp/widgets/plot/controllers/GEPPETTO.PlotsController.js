@@ -144,18 +144,6 @@ GEPPETTO.PlotsController = {
 				delete window[plotID];
 			});
 			
-			//subscribe widget to simulation state 
-			$("#" +plotID).on("subscribe", function (event, param1) {
-				//param1 corresponds to simulation state, subscribe widget to it
-				simulationStates[param1].subscribe(window[plotID]);				
-			});
-			
-			//subscribe widget to simulation state 
-			$("#" +plotID).on("unsubscribe", function (event, param1) {
-				//param1 corresponds to simulation state, subscribe widget to it
-				simulationStates[param1].unsubscribe(window[plotID]);				
-			});
-			
 			//register resize handler for widget
 			$("#"+plotID).on("dialogresizestop", function(event, ui){
 				
@@ -195,13 +183,32 @@ GEPPETTO.PlotsController = {
 			plots = new Array();
 		},
 
-		//receives updates from widget listener class
+		//receives updates from widget listener class to update plotting widget(s)
 		update : function(event){
+			//delete plot widget(s)
 			if(event == WIDGET_EVENT_TYPE.DELETE){
 				this.removePlotWidgets();
 			}
-			else if(event == WIDGET_EVENT_TYPE.UPDATE_DATA){
-				this.removePlotWidgets();
+			
+			//update plotting widgets
+			else if(event == WIDGET_EVENT_TYPE.UPDATE){
+				//loop through all existing widgets
+				for(var i =0; i<plots.length; i++){
+					var plot = plots[i];
+					
+					//retrieve plot's datasets
+					var dataSets = plot.getDataSets();
+					//keeps track of new values
+					var newValues = [];
+					
+					//create new values dataset
+					for(var x =0; x <dataSets.length; x++){
+						newValues.push({label : dataSets[x].label, data: [[simulationStates[dataSets[x].label].value]]});
+					}
+					
+					//update plot with new data set
+					plot.updateDataSet(newValues);
+				}
 			}
 		}
 };

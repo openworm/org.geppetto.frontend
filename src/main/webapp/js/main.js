@@ -39,17 +39,12 @@
 /**
  * Adds widget dependencies
  */
-//Vendor libraries
-require(["widgets/plot/vendor/jquery.flot.min"], function(flot) {});
-
-require(["widgets/plot/vendor/jquery.flot.resize.min"], function(flot) {});
-
 //Widget Classes
 require(["widgets/Widget"], function(Widget) {
 	loadCss("js/widgets/Widget.css");
 });
 
-require(["widgets/plot/Plot"], function(Plot) {
+require(["widgets/plot/vendor/jquery.flot.min","widgets/plot/vendor/jquery.flot.resize.min","widgets/plot/Plot"], function(flot, resize, Plot) {
 	loadCss("js/widgets/plot/Plot.css");
 });
 

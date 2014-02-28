@@ -56,6 +56,10 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 
 			//Populate scene
 			GEPPETTO.populateScene(entities);
+			
+			//remove previous widgets
+			WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
+			
 			break;
 			//Event received to update the simulation
 		case MESSAGE_TYPE.SCENE_UPDATE:
@@ -178,16 +182,20 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 							var iNumber =index[0].replace(/[\[\]']+/g,"");
 							
 							window[parent] = [];
-							window[parent][parseInt(iNumber)] = {};
+							var c = window[parent][parseInt(iNumber)] = {};
+							
+							var stateNamePath = parent+"["+parseInt(iNumber)+"]";
 							
 							for(var x =1; x< splitVariableName.length; x++){
 								var child = splitVariableName[x];
-								var childName = parent+"["+parseInt(iNumber)+"]."+child;
-								
-								var c = window[parent][parseInt(iNumber)][child] =  new State(childName,0);
-								
-								simulationStates[childName] = c;
+								stateNamePath = stateNamePath+"."+child;
+
+								c = c[child] = new State(stateNamePath);								
 							}
+							
+							c = new State(stateNamePath, 0);
+							
+							simulationStates[stateNamePath] = c;
 						}
 						else{
 							window[parent] = new State(parent,0);
@@ -204,13 +212,24 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 						if(index != null){
 							var iNumber =index[0].replace(/[\[\]']+/g,"");
 														
+							var c = window[parent][parseInt(iNumber)];
+							
+							var stateNamePath = parent+"["+parseInt(iNumber)+"]";
+							
 							for(var x =1; x< splitVariableName.length; x++){
 								var child = splitVariableName[x];
-								var childName = parent+"["+parseInt(iNumber)+"]."+child;
+								stateNamePath = stateNamePath+"."+child;
+
+								if(c[child] == null){
+									c[child] = new State(stateNamePath,0);
+								}
 								
-								var c = window[parent][parseInt(iNumber)][child] =  new State(childName,0);
-								simulationStates[childName] = c;
+								c = c[child];								
 							}
+							
+							c = new State(stateNamePath, 0);
+							
+							simulationStates[stateNamePath] = c;
 						}
 					}
 					
@@ -241,39 +260,48 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 	 */
 	function formatListVariableOutput(vars, indent)
 	{
+		var formattedNode = null;
+		
 		// vars is always an array of variables
 		for(var i = 0; i < vars.length; i++) {
 			var name  = vars[i].name;
 
-			var size = null;
-			if (typeof(vars[i].size) != "undefined")
-			{	
-				// we know it's an array
-				size = vars[i].size;
+			if(vars[i].aspect != "aspect"){
+				var size = null;
+				if (typeof(vars[i].size) != "undefined")
+				{	
+					// we know it's an array
+					size = vars[i].size;
+				}
+
+				// print node
+				var arrayPart = (size!=null) ? "[" + size + "]" : "";
+				var indentation = "   ↪";
+				for(var j=0; j<indent; j++){ indentation=indentation.replace("↪"," ") + "   ↪ "; }
+				formattedNode = indentation + name + arrayPart;
+
+				// is type simple variable? print type
+				if (typeof(vars[i].type.variables) == "undefined")
+				{	
+					// we know it's a simple type
+					var type = vars[i].type.type;
+					formattedNode += ":" + type;
+				}
+
+				// print current node
+				GEPPETTO.Console.log(formattedNode);
+
+				// recursion check
+				if (typeof(vars[i].type.variables) != "undefined")
+				{	
+					// we know it's a complex type - recurse! recurse!
+					formatListVariableOutput(vars[i].type.variables, indent + 1);
+				}
 			}
-
-			// print node
-			var arrayPart = (size!=null) ? "[" + size + "]" : "";
-			var indentation = "";
-			for(var j=0; j<indent; j++){ indentation=indentation.replace("↪"," ") + "   ↪ "; }
-			var formattedNode = indentation + name + arrayPart;
-
-			// is type simple variable? print type
-			if (typeof(vars[i].type.variables) == "undefined")
-			{	
-				// we know it's a simple type
-				var type = vars[i].type.type;
-				formattedNode += ":" + type;
-			}
-
-			// print current node
-			GEPPETTO.Console.log(formattedNode);
-
-			// recursion check
-			if (typeof(vars[i].type.variables) != "undefined")
-			{	
-				// we know it's a complex type - recurse! recurse!
-				formatListVariableOutput(vars[i].type.variables, indent + 1);
+			else{
+				formattedNode = name;
+				// print current node
+				GEPPETTO.Console.log(formattedNode);
 			}
 		}
 	}

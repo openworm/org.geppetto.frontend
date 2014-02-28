@@ -138,9 +138,6 @@ public class GeppettoServletController{
 			if(isSimulationInUse()){
 				simulationControlsUnavailable(newVisitor);
 			}
-			else{
-				messageClient(null,newVisitor, OUTBOUND_MESSAGE_TYPES.READ_URL_PARAMETERS);
-			}
 		}
 		else if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
 			int simulatorCapacity = newVisitor.getSimulationService().getSimulationCapacity();

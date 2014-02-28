@@ -172,7 +172,7 @@ Simulation.load = function(simulationURL)
 			loading = true;
 			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);
 			//remove previous widgets
-			GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
+			WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
 		}
 	}
 	
@@ -212,8 +212,6 @@ Simulation.loadFromContent = function(content)
 		GEPPETTO.MessageSocket.send("init_sim", content);
 		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
-		//remove previous widgets
-		GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
 	}
 	
 	return LOADING_SIMULATION;
@@ -386,7 +384,7 @@ function updateSimulationWatchTree(variable){
 		searchTreeArray(tree);
 	}
 	
-	GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.UPDATE);
+	WidgetsListener.update(WIDGET_EVENT_TYPE.UPDATE);
 }
 
 /**

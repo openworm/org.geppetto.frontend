@@ -40,18 +40,19 @@
  * Adds widget dependencies
  */
 //Widget Classes
-require(["widgets/Widget"], function(Widget) {
+require(["widgets/Widget","widgets/WidgetsListener"], function(Widget, WidgetsListener) {
 	loadCss("js/widgets/Widget.css");
 });
 
-require(["widgets/plot/vendor/jquery.flot.min","widgets/plot/vendor/jquery.flot.resize.min","widgets/plot/Plot"], function(flot, resize, Plot) {
+var plot = [];
+plot.push("order!widgets/plot/vendor/jquery.flot.min");
+plot.push("order!widgets/plot/vendor/jquery.flot.resize.min");
+plot.push("order!widgets/plot/Plot");
+plot.push("order!widgets/plot/controllers/PlotsController");
+
+require(plot, function($) {
 	loadCss("js/widgets/plot/Plot.css");
 });
-
-//Widget Listeners and Controllers
-require(["widgets/WidgetsListener"], function(WidgetsListener) {});
-
-require(["widgets/plot/controllers/PlotsController"], function(PlotsController) {});
 
 /**
  * Load CSS File

@@ -43,7 +43,7 @@ var WIDGET_EVENT_TYPE = {
 		UPDATE: "update"
 };
 
-GEPPETTO.WidgetsListener =  {
+WidgetsListener =  {
 
 		_subscribers : [],
 

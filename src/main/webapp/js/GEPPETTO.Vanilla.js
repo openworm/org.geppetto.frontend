@@ -53,7 +53,7 @@ GEPPETTO.Vanilla.checkKeyboard = function()
 {
 	if (GEPPETTO.isKeyPressed("ctrl+alt+p"))
 	{
-		GEPPETTO.PlotsController.toggle();
+		PlotsController.toggle();
 	}
 	
 	else if(GEPPETTO.isKeyPressed("ctrl+alt+j")){

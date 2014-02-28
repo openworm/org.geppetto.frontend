@@ -46,7 +46,7 @@ var limit = 0;
 
 var watchedVariables = {};
 
-GEPPETTO.PlotsController = {
+PlotsController = {
 
 		/**
 		 * Toggles plotting widget on and off
@@ -118,7 +118,7 @@ GEPPETTO.PlotsController = {
 		 */
 		registerHandler : function(plotID){
 			
-			GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PlotsController);
+			WidgetsListener.subscribe(PlotsController);
 			
 			//registers remove handler for widget
 			$("#" +plotID).on("remove", function () {
@@ -131,13 +131,6 @@ GEPPETTO.PlotsController = {
 					{
 						plots.splice(p,1);
 						break;
-					}
-				}
-
-				var simStates = getSimulationStates();
-				for(var state in simStates){
-					if(window[state].isSubscribed(window[plotID])){
-						window[state].unsubscribe(window[plotID]);
 					}
 				}
 				

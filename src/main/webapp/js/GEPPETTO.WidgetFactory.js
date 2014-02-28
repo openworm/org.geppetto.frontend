@@ -57,7 +57,7 @@ var Widgets = {
 		switch(widgetType){
 			//create plotting widget
 			case Widgets.PLOT:
-				widget = GEPPETTO.PlotsController.addPlotWidget();
+				widget = PlotsController.addPlotWidget();
 				break;
 			default: 
 				break;
@@ -73,7 +73,7 @@ var Widgets = {
 		switch(widgetType){
 			//removes plotting widget from geppetto
 			case Widgets.PLOT:
-				GEPPETTO.PlotsController.removePlotWidgets();
+				PlotsController.removePlotWidgets();
 				return REMOVE_PLOT_WIDGETS;
 				break;
 			default: 

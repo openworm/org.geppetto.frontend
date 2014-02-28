@@ -49,33 +49,20 @@ var watchedVariables = {};
 PlotsController = {
 
 		/**
-		 * Toggles plotting widget on and off
+		 * Registers widget events to detect and execute following actions. 
+		 * Used when widget is destroyed. 
+		 * 
+		 * @param plotID
 		 */
-		toggle : function(){
-			//if there aren't plotting widgets to toggle, create one
-			if(plots.length==0){
-				GEPPETTO.Console.executeCommand('G.addWidget(Widgets.PLOT)');
-			}
-			//plot widgets exist, toggle them
-			else if(plots.length > 0){
-				plotsON = !plotsON;
-
-				for(p in plots){
-					var plot = plots[p];
-					if(plotsON){
-						plot.hide();
-					}
-					else{
-						plot.show();
-					}
-				}	
-			}
+		registerHandler : function(plotID){
+			
+			WidgetsListener.subscribe(PlotsController, plotID);
 		},
 
 		/**
 		 * Returns all plotting widgets objects
 		 */
-		getPlotWidgets : function(){
+		getWidgets : function(){
 			return plots;
 		},
 
@@ -109,57 +96,6 @@ PlotsController = {
 
 			return p;
 		},
-		
-		/**
-		 * Registers widget events to detect and execute following actions. 
-		 * Used when widget is destroyed. 
-		 * 
-		 * @param plotID
-		 */
-		registerHandler : function(plotID){
-			
-			WidgetsListener.subscribe(PlotsController);
-			
-			//registers remove handler for widget
-			$("#" +plotID).on("remove", function () {
-				//remove tags and delete object upon destroying widget
-				removeTags(plotID);
-
-				for (p in plots)
-				{
-					if (plots[p].getId() == this.id)
-					{
-						plots.splice(p,1);
-						break;
-					}
-				}
-				
-				delete window[plotID];
-			});
-			
-			//register resize handler for widget
-			$("#"+plotID).on("dialogresizestop", function(event, ui){
-				
-				var height = ui.size.height;
-				var width = ui.size.width;
-				
-				GEPPETTO.Console.executeCommand(plotID+".setSize(" + height +"," +  width + ")");
-				
-				var left = ui.position.left;
-				var top = ui.position.top;
-				
-				window[plotID].setPosition(left, top);
-			});
-			
-			//register drag handler for widget
-			$("#" +plotID).on("dialogdragstop", function(event,ui){
-				
-				var left = ui.position.left;
-				var top = ui.position.top;
-				
-				GEPPETTO.Console.executeCommand(plotID+".setPosition(" + left +"," +  top + ")");
-			});
-		},
 
 		/**
 		 * Removes existing plotting widgets
@@ -176,6 +112,30 @@ PlotsController = {
 			plots = new Array();
 		},
 
+		/**
+		 * Toggles plotting widget on and off
+		 */
+		toggle : function(){
+			//if there aren't plotting widgets to toggle, create one
+			if(plots.length==0){
+				GEPPETTO.Console.executeCommand('G.addWidget(Widgets.PLOT)');
+			}
+			//plot widgets exist, toggle them
+			else if(plots.length > 0){
+				plotsON = !plotsON;
+
+				for(p in plots){
+					var plot = plots[p];
+					if(plotsON){
+						plot.hide();
+					}
+					else{
+						plot.show();
+					}
+				}	
+			}
+		},
+		
 		//receives updates from widget listener class to update plotting widget(s)
 		update : function(event){
 			//delete plot widget(s)

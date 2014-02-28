@@ -40,7 +40,7 @@
  * Adds widget dependencies
  */
 //Widget Classes
-require(["widgets/Widget","widgets/WidgetsListener"], function(Widget, WidgetsListener) {
+require(["widgets/Widget", "widgets/WidgetFactory", "widgets/WidgetsListener"], function(Widget, WidgetsListener) {
 	loadCss("js/widgets/Widget.css");
 });
 

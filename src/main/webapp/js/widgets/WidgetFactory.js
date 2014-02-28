@@ -43,7 +43,7 @@ var Widgets = {
 };
 
 (function(){
-	GEPPETTO.WidgetFactory = GEPPETTO.WidgetFactory ||
+	WidgetFactory = GEPPETTO.WidgetFactory ||
 	{
 		REVISION : '1'
 	};
@@ -51,7 +51,7 @@ var Widgets = {
 	/**
 	 * Adds widget to Geppetto
 	 */
-	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
+	WidgetFactory.addWidget = function(widgetType){
 		var widget = null;
 		
 		switch(widgetType){
@@ -69,7 +69,7 @@ var Widgets = {
 	/**
 	 * Removes widget from Geppetto
 	 */
-	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
+	WidgetFactory.removeWidget = function(widgetType){
 		switch(widgetType){
 			//removes plotting widget from geppetto
 			case Widgets.PLOT:

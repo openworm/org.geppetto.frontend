@@ -56,10 +56,6 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 
 			//Populate scene
 			GEPPETTO.populateScene(entities);
-			
-			//remove previous widgets
-			WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
-			
 			break;
 			//Event received to update the simulation
 		case MESSAGE_TYPE.SCENE_UPDATE:

@@ -54,7 +54,7 @@ debugMode = false;
  * @param widgetType - Type of widget to add
  */
 G.addWidget = function(type){
-	var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
+	var newWidget = WidgetFactory.addWidget(type);
 	
 	return newWidget.getName() + WIDGET_CREATED;
 };
@@ -188,7 +188,7 @@ G.help = function(){
  * @param widgetType - Type of widget to remove
  */
 G.removeWidget = function(type){
-	return GEPPETTO.WidgetFactory.removeWidget(type);
+	return WidgetFactory.removeWidget(type);
 };
 
 /**

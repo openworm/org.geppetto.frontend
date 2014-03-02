@@ -94,7 +94,7 @@
 			resize: function(event,ui){
 				document.getElementById('console').style.top = "0px";
 				$(document.getElementById('footer')).height(ui.size.height + 86);
-			},
+			}
 		});
 
 		//handles resizing the JS console when the windows is resized

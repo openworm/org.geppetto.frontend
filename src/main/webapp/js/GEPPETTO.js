@@ -168,7 +168,23 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.lightUpEntity = function(jsonEntity, intensity)
 	{
+		if(intensity <0) { intensity = 0; }
+		if(intensity >1) { intensity = 1; }
+
+		var getRGB = function(hexString) {
+			return {
+				r:parseInt(hexString.substr(2,2),16),
+				g:parseInt(hexString.substr(4,2),16),
+			  b:parseInt(hexString.substr(6,2),16)
+			}
+		}
+		var scaleColor = function(color) {
+			return (Math.floor(color + ((255 - color)*intensity))).toString(16);
+		}
 		var threeObject=GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
+		var originalColor = getRGB(threeObject.material.originalColor);
+		threeObject.material.color.setHex(
+			'0x' + scaleColor(originalColor.r)+scaleColor(originalColor.g)+scaleColor(originalColor.b) );
 	};
 
 	/**
@@ -320,7 +336,9 @@ var GEPPETTO = GEPPETTO ||
 					shininess : 2,
 					shading : THREE.SmoothShading
 				});
-			material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
+
+			material.originalColor = '0x' + (Math.random() * 0xFFFFFF << 0).toString(16);
+			material.color.setHex(material.originalColor);
 			return material;
 		}
 
@@ -377,6 +395,7 @@ var GEPPETTO = GEPPETTO ||
 						});
 				  pMaterial.color = new THREE.Color(0xffffff);
 					THREE.ColorConverter.setHSV(pMaterial.color, Math.random(), 1.0, 1.0);
+					pMaterial.originalColor = pMaterial.color.getHexString();
 
 					var geometry = new THREE.Geometry();
 					for ( var gindex in geometries)

@@ -83,7 +83,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
             }
             
             var endtime=(new Date()).getTime();
-    		console.log("took " + (endtime-starttime) + " to UPDATE SCENE");
+    		//console.log("took " + (endtime-starttime) + " to UPDATE SCENE");
     		
             // TODO: store variable-watch tree
             break;

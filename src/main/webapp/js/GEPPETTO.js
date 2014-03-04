@@ -47,41 +47,13 @@ var GEPPETTO = GEPPETTO ||
 	/**
 	 * Local variables
 	 */
-	var debug = false;
-	var camera = null;
-	var container = null;
-	var controls = null;
-	var scene = null;
-	var renderer = null;
-	var stats = null;
-	var gui = null;
-	var projector = null;
-	var keyboard = new THREEx.KeyboardState();
-	var jsonscene = null;
-	var needsUpdate = false;
-	var metadata =
-	{};
-	var customUpdate = null;
-	var mouseClickListener = null;
-	var rotationMode = false;
-	var mouse =
-	{
-			x : 0,
-			y : 0
-	};
-	var geometriesMap = null;
-	var idCounter = 0;
-
-	var sceneCenter = new THREE.Vector3();
-	var cameraPosition = new THREE.Vector3();
-
-	var canvasCreated = false;
-	
+	var VARS;
 	/**
 	 * Initialize the engine
 	 */
 	GEPPETTO.init = function(containerp)
 	{
+		GEPPETTO_INIT(this);
 		if (!Detector.webgl)
 		{
 			Detector.addGetWebGLMessage();
@@ -89,69 +61,9 @@ var GEPPETTO = GEPPETTO ||
 		}
 		else
 		{
-			container = containerp;
-			GEPPETTO.setupRenderer();
-			GEPPETTO.setupScene();
-			GEPPETTO.setupCamera();
-			GEPPETTO.setupLights();
-			GEPPETTO.setupControls();
-			GEPPETTO.setupListeners();
-			
+			VARS = GEPPETTO.Init.initialize(containerp);
 			return true;
 		}
-	};
-
-	/**
-	 * Set a listener for mouse clicks
-	 * 
-	 * @param listener
-	 */
-	GEPPETTO.setMouseClickListener = function(listener)
-	{
-		mouseClickListener = listener;
-	};
-
-	/**
-	 * Remove the mouse listener (it's expensive don't add it when you don't need it!)
-	 */
-	GEPPETTO.removeMouseClickListener = function()
-	{
-		mouseClickListener = null;
-	};
-
-	/**
-	 * Creates a geometry according to its type
-	 * 
-	 * @param g
-	 * @param material
-	 * @returns {Mesh} a three mesh representing the geometry
-	 */
-	GEPPETTO.getThreeObjectFromJSONGeometry = function(g, material)
-	{
-		var threeObject = null;
-		switch (g.type)
-		{
-		case "Particle":
-			threeObject = new THREE.Vector3();
-			threeObject.x = g.position.x;
-			threeObject.y = g.position.y;
-			threeObject.z = g.position.z;
-
-			break;
-		case "Cylinder":
-			var lookAtV = new THREE.Vector3(g.distal.x, g.distal.y, g.distal.z);
-			var positionV = new THREE.Vector3(g.position.x, g.position.y, g.position.z);
-			threeObject = GEPPETTO.getCylinder(positionV, lookAtV, g.radiusTop, g.radiusBottom, material);
-			break;
-		case "Sphere":
-			threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius, 20, 20), material);
-			threeObject.position.set(g.position.x, g.position.y, g.position.z);
-			break;
-		}
-		// add the geometry to a map indexed by the geometry id so we can find it
-		// for updating purposes
-		geometriesMap[g.id] = threeObject;
-		return threeObject;
 	};
 
 	/**
@@ -159,9 +71,9 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.updateScene = function()
 	{
-		if (needsUpdate)
+		if (VARS.needsUpdate)
 		{
-			var entities = jsonscene.entities;
+			var entities = VARS.jsonscene.entities;
 
 			for ( var eindex in entities)
 			{
@@ -172,7 +84,7 @@ var GEPPETTO = GEPPETTO ||
 					GEPPETTO.updateGeometry(geometries[gindex]);
 				}
 
-				var entityGeometry = geometriesMap[entities[eindex].id];
+				var entityGeometry = VARS.geometriesMap[entities[eindex].id];
 				if (entityGeometry)
 				{
 					// if an entity is represented by a particle system we need to
@@ -183,7 +95,7 @@ var GEPPETTO = GEPPETTO ||
 					}
 				}
 			}
-			needsUpdate = false;
+			VARS.needsUpdate = false;
 		}
 	};
 
@@ -195,7 +107,7 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.updateGeometry = function(g)
 	{
-		var threeObject = geometriesMap[g.id];
+		var threeObject = VARS.geometriesMap[g.id];
 		if (threeObject)
 		{
 			if (threeObject instanceof THREE.Vector3)
@@ -238,7 +150,7 @@ var GEPPETTO = GEPPETTO ||
 
 		c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
 
-		threeObject = new THREE.Mesh(c, material);
+		var threeObject = new THREE.Mesh(c, material);
 
 		threeObject.lookAt(cylinderAxis);
 		var distance = midPoint.length();
@@ -251,21 +163,28 @@ var GEPPETTO = GEPPETTO ||
 	};
 
 	/**
-	 * Print a point coordinates on console
-	 * 
-	 * @param string
-	 * @param point
+	 * @param jsonEntity the id of the entity to light up
+	 * @param intensity the lighting intensity from 0 (no illumination) to 1 (full illumination)
 	 */
-	GEPPETTO.printPoint = function(string, point)
+	GEPPETTO.lightUpEntity = function(jsonEntity, intensity)
 	{
-		console.log(string + " (" + point.x + ", " + point.y + ", " + point.z + ")");
-	};
+		if(intensity <0) { intensity = 0; }
+		if(intensity >1) { intensity = 1; }
 
-	GEPPETTO.setupScene = function()
-	{
-		scene = new THREE.Scene();
-		geometriesMap =
-		{};
+		var getRGB = function(hexString) {
+			return {
+				r:parseInt(hexString.substr(2,2),16),
+				g:parseInt(hexString.substr(4,2),16),
+			  b:parseInt(hexString.substr(6,2),16)
+			}
+		}
+		var scaleColor = function(color) {
+			return (Math.floor(color + ((255 - color)*intensity))).toString(16);
+		}
+		var threeObject=GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
+		var originalColor = getRGB(threeObject.material.originalColor);
+		threeObject.material.color.setHex(
+			'0x' + scaleColor(originalColor.r)+scaleColor(originalColor.g)+scaleColor(originalColor.b) );
 	};
 
 	/**
@@ -277,7 +196,7 @@ var GEPPETTO = GEPPETTO ||
 		var entities = jsonscene.entities;
 		for ( var eindex in entities)
 		{
-			scene.add(GEPPETTO.getThreeObjectFromJSONEntity(entities[eindex], eindex, true));
+			VARS.scene.add(GEPPETTO.getThreeObjectFromJSONEntity(entities[eindex], eindex, true));
 		}
 
 		GEPPETTO.calculateSceneCenter();
@@ -292,7 +211,7 @@ var GEPPETTO = GEPPETTO ||
 		var aabbMin = null;
 		var aabbMax = null;
 
-		scene.traverse(function(child)
+		VARS.scene.traverse(function(child)
 				{
 			if(child instanceof THREE.Mesh || child instanceof THREE.ParticleSystem){
 				child.geometry.computeBoundingBox();
@@ -316,9 +235,9 @@ var GEPPETTO = GEPPETTO ||
 				});
 
 		// Compute world AABB center
-		sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
-		sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
-		sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
+		VARS.sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
+		VARS.sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
+		VARS.sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
 
 		// Compute world AABB "radius"
 		var diag = new THREE.Vector3();
@@ -326,15 +245,14 @@ var GEPPETTO = GEPPETTO ||
 		var radius = diag.length() * 0.5;
 
 		// Compute offset needed to move the camera back that much needed to center AABB 
-		var offset = radius / Math.tan(Math.PI / 180.0 * camera.fov * 0.25);
+		var offset = radius / Math.tan(Math.PI / 180.0 * VARS.camera.fov * 0.25);
 
 		var camDir = new THREE.Vector3( 0, 0, 1.0 );
-
-		camDir.multiplyScalar(offset); 
+  	camDir.multiplyScalar(offset);
 
 		//Store camera position
-		cameraPosition = new THREE.Vector3();
-		cameraPosition.addVectors(sceneCenter, camDir);
+		VARS.cameraPosition = new THREE.Vector3();
+		VARS.cameraPosition.addVectors(VARS.sceneCenter, camDir);
 	};
 
 	/**
@@ -343,16 +261,12 @@ var GEPPETTO = GEPPETTO ||
 	GEPPETTO.updateCamera = function()
 	{
 		// Update camera 
-		camera.rotationAutoUpdate = false;
-		camera.position.set( cameraPosition.x, cameraPosition.y, cameraPosition.z );
-		camera.lookAt(sceneCenter); 
-		camera.up = new THREE.Vector3(0,1,0);
-		camera.rotationAutoUpdate = true;
-		controls.target = sceneCenter;
-		
-//		GEPPETTO.Console.log("psoition " + cameraPosition.x + " y " +  cameraPosition.y + " z "+ cameraPosition.z);
-//		GEPPETTO.Console.log("scene center " + sceneCenter.x + " y " +  sceneCenter.y + " z "+ sceneCenter.z);
-
+		VARS.camera.rotationAutoUpdate = false;
+		VARS.camera.position.set( VARS.cameraPosition.x, VARS.cameraPosition.y, VARS.cameraPosition.z );
+		VARS.camera.lookAt(VARS.sceneCenter);
+		VARS.camera.up = new THREE.Vector3(0,1,0);
+		VARS.camera.rotationAutoUpdate = true;
+		VARS.controls.target = VARS.sceneCenter;
 	};
 
 	/**
@@ -360,72 +274,47 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.isScenePopulated = function()
 	{
-		for ( var g in geometriesMap)
-		{
-			return true;
-		}
-		return false;
+		return !(_.isEmpty(VARS.geometriesMap));
 	};
 	
 	GEPPETTO.isCanvasCreated = function()
 	{
-		return canvasCreated;
+		return VARS.canvasCreated;
 	};
 
 	/**
-	 * 
-	 * @param entity - The entity to be divided
-	 * @returns {Array}
+	 * Creates a geometry according to its type
+	 *
+	 * @param g
+	 * @param material
+	 * @returns {Mesh} a three mesh representing the geometry
 	 */
-	GEPPETTO.divideEntity = function(entity)
+	GEPPETTO.getThreeObjectFromJSONGeometry = function(g, material)
 	{
-		var jsonEntities = jsonscene.entities;
-		var jsonEntity = jsonEntities[entity.eindex];
-		var newEntities = [];
-		scene.remove(entity);
-
-		var entityObject = GEPPETTO.getThreeObjectFromJSONEntity(jsonEntity, entity.eindex, false);
-		if (entityObject instanceof Array)
+		var threeObject = null;
+		switch (g.type)
 		{
-			for ( var e in entityObject)
-			{
-				scene.add(entityObject[e]);
-				newEntities.push(entityObject[e]);
-			}
+			case "Particle":
+				threeObject = new THREE.Vector3();
+				threeObject.x = g.position.x;
+				threeObject.y = g.position.y;
+				threeObject.z = g.position.z;
+
+				break;
+			case "Cylinder":
+				var lookAtV = new THREE.Vector3(g.distal.x, g.distal.y, g.distal.z);
+				var positionV = new THREE.Vector3(g.position.x, g.position.y, g.position.z);
+				threeObject = GEPPETTO.getCylinder(positionV, lookAtV, g.radiusTop, g.radiusBottom, material);
+				break;
+			case "Sphere":
+				threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius, 20, 20), material);
+				threeObject.position.set(g.position.x, g.position.y, g.position.z);
+				break;
 		}
-		else
-		{
-			scene.add(entityObject);
-			newEntities.push(entityObject);
-		}
-
-		entity.geometry.dispose();
-		return newEntities;
-	};
-
-	/**
-	 * @param entities - the subentities
-	 * 
-	 * @returns {Array} the resulting parent entity in which the subentities were assembled
-	 */
-	GEPPETTO.mergeEntities = function(entities)
-	{
-		var entityObject = null;
-		if (entities[0].hasOwnProperty("parentEntityIndex"))
-		{
-			var jsonEntities = jsonscene.entities;
-			var entityIndex = entities[0].parentEntityIndex;
-
-			for ( var e in entities)
-			{
-				scene.remove(entities[e]);
-				entities[e].geometry.dispose();
-			}
-
-			entityObject = GEPPETTO.getThreeObjectFromJSONEntity(jsonEntities[entityIndex], entityIndex, true);
-			scene.add(entityObject);
-		}
-		return entityObject;
+		// add the geometry to a map indexed by the geometry id so we can find it
+		// for updating purposes
+		VARS.geometriesMap[g.id] = threeObject;
+		return threeObject;
 	};
 
 	/**
@@ -438,6 +327,21 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.getThreeObjectFromJSONEntity = function(jsonEntity, eindex, mergeSubentities)
 	{
+
+		var getMeshPhongMaterial = function() {
+			var material = new THREE.MeshPhongMaterial(
+				{
+					opacity : 1,
+					ambient : 0x777777,
+					shininess : 2,
+					shading : THREE.SmoothShading
+				});
+
+			material.originalColor = '0x' + (Math.random() * 0xFFFFFF << 0).toString(16);
+			material.color.setHex(material.originalColor);
+			return material;
+		}
+
 		var entityObject = null;
 		if (jsonEntity.subentities && jsonEntity.subentities.length > 0)
 		{
@@ -447,22 +351,14 @@ var GEPPETTO = GEPPETTO ||
 				// if mergeSubentities is true then only one resulting entity is
 				// created
 				// by merging all geometries of the different subentities together
-				var material = new THREE.MeshPhongMaterial(
-						{
-							opacity : 1,
-							ambient : 0x777777,
-							shininess : 2,
-							shading : THREE.SmoothShading
-						});
-				material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
 				var combined = new THREE.Geometry();
 				for ( var seindex in jsonEntity.subentities)
 				{
-					var threeObject = GEPPETTO.getThreeObjectFromJSONEntity(jsonEntity.subentities[seindex], mergeSubentities);
+					var threeObject = GEPPETTO.getThreeObjectFromJSONEntity(jsonEntity.subentities[seindex], eindex, false);
 					THREE.GeometryUtils.merge(combined, threeObject);
 					threeObject.geometry.dispose();
 				}
-				entityObject = new THREE.Mesh(combined, material);
+				entityObject = new THREE.Mesh(combined, getMeshPhongMaterial());
 				entityObject.eindex = eindex;
 				entityObject.eid = jsonEntity.id;
 				entityObject.geometry.dynamic = false;
@@ -472,7 +368,7 @@ var GEPPETTO = GEPPETTO ||
 				entityObject = [];
 				for ( var seindex in jsonEntity.subentities)
 				{
-					subentity = GEPPETTO.getThreeObjectFromJSONEntity(jsonEntity.subentities[seindex], mergeSubentities);
+					var subentity = GEPPETTO.getThreeObjectFromJSONEntity(jsonEntity.subentities[seindex], eindex, false);
 					subentity.parentEntityIndex = eindex;
 					entityObject.push(subentity);
 				}
@@ -482,54 +378,26 @@ var GEPPETTO = GEPPETTO ||
 		{
 			// leaf entity it only contains geometries
 			var geometries = jsonEntity.geometries;
-			if (geometries != null && geometries.length > 0)
+			if (geometries != null && geometries.length)
 			{
 				if (geometries[0].type == "Particle")
 				{
 					// assumes there are no particles mixed with other kind of
 					// geometrie hence if the first one is a particle then they all are
 					// create the particle variables
-					var sprite1 = THREE.ImageUtils.loadTexture("images/particle.png");
-					var eMaterial = new THREE.ParticleBasicMaterial(
-							{
-								size : 5,
-								map : sprite1,
-								blending : THREE.AdditiveBlending,
-								depthTest : false,
-								transparent : true
-							});
-					eMaterial.color = new THREE.Color(0xffffff);
-					THREE.ColorConverter.setHSV(eMaterial.color, Math.random(), 1.0, 1.0);
-					var bMaterial = new THREE.ParticleBasicMaterial(
-							{
-								size : 5,
-								map : sprite1,
-								blending : THREE.AdditiveBlending,
-								depthTest : false,
-								transparent : true
-							});
-					bMaterial.color = new THREE.Color(0xffffff);
-					THREE.ColorConverter.setHSV(bMaterial.color, Math.random(), 1.0, 1.0);
-					var lMaterial = new THREE.ParticleBasicMaterial(
-							{
-								size : 5,
-								map : sprite1,
-								blending : THREE.AdditiveBlending,
-								depthTest : false,
-								transparent : true
-							});
-					lMaterial.color = new THREE.Color(0xffffff);
-					THREE.ColorConverter.setHSV(lMaterial.color, Math.random(), 1.0, 1.0);
-					var pMaterial = lMaterial;
-					if (jsonEntity.id.indexOf("ELASTIC") != -1)
-					{
-						pMaterial = eMaterial;
-					}
-					else if (jsonEntity.id.indexOf("BOUNDARY") != -1)
-					{
-						pMaterial = bMaterial;
-					}
-					geometry = new THREE.Geometry();
+					var pMaterial = new THREE.ParticleBasicMaterial(
+						{
+							size : 5,
+							map : THREE.ImageUtils.loadTexture("images/particle.png"),
+							blending : THREE.AdditiveBlending,
+							depthTest : false,
+							transparent : true
+						});
+				  pMaterial.color = new THREE.Color(0xffffff);
+					THREE.ColorConverter.setHSV(pMaterial.color, Math.random(), 1.0, 1.0);
+					pMaterial.originalColor = pMaterial.color.getHexString();
+
+					var geometry = new THREE.Geometry();
 					for ( var gindex in geometries)
 					{
 						var threeObject = GEPPETTO.getThreeObjectFromJSONGeometry(geometries[gindex], pMaterial);
@@ -541,19 +409,12 @@ var GEPPETTO = GEPPETTO ||
 					// sort the particles which enables
 					// the behaviour we want
 					entityObject.sortParticles = true;
-					geometriesMap[jsonEntity.id] = entityObject;
+					VARS.geometriesMap[jsonEntity.id] = entityObject;
 				}
 				else
 				{
-					var material = new THREE.MeshPhongMaterial(
-							{
-								opacity : 1,
-								ambient : 0x777777,
-								shininess : 2,
-								shading : THREE.SmoothShading
-							});
-					material.color.setHex('0x' + (Math.random() * 0xFFFFFF << 0).toString(16));
 					var combined = new THREE.Geometry();
+					var material = getMeshPhongMaterial();
 					for ( var gindex in geometries)
 					{
 						var threeObject = GEPPETTO.getThreeObjectFromJSONGeometry(geometries[gindex], material);
@@ -571,33 +432,6 @@ var GEPPETTO = GEPPETTO ||
 	};
 
 	/**
-	 * Sets up the camera that is used to view the objects in the 3D Scene.
-	 */
-	GEPPETTO.setupCamera = function()
-	{
-		// Camera
-		var SCREEN_WIDTH = $(container).width(), SCREEN_HEIGHT = $(container).height();
-		var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
-		camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-		scene.add(camera);
-		camera.position.set( cameraPosition.x, cameraPosition.y, cameraPosition.z );
-		camera.lookAt(sceneCenter);
-		projector = new THREE.Projector();
-	};
-
-	/**
-	 * Sets up the controls used by the camera to make it able to zoom and pan.
-	 */
-	GEPPETTO.setupControls = function()
-	{
-		// Controls
-		controls = new THREE.TrackballControls(camera, renderer.domElement);
-		controls.noZoom = false;
-		controls.noPan = false;
-		controls.addEventListener('change', GEPPETTO.render);
-	};
-
-	/**
 	 * Sets up the HUD display with the scene stat's fps. 
 	 */
 	GEPPETTO.setupStats = function()
@@ -605,13 +439,13 @@ var GEPPETTO = GEPPETTO ||
 		// Stats
 		if ($("#stats").length == 0)
 		{
-			stats = new Stats();
-			stats.domElement.style.float = 'right';
-			stats.domElement.style.position = 'absolute';
-			stats.domElement.style.bottom = '0px';
-			stats.domElement.style.right = '0px';
-			stats.domElement.style.zIndex = 100;
-			$('#footerHeader').append(stats.domElement);
+			VARS.stats = new Stats();
+			VARS.stats.domElement.style.float = 'right';
+			VARS.stats.domElement.style.position = 'absolute';
+			VARS.stats.domElement.style.bottom = '0px';
+			VARS.stats.domElement.style.right = '0px';
+			VARS.stats.domElement.style.zIndex = 100;
+			$('#footerHeader').append(VARS.stats.domElement);
 		}
 	};
 	
@@ -631,62 +465,22 @@ var GEPPETTO = GEPPETTO ||
 	};
 
 	/**
-	 * Light up the scene
-	 */
-	GEPPETTO.setupLights = function()
-	{
-		// Lights
-
-		ambientLight = new THREE.AmbientLight( 0x000000 );
-		scene.add( ambientLight );
-
-		hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 1.1);
-		scene.add( hemisphereLight );
-
-		directionalLight = new THREE.DirectionalLight(0xffffff, 0.09);
-		directionalLight.position.set( 0, 1, 0 );
-		directionalLight.castShadow = true;
-		scene.add( directionalLight );
-
-		spotLight1 = new THREE.SpotLight( 0xffffff, 0.1 );
-		spotLight1.position.set( 100, 1000, 100 );
-		spotLight1.castShadow = true;
-		spotLight1.shadowDarkness = 0.2;
-		scene.add( spotLight1 );
-
-		spotLight2 = new THREE.SpotLight( 0xffffff, 0.22 );
-		spotLight2.position.set( 100, 1000, 100 );
-		spotLight2.castShadow = true;
-		spotLight2.shadowDarkness = 0.2;
-		scene.add( spotLight2 );
-
-	};
-
-	/**
 	 * Create a GUI element based on the available metadata
 	 */
 	GEPPETTO.setupGUI = function()
 	{
-		var data = false;
-		for ( var m in metadata)
-		{
-			data = true;
-			break;
-		}
+		var data = !(_.isEmpty(VARS.metadata));
 
 		// GUI
-		if (!gui && data)
+		if (!VARS.gui && data)
 		{
-			gui = new dat.GUI(
-					{
-						width : 400
-					});
-			GEPPETTO.addGUIControls(gui, metadata);
+			VARS.gui = new dat.GUI({width : 400});
+			GEPPETTO.addGUIControls(VARS.gui, VARS.metadata);
 		}
-		for (f in gui.__folders)
+		for (f in VARS.gui.__folders)
 		{
 			// opens only the root folders
-			gui.__folders[f].open();
+			VARS.gui.__folders[f].open();
 		}
 
 	};
@@ -707,7 +501,7 @@ var GEPPETTO = GEPPETTO ||
 			{
 				if (typeof current_metadata[m] == "object")
 				{
-					folder = parent.addFolder(m);
+					var folder = parent.addFolder(m);
 					// recursive call to populate the GUI with sub-metadata
 					GEPPETTO.addGUIControls(folder, current_metadata[m]);
 				}
@@ -720,55 +514,12 @@ var GEPPETTO = GEPPETTO ||
 	};
 
 	/**
-	 * Set up the WebGL Renderer
-	 */
-	GEPPETTO.setupRenderer = function()
-	{
-		renderer = new THREE.WebGLRenderer(
-				{
-					antialias : true
-				});
-		renderer.setClearColor(0x000000, 1);
-		var width = $(container).width();
-		var height = $(container).height();
-		renderer.setSize(width, height);
-		renderer.autoClear = true;
-		container.appendChild(renderer.domElement);
-		
-		canvasCreated = true;
-	};
-
-	/**
 	 * Adds debug axis to the scene
 	 */
 	GEPPETTO.setupAxis = function()
 	{
 		// To use enter the axis length
-		scene.add(new THREE.AxisHelper(200));
-	};
-
-	/**
-	 * Set up the listeners use to detect mouse movement and windoe resizing
-	 */
-	GEPPETTO.setupListeners = function()
-	{
-		// when the mouse moves, call the given function
-		renderer.domElement.addEventListener('mousemove', GEPPETTO.onDocumentMouseMove, false);
-		renderer.domElement.addEventListener('mousedown', GEPPETTO.onDocumentMouseDown, false);
-		window.addEventListener('resize', GEPPETTO.onWindowResize, false);
-	};
-
-	/**
-	 * Resizes canvas when window is resized
-	 */
-	GEPPETTO.onWindowResize = function()
-	{
-
-		camera.aspect = ($(container).width())/($(container).height());;
-		camera.updateProjectionMatrix();
-
-		renderer.setSize($(container).width(), $(container).height());
-
+		VARS.scene.add(new THREE.AxisHelper(200));
 	};
 
 	/**
@@ -776,37 +527,7 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.render = function()
 	{
-		renderer.render(scene, camera);
-	};
-
-	/**
-	 * We store the mouse coordinates
-	 * 
-	 * @param event
-	 */
-	GEPPETTO.onDocumentMouseMove = function(event)
-	{
-		// the following line would stop any other event handler from firing
-		// (such as the mouse's TrackballControls)
-		// event.preventDefault();
-
-		// update the mouse variable
-		mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-		mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-	};
-
-	/**
-	 * If a listener for click events was defined we call it
-	 * 
-	 * @param event
-	 */
-	GEPPETTO.onDocumentMouseDown = function(event)
-	{
-		if (mouseClickListener)
-		{
-			mouseClickListener(GEPPETTO.getIntersectedObjects(), event.which);
-		}
+		VARS.renderer.render(VARS.scene, VARS.camera);
 	};
 
 	/**
@@ -817,19 +538,18 @@ var GEPPETTO = GEPPETTO ||
 	{
 		// create a Ray with origin at the mouse position and direction into the
 		// scene (camera direction)
-		var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
-		projector.unprojectVector(vector, camera);
+		var vector = new THREE.Vector3(VARS.mouse.x, VARS.mouse.y, 1);
+		VARS.projector.unprojectVector(vector, VARS.camera);
 
-		var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+		var raycaster = new THREE.Raycaster(VARS.camera.position, vector.sub(VARS.camera.position).normalize());
 
 		var visibleChildren = [];
-		scene.traverse(function(child)
-				{
+		VARS.scene.traverse(function(child){
 			if (child.visible)
 			{
 				visibleChildren.push(child);
 			}
-				});
+		});
 
 		// returns an array containing all objects in the scene with which the ray
 		// intersects
@@ -843,7 +563,7 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.isKeyPressed = function(key)
 	{
-		return keyboard.pressed(key);
+		return VARS.keyboard.pressed(key);
 	};
 
 	/**
@@ -851,7 +571,7 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.getNewId = function()
 	{
-		return idCounter++;
+		return VARS.idCounter++;
 	};	
 
 	/**
@@ -860,14 +580,14 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.showMetadataForEntity = function(entityIndex)
 	{
-		if (gui)
+		if (VARS.gui)
 		{
-			gui.domElement.parentNode.removeChild(gui.domElement);
-			gui = null;
+			VARS.gui.domElement.parentNode.removeChild(VARS.gui.domElement);
+			VARS.gui = null;
 		}
 
-		metadata = jsonscene.entities[entityIndex].metadata;
-		metadata.ID = jsonscene.entities[entityIndex].id;
+		VARS.metadata = jsonscene.entities[entityIndex].metadata;
+		VARS.metadata.ID = jsonscene.entities[entityIndex].id;
 
 		GEPPETTO.setupGUI();
 
@@ -879,10 +599,10 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.updateJSONScene = function(newJSONScene)
 	{
-		jsonscene = newJSONScene;
-		needsUpdate = true;
+		VARS.jsonscene = newJSONScene;
+		VARS.needsUpdate = true;
 		GEPPETTO.updateScene();
-		if (customUpdate != null)
+		if (VARS.customUpdate != null)
 		{
 			GEPPETTO.customUpdate();
 		}
@@ -893,27 +613,27 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.animate = function()
 	{
-		debugUpdate = needsUpdate; // so that we log only the cycles when we are updating the scene
-		if (getSimulationStatus() == 2 && debugUpdate)
+		VARS.debugUpdate = VARS.needsUpdate; // so that we log only the cycles when we are updating the scene
+		if (getSimulationStatus() == 2 && VARS.debugUpdate)
 		{
 			GEPPETTO.log(UPDATE_FRAME_STARTING);
 		}
-		controls.update();
+		VARS.controls.update();
 		requestAnimationFrame(GEPPETTO.animate);
-		if (rotationMode)
+		if (VARS.rotationMode)
 		{
 			var timer = new Date().getTime() * 0.0005;
-			camera.position.x = Math.floor(Math.cos(timer) * 200);
-			camera.position.z = Math.floor(Math.sin(timer) * 200);
+			VARS.camera.position.x = Math.floor(Math.cos(timer) * 200);
+			VARS.camera.position.z = Math.floor(Math.sin(timer) * 200);
 		}
 		GEPPETTO.render();
-		if (stats)
+		if (VARS.stats)
 		{
-			stats.update();
+			VARS.stats.update();
 		}
-		if (getSimulationStatus() == 2 && debugUpdate)
+		if (getSimulationStatus() == 2 && VARS.debugUpdate)
 		{
-			GEPPETTO.log(UPDATE_FRAME_ENDING);
+			GEPPETTO.log(UPDATE_FRAME_END);
 		}
 	};
 
@@ -924,10 +644,10 @@ var GEPPETTO = GEPPETTO ||
 	GEPPETTO.enterRotationMode = function(aroundObject)
 
 	{
-		rotationMode = true;
+		VARS.rotationMode = true;
 		if (aroundObject)
 		{
-			camera.lookAt(aroundObject);
+			VARS.camera.lookAt(aroundObject);
 		}
 	};
 
@@ -936,9 +656,26 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.exitRotationMode = function()
 	{
-		rotationMode = false;
+		VARS.rotationMode = false;
 	};
 
+	/**
+	 * @param entityId
+	 *            the entity id
+	 */
+	GEPPETTO.getThreeObjectFromEntityId = function(entityId)
+	{
+		var threeObject=null;
+		VARS.scene.traverse(function(child)
+		{
+			if (child.hasOwnProperty("eid") && child.eid==entityId)
+			{
+				threeObject = child;
+			}
+		});
+		return threeObject;
+	};
+	
 	/**
 	 * @param entityId
 	 *            the entity id
@@ -953,11 +690,11 @@ var GEPPETTO = GEPPETTO ||
 			referencedIDs.push(entity.references[r].entityId);
 		}
 
-		scene.traverse(function(child)
+		VARS.scene.traverse(function(child)
 				{
 			if (child.hasOwnProperty("eid"))
 			{
-				if (GEPPETTO.isIn(child.eid, referencedIDs))
+				if (_.contains(referencedIDs, child.eid))
 				{
 					threeObjects.push(child);
 					var index = referencedIDs.indexOf(child.eid);
@@ -975,33 +712,14 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.getJSONEntityFromId = function(entityId)
 	{
-		for (e in jsonscene.entities)
+		for (e in VARS.jsonscene.entities)
 		{
-			if (jsonscene.entities[e].id == entityId)
+			if (VARS.jsonscene.entities[e].id === entityId)
 			{
-				return jsonscene.entities[e];
+				return VARS.jsonscene.entities[e];
 			}
 		}
-	};
-
-	/**
-	 * @param e
-	 *            the element to be checked
-	 * @param array
-	 *            the array to be checked
-	 */
-	GEPPETTO.isIn = function(e, array)
-	{
-		var found = false;
-		for ( var i = 0; i < array.length; i++)
-		{
-			if (array[i] == e)
-			{
-				found = true;
-				break;
-			}
-		}
-		return found;
+		return null;
 	};
 
 	/**
@@ -1009,7 +727,7 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.log = function(msg)
 	{
-		if (debug)
+		if (VARS.debug)
 		{
 			var d = new Date();
 			var curr_hour = d.getHours();
@@ -1021,7 +739,6 @@ var GEPPETTO = GEPPETTO ||
 
 		}
 	};
-	
 
 	/**
 	 * @param category
@@ -1037,92 +754,5 @@ var GEPPETTO = GEPPETTO ||
 			_gaq.push(['_trackEvent', category, action, opt_label, opt_value, opt_noninteraction]);
 		}
 	};
-	
 
-//	============================================================================
-//	Application logic.
-//	============================================================================
-
-	$(document).ready(function()
-			{
-		// Toolbar controls
-
-		$("#w").click(function(event)
-				{
-			controls.incrementPanEnd(-0.01, 0);
-				}).mouseup(function(event)
-						{
-					controls.resetSTATE();
-						}).next().click(function(event)
-								{
-							controls.incrementPanEnd(0, -0.01);
-								}).mouseup(function(event)
-										{
-									controls.resetSTATE();
-										}).next().click(function(event)
-												{
-											controls.incrementPanEnd(0.01, 0);
-												}).mouseup(function(event)
-														{
-													controls.resetSTATE();
-														}).next().click(function(event)
-																{
-															controls.incrementPanEnd(0, 0.01);
-																}).mouseup(function(event)
-																		{
-																	controls.resetSTATE();
-																		}).next().click(function(event)
-																				{
-																			GEPPETTO.calculateSceneCenter();
-																			GEPPETTO.updateCamera();
-																				});
-
-		$("#rw").click(function(event)
-				{
-			controls.incrementRotationEnd(-0.01, 0, 0);
-				}).mouseup(function(event)
-						{
-					controls.resetSTATE();
-						}).next().click(function(event)
-								{
-							controls.incrementRotationEnd(0, 0, 0.01);
-								}).mouseup(function(event)
-										{
-									controls.resetSTATE();
-										}).next().click(function(event)
-												{
-											controls.incrementRotationEnd(0.01, 0, 0);
-												}).mouseup(function(event)
-														{
-													controls.resetSTATE();
-														}).next().click(function(event)
-																{
-															controls.incrementRotationEnd(0, 0, -0.01);
-																}).mouseup(function(event)
-																		{
-																	controls.resetSTATE();
-																		}).next().click(function(event)
-																				{
-																			GEPPETTO.calculateSceneCenter();
-																			GEPPETTO.updateCamera();
-																				});
-
-		$("#zo").click(function(event)
-				{
-			controls.incrementZoomEnd(+0.01);
-
-				}).mouseup(function(event)
-						{
-					controls.resetSTATE();
-						});
-
-		$("#zi").click(function(event)
-				{
-			controls.incrementZoomEnd(-0.01);
-				}).mouseup(function(event)
-						{
-					controls.resetSTATE();
-						});
-
-			});
 })();

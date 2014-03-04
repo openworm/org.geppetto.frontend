@@ -171,7 +171,7 @@ Simulation.load = function(simulationURL)
 			GEPPETTO.MessageSocket.send("init_url", simulationURL);
 			loading = true;
 			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);
-			GEPPETTO.FE.simulationReloaded();
+			GEPPETTO.FE.SimulationReloaded();
 		}
 	}
 	
@@ -398,23 +398,45 @@ function searchTreePath(a) {
 	      return true;
 	    }
 	    for (var c in o) {
-	        if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
-	        	var val  = 0;
-	        	if(o[c]!=null){
-	        		val = o[c];
-	        	}
-	        	var rs = r.toString();
-	        	if(rs == ""){
-	        		if(simulationStates[c]!=null){
-	        			simulationStates[c].update(val);
-	        		}
-	        	}
-	        	else{
-	        		if(simulationStates[r + "." + c]!=null){
-	        			simulationStates[r + "." + c].update(val);
-	        		}
-	        	}
-	        }
+	    	if(!isNaN(c)){
+	    		if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
+	    			var val  = 0;
+	    			if(o[c]!=null){
+	    				val = o[c];
+	    			}
+	    			var rs = r.toString();
+	    			if(rs == ""){
+	    				if(simulationStates[c]!=null){
+	    					simulationStates[c].update(val);
+	    				}
+	    			}
+	    			else{
+	    				if(simulationStates[r + "." + c]!=null){
+	    					simulationStates[r + "." + c].update(val);
+	    				}
+	    			}
+	    		}
+	    	}
+	    	else{
+	    		var val  = 0;
+    			if(o[c]!=null){
+    				val = o[c];
+    			}
+    			
+    			if(arguments.callee(o[c], r + (r!=""?".":"") + c + (r!=""?"":""))){
+
+    				if(r == ""){
+    					if(simulationStates[c]!=null){
+    						simulationStates[c].update(val);
+    					}
+    				}
+    				else{
+    					if(simulationStates[r + "." + c]!=null){
+    						simulationStates[r + "." + c].update(val);
+    					}
+    				}
+    			}
+    		}
 	      }
 	    return false;
 	  })(a);

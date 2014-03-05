@@ -132,6 +132,10 @@ var INVALID_WAIT_USE = "G.wait(ms) command must be used inside script";
 
 var WAITING = "Waiting ms";
 
+var SHOW_CONSOLE = "Showing Console";
+
+var HIDE_CONSOLE = "Hiding Console";
+
 
 /**
  * GEPPETTO.Main resources

@@ -206,6 +206,27 @@ G.runScript = function(scriptURL){
 };
 
 /**
+ * Show or hide console using command
+ * 
+ * @name G.showConsole(mode)
+ * @param mode - "true" to show, "false" to hide.
+ */
+G.showConsole = function(mode){
+	var returnMessage;
+	
+	if(mode){
+		returnMessage = SHOW_CONSOLE;
+	}
+	else{
+		returnMessage = HIDE_CONSOLE;
+	}
+	
+	GEPPETTO.Console.showConsole(mode);
+	
+	return returnMessage;
+};
+
+/**
  * 
  * Waits certain amount of time before running next command. Must be 
  * used inside a script. 

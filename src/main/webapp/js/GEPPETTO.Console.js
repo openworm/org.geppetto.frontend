@@ -69,6 +69,25 @@
 			$('#console').slideToggle(200);		
 		}
 	};
+	
+	/**
+	 * Show console or hide it
+	 */
+	GEPPETTO.Console.showConsole = function(mode){
+		if(mode){
+			//check if console isn't already showing, we do this by checking
+			//it's css value of display
+			if($("#console").css("display")=="none"){
+				$('#console').slideToggle(200);
+				$('#commandInputArea').focus();
+			}
+		}
+		else{
+			$('#footer').height('');
+			$('#footerHeader').css("bottom","0px");
+			$('#console').slideToggle(200);	
+		}
+	};
 
 	/**
 	 * Creates Javascript Console

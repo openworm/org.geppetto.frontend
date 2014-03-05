@@ -32,65 +32,33 @@
  *******************************************************************************/
 
 /**
- * Class used to create widgets and handle widget events from parent class. 
+ * Loads plot scripts
+ *  
+ * @author Jesus Martinez (jesus@metacell.us)
  */
-
-/**
- * Enum use to hold different types of widgets
+/*
+ * Configure what dependencies are needed for each library
  */
-var Widgets = {
-			PLOT : 0
-};
-
-(function(){
-	WidgetFactory = GEPPETTO.WidgetFactory ||
-	{
-		REVISION : '1'
-	};
-	
-	/**
-	 * Adds widget to Geppetto
+require.config({
+	paths : {
+		'flot' :"widgets/plot/vendor/jquery.flot.min",
+		'resize' : 'widgets/plot/vendor/jquery.flot.resize.min',
+	},
+	/*
+	 * Specify dependencies for each library
 	 */
-	WidgetFactory.addWidget = function(widgetType){
-		var widget = null;
-		
-		switch(widgetType){
-			//create plotting widget
-			case Widgets.PLOT:
-				widget = PlotsController.addPlotWidget();
-				break;
-			default: 
-				break;
-		}
-				
-		return widget;
-	};
-	
-	/**
-	 * Removes widget from Geppetto
-	 */
-	WidgetFactory.removeWidget = function(widgetType){
-		switch(widgetType){
-			//removes plotting widget from geppetto
-			case Widgets.PLOT:
-				PlotsController.removePlotWidgets();
-				return REMOVE_PLOT_WIDGETS;
-				break;
-			default: 
-				return NON_EXISTENT_WIDGETS;
-				break;
-		}
-	};	
-})();
+	shim: {
+		flot : { deps :['jquery']},
+		resize : { deps : ['flot']}
+	}
+});
 
-/**
- * Load CSS File
- * @param url
- */
-function loadCss(url) {
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = url;
-    document.getElementsByTagName("head")[0].appendChild(link);
-}
+var plot = [];
+plot.push("flot");
+plot.push("resize");
+plot.push("widgets/plot/Plot");
+plot.push("widgets/plot/controllers/PlotsController");
+
+require(plot, function($) {
+	loadCss("js/widgets/plot/Plot.css");
+});

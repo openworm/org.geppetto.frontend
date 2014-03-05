@@ -32,65 +32,28 @@
  *******************************************************************************/
 
 /**
- * Class used to create widgets and handle widget events from parent class. 
+ * Loads widget scripts
+ *  
+ * @author Jesus Martinez (jesus@metacell.us)
  */
-
-/**
- * Enum use to hold different types of widgets
+/*
+ * Configure what dependencies are needed for each library
  */
-var Widgets = {
-			PLOT : 0
-};
+require.config({
+	paths : {
+		'widget' :"widgets/Widget",
+		'factory' :"widgets/WidgetFactory",
+	},
+	shim: {
+		widget : { deps :['backbone']},
+		factory : { deps : ['widget']},
+	}
+});
 
-(function(){
-	WidgetFactory = GEPPETTO.WidgetFactory ||
-	{
-		REVISION : '1'
-	};
+//Widget Classes
+require(["widget", "factory", "widgets/WidgetsListener"], function($) {
+	loadCss("js/widgets/Widget.css");
 	
-	/**
-	 * Adds widget to Geppetto
-	 */
-	WidgetFactory.addWidget = function(widgetType){
-		var widget = null;
-		
-		switch(widgetType){
-			//create plotting widget
-			case Widgets.PLOT:
-				widget = PlotsController.addPlotWidget();
-				break;
-			default: 
-				break;
-		}
-				
-		return widget;
-	};
-	
-	/**
-	 * Removes widget from Geppetto
-	 */
-	WidgetFactory.removeWidget = function(widgetType){
-		switch(widgetType){
-			//removes plotting widget from geppetto
-			case Widgets.PLOT:
-				PlotsController.removePlotWidgets();
-				return REMOVE_PLOT_WIDGETS;
-				break;
-			default: 
-				return NON_EXISTENT_WIDGETS;
-				break;
-		}
-	};	
-})();
-
-/**
- * Load CSS File
- * @param url
- */
-function loadCss(url) {
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = url;
-    document.getElementsByTagName("head")[0].appendChild(link);
-}
+	//Plot Widget
+	require(["js/widgets/plot/config.js"], function($) {});
+});

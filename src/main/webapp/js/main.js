@@ -64,9 +64,9 @@ require.config({
 	 */
 	shim: {
 		'vendor/jquery-ui-1.10.3.custom' : ["jquery"],
-		'vendor/TrackballControls' : ["jquery"],
+		'vendor/TrackballControls' : ["three"],
 		'vendor/THREEx.KeyboardState' : ['three'],
-		'vendor/ColorConverter' : ["jquery"],
+		'vendor/ColorConverter' : ["three"],
 		'vendor/bootstrap.min' : ["jquery"],
 		'vendor/xml' : ["codemirror"],
 		'vendor/javascript' : ["codemirror"],

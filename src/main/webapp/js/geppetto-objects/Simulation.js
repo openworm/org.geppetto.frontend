@@ -429,10 +429,20 @@ function searchTreePath(a) {
     					if(simulationStates[c]!=null){
     						simulationStates[c].update(val);
     					}
+    					else{
+    						stringToObject(c);
+    						simulationStates[c].update(val);
+    					}
     				}
     				else{
-    					if(simulationStates[r + "." + c]!=null){
-    						simulationStates[r + "." + c].update(val);
+						var name = r + "." + c;
+
+    					if(simulationStates[name]!=null){
+    						simulationStates[name].update(val);
+    					}
+    					else{
+    						stringToObject(name);
+    						simulationStates[name].update(val);
     					}
     				}
     			}

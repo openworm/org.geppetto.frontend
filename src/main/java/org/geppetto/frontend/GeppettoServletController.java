@@ -425,23 +425,24 @@ public class GeppettoServletController{
 	/**
 	 * Adds watch lists with variables to be watched
 	 * @throws GeppettoExecutionException 
+	 * @throws JsonProcessingException 
 	 */
-	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException{
+	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException, JsonProcessingException{
 		List<WatchList> lists = null;
 		
 		try {
 			lists = fromJSON(new TypeReference<List<WatchList>>() {}, jsonLists);
+			visitor.getSimulationService().addWatchLists(lists);
+			
+			// serialize watch-lists
+			ObjectMapper mapper = new ObjectMapper();
+			String serializedLists = mapper.writer().writeValueAsString(lists);
+			
+			// message the client the watch lists were added
+	        messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS,serializedLists);
 		} catch (GeppettoExecutionException e) {
 			throw new RuntimeException(e);
 		}
-		
-		// TODO: do a check that variables with those names actually exists for the current simulation
-		// TODO: throw exception if not
-		
-		visitor.getSimulationService().addWatchLists(lists);
-		
-		// message the client the watch lists were added
-        messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS);
 	}
 	
 	/**
@@ -451,8 +452,8 @@ public class GeppettoServletController{
 	 */
 	public void startWatch(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException{		
 		visitor.getSimulationService().startWatch();
-
-		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
+		
+        List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
 
 		// serialize watch-lists
 		ObjectMapper mapper = new ObjectMapper();

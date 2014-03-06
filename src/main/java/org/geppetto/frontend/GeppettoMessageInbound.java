@@ -43,11 +43,8 @@ import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

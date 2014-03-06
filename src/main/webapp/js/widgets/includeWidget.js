@@ -43,6 +43,7 @@ require.config({
 	paths : {
 		'widget' :"widgets/Widget",
 		'factory' :"widgets/WidgetFactory",
+		'widgetsPath' : "widgets/"
 	},
 	shim: {
 		widget : { deps :['backbone']},
@@ -51,7 +52,7 @@ require.config({
 });
 
 //Widget Classes
-require(["widget", "factory", "widgets/WidgetsListener"], function($) {
+require(["widget", "factory", "widgetsPath/WidgetsListener"], function($) {
 	loadCss("js/widgets/Widget.css");
 	
 	//Plot Widget

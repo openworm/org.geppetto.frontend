@@ -172,7 +172,9 @@ GEPPETTO.FE.loadingModalUIUpdate = function()
 			li.appendChild(a);
 			
 			//Add <li> element to load modal's dropdownmenu
-			ul.appendChild(li);
+			if(ul!=null){
+				ul.appendChild(li);
+			}
 		}		
 		
 		//Add click listener to sample simulations dropdown menu

@@ -77,6 +77,7 @@ require.config({
 		'vendor/backbone-localStorage.min' : ["backbone"],
 		sandboxconsole : {deps:["backbone"]},
 		'GEPPETTO.Resources' : ["geppetto"],
+		'GEPPETTO.Init' : ["geppetto"],
 		'GEPPETTO.Vanilla' : ["geppetto"],
 		'GEPPETTO.FE' : ["geppetto"],
 		'GEPPETTO.ScriptRunner' : ["geppetto"],		
@@ -124,6 +125,7 @@ jqueryLib.push("vendor/jquery.cookie");
 jqueryLib.push("vendor/rAF");
 jqueryLib.push("geppetto");
 jqueryLib.push("GEPPETTO.Resources");
+jqueryLib.push("GEPPETTO.Init");
 jqueryLib.push("GEPPETTO.Vanilla");
 jqueryLib.push("GEPPETTO.FE");
 jqueryLib.push("GEPPETTO.ScriptRunner");		

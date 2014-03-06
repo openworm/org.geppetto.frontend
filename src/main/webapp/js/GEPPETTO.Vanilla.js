@@ -60,8 +60,3 @@ GEPPETTO.Vanilla.checkKeyboard = function()
 		GEPPETTO.Console.toggleConsole();
 	}
 };
-
-$(document).ready(function()
-{
-	document.addEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard, false);
-});

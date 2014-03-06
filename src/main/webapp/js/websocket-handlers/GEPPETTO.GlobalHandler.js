@@ -70,6 +70,7 @@ GEPPETTO.GlobalHandler = GEPPETTO.GlobalHandler ||
 			var version = payload.geppetto_version;
 			var geppettoVersion = GEPPETTO_VERSION_HOLDER.replace("$1", version);
 			GEPPETTO.Console.log(geppettoVersion);
+			GEPPETTO.FE.searchForURLEmbeddedSimulation();
 			break;
 			//Notify user with alert they are now in Observer mode
 		case MESSAGE_TYPE.OBSERVER_MODE:
@@ -77,7 +78,7 @@ GEPPETTO.GlobalHandler = GEPPETTO.GlobalHandler ||
 			break;
 			//Read the Parameters passed in url
 		case MESSAGE_TYPE.READ_URL_PARAMS:
-			GEPPETTO.FE.searchForURLEmbeddedSimulation();
+			
 			break;		
 			//Run script
 		case MESSAGE_TYPE.RUN_SCRIPT:

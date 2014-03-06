@@ -43,7 +43,7 @@ var WIDGET_EVENT_TYPE = {
 		UPDATE: "update"
 };
 
-GEPPETTO.WidgetsListener =  {
+WidgetsListener =  {
 
 		_subscribers : [],
 
@@ -53,19 +53,61 @@ GEPPETTO.WidgetsListener =  {
 		 * @param obj - Controller Class subscribing
 		 * @returns {Boolean}
 		 */
-		subscribe : function(obj){
+		subscribe : function(controller, widgetID){
 
 			var addController = true;
 			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				if( this._subscribers[ i ] === obj ) {
+				if( this._subscribers[ i ] === controller ) {
 					addController = false;
 				}
 			}
 			if(addController){
-				this._subscribers.push( obj );
+				this._subscribers.push( controller );
 
 				GEPPETTO.Console.debugLog( 'added new observer' );
 			}
+			
+			//registers remove handler for widget
+			$("#" +widgetID).on("remove", function () {
+				//remove tags and delete object upon destroying widget
+				removeTags(widgetID);
+
+				var widgets = controller.getWidgets();
+				
+				for (p in widgets)
+				{
+					if (widgets[p].getId() == this.id)
+					{
+						widgets.splice(p,1);
+						break;
+					}
+				}
+				
+				delete window[plotID];
+			});
+			
+			//register resize handler for widget
+			$("#"+widgetID).on("dialogresizestop", function(event, ui){
+				
+				var height = ui.size.height;
+				var width = ui.size.width;
+				
+				GEPPETTO.Console.executeCommand(widgetID+".setSize(" + height +"," +  width + ")");
+				
+				var left = ui.position.left;
+				var top = ui.position.top;
+				
+				window[widgetID].setPosition(left, top);
+			});
+			
+			//register drag handler for widget
+			$("#" +widgetID).on("dialogdragstop", function(event,ui){
+				
+				var left = ui.position.left;
+				var top = ui.position.top;
+				
+				GEPPETTO.Console.executeCommand(widgetID+".setPosition(" + left +"," +  top + ")");
+			});
 		},
 
 		/**

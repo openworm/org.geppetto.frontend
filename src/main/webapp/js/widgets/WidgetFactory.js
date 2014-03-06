@@ -43,7 +43,7 @@ var Widgets = {
 };
 
 (function(){
-	GEPPETTO.WidgetFactory = GEPPETTO.WidgetFactory ||
+	WidgetFactory = GEPPETTO.WidgetFactory ||
 	{
 		REVISION : '1'
 	};
@@ -51,13 +51,13 @@ var Widgets = {
 	/**
 	 * Adds widget to Geppetto
 	 */
-	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
+	WidgetFactory.addWidget = function(widgetType){
 		var widget = null;
 		
 		switch(widgetType){
 			//create plotting widget
 			case Widgets.PLOT:
-				widget = GEPPETTO.PlotsController.addPlotWidget();
+				widget = PlotsController.addPlotWidget();
 				break;
 			default: 
 				break;
@@ -69,11 +69,11 @@ var Widgets = {
 	/**
 	 * Removes widget from Geppetto
 	 */
-	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
+	WidgetFactory.removeWidget = function(widgetType){
 		switch(widgetType){
 			//removes plotting widget from geppetto
 			case Widgets.PLOT:
-				GEPPETTO.PlotsController.removePlotWidgets();
+				PlotsController.removePlotWidgets();
 				return REMOVE_PLOT_WIDGETS;
 				break;
 			default: 
@@ -81,4 +81,16 @@ var Widgets = {
 				break;
 		}
 	};	
-})();	
+})();
+
+/**
+ * Load CSS File
+ * @param url
+ */
+function loadCss(url) {
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = url;
+    document.getElementsByTagName("head")[0].appendChild(link);
+}

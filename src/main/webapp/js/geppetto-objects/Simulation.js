@@ -171,8 +171,7 @@ Simulation.load = function(simulationURL)
 			GEPPETTO.MessageSocket.send("init_url", simulationURL);
 			loading = true;
 			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);
-			//remove previous widgets
-			GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
+			GEPPETTO.FE.SimulationReloaded();
 		}
 	}
 	
@@ -212,8 +211,7 @@ Simulation.loadFromContent = function(content)
 		GEPPETTO.MessageSocket.send("init_sim", content);
 		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
-		//remove previous widgets
-		GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
+		GEPPETTO.FE.SimulationReloaded();
 	}
 	
 	return LOADING_SIMULATION;
@@ -386,7 +384,7 @@ function updateSimulationWatchTree(variable){
 		searchTreeArray(tree);
 	}
 	
-	GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.UPDATE);
+	WidgetsListener.update(WIDGET_EVENT_TYPE.UPDATE);
 }
 
 /**
@@ -400,23 +398,55 @@ function searchTreePath(a) {
 	      return true;
 	    }
 	    for (var c in o) {
-	        if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
-	        	var val  = 0;
-	        	if(o[c]!=null){
-	        		val = o[c];
-	        	}
-	        	var rs = r.toString();
-	        	if(rs == ""){
-	        		if(simulationStates[c]!=null){
-	        			simulationStates[c].update(val);
-	        		}
-	        	}
-	        	else{
-	        		if(simulationStates[r + "." + c]!=null){
-	        			simulationStates[r + "." + c].update(val);
-	        		}
-	        	}
-	        }
+	    	if(!isNaN(c)){
+	    		if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
+	    			var val  = 0;
+	    			if(o[c]!=null){
+	    				val = o[c];
+	    			}
+	    			var rs = r.toString();
+	    			if(rs == ""){
+	    				if(simulationStates[c]!=null){
+	    					simulationStates[c].update(val);
+	    				}
+	    			}
+	    			else{
+	    				if(simulationStates[r + "." + c]!=null){
+	    					simulationStates[r + "." + c].update(val);
+	    				}
+	    			}
+	    		}
+	    	}
+	    	else{
+	    		var val  = 0;
+    			if(o[c]!=null){
+    				val = o[c];
+    			}
+    			
+    			if(arguments.callee(o[c], r + (r!=""?".":"") + c + (r!=""?"":""))){
+
+    				if(r == ""){
+    					if(simulationStates[c]!=null){
+    						simulationStates[c].update(val);
+    					}
+    					else{
+    						stringToObject(c);
+    						simulationStates[c].update(val);
+    					}
+    				}
+    				else{
+						var name = r + "." + c;
+
+    					if(simulationStates[name]!=null){
+    						simulationStates[name].update(val);
+    					}
+    					else{
+    						stringToObject(name);
+    						simulationStates[name].update(val);
+    					}
+    				}
+    			}
+    		}
 	      }
 	    return false;
 	  })(a);

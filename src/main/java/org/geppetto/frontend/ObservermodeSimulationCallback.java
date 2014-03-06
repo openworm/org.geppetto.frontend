@@ -66,7 +66,7 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 	 * 
 	 */
 	@Override
-	public void updateReady(String sceneUpdate, String variableWatchTree) {
+	public void updateReady(SimulationEvents event, String sceneUpdate, String variableWatchTree) {
 		long start=System.currentTimeMillis();
 		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -75,17 +75,23 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 
 		OUTBOUND_MESSAGE_TYPES action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
 
-		/*
-		 * Simulation is running but model has not yet been loaded. 
-		 */
-		if(!controller.getSimulationServerConfig().isSimulationLoaded()){
-			action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
+		// switch on message type
+		switch (event) {
+			case LOAD_MODEL: {
+				action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
 
-			controller.getSimulationServerConfig().setIsSimulationLoaded(true);
-			
-			String storedScene = "{ \"entities\":" + sceneUpdate + "}";
-			
-			controller.getSimulationServerConfig().setLoadedScene(storedScene);
+				controller.getSimulationServerConfig().setIsSimulationLoaded(true);
+				
+				String storedScene = "{ \"entities\":" + sceneUpdate + "}";
+				
+				controller.getSimulationServerConfig().setLoadedScene(storedScene);
+				break;
+			}
+			case SCENE_UPDATE: {
+				break;
+			}
+			default: {
+			}
 		}
 
 		for (GeppettoMessageInbound connection : controller.getConnections())

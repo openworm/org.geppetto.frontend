@@ -51,6 +51,15 @@ GEPPETTO.FE.createContainer = function()
 };
 
 /**
+ * Handles updating the front end after re-loading the simulation
+ */
+GEPPETTO.FE.SimulationReloaded = function()
+{
+	//delete all existing widgets
+	WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
+};
+
+/**
  * Show error message if webgl failed to start
  */
 GEPPETTO.FE.update = function(webGLStarted)

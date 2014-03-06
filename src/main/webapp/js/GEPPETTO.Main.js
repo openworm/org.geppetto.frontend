@@ -50,7 +50,7 @@ GEPPETTO.Main.StatusEnum =
 {
 	DEFAULT : 0,
 	CONTROLLING : 1, 
-	OBSERVING : 2, 	
+	OBSERVING : 2
 };
 
 GEPPETTO.Main.status = GEPPETTO.Main.StatusEnum.DEFAULT;

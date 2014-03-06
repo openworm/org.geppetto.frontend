@@ -2,45 +2,10 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>geppetto</title>
-
-		<!-- Third-party js libraries -->
-		<script src="js/vendor/jquery-1.9.1.js"></script>
-		<script src="js/vendor/jquery-ui-1.10.3.custom.js"></script>
-		<script src="js/vendor/three.min.js"></script>
-		<script src="js/vendor/TrackballControls.js"></script>
-		<script src="js/vendor/dat.gui.js"></script>
-		<script src="js/vendor/stats.min.js"></script>
-		<script src="js/vendor/THREEx.KeyboardState.js"></script>
-		<script src="js/vendor/Detector.js"></script>
-		<script src="js/vendor/ColorConverter.js"></script>
-		<script src="js/vendor/bootstrap.min.js"></script>
-		<script src="js/vendor/jquery.cookie.js"></script>
-		<script src="js/vendor/rAF.js"></script>
-		<script src="js/vendor/codemirror.js"></script>
-		<script src="js/vendor/xml.js"></script>
-		<script src ="js/vendor/javascript.js"></script>
-		<script src="js/vendor/formatting.js"></script>	
-
-		<!-- Geppetto -->
-		<script src="js/GEPPETTO.Resources.js"></script>
-		<script src="js/GEPPETTO.js"></script>
-		<script src="js/GEPPETTO.Vanilla.js"></script>
-		<script src="js/GEPPETTO.Main.js"></script>
-		<script src="js/GEPPETTO.FE.js"></script>
-		<script src="js/GEPPETTO.ScriptRunner.js"></script>
-		<script src="js/websocket-handlers/GEPPETTO.MessageSocket.js"></script>
-		<script src="js/websocket-handlers/GEPPETTO.GlobalHandler.js"></script>
-		<script src="js/websocket-handlers/GEPPETTO.SimulationHandler.js"></script>
-		<script src="js/websocket-handlers/GEPPETTO.SocketMessageTypes.js"></script>		
-		<script src="js/GEPPETTO.SimulationContentEditor.js"></script>
-		<script src="js/GEPPETTO.JSEditor.js"></script>
-		<script src="js/GEPPETTO.Console.js"></script>
-		<script src="js/geppetto-objects/Simulation.js"></script>
-		<script src="js/geppetto-objects/G.js"></script>
-		<script src="js/GEPPETTO.Utility.js"></script>
-		<script src="js/GEPPETTO.Share.js"></script>
+		<title>geppetto</title> 
 		
+		<script data-main="js/main.js" src="js/vendor/require.js"></script>
+				
 		<!-- CSS -->
 		<link rel="stylesheet" href="css/bootstrap.min.css" />
 		<link rel="stylesheet" href="css/custom-theme/jquery-ui-1.10.0.custom.css" />
@@ -376,31 +341,20 @@
 			</div>
 		</div>
 		</div>
+		<!-- The sandbox template: -->
 		<script type="text/template" id="tplSandbox">
-		<pre class="output"></pre>
-		<div class="input">
-			<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
+			<pre class="output"></pre>
+			<div class="input">
+				<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
 			</div>
 		</script>
 	
-	<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
-	<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
+		<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
+		<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
 <span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
 <% } %></script>
 
-<script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-
-		<!-- The sandbox template: -->
-		<script src="js/vendor/underscore.min.js"></script>
-		<script src="js/vendor/backbone.min.js"></script>
-		<script src="js/vendor/backbone-localStorage.min.js"></script>
-		<script src="js/SandboxConsole.js"></script>
-		
-		<script src="js/GEPPETTO.SimState.js"></script>
-		<script src="js/GEPPETTO.WidgetFactory.js"></script>
-		
-		<script data-main="js/main.js" src="js/vendor/require.js"></script>
-		
+		<script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>		
 		<script>
 		  var _gaq = _gaq || [];
 		  _gaq.push(['_setAccount', 'UA-45841517-1']);

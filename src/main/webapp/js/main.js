@@ -30,42 +30,124 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
  * Loads all scripts needed for Geppetto
  *  
  * @author Jesus Martinez (jesus@metacell.us)
  */
-/**
- * Adds widget dependencies
+
+/*
+ * Configure RequireJS. Values inside brackets mean those libraries are required prior
+ * to loading the one one. 
  */
-//Vendor libraries
-require(["widgets/plot/vendor/jquery.flot.min"], function(flot) {});
-
-require(["widgets/plot/vendor/jquery.flot.resize.min"], function(flot) {});
-
-//Widget Classes
-require(["widgets/Widget"], function(Widget) {
-	loadCss("js/widgets/Widget.css");
+require.config({
+	/*
+	 * Values in here are for dependencies that more than one module/script requires and/or needs.
+	 * E.G. If depenedency it's used more than once, it goes in here.
+	 */
+	paths : {
+		'jquery' :"vendor/jquery-1.9.1",
+		'three' : 'vendor/three.min',
+		'threeX' : 'vendor/THREEx.KeyboardState',
+		'codemirror' :"vendor/codemirror",
+		'underscore' : 'vendor/underscore.min',
+		'backbone' : 'vendor/backbone.min',
+		'geppetto' : "GEPPETTO",
+		'console' : "GEPPETTO.Console",
+		'geppetto_main' : "Geppetto.Main",
+		'sandboxconsole' : "SandboxConsole",
+	},
+	/*
+	 * Notes what dependencies are needed prior to loading each library, values on the right
+	 * of colon are dependencies. If dependency was declared in path above, then add it's dependencies 
+	 * to that object in here.
+	 */
+	shim: {
+		'vendor/jquery-ui-1.10.3.custom' : ["jquery"],
+		'vendor/TrackballControls' : ["three"],
+		'vendor/THREEx.KeyboardState' : ['three'],
+		'vendor/ColorConverter' : ["three"],
+		'vendor/bootstrap.min' : ["jquery"],
+		'vendor/xml' : ["codemirror"],
+		'vendor/javascript' : ["codemirror"],
+		'vendor/formatting' : ["codemirror"],
+		geppetto : {deps :["jquery", "three", "threeX"]},
+		underscore: {exports: '_'},
+		backbone: {deps:['underscore','jquery']},
+		'vendor/backbone-localStorage.min' : ["backbone"],
+		sandboxconsole : {deps:["backbone"]},
+		'GEPPETTO.Resources' : ["geppetto"],
+		'GEPPETTO.Init' : ["geppetto"],
+		'GEPPETTO.Vanilla' : ["geppetto"],
+		'GEPPETTO.FE' : ["geppetto"],
+		'GEPPETTO.ScriptRunner' : ["geppetto"],		
+		'GEPPETTO.SimulationContentEditor' : ["geppetto"],
+		'GEPPETTO.JSEditor' : ["geppetto"],
+		console : { deps:["sandboxconsole"]},
+		'GEPPETTO.Utility' : ["geppetto"],
+		'GEPPETTO.Share' : ["geppetto"],
+		'GEPPETTO.SimState' : ["geppetto"],
+		'websocket-handlers/GEPPETTO.MessageSocket' : ["geppetto"],
+		'websocket-handlers/GEPPETTO.SocketMessageTypes' : ["geppetto"],
+		'websocket-handlers/GEPPETTO.GlobalHandler' : ["geppetto"],
+		'websocket-handlers/GEPPETTO.SimulationHandler' : ["geppetto"],
+		'geppetto-objects/Simulation' : ["geppetto"],
+		'geppetto-objects/G' : ["geppetto"],
+		geppetto_main : { deps: ["console"] },
+		'vendor/dat.gui' : ["jquery"],
+		'vendor/stats.min' : ["jquery"],
+		'vendor/THREEx.KeyboardState' : ["three"],
+		'vendor/Detector' : ["jquery"],
+		'vendor/jquery.cookie' : ["jquery"],
+		'vendor/rAF': ["jquery"],
+	}
 });
 
-require(["widgets/plot/Plot"], function(Plot) {
-	loadCss("js/widgets/plot/Plot.css");
-});
-
-//Widget Listeners and Controllers
-require(["widgets/WidgetsListener"], function(WidgetsListener) {});
-
-require(["widgets/plot/controllers/PlotsController"], function(PlotsController) {});
-
-/**
- * Load CSS File
- * @param url
+/*
+ * Adds all libs to an array
  */
-function loadCss(url) {
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = url;
-    document.getElementsByTagName("head")[0].appendChild(link);
-}
+var jqueryLib = [];
+jqueryLib.push("jquery");
+jqueryLib.push("three");
+jqueryLib.push("vendor/jquery-ui-1.10.3.custom");
+jqueryLib.push("vendor/TrackballControls");
+jqueryLib.push("vendor/ColorConverter");
+jqueryLib.push("vendor/bootstrap.min");
+jqueryLib.push("codemirror");
+jqueryLib.push("vendor/xml");
+jqueryLib.push("vendor/javascript");
+jqueryLib.push("vendor/formatting");
+jqueryLib.push("vendor/dat.gui");
+jqueryLib.push("vendor/stats.min");
+jqueryLib.push("threeX");
+jqueryLib.push("vendor/Detector");
+jqueryLib.push("vendor/jquery.cookie");
+jqueryLib.push("vendor/rAF");
+jqueryLib.push("geppetto");
+jqueryLib.push("GEPPETTO.Resources");
+jqueryLib.push("GEPPETTO.Init");
+jqueryLib.push("GEPPETTO.Vanilla");
+jqueryLib.push("GEPPETTO.FE");
+jqueryLib.push("GEPPETTO.ScriptRunner");		
+jqueryLib.push("GEPPETTO.SimulationContentEditor");
+jqueryLib.push("GEPPETTO.JSEditor");
+jqueryLib.push("console");
+jqueryLib.push("GEPPETTO.Utility");
+jqueryLib.push("GEPPETTO.Share");
+jqueryLib.push("GEPPETTO.SimState");
+jqueryLib.push("websocket-handlers/GEPPETTO.MessageSocket");
+jqueryLib.push("websocket-handlers/GEPPETTO.SocketMessageTypes");
+jqueryLib.push("websocket-handlers/GEPPETTO.GlobalHandler");
+jqueryLib.push("websocket-handlers/GEPPETTO.SimulationHandler");
+jqueryLib.push("geppetto-objects/Simulation");
+jqueryLib.push("geppetto-objects/G");
+jqueryLib.push("geppetto_main");
+jqueryLib.push("underscore");
+jqueryLib.push("backbone");
+jqueryLib.push("vendor/backbone-localStorage.min");
+jqueryLib.push("sandboxconsole");
+
+require(jqueryLib, function(jquery) {});
+
+//Vendor Classes
+require(["widgets/includeWidget"], function($) {});	

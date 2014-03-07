@@ -85,7 +85,7 @@ test("Test Copy History To Clipboard", function(){
 test("Test Add Widget", function(){
 	G.addWidget(Widgets.PLOT);
 	
-	equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created, test passed");
+	equal(PlotsController.getWidgets().length, 1, "Plot widget created, test passed");
 	
 	G.removeWidget(Widgets.PLOT);
 });
@@ -93,19 +93,19 @@ test("Test Add Widget", function(){
 test("Test Remove Widget", function(){
 	G.addWidget(Widgets.PLOT);
 	
-	equal(GEPPETTO.PlotsController.getPlotWidgets().length,  1, "Plot widget created");
+	equal(PlotsController.getWidgets().length,  1, "Plot widget created");
 	
 	G.removeWidget(Widgets.PLOT);
 	
-	equal(GEPPETTO.PlotsController.getPlotWidgets().length, 0, "Plot widget removed, test passed");
+	equal(PlotsController.getWidgets().length, 0, "Plot widget removed, test passed");
 });
 
 test("Test Widget", function(){
 	G.addWidget(Widgets.PLOT);
 	
-	equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created");
+	equal(PlotsController.getWidgets().length, 1, "Plot widget created");
 	
-	var plot = GEPPETTO.PlotsController.getPlotWidgets()[0];
+	var plot = PlotsController.getWidgets()[0];
 	
 	equal(plot.isVisible(), true, "Default visibility test passed");
 	

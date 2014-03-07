@@ -170,6 +170,7 @@ asyncTest("Test Simulation Controls", function(){
 				Simulation.start();
 				Simulation.pause();
 				Simulation.stop();
+				start();
 				break;
 				case MESSAGE_TYPE.SIMULATION_STARTED:
 					ok(true,"Simulation Started, passed");
@@ -179,7 +180,6 @@ asyncTest("Test Simulation Controls", function(){
 					break;
 				case MESSAGE_TYPE.SIMULATION_STOPPED:
 					ok(true,"Simulation Stopped, passed");
-					start();
 					break;
 				}
 				

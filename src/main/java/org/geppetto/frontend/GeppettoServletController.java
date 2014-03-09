@@ -483,8 +483,9 @@ public class GeppettoServletController
 	 * Adds watch lists with variables to be watched
 	 * 
 	 * @throws GeppettoExecutionException
+	 * @throws GeppettoInitializationException 
 	 */
-	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException
+	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException, GeppettoInitializationException
 	{
 		List<WatchList> lists = null;
 

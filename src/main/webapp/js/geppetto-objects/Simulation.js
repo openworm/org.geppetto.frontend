@@ -382,8 +382,9 @@ function updateSimulationWatchTree(variable){
 
 	tree = Simulation.watchTree.WATCH_TREE;
 	
-	//figure out what the server is returning, either an object structure 
-	// or an array 
+	//server returned an object, traverse through the object to get the new value of
+	// variable and update corresponding GEPPETTO.SimState, if one doesn't exist create 
+	//one
 	if(tree.length == null){
 		searchTreePath(tree);
 	}
@@ -395,7 +396,11 @@ function updateSimulationWatchTree(variable){
 }
 
 /**
- * Create name of variable from tree.
+ * Takes an object path and traverses through it to find the value within. 
+ * Example :    {hhpop[0] : { v : 20 } }
+ * 
+ * Method will traverse through object to find the value "20" and update corresponding 
+ * simulation state with it. If no simulation state exists, then it creates one. 
  */
 function searchTreePath(a) {
 	  var list = [];
@@ -405,6 +410,7 @@ function searchTreePath(a) {
 	      return true;
 	    }
 	    for (var c in o) {
+	    	//if current tree path object is array
 	    	if(!isNaN(c)){
 	    		if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
 	    			var val  = 0;
@@ -412,11 +418,14 @@ function searchTreePath(a) {
 	    				val = o[c];
 	    			}
 	    			var rs = r.toString();
+	    			//first object or no more children
 	    			if(rs == ""){
+	    				//simulation state already exists, update
 	    				if(simulationStates[c]!=null){
 	    					simulationStates[c].update(val);
 	    				}
 	    			}
+	    			//object has leafs, add "." to name and update value if it exists
 	    			else{
 	    				if(simulationStates[r + "." + c]!=null){
 	    					simulationStates[r + "." + c].update(val);
@@ -424,6 +433,7 @@ function searchTreePath(a) {
 	    			}
 	    		}
 	    	}
+	    	//current path object from tree not an array
 	    	else{
 	    		var val  = 0;
     			if(o[c]!=null){
@@ -431,26 +441,24 @@ function searchTreePath(a) {
     			}
     			
     			if(arguments.callee(o[c], r + (r!=""?".":"") + c + (r!=""?"":""))){
-
+    				//root of path case, no more children
     				if(r == ""){
-    					if(simulationStates[c]!=null){
-    						simulationStates[c].update(val);
-    					}
-    					else{
+    					//create simulation state and update it
+    					if(simulationStates[c]==null){
     						createSimState(c);
-    						simulationStates[c].update(val);
     					}
+						simulationStates[c].update(val);
     				}
+    				//within path of tree, add "." to note levels
     				else{
 						var name = r + "." + c;
 
-    					if(simulationStates[name]!=null){
-    						simulationStates[name].update(val);
-    					}
-    					else{
-    						createSimState(name);
-    						simulationStates[name].update(val);
-    					}
+    					//create simulation state and update it
+						if(simulationStates[name]==null){
+							createSimState(name);
+						}
+						simulationStates[name].update(val);
+
     				}
     			}
     		}

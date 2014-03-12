@@ -42,6 +42,9 @@ var Plot = Widget.View.extend({
 	limit : 20,
 	updateGrid : false,
 	options : null,
+	xaxisLabel : null,
+	yaxisLabel : null,
+	labelsUpdated: false,
 	
 	/**
 	 * Default options for plot widget, used if none specified 
@@ -53,6 +56,12 @@ var Plot = Widget.View.extend({
 	    },
 		yaxis: { min : -.1,max : 1},
 		xaxis: {min: 0, max : 20, show : true},
+		grid: {
+			margin: {
+				left: 15,
+				bottom : 15
+			},
+		}
 	},
 	
 	/**
@@ -97,6 +106,7 @@ var Plot = Widget.View.extend({
 			this.datasets.push({label : "", data : newData});
 		}
 		
+		
 		var plotHolder = $("#"+this.id);
 		if(this.plot == null){
 			this.plot = $.plot(plotHolder,this.datasets,this.options);
@@ -105,7 +115,7 @@ var Plot = Widget.View.extend({
 		else{
 			this.plot = $.plot(plotHolder,this.datasets,this.options);	
 		}
-		
+
 		return "Line plot added to widget";
 	},
 	
@@ -149,6 +159,15 @@ var Plot = Widget.View.extend({
 		for(var i =0; i < newValues.length; i++){
 			var label = newValues[i].label;
 			var newValue = newValues[i].data;
+		
+			if(!this.labelsUpdated){
+				var unit = newValues[i].unit;
+				if(unit != null){
+					this.setAxisLabelY("Measure ( " + unit + " )");
+					this.setAxisLabelX("Response time (ms)");
+				}				
+				this.labelsUpdated = true;
+			}
 			
 			if(label != null){
 				var newData = null;
@@ -242,5 +261,35 @@ var Plot = Widget.View.extend({
 	 */
 	getDataSets : function(){
 		return this.datasets;
+	},
+
+	/**
+	 * Sets a label next to the Y Axis
+	 * 
+	 * @param label - Label to use for Y Axis 
+	 */
+	setAxisLabelY : function(label){
+		if(this.yaxisLabel != null){
+			$("#YLabel").remove();		
+		}
+		
+		this.yaxisLabel = $("<div class='axisLabel yaxisLabel' id='YLabel'></div>")
+			.text(label)
+			.appendTo($("#"+this.id));
+	},
+
+	/**
+	 * Sets a label next to the X Axis
+	 * 
+	 * @param label - Label to use for X Axis 
+	 */
+	setAxisLabelX : function(label){
+		if(this.xaxisLabel != null){
+			$("#XLabel").remove();			
+		}
+		this.xaxisLabel = $("<div class='axisLabel xaxisLabel' id='XLabel'></div>")
+			.text(label)
+			.appendTo($("#"+this.id));
 	}
+	
 });

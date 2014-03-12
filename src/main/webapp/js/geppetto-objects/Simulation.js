@@ -66,6 +66,8 @@ var simulationStates = {};
 
 var loading = false;
 
+var TIME = null;
+
 /**
  * Start the simulation.
  * 
@@ -354,9 +356,10 @@ Simulation.clearWatchLists = function()
 Simulation.getWatchTree = function()
 {
 	var watched_variables = WATCHED_SIMULATION_STATES + "";
-	
+		
 	for(var key in simulationStates){
-		watched_variables +=  "\n" + "      -- " + key + "\n";
+		watched_variables +=  "\n" + "      -- " + key + "\n" +
+							   "         " + simulationStates[key].value + " " +simulationStates[key].unit;
 	}
 	
 	if(Simulation.watchTree == null){
@@ -365,6 +368,10 @@ Simulation.getWatchTree = function()
 	else{
 		return watched_variables;
 	}
+};
+
+Simulation.getTime = function(){
+	return SIMULATION_TIME_MSG + TIME;
 };
 
 /**
@@ -430,7 +437,7 @@ function searchTreePath(a) {
     						simulationStates[c].update(val);
     					}
     					else{
-    						stringToObject(c);
+    						createSimState(c);
     						simulationStates[c].update(val);
     					}
     				}
@@ -441,7 +448,7 @@ function searchTreePath(a) {
     						simulationStates[name].update(val);
     					}
     					else{
-    						stringToObject(name);
+    						createSimState(name);
     						simulationStates[name].update(val);
     					}
     				}
@@ -542,3 +549,7 @@ function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
 		return SIMULATION_NOT_LOADED_ERROR;
 	} 
 };
+
+function updateTime(t){
+	TIME = t.TIME_STEP.time;
+}

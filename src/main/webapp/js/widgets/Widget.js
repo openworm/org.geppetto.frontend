@@ -198,6 +198,7 @@ var Widget ={
 						{
 							resizable :  true,
 							draggable : true,
+							top : 10,
 							height : 300,
 							width : 350,
 							close: function(event, ui) {

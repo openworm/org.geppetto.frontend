@@ -56,6 +56,7 @@ require.config({
 		'console' : "GEPPETTO.Console",
 		'geppetto_main' : "Geppetto.Main",
 		'sandboxconsole' : "SandboxConsole",
+		'storage' : 'vendor/backbone-localStorage.min'
 	},
 	/*
 	 * Notes what dependencies are needed prior to loading each library, values on the right
@@ -74,8 +75,8 @@ require.config({
 		geppetto : {deps :["jquery", "three", "threeX"]},
 		underscore: {exports: '_'},
 		backbone: {deps:['underscore','jquery']},
-		'vendor/backbone-localStorage.min' : ["backbone"],
-		sandboxconsole : {deps:["backbone"]},
+		storage: {deps:['backbone']},
+		sandboxconsole : {deps:["backbone", "storage"]},
 		'GEPPETTO.Resources' : ["geppetto"],
 		'GEPPETTO.Init' : ["geppetto"],
 		'GEPPETTO.Vanilla' : ["geppetto"],
@@ -144,7 +145,7 @@ jqueryLib.push("geppetto-objects/G");
 jqueryLib.push("geppetto_main");
 jqueryLib.push("underscore");
 jqueryLib.push("backbone");
-jqueryLib.push("vendor/backbone-localStorage.min");
+jqueryLib.push("storage");
 jqueryLib.push("sandboxconsole");
 
 require(jqueryLib, function(jquery) {});

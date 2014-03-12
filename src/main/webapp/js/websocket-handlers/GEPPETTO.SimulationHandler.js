@@ -63,9 +63,14 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 
             var entities = JSON.parse(payload.update).entities;
             var variables = JSON.parse(payload.update).variable_watch;
+            var time = JSON.parse(payload.update).time;
             
             if(variables != null){
             	updateSimulationWatchTree(variables);
+            }
+            
+            if(time != null){
+            	updateTime(time);
             }
             //Update if simulation hasn't been stopped
             if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated())
@@ -181,7 +186,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 				var name = variables[v].replace(splitVariableName[0]+".", "");
 							
 				if(simulationStates[name]==null){
-					stringToObject(name);
+					createSimState(name);
 				}
 			}
 			break;
@@ -245,84 +250,117 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 	}
 })();
 
-function stringToObject(name){
+/**
+ *Creates a Geppetto.SimState out of a simulation state path
+ */
+function createSimState(name){	
+	//split the path of the object name
+	var statePath = name.split(".");
 	
-	var splitName = name.split(".");
-	
-	//create object from variables
-	if(splitName.length > 1 ){
-		var parent = splitName[0];
-		
-		//get index if array
-		var index = parent.match(/[^[\]]+(?=])/g);
-
-		parent = parent.replace(/ *\[[^]]*\] */g, "");
-		
-		if(window[parent] == null){
-			if(index != null){
-				var iNumber =index[0].replace(/[\[\]']+/g,"");
-				
-				window[parent] = [];
-				var c = window[parent][parseInt(iNumber)] = {};
-				
-				var stateNamePath = parent+"["+parseInt(iNumber)+"]";
-				
-				for(var x =1; x< splitName.length; x++){
-					var child = splitName[x];
-					stateNamePath = stateNamePath+"."+child;
-
-					c = c[child] = new State(stateNamePath);								
-				}
-				
-				c = new State(stateNamePath, 0);
-				
-				simulationStates[stateNamePath] = c;
-			}
-			else{
-				window[parent] = new State(parent,0);
-				
-				for(var x =1; x< splitName.length; x++){
-					var child = splitName[x];
-					window[child] = new State(parent+child,0);
-					
-					window[parent].push(window[child]);
-				}
-			}
-		}
-		else{
-			if(index != null){
-				var iNumber =index[0].replace(/[\[\]']+/g,"");
-											
-				var c = window[parent][parseInt(iNumber)];
-				
-				var stateNamePath = parent+"["+parseInt(iNumber)+"]";
-				
-				for(var x =1; x< splitName.length; x++){
-					var child = splitName[x];
-					stateNamePath = stateNamePath+"."+child;
-
-					if(c[child] == null){
-						c[child] = new State(stateNamePath,0);
-					}
-					
-					c = c[child];								
-				}
-				
-				c = new State(stateNamePath, 0);
-				
-				simulationStates[stateNamePath] = c;
-			}
-		}
-		
+	//create object from simulation states that have a path
+	//e.g. "hhpop[0].v"
+	if(statePath.length > 1 ){		
+		stringToObject(null, statePath);
 	}
+	//create object for non path variable, single node simulation state
+	//e.g. "dummyNode"
 	else{
 		//format name of the variable
-		var singleVar = splitName[0];
+		var singleVar = statePath[0];
 
-		//create object with varible name and 0 as value
+		//create object with variable name and 0 as value
 		if(window[singleVar]==null){
 			window[singleVar] = new State(singleVar, 0);
 			simulationStates[singleVar] = window[singleVar];
+		}
+	}
+}
+
+/**
+ *
+ */
+function stringToObject(parent, statePath){
+	//get first node from path
+	var node = statePath[0];
+	
+	//get index from node if it's array
+	var index = node.match(/[^[\]]+(?=])/g);
+	
+	//take index and brackets out of the equation for now
+	node = node.replace(/ *\[[^]]*\] */g, "");
+	
+	if(window[node] == null){
+		//we have an array
+		if(index != null){
+
+			var iNumber =index[0].replace(/[\[\]']+/g,"");
+			
+			//create array object
+			window[node] = [];
+			var c = window[node][parseInt(iNumber)] = {};
+			
+			var stateName = node+"["+parseInt(iNumber)+"]";
+			
+			for(var x =1; x< statePath.length; x++){
+				var child = statePath[x];
+				stateName = stateName+"."+child;
+
+				c = c[child] = new State(stateName);								
+			}
+			
+			c = new State(stateName, 0);
+			
+			simulationStates[stateName] = c;
+		}
+		else{
+			window[node] = new State(node,0);
+			
+			if(parent!=null){
+				window[parent].push(window[node]);
+			}
+			
+			statePath.splice(0,1);
+			
+			stringToObject(node, statePath);
+		}
+	}
+	else{
+		if(index != null){
+			var iNumber =index[0].replace(/[\[\]']+/g,"");
+										
+			var c = window[node][parseInt(iNumber)];
+			
+			var stateNamePath = node+"["+parseInt(iNumber)+"]";
+			
+			for(var x =1; x< statePath.length; x++){
+				var child = statePath[x];
+				stateNamePath = stateNamePath+"."+child;
+
+				if(c[child] == null){
+					c[child] = new State(stateNamePath,0);
+				}
+				
+				c = c[child];								
+			}
+			
+			if(parent!=null){
+				stateNamePath = parent + "." + stateNamePath;
+			}
+			
+			c = new State(stateNamePath, 0);
+			
+			simulationStates[stateNamePath] = c;			
+		}
+		else{
+			window[node] = new State(node,0);
+			
+			if(parent!=null){
+				window[parent].push(window[node]);
+			}
+			
+			statePath.splice(0,1);
+			
+			stringToObject(node, statePath);
 		}
 	}
 }

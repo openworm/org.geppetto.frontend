@@ -154,9 +154,18 @@ PlotsController = {
 					//keeps track of new values
 					var newValues = [];
 					
+					var value;
+					var u;
 					//create new values dataset
 					for(var x =0; x <dataSets.length; x++){
-						newValues.push({label : dataSets[x].label, data: [[simulationStates[dataSets[x].label].value]]});
+						value = [simulationStates[dataSets[x].label].value];
+						u = simulationStates[dataSets[x].label].unit;
+						if(u != null){
+							newValues.push({label : dataSets[x].label, data: [value], unit : u});
+						}
+						else{
+							newValues.push({label : dataSets[x].label, data: [value]});
+						}
 					}
 					
 					//update plot with new data set

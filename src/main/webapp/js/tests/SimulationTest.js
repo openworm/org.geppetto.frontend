@@ -170,7 +170,6 @@ asyncTest("Test Simulation Controls", function(){
 				Simulation.start();
 				Simulation.pause();
 				Simulation.stop();
-				start();
 				break;
 				case MESSAGE_TYPE.SIMULATION_STARTED:
 					ok(true,"Simulation Started, passed");
@@ -180,6 +179,7 @@ asyncTest("Test Simulation Controls", function(){
 					break;
 				case MESSAGE_TYPE.SIMULATION_STOPPED:
 					ok(true,"Simulation Stopped, passed");
+					start();
 					break;
 				}
 				
@@ -208,9 +208,9 @@ asyncTest("Test Variable Watch in Plot", function(){
 					
 					G.addWidget(Widgets.PLOT);
 					
-					equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created, passed");
+					equal(PlotsController.getWidgets().length, 1, "Plot widget created, passed");
 					
-					var plot = GEPPETTO.PlotsController.getPlotWidgets()[0];
+					var plot = PlotsController.getWidgets()[0];
 					plot.hide();
 					
 					notEqual(plot.getDataSets(),null,"Plot has variable data, passed");

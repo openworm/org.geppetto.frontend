@@ -517,21 +517,9 @@ public class GeppettoServletController{
 	 */
 	public void postClosingConnectionCheck(GeppettoMessageInbound exitingVisitor){
 
-		if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
-			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
-
-			if(this.getConnections().size() == simulatorCapacity){
-				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
-				messageClient(null,nextVisitorInLine,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
-			}
-		}
 		
-		/*
-		 * If the exiting visitor was running the simulation, notify all the observing
-		 * visitors that the controls for the simulation became available
-		 */
-		if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING){
-
+		if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
+			
 			//Controlling user is leaving, but simulation might still be running. 
 			try{
 				if(exitingVisitor.getSimulationService().isRunning()){
@@ -543,31 +531,58 @@ public class GeppettoServletController{
 				e.printStackTrace();
 			}
 
-			//Notify all observers
-			for(GeppettoMessageInbound visitor : _observers){
-				//visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
-				//send message to alert client of server availability
-				messageClient(null,visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
-			}
-			
-			_simulationInUse = false;
+			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
 
-		}			
-
-		/*
-		 * Closing connection is that of a visitor in OBSERVE mode, remove the 
-		 * visitor from the list of observers. 
-		 */
-		else if (exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING){
-			//User observing simulation is closing the connection
-			if(_observers.contains(exitingVisitor)){
-				//Remove user from observers list
-				_observers.remove(exitingVisitor);
+			if(this.getConnections().size() == simulatorCapacity){
+				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
+				messageClient(null,nextVisitorInLine,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
 			}
-			//User observing simulation is closing the connection
-			if(_queueUsers.contains(exitingVisitor)){
-				//Remove user from observers list
-				_queueUsers.remove(exitingVisitor);
+		}
+		
+		else{
+			/*
+			 * If the exiting visitor was running the simulation, notify all the observing
+			 * visitors that the controls for the simulation became available
+			 */
+			if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING){
+
+				//Controlling user is leaving, but simulation might still be running. 
+				try{
+					if(exitingVisitor.getSimulationService().isRunning()){
+						//Pause running simulation upon controlling user's exit
+						exitingVisitor.getSimulationService().stop();
+					}
+				}
+				catch (GeppettoExecutionException e) {
+					e.printStackTrace();
+				}
+
+				//Notify all observers
+				for(GeppettoMessageInbound visitor : _observers){
+					//visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
+					//send message to alert client of server availability
+					messageClient(null,visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
+				}
+
+				_simulationInUse = false;
+
+			}			
+
+			/*
+			 * Closing connection is that of a visitor in OBSERVE mode, remove the 
+			 * visitor from the list of observers. 
+			 */
+			else if (exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING){
+				//User observing simulation is closing the connection
+				if(_observers.contains(exitingVisitor)){
+					//Remove user from observers list
+					_observers.remove(exitingVisitor);
+				}
+				//User observing simulation is closing the connection
+				if(_queueUsers.contains(exitingVisitor)){
+					//Remove user from observers list
+					_queueUsers.remove(exitingVisitor);
+				}
 			}
 		}
 	}

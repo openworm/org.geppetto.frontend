@@ -107,6 +107,10 @@ var WATCHED_SIMULATION_STATES = "You are currently watching the following states
 
 var EMPTY_WATCH_TREE = "There are no simulation states to watch";
 
+var WATCH_TREE = "Simulation States watching";
+
+var SIMULATION_TIME_MSG = "Simulation's current time step : ";
+
 /**
  * Object G resources
  */

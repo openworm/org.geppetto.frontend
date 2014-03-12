@@ -35,9 +35,10 @@
  * 
  * @author Jesus R Martinez (jesus@metacel.us)
  */
-function State(stateName, stateValue) {
+function State(stateName, stateValue, unit) {
 	this.name = stateName;
-	this.value = stateValue;	
+	this.value = stateValue;
+	this.unit = unit;
 };
 
 /**
@@ -46,5 +47,19 @@ function State(stateName, stateValue) {
  * @param newValue - new value for simulation state
  */
 State.prototype.update = function(newValue){
-	this.value = newValue;
+		
+	if(isNaN(newValue)){
+		var splitValue = newValue.split(" ");
+
+		if(splitValue.length > 1){
+			this.value = splitValue[0];
+			this.unit = splitValue[1];
+		}
+		else{
+			this.value = newValue;
+		}
+	}
+	else{
+		this.value = newValue;
+	}
 };

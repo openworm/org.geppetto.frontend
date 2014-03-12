@@ -58,7 +58,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener 
 	 */
 	@Override
 	public void updateReady(SimulationEvents event, String sceneUpdate,
-			String variableWatchTree) {
+			String variableWatchTree, String time) {
 		long start = System.currentTimeMillis();
 		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -84,7 +84,8 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener 
 
 		// pack sceneUpdate and variableWatchTree in the same JSON string
 		String update = "{ \"entities\":" + sceneUpdate
-				+ ", \"variable_watch\":" + variableWatchTree + "}";
+				+ ", \"variable_watch\":" + variableWatchTree
+				+ ", \"time\":" + time + "}";
 
 		// Notify all connected clients about update either to load model or
 		// update current one.

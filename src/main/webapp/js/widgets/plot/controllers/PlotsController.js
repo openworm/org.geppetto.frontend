@@ -156,16 +156,6 @@ PlotsController = {
 					
 					var value;
 					var u;
-					//create new values dataset
-					for(var x =0; x <dataSets.length; x++){
-						value = [simulationStates[dataSets[x].label].value];
-						u = simulationStates[dataSets[x].label].unit;
-						if(u != null){
-							newValues.push({label : dataSets[x].label, data: [value], unit : u});
-						}
-						else{
-							newValues.push({label : dataSets[x].label, data: [value]});
-						}
 					for(var x =0; x <dataSets.length; x++)
 					{
 						var ds=dataSets[x].label.split("/");
@@ -203,6 +193,5 @@ PlotsController = {
 					plot.updateDataSet(newValues);
 				}
 			}
-		}
 		}
 };

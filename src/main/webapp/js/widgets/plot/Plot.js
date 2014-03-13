@@ -238,8 +238,9 @@ var Plot = Widget.View
 			if(!this.labelsUpdated){
 				var unit = newValues[i].unit;
 				if(unit != null){
-					this.setAxisLabelY("Measure ( " + unit + " )");
-					this.setAxisLabelX("Response time (ms)");
+					var labelY = "Measure ( " + unit + " )";
+					var labelX = "Response time (ms) " + Simulation.step;
+					this.setAxisLabel(labelY,labelX);
 				}						
 				this.labelsUpdated = true;
 			}
@@ -345,28 +346,25 @@ var Plot = Widget.View
 	 * 
 	 * @param label - Label to use for Y Axis 
 	 */
-	setAxisLabelY : function(label){
+	setAxisLabel : function(labelY, labelX){
 		if(this.yaxisLabel != null){
 			$("#YLabel").remove();		
 		}
-
-		this.yaxisLabel = $("<div class='axisLabel yaxisLabel' id='YLabel'></div>")
-		.text(label)
-		.appendTo($("#"+this.id));
-	},
-
-	/**
-	 * Sets a label next to the X Axis
-	 * 
-	 * @param label - Label to use for X Axis 
-	 */
-	setAxisLabelX : function(label){
 		if(this.xaxisLabel != null){
 			$("#XLabel").remove();			
 		}
-		this.xaxisLabel = $("<div class='axisLabel xaxisLabel' id='XLabel'></div>")
-		.text(label)
+		
+		//update grid 
+		this.options.grid = {margin : {left : 15, bottom : 15}};		
+		this.plot = $.plot($("#"+this.id), this.datasets,this.options);
+
+		this.yaxisLabel = $("<div class='axisLabel yaxisLabel' id='YLabel'></div>")
+		.text(labelY)
 		.appendTo($("#"+this.id));
-	}
+		
+		this.xaxisLabel = $("<div class='axisLabel xaxisLabel' id='XLabel'></div>")
+		.text(labelX)
+		.appendTo($("#"+this.id));
+	},
 
 });

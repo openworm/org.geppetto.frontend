@@ -65,13 +65,13 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
             var variables = JSON.parse(payload.update).variable_watch;
             var time = JSON.parse(payload.update).time;
             
-            if(variables != null){
-            	updateSimulationWatchTree(variables);
-            }
-            
             if(time != null){
             	updateTime(time);
             }
+            if(variables != null){
+            	updateSimulationWatchTree(variables);
+            }  
+            
             //Update if simulation hasn't been stopped
             if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated())
             {

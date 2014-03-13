@@ -66,7 +66,9 @@ var simulationStates = {};
 
 var loading = false;
 
-var TIME = null;
+Simulation.timestep = null;
+
+Simulation.time = null;
 
 /**
  * Start the simulation.
@@ -371,7 +373,7 @@ Simulation.getWatchTree = function()
 };
 
 Simulation.getTime = function(){
-	return SIMULATION_TIME_MSG + TIME;
+	return SIMULATION_TIME_MSG + Simulation.time;
 };
 
 /**
@@ -559,5 +561,6 @@ function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
 };
 
 function updateTime(t){
-	TIME = t.TIME_STEP.time;
+	Simulation.time = t.TIME_STEP.time + " ms";
+	Simulation.step = t.TIME_STEP.step + " ms";
 }

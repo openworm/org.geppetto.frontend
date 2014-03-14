@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,23 +30,27 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-Share = {
-		facebook: function(linkURL, title, img, text) {
-			url = 'http://www.facebook.com/sharer.php?s=100';
-			url += '&p[title]=' + encodeURIComponent(title);
-			url += '&p[summary]=' + encodeURIComponent(text);
-			url += '&p[url]=' + encodeURIComponent(linkURL);
-			url += '&p[images][0]=' + encodeURIComponent(img);
-			Share.popup(url);
-		},
-		twitter: function(linkURL, title) {
-			url = 'http://twitter.com/share?';
-			url += 'text=' + encodeURIComponent(title);
-			url += '&url=' + encodeURIComponent(linkURL);
-			url += '&counturl=' + encodeURIComponent(linkURL);
-			Share.popup(url);
-		},
-		popup: function(url) {
-			window.open(url,'','toolbar=0,status=0,width=626, height=436');
-		}
-};
+define(function(require) {
+	return function(GEPPETTO) {
+		GEPPETTO.Share = {
+			facebook: function(linkURL, title, img, text) {
+				var url = 'http://www.facebook.com/sharer.php?s=100';
+				url += '&p[title]=' + encodeURIComponent(title);
+				url += '&p[summary]=' + encodeURIComponent(text);
+				url += '&p[url]=' + encodeURIComponent(linkURL);
+				url += '&p[images][0]=' + encodeURIComponent(img);
+				this.popup(url);
+			},
+			twitter: function(linkURL, title) {
+				var url = 'http://twitter.com/share?';
+				url += 'text=' + encodeURIComponent(title);
+				url += '&url=' + encodeURIComponent(linkURL);
+				url += '&counturl=' + encodeURIComponent(linkURL);
+				this.popup(url);
+			},
+			popup: function(url) {
+				window.open(url, '', 'toolbar=0,status=0,width=626, height=436');
+			}
+		};
+	}
+});

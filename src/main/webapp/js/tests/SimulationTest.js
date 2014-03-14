@@ -48,7 +48,7 @@ asyncTest("Test Load Simulation from content", function(){
 		
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
-		Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
+		GEPPETTO.Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
 	},500);
 	
 	var handler = {
@@ -56,7 +56,7 @@ asyncTest("Test Load Simulation from content", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded and model need to be loaded
-				case MESSAGE_TYPE.LOAD_MODEL:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
 				ok(true,"Simulation content Loaded, passed");
 				start();	
 				break;
@@ -74,7 +74,7 @@ asyncTest("Test Load Simulation", function(){
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
 		//GEPPETTO.Console.createConsole();
-		Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");		
+		GEPPETTO.Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 	},500);
 	
 	var handler = {
@@ -83,7 +83,7 @@ asyncTest("Test Load Simulation", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded and model need to be loaded
-				case MESSAGE_TYPE.LOAD_MODEL:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
 				ok(true,"Simulation Loaded, passed");
 				start();
 				break;
@@ -106,7 +106,7 @@ module("Simulation with Scripts",
 	teardown: function(){
 		this.newSocket.close();
 		
-		G.removeWidget(Widgets.PLOT);
+		GEPPETTO.G.removeWidget(Widgets.PLOT);
 	}
 });
 
@@ -115,7 +115,7 @@ asyncTest("Test Simulation with Script", function(){
 	//wait half a second before testing, allows for socket connection to be established
 	setTimeout(function(){
 		//GEPPETTO.Console.createConsole();
-		Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml');
+		GEPPETTO.Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml');
 	},500);
 	
 	var handler = {
@@ -123,11 +123,11 @@ asyncTest("Test Simulation with Script", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded and model need to be loaded
-				case MESSAGE_TYPE.LOAD_MODEL:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
 				ok(true,"Simulation content Loaded, passed");
 				break;
 				//We are not starting simulation from here, must come from associated scrip
-				case MESSAGE_TYPE.SIMULATION_STARTED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 				ok(true, "Simulation started, script read");
 				start();	
 				break;
@@ -148,7 +148,7 @@ module("Simulation controls Test",
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
+			GEPPETTO.Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		},500);
 	},
 	teardown: function(){
@@ -164,22 +164,22 @@ asyncTest("Test Simulation Controls", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been started successfully
-				case MESSAGE_TYPE.LOAD_MODEL:
-				setSimulationLoaded();
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+				GEPPETTO.Simulation.setSimulationLoaded();
 				ok(true, "Simulation loaded, passed");
-				Simulation.start();
-				Simulation.pause();
-				Simulation.stop();
+				GEPPETTO.Simulation.start();
+				GEPPETTO.Simulation.pause();
+				GEPPETTO.Simulation.stop();
+				start();
 				break;
-				case MESSAGE_TYPE.SIMULATION_STARTED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 					ok(true,"Simulation Started, passed");
 					break;
-				case MESSAGE_TYPE.SIMULATION_PAUSED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_PAUSED:
 					ok(true,"Simulation Paused, passed");
 					break;
-				case MESSAGE_TYPE.SIMULATION_STOPPED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STOPPED:
 					ok(true,"Simulation Stopped, passed");
-					start();
 					break;
 				}
 				
@@ -198,19 +198,19 @@ asyncTest("Test Variable Watch in Plot", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been started successfully
-				case MESSAGE_TYPE.LOAD_MODEL:
-				setSimulationLoaded();
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+				GEPPETTO.Simulation.setSimulationLoaded();
 				ok(true, "Simulation loaded, passed");
-				Simulation.start();
+				GEPPETTO.Simulation.start();
 				break;
-				case MESSAGE_TYPE.SIMULATION_STARTED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 					ok(true,"Simulation Started, passed");
 					
-					G.addWidget(Widgets.PLOT);
+					GEPPETTO.G.addWidget(Widgets.PLOT);
 					
-					equal(PlotsController.getWidgets().length, 1, "Plot widget created, passed");
+					equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created, passed");
 					
-					var plot = PlotsController.getWidgets()[0];
+					var plot = GEPPETTO.PlotsController.getPlotWidgets()[0];
 					plot.hide();
 					
 					notEqual(plot.getDataSets(),null,"Plot has variable data, passed");
@@ -234,7 +234,7 @@ module("Get simulation variables test",
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
+			GEPPETTO.Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		},500);
 	},
 	teardown: function(){
@@ -250,12 +250,12 @@ asyncTest("Test list simulation variables no crash - SPH", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded successfully
-				case MESSAGE_TYPE.SIMULATION_LOADED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
 				ok(true, "Simulation loaded, passed");
-				Simulation.start();
-				Simulation.listWatchableVariables();
+				GEPPETTO.Simulation.start();
+				GEPPETTO.Simulation.listWatchableVariables();
 				break;
-				case MESSAGE_TYPE.LIST_WATCH_VARS:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LIST_WATCH_VARS:
 					ok(true, "Variables received");
 					start();
 					break;
@@ -277,7 +277,7 @@ module("Watch variables test",
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
+			GEPPETTO.Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		},500);
 	},
 	teardown: function(){
@@ -293,13 +293,13 @@ asyncTest("Test add / get watchlists no crash - SPH", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded successfully
-				case MESSAGE_TYPE.SIMULATION_LOADED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
 				ok(true, "Simulation loaded, passed");
-				Simulation.start();
-				Simulation.addWatchLists([]);
-				Simulation.getWatchLists();
+				GEPPETTO.Simulation.start();
+				GEPPETTO.Simulation.addWatchLists([]);
+				GEPPETTO.Simulation.getWatchLists();
 				break;
-				case MESSAGE_TYPE.GET_WATCH_LISTS:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_WATCH_LISTS:
 					ok(true, "Variables received");
 					start();
 					break;
@@ -319,20 +319,20 @@ asyncTest("Test watch Simulation variables", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded successfully
-				case MESSAGE_TYPE.SIMULATION_LOADED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
 				ok(true, "Simulation loaded, passed");
-				Simulation.start();
+				GEPPETTO.Simulation.start();
 				// TODO: try to retrieve some values and check they are not there 'cause we are not watching yet
 				
-				Simulation.startWatch();
+				GEPPETTO.Simulation.startWatch();
 				
 				// TODO: retrieve some values and check they are changing
 				
-				Simulation.stopWatch();
+				GEPPETTO.Simulation.stopWatch();
 				
 				// TODO: retrieve some values and check they are not changing changing anymore
 				
-				Simulation.stop();
+				GEPPETTO.Simulation.stop();
 				
 				start();
 				break;	
@@ -352,14 +352,14 @@ asyncTest("Test clear watch Simulation variables", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded successfully
-				case MESSAGE_TYPE.SIMULATION_LOADED:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
 				ok(true, "Simulation loaded, passed");
-				Simulation.start();
+				GEPPETTO.Simulation.start();
 				// TODO: try to retrieve some values and check they are not there 'cause we are not watching yet
 				
-				Simulation.clearWatchLists();
+				GEPPETTO.Simulation.clearWatchLists();
 				
-				Simulation.getWatchLists();
+				GEPPETTO.Simulation.getWatchLists();
 				start();
 				break;	
 				}

@@ -36,25 +36,26 @@
  *  
  * @author Jesus Martinez (jesus@metacell.us)
  */
-/*
- * Configure what dependencies are needed for each library
- */
-require.config({
-	paths : {
-		'widget' :"widgets/Widget",
-		'factory' :"widgets/WidgetFactory",
-		'widgetsPath' : "widgets/"
-	},
-	shim: {
-		widget : { deps :['backbone']},
-		factory : { deps : ['widget']},
-	}
-});
 
 //Widget Classes
-require(["widget", "factory", "widgetsPath/WidgetsListener"], function($) {
+define(function(require){
+	return function(GEPPETTO) {
+	/**
+	 * Load CSS File
+	 * @param url
+	 */
+	function loadCss(url) {
+		var link = document.createElement("link");
+		link.type = "text/css";
+		link.rel = "stylesheet";
+		link.href = url;
+		document.getElementsByTagName("head")[0].appendChild(link);
+	}
+
 	loadCss("js/widgets/Widget.css");
-	
+	require('widgets/WidgetFactory')(GEPPETTO);
+	require('widgets/WidgetsListener')(GEPPETTO);
 	//Plot Widget
-	require(["js/widgets/plot/config.js"], function($) {});
+	require("widgets/plot/config")(GEPPETTO);
+	}
 });

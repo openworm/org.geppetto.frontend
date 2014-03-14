@@ -196,7 +196,6 @@
 					<recursive>true</recursive>
 					<directoryRoots>
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/websocket-handlers</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
 					</directoryRoots>
 					<sourceFiles>

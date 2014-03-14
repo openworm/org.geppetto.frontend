@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,9 +32,9 @@
  *******************************************************************************/
 
 /**
- * 
- * Global class that stores resource strings 
- * 
+ *
+ * Global class that stores resource strings
+ *
  * @constructor
 
  * @author  Jesus R. Martinez (jesus@metacell.us)
@@ -43,180 +43,177 @@
 /**
  * Simulation Object Resources
  */
-var SIMULATION_LOADED = "Simulation Loaded";
+define(function(require) {
+	return function(GEPPETTO) {
+		GEPPETTO.Resources = {
+			SIMULATION_LOADED: "Simulation Loaded",
+			SIMULATION_STARTED: "Simulation Started",
 
-var SIMULATION_STARTED = "Simulation Started";
+			UNABLE_TO_START_SIMULATION: "Simulation not loaded, must load simulation first",
 
-var UNABLE_TO_START_SIMULATION = "Simulation not loaded; must load simulation first";
+			SIMULATION_PAUSED: "Simulation Paused",
 
-var SIMULATION_PAUSED = "Simulation Paused";
+			UNABLE_TO_PAUSE_SIMULATION: "Simulation not running, must run simulation first",
 
-var UNABLE_TO_PAUSE_SIMULATION = "Simulation not running; must run simulation first";
+			SIMULATION_STOP: "Simulation Stopped",
 
-var SIMULATION_STOP = "Simulation Stopped"; 
+			LOADING_SIMULATION: "Loading Simulation",
 
-var LOADING_SIMULATION = "Loading Simulation";
+			SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
 
-var SIMULATION_NOT_RUNNING = "Unable to stop simulation; loaded but not running";
+			SIMULATION_NOT_LOADED: "Unable to stop simulation that hasn't been loaded",
 
-var SIMULATION_NOT_LOADED = "Unable to stop simulation that hasn't been loaded";
+			SIMULATION_UNSPECIFIED: "Simulation not specified",
 
-var SIMULATION_UNSPECIFIED = "Simulation not specified";
+			SIMULATION_ALREADY_STOPPED: "Simulation was already stopped",
 
-var SIMULATION_ALREADY_STOPPED = "Simulation was already stopped";
+			LOADING_FROM_CONTENT: "Outbound Message Sent: Load Simulation from editing console",
 
-var LOADING_FROM_CONTENT= "Outbound Message Sent: Load Simulation from editing console";
+			MESSAGE_OUTBOUND_LOAD: 'Outbound Message Sent: Loading Simulation',
 
-var MESSAGE_OUTBOUND_LOAD = 'Outbound Message Sent: Loading Simulation';
+			MESSAGE_OUTBOUND_STOP: 'Outbund Message Sent: Simulation Stopped',
 
-var MESSAGE_OUTBOUND_STOP = 'Outbund Message Sent: Simulation Stopped';
+			MESSAGE_OUTBOUND_PAUSE: 'Outbund Message Sent: Simulation Paused',
 
-var MESSAGE_OUTBOUND_PAUSE = 'Outbund Message Sent: Simulation Paused';
+			MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
 
-var MESSAGE_OUTBOUND_START = 'Outbund Message Sent: Simulation Started';
+			MESSAGE_OUTBOUND_LIST_WATCH: 'Outbund Message Sent: List watchable variables',
 
-var MESSAGE_OUTBOUND_LIST_WATCH = 'Outbund Message Sent: List watchable variables';
+			MESSAGE_OUTBOUND_LIST_FORCE: 'Outbund Message Sent: List forceable variables',
 
-var MESSAGE_OUTBOUND_LIST_FORCE = 'Outbund Message Sent: List forceable variables';
+			MESSAGE_OUTBOUND_SET_WATCH: 'Outbund Message Sent: add watch lists',
 
-var MESSAGE_OUTBOUND_SET_WATCH = 'Outbund Message Sent: add watch lists';
+			MESSAGE_OUTBOUND_GET_WATCH: 'Outbund Message Sent: get watch lists',
 
-var MESSAGE_OUTBOUND_GET_WATCH = 'Outbund Message Sent: get watch lists';
+			MESSAGE_OUTBOUND_START_WATCH: 'Outbund Message Sent: start watch lists',
 
-var MESSAGE_OUTBOUND_START_WATCH = 'Outbund Message Sent: start watch lists';
+			MESSAGE_OUTBOUND_STOP_WATCH: 'Outbund Message Sent: stop watch lists',
 
-var MESSAGE_OUTBOUND_STOP_WATCH = 'Outbund Message Sent: stop watch lists';
+			MESSAGE_OUTBOUND_CLEAR_WATCH: 'Outbund Message Sent: clear watch lists',
 
-var MESSAGE_OUTBOUND_CLEAR_WATCH = 'Outbund Message Sent: clear watch lists';
+			SIMULATION_NOT_LOADED_ERROR: "Unable to perform operation, the simulation hasn't been loaded",
 
-var SIMULATION_NOT_LOADED_ERROR = "Unable to perform operation, the simulation hasn't been loaded";
+			SIMULATION_VARS_LIST: "Simulation Variables List requested",
 
-var SIMULATION_VARS_LIST = "Simulation Variables List requested";
+			SIMULATION_SET_WATCH: "Simulation add watchlists requested",
 
-var SIMULATION_SET_WATCH = "Simulation add watchlists requested";
+			SIMULATION_GET_WATCH: 'Simulation get watchlists requested',
 
-var SIMULATION_GET_WATCH = 'Simulation get watchlists requested';
+			SIMULATION_START_WATCH: 'Simulation start watch requested',
 
-var SIMULATION_START_WATCH = 'Simulation start watch requested';
+			SIMULATION_STOP_WATCH: 'Simulation stop watch requested',
 
-var SIMULATION_STOP_WATCH = 'Simulation stop watch requested';
+			SIMULATION_CLEAR_WATCH: 'Simulation clear watchlists requested',
 
-var SIMULATION_CLEAR_WATCH = 'Simulation clear watchlists requested';
+			WATCHED_SIMULATION_STATES: "You are currently watching the following states : \n",
 
-var WATCHED_SIMULATION_STATES = "You are currently watching the following states : \n";
+			EMPTY_WATCH_TREE: "There are no simulation states to watch",
 
-var EMPTY_WATCH_TREE = "There are no simulation states to watch";
+			/**
+			 * Object G resources
+			 */
+			RUNNING_SCRIPT: "Running script",
 
-var WATCH_TREE = "Simulation States watching";
+			NO_SIMULATION_TO_GET: "No Simulation to get as no simulation is running",
 
-var SIMULATION_TIME_MSG = "Simulation's current time step : ";
+			DEBUG_ON: "Debug log statements on",
 
-/**
- * Object G resources
- */
-var RUNNING_SCRIPT = "Running script";
+			DEBUG_OFF: "Debug log statements off",
 
-var NO_SIMULATION_TO_GET = "No Simulation to get as no simulation is running";
+			CLEAR_HISTORY: "Console history cleared",
 
-var DEBUG_ON = "Debug log statements on";
+			COPY_CONSOLE_HISTORY: "Copying history to clipboard",
 
-var DEBUG_OFF = "Debug log statements off";
+			EMPTY_CONSOLE_HISTORY: "No console history to copy to clipboard",
 
-var CLEAR_HISTORY = "Console history cleared";
+			COPY_TO_CLIPBOARD_WINDOWS: "Copy to Clipboard: CTRL+C , OK",
 
-var COPY_CONSOLE_HISTORY = "Copying history to clipboard";
+			COPY_TO_CLIPBOARD_MAC: "Copy to Clipboard: Cmd+C , OK",
 
-var EMPTY_CONSOLE_HISTORY = "No console history to copy to clipboard";
+			INVALID_WAIT_USE: "GEPPETTO.G.wait(ms) command must be used inside script",
 
-var COPY_TO_CLIPBOARD_WINDOWS = "Copy to Clipboard: CTRL+C , OK";
+			WAITING: "Waiting ms",
 
-var COPY_TO_CLIPBOARD_MAC = "Copy to Clipboard: Cmd+C , OK";
-	
-var INVALID_WAIT_USE = "G.wait(ms) command must be used inside script";
+			SHOW_CONSOLE: "Showing Console",
 
-var WAITING = "Waiting ms";
+			HIDE_CONSOLE: "Hiding Console",
 
-var SHOW_CONSOLE = "Showing Console";
+			/**
+			 * GEPPETTO.Main resources
+			 */
+			GEPPETTO_INITIALIZED: 'Geppetto Initialised',
 
-var HIDE_CONSOLE = "Hiding Console";
+			SIMULATION_OBSERVED: 'Sent: Simulation being observed',
 
+			WEBSOCKET_NOT_SUPPORTED: 'Error: WebSocket is not supported by this browser.',
 
-/**
- * GEPPETTO.Main resources
- */
-var GEPPETTO_INITIALIZED = 'Geppetto Initialised';
+			WEBSOCKET_OPENED: 'Info: WebSocket connection opened',
 
-var SIMULATION_OBSERVED = 'Sent: Simulation being observed';
+			WEBSOCKET_CLOSED: "Info: WebSocket connection closed",
 
-var WEBSOCKET_NOT_SUPPORTED = 'Error: WebSocket is not supported by this browser.';
+			CLEAR_CANVAS: "Inbound Message Received: Clear canvas",
 
-var WEBSOCKET_OPENED = 'Info: WebSocket connection opened';
+			INVALID_SIMULATION_FILE: "Invalid Simulation File",
 
-var WEBSOCKET_CLOSED = "Info: WebSocket connection closed";
-	
-var CLEAR_CANVAS = "Inbound Message Received: Clear canvas";
+			INVALID_WATCH_LIST: "Invalid Watch List",
 
-var INVALID_SIMULATION_FILE = "Invalid Simulation File";
+			LOADING_MODEL: "Inbound Message Received: Loading Model ",
 
-var INVALID_WATCH_LIST = "Invalid Watch List";
+			OBSERVING_MODE: "Observing Simulation Mode",
 
-var LOADING_MODEL = "Inbound Message Received: Loading Model ";
+			SERVER_UNAVAILABLE: "Server Unavailable",
 
-var OBSERVING_MODE = "Observing Simulation Mode";
+			SERVER_AVAILABLE: "Server Available",
 
-var SERVER_UNAVAILABLE = "Server Unavailable";
+			WEBGL_FAILED: "Initializing Error: Unable to initialize WebGL",
 
-var SERVER_AVAILABLE = "Server Available";
+			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 
-var WEBGL_FAILED = "Initializing Error: Unable to initialize WebGL";
+			GEPPETTO_VERSION_HOLDER: "geppetto v$1 is ready",
 
-var ALL_COMMANDS_AVAILABLE_MESSAGE = "The following commands are available in the Geppetto console.";
+			LISTING_WATCH_VARS: "Inbound Message Received: List watch variables",
 
-var GEPPETTO_VERSION_HOLDER = "geppetto v$1 is ready";
+			LISTING_FORCE_VARS: "Inbound Message Received: List force variables",
 
-var LISTING_WATCH_VARS = "Inbound Message Received: List watch variables";
+			SIMULATOR_UNAVAILABLE: " is Unavailable",
 
-var LISTING_FORCE_VARS = "Inbound Message Received: List force variables";
+			WEBSOCKET_CONNECTION_ERROR: "Server Connection Error",
 
-var SIMULATOR_UNAVAILABLE = " is Unavailable";
+			/**
+			 * GEPPETTO resources
+			 */
+			UPDATE_FRAME_STARTING: "Starting update frame",
 
-var WEBSOCKET_CONNECTION_ERROR = "Server Connection Error";
+			UPDATE_FRAME_END: "Ending update frame",
 
-/**
- * GEPPETTO resources
- */
-var UPDATE_FRAME_STARTING = "Starting update frame";
+			/**
+			 * GEPPETTO.SimulationContentEditor resources
+			 */
+			SAMPLES_DROPDOWN_PLACEHOLDER: "Select simulation from list...",
 
-var UPDATE_FRAME_END = "Ending update frame";
+			/**
+			 * Global resources
+			 */
+			COMMANDS: " commands: \n\n",
 
-/**
- * GEPPETTO.SimulationContentEditor resources
- */
-var SAMPLES_DROPDOWN_PLACEHOLDER = "Select simulation from list...";
+			/**
+			 * Widget resources
+			 */
+			WIDGET_CREATED: " widget created",
+			REMOVE_PLOT_WIDGETS: "Plotting widget(s) removed",
+			NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
 
-/**
- * Global resources
- */
-var COMMANDS = " commands: \n\n";
+			/**
+			 * Idle messages
+			 */
+			IDLE_MESSAGE: "Are you still there?",
 
-/**
- * Widget resources
- */
-var WIDGET_CREATED = " widget created";
-var REMOVE_PLOT_WIDGETS = "Plotting widget(s) removed";
-var NON_EXISTENT_WIDGETS = "Unable to remove widgets, type doesn't exist";
+			DISCONNECT_MESSAGE: "A prolonged inactivity has been detected and you have been disconnected from Geppetto. Please refresh your browser if you wish to continue",
 
-/**
- * Idle messages
- */
-var IDLE_MESSAGE = "Are you still there?";
-
-var DISCONNECT_MESSAGE = "A prolonged inactivity has been detected" +
-          " and you have been disconnected from Geppetto. Please refresh" +
-          " your browser if you wish to continue";
-
-/**
- * Socket Messages
- */
-var SERVER_CONNECTION_ERROR = "Error communicating with Geppetto servlet. \n" +
-"Reload page if problems persits";
+			/**
+			 * Socket Messages
+			 */
+			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto servlet. \nReload page if problems persits"
+		}
+	}
+});

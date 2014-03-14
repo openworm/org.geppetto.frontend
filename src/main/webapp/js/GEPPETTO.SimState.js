@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,35 +31,22 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Simulation State object, keeps track of new values for state and receives updates for it. 
- * 
+ * Simulation State object, keeps track of new values for state and receives updates for it.
+ *
  * @author Jesus R Martinez (jesus@metacel.us)
  */
-function State(stateName, stateValue, unit) {
-	this.name = stateName;
-	this.value = stateValue;
-	this.unit = unit;
-};
-
-/**
- * Update state with new values
- * 
- * @param newValue - new value for simulation state
- */
-State.prototype.update = function(newValue){
-		
-	if(isNaN(newValue)){
-		var splitValue = newValue.split(" ");
-
-		if(splitValue.length > 1){
-			this.value = splitValue[0];
-			this.unit = splitValue[1];
-		}
-		else{
-			this.value = newValue;
-		}
-	}
-	else{
-		this.value = newValue;
-	}
-};
+define(function(require) {
+	return function(GEPPETTO) {
+		GEPPETTO.SimState = {
+			State: function(stateName, stateValue) {
+				return {
+					name: stateName,
+					value: stateValue,
+					update: function(newValue) {
+						this.value = newValue;
+					}
+				};
+			}
+		};
+	};
+});

@@ -48,60 +48,60 @@ test("Global scope Test", function(){
 module( "G Object Test");
 
 test( "Test Get Current Simulation", function() {
-	equal(G.getCurrentSimulation(), NO_SIMULATION_TO_GET, "No simulation, passed.");	
+	equal(GEPPETTO.G.getCurrentSimulation(), NO_SIMULATION_TO_GET, "No simulation, passed.");
 });
 
 test("Test Debug Mode", function(){	
-	G.debug(true);
+	GEPPETTO.G.debug(true);
 
-	equal(isDebugOn(), true, "Debug Mode on, passed");
+	equal(GEPPETTO.G.isDebugOn(), true, "Debug Mode on, passed");
 
-	G.debug(false);
+	GEPPETTO.G.debug(false);
 
-	equal(isDebugOn(), false, "Debug Mode Off, passed.");	
+	equal(GEPPETTO.G.isDebugOn(), false, "Debug Mode Off, passed.");
 });
 
 test("Test G Object help method", function(){
-	notEqual(G.help(), null, "Help command for object G is available, passed.");
+	notEqual(GEPPETTO.G.help(), null, "Help command for object G is available, passed.");
 });
 
 test("Test Clear Console", function(){
 	
-	equal(G.clear(),CLEAR_HISTORY, "Console cleared");
+	equal(GEPPETTO.G.clear(),CLEAR_HISTORY, "Console cleared");
 });
 
 test("Test Copy History To Clipboard", function(){
 	
-	equal(G.copyHistoryToClipboard(), EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
+	equal(GEPPETTO.G.copyHistoryToClipboard(), EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
 	
 	//add some commands to history
-	GEPPETTO.Console.executeCommand("G.help();");
+	GEPPETTO.Console.executeCommand("GEPPETTO.G.help();");
 	GEPPETTO.Console.executeCommand("help();");
 	GEPPETTO.Console.executeCommand("Simulation.start()");
 	
-	equal(G.copyHistoryToClipboard(), COPY_CONSOLE_HISTORY, "Commands copied, test passed");
+	equal(GEPPETTO.G.copyHistoryToClipboard(), COPY_CONSOLE_HISTORY, "Commands copied, test passed");
 });
 
 test("Test Add Widget", function(){
-	G.addWidget(Widgets.PLOT);
+	GEPPETTO.G.addWidget(Widgets.PLOT);
 	
 	equal(PlotsController.getWidgets().length, 1, "Plot widget created, test passed");
 	
-	G.removeWidget(Widgets.PLOT);
+	GEPPETTO.G.removeWidget(Widgets.PLOT);
 });
 
 test("Test Remove Widget", function(){
-	G.addWidget(Widgets.PLOT);
+	GEPPETTO.G.addWidget(Widgets.PLOT);
 	
 	equal(PlotsController.getWidgets().length,  1, "Plot widget created");
 	
-	G.removeWidget(Widgets.PLOT);
+	GEPPETTO.G.removeWidget(Widgets.PLOT);
 	
 	equal(PlotsController.getWidgets().length, 0, "Plot widget removed, test passed");
 });
 
 test("Test Widget", function(){
-	G.addWidget(Widgets.PLOT);
+	GEPPETTO.G.addWidget(Widgets.PLOT);
 	
 	equal(PlotsController.getWidgets().length, 1, "Plot widget created");
 	
@@ -130,7 +130,7 @@ module("Run Script Test",
 		this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
 
 		setTimeout(function(){
-			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
+			GEPPETTO.G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
 		}, 1000);
 	
 	},
@@ -147,7 +147,7 @@ asyncTest("Run Script Test 1", function(){
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded and model need to be loaded
-				case MESSAGE_TYPE.RUN_SCRIPT:
+				case GEPPETTO.SimulationHandler.MESSAGE_TYPE.RUN_SCRIPT:
 				ok(true, "Script parsed, passed");
 				start();
 				break;

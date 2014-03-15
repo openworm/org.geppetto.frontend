@@ -30,29 +30,24 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Simulation State object, keeps track of new values for state and receives updates for it. 
- * 
- * @author Jesus R Martinez (jesus@metacel.us)
- */
-function State(stateName, stateValue, unit) {
-	this.name = stateName;
-	this.value = stateValue;
-	this.unit = unit;
-};
+test("Serializer Test, start with array", function(){
+	var tree =  "hhpop[0].v";
+	var treeSplit = tree.split(".");
+	stringToObject(null,treeSplit);
+	notEqual(null,window["hhpop"][0]["v"]);
+});
 
-/**
- * Update state with new values
- * 
- * @param newValue - new value for simulation state
- */
-State.prototype.update = function(newValue){
-		
-	if(isNaN(newValue)){
-		this.value = newValue.value;
-		this.value = newValue.unit;
-	}
-	else{
-		this.value = newValue;
-	}
-};
+test("Serializer Test, start with array many children", function(){
+	var tree =  "hhpop[0].membraneProperties.naChans.na.k.q";
+	var treeSplit = tree.split(".");
+	stringToObject(null,treeSplit);
+	notEqual(null,window["hhpop"][0]["membraneProperties"]["naChans"]["na"]["k"]["q"]);
+});
+
+
+test("Serializer Test, path no array", function(){
+	var tree =  "hhcell.electrical.hhpop[0].v";
+	var treeSplit = tree.split(".");
+	stringToObject(null,treeSplit);
+	notEqual(null,window["hhcell"]["electrical"]["hhpop"][0]["v"]);
+});

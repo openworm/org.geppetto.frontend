@@ -62,8 +62,6 @@ Simulation.simulationURL = "";
 
 Simulation.watchTree = null;
 
-var simulationStates = {};
-
 var loading = false;
 
 Simulation.timestep = null;

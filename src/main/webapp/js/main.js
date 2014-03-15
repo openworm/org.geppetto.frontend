@@ -56,7 +56,8 @@ require.config({
 		'console' : "GEPPETTO.Console",
 		'geppetto_main' : "Geppetto.Main",
 		'sandboxconsole' : "SandboxConsole",
-		'storage' : 'vendor/backbone-localStorage.min'
+		'storage' : 'vendor/backbone-localStorage.min',
+		'state' : "GEPPETTO.SimState",
 	},
 	/*
 	 * Notes what dependencies are needed prior to loading each library, values on the right
@@ -87,7 +88,8 @@ require.config({
 		console : { deps:["sandboxconsole"]},
 		'GEPPETTO.Utility' : ["geppetto"],
 		'GEPPETTO.Share' : ["geppetto"],
-		'GEPPETTO.SimState' : ["geppetto"],
+		state : ["geppetto"],
+		'Serializer' : ["state"],
 		'websocket-handlers/GEPPETTO.MessageSocket' : ["geppetto"],
 		'websocket-handlers/GEPPETTO.SocketMessageTypes' : ["geppetto"],
 		'websocket-handlers/GEPPETTO.GlobalHandler' : ["geppetto"],
@@ -135,7 +137,8 @@ jqueryLib.push("GEPPETTO.JSEditor");
 jqueryLib.push("console");
 jqueryLib.push("GEPPETTO.Utility");
 jqueryLib.push("GEPPETTO.Share");
-jqueryLib.push("GEPPETTO.SimState");
+jqueryLib.push("state");
+jqueryLib.push("Serializer");
 jqueryLib.push("websocket-handlers/GEPPETTO.MessageSocket");
 jqueryLib.push("websocket-handlers/GEPPETTO.SocketMessageTypes");
 jqueryLib.push("websocket-handlers/GEPPETTO.GlobalHandler");

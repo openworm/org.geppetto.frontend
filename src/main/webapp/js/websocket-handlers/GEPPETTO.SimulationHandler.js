@@ -169,9 +169,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 
 				var name = variables[v].replace(splitVariableName[0]+".", "");
 							
-				if(simulationStates[name]==null){
-					stringToObject(name);
-				}
+				simulationStates[name] = new State(name,0);
 			}
 			break;
 		case MESSAGE_TYPE.SET_WATCH_VARS:
@@ -182,12 +180,11 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			for(var v in variables){
 				
 				var splitVariableName = variables[v].split(".");
-
-				var name = variables[v].replace(splitVariableName[0]+".", "");
 							
-				if(simulationStates[name]==null){
-					createSimState(name);
-				}
+				var name = variables[v].replace(splitVariableName[0]+".", "");
+				
+				//keep track of simulation state being watched
+				simulationStates[name] = new State(name,0);
 			}
 			break;
 		default:

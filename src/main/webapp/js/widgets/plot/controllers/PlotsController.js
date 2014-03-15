@@ -142,55 +142,58 @@ PlotsController = {
 			if(event == WIDGET_EVENT_TYPE.DELETE){
 				this.removePlotWidgets();
 			}
-			
+
 			//update plotting widgets
 			else if(event == WIDGET_EVENT_TYPE.UPDATE){
 				//loop through all existing widgets
 				for(var i =0; i<plots.length; i++){
 					var plot = plots[i];
-					
+
 					//retrieve plot's datasets
 					var dataSets = plot.getDataSets();
-					//keeps track of new values
-					var newValues = [];
-					
-					var value;
-					var u;
-					for(var x =0; x <dataSets.length; x++)
-					{
-						var ds=dataSets[x].label.split("/");
-						u = simulationStates[dataSets[x].label].unit;
-						
-						if(u != null){
-							if(ds.length==1)
-							{
-								newValues.push({label : dataSets[x].label, data: [[simulationStates[ds[0]].value]], unit : u});
+
+					if(dataSets != null){
+						//keeps track of new values
+						var newValues = [];
+
+						var value;
+						var u;
+						for(var x =0; x <dataSets.length; x++)
+						{
+							var ds=dataSets[x].label.split("/");
+							u = simulationStates[dataSets[x].label].unit;
+
+							if(u != null){
+								if(ds.length==1)
+								{
+									newValues.push({label : dataSets[x].label, data: [[simulationStates[ds[0]].value]], unit : u});
+								}
+								if(ds.length==2)
+								{
+									newValues.push({label : dataSets[x].label, data: [[
+									                                                   simulationStates[ds[0]].value,
+									                                                   simulationStates[ds[1]].value
+									                                                   ]], unit : u});
+								}	
 							}
-							if(ds.length==2)
-							{
-								newValues.push({label : dataSets[x].label, data: [[
-								                                                   simulationStates[ds[0]].value,
-								                                                   simulationStates[ds[1]].value
-								                                                   ]], unit : u});
-							}	
+							else{
+								if(ds.length==1)
+								{
+									newValues.push({label : dataSets[x].label, data: [[simulationStates[ds[0]].value]]});
+								}
+								if(ds.length==2)
+								{
+									newValues.push({label : dataSets[x].label, data: [[
+									                                                   simulationStates[ds[0]].value,
+									                                                   simulationStates[ds[1]].value
+									                                                   ]]});
+								}
+							}						
 						}
-						else{
-							if(ds.length==1)
-							{
-								newValues.push({label : dataSets[x].label, data: [[simulationStates[ds[0]].value]]});
-							}
-							if(ds.length==2)
-							{
-								newValues.push({label : dataSets[x].label, data: [[
-								                                                   simulationStates[ds[0]].value,
-								                                                   simulationStates[ds[1]].value
-								                                                   ]]});
-							}
-						}						
+
+						//update plot with new data set
+						plot.updateDataSet(newValues);
 					}
-					
-					//update plot with new data set
-					plot.updateDataSet(newValues);
 				}
 			}
 		}

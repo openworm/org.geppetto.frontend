@@ -85,6 +85,42 @@ var Plot = Widget.View
 	},
 
 	/**
+	 * Takes the name of a simulation state to plot.
+	 * 
+	 * @name plotData(state, options)
+	 * @param state -
+	 *           name of state to plot
+	 * @param options -
+	 *            options for the plotting widget, if null uses default
+	 */
+	plotState : function(state, options) {
+		// If no options specify by user, use default options
+		if (options != null) {
+			this.options = options;
+			if (options.xaxis.max > this.limit) {
+				this.limit = options.xaxis.max;
+			}
+		}
+
+		if (state!= null) {
+			this.datasets.push({
+				label : state,
+				data : [ [ 0, 0] ]
+			});
+		} 
+
+		var plotHolder = $("#" + this.id);
+		if (this.plot == null) {
+			this.plot = $.plot(plotHolder, this.datasets, this.options);
+			plotHolder.resize();
+		} else {
+			this.plot = $.plot(plotHolder, this.datasets, this.options);
+		}
+
+		return "Line plot added to widget";
+	},
+	
+	/**
 	 * Takes data series and plots them. To plot array(s) , use it as
 	 * plotData([[1,2],[2,3]]) To plot an object , use it as
 	 * plotData(objectName) Multiples arrays can be specified at once in

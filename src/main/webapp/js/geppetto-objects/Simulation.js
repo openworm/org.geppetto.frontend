@@ -47,6 +47,8 @@ var Simulation = Simulation ||
 	REVISION : '1'
 };
 
+var simulationStates = {};
+
 Simulation.StatusEnum =
 {
 	INIT : 0,
@@ -381,17 +383,18 @@ function updateSimulationWatchTree(variable){
 	Simulation.watchTree = variable;
 
 	tree = Simulation.watchTree.WATCH_TREE;
-	
-	//server returned an object, traverse through the object to get the new value of
-	// variable and update corresponding GEPPETTO.SimState, if one doesn't exist create 
-	//one
-	if(tree.length == null){
-		searchTreePath(tree);
+
+	//loop through simulation stated being watched
+	for(var s in simulationStates){
+		//traverse watchTree to find value of simulation state
+		var val = deepFind(tree, s);
+
+		//if value ain't null, update state
+		if(val != null){
+			simulationStates[s].update(val);
+		}
 	}
-	else{
-		searchTreeArray(tree);
-	}
-	
+
 	WidgetsListener.update(WIDGET_EVENT_TYPE.UPDATE);
 }
 
@@ -443,20 +446,12 @@ function searchTreePath(a) {
     			if(arguments.callee(o[c], r + (r!=""?".":"") + c + (r!=""?"":""))){
     				//root of path case, no more children
     				if(r == ""){
-    					//create simulation state and update it
-    					if(simulationStates[c]==null){
-    						createSimState(c);
-    					}
 						simulationStates[c].update(val);
     				}
     				//within path of tree, add "." to note levels
     				else{
 						var name = r + "." + c;
 
-    					//create simulation state and update it
-						if(simulationStates[name]==null){
-							createSimState(name);
-						}
 						simulationStates[name].update(val);
 
     				}

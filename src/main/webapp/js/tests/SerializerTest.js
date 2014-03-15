@@ -51,3 +51,19 @@ test("Serializer Test, path no array", function(){
 	stringToObject(null,treeSplit);
 	notEqual(null,window["hhcell"]["electrical"]["hhpop"][0]["v"]);
 });
+
+test("Serializer Test, path no array", function(){
+	var tree =  "hhcell.electrical.hhpop.v";
+	var treeSplit = tree.split(".");
+	stringToObject(null,treeSplit);
+	notEqual(null,window["hhcell"]["electrical"]["hhpop"]["v"]);
+});
+
+test("Locate", function(){
+	var tree = {
+			"jesus": [{ "antes": 0 }]
+	};
+	
+	console.log(deepFind(tree, 'jesus[0].antes'));
+    notEqual(null,window["jesus"][0]["antes"]);
+});

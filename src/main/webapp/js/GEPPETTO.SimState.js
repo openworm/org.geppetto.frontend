@@ -50,7 +50,7 @@ State.prototype.update = function(newValue){
 		
 	if(isNaN(newValue)){
 		this.value = newValue.value;
-		this.value = newValue.unit;
+		this.unit = newValue.unit;
 	}
 	else{
 		this.value = newValue;

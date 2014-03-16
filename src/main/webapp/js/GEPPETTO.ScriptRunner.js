@@ -37,7 +37,7 @@
  *
  * @constructor
 
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @author   (jesus@metacell.us)
  */
 define(function(require) {
 

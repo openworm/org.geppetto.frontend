@@ -151,31 +151,48 @@ define(function(require) {
 
 						//retrieve plot's datasets
 						var dataSets = plot.getDataSets();
-						//keeps track of new values
-						var newValues = [];
 
-						//create new values dataset
-						for(var x = 0; x < dataSets.length; x++) {
-							var ds = dataSets[x].label.split("/");
-							if(ds.length == 1) {
-								newValues.push({label: dataSets[x].label, data: [
-									[GEPPETTO.Simulation.simulationStates[ds[0]].value]
-								]});
+						if(dataSets != null){
+							//keeps track of new values
+							var newValues = [];
+							var u;
+							for(var x =0; x <dataSets.length; x++)
+							{
+								var ds=dataSets[x].label.split("/");
+								u = GEPPETTO.Simulation.simulationStates[dataSets[x].label].unit;
+
+								if(u != null){
+									if(ds.length==1)
+									{
+										newValues.push({label : dataSets[x].label, data: [[GEPPETTO.Simulation.simulationStates[ds[0]].value]], unit : u});
+									}
+									if(ds.length==2)
+									{
+										newValues.push({label : dataSets[x].label, data: [[
+											GEPPETTO.Simulation.simulationStates[ds[0]].value,
+											GEPPETTO.Simulation.simulationStates[ds[1]].value
+										]], unit : u});
+									}
+								}
+								else{
+									if(ds.length==1)
+									{
+										newValues.push({label : dataSets[x].label, data: [[GEPPETTO.Simulation.simulationStates[ds[0]].value]]});
+									}
+									if(ds.length==2)
+									{
+										newValues.push({label : dataSets[x].label, data: [[
+											GEPPETTO.Simulation.simulationStates[ds[0]].value,
+											GEPPETTO.Simulation.simulationStates[ds[1]].value
+										]]});
+									}
+								}
 							}
-							if(ds.length == 2) {
-								newValues.push({label: dataSets[x].label, data: [
-									[
-										GEPPETTO.Simulation.simulationStates[ds[0]].value,
-										GEPPETTO.Simulation.simulationStates[ds[1]].value
-									]
-								]});
-							}
 
-						}
-
-						//update plot with new data set
-						plot.updateDataSet(newValues);
+							//update plot with new data set
+							plot.updateDataSet(newValues);
 					}
+				}
 				}
 			}
 

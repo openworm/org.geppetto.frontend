@@ -40,7 +40,7 @@ define(function(require) {
 		var updateTime = function(t) {
 				GEPPETTO.Simulation.time = t.TIME_STEP.time + " ms";
 				GEPPETTO.Simulation.step = t.TIME_STEP.step + " ms";
-		}
+		};
 
 		GEPPETTO.SimulationHandler = {
 			onMessage: function(parsedServerMessage) {
@@ -169,9 +169,7 @@ define(function(require) {
 
 							var name = variables[v].replace(splitVariableName[0] + ".", "");
 
-							if(GEPPETTO.Simulation.simulationStates[name] == null) {
-								stringToObject(name);
-							}
+							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
 						}
 						break;
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
@@ -185,9 +183,8 @@ define(function(require) {
 
 							var name = variables[v].replace(splitVariableName[0] + ".", "");
 
-							if(GEPPETTO.Simulation.simulationStates[name] == null) {
-								stringToObject(name);
-							}
+							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
+
 						}
 						break;
 					default:
@@ -281,89 +278,6 @@ define(function(require) {
 				formattedNode = name;
 				// print current node
 				GEPPETTO.Console.log(formattedNode);
-			}
-		}
-	}
-
-
-	function stringToObject(name) {
-
-		var splitName = name.split(".");
-
-		//create object from variables
-		if(splitName.length > 1) {
-			var parent = splitName[0];
-
-			//get index if array
-			var index = parent.match(/[^[\]]+(?=])/g);
-
-			parent = parent.replace(/ *\[[^]]*\] */g, "");
-
-			if(window[parent] == null) {
-				if(index != null) {
-					var iNumber = index[0].replace(/[\[\]']+/g, "");
-
-					window[parent] = [];
-					var c = window[parent][parseInt(iNumber)] = {};
-
-					var stateNamePath = parent + "[" + parseInt(iNumber) + "]";
-
-					for(var x = 1; x < splitName.length; x++) {
-						var child = splitName[x];
-						stateNamePath = stateNamePath + "." + child;
-
-						c = c[child] = new GEPPETTO.SimState.State(stateNamePath);
-					}
-
-					c = new GEPPETTO.SimState.State(stateNamePath, 0);
-
-					GEPPETTO.Simulation.simulationStates[stateNamePath] = c;
-				}
-				else {
-					window[parent] = new GEPPETTO.SimState.State(parent, 0);
-
-					for(var x = 1; x < splitName.length; x++) {
-						var child = splitName[x];
-						window[child] = new GEPPETTO.SimState.State(parent + child, 0);
-
-						window[parent].push(window[child]);
-					}
-				}
-			}
-			else {
-				if(index != null) {
-					var iNumber = index[0].replace(/[\[\]']+/g, "");
-
-					var c = window[parent][parseInt(iNumber)];
-
-					var stateNamePath = parent + "[" + parseInt(iNumber) + "]";
-
-					for(var x = 1; x < splitName.length; x++) {
-						var child = splitName[x];
-						stateNamePath = stateNamePath + "." + child;
-
-						if(c[child] == null) {
-							c[child] = new GEPPETTO.SimState.State(stateNamePath, 0);
-						}
-
-						c = c[child];
-					}
-
-					c = new GEPPETTO.SimState.State(stateNamePath, 0);
-
-					GEPPETTO.Simulation.simulationStates[stateNamePath] = c;
-				}
-			}
-
-		}
-		else {
-			//format name of the variable
-			var singleVar = splitName[0];
-
-			//create object with varible name and 0 as value
-			if(window[singleVar] == null) {
-				window[singleVar] = new GEPPETTO.SimState.State(singleVar, 0);
-				GEPPETTO.Simulation.simulationStates[singleVar] = window[singleVar];
 			}
 		}
 	}

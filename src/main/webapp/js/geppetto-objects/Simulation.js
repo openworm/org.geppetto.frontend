@@ -49,6 +49,7 @@ define(function(require) {
 
 		GEPPETTO.Simulation = {
 			simulationStates: {},
+
 			status: 0,
 			simulationURL: "",
 			watchTree: null,
@@ -63,7 +64,7 @@ define(function(require) {
 			},
 
 			getTime: function() {
-				return "Simulation's current time step : " + this.time
+				return "Simulation's current time step : " + this.time;
 			},
 
 			/**
@@ -322,7 +323,7 @@ define(function(require) {
 			clearWatchLists: function() {
 				santasLittleHelper("clear_watch", GEPPETTO.Resources.SIMULATION_CLEAR_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_CLEAR_WATCH, null);
 
-				this.simulationStates = {};
+				GEPPETTO.Simulation.simulationStates = {};
 
 				return GEPPETTO.Resources.SIMULATION_CLEAR_WATCH;
 			},
@@ -336,7 +337,7 @@ define(function(require) {
 			getWatchTree: function() {
 				var watched_variables = GEPPETTO.Resources.WATCHED_SIMULATION_STATES + "";
 
-				for(var key in this.simulationStates) {
+				for(var key in GEPPETTO.Simulation.simulationStates) {
 					watched_variables += "\n" + "      -- " + key + "\n";
 				}
 
@@ -379,77 +380,78 @@ define(function(require) {
 
 				var tree = GEPPETTO.Simulation.watchTree.WATCH_TREE;
 
-				//figure out what the server is returning, either an object structure
-				// or an array
-				if(tree.length == null) {
-					searchTreePath(tree);
-				}
-				else {
-					searchTreeArray(tree);
+				//loop through simulation stated being watched
+				for(var s in this.simulationStates){
+					//traverse watchTree to find value of simulation state
+					var val = GEPPETTO.Serializer.deepFind(tree, s);
+
+					//if value ain't null, update state
+					if(val != null){
+						GEPPETTO.Simulation.simulationStates[s].update(val);
+					}
 				}
 
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
 			}
 
-		}
+		};
 
 		/**
-		 * Create name of variable from tree.
+		 * Takes an object path and traverses through it to find the value within.
+		 * Example :    {hhpop[0] : { v : 20 } }
+		 *
+		 * Method will traverse through object to find the value "20" and update corresponding
+		 * simulation state with it. If no simulation state exists, then it creates one.
 		 */
 		function searchTreePath(a) {
 			var list = [];
 			(function(o, r) {
 				r = r || '';
-				if(typeof o != 'object') {
+				if (typeof o != 'object') {
 					return true;
 				}
-				for(var c in o) {
-					if(!isNaN(c)) {
-						if(arguments.callee(o[c], r + (r != "" ? "[" : "") + c + (r != "" ? "]" : ""))) {
-							var val = 0;
-							if(o[c] != null) {
+				for (var c in o) {
+					//if current tree path object is array
+					if(!isNaN(c)){
+						if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
+							var val  = 0;
+							if(o[c]!=null){
 								val = o[c];
 							}
 							var rs = r.toString();
-							if(rs == "") {
-								if(GEPPETTO.Simulation.simulationStates[c] != null) {
+							//first object or no more children
+							if(rs == ""){
+								//simulation state already exists, update
+								if(GEPPETTO.Simulation.simulationStates[c]!=null){
 									GEPPETTO.Simulation.simulationStates[c].update(val);
 								}
 							}
-							else {
-								if(GEPPETTO.Simulation.simulationStates[r + "." + c] != null) {
+							//object has leafs, add "." to name and update value if it exists
+							else{
+								if(GEPPETTO.Simulation.simulationStates[r + "." + c]!=null){
 									GEPPETTO.Simulation.simulationStates[r + "." + c].update(val);
 								}
 							}
 						}
 					}
-					else {
-						var val = 0;
-						if(o[c] != null) {
+					//current path object from tree not an array
+					else{
+						var val  = 0;
+						if(o[c]!=null){
 							val = o[c];
 						}
 
-						if(arguments.callee(o[c], r + (r != "" ? "." : "") + c + (r != "" ? "" : ""))) {
-
-							if(r == "") {
-								if(GEPPETTO.Simulation.simulationStates[c] != null) {
-									GEPPETTO.Simulation.simulationStates[c].update(val);
-								}
-								else {
-									stringToObject(c);
-									GEPPETTO.Simulation.simulationStates[c].update(val);
-								}
+						if(arguments.callee(o[c], r + (r!=""?".":"") + c + (r!=""?"":""))){
+							//root of path case, no more children
+							if(r == ""){
+								GEPPETTO.Simulation.simulationStates[c].update(val);
 							}
-							else {
+							//within path of tree, add "." to note levels
+							else{
 								var name = r + "." + c;
 
-								if(GEPPETTO.Simulation.simulationStates[name] != null) {
-									GEPPETTO.Simulation.simulationStates[name].update(val);
-								}
-								else {
-									stringToObject(name);
-									GEPPETTO.Simulation.simulationStates[name].update(val);
-								}
+								GEPPETTO.Simulation.simulationStates[name].update(val);
+
 							}
 						}
 					}

@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *      OpenWorm - http://openworm.org/people.html
+ *     	OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,30 +30,31 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Simulation State object, keeps track of new values for state and receives updates for it.
- *
- * @author Jesus R Martinez (jesus@metacel.us)
- */
-define(function(require) {
-	return function(GEPPETTO) {
-		GEPPETTO.SimState = {
-			State: function(stateName, stateValue, unit) {
-				return {
-					name: stateName,
-					value: stateValue,
-					unit: unit,
-					update: function(newValue) {
-						if(isNaN(newValue)){
-							this.value = newValue.value;
-							this.unit = newValue.unit;
-						}
-						else{
-							this.value = newValue;
-						}
-					}
-				};
-			}
-		};
-	};
+test("Serializer Test, start with array", function(){
+	var tree =  "hhpop[0].v";
+	var treeSplit = tree.split(".");
+	GEPPETTO.Serializer.stringToObject(null,treeSplit);
+	notEqual(null,window["hhpop"][0]["v"]);
+});
+
+test("Serializer Test, start with array many children", function(){
+	var tree =  "hhpop[0].membraneProperties.naChans.na.k.q";
+	var treeSplit = tree.split(".");
+	GEPPETTO.Serializer.stringToObject(null,treeSplit);
+	notEqual(null,window["hhpop"][0]["membraneProperties"]["naChans"]["na"]["k"]["q"]);
+});
+
+
+test("Serializer Test, path no array", function(){
+	var tree =  "hhcell.electrical.hhpop[0].v";
+	var treeSplit = tree.split(".");
+	GEPPETTO.Serializer.stringToObject(null,treeSplit);
+	notEqual(null,window["hhcell"]["electrical"]["hhpop"][0]["v"]);
+});
+
+test("Serializer Test, path no array", function(){
+	var tree =  "hhcell.electrical.hhpop.v";
+	var treeSplit = tree.split(".");
+	GEPPETTO.Serializer.stringToObject(null,treeSplit);
+	notEqual(null,window["hhcell"]["electrical"]["hhpop"]["v"]);
 });

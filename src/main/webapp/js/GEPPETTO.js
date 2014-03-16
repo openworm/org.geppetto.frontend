@@ -699,6 +699,7 @@ define(function(require) {
 	require('geppetto-objects/Simulation')(GEPPETTO);
 	require('geppetto-objects/G')(GEPPETTO);
 	require('GEPPETTO.Main')(GEPPETTO);
+	require('Serializer')(GEPPETTO);
 	require("widgets/includeWidget")(GEPPETTO);
 
 	return GEPPETTO;

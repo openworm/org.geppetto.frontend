@@ -48,7 +48,7 @@ test("Global scope Test", function(){
 module( "G Object Test");
 
 test( "Test Get Current Simulation", function() {
-	equal(GEPPETTO.G.getCurrentSimulation(), NO_SIMULATION_TO_GET, "No simulation, passed.");
+	equal(GEPPETTO.G.getCurrentSimulation(), GEPPETTO.Resources.NO_SIMULATION_TO_GET, "No simulation, passed.");
 });
 
 test("Test Debug Mode", function(){	
@@ -67,19 +67,19 @@ test("Test G Object help method", function(){
 
 test("Test Clear Console", function(){
 	
-	equal(GEPPETTO.G.clear(),CLEAR_HISTORY, "Console cleared");
+	equal(GEPPETTO.G.clear(),GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
 });
 
 test("Test Copy History To Clipboard", function(){
 	
-	equal(GEPPETTO.G.copyHistoryToClipboard(), EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
+	equal(GEPPETTO.G.copyHistoryToClipboard(), GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
 	
 	//add some commands to history
 	GEPPETTO.Console.executeCommand("GEPPETTO.G.help();");
 	GEPPETTO.Console.executeCommand("help();");
 	GEPPETTO.Console.executeCommand("Simulation.start()");
 	
-	equal(GEPPETTO.G.copyHistoryToClipboard(), COPY_CONSOLE_HISTORY, "Commands copied, test passed");
+	equal(GEPPETTO.G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "Commands copied, test passed");
 });
 
 test("Test Add Widget", function(){
@@ -93,19 +93,19 @@ test("Test Add Widget", function(){
 test("Test Remove Widget", function(){
 	GEPPETTO.G.addWidget(Widgets.PLOT);
 	
-	equal(PlotsController.getWidgets().length,  1, "Plot widget created");
+	equal(GEPPETTO.PlotsController.getWidgets().length,  1, "Plot widget created");
 	
 	GEPPETTO.G.removeWidget(Widgets.PLOT);
 	
-	equal(PlotsController.getWidgets().length, 0, "Plot widget removed, test passed");
+	equal(GEPPETTO.PlotsController.PlotsController.getWidgets().length, 0, "Plot widget removed, test passed");
 });
 
 test("Test Widget", function(){
 	GEPPETTO.G.addWidget(Widgets.PLOT);
 	
-	equal(PlotsController.getWidgets().length, 1, "Plot widget created");
+	equal(GEPPETTO.PlotsController.PlotsController.getWidgets().length, 1, "Plot widget created");
 	
-	var plot = PlotsController.getWidgets()[0];
+	var plot = GEPPETTO.PlotsController.PlotsController.getWidgets()[0];
 	
 	equal(plot.isVisible(), true, "Default visibility test passed");
 	

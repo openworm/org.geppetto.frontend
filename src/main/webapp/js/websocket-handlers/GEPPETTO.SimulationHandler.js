@@ -159,32 +159,40 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			break;
 		//Starts the watch of requested variables
 		case MESSAGE_TYPE.START_WATCH:
-			//variables watching
-			var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-			
-			//create objects for the variables to watch
-			for(var v in variables){
-				
-				var splitVariableName = variables[v].split(".");
+			var parsePayLoad = JSON.parse(payload.get_watch_lists)[0];
 
-				var name = variables[v].replace(splitVariableName[0]+".", "");
-							
-				simulationStates[name] = new State(name,0);
-			}
+			if(parsePayLoad != null){
+				//variables watching
+				var variables = parsePayLoad.variablePaths;
+
+				//create objects for the variables to watch
+				for(var v in variables){
+
+					var splitVariableName = variables[v].split(".");
+
+					var name = variables[v].replace(splitVariableName[0]+".", "");
+
+					simulationStates[name] = new State(name,0);
+				}}
 			break;
 		case MESSAGE_TYPE.SET_WATCH_VARS:
-			//variables watching
-			var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
 			
-			//create objects for the variables to watch
-			for(var v in variables){
-				
-				var splitVariableName = variables[v].split(".");
-							
-				var name = variables[v].replace(splitVariableName[0]+".", "");
-				
-				//keep track of simulation state being watched
-				simulationStates[name] = new State(name,0);
+			var parsePayLoad = JSON.parse(payload.get_watch_lists)[0];
+
+			if(parsePayLoad != null){
+				//variables watching
+				var variables = parsePayLoad.variablePaths;
+
+				//create objects for the variables to watch
+				for(var v in variables){
+
+					var splitVariableName = variables[v].split(".");
+
+					var name = variables[v].replace(splitVariableName[0]+".", "");
+
+					//keep track of simulation state being watched
+					simulationStates[name] = new State(name,0);
+				}
 			}
 			break;
 		default:

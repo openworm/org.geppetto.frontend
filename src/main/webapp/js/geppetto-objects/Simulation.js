@@ -400,101 +400,6 @@ function updateSimulationWatchTree(variable){
 }
 
 /**
- * Takes an object path and traverses through it to find the value within. 
- * Example :    {hhpop[0] : { v : 20 } }
- * 
- * Method will traverse through object to find the value "20" and update corresponding 
- * simulation state with it. If no simulation state exists, then it creates one. 
- */
-function searchTreePath(a) {
-	  var list = [];
-	  (function(o, r) {
-	    r = r || '';
-	    if (typeof o != 'object') {
-	      return true;
-	    }
-	    for (var c in o) {
-	    	//if current tree path object is array
-	    	if(!isNaN(c)){
-	    		if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
-	    			var val  = 0;
-	    			if(o[c]!=null){
-	    				val = o[c];
-	    			}
-	    			var rs = r.toString();
-	    			//first object or no more children
-	    			if(rs == ""){
-	    				//simulation state already exists, update
-	    				if(simulationStates[c]!=null){
-	    					simulationStates[c].update(val);
-	    				}
-	    			}
-	    			//object has leafs, add "." to name and update value if it exists
-	    			else{
-	    				if(simulationStates[r + "." + c]!=null){
-	    					simulationStates[r + "." + c].update(val);
-	    				}
-	    			}
-	    		}
-	    	}
-	    	//current path object from tree not an array
-	    	else{
-	    		var val  = 0;
-    			if(o[c]!=null){
-    				val = o[c];
-    			}
-    			
-    			if(arguments.callee(o[c], r + (r!=""?".":"") + c + (r!=""?"":""))){
-    				//root of path case, no more children
-    				if(r == ""){
-						simulationStates[c].update(val);
-    				}
-    				//within path of tree, add "." to note levels
-    				else{
-						var name = r + "." + c;
-
-						simulationStates[name].update(val);
-
-    				}
-    			}
-    		}
-	      }
-	    return false;
-	  })(a);
-	  return list;
-	}
-
-
-/**
- * Search through array looking for simulation states
- */
-function searchTreeArray(variables){
-	for(var v =0; v < variables.length; v++){
-		var state = Simulation.watchTree.WATCH_TREE[v];
-
-		if(state.name != null){
-			updateState(state);
-		}
-
-		else{
-			searchTreeObject(state);
-		}	
-	}		
-}
-
-/**
- * Search through object structure for object with value and name
- */
-function searchTreeObject(obj){
-	    for (var name in obj) {
-	    	var value = obj[name];
-	    	
-	    	//state found, create or update its state
-	    	updateState(name,value);
-	    }
-}
-
-/**
  * Update or create a simulation state
  */
 function updateState(name,value){
@@ -507,6 +412,43 @@ function updateState(name,value){
 		 var variable = simulationStates[name];
 		 variable.update(value);
 	}
+}
+
+/**
+ * Search obj for the value of node within using path. 
+ * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will 
+ * search within the obj to find the value of "tree.v", returning 1.
+ */
+function deepFind(obj, path) {
+	var paths = path.split('.')
+	, current = obj
+	, i;
+	
+	for (i = 0; i < paths.length; ++i) {
+		//get index from node if it's array
+		var index = paths[i].match(/[^[\]]+(?=])/g);
+		
+		if(index == null){
+			if (current[paths[i]] == undefined) {
+				return undefined;
+			} else {
+				current = current[paths[i]];
+			}
+		}
+		else{
+			var iNumber =index[0].replace(/[\[\]']+/g,"");
+			
+			//take index and brackets out of the equation for now
+			var node = paths[i].replace(/ *\[[^]]*\] */g, "");
+
+			if (current[node][parseInt(iNumber)] == undefined) {
+				return undefined;
+			} else {
+				current = current[node][parseInt(iNumber)];
+			}
+		}
+	}
+	return current;
 }
 
 /**

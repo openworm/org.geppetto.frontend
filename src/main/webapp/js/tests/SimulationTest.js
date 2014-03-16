@@ -148,7 +148,7 @@ module("Simulation controls Test",
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml");
 		},500);
 	},
 	teardown: function(){
@@ -298,6 +298,9 @@ asyncTest("Test add / get watchlists no crash - SPH", function(){
 				Simulation.start();
 				Simulation.addWatchLists([]);
 				Simulation.getWatchLists();
+				break;
+				case MESSAGE_TYPE.SET_WATCH_VARS:
+					ok(true, "Watch list set");
 				break;
 				case MESSAGE_TYPE.GET_WATCH_LISTS:
 					ok(true, "Variables received");

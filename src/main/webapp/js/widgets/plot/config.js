@@ -43,19 +43,23 @@ require.config({
 	paths : {
 		'flot' :"widgets/plot/vendor/jquery.flot.min",
 		'resize' : 'widgets/plot/vendor/jquery.flot.resize.min',
+		'axis' : 'widgets/plot/vendor/jquery.flot.axislabels',
 	},
 	/*
 	 * Specify dependencies for each library
 	 */
 	shim: {
 		flot : { deps :['jquery']},
-		resize : { deps : ['flot']}
+		resize : { deps : ['flot']},
+		axis : { deps : ['flot']}
+		
 	}
 });
 
 var plot = [];
 plot.push("flot");
 plot.push("resize");
+plot.push("axis");
 plot.push("widgets/plot/Plot");
 plot.push("widgets/plot/controllers/PlotsController");
 

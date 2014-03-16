@@ -111,6 +111,8 @@ var WATCH_TREE = "Simulation States watching";
 
 var SIMULATION_TIME_MSG = "Simulation's current time step : ";
 
+var SIMULATION_TIME_MSG_STEP = "Simulation avdvancing each ";
+
 /**
  * Object G resources
  */

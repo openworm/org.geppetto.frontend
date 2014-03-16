@@ -60,9 +60,6 @@
 }
 
 .xaxisLabel {
-    bottom: 3px;
-    left: 0;
-    right: 0;
     color : white;
 }
 
@@ -70,14 +67,4 @@
     top: 50%;
     left: 0px;
     color : white;
-    transform: rotate(-90deg);
-    -o-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg);
-    -webkit-transform:  rotate(-90deg);
-    transform-origin: 0 0;
-    -o-transform-origin: 0 0;
-    -ms-transform-origin: 0 0;
-    -moz-transform-origin: 0 0;
-    -webkit-transform-origin: 0 0;
 }

@@ -373,7 +373,8 @@ Simulation.getWatchTree = function()
 };
 
 Simulation.getTime = function(){
-	return SIMULATION_TIME_MSG + Simulation.time;
+	return SIMULATION_TIME_MSG + Simulation.time + "\n" +
+		"     " +SIMULATION_TIME_MSG_STEP + Simulation.timestep;
 };
 
 /**
@@ -555,5 +556,5 @@ function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
 
 function updateTime(t){
 	Simulation.time = t.TIME_STEP.time + " ms";
-	Simulation.step = t.TIME_STEP.step + " ms";
+	Simulation.timestep = t.TIME_STEP.step + " ms";
 }

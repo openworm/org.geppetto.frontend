@@ -372,7 +372,26 @@ asyncTest("Test clear watch Simulation variables", function(){
 	this.newSocket.addHandler(handler);
 });
 
-asyncTest("Test Unit in Variables", function(){
+module("Simulation Time and Unit Test",
+		{
+			newSocket : GEPPETTO.MessageSocket, 
+			
+			setup : function(){
+				this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
+
+				//wait half a second before testing, allows for socket connection to be established
+				setTimeout(function(){
+					Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml");
+				},500);
+			},
+			teardown: function(){
+				this.newSocket.close();
+			}
+		});
+
+asyncTest("Test Time", function(){
+
+	var startTest = true;
 	
 	var handler = {
 			onMessage : function(parsedServerMessage){
@@ -381,16 +400,23 @@ asyncTest("Test Unit in Variables", function(){
 				switch(parsedServerMessage.type){
 				//Simulation has been loaded successfully
 				case MESSAGE_TYPE.SIMULATION_LOADED:
-				Simulation.start();				
-				Simulation.startWatch();
+					ok(true, "Simulation loaded, passed");
+					Simulation.start();		
 				break;	
 				case MESSAGE_TYPE.SCENE_UPDATE:
-		            var variables = JSON.parse(payload.update).variable_watch;
-		            var time = JSON.parse(payload.update).time;
-		            
-		            notEqual(null,variables);
-		            notEqual(null, time);	
-					start();
+
+					if(startTest){
+						var payload = JSON.parse(parsedServerMessage.data);
+
+						var time = JSON.parse(payload.update).time;
+
+						notEqual(null, time);
+
+						start();
+						Simulation.stop();		
+						Plot1.destroy();
+						startTest = false;
+					}
 		           break;
 				}
 			}

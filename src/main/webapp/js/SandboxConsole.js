@@ -71,12 +71,6 @@ define(function(require) {
 					if(this.get('iframe')) {
 						this.iframeSetup();
 					}
-
-					// When the Model is destroyed (eg. via ':clear'), erase the current history as well
-					this.on("destroy", function(model) {
-						model.set({history: []});
-					});
-
 				},
 
 				// The Sandbox Model tries to use the localStorage adapter to save the command history
@@ -428,7 +422,8 @@ define(function(require) {
 				},
 
 				clear: function() {
-					this.model.destroy();
+					this.model.set('history',[]);
+					//this.model.destroy();
 				},
 
 				// Manually set the value in the sandbox textarea and focus it ready to submit:

@@ -356,13 +356,13 @@ define(function(require) {
 			 */
 			fullSimulatorNotification: function(simulatorName, queuePosition) {
 
-				$('#capacityNotificationTitle').html(simulatorName + SIMULATOR_UNAVAILABLE);
+				$('#capacityNotificationTitle').html(simulatorName + GEPPETTO.Resources.SIMULATOR_UNAVAILABLE);
 
 				$('#queuePosition').html(queuePosition);
 
 				$('#multiUserNotification').modal();
 			}
-		}
+		};
 
-	}
+	};
 });

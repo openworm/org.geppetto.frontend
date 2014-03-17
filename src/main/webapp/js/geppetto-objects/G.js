@@ -74,9 +74,7 @@ define(function(require) {
 			 * @name G.clear()
 			 */
 			clear: function() {
-
 				GEPPETTO.Console.getConsole().clear();
-
 				return GEPPETTO.Resources.CLEAR_HISTORY;
 			},
 
@@ -87,9 +85,8 @@ define(function(require) {
 			 */
 			copyHistoryToClipboard: function() {
 
-				var text = JSON.stringify(GEPPETTO.Console.consoleHistory(), 0, 4);
-				var commands = JSON.parse(text);
 				var commandsString = "";
+				var commands = GEPPETTO.Console.consoleHistory();
 
 				for(var i = 0; i < commands.length; i++) {
 					var n = commands[i];

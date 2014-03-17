@@ -313,8 +313,10 @@ var Plot = Widget.View
 					}
 				}
 
-				this.plot.setData(this.datasets);
-				this.plot.draw();
+				if(this.plot != null){
+					this.plot.setData(this.datasets);
+					this.plot.draw();
+				}
 			},
 
 			/**

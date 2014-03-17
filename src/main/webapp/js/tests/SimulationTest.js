@@ -339,7 +339,7 @@ asyncTest("Test watch Simulation variables", function(){
 				
 				start();
 				break;	
-				}
+			}
 			}
 	};
 
@@ -370,4 +370,32 @@ asyncTest("Test clear watch Simulation variables", function(){
 	};
 
 	this.newSocket.addHandler(handler);
+});
+
+asyncTest("Test Unit in Variables", function(){
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been loaded successfully
+				case MESSAGE_TYPE.SIMULATION_LOADED:
+				Simulation.start();				
+				Simulation.startWatch();
+				break;	
+				case MESSAGE_TYPE.SCENE_UPDATE:
+		            var variables = JSON.parse(payload.update).variable_watch;
+		            var time = JSON.parse(payload.update).time;
+		            
+		            notEqual(null,variables);
+		            notEqual(null, time);	
+					start();
+		           break;
+				}
+			}
+	};
+
+	this.newSocket.addHandler(handler);
+	
 });

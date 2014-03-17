@@ -35,49 +35,29 @@
 
 define(function(require) {
 
-	var _ = require('underscore');
-
 	var run = function() {
-
 
 		test("Serializer Test, start with array", function() {
 			var tree = "hhpop[0].v";
-			//var treeSplit = tree.split(".");
 			GEPPETTO.Serializer.stringToObject(tree);
 			notEqual(null, window["hhpop"][0]["v"]);
-
-			//var testObj = GEPPETTO.Serializer.stringToObject(tree);
-			//console.log(testObj);
-			//notEqual(null, testObj["hhpop"][0]["v"]);
 		});
 
 		test("Serializer Test, start with array many children", function() {
 			var tree = "hhpop[0].membraneProperties.naChans.na.k.q";
-			var testObj = GEPPETTO.Serializer.stringToObject(tree);
+			GEPPETTO.Serializer.stringToObject(tree);
 			notEqual(null, window["hhpop"][0]["membraneProperties"]["naChans"]["na"]["k"]["q"]);
-
-
 		});
 
 		test("Serializer Test, path no array", function() {
 			var tree = "hhcell.electrical.hhpop[0].v";
-			//var treeSplit = tree.split(".");
 		  GEPPETTO.Serializer.stringToObject(tree);
 			notEqual(null, window["hhcell"]["electrical"]["hhpop"][0]["v"]);
-			//var testObj = GEPPETTO.Serializer.stringToObject(tree);
-			//console.log(testObj);
-
-			//notEqual(null, testObj["hhcell"]["electrical"]["hhpop"][0]["v"]);
 		});
 
 		test("Serializer Test, path no array", function() {
 			var tree = "hhcell.electrical.hhpop.v";
-			//var treeSplit = tree.split(".");
 			GEPPETTO.Serializer.stringToObject(tree);
-			//notEqual(null, window["hhcell"]["electrical"]["hhpop"]["v"]);
-			//var testObj = GEPPETTO.Serializer.stringToObject(tree);
-			//console.log(testObj);
-
 			notEqual(null, window["hhcell"]["electrical"]["hhpop"]["v"]);
 		});
 

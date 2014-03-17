@@ -3,23 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>GEPPETTO Client Unit Test</title>
-<link rel="stylesheet" href="css/qunit-1.12.0.css">
+<link rel="stylesheet" href="css/qunit.css">
 <link rel="stylesheet" href="css/custom-theme/jquery-ui-1.10.0.custom.css" />
-<script src="js/vendor/jquery-1.9.1.js"></script>
-<script src="js/vendor/jquery-ui-1.10.3.custom.js"></script>
-<script src="js/vendor/three.min.js"></script>
-<script src="js/vendor/TrackballControls.js"></script>
-<script src="js/vendor/dat.gui.js"></script>
-<script src="js/vendor/stats.min.js"></script>
-<script src="js/vendor/THREEx.KeyboardState.js"></script>
-<script src="js/vendor/Detector.js"></script>
-<script src="js/vendor/ColorConverter.js"></script>
-<script src="js/vendor/bootstrap.min.js"></script>
-<script src="js/widgets/plot/vendor/jquery.flot.min.js"></script>
-<script src="js/vendor/rAF.js"></script>
-<script src="js/vendor/codemirror.js"></script>
-<script src="js/vendor/xml.js"></script>
-<script src="js/vendor/formatting.js"></script>
 
 <script type="text/template" id="tplSandbox">
 		<pre class="output"></pre>
@@ -34,36 +19,8 @@
 <% } %></script>
 
 <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-<script src="js/vendor/underscore.min.js"></script>
-<script src="js/vendor/backbone.min.js"></script>
-<script src="js/vendor/backbone-localStorage.min.js"></script>
-<script src="js/SandboxConsole.js"></script>
+<script data-main="js/main-test.js" src="js/vendor/require.js"></script>
 
-<script src="js/geppetto-objects/Simulation.js"></script>
-<script src="js/geppetto-objects/G.js"></script>
-<script src="js/GEPPETTO.js"></script>
-<script src="js/GEPPETTO.Init.js"></script>
-<script src="js/GEPPETTO.JSEditor.js"></script>
-<script src="js/GEPPETTO.FE.js"></script>
-<script src="js/websocket-handlers/GEPPETTO.MessageSocket.js"></script>
-<script src="js/websocket-handlers/GEPPETTO.GlobalHandler.js"></script>
-<script src="js/websocket-handlers/GEPPETTO.SimulationHandler.js"></script>
-<script src="js/websocket-handlers/GEPPETTO.SocketMessageTypes.js"></script>
-<script src="js/GEPPETTO.Console.js"></script>
-<script src="js/GEPPETTO.Vanilla.js"></script>
-<script src="js/GEPPETTO.ScriptRunner.js"></script>
-<script src="js/GEPPETTO.Resources.js"></script>
-<script src="js/GEPPETTO.Utility.js"></script>
-<script src="js/vendor/qunit-1.12.0.js"></script>
-
-<script src="js/widgets/Widget.js"></script>
-<script src="js/widgets/plot/Plot.js"></script>
-<script src="js/widgets/WidgetsListener.js"></script>		
-<script src="js/widgets/plot/controllers/PlotsController.js"></script>
-<script src="js/GEPPETTO.SimState.js"></script>
-<script src="js/widgets/WidgetFactory.js"></script>
-<script src="js/tests/GeppettoTests.js"></script>
-<script src="js/tests/SimulationTest.js"></script>
 </head>
 <body>
 	<div id="qunit"></div>
@@ -90,6 +47,5 @@
 		</div>
 	</div>
 	</div>
-	
 </body>
 </html>

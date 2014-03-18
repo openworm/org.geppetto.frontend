@@ -60,7 +60,7 @@ var Plot = Widget.View
 				xaxis : {
 					min : 0,
 					max : 20,
-					show : true,
+					show : false,
 				},
 			},
 
@@ -261,13 +261,15 @@ var Plot = Widget.View
 				for ( var i = 0; i < newValues.length; i++) {
 					var label = newValues[i].label;
 					var newValue = newValues[i].data;
-
+ 
 					if (!this.labelsUpdated) {
 						var unit = newValues[i].unit;
 						if (unit != null) {
-							var labelY = "Measure ( " + unit + " )";
-							var labelX = "Response time (ms) "
-									+ Simulation.timestep;
+							var labelY = unit;
+							//Matteo: commented until this can move as it doesn't make sense for it to be static.
+							//also ms should not be harcoded but should come from the simulator as the timescale could
+							//be different
+							var labelX = "";//Simulation timestep (ms) " + Simulation.timestep;
 							this.setAxisLabel(labelY, labelX);
 						}
 						this.labelsUpdated = true;
@@ -402,10 +404,9 @@ var Plot = Widget.View
 			setAxisLabel : function(labelY, labelX) {
 				// update grid
 				this.options.yaxis.axisLabel = labelY;
-				this.options.xaxis.axisLabel = labelX;
-				this.options.xaxis.axisLabelPadding = 5;
-				this.plot = $.plot($("#" + this.id), this.datasets,
-						this.options);
+				//this.options.xaxis.axisLabel = labelX;
+				//this.options.xaxis.axisLabelPadding = 5;
+				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
 			},
 
 		});

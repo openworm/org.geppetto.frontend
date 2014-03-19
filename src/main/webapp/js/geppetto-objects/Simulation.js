@@ -372,10 +372,13 @@ Simulation.getWatchTree = function()
 	}
 };
 
+/*
+Matteo: Commenting out as it's returning null
 Simulation.getTime = function(){
 	return SIMULATION_TIME_MSG + Simulation.time + "\n" +
 		"     " +SIMULATION_TIME_MSG_STEP + Simulation.timestep;
 };
+ */
 
 /**
  * Updates the simulation states with new watched variables

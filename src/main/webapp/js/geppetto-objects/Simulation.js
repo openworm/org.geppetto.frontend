@@ -392,8 +392,30 @@ define(function(require) {
 				}
 
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
-			}
+			},
 
+			/**
+			 * Add a transfer function to a watched var's sim state.
+			 * The transfer function should accept the value of the watched var and output a
+			 * number between 0 and 1, corresponding to min and max brightness.
+			 * If no transfer function is specified then brightess = value
+			 * @param entityName
+			 * @param varName
+			 * @param transferFunction
+			 */
+			addBrightnessFunction: function(entityName, varName, transferFunction) {
+				this.simulationStates[varName].listeners.push(function (simState){
+					GEPPETTO.lightUpEntity(entityName, transferFunction ? transferFunction(simState.value) : simState.value);
+				});
+			},
+
+			/**
+			 * Clear brightness transfer functions on simulation state
+			 * @param varName
+			 */
+			clearBrightnessFunctions: function(varName) {
+				this.simulationStates[varName].listeners = [];
+			}
 		};
 
 		/**

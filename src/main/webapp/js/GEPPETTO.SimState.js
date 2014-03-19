@@ -36,6 +36,7 @@
  * @author Jesus R Martinez (jesus@metacel.us)
  */
 define(function(require) {
+
 	return function(GEPPETTO) {
 		GEPPETTO.SimState = {
 			State: function(stateName, stateValue, unit) {
@@ -43,6 +44,7 @@ define(function(require) {
 					name: stateName,
 					value: stateValue,
 					unit: unit,
+					listeners:[],
 					update: function(newValue) {
 						if(isNaN(newValue)){
 							this.value = newValue.value;
@@ -50,6 +52,9 @@ define(function(require) {
 						}
 						else{
 							this.value = newValue;
+						}
+						for(var key in this.listeners) {
+							this.listeners[key](this);
 						}
 					}
 				};

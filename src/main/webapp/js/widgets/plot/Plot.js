@@ -39,6 +39,7 @@
 define(function(require) {
 
 	var Widget = require('widgets/Widget');
+	var $ = require('jquery');
 
 	return Widget.View
 		.extend({
@@ -61,13 +62,13 @@ define(function(require) {
 					shadowSize: 0
 				},
 				yaxis: {
-					min: -.1,
+					min: -0.1,
 					max: 1
 				},
 				xaxis: {
 					min: 0,
 					max: 20,
-					show: true
+					show: false
 				},
 				grid: {
 					margin: {
@@ -286,8 +287,12 @@ define(function(require) {
 					if(!this.labelsUpdated) {
 						var unit = newValues[i].unit;
 						if(unit != null) {
-							var labelY = "Measure ( " + unit + " )";
-							var labelX = "Response time (ms) " + Simulation.step;
+							var labelY = unit;
+				      //Matteo: commented until this can move as it doesn't make sense for it to be static.
+							//also ms should not be harcoded but should come from the simulator as the timescale could
+							//be different
+							var labelX = "";
+							//Simulation timestep (ms) " + Simulation.timestep;
 							this.setAxisLabel(labelY, labelX);
 						}
 						this.labelsUpdated = true;
@@ -397,24 +402,8 @@ define(function(require) {
 			 * @param label - Label to use for Y Axis
 			 */
 			setAxisLabel: function(labelY, labelX) {
-				if(this.yaxisLabel != null) {
-					$("#YLabel").remove();
-				}
-				if(this.xaxisLabel != null) {
-					$("#XLabel").remove();
-				}
-
-				//update grid
-				this.options.grid = {margin: {left: 15, bottom: 15}};
-				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
-
-				this.yaxisLabel = $("<div class='axisLabel yaxisLabel' id='YLabel'></div>")
-					.text(labelY)
-					.appendTo($("#" + this.id));
-
-				this.xaxisLabel = $("<div class='axisLabel xaxisLabel' id='XLabel'></div>")
-					.text(labelX)
-					.appendTo($("#" + this.id));
+				this.options.yaxis.axisLabel = labelY;
+				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
 			}
 		});
 });

@@ -56,6 +56,8 @@ define(function(require) {
 						var entities = JSON.parse(payload.update).entities;
 
 						GEPPETTO.Simulation.setSimulationLoaded();
+						//Reset the simulation states
+						GEPPETTO.Simulation.simulationStates={};
 
 						//Populate scene
 						GEPPETTO.populateScene(entities);

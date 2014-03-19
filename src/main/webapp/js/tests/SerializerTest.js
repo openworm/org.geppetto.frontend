@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,31 +30,38 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-test("Serializer Test, start with array", function(){
-	var tree =  "hhpop[0].v";
-	var treeSplit = tree.split(".");
-	stringToObject(null,treeSplit);
-	notEqual(null,window["hhpop"][0]["v"]);
-});
 
-test("Serializer Test, start with array many children", function(){
-	var tree =  "hhpop[0].membraneProperties.naChans.na.k.q";
-	var treeSplit = tree.split(".");
-	stringToObject(null,treeSplit);
-	notEqual(null,window["hhpop"][0]["membraneProperties"]["naChans"]["na"]["k"]["q"]);
-});
+"use strict";
 
+define(function(require) {
 
-test("Serializer Test, path no array", function(){
-	var tree =  "hhcell.electrical.hhpop[0].v";
-	var treeSplit = tree.split(".");
-	stringToObject(null,treeSplit);
-	notEqual(null,window["hhcell"]["electrical"]["hhpop"][0]["v"]);
-});
+	var run = function() {
 
-test("Serializer Test, path no array", function(){
-	var tree =  "hhcell.electrical.hhpop.v";
-	var treeSplit = tree.split(".");
-	stringToObject(null,treeSplit);
-	notEqual(null,window["hhcell"]["electrical"]["hhpop"]["v"]);
+		test("Serializer Test, start with array", function() {
+			var tree = "hhpop[0].v";
+			GEPPETTO.Serializer.stringToObject(tree);
+			notEqual(null, window["hhpop"][0]["v"]);
+		});
+
+		test("Serializer Test, start with array many children", function() {
+			var tree = "hhpop[0].membraneProperties.naChans.na.k.q";
+			GEPPETTO.Serializer.stringToObject(tree);
+			notEqual(null, window["hhpop"][0]["membraneProperties"]["naChans"]["na"]["k"]["q"]);
+		});
+
+		test("Serializer Test, path no array", function() {
+			var tree = "hhcell.electrical.hhpop[0].v";
+		  GEPPETTO.Serializer.stringToObject(tree);
+			notEqual(null, window["hhcell"]["electrical"]["hhpop"][0]["v"]);
+		});
+
+		test("Serializer Test, path no array", function() {
+			var tree = "hhcell.electrical.hhpop.v";
+			GEPPETTO.Serializer.stringToObject(tree);
+			notEqual(null, window["hhcell"]["electrical"]["hhpop"]["v"]);
+		});
+
+	};
+
+	return {run: run};
 });

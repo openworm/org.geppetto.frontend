@@ -73,7 +73,7 @@ define(function(require) {
 							var xmlString = self.xmlToString(result);
 
 							//load the simulation template file to the editor
-							this.loadSimulationInfo(xmlString);
+							self.loadSimulationInfo(xmlString);
 						}
 					});
 			},

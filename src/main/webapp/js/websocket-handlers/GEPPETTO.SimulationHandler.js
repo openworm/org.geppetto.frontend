@@ -52,6 +52,8 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			GEPPETTO.Console.debugLog(LOADING_MODEL);
 			var entities = JSON.parse(payload.update).entities;
 
+			//Reset the simulation states
+			simulationStates={};
 			setSimulationLoaded();
 
 			//Populate scene

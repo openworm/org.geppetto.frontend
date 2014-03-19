@@ -12,10 +12,6 @@
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml"
         },
         {
-        	"name" : "PCISPH Big Liquid/Elastic Scene",
-            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidElasticBig/GEPPETTO.xml"
-        },
-        {
         	"name" : "NeuroML Purkinje Cell (No Simulation)",
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/Purkinje/GEPPETTO.xml"
         },

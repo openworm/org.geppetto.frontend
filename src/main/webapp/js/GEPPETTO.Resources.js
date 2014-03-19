@@ -107,6 +107,12 @@ var WATCHED_SIMULATION_STATES = "You are currently watching the following states
 
 var EMPTY_WATCH_TREE = "There are no simulation states to watch";
 
+var WATCH_TREE = "Simulation States watching";
+
+var SIMULATION_TIME_MSG = "Simulation's current time step : ";
+
+var SIMULATION_TIME_MSG_STEP = "Simulation avdvancing each ";
+
 /**
  * Object G resources
  */
@@ -131,6 +137,10 @@ var COPY_TO_CLIPBOARD_MAC = "Copy to Clipboard: Cmd+C , OK";
 var INVALID_WAIT_USE = "G.wait(ms) command must be used inside script";
 
 var WAITING = "Waiting ms";
+
+var SHOW_CONSOLE = "Showing Console";
+
+var HIDE_CONSOLE = "Hiding Console";
 
 
 /**

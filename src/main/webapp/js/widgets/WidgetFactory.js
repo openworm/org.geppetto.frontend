@@ -30,70 +30,67 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
- * Listener class for widgets. Receives updates from Geppetto that need to be transmitted to all widgets. 
- * 
- * @constructor
- * 
- * @author Jesus R Martinez (jesus@metacell.us)
+ * Class used to create widgets and handle widget events from parent class. 
  */
 
-var WIDGET_EVENT_TYPE = {
-		DELETE : "delete",
+/**
+ * Enum use to hold different types of widgets
+ */
+var Widgets = {
+			PLOT : 0
 };
 
-GEPPETTO.WidgetsListener =  {
-
-		_subscribers : [],
-
-		/**
-		 * Subscribes widget controller class to listener
-		 * 
-		 * @param obj - Controller Class subscribing
-		 * @returns {Boolean}
-		 */
-		subscribe : function(obj){
-
-			var addController = true;
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				if( this._subscribers[ i ] === obj ) {
-					addController = false;
-				}
-			}
-			if(addController){
-				this._subscribers.push( obj );
-
-				GEPPETTO.Console.debugLog( 'added new observer' );
-			}
-		},
-
-		/**
-		 * Unsubscribe widget controller class
-		 * 
-		 * @param obj - Controller class to be unsubscribed from listener
-		 * 
-		 * @returns {Boolean}
-		 */
-		unsubscribe : function(obj){
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				if( this._subscribers[ i ] === obj ) {
-					this._subscribers.splice( i, 1 );
-					GEPPETTO.Console.log( 'removed existing observer' );
-					return true;
-				}
-			}
-			return false;
-		},
-
-		/**
-		 * Update all subscribed controller classes of the changes
-		 * 
-		 * @param newData 
-		 */
-		update : function(arguments){
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				this._subscribers[ i ].update( arguments );
-			}
+(function(){
+	WidgetFactory = GEPPETTO.WidgetFactory ||
+	{
+		REVISION : '1'
+	};
+	
+	/**
+	 * Adds widget to Geppetto
+	 */
+	WidgetFactory.addWidget = function(widgetType){
+		var widget = null;
+		
+		switch(widgetType){
+			//create plotting widget
+			case Widgets.PLOT:
+				widget = PlotsController.addPlotWidget();
+				break;
+			default: 
+				break;
 		}
+				
+		return widget;
+	};
+	
+	/**
+	 * Removes widget from Geppetto
+	 */
+	WidgetFactory.removeWidget = function(widgetType){
+		switch(widgetType){
+			//removes plotting widget from geppetto
+			case Widgets.PLOT:
+				PlotsController.removePlotWidgets();
+				return REMOVE_PLOT_WIDGETS;
+				break;
+			default: 
+				return NON_EXISTENT_WIDGETS;
+				break;
+		}
+	};	
+})();
 
-};
+/**
+ * Load CSS File
+ * @param url
+ */
+function loadCss(url) {
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = url;
+    document.getElementsByTagName("head")[0].appendChild(link);
+}

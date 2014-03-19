@@ -525,6 +525,7 @@ input {
 
 #close-welcomeMsg{
 	width:120px;
+	margin-top:10px;
 }
 #welcomeMessageModal {
 	background-image: URL("../images/welcomebckg.png");
@@ -545,7 +546,7 @@ input {
 
 .wmCheckBoxDiv {
 	position:relative;
-	margin-top:10px;
+	margin-top:20px;
 }
 .wmCheckBoxDiv .label{
 	background:none;

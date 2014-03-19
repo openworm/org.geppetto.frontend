@@ -54,7 +54,7 @@ debugMode = false;
  * @param widgetType - Type of widget to add
  */
 G.addWidget = function(type){
-	var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
+	var newWidget = WidgetFactory.addWidget(type);
 	
 	return newWidget.getName() + WIDGET_CREATED;
 };
@@ -188,7 +188,7 @@ G.help = function(){
  * @param widgetType - Type of widget to remove
  */
 G.removeWidget = function(type){
-	return GEPPETTO.WidgetFactory.removeWidget(type);
+	return WidgetFactory.removeWidget(type);
 };
 
 /**
@@ -203,6 +203,27 @@ G.runScript = function(scriptURL){
 	GEPPETTO.MessageSocket.send("run_script", scriptURL);
 	
 	return RUNNING_SCRIPT; 
+};
+
+/**
+ * Show or hide console using command
+ * 
+ * @name G.showConsole(mode)
+ * @param mode - "true" to show, "false" to hide.
+ */
+G.showConsole = function(mode){
+	var returnMessage;
+	
+	if(mode){
+		returnMessage = SHOW_CONSOLE;
+	}
+	else{
+		returnMessage = HIDE_CONSOLE;
+	}
+	
+	GEPPETTO.Console.showConsole(mode);
+	
+	return returnMessage;
 };
 
 /**

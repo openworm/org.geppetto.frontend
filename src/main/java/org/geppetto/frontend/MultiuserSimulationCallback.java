@@ -40,47 +40,59 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 
-public class MultiuserSimulationCallback implements ISimulationCallbackListener{
+public class MultiuserSimulationCallback implements ISimulationCallbackListener {
 
-	private static Log logger = LogFactory.getLog(MultiuserSimulationCallback.class);
+	private static Log logger = LogFactory
+			.getLog(MultiuserSimulationCallback.class);
 
 	private GeppettoMessageInbound _user;
 
-	public MultiuserSimulationCallback(GeppettoMessageInbound user){
+	public MultiuserSimulationCallback(GeppettoMessageInbound user) {
 		this._user = user;
 	}
-	
+
 	/**
-	 * Receives update from simulation when there are new ones. 
-	 * From here the updates are send to the connected clients
+	 * Receives update from simulation when there are new ones. From here the
+	 * updates are send to the connected clients
 	 * 
 	 */
 	@Override
-	public void updateReady(String sceneUpdate, String variableWatchTree) {
-		long start=System.currentTimeMillis();
+	public void updateReady(SimulationEvents event, String sceneUpdate,
+			String variableWatchTree, String time) {
+		long start = System.currentTimeMillis();
 		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
 		String dateFormatted = formatter.format(date);
-		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
+		logger.info("Simulation Frontend Update Starting: " + dateFormatted);
 
 		OUTBOUND_MESSAGE_TYPES action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
 
-		/*
-		 * Simulation is running but model has not yet been loaded. 
-		 */
-		if(!_user.isSimulationLoaded()){
-			action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
+		// switch on message type
+		switch (event) {
+			case LOAD_MODEL: {
+				action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
 
-			_user.setIsSimulationLoaded(true);
-			
+				_user.setIsSimulationLoaded(true);
+				break;
+			}
+			case SCENE_UPDATE: {
+				break;
+			}
+			default: {
+			}
 		}
-		
+
 		// pack sceneUpdate and variableWatchTree in the same JSON string
-		String update = "{ \"entities\":" + sceneUpdate  + ", \"variable_watch\":" + variableWatchTree + "}";
+		String update = "{ \"entities\":" + sceneUpdate
+				+ ", \"variable_watch\":" + variableWatchTree
+				+ ", \"time\":" + time + "}";
 
-		// Notify all connected clients about update either to load model or update current one.
-		GeppettoServletController.getInstance().messageClient(null,_user, action , update);
+		// Notify all connected clients about update either to load model or
+		// update current one.
+		GeppettoServletController.getInstance().messageClient(null, _user,
+				action, update);
 
-		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
+		logger.info("Simulation Frontend Update Finished: Took:"
+				+ (System.currentTimeMillis() - start));
 	}
 }

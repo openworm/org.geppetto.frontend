@@ -30,25 +30,31 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.plot {
-	width: 100%;
-	height: 100%;
-}
 
-.flot-x-axis {
-	color:white;
-}
+/**
+ * Loads widget scripts
+ *  
+ * @author Jesus Martinez (jesus@metacell.us)
+ */
+/*
+ * Configure what dependencies are needed for each library
+ */
+require.config({
+	paths : {
+		'widget' :"widgets/Widget",
+		'factory' :"widgets/WidgetFactory",
+		'widgetsPath' : "widgets/"
+	},
+	shim: {
+		widget : { deps :['backbone']},
+		factory : { deps : ['widget']},
+	}
+});
 
-.flot-y-axis {
-	color:white;
-}
-
-.legendColorBox {
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-}
-
-.legendLabel {
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-}
+//Widget Classes
+require(["widget", "factory", "widgetsPath/WidgetsListener"], function($) {
+	loadCss("js/widgets/Widget.css");
+	
+	//Plot Widget
+	require(["js/widgets/plot/config.js"], function($) {});
+});

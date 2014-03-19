@@ -51,6 +51,15 @@ GEPPETTO.FE.createContainer = function()
 };
 
 /**
+ * Handles updating the front end after re-loading the simulation
+ */
+GEPPETTO.FE.SimulationReloaded = function()
+{
+	//delete all existing widgets
+	WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
+};
+
+/**
  * Show error message if webgl failed to start
  */
 GEPPETTO.FE.update = function(webGLStarted)
@@ -163,7 +172,9 @@ GEPPETTO.FE.loadingModalUIUpdate = function()
 			li.appendChild(a);
 			
 			//Add <li> element to load modal's dropdownmenu
-			ul.appendChild(li);
+			if(ul!=null){
+				ul.appendChild(li);
+			}
 		}		
 		
 		//Add click listener to sample simulations dropdown menu
@@ -331,6 +342,12 @@ GEPPETTO.FE.showWelcomeMessage = function(){
 	  });
 	
 	$("#close-welcomeMsg").on("click", function(event){
+		if($('#welcomeMsgCookie').hasClass("checked")){
+        	$.cookie("hideWelcomeMessage", true);
+        }
+	});
+	
+	$('#welcomeMessageModal').on('hide', function(event){
 		if($('#welcomeMsgCookie').hasClass("checked")){
         	$.cookie("hideWelcomeMessage", true);
         }

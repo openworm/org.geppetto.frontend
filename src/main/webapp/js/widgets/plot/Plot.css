@@ -30,55 +30,41 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+.plot {
+	width: 100%;
+	height: 100%;
+}
 
-/**
- * Class used to create widgets and handle widget events from parent class. 
- */
+.flot-x-axis {
+	color:white;
+}
 
-/**
- * Enum use to hold different types of widgets
- */
-var Widgets = {
-			PLOT : 0
-};
+.flot-y-axis {
+	color:white;
+}
 
-(function(){
-	GEPPETTO.WidgetFactory = GEPPETTO.WidgetFactory ||
-	{
-		REVISION : '1'
-	};
-	
-	/**
-	 * Adds widget to Geppetto
-	 */
-	GEPPETTO.WidgetFactory.addWidget = function(widgetType){
-		var widget = null;
-		
-		switch(widgetType){
-			//create plotting widget
-			case Widgets.PLOT:
-				widget = GEPPETTO.PlotsController.addPlotWidget();
-				break;
-			default: 
-				break;
-		}
-				
-		return widget;
-	};
-	
-	/**
-	 * Removes widget from Geppetto
-	 */
-	GEPPETTO.WidgetFactory.removeWidget = function(widgetType){
-		switch(widgetType){
-			//removes plotting widget from geppetto
-			case Widgets.PLOT:
-				GEPPETTO.PlotsController.removePlotWidgets();
-				return REMOVE_PLOT_WIDGETS;
-				break;
-			default: 
-				return NON_EXISTENT_WIDGETS;
-				break;
-		}
-	};	
-})();	
+.legendColorBox {
+	background:rgba(66,59,59,0.90)!important;
+	color:white;
+}
+
+.legendLabel {
+	background:rgba(66,59,59,0.90)!important;
+	color:white;
+}
+
+.axisLabel {
+    position: absolute;
+    text-align: center;
+    font-size: 12px;
+}
+
+.xaxisLabel {
+    color : white;
+}
+
+.yaxisLabel {
+    top: 50%;
+    left: 0px;
+    color : white;
+}

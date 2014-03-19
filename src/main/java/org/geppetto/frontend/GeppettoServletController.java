@@ -138,9 +138,6 @@ public class GeppettoServletController{
 			if(isSimulationInUse()){
 				simulationControlsUnavailable(newVisitor);
 			}
-			else{
-				messageClient(null,newVisitor, OUTBOUND_MESSAGE_TYPES.READ_URL_PARAMETERS);
-			}
 		}
 		else if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
 			int simulatorCapacity = newVisitor.getSimulationService().getSimulationCapacity();
@@ -428,23 +425,24 @@ public class GeppettoServletController{
 	/**
 	 * Adds watch lists with variables to be watched
 	 * @throws GeppettoExecutionException 
+	 * @throws JsonProcessingException 
 	 */
-	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException{
+	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException, JsonProcessingException{
 		List<WatchList> lists = null;
 		
 		try {
 			lists = fromJSON(new TypeReference<List<WatchList>>() {}, jsonLists);
+			visitor.getSimulationService().addWatchLists(lists);
+			
+			// serialize watch-lists
+			ObjectMapper mapper = new ObjectMapper();
+			String serializedLists = mapper.writer().writeValueAsString(lists);
+			
+			// message the client the watch lists were added
+	        messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS,serializedLists);
 		} catch (GeppettoExecutionException e) {
 			throw new RuntimeException(e);
 		}
-		
-		// TODO: do a check that variables with those names actually exists for the current simulation
-		// TODO: throw exception if not
-		
-		visitor.getSimulationService().addWatchLists(lists);
-		
-		// message the client the watch lists were added
-        messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS);
 	}
 	
 	/**
@@ -454,8 +452,8 @@ public class GeppettoServletController{
 	 */
 	public void startWatch(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException{		
 		visitor.getSimulationService().startWatch();
-
-		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
+		
+        List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
 
 		// serialize watch-lists
 		ObjectMapper mapper = new ObjectMapper();
@@ -519,21 +517,9 @@ public class GeppettoServletController{
 	 */
 	public void postClosingConnectionCheck(GeppettoMessageInbound exitingVisitor){
 
-		if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
-			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
-
-			if(this.getConnections().size() == simulatorCapacity){
-				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
-				messageClient(null,nextVisitorInLine,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
-			}
-		}
 		
-		/*
-		 * If the exiting visitor was running the simulation, notify all the observing
-		 * visitors that the controls for the simulation became available
-		 */
-		if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING){
-
+		if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER){
+			
 			//Controlling user is leaving, but simulation might still be running. 
 			try{
 				if(exitingVisitor.getSimulationService().isRunning()){
@@ -545,31 +531,58 @@ public class GeppettoServletController{
 				e.printStackTrace();
 			}
 
-			//Notify all observers
-			for(GeppettoMessageInbound visitor : _observers){
-				//visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
-				//send message to alert client of server availability
-				messageClient(null,visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
-			}
-			
-			_simulationInUse = false;
+			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
 
-		}			
-
-		/*
-		 * Closing connection is that of a visitor in OBSERVE mode, remove the 
-		 * visitor from the list of observers. 
-		 */
-		else if (exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING){
-			//User observing simulation is closing the connection
-			if(_observers.contains(exitingVisitor)){
-				//Remove user from observers list
-				_observers.remove(exitingVisitor);
+			if(this.getConnections().size() == simulatorCapacity){
+				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
+				messageClient(null,nextVisitorInLine,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
 			}
-			//User observing simulation is closing the connection
-			if(_queueUsers.contains(exitingVisitor)){
-				//Remove user from observers list
-				_queueUsers.remove(exitingVisitor);
+		}
+		
+		else{
+			/*
+			 * If the exiting visitor was running the simulation, notify all the observing
+			 * visitors that the controls for the simulation became available
+			 */
+			if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING){
+
+				//Controlling user is leaving, but simulation might still be running. 
+				try{
+					if(exitingVisitor.getSimulationService().isRunning()){
+						//Pause running simulation upon controlling user's exit
+						exitingVisitor.getSimulationService().stop();
+					}
+				}
+				catch (GeppettoExecutionException e) {
+					e.printStackTrace();
+				}
+
+				//Notify all observers
+				for(GeppettoMessageInbound visitor : _observers){
+					//visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
+					//send message to alert client of server availability
+					messageClient(null,visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
+				}
+
+				_simulationInUse = false;
+
+			}			
+
+			/*
+			 * Closing connection is that of a visitor in OBSERVE mode, remove the 
+			 * visitor from the list of observers. 
+			 */
+			else if (exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING){
+				//User observing simulation is closing the connection
+				if(_observers.contains(exitingVisitor)){
+					//Remove user from observers list
+					_observers.remove(exitingVisitor);
+				}
+				//User observing simulation is closing the connection
+				if(_queueUsers.contains(exitingVisitor)){
+					//Remove user from observers list
+					_queueUsers.remove(exitingVisitor);
+				}
 			}
 		}
 	}

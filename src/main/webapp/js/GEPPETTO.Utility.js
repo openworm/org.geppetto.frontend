@@ -37,7 +37,7 @@
 
 var tags = [];
 
-var helpObjectsMap = {"G": G.help() , "Simulation" : Simulation.help()};
+var helpObjectsMap;
 
 var helpMsg = ALL_COMMANDS_AVAILABLE_MESSAGE;
 
@@ -47,14 +47,23 @@ var helpMsg = ALL_COMMANDS_AVAILABLE_MESSAGE;
  * @returns {String} - Message with help notes.
  */
 function help(){
+		
+	var map = getHelpObjectsMap();
 	
-	for(var g in helpObjectsMap){
-		helpMsg += '\n\n' + helpObjectsMap[g];
+	for(var g in map){
+		helpMsg += '\n\n' + map[g];
 	}
 	
 	return helpMsg;
 };
 
+function getHelpObjectsMap(){
+	if(helpObjectsMap == null){
+		helpObjectsMap = {"G": G.help() , "Simulation" : Simulation.help()};
+	}
+	
+	return helpObjectsMap;
+}
 /**
  * Extracts commands from Javascript files 
  * 
@@ -137,8 +146,10 @@ function availableTags(){
 	if(tags.length == 0){
 		var commands = "\n";
 
-		for(var g in helpObjectsMap){
-			commands += '\n' + helpObjectsMap[g];
+		var map = getHelpObjectsMap();
+		
+		for(var g in map){
+			commands += '\n' + map[g];
 		}
 
 		var commandsSplitByLine = commands.split("\n");
@@ -183,7 +194,7 @@ function removeAutocompleteTags(targetObject){
  * @returns
  */
 function getObjectCommands(id){
-	return helpObjectsMap[id];
+	return getHelpObjectsMap()[id];
 }
 
 /**
@@ -270,7 +281,7 @@ function updateCommands(scriptLocation, object, id){
 	}	
 	
 	//after commands and comments are extract, update global help option
-	helpObjectsMap[id] =  commands.substring(0,commands.length-2);		
+	getHelpObjectsMap()[id] =  commands.substring(0,commands.length-2);		
 };
 
 function addTag(tagName){
@@ -280,6 +291,6 @@ function addTag(tagName){
 function removeTags(id){
 	
 	removeAutocompleteTags(id);
-	delete helpObjectsMap[id];
+	delete getHelpObjectsMap()[id];
 	
 };

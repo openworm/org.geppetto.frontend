@@ -47,6 +47,8 @@ var Simulation = Simulation ||
 	REVISION : '1'
 };
 
+var simulationStates = {};
+
 Simulation.StatusEnum =
 {
 	INIT : 0,
@@ -62,9 +64,11 @@ Simulation.simulationURL = "";
 
 Simulation.watchTree = null;
 
-var simulationStates = {};
-
 var loading = false;
+
+Simulation.timestep = null;
+
+Simulation.time = null;
 
 /**
  * Start the simulation.
@@ -171,7 +175,7 @@ Simulation.load = function(simulationURL)
 			GEPPETTO.MessageSocket.send("init_url", simulationURL);
 			loading = true;
 			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);
-			GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
+			GEPPETTO.FE.SimulationReloaded();
 		}
 	}
 	
@@ -211,7 +215,7 @@ Simulation.loadFromContent = function(content)
 		GEPPETTO.MessageSocket.send("init_sim", content);
 		loading = true;
 		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
-		GEPPETTO.WidgetsListener.update(WIDGET_EVENT_TYPE.DELETE);
+		GEPPETTO.FE.SimulationReloaded();
 	}
 	
 	return LOADING_SIMULATION;
@@ -354,9 +358,10 @@ Simulation.clearWatchLists = function()
 Simulation.getWatchTree = function()
 {
 	var watched_variables = WATCHED_SIMULATION_STATES + "";
-	
+		
 	for(var key in simulationStates){
-		watched_variables +=  "\n" + "      -- " + key + "\n";
+		watched_variables +=  "\n" + "      -- " + key + "\n" +
+							   "         " + simulationStates[key].value + " " +simulationStates[key].unit;
 	}
 	
 	if(Simulation.watchTree == null){
@@ -367,6 +372,14 @@ Simulation.getWatchTree = function()
 	}
 };
 
+/*
+Matteo: Commenting out as it's returning null
+Simulation.getTime = function(){
+	return SIMULATION_TIME_MSG + Simulation.time + "\n" +
+		"     " +SIMULATION_TIME_MSG_STEP + Simulation.timestep;
+};
+ */
+
 /**
  * Updates the simulation states with new watched variables
  */
@@ -374,71 +387,19 @@ function updateSimulationWatchTree(variable){
 	Simulation.watchTree = variable;
 
 	tree = Simulation.watchTree.WATCH_TREE;
-	
-	//figure out what the server is returning, either an object structure 
-	// or an array 
-	if(tree.length == null){
-		searchTreePath(tree);
-	}
-	else{
-		searchTreeArray(tree);
-	}
-}
 
-/**
- * Create name of variable from tree.
- */
-function searchTreePath(a) {
-	  var list = [];
-	  (function(o, r) {
-	    r = r || '';
-	    if (typeof o != 'object') {
-	      return true;
-	    }
-	    for (var c in o) {
-	        if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
-	        	var val  = 0;
-	        	if(o[c]!=null){
-	        		val = o[c];
-	        	}
-	        	if(simulationStates[r + "." + c]!=null){
-	        		simulationStates[r + "." + c].update(val);
-	        	}
-	        }
-	      }
-	    return false;
-	  })(a);
-	  return list;
-	}
+	//loop through simulation stated being watched
+	for(var s in simulationStates){
+		//traverse watchTree to find value of simulation state
+		var val = deepFind(tree, s);
 
-
-/**
- * Search through array looking for simulation states
- */
-function searchTreeArray(variables){
-	for(var v =0; v < variables.length; v++){
-		var state = Simulation.watchTree.WATCH_TREE[v];
-
-		if(state.name != null){
-			updateState(state);
+		//if value ain't null, update state
+		if(val != null){
+			simulationStates[s].update(val);
 		}
+	}
 
-		else{
-			searchTreeObject(state);
-		}	
-	}		
-}
-
-/**
- * Search through object structure for object with value and name
- */
-function searchTreeObject(obj){
-	    for (var name in obj) {
-	    	var value = obj[name];
-	    	
-	    	//state found, create or update its state
-	    	updateState(name,value);
-	    }
+	WidgetsListener.update(WIDGET_EVENT_TYPE.UPDATE);
 }
 
 /**
@@ -454,6 +415,43 @@ function updateState(name,value){
 		 var variable = simulationStates[name];
 		 variable.update(value);
 	}
+}
+
+/**
+ * Search obj for the value of node within using path. 
+ * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will 
+ * search within the obj to find the value of "tree.v", returning 1.
+ */
+function deepFind(obj, path) {
+	var paths = path.split('.')
+	, current = obj
+	, i;
+	
+	for (i = 0; i < paths.length; ++i) {
+		//get index from node if it's array
+		var index = paths[i].match(/[^[\]]+(?=])/g);
+		
+		if(index == null){
+			if (current[paths[i]] == undefined) {
+				return undefined;
+			} else {
+				current = current[paths[i]];
+			}
+		}
+		else{
+			var iNumber =index[0].replace(/[\[\]']+/g,"");
+			
+			//take index and brackets out of the equation for now
+			var node = paths[i].replace(/ *\[[^]]*\] */g, "");
+
+			if (current[node][parseInt(iNumber)] == undefined) {
+				return undefined;
+			} else {
+				current = current[node][parseInt(iNumber)];
+			}
+		}
+	}
+	return current;
 }
 
 /**
@@ -500,3 +498,8 @@ function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
 		return SIMULATION_NOT_LOADED_ERROR;
 	} 
 };
+
+function updateTime(t){
+	Simulation.time = t.TIME_STEP.time + " ms";
+	Simulation.timestep = t.TIME_STEP.step + " ms";
+}

@@ -52,6 +52,8 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			GEPPETTO.Console.debugLog(LOADING_MODEL);
 			var entities = JSON.parse(payload.update).entities;
 
+			//Reset the simulation states
+			simulationStates={};
 			setSimulationLoaded();
 
 			//Populate scene
@@ -63,10 +65,15 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 
             var entities = JSON.parse(payload.update).entities;
             var variables = JSON.parse(payload.update).variable_watch;
+            var time = JSON.parse(payload.update).time;
             
+            if(time != null){
+            	updateTime(time);
+            }
             if(variables != null){
             	updateSimulationWatchTree(variables);
-            }
+            }  
+            
             //Update if simulation hasn't been stopped
             if(Simulation.status != Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated())
             {
@@ -83,7 +90,7 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
             }
             
             var endtime=(new Date()).getTime();
-    		console.log("took " + (endtime-starttime) + " to UPDATE SCENE");
+    		//console.log("took " + (endtime-starttime) + " to UPDATE SCENE");
     		
             // TODO: store variable-watch tree
             break;
@@ -154,78 +161,40 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 			break;
 		//Starts the watch of requested variables
 		case MESSAGE_TYPE.START_WATCH:
-			//variables watching
-			var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
+			var parsePayLoad = JSON.parse(payload.get_watch_lists)[0];
+
+			if(parsePayLoad != null){
+				//variables watching
+				var variables = parsePayLoad.variablePaths;
+
+				//create objects for the variables to watch
+				for(var v in variables){
+
+					var splitVariableName = variables[v].split(".");
+
+					var name = variables[v].replace(splitVariableName[0]+".", "");
+
+					simulationStates[name] = new State(name,0);
+				}}
+			break;
+		case MESSAGE_TYPE.SET_WATCH_VARS:
 			
-			//create objects for the variables to watch
-			for(var v in variables){
-				
-				var splitVariableName = variables[v].split(".");
+			var parsePayLoad = JSON.parse(payload.get_watch_lists)[0];
 
-				splitVariableName.splice(0,1);
-				
-				//create object from variables
-				if(splitVariableName.length > 1 ){
-					var parent = splitVariableName[0];
-					
-					//get index if array
-					var index = parent.match(/ *\[[^]]*\] */g);
+			if(parsePayLoad != null){
+				//variables watching
+				var variables = parsePayLoad.variablePaths;
 
-					parent = parent.replace(/ *\[[^]]*\] */g, "");
-					
-					if(window[parent] == null){
-						if(index != null){
-							var iNumber =index[0].replace(/[\[\]']+/g,"");
-							
-							window[parent] = [];
-							window[parent][parseInt(iNumber)] = {};
-							
-							for(var x =1; x< splitVariableName.length; x++){
-								var child = splitVariableName[x];
-								var childName = parent+"["+parseInt(iNumber)+"]."+child;
-								
-								var c = window[parent][parseInt(iNumber)][child] =  new State(childName,0);
-								
-								simulationStates[childName] = c;
-							}
-						}
-						else{
-							window[parent] = new State(parent,0);
-							
-							for(var x =1; x< splitVariableName.length; x++){
-								var child = splitVariableName[x];
-								window[child] = new State(parent+child,0);
-								
-								window[parent].push(window[child]);
-							}
-						}
-					}
-					else{
-						if(index != null){
-							var iNumber =index[0].replace(/[\[\]']+/g,"");
-														
-							for(var x =1; x< splitVariableName.length; x++){
-								var child = splitVariableName[x];
-								var childName = parent+"["+parseInt(iNumber)+"]."+child;
-								
-								var c = window[parent][parseInt(iNumber)][child] =  new State(childName,0);
-								simulationStates[childName] = c;
-							}
-						}
-					}
-					
+				//create objects for the variables to watch
+				for(var v in variables){
+
+					var splitVariableName = variables[v].split(".");
+
+					var name = variables[v].replace(splitVariableName[0]+".", "");
+
+					//keep track of simulation state being watched
+					simulationStates[name] = new State(name,0);
 				}
-				else{
-					//format name of the variable
-					var name = splitVariableName[0];
-
-					//create object with varible name and 0 as value
-					if(window[name]==null){
-						window[name] = new State(name, 0);
-						simulationStates[name] = window[name];
-					}
-				}
-			
 			}
 			break;
 		default:
@@ -241,40 +210,75 @@ GEPPETTO.SimulationHandler = GEPPETTO.SimulationHandler ||
 	 */
 	function formatListVariableOutput(vars, indent)
 	{
+		var formattedNode = null;
+		
 		// vars is always an array of variables
 		for(var i = 0; i < vars.length; i++) {
 			var name  = vars[i].name;
 
-			var size = null;
-			if (typeof(vars[i].size) != "undefined")
-			{	
-				// we know it's an array
-				size = vars[i].size;
+			if(vars[i].aspect != "aspect"){
+				var size = null;
+				if (typeof(vars[i].size) != "undefined")
+				{	
+					// we know it's an array
+					size = vars[i].size;
+				}
+
+				// print node
+				var arrayPart = (size!=null) ? "[" + size + "]" : "";
+				var indentation = "   ↪";
+				for(var j=0; j<indent; j++){ indentation=indentation.replace("↪"," ") + "   ↪ "; }
+				formattedNode = indentation + name + arrayPart;
+
+				// is type simple variable? print type
+				if (typeof(vars[i].type.variables) == "undefined")
+				{	
+					// we know it's a simple type
+					var type = vars[i].type.type;
+					formattedNode += ":" + type;
+				}
+
+				// print current node
+				GEPPETTO.Console.log(formattedNode);
+
+				// recursion check
+				if (typeof(vars[i].type.variables) != "undefined")
+				{	
+					// we know it's a complex type - recurse! recurse!
+					formatListVariableOutput(vars[i].type.variables, indent + 1);
+				}
 			}
-
-			// print node
-			var arrayPart = (size!=null) ? "[" + size + "]" : "";
-			var indentation = "";
-			for(var j=0; j<indent; j++){ indentation=indentation.replace("↪"," ") + "   ↪ "; }
-			var formattedNode = indentation + name + arrayPart;
-
-			// is type simple variable? print type
-			if (typeof(vars[i].type.variables) == "undefined")
-			{	
-				// we know it's a simple type
-				var type = vars[i].type.type;
-				formattedNode += ":" + type;
-			}
-
-			// print current node
-			GEPPETTO.Console.log(formattedNode);
-
-			// recursion check
-			if (typeof(vars[i].type.variables) != "undefined")
-			{	
-				// we know it's a complex type - recurse! recurse!
-				formatListVariableOutput(vars[i].type.variables, indent + 1);
+			else{
+				formattedNode = name;
+				// print current node
+				GEPPETTO.Console.log(formattedNode);
 			}
 		}
 	}
 })();
+
+/**
+ *Creates a Geppetto.SimState out of a simulation state path
+ */
+function createSimState(name){	
+	//split the path of the object name
+	var statePath = name.split(".");
+	
+	//create object from simulation states that have a path
+	//e.g. "hhpop[0].v"
+	if(statePath.length > 1 ){		
+		stringToObject(null, statePath);
+	}
+	//create object for non path variable, single node simulation state
+	//e.g. "dummyNode"
+	else{
+		//format name of the variable
+		var singleVar = statePath[0];
+
+		//create object with variable name and 0 as value
+		if(window[singleVar]==null){
+			window[singleVar] = new State(singleVar, 0);
+			simulationStates[singleVar] = window[singleVar];
+		}
+	}
+}

@@ -148,7 +148,7 @@ module("Simulation controls Test",
 
 		//wait half a second before testing, allows for socket connection to be established
 		setTimeout(function(){
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml");
 		},500);
 	},
 	teardown: function(){
@@ -208,9 +208,9 @@ asyncTest("Test Variable Watch in Plot", function(){
 					
 					G.addWidget(Widgets.PLOT);
 					
-					equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created, passed");
+					equal(PlotsController.getWidgets().length, 1, "Plot widget created, passed");
 					
-					var plot = GEPPETTO.PlotsController.getPlotWidgets()[0];
+					var plot = PlotsController.getWidgets()[0];
 					plot.hide();
 					
 					notEqual(plot.getDataSets(),null,"Plot has variable data, passed");
@@ -299,6 +299,9 @@ asyncTest("Test add / get watchlists no crash - SPH", function(){
 				Simulation.addWatchLists([]);
 				Simulation.getWatchLists();
 				break;
+				case MESSAGE_TYPE.SET_WATCH_VARS:
+					ok(true, "Watch list set");
+				break;
 				case MESSAGE_TYPE.GET_WATCH_LISTS:
 					ok(true, "Variables received");
 					start();
@@ -336,7 +339,7 @@ asyncTest("Test watch Simulation variables", function(){
 				
 				start();
 				break;	
-				}
+			}
 			}
 	};
 
@@ -367,4 +370,58 @@ asyncTest("Test clear watch Simulation variables", function(){
 	};
 
 	this.newSocket.addHandler(handler);
+});
+
+module("Simulation Time and Unit Test",
+		{
+			newSocket : GEPPETTO.MessageSocket, 
+			
+			setup : function(){
+				this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
+
+				//wait half a second before testing, allows for socket connection to be established
+				setTimeout(function(){
+					Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml");
+				},500);
+			},
+			teardown: function(){
+				this.newSocket.close();
+			}
+		});
+
+asyncTest("Test Time", function(){
+
+	var startTest = true;
+	
+	var handler = {
+			onMessage : function(parsedServerMessage){
+
+				// Switch based on parsed incoming message type
+				switch(parsedServerMessage.type){
+				//Simulation has been loaded successfully
+				case MESSAGE_TYPE.SIMULATION_LOADED:
+					ok(true, "Simulation loaded, passed");
+					Simulation.start();		
+				break;	
+				case MESSAGE_TYPE.SCENE_UPDATE:
+
+					if(startTest){
+						var payload = JSON.parse(parsedServerMessage.data);
+
+						var time = JSON.parse(payload.update).time;
+
+						notEqual(null, time);
+
+						start();
+						Simulation.stop();		
+						Plot1.destroy();
+						startTest = false;
+					}
+		           break;
+				}
+			}
+	};
+
+	this.newSocket.addHandler(handler);
+	
 });

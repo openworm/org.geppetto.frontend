@@ -40,18 +40,22 @@ define(function(require) {
 
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
+	
+	var plot = null;
+	var labelsUpdated = false;
+	var datasets = [];
 
 	return Widget.View
 		.extend({
 
-			plot: null,
-			datasets: [],
+			//plot: null,
+			//datasets: [],
 			limit: 20,
 			updateGrid: false,
 			options: null,
 			xaxisLabel: null,
 			yaxisLabel: null,
-			labelsUpdated: false,
+			//labelsUpdated: false,
 
 			/**
 			 * Default options for plot widget, used if none specified when plot
@@ -82,7 +86,7 @@ define(function(require) {
 			 * Initializes the plot widget
 			 */
 			initialize: function() {
-				this.datasets = [];
+				datasets = [];
 				this.options = this.defaultPlotOptions;
 				this.render();
 				this.dialog.append("<div class='plot' id='" + this.id
@@ -102,6 +106,7 @@ define(function(require) {
 			 *            options for the plotting widget, if null uses default
 			 */
 			plotData: function(newData, options) {
+
 				// If no options specify by user, use default options
 				if(options != null) {
 					this.options = options;
@@ -111,14 +116,14 @@ define(function(require) {
 				}
 
 				if(newData.name != null) {
-					for(var set in this.datasets) {
-						if(newData.name == this.datasets[set].label) {
+					for(var dataset in datasets) {
+						if(newData.name == datasets[dataset].label) {
 							return this.name
 								+ " widget is already plotting object "
 								+ newData.name;
 						}
 					}
-					this.datasets.push({
+					datasets.push({
 						label: newData.name,
 						data: [
 							[ 0, newData.value ]
@@ -126,19 +131,19 @@ define(function(require) {
 					});
 				}
 				else {
-					this.datasets.push({
+					datasets.push({
 						label: "",
 						data: newData
 					});
 				}
 
 				var plotHolder = $("#" + this.id);
-				if(this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
+				if(plot == null) {
+					plot = $.plot(plotHolder, datasets, this.options);
 					plotHolder.resize();
 				}
 				else {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
+					plot = $.plot(plotHolder, datasets, this.options);
 				}
 
 				return "Line plot added to widget";
@@ -163,18 +168,18 @@ define(function(require) {
 				}
 
 				if (state!= null) {
-					this.datasets.push({
+					datasets.push({
 						label : state,
 						data : [ [ 0, 0] ]
 					});
 				}
 
 				var plotHolder = $("#" + this.id);
-				if (this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
+				if (plot == null) {
+					plot = $.plot(plotHolder, datasets, this.options);
 					plotHolder.resize();
 				} else {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
+					plot = $.plot(plotHolder, datasets, this.options);
 				}
 
 				return "Line plot added to widget";
@@ -204,14 +209,12 @@ define(function(require) {
 				}
 
 				if(newDataX.name != null && newDataY.name != null) {
-					for(var set in this.datasets) {
-						if(newDataX.name + "/" + newDataY.name == this.datasets[set].label) {
-							return this.name
-								+ " widget is already plotting object "
-								+ newDataX.name + "/" + newDataY.name;
+					for(var set in datasets) {
+						if(newDataX.name + "/" + newDataY.name == datasets[set].label) {
+							return this.name + " widget is already plotting object " + newDataX.name + "/" + newDataY.name;
 						}
 					}
-					this.datasets.push({
+					datasets.push({
 						label: newDataX.name + "/" + newDataY.name,
 						data: [
 							[ newDataX.value, newDataY.value ]
@@ -219,23 +222,23 @@ define(function(require) {
 					});
 				}
 				else {
-					this.datasets.push({
+					datasets.push({
 						label: "",
 						data: newDataX
 					});
-					this.datasets.push({
+					datasets.push({
 						label: "",
 						data: newDataY
 					});
 				}
 
 				var plotHolder = $("#" + this.id);
-				if(this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
+				if(plot == null) {
+					plot = $.plot(plotHolder, datasets, this.options);
 					plotHolder.resize();
 				}
 				else {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
+					plot = $.plot(plotHolder, datasets, this.options);
 				}
 
 				return "Line plot added to widget";
@@ -249,24 +252,24 @@ define(function(require) {
 			 */
 			removeDataSet: function(set) {
 				if(set != null) {
-					for(var key in this.datasets) {
-						if(set.name == this.datasets[key].label) {
-							this.datasets.splice(key, 1);
+					for(var key in datasets) {
+						if(set.name == datasets[key].label) {
+							datasets.splice(key, 1);
 						}
 					}
 
 					var data = [];
 
-					for(var i = 0; i < this.datasets.length; i++) {
-						data.push(this.datasets[i]);
+					for(var i = 0; i < datasets.length; i++) {
+						data.push(datasets[i]);
 					}
 
-					this.plot.setData(data);
-					this.plot.setupGrid();
-					this.plot.draw();
+					plot.setData(data);
+					plot.setupGrid();
+					plot.draw();
 				}
 
-				if(this.datasets.length == 0) {
+				if(datasets.length == 0) {
 					this.resetPlot();
 				}
 			},
@@ -284,7 +287,7 @@ define(function(require) {
 					var label = newValues[i].label;
 					var newValue = newValues[i].data;
 
-					if(!this.labelsUpdated) {
+					if(!labelsUpdated) {
 						var unit = newValues[i].unit;
 						if(unit != null) {
 							var labelY = unit;
@@ -295,7 +298,7 @@ define(function(require) {
 							//Simulation timestep (ms) " + Simulation.timestep;
 							this.setAxisLabel(labelY, labelX);
 						}
-						this.labelsUpdated = true;
+						labelsUpdated = true;
 					}
 
 					if(label != null) {
@@ -304,9 +307,9 @@ define(function(require) {
 						var reIndex = false;
 
 						// update corresponding data set
-						for(var key in this.datasets) {
-							if(label == this.datasets[key].label) {
-								newData = this.datasets[key].data;
+						for(var key in datasets) {
+							if(label == datasets[key].label) {
+								newData = datasets[key].data;
 								matchedKey = key;
 							}
 						}
@@ -327,21 +330,20 @@ define(function(require) {
 									indexedData.push([ index, value ]);
 								}
 
-								this.datasets[matchedKey].data = indexedData;
+								datasets[matchedKey].data = indexedData;
 							}
 							else {
-								this.datasets[matchedKey].data = newData;
+								datasets[matchedKey].data = newData;
 							}
 						}
 						else if(newValue[0].length == 2) {
 							newData.push([ newValue[0][0], newValue[0][1] ]);
-							this.datasets[matchedKey].data = newData;
+							datasets[matchedKey].data = newData;
 						}
 					}
 				}
-
-				this.plot.setData(this.datasets);
-				this.plot.draw();
+				plot.setData(datasets);
+				plot.draw();
 			},
 
 			/**
@@ -363,11 +365,11 @@ define(function(require) {
 			 * @name resetPlot()
 			 */
 			resetPlot: function() {
-				if(this.plot != null) {
-					this.datasets = [];
+				if(plot != null) {
+					datasets = [];
 					this.options = this.defaultPlotOptions;
 					var plotHolder = $("#" + this.id);
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
+					plot = $.plot(plotHolder, datasets, this.options);
 				}
 			},
 
@@ -385,7 +387,7 @@ define(function(require) {
 						this.limit = options.xaxis.max;
 					}
 				}
-				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+				plot = $.plot($("#" + this.id), datasets, this.options);
 			},
 
 			/**
@@ -393,7 +395,7 @@ define(function(require) {
 			 * @returns {Array}
 			 */
 			getDataSets: function() {
-				return this.datasets;
+				return datasets;
 			},
 
 			/**
@@ -403,7 +405,7 @@ define(function(require) {
 			 */
 			setAxisLabel: function(labelY, labelX) {
 				this.options.yaxis.axisLabel = labelY;
-				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
+				plot = $.plot($("#" + this.id), datasets,this.options);
 			}
 		});
 });

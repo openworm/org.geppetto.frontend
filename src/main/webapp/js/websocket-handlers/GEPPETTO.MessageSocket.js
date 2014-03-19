@@ -48,6 +48,7 @@ define(function(require) {
 		 * Web socket creation and communication
 		 */
 		GEPPETTO.MessageSocket = {
+			socket:null,
 			connect: function(host) {
 				if('WebSocket' in window) {
 					this.socket = new WebSocket(host);

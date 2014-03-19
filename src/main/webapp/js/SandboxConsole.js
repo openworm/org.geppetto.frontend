@@ -67,10 +67,6 @@ define(function(require) {
 					// Attempt to fetch the Model from localStorage
 					this.fetch();
 
-					// Set up the iframe sandbox if needed
-					if(this.get('iframe')) {
-						this.iframeSetup();
-					}
 				},
 
 				// The Sandbox Model tries to use the localStorage adapter to save the command history
@@ -115,143 +111,6 @@ define(function(require) {
 					catch(e) {
 						return obj.toString();
 					}
-				},
-
-				// Adds a new item to the history
-				addHistory: function(item) {
-					var history = this.get('history');
-
-					// Tidy up the item's result
-					if(_.isString(item.result)) {
-						item.result = '\"' + item.result.toString().replace(/"/g, '\\"') + '\"';
-					}
-					if(_.isFunction(item.result)) {
-						item.result = item.result.toString().replace(/"/g, '\\"');
-					}
-					if(_.isObject(item.result)) {
-						item.result = this.stringify(item.result).replace(/"/g, '\\"');
-					}
-					if(_.isUndefined(item.result)) {
-						item.result = "undefined";
-					}
-
-					// Add the command and result to the history
-					history.push(item);
-
-					// Update the history state and save the model
-					this.set({ history: history });
-					this.save();
-
-					return this;
-				},
-
-				addMessageHistory: function(message, item) {
-					var history = this.get('history');
-
-					if(message == "debugMessage") {
-						item._class = "debug";
-					}
-					else if(message == "logMessage") {
-						item._class = "message";
-					}
-					else if(message == "commandsSuggestions") {
-						item._class = "commandsSuggestions";
-					}
-
-					history.push(item);
-
-					// Update the history state and save the model
-					this.set({ history: history });
-
-					return this;
-				},
-
-				// Creates the sandbox iframe, if needed, and stores it
-				iframeSetup: function() {
-					this.sandboxFrame = $('<iframe width="0" height="0"/>').css({visibility: 'hidden'}).appendTo('body')[0];
-					this.sandbox = this.sandboxFrame.contentWindow;
-
-					// This should help IE run eval inside the iframe.
-					if(!this.sandbox.eval && this.sandbox.execScript) {
-						this.sandbox.execScript("null");
-					}
-				},
-
-				// Runs `eval` safely inside the sandboxed iframe
-				iframeEval: function(command) {
-					// Set up the iframe if not set up already (in case iframe has been enabled):
-					if(!this.sandbox) {
-						this.iframeSetup();
-					}
-
-					// Evaluate inside the sandboxed iframe, if possible.
-					// If fallback is allowed, use basic eval, or else throw an error.
-					return this.sandbox.eval ? this.sandbox.eval(command) : this.get('fallback') ? eval(command) : new Error("Can't evaluate inside the iframe - please report this bug along with your browser information!");
-				},
-
-				// One way of loading scripts into the document or the sandboxed iframe:
-				load: function(src) {
-					var script = document.createElement('script');
-					script.type = "text/javascript";
-					script.src = src;
-
-					if(this.get('iframe')) {
-						return this.sandboxFrame ? this.sandboxFrame.contentDocument.body.appendChild(script) : new Error("sandbox: iframe has not been created yet, cannot load " + src);
-					}
-					else {
-						return document.body.appendChild(script);
-					}
-				},
-
-				// Evaluate a command and save it to history
-				evaluate: function(command) {
-					if(!command) {
-						return false;
-					}
-
-					//check if command are multiple commands instead of single one
-					var multipleCommands = command.split("\n");
-					if(multipleCommands.length > 1) {
-						//run script if multiple commands
-						GEPPETTO.ScriptRunner.runScript(command);
-						//exit function
-						return false;
-					}
-
-					var str = command.replace(/&lt;/g, "<");
-					command = str.replace(/&gt;/g, ">");
-
-					var item = {
-						command: command
-					};
-
-					// Evaluate the command and store the eval result, adding some basic classes for syntax-highlighting
-					try {
-						item.result = this.get('iframe') ? this.iframeEval(command) : eval.call(window, command);
-						if(_.isUndefined(item.result)) {
-							item._class = "undefined";
-						}
-						if(_.isNumber(item.result)) {
-							item._class = "number";
-						}
-						if(_.isString(item.result)) {
-							item._class = "string";
-						}
-					}
-					catch(error) {
-						item.result = error.toString();
-						item._class = "error";
-					}
-
-					//Replace < and > tags with html equivalent in order to
-					//display in console area
-					str = command.replace(/\</g, "&lt;");
-					var formattedCommand = str.replace(/\>/g, "&gt;");
-
-					item.command = formattedCommand;
-
-					// Add the item to the history
-					this.addHistory(item);
 				}
 			}),
 
@@ -265,7 +124,7 @@ define(function(require) {
 				initialize: function(opts) {
 					_(this).bindAll(
 						'render',
-						'update',
+						'updateConsole',
 						'updateInputArea',
 						'focus',
 						'keydown',
@@ -281,7 +140,14 @@ define(function(require) {
 						'setValue',
 						'specialCommands'
 					);
-					this.model.set({history: []});
+
+
+					// Set up the iframe sandbox if needed
+					if(this.model.get('iframe')) {
+						this.iframeSetup();
+					}
+
+					this.model.set('history', []);
 
 					// Set up the history state (the up/down access to command history)
 					this.historyState = this.model.get('history').length;
@@ -294,7 +160,7 @@ define(function(require) {
 					this.helpText = opts.helpText || "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.";
 
 					// Bind to the model's change event to update the View
-					this.model.on("change", this.update);
+					this.model.on('update:console', this.updateConsole, this);
 
 					// Delegate key and mouse events to View input
 					this.$el.delegate("textarea", {
@@ -337,8 +203,7 @@ define(function(require) {
 				},
 
 				// Updates the Sandbox View, redrawing the output and checking the input's value
-				update: function() {
-
+				updateConsole: function(model) {
 					this.output.html(
 						// Reduce the Model's history into HTML, using the command format templating function
 						_.reduce(this.model.get('history'), function(memo, command) {
@@ -383,19 +248,19 @@ define(function(require) {
 				},
 
 				debugLog: function(message) {
-					return this.model.addMessageHistory("debugMessage", {
+					this.addMessageHistory("debugMessage", {
 						result: message
 					});
 				},
 
 				showCommandsSuggestions: function(message) {
-					return this.model.addMessageHistory("commandsSuggestions", {
+					this.addMessageHistory("commandsSuggestions", {
 						result: message
 					});
 				},
 
 				showMessage: function(message) {
-					return this.model.addMessageHistory("logMessage", {
+					this.addMessageHistory("logMessage", {
 						result: message,
 						_class: "string"
 					});
@@ -410,26 +275,23 @@ define(function(require) {
 					if(!this.specialCommands(command)) {
 
 						// If if wasn't a special command, pass off to the Sandbox Model to evaluate and save
-						this.model.evaluate(command);
+						this.evaluate(command);
 					}
 
 					// Update the View's history state to reflect the latest history item
 					this.historyState = this.model.get('history').length;
 				},
 
-				loadScript: function(url) {
-					this.model.load(url);
-				},
-
 				clear: function() {
 					this.model.set('history',[]);
+					this.model.trigger('update:console');
 					//this.model.destroy();
 				},
 
 				// Manually set the value in the sandbox textarea and focus it ready to submit:
 				setValue: function(command) {
 					this.currentHistory = command;
-					this.update();
+					this.updateConsole();
 					this.setCaret(this.textarea.val().length);
 					this.textarea.focus();
 					return false;
@@ -498,7 +360,7 @@ define(function(require) {
 						if(!this.specialCommands(val)) {
 
 							// If if wasn't a special command, pass off to the Sandbox Model to evaluate and save
-							this.model.evaluate(val);
+							this.evaluate(val);
 						}
 
 						// Update the View's history state to reflect the latest history item
@@ -530,7 +392,7 @@ define(function(require) {
 
 						// Update the currentHistory value and update the View
 						this.currentHistory = history[this.historyState] ? history[this.historyState].command : "";
-						this.update();
+						this.updateConsole();
 						this.updateInputArea();
 
 						return false;
@@ -619,6 +481,142 @@ define(function(require) {
 				specialCommands: function(command) {
 					// If no special commands, return false so the command gets evaluated
 					return false;
+				},
+
+				// Adds a new item to the history
+				addHistory: function(item) {
+					var history = this.model.get('history');
+
+					// Tidy up the item's result
+					if(_.isString(item.result)) {
+						item.result = '\"' + item.result.toString().replace(/"/g, '\\"') + '\"';
+					}
+					if(_.isFunction(item.result)) {
+						item.result = item.result.toString().replace(/"/g, '\\"');
+					}
+					if(_.isObject(item.result)) {
+						item.result = this.model.stringify(item.result).replace(/"/g, '\\"');
+					}
+					if(_.isUndefined(item.result)) {
+						item.result = "undefined";
+					}
+
+					// Add the command and result to the history
+					history.push(item);
+
+					// Update the history state and save the model
+					this.model.set('history', history );
+					this.model.trigger('update:console');
+					this.model.save();
+				},
+
+				addMessageHistory: function(message, item) {
+					var history = this.model.get('history');
+
+					if(message == "debugMessage") {
+						item._class = "debug";
+					}
+					else if(message == "logMessage") {
+						item._class = "message";
+					}
+					else if(message == "commandsSuggestions") {
+						item._class = "commandsSuggestions";
+					}
+
+					history.push(item);
+
+					// Update the history state and save the model
+					this.model.set( 'history', history );
+					this.model.trigger('update:console');
+				},
+
+				// Evaluate a command and save it to history
+				evaluate: function(command) {
+					if(!command) {
+						return false;
+					}
+
+					//check if command are multiple commands instead of single one
+					var multipleCommands = command.split("\n");
+					if(multipleCommands.length > 1) {
+						//run script if multiple commands
+						GEPPETTO.ScriptRunner.runScript(command);
+						//exit function
+						return false;
+					}
+
+					var str = command.replace(/&lt;/g, "<");
+					command = str.replace(/&gt;/g, ">");
+
+					var item = {
+						command: command
+					};
+
+					// Evaluate the command and store the eval result, adding some basic classes for syntax-highlighting
+					try {
+						item.result = this.model.get('iframe') ? this.iframeEval(command) : eval.call(window, command);
+						if(_.isUndefined(item.result)) {
+							item._class = "undefined";
+						}
+						if(_.isNumber(item.result)) {
+							item._class = "number";
+						}
+						if(_.isString(item.result)) {
+							item._class = "string";
+						}
+					}
+					catch(error) {
+						item.result = error.toString();
+						item._class = "error";
+					}
+
+					//Replace < and > tags with html equivalent in order to
+					//display in console area
+					str = command.replace(/\</g, "&lt;");
+					var formattedCommand = str.replace(/\>/g, "&gt;");
+
+					item.command = formattedCommand;
+
+					// Add the item to the history
+					this.addHistory(item);
+				},
+
+
+				// Creates the sandbox iframe, if needed, and stores it
+				iframeSetup: function() {
+					this.sandboxFrame = $('<iframe width="0" height="0"/>').css({visibility: 'hidden'}).appendTo('body')[0];
+					this.sandbox = this.sandboxFrame.contentWindow;
+
+					// This should help IE run eval inside the iframe.
+					if(!this.sandbox.eval && this.sandbox.execScript) {
+						this.sandbox.execScript("null");
+					}
+				},
+
+				// Runs `eval` safely inside the sandboxed iframe
+				iframeEval: function(command) {
+					// Set up the iframe if not set up already (in case iframe has been enabled):
+					if(!this.sandbox) {
+						this.iframeSetup();
+					}
+
+					// Evaluate inside the sandboxed iframe, if possible.
+					// If fallback is allowed, use basic eval, or else throw an error.
+					return this.sandbox.eval ? this.sandbox.eval(command) : this.model.get('fallback') ? eval(command) : new Error("Can't evaluate inside the iframe - please report this bug along with your browser information!");
+				},
+
+				// One way of loading scripts into the document or the sandboxed iframe:
+				loadScript: function(src) {
+					var script = document.createElement('script');
+					script.type = "text/javascript";
+					script.src = src;
+
+					if(this.model.get('iframe')) {
+						return this.sandboxFrame ? this.sandboxFrame.contentDocument.body.appendChild(script) : new Error("sandbox: iframe has not been created yet, cannot load " + src);
+					}
+					else {
+						return document.body.appendChild(script);
+					}
 				}
 			})
 		};

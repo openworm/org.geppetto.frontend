@@ -190,7 +190,7 @@ define(function(require) {
 
 						//Custom Content editor is visible, update with new sample simulation chosen
 						if($('#customRadio').val() == "active") {
-							GEPPETTO.FEthis.updateEditor(selectedURL);
+							GEPPETTO.FE.updateEditor(selectedURL);
 						}
 					});
 

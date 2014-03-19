@@ -99,7 +99,7 @@ define(function(require) {
 			 */
 			hide: function() {
 				$("#" + this.id).dialog('close');
-				;
+
 				this.visible = false;
 
 				return "Hiding " + this.name + " widget";

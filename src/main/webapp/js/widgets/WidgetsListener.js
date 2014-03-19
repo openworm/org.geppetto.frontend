@@ -40,6 +40,8 @@
 
 define(function(require) {
 
+	var $ = require('jquery');
+
 	return function(GEPPETTO) {
 
 		GEPPETTO.WidgetsListener = {

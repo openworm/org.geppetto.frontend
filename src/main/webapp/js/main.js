@@ -54,7 +54,7 @@ require.config({
 		'backbone' : 'vendor/backbone.min',
 		'geppetto' : "GEPPETTO",
 		'console' : "GEPPETTO.Console",
-		'geppetto_main' : "Geppetto.Main",
+		'geppetto_main' : "GEPPETTO.Main",
 		'sandboxconsole' : "SandboxConsole",
 		'storage' : 'vendor/backbone-localStorage.min',
 		'state' : "GEPPETTO.SimState",

@@ -82,9 +82,7 @@ define(function(require) {
 				var p = window[name] = new Plot({id:id, name:name,visible:true});
 
 				//create help command for plot
-				Plot.prototype.help = function widgetHelp() {
-					return GEPPETTO.Utility.getObjectCommands(id);
-				};
+				p.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
 
 				//store in local stack
 				plots.push(p);
@@ -124,7 +122,7 @@ define(function(require) {
 				else if(plots.length > 0) {
 					plotsON = !plotsON;
 
-					for(p in plots) {
+					for(var p in plots) {
 						var plot = plots[p];
 						if(plotsON) {
 							plot.hide();
@@ -155,23 +153,23 @@ define(function(require) {
 						if(dataSets != null){
 							//keeps track of new values
 							var newValues = [];
-							var u;
+							var unit;
 							for(var x =0; x <dataSets.length; x++)
 							{
 								var ds=dataSets[x].label.split("/");
-								u = GEPPETTO.Simulation.simulationStates[dataSets[x].label].unit;
+								unit = GEPPETTO.Simulation.simulationStates[dataSets[x].label].unit;
 
-								if(u != null){
+								if(unit){
 									if(ds.length==1)
 									{
-										newValues.push({label : dataSets[x].label, data: [[GEPPETTO.Simulation.simulationStates[ds[0]].value]], unit : u});
+										newValues.push({label : dataSets[x].label, data: [[GEPPETTO.Simulation.simulationStates[ds[0]].value]], unit : unit});
 									}
 									if(ds.length==2)
 									{
 										newValues.push({label : dataSets[x].label, data: [[
 											GEPPETTO.Simulation.simulationStates[ds[0]].value,
 											GEPPETTO.Simulation.simulationStates[ds[1]].value
-										]], unit : u});
+										]], unit : unit});
 									}
 								}
 								else{

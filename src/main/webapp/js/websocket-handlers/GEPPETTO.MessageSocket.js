@@ -49,19 +49,20 @@ define(function(require) {
 		 */
 		GEPPETTO.MessageSocket = {
 			socket:null,
+
 			connect: function(host) {
 				if('WebSocket' in window) {
-					this.socket = new WebSocket(host);
+					GEPPETTO.MessageSocket.socket = new WebSocket(host);
 				}
 				else if('MozWebSocket' in window) {
-					this.socket = new MozWebSocket(host);
+					GEPPETTO.MessageSocket.socket = new MozWebSocket(host);
 				}
 				else {
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_NOT_SUPPORTED);
 					return;
 				}
 
-				this.socket.onopen = function() {
+				GEPPETTO.MessageSocket.socket.onopen = function() {
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_OPENED);
 
 					//attach the handlers once socket is opened
@@ -70,11 +71,11 @@ define(function(require) {
 
 				};
 
-				this.socket.onclose = function() {
+				GEPPETTO.MessageSocket.socket.onclose = function() {
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_CLOSED);
 				};
 
-				this.socket.onmessage = function(msg) {
+				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
 					var parsedServerMessage = JSON.parse(msg.data);
 
 					//notify all handlers
@@ -84,7 +85,7 @@ define(function(require) {
 				};
 
 				//Detects problems when connecting to Geppetto server
-				this.socket.onerror = function(evt) {
+				GEPPETTO.MessageSocket.socket.onerror = function(evt) {
 					var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
 
 					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
@@ -103,15 +104,15 @@ define(function(require) {
 					GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
 				}
 
-				this.socket.send(messageTemplate(requestID, command, parameter));
+				GEPPETTO.MessageSocket.socket.send(messageTemplate(requestID, command, parameter));
 			},
 
 			isReady: function() {
-				return this.socket.readyState;
+				return GEPPETTO.MessageSocket.socket.readyState;
 			},
 
 			close: function() {
-				this.socket.close();
+				GEPPETTO.MessageSocket.socket.close();
 				//dispose of handlers upon closing connection
 				messageHandlers = [];
 			},

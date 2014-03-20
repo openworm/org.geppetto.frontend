@@ -40,13 +40,8 @@ define(function(require) {
 
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
-	var _ = require('underscore');
 
 	return Widget.View.extend({
-
-			initialize: function() {
-				_(this).bindAll();
-			},
 			plot: null,
 			datasets: [],
 			limit: 20,
@@ -80,15 +75,14 @@ define(function(require) {
 				}
 			},
 
-			/**
-			 * Initializes the plot widget
-			 */
-			initialize: function() {
+			initialize: function(options) {
+				this.id = options.id;
+				this.name = options.name;
+				this.visible = options.visible;
 				this.datasets = [];
 				this.options = this.defaultPlotOptions;
 				this.render();
-				this.dialog.append("<div class='plot' id='" + this.id
-					+ "'></div>");
+				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");
 			},
 
 			/**

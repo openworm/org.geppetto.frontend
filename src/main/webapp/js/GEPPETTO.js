@@ -167,11 +167,11 @@ define(function(require) {
 					r: parseInt(hexString.substr(2, 2), 16),
 					g: parseInt(hexString.substr(4, 2), 16),
 					b: parseInt(hexString.substr(6, 2), 16)
-				}
-			}
+				};
+			};
 			var scaleColor = function(color) {
 				return (Math.floor(color + ((255 - color) * intensity))).toString(16);
-			}
+			};
 			var threeObject = GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
 			var originalColor = getRGB(threeObject.material.originalColor);
 			threeObject.material.color.setHex(
@@ -321,7 +321,7 @@ define(function(require) {
 				material.originalColor = '0x' + (Math.random() * 0xFFFFFF << 0).toString(16);
 				material.color.setHex(material.originalColor);
 				return material;
-			}
+			};
 
 			var entityObject = null;
 			if(jsonEntity.subentities && jsonEntity.subentities.length > 0) {
@@ -537,8 +537,8 @@ define(function(require) {
 				VARS.gui = null;
 			}
 
-			VARS.metadata = jsonscene.entities[entityIndex].metadata;
-			VARS.metadata.ID = jsonscene.entities[entityIndex].id;
+			VARS.metadata = VARS.jsonscene.entities[entityIndex].metadata;
+			VARS.metadata.ID = VARS.jsonscene.entities[entityIndex].id;
 
 			GEPPETTO.setupGUI();
 

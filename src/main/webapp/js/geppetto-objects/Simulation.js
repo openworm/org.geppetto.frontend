@@ -174,6 +174,7 @@ define(function(require) {
 					loadStatus = GEPPETTO.Resources.SIMULATION_UNSPECIFIED;
 				}
 
+				this.simulationStates = {};
 				return loadStatus;
 			},
 

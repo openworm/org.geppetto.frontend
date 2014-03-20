@@ -43,7 +43,6 @@ define(function(require) {
 
 	return function(GEPPETTO) {
 
-		var $ = require('jquery');
 		var simulationScripts = [];
 		var waitingForPreviousCommand = false;
 		var runningScript = false;
@@ -79,36 +78,8 @@ define(function(require) {
 							GEPPETTO.G.wait(remainingCommands, ms);
 							return;
 						}
-
-						//execute commands, except the wait one
 						else {
 							GEPPETTO.Console.executeCommand(command);
-
-							//if last command executed it's waiting on server response, break from loop and 
-							//keep track of remaining commands to execute later
-							if(waitingForPreviousCommand) {
-								//get the remaining commands
-								remainingCommands = commands.splice(i + 1, commands.length);
-								break;
-							}
-						}
-					}
-
-					//End of commands, check if there's more scripts waiting to be run
-					if(commands.length == (i + 1)) {
-						//more scripts waiting to be run
-						if(simulationScripts.length > 0) {
-							//run next script
-							var script = simulationScripts[0];
-							GEPPETTO.Console.executeCommand('G.runScript("' + script + '")');
-
-							simulationScripts.splice(0, 1);
-						}
-						//no more scripts waiting to be run, remove handler and loading panel
-						else {
-							GEPPETTO.MessageSocket.removeHandler(scriptMessageHandler);
-							runningScript = false;
-							$('#loadingmodal').modal('hide');
 						}
 					}
 				}
@@ -119,15 +90,15 @@ define(function(require) {
 			 */
 			runScript: function(scriptData) {
 				//create handler to receive message form server after sending commands 
-				this.addScriptMessageHandler();
+				GEPPETTO.ScriptRunner.addScriptMessageHandler();
 
 				var commands = scriptData.split("\n");
 
 				//format the commands, remove white spaces
 				for(var c = 0; c < commands.length; c++) {
-					commands[c] = commands[c].replace(/\s/g, "");
+					//commands[c] = commands[c].replace(/\s/g, "");
 					var lineC = commands[c];
-					if(lineC.toString() === "") {
+					if(!lineC) {
 						commands.splice(c, 1);
 					}
 				}
@@ -154,16 +125,13 @@ define(function(require) {
 								//reset flag if no longer waiting for commands to process
 								waitingForPreviousCommand = false;
 							}
-							//execute remaining commands
-							if(remainingCommands.length > 0) {
-								GEPPETTO.ScriptRunner.executeScriptCommands(remainingCommands);
-							}
 						}
 					}
 				};
 
 				//adds the handler to the socket class
 				GEPPETTO.MessageSocket.addHandler(scriptMessageHandler);
+
 			},
 
 			/**

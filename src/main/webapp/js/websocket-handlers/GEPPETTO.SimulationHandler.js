@@ -192,6 +192,11 @@ define(function(require) {
 
 						}
 						break;
+					//handles the case where simulation is done executing all steps
+					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_OVER:
+						//Updates the simulation controls visibility
+						GEPPETTO.FE.updateStopEvent();
+						break;
 					default:
 						break;
 				}

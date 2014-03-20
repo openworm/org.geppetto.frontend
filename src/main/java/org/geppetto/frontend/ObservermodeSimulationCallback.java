@@ -75,8 +75,9 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 		String dateFormatted = formatter.format(date);
 		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
 
-		OUTBOUND_MESSAGE_TYPES action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
-
+		OUTBOUND_MESSAGE_TYPES action = null;
+		String update = "";
+		
 		// switch on message type
 		switch (event) {
 			case LOAD_MODEL: {
@@ -84,25 +85,36 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 
 				controller.getSimulationServerConfig().setIsSimulationLoaded(true);
 
+				//We store the original model as part of configuration file, this way new users connecting 
+				//will be able to received this copy of the stored model
 				String storedScene = "{ \"entities\":" + sceneUpdate + "}";
 
 				controller.getSimulationServerConfig().setLoadedScene(storedScene);
+				
+				// pack sceneUpdate and variableWatchTree in the same JSON string
+				update = "{ \"entities\":" + sceneUpdate + "}";
+
 				break;
 			}
-			case SCENE_UPDATE: {
+			case SCENE_UPDATE: {	
+				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
+				
+				// pack sceneUpdate and variableWatchTree in the same JSON string
+				update = "{ \"entities\":" + sceneUpdate
+						+ ", \"variable_watch\": " + variableWatchTree
+						+ ", \"time\": " + time + "}";
+
 				break;
+			}
+			case SIMULATION_OVER: {
+				action= OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
 			}
 			default: {
 			}
 		}
-
+		
 		for (GeppettoMessageInbound connection : controller.getConnections())
 		{
-			// pack sceneUpdate and variableWatchTree in the same JSON string
-			String update = "{ \"entities\":" + sceneUpdate
-					+ ", \"variable_watch\": " + variableWatchTree
-					+ ", \"time\": " + time + "}";
-
 			// Notify all connected clients about update either to load model or update current one.
 			controller.messageClient(null,connection, action , update);
 		}

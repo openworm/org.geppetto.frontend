@@ -73,7 +73,10 @@ require.config({
 		'vendor/stats.min' : ["jquery"],
 		'vendor/Detector' : ["jquery"],
 		'vendor/jquery.cookie' : ["jquery"],
-		'vendor/rAF': ["jquery"]
+		'vendor/rAF': ["jquery"],
+		'widgets/plot/vendor/jquery.flot.min' : ['jquery'],
+		'widgets/plot/vendor/jquery.flot.resize.min': ['widgets/plot/vendor/jquery.flot.min'],
+		'widgets/plot/vendor/jquery.flot.axislabels': ['widgets/plot/vendor/jquery.flot.min']
 	}
 });
 

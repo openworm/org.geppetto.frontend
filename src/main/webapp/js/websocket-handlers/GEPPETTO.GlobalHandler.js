@@ -46,17 +46,17 @@ define(function(require) {
 				// Switch based on parsed incoming message type
 				switch(parsedServerMessage.type) {
 					//sets client id
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.CLIENT_ID:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.CLIENT_ID:
 						GEPPETTO.MessageSocket.setClientID(payload.clientID);
 						break;
 					//clear canvas, used when loading a new model or re-loading previous one
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.RELOAD_CANVAS:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RELOAD_CANVAS:
 						GEPPETTO.Console.debugLog(GEPPETTO.Resources.CLEAR_CANVAS);
 						var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 						GEPPETTO.FE.update(webGLStarted);
 						break;
 					//Error loading simulation, invalid url or simulation file
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.ERROR_LOADING_SIM:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_SIM:
 						//if welcome message is open, return normal opacity after user clicked observed
 						if(($('#welcomeMessageModal').hasClass('in'))) {
 							$('#welcomeMessageModal').modal('hide');
@@ -65,26 +65,26 @@ define(function(require) {
 						$('#start').attr('disabled', 'disabled');
 						GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INVALID_SIMULATION_FILE, payload.message);
 						break;
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GEPPETTO_VERSION:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.GEPPETTO_VERSION:
 						var version = payload.geppetto_version;
 						var geppettoVersion = GEPPETTO.Resources.GEPPETTO_VERSION_HOLDER.replace("$1", version);
 						GEPPETTO.Console.log(geppettoVersion);
 						GEPPETTO.FE.searchForURLEmbeddedSimulation();
 						break;
 					//Notify user with alert they are now in Observer mode
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.OBSERVER_MODE:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.OBSERVER_MODE:
 						GEPPETTO.FE.observersAlert(GEPPETTO.Resources.OBSERVING_MODE, payload.alertMessage, payload.popoverMessage);
 						break;
 					//Read the Parameters passed in url
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.READ_URL_PARAMS:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.READ_URL_PARAMS:
 
 						break;
 					//Run script
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.RUN_SCRIPT:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
 						GEPPETTO.ScriptRunner.runScript(payload.run_script);
 						break;
 					//Simulation server became available
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SERVER_AVAILABLE:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.SERVER_AVAILABLE:
 						//if welcome message is open, return normal opacity after user clicked observed
 						if(($('#welcomeMessageModal').hasClass('in'))) {
 							$('#welcomeMessageModal').modal('hide');
@@ -93,7 +93,7 @@ define(function(require) {
 						$("#multiUserNotification").modal('hide');
 						break;
 					//Simulation server already in use
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SERVER_UNAVAILABLE:
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.SERVER_UNAVAILABLE:
 						//if welcome message is open, return normal opacity after user clicked observed
 						if(($('#welcomeMessageModal').hasClass('in'))) {
 							$('#welcomeMessageModal').modal('hide');
@@ -107,5 +107,19 @@ define(function(require) {
 				}
 			}
 		};
-	}
+		GEPPETTO.GlobalHandler.MESSAGE_TYPE = {
+				/*
+				 * Messages handle by GlobalHandler
+				 */
+				CLIENT_ID: "client_id",
+				RELOAD_CANVAS: "reload_canvas",
+				ERROR_LOADING_SIM: "error_loading_simulation",
+				GEPPETTO_VERSION: "geppetto_version",
+				OBSERVER_MODE: "observer_mode_alert",
+				READ_URL_PARAMS: "read_url_parameters",
+				RUN_SCRIPT: "run_script",
+				SERVER_AVAILABLE: "server_available",
+				SERVER_UNAVAILABLE: "server_unavailable",
+		};
+	};
 });

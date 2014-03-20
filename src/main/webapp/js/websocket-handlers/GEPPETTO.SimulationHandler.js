@@ -38,8 +38,8 @@ define(function(require) {
 		var $ = require('jquery');
 
 		var updateTime = function(t) {
-				GEPPETTO.Simulation.time = t.TIME_STEP.time + " ms";
-				GEPPETTO.Simulation.step = t.TIME_STEP.step + " ms";
+				GEPPETTO.Simulation.time = t.TIME_STEP.time.value + t.TIME_STEP.time.unit;
+				GEPPETTO.Simulation.step = t.TIME_STEP.step.value + t.TIME_STEP.step.unit;
 		};
 
 		GEPPETTO.SimulationHandler = {
@@ -200,19 +200,6 @@ define(function(require) {
 
 		GEPPETTO.SimulationHandler.MESSAGE_TYPE = {
 			/*
-			 * Messages handle by GlobalHandler
-			 */
-			CLIENT_ID: "client_id",
-			RELOAD_CANVAS: "reload_canvas",
-			ERROR_LOADING_SIM: "error_loading_simulation",
-			GEPPETTO_VERSION: "geppetto_version",
-			OBSERVER_MODE: "observer_mode_alert",
-			READ_URL_PARAMS: "read_url_parameters",
-			RUN_SCRIPT: "run_script",
-			SERVER_AVAILABLE: "server_available",
-			SERVER_UNAVAILABLE: "server_unavailable",
-
-			/*
 			 * Messages handle by SimulatorHandle
 			 */
 			LOAD_MODEL: "load_model",
@@ -230,7 +217,8 @@ define(function(require) {
 			START_WATCH: "start_watch",
 			STOP_WATCH: "stop_watch",
 			CLEAR_WATCH: "clear_watch",
-			FIRE_SIM_SCRIPTS: "fire_sim_scripts"
+			FIRE_SIM_SCRIPTS: "fire_sim_scripts",
+			SIMULATION_OVER : "simulation_over"
 		};
 	};
 

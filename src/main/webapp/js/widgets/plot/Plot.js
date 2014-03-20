@@ -295,8 +295,8 @@ define(function(require) {
 							var labelX = "";
 							//Simulation timestep (ms) " + Simulation.timestep;
 							this.setAxisLabel(labelY, labelX);
+							this.labelsUpdated = true;
 						}
-						this.labelsUpdated = true;
 					}
 
 					if(label != null) {
@@ -340,8 +340,11 @@ define(function(require) {
 						}
 					}
 				}
-				this.plot.setData(this.datasets);
-				this.plot.draw();
+				
+				if(this.plot != null){
+					this.plot.setData(this.datasets);
+					this.plot.draw();
+				}
 			},
 
 			/**

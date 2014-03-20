@@ -52,13 +52,13 @@ define(function(require) {
 			link.href = url;
 			document.getElementsByTagName("head")[0].appendChild(link);
 		}
-
-		require('jquery');
-		require('widgets/plot/vendor/jquery.flot.min');
-		require('widgets/plot/vendor/jquery.flot.resize.min');
+		
+		require("widgets/plot/vendor/jquery.flot.min");
+		require("widgets/plot/vendor/jquery.flot.resize.min");
+		require("widgets/plot/vendor/jquery.flot.axislabels");
 		require('widgets/plot/controllers/PlotsController')(GEPPETTO);
 
 		loadCss("js/widgets/plot/Plot.css");
 
-	}
+	};
 });

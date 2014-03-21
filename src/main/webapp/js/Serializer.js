@@ -30,35 +30,51 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Simulation State object, keeps track of new values for state and receives updates for it.
- *
- * @author Jesus R Martinez (jesus@metacel.us)
+
+/*
+ * Class use for creating namespace objects for the simulation states being watched.
+ * Serializer is not used right now by Geppetto
  */
 define(function(require) {
-
 	return function(GEPPETTO) {
-		GEPPETTO.SimState = {
-			State: function(stateName, stateValue, unit) {
-				return {
-					name: stateName,
-					value: stateValue,
-					unit: unit,
-					listeners:[],
-					update: function(newValue) {
-						if(isNaN(newValue)){
-							this.value = newValue.value;
-							this.unit = newValue.unit;
+		/**
+		 * Method responsible for serializing values to simulation states
+		 */
+		GEPPETTO.Serializer = {
+
+			/**
+			 * Converts string representation of variable into object,
+			 * inserts them into the window object
+			 * Examples:
+			 *   "hhcell.electrical.hhpop[0].v"
+			 *   "hhcell.electrical.hhpop.v"
+			 *
+			 **/
+			stringToObject: function(input) {
+				var arrPattern = /(\w+)\[(\d*)\]$/;
+
+				function index(obj, element) {
+					var matches = element.match(arrPattern);
+					if(!matches) {
+						if(!obj[element]) {
+							obj[element] = new GEPPETTO.SimState.State(element);
 						}
-						else{
-							this.value = newValue;
-						}
-						for(var key in this.listeners) {
-							this.listeners[key](this);
-						}
+						return obj[element];
 					}
-				};
+					else {
+						if(!obj[matches[1]]) {
+							obj[matches[1]] = [];
+						}
+						var arrIndex = parseInt(matches[2]);
+						if(!obj[matches[1]][arrIndex]) {
+							obj[matches[1]][arrIndex] = new GEPPETTO.SimState.State(element);
+						}
+						return obj[matches[1]][arrIndex];
+					}
+				}
+				input.split('.').reduce(index, window);
 			}
 		};
+
 	};
 });

@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,112 +31,114 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Listener class for widgets. Receives updates from Geppetto that need to be transmitted to all widgets. 
- * 
+ * Listener class for widgets. Receives updates from Geppetto that need to be transmitted to all widgets.
+ *
  * @constructor
- * 
+ *
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 
-var WIDGET_EVENT_TYPE = {
-		DELETE : "delete",
-		UPDATE: "update"
-};
+define(function(require) {
 
-WidgetsListener =  {
+	var $ = require('jquery');
 
-		_subscribers : [],
+	return function(GEPPETTO) {
 
-		/**
-		 * Subscribes widget controller class to listener
-		 * 
-		 * @param obj - Controller Class subscribing
-		 * @returns {Boolean}
-		 */
-		subscribe : function(controller, widgetID){
+		GEPPETTO.WidgetsListener = {
 
-			var addController = true;
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				if( this._subscribers[ i ] === controller ) {
-					addController = false;
-				}
-			}
-			if(addController){
-				this._subscribers.push( controller );
+			WIDGET_EVENT_TYPE: {
+				DELETE: "delete",
+				UPDATE: "update"
+			},
+			_subscribers: [],
 
-				GEPPETTO.Console.debugLog( 'added new observer' );
-			}
-			
-			//registers remove handler for widget
-			$("#" +widgetID).on("remove", function () {
-				//remove tags and delete object upon destroying widget
-				removeTags(widgetID);
+			/**
+			 * Subscribes widget controller class to listener
+			 *
+			 * @param obj - Controller Class subscribing
+			 * @returns {Boolean}
+			 */
+			subscribe: function(controller, widgetID) {
 
-				var widgets = controller.getWidgets();
-				
-				for (p in widgets)
-				{
-					if (widgets[p].getId() == this.id)
-					{
-						widgets.splice(p,1);
-						break;
+				var addController = true;
+				for(var i = 0, len = this._subscribers.length; i < len; i++) {
+					if(this._subscribers[ i ] === controller) {
+						addController = false;
 					}
 				}
-				
-				delete window[plotID];
-			});
-			
-			//register resize handler for widget
-			$("#"+widgetID).on("dialogresizestop", function(event, ui){
-				
-				var height = ui.size.height;
-				var width = ui.size.width;
-				
-				GEPPETTO.Console.executeCommand(widgetID+".setSize(" + height +"," +  width + ")");
-				
-				var left = ui.position.left;
-				var top = ui.position.top;
-				
-				window[widgetID].setPosition(left, top);
-			});
-			
-			//register drag handler for widget
-			$("#" +widgetID).on("dialogdragstop", function(event,ui){
-				
-				var left = ui.position.left;
-				var top = ui.position.top;
-				
-				GEPPETTO.Console.executeCommand(widgetID+".setPosition(" + left +"," +  top + ")");
-			});
-		},
+				if(addController) {
+					this._subscribers.push(controller);
 
-		/**
-		 * Unsubscribe widget controller class
-		 * 
-		 * @param obj - Controller class to be unsubscribed from listener
-		 * 
-		 * @returns {Boolean}
-		 */
-		unsubscribe : function(obj){
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				if( this._subscribers[ i ] === obj ) {
-					this._subscribers.splice( i, 1 );
-					GEPPETTO.Console.log( 'removed existing observer' );
-					return true;
+					GEPPETTO.Console.debugLog('added new observer');
+				}
+
+				//registers remove handler for widget
+				$("#" + widgetID).on("remove", function() {
+					//remove tags and delete object upon destroying widget
+					GEPPETTO.Utility.removeTags(widgetID);
+
+					var widgets = controller.getWidgets();
+
+					for(var p in widgets) {
+						if(widgets[p].getId() == this.id) {
+							widgets.splice(p, 1);
+							break;
+						}
+					}
+				});
+
+				//register resize handler for widget
+				$("#" + widgetID).on("dialogresizestop", function(event, ui) {
+
+					var height = ui.size.height;
+					var width = ui.size.width;
+
+					GEPPETTO.Console.executeCommand(widgetID + ".setSize(" + height + "," + width + ")");
+
+					var left = ui.position.left;
+					var top = ui.position.top;
+
+					window[widgetID].setPosition(left, top);
+				});
+
+				//register drag handler for widget
+				$("#" + widgetID).on("dialogdragstop", function(event, ui) {
+
+					var left = ui.position.left;
+					var top = ui.position.top;
+
+					GEPPETTO.Console.executeCommand(widgetID + ".setPosition(" + left + "," + top + ")");
+				});
+			},
+
+			/**
+			 * Unsubscribe widget controller class
+			 *
+			 * @param obj - Controller class to be unsubscribed from listener
+			 *
+			 * @returns {Boolean}
+			 */
+			unsubscribe: function(obj) {
+				for(var i = 0, len = this._subscribers.length; i < len; i++) {
+					if(this._subscribers[ i ] === obj) {
+						this._subscribers.splice(i, 1);
+						GEPPETTO.Console.log('removed existing observer');
+						return true;
+					}
+				}
+				return false;
+			},
+
+			/**
+			 * Update all subscribed controller classes of the changes
+			 *
+			 * @param newData
+			 */
+			update: function(arguments) {
+				for(var i = 0, len = this._subscribers.length; i < len; i++) {
+					this._subscribers[ i ].update(arguments);
 				}
 			}
-			return false;
-		},
-
-		/**
-		 * Update all subscribed controller classes of the changes
-		 * 
-		 * @param newData 
-		 */
-		update : function(arguments){
-			for( var i = 0, len = this._subscribers.length; i < len; i++ ) {
-				this._subscribers[ i ].update( arguments );
-			}
-		}
-
-};
+		};
+	};
+});

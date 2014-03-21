@@ -90,6 +90,9 @@ public class TransportMessageFactory {
 			case SIMULATION_LOADED:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
+			case SIMULATION_OVER:
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;	
 			case FIRE_SIM_SCRIPTS:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_SCRIPTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;

@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,162 +33,145 @@
 
 /**
  *
- * Creates Javascript editor to display commands. 
- * 
+ * Creates Javascript editor to display commands.
+ *
  * @constructor
- * 
+ *
  * @author Jesus Martinez (jesus@metacell.us)
  */
-(function(){
+define(function(require) {
+	return function(GEPPETTO) {
+		var $ = require('jquery');
+		var editingJS = false;
+		var jsEditor = null;
 
-	var editingJS = false;
-	var jsEditor = null;
+	  require('codemirror');
 
-	GEPPETTO.JSEditor = GEPPETTO.JSEditor ||
-	{
-		REVISION : '1'
-	};
-
-	/**
-	 * Load the editor, create it if it doesn't exist
-	 */
-	GEPPETTO.JSEditor.loadEditor = function()
-	{
-		if (jsEditor == null)
-		{
-			GEPPETTO.JSEditor.createJSEditor();
-		}
-	};
-
-	/**
-	 * Create JSEditor, use to display command history
-	 */
-	GEPPETTO.JSEditor.createJSEditor = function()
-	{
-		//create the editor with given options
-		jsEditor = CodeMirror.fromTextArea(document.getElementById("javascriptCode"),
-				{
-			mode : "javascript",
-			lineNumbers : true,
-	        matchBrackets: true,
-	        continueComments: "Enter",
-	        theme : "lesser-dark",
-	        autofocus : true,
-			extraKeys :
-			{
-				"F11" : function(cm)
-				{
-					GEPPETTO.JSEditor.setFullScreen(cm, !GEPPETTO.JSEditor.isFullScreen(cm));
-				},
-				"Esc" : function(cm)
-				{
-					if (GEPPETTO.JSEditor.isFullScreen(cm))
-						GEPPETTO.JSEditor.setFullScreen(cm, false);
-				},
-				"Ctrl-Q": "toggleComment",
+		CodeMirror.on(window, "resize", function() {
+			var showing = document.body.getElementsByClassName("CodeMirror-fullscreen")[0];
+			if(!showing) {
+				return;
 			}
-				});
-
-		//Toggles fullscreen mode on editor
-		$("#javascriptFullscreen").click(function(){
-			cm=jsEditor;
-			GEPPETTO.JSEditor.setFullScreen(cm, !GEPPETTO.JSEditor.isFullScreen(cm));
+			showing.CodeMirror.getWrapperElement().style.height = GEPPETTO.winHeight() + "px";
 		});
-	};
 
-	/**
-	 * Load javascript code in the editor
-	 */
-	GEPPETTO.JSEditor.loadCode = function(commands){
-		jsEditor.setValue(commands);
-		autoSelectJSEditorText();
-	};
+		/**
+		 * Selects all text within the Javascript editor
+		 */
+		function autoSelectJSEditorText() {
+			//give the editor focus
+			jsEditor.focus();
 
-
-	/**
-	 * Returns text inside editor, xml for edited simulation file
-	 */
-	GEPPETTO.JSEditor.getEditedSimulation = function()
-	{
-		var code = jsEditor.getValue();
-
-		return code;
-	};
-
-	/**
-	 * Returns true if editor is being used
-	 */
-	GEPPETTO.JSEditor.setEditing = function(mode)
-	{
-		editingJS = mode;
-	};
-
-
-	/**
-	 * Returns true if editor is being used
-	 */
-	GEPPETTO.JSEditor.isEditing = function()
-	{
-		return editingJS;
-	};
-
-	/**
-	 * Selects all text within the Javascript editor
-	 */
-	function autoSelectJSEditorText() {
-		
-		//give the editor focus
-		jsEditor.focus();
-		
-		//start selecting the editor's text
-		var totalLines = jsEditor.lineCount();
-		var totalChars = jsEditor.getTextArea().value.length;
-		jsEditor.setSelection(
+			//start selecting the editor's text
+			var totalLines = jsEditor.lineCount();
+			var totalChars = jsEditor.getTextArea().value.length;
+			jsEditor.setSelection(
 				{
-					line : 0,
-					ch : 0
+					line: 0,
+					ch: 0
 				},
 				{
-					line : totalLines,
-					ch : totalChars
+					line: totalLines,
+					ch: totalChars
 				});
-	}
-
-	GEPPETTO.JSEditor.isFullScreen =function(cm)
-	{
-		return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
-	};
-
-	GEPPETTO.winHeight = function ()
-	{
-		return window.innerHeight || (document.documentElement || document.body).clientHeight;
-	};
-
-	GEPPETTO.JSEditor.setFullScreen=function(cm, full)
-	{
-		var wrap = cm.getWrapperElement();
-		if (full)
-		{
-			wrap.className += " CodeMirror-fullscreen";
-			wrap.style.height = GEPPETTO.winHeight() + "px";
-			document.documentElement.style.overflow = "hidden";
-			cm.focus();
 		}
-		else
-		{
-			wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
-			wrap.style.height = "";
-			document.documentElement.style.overflow = "";
-			cm.focus();
-		}
-		cm.refresh();
-	};
 
-	CodeMirror.on(window, "resize", function()
-			{
-		var showing = document.body.getElementsByClassName("CodeMirror-fullscreen")[0];
-		if (!showing)
-			return;
-		showing.CodeMirror.getWrapperElement().style.height = GEPPETTO.winHeight() + "px";
-			});
-})();
+		GEPPETTO.JSEditor = {
+			/**
+			 * Load the editor, create it if it doesn't exist
+			 */
+			loadEditor: function() {
+				if(jsEditor == null) {
+					GEPPETTO.JSEditor.createJSEditor();
+				}
+			},
+
+			/**
+			 * Create JSEditor, use to display command history
+			 */
+			createJSEditor: function() {
+				//create the editor with given options
+				jsEditor = CodeMirror.fromTextArea(document.getElementById("javascriptCode"),
+					{
+						mode: "javascript",
+						lineNumbers: true,
+						matchBrackets: true,
+						continueComments: "Enter",
+						theme: "lesser-dark",
+						autofocus: true,
+						extraKeys: {
+							"F11": function(cm) {
+								GEPPETTO.JSEditor.setFullScreen(cm, !GEPPETTO.JSEditor.isFullScreen(cm));
+							},
+							"Esc": function(cm) {
+								if(GEPPETTO.JSEditor.isFullScreen(cm)) {
+									GEPPETTO.JSEditor.setFullScreen(cm, false);
+								}
+							},
+							"Ctrl-Q": "toggleComment"
+						}
+					});
+
+				//Toggles fullscreen mode on editor
+				$("#javascriptFullscreen").click(function() {
+					cm = jsEditor;
+					GEPPETTO.JSEditor.setFullScreen(cm, !GEPPETTO.JSEditor.isFullScreen(cm));
+				});
+			},
+
+			/**
+			 * Load javascript code in the editor
+			 */
+			loadCode: function(commands) {
+				jsEditor.setValue(commands);
+				autoSelectJSEditorText();
+			},
+
+			/**
+			 * Returns text inside editor, xml for edited simulation file
+			 */
+			getEditedSimulation: function() {
+				return jsEditor.getValue();
+			},
+
+			/**
+			 * Returns true if editor is being used
+			 */
+			setEditing: function(mode) {
+				editingJS = mode;
+			},
+
+			/**
+			 * Returns true if editor is being used
+			 */
+			isEditing: function() {
+				return editingJS;
+			},
+
+			isFullScreen: function(cm) {
+				return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
+			},
+
+			winHeight: function() {
+				return window.innerHeight || (document.documentElement || document.body).clientHeight;
+			},
+
+			setFullScreen: function(cm, full) {
+				var wrap = cm.getWrapperElement();
+				if(full) {
+					wrap.className += " CodeMirror-fullscreen";
+					wrap.style.height = GEPPETTO.winHeight() + "px";
+					document.documentElement.style.overflow = "hidden";
+					cm.focus();
+				}
+				else {
+					wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
+					wrap.style.height = "";
+					document.documentElement.style.overflow = "";
+					cm.focus();
+				}
+				cm.refresh();
+			}
+		};
+	};
+});

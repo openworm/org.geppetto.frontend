@@ -3,23 +3,14 @@
 <head>
 <meta charset="utf-8">
 <title>GEPPETTO Client Unit Test</title>
-<link rel="stylesheet" href="css/qunit.css">
+<link rel="stylesheet" href="css/qunit-1.12.0.css">
 <link rel="stylesheet" href="css/custom-theme/jquery-ui-1.10.0.custom.css" />
-
-<script type="text/template" id="tplSandbox">
-		<pre class="output"></pre>
-		<div class="input">
-			<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
-		</div>
-	</script>
-
-<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
-<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
-<span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
-<% } %></script>
-
-<script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-<script data-main="js/main-test.js" src="js/vendor/require.js"></script>
+<script src="js/vendor/jquery-1.9.1.js"></script>
+<script src="js/vendor/jquery-ui-1.10.3.custom.js"></script>
+<script src="js/vendor/qunit-1.12.0.js"></script>
+<script src="js/GEPPETTO.SimState.js"></script>
+<script src="js/tests/SerializerTest.js"></script>
+<script src="js/Serializer.js"></script>
 
 </head>
 <body>
@@ -47,5 +38,6 @@
 		</div>
 	</div>
 	</div>
+	
 </body>
 </html>

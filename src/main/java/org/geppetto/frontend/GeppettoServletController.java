@@ -483,30 +483,33 @@ public class GeppettoServletController
 	 * Adds watch lists with variables to be watched
 	 * 
 	 * @throws GeppettoExecutionException
-	 * @throws GeppettoInitializationException 
+	 * @throws JsonProcessingException
+	 * @throws GeppettoInitializationException
 	 */
 	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException, GeppettoInitializationException
 	{
 		List<WatchList> lists = null;
 
+		lists = fromJSON(new TypeReference<List<WatchList>>()
+		{
+		}, jsonLists);
+		visitor.getSimulationService().addWatchLists(lists);
+
+		// serialize watch-lists
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedLists;
 		try
 		{
-			lists = fromJSON(new TypeReference<List<WatchList>>()
-			{
-			}, jsonLists);
-			visitor.getSimulationService().addWatchLists(lists);
-
-			// serialize watch-lists
-			ObjectMapper mapper = new ObjectMapper();
-			String serializedLists = mapper.writer().writeValueAsString(lists);
-
-			// message the client the watch lists were added
-			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS, serializedLists);
+			serializedLists = mapper.writer().writeValueAsString(lists);
 		}
 		catch(JsonProcessingException e)
 		{
 			throw new GeppettoExecutionException(e);
 		}
+
+		// message the client the watch lists were added
+		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS, serializedLists);
+
 	}
 
 	/**
@@ -590,20 +593,6 @@ public class GeppettoServletController
 
 		if(this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER)
 		{
-			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
-
-			if(this.getConnections().size() == simulatorCapacity)
-			{
-				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
-				messageClient(null, nextVisitorInLine, OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
-			}
-		}
-
-		/*
-		 * If the exiting visitor was running the simulation, notify all the observing visitors that the controls for the simulation became available
-		 */
-		if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING)
-		{
 
 			// Controlling user is leaving, but simulation might still be running.
 			try
@@ -619,34 +608,66 @@ public class GeppettoServletController
 				e.printStackTrace();
 			}
 
-			// Notify all observers
-			for(GeppettoMessageInbound visitor : _observers)
+			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
+
+			if(this.getConnections().size() == simulatorCapacity)
 			{
-				// visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
-				// send message to alert client of server availability
-				messageClient(null, visitor, OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
+				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
+				messageClient(null, nextVisitorInLine, OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
 			}
-
-			_simulationInUse = false;
-
 		}
 
-		/*
-		 * Closing connection is that of a visitor in OBSERVE mode, remove the visitor from the list of observers.
-		 */
-		else if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING)
+		else
 		{
-			// User observing simulation is closing the connection
-			if(_observers.contains(exitingVisitor))
+			/*
+			 * If the exiting visitor was running the simulation, notify all the observing visitors that the controls for the simulation became available
+			 */
+			if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.CONTROLLING)
 			{
-				// Remove user from observers list
-				_observers.remove(exitingVisitor);
+
+				// Controlling user is leaving, but simulation might still be running.
+				try
+				{
+					if(exitingVisitor.getSimulationService().isRunning())
+					{
+						// Pause running simulation upon controlling user's exit
+						exitingVisitor.getSimulationService().stop();
+					}
+				}
+				catch(GeppettoExecutionException e)
+				{
+					e.printStackTrace();
+				}
+
+				// Notify all observers
+				for(GeppettoMessageInbound visitor : _observers)
+				{
+					// visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
+					// send message to alert client of server availability
+					messageClient(null, visitor, OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
+				}
+
+				_simulationInUse = false;
+
 			}
-			// User observing simulation is closing the connection
-			if(_queueUsers.contains(exitingVisitor))
+
+			/*
+			 * Closing connection is that of a visitor in OBSERVE mode, remove the visitor from the list of observers.
+			 */
+			else if(exitingVisitor.getCurrentRunMode() == GeppettoMessageInbound.VisitorRunMode.OBSERVING)
 			{
-				// Remove user from observers list
-				_queueUsers.remove(exitingVisitor);
+				// User observing simulation is closing the connection
+				if(_observers.contains(exitingVisitor))
+				{
+					// Remove user from observers list
+					_observers.remove(exitingVisitor);
+				}
+				// User observing simulation is closing the connection
+				if(_queueUsers.contains(exitingVisitor))
+				{
+					// Remove user from observers list
+					_queueUsers.remove(exitingVisitor);
+				}
 			}
 		}
 	}

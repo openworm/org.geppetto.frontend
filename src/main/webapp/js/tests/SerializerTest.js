@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,43 +31,37 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-/**
- * 
- * Enum that holds different message types for socket
+"use strict";
 
- * @author  Jesus R. Martinez (jesus@metacell.us)
- */
-var MESSAGE_TYPE = {
-	/*
-	 * Messages handle by GlobalHandler
-	 */
-	CLIENT_ID : "client_id",
-	RELOAD_CANVAS : "reload_canvas",
-	ERROR_LOADING_SIM : "error_loading_simulation",
-	GEPPETTO_VERSION : "geppetto_version",
-	OBSERVER_MODE : "observer_mode_alert",
-	READ_URL_PARAMS : "read_url_parameters",
-	RUN_SCRIPT : "run_script",
-	SERVER_AVAILABLE : "server_available",
-	SERVER_UNAVAILABLE : "server_unavailable",
-	
-	/*
-	 * Messages handle by SimulatorHandle
-	 */
-	LOAD_MODEL : "load_model",
-	SCENE_UPDATE : "scene_update",
-	SIMULATION_CONFIGURATION : "simulation_configuration",
-	SIMULATION_LOADED : "simulation_loaded",
-	SIMULATION_STARTED : "simulation_started",
-	SIMULATION_PAUSED : "simulation_paused",
-	SIMULATION_STOPPED : "simulation_stopped",
-	LIST_WATCH_VARS : "list_watch_vars",
-	LIST_FORCE_VARS : "list_force_vars",
-	GET_WATCH_LISTS : "get_watch_lists",
-	SIMULATOR_FULL : "simulator_full",
-	SET_WATCH_VARS : "set_watch_vars",
-	START_WATCH : "start_watch",
-	STOP_WATCH : "stop_watch",
-	CLEAR_WATCH : "clear_watch",
-	FIRE_SIM_SCRIPTS : "fire_sim_scripts"
-};
+define(function(require) {
+
+	var run = function() {
+
+		test("Serializer Test, start with array", function() {
+			var tree = "hhpop[0].v";
+			GEPPETTO.Serializer.stringToObject(tree);
+			notEqual(null, window["hhpop"][0]["v"]);
+		});
+
+		test("Serializer Test, start with array many children", function() {
+			var tree = "hhpop[0].membraneProperties.naChans.na.k.q";
+			GEPPETTO.Serializer.stringToObject(tree);
+			notEqual(null, window["hhpop"][0]["membraneProperties"]["naChans"]["na"]["k"]["q"]);
+		});
+
+		test("Serializer Test, path no array", function() {
+			var tree = "hhcell.electrical.hhpop[0].v";
+		  GEPPETTO.Serializer.stringToObject(tree);
+			notEqual(null, window["hhcell"]["electrical"]["hhpop"][0]["v"]);
+		});
+
+		test("Serializer Test, path no array", function() {
+			var tree = "hhcell.electrical.hhpop.v";
+			GEPPETTO.Serializer.stringToObject(tree);
+			notEqual(null, window["hhcell"]["electrical"]["hhpop"]["v"]);
+		});
+
+	};
+
+	return {run: run};
+});

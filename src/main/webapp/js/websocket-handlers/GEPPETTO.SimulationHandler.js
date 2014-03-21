@@ -37,9 +37,11 @@ define(function(require) {
 	return function(GEPPETTO) {
 		var $ = require('jquery');
 
-		var updateTime = function(t) {
-				GEPPETTO.Simulation.time = t.TIME_STEP.time.value + t.TIME_STEP.time.unit;
-				GEPPETTO.Simulation.step = t.TIME_STEP.step.value + t.TIME_STEP.step.unit;
+		var updateTime = function(time) {
+			if(time && time.TIME_STEP && time.TIME_STEP.time) {
+				GEPPETTO.Simulation.time = time.TIME_STEP.time.value + time.TIME_STEP.time.unit;
+				GEPPETTO.Simulation.step = time.TIME_STEP.step.value + time.TIME_STEP.step.unit;
+			}
 		};
 
 		GEPPETTO.SimulationHandler = {
@@ -64,34 +66,21 @@ define(function(require) {
 						break;
 					//Event received to update the simulation
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
-						var starttime = (new Date()).getTime();
+						var update = JSON.parse(payload.update);
+						GEPPETTO.Simulation.updateSimulationWatchTree(update.variable_watch);
+						updateTime(update.time);
 
-						var entities = JSON.parse(payload.update).entities;
-						var variables = JSON.parse(payload.update).variable_watch;
-
-						if(variables != null) {
-							GEPPETTO.Simulation.updateSimulationWatchTree(variables);
-						}
-						var time = JSON.parse(payload.update).time;
-
-						if(time != null) {
-							updateTime(time);
-						}
 						//Update if simulation hasn't been stopped
 						if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
 							if(!GEPPETTO.isScenePopulated()) {
 								// the first time we need to create the object.s
-								GEPPETTO.populateScene(entities);
+								GEPPETTO.populateScene(update.entities);
 							}
 							else {
 								// any other time we just update them
-								GEPPETTO.updateJSONScene(entities);
+								GEPPETTO.updateJSONScene(update.entities);
 							}
 						}
-
-						var endtime = (new Date()).getTime();
-						//console.log("took " + (endtime-starttime) + " to UPDATE SCENE");
-
 						// TODO: store variable-watch tree
 						break;
 					//Simulation server became available

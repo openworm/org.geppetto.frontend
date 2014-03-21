@@ -68,7 +68,6 @@ define(function(require) {
 					//attach the handlers once socket is opened
 					messageHandlers.push(GEPPETTO.SimulationHandler);
 					messageHandlers.push(GEPPETTO.GlobalHandler);
-
 				};
 
 				GEPPETTO.MessageSocket.socket.onclose = function() {
@@ -134,6 +133,14 @@ define(function(require) {
 					messageHandlers.splice(index, 1);
 				}
 			},
+
+			/**
+			 * Clear handlers
+			 */
+			clearHandlers: function() {
+				messageHandlers = [];
+			},
+
 
 			/**
 			 * Sets the id of the client

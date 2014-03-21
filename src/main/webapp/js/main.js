@@ -113,3 +113,8 @@ require(jqueryLib, function($, geppetto){
 	});
 });
 
+
+//TODO: why isn't plot doing the same, in tune with
+//  http://docs.geppetto.org/en/latest/widgets.html#using-a-widget-inside-geppetto
+require("widgets/scatter3d/config.js", function($) {});
+

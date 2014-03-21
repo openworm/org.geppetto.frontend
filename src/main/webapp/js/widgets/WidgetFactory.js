@@ -43,7 +43,8 @@ define(function(require) {
 
 	return function(GEPPETTO) {
 		GEPPETTO.Widgets = {
-			PLOT: 0
+			PLOT: 0,
+			SCATTER3D: 1
 		};
 
 		GEPPETTO.WidgetFactory = {
@@ -57,6 +58,9 @@ define(function(require) {
 					//create plotting widget
 					case GEPPETTO.Widgets.PLOT:
 						widget = GEPPETTO.PlotsController.addPlotWidget();
+						break;
+					case GEPPETTO.Widgets.SCATTER3D:
+						widget = GEPPETTO.Scatter3dController.addScatter3dWidget();
 						break;
 					default:
 						break;
@@ -74,6 +78,9 @@ define(function(require) {
 					case GEPPETTO.Widgets.PLOT:
 						GEPPETTO.PlotsController.removePlotWidgets();
 						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
+					case GEPPETTO.Widgets.SCATTER3D:
+						GEPPETTO.Scatter3dController.removeScatter3dWidgets();
+						return GEPPETTO.Resources.REMOVE_SCATTER3D_WIDGETS;
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
 				}

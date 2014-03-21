@@ -77,23 +77,32 @@ var GEPPETTO = GEPPETTO ||
 
 			for ( var eindex in entities)
 			{
-				var geometries = entities[eindex].geometries;
+        var entity=entities[eindex];
+        for (var a in entity.aspects)
+          {
+            var aspect=entity.aspects[a];
+            for ( var vm in aspect.visualModel)
+            {
+              var visualModel=aspect.visualModel[vm];
+              var geometries = visualModel.objects;
 
-				for ( var gindex in geometries)
-				{
-					GEPPETTO.updateGeometry(geometries[gindex]);
-				}
+              for ( var gindex in geometries)
+              {
+                GEPPETTO.updateGeometry(geometries[gindex]);
+              }
 
-				var entityGeometry = VARS.geometriesMap[entities[eindex].id];
-				if (entityGeometry)
-				{
-					// if an entity is represented by a particle system we need to
-					// mark it as dirty for it to be updated
-					if (entityGeometry instanceof THREE.ParticleSystem)
-					{
-						entityGeometry.geometry.verticesNeedUpdate = true;
-					}
-				}
+              var entityGeometry = VARS.geometriesMap[entity.id];
+              if (entityGeometry)
+              {
+                // if an entity is represented by a particle system we need to
+                // mark it as dirty for it to be updated
+                if (entityGeometry instanceof THREE.ParticleSystem)
+                {
+                  entityGeometry.geometry.verticesNeedUpdate = true;
+                }
+              }
+            }
+          }
 			}
 			VARS.needsUpdate = false;
 		}
@@ -101,7 +110,7 @@ var GEPPETTO = GEPPETTO ||
 
 	/**
 	 * Updates a THREE geometry from the json one
-	 * 
+	 *
 	 * @param g
 	 *            the update json geometry
 	 */
@@ -127,7 +136,7 @@ var GEPPETTO = GEPPETTO ||
 
 	/**
 	 * Creates a cylinder
-	 * 
+	 *
 	 * @param bottomBasePos
 	 * @param topBasePos
 	 * @param radiusTop
@@ -173,7 +182,7 @@ var GEPPETTO = GEPPETTO ||
 
 		var getRGB = function(hexString) {
 			return {
-				r:parseInt(hexString.substr(2,2),16),
+				r :parseInt(hexString.substr(2,2),16),
 				g:parseInt(hexString.substr(4,2),16),
 			  b:parseInt(hexString.substr(6,2),16)
 			}
@@ -207,7 +216,7 @@ var GEPPETTO = GEPPETTO ||
 	 * Compute the center of the scene.
 	 */
 	GEPPETTO.calculateSceneCenter = function()
-	{   
+	{
 		var aabbMin = null;
 		var aabbMax = null;
 
@@ -244,7 +253,7 @@ var GEPPETTO = GEPPETTO ||
 		diag = diag.subVectors(aabbMax, aabbMin);
 		var radius = diag.length() * 0.5;
 
-		// Compute offset needed to move the camera back that much needed to center AABB 
+		// Compute offset needed to move the camera back that much needed to center AABB
 		var offset = radius / Math.tan(Math.PI / 180.0 * VARS.camera.fov * 0.25);
 
 		var camDir = new THREE.Vector3( 0, 0, 1.0 );
@@ -260,7 +269,7 @@ var GEPPETTO = GEPPETTO ||
 	 */
 	GEPPETTO.updateCamera = function()
 	{
-		// Update camera 
+		// Update camera
 		VARS.camera.rotationAutoUpdate = false;
 		VARS.camera.position.set( VARS.cameraPosition.x, VARS.cameraPosition.y, VARS.cameraPosition.z );
 		VARS.camera.lookAt(VARS.sceneCenter);
@@ -276,7 +285,7 @@ var GEPPETTO = GEPPETTO ||
 	{
 		return !(_.isEmpty(VARS.geometriesMap));
 	};
-	
+
 	GEPPETTO.isCanvasCreated = function()
 	{
 		return VARS.canvasCreated;
@@ -377,62 +386,71 @@ var GEPPETTO = GEPPETTO ||
 		else
 		{
 			// leaf entity it only contains geometries
-			var geometries = jsonEntity.geometries;
-			if (geometries != null && geometries.length)
-			{
-				if (geometries[0].type == "Particle")
-				{
-					// assumes there are no particles mixed with other kind of
-					// geometrie hence if the first one is a particle then they all are
-					// create the particle variables
-					var pMaterial = new THREE.ParticleBasicMaterial(
-						{
-							size : 5,
-							map : THREE.ImageUtils.loadTexture("images/particle.png"),
-							blending : THREE.AdditiveBlending,
-							depthTest : false,
-							transparent : true
-						});
-				  pMaterial.color = new THREE.Color(0xffffff);
-					THREE.ColorConverter.setHSV(pMaterial.color, Math.random(), 1.0, 1.0);
-					pMaterial.originalColor = pMaterial.color.getHexString();
-
-					var geometry = new THREE.Geometry();
-					for ( var gindex in geometries)
-					{
-						var threeObject = GEPPETTO.getThreeObjectFromJSONGeometry(geometries[gindex], pMaterial);
-						geometry.vertices.push(threeObject);
-					}
-					entityObject = new THREE.ParticleSystem(geometry, pMaterial);
-					entityObject.eid = jsonEntity.id;
-					// also update the particle system to
-					// sort the particles which enables
-					// the behaviour we want
-					entityObject.sortParticles = true;
-					VARS.geometriesMap[jsonEntity.id] = entityObject;
-				}
-				else
-				{
-					var combined = new THREE.Geometry();
-					var material = getMeshPhongMaterial();
-					for ( var gindex in geometries)
-					{
-						var threeObject = GEPPETTO.getThreeObjectFromJSONGeometry(geometries[gindex], material);
-						THREE.GeometryUtils.merge(combined, threeObject);
-						threeObject.geometry.dispose();
-					}
-					entityObject = new THREE.Mesh(combined, material);
-					entityObject.eindex = eindex;
-					entityObject.eid = jsonEntity.id;
-					entityObject.geometry.dynamic = false;
-				}
-			}
-		}
+			var aspects = jsonEntity.aspects;
+      for (var a in aspects)
+      {
+    	var aspect=aspects[a];
+    	for (var vm in aspect.visualModel)
+    	{
+    		var visualModel = aspect.visualModel[vm];
+    		var geometries = visualModel.objects;
+	          if (geometries != null && geometries.length)
+	          {
+	            if (geometries[0].type == "Particle")
+	            {
+	              // assumes there are no particles mixed with other kind of
+	              // geometry hence if the first one is a particle then they all are
+	              // create the particle variables
+	              var pMaterial = new THREE.ParticleBasicMaterial(
+	                {
+	                  size : 5,
+	                  map : THREE.ImageUtils.loadTexture("images/particle.png"),
+	                  blending : THREE.AdditiveBlending,
+	                  depthTest : false,
+	                  transparent : true
+	                });
+	              pMaterial.color = new THREE.Color(0xffffff);
+	              THREE.ColorConverter.setHSV(pMaterial.color, Math.random(), 1.0, 1.0);
+	              pMaterial.originalColor = pMaterial.color.getHexString();
+	
+	              var geometry = new THREE.Geometry();
+	              for ( var gindex in geometries)
+	              {
+	                var threeObject = GEPPETTO.getThreeObjectFromJSONGeometry(geometries[gindex], pMaterial);
+	                geometry.vertices.push(threeObject);
+	              }
+	              entityObject = new THREE.ParticleSystem(geometry, pMaterial);
+	              entityObject.eid = jsonEntity.id;
+	              // also update the particle system to
+	              // sort the particles which enables
+	              // the behaviour we want
+	              entityObject.sortParticles = true;
+	              VARS.geometriesMap[jsonEntity.id] = entityObject;
+	            }
+	            else
+	            {
+	              var combined = new THREE.Geometry();
+	              var material = getMeshPhongMaterial();
+	              for ( var gindex in geometries)
+	              {
+	                var threeObject = GEPPETTO.getThreeObjectFromJSONGeometry(geometries[gindex], material);
+	                THREE.GeometryUtils.merge(combined, threeObject);
+	                threeObject.geometry.dispose();
+	              }
+	              entityObject = new THREE.Mesh(combined, material);
+	              entityObject.eindex = eindex;
+	              entityObject.eid = jsonEntity.id;
+	              entityObject.geometry.dynamic = false;
+	            }
+	        }
+    	}
+      }
+    }
 		return entityObject;
 	};
 
 	/**
-	 * Sets up the HUD display with the scene stat's fps. 
+	 * Sets up the HUD display with the scene stat's fps.
 	 */
 	GEPPETTO.setupStats = function()
 	{
@@ -450,7 +468,7 @@ var GEPPETTO = GEPPETTO ||
 			}
 		}
 	};
-	
+
 	GEPPETTO.showStats = function()
 	{
 		if ($("#stats").length == 0)
@@ -460,7 +478,7 @@ var GEPPETTO = GEPPETTO ||
 			$("#stats").show();
 		}
 	};
-	
+
 	GEPPETTO.hideStats = function()
 	{
 		$("#stats").hide();
@@ -533,7 +551,7 @@ var GEPPETTO = GEPPETTO ||
 	};
 
 	/**
-	 * 
+	 *
 	 * @returns {Array} a list of objects intersected by the current mouse coordinates
 	 */
 	GEPPETTO.getIntersectedObjects = function()
@@ -574,7 +592,7 @@ var GEPPETTO = GEPPETTO ||
 	GEPPETTO.getNewId = function()
 	{
 		return VARS.idCounter++;
-	};	
+	};
 
 	/**
 	 * @param entityIndex
@@ -611,7 +629,7 @@ var GEPPETTO = GEPPETTO ||
 	};
 
 	/**
-	 * Animate simulation 
+	 * Animate simulation
 	 */
 	GEPPETTO.animate = function()
 	{
@@ -677,7 +695,7 @@ var GEPPETTO = GEPPETTO ||
 		});
 		return threeObject;
 	};
-	
+
 	/**
 	 * @param entityId
 	 *            the entity id

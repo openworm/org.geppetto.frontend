@@ -274,6 +274,7 @@ define(function(require) {
 			 * @param newValue -
 			 *            Updated value for data set
 			 */
+			 //TODO: is @param label above relevant?
 			updateDataSet: function(newValues) {
 				for(var i = 0; i < newValues.length; i++) {
 					var label = newValues[i].label;

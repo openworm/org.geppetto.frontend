@@ -88,6 +88,10 @@ define(function(require) {
 				var commandsString = "";
 				var commands = GEPPETTO.Console.consoleHistory();
 
+				if(!commands || !commands.length) {
+					return GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY;
+				}
+
 				for(var i = 0; i < commands.length; i++) {
 					var n = commands[i];
 					if(n.command) {
@@ -124,8 +128,9 @@ define(function(require) {
 					return GEPPETTO.Resources.COPY_CONSOLE_HISTORY;
 				}
 				else {
-					return GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY;
+					return '';
 				}
+
 			},
 
 			/**

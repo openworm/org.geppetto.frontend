@@ -90,6 +90,17 @@ p {
 }
 }
 
+#github icon {
+	left: 35px;
+	top:250px;
+	color:#555555;
+	position:absolute;
+	text-decoration: none;
+}
+#github icon:hover {
+	color:white;
+}
+
 #position_toolbar {
 	left: 10px;
 	top: 10px;

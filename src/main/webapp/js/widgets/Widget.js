@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,72 +31,75 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * 
+ *
  * Base Widget Class, all widgets extend this class.
- * 
+ *
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 
 /**
  * Parent Widget Base class
  */
-var Widget ={
-		
+
+define(function(require) {
+
+	var Backbone = require('backbone');
+	var $ = require('jquery');
+	return {
+
 		/**
-		 * Not yet implemented, used for local storage and history. 
+		 * Not yet implemented, used for local storage and history.
 		 */
-		Model : Backbone.Model.extend({
-			
+		Model: Backbone.Model.extend({
+
 		}),
-		
+
 		/**
 		 * Creates base view for widget
 		 */
-		View : Backbone.View.extend({
+		View: Backbone.View.extend({
 
-			id : null,
-			dialog : null,
-			visible : true,
-			size : {height : 300, width : 350}, 
-			position : {left : "50%", top : "50%"},
+			id: null,
+			dialog: null,
+			visible: true,
+			size: {height: 300, width: 350},
+			position: {left: "50%", top: "50%"},
 
 			/**
 			 * Initializes the widget
-			 * 
+			 *
 			 * @param id - id of widget
 			 * @param name - name of widget
 			 * @param visibility - visibility of widget window
 			 */
-			constructor: function(id, name, visible) {
-				this.id = id;
-				this.name = name;
-				this.visible = visible;
-
-				// Call the original constructor
-				Backbone.View.apply(this, arguments);
+			initialize: function(options) {
+				this.id = options.id;
+				this.name = options.name;
+				this.visible = options.visible;
 			},
 
 			/**
 			 * Destroy the widget, remove it from DOM
-			 * 
+			 *
 			 * @name destroy()
 			 * @returns {String} - Action Message
 			 */
-			destroy : function(){
-				$("#"+this.id).remove();
+			destroy: function() {
+				$("#" + this.id).remove();
 
 				return this.name + " destroyed";
 			},
 
 			/**
-			 * 
-			 * Hides the widget 
-			 * 
+			 *
+			 * Hides the widget
+			 *
 			 * @name hide()
 			 * @returns {String} - Action Message
 			 */
-			hide : function(){
-				$("#"+this.id).dialog('close');;
+			hide: function() {
+				$("#" + this.id).dialog('close');
+
 				this.visible = false;
 
 				return "Hiding " + this.name + " widget";
@@ -104,87 +107,86 @@ var Widget ={
 
 			/**
 			 *  Opens widget dialog
-			 *  
+			 *
 			 * @name show()
 			 * @returns {String} - Action Message
 			 */
-			show : function(){
-				$("#"+this.id).dialog('open');
+			show: function() {
+				$("#" + this.id).dialog('open');
 				this.visible = true;
 
 				//Unfocused close button 
 				$(".ui-dialog-titlebar-close").blur();
-				
+
 				return "Showing " + this.name + " widget";
-			}, 
+			},
 
 			/**
 			 * Gets the name of the widget
-			 * 
+			 *
 			 * @getName()
 			 * @returns {String} - Name of widget
 			 */
-			getName : function(){
+			getName: function() {
 				return this.name;
 			},
 
 			/**
-			 * Sets the name of the widget 
-			 * 
+			 * Sets the name of the widget
+			 *
 			 * @param name - Name of widget
 			 */
-			setName : function(name){
+			setName: function(name) {
 				this.name = name;
-				
+
 				// set name to widget window
-				$( "#"+this.id).dialog( "option", "title", this.name );
-				
+				$("#" + this.id).dialog("option", "title", this.name);
+
 				return "Widget has been renamed to " + this.name;
 			},
-			
-			setPosition : function(left, top){
-				
+
+			setPosition: function(left, top) {
+
 				this.position.left = left;
 				this.position.top = top;
-				$("#"+this.id).dialog('option', 'position',[this.position.left, this.position.top]);
-				
+				$("#" + this.id).dialog('option', 'position', [this.position.left, this.position.top]);
 
 				return this.name + " Widget's position has been updated";
 			},
-			
-			setSize : function(h,w){
+
+			setSize: function(h, w) {
 				this.size.height = h;
 				this.size.width = w;
-				$( "#"+this.id).dialog({ height: this.size.height, width: this.size.width });
-			    
+				$("#" + this.id).dialog({ height: this.size.height, width: this.size.width });
+
 				return this.name + " Widget has been resized";
 			},
-			
-			getPosition : function(){
+
+			getPosition: function() {
 				return this.position;
 			},
-			
-			getSize : function(){
+
+			getSize: function() {
 				return this.size;
 			},
-			
+
 			/**
 			 * Gets the ID of the widget
-			 * 
+			 *
 			 * @name getId()
 			 * @returns {String} - ID of widget
 			 */
-			getId : function(){
+			getId: function() {
 				return this.id;
 			},
 
 			/**
 			 * Returns whether widget is visible or not
-			 * 
+			 *
 			 * @name isVisible()
 			 * @returns {Boolean} - Widget visibility state
 			 */
-			isVisible : function(){
+			isVisible: function() {
 				return this.visible;
 			},
 
@@ -192,26 +194,28 @@ var Widget ={
 			 * Renders the widget dialog window
 			 */
 			render: function() {
-				
+
 				//create the dialog window for the widget
 				this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
-						{
-							resizable :  true,
-							draggable : true,
-							top : 10,
-							height : 300,
-							width : 350,
-							close: function(event, ui) {
-							    if ( event.originalEvent && 
-							                $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length ) {
-							    	$("#"+this.id).remove();
-							    }
+					{
+						resizable: true,
+						draggable: true,
+						top: 10,
+						height: 300,
+						width: 350,
+						close: function(event, ui) {
+							if(event.originalEvent &&
+								$(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
+								$("#" + this.id).remove();
 							}
-						});	
-				
+						}
+					});
+
 				//Take focus away from close button
 				$(".ui-dialog-titlebar-close").blur();
-								
-			},
-		}),
-};
+
+			}
+		})
+	};
+
+});

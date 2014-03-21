@@ -65,7 +65,8 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	STOP_WATCH("stop_watch"),
 	CLEAR_WATCH("clear_watch"),
 	CLIENT_ID("client_id"), 
-	FIRE_SIM_SCRIPTS("fire_sim_scripts");
+	FIRE_SIM_SCRIPTS("fire_sim_scripts"),
+	SIMULATION_OVER("simulation_over");
 
 	private OUTBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

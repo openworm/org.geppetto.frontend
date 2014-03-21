@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,30 +33,25 @@
 
 /**
  * @fileoverview Geppetto Vanilla business logic
- * 
+ *
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @author giovanni@openworm.org (Giovanni Idili)
  */
+define(function(require) {
+	return function(GEPPETTO){
+		GEPPETTO.Vanilla = {
+			/**
+			 * Business logic for Geppetto Vanilla
+			 */
+			checkKeyboard: function() {
+				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
+					PlotsController.toggle();
+				}
 
-/**
- * Base class
- */
-GEPPETTO.Vanilla = GEPPETTO.Vanilla ||
-{
-	REVISION : '1'
-};
-
-/**
- * Business logic for Geppetto Vanilla
- */
-GEPPETTO.Vanilla.checkKeyboard = function()
-{
-	if (GEPPETTO.isKeyPressed("ctrl+alt+p"))
-	{
-		PlotsController.toggle();
+				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
+					GEPPETTO.Console.toggleConsole();
+				}
+			}
+		}
 	}
-	
-	else if(GEPPETTO.isKeyPressed("ctrl+alt+j")){
-		GEPPETTO.Console.toggleConsole();
-	}
-};
+});

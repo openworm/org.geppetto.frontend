@@ -65,7 +65,8 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener 
 		String dateFormatted = formatter.format(date);
 		logger.info("Simulation Frontend Update Starting: " + dateFormatted);
 
-		OUTBOUND_MESSAGE_TYPES action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
+		OUTBOUND_MESSAGE_TYPES action = null;
+		String update = "";
 
 		// switch on message type
 		switch (event) {
@@ -73,19 +74,28 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener 
 				action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
 
 				_user.setIsSimulationLoaded(true);
+				
+				// pack sceneUpdate and variableWatchTree in the same JSON string
+				update = "{ \"entities\":" + sceneUpdate + "}";
+				
 				break;
 			}
 			case SCENE_UPDATE: {
+				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
+				
+				// pack sceneUpdate and variableWatchTree in the same JSON string
+				update = "{ \"entities\":" + sceneUpdate
+						+ ", \"variable_watch\":" + variableWatchTree
+						+ ", \"time\":" + time + "}";
+				
 				break;
 			}
+			case SIMULATION_OVER:
+				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
+				break;
 			default: {
 			}
 		}
-
-		// pack sceneUpdate and variableWatchTree in the same JSON string
-		String update = "{ \"entities\":" + sceneUpdate
-				+ ", \"variable_watch\":" + variableWatchTree
-				+ ", \"time\":" + time + "}";
 
 		// Notify all connected clients about update either to load model or
 		// update current one.

@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,474 +32,550 @@
  *******************************************************************************/
 
 /**
- * 
- * Class for the Simulation Object. Handles user's request to start, stop, pause, 
+ *
+ * Class for the Simulation Object. Handles user's request to start, stop, pause,
  * and/or load a simulation.
- * 
+ *
  * @constructor
- * 
+ *
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @author giovanni@openworm.org (Giovanni Idili)
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-var Simulation = Simulation ||
-{
-	REVISION : '1'
-};
 
-var simulationStates = {};
+define(function(require) {
+	return function(GEPPETTO) {
+		var loading = false;
 
-Simulation.StatusEnum =
-{
-	INIT : 0,
-	LOADED : 1,
-	STARTED : 2,
-	PAUSED : 3,
-	STOPPED: 4
-};
+		GEPPETTO.Simulation = {
+			simulationStates: {},
 
-Simulation.status = Simulation.StatusEnum.INIT;
+			status: 0,
+			simulationURL: "",
+			watchTree: null,
+			time: null,
+			timestep: null,
+			StatusEnum: {
+				INIT: 0,
+				LOADED: 1,
+				STARTED: 2,
+				PAUSED: 3,
+				STOPPED: 4
+			},
 
-Simulation.simulationURL = "";
+			getTime: function() {
+				return "Simulation's current time step : " + this.time;
+			},
 
-Simulation.watchTree = null;
+			/**
+			 * Start the simulation.
+			 *
+			 * @name GEPPETTO.Simulation.start()
+			 * @returns {String} - Simulation status after starting it.
+			 */
+			start: function() {
+				if(this.isLoaded()) {
+					GEPPETTO.MessageSocket.send("start", null);
 
-var loading = false;
+					this.status = this.StatusEnum.STARTED;
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_START);
 
-Simulation.timestep = null;
+					return GEPPETTO.Resources.SIMULATION_STARTED;
+				}
+				else {
+					return GEPPETTO.Resources.UNABLE_TO_START_SIMULATION;
+				}
+			},
 
-Simulation.time = null;
+			/**
+			 * Pauses the simulation
+			 *
+			 * @name GEPPETTO.Simulation.pause()
+			 * @returns {String} - Status of Simulation after pausing it.
+			 *
+			 */
+			pause: function() {
+				if(this.status == this.StatusEnum.STARTED) {
 
-/**
- * Start the simulation.
- * 
- * @name Simulation.start()
- * @returns {String} - Simulation status after starting it.
- */
-Simulation.start = function()
-{
-	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.send("start", null);
-		
-		Simulation.status = Simulation.StatusEnum.STARTED;
-		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_START);
-		
-		return SIMULATION_STARTED;
-	}
-	else{
-		return UNABLE_TO_START_SIMULATION;
-	}
-};
+					GEPPETTO.MessageSocket.send("pause", null);
 
-/**
- * Pauses the simulation
- * 
- * @name Simulation.pause()
- * @returns {String} - Status of Simulation after pausing it.
- * 
- */
-Simulation.pause = function()
-{
-	if(Simulation.status == Simulation.StatusEnum.STARTED){
-		
-		GEPPETTO.MessageSocket.send("pause", null);
-		
-		Simulation.status = Simulation.StatusEnum.PAUSED;
-		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_PAUSE);
+					this.status = this.StatusEnum.PAUSED;
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_PAUSE);
 
-		return SIMULATION_PAUSED;
-	}
-	else{
-		return UNABLE_TO_PAUSE_SIMULATION;
-	}
-};
+					return GEPPETTO.Resources.SIMULATION_PAUSED;
+				}
+				else {
+					return GEPPETTO.Resources.UNABLE_TO_PAUSE_SIMULATION;
+				}
+			},
 
-/**
- * Stops the simulation. 
- * 
- * @name Simulation.stop()
- * @returns {String} - Status of simulation after stopping it.
- */
-Simulation.stop = function()
-{
-	if(Simulation.status == Simulation.StatusEnum.PAUSED || Simulation.status == Simulation.StatusEnum.STARTED){
-		GEPPETTO.MessageSocket.send("stop", null);
-		
-		Simulation.status = Simulation.StatusEnum.STOPPED;
-		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_STOP);
+			/**
+			 * Stops the simulation.
+			 *
+			 * @name GEPPETTO.Simulation.stop()
+			 * @returns {String} - Status of simulation after stopping it.
+			 */
+			stop: function() {
+				if(this.status == this.StatusEnum.PAUSED || this.status == this.StatusEnum.STARTED) {
+					GEPPETTO.MessageSocket.send("stop", null);
 
-		return SIMULATION_STOP;
-	}
-	else if(Simulation.status == Simulation.StatusEnum.LOADED){
-		return SIMULATION_NOT_RUNNING;
-	}
-	else if(Simulation.status == Simulation.StatusEnum.STOPPED){
-		return SIMULATION_ALREADY_STOPPED;
-	}
-	else{
-		return SIMULATION_NOT_LOADED;
-	}
-};
+					this.status = this.StatusEnum.STOPPED;
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_STOP);
 
-/**
- * Loads a simulation from a URL.
- * 
- * @name Simulation.load(simulationURL)
- * @param simulationURL - URL of simulation file to be loaded.
- * @returns {String} - Status of attempt to load simulation using url. 
- */
-Simulation.load = function(simulationURL)
-{
-	if (Simulation.status == Simulation.StatusEnum.STARTED || Simulation.status == Simulation.StatusEnum.PAUSED)
-	{
-		Simulation.stop();
-	}
-		
-	Simulation.simulationURL = simulationURL;
-	
-	var loadStatus = LOADING_SIMULATION;
-	
-	if(simulationURL != null && simulationURL != ""){
-		//Updates the simulation controls visibility
-		var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-		//update ui based on success of webgl
-		GEPPETTO.FE.update(webGLStarted);
-		//Keep going with load of simulation only if webgl container was created
-		if(webGLStarted){
-			GEPPETTO.FE.activateLoader("show", LOADING_SIMULATION);
-			if (Simulation.status == Simulation.StatusEnum.INIT)
-			{
-				//we call it only the first time
-				GEPPETTO.animate();
+					return GEPPETTO.Resources.SIMULATION_STOP;
+				}
+				else if(this.status == this.StatusEnum.LOADED) {
+					return GEPPETTO.Resources.SIMULATION_NOT_RUNNING;
+				}
+				else if(this.status == this.StatusEnum.STOPPED) {
+					return GEPPETTO.Resources.SIMULATION_ALREADY_STOPPED;
+				}
+				else {
+					return GEPPETTO.Resources.SIMULATION_NOT_LOADED;
+				}
+			},
+
+			/**
+			 * Loads a simulation from a URL.
+			 *
+			 * @name GEPPETTO.Simulation.load(simulationURL)
+			 * @param simulationURL - URL of simulation file to be loaded.
+			 * @returns {String} - Status of attempt to load simulation using url.
+			 */
+			load: function(simulationURL) {
+				if(this.status == this.StatusEnum.STARTED || this.status == this.StatusEnum.PAUSED) {
+					this.stop();
+				}
+
+				this.simulationURL = simulationURL;
+
+				var loadStatus = GEPPETTO.Resources.LOADING_SIMULATION;
+
+				if(simulationURL != null && simulationURL != "") {
+					//Updates the simulation controls visibility
+					var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+					//update ui based on success of webgl
+					GEPPETTO.FE.update(webGLStarted);
+					//Keep going with load of simulation only if webgl container was created
+					if(webGLStarted) {
+						GEPPETTO.FE.activateLoader("show", GEPPETTO.Resources.LOADING_SIMULATION);
+						if(this.status == this.StatusEnum.INIT) {
+							//we call it only the first time
+							GEPPETTO.animate();
+						}
+						GEPPETTO.MessageSocket.send("init_url", simulationURL);
+						loading = true;
+						GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+						GEPPETTO.FE.SimulationReloaded();
+					}
+				}
+
+				else {
+					loadStatus = GEPPETTO.Resources.SIMULATION_UNSPECIFIED;
+				}
+
+				this.simulationStates = {};
+				return loadStatus;
+			},
+
+			/**
+			 * Loads a simulation using the content's from the simulation file editor.
+			 *
+			 * @name GEPPETTO.Simulation.loadFromContent(content)
+			 * @param content - Content of simulation to be loaded.
+			 * @returns {String} - Status of attempt to load simulation from content window.
+			 */
+			loadFromContent: function(content) {
+				if(this.status == this.StatusEnum.STARTED || this.status == this.StatusEnum.PAUSED) {
+					this.stop();
+				}
+
+				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+				//update ui based on success of webgl
+				GEPPETTO.FE.update(webGLStarted);
+				//Keep going with load of simulation only if webgl container was created
+				if(webGLStarted) {
+					GEPPETTO.FE.activateLoader("show", GEPPETTO.Resources.LOADING_SIMULATION);
+					if(GEPPETTO.Simulation.status == GEPPETTO.Simulation.StatusEnum.INIT) {
+						//we call it only the first time
+						GEPPETTO.animate();
+					}
+
+					GEPPETTO.MessageSocket.send("init_sim", content);
+					loading = true;
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_FROM_CONTENT);
+					GEPPETTO.FE.SimulationReloaded();
+				}
+
+				return GEPPETTO.Resources.LOADING_SIMULATION;
+			},
+
+			/**
+			 * Checks status of the simulation, whether it has been loaded or not.
+			 *
+			 * @name GEPPETTO.Simulation.isLoaded()
+			 * @returns {Boolean} - True if simulation has been loaded, false if not.
+			 */
+			isLoaded: function() {
+				return this.status != this.StatusEnum.INIT;
+			},
+
+			isLoading: function() {
+				return loading;
+			},
+
+			addTransferFunction: function(targetEntity, targetVar, transferFunction) {
+				console.log(this.getWatchTree());
+			},
+
+			/**
+			 * List watchable variables for the simulation.
+			 *
+			 * @name GEPPETTO.Simulation.listWatchableVariables()
+			 * @returns {String} - status after requesting list of watchable variables.
+			 */
+			listWatchableVariables: function() {
+				if(this.isLoaded()) {
+					GEPPETTO.MessageSocket.send("list_watch_vars", null);
+
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LIST_WATCH);
+
+					return GEPPETTO.Resources.SIMULATION_VARS_LIST;
+				}
+				else {
+					return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
+				}
+			},
+
+			/**
+			 * List forceable variables for the simulation.
+			 *
+			 * @name GEPPETTO.Simulation.listForceableVariables()
+			 * @returns {String} - status after requesting list of forceable variables.
+			 */
+			listForceableVariables: function() {
+				if(this.isLoaded()) {
+					GEPPETTO.MessageSocket.send("list_force_vars", null);
+
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LIST_FORCE);
+
+					return GEPPETTO.Resources.SIMULATION_VARS_LIST;
+				}
+				else {
+					return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
+				}
+			},
+
+			/**
+			 * Add watchlists to the simulation.
+			 *
+			 * @name GEPPETTO.Simulation.addWatchLists()
+			 * @param watchLists - listing variables to be watched.
+			 * @returns {String} - status after request.
+			 */
+			addWatchLists: function(watchLists) {
+				santasLittleHelper("set_watch", GEPPETTO.Resources.SIMULATION_SET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_SET_WATCH, watchLists);
+
+				return GEPPETTO.Resources.SIMULATION_SET_WATCH;
+			},
+
+			/**
+			 * Retrieve watchlists available the simulation.
+			 *
+			 * @name GEPPETTO.Simulation.getWatchLists()
+			 * @returns {String} - status after request.
+			 */
+			getWatchLists: function() {
+				santasLittleHelper("get_watch", GEPPETTO.Resources.SIMULATION_GET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_GET_WATCH, null);
+
+				return GEPPETTO.Resources.SIMULATION_GET_WATCH;
+			},
+
+			/**
+			 * Start watching variables for the simulation.
+			 *
+			 * @name GEPPETTO.Simulation.startWatch()
+			 * @returns {String} - status after request.
+			 */
+			startWatch: function() {
+				santasLittleHelper("start_watch", GEPPETTO.Resources.SIMULATION_START_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_START_WATCH, null);
+
+				return GEPPETTO.Resources.SIMULATION_START_WATCH;
+			},
+
+			/**
+			 * Stop watching variables for the simulation.
+			 *
+			 * @name GEPPETTO.Simulation.stopWatch()
+			 * @returns {String} - status after request.
+			 */
+			stopWatch: function() {
+				santasLittleHelper("stop_watch", GEPPETTO.Resources.SIMULATION_STOP_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_STOP_WATCH, null);
+
+				return GEPPETTO.Resources.SIMULATION_STOP_WATCH;
+			},
+
+			/**
+			 * Clears all watch lists for the given simulation
+			 *
+			 * @name GEPPETTO.Simulation.clearWatchLists()
+			 * @returns {String} - status after request.
+			 */
+			clearWatchLists: function() {
+				santasLittleHelper("clear_watch", GEPPETTO.Resources.SIMULATION_CLEAR_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_CLEAR_WATCH, null);
+
+				GEPPETTO.Simulation.simulationStates = {};
+
+				return GEPPETTO.Resources.SIMULATION_CLEAR_WATCH;
+			},
+
+			/**
+			 * Gets tree for variables being watched if any.
+			 *
+			 * @name GEPPETTO.Simulation.getWatchTree()
+			 * @returns {String} - status after request.
+			 */
+			getWatchTree: function() {
+				var watched_variables = GEPPETTO.Resources.WATCHED_SIMULATION_STATES + "";
+
+				for(var key in GEPPETTO.Simulation.simulationStates) {
+					watched_variables += "\n" + "      -- " + key + "\n";
+				}
+
+				if(this.watchTree == null) {
+					return GEPPETTO.Resources.EMPTY_WATCH_TREE;
+				}
+				else {
+					return watched_variables;
+				}
+			},
+
+			/**
+			 *
+			 * Outputs list of commands with descriptions associated with the Simulation object.
+			 *
+			 * @name GEPPETTO.Simulation.help()
+			 * @returns  Returns list of all commands for the Simulation object
+			 */
+			help: function() {
+				return GEPPETTO.Utility.extractCommandsFromFile("js/geppetto-objects/Simulation.js", GEPPETTO.Simulation, "Simulation");
+			},
+
+			/**
+			 * Return status of simulation
+			 */
+			getSimulationStatus: function() {
+				return this.status;
+			},
+
+			setSimulationLoaded: function() {
+				this.status = GEPPETTO.Simulation.StatusEnum.LOADED;
+				loading = false;
+			},
+
+			/**
+			 * Updates the simulation states with new watched variables
+			 */
+			updateSimulationWatchTree: function(variable) {
+				if(!variable) {
+					return;
+				}
+
+				GEPPETTO.Simulation.watchTree = variable;
+
+				var tree = GEPPETTO.Simulation.watchTree.WATCH_TREE;
+
+				//loop through simulation stated being watched
+				for(var s in this.simulationStates){
+					//traverse watchTree to find value of simulation state
+					var val = deepFind(tree, s);
+
+					//if value ain't null, update state
+					if(val != null){
+						GEPPETTO.Simulation.simulationStates[s].update(val);
+					}
+				}
+
+				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
+			},
+
+			/**
+			 * Add a transfer function to a watched var's sim state.
+			 * The transfer function should accept the value of the watched var and output a
+			 * number between 0 and 1, corresponding to min and max brightness.
+			 * If no transfer function is specified then brightess = value
+			 * @param entityName
+			 * @param varName
+			 * @param transferFunction
+			 */
+			addBrightnessFunction: function(entityName, varName, transferFunction) {
+				this.simulationStates[varName].listeners.push(function (simState){
+					GEPPETTO.lightUpEntity(entityName, transferFunction ? transferFunction(simState.value) : simState.value);
+				});
+			},
+
+			/**
+			 * Clear brightness transfer functions on simulation state
+			 * @param varName
+			 */
+			clearBrightnessFunctions: function(varName) {
+				this.simulationStates[varName].listeners = [];
 			}
-			GEPPETTO.MessageSocket.send("init_url", simulationURL);
-			loading = true;
-			GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LOAD);
-			GEPPETTO.FE.SimulationReloaded();
+		};
+
+		/**
+		 * Takes an object path and traverses through it to find the value within.
+		 * Example :    {hhpop[0] : { v : 20 } }
+		 *
+		 * Method will traverse through object to find the value "20" and update corresponding
+		 * simulation state with it. If no simulation state exists, then it creates one.
+		 */
+		function searchTreePath(a) {
+			var list = [];
+			(function(o, r) {
+				r = r || '';
+				if (typeof o != 'object') {
+					return true;
+				}
+				for (var c in o) {
+					//if current tree path object is array
+					if(!isNaN(c)){
+						if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
+							var val  = 0;
+							if(o[c]!=null){
+								val = o[c];
+							}
+							var rs = r.toString();
+							//first object or no more children
+							if(rs == ""){
+								//simulation state already exists, update
+								if(GEPPETTO.Simulation.simulationStates[c]!=null){
+									GEPPETTO.Simulation.simulationStates[c].update(val);
+								}
+							}
+							//object has leafs, add "." to name and update value if it exists
+							else{
+								if(GEPPETTO.Simulation.simulationStates[r + "." + c]!=null){
+									GEPPETTO.Simulation.simulationStates[r + "." + c].update(val);
+								}
+							}
+						}
+					}
+					//current path object from tree not an array
+					else{
+						var val  = 0;
+						if(o[c]!=null){
+							val = o[c];
+						}
+
+						if(arguments.callee(o[c], r + (r!=""?".":"") + c + (r!=""?"":""))){
+							//root of path case, no more children
+							if(r == ""){
+								GEPPETTO.Simulation.simulationStates[c].update(val);
+							}
+							//within path of tree, add "." to note levels
+							else{
+								var name = r + "." + c;
+
+								GEPPETTO.Simulation.simulationStates[name].update(val);
+
+							}
+						}
+					}
+				}
+				return false;
+			})(a);
+			return list;
 		}
-	}
-	
-	else{		
-		loadStatus = SIMULATION_UNSPECIFIED;
-	}
-	
-	return loadStatus;
-};
 
-/**
- * Loads a simulation using the content's from the simulation file editor.
- * 
- * @name Simulation.loadFromContent(content)
- * @param content - Content of simulation to be loaded. 
- * @returns {String} - Status of attempt to load simulation from content window.
- */
-Simulation.loadFromContent = function(content)
-{
-	 if (Simulation.status == Simulation.StatusEnum.STARTED || Simulation.status == Simulation.StatusEnum.PAUSED)
-	 {
-		 Simulation.stop();
-	 }
+		/**
+		 * Search through array looking for simulation states
+		 */
+		function searchTreeArray(variables) {
+			for(var v = 0; v < variables.length; v++) {
+				var state = GEPPETTO.Simulation.watchTree.WATCH_TREE[v];
 
-	var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-	//update ui based on success of webgl
-	GEPPETTO.FE.update(webGLStarted);
-	//Keep going with load of simulation only if webgl container was created
-	if(webGLStarted){
-		GEPPETTO.FE.activateLoader("show", LOADING_SIMULATION);
-		if (Simulation.status == Simulation.StatusEnum.INIT)
-		{
-			//we call it only the first time
-			GEPPETTO.animate();
-		}
-		
-		GEPPETTO.MessageSocket.send("init_sim", content);
-		loading = true;
-		GEPPETTO.Console.debugLog(LOADING_FROM_CONTENT);
-		GEPPETTO.FE.SimulationReloaded();
-	}
-	
-	return LOADING_SIMULATION;
-};
+				if(state.name != null) {
+					updateState(state);
+				}
 
-/**
- * Checks status of the simulation, whether it has been loaded or not.
- * 
- * @name Simulation.isLoaded()
- * @returns {Boolean} - True if simulation has been loaded, false if not.
- */
-Simulation.isLoaded = function()
-{
-	if(Simulation.status != Simulation.StatusEnum.INIT){
-		return true;
-	}
-	
-	return false;
-};
-
-Simulation.isLoading = function()
-{
-	return loading;
-};
-
-/**
- * List watchable variables for the simulation.
- * 
- * @name Simulation.listWatchableVariables()
- * @returns {String} - status after requesting list of watchable variables.
- */
-Simulation.listWatchableVariables = function()
-{
-	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.send("list_watch_vars", null);
-		
-		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_WATCH);
-		
-		return SIMULATION_VARS_LIST;
-	}
-	else{
-		return SIMULATION_NOT_LOADED_ERROR;
-	}
-};
-
-/**
- * List forceable variables for the simulation.
- * 
- * @name Simulation.listForceableVariables()
- * @returns {String} - status after requesting list of forceable variables.
- */
-Simulation.listForceableVariables = function()
-{
-	if(Simulation.isLoaded()){		
-		GEPPETTO.MessageSocket.send("list_force_vars", null);
-		
-		GEPPETTO.Console.debugLog(MESSAGE_OUTBOUND_LIST_FORCE);
-		
-		return SIMULATION_VARS_LIST;
-	}
-	else{
-		return SIMULATION_NOT_LOADED_ERROR;
-	}
-};
-
-/**
- * Add watchlists to the simulation.
- * 
- * @name Simulation.addWatchLists()
- * @param watchLists - listing variables to be watched.
- * @returns {String} - status after request.
- */
-Simulation.addWatchLists = function(watchLists)
-{
-	santasLittleHelper("set_watch", SIMULATION_SET_WATCH, MESSAGE_OUTBOUND_SET_WATCH, watchLists);
-	
-	return SIMULATION_SET_WATCH;
-};
-
-/**
- * Retrieve watchlists available the simulation.
- * 
- * @name Simulation.getWatchLists()
- * @returns {String} - status after request.
- */
-Simulation.getWatchLists = function()
-{
-	santasLittleHelper("get_watch", SIMULATION_GET_WATCH, MESSAGE_OUTBOUND_GET_WATCH, null);
-	
-	return SIMULATION_GET_WATCH;
-};
-
-/**
- * Start watching variables for the simulation.
- * 
- * @name Simulation.startWatch()
- * @returns {String} - status after request.
- */
-Simulation.startWatch = function()
-{
-	santasLittleHelper("start_watch", SIMULATION_START_WATCH, MESSAGE_OUTBOUND_START_WATCH, null);
-	
-	return SIMULATION_START_WATCH;
-};
-
-/**
- * Stop watching variables for the simulation.
- * 
- * @name Simulation.stopWatch()
- * @returns {String} - status after request.
- */
-Simulation.stopWatch = function()
-{
-	santasLittleHelper("stop_watch", SIMULATION_STOP_WATCH, MESSAGE_OUTBOUND_STOP_WATCH, null);
-	
-	return SIMULATION_STOP_WATCH;
-};
-
-/**
- * Clears all watch lists for the given simulation
- * 
- * @name Simulation.clearWatchLists()
- * @returns {String} - status after request.
- */
-Simulation.clearWatchLists = function()
-{
-	santasLittleHelper("clear_watch", SIMULATION_CLEAR_WATCH, MESSAGE_OUTBOUND_CLEAR_WATCH, null);
-	
-	simulationStates = {};
-	
-	return SIMULATION_CLEAR_WATCH;
-};
-
-/**
- * Gets tree for variables being watched if any.
- * 
- * @name Simulation.getWatchTree()
- * @returns {String} - status after request.
- */
-Simulation.getWatchTree = function()
-{
-	var watched_variables = WATCHED_SIMULATION_STATES + "";
-		
-	for(var key in simulationStates){
-		watched_variables +=  "\n" + "      -- " + key + "\n" +
-							   "         " + simulationStates[key].value + " " +simulationStates[key].unit;
-	}
-	
-	if(Simulation.watchTree == null){
-		return EMPTY_WATCH_TREE;
-	}
-	else{
-		return watched_variables;
-	}
-};
-
-/*
-Matteo: Commenting out as it's returning null
-Simulation.getTime = function(){
-	return SIMULATION_TIME_MSG + Simulation.time + "\n" +
-		"     " +SIMULATION_TIME_MSG_STEP + Simulation.timestep;
-};
- */
-
-/**
- * Updates the simulation states with new watched variables
- */
-function updateSimulationWatchTree(variable){	  
-	Simulation.watchTree = variable;
-
-	tree = Simulation.watchTree.WATCH_TREE;
-
-	//loop through simulation stated being watched
-	for(var s in simulationStates){
-		//traverse watchTree to find value of simulation state
-		var val = deepFind(tree, s);
-
-		//if value ain't null, update state
-		if(val != null){
-			simulationStates[s].update(val);
-		}
-	}
-
-	WidgetsListener.update(WIDGET_EVENT_TYPE.UPDATE);
-}
-
-/**
- * Update or create a simulation state
- */
-function updateState(name,value){
-	//If it's a new state add to tags
-	if(!(name in simulationStates)){
-		addTag(name);
-	}
-	
-	else{
-		 var variable = simulationStates[name];
-		 variable.update(value);
-	}
-}
-
-/**
- * Search obj for the value of node within using path. 
- * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will 
- * search within the obj to find the value of "tree.v", returning 1.
- */
-function deepFind(obj, path) {
-	var paths = path.split('.')
-	, current = obj
-	, i;
-	
-	for (i = 0; i < paths.length; ++i) {
-		//get index from node if it's array
-		var index = paths[i].match(/[^[\]]+(?=])/g);
-		
-		if(index == null){
-			if (current[paths[i]] == undefined) {
-				return undefined;
-			} else {
-				current = current[paths[i]];
+				else {
+					searchTreeObject(state);
+				}
 			}
 		}
-		else{
-			var iNumber =index[0].replace(/[\[\]']+/g,"");
-			
-			//take index and brackets out of the equation for now
-			var node = paths[i].replace(/ *\[[^]]*\] */g, "");
 
-			if (current[node][parseInt(iNumber)] == undefined) {
-				return undefined;
-			} else {
-				current = current[node][parseInt(iNumber)];
+		/**
+		 * Search through object structure for object with value and name
+		 */
+		function searchTreeObject(obj) {
+			for(var name in obj) {
+				updateState(name, obj[name]);
 			}
 		}
+
+		/**
+		 * Update or create a simulation state
+		 */
+		function updateState(name, value) {
+			//If it's a new state add to tags
+			if(!(name in GEPPETTO.Simulation.simulationStates)) {
+				GEPPETTO.Utility.addTag(name);
+			}
+			else {
+				GEPPETTO.Simulation.simulationStates[name].update(value);
+			}
+		}
+
+		function santasLittleHelper(msg, return_msg, outbound_msg_log, payload) {
+			if(GEPPETTO.Simulation.isLoaded()) {
+				GEPPETTO.MessageSocket.send(msg, payload);
+
+				GEPPETTO.Console.debugLog(outbound_msg_log);
+
+				return return_msg;
+			}
+			else {
+				return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
+			}
+		};
+
+		/**
+		 * Search obj for the value of node within using path.
+		 * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will
+		 * search within the obj to find the value of "tree.v", returning 1.
+		 */
+		function deepFind(obj, path) {
+			var paths = path.split('.')
+				, current = obj
+				, i;
+
+			for (i = 0; i < paths.length; ++i) {
+				//get index from node if it's array
+				var index = paths[i].match(/[^[\]]+(?=])/g);
+
+				if(index == null){
+					if (current[paths[i]] == undefined) {
+						return undefined;
+					} else {
+						current = current[paths[i]];
+					}
+				}
+				else{
+					var iNumber =index[0].replace(/[\[\]']+/g,"");
+
+					//take index and brackets out of the equation for now
+					var node = paths[i].replace(/ *\[[^]]*\] */g, "");
+
+					if (current[node][parseInt(iNumber)] == undefined) {
+						return undefined;
+					} else {
+						current = current[node][parseInt(iNumber)];
+					}
+				}
+			}
+			return current;
+		}
+
 	}
-	return current;
-}
-
-/**
- *
- * Outputs list of commands with descriptions associated with the Simulation object.
- * 
- * @name Simulation.help()
- * @returns  Returns list of all commands for the Simulation object
- */
-Simulation.help = function(){
-	return extractCommandsFromFile("js/geppetto-objects/Simulation.js", Simulation, "Simulation");
-};
-
-/**
- * Return status of simulation
- */
-function getSimulationStatus()
-{
-	return Simulation.status;
-};
-
-function getSimulationStates()
-{
-	return simulationStates;
-};
-
-function setSimulationLoaded()
-{
-	Simulation.status = Simulation.StatusEnum.LOADED;
-	loading = false;
-};
-
-
-function santasLittleHelper(msg, return_msg, outbound_msg_log, payload)
-{
-	if(Simulation.isLoaded()){
-		GEPPETTO.MessageSocket.send(msg, payload);
-		
-		GEPPETTO.Console.debugLog(outbound_msg_log);
-		
-		return return_msg;
-	}
-	else{
-		return SIMULATION_NOT_LOADED_ERROR;
-	} 
-};
-
-function updateTime(t){
-	Simulation.time = t.TIME_STEP.time + " ms";
-	Simulation.timestep = t.TIME_STEP.step + " ms";
-}
+});

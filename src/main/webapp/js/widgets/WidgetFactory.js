@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,65 +32,52 @@
  *******************************************************************************/
 
 /**
- * Class used to create widgets and handle widget events from parent class. 
+ * Class used to create widgets and handle widget events from parent class.
  */
 
 /**
  * Enum use to hold different types of widgets
  */
-var Widgets = {
-			PLOT : 0
-};
 
-(function(){
-	WidgetFactory = GEPPETTO.WidgetFactory ||
-	{
-		REVISION : '1'
-	};
-	
-	/**
-	 * Adds widget to Geppetto
-	 */
-	WidgetFactory.addWidget = function(widgetType){
-		var widget = null;
-		
-		switch(widgetType){
-			//create plotting widget
-			case Widgets.PLOT:
-				widget = PlotsController.addPlotWidget();
-				break;
-			default: 
-				break;
-		}
-				
-		return widget;
-	};
-	
-	/**
-	 * Removes widget from Geppetto
-	 */
-	WidgetFactory.removeWidget = function(widgetType){
-		switch(widgetType){
-			//removes plotting widget from geppetto
-			case Widgets.PLOT:
-				PlotsController.removePlotWidgets();
-				return REMOVE_PLOT_WIDGETS;
-				break;
-			default: 
-				return NON_EXISTENT_WIDGETS;
-				break;
-		}
-	};	
-})();
+define(function(require) {
 
-/**
- * Load CSS File
- * @param url
- */
-function loadCss(url) {
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = url;
-    document.getElementsByTagName("head")[0].appendChild(link);
-}
+	return function(GEPPETTO) {
+		GEPPETTO.Widgets = {
+			PLOT: 0
+		};
+
+		GEPPETTO.WidgetFactory = {
+			/**
+			 * Adds widget to Geppetto
+			 */
+			addWidget: function(widgetType) {
+				var widget = null;
+
+				switch(widgetType) {
+					//create plotting widget
+					case GEPPETTO.Widgets.PLOT:
+						widget = GEPPETTO.PlotsController.addPlotWidget();
+						break;
+					default:
+						break;
+				}
+
+				return widget;
+			},
+
+			/**
+			 * Removes widget from Geppetto
+			 */
+			removeWidget: function(widgetType) {
+				switch(widgetType) {
+					//removes plotting widget from geppetto
+					case GEPPETTO.Widgets.PLOT:
+						GEPPETTO.PlotsController.removePlotWidgets();
+						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
+					default:
+						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
+				}
+			}
+		};
+	};
+});

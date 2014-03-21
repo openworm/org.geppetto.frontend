@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,36 +33,32 @@
 
 /**
  * Loads plot scripts
- *  
+ *
  * @author Jesus Martinez (jesus@metacell.us)
  */
 /*
  * Configure what dependencies are needed for each library
  */
-require.config({
-	paths : {
-		'flot' :"widgets/plot/vendor/jquery.flot.min",
-		'resize' : 'widgets/plot/vendor/jquery.flot.resize.min',
-		'axis' : 'widgets/plot/vendor/jquery.flot.axislabels',
-	},
-	/*
-	 * Specify dependencies for each library
-	 */
-	shim: {
-		flot : { deps :['jquery']},
-		resize : { deps : ['flot']},
-		axis : { deps : ['flot']}
+define(function(require) {
+	return function(GEPPETTO) {
+		/**
+		 * Load CSS File
+		 * @param url
+		 */
+		function loadCss(url) {
+			var link = document.createElement("link");
+			link.type = "text/css";
+			link.rel = "stylesheet";
+			link.href = url;
+			document.getElementsByTagName("head")[0].appendChild(link);
+		}
 		
-	}
-});
+		require("widgets/plot/vendor/jquery.flot.min");
+		require("widgets/plot/vendor/jquery.flot.resize.min");
+		require("widgets/plot/vendor/jquery.flot.axislabels");
+		require('widgets/plot/controllers/PlotsController')(GEPPETTO);
 
-var plot = [];
-plot.push("flot");
-plot.push("resize");
-plot.push("axis");
-plot.push("widgets/plot/Plot");
-plot.push("widgets/plot/controllers/PlotsController");
+		loadCss("js/widgets/plot/Plot.css");
 
-require(plot, function($) {
-	loadCss("js/widgets/plot/Plot.css");
+	};
 });

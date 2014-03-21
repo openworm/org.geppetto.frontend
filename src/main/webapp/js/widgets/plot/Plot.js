@@ -131,11 +131,11 @@ define(function(require) {
 
 				var plotHolder = $("#" + this.id);
 				if(this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, options);
+					this.plot = $.plot(plotHolder, this.datasets, this.options);
 					plotHolder.resize();
 				}
 				else {
-					this.plot = $.plot(plotHolder, this.datasets, options);
+					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
 
 				return "Line plot added to widget";

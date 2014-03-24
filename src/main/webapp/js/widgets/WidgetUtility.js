@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,23 +30,19 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Loads widget scripts
- *  
- * @author Jesus Martinez (jesus@metacell.us)
+ * Widget Utility Class
+ *
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
-
-//Widget Classes
-define(function(require){
-	return function(GEPPETTO) {
-
-	require('widgets/WidgetFactory')(GEPPETTO);
-	require('widgets/WidgetsListener')(GEPPETTO);
-	require("widgets/WidgetUtility");
-	//Plot Widget
-	require("widgets/plot/config")(GEPPETTO);
-	
-	loadCss("js/widgets/Widget.css");
-	};
-});
+/**
+ * Load CSS File
+ * @param url
+ */
+function loadCss(url) {
+	var link = document.createElement("link");
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	link.href = url;
+	document.getElementsByTagName("head")[0].appendChild(link);
+}

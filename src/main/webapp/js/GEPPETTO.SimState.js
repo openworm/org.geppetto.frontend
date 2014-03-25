@@ -46,13 +46,8 @@ define(function(require) {
 					unit: unit,
 					listeners:[],
 					update: function(newValue) {
-						if(isNaN(newValue)){
-							this.value = newValue.value;
-							this.unit = newValue.unit;
-						}
-						else{
-							this.value = newValue;
-						}
+						this.value = newValue.value;
+						this.unit = newValue.unit;
 						for(var key in this.listeners) {
 							this.listeners[key](this);
 						}

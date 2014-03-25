@@ -291,6 +291,9 @@ define(function(require) {
 				$('#start').removeAttr('disabled');
 				$('#pause').attr('disabled', 'disabled');
 				$('#stop').attr('disabled', 'disabled');
+				
+				//send signal to all widgets to reset data sets
+				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
 			},
 
 			/**

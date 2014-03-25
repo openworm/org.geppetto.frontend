@@ -162,7 +162,7 @@ define(function(require) {
 				if (state!= null) {
 					this.datasets.push({
 						label : state,
-						data : [ [ 0, 0] ]
+						data : [ [] ]
 					});
 				}
 
@@ -394,6 +394,16 @@ define(function(require) {
 				return this.datasets;
 			},
 
+			/**
+			 * Resets the datasets for the plot
+			 */
+			cleanDataSets: function() {
+				// update corresponding data set
+				for(var key in this.datasets) {
+					this.datasets[key].data = [[]];
+				}
+			},
+			
 			/**
 			 * Sets a label next to the Y Axis
 			 *

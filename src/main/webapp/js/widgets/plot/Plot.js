@@ -131,11 +131,11 @@ define(function(require) {
 
 				var plotHolder = $("#" + this.id);
 				if(this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, options);
+					this.plot = $.plot(plotHolder, this.datasets, this.options);
 					plotHolder.resize();
 				}
 				else {
-					this.plot = $.plot(plotHolder, this.datasets, options);
+					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
 
 				return "Line plot added to widget";
@@ -162,7 +162,7 @@ define(function(require) {
 				if (state!= null) {
 					this.datasets.push({
 						label : state,
-						data : [ [ 0, 0] ]
+						data : [ [] ]
 					});
 				}
 
@@ -274,6 +274,7 @@ define(function(require) {
 			 * @param newValue -
 			 *            Updated value for data set
 			 */
+			 //TODO: is @param label above relevant?
 			updateDataSet: function(newValues) {
 				for(var i = 0; i < newValues.length; i++) {
 					var label = newValues[i].label;
@@ -393,6 +394,16 @@ define(function(require) {
 				return this.datasets;
 			},
 
+			/**
+			 * Resets the datasets for the plot
+			 */
+			cleanDataSets: function() {
+				// update corresponding data set
+				for(var key in this.datasets) {
+					this.datasets[key].data = [[]];
+				}
+			},
+			
 			/**
 			 * Sets a label next to the Y Axis
 			 *

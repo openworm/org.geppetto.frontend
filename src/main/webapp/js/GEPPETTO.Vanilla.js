@@ -45,7 +45,7 @@ define(function(require) {
 			 */
 			checkKeyboard: function() {
 				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
-					PlotsController.toggle();
+					GEPPETTO.PlotsController.toggle();
 				}
 
 				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {

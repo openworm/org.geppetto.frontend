@@ -198,6 +198,14 @@ define(function(require) {
 			$(this).keypress(function(e) {
 				GEPPETTO.Main.idleTime = 0;
 			});
+			
+			//Create canvas 
+			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+
+			//make sure webgl started correctly
+			if(!webGLStarted) {
+				//TODO: Display message if doesn't support webgl
+			}
 		});
 	}
 });

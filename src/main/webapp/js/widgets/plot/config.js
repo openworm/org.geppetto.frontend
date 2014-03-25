@@ -39,26 +39,44 @@
 /*
  * Configure what dependencies are needed for each library
  */
+
+require.config({
+	/*
+	 * Values in here are for dependencies that more than one module/script requires and/or needs.
+	 * E.G. If depenedency it's used more than once, it goes in here.
+	 */
+	paths : {
+		'flot' :"widgets/plot/vendor/jquery.flot.min",
+	},
+	/*
+	 * Notes what dependencies are needed prior to loading each library, values on the right
+	 * of colon are dependencies. If dependency was declared in path above, then add it's dependencies 
+	 * to that object in here.
+	 */
+	shim: {
+		"widgets/plot/vendor/jquery.flot.resize.min" : ["flot"],
+		"widgets/plot/vendor/jquery.flot.axislabels" : ["flot"]
+	}
+});
+
+/*
+ * Libraries used by plot widget
+ */
+var libraries = [];
+libraries.push("flot");
+libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
+libraries.push("widgets/plot/vendor/jquery.flot.axislabels");
+
+/*
+ * Load libraries, and CSS after libraries are loaded
+ */
+require(libraries,function($){
+	loadCss("js/widgets/plot/Plot.css");
+});	
+
+//Load PlotsController and other classes using GEPPETTO
 define(function(require) {
 	return function(GEPPETTO) {
-		/**
-		 * Load CSS File
-		 * @param url
-		 */
-		function loadCss(url) {
-			var link = document.createElement("link");
-			link.type = "text/css";
-			link.rel = "stylesheet";
-			link.href = url;
-			document.getElementsByTagName("head")[0].appendChild(link);
-		}
-		
-		require("widgets/plot/vendor/jquery.flot.min");
-		require("widgets/plot/vendor/jquery.flot.resize.min");
-		require("widgets/plot/vendor/jquery.flot.axislabels");
-		require('widgets/plot/controllers/PlotsController')(GEPPETTO);
-
-		loadCss("js/widgets/plot/Plot.css");
-
+		require("widgets/plot/controllers/PlotsController")(GEPPETTO);
 	};
 });

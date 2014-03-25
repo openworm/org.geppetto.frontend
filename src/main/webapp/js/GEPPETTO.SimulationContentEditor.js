@@ -230,7 +230,7 @@ define(function(require) {
 			},
 
 			isFullScreen: function(cm) {
-				return '/\bCodeMirror-fullscreen\b/'.test(cm.getWrapperElement().className);
+				return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
 			},
 
 			winHeight: function() {

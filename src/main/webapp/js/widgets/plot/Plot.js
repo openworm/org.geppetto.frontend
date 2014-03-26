@@ -87,46 +87,39 @@ define(function(require) {
 
 			/**
 			 * Takes data series and plots them. To plot array(s) , use it as
-			 * plotData([[1,2],[2,3]]) To plot an object , use it as
-			 * plotData(objectName) Multiples arrays can be specified at once in
+			 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
+			 * plotData("objectName") Multiples arrays can be specified at once in
 			 * this method, but only one object at a time.
 			 *
-			 * @name plotData(data, options)
-			 * @param newData -
-			 *            series to plot, can be array or an object
+			 * @name plotData(state, options)
+			 * @param state -
+			 *            series to plot, can be array of data or an geppetto simulation variable
 			 * @param options -
 			 *            options for the plotting widget, if null uses default
 			 */
-			plotData: function(newData, newOptions) {
+			plotData: function(state, options) {
 
 				// If no options specify by user, use default options
-				if(newOptions != null) {
-					this.options = newOptions;
+				if(options != null) {
+					this.options = options;
 					if(this.options.xaxis.max > this.limit) {
 						this.limit = this.options.xaxis.max;
 					}
 				}
 
-				if(newData.name != null) {
-					for(var dataset in this.datasets) {
-						if(newData.name == this.datasets[dataset].label) {
-							return this.name
-								+ " widget is already plotting object "
-								+ newData.name;
-						}
+				if (state!= null) {					
+					if(state instanceof Array){
+						this.datasets.push({
+							data : state
+						});
 					}
-					this.datasets.push({
-						label: newData.name,
-						data: [
-							[ 0, newData.value ]
-						]
-					});
-				}
-				else {
-					this.datasets.push({
-						label: "",
-						data: newData
-					});
+					
+					else{
+						this.datasets.push({
+							label : state,
+							data : [ [] ]
+						});
+					}
 				}
 
 				var plotHolder = $("#" + this.id);
@@ -135,42 +128,6 @@ define(function(require) {
 					plotHolder.resize();
 				}
 				else {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
-				}
-
-				return "Line plot added to widget";
-			},
-
-			/**
-			 * Takes the name of a simulation state to plot.
-			 *
-			 * @name plotData(state, options)
-			 * @param state -
-			 *           name of state to plot
-			 * @param options -
-			 *            options for the plotting widget, if null uses default
-			 */
-			plotState : function(state, options) {
-				// If no options specify by user, use default options
-				if (options != null) {
-					this.options = options;
-					if (this.options.xaxis.max > this.limit) {
-						this.limit = this.options.xaxis.max;
-					}
-				}
-
-				if (state!= null) {
-					this.datasets.push({
-						label : state,
-						data : [ [] ]
-					});
-				}
-
-				var plotHolder = $("#" + this.id);
-				if (this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
-					plotHolder.resize();
-				} else {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
 
@@ -275,13 +232,13 @@ define(function(require) {
 			 *            Updated value for data set
 			 */
 			 //TODO: is @param label above relevant?
-			updateDataSet: function(newValues) {
-				for(var i = 0; i < newValues.length; i++) {
-					var label = newValues[i].label;
-					var newValue = newValues[i].data;
+			updateDataSet: function() {
+				for(var i in this.datasets) {
+					var label = this.datasets[i].label;
+					var newValue = this.getState(GEPPETTO.Simulation.watchTree, label);
 
 					if(!this.labelsUpdated) {
-						var unit = newValues[i].unit;
+						var unit = newValue.unit;
 						if(unit != null) {
 							var labelY = unit;
 				      //Matteo: commented until this can move as it doesn't make sense for it to be static.
@@ -307,32 +264,27 @@ define(function(require) {
 							}
 						}
 
-						if(newValue[0].length == 1) {
-							if(newData.length > this.limit) {
-								newData.splice(0, 1);
-								reIndex = true;
-							}
-
-							newData.push([ newData.length, newValue[0][0] ]);
-
-							if(reIndex) {
-								// re-index data
-								var indexedData = [];
-								for(var index = 0, len = newData.length; index < len; index++) {
-									var value = newData[index][1];
-									indexedData.push([ index, value ]);
-								}
-
-								this.datasets[matchedKey].data = indexedData;
-							}
-							else {
-								this.datasets[matchedKey].data = newData;
-							}
+						if(newData.length > this.limit) {
+							newData.splice(0, 1);
+							reIndex = true;
 						}
-						else if(newValue[0].length == 2) {
-							newData.push([ newValue[0][0], newValue[0][1][0] ]);
+
+						newData.push([ newData.length, newValue.value]);
+
+						if(reIndex) {
+							// re-index data
+							var indexedData = [];
+							for(var index = 0, len = newData.length; index < len; index++) {
+								var value = newData[index][1];
+								indexedData.push([ index, value ]);
+							}
+
+							this.datasets[matchedKey].data = indexedData;
+						}
+						else {
 							this.datasets[matchedKey].data = newData;
 						}
+
 					}
 				}
 				

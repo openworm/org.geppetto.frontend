@@ -692,7 +692,6 @@ define(function(require) {
 	require('GEPPETTO.Console')(GEPPETTO);
 	require('GEPPETTO.Utility')(GEPPETTO);
 	require('GEPPETTO.Share')(GEPPETTO);
-	require('GEPPETTO.SimState')(GEPPETTO);
 	require('websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
 	require('websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
 	require('websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);

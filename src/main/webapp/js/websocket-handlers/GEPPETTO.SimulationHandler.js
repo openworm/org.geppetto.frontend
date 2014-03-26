@@ -152,34 +152,10 @@ define(function(require) {
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.START_WATCH:
 						//variables watching
 						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-
-						//create objects for the variables to watch
-						for(var v in variables) {
-							GEPPETTO.Serializer.stringToObject(variables[v]);
-							var splitVariableName = variables[v].split(".");
-
-							var name = variables[v].replace(splitVariableName[0] + ".", "");
-
-							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
-
-
-						}
 						break;
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
 						//variables watching
 						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-
-						//create objects for the variables to watch
-						for(var v in variables) {
-							GEPPETTO.Serializer.stringToObject(variables[v]);
-
-							var splitVariableName = variables[v].split(".");
-
-							var name = variables[v].replace(splitVariableName[0] + ".", "");
-
-							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
-
-						}
 						break;
 					//handles the case where simulation is done executing all steps
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_OVER:

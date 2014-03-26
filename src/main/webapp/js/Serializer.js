@@ -56,9 +56,6 @@ define(function(require) {
 				function index(obj, element) {
 					var matches = element.match(arrPattern);
 					if(!matches) {
-						if(!obj[element]) {
-							obj[element] = new GEPPETTO.SimState.State(element);
-						}
 						return obj[element];
 					}
 					else {
@@ -66,9 +63,6 @@ define(function(require) {
 							obj[matches[1]] = [];
 						}
 						var arrIndex = parseInt(matches[2]);
-						if(!obj[matches[1]][arrIndex]) {
-							obj[matches[1]][arrIndex] = new GEPPETTO.SimState.State(element);
-						}
 						return obj[matches[1]][arrIndex];
 					}
 				}

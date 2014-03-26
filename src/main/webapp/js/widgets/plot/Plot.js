@@ -233,61 +233,50 @@ define(function(require) {
 			 */
 			 //TODO: is @param label above relevant?
 			updateDataSet: function() {
-				for(var i in this.datasets) {
-					var label = this.datasets[i].label;
+				for(var key in this.datasets) {
+					var label = this.datasets[key].label;
 					var newValue = this.getState(GEPPETTO.Simulation.watchTree, label);
 
-					if(!this.labelsUpdated) {
-						var unit = newValue.unit;
-						if(unit != null) {
-							var labelY = unit;
-				      //Matteo: commented until this can move as it doesn't make sense for it to be static.
-							//also ms should not be harcoded but should come from the simulator as the timescale could
-							//be different
-							var labelX = "";
-							//Simulation timestep (ms) " + Simulation.timestep;
-							this.setAxisLabel(labelY, labelX);
-							this.labelsUpdated = true;
-						}
+//					if(!this.labelsUpdated) {
+//						var unit = newValue.unit;
+//						if(unit != null) {
+//							var labelY = unit;
+//							//Matteo: commented until this can move as it doesn't make sense for it to be static.
+//							//also ms should not be harcoded but should come from the simulator as the timescale could
+//							//be different
+//							var labelX = "";
+//							//Simulation timestep (ms) " + Simulation.timestep;
+//							this.setAxisLabel(labelY, labelX);
+//							this.labelsUpdated = true;
+//						}
+//					}
+
+					var oldata = this.datasets[key].data;;
+					var reIndex = false;
+
+					if(oldata.length > this.limit) {
+						oldata.splice(0, 1);
+						reIndex = true;
 					}
 
-					if(label != null) {
-						var newData = null;
-						var matchedKey = 0;
-						var reIndex = false;
+					oldata.push([ oldata.length, newValue.value]);
 
-						// update corresponding data set
-						for(var key in this.datasets) {
-							if(label == this.datasets[key].label) {
-								newData = this.datasets[key].data;
-								matchedKey = key;
-							}
+					if(reIndex) {
+						// re-index data
+						var indexedData = [];
+						for(var index = 0, len = oldata.length; index < len; index++) {
+							var value = oldata[index][1];
+							indexedData.push([ index, value ]);
 						}
 
-						if(newData.length > this.limit) {
-							newData.splice(0, 1);
-							reIndex = true;
-						}
-
-						newData.push([ newData.length, newValue.value]);
-
-						if(reIndex) {
-							// re-index data
-							var indexedData = [];
-							for(var index = 0, len = newData.length; index < len; index++) {
-								var value = newData[index][1];
-								indexedData.push([ index, value ]);
-							}
-
-							this.datasets[matchedKey].data = indexedData;
-						}
-						else {
-							this.datasets[matchedKey].data = newData;
-						}
-
+						this.datasets[key].data = indexedData;
 					}
+					else {
+						this.datasets[key].data = oldata;
+					}
+
 				}
-				
+
 				if(this.plot != null){
 					this.plot.setData(this.datasets);
 					this.plot.draw();

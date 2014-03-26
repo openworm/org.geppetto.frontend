@@ -156,17 +156,9 @@ define(function(require) {
 					for(var i = 0; i < plots.length; i++) {
 						var plot = plots[i];
 
-						//retrieve plot's datasets
-						var dataSets = plot.getDataSets();
-
-						if(dataSets != null){
-							for(var x =0; x <dataSets.length; x++)
-							{
-								//update plot with new data set
-								plot.updateDataSet();
-							}
+						//update plot with new data set
+						plot.updateDataSet();
 					}
-				}
 				}
 			}
 

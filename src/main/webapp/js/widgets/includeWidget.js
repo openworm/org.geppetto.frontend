@@ -57,5 +57,6 @@ define(function(require){
 	require('widgets/WidgetsListener')(GEPPETTO);
 	//Plot Widget
 	require("widgets/plot/config")(GEPPETTO);
+	require("widgets/scatter3d/config")(GEPPETTO);
 	};
 });

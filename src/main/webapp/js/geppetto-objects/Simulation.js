@@ -55,6 +55,8 @@ define(function(require) {
 			watchTree: null,
 			time: null,
 			timestep: null,
+			listeners:[],
+			simState : null,
 			StatusEnum: {
 				INIT: 0,
 				LOADED: 1,
@@ -389,6 +391,11 @@ define(function(require) {
 				}
 
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
+				
+				for(var key in this.listeners) {
+					this.listeners[key](this.simState);
+				}
+				
 			},
 
 			/**
@@ -401,9 +408,11 @@ define(function(require) {
 			 * @param transferFunction
 			 */
 			addBrightnessFunction: function(entityName, varName, transferFunction) {
-//				this.simulationStates[varName].listeners.push(function (simState){
-//					GEPPETTO.lightUpEntity(entityName, transferFunction ? transferFunction(simState.value) : simState.value);
-//				});
+				this.simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, varName);
+				
+				this.listeners.push(function (simState){
+					GEPPETTO.lightUpEntity(entityName, transferFunction ? transferFunction(simState.value) : simState.value);
+				});
 			},
 
 			/**

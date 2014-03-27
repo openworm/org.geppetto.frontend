@@ -225,31 +225,25 @@ define(function(require) {
 
 			/**
 			 * Updates a data set, use for time series
-			 *
-			 * @param label -
-			 *            Name of data set
-			 * @param newValue -
-			 *            Updated value for data set
 			 */
-			 //TODO: is @param label above relevant?
 			updateDataSet: function() {
 				for(var key in this.datasets) {
 					var label = this.datasets[key].label;
 					var newValue = this.getState(GEPPETTO.Simulation.watchTree, label);
 
-//					if(!this.labelsUpdated) {
-//						var unit = newValue.unit;
-//						if(unit != null) {
-//							var labelY = unit;
-//							//Matteo: commented until this can move as it doesn't make sense for it to be static.
-//							//also ms should not be harcoded but should come from the simulator as the timescale could
-//							//be different
-//							var labelX = "";
-//							//Simulation timestep (ms) " + Simulation.timestep;
-//							this.setAxisLabel(labelY, labelX);
-//							this.labelsUpdated = true;
-//						}
-//					}
+					if(!this.labelsUpdated) {
+						var unit = newValue.unit;
+						if(unit != null) {
+							var labelY = unit;
+							//Matteo: commented until this can move as it doesn't make sense for it to be static.
+							//also ms should not be harcoded but should come from the simulator as the timescale could
+							//be different
+							var labelX = "";
+							//Simulation timestep (ms) " + Simulation.timestep;
+							this.setAxisLabel(labelY, labelX);
+							this.labelsUpdated = true;
+						}
+					}
 
 					var oldata = this.datasets[key].data;;
 					var reIndex = false;

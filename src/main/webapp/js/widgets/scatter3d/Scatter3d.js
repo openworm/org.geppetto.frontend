@@ -34,7 +34,7 @@ define(function(require) {
 			this.visible = options.visible;
 			this.datasets = [];
 			this.options = this.defaultScatter3dOptions;
-
+			this.render();
 			this.dialog.append("<div class='scatter3d' id='" + this.id + "'></div>");
 
 			var plotHolder = $("#"+this.id);
@@ -67,7 +67,7 @@ define(function(require) {
 			//eso sale de aqui 
 			var scatterPlot = new THREE.Object3D();
 			this.scene.add(scatterPlot);
-			scatterPlot.add(this.octants());
+			scatterPlot.add(this.octants);
 			this.controls.update();
 			this.render3DPlot();
 		},

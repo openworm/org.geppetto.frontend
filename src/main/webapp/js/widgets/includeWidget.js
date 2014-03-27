@@ -46,6 +46,7 @@ define(function(require){
 	require("widgets/WidgetUtility");
 	//Plot Widget
 	require("widgets/plot/config")(GEPPETTO);
+	require("widgets/scatter3d/config")(GEPPETTO);
 	
 	loadCss("js/widgets/Widget.css");
 	};

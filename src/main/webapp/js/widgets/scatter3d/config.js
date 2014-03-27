@@ -12,7 +12,7 @@ require.config({
 		"threelib" :"widgets/scatter3d/vendor/three.min",
 	},
 	shim: {
-		"widgets/scatter3d/vendor/OrbitControls" : ["threelib"],
+		"widgets/scatter3d/vendor/OrbitControls" : ["threelib"]
 	}
 });
 

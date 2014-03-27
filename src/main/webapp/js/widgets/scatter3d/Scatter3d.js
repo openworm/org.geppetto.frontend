@@ -64,14 +64,80 @@ define(function(require) {
 
 			this.scene = new THREE.Scene();
 			
-			//eso sale de aqui 
 			var scatterPlot = new THREE.Object3D();
+			
+			//PAINTING AXIS			
+			scatterPlot.add(this.paintOctants());
+			
+			//PAINTING A CURVE JUST FOR FUN
+			var mat = new THREE.ParticleBasicMaterial({vertexColors: true, size: 1.5});
+
+			var pointCount = 10000;
+			var pointGeo = new THREE.Geometry();
+			for (var i=0; i<pointCount; i++) {
+			  var x = Math.random() * 100 - 50;
+			  var y = x*0.8+Math.random() * 20 - 10;
+			  var z = x*0.7+Math.random() * 30 - 15;
+			  pointGeo.vertices.push(new THREE.Vertex(new THREE.Vector3(x,y,z)));
+			  //pointGeo.colors.push(new THREE.Color().setHSV((x+50)/100, (z+50)/100, (y+50)/100));
+			}
+			var points = new THREE.ParticleSystem(pointGeo, mat);
+			
+			//ADDING POINTS 
+			scatterPlot.add(points);
 			this.scene.add(scatterPlot);
-			scatterPlot.add(this.octants);
+			
+			//REFRESHIN CONTROLS AND RENDERING
 			this.controls.update();
 			this.render3DPlot();
 		},
 
+		
+		
+		paintOctants: function() {
+			function v(x,y,z){ return new THREE.Vertex(new THREE.Vector3(x,y,z)); }  
+			var lineGeo = new THREE.Geometry();
+		      lineGeo.vertices.push(
+		        v(-50, 0, 0), v(50, 0, 0),
+		        v(0, -50, 0), v(0, 50, 0),
+		        v(0, 0, -50), v(0, 0, 50),
+
+		        v(-50, 50, -50), v(50, 50, -50),
+		        v(-50, -50, -50), v(50, -50, -50),
+		        v(-50, 50, 50), v(50, 50, 50),
+		        v(-50, -50, 50), v(50, -50, 50),
+
+		        v(-50, 0, 50), v(50, 0, 50),
+		        v(-50, 0, -50), v(50, 0, -50),
+		        v(-50, 50, 0), v(50, 50, 0),
+		        v(-50, -50, 0), v(50, -50, 0),
+
+		        v(50, -50, -50), v(50, 50, -50),
+		        v(-50, -50, -50), v(-50, 50, -50),
+		        v(50, -50, 50), v(50, 50, 50),
+		        v(-50, -50, 50), v(-50, 50, 50),
+
+		        v(0, -50, 50), v(0, 50, 50),
+		        v(0, -50, -50), v(0, 50, -50),
+		        v(50, -50, 0), v(50, 50, 0),
+		        v(-50, -50, 0), v(-50, 50, 0),
+
+		        v(50, 50, -50), v(50, 50, 50),
+		        v(50, -50, -50), v(50, -50, 50),
+		        v(-50, 50, -50), v(-50, 50, 50),
+		        v(-50, -50, -50), v(-50, -50, 50),
+
+		        v(-50, 0, -50), v(-50, 0, 50),
+		        v(50, 0, -50), v(50, 0, 50),
+		        v(0, 50, -50), v(0, 50, 50),
+		        v(0, -50, -50), v(0, -50, 50)
+		      );
+		      var lineMat = new THREE.LineBasicMaterial({color: 0x808080, lineWidth: 1});
+		      var line = new THREE.Line(lineGeo, lineMat);
+		      line.type = THREE.Lines;
+		      return line;
+		},
+		
 
 		/**
 		 * Removes the data set from the scatter3d. EX:
@@ -179,6 +245,11 @@ define(function(require) {
 			}
 		},
 
+		plotXYZData: function(newDataX, newDataY, newDataZ, options) {
+			
+			
+		},
+		
 		/**
 		 * Scatter3ds a function against a data series
 		 *

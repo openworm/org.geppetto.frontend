@@ -156,6 +156,14 @@ define(function(require) {
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
 						//variables watching
 						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
+						
+						var length = GEPPETTO.Simulation.simulationStates.length;
+						
+						//create objects for the variables to watch
+						for(var v in variables) {
+							GEPPETTO.Simulation.simulationStates[length] = variables[v];
+							length++;
+						}
 						break;
 					//handles the case where simulation is done executing all steps
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_OVER:

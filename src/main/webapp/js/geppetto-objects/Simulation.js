@@ -48,7 +48,7 @@ define(function(require) {
 		var loading = false;
 
 		GEPPETTO.Simulation = {
-			simulationStates: {},
+			simulationStates: new Array(),
 
 			status: 0,
 			simulationURL: "",
@@ -341,7 +341,7 @@ define(function(require) {
 				var watched_variables = GEPPETTO.Resources.WATCHED_SIMULATION_STATES + "";
 
 				for(var key in GEPPETTO.Simulation.simulationStates) {
-					watched_variables += "\n" + "      -- " + key + "\n";
+					watched_variables += "\n" + "      -- " + GEPPETTO.Simulation.simulationStates[key] + "\n";
 				}
 
 				if(this.watchTree == null) {

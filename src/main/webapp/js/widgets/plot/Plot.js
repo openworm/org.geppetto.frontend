@@ -202,7 +202,7 @@ define(function(require) {
 			removeDataSet: function(set) {
 				if(set != null) {
 					for(var key in this.datasets) {
-						if(set.name == this.datasets[key].label) {
+						if(set == this.datasets[key].label) {
 							this.datasets.splice(key, 1);
 						}
 					}

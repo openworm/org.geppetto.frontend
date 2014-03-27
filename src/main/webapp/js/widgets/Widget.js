@@ -193,7 +193,8 @@ define(function(require) {
 			/**
 			 * Search obj for the value of node within using path.
 			 * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will
-			 * search within the obj to find the value of "tree.v", returning 1.
+			 * search within the obj to find the value of "tree.v", returning object 
+			 * containing {value : val, unit : unit, scale : scale}.
 			 */
 			getState : function(tree, state) {
 				var paths = state.split('.')

@@ -392,8 +392,13 @@ define(function(require) {
 
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
 				
+				//update scene brightness
 				for(var key in this.listeners) {
-					this.listeners[key](this.simState);
+					//retrieve the simulate state from watch tree
+					var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, key);
+					
+					//update simulation state
+					this.listeners[key](simState);
 				}
 				
 			},
@@ -407,10 +412,8 @@ define(function(require) {
 			 * @param varName
 			 * @param transferFunction
 			 */
-			addBrightnessFunction: function(entityName, varName, transferFunction) {
-				this.simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, varName);
-				
-				this.listeners.push(function (simState){
+			addBrightnessFunction: function(entityName, varName, transferFunction) {	
+				this.listeners[varName] = (function (simState){
 					GEPPETTO.lightUpEntity(entityName, transferFunction ? transferFunction(simState.value) : simState.value);
 				});
 			},
@@ -420,7 +423,7 @@ define(function(require) {
 			 * @param varName
 			 */
 			clearBrightnessFunctions: function(varName) {
-				this.simulationStates[varName].listeners = [];
+				this.listeners[varName] = null;
 			}
 		};
 

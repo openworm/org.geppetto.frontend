@@ -757,11 +757,11 @@ public class GeppettoServletController
 		}
 		catch(MalformedURLException e)
 		{
-			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
+			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION_CONFIG,e.getMessage());
 		}
 		catch(GeppettoInitializationException e)
 		{
-			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION_CONFIG);
+			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION_CONFIG,e.getMessage());
 		}
 	}
 

@@ -38,6 +38,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 
 public class MultiuserSimulationCallback implements ISimulationCallbackListener
@@ -87,7 +88,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
 
 				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{ \"entities\":" + sceneUpdate + ", \"variable_watch\":" + variableWatchTree +"}";
+				update = "{ \"entities\":" + sceneUpdate + ", \"variable_watch\":" + variableWatchTree + "}";
 
 				break;
 			}
@@ -105,4 +106,18 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 
 		logger.info("Simulation Frontend Update Finished: Took:" + (System.currentTimeMillis() - start));
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.geppetto.core.simulation.ISimulationCallbackListener#error(org.geppetto.core.common.GeppettoErrorCodes, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void error(GeppettoErrorCodes errorCode, String classSource, String errorMessage, Exception e)
+	{
+		String error = "{ \"error_code\":" + errorCode.toString() + ", \"source\":" + classSource + ", \"message\": " + errorMessage + ", \"exception\": " + e.getMessage() +"}";
+		// Notify all connected clients about update either to load model or update current one.
+		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.ERROR, error);
+	}
+
 }

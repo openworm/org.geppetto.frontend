@@ -38,6 +38,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 
 public class ObservermodeSimulationCallback implements ISimulationCallbackListener
@@ -125,6 +126,21 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 		}
 
 		logger.info("Simulation Frontend Update Finished: Took:" + (System.currentTimeMillis() - start));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.geppetto.core.simulation.ISimulationCallbackListener#error(org.geppetto.core.common.GeppettoErrorCodes, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void error(GeppettoErrorCodes errorCode, String classSource, String errorMessage, Exception e)
+	{
+		String error = "{ \"error_code\":" + errorCode.toString() + ", \"source\":" + classSource + ", \"message\": " + errorMessage + ", \"exception\": " + e.getMessage() +"}";
+		for(GeppettoMessageInbound connection : controller.getConnections())
+		{
+			// Notify all connected clients about update either to load model or update current one.
+			controller.messageClient(null, connection, OUTBOUND_MESSAGE_TYPES.ERROR, error);
+		}
+		
 	}
 
 }

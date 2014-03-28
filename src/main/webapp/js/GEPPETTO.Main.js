@@ -95,6 +95,8 @@ define(function(require) {
 // ============================================================================
 		$(document).ready(function() {
 
+			GEPPETTO.FE.checkWelcomeMessageCookie();
+
 			var allowedTime = 5, timeOut = 6;
 			function idleCheck() {
 				if(!GEPPETTO.Main.disconnected) {
@@ -179,8 +181,6 @@ define(function(require) {
 			});
 
 			GEPPETTO.Console.createConsole();
-
-			GEPPETTO.FE.checkWelcomeMessageCookie();
 
 			$("#share").click(function() {
 				$(".share-panel").slideToggle();

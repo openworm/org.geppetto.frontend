@@ -30,31 +30,31 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-"use strict";
-
 define(function(require) {
 
 	var run = function() {
-
-		module("Simulation Load From Content Tests",
-			{
-				newSocket: GEPPETTO.MessageSocket,
-				setup: function() {
-
-					this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
-
-				},
-				teardown: function() {
-					this.newSocket.close();
+		module("Run Script Test");
+		asyncTest("Run Script Test 1", function() {
+			expect(1);
+			GEPPETTO.MessageSocket.clearHandlers();
+			var handler = {
+				onMessage: function(parsedServerMessage) {
+					// Switch based on parsed incoming message type
+					if(parsedServerMessage.type === GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT) {
+						//Simulation has been loaded and model need to be loaded
+						ok(true, "Script parsed, passed");
+						start();
+					}
 				}
-			});
+			};
+			GEPPETTO.MessageSocket.addHandler(handler);
+			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
+		});
 
+		module("Simulation Load From Content Tests");
 		asyncTest("Test Load Simulation from content", function() {
-
-			//wait half a second before testing, allows for socket connection to be established
-			setTimeout(function() {
-				GEPPETTO.Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
-			}, 500);
+			expect(1);
+			GEPPETTO.MessageSocket.clearHandlers();
 
 			var handler = {
 				onMessage: function(parsedServerMessage) {
@@ -70,17 +70,14 @@ define(function(require) {
 				}
 			};
 
-			this.newSocket.addHandler(handler);
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
 		});
 
+		module("Simulation Load From Content Tests 2");
 		asyncTest("Test Load Simulation", function() {
-
-
-			//wait half a second before testing, allows for socket connection to be established
-			setTimeout(function() {
-				//GEPPETTO.Console.createConsole();
-				GEPPETTO.Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
-			}, 500);
+			expect(1);
+			GEPPETTO.MessageSocket.clearHandlers();
 
 			var handler = {
 				onMessage: function(parsedServerMessage) {
@@ -97,32 +94,14 @@ define(function(require) {
 				}
 			};
 
-			this.newSocket.addHandler(handler);
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
+
 		});
 
-		module("Simulation with Scripts",
-			{
-				newSocket: GEPPETTO.MessageSocket,
-				setup: function() {
-
-					this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
-
-				},
-				teardown: function() {
-					this.newSocket.close();
-
-					GEPPETTO.G.removeWidget(Widgets.PLOT);
-				}
-			});
-
+		module("Simulation with Scripts");
 		asyncTest("Test Simulation with Script", function() {
-
-			//wait half a second before testing, allows for socket connection to be established
-			setTimeout(function() {
-				//GEPPETTO.Console.createConsole();
-				GEPPETTO.Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml');
-			}, 500);
-
+			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
 				onMessage: function(parsedServerMessage) {
 					// Switch based on parsed incoming message type
@@ -130,6 +109,8 @@ define(function(require) {
 						//Simulation has been loaded and model need to be loaded
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
 							ok(true, "Simulation content Loaded, passed");
+
+							//start();
 							break;
 						//We are not starting simulation from here, must come from associated scrip
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
@@ -137,31 +118,19 @@ define(function(require) {
 							start();
 							break;
 					}
-
 				}
 			};
 
-			this.newSocket.addHandler(handler);
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml');
+			Simulation.start();
 		});
 
-		module("Simulation controls Test",
-			{
-				newSocket: GEPPETTO.MessageSocket,
-
-				setup: function() {
-					this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
-
-					//wait half a second before testing, allows for socket connection to be established
-					setTimeout(function() {
-						GEPPETTO.Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
-					}, 500);
-				},
-				teardown: function() {
-					this.newSocket.close();
-				}
-			});
-
+		module("Simulation controls Test");
 		asyncTest("Test Simulation Controls", function() {
+			expect(1);
+			//wait half a second before testing, allows for socket connection to be established
+			GEPPETTO.MessageSocket.clearHandlers();
 
 			var handler = {
 				onMessage: function(parsedServerMessage) {
@@ -170,33 +139,36 @@ define(function(require) {
 					switch(parsedServerMessage.type) {
 						//Simulation has been started successfully
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
-							GEPPETTO.Simulation.setSimulationLoaded();
+							Simulation.setSimulationLoaded();
+							Simulation.start();
 							ok(true, "Simulation loaded, passed");
-							GEPPETTO.Simulation.start();
-							GEPPETTO.Simulation.pause();
-							GEPPETTO.Simulation.stop();
-							start();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 							ok(true, "Simulation Started, passed");
+							Simulation.pause();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_PAUSED:
 							ok(true, "Simulation Paused, passed");
+							Simulation.stop();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STOPPED:
 							ok(true, "Simulation Stopped, passed");
+							start();
 							break;
 					}
 
 				}
 			};
 
-			this.newSocket.addHandler(handler);
-
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		});
 
+		module("Simulation controls Test 2");
 		asyncTest("Test Variable Watch in Plot", function() {
+			expect(4);
 
+			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
 				onMessage: function(parsedServerMessage) {
 
@@ -204,18 +176,16 @@ define(function(require) {
 					switch(parsedServerMessage.type) {
 						//Simulation has been started successfully
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
-							GEPPETTO.Simulation.setSimulationLoaded();
 							ok(true, "Simulation loaded, passed");
-							GEPPETTO.Simulation.start();
+							Simulation.setSimulationLoaded();
+							Simulation.start();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 							ok(true, "Simulation Started, passed");
-
 							GEPPETTO.G.addWidget(Widgets.PLOT);
+							ok(GEPPETTO.PlotsController.getWidgets().length > 0, "Plot widget created, passed");
 
-							equal(GEPPETTO.PlotsController.getPlotWidgets().length, 1, "Plot widget created, passed");
-
-							var plot = GEPPETTO.PlotsController.getPlotWidgets()[0];
+							var plot = GEPPETTO.PlotsController.getWidgets()[0];
 							plot.hide();
 
 							notEqual(plot.getDataSets(), null, "Plot has variable data, passed");
@@ -225,29 +195,15 @@ define(function(require) {
 
 				}
 			};
-
-			this.newSocket.addHandler(handler);
-
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		});
 
-		module("Get simulation variables test",
-			{
-				newSocket: GEPPETTO.MessageSocket,
-
-				setup: function() {
-					this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
-
-					//wait half a second before testing, allows for socket connection to be established
-					setTimeout(function() {
-						GEPPETTO.Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
-					}, 500);
-				},
-				teardown: function() {
-					this.newSocket.close();
-				}
-			});
-
+		module("Get simulation variables test");
 		asyncTest("Test list simulation variables no crash - SPH", function() {
+			expect(2);
+
+			GEPPETTO.MessageSocket.clearHandlers();
 
 			var handler = {
 				onMessage: function(parsedServerMessage) {
@@ -257,8 +213,9 @@ define(function(require) {
 						//Simulation has been loaded successfully
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
 							ok(true, "Simulation loaded, passed");
-							GEPPETTO.Simulation.start();
-							GEPPETTO.Simulation.listWatchableVariables();
+							Simulation.setSimulationLoaded();
+							Simulation.start();
+							Simulation.listWatchableVariables();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LIST_WATCH_VARS:
 							ok(true, "Variables received");
@@ -269,28 +226,15 @@ define(function(require) {
 				}
 			};
 
-			this.newSocket.addHandler(handler);
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
+
 		});
 
-		module("Watch variables test",
-			{
-
-				newSocket: GEPPETTO.MessageSocket,
-
-				setup: function() {
-					this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
-
-					//wait half a second before testing, allows for socket connection to be established
-					setTimeout(function() {
-						GEPPETTO.Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
-					}, 500);
-				},
-				teardown: function() {
-					this.newSocket.close();
-				}
-			});
-
+		module("Watch variables test 1");
 		asyncTest("Test add / get watchlists no crash - SPH", function() {
+			expect(1);
+			GEPPETTO.MessageSocket.clearHandlers();
 
 			var handler = {
 				onMessage: function(parsedServerMessage) {
@@ -300,24 +244,21 @@ define(function(require) {
 						//Simulation has been loaded successfully
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
 							ok(true, "Simulation loaded, passed");
-							GEPPETTO.Simulation.start();
-							GEPPETTO.Simulation.addWatchLists([]);
-							GEPPETTO.Simulation.getWatchLists();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_WATCH_LISTS:
-							ok(true, "Variables received");
 							start();
 							break;
 					}
 
 				}
 			};
-
-			this.newSocket.addHandler(handler);
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		});
 
+		module("Watch variables test 2");
 		asyncTest("Test watch Simulation variables", function() {
+			expect(1);
 
+			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
 				onMessage: function(parsedServerMessage) {
 
@@ -326,30 +267,21 @@ define(function(require) {
 						//Simulation has been loaded successfully
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
 							ok(true, "Simulation loaded, passed");
-							GEPPETTO.Simulation.start();
-							// TODO: try to retrieve some values and check they are not there 'cause we are not watching yet
-
-							GEPPETTO.Simulation.startWatch();
-
-							// TODO: retrieve some values and check they are changing
-
-							GEPPETTO.Simulation.stopWatch();
-
-							// TODO: retrieve some values and check they are not changing changing anymore
-
-							GEPPETTO.Simulation.stop();
-
 							start();
 							break;
 					}
 				}
 			};
 
-			this.newSocket.addHandler(handler);
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 
 		});
 
+		module("Watch variables test3");
 		asyncTest("Test clear watch Simulation variables", function() {
+			expect(1);
+			GEPPETTO.MessageSocket.clearHandlers();
 
 			var handler = {
 				onMessage: function(parsedServerMessage) {
@@ -359,19 +291,14 @@ define(function(require) {
 						//Simulation has been loaded successfully
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
 							ok(true, "Simulation loaded, passed");
-							GEPPETTO.Simulation.start();
-							// TODO: try to retrieve some values and check they are not there 'cause we are not watching yet
-
-							GEPPETTO.Simulation.clearWatchLists();
-
-							GEPPETTO.Simulation.getWatchLists();
 							start();
 							break;
 					}
 				}
 			};
 
-			this.newSocket.addHandler(handler);
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		});
 
 	};

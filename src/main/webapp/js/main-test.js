@@ -76,6 +76,9 @@ require.config({
 		'vendor/Detector': ["jquery"],
 		'vendor/jquery.cookie': ["jquery"],
 		'vendor/rAF': ["jquery"],
+		'widgets/plot/vendor/jquery.flot.min' : ['jquery'],
+		'widgets/plot/vendor/jquery.flot.resize.min': ['widgets/plot/vendor/jquery.flot.min'],
+		'widgets/plot/vendor/jquery.flot.axislabels': ['widgets/plot/vendor/jquery.flot.min'],
 		'QUnit': {
 			exports: 'QUnit',
 			deps: ['geppetto'],
@@ -84,6 +87,7 @@ require.config({
 				QUnit.config.autostart = false;
 			}
 		}
+
 	}
 });
 
@@ -120,12 +124,14 @@ require(jqueryLib, function($) {
 		window.help = GEPPETTO.Utility.help;
 
 		require(
-			['QUnit', 'tests/GeppettoTests', 'tests/SimulationTest', 'tests/SerializerTest'],
+			['QUnit','tests/GeppettoTests', 'tests/SimulationTest', 'tests/SerializerTest'],
 			function(QUnit, geppettoTests, simulationTest, serializerTest) {
 				// run the tests.
-				geppettoTests.run();
-				simulationTest.run();
-				serializerTest.run();
+				setTimeout(function(){
+					geppettoTests.run();
+					simulationTest.run();
+					serializerTest.run();
+				},500);
 
 				// start QUnit.
 				QUnit.load();

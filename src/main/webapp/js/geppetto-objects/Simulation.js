@@ -377,6 +377,10 @@ define(function(require) {
 			 * Updates the simulation states with new watched variables
 			 */
 			updateSimulationWatchTree: function(variable) {
+				if(!variable) {
+					return;
+				}
+
 				GEPPETTO.Simulation.watchTree = variable;
 
 				var tree = GEPPETTO.Simulation.watchTree.WATCH_TREE;

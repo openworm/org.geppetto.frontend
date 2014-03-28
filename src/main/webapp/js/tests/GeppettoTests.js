@@ -46,7 +46,6 @@ define(function(require) {
 		});
 
 		module("G Object Test");
-
 		test("Test Get Current Simulation", function() {
 			equal(G.getCurrentSimulation(), GEPPETTO.Resources.NO_SIMULATION_TO_GET, "No simulation, passed.");
 		});
@@ -121,43 +120,6 @@ define(function(require) {
 			equal($("#" + plot.getId()).html(), null, "Widget successfully destroyed, passed");
 		});
 
-		module("Run Script Test",
-			{
-				newSocket: GEPPETTO.MessageSocket,
-				setup: function() {
-
-					this.newSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
-
-					setTimeout(function() {
-						G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
-					}, 1000);
-
-				},
-				teardown: function() {
-					this.newSocket.close();
-				}
-			});
-
-		asyncTest("Run Script Test 1", function() {
-
-			var handler = {
-				onMessage: function(parsedServerMessage) {
-
-					// Switch based on parsed incoming message type
-					switch(parsedServerMessage.type) {
-						//Simulation has been loaded and model need to be loaded
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.RUN_SCRIPT:
-							ok(true, "Script parsed, passed");
-							start();
-							break;
-					}
-
-				}
-			};
-
-			this.newSocket.addHandler(handler);
-
-		});
 	};
 
 	return {run: run};

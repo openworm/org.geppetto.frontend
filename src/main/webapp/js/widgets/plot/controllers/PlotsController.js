@@ -140,6 +140,15 @@ define(function(require) {
 				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 					this.removePlotWidgets();
 				}
+				
+				//reset plot's datasets
+				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+					for(var i = 0; i < plots.length; i++) {
+						var plot = plots[i];
+						
+						plot.cleanDataSets();
+					}
+				}
 
 				//update plotting widgets
 				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {

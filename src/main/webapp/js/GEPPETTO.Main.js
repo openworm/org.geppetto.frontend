@@ -69,36 +69,12 @@ define(function(require) {
 				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.INIT;
 				GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);
 			},
-
+			
 			/**
-			 * Add user as an observer to an ongoing simulation. Create
-			 * webGL container and notify servlet about new member that is becoming an observer.
+			 * Idle check
 			 */
-			observe: function() {
-				//Create canvas for observing visitor
-				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-
-				//Allow user to observe only if wegbl container was created
-				if(webGLStarted) {
-					GEPPETTO.animate();
-					GEPPETTO.MessageSocket.send("observe", null);
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.SIMULATION_OBSERVED);
-				}
-
-				//update the UI based on success of webgl
-				GEPPETTO.FE.update(webGLStarted);
-			}
-		};
-
-// ============================================================================
-// Application logic.
-// ============================================================================
-		$(document).ready(function() {
-
-			GEPPETTO.FE.checkWelcomeMessageCookie();
-
-			var allowedTime = 5, timeOut = 6;
-			function idleCheck() {
+			idleCheck : function(){
+				var allowedTime = 5, timeOut = 6;
 				if(!GEPPETTO.Main.disconnected) {
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there
@@ -134,7 +110,38 @@ define(function(require) {
 						GEPPETTO.FE.update(webGLStarted);
 					}
 				}
+			},
+
+			/**
+			 * Add user as an observer to an ongoing simulation. Create
+			 * webGL container and notify servlet about new member that is becoming an observer.
+			 */
+			observe: function() {
+				//Create canvas for observing visitor
+				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+
+				//Allow user to observe only if wegbl container was created
+				if(webGLStarted) {
+					GEPPETTO.animate();
+					GEPPETTO.MessageSocket.send("observe", null);
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.SIMULATION_OBSERVED);
+				}
+
+				//update the UI based on success of webgl
+				GEPPETTO.FE.update(webGLStarted);
 			}
+		};
+
+// ============================================================================
+// Application logic.
+// ============================================================================
+		$(document).ready(function() {
+			//disable simulation controls
+			$('#start').attr('disabled', 'disabled');
+			$('#pause').attr('disabled', 'disabled');
+			$('#stop').attr('disabled', 'disabled');
+			
+			GEPPETTO.FE.checkWelcomeMessageCookie();
 
 			/*
 			 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows
@@ -142,14 +149,8 @@ define(function(require) {
 			 */
 			$.fn.modal.Constructor.prototype.enforceFocus = function() {};
 
-			//Initialize websocket functionality
-			GEPPETTO.Main.init();
-
 			//Populate the 'loading simulation' modal's drop down menu with sample simulations
 			$('#loadSimModal').on('shown', GEPPETTO.FE.loadingModalUIUpdate());
-			$('#start').attr('disabled', 'disabled');
-			$('#pause').attr('disabled', 'disabled');
-			$('#stop').attr('disabled', 'disabled');
 
 			$('#start').click(function() {
 				GEPPETTO.Console.executeCommand("Simulation.start()");
@@ -189,7 +190,7 @@ define(function(require) {
 			});
 
 			//Increment the idle time counter every minute.
-			var idleInterval = setInterval(idleCheck, 60000); // 1 minute
+			var idleInterval = setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
 
 			//Zero the idle timer on mouse movement.
 			$(this).mousemove(function(e) {
@@ -198,7 +199,7 @@ define(function(require) {
 			$(this).keypress(function(e) {
 				GEPPETTO.Main.idleTime = 0;
 			});
-			
+
 			//Create canvas 
 			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
@@ -206,6 +207,12 @@ define(function(require) {
 			if(!webGLStarted) {
 				//TODO: Display message if doesn't support webgl
 			}
+
+			//Initialize websocket functionality
+			GEPPETTO.Main.init();
+			
+			//change welcome message button from Loading... to Start
+			$('#close-welcomeMsg').html("Start");
 		});
 	}
 });

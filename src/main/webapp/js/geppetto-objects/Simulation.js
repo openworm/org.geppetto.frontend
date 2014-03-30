@@ -179,8 +179,12 @@ define(function(require) {
 
 				this.simulationStates = new Array();
 				//time simulation, display appropriate message if taking too long
+				setInterval(function simulationTakingTooLong(){
+					if(Simulation.loading){
+						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
+					}
+				},10000);
 				this.loading = true;
-				setInterval(simulationTakingTooLong(),10000);
 
 				return loadStatus;
 			},
@@ -214,8 +218,12 @@ define(function(require) {
 				}
 
 				//time simulation, display appropriate message if taking too long
+				setInterval(function simulationTakingTooLong(){
+					if(Simulation.loading){
+						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
+					}
+				},10000);
 				this.loading = true;
-				setInterval(simulationTakingTooLong(),10000);
 				
 				return GEPPETTO.Resources.LOADING_SIMULATION;
 			},
@@ -445,15 +453,6 @@ define(function(require) {
 			}
 			else {
 				return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
-			}
-		};
-		
-		/*
-		 * Displays message if simulation is taking longer than 10 seconds to load
-		 */
-		function simulationTakingTooLong(){
-			if(Simulation.loading){
-				$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
 			}
 		};
 	}

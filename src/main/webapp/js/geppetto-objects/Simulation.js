@@ -57,6 +57,7 @@ define(function(require) {
 			timestep: null,
 			listeners:[],
 			simState : null,
+			loading : false,
 			StatusEnum: {
 				INIT: 0,
 				LOADED: 1,
@@ -176,7 +177,11 @@ define(function(require) {
 					loadStatus = GEPPETTO.Resources.SIMULATION_UNSPECIFIED;
 				}
 
-				this.simulationStates = {};
+				this.simulationStates = new Array();
+				//time simulation, display appropriate message if taking too long
+				this.loading = true;
+				setInterval(simulationTakingTooLong(),10000);
+
 				return loadStatus;
 			},
 
@@ -204,11 +209,14 @@ define(function(require) {
 					}
 
 					GEPPETTO.MessageSocket.send("init_sim", content);
-					loading = true;
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_FROM_CONTENT);
 					GEPPETTO.FE.SimulationReloaded();
 				}
 
+				//time simulation, display appropriate message if taking too long
+				this.loading = true;
+				setInterval(simulationTakingTooLong(),10000);
+				
 				return GEPPETTO.Resources.LOADING_SIMULATION;
 			},
 
@@ -437,6 +445,15 @@ define(function(require) {
 			}
 			else {
 				return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
+			}
+		};
+		
+		/*
+		 * Displays message if simulation is taking longer than 10 seconds to load
+		 */
+		function simulationTakingTooLong(){
+			if(Simulation.loading){
+				$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
 			}
 		};
 	}

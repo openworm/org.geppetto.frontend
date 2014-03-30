@@ -59,6 +59,8 @@ define(function(require) {
 
 			LOADING_SIMULATION: "Loading Simulation",
 
+			LOADING_SIMULATION_SLOW : "Still loading, but things are taking longer than expected, are you on low bandwidth?",
+			
 			SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
 
 			SIMULATION_NOT_LOADED: "Unable to stop simulation that hasn't been loaded",

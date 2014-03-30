@@ -63,6 +63,7 @@ define(function(require) {
 
 						//Populate scene
 						GEPPETTO.populateScene(entities);
+						Simulation.loading = false;
 						break;
 					//Event received to update the simulation
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:

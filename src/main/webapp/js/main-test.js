@@ -124,13 +124,12 @@ require(jqueryLib, function($) {
 		window.help = GEPPETTO.Utility.help;
 
 		require(
-			['QUnit','tests/GeppettoTests', 'tests/SimulationTest', 'tests/SerializerTest'],
+			['QUnit','tests/GeppettoTests', 'tests/SimulationTest'],
 			function(QUnit, geppettoTests, simulationTest, serializerTest) {
 				// run the tests.
 				setTimeout(function(){
 					geppettoTests.run();
 					simulationTest.run();
-					serializerTest.run();
 				},500);
 
 				// start QUnit.

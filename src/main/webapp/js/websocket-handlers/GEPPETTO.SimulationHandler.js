@@ -63,6 +63,7 @@ define(function(require) {
 
 						//Populate scene
 						GEPPETTO.populateScene(entities);
+						Simulation.loading = false;
 						break;
 					//Event received to update the simulation
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
@@ -152,33 +153,17 @@ define(function(require) {
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.START_WATCH:
 						//variables watching
 						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-
-						//create objects for the variables to watch
-						for(var v in variables) {
-							GEPPETTO.Serializer.stringToObject(variables[v]);
-							var splitVariableName = variables[v].split(".");
-
-							var name = variables[v].replace(splitVariableName[0] + ".", "");
-
-							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
-
-
-						}
 						break;
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
 						//variables watching
 						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-
+						
+						var length = GEPPETTO.Simulation.simulationStates.length;
+						
 						//create objects for the variables to watch
 						for(var v in variables) {
-							GEPPETTO.Serializer.stringToObject(variables[v]);
-
-							var splitVariableName = variables[v].split(".");
-
-							var name = variables[v].replace(splitVariableName[0] + ".", "");
-
-							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
-
+							GEPPETTO.Simulation.simulationStates[length] = variables[v];
+							length++;
 						}
 						break;
 					//handles the case where simulation is done executing all steps

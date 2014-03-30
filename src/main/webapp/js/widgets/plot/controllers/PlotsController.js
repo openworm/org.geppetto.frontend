@@ -156,50 +156,9 @@ define(function(require) {
 					for(var i = 0; i < plots.length; i++) {
 						var plot = plots[i];
 
-						//retrieve plot's datasets
-						var dataSets = plot.getDataSets();
-
-						if(dataSets != null){
-							//keeps track of new values
-							var newValues = [];
-							var unit;
-							for(var x =0; x <dataSets.length; x++)
-							{
-								var ds=dataSets[x].label.split("/");
-								unit = GEPPETTO.Simulation.simulationStates[dataSets[x].label].unit;
-
-								if(unit){
-									if(ds.length==1)
-									{
-										newValues.push({label : dataSets[x].label, data: [[GEPPETTO.Simulation.simulationStates[ds[0]].value]], unit : unit});
-									}
-									if(ds.length==2)
-									{
-										newValues.push({label : dataSets[x].label, data: [[
-											GEPPETTO.Simulation.simulationStates[ds[0]].value,
-											GEPPETTO.Simulation.simulationStates[ds[1]].value
-										]], unit : unit});
-									}
-								}
-								else{
-									if(ds.length==1)
-									{
-										newValues.push({label : dataSets[x].label, data: [[GEPPETTO.Simulation.simulationStates[ds[0]].value]]});
-									}
-									if(ds.length==2)
-									{
-										newValues.push({label : dataSets[x].label, data: [[
-											GEPPETTO.Simulation.simulationStates[ds[0]].value,
-											GEPPETTO.Simulation.simulationStates[ds[1]].value
-										]]});
-									}
-								}
-							}
-
-							//update plot with new data set
-							plot.updateDataSet(newValues);
+						//update plot with new data set
+						plot.updateDataSet();
 					}
-				}
 				}
 			}
 

@@ -69,6 +69,17 @@ define(function(require) {
 			//PAINTING AXIS			
 			scatterPlot.add(this.paintOctants());
 			
+						
+			//ADDING POINTS 
+			scatterPlot.add(this.paintTestCurve());
+			this.scene.add(scatterPlot);
+			
+			//REFRESHIN CONTROLS AND RENDERING
+			this.controls.update();
+			this.render3DPlot();
+		},
+
+		paintTestCurve: function(){
 			//PAINTING A CURVE JUST FOR FUN
 			var mat = new THREE.ParticleBasicMaterial({vertexColors: true, size: 1.5});
 
@@ -82,16 +93,10 @@ define(function(require) {
 			  //pointGeo.colors.push(new THREE.Color().setHSV((x+50)/100, (z+50)/100, (y+50)/100));
 			}
 			var points = new THREE.ParticleSystem(pointGeo, mat);
-			
-			//ADDING POINTS 
-			scatterPlot.add(points);
-			this.scene.add(scatterPlot);
-			
-			//REFRESHIN CONTROLS AND RENDERING
-			this.controls.update();
-			this.render3DPlot();
-		},
 
+			return points;
+		},
+		
 		
 		
 		paintOctants: function() {

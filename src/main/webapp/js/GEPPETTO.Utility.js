@@ -288,6 +288,44 @@ define(function(require) {
 				GEPPETTO.Utility.removeAutocompleteTags(id);
 				delete getHelpObjectsMap()[id];
 
+			},
+			
+			/**
+			 * Search obj for the value of node within using path.
+			 * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will
+			 * search within the obj to find the value of "tree.v", returning object 
+			 * containing {value : val, unit : unit, scale : scale}.
+			 */
+			deepFind: function(tree, state){
+				var paths = state.split('.')
+				, current = tree
+				, i;
+
+				for (i = 0; i < paths.length; ++i) {
+					//get index from node if it's array
+					var index = paths[i].match(/[^[\]]+(?=])/g);
+
+					if(index == null){
+						if (current[paths[i]] == undefined) {
+							return undefined;
+						} else {
+							current = current[paths[i]];
+						}
+					}
+					else{
+						var iNumber =index[0].replace(/[\[\]']+/g,"");
+
+						//take index and brackets out of the equation for now
+						var node = paths[i].replace(/ *\[[^]]*\] */g, "");
+
+						if (current[node][parseInt(iNumber)] == undefined) {
+							return undefined;
+						} else {
+							current = current[node][parseInt(iNumber)];
+						}
+					}
+				}
+				return current;
 			}
 		};
 	};

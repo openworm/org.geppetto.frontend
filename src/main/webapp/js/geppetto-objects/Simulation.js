@@ -48,13 +48,16 @@ define(function(require) {
 		var loading = false;
 
 		GEPPETTO.Simulation = {
-			simulationStates: {},
+			simulationStates: new Array(),
 
 			status: 0,
 			simulationURL: "",
 			watchTree: null,
 			time: null,
 			timestep: null,
+			listeners:[],
+			simState : null,
+			loading : false,
 			StatusEnum: {
 				INIT: 0,
 				LOADED: 1,
@@ -174,7 +177,15 @@ define(function(require) {
 					loadStatus = GEPPETTO.Resources.SIMULATION_UNSPECIFIED;
 				}
 
-				this.simulationStates = {};
+				this.simulationStates = new Array();
+				//time simulation, display appropriate message if taking too long
+				setInterval(function simulationTakingTooLong(){
+					if(Simulation.loading){
+						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
+					}
+				},10000);
+				this.loading = true;
+
 				return loadStatus;
 			},
 
@@ -202,11 +213,18 @@ define(function(require) {
 					}
 
 					GEPPETTO.MessageSocket.send("init_sim", content);
-					loading = true;
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_FROM_CONTENT);
 					GEPPETTO.FE.SimulationReloaded();
 				}
 
+				//time simulation, display appropriate message if taking too long
+				setInterval(function simulationTakingTooLong(){
+					if(Simulation.loading){
+						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
+					}
+				},10000);
+				this.loading = true;
+				
 				return GEPPETTO.Resources.LOADING_SIMULATION;
 			},
 
@@ -339,7 +357,7 @@ define(function(require) {
 				var watched_variables = GEPPETTO.Resources.WATCHED_SIMULATION_STATES + "";
 
 				for(var key in GEPPETTO.Simulation.simulationStates) {
-					watched_variables += "\n" + "      -- " + key + "\n";
+					watched_variables += "\n" + "      -- " + GEPPETTO.Simulation.simulationStates[key] + "\n";
 				}
 
 				if(this.watchTree == null) {
@@ -381,22 +399,24 @@ define(function(require) {
 					return;
 				}
 
-				GEPPETTO.Simulation.watchTree = variable;
+				GEPPETTO.Simulation.watchTree = variable.WATCH_TREE;
 
-				var tree = GEPPETTO.Simulation.watchTree;
-
-				//loop through simulation stated being watched
-				for(var s in this.simulationStates){
-					//traverse watchTree to find value of simulation state
-					var val = deepFind(tree, s);
-
-					//if value ain't null, update state
-					if(val != null){
-						GEPPETTO.Simulation.simulationStates[s].update(val);
-					}
+				//Create window objects for variables
+				for(var child in GEPPETTO.Simulation.watchTree) {
+					window[child]= GEPPETTO.Simulation.watchTree[child];
 				}
 
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
+				
+				//update scene brightness
+				for(var key in this.listeners) {
+					//retrieve the simulate state from watch tree
+					var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, key);
+					
+					//update simulation state
+					this.listeners[key](simState);
+				}
+				
 			},
 
 			/**
@@ -408,8 +428,8 @@ define(function(require) {
 			 * @param varName
 			 * @param transferFunction
 			 */
-			addBrightnessFunction: function(entityName, varName, transferFunction) {
-				this.simulationStates[varName].listeners.push(function (simState){
+			addBrightnessFunction: function(entityName, varName, transferFunction) {	
+				this.listeners[varName] = (function (simState){
 					GEPPETTO.lightUpEntity(entityName, transferFunction ? transferFunction(simState.value) : simState.value);
 				});
 			},
@@ -419,113 +439,9 @@ define(function(require) {
 			 * @param varName
 			 */
 			clearBrightnessFunctions: function(varName) {
-				this.simulationStates[varName].listeners = [];
+				this.listeners[varName] = null;
 			}
 		};
-
-		/**
-		 * Takes an object path and traverses through it to find the value within.
-		 * Example :    {hhpop[0] : { v : 20 } }
-		 *
-		 * Method will traverse through object to find the value "20" and update corresponding
-		 * simulation state with it. If no simulation state exists, then it creates one.
-		 */
-		function searchTreePath(a) {
-			var list = [];
-			(function(o, r) {
-				r = r || '';
-				if (typeof o != 'object') {
-					return true;
-				}
-				for (var c in o) {
-					//if current tree path object is array
-					if(!isNaN(c)){
-						if (arguments.callee(o[c], r + (r!=""?"[":"") + c + (r!=""?"]":""))) {
-							var val  = 0;
-							if(o[c]!=null){
-								val = o[c];
-							}
-							var rs = r.toString();
-							//first object or no more children
-							if(rs == ""){
-								//simulation state already exists, update
-								if(GEPPETTO.Simulation.simulationStates[c]!=null){
-									GEPPETTO.Simulation.simulationStates[c].update(val);
-								}
-							}
-							//object has leafs, add "." to name and update value if it exists
-							else{
-								if(GEPPETTO.Simulation.simulationStates[r + "." + c]!=null){
-									GEPPETTO.Simulation.simulationStates[r + "." + c].update(val);
-								}
-							}
-						}
-					}
-					//current path object from tree not an array
-					else{
-						var val  = 0;
-						if(o[c]!=null){
-							val = o[c];
-						}
-
-						if(arguments.callee(o[c], r + (r!=""?".":"") + c + (r!=""?"":""))){
-							//root of path case, no more children
-							if(r == ""){
-								GEPPETTO.Simulation.simulationStates[c].update(val);
-							}
-							//within path of tree, add "." to note levels
-							else{
-								var name = r + "." + c;
-
-								GEPPETTO.Simulation.simulationStates[name].update(val);
-
-							}
-						}
-					}
-				}
-				return false;
-			})(a);
-			return list;
-		}
-
-		/**
-		 * Search through array looking for simulation states
-		 */
-		function searchTreeArray(variables) {
-			for(var v = 0; v < variables.length; v++) {
-				var state = GEPPETTO.Simulation.watchTree.WATCH_TREE[v];
-
-				if(state.name != null) {
-					updateState(state);
-				}
-
-				else {
-					searchTreeObject(state);
-				}
-			}
-		}
-
-		/**
-		 * Search through object structure for object with value and name
-		 */
-		function searchTreeObject(obj) {
-			for(var name in obj) {
-				updateState(name, obj[name]);
-			}
-		}
-
-		/**
-		 * Update or create a simulation state
-		 */
-		function updateState(name, value) {
-			//If it's a new state add to tags
-			if(!(name in GEPPETTO.Simulation.simulationStates)) {
-				GEPPETTO.Utility.addTag(name);
-			}
-			else {
-				GEPPETTO.Simulation.simulationStates[name].update(value);
-			}
-		}
 
 		function santasLittleHelper(msg, return_msg, outbound_msg_log, payload) {
 			if(GEPPETTO.Simulation.isLoaded()) {
@@ -539,43 +455,5 @@ define(function(require) {
 				return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
 			}
 		};
-
-		/**
-		 * Search obj for the value of node within using path.
-		 * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will
-		 * search within the obj to find the value of "tree.v", returning 1.
-		 */
-		function deepFind(obj, path) {
-			var paths = path.split('.')
-				, current = obj
-				, i;
-
-			for (i = 0; i < paths.length; ++i) {
-				//get index from node if it's array
-				var index = paths[i].match(/[^[\]]+(?=])/g);
-
-				if(index == null){
-					if (current[paths[i]] == undefined) {
-						return undefined;
-					} else {
-						current = current[paths[i]];
-					}
-				}
-				else{
-					var iNumber =index[0].replace(/[\[\]']+/g,"");
-
-					//take index and brackets out of the equation for now
-					var node = paths[i].replace(/ *\[[^]]*\] */g, "");
-
-					if (current[node][parseInt(iNumber)] == undefined) {
-						return undefined;
-					} else {
-						current = current[node][parseInt(iNumber)];
-					}
-				}
-			}
-			return current;
-		}
-
 	}
 });

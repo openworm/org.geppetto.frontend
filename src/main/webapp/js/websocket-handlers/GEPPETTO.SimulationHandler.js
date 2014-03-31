@@ -156,11 +156,8 @@ define(function(require) {
 						//create objects for the variables to watch
 						for(var v in variables) {
 							GEPPETTO.Serializer.stringToObject(variables[v]);
-							var splitVariableName = variables[v].split(".");
 
-							var name = variables[v].replace(splitVariableName[0] + ".", "");
-
-							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
+							GEPPETTO.Simulation.simulationStates[variables[v]] = new GEPPETTO.SimState.State(variables[v],0);
 
 
 						}
@@ -173,11 +170,7 @@ define(function(require) {
 						for(var v in variables) {
 							GEPPETTO.Serializer.stringToObject(variables[v]);
 
-							var splitVariableName = variables[v].split(".");
-
-							var name = variables[v].replace(splitVariableName[0] + ".", "");
-
-							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
+							GEPPETTO.Simulation.simulationStates[variables[v]] = new GEPPETTO.SimState.State(variables[v],0);
 
 						}
 						break;

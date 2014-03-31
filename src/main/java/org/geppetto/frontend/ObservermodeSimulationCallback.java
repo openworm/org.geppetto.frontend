@@ -134,7 +134,9 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 	@Override
 	public void error(GeppettoErrorCodes errorCode, String classSource, String errorMessage, Exception e)
 	{
-		String error = "{ \"error_code\":" + errorCode.toString() + ", \"source\":" + classSource + ", \"message\": " + errorMessage + ", \"exception\": " + e.getMessage() +"}";
+		String jsonExceptionMsg=e==null?"":e.getMessage();
+		String jsonErrorMsg=errorMessage==null?"":errorMessage;
+		String error = "{ \"error_code\":" + errorCode.toString() + ", \"source\":" + classSource + ", \"message\": " + jsonErrorMsg + ", \"exception\": " + jsonExceptionMsg +"}";
 		for(GeppettoMessageInbound connection : controller.getConnections())
 		{
 			// Notify all connected clients about update either to load model or update current one.

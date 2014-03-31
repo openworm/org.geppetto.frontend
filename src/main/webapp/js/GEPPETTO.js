@@ -71,7 +71,7 @@ define(function(require) {
 		 */
 		updateScene: function() {
 			if(VARS.needsUpdate) {
-				var entities = VARS.jsonscene.entities;
+				var entities = VARS.jsonscene;
 
 				for(var eindex in entities) {
 					
@@ -196,9 +196,8 @@ define(function(require) {
 		 */
 		populateScene: function(jsonscene) {
 			this.jsonscene = jsonscene;
-			var entities = jsonscene.entities;
-			for(var eindex in entities) {
-				VARS.scene.add(GEPPETTO.getThreeObjectFromJSONEntity(entities[eindex], eindex, true));
+			for(var eindex in jsonscene) {
+				VARS.scene.add(GEPPETTO.getThreeObjectFromJSONEntity(jsonscene[eindex], eindex, true));
 			}
 
 			GEPPETTO.calculateSceneCenter();
@@ -564,8 +563,8 @@ define(function(require) {
 				VARS.gui = null;
 			}
 
-			VARS.metadata = VARS.jsonscene.entities[entityIndex].metadata;
-			VARS.metadata.ID = VARS.jsonscene.entities[entityIndex].id;
+			VARS.metadata = VARS.jsonscene[entityIndex].metadata;
+			VARS.metadata.ID = VARS.jsonscene[entityIndex].id;
 
 			GEPPETTO.setupGUI();
 
@@ -670,9 +669,9 @@ define(function(require) {
 		 *            the entity id
 		 */
 		getJSONEntityFromId: function(entityId) {
-			for(e in VARS.jsonscene.entities) {
-				if(VARS.jsonscene.entities[e].id === entityId) {
-					return VARS.jsonscene.entities[e];
+			for(e in VARS.jsonscene) {
+				if(VARS.jsonscene[e].id === entityId) {
+					return VARS.jsonscene[e];
 				}
 			}
 			return null;

@@ -383,7 +383,7 @@ define(function(require) {
 
 				GEPPETTO.Simulation.watchTree = variable;
 
-				var tree = GEPPETTO.Simulation.watchTree.WATCH_TREE;
+				var tree = GEPPETTO.Simulation.watchTree;
 
 				//loop through simulation stated being watched
 				for(var s in this.simulationStates){

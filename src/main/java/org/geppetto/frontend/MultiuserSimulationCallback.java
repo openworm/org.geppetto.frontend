@@ -77,9 +77,9 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 				action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
 
 				_user.setIsSimulationLoaded(true);
-
+				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
 				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{ \"entities\":" + sceneUpdate + "}";
+				update = "{ "+ sceneUpdate + "}";
 
 				break;
 			}
@@ -88,7 +88,9 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
 
 				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{ \"entities\":" + sceneUpdate + ", \"variable_watch\":" + variableWatchTree + "}";
+				variableWatchTree=variableWatchTree.substring(1, variableWatchTree.length()-1);
+				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
+				update = "{ "+sceneUpdate + ", "+variableWatchTree + "}";
 
 				break;
 			}
@@ -115,7 +117,9 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 	@Override
 	public void error(GeppettoErrorCodes errorCode, String classSource, String errorMessage, Exception e)
 	{
-		String error = "{ \"error_code\":" + errorCode.toString() + ", \"source\":" + classSource + ", \"message\": " + errorMessage + ", \"exception\": " + e.getMessage() +"}";
+		String jsonExceptionMsg=e==null?"":e.toString();
+		String jsonErrorMsg=errorMessage==null?"":errorMessage;
+		String error = "{ \"error_code\":" + errorCode.toString() + ", \"source\": \"" + classSource + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg +"\"}";
 		// Notify all connected clients about update either to load model or update current one.
 		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.ERROR, error);
 	}

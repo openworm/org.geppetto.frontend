@@ -25,7 +25,14 @@ define(function(require) {
 		 * is created
 		 */
 		defaultScatter3dOptions:  {
-			octants: true
+			octants: true,
+			octantsColor: 0x808080,
+			clearColor: 0xEEEEEE,
+			nearClipPlane: 1,
+			farClipPlane: 10000,
+			fov: 45,
+			cameraPositionZ: 300
+			
 		},
 
 		initialize: function(options) {
@@ -43,16 +50,8 @@ define(function(require) {
 			plotHolder.append(this.renderer.domElement);
 
 			this.renderer.clear();
-			var fov = 45; // camera field-of-view in degrees
-			var width = this.renderer.domElement.width;
-			var height = this.renderer.domElement.height;
-			var aspect = width / height; // view aspect ratio
-			var near = 1; // near clip plane
-			var far = 10000; // far clip plane
-			this.camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-			this.camera.position.z = 300;
-
-			this.renderer.setClearColor(0xEEEEEE, 0);
+			this.initializeCamera();
+			this.renderer.setClearColor(this.options.clearColor, 0);
 
 			this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 			this.controls.parentWidget = this;
@@ -64,32 +63,47 @@ define(function(require) {
 
 			this.scene = new THREE.Scene();
 			
-			var scatterPlot = new THREE.Object3D();
+			//ADDING POINTS CURVE 
+			//scatterPlot.add(this.paintTestCurve());
 			
+			//ADDING PLOT CURVE
+			this.generate_trajectory_data(1000);
+
 			//PAINTING AXIS			
-			scatterPlot.add(this.paintOctants());
-			
-						
-			//ADDING POINTS 
-			scatterPlot.add(this.paintTestCurve());
-			this.scene.add(scatterPlot);
+			if (this.options.octants){
+				var scatterPlot = new THREE.Object3D();
+				scatterPlot.add(this.paintOctants());
+				this.scene.add(scatterPlot);
+			}	
 			
 			//REFRESHIN CONTROLS AND RENDERING
 			this.controls.update();
 			this.render3DPlot();
+			THREEx.WindowResize(this.renderer, this.camera);
+		},
+		
+		initializeCamera: function(){
+			var fov = this.options.fov; // camera field-of-view in degrees
+			var width = this.renderer.domElement.width;
+			var height = this.renderer.domElement.height;
+			var aspect = width / height; // view aspect ratio
+			var near = this.options.nearClipPlane; // near clip plane
+			var far = this.options.farClipPlane; // far clip plane
+			this.camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
+			this.camera.position.z = this.options.cameraPositionZ;
 		},
 
 		paintTestCurve: function(){
 			//PAINTING A CURVE JUST FOR FUN
 			var mat = new THREE.ParticleBasicMaterial({vertexColors: true, size: 1.5});
 
-			var pointCount = 10000;
+			var pointCount = 1000;
 			var pointGeo = new THREE.Geometry();
 			for (var i=0; i<pointCount; i++) {
 			  var x = Math.random() * 100 - 50;
 			  var y = x*0.8+Math.random() * 20 - 10;
 			  var z = x*0.7+Math.random() * 30 - 15;
-			  pointGeo.vertices.push(new THREE.Vertex(new THREE.Vector3(x,y,z)));
+			  pointGeo.vertices.push(new THREE.Vector3(x,y,z));
 			  //pointGeo.colors.push(new THREE.Color().setHSV((x+50)/100, (z+50)/100, (y+50)/100));
 			}
 			var points = new THREE.ParticleSystem(pointGeo, mat);
@@ -97,10 +111,46 @@ define(function(require) {
 			return points;
 		},
 		
-		
+		generate_trajectory_data: function(npt){
+			var trajectory_data_x = [];
+			var trajectory_data_y = [];
+			var trajectory_data_z = [];
+			var x = 0.0;
+			var y = 0.0;
+			var z = 0.5;
+
+			var xx, yy, zz;
+
+			var a = 0.2;
+			var b = 0.2;
+			var c = 5.7;
+			var dt = 0.05;
+
+			for (var i=0; i < npt; i++) {
+				//rössler euler
+				xx = x + dt * (- y - z);
+				yy = y + dt * (x + a * y);
+				zz = z + dt * (b + z * (x - c));
+	
+				trajectory_data_x.push(xx);
+				trajectory_data_y.push(yy);
+				trajectory_data_z.push(zz);
+	
+				x = xx;
+				y = yy;
+				z = zz;
+			}
+			//this.plotXYZData(trajectory_data_x, trajectory_data_y, trajectory_data_z);
+			//xyzData = {'label': 'nombrex', 'value': trajectory_data_x}, trajectory_data_y, trajectory_data_z]};
+			this.plotXYZData({'label': 'nombrex', 'value': trajectory_data_x},
+					{'label': 'nombrey', 'value': trajectory_data_y},
+					{'label': 'nombrez', 'value': trajectory_data_z}
+					);
+		},
+	
 		
 		paintOctants: function() {
-			function v(x,y,z){ return new THREE.Vertex(new THREE.Vector3(x,y,z)); }  
+			function v(x,y,z){ return new THREE.Vector3(x,y,z); }  
 			var lineGeo = new THREE.Geometry();
 		      lineGeo.vertices.push(
 		        v(-50, 0, 0), v(50, 0, 0),
@@ -137,7 +187,7 @@ define(function(require) {
 		        v(0, 50, -50), v(0, 50, 50),
 		        v(0, -50, -50), v(0, -50, 50)
 		      );
-		      var lineMat = new THREE.LineBasicMaterial({color: 0x808080, lineWidth: 1});
+		      var lineMat = new THREE.LineBasicMaterial({color: this.options.octantsColor, lineWidth: 1});
 		      var line = new THREE.Line(lineGeo, lineMat);
 		      line.type = THREE.Lines;
 		      return line;
@@ -251,8 +301,46 @@ define(function(require) {
 		},
 
 		plotXYZData: function(newDataX, newDataY, newDataZ, options) {
+			// If no options specify by user, use default options
+			if(options != null) {
+				this.options = options;
+			}
 			
+			if(newDataX.name != null && newDataY.name != null && newDataZ.name != null) {
+				datasetLabel = newDataX.name + "/" + newDataY.name + "/" + newDataZ.name;
+				for(var dataset in this.datasets) {
+					if(datasetLabel == this.datasets[dataset].label) {
+						return this.name + " widget is already plotting object " + datasetLabel;
+					}
+				}
+				this.datasets.push({
+					label: datasetLabel,
+					data: [newDataX.value, newDataY.value, newDataZ.value ]
+				});
+			}
+			else {
+				this.datasets.push({
+					label: "",
+					data: [newDataX, newDataY, newDataZ]
+				});
+			}
 			
+			//vertArray.push( new THREE.Vector3(-150, -100, 0), new THREE.Vector3(-150, 100, 0) );
+			
+			for(var key in this.datasets) {
+				var lineGeometry = new THREE.Geometry();
+				var vertArray = lineGeometry.vertices;
+				var datasetsValue = this.datasets[key].data;
+				for (var index = 0; index < datasetsValue[0].length; index++){
+					vertArray.push(new THREE.Vector3(datasetsValue[0][index], datasetsValue[1][index], datasetsValue[2][index]));
+				}
+				lineGeometry.computeLineDistances();
+				var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
+				var line = new THREE.Line( lineGeometry, lineMaterial );
+				this.scene.add(line);
+			}	
+
+			this.render3DPlot();
 		},
 		
 		/**
@@ -303,11 +391,10 @@ define(function(require) {
 		},
 
 		/**
-		 * Sets a label next to the Y Axis
+		 * Sets labels next to each axis
 		 *
-		 * @param label - Label to use for Y Axis
 		 */
-		setAxisLabel: function(labelY, labelX) {
+		setAxisLabel: function(labelX, labelY, labelZ) {
 			this.options.yaxis.axisLabel = labelY;
 			this.scatter3d = $.plot($("#" + this.id), this.datasets,this.options);
 		},

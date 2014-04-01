@@ -237,9 +237,10 @@ define(function(require) {
 					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;
 					
 					//show share bar
-					if(!$("#geppetto-share").hasClass("clicked")){
+					if(!GEPPETTO.Share.isVisible()){
 						$("#geppetto-share").toggleClass("clicked");
 						$(".share-panel").slideToggle();
+						GEPPETTO.Share.setVisible(mode);
 					}
 					//share bar is already visible, nothing to see here
 					else{
@@ -249,9 +250,10 @@ define(function(require) {
 				else {
 					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;					
 					//hide share bar
-					if($("#geppetto-share").hasClass("clicked")){
+					if(GEPPETTO.Share.isVisible()){
 						$("#geppetto-share").toggleClass("clicked");
 						$(".share-panel").slideToggle();
+						GEPPETTO.Share.setVisible(mode);
 					}
 					//share bar already hidden
 					else{

@@ -33,6 +33,7 @@
 define(function(require) {
 	return function(GEPPETTO) {
 		GEPPETTO.Share = {
+			visible : false,
 			facebook: function(linkURL, title, img, text) {
 				var url = 'http://www.facebook.com/sharer.php?s=100';
 				url += '&p[title]=' + encodeURIComponent(title);
@@ -50,6 +51,12 @@ define(function(require) {
 			},
 			popup: function(url) {
 				window.open(url, '', 'toolbar=0,status=0,width=626, height=436');
+			},
+			setVisible : function(mode){
+				this.visible = mode;
+			},
+			isVisible : function(){
+				return this.visible;
 			}
 		};
 	}

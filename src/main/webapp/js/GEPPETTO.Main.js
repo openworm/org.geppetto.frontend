@@ -160,9 +160,6 @@ define(function(require) {
 
 			//Initialize websocket functionality
 			GEPPETTO.Main.init();
-			
-			//change welcome message button from Loading... to Start
-			$('#close-welcomeMsg').html("Start Tutorial");
 		});
 	}
 });

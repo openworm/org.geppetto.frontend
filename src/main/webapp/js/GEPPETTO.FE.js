@@ -53,11 +53,15 @@ define(function(require) {
 			initialEvents : function(){
 				
 				GEPPETTO.Console.createConsole();
-
+				
+				//disable welcome message buttons
+				$('#close-welcomeMsg').attr('disabled', 'disabled');
+				$('#tutorialSkip').attr('disabled', 'disabled');
 				//disable simulation controls
 				$('#start').attr('disabled', 'disabled');
 				$('#pause').attr('disabled', 'disabled');
 				$('#stop').attr('disabled', 'disabled');
+				$('#openload').attr('disabled', 'disabled');
 				
 				GEPPETTO.FE.checkWelcomeMessageCookie();
 
@@ -113,6 +117,14 @@ define(function(require) {
 					}
 					return false;
 				});
+			},
+			
+			postSocketConnection : function(){
+				//change welcome message button from Loading... to Start
+				$('#close-welcomeMsg').html("Start Tutorial");
+				$('#close-welcomeMsg').removeAttr('disabled');
+				$('#tutorialSkip').removeAttr('disabled');
+				$('#openload').removeAttr('disabled');
 			},
 			
 			createContainer: function() {

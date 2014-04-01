@@ -535,7 +535,7 @@ input {
 }
 
 
-#close-welcomeMsg{
+.welcomeButton{
 	width:120px;
 	margin-top:10px;
 }

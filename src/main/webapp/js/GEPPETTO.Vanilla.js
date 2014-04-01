@@ -40,17 +40,24 @@
 define(function(require) {
 	return function(GEPPETTO){
 		GEPPETTO.Vanilla = {
+			keyboardEnabled : true,
 			/**
 			 * Business logic for Geppetto Vanilla
 			 */
 			checkKeyboard: function() {
-				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
-					GEPPETTO.PlotsController.toggle();
-				}
+				if(this.keyboardEnabled){
+					if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
+						GEPPETTO.PlotsController.toggle();
+					}
 
-				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
-					GEPPETTO.Console.toggleConsole();
+					else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
+						GEPPETTO.Console.toggleConsole();
+					}
 				}
+			},
+			
+			enableKeyboard: function(enable){
+				this.keyboardEnabled = enable;
 			}
 		}
 	}

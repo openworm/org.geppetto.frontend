@@ -62,6 +62,8 @@ define(function(require) {
 				$('#pause').attr('disabled', 'disabled');
 				$('#stop').attr('disabled', 'disabled');
 				$('#openload').attr('disabled', 'disabled');
+				//disable keyboard controls
+				GEPPETTO.Vanilla.enableKeyboard(false);
 				
 				GEPPETTO.FE.checkWelcomeMessageCookie();
 
@@ -119,12 +121,17 @@ define(function(require) {
 				});
 			},
 			
+			/**
+			 * Enables controls after connection is established
+			 */
 			postSocketConnection : function(){
 				//change welcome message button from Loading... to Start
 				$('#close-welcomeMsg').html("Start Tutorial");
 				$('#close-welcomeMsg').removeAttr('disabled');
 				$('#tutorialSkip').removeAttr('disabled');
 				$('#openload').removeAttr('disabled');
+				//enable keyboard controls
+				GEPPETTO.Vanilla.enableKeyboard(false);
 			},
 			
 			createContainer: function() {

@@ -223,6 +223,99 @@ define(function(require) {
 
 				return returnMessage;
 			},
+			
+			/**
+			 * Show or hide share bar
+			 *
+			 * @name G.showShareBar(mode)
+			 * @param mode - "true" to show, "false" to hide.
+			 */
+			showShareBar: function(mode) {
+				var returnMessage;
+
+				if(mode) {
+					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;
+					
+					//show share bar
+					if(!$("#geppetto-share").hasClass("clicked")){
+						$("#geppetto-share").toggleClass("clicked");
+						$(".share-panel").slideToggle();
+					}
+					//share bar is already visible, nothing to see here
+					else{
+						returnMessage = GEPPETTO.Resources.SHAREBAR_ALREADY_VISIBLE;
+					}
+				}
+				else {
+					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;					
+					//hide share bar
+					if($("#geppetto-share").hasClass("clicked")){
+						$("#geppetto-share").toggleClass("clicked");
+						$(".share-panel").slideToggle();
+					}
+					//share bar already hidden
+					else{
+						returnMessage = GEPPETTO.Resources.SHAREBAR_ALREADY_HIDDEN;
+					}
+				}				
+
+				return returnMessage;
+			},
+			
+			/**
+			 * Show or hide help window using command
+			 *
+			 * @name G.showHelpWindow(mode)
+			 * @param mode - "true" to show, "false" to hide.
+			 */
+			showHelpWindow: function(mode) {
+				var returnMessage;
+
+				if(mode) {
+					returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
+					$('#helpmodal').modal('show');
+				}
+				else {
+					returnMessage = GEPPETTO.Resources.HIDE_HELP_WINDOW;
+					$('#helpmodal').modal('hide');
+				}
+
+				return returnMessage;
+			},
+			
+			/**
+			 * Opens window to share geppetto on twitter
+			 */
+			shareOnTwitter : function(){
+				var shareURL = 'http://geppetto.org';
+				
+				if(GEPPETTO.Simulation.isLoaded()){
+					shareURL = "http://live.geppeto.org//?sim=" + GEPPETTO.Simulation.simulationURL;
+				}
+				
+				GEPPETTO.Share.twitter(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!');
+			
+				return GEPPETTO.Resources.SHARE_ON_TWITTER;
+			},
+			
+			/**
+			 * Opens window to share facebook on twitter
+			 */
+			shareOnFacebook : function(){
+				var shareURL = 'http://geppetto.org';
+				
+				if(GEPPETTO.Simulation.isLoaded()){
+					shareURL = "http://live.geppeto.org/?sim=" + GEPPETTO.Simulation.simulationURL;
+				}
+				
+				GEPPETTO.Share.facebook(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','');			
+				
+				return GEPPETTO.Resources.SHARE_ON_FACEBOOK;
+			},
+			
+			showPopup : function(x,y,message){
+				
+			},
 
 			/**
 			 *

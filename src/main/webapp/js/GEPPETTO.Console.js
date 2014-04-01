@@ -142,21 +142,13 @@ define(function(require) {
 		GEPPETTO.Console = {
 			toggleConsole: function() {
 
-				//toggle button class
-				$('#consoleButton').toggleClass('clicked');
-
 				//user has clicked the console button
-				if($('#consoleButton').hasClass('clicked')) {
-					//toggle console
-					$('#console').slideToggle(200);
-
-					$('#commandInputArea').focus();
+				if($("#console").css("display") === "none") {
+					GEPPETTO.Console.executeCommand('G.showConsole(true)');
 				}
 				else {
-					$('#footer').height('');
-					$('#footerHeader').css("bottom", "0px");
-					$('#console').slideToggle(200);
-				}
+					GEPPETTO.Console.executeCommand('G.showConsole(false)');
+				}				
 			},
 
 			/**

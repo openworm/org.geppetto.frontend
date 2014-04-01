@@ -136,59 +136,9 @@ define(function(require) {
 // Application logic.
 // ============================================================================
 		$(document).ready(function() {
-			//disable simulation controls
-			$('#start').attr('disabled', 'disabled');
-			$('#pause').attr('disabled', 'disabled');
-			$('#stop').attr('disabled', 'disabled');
+
+			GEPPETTO.FE.initialEvents();
 			
-			GEPPETTO.FE.checkWelcomeMessageCookie();
-
-			/*
-			 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows
-			 * multiple modals to be open simultaneously without going in an infinite loop.
-			 */
-			$.fn.modal.Constructor.prototype.enforceFocus = function() {};
-
-			//Populate the 'loading simulation' modal's drop down menu with sample simulations
-			$('#loadSimModal').on('shown', GEPPETTO.FE.loadingModalUIUpdate());
-
-			$('#start').click(function() {
-				GEPPETTO.Console.executeCommand("Simulation.start()");
-			});
-
-			$('#pause').click(function() {
-				GEPPETTO.Console.executeCommand("Simulation.pause()");
-			});
-
-			$('#stop').click(function() {
-				GEPPETTO.Console.executeCommand("Simulation.stop()");
-			});
-
-			$('#load').click(function() {
-				//Update the simulation controls visibility
-				GEPPETTO.FE.updateLoadEvent();
-				//loading from simulation file editor's
-				if(GEPPETTO.SimulationContentEditor.isEditing()) {
-					var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');
-					GEPPETTO.Console.executeCommand("Simulation.loadFromContent('" + simulation + "')");
-					GEPPETTO.SimulationContentEditor.setEditing(false);
-				}
-				//loading simulation url
-				else {
-					GEPPETTO.Console.executeCommand('Simulation.load("' + $('#url').val() + '")');
-				}
-
-				$('#loadSimModal').modal("hide");
-			});
-
-			GEPPETTO.Console.createConsole();
-
-			$("#share").click(function() {
-				$(".share-panel").slideToggle();
-				$(this).toggleClass("active");
-				return false;
-			});
-
 			//Increment the idle time counter every minute.
 			var idleInterval = setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
 
@@ -212,7 +162,7 @@ define(function(require) {
 			GEPPETTO.Main.init();
 			
 			//change welcome message button from Loading... to Start
-			$('#close-welcomeMsg').html("Start");
+			$('#close-welcomeMsg').html("Start Tutorial");
 		});
 	}
 });

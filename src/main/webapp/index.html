@@ -81,7 +81,7 @@
 
 	
 
-		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true" >
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -190,9 +190,9 @@
 
 	<div id="geppetto-share" class="col-md-1 share-panel">
         	<p>
-        	<a class="btn btn-warning" onclick="GEPPETTO.Share.facebook('http://geppetto.org','Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','')">
+        	<a class="btn btn-warning" onclick="G.shareOnFacebook()">
         	<i class="icon-xlarge icon-facebook"></i></a></p>
-			<p><a class="btn btn-warning" onclick="GEPPETTO.Share.twitter('http://geppetto.org','Check out Geppetto, the opensource simulation platform powering OpenWorm!')"><i class="icon-xlarge icon-twitter"></i></a></p>
+			<p><a class="btn btn-warning" onclick="G.shareOnTwitter()"><i class="icon-xlarge icon-twitter"></i></a></p>
 			<!-- Commented until fully implemented <p><a class="btn btn-warning" href="#email"><i class="icon-xlarge icon-envelope"></i></a><p>-->
    	</div>
 	
@@ -314,6 +314,9 @@
 				</div>
 				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">
 					Loading...
+				</button>
+				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">
+					Skip Tutorial
 				</button>
 				<br/>
 				<div class="wmCheckBoxDiv">

@@ -38,9 +38,8 @@ define(function(require) {
 		var $ = require('jquery');
 
 		var updateTime = function(time) {
-			if(time && time.TIME_STEP && time.TIME_STEP.time) {
-				GEPPETTO.Simulation.time = time.TIME_STEP.time.value + time.TIME_STEP.time.unit;
-				GEPPETTO.Simulation.step = time.TIME_STEP.step.value + time.TIME_STEP.step.unit;
+			if(time) {
+				GEPPETTO.Simulation.time = time.value + time.unit;
 			}
 		};
 

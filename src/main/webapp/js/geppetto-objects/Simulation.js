@@ -67,7 +67,7 @@ define(function(require) {
 			},
 
 			getTime: function() {
-				return "Simulation's current time step : " + this.time;
+				return "Current simulation time: " + this.time;
 			},
 
 			/**

@@ -74,7 +74,7 @@ define(function(require) {
 						//Update if simulation hasn't been stopped
 						if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
 							if(!GEPPETTO.isScenePopulated()) {
-								// the first time we need to create the object.s
+								// the first time we need to create the objects
 								GEPPETTO.populateScene(update.entities);
 							}
 							else {

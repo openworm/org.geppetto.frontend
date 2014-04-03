@@ -30,63 +30,29 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Class used to create widgets and handle widget events from parent class.
+ * Controller class for popup widget. Use to make calls to widget from inside Geppetto.
+ *
+ * @constructor
+ *
+ * @author Jesus R Martinez (jesus@metacell.us)
  */
-
-/**
- * Enum use to hold different types of widgets
- */
-
 define(function(require) {
-
 	return function(GEPPETTO) {
-		GEPPETTO.Widgets = {
-			PLOT: 0,
-			POPUP : 1
-		};
 
-		GEPPETTO.WidgetFactory = {
-			/**
-			 * Adds widget to Geppetto
-			 */
-			addWidget: function(widgetType) {
-				var widget = null;
+		var Popup = require('widgets/popup/Popup');
+		var popups = new Array();
 
-				switch(widgetType) {
-					//create plotting widget
-					case GEPPETTO.Widgets.PLOT:
-						widget = GEPPETTO.PlotsController.addPlotWidget();
-						break;
-						//create plotting widget
-					case GEPPETTO.Widgets.POPUP:
-						widget = GEPPETTO.PopupsController.addPopupWidget();
-						break;
-					default:
-						break;
-				}
-
-				return widget;
+		GEPPETTO.PopupsController = {
+			
+			addPopupWidget : function(){
+				
 			},
-
-			/**
-			 * Removes widget from Geppetto
-			 */
-			removeWidget: function(widgetType) {
-				switch(widgetType) {
-					//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.PLOT:
-						GEPPETTO.PlotsController.removePlotWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-						//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.POPUP:
-						GEPPETTO.PlotsController.removePopupWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-					default:
-						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
-				}
+		
+			removePopupWidgets : function(){
+				
 			}
 		};
+		
 	};
 });

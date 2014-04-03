@@ -55,8 +55,8 @@ define(function(require) {
 				GEPPETTO.Console.createConsole();
 				
 				//disable welcome message buttons
-				$('#close-welcomeMsg').attr('disabled', 'disabled');
-				$('#tutorialSkip').attr('disabled', 'disabled');
+				$('#skipTutorial').attr('disabled', 'disabled');
+				$('#startTutorial').attr('disabled', 'disabled');
 				//disable simulation controls
 				$('#start').attr('disabled', 'disabled');
 				$('#pause').attr('disabled', 'disabled');
@@ -126,9 +126,9 @@ define(function(require) {
 			 */
 			postSocketConnection : function(){
 				//change welcome message button from Loading... to Start
-				$('#close-welcomeMsg').html("Start Tutorial");
-				$('#close-welcomeMsg').removeAttr('disabled');
-				$('#tutorialSkip').removeAttr('disabled');
+				$('#startTutorial').html("Start Tutorial");
+				$('#startTutorial').removeAttr('disabled');
+				$('#skipTutorial').removeAttr('disabled');
 				$('#openload').removeAttr('disabled');
 				//enable keyboard controls
 				GEPPETTO.Vanilla.enableKeyboard(false);
@@ -425,10 +425,14 @@ define(function(require) {
 					}
 				});
 
-				$("#close-welcomeMsg").on("click", function(event) {
+				$("#skipTutorial").on("click", function(event) {
 					if($('#welcomeMsgCookie').hasClass("checked")) {
 						$.cookie("hideWelcomeMessage", true);
 					}
+				});
+				
+				$("#startTutorial").on("click", function(event) {
+					GEPPETTO.Tutorial.startTutorial();
 				});
 
 				$('#welcomeMessageModal').on('hide', function(event) {

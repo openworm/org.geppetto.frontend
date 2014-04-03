@@ -698,6 +698,7 @@ define(function(require) {
 	require('geppetto-objects/Simulation')(GEPPETTO);
 	require('geppetto-objects/G')(GEPPETTO);
 	require('GEPPETTO.Main')(GEPPETTO);
+	require('GEPPETTO.Tutorial')(GEPPETTO);
 	require("widgets/includeWidget")(GEPPETTO);
 
 	return GEPPETTO;

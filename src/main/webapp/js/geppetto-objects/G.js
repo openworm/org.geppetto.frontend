@@ -35,7 +35,7 @@
  *
  * Global objects. Handles global operations; clearing js console history commands,
  * turning on/off debug statements, copying history commands, help info, etc.
- *
+ *=-
  * @constructor
 
  * @author  Jesus R. Martinez (jesus@metacell.us)
@@ -287,6 +287,7 @@ define(function(require) {
 			
 			/**
 			 * Opens window to share geppetto on twitter
+			 * @name G.shareOnTwitter()
 			 */
 			shareOnTwitter : function(){
 				var shareURL = 'http://geppetto.org';
@@ -302,6 +303,8 @@ define(function(require) {
 			
 			/**
 			 * Opens window to share facebook on twitter
+			 * 
+			 * @name - G.shareOnFacebook()
 			 */
 			shareOnFacebook : function(){
 				var shareURL = 'http://geppetto.org';
@@ -316,7 +319,10 @@ define(function(require) {
 			},
 			
 			showPopup : function(x,y,message){
-				
+				var newWidget = GEPPETTO.WidgetFactory.addWidget(GEPPETTO.Widgets.POPUP);
+				newWidget.setPosition(x,y);
+				newWidget.setMessage(msg);
+				newWwidget.show();
 			},
 
 			/**
@@ -349,6 +355,7 @@ define(function(require) {
 			/**
 			 * State of debug statements, whether they are turned on or off.
 			 *
+			 * @name - G.isDebugOn()
 			 * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
 			 */
 			isDebugOn: function() {

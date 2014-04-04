@@ -48,12 +48,14 @@ define(function(require) {
 			this.name = options.name;
 			this.visible = options.visible;
 			this.render();
-			this.setSize(200,300);
+			this.setSize(100,300);
 			this.dialog.append("<div class='popup' id='" + this.id + "'></div>");
 		},
 		
 		setMessage : function(msg){
+			$("#"+this.id).html(msg);
 			
+			return "Setting new Message for " + this.id;
 		}
 	});
 });

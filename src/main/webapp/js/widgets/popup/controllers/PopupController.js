@@ -45,6 +45,17 @@ define(function(require) {
 
 		GEPPETTO.PopupsController = {
 			
+
+			/**
+			 * Registers widget events to detect and execute following actions.
+			 * Used when widget is destroyed.
+			 *
+			 * @param plotID
+			 */
+			registerHandler: function(popupID) {
+				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PopupsController, popupID);
+			},
+			
 			addPopupWidget : function(){
 				//Popup widget number
 				var index = (popups.length + 1);
@@ -53,7 +64,7 @@ define(function(require) {
 				var name = "Popup" + index;
 				var id = name;
 
-				//create plotting widget
+				//create popup widget
 				var p = window[name] = new Popup({id:id, name:name,visible:false});
 
 				//create help command for plot
@@ -61,6 +72,8 @@ define(function(require) {
 
 				//store in local stack
 				popups.push(p);
+				
+				this.registerHandler(id);
 
 				//add commands to console autocomplete and help option
 				GEPPETTO.Utility.updateCommands("js/widgets/popup/Popup.js", p, id);
@@ -69,7 +82,15 @@ define(function(require) {
 			},
 		
 			removePopupWidgets : function(){
-				
+				//remove all existing popup widgets
+				for(var i = 0; i < popups.length; i++) {
+					var popup = popups[i];
+
+					popup.destroy();
+					i--;
+				}
+
+				popups = new Array();
 			}
 		};
 		

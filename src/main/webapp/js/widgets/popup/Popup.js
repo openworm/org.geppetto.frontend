@@ -43,11 +43,17 @@ define(function(require) {
 
 	return Widget.View.extend({
 		
-		initialize : function(){
-			
+		initialize : function(options){
+			this.id = options.id;
+			this.name = options.name;
+			this.visible = options.visible;
+			this.render();
+			this.setSize(200,300);
+			this.dialog.append("<div class='popup' id='" + this.id + "'></div>");
 		},
 		
 		setMessage : function(msg){
+			
 		}
 	});
 });

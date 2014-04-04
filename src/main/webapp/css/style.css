@@ -242,11 +242,6 @@ input {
 	float: left;
 }
 
-.popover {
-	font-size: 14px;
-	font-weight: 200;
-}
-
 #alertbox {
 	display: none;
 	margin-top: 20px;
@@ -648,4 +643,16 @@ input {
 	filter: alpha(opacity = 85);
 	opacity: .85;
 	padding-bottom : 30px;
+}
+
+.popover {
+	transition: opacity .25s ease-in-out;
+	font-size: 14px;
+	font-weight: 200;
+	width : auto;
+}
+
+.btn-tut {
+	float : right;
+	margin-top : 10px;
 }

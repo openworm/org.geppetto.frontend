@@ -46,6 +46,8 @@ define(function(require){
 	require("widgets/WidgetUtility");
 	//Plot Widget
 	require("widgets/plot/config")(GEPPETTO);
+	//Popup Widget
+	require("widgets/popup/config")(GEPPETTO);
 	
 	loadCss("js/widgets/Widget.css");
 	};

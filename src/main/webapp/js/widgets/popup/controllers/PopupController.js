@@ -46,7 +46,26 @@ define(function(require) {
 		GEPPETTO.PopupsController = {
 			
 			addPopupWidget : function(){
-				
+				//Popup widget number
+				var index = (popups.length + 1);
+
+				//Name of popup widget
+				var name = "Popup" + index;
+				var id = name;
+
+				//create plotting widget
+				var p = window[name] = new Popup({id:id, name:name,visible:false});
+
+				//create help command for plot
+				p.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+
+				//store in local stack
+				popups.push(p);
+
+				//add commands to console autocomplete and help option
+				GEPPETTO.Utility.updateCommands("js/widgets/popup/Popup.js", p, id);
+
+				return p;
 			},
 		
 			removePopupWidgets : function(){

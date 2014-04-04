@@ -39,7 +39,7 @@
 //Load PopupsController and other classes using GEPPETTO
 define(function(require) {
 	return function(GEPPETTO) {
-		require("widgets/plot/controllers/PopupController")(GEPPETTO);
+		require("widgets/popup/controllers/PopupController")(GEPPETTO);
 		loadCss("js/widgets/popup/Popup.css");
 	};
 });

@@ -321,8 +321,8 @@ define(function(require) {
 			showPopup : function(x,y,message){
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(GEPPETTO.Widgets.POPUP);
 				newWidget.setPosition(x,y);
-				newWidget.setMessage(msg);
-				newWwidget.show();
+				newWidget.setMessage(message);
+				newWidget.show();
 			},
 
 			/**

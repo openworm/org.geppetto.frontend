@@ -60,7 +60,11 @@ define(function(require) {
 						GEPPETTO.Simulation.setSimulationLoaded();
 
 						//Populate scene
-						GEPPETTO.populateScene(entities);						
+						GEPPETTO.populateScene(entities);		
+						
+						if(GEPPETTO.Tutorial.isTutorialOn()){
+							GEPPETTO.Tutorial.continueTutorialAfterSim();
+						}
 						break;
 					//Event received to update the simulation
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
@@ -80,9 +84,6 @@ define(function(require) {
 							}
 						}
 						
-						if(GEPPETTO.Tutorial.isTutorialOn()){
-							GEPPETTO.Tutorial.simulationLoaded();
-						}
 						// TODO: store variable-watch tree
 						break;
 					//Simulation server became available

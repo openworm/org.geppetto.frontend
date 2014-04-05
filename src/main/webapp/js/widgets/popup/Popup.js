@@ -49,7 +49,8 @@ define(function(require) {
 			this.visible = options.visible;
 			this.render();
 			this.setSize(100,300);
-			this.dialog.append("<div class='popup' id='" + this.id + "'></div>");
+			//set class pop up
+			$("#"+this.id).addClass("popup");
 		},
 		
 		setMessage : function(msg){

@@ -79,6 +79,10 @@ define(function(require) {
 								GEPPETTO.updateJSONScene(update.entities);
 							}
 						}
+						
+						if(GEPPETTO.Tutorial.isTutorialOn()){
+							GEPPETTO.Tutorial.simulationLoaded();
+						}
 						// TODO: store variable-watch tree
 						break;
 					//Simulation server became available

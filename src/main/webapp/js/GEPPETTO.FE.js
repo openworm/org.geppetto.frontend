@@ -131,7 +131,7 @@ define(function(require) {
 				$('#skipTutorial').removeAttr('disabled');
 				$('#openload').removeAttr('disabled');
 				//enable keyboard controls
-				GEPPETTO.Vanilla.enableKeyboard(false);
+				GEPPETTO.Vanilla.enableKeyboard(true);
 			},
 			
 			createContainer: function() {

@@ -45,15 +45,18 @@ define(function(require) {
 			 * Business logic for Geppetto Vanilla
 			 */
 			checkKeyboard: function() {
-				if(this.keyboardEnabled){
-					if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
-						GEPPETTO.PlotsController.toggle();
-					}
-
-					else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
-						GEPPETTO.Console.toggleConsole();
-					}
+				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
+					GEPPETTO.PlotsController.toggle();
 				}
+
+				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
+					GEPPETTO.Console.toggleConsole();
+				}
+
+			},
+			
+			isKeyboardEnabled : function(){
+				this.keyboardEnabled;
 			},
 			
 			enableKeyboard: function(enable){

@@ -57,7 +57,6 @@ define(function(require) {
 				//disable welcome message buttons
 				$('#skipTutorial').attr('disabled', 'disabled');
 				$('#startTutorial').attr('disabled', 'disabled');
-				//disable keyboard controls
 				GEPPETTO.Vanilla.enableKeyboard(false);
 				
 				GEPPETTO.FE.checkWelcomeMessageCookie();

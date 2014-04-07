@@ -57,11 +57,6 @@ define(function(require) {
 				//disable welcome message buttons
 				$('#skipTutorial').attr('disabled', 'disabled');
 				$('#startTutorial').attr('disabled', 'disabled');
-				//disable simulation controls
-				$('#start').attr('disabled', 'disabled');
-				$('#pause').attr('disabled', 'disabled');
-				$('#stop').attr('disabled', 'disabled');
-				$('#openload').attr('disabled', 'disabled');
 				//disable keyboard controls
 				GEPPETTO.Vanilla.enableKeyboard(false);
 				

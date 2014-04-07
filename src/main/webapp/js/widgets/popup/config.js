@@ -32,61 +32,14 @@
  *******************************************************************************/
 
 /**
- * Class used to create widgets and handle widget events from parent class.
+ * Loads popup scripts
+ *
+ * @author Jesus Martinez (jesus@metacell.us)
  */
-
-/**
- * Enum use to hold different types of widgets
- */
-
+//Load PopupsController and other classes using GEPPETTO
 define(function(require) {
-
 	return function(GEPPETTO) {
-		GEPPETTO.Widgets = {
-			PLOT: 0,
-			POPUP : 1
-		};
-
-		GEPPETTO.WidgetFactory = {
-			/**
-			 * Adds widget to Geppetto
-			 */
-			addWidget: function(widgetType) {
-				var widget = null;
-
-				switch(widgetType) {
-					//create plotting widget
-					case GEPPETTO.Widgets.PLOT:
-						widget = GEPPETTO.PlotsController.addPlotWidget();
-						break;
-						//create plotting widget
-					case GEPPETTO.Widgets.POPUP:
-						widget = GEPPETTO.PopupsController.addPopupWidget();
-						break;
-					default:
-						break;
-				}
-
-				return widget;
-			},
-
-			/**
-			 * Removes widget from Geppetto
-			 */
-			removeWidget: function(widgetType) {
-				switch(widgetType) {
-					//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.PLOT:
-						GEPPETTO.PlotsController.removePlotWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-						//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.POPUP:
-						GEPPETTO.PlotsController.removePopupWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-					default:
-						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
-				}
-			}
-		};
+		require("widgets/popup/controllers/PopupController")(GEPPETTO);
+		loadCss("js/widgets/popup/Popup.css");
 	};
 });

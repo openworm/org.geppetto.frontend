@@ -58,6 +58,7 @@ define(function(require) {
 			listeners:[],
 			simState : null,
 			loading : false,
+			loadingTimer : null,
 			StatusEnum: {
 				INIT: 0,
 				LOADED: 1,
@@ -179,7 +180,7 @@ define(function(require) {
 
 				this.simulationStates = new Array();
 				//time simulation, display appropriate message if taking too long
-				setInterval(function simulationTakingTooLong(){
+				this.loadTimer = setInterval(function simulationTakingTooLong(){
 					if(Simulation.loading){
 						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
 					}
@@ -389,6 +390,13 @@ define(function(require) {
 			setSimulationLoaded: function() {
 				this.status = GEPPETTO.Simulation.StatusEnum.LOADED;
 				loading = false;
+				this.loading = false;
+				
+				//Reset the simulation states
+				this.simulationStates={};
+				
+				window.clearInterval(this.loadTimer);
+				this.loadTimer = 0;
 			},
 
 			/**

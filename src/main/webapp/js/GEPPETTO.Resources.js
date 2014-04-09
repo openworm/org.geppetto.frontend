@@ -139,6 +139,26 @@ define(function(require) {
 			SHOW_CONSOLE: "Showing Console",
 
 			HIDE_CONSOLE: "Hiding Console",
+			
+			CONSOLE_ALREADY_VISIBLE: "Console is already visible",
+
+			CONSOLE_ALREADY_HIDDEN: "Console is already hidden",
+			
+			SHOW_SHAREBAR: "Showing ShareBar",
+
+			HIDE_SHAREBAR: "Hiding ShareBar",
+			
+			SHAREBAR_ALREADY_VISIBLE: "ShareBar is already visible",
+
+			SHAREBAR_ALREADY_HIDDEN: "Sharebar is already hidden",
+			
+			SHARE_ON_TWITTER : "Sharing Geppetto on Twitter",
+			
+			SHARE_ON_FACEBOOK : "Sharing Geppetto on Facebook",
+			
+			SHOW_HELP_WINDOW: "Showing Help Window",
+
+			HIDE_HELP_WINDOW: "Hiding Help Window",
 
 			/**
 			 * GEPPETTO.Main resources

@@ -27,17 +27,17 @@
 
 		<div id="sim_toolbar">
 			<a href="#loadSimModal" role="button" class="btn" data-toggle="modal"
-				data-keyboard="false" id="openload"><icon
+				data-keyboard="false" id="openload" disabled="disabled"><icon
 					class="icon-folder-open-alt"></icon> Load Simulation</a>
-			<button class="btn" id="start">
+			<button class="btn" id="start" disabled="disabled">
 				<icon class="icon-play"></icon>
 				Start
 			</button>
-			<button class="btn" id="pause">
+			<button class="btn" id="pause" disabled="disabled">
 				<icon class="icon-pause"></icon>
 				Pause
 			</button>
-			<button class="btn" id="stop">
+			<button class="btn" id="stop" disabled="disabled">
 				<icon class="icon-stop"></icon>
 				Stop
 			</button>
@@ -58,30 +58,36 @@
 		</div>
 
 		<div id="position_toolbar">
+			<div id="position">
 			<button class="btn squareB icon-chevron-left" id="w"></button>
 			<button class="btn squareB icon-chevron-up" id="n"></button>
 			<button class="btn squareB icon-chevron-right" id="e"></button>
 			<button class="btn squareB icon-chevron-down" id="s"></button>
 			<button class="btn squareB icon-home" id="h"></button>
-
+			</div>
+			
+			<div id ="rotation">
 			<button class="btn squareB icon-undo" id="rw"></button>
 			<button class="btn squareB icon-repeat rotate90" id="rn"></button>
 			<button class="btn squareB icon-repeat" id="re"></button>
 			<button class="btn squareB icon-undo rotate90" id="rs"></button>
 			<button class="btn squareB icon-home" id="rh"></button>
+			</div>
 
+			<div id="zoom">
 			<button class="btn squareB icon-zoom-in" id="zi"></button>
 			<button class="btn squareB icon-zoom-out" id="zo"></button>
+			</div>
 			<br />
 		</div>
 		
 		<div id="github">
-			<a href="https://github.com/openworm/org.geppetto" target="_blank"><icon class="icon-github icon-2x"></icon></a>
+			<a href="https://github.com/openworm/org.geppetto" target="_blank"><icon class="icon-github icon-2x" id="git"></icon></a>
 		</div>
 
 	
 
-		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true" >
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -190,9 +196,9 @@
 
 	<div id="geppetto-share" class="col-md-1 share-panel">
         	<p>
-        	<a class="btn btn-warning" onclick="GEPPETTO.Share.facebook('http://geppetto.org','Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','')">
+        	<a class="btn btn-warning" onclick="G.shareOnFacebook()">
         	<i class="icon-xlarge icon-facebook"></i></a></p>
-			<p><a class="btn btn-warning" onclick="GEPPETTO.Share.twitter('http://geppetto.org','Check out Geppetto, the opensource simulation platform powering OpenWorm!')"><i class="icon-xlarge icon-twitter"></i></a></p>
+			<p><a class="btn btn-warning" onclick="G.shareOnTwitter()"><i class="icon-xlarge icon-twitter"></i></a></p>
 			<!-- Commented until fully implemented <p><a class="btn btn-warning" href="#email"><i class="icon-xlarge icon-envelope"></i></a><p>-->
    	</div>
 	
@@ -302,7 +308,7 @@
 			<p id="loadingmodaltext" class="orange"></p>
 		</div>	
 		
-		<div id="welcomeMessageModal" class="modal hide well fade lead pagination-centered" data-backdrop="static data-keyboard="true" tabindex="-1">
+		<div id="welcomeMessageModal" class="modal hide well fade lead pagination-centered" data-backdrop="static" data-keyboard="false" tabindex="-1">
 			<div id="welcomeBody" class="modal-body">
 				<div class="messageBody">
 					<strong>Welcome to geppetto!</strong> geppetto is an open-source platform designed by engineers together with scientists to 
@@ -312,8 +318,11 @@
 					We worked hard to bring you the best possible alpha release but geppetto is still very much a platform under development. 
 					In fact we reckon this only represents about 20% of what you can expect in the end. We hope you'll enjoy it.</div>
 				</div>
-				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">
+				<button  id="startTutorial" class="btn btn-success welcomeButton" data-dismiss="modal" aria-hidden="true">
 					Loading...
+				</button>
+				<button  id="skipTutorial" class="btn btn-success welcomeButton" data-dismiss="modal" aria-hidden="true">
+					Skip Tutorial
 				</button>
 				<br/>
 				<div class="wmCheckBoxDiv">
@@ -393,7 +402,7 @@
 		loader: "static.olark.com/jsclient/loader0.js",name:"olark",methods:["configure","extend","declare","identify"]});
 		/* custom configuration goes here (www.olark.com/documentation) */
 		olark.identify('3330-945-10-6280');/*]]>*/</script>
-		<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
+		<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" id="contact" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
 		<!-- end olark code -->
 </body>
 </html>

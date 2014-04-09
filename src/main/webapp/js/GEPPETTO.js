@@ -248,7 +248,7 @@ define(function(require)
 					shading : THREE.SmoothShading
 				});
 
-				material.originalColor = '0x' + (Math.random() * 0xFFFFFF << 0).toString(16);
+				material.originalColor = '0x' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
 				material.color.setHex(material.originalColor);
 				return material;
 			};
@@ -814,6 +814,7 @@ define(function(require)
 	require('geppetto-objects/Simulation')(GEPPETTO);
 	require('geppetto-objects/G')(GEPPETTO);
 	require('GEPPETTO.Main')(GEPPETTO);
+	require('GEPPETTO.Tutorial')(GEPPETTO);
 	require("widgets/includeWidget")(GEPPETTO);
 
 	return GEPPETTO;

@@ -173,6 +173,10 @@ input {
 #error {
 }
 
+#position{
+	height : 75px;	
+}
+
 #w {
 	left: 0px;
 	top: 25px;
@@ -194,6 +198,10 @@ input {
 	top: 50px;
 }
 
+#rotation {
+	height : 75px;	
+}
+
 #rw {
 	left: 0px;
 	top: 110px;
@@ -213,6 +221,10 @@ input {
 #rs {
 	left: 25px;
 	top: 135px;
+}
+
+#zoom {
+	height : 50px;
 }
 
 #zo {
@@ -240,11 +252,6 @@ input {
 
 #rotationmode {
 	float: left;
-}
-
-.popover {
-	font-size: 14px;
-	font-weight: 200;
 }
 
 #alertbox {
@@ -535,7 +542,7 @@ input {
 }
 
 
-#close-welcomeMsg{
+.welcomeButton{
 	width:120px;
 	margin-top:10px;
 }
@@ -648,4 +655,17 @@ input {
 	filter: alpha(opacity = 85);
 	opacity: .85;
 	padding-bottom : 30px;
+}
+
+.popover {
+	transition: opacity .25s ease-in-out;
+	font-size: 14px;
+	font-weight: 200;
+	width : auto;
+	z-index: 9999;
+}
+
+.btn-tut {
+	float : right;
+	margin-top : 10px;
 }

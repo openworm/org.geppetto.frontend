@@ -119,6 +119,36 @@ define(function(require) {
 
 			equal($("#" + plot.getId()).html(), null, "Widget successfully destroyed, passed");
 		});
+		
+		test("Test Commands", function() {
+			G.showConsole(true);
+			
+			equal(GEPPETTO.Console.isConsoleVisible(), true, "Console Visible");
+			
+			G.showConsole(false);
+			
+			equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
+			
+			G.showShareBar(true);
+			
+			equal(GEPPETTO.Share.isVisible(), true, "ShareBar Visible");
+			
+			G.showShareBar(false);
+			
+			equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
+			
+			//Qunit tests JS and not HTML. For the help window and share on twitter/facebook we are testing 
+			//the returned message from the commands since we can't acess the index.html file
+			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Show Help Window");
+
+			equal(G.showHelpWindow(false), GEPPETTO.Resources.HIDE_HELP_WINDOW, "Hide Help Window");
+			
+			equal(G.shareOnTwitter(), GEPPETTO.Resources.SHARE_ON_TWITTER, "Share On Twitter");
+						
+			equal(G.shareOnFacebook(), GEPPETTO.Resources.SHARE_ON_FACEBOOK, "Share On Facebook");
+		});
+		
+		
 
 	};
 

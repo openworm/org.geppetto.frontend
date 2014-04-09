@@ -57,12 +57,13 @@ define(function(require) {
 						var entities = JSON.parse(payload.update).entities;
 
 						GEPPETTO.Simulation.setSimulationLoaded();
-						//Reset the simulation states
-						GEPPETTO.Simulation.simulationStates={};
 
 						//Populate scene
-						GEPPETTO.populateScene(entities);
-						Simulation.loading = false;
+						GEPPETTO.populateScene(entities);		
+						
+						if(GEPPETTO.Tutorial.isTutorialOn()){
+							GEPPETTO.Tutorial.continueTutorialAfterSim();
+						}
 						break;
 					//Event received to update the simulation
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
@@ -81,6 +82,7 @@ define(function(require) {
 								GEPPETTO.updateJSONScene(update.entities);
 							}
 						}
+						
 						// TODO: store variable-watch tree
 						break;
 					//Simulation server became available

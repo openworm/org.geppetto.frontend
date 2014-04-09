@@ -40,6 +40,7 @@
 define(function(require) {
 	return function(GEPPETTO){
 		GEPPETTO.Vanilla = {
+			keyboardEnabled : true,
 			/**
 			 * Business logic for Geppetto Vanilla
 			 */
@@ -51,6 +52,15 @@ define(function(require) {
 				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
 					GEPPETTO.Console.toggleConsole();
 				}
+
+			},
+			
+			isKeyboardEnabled : function(){
+				this.keyboardEnabled;
+			},
+			
+			enableKeyboard: function(enable){
+				this.keyboardEnabled = enable;
 			}
 		}
 	}

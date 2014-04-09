@@ -65,6 +65,16 @@ define(function(require) {
 						$('#start').attr('disabled', 'disabled');
 						GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INVALID_SIMULATION_FILE, payload.message);
 						break;
+					//Error while running the simulation
+					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+						//if welcome message is open, return normal opacity after user clicked observed
+						if(($('#welcomeMessageModal').hasClass('in'))) {
+							$('#welcomeMessageModal').modal('hide');
+						}
+						$('#loadingmodal').modal('hide');
+						$('#start').attr('disabled', 'disabled');
+						GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, payload.message);
+						break;
 					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.GEPPETTO_VERSION:
 						var version = payload.geppetto_version;
 						var geppettoVersion = GEPPETTO.Resources.GEPPETTO_VERSION_HOLDER.replace("$1", version);
@@ -114,6 +124,7 @@ define(function(require) {
 				CLIENT_ID: "client_id",
 				RELOAD_CANVAS: "reload_canvas",
 				ERROR_LOADING_SIM: "error_loading_simulation",
+				ERROR: "generic_error",
 				GEPPETTO_VERSION: "geppetto_version",
 				OBSERVER_MODE: "observer_mode_alert",
 				READ_URL_PARAMS: "read_url_parameters",

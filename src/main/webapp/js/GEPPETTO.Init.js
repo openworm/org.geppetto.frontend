@@ -26,7 +26,7 @@ define(function(require) {
 				x: 0,
 				y: 0
 			},
-			geometriesMap: null,
+			visualModelMap: null,
 			idCounter: 0,
 
 			sceneCenter: new THREE.Vector3(),
@@ -36,7 +36,7 @@ define(function(require) {
 
 		var setupScene = function() {
 			VARS.scene = new THREE.Scene();
-			VARS.geometriesMap = {};
+			VARS.visualModelMap = {};
 		};
 
 		/**

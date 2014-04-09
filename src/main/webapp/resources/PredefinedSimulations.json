@@ -1,22 +1,22 @@
 {"simulations":[
         {
             "name" : "LEMS Sample Hodgkin-Huxley Neuron",
-            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml"
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/replay/LEMS/SingleComponentHH/GEPPETTO.xml"
         },
         {
         	"name" : "PCISPH Small Liquid Scene",
-            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml"
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/replay/SPH/LiquidSmall/GEPPETTO.xml"
         },
         {
         	"name" : "PCISPH Small Elastic Scene",
-            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml"
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/replay/SPH/ElasticSmall/GEPPETTO.xml"
         },
         {
         	"name" : "NeuroML Purkinje Cell (No Simulation)",
-            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/Purkinje/GEPPETTO.xml"
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/replay/NeuroML/Purkinje/GEPPETTO.xml"
         },
         {
         	"name" : "NeuroML C.elegans PVDR Neuron (No Simulation)",
-            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/PVDR/GEPPETTO.xml"
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/replay/NeuroML/PVDR/GEPPETTO.xml"
         }
 ]}

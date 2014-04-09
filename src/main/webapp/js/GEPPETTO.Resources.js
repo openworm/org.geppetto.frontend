@@ -176,6 +176,8 @@ define(function(require) {
 			CLEAR_CANVAS: "Inbound Message Received: Clear canvas",
 
 			INVALID_SIMULATION_FILE: "Invalid Simulation File",
+			
+			ERROR: "Rats! Something went wrong. Please open an issue with the details",
 
 			INVALID_WATCH_LIST: "Invalid Watch List",
 

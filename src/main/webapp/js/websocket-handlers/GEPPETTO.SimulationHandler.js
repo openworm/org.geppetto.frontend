@@ -38,9 +38,8 @@ define(function(require) {
 		var $ = require('jquery');
 
 		var updateTime = function(time) {
-			if(time && time.TIME_STEP && time.TIME_STEP.time) {
-				GEPPETTO.Simulation.time = time.TIME_STEP.time.value + time.TIME_STEP.time.unit;
-				GEPPETTO.Simulation.step = time.TIME_STEP.step.value + time.TIME_STEP.step.unit;
+			if(time) {
+				GEPPETTO.Simulation.time = time.value + time.unit;
 			}
 		};
 
@@ -75,7 +74,7 @@ define(function(require) {
 						//Update if simulation hasn't been stopped
 						if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
 							if(!GEPPETTO.isScenePopulated()) {
-								// the first time we need to create the object.s
+								// the first time we need to create the objects
 								GEPPETTO.populateScene(update.entities);
 							}
 							else {

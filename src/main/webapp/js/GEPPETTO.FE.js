@@ -60,6 +60,17 @@ define(function(require) {
 				GEPPETTO.Vanilla.enableKeyboard(false);
 				
 				GEPPETTO.FE.checkWelcomeMessageCookie();
+				
+				//handles clicking on help button 
+				$("#helpButton").click(function() {
+					var modalVisible = $('#helpmodal').hasClass('in');
+					if(modalVisible){
+						GEPPETTO.Console.executeCommand("G.showHelpWindow(false)");
+					}
+					else{
+						GEPPETTO.Console.executeCommand("G.showHelpWindow(true)");
+					}
+				});
 
 				/*
 				 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows

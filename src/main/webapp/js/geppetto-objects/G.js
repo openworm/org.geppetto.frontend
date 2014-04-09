@@ -274,14 +274,29 @@ define(function(require) {
 				var returnMessage;
 
 				if(mode) {
-					returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
-					$('#helpmodal').modal('show');
+					var modalVisible = $('#helpmodal').hasClass('in');
+					//don't try to show help window again if already visible
+					if(modalVisible){
+						returnMessage = GEPPETTO.Resources.HELP_ALREADY_VISIBLE;
+					}
+					//show help window if it isn't visible
+					else{
+						returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
+						$('#helpmodal').modal('show');
+					}
 				}
 				else {
-					returnMessage = GEPPETTO.Resources.HIDE_HELP_WINDOW;
-					$('#helpmodal').modal('hide');
+					var modalVisible = $('#helpmodal').hasClass('in');
+					//don't try to hide already hidden help window
+					if(!modalVisible){
+						returnMessage = GEPPETTO.Resources.HELP_ALREADY_HIDDEN;
+					}
+					//hide help window
+					else{
+						returnMessage = GEPPETTO.Resources.HIDE_HELP_WINDOW;
+						$('#helpmodal').modal('hide');
+					}
 				}
-
 				return returnMessage;
 			},
 			

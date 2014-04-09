@@ -159,6 +159,10 @@ define(function(require) {
 			SHOW_HELP_WINDOW: "Showing Help Window",
 
 			HIDE_HELP_WINDOW: "Hiding Help Window",
+			
+			HELP_ALREADY_VISIBLE: "Help Window is already visible",
+
+			HELP_ALREADY_HIDDEN: "Help Window is already hidden",
 
 			/**
 			 * GEPPETTO.Main resources

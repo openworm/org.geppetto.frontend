@@ -50,6 +50,7 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	SCENE_UPDATE("scene_update"), 
 	RELOAD_CANVAS("reload_canvas"),
 	SIMULATION_CONFIGURATION("simulation_configuration"),
+	ERROR("generic_error"),
 	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config"),
 	ERROR_READING_SCRIPT("error_reading_script"),
 	ERROR_ADDING_WATCH_LIST("error_adding_watch"),

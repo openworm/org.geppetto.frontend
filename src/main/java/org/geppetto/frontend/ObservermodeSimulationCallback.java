@@ -38,9 +38,11 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 
-public class ObservermodeSimulationCallback implements ISimulationCallbackListener{
+public class ObservermodeSimulationCallback implements ISimulationCallbackListener
+{
 
 	private static Log logger = LogFactory.getLog(ObservermodeSimulationCallback.class);
 
@@ -48,78 +50,99 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 
 	private static ObservermodeSimulationCallback _instance = null;
 
-	public static ObservermodeSimulationCallback getInstance() {
-		if(_instance == null) {
+	public static ObservermodeSimulationCallback getInstance()
+	{
+		if(_instance == null)
+		{
 			_instance = new ObservermodeSimulationCallback();
 		}
 		return _instance;
 	}
 
-
-	protected ObservermodeSimulationCallback() {
+	protected ObservermodeSimulationCallback()
+	{
 		controller = GeppettoServletController.getInstance();
 	}
 
 	/**
-	 * Receives update from simulation when there are new ones. 
-	 * From here the updates are send to the connected clients
-	 *
+	 * Receives update from simulation when there are new ones. From here the updates are send to the connected clients
+	 * 
 	 */
 	@Override
-	public void updateReady(SimulationEvents event, String sceneUpdate,
-	                        String variableWatchTree, String time) {
+	public void updateReady(SimulationEvents event, String sceneUpdate, String variableWatchTree)
+	{
 
-		long start=System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
 		String dateFormatted = formatter.format(date);
-		logger.info("Simulation Frontend Update Starting: "+dateFormatted);
+		logger.info("Simulation Frontend Update Starting: " + dateFormatted);
 
 		OUTBOUND_MESSAGE_TYPES action = null;
 		String update = "";
-		
+
 		// switch on message type
-		switch (event) {
-			case LOAD_MODEL: {
+		switch(event)
+		{
+			case LOAD_MODEL:
+			{
 				action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
 
 				controller.getSimulationServerConfig().setIsSimulationLoaded(true);
 
-				//We store the original model as part of configuration file, this way new users connecting 
-				//will be able to received this copy of the stored model
+				// We store the original model as part of configuration file, this way new users connecting
+				// will be able to received this copy of the stored model
 				String storedScene = "{ \"entities\":" + sceneUpdate + "}";
 
 				controller.getSimulationServerConfig().setLoadedScene(storedScene);
-				
+
 				// pack sceneUpdate and variableWatchTree in the same JSON string
 				update = "{ \"entities\":" + sceneUpdate + "}";
 
 				break;
 			}
-			case SCENE_UPDATE: {	
+			case SCENE_UPDATE:
+			{
 				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
-				
+
 				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{ \"entities\":" + sceneUpdate
-						+ ", \"variable_watch\": " + variableWatchTree
-						+ ", \"time\": " + time + "}";
+				update = "{ \"entities\":" + sceneUpdate + ", \"variable_watch\": " + variableWatchTree + "}";
 
 				break;
 			}
-			case SIMULATION_OVER: {
-				action= OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
+			case SIMULATION_OVER:
+			{
+				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
 			}
-			default: {
+			default:
+			{
 			}
-		}
-		
-		for (GeppettoMessageInbound connection : controller.getConnections())
-		{
-			// Notify all connected clients about update either to load model or update current one.
-			controller.messageClient(null,connection, action , update);
 		}
 
-		logger.info("Simulation Frontend Update Finished: Took:"+(System.currentTimeMillis()-start));
+		for(GeppettoMessageInbound connection : controller.getConnections())
+		{
+			// Notify all connected clients about update either to load model or update current one.
+			controller.messageClient(null, connection, action, update);
+		}
+
+		logger.info("Simulation Frontend Update Finished: Took:" + (System.currentTimeMillis() - start));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.geppetto.core.simulation.ISimulationCallbackListener#error(org.geppetto.core.common.GeppettoErrorCodes, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void error(GeppettoErrorCodes errorCode, String classSource, String errorMessage, Exception e)
+	{
+		String jsonExceptionMsg=e==null?"":e.getMessage();
+		String jsonErrorMsg=errorMessage==null?"":errorMessage;
+		String error = "{ \"error_code\":" + errorCode.toString() + ", \"source\":" + classSource + ", \"message\": " + jsonErrorMsg + ", \"exception\": " + jsonExceptionMsg +"}";
+		for(GeppettoMessageInbound connection : controller.getConnections())
+		{
+			// Notify all connected clients about update either to load model or update current one.
+			controller.messageClient(null, connection, OUTBOUND_MESSAGE_TYPES.ERROR, error);
+		}
+		
 	}
 
 }

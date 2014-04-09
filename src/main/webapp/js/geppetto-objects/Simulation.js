@@ -68,7 +68,7 @@ define(function(require) {
 			},
 
 			getTime: function() {
-				return "Simulation's current time step : " + this.time;
+				return "Current simulation time: " + this.time;
 			},
 
 			/**
@@ -402,12 +402,12 @@ define(function(require) {
 			/**
 			 * Updates the simulation states with new watched variables
 			 */
-			updateSimulationWatchTree: function(variable) {
-				if(!variable) {
+			updateSimulationWatchTree: function(watchTree) {
+				if(!watchTree) {
 					return;
 				}
 
-				GEPPETTO.Simulation.watchTree = variable.WATCH_TREE;
+				GEPPETTO.Simulation.watchTree = watchTree;
 
 				//Create window objects for variables
 				for(var child in GEPPETTO.Simulation.watchTree) {

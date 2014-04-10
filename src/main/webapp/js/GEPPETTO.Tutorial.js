@@ -126,7 +126,7 @@ define(function(require) {
 							title: GEPPETTO.Tutorial.TITLE.SAMPLES,
 							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.SAMPLES +
 							'<button class="btn btn-success btn-tut" id="next_load">Continue</button></div>',	
-							placement : 'right',
+							placement : 'bottom',
 						});
 						$('#loadSimModal').popover('show');
 						
@@ -228,7 +228,7 @@ define(function(require) {
 							title: GEPPETTO.Tutorial.TITLE.POSITION,
 							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.POSITION +
 							'<button class="btn btn-success btn-tut" id="next_rotation">Continue</button></div>',			
-							placement : 'bottom',
+							placement : 'right',
 						});
 						$('#position').popover('show');
 					}
@@ -244,7 +244,7 @@ define(function(require) {
 							title: GEPPETTO.Tutorial.TITLE.ROTATION,
 							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.ROTATION +
 							'<button class="btn btn-success btn-tut" id="next_zoom">Continue</button></div>',			
-							placement : 'bottom',
+							placement : 'right',
 						});
 						$('#rotation').popover('show');
 					}
@@ -260,7 +260,7 @@ define(function(require) {
 							title: GEPPETTO.Tutorial.TITLE.CONSOLE,
 							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.CONSOLE +
 							'<button class="btn btn-success btn-tut" id="next_console">Continue</button></div>',			
-							placement : 'bottom',
+							placement : 'right',
 						});
 						$('#zoom').popover('show');
 					}

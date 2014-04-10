@@ -174,7 +174,8 @@ input {
 }
 
 #position{
-	height : 75px;	
+	height : 25px;
+	width : 100px;	
 }
 
 #w {
@@ -199,7 +200,8 @@ input {
 }
 
 #rotation {
-	height : 75px;	
+	height : 75px;
+	width : 100px;	
 }
 
 #rw {
@@ -225,6 +227,7 @@ input {
 
 #zoom {
 	height : 50px;
+	width : 100px;
 }
 
 #zo {
@@ -662,7 +665,7 @@ input {
 	font-size: 14px;
 	font-weight: 200;
 	width : auto;
-	z-index: 9999;
+	z-index: 9999!important;
 }
 
 .btn-tut {

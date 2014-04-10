@@ -87,7 +87,7 @@ define(function(require) {
 					var popup = popups[i];
 
 					popup.destroy();
-					i--;
+					i++;
 				}
 
 				popups = new Array();
@@ -97,7 +97,7 @@ define(function(require) {
 			update: function(event) {
 				//delete popup widget(s)
 				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removePlotWidgets();
+					this.removePopupWidgets();
 				}
 			}
 		};

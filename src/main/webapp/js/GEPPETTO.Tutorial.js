@@ -57,11 +57,9 @@ define(function(require) {
 						});
 						$('#loadSimModal').on('shown', function (e) {
 							GEPPETTO.Tutorial.samplesPopover();
-						$('#next_load').on('click', function (e) {
-							GEPPETTO.Tutorial.loadPopover();
 						$('#loadingmodal').on('shown', function (e) {
 							GEPPETTO.Tutorial.loadingPopover();
-						;});});});});
+						;});});});
 				},
 
 				stopTutorial : function(){
@@ -119,30 +117,29 @@ define(function(require) {
 				
 				samplesPopover : function(){
 					if(this.tutorialOn){
-						$("#loadSimModal").popover({
+						$("#samples").popover({
 							html : true,
 							animation : true,
 							trigger : "manual",
 							title: GEPPETTO.Tutorial.TITLE.SAMPLES,
-							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.SAMPLES +
-							'<button class="btn btn-success btn-tut" id="next_load">Continue</button></div>',	
+							content: GEPPETTO.Tutorial.MESSAGE.SAMPLES,
 							placement : 'bottom',
 						});
-						$('#loadSimModal').popover('show');
+						$('#samples').popover('show');
 						
-						//double check if this popover is still visiblen user clicks load, user might have skipped a test
-						$('#load').on('click', function (e) {
-							var isVisible = $('#loadSimModal').data('popover').tip().hasClass('in');
-							if(isVisible){
-								$('#loadSimModal').popover('hide');
-							}
+						$('#dLabel').on('click', function(e){
+							$('#samples').popover('hide');
+						});
+
+						$('#dropdownmenu').on('click', function(e){
+							GEPPETTO.Tutorial.loadPopover();
 						});
 					}
 				},
 				
 				loadPopover : function(){
 					if(this.tutorialOn){
-						$("#loadSimModal").popover('hide');
+						$("#dLabel").popover('hide');
 						$("#load").popover({
 							html : true,
 							animation : true,
@@ -295,6 +292,10 @@ define(function(require) {
 							placement : 'top',
 						});
 						$('#shareTab').popover('show');
+						
+						$("#share").on("click", function(e){
+							$('#shareTab').popover('hide');
+						});
 					}
 				},
 				
@@ -356,8 +357,8 @@ define(function(require) {
 				OPENLOAD : "Use this button to load an existing simulation or enter the URL to your own simulation. Click this" +
 						   " button to continue with tutorial.",
 				SAMPLES : "You can load a sample simulation from the list available. Alternatively, you can enter the URL of your" +
-						" own simulation in the input field above. Open the dropdown list and select the third simulation, press continue to go " +
-						" to the next step",
+						" own simulation in the input field above. Open the dropdown list and select the third simulation" +
+						" to continue with tutorial",
 				LOAD : "Use the Load button to load the simulation. Click the button now to continue with tutorial.",
 				LOADING : "A simulation will take a few seconds to load, until then this message will be displayed and " +
 						"will be gone once simulation is loaded",

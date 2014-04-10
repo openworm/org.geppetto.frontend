@@ -225,7 +225,7 @@ define(function(require) {
 							title: GEPPETTO.Tutorial.TITLE.POSITION,
 							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.POSITION +
 							'<button class="btn btn-success btn-tut" id="next_rotation">Continue</button></div>',			
-							placement : 'right',
+							placement : 'bottom',
 						});
 						$('#position').popover('show');
 					}
@@ -241,7 +241,7 @@ define(function(require) {
 							title: GEPPETTO.Tutorial.TITLE.ROTATION,
 							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.ROTATION +
 							'<button class="btn btn-success btn-tut" id="next_zoom">Continue</button></div>',			
-							placement : 'right',
+							placement : 'bottom',
 						});
 						$('#rotation').popover('show');
 					}
@@ -292,10 +292,6 @@ define(function(require) {
 							placement : 'top',
 						});
 						$('#shareTab').popover('show');
-						
-						$("#share").on("click", function(e){
-							$('#shareTab').popover('hide');
-						});
 					}
 				},
 				

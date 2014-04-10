@@ -174,7 +174,7 @@ input {
 }
 
 #position{
-	height : 25px;
+	height : 75px;
 	width : 100px;	
 }
 
@@ -665,7 +665,7 @@ input {
 	font-size: 14px;
 	font-weight: 200;
 	width : auto;
-	z-index: 9999!important;
+	z-index: 9999;
 }
 
 .btn-tut {

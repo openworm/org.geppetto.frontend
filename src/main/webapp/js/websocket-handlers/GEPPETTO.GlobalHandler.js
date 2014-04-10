@@ -67,13 +67,16 @@ define(function(require) {
 						break;
 					//Error while running the simulation
 					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+						
+						var msg = JSON.parse(payload.message).message;
+
 						//if welcome message is open, return normal opacity after user clicked observed
 						if(($('#welcomeMessageModal').hasClass('in'))) {
 							$('#welcomeMessageModal').modal('hide');
 						}
 						$('#loadingmodal').modal('hide');
 						$('#start').attr('disabled', 'disabled');
-						GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, payload.message);
+						GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, msg);
 						break;
 					case GEPPETTO.GlobalHandler.MESSAGE_TYPE.GEPPETTO_VERSION:
 						var version = payload.geppetto_version;

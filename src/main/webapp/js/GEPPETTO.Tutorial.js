@@ -351,37 +351,37 @@ define(function(require) {
 		};
 		
 		GEPPETTO.Tutorial.MESSAGE = {
-				BEGIN : "You are about to begin a guided journey through Geppetto. Through the duration of it you will " +
-						"learn to load a Simulation and use the different controls for handling the Simulation.",
+				BEGIN : "You are about to begin a guided journey through Geppetto. On your tour you will " +
+						"learn to load a simulation and use the different controls for handling the simulation.",
 				OPENLOAD : "Use this button to load an existing simulation or enter the URL to your own simulation. Click this" +
 						   " button to continue with tutorial.",
 				SAMPLES : "You can load a sample simulation from the list available. Alternatively, you can enter the URL of your" +
-						" own simulation in the input field above. Open the dropdown list and select the third simulation, press continue to go " +
+						" own simulation in the input field above. Open the dropdown list and select the third simulation.  Then press continue to go " +
 						" to the next step",
 				LOAD : "Use the Load button to load the simulation. Click the button now to continue with tutorial.",
-				LOADING : "A simulation will take a few seconds to load, until then this message will be displayed and " +
-						"will be gone once simulation is loaded",
-				START: "Once you have loaded a simulation, it's time to see it on action by pressing Start. Click it now to see the " +
-						"simulation on action",
-				PAUSE : "You might want to admire the beauty of a simulation for a while, pausing it with " +
+				LOADING : "A simulation will take a few seconds to load.  Until then this message will be displayed and " +
+						"will be gone once the simulation is loaded",
+				START: "Once you have loaded a simulation, it's time to see it in action by pressing Start. Click it now to see the " +
+						"simulation in action",
+				PAUSE : "You might want to admire the beauty of a simulation for a while.  Pausing it with " +
 					    " this button is the way to go.",
-				STOP : "Perhaps you want to restart the simulation or are done with it, the stop button will help " +
+				STOP : "Perhaps you want to restart the simulation or are done with it?  The Stop button will help " +
 						"you with this task",
-				CONSOLE : "Controls Geppetto using commands. Everything you can do through the interface you can " +
-						  "do via commands. Open up the console by clicking this button, and type help() for more info.",
-				POSITION : "Reposition navigation buttons for the simulation.Move the simulation; up, down, left and right."+
-						   "Use the home button at the center to reset position to original default",
+				CONSOLE : "Control Geppetto using console commands that you type in. Everything you can do through the interface you can " +
+						  "do via console commands. Open up the console by clicking this button, and type help() for more info.",
+				POSITION : "Reposition navigation buttons for the simulation.  Move the simulation; up, down, left and right."+
+						   "Use the home button at the center to reset position to the original default",
 				ROTATION : "Rotate the simulation clockwise and counter-clockwise along the x and y axis. " +
 							"Use the home button at the center to reset position to original default",
-				ZOOM : "Zoom in and out of the Simulation. Use the '+' for getting closer, and the '-' to get farther",
-				SHARE : "Once you get to experience the awesomeness of Geppetto you might want to share it with friends via Facebook or twitter." +
+				ZOOM : "Zoom in and out of the simulation. Use the '+' to get closer, and the '-' to move farther away",
+				SHARE : "Once you get to experience the awesomeness of Geppetto you might want to share it with friends via Facebook or Twitter." +
 						" Click on this tab to choose either method of sharing it on your preferred social site.",
 				CONTACT : "If you have any questions or want to talk to us, send us a message. Simply click this button " +
-						"and you can inmediately start communication with us without leaving this page.",
+						"and you can immediately start communication with us without leaving this page.",
 				HELP : "Click this button at any time for detailed descriptions of all the commands and controls within " +
 						"Geppetto.",
-				DONE : "Congratulations! You have reached the end of the tutorial, become Geppetto itself and are " +
-						"ready to create Pinochio!. "
+				DONE : "Congratulations! You have reached the end of the tutorial!  You have now become Geppetto himself and are " +
+						"ready to create Pinocchio! ;)"
 		};
 	};
 });

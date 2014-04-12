@@ -445,6 +445,12 @@ input {
 	width : 500px;
 }
 
+#error_code {
+	margin : .5em 2em;
+	font-size : 14px;
+	color : black;
+}
+
 #infomodal .modal-body{
 	overflow: auto;
 	max-height: 50%;

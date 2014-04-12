@@ -303,6 +303,37 @@
 			</div>
 		</div>
 		
+		<div id="errormodal"  class="modal hide fade" tabindex="-1"  aria-labelledby="errormodal-title" aria-hidden="true" data-backdrop="static">
+			<div class="modal-header" id="errormodal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					×
+				</button>
+				<h3 id="errormodal-title" class="pagination-centered"></h3>
+			</div>
+			<div class="modal-body">
+				<p id="errormodal-text">
+				</p>
+				<div class="panel panel-default">
+    				<div class="panel-heading">
+      				<h4 class="panel-title">
+        			<a id="error_code" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"></a>
+      				</h4>
+    				</div>
+    				<div id="collapseOne" class="panel-collapse collapse">
+      				<div class="panel-body">
+      					<p id="error_source"></p>
+      					<p id="error_exception"></p>
+      				</div>
+    				</div>
+ 	 			</div>
+			</div>
+			<div class="modal-footer" id="errormodal-footer">
+				<button  id="errormodal-btn" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
+					Ok
+				</button>
+			</div>
+		</div>
+		
 		<div id="loadingmodal" class="loading modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
 			<div class="asterisk icon-spin"></div>
 			<p id="loadingmodaltext" class="orange"></p>

@@ -62,7 +62,7 @@ define(function(require) {
 						GEPPETTO.populateScene(entities);		
 						
 						if(GEPPETTO.Tutorial.isTutorialOn()){
-							GEPPETTO.Tutorial.continueTutorialAfterSim();
+							GEPPETTO.Tutorial.startPopover();
 						}
 						break;
 					//Event received to update the simulation

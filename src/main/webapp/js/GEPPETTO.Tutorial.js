@@ -76,10 +76,7 @@ define(function(require) {
 				 * A step during tutorial is to load the simulation, after it's done loading it will call 
 				 * this method to continue with the tutorial.
 				 */
-				continueTutorialAfterSim : function(){
-					GEPPETTO.Tutorial.startPopover();
-					$('#next_pause').on('click', function (e) {
-						GEPPETTO.Tutorial.pausePopover();
+				continueTutorialAfterSimStarted : function(){
 					$('#next_stop').on('click', function (e) {
 						GEPPETTO.Tutorial.stopPopover();
 					$('#next_position').on('click', function (e) {
@@ -98,7 +95,7 @@ define(function(require) {
 						GEPPETTO.Tutorial.helpPopover();
 					$('#tutorial_done').on('click', function (e) {
 						GEPPETTO.Tutorial.stopTutorial();
-					});});});});});});});});});});
+					});});});});});});});});});
 				},
 				
 				openLoadPopover : function(){
@@ -175,11 +172,14 @@ define(function(require) {
 							animation : true,
 							trigger : "manual",
 							title: GEPPETTO.Tutorial.TITLE.START,
-							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.START +
-							'<button class="btn btn-success btn-tut" id="next_pause">Continue</button></div>',
+							content: GEPPETTO.Tutorial.MESSAGE.START,
 							placement : 'bottom',
 						});
 						$('#start').popover('show');
+						
+						$('#start').on('click', function(e){
+							GEPPETTO.Tutorial.pausePopover();
+						});
 					}
 				},
 				
@@ -196,6 +196,8 @@ define(function(require) {
 							placement : 'bottom',
 						});
 						$('#pause').popover('show');
+						
+						GEPPETTO.Tutorial.continueTutorialAfterSimStarted();
 					}
 				},
 				
@@ -218,22 +220,22 @@ define(function(require) {
 				positionPopover : function(){
 					if(this.tutorialOn){
 						$("#stop").popover('hide');
-						$("#position").popover({
+						$("#position_toolbar").popover({
 							html : true,
 							animation : true,
 							trigger : "manual",
 							title: GEPPETTO.Tutorial.TITLE.POSITION,
 							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.POSITION +
 							'<button class="btn btn-success btn-tut" id="next_rotation">Continue</button></div>',			
-							placement : 'bottom',
+							placement : 'right',
 						});
-						$('#position').popover('show');
+						$('#position_toolbar').popover('show');
 					}
 				},
 				
 				rotationPopover : function(){
 					if(this.tutorialOn){
-						$("#position").popover('hide');
+						$("#position_toolbar").popover('hide');
 						$("#rotation").popover({
 							html : true,
 							animation : true,
@@ -241,7 +243,7 @@ define(function(require) {
 							title: GEPPETTO.Tutorial.TITLE.ROTATION,
 							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.ROTATION +
 							'<button class="btn btn-success btn-tut" id="next_zoom">Continue</button></div>',			
-							placement : 'bottom',
+							placement : 'right',
 						});
 						$('#rotation').popover('show');
 					}
@@ -254,8 +256,8 @@ define(function(require) {
 							html : true,
 							animation : true,
 							trigger : "manual",
-							title: GEPPETTO.Tutorial.TITLE.CONSOLE,
-							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.CONSOLE +
+							title: GEPPETTO.Tutorial.TITLE.ZOOM,
+							content: '<div>'+GEPPETTO.Tutorial.MESSAGE.ZOOM +
 							'<button class="btn btn-success btn-tut" id="next_console">Continue</button></div>',			
 							placement : 'right',
 						});
@@ -291,7 +293,7 @@ define(function(require) {
 							'<button class="btn btn-success btn-tut" id="next_contact">Continue</button></div>',			
 							placement : 'top',
 						});
-						$('#shareTab').popover('show');
+						$('#shareTab').popover('show');						
 					}
 				},
 				

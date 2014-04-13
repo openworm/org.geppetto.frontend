@@ -173,11 +173,6 @@ input {
 #error {
 }
 
-#position{
-	height : 75px;
-	width : 100px;	
-}
-
 #w {
 	left: 0px;
 	top: 25px;
@@ -200,7 +195,10 @@ input {
 }
 
 #rotation {
-	height : 75px;
+	left: 10px;
+	top: 50px;
+	position: absolute;
+	height : 150px;
 	width : 100px;	
 }
 
@@ -226,7 +224,10 @@ input {
 }
 
 #zoom {
-	height : 50px;
+	left: 10px;
+	top: 140px;
+	position: absolute;
+	height : 150px;
 	width : 100px;
 }
 
@@ -636,6 +637,10 @@ input {
 	width : 55px;
 	height:32px;
 	border : 0px;
+}
+
+#geppetto-share p {
+	width : 100px;
 }
 
 #geppetto-share p {

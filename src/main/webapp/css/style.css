@@ -105,7 +105,7 @@ p {
 	left: 10px;
 	top: 10px;
 	position: absolute;
-	width: 100px;
+	width: 90px;
 	height: 150px;
 }
 
@@ -199,7 +199,7 @@ input {
 	top: 50px;
 	position: absolute;
 	height : 150px;
-	width : 100px;	
+	width : 80px;	
 }
 
 #rw {
@@ -225,10 +225,10 @@ input {
 
 #zoom {
 	left: 10px;
-	top: 140px;
+	top: 120px;
 	position: absolute;
 	height : 150px;
-	width : 100px;
+	width : 80px;
 }
 
 #zo {

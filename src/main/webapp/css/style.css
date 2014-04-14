@@ -391,7 +391,7 @@ input {
 }
 
 #footer {
-	position: fixed;
+	position: absolute;
 	bottom: 0px;
 	width: 100%;
 }
@@ -639,7 +639,7 @@ input {
 	border : 0px;
 }
 
-#geppetto-share p {
+#geppetto-share{
 	width : 100px;
 }
 

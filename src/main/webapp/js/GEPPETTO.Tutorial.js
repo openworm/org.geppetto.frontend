@@ -167,14 +167,28 @@ define(function(require) {
 				startPopover : function(){
 					if(this.tutorialOn){
 						$("#loadingmodal").popover('hide');
-						$("#start").popover({
-							html : true,
-							animation : true,
-							trigger : "manual",
-							title: GEPPETTO.Tutorial.TITLE.START,
-							content: GEPPETTO.Tutorial.MESSAGE.START,
-							placement : 'bottom',
-						});
+						if(GEPPETTO.Simulation.isStarted())
+						{
+							$("#start").popover({
+								html : true,
+								animation : true,
+								trigger : "manual",
+								title: GEPPETTO.Tutorial.TITLE.START,
+								content: '<div>'+GEPPETTO.Tutorial.MESSAGE.START +
+								'<button class="btn btn-success btn-tut" id="next_pause">Continue</button></div>',
+								placement : 'bottom',
+							});	
+						}
+						else{
+							$("#start").popover({
+								html : true,
+								animation : true,
+								trigger : "manual",
+								title: GEPPETTO.Tutorial.TITLE.START,
+								content: GEPPETTO.Tutorial.MESSAGE.START,
+								placement : 'bottom',
+							});
+						}
 						$('#start').popover('show');
 						
 						$('#start').on('click', function(e){
@@ -293,7 +307,29 @@ define(function(require) {
 							'<button class="btn btn-success btn-tut" id="next_contact">Continue</button></div>',			
 							placement : 'top',
 						});
-						$('#shareTab').popover('show');						
+						$('#shareTab').popover('show');	
+						
+//						$('#shareTab').on('click', function(e){
+//							$('#shareTab').popover('hide');	
+//							
+////							if(GEPPETTO.Share.isVisible()){
+////								$("#geppetto-share").toggleClass("clicked");
+////								$(".share-panel").slideToggle();
+////								GEPPETTO.Share.setVisible(mode);
+////							}
+////							else{
+////								$("#geppetto-share").popover({
+////									html : true,
+////									animation : true,
+////									trigger : "manual",
+////									title: GEPPETTO.Tutorial.TITLE.SHARE,
+////									content: '<div>'+GEPPETTO.Tutorial.MESSAGE.SHARE +
+////									'<button class="btn btn-success btn-tut" id="next_contact">Continue</button></div>',			
+////									placement : 'top',
+////								});
+////								$('#geppetto-share').popover('show');
+////							}
+//						});	
 					}
 				},
 				

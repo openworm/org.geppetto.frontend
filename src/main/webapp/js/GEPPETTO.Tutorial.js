@@ -146,6 +146,10 @@ define(function(require) {
 							placement : 'bottom',
 						});
 						$('#load').popover('show');
+						
+						$('#load').on("click", function(e){
+							$("#loadingmodal").popover('hide');
+						});
 					}
 				},
 				
@@ -166,7 +170,6 @@ define(function(require) {
 				
 				startPopover : function(){
 					if(this.tutorialOn){
-						$("#loadingmodal").popover('hide');
 						if(GEPPETTO.Simulation.isStarted())
 						{
 							$("#start").popover({
@@ -192,6 +195,10 @@ define(function(require) {
 						$('#start').popover('show');
 						
 						$('#start').on('click', function(e){
+							GEPPETTO.Tutorial.pausePopover();
+						});
+						
+						$('#next_pause').on('click', function(e){
 							GEPPETTO.Tutorial.pausePopover();
 						});
 					}

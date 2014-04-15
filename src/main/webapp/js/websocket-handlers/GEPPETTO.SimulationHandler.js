@@ -59,11 +59,7 @@ define(function(require) {
 						GEPPETTO.Simulation.setSimulationLoaded();
 
 						//Populate scene
-						GEPPETTO.populateScene(entities);		
-						
-						if(GEPPETTO.Tutorial.isTutorialOn()){
-							GEPPETTO.Tutorial.startPopover();
-						}
+						GEPPETTO.populateScene(entities);	
 						break;
 					//Event received to update the simulation
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
@@ -115,6 +111,9 @@ define(function(require) {
 					//Simulation has been started, enable pause button
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 						GEPPETTO.FE.updateStartEvent();
+						if(GEPPETTO.Tutorial.isTutorialOn()){
+							GEPPETTO.Tutorial.startPopover();
+						}
 						break;
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STOPPED:
 						//Updates the simulation controls visibility

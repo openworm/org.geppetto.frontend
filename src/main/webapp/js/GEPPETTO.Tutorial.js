@@ -76,7 +76,7 @@ define(function(require) {
 				 * A step during tutorial is to load the simulation, after it's done loading it will call 
 				 * this method to continue with the tutorial.
 				 */
-				continueTutorialAfterSimStarted : function(){
+				continueTutorial : function(){
 					$('#next_stop').on('click', function (e) {
 						GEPPETTO.Tutorial.stopPopover();
 					$('#next_position').on('click', function (e) {
@@ -177,7 +177,7 @@ define(function(require) {
 								animation : true,
 								trigger : "manual",
 								title: GEPPETTO.Tutorial.TITLE.START,
-								content: '<div>'+GEPPETTO.Tutorial.MESSAGE.START +
+								content: '<div>'+GEPPETTO.Tutorial.MESSAGE.STARTED +
 								'<button class="btn btn-success btn-tut" id="next_pause">Continue</button></div>',
 								placement : 'bottom',
 							});	
@@ -196,11 +196,7 @@ define(function(require) {
 						
 						$('#start').on('click', function(e){
 							GEPPETTO.Tutorial.pausePopover();
-						});
-						
-						$('#next_pause').on('click', function(e){
-							GEPPETTO.Tutorial.pausePopover();
-						});
+						});						
 					}
 				},
 				
@@ -216,9 +212,9 @@ define(function(require) {
 							'<button class="btn btn-success btn-tut" id="next_stop">Continue</button></div>',					
 							placement : 'bottom',
 						});
-						$('#pause').popover('show');
+						$('#pause').popover('show');				
 						
-						GEPPETTO.Tutorial.continueTutorialAfterSimStarted();
+						GEPPETTO.Tutorial.continueTutorial();
 					}
 				},
 				
@@ -316,27 +312,11 @@ define(function(require) {
 						});
 						$('#shareTab').popover('show');	
 						
-//						$('#shareTab').on('click', function(e){
-//							$('#shareTab').popover('hide');	
-//							
-////							if(GEPPETTO.Share.isVisible()){
-////								$("#geppetto-share").toggleClass("clicked");
-////								$(".share-panel").slideToggle();
-////								GEPPETTO.Share.setVisible(mode);
-////							}
-////							else{
-////								$("#geppetto-share").popover({
-////									html : true,
-////									animation : true,
-////									trigger : "manual",
-////									title: GEPPETTO.Tutorial.TITLE.SHARE,
-////									content: '<div>'+GEPPETTO.Tutorial.MESSAGE.SHARE +
-////									'<button class="btn btn-success btn-tut" id="next_contact">Continue</button></div>',			
-////									placement : 'top',
-////								});
-////								$('#geppetto-share').popover('show');
-////							}
-//						});	
+						$('#share').on('click', function(e){
+							$('#shareTab').popover('hide');	
+							
+							$('#next_contact').click();
+						});	
 					}
 				},
 				
@@ -405,6 +385,8 @@ define(function(require) {
 						"will be gone once simulation is loaded",
 				START: "Once you have loaded a simulation, it's time to see it on action by pressing Start. Click it now to see the " +
 						"simulation on action",
+				STARTED: "Once you have loaded a simulation, you can use this button to start the simulation. Since this one" +
+						" was already started via script, you can click continue to continue with the tutorial.",
 				PAUSE : "You might want to admire the beauty of a simulation for a while, pausing it with " +
 					    " this button is the way to go.",
 				STOP : "Perhaps you want to restart the simulation or are done with it, the stop button will help " +

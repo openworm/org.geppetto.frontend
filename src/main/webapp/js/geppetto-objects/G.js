@@ -239,7 +239,7 @@ define(function(require) {
 					//show share bar
 					if(!GEPPETTO.Share.isVisible()){
 						$("#geppetto-share").toggleClass("clicked");
-						$(".share-panel").slideToggle();
+						$("#geppetto-share").slideToggle();
 						GEPPETTO.Share.setVisible(mode);
 					}
 					//share bar is already visible, nothing to see here
@@ -252,7 +252,7 @@ define(function(require) {
 					//hide share bar
 					if(GEPPETTO.Share.isVisible()){
 						$("#geppetto-share").toggleClass("clicked");
-						$(".share-panel").slideToggle();
+						$("#geppetto-share").slideToggle();
 						GEPPETTO.Share.setVisible(mode);
 					}
 					//share bar already hidden

@@ -38,9 +38,8 @@ define(function(require) {
 		var $ = require('jquery');
 
 		var updateTime = function(time) {
-			if(time && time.TIME_STEP && time.TIME_STEP.time) {
-				GEPPETTO.Simulation.time = time.TIME_STEP.time.value + time.TIME_STEP.time.unit;
-				GEPPETTO.Simulation.step = time.TIME_STEP.step.value + time.TIME_STEP.step.unit;
+			if(time) {
+				GEPPETTO.Simulation.time = time.value + time.unit;
 			}
 		};
 
@@ -58,11 +57,13 @@ define(function(require) {
 						var entities = JSON.parse(payload.update).entities;
 
 						GEPPETTO.Simulation.setSimulationLoaded();
-						//Reset the simulation states
-						GEPPETTO.Simulation.simulationStates={};
 
 						//Populate scene
-						GEPPETTO.populateScene(entities);
+						GEPPETTO.populateScene(entities);	
+						
+						if(GEPPETTO.Tutorial.isTutorialOn()){
+							GEPPETTO.Tutorial.startPopover();
+						}
 						break;
 					//Event received to update the simulation
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
@@ -73,7 +74,7 @@ define(function(require) {
 						//Update if simulation hasn't been stopped
 						if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
 							if(!GEPPETTO.isScenePopulated()) {
-								// the first time we need to create the object.s
+								// the first time we need to create the objects
 								GEPPETTO.populateScene(update.entities);
 							}
 							else {
@@ -81,6 +82,7 @@ define(function(require) {
 								GEPPETTO.updateJSONScene(update.entities);
 							}
 						}
+						
 						// TODO: store variable-watch tree
 						break;
 					//Simulation server became available
@@ -152,33 +154,17 @@ define(function(require) {
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.START_WATCH:
 						//variables watching
 						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-
-						//create objects for the variables to watch
-						for(var v in variables) {
-							GEPPETTO.Serializer.stringToObject(variables[v]);
-							var splitVariableName = variables[v].split(".");
-
-							var name = variables[v].replace(splitVariableName[0] + ".", "");
-
-							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
-
-
-						}
 						break;
 					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
 						//variables watching
 						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-
+						
+						var length = GEPPETTO.Simulation.simulationStates.length;
+						
 						//create objects for the variables to watch
 						for(var v in variables) {
-							GEPPETTO.Serializer.stringToObject(variables[v]);
-
-							var splitVariableName = variables[v].split(".");
-
-							var name = variables[v].replace(splitVariableName[0] + ".", "");
-
-							GEPPETTO.Simulation.simulationStates[name] = new GEPPETTO.SimState.State(name,0);
-
+							GEPPETTO.Simulation.simulationStates[length] = variables[v];
+							length++;
 						}
 						break;
 					//handles the case where simulation is done executing all steps

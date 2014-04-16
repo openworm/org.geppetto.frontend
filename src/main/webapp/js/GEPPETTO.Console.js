@@ -43,7 +43,7 @@
 define(function(require) {
 	
 	var console;
-
+	
 	return function(GEPPETTO) {
 		var $ = require('jquery');
 		/**
@@ -140,23 +140,17 @@ define(function(require) {
 		 * Toggle javascript console's visibility via button
 		 */
 		GEPPETTO.Console = {
+			visible : false,
+			
 			toggleConsole: function() {
 
-				//toggle button class
-				$('#consoleButton').toggleClass('clicked');
-
 				//user has clicked the console button
-				if($('#consoleButton').hasClass('clicked')) {
-					//toggle console
-					$('#console').slideToggle(200);
-
-					$('#commandInputArea').focus();
+				if($("#console").css("display") === "none") {
+					GEPPETTO.Console.executeCommand('G.showConsole(true)');
 				}
 				else {
-					$('#footer').height('');
-					$('#footerHeader').css("bottom", "0px");
-					$('#console').slideToggle(200);
-				}
+					GEPPETTO.Console.executeCommand('G.showConsole(false)');
+				}				
 			},
 
 			/**
@@ -166,7 +160,7 @@ define(function(require) {
 				if(mode) {
 					//check if console isn't already showing, we do this by checking
 					//it's css value of display
-					if($("#console").css("display") === "none") {
+					if(!this.visible) {
 						$('#console').slideToggle(200);
 						$('#commandInputArea').focus();
 					}
@@ -176,6 +170,8 @@ define(function(require) {
 					$('#footerHeader').css("bottom", "0px");
 					$('#console').slideToggle(200);
 				}
+				
+				this.visible = mode;
 			},
 
 			/**
@@ -235,6 +231,10 @@ define(function(require) {
 					GEPPETTO.Console.createConsole();
 				}
 				return console;
+			},
+			
+			isConsoleVisible : function() {
+				return this.visible;
 			},
 
 			/*

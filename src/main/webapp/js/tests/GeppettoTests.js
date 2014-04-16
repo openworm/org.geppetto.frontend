@@ -119,6 +119,38 @@ define(function(require) {
 
 			equal($("#" + plot.getId()).html(), null, "Widget successfully destroyed, passed");
 		});
+		
+		test("Test Commands", function() {
+			G.showConsole(true);
+			
+			equal(GEPPETTO.Console.isConsoleVisible(), true, "Console Visible");
+			
+			G.showConsole(false);
+			
+			equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
+			
+			G.showShareBar(true);
+			
+			equal(GEPPETTO.Share.isVisible(), true, "ShareBar Visible");
+			
+			G.showShareBar(false);
+			
+			equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
+						
+			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
+
+			G.showHelpWindow(false);
+			
+			var modalVisible = $('#helpmodal').hasClass('in');
+			
+			equal(modalVisible, false, "Help Window Hidden");
+			
+			equal(G.shareOnTwitter(), GEPPETTO.Resources.SHARE_ON_TWITTER, "Share On Twitter");
+						
+			equal(G.shareOnFacebook(), GEPPETTO.Resources.SHARE_ON_FACEBOOK, "Share On Facebook");
+		});
+		
+		
 
 	};
 

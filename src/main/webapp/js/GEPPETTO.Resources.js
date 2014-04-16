@@ -59,6 +59,8 @@ define(function(require) {
 
 			LOADING_SIMULATION: "Loading Simulation",
 
+			LOADING_SIMULATION_SLOW : "Still loading, but things are taking longer than expected, are you on low bandwidth?",
+			
 			SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
 
 			SIMULATION_NOT_LOADED: "Unable to stop simulation that hasn't been loaded",
@@ -137,6 +139,30 @@ define(function(require) {
 			SHOW_CONSOLE: "Showing Console",
 
 			HIDE_CONSOLE: "Hiding Console",
+			
+			CONSOLE_ALREADY_VISIBLE: "Console is already visible",
+
+			CONSOLE_ALREADY_HIDDEN: "Console is already hidden",
+			
+			SHOW_SHAREBAR: "Showing ShareBar",
+
+			HIDE_SHAREBAR: "Hiding ShareBar",
+			
+			SHAREBAR_ALREADY_VISIBLE: "ShareBar is already visible",
+
+			SHAREBAR_ALREADY_HIDDEN: "Sharebar is already hidden",
+			
+			SHARE_ON_TWITTER : "Sharing Geppetto on Twitter",
+			
+			SHARE_ON_FACEBOOK : "Sharing Geppetto on Facebook",
+			
+			SHOW_HELP_WINDOW: "Showing Help Window",
+
+			HIDE_HELP_WINDOW: "Hiding Help Window",
+			
+			HELP_ALREADY_VISIBLE: "Help Window is already visible",
+
+			HELP_ALREADY_HIDDEN: "Help Window is already hidden",
 
 			/**
 			 * GEPPETTO.Main resources
@@ -154,6 +180,8 @@ define(function(require) {
 			CLEAR_CANVAS: "Inbound Message Received: Clear canvas",
 
 			INVALID_SIMULATION_FILE: "Invalid Simulation File",
+			
+			ERROR: "Rats! Something went wrong. Please open an issue with the details",
 
 			INVALID_WATCH_LIST: "Invalid Watch List",
 

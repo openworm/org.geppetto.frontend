@@ -63,6 +63,9 @@ define(function(require) {
 				}
 
 				GEPPETTO.MessageSocket.socket.onopen = function() {
+					//enable load simulation button, and welcome message buttons
+					GEPPETTO.FE.postSocketConnection();
+					
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_OPENED);
 
 					//attach the handlers once socket is opened

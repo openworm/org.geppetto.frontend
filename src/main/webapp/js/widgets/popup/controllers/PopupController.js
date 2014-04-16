@@ -30,63 +30,77 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Class used to create widgets and handle widget events from parent class.
+ * Controller class for popup widget. Use to make calls to widget from inside Geppetto.
+ *
+ * @constructor
+ *
+ * @author Jesus R Martinez (jesus@metacell.us)
  */
-
-/**
- * Enum use to hold different types of widgets
- */
-
 define(function(require) {
-
 	return function(GEPPETTO) {
-		GEPPETTO.Widgets = {
-			PLOT: 0,
-			POPUP : 1
-		};
 
-		GEPPETTO.WidgetFactory = {
+		var Popup = require('widgets/popup/Popup');
+		var popups = new Array();
+
+		GEPPETTO.PopupsController = {
+			
+
 			/**
-			 * Adds widget to Geppetto
+			 * Registers widget events to detect and execute following actions.
+			 * Used when widget is destroyed.
+			 *
+			 * @param plotID
 			 */
-			addWidget: function(widgetType) {
-				var widget = null;
+			registerHandler: function(popupID) {
+				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PopupsController, popupID);
+			},
+			
+			addPopupWidget : function(){
+				//Popup widget number
+				var index = (popups.length + 1);
 
-				switch(widgetType) {
-					//create plotting widget
-					case GEPPETTO.Widgets.PLOT:
-						widget = GEPPETTO.PlotsController.addPlotWidget();
-						break;
-						//create plotting widget
-					case GEPPETTO.Widgets.POPUP:
-						widget = GEPPETTO.PopupsController.addPopupWidget();
-						break;
-					default:
-						break;
+				//Name of popup widget
+				var name = "Popup" + index;
+				var id = name;
+
+				//create popup widget
+				var p = window[name] = new Popup({id:id, name:name,visible:false});
+
+				//create help command for plot
+				p.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+
+				//store in local stack
+				popups.push(p);
+				
+				this.registerHandler(id);
+
+				//add commands to console autocomplete and help option
+				GEPPETTO.Utility.updateCommands("js/widgets/popup/Popup.js", p, id);
+
+				return p;
+			},
+		
+			removePopupWidgets : function(){
+				//remove all existing popup widgets
+				for(var i = 0; i < popups.length; i++) {
+					var popup = popups[i];
+
+					popup.destroy();
+					i++;
 				}
 
-				return widget;
+				popups = new Array();
 			},
-
-			/**
-			 * Removes widget from Geppetto
-			 */
-			removeWidget: function(widgetType) {
-				switch(widgetType) {
-					//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.PLOT:
-						GEPPETTO.PlotsController.removePlotWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-						//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.POPUP:
-						GEPPETTO.PlotsController.removePopupWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-					default:
-						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
+			
+			//receives updates from widget listener class to update plotting widget(s)
+			update: function(event) {
+				//delete popup widget(s)
+				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+					this.removePopupWidgets();
 				}
 			}
 		};
+		
 	};
 });

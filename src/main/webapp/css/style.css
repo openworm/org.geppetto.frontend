@@ -105,7 +105,7 @@ p {
 	left: 10px;
 	top: 10px;
 	position: absolute;
-	width: 100px;
+	width: 90px;
 	height: 150px;
 }
 
@@ -194,6 +194,14 @@ input {
 	top: 50px;
 }
 
+#rotation {
+	left: 10px;
+	top: 50px;
+	position: absolute;
+	height : 150px;
+	width : 80px;	
+}
+
 #rw {
 	left: 0px;
 	top: 110px;
@@ -213,6 +221,14 @@ input {
 #rs {
 	left: 25px;
 	top: 135px;
+}
+
+#zoom {
+	left: 10px;
+	top: 120px;
+	position: absolute;
+	height : 150px;
+	width : 80px;
 }
 
 #zo {
@@ -240,11 +256,6 @@ input {
 
 #rotationmode {
 	float: left;
-}
-
-.popover {
-	font-size: 14px;
-	font-weight: 200;
 }
 
 #alertbox {
@@ -362,6 +373,7 @@ input {
 	top: 0!important;
 	left: 0!important;
 	width: 100%!important;
+	height: 100%!important;
 	z-index: 9999!important;
 	-webkit-backface-visibility: hidden; 
 	-webkit-transform: translateZ(0);
@@ -379,7 +391,7 @@ input {
 }
 
 #footer {
-	position: fixed;
+	position: absolute;
 	bottom: 0px;
 	width: 100%;
 }
@@ -432,6 +444,12 @@ input {
 	z-index : 9999;
 	top : 35%;
 	width : 500px;
+}
+
+#error_code {
+	margin : .5em 2em;
+	font-size : 14px;
+	color : black;
 }
 
 #infomodal .modal-body{
@@ -534,7 +552,7 @@ input {
 }
 
 
-#close-welcomeMsg{
+.welcomeButton{
 	width:120px;
 	margin-top:10px;
 }
@@ -621,6 +639,10 @@ input {
 	border : 0px;
 }
 
+#geppetto-share{
+	width : 100px;
+}
+
 #geppetto-share p {
 	margin: 1em 0em;
 }
@@ -647,4 +669,17 @@ input {
 	filter: alpha(opacity = 85);
 	opacity: .85;
 	padding-bottom : 30px;
+}
+
+.popover {
+	transition: opacity .25s ease-in-out;
+	font-size: 14px;
+	font-weight: 200;
+	width : auto;
+	z-index: 9999;
+}
+
+.btn-tut {
+	float : right;
+	margin-top : 10px;
 }

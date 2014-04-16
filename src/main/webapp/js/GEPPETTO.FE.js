@@ -46,6 +46,99 @@ define(function(require) {
 		 * @returns {DivElement}
 		 */
 		GEPPETTO.FE = {
+				
+			/*
+			 * Handles events that are executed as soon as page is finished loading
+			 */
+			initialEvents : function(){
+				
+				GEPPETTO.Console.createConsole();
+				
+				//disable welcome message buttons
+				$('#skipTutorial').attr('disabled', 'disabled');
+				$('#startTutorial').attr('disabled', 'disabled');
+				GEPPETTO.Vanilla.enableKeyboard(false);
+				
+				GEPPETTO.FE.checkWelcomeMessageCookie();
+				
+				//handles clicking on help button 
+				$("#helpButton").click(function() {
+					var modalVisible = $('#helpmodal').hasClass('in');
+					if(modalVisible){
+						GEPPETTO.Console.executeCommand("G.showHelpWindow(false)");
+					}
+					else{
+						GEPPETTO.Console.executeCommand("G.showHelpWindow(true)");
+					}
+				});
+
+				/*
+				 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows
+				 * multiple modals to be open simultaneously without going in an infinite loop.
+				 */
+				$.fn.modal.Constructor.prototype.enforceFocus = function() {};
+
+				//Populate the 'loading simulation' modal's drop down menu with sample simulations
+				$('#loadSimModal').on('shown', GEPPETTO.FE.loadingModalUIUpdate());
+				
+				$('#start').click(function() {
+					GEPPETTO.Console.executeCommand("Simulation.start()");
+				});
+
+				$('#pause').click(function() {
+					GEPPETTO.Console.executeCommand("Simulation.pause()");
+				});
+
+				$('#stop').click(function() {
+					GEPPETTO.Console.executeCommand("Simulation.stop()");
+				});
+
+				$('#load').click(function() {
+					//Update the simulation controls visibility
+					GEPPETTO.FE.updateLoadEvent();
+					//loading from simulation file editor's
+					if(GEPPETTO.SimulationContentEditor.isEditing()) {
+						var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');
+						GEPPETTO.Console.executeCommand("Simulation.loadFromContent('" + simulation + "')");
+						GEPPETTO.SimulationContentEditor.setEditing(false);
+					}
+					//loading simulation url
+					else {
+						GEPPETTO.Console.executeCommand('Simulation.load("' + $('#url').val() + '")');
+					}
+
+					$('#loadSimModal').modal("hide");
+				});
+
+				$("#share").click(function() {
+					
+					//toggle button class
+					$('#share').toggleClass('clicked');
+
+					//user has clicked the console button
+					if($('#share').hasClass('clicked')) {
+						GEPPETTO.Console.executeCommand('G.showShareBar(true)');
+					}
+					else {
+						GEPPETTO.Console.executeCommand('G.showShareBar(false)');
+					}
+					return false;
+				});
+			},
+			
+			/**
+			 * Enables controls after connection is established
+			 */
+			postSocketConnection : function(){
+				//change welcome message button from Loading... to Start
+				$('#startTutorial').html("Start Tutorial");
+				$('#startTutorial').removeAttr('disabled');
+				$('#skipTutorial').removeAttr('disabled');
+				$('#openload').removeAttr('disabled');
+				//enable keyboard controls
+				GEPPETTO.Vanilla.enableKeyboard(true);
+			},
+			
 			createContainer: function() {
 				$("#sim canvas").remove();
 
@@ -105,6 +198,31 @@ define(function(require) {
 				$('#infomodal-text').html(msg);
 				$('#infomodal-btn').html("OK").off('click');
 				$('#infomodal').modal();
+			},
+			
+			/**
+			 * Dialog box to display error messages.
+			 *
+			 * @method
+			 *
+			 * @param title - Notifying error
+			 * @param msg - Message to display for error
+			 * @param code - Error code of message
+			 * @param source - Source error to display
+			 * @param exception - Exception to display
+			 */
+			errorDialog: function(title, msg, code, source, exception) {
+				$('#errormodal-title').html(title);
+				$('#errormodal-text').html(msg);
+				$('#error_code').html("> Error Code: "+code);
+				if(source!=""){
+					$('#error_source').html("Source : " +source);
+				}
+				if(exception !=""){
+					$('#error_exception').html("Exception : " + exception);
+				}
+				$('#errormodal-btn').html("OK").off('click');
+				$('#errormodal').modal();
 			},
 
 			/**
@@ -291,6 +409,9 @@ define(function(require) {
 				$('#start').removeAttr('disabled');
 				$('#pause').attr('disabled', 'disabled');
 				$('#stop').attr('disabled', 'disabled');
+				
+				//send signal to all widgets to reset data sets
+				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
 			},
 
 			/**
@@ -334,10 +455,14 @@ define(function(require) {
 					}
 				});
 
-				$("#close-welcomeMsg").on("click", function(event) {
+				$("#skipTutorial").on("click", function(event) {
 					if($('#welcomeMsgCookie').hasClass("checked")) {
 						$.cookie("hideWelcomeMessage", true);
 					}
+				});
+				
+				$("#startTutorial").on("click", function(event) {
+					GEPPETTO.Tutorial.startTutorial();
 				});
 
 				$('#welcomeMessageModal').on('hide', function(event) {

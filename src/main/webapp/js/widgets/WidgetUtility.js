@@ -31,34 +31,18 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Simulation State object, keeps track of new values for state and receives updates for it.
+ * Widget Utility Class
  *
- * @author Jesus R Martinez (jesus@metacel.us)
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
-
-	return function(GEPPETTO) {
-		GEPPETTO.SimState = {
-			State: function(stateName, stateValue, unit) {
-				return {
-					name: stateName,
-					value: stateValue,
-					unit: unit,
-					listeners:[],
-					update: function(newValue) {
-						if(isNaN(newValue)){
-							this.value = newValue.value;
-							this.unit = newValue.unit;
-						}
-						else{
-							this.value = newValue;
-						}
-						for(var key in this.listeners) {
-							this.listeners[key](this);
-						}
-					}
-				};
-			}
-		};
-	};
-});
+/**
+ * Load CSS File
+ * @param url
+ */
+function loadCss(url) {
+	var link = document.createElement("link");
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	link.href = url;
+	document.getElementsByTagName("head")[0].appendChild(link);
+}

@@ -65,9 +65,7 @@ require.config({
 		'vendor/THREEx.KeyboardState' : ['three'],
 		'vendor/ColorConverter' : ["three"],
 		'vendor/bootstrap.min' : ["jquery"],
-		'vendor/xml' : ["codemirror"],
-		'vendor/javascript' : ["codemirror"],
-		'vendor/formatting' : ["codemirror"],
+		'vendor/codemirror-formats.min' : ["codemirror"],
 		'vendor/backbone-localStorage.min' : ["backbone"],
 		'vendor/dat.gui.min' : ["jquery"],
 		'vendor/stats.min' : ["jquery"],
@@ -90,10 +88,8 @@ jqueryLib.push("vendor/TrackballControls");
 jqueryLib.push("vendor/ColorConverter");
 jqueryLib.push("vendor/bootstrap.min");
 jqueryLib.push("codemirror");
-jqueryLib.push("vendor/xml");
-jqueryLib.push("vendor/javascript");
-jqueryLib.push("vendor/formatting");
-jqueryLib.push("vendor/dat.gui");
+jqueryLib.push("vendor/codemirror-formats.min");
+jqueryLib.push("vendor/dat.gui.min");
 jqueryLib.push("vendor/stats.min");
 jqueryLib.push("vendor/Detector");
 jqueryLib.push("vendor/jquery.cookie");

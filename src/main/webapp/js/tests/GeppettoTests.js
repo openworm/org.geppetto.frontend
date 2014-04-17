@@ -136,12 +136,14 @@ define(function(require) {
 			G.showShareBar(false);
 			
 			equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
-			
-			//Qunit tests JS and not HTML. For the help window and share on twitter/facebook we are testing 
-			//the returned message from the commands since we can't acess the index.html file
-			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Show Help Window");
+						
+			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
 
-			equal(G.showHelpWindow(false), GEPPETTO.Resources.HIDE_HELP_WINDOW, "Hide Help Window");
+			G.showHelpWindow(false);
+			
+			var modalVisible = $('#helpmodal').hasClass('in');
+			
+			equal(modalVisible, false, "Help Window Hidden");
 			
 			equal(G.shareOnTwitter(), GEPPETTO.Resources.SHARE_ON_TWITTER, "Share On Twitter");
 						

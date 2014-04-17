@@ -105,7 +105,7 @@ p {
 	left: 10px;
 	top: 10px;
 	position: absolute;
-	width: 100px;
+	width: 90px;
 	height: 150px;
 }
 
@@ -173,10 +173,6 @@ input {
 #error {
 }
 
-#position{
-	height : 75px;	
-}
-
 #w {
 	left: 0px;
 	top: 25px;
@@ -199,7 +195,11 @@ input {
 }
 
 #rotation {
-	height : 75px;	
+	left: 10px;
+	top: 50px;
+	position: absolute;
+	height : 150px;
+	width : 80px;	
 }
 
 #rw {
@@ -224,7 +224,11 @@ input {
 }
 
 #zoom {
-	height : 50px;
+	left: 10px;
+	top: 120px;
+	position: absolute;
+	height : 150px;
+	width : 80px;
 }
 
 #zo {
@@ -387,7 +391,7 @@ input {
 }
 
 #footer {
-	position: fixed;
+	position: absolute;
 	bottom: 0px;
 	width: 100%;
 }
@@ -440,6 +444,12 @@ input {
 	z-index : 9999;
 	top : 35%;
 	width : 500px;
+}
+
+#error_code {
+	margin : .5em 2em;
+	font-size : 14px;
+	color : black;
 }
 
 #infomodal .modal-body{
@@ -627,6 +637,10 @@ input {
 	width : 55px;
 	height:32px;
 	border : 0px;
+}
+
+#geppetto-share{
+	width : 100px;
 }
 
 #geppetto-share p {

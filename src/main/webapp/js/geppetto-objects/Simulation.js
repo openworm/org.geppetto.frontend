@@ -238,6 +238,10 @@ define(function(require) {
 			isLoaded: function() {
 				return this.status != this.StatusEnum.INIT;
 			},
+			
+			isStarted: function() {
+				return this.status == this.StatusEnum.STARTED;
+			},
 
 			isLoading: function() {
 				return loading;

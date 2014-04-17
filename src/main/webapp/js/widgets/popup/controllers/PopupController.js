@@ -87,10 +87,18 @@ define(function(require) {
 					var popup = popups[i];
 
 					popup.destroy();
-					i--;
+					i++;
 				}
 
 				popups = new Array();
+			},
+			
+			//receives updates from widget listener class to update plotting widget(s)
+			update: function(event) {
+				//delete popup widget(s)
+				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+					this.removePopupWidgets();
+				}
 			}
 		};
 		

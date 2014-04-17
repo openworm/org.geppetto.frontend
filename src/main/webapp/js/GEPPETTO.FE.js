@@ -199,6 +199,31 @@ define(function(require) {
 				$('#infomodal-btn').html("OK").off('click');
 				$('#infomodal').modal();
 			},
+			
+			/**
+			 * Dialog box to display error messages.
+			 *
+			 * @method
+			 *
+			 * @param title - Notifying error
+			 * @param msg - Message to display for error
+			 * @param code - Error code of message
+			 * @param source - Source error to display
+			 * @param exception - Exception to display
+			 */
+			errorDialog: function(title, msg, code, source, exception) {
+				$('#errormodal-title').html(title);
+				$('#errormodal-text').html(msg);
+				$('#error_code').html("> Error Code: "+code);
+				if(source!=""){
+					$('#error_source').html("Source : " +source);
+				}
+				if(exception !=""){
+					$('#error_exception').html("Exception : " + exception);
+				}
+				$('#errormodal-btn').html("OK").off('click');
+				$('#errormodal').modal();
+			},
 
 			/**
 			 * Create bootstrap alert to notify users they are in observer mode

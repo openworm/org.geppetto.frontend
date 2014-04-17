@@ -59,10 +59,10 @@ define(function(require) {
 						GEPPETTO.Simulation.setSimulationLoaded();
 
 						//Populate scene
-						GEPPETTO.populateScene(entities);		
+						GEPPETTO.populateScene(entities);	
 						
 						if(GEPPETTO.Tutorial.isTutorialOn()){
-							GEPPETTO.Tutorial.continueTutorialAfterSim();
+							GEPPETTO.Tutorial.startPopover();
 						}
 						break;
 					//Event received to update the simulation

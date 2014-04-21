@@ -687,3 +687,9 @@ input {
 	float : right;
 	margin-top : 10px;
 }
+
+#simtutorial {
+	float: left;
+	margin-top: 11px;
+	margin-left: 15px;
+}

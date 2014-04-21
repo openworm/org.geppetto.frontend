@@ -43,7 +43,8 @@ define(function(require) {
 
 	return function(GEPPETTO) {
 		GEPPETTO.Widgets = {
-			PLOT: 0
+			PLOT: 0,
+			POPUP : 1
 		};
 
 		GEPPETTO.WidgetFactory = {
@@ -57,6 +58,10 @@ define(function(require) {
 					//create plotting widget
 					case GEPPETTO.Widgets.PLOT:
 						widget = GEPPETTO.PlotsController.addPlotWidget();
+						break;
+						//create plotting widget
+					case GEPPETTO.Widgets.POPUP:
+						widget = GEPPETTO.PopupsController.addPopupWidget();
 						break;
 					default:
 						break;
@@ -73,6 +78,10 @@ define(function(require) {
 					//removes plotting widget from geppetto
 					case GEPPETTO.Widgets.PLOT:
 						GEPPETTO.PlotsController.removePlotWidgets();
+						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
+						//removes plotting widget from geppetto
+					case GEPPETTO.Widgets.POPUP:
+						GEPPETTO.PlotsController.removePopupWidgets();
 						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;

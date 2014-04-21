@@ -30,53 +30,77 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Loads plot scripts
+ * Controller class for popup widget. Use to make calls to widget from inside Geppetto.
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @constructor
+ *
+ * @author Jesus R Martinez (jesus@metacell.us)
  */
-/*
- * Configure what dependencies are needed for each library
- */
-
-require.config({
-	/*
-	 * Values in here are for dependencies that more than one module/script requires and/or needs.
-	 * E.G. If depenedency it's used more than once, it goes in here.
-	 */
-	paths : {
-		'flot' :"widgets/plot/vendor/jquery.flot.min",
-	},
-	/*
-	 * Notes what dependencies are needed prior to loading each library, values on the right
-	 * of colon are dependencies. If dependency was declared in path above, then add it's dependencies 
-	 * to that object in here.
-	 */
-	shim: {
-		"widgets/plot/vendor/jquery.flot.resize.min" : ["flot"],
-		"widgets/plot/vendor/jquery.flot.axislabels.min" : ["flot"]
-	}
-});
-
-/*
- * Libraries used by plot widget
- */
-var libraries = [];
-libraries.push("flot");
-libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
-libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
-
-/*
- * Load libraries, and CSS after libraries are loaded
- */
-require(libraries,function($){
-	loadCss("js/widgets/plot/Plot.css");
-});	
-
-//Load PlotsController and other classes using GEPPETTO
 define(function(require) {
 	return function(GEPPETTO) {
-		require("widgets/plot/controllers/PlotsController")(GEPPETTO);
+
+		var Popup = require('widgets/popup/Popup');
+		var popups = new Array();
+
+		GEPPETTO.PopupsController = {
+			
+
+			/**
+			 * Registers widget events to detect and execute following actions.
+			 * Used when widget is destroyed.
+			 *
+			 * @param plotID
+			 */
+			registerHandler: function(popupID) {
+				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PopupsController, popupID);
+			},
+			
+			addPopupWidget : function(){
+				//Popup widget number
+				var index = (popups.length + 1);
+
+				//Name of popup widget
+				var name = "Popup" + index;
+				var id = name;
+
+				//create popup widget
+				var p = window[name] = new Popup({id:id, name:name,visible:false});
+
+				//create help command for plot
+				p.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+
+				//store in local stack
+				popups.push(p);
+				
+				this.registerHandler(id);
+
+				//add commands to console autocomplete and help option
+				GEPPETTO.Utility.updateCommands("js/widgets/popup/Popup.js", p, id);
+
+				return p;
+			},
+		
+			removePopupWidgets : function(){
+				//remove all existing popup widgets
+				for(var i = 0; i < popups.length; i++) {
+					var popup = popups[i];
+
+					popup.destroy();
+					i++;
+				}
+
+				popups = new Array();
+			},
+			
+			//receives updates from widget listener class to update plotting widget(s)
+			update: function(event) {
+				//delete popup widget(s)
+				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+					this.removePopupWidgets();
+				}
+			}
+		};
+		
 	};
 });

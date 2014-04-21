@@ -48,7 +48,8 @@ define(function(require) {
 
 			WIDGET_EVENT_TYPE: {
 				DELETE: "delete",
-				UPDATE: "update"
+				UPDATE: "update",
+				RESET_DATA : "reset"
 			},
 			_subscribers: [],
 

@@ -35,7 +35,7 @@
  *
  * Global objects. Handles global operations; clearing js console history commands,
  * turning on/off debug statements, copying history commands, help info, etc.
- *
+ *=-
  * @constructor
 
  * @author  Jesus R. Martinez (jesus@metacell.us)
@@ -223,6 +223,122 @@ define(function(require) {
 
 				return returnMessage;
 			},
+			
+			/**
+			 * Show or hide share bar
+			 *
+			 * @name G.showShareBar(mode)
+			 * @param mode - "true" to show, "false" to hide.
+			 */
+			showShareBar: function(mode) {
+				var returnMessage;
+
+				if(mode) {
+					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;
+					
+					//show share bar
+					if(!GEPPETTO.Share.isVisible()){
+						$("#geppetto-share").toggleClass("clicked");
+						$("#geppetto-share").slideToggle();
+						GEPPETTO.Share.setVisible(mode);
+					}
+					//share bar is already visible, nothing to see here
+					else{
+						returnMessage = GEPPETTO.Resources.SHAREBAR_ALREADY_VISIBLE;
+					}
+				}
+				else {
+					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;					
+					//hide share bar
+					if(GEPPETTO.Share.isVisible()){
+						$("#geppetto-share").toggleClass("clicked");
+						$("#geppetto-share").slideToggle();
+						GEPPETTO.Share.setVisible(mode);
+					}
+					//share bar already hidden
+					else{
+						returnMessage = GEPPETTO.Resources.SHAREBAR_ALREADY_HIDDEN;
+					}
+				}				
+
+				return returnMessage;
+			},
+			
+			/**
+			 * Show or hide help window using command
+			 *
+			 * @name G.showHelpWindow(mode)
+			 * @param mode - "true" to show, "false" to hide.
+			 */
+			showHelpWindow: function(mode) {
+				var returnMessage;
+
+				if(mode) {
+					var modalVisible = $('#helpmodal').hasClass('in');
+					//don't try to show help window again if already visible
+					if(modalVisible){
+						returnMessage = GEPPETTO.Resources.HELP_ALREADY_VISIBLE;
+					}
+					//show help window if it isn't visible
+					else{
+						returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
+						$('#helpmodal').modal('show');
+					}
+				}
+				else {
+					var modalVisible = $('#helpmodal').hasClass('in');
+					//don't try to hide already hidden help window
+					if(!modalVisible){
+						returnMessage = GEPPETTO.Resources.HELP_ALREADY_HIDDEN;
+					}
+					//hide help window
+					else{
+						returnMessage = GEPPETTO.Resources.HIDE_HELP_WINDOW;
+						$('#helpmodal').modal('hide');
+					}
+				}
+				return returnMessage;
+			},
+			
+			/**
+			 * Opens window to share geppetto on twitter
+			 * @name G.shareOnTwitter()
+			 */
+			shareOnTwitter : function(){
+				var shareURL = 'http://geppetto.org';
+				
+				if(GEPPETTO.Simulation.isLoaded()){
+					shareURL = "http://live.geppeto.org//?sim=" + GEPPETTO.Simulation.simulationURL;
+				}
+				
+				GEPPETTO.Share.twitter(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!');
+			
+				return GEPPETTO.Resources.SHARE_ON_TWITTER;
+			},
+			
+			/**
+			 * Opens window to share facebook on twitter
+			 * 
+			 * @name - G.shareOnFacebook()
+			 */
+			shareOnFacebook : function(){
+				var shareURL = 'http://geppetto.org';
+				
+				if(GEPPETTO.Simulation.isLoaded()){
+					shareURL = "http://live.geppeto.org/?sim=" + GEPPETTO.Simulation.simulationURL;
+				}
+				
+				GEPPETTO.Share.facebook(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','');			
+				
+				return GEPPETTO.Resources.SHARE_ON_FACEBOOK;
+			},
+			
+			showPopup : function(x,y,message){
+				var newWidget = GEPPETTO.WidgetFactory.addWidget(GEPPETTO.Widgets.POPUP);
+				newWidget.setPosition(x,y);
+				newWidget.setMessage(message);
+				newWidget.show();
+			},
 
 			/**
 			 *
@@ -254,6 +370,7 @@ define(function(require) {
 			/**
 			 * State of debug statements, whether they are turned on or off.
 			 *
+			 * @name - G.isDebugOn()
 			 * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
 			 */
 			isDebugOn: function() {

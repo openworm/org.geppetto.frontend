@@ -26,7 +26,7 @@ define(function(require) {
 				x: 0,
 				y: 0
 			},
-			geometriesMap: null,
+			visualModelMap: null,
 			idCounter: 0,
 
 			sceneCenter: new THREE.Vector3(),
@@ -36,7 +36,7 @@ define(function(require) {
 
 		var setupScene = function() {
 			VARS.scene = new THREE.Scene();
-			VARS.geometriesMap = {};
+			VARS.visualModelMap = {};
 		};
 
 		/**
@@ -108,7 +108,7 @@ define(function(require) {
 			VARS.controls = new THREE.TrackballControls(VARS.camera, VARS.renderer.domElement);
 			VARS.controls.noZoom = false;
 			VARS.controls.noPan = false;
-			VARS.controls.addEventListener('change', GEPPETTO.render);
+			VARS.controls.addEventListener('change', GEPPETTO.render);			
 		};
 
 		/**
@@ -134,6 +134,8 @@ define(function(require) {
 				VARS.camera.updateProjectionMatrix();
 				VARS.renderer.setSize($(VARS.container).width(), $(VARS.container).height());
 			}, false);
+			
+			document.addEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard, false);
 		};
 //	============================================================================
 //	Application logic.
@@ -197,7 +199,6 @@ define(function(require) {
 						VARS.controls.resetSTATE();
 					});
 
-				document.addEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard, false);
 			});
 		};
 

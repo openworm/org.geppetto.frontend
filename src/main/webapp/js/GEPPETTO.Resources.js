@@ -181,7 +181,7 @@ define(function(require) {
 
 			INVALID_SIMULATION_FILE: "Invalid Simulation File",
 			
-			ERROR: "Rats! Something went wrong. Please open an issue with the details",
+			ERROR: "Rats! Something went wrong.",
 
 			INVALID_WATCH_LIST: "Invalid Watch List",
 

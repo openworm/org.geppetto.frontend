@@ -131,7 +131,7 @@ define(function(require) {
 			 */
 			postSocketConnection : function(){
 				//change welcome message button from Loading... to Start
-				$('#startTutorial').html("Start Tutorial");
+				$('#startTutorial').html("<icon class='icon-comment'></icon> Start Tutorial");
 				$('#startTutorial').removeAttr('disabled');
 				$('#skipTutorial').removeAttr('disabled');
 				$('#openload').removeAttr('disabled');

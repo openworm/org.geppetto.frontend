@@ -36,11 +36,6 @@ div#preloaded-images {
 	font-weight: 300;
 }
 
-p {
-	text-align: center;
-	margin: .5em 2em;
-}
-
 #helpmodal {
 	overflow : auto;	
 	font-family : 'Helvetica Neue';
@@ -48,7 +43,6 @@ p {
 }
 
 #helpmodal p {
-	margin: .5em 2em;
 	text-align: left;
 }
 
@@ -447,9 +441,17 @@ input {
 }
 
 #error_code {
-	margin : .5em 2em;
 	font-size : 14px;
-	color : black;
+	color : #fd6808;
+}
+
+#errormodal p{
+	text-align: left;
+}
+
+#error_exception{
+	font-size: 12px;
+	line-height: 18px;
 }
 
 #infomodal .modal-body{
@@ -553,7 +555,7 @@ input {
 
 
 .welcomeButton{
-	width:120px;
+	width:150px;
 	margin-top:10px;
 }
 #welcomeMessageModal {
@@ -594,6 +596,7 @@ input {
 	top:80px;
 	background:rgba(0,0,0,0.7);
 	height:230px;
+	width:571px;
 	margin:0 auto;
 }
 
@@ -641,6 +644,7 @@ input {
 
 #geppetto-share{
 	width : 100px;
+	text-align:center;
 }
 
 #geppetto-share p {

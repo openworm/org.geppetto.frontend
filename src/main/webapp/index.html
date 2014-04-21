@@ -325,8 +325,14 @@
  	 			</div>
 			</div>
 			<div class="modal-footer" id="errormodal-footer">
-				<button  id="errormodal-btn" class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
-					Ok
+				<button  class="btn btn-warning" onclick="GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');" aria-hidden="true">
+					<icon class="icon-twitter"></icon> Shame on you
+				</button>
+				<button  class="btn btn-warning" onclick="window.open('https://github.com/openworm/org.geppetto/issues/new')" aria-hidden="true">
+					<icon class="icon-bug"></icon> Open issue
+				</button>
+				<button  id="errormodal-btn" class="btn btn-info" data-dismiss="modal" aria-hidden="true">
+					Close
 				</button>
 			</div>
 		</div>
@@ -350,7 +356,7 @@
 					Loading...
 				</button>
 				<button  id="skipTutorial" class="btn btn-success welcomeButton" data-dismiss="modal" aria-hidden="true">
-					Skip Tutorial
+					<icon class="icon-step-forward"></icon> Skip Tutorial
 				</button>
 				<br/>
 				<div class="wmCheckBoxDiv">

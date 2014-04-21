@@ -152,7 +152,7 @@ define(function(require) {
 				}
 
 				this.simulationURL = simulationURL;
-
+				this.listeners=[];
 				var loadStatus = GEPPETTO.Resources.LOADING_SIMULATION;
 
 				if(simulationURL != null && simulationURL != "") {
@@ -184,7 +184,7 @@ define(function(require) {
 					if(Simulation.loading){
 						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
 					}
-				},10000);
+				},15000);
 				this.loading = true;
 
 				return loadStatus;
@@ -201,7 +201,7 @@ define(function(require) {
 				if(this.status == this.StatusEnum.STARTED || this.status == this.StatusEnum.PAUSED) {
 					this.stop();
 				}
-
+				this.listeners=[];
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 				//update ui based on success of webgl
 				GEPPETTO.FE.update(webGLStarted);
@@ -223,7 +223,7 @@ define(function(require) {
 					if(Simulation.loading){
 						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
 					}
-				},10000);
+				},15000);
 				this.loading = true;
 				
 				return GEPPETTO.Resources.LOADING_SIMULATION;

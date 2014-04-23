@@ -170,22 +170,27 @@ input {
 #w {
 	left: 0px;
 	top: 25px;
+	z-index : 1;
 }
 #n {
 	left: 25px;
 	top: 0px;
+	z-index : 1;
 }
 #h {
 	left: 25px;
 	top: 25px;
+	z-index : 1;
 }
 #e {
 	left: 50px;
 	top: 25px;
+	z-index : 1;
 }
 #s {
 	left: 25px;
 	top: 50px;
+	z-index : 1;
 }
 
 #rotation {
@@ -193,28 +198,34 @@ input {
 	top: 50px;
 	position: absolute;
 	height : 150px;
-	width : 80px;	
+	width : 80px;
+	z-index : 0;	
 }
 
 #rw {
 	left: 0px;
 	top: 110px;
+	z-index : 1;
 }
 #rn {
 	left: 25px;
 	top: 85px;
+	z-index : 1;
 }
 #rh {
 	left: 25px;
 	top: 110px;
+	z-index : 1;
 }
 #re {
 	left: 50px;
 	top: 110px;
+	z-index : 1;
 }
 #rs {
 	left: 25px;
 	top: 135px;
+	z-index : 1;
 }
 
 #zoom {
@@ -223,15 +234,18 @@ input {
 	position: absolute;
 	height : 150px;
 	width : 80px;
+	z-index : 0;
 }
 
 #zo {
 	left: 25px;
 	top: 200px;
+	z-index : 1;
 }
 #zi {
 	left: 25px;
 	top: 175px;
+	z-index : 1;
 }
 #mode {
 	margin-bottom: 10px;

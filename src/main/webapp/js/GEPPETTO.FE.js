@@ -124,6 +124,9 @@ define(function(require) {
 					}
 					return false;
 				});
+				
+				//handles launching tutorial if button inside help dialog is pressed
+				GEPPETTO.FE.launchTutorial();
 			},
 			
 			/**
@@ -143,6 +146,35 @@ define(function(require) {
 				$("#sim canvas").remove();
 
 				return $("#sim").get(0);
+			},
+			
+			/**
+			 * Launches tutorial from button inside help modal 
+			 */
+			launchTutorial : function(){
+				$("#launch-tutorial").click(function(){
+					GEPPETTO.Console.executeCommand("G.showHelpWindow(false)");
+
+					if(!GEPPETTO.Simulation.isLoaded()){
+						GEPPETTO.Tutorial.startTutorial();
+					}
+					else{
+						$('#infomodal-title').html(GEPPETTO.Resources.STOP_SIMULATION_TUTORIAL);
+						$('#infomodal-text').html(GEPPETTO.Resources.STOP_SIMULATION_TUTORIAL_MSG);
+						$('#infomodal-btn').html("Okay").click(function() {
+							
+							$('#infomodal').on('hidden', function() { 
+								if(!GEPPETTO.Tutorial.isTutorialOn()){
+									//reset sample drop down menu for tutorial purposes
+									$('#dropdowndisplaytext').html("Select simulation from list...");
+									$('#url').val("");
+									GEPPETTO.Tutorial.startTutorial();
+								}
+							});
+						});
+						$('#infomodal').modal();
+					}
+				});
 			},
 
 			/**

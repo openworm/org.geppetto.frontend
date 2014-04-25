@@ -50,6 +50,7 @@ define(function(require) {
 							GEPPETTO.Tutorial.MESSAGE.BEGIN);
 					
 					$('#infomodal-btn').on('click', function (e) {
+						$('.modal-backdrop').remove();
 						GEPPETTO.Tutorial.openLoadPopover();
 						//hide openload popover
 						$('#openload').on('click', function (e) {

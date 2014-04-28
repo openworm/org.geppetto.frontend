@@ -161,9 +161,15 @@ define(function(require) {
 					else{
 						$('#infomodal-title').html(GEPPETTO.Resources.STOP_SIMULATION_TUTORIAL);
 						$('#infomodal-text').html(GEPPETTO.Resources.STOP_SIMULATION_TUTORIAL_MSG);
+						
+						var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+						GEPPETTO.FE.update(webGLStarted);
+						
 						$('#infomodal-btn').html("Okay").click(function() {
 							
 							$('#infomodal').on('hidden', function() { 
+								//unbind hidden event so we can reuse same modal for other alerts
+								$('#infomodal').unbind('hidden');
 								if(!GEPPETTO.Tutorial.isTutorialOn()){
 									//reset sample drop down menu for tutorial purposes
 									$('#dropdowndisplaytext').html("Select simulation from list...");

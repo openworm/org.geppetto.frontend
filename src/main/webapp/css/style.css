@@ -103,6 +103,13 @@ div#preloaded-images {
 	height: 150px;
 }
 
+#quitTutorial {
+	display : none;
+	right: 13px;
+	top: 50px;
+	position : absolute;
+}
+
 #toolbar {
 	position: absolute;
 	left: 100px;

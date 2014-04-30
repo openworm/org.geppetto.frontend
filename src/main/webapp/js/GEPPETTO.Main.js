@@ -65,7 +65,7 @@ define(function(require) {
 			 * Initialize web socket communication
 			 */
 			init: function() {
-				GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/org.geppetto.frontend/GeppettoServlet');
+				GEPPETTO.MessageSocket.connect('ws://' + window.location.host + '/GeppettoServlet');
 				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.INIT;
 				GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);
 			},

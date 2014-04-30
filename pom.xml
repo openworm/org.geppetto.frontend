@@ -132,7 +132,7 @@
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-ClassPath>.,{maven-dependencies},WEB-INF/classes</Bundle-ClassPath>
-						<Web-ContextPath>org.geppetto.frontend</Web-ContextPath>
+						<Web-ContextPath>/</Web-ContextPath>
 						<Import-Package>org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
 						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>						

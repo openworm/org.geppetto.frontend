@@ -48,6 +48,13 @@ define(function(require) {
 		 * Web socket creation and communication
 		 */
 		GEPPETTO.MessageSocket = {
+				
+			//sets protocol to use for connection
+			protocol : "wss://",
+			
+			//flag used to connect using ws protocol if wss failed
+			failsafe : false,
+			
 			socket:null,
 
 			connect: function(host) {
@@ -88,9 +95,20 @@ define(function(require) {
 
 				//Detects problems when connecting to Geppetto server
 				GEPPETTO.MessageSocket.socket.onerror = function(evt) {
-					var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
+					//attempt to connect using ws first time wss fails, 
+					//if ws fails too then don't try again and display info error window
+					if(!GEPPETTO.MessageSocket.failsafe){
+						GEPPETTO.MessageSocket.protocol = "ws://";
+						GEPPETTO.MessageSocket.failsafe = true;
+						GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol
+								+ window.location.host + '/org.geppetto.frontend/GeppettoServlet');
+					}
+					//display error window
+					else{
+						var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
 
-					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
+						GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
+					}
 				};
 			},
 

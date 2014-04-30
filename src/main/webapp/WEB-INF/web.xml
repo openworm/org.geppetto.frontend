@@ -30,7 +30,16 @@
     <servlet-class>org.geppetto.frontend.TestServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>TestServlet</servlet-name>
-    <url-pattern>/TestServlet</url-pattern>
+	<servlet-name>TestServlet</servlet-name>
+	<url-pattern>/TestServlet</url-pattern>
   </servlet-mapping>
+  <security-constraint>
+  <web-resource-collection>
+	<web-resource-name>securedapp</web-resource-name>
+	<url-pattern>/*</url-pattern>
+  </web-resource-collection>
+	<user-data-constraint>
+		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	</user-data-constraint>
+	</security-constraint>
 </web-app>

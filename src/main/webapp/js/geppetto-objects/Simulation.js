@@ -404,6 +404,13 @@ define(function(require) {
 				this.loadTimer = 0;
 			},
 
+			selectEntity : function(name){
+				
+				GEPPETTO.selectEntity(name);
+				
+				return GEPPETTO.Resources.SELECTING_ENTITY + name;
+			},
+			
 			/**
 			 * Updates the simulation states with new watched variables
 			 */

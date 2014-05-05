@@ -11,6 +11,7 @@ define(function(require) {
 			container: null,
 			controls: null,
 			scene: null,
+			entities : {},
 			renderer: null,
 			stats: null,
 			gui: null,
@@ -31,7 +32,8 @@ define(function(require) {
 
 			sceneCenter: new THREE.Vector3(),
 			cameraPosition: new THREE.Vector3(),
-			canvasCreated: false
+			canvasCreated: false,
+			selected : [],
 		};
 
 		var setupScene = function() {
@@ -117,9 +119,18 @@ define(function(require) {
 		var setupListeners = function() {
 			// when the mouse moves, call the given function
 			VARS.renderer.domElement.addEventListener('mousedown', function(event) {
-				if(VARS.mouseClickListener) {
-					VARS.mouseClickListener(GEPPETTO.getIntersectedObjects(), event.which);
-				}
+					var intersects = GEPPETTO.getIntersectedObjects();
+
+					if ( intersects.length > 0 ) {
+						VARS.selected[0] = intersects[ 0 ];
+						GEPPETTO.Console.executeCommand('Simulation.selectEntity("'+ VARS.selected[0].object.name + '")' );
+					}else{
+						if(VARS.selected.length >0 ){
+							VARS.selected[0].object.material.color.setHex(Math.random() * 0xffffff);
+							VARS.selected[0]=null;
+						}
+					}
+						
 			}, false);
 
 			VARS.renderer.domElement.addEventListener('mousemove', function(event) {

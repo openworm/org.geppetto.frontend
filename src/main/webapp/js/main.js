@@ -83,7 +83,7 @@ var jqueryLib = [
   "geppetto",
   "three",
   "vendor/THREEx.KeyboardState",
-  "vendor/jqueryui-1.10.3.custom.min",
+  "vendor/jquery-ui-1.10.3.custom.min",
   "vendor/TrackballControls",
   "vendor/ColorConverter",
   "vendor/bootstrap.min",

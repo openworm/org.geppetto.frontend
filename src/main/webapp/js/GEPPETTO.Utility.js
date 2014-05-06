@@ -280,7 +280,7 @@ define(function(require) {
 			},
 
 			addTag: function(tagName) {
-				tags[tags.length] = tagName;
+				tags.push(tagName);
 			},
 
 			removeTags: function(id) {

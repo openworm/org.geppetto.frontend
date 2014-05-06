@@ -79,16 +79,18 @@ define(function(require) {
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there
 					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
+                        var infomodalBtn = $('#infomodal-btn');
+
 						$('#infomodal-title').html("Zzz");
 						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
-						$('#infomodal-btn').html("Yes");
+						infomodalBtn.html("Yes");
 
-						$('#infomodal-btn').html("Yes").click(function() {
+						infomodalBtn.html("Yes").click(function() {
 							$('#infomodal').modal('hide');
 							GEPPETTO.Main.idleTime = 0;
 
 							//unbind click event so we can reuse same modal for other alerts
-							$('#infomodal-btn').unbind('click');
+							infomodalBtn.unbind('click');
 						});
 
 						$('#infomodal').modal();
@@ -141,12 +143,12 @@ define(function(require) {
 			
 			//Increment the idle time counter every minute.
 			var idleInterval = setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
-
+            var here = $(this);
 			//Zero the idle timer on mouse movement.
-			$(this).mousemove(function(e) {
+			here.mousemove(function(e) {
 				GEPPETTO.Main.idleTime = 0;
 			});
-			$(this).keypress(function(e) {
+			here.keypress(function(e) {
 				GEPPETTO.Main.idleTime = 0;
 			});
 

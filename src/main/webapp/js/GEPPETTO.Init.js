@@ -129,12 +129,15 @@ define(function(require) {
 			}, false);
 
 			window.addEventListener('resize', function() {
-				VARS.camera.aspect = ($(VARS.container).width()) / ($(VARS.container).height());
-				;
+              var container = $(VARS.container),
+                  width     = container.width(),
+                  height    = container.height();
+
+				VARS.camera.aspect = (width) / (height);
 				VARS.camera.updateProjectionMatrix();
-				VARS.renderer.setSize($(VARS.container).width(), $(VARS.container).height());
+				VARS.renderer.setSize(width, height);
 			}, false);
-			
+
 			document.addEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard, false);
 		};
 //	============================================================================

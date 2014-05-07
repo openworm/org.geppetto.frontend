@@ -86,12 +86,12 @@ define(function(require) {
 						return false;
 					},
 					open: function(event, ui) {
-						var firstElement = $(this).data("uiAutocomplete").menu.element[0].children[0]
+                        var suggestions = $(this).data("uiAutocomplete").menu.element[0].children
+                            , firstElement = suggestions[0]
 							, inpt = $('#commandInputArea')
 							, original = inpt.val()
-							, firstElementText = $(firstElement).text();
-
-						var suggestionsSize = $(this).data("uiAutocomplete").menu.element[0].children.length;
+							, firstElementText = $(firstElement).text()
+                            , suggestionsSize = suggestions.length;
 						/*
 						 here we want to make sure that we're not matching something that doesn't start
 						 with what was typed in
@@ -100,7 +100,7 @@ define(function(require) {
 
 							//only one suggestion
 							if(suggestionsSize == 1) {
-								if(inpt.val() != firstElementText) {
+								if(inpt.val() !== firstElementText) {
 									inpt.val(firstElementText);//change the input to the first match
 
 									inpt[0].selectionStart = original.length; //highlight from end of input
@@ -109,11 +109,11 @@ define(function(require) {
 							}
 							//match multiple suggestions
 							else {
-								if(inpt.val() != "") {
+								if(inpt.val() !== "") {
 
 									var elementsText = [];
 									for(var i = 0; i < suggestionsSize; i++) {
-										elementsText[i] = $($(this).data("uiAutocomplete").menu.element[0].children[i]).text();
+										elementsText[i] = $(suggestions[i]).text();
 									}
 									var A = elementsText.slice(0).sort(),
 										word1 = A[0], word2 = A[A.length - 1],
@@ -145,12 +145,8 @@ define(function(require) {
 			toggleConsole: function() {
 
 				//user has clicked the console button
-				if($("#console").css("display") === "none") {
-					GEPPETTO.Console.executeCommand('G.showConsole(true)');
-				}
-				else {
-					GEPPETTO.Console.executeCommand('G.showConsole(false)');
-				}				
+				var command = ($("#console").css("display") === "none") ? "true" : "false";
+				GEPPETTO.Console.executeCommand("G.showConsole("+command+")");
 			},
 
 			/**
@@ -170,7 +166,7 @@ define(function(require) {
 					$('#footerHeader').css("bottom", "0px");
 					$('#console').slideToggle(200);
 				}
-				
+
 				this.visible = mode;
 			},
 
@@ -178,32 +174,35 @@ define(function(require) {
 			 * Creates Javascript Console
 			 */
 			createConsole: function() {
+              var consoleElement = $("#console");
 				// Create the sandbox console:
 				console = new GEPPETTO.Sandbox.View({
-					el: $('#console'),
+					el: consoleElement,
 					model: new GEPPETTO.Sandbox.Model(),
 					resultPrefix: "  => ",
 					tabCharacter: "\t",
 					placeholder: "// type a javascript command and hit enter (help() for info)"
 				});
 
-				$('#console').css("width", $("#footer").width() - 40);
+                var width = $("#footer").width();
+
+				consoleElement.css("width", width - 40);
 
 				//allow console to be resizable
-				$("#console").resizable({
+				consoleElement.resizable({
 					handles: 'n',
 					minHeight: 100,
 					autoHide: true,
 					maxHeight: 400,
 					resize: function(event, ui) {
-						document.getElementById('console').style.top = "0px";
+						consoleElement.style.top = "0px";
 						$(document.getElementById('footer')).height(ui.size.height + 86);
 					}
 				});
 
 				//handles resizing the JS console when the windows is resized
 				$(window).resize(function() {
-					$('#console').css("width", $("#footer").width() - 40);
+					consoleElement.css("width", width - 40);
 				});
 
 				autoComplete();

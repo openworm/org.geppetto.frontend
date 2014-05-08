@@ -122,13 +122,11 @@ define(function(require) {
 					var intersects = GEPPETTO.getIntersectedObjects();
 
 					if ( intersects.length > 0 ) {
-						VARS.selected[0] = intersects[ 0 ];
+						GEPPETTO.unselectEntity();
+						VARS.selected[0] = intersects[ 0 ].object;
 						GEPPETTO.Console.executeCommand('Simulation.selectEntity("'+ VARS.selected[0].object.name + '")' );
 					}else{
-						if(VARS.selected.length >0 ){
-							VARS.selected[0].object.material.color.setHex(Math.random() * 0xffffff);
-							VARS.selected[0]=null;
-						}
+						GEPPETTO.unselectEntity();
 					}
 						
 			}, false);

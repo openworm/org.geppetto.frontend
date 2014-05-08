@@ -773,12 +773,19 @@ define(function(require)
 		selectEntity : function(name){
 			for(var v in VARS.entities){
 				if(v == name){
+					VARS.selected[0] = VARS.entities[v];
 					VARS.entities[v].material.color.setHex(0xFFFF33);
-					return true;
 				}
 			};
 			
 			return false;
+		},
+		
+		unselectEntity : function(){
+			if(VARS.selected.length >0 ){
+				VARS.selected[0].material.color.setHex(Math.random() * 0xffffff);
+				VARS.selected.splice(0,1);
+			}
 		},
 		
 		/**

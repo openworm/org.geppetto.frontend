@@ -211,6 +211,10 @@ define(function(require) {
 			
 			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
 					" Okay and enjoy the show!",
+					
+			SELECTING_ENTITY : "Selecting entity ",
+			
+			ENTITY_ALREADY_SELECTED : "Entity Already Selected",
 
 			/**
 			 * GEPPETTO resources

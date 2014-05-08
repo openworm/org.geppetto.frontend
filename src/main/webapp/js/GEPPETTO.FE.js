@@ -191,7 +191,7 @@ define(function(require) {
 			update: function(webGLStarted) {
 				//
 				if(!webGLStarted) {
-					GEPPETTO.Console.debugLog(WEBGL_FAILED);
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
 					GEPPETTO.FE.disableSimulationControls();
 				}
 			},

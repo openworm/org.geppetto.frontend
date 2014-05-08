@@ -220,10 +220,17 @@ define(function(require)
 			{
 				var jsonEntity = jsonscene[eindex];
 				var aspects = jsonEntity.aspects;
+				var position = jsonEntity.position;
 				for ( var a in aspects)
 				{
 					var aspect = aspects[a];
-					VARS.scene.add(GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true));
+					var mesh = GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true);
+					VARS.scene.add(mesh);
+					if(position!=null){
+						mesh.position = new THREE.Vector3(position.x, position.y, position.z);
+						mesh.name = jsonEntity.id;
+						VARS.entities[mesh.name] = mesh;
+					}
 				}
 			}
 
@@ -783,6 +790,24 @@ define(function(require)
 			return null;
 		},
 
+		selectEntity : function(name){
+			for(var v in VARS.entities){
+				if(v == name){
+					VARS.selected[0] = VARS.entities[v];
+					VARS.entities[v].material.color.setHex(0xFFFF33);
+				}
+			};
+			
+			return false;
+		},
+		
+		unselectEntity : function(){
+			if(VARS.selected.length >0 ){
+				VARS.selected[0].material.color.setHex(Math.random() * 0xffffff);
+				VARS.selected.splice(0,1);
+			}
+		},
+		
 		/**
 		 * @param msg
 		 */

@@ -45,6 +45,7 @@ define(function(require)
 	require('vendor/Detector');
 	require('three');
 	require('vendor/THREEx.KeyboardState');
+	require('vendor/ColladaLoader');
 
 	/**
 	 * Local variables
@@ -299,7 +300,12 @@ define(function(require)
 						//FIXME Matteo: the case in which multiple visual models are sent for a particle scene is 
 						//not handles as it's not handled potentially merging them
 						return entityObject;
-					} else
+					} 
+					else if (vobjects[0].type == "Collada")
+					{
+						return GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[0]);
+					}
+					else
 					{
 						if (!merge)
 						{
@@ -452,6 +458,20 @@ define(function(require)
 			case "Sphere":
 				threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius, 20, 20), material);
 				threeObject.position.set(g.position.x, g.position.y, g.position.z);
+				break;
+			case "Collada":
+				var loader = new THREE.ColladaLoader();
+				loader.options.convertUpAxis = true;
+				var xmlParser = new DOMParser();
+				var responseXML = xmlParser.parseFromString( g.model, "application/xml" );
+				loader.parse( responseXML, function ( collada ) {
+
+					threeObject = collada.scene;
+					skin = collada.skins[ 0 ];
+
+					threeObject.scale.x = threeObject.scale.y = threeObject.scale.z = 0.002;
+					threeObject.updateMatrix();
+				} );
 				break;
 			}
 			// add the geometry to a map indexed by the geometry id so we can

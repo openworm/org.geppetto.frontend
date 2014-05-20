@@ -143,7 +143,8 @@ define(function(require) {
 			 * Loads a simulation from a URL.
 			 *
 			 * @name GEPPETTO.Simulation.load(simulationURL)
-			 * @param simulationURL - URL of simulation file to be loaded.
+			 * @param simulationURL - URL of simulation file to be loaded, use string format as in 
+			 *                              Simulation.load("http://url.com")
 			 * @returns {String} - Status of attempt to load simulation using url.
 			 */
 			load: function(simulationURL) {
@@ -403,6 +404,13 @@ define(function(require) {
 				this.loadTimer = 0;
 			},
 
+			selectEntity : function(name){
+				
+				GEPPETTO.selectEntity(name);
+				
+				return GEPPETTO.Resources.SELECTING_ENTITY + name;
+			},
+			
 			/**
 			 * Updates the simulation states with new watched variables
 			 */

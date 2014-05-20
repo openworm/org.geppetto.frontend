@@ -43,6 +43,9 @@ define(function(require) {
 				//flag that keeps track if tutorial is on/off
 				tutorialOn : false,
 				
+				//keeps track of last open popover to be able to turn it off dynamically
+				visiblePopOver : null,
+				
 				startTutorial : function(){
 					this.tutorialOn = true;
 
@@ -50,6 +53,7 @@ define(function(require) {
 							GEPPETTO.Tutorial.MESSAGE.BEGIN);
 					
 					$('#infomodal-btn').on('click', function (e) {
+						$('.modal-backdrop').remove();
 						GEPPETTO.Tutorial.openLoadPopover();
 						//hide openload popover
 						$('#openload').on('click', function (e) {
@@ -60,12 +64,41 @@ define(function(require) {
 						$('#loadingmodal').on('shown', function (e) {
 							GEPPETTO.Tutorial.loadingPopover();
 						;});});});
+					
+						//make quit tutorial button visible to allow quitting tutorial
+						document.getElementById('quitTutorial').style.display = 'block';
+						
+						//quit tutorial handle event
+						$("#quitTutorial").on("click",function(e){
+							//stop tutorial
+							GEPPETTO.Tutorial.stopTutorial();
+							
+						});
 				},
 
-				stopTutorial : function(){
+				/**
+				 * Handles events at end of tutorial
+				 */
+				endTutorial : function(){
 					this.tutorialOn = false;
-					$('#helpButton').popover('hide');
+					$(this.visiblePopOver).popover('hide');
 					GEPPETTO.FE.infoDialog(GEPPETTO.Tutorial.TITLE.DONE,GEPPETTO.Tutorial.MESSAGE.DONE);
+				},
+				
+				/**
+				 * Stops tutorial by user request without having it come to an end.
+				 */
+				stopTutorial : function(){
+					
+					//hide visible popover
+					$(this.visiblePopOver).popover('hide');
+					
+					this.tutorialOn = false;
+					$(this.visiblePopOver).popover('hide');
+					GEPPETTO.FE.infoDialog(GEPPETTO.Tutorial.TITLE.TUTORIAL_STOP,GEPPETTO.Tutorial.MESSAGE.TUTORIAL_STOP);
+					
+					//hide quit tutorial button
+					document.getElementById('quitTutorial').style.display = 'none';
 				},
 				
 				isTutorialOn : function(){
@@ -94,7 +127,7 @@ define(function(require) {
 					$('#next_help').on('click', function (e) {
 						GEPPETTO.Tutorial.helpPopover();
 					$('#tutorial_done').on('click', function (e) {
-						GEPPETTO.Tutorial.stopTutorial();
+						GEPPETTO.Tutorial.endTutorial();
 					});});});});});});});});});
 				},
 				
@@ -109,6 +142,8 @@ define(function(require) {
 							placement : 'bottom',
 						});
 						$('#openload').popover('show');
+						
+						this.visiblePopOver = '#openload';
 					}
 				},
 				
@@ -131,6 +166,8 @@ define(function(require) {
 						$('#dropdownmenu').on('click', function(e){
 							GEPPETTO.Tutorial.loadPopover();
 						});
+						
+						this.visiblePopOver = '#samples';
 					}
 				},
 				
@@ -150,6 +187,8 @@ define(function(require) {
 						$('#load').on("click", function(e){
 							$("#loadingmodal").popover('hide');
 						});
+						
+						this.visiblePopOver = '#load';
 					}
 				},
 				
@@ -165,6 +204,8 @@ define(function(require) {
 							placement : 'bottom',
 						});
 						$('#loadingmodal').popover('show');
+						
+						this.visiblePopOver = '#loadingmodal';
 					}
 				},
 				
@@ -196,7 +237,9 @@ define(function(require) {
 						
 						$('#start').on('click', function(e){
 							GEPPETTO.Tutorial.pausePopover();
-						});						
+						});	
+						
+						this.visiblePopOver = '#start';
 					}
 				},
 				
@@ -212,7 +255,9 @@ define(function(require) {
 							'<button class="btn btn-success btn-tut" id="next_stop">Continue</button></div>',					
 							placement : 'bottom',
 						});
-						$('#pause').popover('show');				
+						$('#pause').popover('show');			
+						
+						this.visiblePopOver = '#pause';
 						
 						GEPPETTO.Tutorial.continueTutorial();
 					}
@@ -231,6 +276,8 @@ define(function(require) {
 							placement : 'bottom',
 						});
 						$('#stop').popover('show');
+						
+						this.visiblePopOver = '#stop';
 					}
 				},
 				
@@ -247,6 +294,8 @@ define(function(require) {
 							placement : 'right',
 						});
 						$('#position_toolbar').popover('show');
+						
+						this.visiblePopOver = '#position_toolbar';
 					}
 				},
 				
@@ -263,6 +312,8 @@ define(function(require) {
 							placement : 'right',
 						});
 						$('#rotation').popover('show');
+						
+						this.visiblePopOver = '#rotation';
 					}
 				},
 				
@@ -279,6 +330,8 @@ define(function(require) {
 							placement : 'right',
 						});
 						$('#zoom').popover('show');
+						
+						this.visiblePopOver = '#zoom';
 					}
 				},
 				
@@ -295,6 +348,8 @@ define(function(require) {
 							placement : 'top',
 						});
 						$('#consoleButton').popover('show');
+						
+						this.visiblePopOver = '#consoleButton';
 					}
 				},
 				
@@ -317,6 +372,8 @@ define(function(require) {
 							
 							$('#next_contact').click();
 						});	
+						
+						this.visiblePopOver = '#shareTab';
 					}
 				},
 				
@@ -333,6 +390,8 @@ define(function(require) {
 							placement : 'top',
 						});
 						$('#habla_topbar_div').popover('show');
+						
+						this.visiblePopOver = '#habla_topbar_div';
 					}
 				},
 				
@@ -349,6 +408,8 @@ define(function(require) {
 							placement : 'bottom',
 						});
 						$('#helpButton').popover('show');
+						
+						this.visiblePopOver = '#helpButton';
 					}
 				},
 		};
@@ -369,7 +430,8 @@ define(function(require) {
 				SHARE : "Share Geppetto!",
 				CONTACT : "Contact Us",
 				HELP : "Get More Help",
-				DONE : "End of Tutorial"
+				DONE : "End of Tutorial",
+				TUTORIAL_STOP : "Tutorial Stopped"
 		};
 		
 		GEPPETTO.Tutorial.MESSAGE = {
@@ -403,7 +465,9 @@ define(function(require) {
 				HELP : "Click this button at any time for detailed descriptions of all the commands and controls within " +
 						"Geppetto.",
 				DONE : "Congratulations! You have reached the end of the tutorial!  You have now become Geppetto himself and are " +
-						"ready to create Pinocchio! ;)"
+						"ready to create Pinocchio! ;)",
+				TUTORIAL_STOP : "You have stopped the current tutorial, you can keep using Geppetto by pressing Okay "
+					+ "button",
 		};
 	};
 });

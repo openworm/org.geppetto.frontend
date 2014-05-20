@@ -45,11 +45,13 @@ define(function(require)
 	require('vendor/Detector');
 	require('three');
 	require('vendor/THREEx.KeyboardState');
+	require('vendor/ColladaLoader');
 
 	/**
 	 * Local variables
 	 */
 	var VARS;
+	
 	/**
 	 * Initialize the engine
 	 */
@@ -217,13 +219,7 @@ define(function(require)
 			this.jsonscene = jsonscene;
 			for ( var eindex in jsonscene)
 			{
-				var jsonEntity = jsonscene[eindex];
-				var aspects = jsonEntity.aspects;
-				for ( var a in aspects)
-				{
-					var aspect = aspects[a];
-					VARS.scene.add(GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true));
-				}
+				GEPPETTO.loadEntity(jsonscene[eindex]);
 			}
 
 			GEPPETTO.calculateSceneCenter();
@@ -231,30 +227,56 @@ define(function(require)
 		},
 
 		/**
+		 * @param jsonscene
+		 */
+		loadEntity : function(jsonEntity, materialParam)
+		{
+			var material=materialParam;//==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
+			var aspects = jsonEntity.aspects;
+			var children = jsonEntity.children;
+			var position = jsonEntity.position;
+			for ( var a in aspects)
+			{
+				var aspect = aspects[a];
+				var mesh = GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true,material);
+				VARS.scene.add(mesh);
+				if(position!=null){
+					mesh.position = new THREE.Vector3(position.x, position.y, position.z);
+					mesh.name = jsonEntity.id;
+					VARS.entities[mesh.name] = mesh;
+				}
+			}
+			for ( var c in children)
+			{
+				GEPPETTO.loadEntity(children[c],material);
+			}
+
+		},
+		
+		getMeshPhongMaterial : function()
+		{
+			var material = new THREE.MeshPhongMaterial(
+			{
+				opacity : 1,
+				ambient : 0x777777,
+				shininess : 2,
+				shading : THREE.SmoothShading
+			});
+
+			material.originalColor = '0x' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+			material.color.setHex(material.originalColor);
+			return material;
+		},
+		/**
 		 * @param visualModel
 		 * @param merge
 		 *            if true all the visual models will be merged into one,
 		 *            otherwise an array of Three objects will be returned
 		 */
-		getThreeObjectFromVisualModel : function(visualModels, aspectInstancePath, merge)
+		getThreeObjectFromVisualModel : function(visualModels, aspectInstancePath, merge,materialParam)
 		{
-			var getMeshPhongMaterial = function()
-			{
-				var material = new THREE.MeshPhongMaterial(
-				{
-					opacity : 1,
-					ambient : 0x777777,
-					shininess : 2,
-					shading : THREE.SmoothShading
-				});
-
-				material.originalColor = '0x' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
-				material.color.setHex(material.originalColor);
-				return material;
-			};
-
 			var combined = new THREE.Geometry();
-			var material = getMeshPhongMaterial();
+			var material=materialParam==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
 			if(!merge)
 			{
 				entityObjects=[];
@@ -299,7 +321,12 @@ define(function(require)
 						//FIXME Matteo: the case in which multiple visual models are sent for a particle scene is 
 						//not handles as it's not handled potentially merging them
 						return entityObject;
-					} else
+					} 
+					else if (vobjects[0].type == "Collada")
+					{
+						return GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[0]);
+					}
+					else
 					{
 						if (!merge)
 						{
@@ -452,6 +479,20 @@ define(function(require)
 			case "Sphere":
 				threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius, 20, 20), material);
 				threeObject.position.set(g.position.x, g.position.y, g.position.z);
+				break;
+			case "Collada":
+				var loader = new THREE.ColladaLoader();
+				loader.options.convertUpAxis = true;
+				var xmlParser = new DOMParser();
+				var responseXML = xmlParser.parseFromString( g.model, "application/xml" );
+				loader.parse( responseXML, function ( collada ) {
+
+					threeObject = collada.scene;
+					skin = collada.skins[ 0 ];
+
+					threeObject.scale.x = threeObject.scale.y = threeObject.scale.z = 0.002;
+					threeObject.updateMatrix();
+				} );
 				break;
 			}
 			// add the geometry to a map indexed by the geometry id so we can
@@ -763,6 +804,24 @@ define(function(require)
 			return null;
 		},
 
+		selectEntity : function(name){
+			for(var v in VARS.entities){
+				if(v == name){
+					VARS.selected[0] = VARS.entities[v];
+					VARS.entities[v].material.color.setHex(0xFFFF33);
+				}
+			};
+			
+			return false;
+		},
+		
+		unselectEntity : function(){
+			if(VARS.selected.length >0 ){
+				VARS.selected[0].material.color.setHex(Math.random() * 0xffffff);
+				VARS.selected.splice(0,1);
+			}
+		},
+		
 		/**
 		 * @param msg
 		 */

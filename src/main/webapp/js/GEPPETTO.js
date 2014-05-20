@@ -51,6 +51,7 @@ define(function(require)
 	 * Local variables
 	 */
 	var VARS;
+	
 	/**
 	 * Initialize the engine
 	 */
@@ -218,20 +219,7 @@ define(function(require)
 			this.jsonscene = jsonscene;
 			for ( var eindex in jsonscene)
 			{
-				var jsonEntity = jsonscene[eindex];
-				var aspects = jsonEntity.aspects;
-				var position = jsonEntity.position;
-				for ( var a in aspects)
-				{
-					var aspect = aspects[a];
-					var mesh = GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true);
-					VARS.scene.add(mesh);
-					if(position!=null){
-						mesh.position = new THREE.Vector3(position.x, position.y, position.z);
-						mesh.name = jsonEntity.id;
-						VARS.entities[mesh.name] = mesh;
-					}
-				}
+				GEPPETTO.loadEntity(jsonscene[eindex]);
 			}
 
 			GEPPETTO.calculateSceneCenter();
@@ -239,30 +227,56 @@ define(function(require)
 		},
 
 		/**
+		 * @param jsonscene
+		 */
+		loadEntity : function(jsonEntity, materialParam)
+		{
+			var material=materialParam;//==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
+			var aspects = jsonEntity.aspects;
+			var children = jsonEntity.children;
+			var position = jsonEntity.position;
+			for ( var a in aspects)
+			{
+				var aspect = aspects[a];
+				var mesh = GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true,material);
+				VARS.scene.add(mesh);
+				if(position!=null){
+					mesh.position = new THREE.Vector3(position.x, position.y, position.z);
+					mesh.name = jsonEntity.id;
+					VARS.entities[mesh.name] = mesh;
+				}
+			}
+			for ( var c in children)
+			{
+				GEPPETTO.loadEntity(children[c],material);
+			}
+
+		},
+		
+		getMeshPhongMaterial : function()
+		{
+			var material = new THREE.MeshPhongMaterial(
+			{
+				opacity : 1,
+				ambient : 0x777777,
+				shininess : 2,
+				shading : THREE.SmoothShading
+			});
+
+			material.originalColor = '0x' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+			material.color.setHex(material.originalColor);
+			return material;
+		},
+		/**
 		 * @param visualModel
 		 * @param merge
 		 *            if true all the visual models will be merged into one,
 		 *            otherwise an array of Three objects will be returned
 		 */
-		getThreeObjectFromVisualModel : function(visualModels, aspectInstancePath, merge)
+		getThreeObjectFromVisualModel : function(visualModels, aspectInstancePath, merge,materialParam)
 		{
-			var getMeshPhongMaterial = function()
-			{
-				var material = new THREE.MeshPhongMaterial(
-				{
-					opacity : 1,
-					ambient : 0x777777,
-					shininess : 2,
-					shading : THREE.SmoothShading
-				});
-
-				material.originalColor = '0x' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
-				material.color.setHex(material.originalColor);
-				return material;
-			};
-
 			var combined = new THREE.Geometry();
-			var material = getMeshPhongMaterial();
+			var material=materialParam==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
 			if(!merge)
 			{
 				entityObjects=[];

@@ -74,7 +74,7 @@ define(function(require) {
 			 * Idle check
 			 */
 			idleCheck : function(){
-				var allowedTime = 5, timeOut = 6;
+				var allowedTime = 6, timeOut = 7;
 				if(!GEPPETTO.Main.disconnected) {
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there

@@ -206,6 +206,15 @@ define(function(require) {
 			SIMULATOR_UNAVAILABLE: " is Unavailable",
 
 			WEBSOCKET_CONNECTION_ERROR: "Server Connection Error",
+			
+			STOP_SIMULATION_TUTORIAL : "Tutorial Starting",
+			
+			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
+					" Okay and enjoy the show!",
+					
+			SELECTING_ENTITY : "Selecting entity ",
+			
+			ENTITY_ALREADY_SELECTED : "Entity Already Selected",
 
 			/**
 			 * GEPPETTO resources

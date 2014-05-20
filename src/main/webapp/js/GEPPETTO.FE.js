@@ -64,12 +64,8 @@ define(function(require) {
 				//handles clicking on help button 
 				$("#helpButton").click(function() {
 					var modalVisible = $('#helpmodal').hasClass('in');
-					if(modalVisible){
-						GEPPETTO.Console.executeCommand("G.showHelpWindow(false)");
-					}
-					else{
-						GEPPETTO.Console.executeCommand("G.showHelpWindow(true)");
-					}
+					var command = (modalVisible) ? "false" : "true";
+					GEPPETTO.Console.executeCommand("G.showHelpWindow("+command+")");
 				});
 
 				/*
@@ -110,20 +106,21 @@ define(function(require) {
 					$('#loadSimModal').modal("hide");
 				});
 
-				$("#share").click(function() {
-					
+                var share = $("#share");
+
+				share.click(function() {
+
 					//toggle button class
-					$('#share').toggleClass('clicked');
+					share.toggleClass('clicked');
 
 					//user has clicked the console button
-					if($('#share').hasClass('clicked')) {
-						GEPPETTO.Console.executeCommand('G.showShareBar(true)');
-					}
-					else {
-						GEPPETTO.Console.executeCommand('G.showShareBar(false)');
-					}
+                    var command = (share.hasClass('clicked')) ? "true" : "false";
+					GEPPETTO.Console.executeCommand("G.showShareBar("+command+")");
 					return false;
 				});
+				
+				//handles launching tutorial if button inside help dialog is pressed
+				GEPPETTO.FE.launchTutorial();
 			},
 			
 			/**
@@ -144,6 +141,41 @@ define(function(require) {
 
 				return $("#sim").get(0);
 			},
+			
+			/**
+			 * Launches tutorial from button inside help modal 
+			 */
+			launchTutorial : function(){
+				$("#launch-tutorial").click(function(){
+					GEPPETTO.Console.executeCommand("G.showHelpWindow(false)");
+
+					if(!GEPPETTO.Simulation.isLoaded()){
+						GEPPETTO.Tutorial.startTutorial();
+					}
+					else{
+						$('#infomodal-title').html(GEPPETTO.Resources.STOP_SIMULATION_TUTORIAL);
+						$('#infomodal-text').html(GEPPETTO.Resources.STOP_SIMULATION_TUTORIAL_MSG);
+						
+						var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+						GEPPETTO.FE.update(webGLStarted);
+						
+						$('#infomodal-btn').html("Okay").click(function() {
+							
+							$('#infomodal').on('hidden', function() { 
+								//unbind hidden event so we can reuse same modal for other alerts
+								$('#infomodal').unbind('hidden');
+								if(!GEPPETTO.Tutorial.isTutorialOn()){
+									//reset sample drop down menu for tutorial purposes
+									$('#dropdowndisplaytext').html("Select simulation from list...");
+									$('#url').val("");
+									GEPPETTO.Tutorial.startTutorial();
+								}
+							});
+						});
+						$('#infomodal').modal();
+					}
+				});
+			},
 
 			/**
 			 * Handles updating the front end after re-loading the simulation
@@ -159,7 +191,7 @@ define(function(require) {
 			update: function(webGLStarted) {
 				//
 				if(!webGLStarted) {
-					GEPPETTO.Console.debugLog(WEBGL_FAILED);
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
 					GEPPETTO.FE.disableSimulationControls();
 				}
 			},
@@ -322,17 +354,19 @@ define(function(require) {
 
 				});
 
+                var customRadio = $("#customRadio");
+
 				//Responds to user selecting url radio button
 				$("#urlRadio").click(function() {
-					$('#customRadio').val("inactive");
+					customRadio.val("inactive");
 					$('#customInputDiv').hide();
 					$('#urlInput').show();
 				});
 
 				//Responds to user selecting Custom radio button
-				$("#customRadio").click(function() {
+				customRadio.click(function() {
 					//Handles the events related the content edit area
-					$('#customRadio').val("active");
+					customRadio.val("active");
 					$('#urlInput').hide();
 					$('#customInputDiv').show();
 
@@ -351,7 +385,7 @@ define(function(require) {
 				GEPPETTO.SimulationContentEditor.loadEditor();
 
 				//load template simulation
-				if(selectedSimulation == "resources/template.xml") {
+				if(selectedSimulation === "resources/template.xml") {
 					GEPPETTO.SimulationContentEditor.loadTemplateSimulation(selectedSimulation);
 				}
 				//load sample simulation, request info from the servlet
@@ -366,8 +400,9 @@ define(function(require) {
 			 */
 			disableSimulationControls: function() {
 				//Disable 'load simulation' button and click events
-				$('#openload').attr('disabled', 'disabled');
-				$('#openload').click(function(e) {
+                var openLoad = $("#openload");
+				openLoad.attr('disabled', 'disabled');
+				openLoad.click(function(e) {
 					return false;
 				});
 

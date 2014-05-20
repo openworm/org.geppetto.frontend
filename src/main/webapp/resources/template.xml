@@ -4,11 +4,15 @@
 	<tns:configuration>
 		<tns:outputFormat>$ENTER FORMAT</tns:outputFormat>
 	</tns:configuration>
-	<tns:aspects>
-		<tns:modelInterpreter>$ENTER MODAL INTERPRETER</tns:modelInterpreter>
-		<tns:modelURL>$ENTER MODEL URL</tns:modelURL>
-		<tns:simulator>$ENTER SIMULATOR</tns:simulator>
-		<tns:id>$ENTER ID</tns:id>
-	</tns:aspects>
+	<tns:entity>
+		<tns:aspect>
+			<tns:id>$ENTER ID</tns:id>
+			<tns:modelInterpreter>$ENTER MODAL INTERPRETER</tns:modelInterpreter>
+			<tns:modelURL>$ENTER MODEL URL</tns:modelURL>
+			<tns:simulator>$ENTER SIMULATOR</tns:simulator>
+		</tns:aspect>
+	</tns:entity>
 	<tns:name>$ENTER NAME</tns:name>
+	<!-- Optional input for script-->
+	<tns:script>$ENTER URL</tns:script>
 </tns:simulation>

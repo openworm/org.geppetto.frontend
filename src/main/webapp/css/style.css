@@ -371,6 +371,10 @@ input {
 	-webkit-appearance: none;
 }
 
+#fullscreen:hover {
+	color: #fd6808;
+}
+
 #javascriptFullscreen {
 	position: absolute;
 	top: 16px;
@@ -380,6 +384,10 @@ input {
 	background: transparent;
 	border: 0;
 	-webkit-appearance: none;
+}
+
+#javascriptFullscreen:hover {
+	color: #fd6808;
 }
 
 .CodeMirror-fullscreen {
@@ -394,9 +402,7 @@ input {
 	-webkit-transform: translateZ(0);
 }
 
-#fullscreen:hover {
-	color: gray;
-}
+
 .CodeMirror {
 	border: 1px solid #cccccc;
 	width: 500px;
@@ -711,6 +717,14 @@ input {
 
 #simtutorial {
 	float: left;
-	margin-top: 11px;
-	margin-left: 15px;
+	margin-top: 14px;
+	margin-left: 10px;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	-webkit-appearance: none;
+}
+
+#simtutorial:hover{
+	color: #fd6808;
 }

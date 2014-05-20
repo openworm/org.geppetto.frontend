@@ -63,6 +63,7 @@ require.config({
 		'vendor/jquery-ui-1.10.3.custom.min' : ["jquery"],
 		'vendor/TrackballControls' : ["three"],
 		'vendor/THREEx.KeyboardState' : ['three'],
+		'vendor/ColladaLoader' : ['three'],
 		'vendor/ColorConverter' : ["three"],
 		'vendor/bootstrap.min' : ["jquery"],
 		'vendor/codemirror-formats.min' : ["codemirror"],
@@ -78,22 +79,24 @@ require.config({
 /*
  * Adds all libs to an array
  */
-var jqueryLib = [];
-jqueryLib.push("jquery");
-jqueryLib.push("geppetto");
-jqueryLib.push("three");
-jqueryLib.push("vendor/THREEx.KeyboardState");
-jqueryLib.push("vendor/jquery-ui-1.10.3.custom.min");
-jqueryLib.push("vendor/TrackballControls");
-jqueryLib.push("vendor/ColorConverter");
-jqueryLib.push("vendor/bootstrap.min");
-jqueryLib.push("codemirror");
-jqueryLib.push("vendor/codemirror-formats.min");
-jqueryLib.push("vendor/dat.gui.min");
-jqueryLib.push("vendor/stats.min");
-jqueryLib.push("vendor/Detector");
-jqueryLib.push("vendor/jquery.cookie");
-jqueryLib.push("vendor/rAF");
+var jqueryLib = [
+  "jquery",
+  "geppetto",
+  "three",
+  "vendor/THREEx.KeyboardState",
+  "vendor/ColladaLoader",
+  "vendor/jquery-ui-1.10.3.custom.min",
+  "vendor/TrackballControls",
+  "vendor/ColorConverter",
+  "vendor/bootstrap.min",
+  "codemirror",
+  "vendor/codemirror-formats.min",
+  "vendor/dat.gui.min",
+  "vendor/stats.min",
+  "vendor/Detector",
+  "vendor/jquery.cookie",
+  "vendor/rAF"
+];
 
 require(jqueryLib, function($, geppetto){
 	$(function(){

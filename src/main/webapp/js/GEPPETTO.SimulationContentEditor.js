@@ -109,13 +109,14 @@ define(function(require) {
 			 * Bind editor to certain events as user key events and new input events
 			 */
 			handleContentEdit: function() {
+              var dropDownDisplayText = $("#dropdowndisplaytext");
 				// detects keyboard events and sets 'editing' flag to true
 				xmlEditor.on("keyHandled", function() {
 					editing = true;
 
 					// Reset sample drop down menu to original value
-					if($('#dropdowndisplaytext').text() != GEPPETTO.Resources.SAMPLES_DROPDOWN_PLACEHOLDER) {
-						$('#dropdowndisplaytext').html(GEPPETTO.Resources.SAMPLES_DROPDOWN_PLACEHOLDER);
+					if(dropDownDisplayText.text() != GEPPETTO.Resources.SAMPLES_DROPDOWN_PLACEHOLDER) {
+						dropDownDisplayText.html(GEPPETTO.Resources.SAMPLES_DROPDOWN_PLACEHOLDER);
 					}
 				});
 
@@ -124,8 +125,8 @@ define(function(require) {
 					editing = true;
 
 					//if simulation file is edited, reset sample menu dropdown
-					if($('#dropdowndisplaytext').text() != GEPPETTO.Resources.SAMPLES_DROPDOWN_PLACEHOLDER) {
-						$('#dropdowndisplaytext').html(GEPPETTO.Resources.SAMPLES_DROPDOWN_PLACEHOLDER);
+					if(dropDownDisplayText.text() != GEPPETTO.Resources.SAMPLES_DROPDOWN_PLACEHOLDER) {
+						dropDownDisplayText.html(GEPPETTO.Resources.SAMPLES_DROPDOWN_PLACEHOLDER);
 					}
 				});
 			},

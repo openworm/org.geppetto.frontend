@@ -66,6 +66,9 @@ public class TransportMessageFactory {
 		switch(type){
 			case RELOAD_CANVAS:
 				break;	
+			case ERROR:
+				params.add(new SimpleEntry<String, String>("message", update));
+				break;
 			case ERROR_LOADING_SIMULATION:
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString()));
 				break;

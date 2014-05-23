@@ -55,7 +55,7 @@ require.config({
 	 */
 	shim: {
 		"widgets/plot/vendor/jquery.flot.resize.min" : ["flot"],
-		"widgets/plot/vendor/jquery.flot.axislabels" : ["flot"]
+		"widgets/plot/vendor/jquery.flot.axislabels.min" : ["flot"]
 	}
 });
 
@@ -65,7 +65,7 @@ require.config({
 var libraries = [];
 libraries.push("flot");
 libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
-libraries.push("widgets/plot/vendor/jquery.flot.axislabels");
+libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
 
 /*
  * Load libraries, and CSS after libraries are loaded

@@ -27,21 +27,21 @@
 
 		<div id="sim_toolbar">
 			<a href="#loadSimModal" role="button" class="btn" data-toggle="modal"
-				data-keyboard="false" id="openload"><icon
+				data-keyboard="false" id="openload" disabled="disabled"><icon
 					class="icon-folder-open-alt"></icon> Load Simulation</a>
-			<button class="btn" id="start">
+			<button class="btn" id="start" disabled="disabled">
 				<icon class="icon-play"></icon>
 				Start
 			</button>
-			<button class="btn" id="pause">
+			<button class="btn" id="pause" disabled="disabled">
 				<icon class="icon-pause"></icon>
 				Pause
 			</button>
-			<button class="btn" id="stop">
+			<button class="btn" id="stop" disabled="disabled">
 				<icon class="icon-stop"></icon>
 				Stop
 			</button>
-			<button class="btn btn-info" id="helpButton" data-toggle="modal" data-target="#helpmodal">
+			<button class="btn btn-info" id="helpButton">
 				<icon class="icon-info-sign"></icon>
 				Help
 			</button>
@@ -56,6 +56,11 @@
 				<p id="alertbox-text"></p>
 			</div>
 		</div>
+		
+		<button class="btn btn-danger" id="quitTutorial">
+				<icon class="icon-remove-circle"></icon>
+				Quit Tutorial
+		</button>
 
 		<div id="position_toolbar">
 			<button class="btn squareB icon-chevron-left" id="w"></button>
@@ -63,7 +68,7 @@
 			<button class="btn squareB icon-chevron-right" id="e"></button>
 			<button class="btn squareB icon-chevron-down" id="s"></button>
 			<button class="btn squareB icon-home" id="h"></button>
-
+			
 			<button class="btn squareB icon-undo" id="rw"></button>
 			<button class="btn squareB icon-repeat rotate90" id="rn"></button>
 			<button class="btn squareB icon-repeat" id="re"></button>
@@ -75,16 +80,22 @@
 			<br />
 		</div>
 		
+		<!-- Used for popovers, otherwise they would be too small to display -->
+		<div id ="rotation"></div>
+		<div id="zoom"></div>
+		
 		<div id="github">
-			<a href="https://github.com/openworm/org.geppetto" target="_blank"><icon class="icon-github icon-2x"></icon></a>
+			<a href="https://github.com/openworm/org.geppetto" target="_blank"><icon class="icon-github icon-2x" id="git"></icon></a>
 		</div>
 
-	
-
-		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal fade hide" id="helpmodal" tabindex="-1" role="dialog" aria-hidden="true" >
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
+							<button type="button" class="btn btn-info pull-left"
+								aria-hidden="true" id="launch-tutorial">
+								<icon class="icon-play"></icon>
+								Start Tutorial</button>
 							<button type="button" class="btn btn-info pull-right"
 								aria-hidden="true" onClick="window.open('http://docs.geppetto.org');">
 								<icon class="icon-file-text"></icon>
@@ -187,12 +198,11 @@
 			<icon class="icon-share icon-xlarge"></icon>
 		</button>
 	</div>
-
 	<div id="geppetto-share" class="col-md-1 share-panel">
         	<p>
-        	<a class="btn btn-warning" onclick="GEPPETTO.Share.facebook('http://geppetto.org','Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','')">
+        	<a class="btn btn-warning" onclick="G.shareOnFacebook()">
         	<i class="icon-xlarge icon-facebook"></i></a></p>
-			<p><a class="btn btn-warning" onclick="GEPPETTO.Share.twitter('http://geppetto.org','Check out Geppetto, the opensource simulation platform powering OpenWorm!')"><i class="icon-xlarge icon-twitter"></i></a></p>
+			<p><a class="btn btn-warning" onclick="G.shareOnTwitter()"><i class="icon-xlarge icon-twitter"></i></a></p>
 			<!-- Commented until fully implemented <p><a class="btn btn-warning" href="#email"><i class="icon-xlarge icon-envelope"></i></a><p>-->
    	</div>
 	
@@ -214,6 +224,9 @@
 							</label> <label class="radio inline"> <input type="radio"
 								name="optionsRadios" id="customRadio" value="inactive">Custom
 							</label>
+							<button id="simtutorial" type="button"
+								class="button icon-question-sign" data-toggle="popover" data-placement="right" data-trigger="hover" title="How do I define a Geppetto simualtion?"
+							 onClick="window.open('http://docs.geppetto.org/en/latest/simtutorial.html');"></button>
 						</div>
 					</div>
 				</div>
@@ -240,7 +253,7 @@
 					<div id="input" class="modal-input">
 						<label class="control-label" for="dLabel">Samples</label>
 						<div class="controls">
-							<div class="btn-group">
+							<div class="btn-group" id="samples">
 								<a class="btn dropdown-toggle" id="dLabel"
 									data-toggle="dropdown" href="#"><span
 									id="dropdowndisplaytext">Select simulation from list...</span><b
@@ -297,12 +310,49 @@
 			</div>
 		</div>
 		
+		<div id="errormodal"  class="modal hide fade" tabindex="-1"  aria-labelledby="errormodal-title" aria-hidden="true" data-backdrop="static">
+			<div class="modal-header" id="errormodal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					×
+				</button>
+				<h3 id="errormodal-title" class="pagination-centered"></h3>
+			</div>
+			<div class="modal-body">
+				<p id="errormodal-text">
+				</p>
+				<div class="panel panel-default">
+    				<div class="panel-heading">
+      				<h4 class="panel-title">
+        			<a id="error_code" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"></a>
+      				</h4>
+    				</div>
+    				<div id="collapseOne" class="panel-collapse collapse">
+      				<div class="panel-body">
+      					<p id="error_source"></p>
+      					<p id="error_exception"></p>
+      				</div>
+    				</div>
+ 	 			</div>
+			</div>
+			<div class="modal-footer" id="errormodal-footer">
+				<button  class="btn btn-warning" onclick="GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');" aria-hidden="true">
+					<icon class="icon-twitter"></icon> Shame on you
+				</button>
+				<button  class="btn btn-warning" onclick="window.open('https://github.com/openworm/org.geppetto/issues/new')" aria-hidden="true">
+					<icon class="icon-bug"></icon> Open issue
+				</button>
+				<button  id="errormodal-btn" class="btn btn-info" data-dismiss="modal" aria-hidden="true">
+					Close
+				</button>
+			</div>
+		</div>
+		
 		<div id="loadingmodal" class="loading modal hide well fade lead pagination-centered" data-keyboard="false" data-backdrop="static">
 			<div class="asterisk icon-spin"></div>
 			<p id="loadingmodaltext" class="orange"></p>
 		</div>	
 		
-		<div id="welcomeMessageModal" class="modal hide well fade lead pagination-centered" data-backdrop="static data-keyboard="true" tabindex="-1">
+		<div id="welcomeMessageModal" class="modal hide well fade lead pagination-centered" data-backdrop="static" data-keyboard="false" tabindex="-1">
 			<div id="welcomeBody" class="modal-body">
 				<div class="messageBody">
 					<strong>Welcome to geppetto!</strong> geppetto is an open-source platform designed by engineers together with scientists to 
@@ -312,8 +362,11 @@
 					We worked hard to bring you the best possible alpha release but geppetto is still very much a platform under development. 
 					In fact we reckon this only represents about 20% of what you can expect in the end. We hope you'll enjoy it.</div>
 				</div>
-				<button  id="close-welcomeMsg" class="btn btn-success" data-dismiss="modal" aria-hidden="true">
-					Start
+				<button  id="startTutorial" class="btn btn-success welcomeButton" data-dismiss="modal" aria-hidden="true">
+					Loading...
+				</button>
+				<button  id="skipTutorial" class="btn btn-success welcomeButton" data-dismiss="modal" aria-hidden="true">
+					<icon class="icon-step-forward"></icon> Skip Tutorial
 				</button>
 				<br/>
 				<div class="wmCheckBoxDiv">
@@ -393,7 +446,7 @@
 		loader: "static.olark.com/jsclient/loader0.js",name:"olark",methods:["configure","extend","declare","identify"]});
 		/* custom configuration goes here (www.olark.com/documentation) */
 		olark.identify('3330-945-10-6280');/*]]>*/</script>
-		<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
+		<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" id="contact" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
 		<!-- end olark code -->
 </body>
 </html>

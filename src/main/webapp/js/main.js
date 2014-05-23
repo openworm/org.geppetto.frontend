@@ -46,9 +46,9 @@ require.config({
 	 * E.G. If depenedency it's used more than once, it goes in here.
 	 */
 	paths : {
-		'jquery' :"vendor/jquery-1.9.1",
+		'jquery' :"vendor/jquery-1.9.1.min",
 		'three' : 'vendor/three.min',
-		'codemirror' :"vendor/codemirror",
+		'codemirror' :"vendor/codemirror.min",
 		'underscore' : 'vendor/underscore.min',
 		'backbone' : 'vendor/backbone.min',
 		'backbone-store' : 'vendor/backbone-localStorage.min',
@@ -60,16 +60,15 @@ require.config({
 	 * to that object in here.
 	 */
 	shim: {
-		'vendor/jquery-ui-1.10.3.custom' : ["jquery"],
+		'vendor/jquery-ui-1.10.3.custom.min' : ["jquery"],
 		'vendor/TrackballControls' : ["three"],
 		'vendor/THREEx.KeyboardState' : ['three'],
+		'vendor/ColladaLoader' : ['three'],
 		'vendor/ColorConverter' : ["three"],
 		'vendor/bootstrap.min' : ["jquery"],
-		'vendor/xml' : ["codemirror"],
-		'vendor/javascript' : ["codemirror"],
-		'vendor/formatting' : ["codemirror"],
+		'vendor/codemirror-formats.min' : ["codemirror"],
 		'vendor/backbone-localStorage.min' : ["backbone"],
-		'vendor/dat.gui' : ["jquery"],
+		'vendor/dat.gui.min' : ["jquery"],
 		'vendor/stats.min' : ["jquery"],
 		'vendor/Detector' : ["jquery"],
 		'vendor/jquery.cookie' : ["jquery"],
@@ -80,24 +79,24 @@ require.config({
 /*
  * Adds all libs to an array
  */
-var jqueryLib = [];
-jqueryLib.push("jquery");
-jqueryLib.push("geppetto");
-jqueryLib.push("three");
-jqueryLib.push("vendor/THREEx.KeyboardState");
-jqueryLib.push("vendor/jquery-ui-1.10.3.custom");
-jqueryLib.push("vendor/TrackballControls");
-jqueryLib.push("vendor/ColorConverter");
-jqueryLib.push("vendor/bootstrap.min");
-jqueryLib.push("codemirror");
-jqueryLib.push("vendor/xml");
-jqueryLib.push("vendor/javascript");
-jqueryLib.push("vendor/formatting");
-jqueryLib.push("vendor/dat.gui");
-jqueryLib.push("vendor/stats.min");
-jqueryLib.push("vendor/Detector");
-jqueryLib.push("vendor/jquery.cookie");
-jqueryLib.push("vendor/rAF");
+var jqueryLib = [
+  "jquery",
+  "geppetto",
+  "three",
+  "vendor/THREEx.KeyboardState",
+  "vendor/ColladaLoader",
+  "vendor/jquery-ui-1.10.3.custom.min",
+  "vendor/TrackballControls",
+  "vendor/ColorConverter",
+  "vendor/bootstrap.min",
+  "codemirror",
+  "vendor/codemirror-formats.min",
+  "vendor/dat.gui.min",
+  "vendor/stats.min",
+  "vendor/Detector",
+  "vendor/jquery.cookie",
+  "vendor/rAF"
+];
 
 require(jqueryLib, function($, geppetto){
 	$(function(){

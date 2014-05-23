@@ -69,6 +69,50 @@ define(function(require) {
 				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.INIT;
 				GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);
 			},
+			
+			/**
+			 * Idle check
+			 */
+			idleCheck : function(){
+				var allowedTime = 6, timeOut = 7;
+				if(!GEPPETTO.Main.disconnected) {
+					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
+					//first time check, asks if user is still there
+					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
+                        var infomodalBtn = $('#infomodal-btn');
+
+						$('#infomodal-title').html("Zzz");
+						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
+						infomodalBtn.html("Yes");
+
+						infomodalBtn.html("Yes").click(function() {
+							$('#infomodal').modal('hide');
+							GEPPETTO.Main.idleTime = 0;
+
+							//unbind click event so we can reuse same modal for other alerts
+							infomodalBtn.unbind('click');
+						});
+
+						$('#infomodal').modal();
+					}
+
+					//second check, user isn't there or didn't click yes, disconnect
+					if(GEPPETTO.Main.idleTime > timeOut) {
+						$('#infomodal-title').html("");
+						$('#infomodal-text').html(GEPPETTO.Resources.DISCONNECT_MESSAGE);
+						$('#infomodal-footer').remove();
+						$('#infomodal-header').remove();
+						$('#infomodal').modal();
+
+						GEPPETTO.Main.idleTime = 0;
+						GEPPETTO.Main.disconnected = true;
+						GEPPETTO.FE.disableSimulationControls();
+						GEPPETTO.MessageSocket.send("idle_user", null);
+						var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+						GEPPETTO.FE.update(webGLStarted);
+					}
+				}
+			},
 
 			/**
 			 * Add user as an observer to an ongoing simulation. Create
@@ -95,110 +139,19 @@ define(function(require) {
 // ============================================================================
 		$(document).ready(function() {
 
-			var allowedTime = 5, timeOut = 6;
-			function idleCheck() {
-				if(!GEPPETTO.Main.disconnected) {
-					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
-					//first time check, asks if user is still there
-					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
-						$('#infomodal-title').html("Zzz");
-						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
-						$('#infomodal-btn').html("Yes");
-
-						$('#infomodal-btn').html("Yes").click(function() {
-							$('#infomodal').modal('hide');
-							GEPPETTO.Main.idleTime = 0;
-
-							//unbind click event so we can reuse same modal for other alerts
-							$('#infomodal-btn').unbind('click');
-						});
-
-						$('#infomodal').modal();
-					}
-
-					//second check, user isn't there or didn't click yes, disconnect
-					if(GEPPETTO.Main.idleTime > timeOut) {
-						$('#infomodal-title').html("");
-						$('#infomodal-text').html(GEPPETTO.Resources.DISCONNECT_MESSAGE);
-						$('#infomodal-footer').remove();
-						$('#infomodal-header').remove();
-						$('#infomodal').modal();
-
-						GEPPETTO.Main.idleTime = 0;
-						GEPPETTO.Main.disconnected = true;
-						GEPPETTO.FE.disableSimulationControls();
-						GEPPETTO.MessageSocket.send("idle_user", null);
-						var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-						GEPPETTO.FE.update(webGLStarted);
-					}
-				}
-			}
-
-			/*
-			 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows
-			 * multiple modals to be open simultaneously without going in an infinite loop.
-			 */
-			$.fn.modal.Constructor.prototype.enforceFocus = function() {};
-
-			//Initialize websocket functionality
-			GEPPETTO.Main.init();
-
-			//Populate the 'loading simulation' modal's drop down menu with sample simulations
-			$('#loadSimModal').on('shown', GEPPETTO.FE.loadingModalUIUpdate());
-			$('#start').attr('disabled', 'disabled');
-			$('#pause').attr('disabled', 'disabled');
-			$('#stop').attr('disabled', 'disabled');
-
-			$('#start').click(function() {
-				GEPPETTO.Console.executeCommand("Simulation.start()");
-			});
-
-			$('#pause').click(function() {
-				GEPPETTO.Console.executeCommand("Simulation.pause()");
-			});
-
-			$('#stop').click(function() {
-				GEPPETTO.Console.executeCommand("Simulation.stop()");
-			});
-
-			$('#load').click(function() {
-				//Update the simulation controls visibility
-				GEPPETTO.FE.updateLoadEvent();
-				//loading from simulation file editor's
-				if(GEPPETTO.SimulationContentEditor.isEditing()) {
-					var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');
-					GEPPETTO.Console.executeCommand("Simulation.loadFromContent('" + simulation + "')");
-					GEPPETTO.SimulationContentEditor.setEditing(false);
-				}
-				//loading simulation url
-				else {
-					GEPPETTO.Console.executeCommand('Simulation.load("' + $('#url').val() + '")');
-				}
-
-				$('#loadSimModal').modal("hide");
-			});
-
-			GEPPETTO.Console.createConsole();
-
-			GEPPETTO.FE.checkWelcomeMessageCookie();
-
-			$("#share").click(function() {
-				$(".share-panel").slideToggle();
-				$(this).toggleClass("active");
-				return false;
-			});
-
-			//Increment the idle time counter every minute.
-			var idleInterval = setInterval(idleCheck, 60000); // 1 minute
-
-			//Zero the idle timer on mouse movement.
-			$(this).mousemove(function(e) {
-				GEPPETTO.Main.idleTime = 0;
-			});
-			$(this).keypress(function(e) {
-				GEPPETTO.Main.idleTime = 0;
-			});
+			GEPPETTO.FE.initialEvents();
 			
+			//Increment the idle time counter every minute.
+			var idleInterval = setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
+            var here = $(this);
+			//Zero the idle timer on mouse movement.
+			here.mousemove(function(e) {
+				GEPPETTO.Main.idleTime = 0;
+			});
+			here.keypress(function(e) {
+				GEPPETTO.Main.idleTime = 0;
+			});
+
 			//Create canvas 
 			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
@@ -206,6 +159,9 @@ define(function(require) {
 			if(!webGLStarted) {
 				//TODO: Display message if doesn't support webgl
 			}
+
+			//Initialize websocket functionality
+			GEPPETTO.Main.init();
 		});
 	}
 });

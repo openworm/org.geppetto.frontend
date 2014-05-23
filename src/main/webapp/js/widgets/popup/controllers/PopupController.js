@@ -30,51 +30,77 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
-/*
- * Class use for creating namespace objects for the simulation states being watched.
- * Serializer is not used right now by Geppetto
+/**
+ * Controller class for popup widget. Use to make calls to widget from inside Geppetto.
+ *
+ * @constructor
+ *
+ * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function(require) {
 	return function(GEPPETTO) {
-		/**
-		 * Method responsible for serializing values to simulation states
-		 */
-		GEPPETTO.Serializer = {
+
+		var Popup = require('widgets/popup/Popup');
+		var popups = new Array();
+
+		GEPPETTO.PopupsController = {
+			
 
 			/**
-			 * Converts string representation of variable into object,
-			 * inserts them into the window object
-			 * Examples:
-			 *   "hhcell.electrical.hhpop[0].v"
-			 *   "hhcell.electrical.hhpop.v"
+			 * Registers widget events to detect and execute following actions.
+			 * Used when widget is destroyed.
 			 *
-			 **/
-			stringToObject: function(input) {
-				var arrPattern = /(\w+)\[(\d*)\]$/;
+			 * @param plotID
+			 */
+			registerHandler: function(popupID) {
+				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PopupsController, popupID);
+			},
+			
+			addPopupWidget : function(){
+				//Popup widget number
+				var index = (popups.length + 1);
 
-				function index(obj, element) {
-					var matches = element.match(arrPattern);
-					if(!matches) {
-						if(!obj[element]) {
-							obj[element] = new GEPPETTO.SimState.State(element);
-						}
-						return obj[element];
-					}
-					else {
-						if(!obj[matches[1]]) {
-							obj[matches[1]] = [];
-						}
-						var arrIndex = parseInt(matches[2]);
-						if(!obj[matches[1]][arrIndex]) {
-							obj[matches[1]][arrIndex] = new GEPPETTO.SimState.State(element);
-						}
-						return obj[matches[1]][arrIndex];
-					}
+				//Name of popup widget
+				var name = "Popup" + index;
+				var id = name;
+
+				//create popup widget
+				var p = window[name] = new Popup({id:id, name:name,visible:false});
+
+				//create help command for plot
+				p.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+
+				//store in local stack
+				popups.push(p);
+				
+				this.registerHandler(id);
+
+				//add commands to console autocomplete and help option
+				GEPPETTO.Utility.updateCommands("js/widgets/popup/Popup.js", p, id);
+
+				return p;
+			},
+		
+			removePopupWidgets : function(){
+				//remove all existing popup widgets
+				for(var i = 0; i < popups.length; i++) {
+					var popup = popups[i];
+
+					popup.destroy();
+					i++;
 				}
-				input.split('.').reduce(index, window);
+
+				popups = new Array();
+			},
+			
+			//receives updates from widget listener class to update plotting widget(s)
+			update: function(event) {
+				//delete popup widget(s)
+				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+					this.removePopupWidgets();
+				}
 			}
 		};
-
+		
 	};
 });

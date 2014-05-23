@@ -30,38 +30,33 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
-"use strict";
+/**
+ * Popup Widget
+ *
+ * @author Jesus R. Martinez (jesus@metacell.us)
+ */
 
 define(function(require) {
 
-	var run = function() {
+	var Widget = require('widgets/Widget');
+	var $ = require('jquery');
 
-		test("Serializer Test, start with array", function() {
-			var tree = "hhpop[0].v";
-			GEPPETTO.Serializer.stringToObject(tree);
-			notEqual(null, window["hhpop"][0]["v"]);
-		});
-
-		test("Serializer Test, start with array many children", function() {
-			var tree = "hhpop[0].membraneProperties.naChans.na.k.q";
-			GEPPETTO.Serializer.stringToObject(tree);
-			notEqual(null, window["hhpop"][0]["membraneProperties"]["naChans"]["na"]["k"]["q"]);
-		});
-
-		test("Serializer Test, path no array", function() {
-			var tree = "hhcell.electrical.hhpop[0].v";
-		  GEPPETTO.Serializer.stringToObject(tree);
-			notEqual(null, window["hhcell"]["electrical"]["hhpop"][0]["v"]);
-		});
-
-		test("Serializer Test, path no array", function() {
-			var tree = "hhcell.electrical.hhpop.v";
-			GEPPETTO.Serializer.stringToObject(tree);
-			notEqual(null, window["hhcell"]["electrical"]["hhpop"]["v"]);
-		});
-
-	};
-
-	return {run: run};
+	return Widget.View.extend({
+		
+		initialize : function(options){
+			this.id = options.id;
+			this.name = options.name;
+			this.visible = options.visible;
+			this.render();
+			this.setSize(100,300);
+			//set class pop up
+			$("#"+this.id).addClass("popup");
+		},
+		
+		setMessage : function(msg){
+			$("#"+this.id).html(msg);
+			
+			return "Setting new Message for " + this.id;
+		}
+	});
 });

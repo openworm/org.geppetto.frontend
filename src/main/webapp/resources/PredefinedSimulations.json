@@ -2,7 +2,7 @@
         {
             "name" : "LEMS Sample Hodgkin-Huxley Neuron",
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml"
-        },
+        }, 
         {
         	"name" : "PCISPH Small Liquid Scene",
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml"
@@ -18,5 +18,9 @@
         {
         	"name" : "NeuroML C.elegans PVDR Neuron (No Simulation)",
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/PVDR/GEPPETTO.xml"
+        },
+        {
+        	"name" : "Scatter3d Test",
+            "url" : "http://127.0.0.1:8080/org.geppetto.frontend/js/widgets/scatter3d/testscatter.xml"
         }
 ]}

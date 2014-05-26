@@ -19,6 +19,8 @@ define(function(require) {
 		renderer:null,
 		camera:null,
 		controls:null,
+		
+		labelsUpdated: false,
 
 		/**
 		 * Default options for scatter3d widget, used if none specified when scatter3d
@@ -67,7 +69,7 @@ define(function(require) {
 			//scatterPlot.add(this.paintTestCurve());
 			
 			//ADDING PLOT CURVE
-			this.generate_trajectory_data(1000);
+			//this.generate_trajectory_data(10000);
 
 			//PAINTING AXIS			
 			if (this.options.octants){
@@ -233,13 +235,19 @@ define(function(require) {
 		 * @param newValue -
 		 *            Updated value for data set
 		 */
-		updateDataSet: function(newValues) {
-			for(var i = 0; i < newValues.length; i++) {
-				var label = newValues[i].label;
-				var newValue = newValues[i].data;
+		updateDataSet: function() {
+			for(var key in this.datasets) {
+				var label = this.datasets[key].label;
+				
+				var newValues = new Array(3);
+				for(var labelKey in label) {
+					newValues[labelKey] = this.getState(GEPPETTO.Simulation.watchTree, label[labelKey]);
+				}
+				
+//				var newValue = newValues[i].data;
 
 				if(!this.labelsUpdated) {
-					var unit = newValues[i].unit;
+					var unit = newValues[0].unit;
 					if(unit != null) {
 						var labelY = unit;
 						//Matteo: commented until this can move as it doesn't make sense for it to be static.
@@ -252,53 +260,52 @@ define(function(require) {
 					}
 				}
 
-				if(label != null) {
-					var newData = null;
-					var matchedKey = 0;
-					var reIndex = false;
-
-					// update corresponding data set
-					for(var key in this.datasets) {
-						if(label == this.datasets[key].label) {
-							newData = this.datasets[key].data;
-							matchedKey = key;
-						}
-					}
-
-					if(newValue[0].length == 1) {
-						if(newData.length > this.limit) {
-							newData.splice(0, 1);
-							reIndex = true;
-						}
-
-						newData.push([ newData.length, newValue[0][0] ]);
-
-						if(reIndex) {
-							// re-index data
-							var indexedData = [];
-							for(var index = 0, len = newData.length; index < len; index++) {
-								var value = newData[index][1];
-								indexedData.push([ index, value ]);
-							}
-
-							this.datasets[matchedKey].data = indexedData;
-						}
-						else {
-							this.datasets[matchedKey].data = newData;
-						}
-					}
-					else if(newValue[0].length == 2) {
-						newData.push([ newValue[0][0], newValue[0][1][0] ]);
-						this.datasets[matchedKey].data = newData;
-					}
+				
+				var oldata = this.datasets[key].data;
+				
+				for(var labelKey in label) {
+					oldata[labelKey].push(newValues[labelKey]);
+					this.datasets[key].data[labelKey] = oldata[labelKey];
 				}
-			}
-			
-			if(this.scatter3d != null){
-				this.scatter3d.setData(this.datasets);
-				this.scatter3d.draw();
-			}
+				
+				
+//				if (this.datasets[key].data[0].length > 1){
+//					var lineGeometry = new THREE.Geometry();
+//					var vertArray = lineGeometry.vertices;
+//					
+//					vertArray.push(new THREE.Vector3(this.datasets[key].data[0][this.datasets[key].data[0].length-1].value*100, this.datasets[key].data[1][this.datasets[key].data[0].length-1].value*100, this.datasets[key].data[2][this.datasets[key].data[0].length-1].value*100));
+//					vertArray.push(new THREE.Vector3(newValues[0].value*100, newValues[1].value*100, newValues[2].value*100));
+//					
+//					lineGeometry.computeLineDistances();
+//					var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
+//					var line = new THREE.Line( lineGeometry, lineMaterial );
+//					this.scene.add(line);
+//					this.render3DPlot();
+//				}
+				
+				
+			}	
+					
+			if(this.scene != null){
+				//var mat = new THREE.ParticleBasicMaterial({vertexColors: true, size: 1.5});
+				var lineGeometry = new THREE.Geometry();
+				var vertArray = lineGeometry.vertices;
+				
+				for(var key in this.datasets) {
+					for (var i=0; i < this.datasets[key].data[0].length; i++) {
+					
+						vertArray.push(new THREE.Vector3(this.datasets[key].data[0][i].value*100, this.datasets[key].data[1][i].value*100, this.datasets[key].data[2][i].value*100));
+					}	
+				}
+				lineGeometry.computeLineDistances();
+				var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
+				var line = new THREE.Line( lineGeometry, lineMaterial );
+				this.scene.add(line);
+				this.render3DPlot();
+
+			}	
 		},
+		
 
 		plotXYZData: function(newDataX, newDataY, newDataZ, options) {
 			// If no options specify by user, use default options
@@ -307,7 +314,7 @@ define(function(require) {
 			}
 			
 			if(newDataX.name != null && newDataY.name != null && newDataZ.name != null) {
-				datasetLabel = newDataX.name + "/" + newDataY.name + "/" + newDataZ.name;
+				datasetLabel = [newDataX.name, newDataY.name, newDataZ.name];
 				for(var dataset in this.datasets) {
 					if(datasetLabel == this.datasets[dataset].label) {
 						return this.name + " widget is already plotting object " + datasetLabel;
@@ -331,8 +338,8 @@ define(function(require) {
 				var lineGeometry = new THREE.Geometry();
 				var vertArray = lineGeometry.vertices;
 				var datasetsValue = this.datasets[key].data;
-				for (var index = 0; index < datasetsValue[0].length; index++){
-					vertArray.push(new THREE.Vector3(datasetsValue[0][index], datasetsValue[1][index], datasetsValue[2][index]));
+				for (var index = 0; index < datasetsValue[0].value.length; index++){
+					vertArray.push(new THREE.Vector3(datasetsValue[0].value[index], datasetsValue[1].value[index], datasetsValue[2].value[index]));
 				}
 				lineGeometry.computeLineDistances();
 				var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
@@ -341,6 +348,64 @@ define(function(require) {
 			}	
 
 			this.render3DPlot();
+		},
+		
+		/**
+		 * Takes data series and plots them. To plot array(s) , use it as
+		 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
+		 * plotData("objectName") Multiples arrays can be specified at once in
+		 * this method, but only one object at a time.
+		 *
+		 * @name plotData(state, options)
+		 * @param state -
+		 *            series to plot, can be array of data or an geppetto simulation variable
+		 * @param options -
+		 *            options for the plotting widget, if null uses default
+		 */
+		plotData: function(state, options) {
+
+			// If no options specify by user, use default options
+			if(options != null) {
+				this.options = options;
+//				if(this.options.xaxis.max > this.limit) {
+//					this.limit = this.options.xaxis.max;
+//				}
+			}
+
+			if (state!= null) {					
+				if(state instanceof Array){
+					if ((typeof(state[0]) === 'string' || state[0] instanceof String) && (typeof(state[1]) === 'string' || state[1] instanceof String) && (typeof(state[2]) === 'string' || state[2] instanceof String)){
+						this.datasets.push({
+							label : state,
+							data : new Array([],[],[])
+						});
+					}
+					else{
+						this.datasets.push({
+							label: "",
+							data : state
+						});
+					}
+				}
+				
+//				else{
+//					this.datasets.push({
+//						label : state,
+//						data : [ [] ]
+//					});
+//				}
+			}
+
+			var plotHolder = $("#" + this.id);
+			if(this.plot == null) {
+				//this.plot = $.plot(plotHolder, this.datasets, this.options);
+				//plotHolder.resize();
+			}
+			else {
+				//this.plot = $.plot(plotHolder, this.datasets, this.options);
+			}
+
+			return "Line plot added to widget";
 		},
 		
 		/**

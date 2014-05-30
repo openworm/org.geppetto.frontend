@@ -208,7 +208,9 @@ define(function(require)
 			};
 			var threeObject = GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
 			var originalColor = getRGB(threeObject.material.originalColor);
-			threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
+			//threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
+			//threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
+		 	 threeObject.position.x = 10*intensity;
 		},
 
 		/**
@@ -488,10 +490,7 @@ define(function(require)
 				loader.parse( responseXML, function ( collada ) {
 
 					threeObject = collada.scene;
-					skin = collada.skins[ 0 ];
 
-					threeObject.scale.x = threeObject.scale.y = threeObject.scale.z = 0.002;
-					threeObject.updateMatrix();
 				} );
 				break;
 			}

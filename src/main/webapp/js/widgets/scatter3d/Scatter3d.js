@@ -12,15 +12,19 @@ define(function(require) {
 
 	return Widget.View.extend({
 		scatter3d: null,
-		limit: 400,
 		datasets: [],
 		options: null,
+		
+		numberPoints: 0,
 
 		scene : null,
 		renderer:null,
 		camera:null,
 		controls:null,
 		
+		xaxisLabel: null,
+		yaxisLabel: null,
+		zaxisLabel: null,
 		labelsUpdated: false,
 
 		/**
@@ -28,14 +32,17 @@ define(function(require) {
 		 * is created
 		 */
 		defaultScatter3dOptions:  {
-			octants: true,
+			octants: false,
+			axis: true,
 			octantsColor: 0x808080,
 			clearColor: 0xEEEEEE,
 			nearClipPlane: 1,
 			farClipPlane: 10000,
 			fov: 45,
-			cameraPositionZ: 300
-			
+			cameraPositionZ: 300,
+			colors: [0xedc240, 0xafd8f8, 0xcb4b4b, 0x4da74d, 0x9440ed],
+			limit: 1000,
+			plotEachN: null
 		},
 
 		initialize: function(options) {
@@ -48,6 +55,7 @@ define(function(require) {
 			this.dialog.append("<div class='scatter3d' id='" + this.id + "'></div>");
 
 			var plotHolder = $("#"+this.id);
+			//plotHolder.addEventListener( 'resize', this.onWindowResize, false );
 			this.renderer = new THREE.WebGLRenderer({antialias:false});
 			this.renderer.setSize(plotHolder.width(), plotHolder.height());
 			plotHolder.append(this.renderer.domElement);
@@ -65,25 +73,34 @@ define(function(require) {
 				}});
 
 			this.scene = new THREE.Scene();
-			
-			//ADDING POINTS CURVE 
-			//scatterPlot.add(this.paintTestCurve());
-			
-			//ADDING PLOT CURVE
-			//this.generate_trajectory_data(10000);
 
-			//PAINTING AXIS			
+			//PAINTING OCTANTS		
 			if (this.options.octants){
 				var scatterPlot = new THREE.Object3D();
 				scatterPlot.add(this.paintOctants());
 				this.scene.add(scatterPlot);
 			}	
 			
+			//PAINTING AXIS
+			if (this.options.axis){
+				var axisHelper = new THREE.AxisHelper(50);
+				this.scene.add(axisHelper);
+			}
+			
 			//REFRESHIN CONTROLS AND RENDERING
 			this.controls.update();
 			this.render3DPlot();
-			THREEx.WindowResize(this.renderer, this.camera);
+			//THREEx.WindowResize(this.renderer, this.camera);
 		},
+		
+//		onWindowResize: function(){
+//
+//			camera.aspect = window.innerWidth / window.innerHeight;
+//			camera.updateProjectionMatrix();
+//
+//			renderer.setSize( window.innerWidth, window.innerHeight );
+//
+//			},
 		
 		initializeCamera: function(){
 			var fov = this.options.fov; // camera field-of-view in degrees
@@ -95,62 +112,52 @@ define(function(require) {
 			this.camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
 			this.camera.position.z = this.options.cameraPositionZ;
 		},
-
-		paintTestCurve: function(){
-			//PAINTING A CURVE JUST FOR FUN
-			var mat = new THREE.ParticleBasicMaterial({vertexColors: true, size: 1.5});
-
-			var pointCount = 1000;
-			var pointGeo = new THREE.Geometry();
-			for (var i=0; i<pointCount; i++) {
-			  var x = Math.random() * 100 - 50;
-			  var y = x*0.8+Math.random() * 20 - 10;
-			  var z = x*0.7+Math.random() * 30 - 15;
-			  pointGeo.vertices.push(new THREE.Vector3(x,y,z));
-			  //pointGeo.colors.push(new THREE.Color().setHSV((x+50)/100, (z+50)/100, (y+50)/100));
-			}
-			var points = new THREE.ParticleSystem(pointGeo, mat);
-
-			return points;
-		},
 		
-		generate_trajectory_data: function(npt){
-			var trajectory_data_x = [];
-			var trajectory_data_y = [];
-			var trajectory_data_z = [];
-			var x = 0.0;
-			var y = 0.0;
-			var z = 0.5;
+		/**
+		 * Takes data series and 3d plots them. To plot array(s) , use it as
+		 * plotData([[1,2],[2,3],[3,4]]) To plot a geppetto simulation variable , use it as
+		 * plotData(["objectName","objectName2","objectName3"]) Multiples arrays can be specified at once in
+		 * this method, but only one object at a time.
+		 *
+		 * @name plotData(state, options)
+		 * @param state -
+		 *            series to plot, can be array of data or an array of geppetto simulation variables
+		 * @param options -
+		 *            options for the scatter3d widget, if null uses default
+		 */
+		plotData: function(state, options) {
 
-			var xx, yy, zz;
-
-			var a = 0.2;
-			var b = 0.2;
-			var c = 5.7;
-			var dt = 0.05;
-
-			for (var i=0; i < npt; i++) {
-				//rössler euler
-				xx = x + dt * (- y - z);
-				yy = y + dt * (x + a * y);
-				zz = z + dt * (b + z * (x - c));
-	
-				trajectory_data_x.push(xx);
-				trajectory_data_y.push(yy);
-				trajectory_data_z.push(zz);
-	
-				x = xx;
-				y = yy;
-				z = zz;
+			// If no options specify by user, use default options
+			if(options != null) {
+				this.options = options;
 			}
-			//this.plotXYZData(trajectory_data_x, trajectory_data_y, trajectory_data_z);
-			//xyzData = {'label': 'nombrex', 'value': trajectory_data_x}, trajectory_data_y, trajectory_data_z]};
-			this.plotXYZData({'label': 'nombrex', 'value': trajectory_data_x},
-					{'label': 'nombrey', 'value': trajectory_data_y},
-					{'label': 'nombrez', 'value': trajectory_data_z}
-					);
+
+			if (state!= null) {					
+				if(state instanceof Array){
+					if ((typeof(state[0]) === 'string' || state[0] instanceof String) && (typeof(state[1]) === 'string' || state[1] instanceof String) && (typeof(state[2]) === 'string' || state[2] instanceof String)){
+						dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial( { color: 0xcc0000 } )};
+						
+						for (var key in state){
+							dataset.data.push({
+								label: state[key],
+								values: []
+							});
+						}
+						this.datasets.push(dataset);
+					}
+					else{
+						for (var key in state){
+							this.datasets.push({
+								label: "",
+								values: state[key]
+							});
+						}	
+					}
+				}
+			}
+
+			return "Lines or variables to scatter added to widget";
 		},
-	
 		
 		paintOctants: function() {
 			function v(x,y,z){ return new THREE.Vector3(x,y,z); }  
@@ -230,226 +237,126 @@ define(function(require) {
 
 		/**
 		 * Updates a data set, use for time series
-		 *
-		 * @param label -
-		 *            Name of data set
-		 * @param newValue -
-		 *            Updated value for data set
 		 */
 		updateDataSet: function() {
-			for(var key in this.datasets) {
-				var reIndex = false;
-				var data = this.datasets[key].data;
-				
-				var newValues = new Array(3);
-				var currentLabel = '';
-				var oldata = new Array(3);
-				for(var dataKey in data) {
-					currentLabel = data[dataKey].label;
-					newValues[dataKey] = this.getState(GEPPETTO.Simulation.watchTree, currentLabel);
+			if (this.options.plotEachN == null || !(this.numberPoints++ % this.options.plotEachN)){
+				for(var key in this.datasets) {
+					var reIndex = false;
+					var data = this.datasets[key].data;
 					
-					oldata = data[dataKey].values;
-					if(oldata.length > this.limit) {
-						oldata.splice(0, 1);
-						reIndex = true;
-						//this.datasets[key].curve.vertices.splice(0, 1);
-					}
-					
-					oldata.push(newValues[dataKey]);
-					this.datasets[key].data[dataKey].values = oldata;
-				}
-				
-
-				if(!this.labelsUpdated) {
-					var unit = newValues[0].unit;
-					if(unit != null) {
-						var labelY = unit;
-						//Matteo: commented until this can move as it doesn't make sense for it to be static.
-						//also ms should not be harcoded but should come from the simulator as the timescale could
-						//be different
-						var labelX = "";
-						//Simulation timestep (ms) " + Simulation.timestep;
-						this.setAxisLabel(labelY, labelX);
-						this.labelsUpdated = true;
-					}
-				}
-			
-				
-				//Approach painting a line for every two points
-//				if (this.datasets[key].data[0].length > 1){
-//					var lineGeometry = new THREE.Geometry();
-//					var vertArray = lineGeometry.vertices;
-//					
-//					vertArray.push(new THREE.Vector3(this.datasets[key].data[0][this.datasets[key].data[0].length-2].value*100, this.datasets[key].data[1][this.datasets[key].data[0].length-2].value*100, this.datasets[key].data[2][this.datasets[key].data[0].length-2].value*100));
-//					vertArray.push(new THREE.Vector3(newValues[0].value*100, newValues[1].value*100, newValues[2].value*100));
-//					
-//					lineGeometry.computeLineDistances();
-//					var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
-//					var line = new THREE.Line( lineGeometry, lineMaterial );
-//					this.scene.add(line);
-//					this.render3DPlot();
-//				}
-				
-				if(this.scene != null && this.datasets[key].data[0].values.length>1){
-					//var mat = new THREE.ParticleBasicMaterial({vertexColors: true, size: 1.5});
-					//var vertArray = this.datasets[key].curve.geometry.vertices;
-					//if (vertArray.length == 0){
-						//vertArray = new Array(401);
-					//} 
+					var newValues = new Array(3);
+					var currentLabel = '';
+					var oldata = new Array(3);
+					for(var dataKey in data) {
+						currentLabel = data[dataKey].label;
+						newValues[dataKey] = this.getState(GEPPETTO.Simulation.watchTree, currentLabel);
 						
-					//var vertArray = this.datasets[key].curve.vertices;
-					var lineGeometry = new THREE.Geometry();
-					var vertArray = lineGeometry.vertices;
-					//console.log('Tamano')
-					//console.log(data[0].values.length);
-					//vertArray = [];
-					//for (var i=0; i<data[0].values.length;i++){
-						//vertArray[i] = new THREE.Vector3(data[0].values[i].value*100, data[1].values[i].value*100, data[2].values[i].value*100);
-					//}
-					
-					if (reIndex){
-						this.scene.remove(this.datasets[key].curves[0]);
-						this.datasets[key].curves.splice(0, 1);
+						oldata = data[dataKey].values;
+						if(oldata.length > this.options.limit) {
+							oldata.splice(0, 1);
+							reIndex = true;
+						}
+						
+						oldata.push(newValues[dataKey].value);
+						this.datasets[key].data[dataKey].values = oldata;
 					}
 					
-					vertArray.push(new THREE.Vector3(this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-2].value*100, this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-2].value*100, this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-2].value*100));
-					vertArray.push(new THREE.Vector3(newValues[0].value*100, newValues[1].value*100, newValues[2].value*100));
-
-					//this.datasets[key].curve.material.attributes.lineDistances.needsUpdate = true;
+	
+					if(!this.labelsUpdated) {
+						var unit = newValues[0].unit;
+						if(unit != null) {
+							var labelY = unit;
+							//Matteo: commented until this can move as it doesn't make sense for it to be static.
+							//also ms should not be harcoded but should come from the simulator as the timescale could
+							//be different
+							var labelX = "";
+							//Simulation timestep (ms) " + Simulation.timestep;
+							this.setAxisLabel(labelY, labelX);
+							this.labelsUpdated = true;
+						}
+					}
 					
-					//this.datasets[key].curve.geometry.computeLineDistances();
-					//this.datasets[key].curve.geometry.dynamic = true;
-					//this.datasets[key].curve.geometry.verticesNeedUpdate = true;
-					//this.datasets[key].curve.geometry.__dirtyVertices = true;
-					//this.datasets[key].curve.geometry.lineDistancesNeedUpdate = true;
-					var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
-					//var line = new THREE.Line( this.datasets[key].curve, lineMaterial );
-					var line = new THREE.Line( lineGeometry, lineMaterial );
-					
-					this.datasets[key].curves.push(line);
-					
-					//this.scene.add(this.datasets[key].curve);
-					this.scene.add(line);
-					this.render3DPlot();
-					
+					if(this.scene != null && this.datasets[key].data[0].values.length>1){
+						//TODO: This solution adds a new line for each new vertex until a limit. When this limit is reached
+						// it behaves as a FIFO (deleting first line and adding a new one).
+						// I also tried to have just one single line and remove/add vertex (which I think will have a better performance/elegance)
+						// but I can not make renderer to refresh the line 
+						//this.datasets[key].curve.geometry.computeLineDistances();
+						//this.datasets[key].curve.geometry.dynamic = true;
+						//this.datasets[key].curve.geometry.verticesNeedUpdate = true;
+						//this.datasets[key].curve.geometry.__dirtyVertices = true;
+						
+						if (reIndex){
+							this.scene.remove(this.datasets[key].curves[0]);
+							this.datasets[key].curves.splice(0, 1);
+						}
+						
+						var line = this.paintThreeLine(
+								[this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-2], this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-1]],
+								[this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-2], this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-1]],
+								[this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-2]*10, this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-1]*10],
+								this.datasets[key].lineBasicMaterial
+						);
+						
+						this.datasets[key].curves.push(line);
+						this.scene.add(line);
+						this.render3DPlot();
+					}	
 				}	
-				
-			}	
-			
+			}
+
 			
 		},
 		
-
+		paintThreeLine: function(dataX, dataY, dataZ, lineBasicMaterial){
+			var lineGeometry = new THREE.Geometry();
+			var vertArray = lineGeometry.vertices;
+			for (var key in dataX){
+				vertArray.push(new THREE.Vector3(dataX[key], dataY[key], dataZ[key]));
+			}
+			var line = new THREE.Line( lineGeometry, lineBasicMaterial);
+			return line;
+		},
+		
+		/**
+		 * Takes data series and 3d plots them. To plot array(s) , use it as
+		 * plotData([[1,2],[2,3],[3,4]]) 
+		 *
+		 * @name plotData(state, options)
+		 * @param newDataX, newDataY, newDataZ
+		 *            series to plot, each of them can be an array of data or 
+		 *            an object containing a name(label) and array of data
+		 * @param options -
+		 *            options for the scatter3d widget, if null uses default
+		 */
 		plotXYZData: function(newDataX, newDataY, newDataZ, options) {
 			// If no options specify by user, use default options
 			if(options != null) {
 				this.options = options;
 			}
 			
+			dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial( { color: 0xcc0000 } )};
 			if(newDataX.name != null && newDataY.name != null && newDataZ.name != null) {
-				datasetLabel = [newDataX.name, newDataY.name, newDataZ.name];
-				for(var dataset in this.datasets) {
-					if(datasetLabel == this.datasets[dataset].label) {
-						return this.name + " widget is already plotting object " + datasetLabel;
-					}
-				}
-				this.datasets.push({
-					label: datasetLabel,
-					data: [newDataX.value, newDataY.value, newDataZ.value ]
-				});
+				dataset.data.push(
+						{label: newDataX.name, values: newDataX.value},
+						{label: newDataY.name, values: newDataY.value},
+						{label: newDataZ.name, values: newDataZ.value}
+						);
 			}
 			else {
-				this.datasets.push({
-					label: "",
-					data: [newDataX, newDataY, newDataZ]
-				});
+				dataset.data.push(
+						{label: "", values: newDataX},
+						{label: "", values: newDataY},
+						{label: "", values: newDataZ}
+						);
 			}
+			this.datasets.push(dataset);
 			
-			//vertArray.push( new THREE.Vector3(-150, -100, 0), new THREE.Vector3(-150, 100, 0) );
-			
-			for(var key in this.datasets) {
-				var lineGeometry = new THREE.Geometry();
-				var vertArray = lineGeometry.vertices;
-				var datasetsValue = this.datasets[key].data;
-				for (var index = 0; index < datasetsValue[0].value.length; index++){
-					vertArray.push(new THREE.Vector3(datasetsValue[0].value[index], datasetsValue[1].value[index], datasetsValue[2].value[index]));
-				}
-				lineGeometry.computeLineDistances();
-				var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
-				var line = new THREE.Line( lineGeometry, lineMaterial );
-				this.scene.add(line);
-			}	
+			this.paintThreeLine(dataset.data[0].values, dataset.data[1].values, dataset.data[2].values, dataset.lineBasicMaterial);
 
+			dataset.curves.push(line);
+			this.scene.add(line);
 			this.render3DPlot();
-		},
-		
-		/**
-		 * Takes data series and plots them. To plot array(s) , use it as
-		 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
-		 * plotData("objectName") Multiples arrays can be specified at once in
-		 * this method, but only one object at a time.dataset = {curve: new THREE.Line(new THREE.Geometry(),  lineBasicMaterial), data:[]};
-		 *
-		 * @name plotData(state, options)
-		 * @param state -
-		 *            series to plot, can be array of data or an geppetto simulation variable
-		 * @param options -
-		 *            options for the plotting widget, if null uses default
-		 */
-		plotData: function(state, options) {
-
-			// If no options specify by user, use default options
-			if(options != null) {
-				this.options = options;
-//				if(this.options.xaxis.max > this.limit) {
-//					this.limit = this.options.xaxis.max;
-//				}
-			}
-
-			if (state!= null) {					
-				if(state instanceof Array){
-					if ((typeof(state[0]) === 'string' || state[0] instanceof String) && (typeof(state[1]) === 'string' || state[1] instanceof String) && (typeof(state[2]) === 'string' || state[2] instanceof String)){
-						//var line = new THREE.Line( this.datasets[key].curve, lineMaterial );
-						//var curveGeometry = new THREE.Geometry();
-						var lineBasicMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
-						//curveLine = new THREE.Line(curveGeometry,  lineBasicMaterial);
-						//curveGeometry.vertices = new Array(401);
-						//dataset = {curve: new THREE.Line(new THREE.Geometry(),  lineBasicMaterial), data:[]};
-						dataset = {curves: [], data:[]};
-						
-						for (var key in state){
-							dataset.data.push({
-								label: state[key],
-								values: []
-							});
-
-							this.scene.add(dataset.curve);
-						}
-						this.datasets.push(dataset);
-						//var vertArray = this.datasets[0].curve.geometry.vertices;
-						//vertArray.push(new THREE.Vector3(0, 0, 0));
-						//vertArray.push(new THREE.Vector3(100, 100, 100));
-					}
-					else{
-						for (var key in state){
-							this.datasets.push({
-								label: "",
-								values: state[key]
-							});
-						}	
-					}
-				}
-			}
-
-			var plotHolder = $("#" + this.id);
-			if(this.plot == null) {
-				//this.plot = $.plot(plotHolder, this.datasets, this.options);
-				//plotHolder.resize();
-			}
-			else {
-				//this.plot = $.plot(plotHolder, this.datasets, this.options);
-			}
-
-			return "Line plot added to widget";
 		},
 		
 		/**

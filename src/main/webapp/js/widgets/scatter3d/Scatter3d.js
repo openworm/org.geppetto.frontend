@@ -12,6 +12,7 @@ define(function(require) {
 
 	return Widget.View.extend({
 		scatter3d: null,
+		limit: 400,
 		datasets: [],
 		options: null,
 
@@ -237,14 +238,27 @@ define(function(require) {
 		 */
 		updateDataSet: function() {
 			for(var key in this.datasets) {
-				var label = this.datasets[key].label;
+				var reIndex = false;
+				var data = this.datasets[key].data;
 				
 				var newValues = new Array(3);
-				for(var labelKey in label) {
-					newValues[labelKey] = this.getState(GEPPETTO.Simulation.watchTree, label[labelKey]);
+				var currentLabel = '';
+				var oldata = new Array(3);
+				for(var dataKey in data) {
+					currentLabel = data[dataKey].label;
+					newValues[dataKey] = this.getState(GEPPETTO.Simulation.watchTree, currentLabel);
+					
+					oldata = data[dataKey].values;
+					if(oldata.length > this.limit) {
+						oldata.splice(0, 1);
+						reIndex = true;
+						//this.datasets[key].curve.vertices.splice(0, 1);
+					}
+					
+					oldata.push(newValues[dataKey]);
+					this.datasets[key].data[dataKey].values = oldata;
 				}
 				
-//				var newValue = newValues[i].data;
 
 				if(!this.labelsUpdated) {
 					var unit = newValues[0].unit;
@@ -259,21 +273,14 @@ define(function(require) {
 						this.labelsUpdated = true;
 					}
 				}
-
+			
 				
-				var oldata = this.datasets[key].data;
-				
-				for(var labelKey in label) {
-					oldata[labelKey].push(newValues[labelKey]);
-					this.datasets[key].data[labelKey] = oldata[labelKey];
-				}
-				
-				
+				//Approach painting a line for every two points
 //				if (this.datasets[key].data[0].length > 1){
 //					var lineGeometry = new THREE.Geometry();
 //					var vertArray = lineGeometry.vertices;
 //					
-//					vertArray.push(new THREE.Vector3(this.datasets[key].data[0][this.datasets[key].data[0].length-1].value*100, this.datasets[key].data[1][this.datasets[key].data[0].length-1].value*100, this.datasets[key].data[2][this.datasets[key].data[0].length-1].value*100));
+//					vertArray.push(new THREE.Vector3(this.datasets[key].data[0][this.datasets[key].data[0].length-2].value*100, this.datasets[key].data[1][this.datasets[key].data[0].length-2].value*100, this.datasets[key].data[2][this.datasets[key].data[0].length-2].value*100));
 //					vertArray.push(new THREE.Vector3(newValues[0].value*100, newValues[1].value*100, newValues[2].value*100));
 //					
 //					lineGeometry.computeLineDistances();
@@ -283,27 +290,53 @@ define(function(require) {
 //					this.render3DPlot();
 //				}
 				
-				
-			}	
+				if(this.scene != null && this.datasets[key].data[0].values.length>1){
+					//var mat = new THREE.ParticleBasicMaterial({vertexColors: true, size: 1.5});
+					//var vertArray = this.datasets[key].curve.geometry.vertices;
+					//if (vertArray.length == 0){
+						//vertArray = new Array(401);
+					//} 
+						
+					//var vertArray = this.datasets[key].curve.vertices;
+					var lineGeometry = new THREE.Geometry();
+					var vertArray = lineGeometry.vertices;
+					//console.log('Tamano')
+					//console.log(data[0].values.length);
+					//vertArray = [];
+					//for (var i=0; i<data[0].values.length;i++){
+						//vertArray[i] = new THREE.Vector3(data[0].values[i].value*100, data[1].values[i].value*100, data[2].values[i].value*100);
+					//}
 					
-			if(this.scene != null){
-				//var mat = new THREE.ParticleBasicMaterial({vertexColors: true, size: 1.5});
-				var lineGeometry = new THREE.Geometry();
-				var vertArray = lineGeometry.vertices;
-				
-				for(var key in this.datasets) {
-					for (var i=0; i < this.datasets[key].data[0].length; i++) {
+					if (reIndex){
+						this.scene.remove(this.datasets[key].curves[0]);
+						this.datasets[key].curves.splice(0, 1);
+					}
 					
-						vertArray.push(new THREE.Vector3(this.datasets[key].data[0][i].value*100, this.datasets[key].data[1][i].value*100, this.datasets[key].data[2][i].value*100));
-					}	
-				}
-				lineGeometry.computeLineDistances();
-				var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
-				var line = new THREE.Line( lineGeometry, lineMaterial );
-				this.scene.add(line);
-				this.render3DPlot();
+					vertArray.push(new THREE.Vector3(this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-2].value*100, this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-2].value*100, this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-2].value*100));
+					vertArray.push(new THREE.Vector3(newValues[0].value*100, newValues[1].value*100, newValues[2].value*100));
 
+					//this.datasets[key].curve.material.attributes.lineDistances.needsUpdate = true;
+					
+					//this.datasets[key].curve.geometry.computeLineDistances();
+					//this.datasets[key].curve.geometry.dynamic = true;
+					//this.datasets[key].curve.geometry.verticesNeedUpdate = true;
+					//this.datasets[key].curve.geometry.__dirtyVertices = true;
+					//this.datasets[key].curve.geometry.lineDistancesNeedUpdate = true;
+					var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
+					//var line = new THREE.Line( this.datasets[key].curve, lineMaterial );
+					var line = new THREE.Line( lineGeometry, lineMaterial );
+					
+					this.datasets[key].curves.push(line);
+					
+					//this.scene.add(this.datasets[key].curve);
+					this.scene.add(line);
+					this.render3DPlot();
+					
+				}	
+				
 			}	
+			
+			
 		},
 		
 
@@ -354,7 +387,7 @@ define(function(require) {
 		 * Takes data series and plots them. To plot array(s) , use it as
 		 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
 		 * plotData("objectName") Multiples arrays can be specified at once in
-		 * this method, but only one object at a time.
+		 * this method, but only one object at a time.dataset = {curve: new THREE.Line(new THREE.Geometry(),  lineBasicMaterial), data:[]};
 		 *
 		 * @name plotData(state, options)
 		 * @param state -
@@ -375,25 +408,36 @@ define(function(require) {
 			if (state!= null) {					
 				if(state instanceof Array){
 					if ((typeof(state[0]) === 'string' || state[0] instanceof String) && (typeof(state[1]) === 'string' || state[1] instanceof String) && (typeof(state[2]) === 'string' || state[2] instanceof String)){
-						this.datasets.push({
-							label : state,
-							data : new Array([],[],[])
-						});
+						//var line = new THREE.Line( this.datasets[key].curve, lineMaterial );
+						//var curveGeometry = new THREE.Geometry();
+						var lineBasicMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
+						//curveLine = new THREE.Line(curveGeometry,  lineBasicMaterial);
+						//curveGeometry.vertices = new Array(401);
+						//dataset = {curve: new THREE.Line(new THREE.Geometry(),  lineBasicMaterial), data:[]};
+						dataset = {curves: [], data:[]};
+						
+						for (var key in state){
+							dataset.data.push({
+								label: state[key],
+								values: []
+							});
+
+							this.scene.add(dataset.curve);
+						}
+						this.datasets.push(dataset);
+						//var vertArray = this.datasets[0].curve.geometry.vertices;
+						//vertArray.push(new THREE.Vector3(0, 0, 0));
+						//vertArray.push(new THREE.Vector3(100, 100, 100));
 					}
 					else{
-						this.datasets.push({
-							label: "",
-							data : state
-						});
+						for (var key in state){
+							this.datasets.push({
+								label: "",
+								values: state[key]
+							});
+						}	
 					}
 				}
-				
-//				else{
-//					this.datasets.push({
-//						label : state,
-//						data : [ [] ]
-//					});
-//				}
 			}
 
 			var plotHolder = $("#" + this.id);

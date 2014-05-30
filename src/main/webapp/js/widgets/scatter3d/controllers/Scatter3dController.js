@@ -120,49 +120,8 @@ define(function(require) {
           for(var i = 0; i < scatter3ds.length; i++) {
             var scatter3d = scatter3ds[i];
 
-            //retrieve scatter3d's datasets
-//            var dataSets = scatter3d.getDataSets();
-//
-//            if(dataSets != null){
-//              //keeps track of new values
-//              var newValues = [];
-//              var unit;
-//              for(var x = 0; x < dataSets.length; x++)
-//              {
-//                var ds = dataSets[x].label.split("/");
-//                unit = GEPPETTO.Simulation.simulationStates[dataSets[x].label].unit;
-//
-//                if(unit){
-//                  if(ds.length==1)
-//                  {
-//                    newValues.push({label : dataSets[x].label, data: [[GEPPETTO.Simulation.simulationStates[ds[0]].value]], unit : unit});
-//                  }
-//                  if(ds.length==2)
-//                  {
-//                    newValues.push({label : dataSets[x].label, data: [[
-//                      GEPPETTO.Simulation.simulationStates[ds[0]].value,
-//                      GEPPETTO.Simulation.simulationStates[ds[1]].value
-//                    ]], unit : unit});
-//                  }
-//                }
-//                else{
-//                  if(ds.length==1)
-//                  {
-//                    newValues.push({label : dataSets[x].label, data: [[GEPPETTO.Simulation.simulationStates[ds[0]].value]]});
-//                  }
-//                  if(ds.length==2)
-//                  {
-//                    newValues.push({label : dataSets[x].label, data: [[
-//                      GEPPETTO.Simulation.simulationStates[ds[0]].value,
-//                      GEPPETTO.Simulation.simulationStates[ds[1]].value
-//                    ]]});
-//                  }
-//                }
-//              }
-
-//            console.log("actualiza");
-              //update scatter3d with new data set
-              scatter3d.updateDataSet();
+            //update scatter3d with new data set
+            scatter3d.updateDataSet();
             
           }
         }

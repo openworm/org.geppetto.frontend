@@ -39,10 +39,11 @@ define(function(require) {
 			nearClipPlane: 1,
 			farClipPlane: 10000,
 			fov: 45,
-			cameraPositionZ: 300,
+			cameraPositionZ: 10,
 			colors: [0xedc240, 0xafd8f8, 0xcb4b4b, 0x4da74d, 0x9440ed],
-			limit: 1000,
-			plotEachN: null
+			limit: 400,
+			plotEachN: 10,
+			normalizeData: false
 		},
 
 		initialize: function(options) {
@@ -246,19 +247,19 @@ define(function(require) {
 					
 					var newValues = new Array(3);
 					var currentLabel = '';
-					var oldata = new Array(3);
+					var olddata = new Array(3);
 					for(var dataKey in data) {
 						currentLabel = data[dataKey].label;
 						newValues[dataKey] = this.getState(GEPPETTO.Simulation.watchTree, currentLabel);
 						
-						oldata = data[dataKey].values;
-						if(oldata.length > this.options.limit) {
-							oldata.splice(0, 1);
+						olddata = data[dataKey].values;
+						if(olddata.length > this.options.limit) {
+							olddata.splice(0, 1);
 							reIndex = true;
 						}
 						
-						oldata.push(newValues[dataKey].value);
-						this.datasets[key].data[dataKey].values = oldata;
+						olddata.push(newValues[dataKey].value);
+						this.datasets[key].data[dataKey].values = olddata;
 					}
 					
 	
@@ -291,12 +292,29 @@ define(function(require) {
 							this.datasets[key].curves.splice(0, 1);
 						}
 						
-						var line = this.paintThreeLine(
-								[this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-2], this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-1]],
-								[this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-2], this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-1]],
-								[this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-2]*10, this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-1]*10],
-								this.datasets[key].lineBasicMaterial
-						);
+						var avg = [];
+						var line = {};
+						if (this.options.normalizeData){
+							for (var i=0; i < 3; i++){
+								var sum = this.datasets[key].data[i].values.reduce(function(a, b) { return a + b });
+								avg[i] = sum / this.datasets[key].data[i].values.length;
+							}
+						
+							line = this.paintThreeLine(
+									[(this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-2] -avg[0])/this.datasets[key].data[0].values.length, (this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-1] -avg[0])/this.datasets[key].data[0].values.length],
+									[(this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-2] -avg[1])/this.datasets[key].data[1].values.length, (this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-1] -avg[1])/this.datasets[key].data[1].values.length],
+									[(this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-2] -avg[2])/this.datasets[key].data[2].values.length, (this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-1] -avg[2])/this.datasets[key].data[2].values.length],
+									this.datasets[key].lineBasicMaterial
+							);
+						}
+						else{
+							 line = this.paintThreeLine(
+									[this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-2], this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-1]],
+									[this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-2], this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-1]],
+									[this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-2], this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-1]],
+									this.datasets[key].lineBasicMaterial
+							);
+						}
 						
 						this.datasets[key].curves.push(line);
 						this.scene.add(line);
@@ -384,18 +402,6 @@ define(function(require) {
 				var scatter3dHolder = $("#" + this.id);
 				this.scatter3d = $.plot(scatter3dHolder, this.datasets, this.options);
 			}
-		},
-
-		/**
-		 *
-		 * Set the options for the scatter3dting widget
-		 *
-		 * @name setOptions(options)
-		 * @param options
-		 */
-		setOptions: function(options) {
-			this.options = options;
-			this.scatter3d = $.plot($("#" + this.id), this.datasets, this.options);
 		},
 
 		/**

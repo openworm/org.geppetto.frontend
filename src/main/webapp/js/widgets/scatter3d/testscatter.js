@@ -1,4 +1,4 @@
-Simulation.addWatchLists([{name:"hhvars",variablePaths:["hhcell.electrical.hhpop[0].v", "hhcell.electrical.hhpop[0].spiking","hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.naChans.gDensity","hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q", "hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.naChans.na.m.q","hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.kChans.k.n.q"]}]);
+Simulation.addWatchLists([{name:"hhvars",variablePaths:["hhcell.electrical.hr_chaotic_pop[0].x", "hhcell.electrical.hr_chaotic_pop[0].y", "hhcell.electrical.hr_chaotic_pop[0].z"]}]);
 Simulation.startWatch();
 Simulation.start();
 
@@ -14,6 +14,7 @@ Scatter3d1.setName("Hodgkin-Huxley Spiking Neuron");
 //Plot1.setOptions(options);
 Scatter3d1.setPosition(113, 90);
 Scatter3d1.setSize(230,445); 
-Scatter3d1.plotData(["hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q", "hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.naChans.na.m.q","hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.kChans.k.n.q"]);
+//Scatter3d1.plotData(["hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q", "hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.naChans.na.m.q","hhcell.electrical.hhpop[0].bioPhys1.membraneProperties.kChans.k.n.q"]);
+Scatter3d1.plotData(["hhcell.electrical.hr_chaotic_pop[0].x", "hhcell.electrical.hr_chaotic_pop[0].y", "hhcell.electrical.hr_chaotic_pop[0].z"]);
 
 

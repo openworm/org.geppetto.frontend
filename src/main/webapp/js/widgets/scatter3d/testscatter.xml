@@ -10,7 +10,8 @@
 			</tns:simulator>
 			<tns:model>
     				<tns:modelInterpreterId>lemsModelInterpreter</tns:modelInterpreterId>
-    				<tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/LEMS_NML2_Ex5_DetCell.xml</tns:modelURL>
+    				<!-- <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/LEMS_NML2_Ex5_DetCell.xml</tns:modelURL> -->
+    				<tns:modelURL>http://127.0.0.1:8080/org.geppetto.frontend/js/widgets/scatter3d/run_chaotic_hr.xml</tns:modelURL>
 			</tns:model>
 		</tns:aspect>		
 	</tns:entity>

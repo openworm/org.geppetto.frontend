@@ -32,68 +32,40 @@
  *******************************************************************************/
 
 /**
- * Class used to create widgets and handle widget events from parent class.
+ * Loads tree visualiser scripts
+ *
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 
-/**
- * Enum use to hold different types of widgets
+
+/*
+ * Libraries used by Tree Visualizer widget
  */
 
+require.config({
+	  paths: {
+	    "d3": "widgets/treevisualiser/vendor/d3.min"
+	  }
+	});
+
+var reqs = [];
+reqs.push("d3");
+reqs.push("widgets/treevisualiser/vendor/dat.gui.min");
+
+define("d3.global", ["d3"], function(_) {
+	  d3 = _;
+	});
+
+require(reqs, function(d3) {
+	window.d3 = d3;
+	loadCss("js/widgets/treevisualiser/TreeVisualiserD3.css");
+	loadCss("js/widgets/treevisualiser/TreeVisualiserDAT.css");
+	
+});
+
+//Load TreeVisualiserController and other classes using GEPPETTO
 define(function(require) {
-
 	return function(GEPPETTO) {
-		GEPPETTO.Widgets = {
-			PLOT: 0,
-			POPUP : 1,
-			TREEVISUALISER: 2
-		};
-
-		GEPPETTO.WidgetFactory = {
-			/**
-			 * Adds widget to Geppetto
-			 */
-			addWidget: function(widgetType) {
-				var widget = null;
-
-				switch(widgetType) {
-					//create plotting widget
-					case GEPPETTO.Widgets.PLOT:
-						widget = GEPPETTO.PlotsController.addPlotWidget();
-						break;
-						//create plotting widget
-					case GEPPETTO.Widgets.POPUP:
-						widget = GEPPETTO.PopupsController.addPopupWidget();
-						break;
-					case GEPPETTO.Widgets.TREEVISUALISER:
-						widget = GEPPETTO.TreeVisualiserController.addTreeVisualiserWidget();
-						break;
-					default:
-						break;
-				}
-
-				return widget;
-			},
-
-			/**
-			 * Removes widget from Geppetto
-			 */
-			removeWidget: function(widgetType) {
-				switch(widgetType) {
-					//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.PLOT:
-						GEPPETTO.PlotsController.removePlotWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-						//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.POPUP:
-						GEPPETTO.PlotsController.removePopupWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-					case GEPPETTO.Widgets.TREEVISUALISER:
-						GEPPETTO.TreeVisualiserController.removeTreeVisualiserWidgets();
-						return GEPPETTO.Resources.REMOVE_TREEVISUALISER_WIDGETS;
-					default:
-						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
-				}
-			}
-		};
+		require("widgets/treevisualiser/controllers/TreeVisualiserController")(GEPPETTO);
 	};
 });

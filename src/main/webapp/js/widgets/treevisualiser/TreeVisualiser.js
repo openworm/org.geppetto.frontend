@@ -72,15 +72,16 @@ define(function(require) {
 	//			this.generateTestTreeForDAT();
 	
 	//			Testing With Real Data
-	//			this.generateRealDataTestTree();
+	//			this.generateRealDataTestTreeForDAT();
 				
 	//			Testing With Variable
-				this.setData("hhcell");
+	//			this.setData("hhcell");
 				
 				this.dialog.append(this.gui.domElement);
 			}
 			else if (this.options.mode == 'd3'){
-				this.generateTestTreeFor3D();
+	//			Testing Data
+				this.generateTestTreeForD3();
 			}
 			
 		},
@@ -110,17 +111,42 @@ define(function(require) {
 		},
 		
 		displayTree: function(parent, data){
-			for (var key in data){
-				if (data[key] !== null && typeof data[key] === 'object'){
-					parentFolder = parent.addFolder(key);
-					this.displayTree(parentFolder, data[key]);
+			if (this.options.mode == 'dat'){
+				for (var key in data){
+					if (data[key] !== null && typeof data[key] === 'object'){
+						parentFolder = parent.addFolder(key);
+						this.displayTree(parentFolder, data[key]);
+					}
+					else{
+						if (data[key] === null){data[key] = '';}
+						parent.add(data,key).listen();
+					}
 				}
-				else{
-					if (data[key] === null){data[key] = 'Null';}
-					parent.add(data,key).listen();
+			}
+			else if (this.options.mode == 'd3'){
+				for (var key in data){
+					if (data[key] !== null && typeof data[key] === 'object'){
+						this.nodes[key] = {name: key};
+						
+						if (parent != null){
+							var link = {};
+							link.source = parent;
+							link.target = this.nodes[key];
+							link.type = "licensing";
+							this.links.push(link);
+						}
+						this.displayTree(this.nodes[key], data[key]);
+					}
+					else{
+						if (data[key] === null){data[key] = '';}
+//						this.nodes[key] = {name: key + "=" + data[key]};
+						this.nodes[key] = {name: key};
+					}
 				}
 			}
 		},
+		
+		
 		
 		updateData: function(){
 			if (this.variableToDisplay != null){
@@ -135,9 +161,7 @@ define(function(require) {
 				}
 			}
 		},
-		generateTestTreeFor3D: function(){
-				//this.dialog.append(this.gui.domElement);
-				// http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
+		generateTestTreeForD3: function(){
 				var links = [
 				  {source: "Microsoft", target: "Amazon", type: "licensing"},
 				  {source: "Microsoft", target: "HTC", type: "licensing"},
@@ -176,6 +200,9 @@ define(function(require) {
 				  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
 				  link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
 				});
+				
+				
+				//this.displayTree(null, this.getTestingData());
 
 				var width = 960,
 				    height = 500;
@@ -189,7 +216,7 @@ define(function(require) {
 				    .on("tick", tick)
 				    .start();
 
-				var svg = d3.select(this.id).append("svg")
+				var svg = d3.select("#"+this.id).append("svg")
 				    .attr("width", width)
 				    .attr("height", height);
 
@@ -258,9 +285,13 @@ define(function(require) {
 			this.gui.add(text, 'displayOutline');	
 		},
 		
-		generateRealDataTestTree: function(){
-			data = {"electrical":
-				{"hhpop":[
+		generateRealDataTestTreeForDAT: function(){
+			this.setData(this.getTestingData());
+		},
+		
+		getTestingData: function(){
+			return {"electrical":
+			{"hhpop":[
 				       {"bioPhys1":
 				          	{"membraneProperties":
 				          		{"naChans":
@@ -279,8 +310,6 @@ define(function(require) {
 				       ]
 					}
 			};
-			
-			this.setData(data);
 		}
 		
 

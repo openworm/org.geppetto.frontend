@@ -46,6 +46,7 @@ define(function(require) {
 		data: {},
 		variableToDisplay: null,
 		isDisplayed: false,
+		svg: {},
 		nodes: {},
 		links: [],
 		
@@ -60,7 +61,7 @@ define(function(require) {
 			this.name = options.name;
 			this.visible = options.visible;
 			this.render();
-			this.setSize(100,300);
+			this.setSize(500,500);
 
 			this.options = this.defaultTreeVisualiserOptions;
 			
@@ -77,7 +78,7 @@ define(function(require) {
 	//			this.generateRealDataTestTreeForDAT();
 				
 	//			Testing With Variable
-				this.setData("hhcell");
+	//			this.setData("hhcell");
 				
 				this.dialog.append(this.gui.domElement);
 			}
@@ -86,10 +87,10 @@ define(function(require) {
 //				this.generateTestTreeForD3();
 				
 	//			Testing With Real Data
-				this.generateRealDataTestTreeForD3();
+	//			this.generateRealDataTestTreeForD3();
 				
 				//			Testing With Variable
-				//this.setData("hhcell");
+				this.setData("hhcell");
 			}
 			
 		},
@@ -163,8 +164,6 @@ define(function(require) {
 			}
 		},
 		
-		
-		
 		updateData: function(){
 			if (this.variableToDisplay != null){
 				newdata = this.getState(GEPPETTO.Simulation.watchTree, this.variableToDisplay);
@@ -179,7 +178,39 @@ define(function(require) {
 					}
 				}
 				else if (this.options.mode == 'd3'){
-					
+					if (!this.isDisplayed){
+						this.data = newdata;
+						this.prepareTree('', this.data);
+						this.paintTree();
+						this.isDisplayed = true;
+					}
+					else{
+						$.extend(true, this.data, newdata);
+						this.prepareTree('', this.data);
+//						this.svg.selectAll("circle").data(d3.values(this.nodes));
+//						this.svg.selectAll("text").data(d3.values(this.nodes));
+						
+//						this.force.nodes(d3.values(this.nodes));
+						
+//						this.svg.selectAll("text")
+//					    .data(this.force.nodes())
+//					    .attr("x", 8)
+//					    .attr("y", ".31em")
+//					    .text(function(d) { return d.name; });
+						
+						
+						this.svg.selectAll("text").data(d3.values(this.nodes)).append()
+					    .attr("x", 8)
+					    .attr("y", ".31em")
+					    .text(function(d) { return d.name; });
+						
+//					  .enter().append("text")
+//					    .attr("x", 8)
+//					    .attr("y", ".31em")
+//					    .text(function(d) { return d.name; });
+						
+//						this.force.start();
+					}
 				}
 			}
 		},
@@ -189,7 +220,7 @@ define(function(require) {
 				var width = 960,
 				    height = 500;
 	
-				var force = d3.layout.force()
+				this.force = d3.layout.force()
 				    .nodes(d3.values(this.nodes))
 				    .links(this.links)
 				    .size([width, height])
@@ -198,12 +229,12 @@ define(function(require) {
 				    .on("tick", tick)
 				    .start();
 	
-				var svg = d3.select("#"+this.id).append("svg")
+				this.svg = d3.select("#"+this.id).append("svg")
 				    .attr("width", width)
 				    .attr("height", height);
 	
 				// Per-type markers, as they don't inherit styles.
-				svg.append("defs").selectAll("marker")
+				this.svg.append("defs").selectAll("marker")
 				    .data(["suit", "licensing", "resolved"])
 				  .enter().append("marker")
 				    .attr("id", function(d) { return d; })
@@ -216,20 +247,20 @@ define(function(require) {
 				  .append("path")
 				    .attr("d", "M0,-5L10,0L0,5");
 	
-				var path = svg.append("g").selectAll("path")
-				    .data(force.links())
+				var path = this.svg.append("g").selectAll("path")
+				    .data(this.force.links())
 				  .enter().append("path")
 				    .attr("class", function(d) { return "link " + d.type; })
 				    .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
 	
-				var circle = svg.append("g").selectAll("circle")
-				    .data(force.nodes())
+				var circle = this.svg.append("g").selectAll("circle")
+				    .data(this.force.nodes())
 				  .enter().append("circle")
 				    .attr("r", 6)
-				    .call(force.drag);
+				    .call(this.force.drag);
 	
-				var text = svg.append("g").selectAll("text")
-				    .data(force.nodes())
+				var text = this.svg.append("g").selectAll("text")
+				    .data(this.force.nodes())
 				  .enter().append("text")
 				    .attr("x", 8)
 				    .attr("y", ".31em")

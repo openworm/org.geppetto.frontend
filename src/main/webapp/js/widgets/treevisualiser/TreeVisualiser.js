@@ -43,12 +43,7 @@ define(function(require) {
 
 	return Widget.View.extend({
 		
-		data: {},
-		variableToDisplay: null,
-		isDisplayed: false,
-		svg: {},
-		nodes: {},
-		links: [],
+		datasets: [],
 		
 		defaultTreeVisualiserOptions:  {
 			mode: "d3", // Options: d3, dat
@@ -89,7 +84,7 @@ define(function(require) {
 	//			Testing With Real Data
 	//			this.generateRealDataTestTreeForD3();
 				
-				//			Testing With Variable
+	//			Testing With Variable
 				this.setData("hhcell");
 			}
 			
@@ -101,18 +96,23 @@ define(function(require) {
 				this.options = options;
 			}
 
-			if (state!= null) {					
+			if (state!= null) {	
+				var dataset = {variableToDisplay:'', data:{}, links:[], nodes:{}, isDisplayed:false, svg:null, force:null};
 				if (typeof(state) === 'string'){
-					this.variableToDisplay = state;
+					dataset.variableToDisplay = state;
+					this.datasets.push(dataset);
 				}
 				else{
-					this.data = state;
+					dataset.data = state;
 					var parent = '';
 					if (this.options.mode == 'dat'){
 						parent = this.gui;
 					}	
 					
-					this.prepareTree(parent, this.data);
+					this.prepareTree(parent, state, dataset);
+//					dataset.links = treeVariables.links;
+//					dataset.nodes = treeVariables.nodes;
+					this.datasets.push(dataset);
 					this.paintTree();
 				}
 			}
@@ -120,7 +120,7 @@ define(function(require) {
 			return "Metadata or variables to display added to tree visualiser";
 		},
 		
-		prepareTree: function(parent, data){
+		prepareTree: function(parent, data, dataset){
 			if (this.options.mode == 'dat'){
 				for (var key in data){
 					if (data[key] !== null && typeof data[key] === 'object'){
@@ -137,25 +137,25 @@ define(function(require) {
 				for (var key in data){
 					nodeName = (parent != '')?parent + "." + key:key;
 					if (data[key] !== null && typeof data[key] === 'object'){
-						this.nodes[nodeName] = {name: key};
+						dataset.nodes[nodeName] = {name: key};
 						if (parent != ''){
 							var link = {};
-							link.source = this.nodes[parent];
-							link.target = this.nodes[nodeName];
+							link.source = dataset.nodes[parent];
+							link.target = dataset.nodes[nodeName];
 							link.type = "suit";
-							this.links.push(link);
+							dataset.links.push(link);
 						}
-						this.prepareTree(nodeName, data[key]);
+						this.prepareTree(nodeName, data[key], dataset);
 					}
 					else{
 						if (data[key] === null){data[key] = '';}
-						this.nodes[nodeName] = {name: key + "=" + data[key]};
+						dataset.nodes[nodeName] = {name: key + "=" + data[key]};
 						if (parent != ''){
 							var link = {};
-							link.source = this.nodes[parent];
-							link.target = this.nodes[nodeName];
+							link.source = dataset.nodes[parent];
+							link.target = dataset.nodes[nodeName];
 							link.type = "suit";
-							this.links.push(link);
+							dataset.links.push(link);
 						}
 						
 					}
@@ -165,51 +165,37 @@ define(function(require) {
 		},
 		
 		updateData: function(){
-			if (this.variableToDisplay != null){
-				newdata = this.getState(GEPPETTO.Simulation.watchTree, this.variableToDisplay);
-				if (this.options.mode == 'dat'){
-					if (!this.isDisplayed){
-						this.data = newdata;
-						this.prepareTree(this.gui, this.data);
-						this.isDisplayed = true;
+			for(var key in this.datasets) {
+				dataset = this.datasets[key];
+				
+				if (dataset.variableToDisplay != null){
+					newdata = this.getState(GEPPETTO.Simulation.watchTree, dataset.variableToDisplay);
+					if (this.options.mode == 'dat'){
+						if (!dataset.isDisplayed){
+							dataset.data = newdata;
+							this.prepareTree(this.gui, dataset.data);
+							dataset.isDisplayed = true;
+						}
+						else{
+							$.extend(true, dataset.data, newdata);
+						}
 					}
-					else{
-						$.extend(true, this.data, newdata);
-					}
-				}
-				else if (this.options.mode == 'd3'){
-					if (!this.isDisplayed){
-						this.data = newdata;
-						this.prepareTree('', this.data);
-						this.paintTree();
-						this.isDisplayed = true;
-					}
-					else{
-						$.extend(true, this.data, newdata);
-						this.prepareTree('', this.data);
-//						this.svg.selectAll("circle").data(d3.values(this.nodes));
-//						this.svg.selectAll("text").data(d3.values(this.nodes));
-						
-//						this.force.nodes(d3.values(this.nodes));
-						
-//						this.svg.selectAll("text")
-//					    .data(this.force.nodes())
-//					    .attr("x", 8)
-//					    .attr("y", ".31em")
-//					    .text(function(d) { return d.name; });
-						
-						
-						this.svg.selectAll("text").data(d3.values(this.nodes)).append()
-					    .attr("x", 8)
-					    .attr("y", ".31em")
-					    .text(function(d) { return d.name; });
-						
-//					  .enter().append("text")
-//					    .attr("x", 8)
-//					    .attr("y", ".31em")
-//					    .text(function(d) { return d.name; });
-						
-//						this.force.start();
+					else if (this.options.mode == 'd3'){
+						if (!dataset.isDisplayed){
+							dataset.data = newdata;
+							this.prepareTree('', dataset.data, dataset);
+							this.paintTree();
+						}
+						else{
+							$.extend(true, dataset.data, newdata);
+							dataset.links = [];
+							dataset.nodes = {};
+							this.prepareTree('', dataset.data, dataset);
+							
+							var nodes = dataset.force.nodes();
+							$.extend(true, nodes, d3.values(dataset.nodes));
+							dataset.svg.selectAll("text").data(nodes).text(function(d) { return d.name; });
+						}
 					}
 				}
 			}
@@ -217,199 +203,93 @@ define(function(require) {
 		
 		paintTree: function(){
 			if (this.options.mode == 'd3'){
-				var width = 960,
-				    height = 500;
-	
-				this.force = d3.layout.force()
-				    .nodes(d3.values(this.nodes))
-				    .links(this.links)
-				    .size([width, height])
-				    .linkDistance(60)
-				    .charge(-300)
-				    .on("tick", tick)
-				    .start();
-	
-				this.svg = d3.select("#"+this.id).append("svg")
-				    .attr("width", width)
-				    .attr("height", height);
-	
-				// Per-type markers, as they don't inherit styles.
-				this.svg.append("defs").selectAll("marker")
-				    .data(["suit", "licensing", "resolved"])
-				  .enter().append("marker")
-				    .attr("id", function(d) { return d; })
-				    .attr("viewBox", "0 -5 10 10")
-				    .attr("refX", 15)
-				    .attr("refY", -1.5)
-				    .attr("markerWidth", 6)
-				    .attr("markerHeight", 6)
-				    .attr("orient", "auto")
-				  .append("path")
-				    .attr("d", "M0,-5L10,0L0,5");
-	
-				var path = this.svg.append("g").selectAll("path")
-				    .data(this.force.links())
-				  .enter().append("path")
-				    .attr("class", function(d) { return "link " + d.type; })
-				    .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
-	
-				var circle = this.svg.append("g").selectAll("circle")
-				    .data(this.force.nodes())
-				  .enter().append("circle")
-				    .attr("r", 6)
-				    .call(this.force.drag);
-	
-				var text = this.svg.append("g").selectAll("text")
-				    .data(this.force.nodes())
-				  .enter().append("text")
-				    .attr("x", 8)
-				    .attr("y", ".31em")
-				    .text(function(d) { return d.name; });
-	
-				// Use elliptical arc path segments to doubly-encode directionality.
-				function tick() {
-				  path.attr("d", linkArc);
-				  circle.attr("transform", transform);
-				  text.attr("transform", transform);
-				}
-	
-				function linkArc(d) {
-				  var dx = d.target.x - d.source.x,
-				      dy = d.target.y - d.source.y,
-				      dr = Math.sqrt(dx * dx + dy * dy);
-				  return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-				}
-	
-				function transform(d) {
-				  return "translate(" + d.x + "," + d.y + ")";
-				}
+				for(var key in this.datasets) {
+					dataset = this.datasets[key];
+					if (dataset.nodes != {} && dataset.links != []){
+						if (!dataset.isDisplayed){
+							dataset.isDisplayed = true;
+							
+							var width = 860,
+							    height = 500;
+				
+							var force = d3.layout.force()
+							    .nodes(d3.values(dataset.nodes))
+							    .links(dataset.links)
+							    .size([width, height])
+							    .linkDistance(60)
+							    .charge(-300)
+							    .on("tick", tick)
+							    .start();
+				
+							var svg = d3.select("#"+this.id).append("svg")
+							    .attr("width", width)
+							    .attr("height", height);
+				
+							// Per-type markers, as they don't inherit styles.
+							svg.append("defs").selectAll("marker")
+							    .data(["suit", "licensing", "resolved"])
+							  .enter().append("marker")
+							    .attr("id", function(d) { return d; })
+							    .attr("viewBox", "0 -5 10 10")
+							    .attr("refX", 15)
+							    .attr("refY", -1.5)
+							    .attr("markerWidth", 6)
+							    .attr("markerHeight", 6)
+							    .attr("orient", "auto")
+							  .append("path")
+							    .attr("d", "M0,-5L10,0L0,5");
+				
+							var path = svg.append("g").selectAll("path")
+							    .data(force.links())
+							  .enter().append("path")
+							    .attr("class", function(d) { return "link " + d.type; })
+							    .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
+				
+							var circle = svg.append("g").selectAll("circle")
+							    .data(force.nodes())
+							  .enter().append("circle")
+							    .attr("r", 6)
+							    .call(force.drag);
+				
+							var text = svg.append("g").selectAll("text")
+							    .data(force.nodes())
+							  .enter().append("text")
+							    .attr("x", 8)
+							    .attr("y", ".31em")
+							    .text(function(d) { return d.name; });
+							
+							dataset.svg = svg;
+							dataset.force = force;
+				
+							// Use elliptical arc path segments to doubly-encode directionality.
+							function tick() {
+							  path.attr("d", linkArc);
+							  circle.attr("transform", transform);
+							  text.attr("transform", transform);
+							}
+				
+							function linkArc(d) {
+							  var dx = d.target.x - d.source.x,
+							      dy = d.target.y - d.source.y,
+							      dr = Math.sqrt(dx * dx + dy * dy);
+							  return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+							}
+				
+							function transform(d) {
+							  return "translate(" + d.x + "," + d.y + ")";
+							}
+						}
+					}	
+				}	
 			}	
 		},
 		
-//		generateTestTreeForD3: function(){
-//				var links = [
-//				  {source: "Microsoft", target: "Amazon", type: "licensing"},
-//				  {source: "Microsoft", target: "HTC", type: "licensing"},
-//				  {source: "Samsung", target: "Apple", type: "suit"},
-//				  {source: "Motorola", target: "Apple", type: "suit"},
-//				  {source: "Nokia", target: "Apple", type: "resolved"},
-//				  {source: "HTC", target: "Apple", type: "suit"},
-//				  {source: "Kodak", target: "Apple", type: "suit"},
-//				  {source: "Microsoft", target: "Barnes & Noble", type: "suit"},
-//				  {source: "Microsoft", target: "Foxconn", type: "suit"},
-//				  {source: "Oracle", target: "Google", type: "suit"},
-//				  {source: "Apple", target: "HTC", type: "suit"},
-//				  {source: "Microsoft", target: "Inventec", type: "suit"},
-//				  {source: "Samsung", target: "Kodak", type: "resolved"},
-//				  {source: "LG", target: "Kodak", type: "resolved"},
-//				  {source: "RIM", target: "Kodak", type: "suit"},
-//				  {source: "Sony", target: "LG", type: "suit"},
-//				  {source: "Kodak", target: "LG", type: "resolved"},
-//				  {source: "Apple", target: "Nokia", type: "resolved"},
-//				  {source: "Qualcomm", target: "Nokia", type: "resolved"},
-//				  {source: "Apple", target: "Motorola", type: "suit"},
-//				  {source: "Microsoft", target: "Motorola", type: "suit"},
-//				  {source: "Motorola", target: "Microsoft", type: "suit"},
-//				  {source: "Huawei", target: "ZTE", type: "suit"},
-//				  {source: "Ericsson", target: "ZTE", type: "suit"},
-//				  {source: "Kodak", target: "Samsung", type: "resolved"},
-//				  {source: "Apple", target: "Samsung", type: "suit"},
-//				  {source: "Kodak", target: "RIM", type: "suit"},
-//				  {source: "Nokia", target: "Qualcomm", type: "suit"}
-//				];
-//
-//				var nodes = {};
-//
-//				// Compute the distinct nodes from the links.
-//				links.forEach(function(link) {
-//				  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
-//				  link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
-//				});
-//				
-//				
-//				var width = 960,
-//				    height = 500;
-//
-//				var force = d3.layout.force()
-//				    .nodes(d3.values(nodes))
-//				    .links(links)
-//				    .size([width, height])
-//				    .linkDistance(60)
-//				    .charge(-300)
-//				    .on("tick", tick)
-//				    .start();
-//
-//				var svg = d3.select("#"+this.id).append("svg")
-//				    .attr("width", width)
-//				    .attr("height", height);
-//
-//				// Per-type markers, as they don't inherit styles.
-//				svg.append("defs").selectAll("marker")
-//				    .data(["suit", "licensing", "resolved"])
-//				  .enter().append("marker")
-//				    .attr("id", function(d) { return d; })
-//				    .attr("viewBox", "0 -5 10 10")
-//				    .attr("refX", 15)
-//				    .attr("refY", -1.5)
-//				    .attr("markerWidth", 6)
-//				    .attr("markerHeight", 6)
-//				    .attr("orient", "auto")
-//				  .append("path")
-//				    .attr("d", "M0,-5L10,0L0,5");
-//
-//				var path = svg.append("g").selectAll("path")
-//				    .data(force.links())
-//				  .enter().append("path")
-//				    .attr("class", function(d) { return "link " + d.type; })
-//				    .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
-//
-//				var circle = svg.append("g").selectAll("circle")
-//				    .data(force.nodes())
-//				  .enter().append("circle")
-//				    .attr("r", 6)
-//				    .call(force.drag);
-//
-//				var text = svg.append("g").selectAll("text")
-//				    .data(force.nodes())
-//				  .enter().append("text")
-//				    .attr("x", 8)
-//				    .attr("y", ".31em")
-//				    .text(function(d) { return d.name; });
-//
-//				// Use elliptical arc path segments to doubly-encode directionality.
-//				function tick() {
-//				  path.attr("d", linkArc);
-//				  circle.attr("transform", transform);
-//				  text.attr("transform", transform);
-//				}
-//
-//				function linkArc(d) {
-//				  var dx = d.target.x - d.source.x,
-//				      dy = d.target.y - d.source.y,
-//				      dr = Math.sqrt(dx * dx + dy * dy);
-//				  return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-//				}
-//
-//				function transform(d) {
-//				  return "translate(" + d.x + "," + d.y + ")";
-//				}
-//		},
-//		
-//		generateTestTreeForDAT: function(){
-//			var FizzyText = function() {
-//			  this.message = 'dat.gui';
-//			  this.speed = 0.8;
-//			  this.displayOutline = false;
-//			};
-//			
-//			var text = new FizzyText();
-//			this.gui.add(text, 'message');
-//			this.gui.add(text, 'speed', -5, 5);
-//			this.gui.add(text, 'displayOutline');	
-//		},
-		
 		generateRealDataTestTreeForDAT: function(){
 			this.setData(this.getTestingData());
+		},
+		
+		generateRealDataTestTreeForDAT2: function(){
+			this.setData(this.getTestingData2());
 		},
 		
 		generateRealDataTestTreeForD3: function(){
@@ -418,6 +298,29 @@ define(function(require) {
 		
 		getTestingData: function(){
 			return {"electrical":
+			{"hhpop":[
+				       {"bioPhys1":
+				          	{"membraneProperties":
+				          		{"naChans":
+				          			{"gDensity":{"value":4.1419823201649315,"unit":null,"scale":null},
+				          			"na":{
+				          				"m":
+				          					{"q":{"value":0.21040640018173135,"unit":null,"scale":null}},
+				          				"h":
+				          					{"q":{"value":0.4046102327961389,"unit":null,"scale":null}}}},
+				          		"kChans":
+				          			{"k":
+				          				{"n":
+				          					{"q":{"value":0.42015716873953574,"unit":null,"scale":null}}}}}},
+				       "spiking":{"value":0,"unit":null,"scale":null},
+				       "v":{"value":-0.047481204346777425,"unit":null,"scale":null}}
+				       ]
+					}
+			};
+		},
+		
+		getTestingData2: function(){
+			return {"electrical2":
 			{"hhpop":[
 				       {"bioPhys1":
 				          	{"membraneProperties":

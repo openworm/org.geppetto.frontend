@@ -178,7 +178,7 @@ define(function(require) {
 
 			// If no options specify by user, use default options
 			if(options != null) {
-				this.options = options;
+				$.extend(this.options, options);
 			}
 
 			if (state!= null) {					

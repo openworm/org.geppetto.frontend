@@ -106,13 +106,13 @@ define(function(require) {
           this.removeScatter3dWidgets();
         }
         //reset plot's datasets
-		else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-			for(var i = 0; i < scatter3ds.length; i++) {
-				var scatter3d = scatter3ds[i];
-				
-				scatter3d.cleanDataSets();
-			}
-		}
+//		else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+//			for(var i = 0; i < scatter3ds.length; i++) {
+//				var scatter3d = scatter3ds[i];
+//				
+//				scatter3d.cleanDataSets();
+//			}
+//		}
 
         //update scatter3d widgets
         else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {

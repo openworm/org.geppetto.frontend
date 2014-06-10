@@ -31,7 +31,7 @@ define(function(require) {
 		defaultScatter3dOptions:  {
 			axis: true, //Axis Helper
 			axisColours: [{ r:255, g:0, b:0}, { r:0, g:255, b:0}, { r:0, g:0, b:255}], //Currently this is not used to set the axis colours but just for reading while generating the legend  
-			grid: true, //Grid Helper
+			grid: false, //Grid Helper
 			legend: true, //Legend
 			clearColor: 0xEEEEEE,
 			nearClipPlane: 1,

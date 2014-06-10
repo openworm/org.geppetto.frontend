@@ -18,9 +18,5 @@
         {
         	"name" : "NeuroML C.elegans PVDR Neuron (No Simulation)",
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/PVDR/GEPPETTO.xml"
-        },
-        {
-        	"name" : "Scatter3d Test",
-            "url" : "http://127.0.0.1:8080/org.geppetto.frontend/js/widgets/scatter3d/testscatter.xml"
         }
 ]}

@@ -11,7 +11,6 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Widget.View.extend({
-		scatter3d: null,
 		datasets: [],
 		options: null,
 		
@@ -22,28 +21,27 @@ define(function(require) {
 		camera:null,
 		controls:null,
 		
-		xaxisLabel: null,
-		yaxisLabel: null,
-		zaxisLabel: null,
-		labelsUpdated: false,
+		axisHelper: {},
+		scatter3dHolder: {},
 
 		/**
 		 * Default options for scatter3d widget, used if none specified when scatter3d
 		 * is created
 		 */
 		defaultScatter3dOptions:  {
-			octants: false,
-			axis: true,
-			octantsColor: 0x808080,
+			axis: true, //Axis Helper
+			axisColours: [{ r:255, g:0, b:0}, { r:0, g:255, b:0}, { r:0, g:0, b:255}], //Currently this is not used to set the axis colours but just for reading while generating the legend  
+			grid: true, //Grid Helper
+			legend: true, //Legend
 			clearColor: 0xEEEEEE,
 			nearClipPlane: 1,
 			farClipPlane: 10000,
 			fov: 45,
 			cameraPositionZ: 10,
-			colors: [0xedc240, 0xafd8f8, 0xcb4b4b, 0x4da74d, 0x9440ed],
-			limit: 400,
-			plotEachN: 10,
-			normalizeData: false
+			colours: [0xedc240, 0xafd8f8, 0xcb4b4b, 0x4da74d, 0x9440ed], //Colours range for the lines
+			limit: 400, //Maximum number of samples to be displayed in the Scatter 3d
+			plotEachN: null, // If define it will behave as a sampling factor
+			normalizeData: false //Not working properly
 		},
 
 		initialize: function(options) {
@@ -53,13 +51,11 @@ define(function(require) {
 			this.datasets = [];
 			this.options = this.defaultScatter3dOptions;
 			this.render();
-			this.dialog.append("<div class='scatter3d' id='" + this.id + "'></div>");
 
-			var plotHolder = $("#"+this.id);
-			//plotHolder.addEventListener( 'resize', this.onWindowResize, false );
+			this.scatter3dHolder = $("#"+this.id);
 			this.renderer = new THREE.WebGLRenderer({antialias:false});
-			this.renderer.setSize(plotHolder.width(), plotHolder.height());
-			plotHolder.append(this.renderer.domElement);
+			this.renderer.setSize(this.scatter3dHolder.width(), this.scatter3dHolder.height());
+			this.scatter3dHolder.append(this.renderer.domElement);
 
 			this.renderer.clear();
 			this.initializeCamera();
@@ -68,41 +64,36 @@ define(function(require) {
 			this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 			this.controls.parentWidget = this;
 			this.controls.addEventListener( 'change', function(){
-				if(this.parentWidget)
-				{
-					this.parentWidget.render3DPlot();
-				}});
+			if(this.parentWidget)
+			{
+				this.parentWidget.render3DPlot();
+			}});
 
 			this.scene = new THREE.Scene();
-
-			//PAINTING OCTANTS		
-			if (this.options.octants){
-				var scatterPlot = new THREE.Object3D();
-				scatterPlot.add(this.paintOctants());
-				this.scene.add(scatterPlot);
-			}	
 			
-			//PAINTING AXIS
-			if (this.options.axis){
-				var axisHelper = new THREE.AxisHelper(50);
-				this.scene.add(axisHelper);
-			}
+			//PAINTING HELPERS (AXIS AND GRID)
+			this.helpers();
+			
+			//ADDING RESIZE EVENT
+			this.scatter3dHolder.on('resize', this, function (e) {
+				WIDTH = e.data.scatter3dHolder.width(),
+				HEIGHT = e.data.scatter3dHolder.height();
+				e.data.renderer.setSize(WIDTH, HEIGHT);
+				e.data.camera.aspect = WIDTH / HEIGHT;
+				e.data.camera.updateProjectionMatrix();
+				e.stopPropagation();
+		    });
 			
 			//REFRESHIN CONTROLS AND RENDERING
 			this.controls.update();
 			this.render3DPlot();
-			//THREEx.WindowResize(this.renderer, this.camera);
 		},
 		
-//		onWindowResize: function(){
-//
-//			camera.aspect = window.innerWidth / window.innerHeight;
-//			camera.updateProjectionMatrix();
-//
-//			renderer.setSize( window.innerWidth, window.innerHeight );
-//
-//			},
-		
+		/**
+		 * Initializing Camera Aspects
+		 *
+		 * @name initializeCamera()
+		 */
 		initializeCamera: function(){
 			var fov = this.options.fov; // camera field-of-view in degrees
 			var width = this.renderer.domElement.width;
@@ -113,6 +104,63 @@ define(function(require) {
 			this.camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
 			this.camera.position.z = this.options.cameraPositionZ;
 		},
+		
+		/**
+		 * Paint Axis Helper and/or Grid Helper
+		 *
+		 * @name helpers()
+		 */
+		helpers: function(){
+			//PAINTING AXIS
+			if (this.options.axis){
+				this.axisHelper = new THREE.AxisHelper(50);
+				this.scene.add(this.axisHelper);
+			}
+			
+			//PAINTING GRID
+			if (this.options.grid){
+				var gridXZ = new THREE.GridHelper(50, 10);
+				gridXZ.position.set( 50,0,50 );
+				this.scene.add(gridXZ);
+				
+				var gridXY = new THREE.GridHelper(50, 10);
+				gridXY.position.set( 50,50,0 );
+				gridXY.rotation.x = Math.PI/2;
+				this.scene.add(gridXY);
+
+				var gridYZ = new THREE.GridHelper(50, 10);
+				gridYZ.position.set( 0,50,50 );
+				gridYZ.rotation.z = Math.PI/2;
+				this.scene.add(gridYZ);
+			}
+		},
+		
+		/**
+		 * Display legend from dataset labels
+		 *
+		 * @name paintLegend()
+		 */
+		paintLegend: function(){
+			if ($('#legendBox').length > 0){
+				$("#legendBox").empty();
+			}
+			else{
+				this.scatter3dHolder.append("<div id='legendBox' title='Legend Box'></div>");
+			}	
+			for(var key in this.datasets) {
+				var data = this.datasets[key].data;
+				$("#legendBox").append("<div id='datasetLegend" + key + "' class='datasetLegend'><div class='legendColor' style='background: #" + (this.options.colours[key]).toString(16) + ";'></div></div>");
+				$("#datasetLegend" + key).append("<div id='datasetLegendText" + key + "' class='datasetLegendText'></div>");
+				for(var dataKey in data) {
+					$("#datasetLegendText" + key).append("<span style='color:RGB(" + this.options.axisColours[dataKey].r + "," + this.options.axisColours[dataKey].g + "," + this.options.axisColours[dataKey].b + ")'>" + data[dataKey].label +"</span>");
+					if (dataKey != data.length -1){
+						$("#datasetLegendText" + key).append("<br>");
+					}
+				}
+			}
+		},
+		
+		
 		
 		/**
 		 * Takes data series and 3d plots them. To plot array(s) , use it as
@@ -136,8 +184,8 @@ define(function(require) {
 			if (state!= null) {					
 				if(state instanceof Array){
 					if ((typeof(state[0]) === 'string' || state[0] instanceof String) && (typeof(state[1]) === 'string' || state[1] instanceof String) && (typeof(state[2]) === 'string' || state[2] instanceof String)){
-						dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial( { color: 0xcc0000 } )};
 						
+						dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial({color: this.options.colours[this.datasets.length]})};
 						for (var key in state){
 							dataset.data.push({
 								label: state[key],
@@ -154,86 +202,39 @@ define(function(require) {
 							});
 						}	
 					}
+					//Painting legend
+					if (this.options.axis && this.options.legend === true){this.paintLegend();}
 				}
 			}
 
 			return "Lines or variables to scatter added to widget";
 		},
 		
-		paintOctants: function() {
-			function v(x,y,z){ return new THREE.Vector3(x,y,z); }  
-			var lineGeo = new THREE.Geometry();
-		      lineGeo.vertices.push(
-		        v(-50, 0, 0), v(50, 0, 0),
-		        v(0, -50, 0), v(0, 50, 0),
-		        v(0, 0, -50), v(0, 0, 50),
-
-		        v(-50, 50, -50), v(50, 50, -50),
-		        v(-50, -50, -50), v(50, -50, -50),
-		        v(-50, 50, 50), v(50, 50, 50),
-		        v(-50, -50, 50), v(50, -50, 50),
-
-		        v(-50, 0, 50), v(50, 0, 50),
-		        v(-50, 0, -50), v(50, 0, -50),
-		        v(-50, 50, 0), v(50, 50, 0),
-		        v(-50, -50, 0), v(50, -50, 0),
-
-		        v(50, -50, -50), v(50, 50, -50),
-		        v(-50, -50, -50), v(-50, 50, -50),
-		        v(50, -50, 50), v(50, 50, 50),
-		        v(-50, -50, 50), v(-50, 50, 50),
-
-		        v(0, -50, 50), v(0, 50, 50),
-		        v(0, -50, -50), v(0, 50, -50),
-		        v(50, -50, 0), v(50, 50, 0),
-		        v(-50, -50, 0), v(-50, 50, 0),
-
-		        v(50, 50, -50), v(50, 50, 50),
-		        v(50, -50, -50), v(50, -50, 50),
-		        v(-50, 50, -50), v(-50, 50, 50),
-		        v(-50, -50, -50), v(-50, -50, 50),
-
-		        v(-50, 0, -50), v(-50, 0, 50),
-		        v(50, 0, -50), v(50, 0, 50),
-		        v(0, 50, -50), v(0, 50, 50),
-		        v(0, -50, -50), v(0, -50, 50)
-		      );
-		      var lineMat = new THREE.LineBasicMaterial({color: this.options.octantsColor, lineWidth: 1});
-		      var line = new THREE.Line(lineGeo, lineMat);
-		      line.type = THREE.Lines;
-		      return line;
-		},
-		
-
 		/**
 		 * Removes the data set from the scatter3d. EX:
-		 * removeDataSet(dummyDouble)
+		 * removeDataSet(0)
 		 *
 		 * @param set -
 		 *            Data set to be removed from the scatter3d
 		 */
-		removeDataSet: function(set) {
-			if(set != null) {
-				for(var key in this.datasets) {
-					if(set.name == this.datasets[key].label) {
-						this.datasets.splice(key, 1);
-					}
+		removeDataSet: function(key) {
+			if(key != null) {
+				for (var curve in this.datasets[key].curves){
+					this.scene.remove(this.datasets[key].curves[curve]);
+//					TODO: Something like this needs to be done in order to make a proper memory management				
+//					this.datasets[key].curves[curve].deallocate();
+//					this.renderer.deallocateObject(this.datasets[key].curves[curve]);
 				}
-
-				var data = [];
-
-				for(var i = 0; i < this.datasets.length; i++) {
-					data.push(this.datasets[i]);
-				}
-
-				this.scatter3d.setData(data);
-				this.scatter3d.setupGrid();
-				this.scatter3d.draw();
+				this.datasets.splice(key, 1);
 			}
 
 			if(this.datasets.length == 0) {
 				this.resetScatter3d();
 			}
+			else{
+				this.render3DPlot();
+			}
+			
 		},
 
 		/**
@@ -261,22 +262,7 @@ define(function(require) {
 						olddata.push(newValues[dataKey].value);
 						this.datasets[key].data[dataKey].values = olddata;
 					}
-					
-	
-					if(!this.labelsUpdated) {
-						var unit = newValues[0].unit;
-						if(unit != null) {
-							var labelY = unit;
-							//Matteo: commented until this can move as it doesn't make sense for it to be static.
-							//also ms should not be harcoded but should come from the simulator as the timescale could
-							//be different
-							var labelX = "";
-							//Simulation timestep (ms) " + Simulation.timestep;
-							this.setAxisLabel(labelY, labelX);
-							this.labelsUpdated = true;
-						}
-					}
-					
+										
 					if(this.scene != null && this.datasets[key].data[0].values.length>1){
 						//TODO: This solution adds a new line for each new vertex until a limit. When this limit is reached
 						// it behaves as a FIFO (deleting first line and adding a new one).
@@ -315,15 +301,12 @@ define(function(require) {
 									this.datasets[key].lineBasicMaterial
 							);
 						}
-						
 						this.datasets[key].curves.push(line);
 						this.scene.add(line);
 						this.render3DPlot();
 					}	
 				}	
 			}
-
-			
 		},
 		
 		paintThreeLine: function(dataX, dataY, dataZ, lineBasicMaterial){
@@ -353,7 +336,7 @@ define(function(require) {
 				this.options = options;
 			}
 			
-			dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial( { color: 0xcc0000 } )};
+			dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial( { color: this.options.colours[this.datasets.length] } )};
 			if(newDataX.name != null && newDataY.name != null && newDataZ.name != null) {
 				dataset.data.push(
 						{label: newDataX.name, values: newDataX.value},
@@ -370,7 +353,7 @@ define(function(require) {
 			}
 			this.datasets.push(dataset);
 			
-			this.paintThreeLine(dataset.data[0].values, dataset.data[1].values, dataset.data[2].values, dataset.lineBasicMaterial);
+			line = this.paintThreeLine(dataset.data[0].values, dataset.data[1].values, dataset.data[2].values, dataset.lineBasicMaterial);
 
 			dataset.curves.push(line);
 			this.scene.add(line);
@@ -396,12 +379,13 @@ define(function(require) {
 		 * @name resetScatter3d()
 		 */
 		resetScatter3d: function() {
-			if(this.scatter3d != null) {
-				this.datasets = [];
-				this.options = this.defaultScatter3dOptions;
-				var scatter3dHolder = $("#" + this.id);
-				this.scatter3d = $.plot(scatter3dHolder, this.datasets, this.options);
-			}
+			this.datasets = [];
+			this.options = this.defaultScatter3dOptions;
+			this.paintLegend();
+			this.renderer.clear();
+			this.scene = new THREE.Scene();
+			this.helpers();
+			this.render3DPlot();
 		},
 
 		/**
@@ -413,12 +397,22 @@ define(function(require) {
 		},
 
 		/**
-		 * Sets labels next to each axis
+		 * Sets labels and the legend
+		 * @name setAxisLabel(labelX, labelY, labelZ, datasetsIndex)
+		 * @param labelX, labelY, labelZ - labels for each axis
+		 * @param datasetsIndex - 0 by default
 		 *
 		 */
-		setAxisLabel: function(labelX, labelY, labelZ) {
-			this.options.yaxis.axisLabel = labelY;
-			this.scatter3d = $.plot($("#" + this.id), this.datasets,this.options);
+		setAxisLabel: function(labelX, labelY, labelZ, datasetsIndex) {
+			if (typeof(datasetsIndex) === "undefined"){
+				datasetsIndex = 0;
+			}
+			
+			this.datasets[datasetsIndex].data[0].label = labelX;
+			this.datasets[datasetsIndex].data[1].label = labelY;
+			this.datasets[datasetsIndex].data[2].label = labelZ;
+			
+			this.paintLegend();
 		},
 
 		render3DPlot:function () {

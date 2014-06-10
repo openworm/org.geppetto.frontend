@@ -1,38 +1,26 @@
-.plot {
-	width: 100%;
-	height: 100%;
+.legendColor {
+	border: 1px solid #424242;
+	font-weight: bold;
+	width: 10px;
+	height: 10px;
+	line-height: 10px;
+	text-align: center;
+	margin: 4px;
+	float: left;
+	cursor: pointer;
 }
 
-.flot-x-axis {
-	color:white;
+#legendBox{
+	position:absolute;
+	top:20px;
+	right:20px;
 }
 
-.flot-y-axis {
-	color:white;
+.datasetLegendText{
+	float:right;
 }
 
-.legendColorBox {
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-}
-
-.legendLabel {
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-}
-
-.axisLabel {
-    position: absolute;
-    text-align: center;
-    font-size: 12px;
-}
-
-.xaxisLabel {
-    color : white;
-}
-
-.yaxisLabel {
-    top: 50%;
-    left: 0px;
-    color : white;
+.datasetLegend{
+	clear:both;
+	margin-top: 10px;
 }

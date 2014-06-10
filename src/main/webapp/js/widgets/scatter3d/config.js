@@ -13,14 +13,14 @@ require.config({
 	},
 	shim: {
 		"widgets/scatter3d/vendor/OrbitControls" : ["threelib"],
-		"widgets/scatter3d/vendor/THREEx.WindowResize" : ["threelib"]
+		"widgets/scatter3d/vendor/helvetiker_regular.typeface" : ["threelib"]
 	}
 });
 
 var reqs = [];
 reqs.push("threelib");
 reqs.push("widgets/scatter3d/vendor/OrbitControls");
-reqs.push("widgets/scatter3d/vendor/THREEx.WindowResize");
+reqs.push("widgets/scatter3d/vendor/helvetiker_regular.typeface");
 
 require(reqs, function($) {
 	loadCss("js/widgets/scatter3d/Scatter3d.css");

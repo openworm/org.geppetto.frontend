@@ -2,7 +2,7 @@
         {
             "name" : "LEMS Sample Hodgkin-Huxley Neuron",
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml"
-        },
+        }, 
         {
         	"name" : "PCISPH Small Liquid Scene",
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml"

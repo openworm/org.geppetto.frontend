@@ -45,7 +45,8 @@ define(function(require) {
 		GEPPETTO.Widgets = {
 			PLOT: 0,
 			POPUP : 1,
-			TREEVISUALISER: 2
+			TREEVISUALISERDAT: 2,
+			TREEVISUALISERD3: 3
 		};
 
 		GEPPETTO.WidgetFactory = {
@@ -64,9 +65,12 @@ define(function(require) {
 					case GEPPETTO.Widgets.POPUP:
 						widget = GEPPETTO.PopupsController.addPopupWidget();
 						break;
-					case GEPPETTO.Widgets.TREEVISUALISER:
-						widget = GEPPETTO.TreeVisualiserController.addTreeVisualiserWidget();
+					case GEPPETTO.Widgets.TREEVISUALISERDAT:
+						widget = GEPPETTO.TreeVisualiserControllerDAT.addTreeVisualiserDATWidget();
 						break;
+					case GEPPETTO.Widgets.TREEVISUALISERD3:
+						widget = GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
+						break;	
 					default:
 						break;
 				}
@@ -86,10 +90,13 @@ define(function(require) {
 						//removes plotting widget from geppetto
 					case GEPPETTO.Widgets.POPUP:
 						GEPPETTO.PlotsController.removePopupWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-					case GEPPETTO.Widgets.TREEVISUALISER:
-						GEPPETTO.TreeVisualiserController.removeTreeVisualiserWidgets();
-						return GEPPETTO.Resources.REMOVE_TREEVISUALISER_WIDGETS;
+						return GEPPETTO.Resources.REMOVE_POPUP_WIDGETS;
+					case GEPPETTO.Widgets.TREEVISUALISERDAT:
+						GEPPETTO.TreeVisualiserController.removeTreeVisualiserDATWidgets();
+						return GEPPETTO.Resources.REMOVE_TREEVISUALISERDAT_WIDGETS;
+					case GEPPETTO.Widgets.TREEVISUALISERD3:
+						GEPPETTO.TreeVisualiserController.removeTreeVisualiserD3Widgets();
+						return GEPPETTO.Resources.REMOVE_TREEVISUALISERD3_WIDGETS;	
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
 				}

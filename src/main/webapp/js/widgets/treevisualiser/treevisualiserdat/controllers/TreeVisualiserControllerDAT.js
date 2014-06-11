@@ -40,10 +40,10 @@
 define(function(require) {
 	return function(GEPPETTO) {
 
-		var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
-		var treeVisualisers = new Array();
+		var TreeVisualiserDAT = require('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT');
+		var treeVisualisersDAT = new Array();
 
-		GEPPETTO.TreeVisualiserController = {
+		GEPPETTO.TreeVisualiserControllerDAT = {
 			
 
 			/**
@@ -52,68 +52,68 @@ define(function(require) {
 			 *
 			 * @param plotID
 			 */
-			registerHandler: function(treeVisualiserID) {
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.TreeVisualiserController, treeVisualiserID);
+			registerHandler: function(treeVisualiserDATID) {
+				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.TreeVisualiserControllerDAT, treeVisualiserDATID);
 			},
 
 			/**
 			 * Returns all plotting widgets objects
 			 */
 			getWidgets: function() {
-				return treeVisualisers;
+				return treeVisualisersDAT;
 			},
 			
-			addTreeVisualiserWidget : function(){
+			addTreeVisualiserDATWidget : function(){
 				//Popup widget number
-				var index = (treeVisualisers.length + 1);
+				var index = (treeVisualisersDAT.length + 1);
 
 				//Name of popup widget
-				var name = "TreeVisualiser" + index;
+				var name = "TreeVisualiserDAT" + index;
 				var id = name;
 
 				//create tree visualiser widget
-				var tv = window[name] = new TreeVisualiser({id:id, name:name,visible:false});
+				var tv = window[name] = new TreeVisualiserDAT({id:id, name:name,visible:false});
 
 				//create help command for plot
 				tv.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
 
 				//store in local stack
-				treeVisualisers.push(tv);
+				treeVisualisersDAT.push(tv);
 				
 				this.registerHandler(id);
 
 				//add commands to console autocomplete and help option
-				GEPPETTO.Utility.updateCommands("js/widgets/treevisualiser/TreeVisualiser.js", tv, id);
+				GEPPETTO.Utility.updateCommands("js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js", tv, id);
 
 				return tv;
 			},
 		
-			removeTreeVisualiserWidgets : function(){
+			removeTreeVisualiserDATWidgets : function(){
 				//remove all existing popup widgets
-				for(var i = 0; i < treeVisualisers.length; i++) {
-					var treeVisualiser = treeVisualisers[i];
+				for(var i = 0; i < treeVisualisersDAT.length; i++) {
+					var treeVisualiserDAT = treeVisualisersDAT[i];
 
-					treeVisualiser.destroy();
+					treeVisualiserDAT.destroy();
 					i++;
 				}
 
-				treeVisualisers = new Array();
+				treeVisualisersDAT = new Array();
 			},
 			
 			//receives updates from widget listener class to update tree visualiser widget(s)
 			update: function(event) {
 				//delete treevisualiser widget(s)
 				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removeTreeVisualiserWidgets();
+					this.removeTreeVisualiserDATWidgets();
 				}
 				//update treevisualiser widgets
 				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
 					//loop through all existing widgets
-					for(var i = 0; i < treeVisualisers.length; i++) {
-						var treeVisualiser = treeVisualisers[i];
+					for(var i = 0; i < treeVisualisersDAT.length; i++) {
+						var treeVisualiserDAT = treeVisualisersDAT[i];
 
 						//update treevisualiser with new data set
-						treeVisualiser.updateData();
+						treeVisualiserDAT.updateData();
 					}
 				}
 			}

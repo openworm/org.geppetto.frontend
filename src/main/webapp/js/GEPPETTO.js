@@ -208,9 +208,8 @@ define(function(require)
 			};
 			var threeObject = GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
 			var originalColor = getRGB(threeObject.material.originalColor);
-			//threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
-			//threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
-		 	 threeObject.position.x = 10*intensity;
+			threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
+
 		},
 
 		/**

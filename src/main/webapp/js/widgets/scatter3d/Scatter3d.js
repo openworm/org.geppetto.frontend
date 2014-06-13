@@ -1,3 +1,35 @@
+/*******************************************************************************
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011, 2013 OpenWorm.
+ * http://openworm.org
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *      OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 /**
  * Scatter3d Widget class
  *
@@ -30,10 +62,10 @@ define(function(require) {
 		 */
 		defaultScatter3dOptions:  {
 			axis: true, //Axis Helper
-			axisColours: [{ r:255, g:0, b:0}, { r:0, g:255, b:0}, { r:0, g:0, b:255}], //Currently this is not used to set the axis colours but just for reading while generating the legend  
-			grid: false, //Grid Helper
+			axisColours: [{ r:248, g:102, b:8}, { r:177, g:255, b:86}, { r:134, g:197, b:255}],   
+			grid: false, //Grid Helper //Not working properly
 			legend: true, //Legend
-			clearColor: 0xEEEEEE,
+			clearColor: 0x3b3535,
 			nearClipPlane: 1,
 			farClipPlane: 10000,
 			fov: 45,
@@ -59,7 +91,7 @@ define(function(require) {
 
 			this.renderer.clear();
 			this.initializeCamera();
-			this.renderer.setClearColor(this.options.clearColor, 0);
+			this.renderer.setClearColor(this.options.clearColor, 1);
 
 			this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 			this.controls.parentWidget = this;
@@ -113,7 +145,12 @@ define(function(require) {
 		helpers: function(){
 			//PAINTING AXIS
 			if (this.options.axis){
-				this.axisHelper = new THREE.AxisHelper(50);
+							
+				var colorX = new THREE.Color("rgb(" + this.options.axisColours[0].r + "," + this.options.axisColours[0].g + "," + this.options.axisColours[0].b + ")");
+				var colorY = new THREE.Color("rgb(" + this.options.axisColours[1].r + "," + this.options.axisColours[1].g + "," + this.options.axisColours[1].b + ")");
+				var colorZ = new THREE.Color("rgb(" + this.options.axisColours[2].r + "," + this.options.axisColours[2].g + "," + this.options.axisColours[2].b + ")");
+				
+				this.axisHelper = new THREE.AxisHelper(50,colorX,colorY,colorZ);
 				this.scene.add(this.axisHelper);
 			}
 			
@@ -185,7 +222,7 @@ define(function(require) {
 				if(state instanceof Array){
 					if ((typeof(state[0]) === 'string' || state[0] instanceof String) && (typeof(state[1]) === 'string' || state[1] instanceof String) && (typeof(state[2]) === 'string' || state[2] instanceof String)){
 						
-						dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial({color: this.options.colours[this.datasets.length]})};
+						dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial({linewidth: 4, color: this.options.colours[this.datasets.length]})};
 						for (var key in state){
 							dataset.data.push({
 								label: state[key],

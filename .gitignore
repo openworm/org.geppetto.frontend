@@ -11,4 +11,5 @@ src/main/webapp/js/jsdocs
 # Editor byproducts
 *.swp
 /target
+*~
 

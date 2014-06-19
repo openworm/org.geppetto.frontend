@@ -208,9 +208,8 @@ define(function(require)
 			};
 			var threeObject = GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
 			var originalColor = getRGB(threeObject.material.originalColor);
-			//threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
-			//threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
-		 	 threeObject.position.x = 10*intensity;
+			threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
+
 		},
 
 		/**
@@ -240,12 +239,16 @@ define(function(require)
 			for ( var a in aspects)
 			{
 				var aspect = aspects[a];
-				var mesh = GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true,material);
-				VARS.scene.add(mesh);
-				if(position!=null){
-					mesh.position = new THREE.Vector3(position.x, position.y, position.z);
-					mesh.name = jsonEntity.id;
-					VARS.entities[mesh.name] = mesh;
+				var meshes = GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true,material);
+				for(var m in meshes)
+				{
+					var mesh=meshes[m];
+					VARS.scene.add(mesh);
+					if(position!=null){
+						mesh.position = new THREE.Vector3(position.x, position.y, position.z);
+						mesh.name = jsonEntity.id;
+						VARS.entities[mesh.name] = mesh;
+					}
 				}
 			}
 			for ( var c in children)
@@ -279,10 +282,7 @@ define(function(require)
 		{
 			var combined = new THREE.Geometry();
 			var material=materialParam==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
-			if(!merge)
-			{
-				entityObjects=[];
-			}
+			var	entityObjects=[];
 			for ( var vm in visualModels)
 			{
 				visualModel = visualModels[vm];
@@ -292,6 +292,7 @@ define(function(require)
 				{
 					if (vobjects[0].type == "Particle")
 					{
+						merge=false;
 						// assumes there are no particles mixed with
 						// other kind of
 						// geometry hence if the first one is a particle
@@ -320,13 +321,11 @@ define(function(require)
 						// also update the particle system to sort the particles which enables the behaviour we want
 						entityObject.sortParticles = true;
 						VARS.visualModelMap[visualModel.id] = entityObject;
-						//FIXME Matteo: the case in which multiple visual models are sent for a particle scene is 
-						//not handles as it's not handled potentially merging them
-						return entityObject;
+						entityObjects.push(entityObject);
 					} 
 					else if (vobjects[0].type == "Collada")
 					{
-						return GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[0]);
+						entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[0]));
 					}
 					else
 					{
@@ -361,13 +360,9 @@ define(function(require)
 				// entityObject.eindex = eindex;
 				entityObject.eid = aspectInstancePath;
 				entityObject.geometry.dynamic = false;
-				return entityObject;	
+				entityObjects.push(entityObject);
 			}
-			else
-			{
-				return entityObjects;
-			}
-			
+			return entityObjects;
 		},
 
 		/**

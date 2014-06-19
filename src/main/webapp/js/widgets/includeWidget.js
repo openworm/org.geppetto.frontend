@@ -48,6 +48,8 @@ define(function(require){
 	require("widgets/plot/config")(GEPPETTO);
 	//Popup Widget
 	require("widgets/popup/config")(GEPPETTO);
+	//Scatter3d Widget
+	require("widgets/scatter3d/config")(GEPPETTO);	
 	//TreeVisualiser DAT Widget
 	require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
 	//TreeVisualiser D3 Widget

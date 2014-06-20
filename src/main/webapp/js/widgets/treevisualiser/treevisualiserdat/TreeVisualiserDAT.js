@@ -40,6 +40,7 @@ define(function(require) {
 
 	var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
 	var $ = require('jquery');
+	var ContextMenuView = require('widgets/ContextMenuView');
 
 	return TreeVisualiser.TreeVisualiser.extend({
 		
@@ -47,6 +48,11 @@ define(function(require) {
 			width: 400,
 			autoPlace: false
 		},
+		
+		events: {
+		   
+		'contextmenu': 'displayMenu'
+		  },
 		
 		initialize : function(options){
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this,options);
@@ -58,12 +64,20 @@ define(function(require) {
 				autoPlace: this.options.autoPlace
 			});
 //			Testing With Real Data
-//			this.generateRealDataTestTreeForDAT();
+			this.generateRealDataTestTreeForDAT();
 			
 //			Testing With Variable
-			this.setData("hhcell");
+//			this.setData("hhcell");
 			
 			this.dialog.append(this.gui.domElement);
+			
+			// Delegate key and mouse events to View input
+			this.contextMenu = new ContextMenuView.View();
+			
+//			this.$el.delegate("div", {
+//				click: this.taka,
+//			});
+			
 		},
 		
 		setData : function(state, options){
@@ -74,6 +88,12 @@ define(function(require) {
 				this.prepareTree(this.gui, state);
 			}	
 			return "Metadata or variables to display added to tree visualiser";
+		},
+		
+		displayMenu: function(e){
+			alert("taka");
+			this.showContextMenu(e);
+			e.preventDefault();
 		},
 		
 		prepareTree: function(parent, data){

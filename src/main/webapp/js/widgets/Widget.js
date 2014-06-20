@@ -228,6 +228,35 @@ define(function(require) {
 				return current;
 			},
 
+			showContextMenu: function (event, queueItem) {
+
+//			    var queueContextMenuGroups = [{
+//			        position: 0,
+//			        items: [{
+//			            position: 0,
+//			            text: 'Clear Queue'
+//			        }]
+//			    }];
+	//
+//			    if (queueItem) {
+//			        queueContextMenuGroups.push({
+//			            position: 1,
+//			            items: [{
+//			                position: 0,
+//			                text: 'Remove ' + queueItem.get('title')
+//			            }]
+//			        });
+//			    }
+
+			    this.contextMenu.show({
+			        top: event.pageY,
+			        left: event.pageX + 1
+//			        groups: queueContextMenuGroups
+			    });
+
+			    return false;
+			},
+			
 			/**
 			 * Renders the widget dialog window
 			 */
@@ -249,6 +278,8 @@ define(function(require) {
 						}
 					});
 
+				this.$el = $("#"+this.id);
+				
 				//Take focus away from close button
 				$(".ui-dialog-titlebar-close").blur();
 

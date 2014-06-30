@@ -157,57 +157,36 @@ define(function(require) {
 				// Toolbar controls
 
 				$("#w").click(function(event) {
-					VARS.controls.incrementPanEnd(-0.01, 0);
-				}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
+					GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
+				}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
 					}).next().click(function(event) {
-						VARS.controls.incrementPanEnd(0, -0.01);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
+						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
 					}).next().click(function(event) {
-						VARS.controls.incrementPanEnd(0.01, 0);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						VARS.controls.incrementPanEnd(0, 0.01);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
+						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
 					}).next().click(function(event) {
 						GEPPETTO.Console.executeCommand('G.resetCamera()');
 					});
 
 				$("#rw").click(function(event) {
-					VARS.controls.incrementRotationEnd(-0.01, 0, 0);
-				}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
+					GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
+				}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
 					}).next().click(function(event) {
-						VARS.controls.incrementRotationEnd(0, 0, 0.01);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
+						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
 					}).next().click(function(event) {
-						VARS.controls.incrementRotationEnd(0.01, 0, 0);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						VARS.controls.incrementRotationEnd(0, 0, -0.01);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
+						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
 					}).next().click(function(event) {
 						GEPPETTO.Console.executeCommand('G.resetCamera()');
 					});
 
 				$("#zo").click(function(event) {
 					VARS.controls.incrementZoomEnd(+0.01);
-
-				}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					});
+				});
 
 				$("#zi").click(function(event) {
 					VARS.controls.incrementZoomEnd(-0.01);
-				}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					});
+				});
 
 			});
 		};

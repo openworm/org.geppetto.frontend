@@ -384,6 +384,29 @@ define(function(require) {
 			 */
 			resetCamera: function() {
 				GEPPETTO.resetCamera();
+			},
+			
+			/**
+			 * Resets Camera to initial position - same as after loading.
+			 *
+			 * @name - G.incrementCameraPan()
+			 * @param x - x coordinate of pan increment vector
+			 * @param y - y coordinate of pan increment vector
+			 */
+			incrementCameraPan: function(x, y) {
+				GEPPETTO.incrementCameraPan(x, y);
+			},
+			
+			/**
+			 * Resets Camera to initial position - same as after loading.
+			 *
+			 * @name - G.incrementCameraRotate()
+			 * @param x - x coordinate or rotate increment vector
+			 * @param y - y coordinate or rotate increment vector
+			 * @param z - z coordinate or rotate increment vector
+			 */
+			incrementCameraRotate: function(x, y, z) {
+				GEPPETTO.incrementCameraRotate(x, y, z);
 			}
 
 		};

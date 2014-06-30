@@ -822,6 +822,23 @@ define(function(require)
 		},
 		
 		/**
+		 * @param x
+		 * @param y
+		 */
+		incrementCameraPan : function(x, y){
+			VARS.controls.incrementPanEnd(x, y);
+		},
+		
+		/**
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
+		incrementCameraRotate : function(x, y, z){
+			VARS.controls.incrementRotationEnd(x, y, z);
+		},
+		
+		/**
 		 * @param msg
 		 */
 		log : function(msg)

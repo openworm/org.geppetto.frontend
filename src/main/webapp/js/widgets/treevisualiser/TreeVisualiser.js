@@ -46,9 +46,11 @@ define(function(require) {
 			datasets: [],
 			
 			initialize : function(options){
-				this.id = options.id;
-				this.name = options.name;
-				this.visible = options.visible;
+				Widget.View.prototype.initialize.call(this,options);
+				
+//				this.id = options.id;
+//				this.name = options.name;
+//				this.visible = options.visible;
 				this.render();
 				this.setSize(500,500);
 	
@@ -61,7 +63,6 @@ define(function(require) {
 				}
 	
 				if (state!= null) {	
-//					var dataset = {variableToDisplay:'', data:{}, links:[], nodes:{}, isDisplayed:false, svg:null, force:null};
 					var dataset = this.createDataset();
 					if (typeof(state) === 'string'){
 						dataset.variableToDisplay = state;

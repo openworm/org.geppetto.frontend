@@ -404,9 +404,15 @@
 	
 		<!-- The contextual menu template: -->
 		<script type="text/template" id="tplContextMenu">
-			<div id="contextMenuContainer" style="width:200px;">
-			taka
-			</div>
+			<% groups.each(function(group){ %>
+		        <ul id="group_<%= group.cid %>">
+		            <% group.get('items').each(function(item){ %>
+		               <li>
+		                   <a id="groupItem_<%= item.cid %>" href="#"><%= item.get('text') %></a>
+		               </li>
+		            <% }); %>
+		        </ul>
+		    <% }); %>
 		</script>
 	
 		<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->

@@ -38,21 +38,20 @@
  */
 
 
-/*
- * Libraries used by Tree Visualizer widget
- */
 
+// Libraries used by Tree Visualizer widget
 var reqs = [];
 reqs.push("widgets/treevisualiser/treevisualiserdat/vendor/dat.gui.min");
-
 require(reqs, function(d3) {
 	loadCss("js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
-	
 });
 
-//Load TreeVisualiserController and other classes using GEPPETTO
 define(function(require) {
 	return function(GEPPETTO) {
+		// Load TreeVisualiserController and other classes using GEPPETTO
 		require("widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT")(GEPPETTO);
+		
+		// Register Commands
+		GEPPETTO.MenuManager.registerNewCommandProvider("nodeType", GEPPETTO.TreeVisualiserControllerDAT.getCommands);
 	};
 });

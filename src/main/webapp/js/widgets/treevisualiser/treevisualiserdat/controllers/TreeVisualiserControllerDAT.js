@@ -116,6 +116,16 @@ define(function(require) {
 						treeVisualiserDAT.updateData();
 					}
 				}
+			},
+			
+			getCommands: function(node) {
+				console.log("getCommands" + node);
+				
+				commands = [{label:"Add to Widget 1", handler:"TreeVisualiserDAT1.setData('hhCell')", icon:"icon"},
+				            {label:"Add to New Widget", handler:"TreeVisualiserDATController.", icon:"icon2"}];
+				
+				return commands;
+				
 			}
 		};
 		

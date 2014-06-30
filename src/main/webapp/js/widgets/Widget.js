@@ -76,6 +76,7 @@ define(function(require) {
 				this.id = options.id;
 				this.name = options.name;
 				this.visible = options.visible;
+				this.contextMenu = new GEPPETTO.ContextMenuView();
 			},
 
 			/**
@@ -228,32 +229,28 @@ define(function(require) {
 				return current;
 			},
 
-			showContextMenu: function (event, queueItem) {
+			showContextMenu: function (event, data) {
 
-//			    var queueContextMenuGroups = [{
-//			        position: 0,
-//			        items: [{
-//			            position: 0,
-//			            text: 'Clear Queue'
-//			        }]
-//			    }];
-	//
-//			    if (queueItem) {
-//			        queueContextMenuGroups.push({
-//			            position: 1,
-//			            items: [{
-//			                position: 0,
-//			                text: 'Remove ' + queueItem.get('title')
-//			            }]
-//			        });
-//			    }
-
+				var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor("nodeType");
+				
+				groups = [];				
+				for (var handlerIndex = 0; handlerIndex < handlers.length; handlerIndex++){
+					var group = {position: handlerIndex, items: []};
+					var actions = handlers[handlerIndex]();
+					for (var actionIndex = 0; actionIndex < actions.length; actionIndex++){
+						var item = {position: actionIndex, text: actions[actionIndex]["label"]};
+						group["items"].push(item);
+					}
+					groups.push(group);
+				}
+				
 			    this.contextMenu.show({
 			        top: event.pageY,
-			        left: event.pageX + 1
-//			        groups: queueContextMenuGroups
+			        left: event.pageX + 1,
+			        groups: groups
 			    });
 
+			    event.preventDefault();
 			    return false;
 			},
 			

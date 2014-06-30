@@ -728,3 +728,9 @@ input {
 #simtutorial:hover{
 	color: #fd6808;
 }
+
+.contextMenuView{
+	z-index: 9999;
+	display: inline-block;
+	background-color:white;
+}

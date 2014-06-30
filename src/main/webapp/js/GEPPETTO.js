@@ -816,6 +816,11 @@ define(function(require)
 			}
 		},
 		
+		resetCamera : function(){
+			GEPPETTO.calculateSceneCenter();
+			GEPPETTO.updateCamera();
+		},
+		
 		/**
 		 * @param msg
 		 */

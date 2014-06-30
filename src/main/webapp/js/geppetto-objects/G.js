@@ -375,6 +375,15 @@ define(function(require) {
 			 */
 			isDebugOn: function() {
 				return debugMode;
+			},
+			
+			/**
+			 * Resets Camera to initial position - same as after loading.
+			 *
+			 * @name - G.resetCamera()
+			 */
+			resetCamera: function() {
+				GEPPETTO.resetCamera();
 			}
 
 		};

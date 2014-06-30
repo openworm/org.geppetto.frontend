@@ -173,8 +173,7 @@ define(function(require) {
 					}).mouseup(function(event) {
 						VARS.controls.resetSTATE();
 					}).next().click(function(event) {
-						GEPPETTO.calculateSceneCenter();
-						GEPPETTO.updateCamera();
+						GEPPETTO.Console.executeCommand('G.resetCamera()');
 					});
 
 				$("#rw").click(function(event) {
@@ -194,8 +193,7 @@ define(function(require) {
 					}).mouseup(function(event) {
 						VARS.controls.resetSTATE();
 					}).next().click(function(event) {
-						GEPPETTO.calculateSceneCenter();
-						GEPPETTO.updateCamera();
+						GEPPETTO.Console.executeCommand('G.resetCamera()');
 					});
 
 				$("#zo").click(function(event) {

@@ -181,11 +181,11 @@ define(function(require) {
 					});
 
 				$("#zo").click(function(event) {
-					VARS.controls.incrementZoomEnd(+0.01);
+					GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
 				});
 
 				$("#zi").click(function(event) {
-					VARS.controls.incrementZoomEnd(-0.01);
+					GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
 				});
 
 			});

@@ -839,6 +839,13 @@ define(function(require)
 		},
 		
 		/**
+		 * @param z
+		 */
+		incrementCameraZoom : function(z){
+			VARS.controls.incrementZoomEnd(z);
+		},
+		
+		/**
 		 * @param msg
 		 */
 		log : function(msg)

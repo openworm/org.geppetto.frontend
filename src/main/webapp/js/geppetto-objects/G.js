@@ -387,7 +387,7 @@ define(function(require) {
 			},
 			
 			/**
-			 * Resets Camera to initial position - same as after loading.
+			 * Increments camera pan.
 			 *
 			 * @name - G.incrementCameraPan()
 			 * @param x - x coordinate of pan increment vector
@@ -398,15 +398,25 @@ define(function(require) {
 			},
 			
 			/**
-			 * Resets Camera to initial position - same as after loading.
+			 * Increments camera rotation.
 			 *
 			 * @name - G.incrementCameraRotate()
-			 * @param x - x coordinate or rotate increment vector
-			 * @param y - y coordinate or rotate increment vector
-			 * @param z - z coordinate or rotate increment vector
+			 * @param x - x coordinate of rotate increment vector
+			 * @param y - y coordinate of rotate increment vector
+			 * @param z - z coordinate of rotate increment vector
 			 */
 			incrementCameraRotate: function(x, y, z) {
 				GEPPETTO.incrementCameraRotate(x, y, z);
+			},
+			
+			/**
+			 * Increments camera zoom.
+			 *
+			 * @name - G.incrementCameraZoom()
+			 * @param z - z coordinate for zoom increment vector
+			 */
+			incrementCameraZoom: function(z) {
+				GEPPETTO.incrementCameraZoom(z);
 			}
 
 		};

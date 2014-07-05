@@ -43,163 +43,161 @@ define(function(require) {
 			}
 		};
 
+
+        var messageTypes = {
+            /*
+             * Messages handle by SimulatorHandler
+             */
+            LOAD_MODEL: "load_model",
+            SCENE_UPDATE: "scene_update",
+            SIMULATION_CONFIGURATION: "simulation_configuration",
+            SIMULATION_LOADED: "simulation_loaded",
+            SIMULATION_STARTED: "simulation_started",
+            SIMULATION_PAUSED: "simulation_paused",
+            SIMULATION_STOPPED: "simulation_stopped",
+            LIST_WATCH_VARS: "list_watch_vars",
+            LIST_FORCE_VARS: "list_force_vars",
+            GET_WATCH_LISTS: "get_watch_lists",
+            SIMULATOR_FULL: "simulator_full",
+            SET_WATCH_VARS: "set_watch_vars",
+            START_WATCH: "start_watch",
+            STOP_WATCH: "stop_watch",
+            CLEAR_WATCH: "clear_watch",
+            FIRE_SIM_SCRIPTS: "fire_sim_scripts",
+            SIMULATION_OVER : "simulation_over"
+        };
+
+        var messageHandler = {};
+
+        messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
+            var entities = JSON.parse(payload.update).entities;
+
+            GEPPETTO.Simulation.setSimulationLoaded();
+
+            //Populate scene
+            GEPPETTO.populateScene(entities);
+
+            if(GEPPETTO.Tutorial.isTutorialOn()){
+                GEPPETTO.Tutorial.startPopover();
+            }
+        };
+
+        messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
+            var update = JSON.parse(payload.update);
+            GEPPETTO.Simulation.updateSimulationWatchTree(update.variable_watch);
+            updateTime(update.time);
+
+            //Update if simulation hasn't been stopped
+            if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
+                if(!GEPPETTO.isScenePopulated()) {
+                    // the first time we need to create the objects
+                    GEPPETTO.populateScene(update.entities);
+                }
+                else {
+                    // any other time we just update them
+                    GEPPETTO.updateJSONScene(update.entities);
+                }
+            }
+        };
+
+        messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {
+            //Load simulation file into display area
+            GEPPETTO.SimulationContentEditor.loadSimulationInfo(payload.configuration);
+            //Auto Format Simulation FIle display
+            GEPPETTO.SimulationContentEditor.autoFormat();
+
+        };
+
+        messageHandler[messageTypes.SIMULATION_LOADED] = function() {
+            $('#start').removeAttr('disabled');
+            $('#loadingmodal').modal('hide');
+        };
+
+        messageHandler[messageTypes.FIRE_SIM_SCRIPTS] = function(payload) {
+            //Reads scripts received for the simulation
+            var scripts = JSON.parse(payload.get_scripts).scripts;
+
+            //make sure object isn't empty
+            if(!jQuery.isEmptyObject(scripts)) {
+                //run the received scripts
+                GEPPETTO.ScriptRunner.fireScripts(scripts);
+            }
+            else {
+                //hide loading modal, no scripts associated with simulation
+                $('#loadingmodal').modal('hide');
+            }
+        };
+
+        //Simulation has been started, enable pause button
+        messageHandler[messageTypes.SIMULATION_STARTED] = function() {
+            GEPPETTO.FE.updateStartEvent();
+        };
+
+        messageHandler[messageTypes.SIMULATION_STOPPED] = function() {
+            GEPPETTO.FE.updateStopEvent();
+        };
+
+        messageHandler[messageTypes.SIMULATION_PAUSED] = function() {
+            GEPPETTO.FE.updatePauseEvent();
+        };
+
+        messageHandler[messageTypes.LIST_WATCH_VARS] = function(payload) {
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_WATCH_VARS);
+            // TODO: format output
+            formatListVariableOutput(JSON.parse(payload.list_watch_vars).variables, 0);
+        };
+
+        messageHandler[messageTypes.LIST_FORCE_VARS] = function(payload) {
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_FORCE_VARS);
+            // TODO: format output
+            formatListVariableOutput(JSON.parse(payload.list_force_vars).variables, 0);
+        };
+
+        messageHandler[messageTypes.GET_WATCH_LISTS] = function(payload) {
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_FORCE_VARS);
+            GEPPETTO.Console.log(payload.get_watch_lists);
+        };
+
+        messageHandler[messageTypes.SIMULATOR_FULL] = function(payload) {
+            var simulatorInfo = JSON.parse(payload.simulatorFull);
+            var simulatorName = simulatorInfo.simulatorName;
+            var queuePosition = simulatorInfo.queuePosition;
+            GEPPETTO.FE.disableSimulationControls();
+            GEPPETTO.FE.fullSimulatorNotification(simulatorName, queuePosition);
+        }
+
+        messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {
+            //variables watching
+            var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
+
+            var length = GEPPETTO.Simulation.simulationStates.length;
+
+            //create objects for the variables to watch
+            for(var v in variables) {
+                GEPPETTO.Simulation.simulationStates[length] = variables[v];
+                length++;
+            }
+        };
+
+        //handles the case where simulation is done executing all steps
+        messageHandler[messageTypes.SIMULATION_OVER] = function() {
+            //Updates the simulation controls visibility
+            GEPPETTO.FE.updateStopEvent();
+        };
+
+
 		GEPPETTO.SimulationHandler = {
 			onMessage: function(parsedServerMessage) {
-
 				// parsed message has a type and data fields - data contains the payload of the message
-				var payload = JSON.parse(parsedServerMessage.data);
-
 				// Switch based on parsed incoming message type
-				switch(parsedServerMessage.type) {
-					//Simulation has been loaded and model need to be loaded
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
-						GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
-						var entities = JSON.parse(payload.update).entities;
-
-						GEPPETTO.Simulation.setSimulationLoaded();
-
-						//Populate scene
-						GEPPETTO.populateScene(entities);	
-						
-						if(GEPPETTO.Tutorial.isTutorialOn()){
-							GEPPETTO.Tutorial.startPopover();
-						}
-						break;
-					//Event received to update the simulation
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
-						var update = JSON.parse(payload.update);
-						GEPPETTO.Simulation.updateSimulationWatchTree(update.variable_watch);
-						updateTime(update.time);
-
-						//Update if simulation hasn't been stopped
-						if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
-							if(!GEPPETTO.isScenePopulated()) {
-								// the first time we need to create the objects
-								GEPPETTO.populateScene(update.entities);
-							}
-							else {
-								// any other time we just update them
-								GEPPETTO.updateJSONScene(update.entities);
-							}
-						}
-						
-						// TODO: store variable-watch tree
-						break;
-					//Simulation server became available
-					//Simulation configuration retrieved from server
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_CONFIGURATION:
-						//Load simulation file into display area
-						GEPPETTO.SimulationContentEditor.loadSimulationInfo(payload.configuration);
-						//Auto Format Simulation FIle display
-						GEPPETTO.SimulationContentEditor.autoFormat();
-						break;
-					//Simulation has been loaded, enable start button and remove loading panel
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
-						$('#start').removeAttr('disabled');
-						$('#loadingmodal').modal('hide');
-						break;
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
-						//Reads scripts received for the simulation
-						var scripts = JSON.parse(payload.get_scripts).scripts;
-
-						//make sure object isn't empty
-						if(!jQuery.isEmptyObject(scripts)) {
-							//run the received scripts
-							GEPPETTO.ScriptRunner.fireScripts(scripts);
-						}
-						else {
-							//hide loading modal, no scripts associated with simulation
-							$('#loadingmodal').modal('hide');
-						}
-						break;
-					//Simulation has been started, enable pause button
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
-						GEPPETTO.FE.updateStartEvent();
-						break;
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STOPPED:
-						//Updates the simulation controls visibility
-						GEPPETTO.FE.updateStopEvent();
-						break;
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_PAUSED:
-						//Updates the simulation controls visibility
-						GEPPETTO.FE.updatePauseEvent();
-						break;
-					//Simulation has been started, enable pause button
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LIST_WATCH_VARS:
-						GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_WATCH_VARS);
-						// TODO: format output
-						formatListVariableOutput(JSON.parse(payload.list_watch_vars).variables, 0);
-						//GEPPETTO.Console.log(JSON.stringify(payload));
-						break;
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LIST_FORCE_VARS:
-						GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_FORCE_VARS);
-						// TODO: format output
-						formatListVariableOutput(JSON.parse(payload.list_force_vars).variables, 0);
-						//GEPPETTO.Console.log(JSON.stringify(payload));
-						break;
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_WATCH_LISTS:
-						GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_FORCE_VARS);
-						GEPPETTO.Console.log(payload.get_watch_lists);
-						break;
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATOR_FULL:
-						var simulatorInfo = JSON.parse(payload.simulatorFull);
-
-						var simulatorName = simulatorInfo.simulatorName;
-						var queuePosition = simulatorInfo.queuePosition;
-
-						GEPPETTO.FE.disableSimulationControls();
-						GEPPETTO.FE.fullSimulatorNotification(simulatorName, queuePosition);
-						break;
-					//Starts the watch of requested variables
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.START_WATCH:
-						//variables watching
-						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-						break;
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
-						//variables watching
-						var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-						
-						var length = GEPPETTO.Simulation.simulationStates.length;
-						
-						//create objects for the variables to watch
-						for(var v in variables) {
-							GEPPETTO.Simulation.simulationStates[length] = variables[v];
-							length++;
-						}
-						break;
-					//handles the case where simulation is done executing all steps
-					case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_OVER:
-						//Updates the simulation controls visibility
-						GEPPETTO.FE.updateStopEvent();
-						break;
-					default:
-						break;
-				}
+                if(messageHandler.hasOwnProperty(parsedServerMessage.type)) {
+                    messageHandler[parsedServerMessage.type](JSON.parse(parsedServerMessage.data));
+                }
 			}
 		};
 
-		GEPPETTO.SimulationHandler.MESSAGE_TYPE = {
-			/*
-			 * Messages handle by SimulatorHandle
-			 */
-			LOAD_MODEL: "load_model",
-			SCENE_UPDATE: "scene_update",
-			SIMULATION_CONFIGURATION: "simulation_configuration",
-			SIMULATION_LOADED: "simulation_loaded",
-			SIMULATION_STARTED: "simulation_started",
-			SIMULATION_PAUSED: "simulation_paused",
-			SIMULATION_STOPPED: "simulation_stopped",
-			LIST_WATCH_VARS: "list_watch_vars",
-			LIST_FORCE_VARS: "list_force_vars",
-			GET_WATCH_LISTS: "get_watch_lists",
-			SIMULATOR_FULL: "simulator_full",
-			SET_WATCH_VARS: "set_watch_vars",
-			START_WATCH: "start_watch",
-			STOP_WATCH: "stop_watch",
-			CLEAR_WATCH: "clear_watch",
-			FIRE_SIM_SCRIPTS: "fire_sim_scripts",
-			SIMULATION_OVER : "simulation_over"
-		};
+		GEPPETTO.SimulationHandler.MESSAGE_TYPE = messageTypes;
 	};
 
 	/**

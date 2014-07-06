@@ -152,45 +152,6 @@ define(function(require) {
 //	============================================================================
 //	Application logic.
 //	============================================================================
-		var setupApplicationLogic = function() {
-			$(document).ready(function() {
-				// Toolbar controls
-
-				$("#w").click(function(event) {
-					GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
-				}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.resetCamera()');
-					});
-
-				$("#rw").click(function(event) {
-					GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
-				}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.resetCamera()');
-					});
-
-				$("#zo").click(function(event) {
-					GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
-				});
-
-				$("#zi").click(function(event) {
-					GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
-				});
-
-			});
-		};
-
 		GEPPETTO.Init = {
 			initialize: function(containerp) {
 				VARS.container = containerp;
@@ -200,7 +161,6 @@ define(function(require) {
 				setupLights();
 				setupControls();
 				setupListeners();
-				setupApplicationLogic();
 				return VARS;
 			}
 		};

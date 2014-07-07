@@ -233,13 +233,17 @@ define(function(require) {
 
 				var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor("nodeType");
 				
-				groups = [];				
+				groups = [];	
+				registeredItems = {};
 				for (var handlerIndex = 0; handlerIndex < handlers.length; handlerIndex++){
-					var group = {position: handlerIndex, items: []};
-					var actions = handlers[handlerIndex]();
-					for (var actionIndex = 0; actionIndex < actions.length; actionIndex++){
-						var item = {position: actionIndex, text: actions[actionIndex]["label"]};
+					var groupId = "g"+handlerIndex;
+					var group = {id: groupId, position: handlerIndex, items: []};
+					var items = handlers[handlerIndex](data);
+					for (var itemIndex = 0; itemIndex < items.length; itemIndex++){
+						var itemId = groupId + "_" + "i"+itemIndex;
+						var item = {id: itemId, position: itemIndex, text: items[itemIndex]["label"], action: items[itemIndex]["action"]};
 						group["items"].push(item);
+						registeredItems[itemId] = item;
 					}
 					groups.push(group);
 				}
@@ -247,7 +251,9 @@ define(function(require) {
 			    this.contextMenu.show({
 			        top: event.pageY,
 			        left: event.pageX + 1,
-			        groups: groups
+			        groups: groups,
+			        registeredItems: registeredItems,
+			        data: data
 			    });
 
 			    event.preventDefault();

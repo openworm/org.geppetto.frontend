@@ -729,8 +729,47 @@ input {
 	color: #fd6808;
 }
 
+
+/*Context Menu*/
 .contextMenuView{
-	z-index: 9999;
+	z-index: 1000;
 	display: inline-block;
-	background-color:white;
+	min-width: 120px;
+	max-width: 250px;
+	border: 1px solid #DDD;
+	background: #EEE;
+	margin: 0;
+	padding: 0;
 }
+
+.contextMenuView ul{
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+	list-style-type: none;
+	border-bottom: 1px solid #DDD;
+}
+
+.contextMenuView li{
+	padding: 2px 10px 2px 24px;
+	background-color: #EEE;
+	position: relative;
+	-webkit-user-select: none;
+	-moz-user-select: -moz-none;
+	-ms-user-select: none;
+	user-select: none;	
+}
+
+.contextMenuView li:hover {
+    cursor: pointer;
+    background-color: #39F;
+}
+
+.contextMenuView li.disabled {
+    color: #666;
+}
+
+.contextMenuView li.disabled.hover {
+    cursor: default;
+    background-color: #EEE;
+} 

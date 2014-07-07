@@ -121,10 +121,16 @@ define(function(require) {
 			getCommands: function(node) {
 				console.log("getCommands" + node);
 				
-				commands = [{label:"Add to Widget 1", handler:"TreeVisualiserDAT1.setData('hhCell')", icon:"icon"},
-				            {label:"Add to New Widget", handler:"TreeVisualiserDATController.", icon:"icon2"}];
+				commands = [{label:"Add to Widget 1", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon"},
+				            {label:"Add to New Widget", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon2"}];
 				
 				return commands;
+				
+			},
+			
+			actionMenu: function(node){
+				console.log("Action" + node);
+				console.log(node);
 				
 			}
 		};

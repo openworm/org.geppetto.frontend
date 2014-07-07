@@ -404,16 +404,21 @@
 	
 		<!-- The contextual menu template: -->
 		<script type="text/template" id="tplContextMenu">
+		</script>
+		<script type="text/template" id="tplContextMenuGroups">
 			<% groups.each(function(group){ %>
-		        <ul id="group_<%= group.cid %>">
-		            <% group.get('items').each(function(item){ %>
-		               <li>
-		                   <a id="groupItem_<%= item.cid %>" href="#"><%= item.get('text') %></a>
-		               </li>
-		            <% }); %>
+		        <ul id="<%= group.id %>">
 		        </ul>
 		    <% }); %>
 		</script>
+		<script type="text/template" id="tplContextMenuItems">
+            <% items.each(function(item){ %>
+               <li id="<%= item.id %>">
+                   <%= item.get('text') %>
+               </li>
+            <% }); %>
+		</script>
+
 	
 		<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
 		<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>

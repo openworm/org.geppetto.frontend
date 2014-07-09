@@ -384,6 +384,8 @@ define(function(require) {
 			 */
 			resetCamera: function() {
 				GEPPETTO.resetCamera();
+				
+				return GEPPETTO.Resources.CAMERA_RESET;
 			},
 			
 			/**
@@ -395,6 +397,8 @@ define(function(require) {
 			 */
 			incrementCameraPan: function(x, y) {
 				GEPPETTO.incrementCameraPan(x, y);
+				
+				return GEPPETTO.Resources.CAMERA_PAN_INCREMENT;
 			},
 			
 			/**
@@ -407,6 +411,8 @@ define(function(require) {
 			 */
 			incrementCameraRotate: function(x, y, z) {
 				GEPPETTO.incrementCameraRotate(x, y, z);
+				
+				return GEPPETTO.Resources.CAMERA_ROTATE_INCREMENT;
 			},
 			
 			/**
@@ -417,6 +423,8 @@ define(function(require) {
 			 */
 			incrementCameraZoom: function(z) {
 				GEPPETTO.incrementCameraZoom(z);
+				
+				return GEPPETTO.Resources.CAMERA_ZOOM_INCREMENT;
 			}
 
 		};

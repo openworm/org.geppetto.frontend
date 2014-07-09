@@ -163,6 +163,14 @@ define(function(require) {
 			HELP_ALREADY_VISIBLE: "Help Window is already visible",
 
 			HELP_ALREADY_HIDDEN: "Help Window is already hidden",
+			
+			CAMERA_PAN_INCREMENT: "Panning increment",
+			
+			CAMERA_ROTATE_INCREMENT: "Rotation increment",
+			
+			CAMERA_ZOOM_INCREMENT: "Zoom increment",
+			
+			CAMERA_RESET: "Camera reset",
 
 			/**
 			 * GEPPETTO.Main resources

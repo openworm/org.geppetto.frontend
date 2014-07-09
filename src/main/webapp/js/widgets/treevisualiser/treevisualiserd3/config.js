@@ -65,5 +65,8 @@ require(reqs, function(d3) {
 define(function(require) {
 	return function(GEPPETTO) {
 		require("widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3")(GEPPETTO);
+		
+		// Register Commands
+		GEPPETTO.MenuManager.registerNewCommandProvider("nodeType", GEPPETTO.TreeVisualiserControllerD3.getCommands);
 	};
 });

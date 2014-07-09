@@ -233,26 +233,16 @@ define(function(require) {
 
 				var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor("nodeType");
 				
-				groups = [];	
-				registeredItems = {};
+				var groups = [];	
 				for (var handlerIndex = 0; handlerIndex < handlers.length; handlerIndex++){
-					var groupId = "g"+handlerIndex;
-					var group = {id: groupId, position: handlerIndex, items: []};
-					var items = handlers[handlerIndex](data);
-					for (var itemIndex = 0; itemIndex < items.length; itemIndex++){
-						var itemId = groupId + "_" + "i"+itemIndex;
-						var item = {id: itemId, position: itemIndex, text: items[itemIndex]["label"], action: items[itemIndex]["action"]};
-						group["items"].push(item);
-						registeredItems[itemId] = item;
-					}
-					groups.push(group);
+					groups = groups.concat(handlers[handlerIndex](data));
 				}
-				
+			
 			    this.contextMenu.show({
 			        top: event.pageY,
 			        left: event.pageX + 1,
 			        groups: groups,
-			        registeredItems: registeredItems,
+//			        registeredItems: registeredItems,
 			        data: data
 			    });
 

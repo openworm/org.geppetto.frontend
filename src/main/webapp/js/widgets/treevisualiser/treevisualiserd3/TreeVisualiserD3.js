@@ -57,7 +57,7 @@ define(function(require) {
 //			this.generateRealDataTestTreeForD3();
 			
 //			Testing With Variable
-			this.setData("hhcell");
+//			this.setData("hhcell");
 		},
 		
 		setData : function(state, options){

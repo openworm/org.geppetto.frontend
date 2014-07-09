@@ -44,7 +44,6 @@ define(function(require) {
 		var treeVisualisersD3 = new Array();
 
 		GEPPETTO.TreeVisualiserControllerD3 = {
-			
 
 			/**
 			 * Registers widget events to detect and execute following actions.
@@ -116,7 +115,25 @@ define(function(require) {
 						treeVisualiserD3.updateData();
 					}
 				}
+			},
+			
+			getCommands: function(node) {
+				groups = [
+				          [{label:"Open with D3 Widget", action: GEPPETTO.TreeVisualiserControllerD3.actionMenu, icon:"icon3"}]
+				          ];
+				
+				return groups;
+				
+			},
+			
+			actionMenu: function(node){
+				tv = this.GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
+				tv.setData(node);
+				console.log("Action" + node);
+				console.log(node);
+				
 			}
+			
 		};
 		
 	};

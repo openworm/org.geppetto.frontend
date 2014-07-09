@@ -405,18 +405,10 @@
 		<!-- The contextual menu template: -->
 		<script type="text/template" id="tplContextMenu">
 		</script>
-		<script type="text/template" id="tplContextMenuGroups">
-			<% groups.each(function(group){ %>
-		        <ul id="<%= group.id %>">
-		        </ul>
-		    <% }); %>
-		</script>
 		<script type="text/template" id="tplContextMenuItems">
-            <% items.each(function(item){ %>
-               <li id="<%= item.id %>">
-                   <%= item.get('text') %>
-               </li>
-            <% }); %>
+           <li id="<%= this.cid %>">
+               <%= label %>
+           </li>
 		</script>
 
 	

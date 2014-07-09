@@ -119,19 +119,19 @@ define(function(require) {
 			},
 			
 			getCommands: function(node) {
-				console.log("getCommands" + node);
+				groups = [
+				          [{label:"Add to Widget 1", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon", position: 0, 
+								groups:[[{label:"Add to Widget 12", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon2", position: 0},{label:"Add to Widget 123", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon2", position: 2}]]},
+				           {label:"Add to New Widget", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon2", position: 1}],
+				          [{label:"Add to Widget 3", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon3"}]
+				          ];
 				
-				commands = [{label:"Add to Widget 1", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon"},
-				            {label:"Add to New Widget", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon2"}];
-				
-				return commands;
+				return groups;
 				
 			},
 			
 			actionMenu: function(node){
-				console.log("Action" + node);
-				console.log(node);
-				
+				window.alert("Action for node:" + node.toSource());
 			}
 		};
 		

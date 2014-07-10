@@ -152,68 +152,6 @@ define(function(require) {
 //	============================================================================
 //	Application logic.
 //	============================================================================
-		var setupApplicationLogic = function() {
-			$(document).ready(function() {
-				// Toolbar controls
-
-				$("#w").click(function(event) {
-					VARS.controls.incrementPanEnd(-0.01, 0);
-				}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						VARS.controls.incrementPanEnd(0, -0.01);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						VARS.controls.incrementPanEnd(0.01, 0);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						VARS.controls.incrementPanEnd(0, 0.01);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						GEPPETTO.calculateSceneCenter();
-						GEPPETTO.updateCamera();
-					});
-
-				$("#rw").click(function(event) {
-					VARS.controls.incrementRotationEnd(-0.01, 0, 0);
-				}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						VARS.controls.incrementRotationEnd(0, 0, 0.01);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						VARS.controls.incrementRotationEnd(0.01, 0, 0);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						VARS.controls.incrementRotationEnd(0, 0, -0.01);
-					}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					}).next().click(function(event) {
-						GEPPETTO.calculateSceneCenter();
-						GEPPETTO.updateCamera();
-					});
-
-				$("#zo").click(function(event) {
-					VARS.controls.incrementZoomEnd(+0.01);
-
-				}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					});
-
-				$("#zi").click(function(event) {
-					VARS.controls.incrementZoomEnd(-0.01);
-				}).mouseup(function(event) {
-						VARS.controls.resetSTATE();
-					});
-
-			});
-		};
-
 		GEPPETTO.Init = {
 			initialize: function(containerp) {
 				VARS.container = containerp;
@@ -223,7 +161,6 @@ define(function(require) {
 				setupLights();
 				setupControls();
 				setupListeners();
-				setupApplicationLogic();
 				return VARS;
 			}
 		};

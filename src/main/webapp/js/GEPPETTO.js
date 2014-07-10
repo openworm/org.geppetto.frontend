@@ -816,6 +816,35 @@ define(function(require)
 			}
 		},
 		
+		resetCamera : function(){
+			GEPPETTO.calculateSceneCenter();
+			GEPPETTO.updateCamera();
+		},
+		
+		/**
+		 * @param x
+		 * @param y
+		 */
+		incrementCameraPan : function(x, y){
+			VARS.controls.incrementPanEnd(x, y);
+		},
+		
+		/**
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
+		incrementCameraRotate : function(x, y, z){
+			VARS.controls.incrementRotationEnd(x, y, z);
+		},
+		
+		/**
+		 * @param z
+		 */
+		incrementCameraZoom : function(z){
+			VARS.controls.incrementZoomEnd(z);
+		},
+		
 		/**
 		 * @param msg
 		 */

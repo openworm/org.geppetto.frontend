@@ -137,12 +137,51 @@ define(function(require) {
 // ============================================================================
 // Application logic.
 // ============================================================================
+		var setupCameraControls = function() {
+			$(document).ready(function() {
+				// Toolbar controls
+
+				$("#w").click(function(event) {
+					GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
+				}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
+					}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
+					}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
+					}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.resetCamera()');
+					});
+
+				$("#rw").click(function(event) {
+					GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
+				}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
+					}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
+					}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
+					}).next().click(function(event) {
+						GEPPETTO.Console.executeCommand('G.resetCamera()');
+					});
+
+				$("#zo").click(function(event) {
+					GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
+				});
+
+				$("#zi").click(function(event) {
+					GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
+				});
+
+			});
+		};
+		
 		$(document).ready(function() {
 
 			GEPPETTO.FE.initialEvents();
 			
 			//Increment the idle time counter every minute.
-			var idleInterval = setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
+			setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
             var here = $(this);
 			//Zero the idle timer on mouse movement.
 			here.mousemove(function(e) {
@@ -162,6 +201,9 @@ define(function(require) {
 
 			//Initialize websocket functionality
 			GEPPETTO.Main.init();
+			
+			// hookup camera controls
+			setupCameraControls();
 		});
-	}
+	};
 });

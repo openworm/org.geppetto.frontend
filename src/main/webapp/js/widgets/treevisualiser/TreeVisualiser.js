@@ -48,6 +48,8 @@ define(function(require) {
 			initialize : function(options){
 				Widget.View.prototype.initialize.call(this,options);
 				
+				this.datasets = [];
+				
 //				this.id = options.id;
 //				this.name = options.name;
 //				this.visible = options.visible;

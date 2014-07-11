@@ -31,10 +31,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Controller class for treevisualiser widget. Use to make calls to widget from inside Geppetto.
- *
+ * Controller class for treevisualiser widget. Use to make calls to widget from
+ * inside Geppetto.
+ * 
  * @constructor
- *
+ * 
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
@@ -44,53 +45,63 @@ define(function(require) {
 		var treeVisualisersDAT = new Array();
 
 		GEPPETTO.TreeVisualiserControllerDAT = {
-			
 
 			/**
 			 * Registers widget events to detect and execute following actions.
 			 * Used when widget is destroyed.
-			 *
+			 * 
 			 * @param plotID
 			 */
-			registerHandler: function(treeVisualiserDATID) {
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.TreeVisualiserControllerDAT, treeVisualiserDATID);
+			registerHandler : function(treeVisualiserDATID) {
+				GEPPETTO.WidgetsListener.subscribe(
+						GEPPETTO.TreeVisualiserControllerDAT,
+						treeVisualiserDATID);
 			},
 
 			/**
 			 * Returns all plotting widgets objects
 			 */
-			getWidgets: function() {
+			getWidgets : function() {
 				return treeVisualisersDAT;
 			},
-			
-			addTreeVisualiserDATWidget : function(){
-				//Popup widget number
+
+			addTreeVisualiserDATWidget : function() {
+				// Popup widget number
 				var index = (treeVisualisersDAT.length + 1);
 
-				//Name of popup widget
+				// Name of popup widget
 				var name = "TreeVisualiserDAT" + index;
 				var id = name;
 
-				//create tree visualiser widget
-				var tv = window[name] = new TreeVisualiserDAT({id:id, name:name,visible:false});
+				// create tree visualiser widget
+				var tvdat = window[name] = new TreeVisualiserDAT({
+					id : id,
+					name : name,
+					visible : false
+				});
 
-				//create help command for plot
-				tv.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+				// create help command for plot
+				tvdat.help = function() {
+					return GEPPETTO.Utility.getObjectCommands(id);
+				};
 
-				//store in local stack
-				treeVisualisersDAT.push(tv);
-				
+				// store in local stack
+				treeVisualisersDAT.push(tvdat);
+
 				this.registerHandler(id);
 
-				//add commands to console autocomplete and help option
-				GEPPETTO.Utility.updateCommands("js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js", tv, id);
+				// add commands to console autocomplete and help option
+				GEPPETTO.Utility
+						.updateCommands(
+								"js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",
+								tvdat, id);
 
-				return tv;
+				return tvdat;
 			},
-		
-			removeTreeVisualiserDATWidgets : function(){
-				//remove all existing popup widgets
-				for(var i = 0; i < treeVisualisersDAT.length; i++) {
+
+			removeTreeVisualiserDATWidgets : function() {
+				// remove all existing popup widgets
+				for (var i = 0; i < treeVisualisersDAT.length; i++) {
 					var treeVisualiserDAT = treeVisualisersDAT[i];
 
 					treeVisualiserDAT.destroy();
@@ -99,41 +110,63 @@ define(function(require) {
 
 				treeVisualisersDAT = new Array();
 			},
-			
-			//receives updates from widget listener class to update tree visualiser widget(s)
-			update: function(event) {
-				//delete treevisualiser widget(s)
-				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+
+			// receives updates from widget listener class to update tree
+			// visualiser widget(s)
+			update : function(event) {
+				// delete treevisualiser widget(s)
+				if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 					this.removeTreeVisualiserDATWidgets();
 				}
-				//update treevisualiser widgets
-				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-					//loop through all existing widgets
-					for(var i = 0; i < treeVisualisersDAT.length; i++) {
+				// update treevisualiser widgets
+				else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+					// loop through all existing widgets
+					for (var i = 0; i < treeVisualisersDAT.length; i++) {
 						var treeVisualiserDAT = treeVisualisersDAT[i];
 
-						//update treevisualiser with new data set
+						// update treevisualiser with new data set
 						treeVisualiserDAT.updateData();
 					}
 				}
 			},
-			
-			getCommands: function(node) {
-				groups = [
-				          [{label:"Add to Widget 1", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon", position: 0, 
-								groups:[[{label:"Add to Widget 12", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon2", position: 0},{label:"Add to Widget 123", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon2", position: 2}]]},
-				           {label:"Add to New Widget", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon2", position: 1}],
-				          [{label:"Add to Widget 3", action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu, icon:"icon3"}]
-				          ];
-				
+
+			getCommands : function(node) {
+				var groups = [ [ {
+					label : "Add to Chart",
+					icon : "icon0",
+					position : 0,
+					groups : [ [ {
+						label : "Add to New Chart",
+						action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+						icon : "icon01",
+						position : 0
+					}, {
+						label : "Add to Chart 1",
+						action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+						icon : "icon02",
+						position : 1
+					} ] ]
+				}, {
+					label : "Add as new line",
+					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+					icon : "icon1",
+					position : 1
+				} ],
+
+				[ {
+					label : "Save to file as a Chart",
+					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+					icon : "icon2"
+				} ] ];
+
 				return groups;
-				
+
 			},
-			
-			actionMenu: function(node){
+
+			actionMenu : function(node) {
 				window.alert("Action for node:" + node.toSource());
 			}
 		};
-		
+
 	};
 });

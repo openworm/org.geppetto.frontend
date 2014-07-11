@@ -71,20 +71,20 @@ define(function(require) {
 				var id = name;
 
 				//create tree visualiser widget
-				var tv = window[name] = new TreeVisualiserD3({id:id, name:name,visible:false});
+				var tvd3 = window[name] = new TreeVisualiserD3({id:id, name:name,visible:false});
 
 				//create help command for plot
-				tv.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+				tvd3.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
 
 				//store in local stack
-				treeVisualisersD3.push(tv);
+				treeVisualisersD3.push(tvd3);
 				
 				this.registerHandler(id);
 
 				//add commands to console autocomplete and help option
-				GEPPETTO.Utility.updateCommands("js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tv, id);
+				GEPPETTO.Utility.updateCommands("js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
 
-				return tv;
+				return tvd3;
 			},
 		
 			removeTreeVisualiserD3Widgets : function(){
@@ -127,11 +127,8 @@ define(function(require) {
 			},
 			
 			actionMenu: function(node){
-				tv = this.GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
+				tv = GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
 				tv.setData(node);
-				console.log("Action" + node);
-				console.log(node);
-				
 			}
 			
 		};

@@ -138,24 +138,24 @@ define(function(require) {
 					if (!dataset.isDisplayed){
 						dataset.isDisplayed = true;
 						
-						var width = 860,
-						    height = 500;
+						this.width = 860;
+						this.height = 500;
 			
-						var force = d3.layout.force()
+						this.force = d3.layout.force()
 						    .nodes(d3.values(dataset.nodes))
 						    .links(dataset.links)
-						    .size([width, height])
+						    .size([this.width, this.height])
 						    .linkDistance(60)
 						    .charge(-300)
 						    .on("tick", tick)
 						    .start();
 			
-						var svg = d3.select("#"+this.id).append("svg")
-						    .attr("width", width)
-						    .attr("height", height);
+						this.svg = d3.select("#"+this.id).append("svg")
+						    .attr("width", this.width)
+						    .attr("height", this.height);
 			
 						// Per-type markers, as they don't inherit styles.
-						svg.append("defs").selectAll("marker")
+						this.svg.append("defs").selectAll("marker")
 						    .data(["suit", "licensing", "resolved"])
 						  .enter().append("marker")
 						    .attr("id", function(d) { return d; })
@@ -168,27 +168,27 @@ define(function(require) {
 						  .append("path")
 						    .attr("d", "M0,-5L10,0L0,5");
 			
-						var path = svg.append("g").selectAll("path")
-						    .data(force.links())
+						var path = this.svg.append("g").selectAll("path")
+						    .data(this.force.links())
 						  .enter().append("path")
 						    .attr("class", function(d) { return "link " + d.type; })
 						    .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
 			
-						var circle = svg.append("g").selectAll("circle")
-						    .data(force.nodes())
+						var circle = this.svg.append("g").selectAll("circle")
+						    .data(this.force.nodes())
 						  .enter().append("circle")
 						    .attr("r", 6)
-						    .call(force.drag);
+						    .call(this.force.drag);
 			
-						var text = svg.append("g").selectAll("text")
-						    .data(force.nodes())
+						var text = this.svg.append("g").selectAll("text")
+						    .data(this.force.nodes())
 						  .enter().append("text")
 						    .attr("x", 8)
 						    .attr("y", ".31em")
 						    .text(function(d) { return d.name; });
 						
-						dataset.svg = svg;
-						dataset.force = force;
+						dataset.svg = this.svg;
+						dataset.force = this.force;
 			
 						// Use elliptical arc path segments to doubly-encode directionality.
 						function tick() {
@@ -217,26 +217,7 @@ define(function(require) {
 		},
 		
 		getTestingData: function(){
-			return {"electrical":
-			{"hhpop":[
-				       {"bioPhys1":
-				          	{"membraneProperties":
-				          		{"naChans":
-				          			{"gDensity":{"value":4.1419823201649315,"unit":null,"scale":null},
-				          			"na":{
-				          				"m":
-				          					{"q":{"value":0.21040640018173135,"unit":null,"scale":null}},
-				          				"h":
-				          					{"q":{"value":0.4046102327961389,"unit":null,"scale":null}}}},
-				          		"kChans":
-				          			{"k":
-				          				{"n":
-				          					{"q":{"value":0.42015716873953574,"unit":null,"scale":null}}}}}},
-				       "spiking":{"value":0,"unit":null,"scale":null},
-				       "v":{"value":-0.047481204346777425,"unit":null,"scale":null}}
-				       ]
-					}
-			};
+			return {"electrical":{"hhpop":[{"bioPhys1":{"membraneProperties":{"naChans":{"gDensity":{"value":4.1419823201649315,"unit":null,"scale":null},"na":{"m":{"q":{"value":0.21040640018173135,"unit":null,"scale":null}},"h":{"q":{"value":0.4046102327961389,"unit":null,"scale":null}}}},"kChans":{"k":{"n":{"q":{"value":0.42015716873953574,"unit":null,"scale":null}}}}}},"spiking":{"value":0,"unit":null,"scale":null},"v":{"value":-0.047481204346777425,"unit":null,"scale":null}}]}};
 		},
 		
 		getTestingData2: function(){

@@ -15,9 +15,6 @@ define(function(require) {
 				action: "Not specified",
 				icon: "Not specified",
 			},
-			
-
-			
 			initialize: function(attributes){
 				if (typeof attributes.groups != 'undefined'){
 					this.set("groups", new ContextMenuGroups(attributes.groups));
@@ -65,42 +62,18 @@ define(function(require) {
 			initialize: function (options) {
 				this.items = options.items;
 			},
-			
-//			events : {
-//			'click' : 'manageMenuClickEvent'
-//		},
-//		
-//		manageMenuClickEvent: function(event){
-//			console.log(this); 
-//			console.log(event);
-//			console.log($(event.target));
-//			
-//			var action = $(event.target).data('action');
-//			
-////			var registedItem = this.registeredItems[itemId];
-//			console.log('click');
-////			registedItem['action'](this.data);
-//			
-//			//Create the function
-//			var fn = window[action];
-//			//Call the function
-//			fn(this.data);
-//		},
-			
-			 render: function () {
+			render: function () {
 				 
-				 this.$el.append(this.template(this.items.toJSON()));
+				this.$el.append(this.template(this.items.toJSON()));
 				 
-				 registeredItems[this.items.get("cid")] = this.items.get("action");
+				registeredItems[this.items.get("cid")] = this.items.get("action");
 				 
-				 if (this.items.has("groups") ){
-					 var elementBb2 = this.$el.find("li");
-					 this.items.get("groups").each(function(group){
-						 var view2 = new ContextMenuViewGroups({ model: group });
-						 elementBb2.append( view2.render().el.childNodes );
-						 
-					 }	 
-					 );
+				if (this.items.has("groups")){
+					var contextMenuViewItemsElement = this.$el.find("li");
+					this.items.get("groups").each(function(group){
+						var contextMenuViewGroupsTmp2 = new ContextMenuViewGroups({ model: group });
+						contextMenuViewItemsElement.append(contextMenuViewGroupsTmp2.render().el.childNodes);
+					});
 				 }
 				 
 				 return this;
@@ -108,19 +81,16 @@ define(function(require) {
 		});
 		
 		var ContextMenuViewGroups = Backbone.View.extend({
-			
 			initialize: function (options) {
 				this.group = options.model;
 			},
-			
 			render: function () {
-				
 				 this.$el.html("<ul></ul>");
 				 
-				 var elementTmp = this.$el.find("ul");
+				 var contextMenuViewGroupsElement = this.$el.find("ul");
 				 this.group.get("items").each(function(item){
-					 var viewTaka = new ContextMenuViewItems({items: item });
-					 elementTmp.append(viewTaka.render().el.childNodes);
+					 var contextMenuViewItemsTmp = new ContextMenuViewItems({items: item });
+					 contextMenuViewGroupsElement.append(contextMenuViewItemsTmp.render().el.childNodes);
 			    });
 				 				 
 		        return this;
@@ -128,39 +98,33 @@ define(function(require) {
 		});
 		
 		GEPPETTO.ContextMenuView = Backbone.View.extend({
-
 	        className: 'contextMenuView',
 	        template: _.template($('#tplContextMenu').html()),
 	        parentSelector: 'body',
-	
 			events : {
 				'click li' : 'manageMenuClickEvent'
 			},
-
 			manageMenuClickEvent: function(event){
-				console.log(this); 
-				console.log(event);
-				console.log($(event.target));
-				
+				//TODO: Check if this can be done through and event in the menu view items
 				var itemId = $(event.target).data('id');
-				
 				var registeredItem = this.registeredItems[itemId];
-				registeredItem(this.data);
+				
+				var entire = registeredItem.toString();
+				var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
+				GEPPETTO.Console.executeCommand("var node = " + JSON.stringify(this.data));
+				GEPPETTO.Console.executeCommand(body);
 			},
 	        
 	        render: function () {
 	        	this.$el.html(this.template());	            
-
 	            
-	        	var elementBb = this.$el;
-	        	
+	        	var contextMenuViewElement = this.$el;
 	        	this.model.get("groups").each(
-	    			function( model ){
-	    			      var view = new ContextMenuViewGroups({ model: model });
-	    			      elementBb.append( view.render().el.childNodes );
+	    			function(model){
+	    			      var contextMenuViewGroupsTmp = new ContextMenuViewGroups({ model: model });
+	    			      contextMenuViewElement.append(contextMenuViewGroupsTmp.render().el.childNodes);
 	    			    }
 	        	);
-	        	
 	            
 	            //  Prevent display outside viewport.
 	            var offsetTop = this.top;
@@ -180,13 +144,10 @@ define(function(require) {
 	                top: this.top,
 	                left: this.left
 	            });
-	            
 	
 	            return this;
 	        },
-	
 	        initialize: function () {
-	            //  TODO: If I implement Backbone View's more properly, then 'body' should be responsible for this, but for now this is fine.
 	            this.$el.appendTo(this.parentSelector);
 	            
 	            var self = this;

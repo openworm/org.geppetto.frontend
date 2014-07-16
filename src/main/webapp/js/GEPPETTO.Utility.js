@@ -198,11 +198,7 @@ define(function(require) {
 			 * @returns
 			 */
 			updateCommands: function(scriptLocation, object, id) {
-				var nonCommands = ["initialize()", "constructor()", "render()", "bind(a,b,c)", "unbind(a,b)", "trigger(a)",
-					"$(a)", "make(a)", "remove()", "delegateEvents(a)", "_configure(a)", "_ensureElement()", "off(t,e,r)",
-					"on(t,e,i)", "once(t,e,r)", "listenTo(e,r,s)", "listenToOnce(e,r,s)", "stopListening(t,e,r)",
-					"trigger(t)", "unbind(t,e,r)", "$(t)", "bind(t,e,i)", "setElement(t,i)", "delegateEvents(t)",
-					"undelegateEvents()"];
+				var nonCommands = ["constructor()", "initialize(options)"];
 
 				var descriptions = [];
 
@@ -223,10 +219,14 @@ define(function(require) {
 
 				var tagsCount = tags.length;
 
+				var proto = object.__proto__;
 				//	find all functions of object Simulation
-				for(var prop in object) {
-					if(typeof object[prop] === "function") {
-						var f = object[prop].toString();
+				for(var prop in proto) {
+					if(typeof proto[prop] === "n") {
+						alert("Object yo");
+					}
+					if(typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
+						var f = proto[prop].toString();
 						//get the argument for this function
 						var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
 

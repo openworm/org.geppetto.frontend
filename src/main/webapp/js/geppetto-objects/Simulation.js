@@ -59,6 +59,8 @@ define(function(require) {
 			simState : null,
 			loading : false,
 			loadingTimer : null,
+			entities : {},
+			
 			StatusEnum: {
 				INIT: 0,
 				LOADED: 1,
@@ -409,6 +411,20 @@ define(function(require) {
 				GEPPETTO.selectEntity(name);
 				
 				return GEPPETTO.Resources.SELECTING_ENTITY + name;
+			},
+			
+			getEntities : function(){
+				var output="";
+
+				for(var e in this.entities){
+					output = output + this.entities[e].getId() + "\n";
+				}
+
+				return this.entities;
+			},
+			
+			addEntity : function(name,entity){
+				this.entities[name] = entity;
 			},
 			
 			/**

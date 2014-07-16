@@ -79,7 +79,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 				_user.setIsSimulationLoaded(true);
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
 				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{ "+ sceneUpdate + "}";
+				update = "{"+ sceneUpdate + "}";
 
 				break;
 			}

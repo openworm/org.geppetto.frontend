@@ -898,6 +898,7 @@ define(function(require)
 	require('GEPPETTO.Main')(GEPPETTO);
 	require('GEPPETTO.Tutorial')(GEPPETTO);
 	require("widgets/includeWidget")(GEPPETTO);
+	require('nodes/NodeFactory')(GEPPETTO);
 
 	return GEPPETTO;
 

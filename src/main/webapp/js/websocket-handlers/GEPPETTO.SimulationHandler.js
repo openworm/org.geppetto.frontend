@@ -71,12 +71,14 @@ define(function(require) {
 
         messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
             GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
-            var entities = JSON.parse(payload.update).entities;
+            var scene = JSON.parse(payload.update).scene;
 
+            GEPPETTO.NodeFactory.createNodes(scene);
+            
             GEPPETTO.Simulation.setSimulationLoaded();
 
             //Populate scene
-            GEPPETTO.populateScene(entities);
+            GEPPETTO.populateScene(Simulation.getEntities());
 
             if(GEPPETTO.Tutorial.isTutorialOn()){
                 GEPPETTO.Tutorial.startPopover();
@@ -165,7 +167,7 @@ define(function(require) {
             var queuePosition = simulatorInfo.queuePosition;
             GEPPETTO.FE.disableSimulationControls();
             GEPPETTO.FE.fullSimulatorNotification(simulatorName, queuePosition);
-        }
+        };
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {
             //variables watching

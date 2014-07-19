@@ -37,30 +37,25 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Node.Model.extend({
+		id:"",
+		modelInterpreter : "",
+		simulator : "",
+		model : "",
 		relations:[
 		           {
 		        	   type:Backbone.Many,
 		        	   key:'aspectSubTrees',
 		        	   relatedModel:AspectSubTreeNode,
 		           },
-		           {
-		        	   type: Backbone.Many,
-		        	   key: 'children',
-		        	   relatedModel: Backbone.Self
-		           }
 		           ],
 		           defaults : {
 		        	   aspectSubTrees : [],
-		        	   id:"",
-		        	   modelInterpreter : "",
-		        	   simulator : "",
-		        	   model : ""
 		           },
 		           initialize : function(options){
-		        	   this.defaults.id = options.id;
-		        	   this.defaults.modelInterpreter = options.modelInterpreter;
-		        	   this.defaults.simulator = options.simulator;
-		        	   this.defaults.model = options.model;
+		        	   this.id = options.id;
+		        	   this.modelInterpreter = options.modelInterpreter;
+		        	   this.simulator = options.simulator;
+		        	   this.model = options.model;
 		           },
 
 

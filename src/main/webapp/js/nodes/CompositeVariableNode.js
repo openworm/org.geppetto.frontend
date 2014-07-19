@@ -38,43 +38,17 @@ define(function(require) {
 	return Node.Model.extend({
 		relations:[
 		           {
-		        	   type:Backbone.Many,
-		        	   key:'aspects',
-		        	   relatedModel:AspectNode,
-		           },
-		           {
 		        	   type: Backbone.Many,
-		        	   key: 'entities',
-		        	   relatedModel: Backbone.Self
+		        	   key: 'children',
+		        	   relatedModel: Node
 		           }
 		           ],
-
 		           defaults : {
-		        	   aspects : [],
-		        	   entities : [],
-		        	   id : "",
+		        	   children : []
 		           },
-
+		           id : "",
 		           initialize : function(options){
-		        	   this.defaults.id = options.id;
-		           },
-
-		           /**
-		            * Hides the entity
-		            *
-		            * @name EntityNode.hide()
-		            *
-		            */
-		           hide : function(){
-		           },
-
-		           /**
-		            * Shows the entity
-		            *
-		            * @name EntityNode.show()
-		            *
-		            */
-		           show : function(){
+		        	   this.id = options.id;
 		           },
 
 
@@ -99,19 +73,6 @@ define(function(require) {
 		           getAspects : function(){
 		        	   var aspects = this.get("aspects");
 		        	   return aspects;
-		           },
-		           
-		           /**
-		            * Get this entity's children entities
-		            * 
-		            * @name EntityNode.getEntities()
-		            * 
-		            * @returns {List<Aspect>} - List of aspects
-		            *
-		            */
-		           getEntities : function(){
-		        	   var entities = this.get("entities");
-		        	   return entities;
 		           }
 	});
 });

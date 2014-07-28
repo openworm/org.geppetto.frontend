@@ -38,7 +38,6 @@ define(function(require) {
 	return Node.Model.extend({
 		type:"",
 		content : "",
-		
 		initialize : function(options){
 			this.type = options.type;
 			this.content = options.content;

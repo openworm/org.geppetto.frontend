@@ -41,6 +41,7 @@ define(function(require) {
 		modelInterpreter : "",
 		simulator : "",
 		model : "",
+		instancePath : "",
 		relations:[
 		           {
 		        	   type:Backbone.Many,
@@ -56,6 +57,7 @@ define(function(require) {
 		        	   this.modelInterpreter = options.modelInterpreter;
 		        	   this.simulator = options.simulator;
 		        	   this.model = options.model;
+		        	   this.instancePath = options.instancePath;
 		           },
 
 
@@ -109,31 +111,50 @@ define(function(require) {
 		            *
 		            * @name AspectNode.getModel()
 		            */
-		           getSubTrees : function(){
-		        	   return this.get("aspectSubTrees");
-		           },
-		           
-		           /**
-		            * Get model URL associated with the aspect
-		            *
-		            * @name AspectNode.getModel()
-		            */
 		           getModel : function(){
 		        	   return this.defaults.model;
 		           },
-		           
+
 		           /**
-		            * Get subtree type
+		            * Get visualization tree for aspect
 		            * 
-		            * @name AspectNode.getSubTree(type)
+		            * @name AspectNode.getVisualizationTree()
 		            */
-		           getSubTree : function(type){
+		           getVisualizationTree : function(){
 		        	   var subtrees = this.get("aspectSubTrees");
 		        	   for(var s=0; s<subtrees.length; s++){
-		        		   if(subtrees.at(s).type == type){
+		        		   if(subtrees.at(s).type == "VisualizationTree"){
 		        			   return subtrees.at(s);
 		        		   }
 		        	   }	        	   
-		           }
+		           },
+
+		           /**
+		            * Get model tree for aspect
+		            * 
+		            * @name AspectNode.getModelTree()
+		            */
+		           getModelTree : function(){
+		        	   var subtrees = this.get("aspectSubTrees");
+		        	   for(var s=0; s<subtrees.length; s++){
+		        		   if(subtrees.at(s).type == "ModelTree"){
+		        			   return subtrees.at(s);
+		        		   }
+		        	   }	        	   
+		           },
+
+		           /**
+		            * Get simulation watch tree for aspect
+		            * 
+		            * @name AspectNode.getSimulationTree()
+		            */
+		           getSimulationTree : function(){
+		        	   var subtrees = this.get("aspectSubTrees");
+		        	   for(var s=0; s<subtrees.length; s++){
+		        		   if(subtrees.at(s).type == "SimulationTree"){
+		        			   return subtrees.at(s);
+		        		   }
+		        	   }	        	   
+		           },
 	});
 });

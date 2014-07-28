@@ -99,6 +99,49 @@ define(function(require) {
 
 		});
 
+		module("Simulation - JLems Runtime Tree");
+		asyncTest("Test Runtime Tree at Start", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var handler = {
+				onMessage: function(parsedServerMessage) {
+					// Switch based on parsed incoming message type
+					switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var payload = JSON.stringify(parsedServerMessage);
+							var scene = JSON.parse(payload.update).scene;
+							var entities, aspects, subtrees = 0;
+							
+							for(var e in scene){
+								if(scene[e]._metaType == "EntityNode"){
+									entities++;
+									var entity = scene[e];
+									for(var a in entity){
+										if(entity[a]._metaType == "AspectNode"){
+											aspects++;
+											var aspect = entity[a];
+											for(var as in aspect){
+												if(aspect[as]._metaType == "AspectSubTreeNode"){
+													subtrees++;
+												}
+											}
+										}
+									}
+								}
+							}
+							
+							ok(1, entities, "Entities, matched");
+							ok(1, aspects, "Entities, matched");
+							ok(3, subtrees, "Entities, matched");
+							break;
+					}
+				}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml');
+		});
+		
 		module("Simulation with Scripts");
 		asyncTest("Test Simulation with Script", function() {
 			GEPPETTO.MessageSocket.clearHandlers();

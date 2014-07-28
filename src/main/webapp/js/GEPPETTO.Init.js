@@ -124,7 +124,7 @@ define(function(require) {
 					if ( intersects.length > 0 ) {
 						GEPPETTO.unselectEntity();
 						VARS.selected[0] = intersects[ 0 ].object;
-						GEPPETTO.Console.executeCommand('Simulation.selectEntity("'+ VARS.selected[0].name + '")' );
+						GEPPETTO.Console.executeCommand(VARS.selected[0].name + '.select()' );
 					}else{
 						GEPPETTO.unselectEntity();
 					}

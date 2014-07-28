@@ -44,15 +44,53 @@ define(function(require) {
 							var entityNode = 
 								GEPPETTO.NodeFactory.createEntityNode(name,node);
 							
-							GEPPETTO.Simulation.addEntity(name, entityNode);
+							GEPPETTO.Simulation.entities[name]= entityNode;
+						}
+					}
+
+				},
+				
+				updateEntityNodes : function(scene){
+					for (var name in scene) {
+						var node = scene[name];
+						if(node._metaType == "EntityNode"){
+							for(var index in GEPPETTO.Simulation.entities){
+								if(name == index){
+									var entityNode = 
+										GEPPETTO.Simulation.entities[index];
+									
+									for (var a in node) {
+										var nodeA = node[a];
+										if(nodeA._metaType == "AspectNode"){
+											for (var aspect in entityNode.aspects) {
+												if(entityNode.aspects[aspect].id == nodeA.id){
+													var subtrees = entityNode.aspects[aspect].get("aspectSubTrees");
+										        	   for(var s=0; s<subtrees.length; s++){
+										        		   if(subtrees.at(s).type == "ModelTree"){
+										        			   entityNode.aspects[aspect].get("aspectSubTrees").at(s).set('content',nodeA.ModelTree);
+										        		   }
+										        		   else if(subtrees.at(s).type == "VisualizationTree"){
+										        			   entityNode.aspects[aspect].get("aspectSubTrees").at(s).set('content',nodeA.VisualizationTree);
+										        		   }
+										        		   else if(subtrees.at(s).type == "SimulationTree"){
+										        			   entityNode.aspects[aspect].get("aspectSubTrees").at(s).set('content',nodeA.SimulationTree);
+										        		   }
+										        	   }	  
+												}
+											}
+										}
+									}
+							
+								}
+							}
 						}
 					}
 
 				},
 				
 				createEntityNode : function(name,entity){
-					var id = entity.id;
-					var e = window[name] = new EntityNode({id:id});
+					var e = window[name] = new EntityNode(
+							{id:entity.id, instancePath : entity.instancePath,position : entity.position});
 					//add commands to console autocomplete and help option
 					GEPPETTO.Utility.updateCommands("js/nodes/EntityNode.js", e, name);
 					
@@ -70,12 +108,12 @@ define(function(require) {
 				},
 				
 				createAspectNode : function(name,aspect){
+					var instancePath = aspect.instancePath;
 					var a = window[name] = new AspectNode(
-							{id: aspect.id,modelInterpreter: aspect.modelInterpreter,simulator: aspect.simulator,model : aspect.model});
-
-					//add commands to console autocomplete and help option
-					GEPPETTO.Utility.updateCommands("js/nodes/AspectNode.js", a, name);
-				
+							{id: aspect.id,modelInterpreter: aspect.modelInterpreter,
+								simulator: aspect.simulator,model : aspect.model,
+								instancePath : instancePath});
+									
 					for (var aspectKey in aspect) {
 						var node = aspect[aspectKey];
 						if(node._metaType == "AspectSubTreeNode"){
@@ -92,9 +130,6 @@ define(function(require) {
 				createAspectSubTreeNode : function(name,aspectSubTree){
 					var a = window[name] = new AspectSubTreeNode(
 							{type: aspectSubTree.type,content: aspectSubTree});
-
-					//add commands to console autocomplete and help option
-					GEPPETTO.Utility.updateCommands("js/nodes/AspectSubTreeNode.js", a, name);
 				
 					return a;
 				}

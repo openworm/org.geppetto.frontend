@@ -52,11 +52,19 @@ define(function(require) {
 		           defaults : {
 		        	   aspects : [],
 		        	   entities : [],
-		        	   id : "",
 		           },
+		           
+		           aspects : [],
+		           entities : [],
+		           position : null,
+		           id : "",
+		           isntancePath : "",
 
 		           initialize : function(options){
-		        	   this.defaults.id = options.id;
+		        	   this.id = options.id;
+		        	   this.position = options.position;
+		        	   this.instancePath = options.instancePath;
+		        	   this.aspects = this.get("aspects").models;
 		           },
 
 		           /**
@@ -66,6 +74,15 @@ define(function(require) {
 		            *
 		            */
 		           hide : function(){
+		        	   var message; 
+		        	   
+		        	   if(GEPPETTO.hideEntity(this.id)){
+		        		   message = GEPPETTO.Resources.HIDE_ENTITY;
+		        	   }
+		        	   else{
+		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
+		        	   }	
+					   return message;
 		           },
 
 		           /**
@@ -75,17 +92,76 @@ define(function(require) {
 		            *
 		            */
 		           show : function(){
+		        	   var message; 
+		        	   
+		        	   if(GEPPETTO.showEntity(this.id)){
+		        		   message = GEPPETTO.Resources.SHOW_ENTITY;
+		        	   }
+		        	   else{
+		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
+		        	   }	
+					   return message;
+		        	   						
+		           },
+		           
+		           /**
+		            * Unselects the entity
+		            *
+		            * @name EntityNode.unselect()
+		            *
+		            */
+		           unselect : function(){
+		        	   var message; 
+		        	   
+		        	   if(GEPPETTO.unselectEntity(this.id)){
+		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY;
+		        	   }
+		        	   else{
+		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
+		        	   }	
+					   return message;
 		           },
 
-
 		           /**
-		            * Get the model interpreter associated with entity
+		            * Selects the entity
+		            *
+		            * @name EntityNode.unselect()
+		            *
+		            */
+				   select : function(){
+						
+					   var message; 
+		        	   
+		        	   if(GEPPETTO.selectEntity(this.id)){
+		        		   message = GEPPETTO.Resources.SELECTING_ENTITY;
+		        	   }
+		        	   else{
+		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
+		        	   }	
+					   return message;
+					},
+					
+					/**
+			            * Zooms to entity
+			            *
+			            * @name EntityNode.zoomTo()
+			            *
+			            */
+					zoomTo : function(){
+						
+						GEPPETTO.zoomToEntity(this.id);
+						
+						return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.id;
+					},
+					
+		           /**
+		            * Get the id associated with entity
 		            *
 		            * @name EntityNode.getId()
 		            * @returns {String} - ID of entity
 		            */
 		           getId : function(){
-		        	   return this.defaults.id;
+		        	   return this.id;
 		           },
 
 		           /**
@@ -97,8 +173,19 @@ define(function(require) {
 		            *
 		            */
 		           getAspects : function(){
-		        	   var aspects = this.get("aspects");
-		        	   return aspects;
+		        	   var formattedOutput="";
+						var indentation = "↪";
+						for(var a in this.aspects){
+							var aspect = this.aspects[a];
+							formattedOutput = formattedOutput+indentation + aspect.id + " [Aspect]\n";
+							indentation = "      " + indentation;
+						}
+						
+						if(formattedOutput.lastIndexOf("\n")>0) {
+							formattedOutput = formattedOutput.substring(0, formattedOutput.lastIndexOf("\n"));
+						} 
+						
+						return formattedOutput.replace(/"/g, "");
 		           },
 		           
 		           /**
@@ -112,6 +199,6 @@ define(function(require) {
 		           getEntities : function(){
 		        	   var entities = this.get("entities");
 		        	   return entities;
-		           }
+		           },
 	});
 });

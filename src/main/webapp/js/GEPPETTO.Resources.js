@@ -220,9 +220,17 @@ define(function(require) {
 			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
 					" Okay and enjoy the show!",
 					
-			SELECTING_ENTITY : "Selecting entity ",
+			SELECTING_ENTITY : "Selecting entity.",
+			UNSELECTING_ENTITY : "Unselecting entity.",
+			SHOW_ENTITY : "Showing entity.",
+			ENTITY_ALREADY_VISIBLE : "Entity already visible.",
+			HIDE_ENTITY : "Hiding entity.",
+			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
+			ZOOM_TO_ENTITY : "Zooming to entity.",
 			
-			ENTITY_ALREADY_SELECTED : "Entity Already Selected",
+			ENTITY_ALREADY_SELECTED : "Entity already selected",
+			
+			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
 
 			/**
 			 * GEPPETTO resources

@@ -59,7 +59,7 @@ define(function(require) {
 			simState : null,
 			loading : false,
 			loadingTimer : null,
-			entities : {},
+			entities : [],
 			
 			StatusEnum: {
 				INIT: 0,
@@ -154,6 +154,10 @@ define(function(require) {
 					this.stop();
 				}
 
+				for(var e in this.entities){
+					GEPPETTO.Utility.removeTags(e);
+				}
+				this.entities = [];
 				this.simulationURL = simulationURL;
 				this.listeners=[];
 				var loadStatus = GEPPETTO.Resources.LOADING_SIMULATION;
@@ -204,6 +208,11 @@ define(function(require) {
 				if(this.status == this.StatusEnum.STARTED || this.status == this.StatusEnum.PAUSED) {
 					this.stop();
 				}
+				
+				for(var e in this.entities){
+					GEPPETTO.Utility.removeTags(e);
+				}
+				this.entities = [];
 				this.listeners=[];
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 				//update ui based on success of webgl
@@ -405,54 +414,61 @@ define(function(require) {
 				window.clearInterval(this.loadTimer);
 				this.loadTimer = 0;
 			},
-
-			selectEntity : function(name){
-				
-				GEPPETTO.selectEntity(name);
-				
-				return GEPPETTO.Resources.SELECTING_ENTITY + name;
-			},
 			
 			getEntities : function(){
-				var output="";
-
+				var formattedOutput="";
+				var indentation = "↪";
 				for(var e in this.entities){
-					output = output + this.entities[e].getId() + "\n";
+					var entity = this.entities[e];
+					formattedOutput = formattedOutput+indentation + entity.id + " [Entity]\n";
+					for(var a in entity.aspects){
+						var aspect = entity.aspects[a];
+						var aspectIndentation = "         ↪";
+						formattedOutput = formattedOutput+ aspectIndentation + aspect.id +  " [Aspect]\n";
+					}
+					indentation = "      ↪";
 				}
-
-				return this.entities;
-			},
-			
-			addEntity : function(name,entity){
-				this.entities[name] = entity;
+				
+				if(formattedOutput.lastIndexOf("\n")>0) {
+					formattedOutput = formattedOutput.substring(0, formattedOutput.lastIndexOf("\n"));
+				} 
+				
+				return formattedOutput.replace(/"/g, "");
 			},
 			
 			/**
 			 * Updates the simulation states with new watched variables
 			 */
-			updateSimulationWatchTree: function(watchTree) {
-				if(!watchTree) {
+			updateSimulationWatchTree: function(scene) {
+				if(!scene) {
 					return;
 				}
 
-				GEPPETTO.Simulation.watchTree = watchTree;
-
-				//Create window objects for variables
-				for(var child in GEPPETTO.Simulation.watchTree) {
-					window[child]= GEPPETTO.Simulation.watchTree[child];
-				}
-
-				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
-				
-				//update scene brightness
-				for(var key in this.listeners) {
-					//retrieve the simulate state from watch tree
-					var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, key);
+				for(var e in scene){
+					var entity = scene[e];
 					
-					//update simulation state
-					this.listeners[key](simState);
+					for(var a in aspect){
+						var aspect = aspect[a];
+						
+						GEPPETTO.Simulation.watchTree = aspect.getSimulationTree();
+
+						//Create window objects for variables
+						for(var child in GEPPETTO.Simulation.watchTree) {
+							window[child]= GEPPETTO.Simulation.watchTree[child];
+						}
+
+						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
+
+						//update scene brightness
+						for(var key in this.listeners) {
+							//retrieve the simulate state from watch tree
+							var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, key);
+
+							//update simulation state
+							this.listeners[key](simState);
+						}
+					}
 				}
-				
 			},
 
 			/**

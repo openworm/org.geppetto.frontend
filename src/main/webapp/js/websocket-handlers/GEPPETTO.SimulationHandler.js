@@ -78,7 +78,7 @@ define(function(require) {
             GEPPETTO.Simulation.setSimulationLoaded();
 
             //Populate scene
-            GEPPETTO.populateScene(Simulation.getEntities());
+            GEPPETTO.populateScene(GEPPETTO.Simulation.entities);
 
             if(GEPPETTO.Tutorial.isTutorialOn()){
                 GEPPETTO.Tutorial.startPopover();
@@ -86,19 +86,22 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
-            var update = JSON.parse(payload.update);
-            GEPPETTO.Simulation.updateSimulationWatchTree(update.variable_watch);
-            updateTime(update.time);
+            var updateScene = JSON.parse(payload.update).scene;
+            updateTime(updateScene.time);
+
+            GEPPETTO.NodeFactory.updateEntityNodes(updateScene);
+
+            GEPPETTO.Simulation.updateSimulationWatchTree(GEPPETTO.Simulation.entities);
 
             //Update if simulation hasn't been stopped
             if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
                 if(!GEPPETTO.isScenePopulated()) {
                     // the first time we need to create the objects
-                    GEPPETTO.populateScene(update.entities);
+                    GEPPETTO.populateScene(GEPPETTO.Simulation.entities);
                 }
                 else {
                     // any other time we just update them
-                    GEPPETTO.updateJSONScene(update.entities);
+                    GEPPETTO.updateJSONScene(GEPPETTO.Simulation.entities);
                 }
             }
         };

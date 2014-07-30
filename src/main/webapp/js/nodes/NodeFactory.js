@@ -32,7 +32,6 @@
  *******************************************************************************/
 define(function(require) {
 	return function(GEPPETTO) {
-		var AspectSubTreeNode = require('nodes/AspectSubTreeNode');
 		var AspectNode = require('nodes/AspectNode');
 		var EntityNode = require('nodes/EntityNode');
 
@@ -62,20 +61,11 @@ define(function(require) {
 									for (var a in node) {
 										var nodeA = node[a];
 										if(nodeA._metaType == "AspectNode"){
-											for (var aspect in entityNode.aspects) {
-												if(entityNode.aspects[aspect].id == nodeA.id){
-													var subtrees = entityNode.aspects[aspect].get("aspectSubTrees");
-										        	   for(var s=0; s<subtrees.length; s++){
-										        		   if(subtrees.at(s).type == "ModelTree"){
-										        			   entityNode.aspects[aspect].get("aspectSubTrees").at(s).set('content',nodeA.ModelTree);
-										        		   }
-										        		   else if(subtrees.at(s).type == "VisualizationTree"){
-										        			   entityNode.aspects[aspect].get("aspectSubTrees").at(s).set('content',nodeA.VisualizationTree);
-										        		   }
-										        		   else if(subtrees.at(s).type == "SimulationTree"){
-										        			   entityNode.aspects[aspect].get("aspectSubTrees").at(s).set('content',nodeA.SimulationTree);
-										        		   }
-										        	   }	  
+											for (var aspectKey in entityNode.aspects) {
+												var aspect = entityNode.aspects[aspectKey];
+												if(aspect.instancePath == nodeA.instancePath){
+													aspect.VisualizationTree = nodeA.VisualizationTree;
+													aspect.SimulationTree = nodeA.SimulationTree;	
 												}
 											}
 										}
@@ -100,6 +90,7 @@ define(function(require) {
 							var aspectNode = 
 								GEPPETTO.NodeFactory.createAspectNode(name, node);
 							
+							e[name] =aspectNode;
 							e.get("aspects").add(aspectNode);
 						}
 					}
@@ -117,22 +108,18 @@ define(function(require) {
 					for (var aspectKey in aspect) {
 						var node = aspect[aspectKey];
 						if(node._metaType == "AspectSubTreeNode"){
-							var aspectSubTreeNode = 
-								GEPPETTO.NodeFactory.createAspectSubTreeNode(aspectKey, node);
-							
-							a.get("aspectSubTrees").add(aspectSubTreeNode);
+							if(node.type == "ModelTree"){
+								a.ModelTree = node;
+							}else if(node.type == "VisualizationTree"){
+								a.VisualizationTree = node;
+							}else if(node.type == "SimulationTree"){
+								a.SimulationTree = node;
+							}		
 						}
 					}
 					
 					return a;
 				},
-				
-				createAspectSubTreeNode : function(name,aspectSubTree){
-					var a = window[name] = new AspectSubTreeNode(
-							{type: aspectSubTree.type,content: aspectSubTree});
-				
-					return a;
-				}
 		}
 	}
 });

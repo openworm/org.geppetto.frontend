@@ -59,12 +59,15 @@ define(function(require) {
 		           position : null,
 		           id : "",
 		           isntancePath : "",
-
+		           selected : false,
+		           visible : true,
 		           initialize : function(options){
 		        	   this.id = options.id;
 		        	   this.position = options.position;
 		        	   this.instancePath = options.instancePath;
 		        	   this.aspects = this.get("aspects").models;
+		        	   this.selected = options.selected;
+		        	   this.visible = options.visible;
 		           },
 
 		           /**
@@ -81,7 +84,9 @@ define(function(require) {
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
-		        	   }	
+		        	   }
+		        	   this.visible = false;
+		        	   
 					   return message;
 		           },
 
@@ -99,7 +104,9 @@ define(function(require) {
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
-		        	   }	
+		        	   }
+		        	   this.visible = true;
+		        	   
 					   return message;
 		        	   						
 		           },
@@ -118,7 +125,9 @@ define(function(require) {
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
-		        	   }	
+		        	   }
+		        	   this.selected = false;
+		        	   
 					   return message;
 		           },
 
@@ -137,7 +146,9 @@ define(function(require) {
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
-		        	   }	
+		        	   }
+		        	   this.selected = true;
+		        	   
 					   return message;
 					},
 					

@@ -33,7 +33,6 @@
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var AspectSubTreeNode = require('nodes/AspectSubTreeNode');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
@@ -42,119 +41,97 @@ define(function(require) {
 		simulator : "",
 		model : "",
 		instancePath : "",
-		relations:[
-		           {
-		        	   type:Backbone.Many,
-		        	   key:'aspectSubTrees',
-		        	   relatedModel:AspectSubTreeNode,
-		           },
-		           ],
-		           defaults : {
-		        	   aspectSubTrees : [],
-		           },
-		           initialize : function(options){
-		        	   this.id = options.id;
-		        	   this.modelInterpreter = options.modelInterpreter;
-		        	   this.simulator = options.simulator;
-		        	   this.model = options.model;
-		        	   this.instancePath = options.instancePath;
-		           },
+		ModelTree : {},
+		VisualizationTree : {},
+		SimulationTree : {},
+		initialize : function(options){
+			this.id = options.id;
+			this.modelInterpreter = options.modelInterpreter;
+			this.simulator = options.simulator;
+			this.model = options.model;
+			this.instancePath = options.instancePath;
+		},
 
 
-		           /**
-		            * Hides the aspect
-		            *
-		            * @name AspectNode.hide()
-		            */
-		           hide : function(){
+		/**
+		 * Hides the aspect
+		 *
+		 * @name AspectNode.hide()
+		 */
+		 hide : function(){
 
-		           },
+		 },
 
-		           /**
-		            * Shows the aspect
-		            *
-		            * @name AspectNode.show()
-		            */
-		           show : function(){
+		 /**
+		  * Shows the aspect
+		  *
+		  * @name AspectNode.show()
+		  */
+		 show : function(){
 
-		           },
+		 },
 
-		           /**
-		            * Get the model interpreter associated with aspect
-		            *
-		            * @name AspectNode.getId()
-		            */
-		           getId : function(){
-		        	   return this.defaults.id;
-		           },
+		 /**
+		  * Get the model interpreter associated with aspect
+		  *
+		  * @name AspectNode.getId()
+		  */
+		 getId : function(){
+			 return this.defaults.id;
+		 },
 
-		           /**
-		            * Get the model interpreter associated with aspect
-		            *
-		            * @name AspectNode.getModelInterpreter()
-		            */
-		           getModelInterpreter : function(){
-		        	   return this.defaults.modelInterpreter;
-		           },
+		 /**
+		  * Get the model interpreter associated with aspect
+		  *
+		  * @name AspectNode.getModelInterpreter()
+		  */
+		 getModelInterpreter : function(){
+			 return this.defaults.modelInterpreter;
+		 },
 
-		           /**
-		            * Get the simulator interpreter associated with aspect
-		            *
-		            * @name AspectNode.getSimulator()
-		            */
-		           getSimulator : function(){
-		        	   return this.defaults.simulator;
-		           },
+		 /**
+		  * Get the simulator interpreter associated with aspect
+		  *
+		  * @name AspectNode.getSimulator()
+		  */
+		 getSimulator : function(){
+			 return this.defaults.simulator;
+		 },
 
-		           /**
-		            * Get model URL associated with the aspect
-		            *
-		            * @name AspectNode.getModel()
-		            */
-		           getModel : function(){
-		        	   return this.defaults.model;
-		           },
+		 /**
+		  * Get model URL associated with the aspect
+		  *
+		  * @name AspectNode.getModel()
+		  */
+		 getModel : function(){
+			 return this.defaults.model;
+		 },
 
-		           /**
-		            * Get visualization tree for aspect
-		            * 
-		            * @name AspectNode.getVisualizationTree()
-		            */
-		           getVisualizationTree : function(){
-		        	   var subtrees = this.get("aspectSubTrees");
-		        	   for(var s=0; s<subtrees.length; s++){
-		        		   if(subtrees.at(s).type == "VisualizationTree"){
-		        			   return subtrees.at(s);
-		        		   }
-		        	   }	        	   
-		           },
+		 /**
+		  * Get visualization tree for aspect
+		  * 
+		  * @name AspectNode.getVisualizationTree()
+		  */
+		 getVisualizationTree : function(){
+			 return this.VisualizationTree;	        	   
+		 },
 
-		           /**
-		            * Get model tree for aspect
-		            * 
-		            * @name AspectNode.getModelTree()
-		            */
-		           getModelTree : function(){
-		        	   var subtrees = this.get("aspectSubTrees");
-		        	   for(var s=0; s<subtrees.length; s++){
-		        		   if(subtrees.at(s).type == "ModelTree"){
-		        			   return subtrees.at(s);
-		        		   }
-		        	   }	        	   
-		           },
+		 /**
+		  * Get model tree for aspect
+		  * 
+		  * @name AspectNode.getModelTree()
+		  */
+		 getModelTree : function(){
+			 return this.ModelTree;	        	   
+		 },
 
-		           /**
-		            * Get simulation watch tree for aspect
-		            * 
-		            * @name AspectNode.getSimulationTree()
-		            */
-		           getSimulationTree : function(){
-		        	   var subtrees = this.get("aspectSubTrees");
-		        	   for(var s=0; s<subtrees.length; s++){
-		        		   if(subtrees.at(s).type == "SimulationTree"){
-		        			   return subtrees.at(s);
-		        		   }
-		        	   }	        	   
-		           },
+		 /**
+		  * Get simulation watch tree for aspect
+		  * 
+		  * @name AspectNode.getSimulationTree()
+		  */
+		 getSimulationTree : function(){
+			 return this.SimulationTree;       	   
+		 },
 	});
 });

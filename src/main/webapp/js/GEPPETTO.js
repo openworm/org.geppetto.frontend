@@ -86,7 +86,7 @@ define(function(require)
 					for ( var a in entity.aspects)
 					{
 						var aspect = entity.aspects[a];
-						var visualTree = aspect.getVisualizationTree().content;
+						var visualTree = aspect.getVisualizationTree();
 						for ( var vm in visualTree)
 						{
 							var visualGroup = visualTree[vm];
@@ -249,16 +249,17 @@ define(function(require)
 			for ( var a in aspects)
 			{
 				var aspect = aspects[a];
-				var meshes = GEPPETTO.getThreeObjectFromVisualizationTree(aspect.getVisualizationTree().content, aspect.instancePath, true,material);
+				var meshes = GEPPETTO.getThreeObjectFromVisualizationTree(aspect.getVisualizationTree(), aspect.instancePath, true,material);
 				for(var m in meshes)
 				{
 					var mesh=meshes[m];
+					mesh.name = jsonEntity.id;
 					VARS.scene.add(mesh);
 					if(position!=null){
 						mesh.position = new THREE.Vector3(position.x, position.y, position.z);
-						mesh.name = jsonEntity.id;
-						VARS.entities[mesh.name] = mesh;
 					}
+					VARS.entities[mesh.name] = mesh;
+					VARS.entities[mesh.name].visible = true;
 				}
 			}
 			for ( var c in children)
@@ -891,8 +892,15 @@ define(function(require)
 		selectEntity : function(name){
 			for(var v in VARS.entities){
 				if(v == name){
-					VARS.selected[0] = VARS.entities[v];
+					for(var s in VARS.selected){
+						if(VARS.selected[s].name == v){
+							return false;
+						}
+					}
+					var index = VARS.selected.length;
+					VARS.selected[index] = VARS.entities[v];
 					VARS.entities[v].material.color.setHex(0xFFFF33);
+					VARS.entities[v].selected = true;
 					
 					return true;
 				}
@@ -946,11 +954,14 @@ define(function(require)
 			GEPPETTO.updateCamera();
 		},
 		
-		unselectEntity : function(){
-			if(VARS.selected.length >0 ){
-				VARS.selected[0].material.color.setHex(Math.random() * 0xffffff);
-				VARS.selected.splice(0,1);
-				return true;
+		unselectEntity : function(name){
+			for(var key in VARS.selected){
+				if(VARS.selected[key].name = name){
+					VARS.selected[key].material.color.setHex(Math.random() * 0xffffff);
+					VARS.selected.splice(key,1);
+					VARS.entities[name].selected = false;
+					return true;
+				}
 			}
 			
 			return false;

@@ -447,15 +447,10 @@ define(function(require) {
 				for(var e in scene){
 					var entity = scene[e];
 					
-					for(var a in aspect){
-						var aspect = aspect[a];
+					for(var a in entity.aspects){
+						var aspect =entity.aspects[a];
 						
 						GEPPETTO.Simulation.watchTree = aspect.getSimulationTree();
-
-						//Create window objects for variables
-						for(var child in GEPPETTO.Simulation.watchTree) {
-							window[child]= GEPPETTO.Simulation.watchTree[child];
-						}
 
 						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
 

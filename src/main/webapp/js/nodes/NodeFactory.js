@@ -53,24 +53,21 @@ define(function(require) {
 					for (var name in scene) {
 						var node = scene[name];
 						if(node._metaType == "EntityNode"){
-							for(var index in GEPPETTO.Simulation.entities){
-								if(name == index){
-									var entityNode = 
-										GEPPETTO.Simulation.entities[index];
-									
-									for (var a in node) {
-										var nodeA = node[a];
-										if(nodeA._metaType == "AspectNode"){
-											for (var aspectKey in entityNode.aspects) {
-												var aspect = entityNode.aspects[aspectKey];
-												if(aspect.instancePath == nodeA.instancePath){
-													aspect.VisualizationTree = nodeA.VisualizationTree;
-													aspect.SimulationTree = nodeA.SimulationTree;	
-												}
+							if(GEPPETTO.Simulation.entities.hasOwnProperty(name)){
+								var entityNode = 
+									GEPPETTO.Simulation.entities[name];
+
+								for (var a in node) {
+									var nodeA = node[a];
+									if(nodeA._metaType == "AspectNode"){
+										for (var aspectKey in entityNode.aspects) {
+											var aspect = entityNode.aspects[aspectKey];
+											if(aspect.instancePath == nodeA.instancePath){
+												aspect.VisualizationTree = nodeA.VisualizationTree;
+												aspect.SimulationTree = nodeA.SimulationTree;	
 											}
 										}
 									}
-							
 								}
 							}
 						}

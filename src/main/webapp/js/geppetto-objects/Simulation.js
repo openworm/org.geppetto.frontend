@@ -59,7 +59,7 @@ define(function(require) {
 			simState : null,
 			loading : false,
 			loadingTimer : null,
-			entities : [],
+			entities : {},
 			
 			StatusEnum: {
 				INIT: 0,

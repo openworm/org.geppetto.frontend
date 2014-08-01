@@ -30,12 +30,24 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Factory class that figures out what kind of nodes to create with the updates received 
+ * from the server. Creates the client nodes for entities, aspects, etc and updates them.
+ * 
+ * @author  Jesus R. Martinez (jesus@metacell.us)
+ */
 define(function(require) {
 	return function(GEPPETTO) {
 		var AspectNode = require('nodes/AspectNode');
 		var EntityNode = require('nodes/EntityNode');
-
+		var CompositeVariableNode = require('nodes/CompositeVariableNode');
+		var ParameterNode = require('nodes/ParameterNode');
+		var ParameterSpecificationNode = require('nodes/ParameterSpecificationNode');
+		var DynamicsSpecificationNode = require('nodes/DynamicsSpecificationNode');
+		var FunctionNode = require('nodes/FunctionNode');
+		
 		GEPPETTO.NodeFactory = {
+				/*Creates the nodes for the first time depending on type*/
 				createNodes : function(scene){
 					for (var name in scene) {
 						var node = scene[name];
@@ -49,7 +61,8 @@ define(function(require) {
 
 				},
 				
-				updateEntityNodes : function(scene){
+				/*Update entities of scene with new updates*/
+				updateSceneNodes : function(scene){
 					for (var name in scene) {
 						var node = scene[name];
 						if(node._metaType == "EntityNode"){
@@ -62,6 +75,8 @@ define(function(require) {
 									if(nodeA._metaType == "AspectNode"){
 										for (var aspectKey in entityNode.aspects) {
 											var aspect = entityNode.aspects[aspectKey];
+											//we don't update the model tree, unless it will change 
+											//if/when simulation is running
 											if(aspect.instancePath == nodeA.instancePath){
 												aspect.VisualizationTree = nodeA.VisualizationTree;
 												aspect.SimulationTree = nodeA.SimulationTree;	
@@ -75,6 +90,59 @@ define(function(require) {
 
 				},
 				
+				updateAspectModelTree : function(aspectID, modelTree){
+					var obj= GEPPETTO.Simulation.entities;
+					
+					for (var i=0, path=aspectID.split('.'), len=path.length; i<len; i++){
+				        obj = obj[path[i]];
+				    };
+				    
+				    obj.ModelTree = this.createModelTree({}, modelTree.ModelTree);
+				    
+				    var formattedNode = GEPPETTO.Utility.formatnode(obj.ModelTree, 3, "");
+				    formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
+				    formattedNode.replace(/"/g, "");
+				    
+				    GEPPETTO.Console.log(formattedNode);
+				},
+				
+				createModelTree : function(aspectPath, node){				    
+					// node is always an array of variables
+					for(var i in node) {
+						if(typeof node[i] === "object") {
+							var metatype = node[i]._metaType;
+
+							if(metatype == "CompositeVariableNode"){
+								aspectPath[i]=this.createCompositeVariableNode(i,node[i]);
+								this.createModelTree(aspectPath[i], node[i]);
+							}
+							else if(metatype == "FunctionNode"){
+								var functionNode =  this.createFunctionNode(i,node[i]);
+								aspectPath.get("children").add(functionNode);
+								aspectPath[i] = functionNode;
+							}
+							else if(metatype == "DynamicsSpecificationNode"){
+								var dynamicsSpecificationNode =  this.createDynamicsSpecificationNode(i,node[i]);
+								aspectPath.get("children").add(dynamicsSpecificationNode);
+								aspectPath[i] = dynamicsSpecificationNode;
+							}
+							else if(metatype == "ParameterSpecificationNode"){
+								var parameterSpecificationNode =  this.createParameterSpecificationNode(i,node[i]);
+								aspectPath.get("children").add(parameterSpecificationNode);
+								aspectPath[i] = parameterSpecificationNode;
+							}
+							else if(metatype == "ParameterNode"){
+								var parameterNode =  this.createParameterNode(i,node[i]);
+								aspectPath.get("children").add(parameterNode);
+								aspectPath[i] = parameterNode; 
+							}
+						}
+					}
+					
+					return aspectPath;
+				},
+				
+				/*Create and populate client entity nodes for the first time*/
 				createEntityNode : function(name,entity){
 					var e = window[name] = new EntityNode(
 							{id:entity.id, instancePath : entity.instancePath,position : entity.position});
@@ -95,6 +163,7 @@ define(function(require) {
 					return e;
 				},
 				
+				/*Creates and populates client aspect nodes for first time*/
 				createAspectNode : function(name,aspect){
 					var instancePath = aspect.instancePath;
 					var a = window[name] = new AspectNode(
@@ -105,18 +174,55 @@ define(function(require) {
 					for (var aspectKey in aspect) {
 						var node = aspect[aspectKey];
 						if(node._metaType == "AspectSubTreeNode"){
-							if(node.type == "ModelTree"){
-								a.ModelTree = node;
-							}else if(node.type == "VisualizationTree"){
+							if(node.type == "VisualizationTree"){
 								a.VisualizationTree = node;
-							}else if(node.type == "SimulationTree"){
-								a.SimulationTree = node;
 							}		
 						}
 					}
 					
 					return a;
 				},
-		}
-	}
+				
+				/*Creates and populates client aspect nodes for first time*/
+				createCompositeVariableNode : function(name,node){
+					var a = window[name] = new CompositeVariableNode(
+							{id: name, name : name, _metaType : "CompositeVariableNode"});
+					return a;
+				},
+				
+				/*Creates and populates client aspect nodes for first time*/
+				createFunctionNode : function(name,node){
+					var a = window[name] = new FunctionNode(
+							{name: name, expression : node.expression, arguments : node.arguments,
+								_metaType : "FunctionNode"});
+					return a;
+				},
+				/*Creates and populates client aspect nodes for first time*/
+				createDynamicsSpecificationNode : function(name,node){
+					var a = window[name] = new DynamicsSpecificationNode(
+							{name: name, value : node.value, unit : node.unit, 
+								scalingFactor : node.scalingFactor,_metaType : "DynamicsSpecificationNode"});
+					
+					var f = new FunctionNode(
+							{expression : node.expression, arguments : node.arguments});
+					
+					a.set("dynamics",f);
+					
+					return a;
+				},
+				/*Creates and populates client aspect nodes for first time*/
+				createParameterSpecificationNode : function(name,node){
+					var a = window[name] = new ParameterSpecificationNode(
+							{name: name, value : node.value, unit : node.unit, 
+								scalingFactor : node.scalingFactor,_metaType : "ParameterSpecificationNode"});
+					return a;
+				},
+				/*Creates and populates client aspect nodes for first time*/
+				createParameterNode : function(name,node){
+					var a = window[name] = new ParameterNode(
+							{name: name, _metaType : "ParameterNode"});
+					return a;
+				},
+		};
+	};
 });

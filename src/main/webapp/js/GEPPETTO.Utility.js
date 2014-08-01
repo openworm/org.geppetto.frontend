@@ -291,6 +291,44 @@ define(function(require) {
 			},
 			
 			/**
+			 * Utility function for formatting output of list variable operations
+			 * NOTE: move from here under wherever it makes sense
+			 *
+			 * @param vars - array of variables
+			 */
+			formatnode: function(node, indent, previousNode)
+			{
+				var formattedNode = previousNode;
+
+				// node is always an array of variables
+				for(var i in node) {
+					if(typeof node[i] === "object" && node[i]!=null && i!= "attributes") {
+						var type = node[i]._metaType;
+
+						if(type == "CompositeVariableNode"){
+							var indentation = "   ↪";
+							for(var j = 0; j < indent; j++) {
+								indentation = " " +indentation;
+							}
+							formattedNode = formattedNode + indentation + i + "- [" +type + "]\n";
+							
+							// we know it's a complex type - recurse! recurse!
+							formattedNode = GEPPETTO.Utility.formatnode(node[i], indent + 1, formattedNode);
+						}
+						else if(type == "FunctionNode" || type  == "ParameterNode" || type == "ParameterSpecificationNode"
+							|| type == "DynamicsSpecificationNode"){
+							var indentation = "   ↪";
+							for(var j = 0; j < indent; j++) {
+								indentation = " " + indentation;
+							}
+							formattedNode = formattedNode + indentation + i + "- [" +type + "]\n";
+						}
+					}
+				}
+				return formattedNode;
+			},
+			
+			/**
 			 * Search obj for the value of node within using path.
 			 * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will
 			 * search within the obj to find the value of "tree.v", returning object 

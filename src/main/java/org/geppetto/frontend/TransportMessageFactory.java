@@ -129,6 +129,9 @@ public class TransportMessageFactory {
 			case SET_WATCH_LISTS:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
+			case GET_MODEL_TREE:
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
+				break;
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
 				break;

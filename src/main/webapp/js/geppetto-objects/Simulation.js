@@ -42,7 +42,6 @@
  * @author giovanni@openworm.org (Giovanni Idili)
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-
 define(function(require) {
 	return function(GEPPETTO) {
 		var loading = false;

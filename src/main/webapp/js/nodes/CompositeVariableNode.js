@@ -32,7 +32,6 @@
  *******************************************************************************/
 define(function(require) {
 	var Node = require('nodes/Node');
-	var AspectNode = require('nodes/AspectNode');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
@@ -47,8 +46,12 @@ define(function(require) {
 		        	   children : []
 		           },
 		           id : "",
+		           _metaType : "",
+		           
 		           initialize : function(options){
 		        	   this.id = options.id;
+		        	   this.name = options.name;
+		        	   this._metaType = options._metaType;
 		           },
 
 
@@ -59,20 +62,20 @@ define(function(require) {
 		            * @returns {String} - ID of entity
 		            */
 		           getId : function(){
-		        	   return this.defaults.id;
+		        	   return this.id;
 		           },
 
 		           /**
 		            * Get this entity's aspects
 		            *
-		            * @name EntityNode.getAspects()
+		            * @name CompositeVariableNode.getChildren()
 		            * 
 		            * @returns {List<Aspect>} - List of aspects
 		            *
 		            */
-		           getAspects : function(){
-		        	   var aspects = this.get("aspects");
-		        	   return aspects;
+		           getChildren : function(){
+		        	   var children = this.get("children");
+		        	   return children;
 		           }
 	});
 });

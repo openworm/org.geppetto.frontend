@@ -30,6 +30,11 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * The parent node from where all other nodes extend
+ * 
+ * @author  Jesus R. Martinez (jesus@metacell.us)
+ */
 define([
 	'jquery',
 	'underscore',

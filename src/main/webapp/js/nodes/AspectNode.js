@@ -30,6 +30,12 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Client class use to represent an Aspect. It stores that aspect's properties along with its
+ * population, visualization and model tree.
+ * 
+ * @author  Jesus R. Martinez (jesus@metacell.us)
+ */
 define(function(require) {
 
 	var Node = require('nodes/Node');
@@ -37,18 +43,18 @@ define(function(require) {
 
 	return Node.Model.extend({
 		id:"",
-		modelInterpreter : "",
-		simulator : "",
-		model : "",
+		modelInterpreterName : "",
+		simulatorName : "",
+		modelURL : "",
 		instancePath : "",
-		ModelTree : {},
+		ModelTree : null,
 		VisualizationTree : {},
 		SimulationTree : {},
 		initialize : function(options){
 			this.id = options.id;
-			this.modelInterpreter = options.modelInterpreter;
-			this.simulator = options.simulator;
-			this.model = options.model;
+			this.modelInterpreterName = options.modelInterpreter;
+			this.simulatorName = options.simulator;
+			this.modelURL = options.model;
 			this.instancePath = options.instancePath;
 		},
 
@@ -59,7 +65,6 @@ define(function(require) {
 		 * @name AspectNode.hide()
 		 */
 		 hide : function(){
-
 		 },
 
 		 /**
@@ -68,7 +73,6 @@ define(function(require) {
 		  * @name AspectNode.show()
 		  */
 		 show : function(){
-
 		 },
 
 		 /**
@@ -77,34 +81,34 @@ define(function(require) {
 		  * @name AspectNode.getId()
 		  */
 		 getId : function(){
-			 return this.defaults.id;
+			 return this.id;
 		 },
 
 		 /**
 		  * Get the model interpreter associated with aspect
 		  *
-		  * @name AspectNode.getModelInterpreter()
+		  * @name AspectNode.getModelInterpreterName()
 		  */
-		 getModelInterpreter : function(){
-			 return this.defaults.modelInterpreter;
+		 getModelInterpreterName : function(){
+			 return this.modelInterpreterName;
 		 },
 
 		 /**
 		  * Get the simulator interpreter associated with aspect
 		  *
-		  * @name AspectNode.getSimulator()
+		  * @name AspectNode.getSimulatorName()
 		  */
-		 getSimulator : function(){
-			 return this.defaults.simulator;
+		 getSimulatorName : function(){
+			 return this.simulatorName;
 		 },
 
 		 /**
 		  * Get model URL associated with the aspect
 		  *
-		  * @name AspectNode.getModel()
+		  * @name AspectNode.getModelURL()
 		  */
-		 getModel : function(){
-			 return this.defaults.model;
+		 getModelURL : function(){
+			 return this.modelURL;
 		 },
 
 		 /**
@@ -122,7 +126,18 @@ define(function(require) {
 		  * @name AspectNode.getModelTree()
 		  */
 		 getModelTree : function(){
-			 return this.ModelTree;	        	   
+			 if(this.ModelTree == null){
+				 GEPPETTO.MessageSocket.send("get_model_tree", this.instancePath);
+				 
+				 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE;
+			 }
+			 else{
+				 var formattedNode = GEPPETTO.Utility.formatnode(this.ModelTree, 3, "");
+				 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
+				 formattedNode.replace(/"/g, "");
+
+				 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE + "\n" + formattedNode;
+			 }
 		 },
 
 		 /**

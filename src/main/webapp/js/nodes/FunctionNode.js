@@ -30,18 +30,25 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Client class use to represent a function. Used to store properties of model tree
+ * 
+ * @author  Jesus R. Martinez (jesus@metacell.us)
+ */
 define(function(require) {
 
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
 		
 	return Node.Model.extend({
-		arguments : {},
+		arguments : "",
 		expression : "",
+		_metaType : "",
 		
 		initialize : function(options){
 			this.arguments = options.arguments;
 			this.expression = options.expression;
+			this._metaType = options._metaType;
 		},
 		
 		/**

@@ -30,6 +30,11 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Client class use to represent a parameter node, used for model tree properties.
+ * 
+ * @author  Jesus R. Martinez (jesus@metacell.us)
+ */
 define(function(require) {
 
 	var Node = require('nodes/Node');
@@ -37,9 +42,12 @@ define(function(require) {
 		
 	return Node.Model.extend({
 		properties:{},
+		_metaType : "",
 		
 		initialize : function(options){
 			this.properties = options.properties;
+			this.name = options.name;
+			this._metaType = options._metaType;
 		},
 		
 		/**

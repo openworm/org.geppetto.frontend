@@ -30,6 +30,12 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Client class use to represent an Entity. It stores that aspect's properties along with its
+ * population, visualization and model tree.
+ * 
+ * @author  Jesus R. Martinez (jesus@metacell.us)
+ */
 define(function(require) {
 	var Node = require('nodes/Node');
 	var AspectNode = require('nodes/AspectNode');

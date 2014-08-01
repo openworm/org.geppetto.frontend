@@ -171,7 +171,13 @@ define(function(require) {
 			CAMERA_ZOOM_INCREMENT: "Zoom increment",
 			
 			CAMERA_RESET: "Camera reset",
+			
+			/**
+			 * Node resources
+			 */
 
+			RETRIEVING_MODEL_TREE : 'Model tree requested',
+			
 			/**
 			 * GEPPETTO.Main resources
 			 */

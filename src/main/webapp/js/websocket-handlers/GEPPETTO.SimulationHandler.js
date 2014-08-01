@@ -64,7 +64,8 @@ define(function(require) {
             STOP_WATCH: "stop_watch",
             CLEAR_WATCH: "clear_watch",
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
-            SIMULATION_OVER : "simulation_over"
+            SIMULATION_OVER : "simulation_over",
+            GET_MODEL_TREE : "get_model_tree"
         };
 
         var messageHandler = {};
@@ -89,7 +90,7 @@ define(function(require) {
             var updateScene = JSON.parse(payload.update).scene;
             updateTime(updateScene.time);
 
-            GEPPETTO.NodeFactory.updateEntityNodes(updateScene);
+            GEPPETTO.NodeFactory.updateSceneNodes(updateScene);
 
             GEPPETTO.Simulation.updateSimulationWatchTree(GEPPETTO.Simulation.entities);
 
@@ -191,6 +192,14 @@ define(function(require) {
             GEPPETTO.FE.updateStopEvent();
         };
 
+        //received model tree from 
+        messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
+        	var update = JSON.parse(payload.get_model_tree);
+        	var aspectID = update.aspectID;
+        	var modelTree = update.modelTree;
+        	
+        	GEPPETTO.NodeFactory.updateAspectModelTree(aspectID, modelTree);        	        	
+        };
 
 		GEPPETTO.SimulationHandler = {
 			onMessage: function(parsedServerMessage) {

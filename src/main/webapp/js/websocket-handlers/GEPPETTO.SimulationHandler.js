@@ -198,7 +198,7 @@ define(function(require) {
         	var aspectID = update.aspectID;
         	var modelTree = update.modelTree;
         	
-        	GEPPETTO.NodeFactory.updateAspectModelTree(aspectID, modelTree);        	        	
+        	GEPPETTO.NodeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
         };
 
 		GEPPETTO.SimulationHandler = {

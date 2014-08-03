@@ -45,6 +45,7 @@ define(function(require) {
 		var ParameterSpecificationNode = require('nodes/ParameterSpecificationNode');
 		var DynamicsSpecificationNode = require('nodes/DynamicsSpecificationNode');
 		var FunctionNode = require('nodes/FunctionNode');
+		var VariableNode = require('nodes/VariableNode');
 		
 		GEPPETTO.NodeFactory = {
 				/*Creates the nodes for the first time depending on type*/
@@ -90,14 +91,30 @@ define(function(require) {
 
 				},
 				
-				updateAspectModelTree : function(aspectID, modelTree){
+				updateAspectSimulationTree : function(simulationTree){
 					var obj= GEPPETTO.Simulation.entities;
 					
 					for (var i=0, path=aspectID.split('.'), len=path.length; i<len; i++){
 				        obj = obj[path[i]];
 				    };
 				    
-				    obj.ModelTree = this.createModelTree({}, modelTree.ModelTree);
+				    obj.SimulationTree = this.createModelTree({}, simulationTree);
+				    
+				    var formattedNode = GEPPETTO.Utility.formatnode(obj.SimulationTree, 3, "");
+				    formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
+				    formattedNode.replace(/"/g, "");
+				    
+				    GEPPETTO.Console.log(formattedNode);
+				},
+				
+				createAspectModelTree : function(aspectID, modelTree){
+					var obj= GEPPETTO.Simulation.entities;
+					
+					for (var i=0, path=aspectID.split('.'), len=path.length; i<len; i++){
+				        obj = obj[path[i]];
+				    };
+				    
+				    obj.ModelTree = this.modelJSONToNodes({}, modelTree);
 				    
 				    var formattedNode = GEPPETTO.Utility.formatnode(obj.ModelTree, 3, "");
 				    formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
@@ -106,40 +123,61 @@ define(function(require) {
 				    GEPPETTO.Console.log(formattedNode);
 				},
 				
-				createModelTree : function(aspectPath, node){				    
+				modelJSONToNodes : function(parent, node){				    
 					// node is always an array of variables
 					for(var i in node) {
 						if(typeof node[i] === "object") {
 							var metatype = node[i]._metaType;
 
 							if(metatype == "CompositeVariableNode"){
-								aspectPath[i]=this.createCompositeVariableNode(i,node[i]);
-								this.createModelTree(aspectPath[i], node[i]);
+								parent[i]=this.createCompositeVariableNode(i,node[i]);
+								this.modelJSONToNodes(parent[i], node[i]);
 							}
 							else if(metatype == "FunctionNode"){
 								var functionNode =  this.createFunctionNode(i,node[i]);
-								aspectPath.get("children").add(functionNode);
-								aspectPath[i] = functionNode;
+								parent.get("children").add(functionNode);
+								parent[i] = functionNode;
 							}
 							else if(metatype == "DynamicsSpecificationNode"){
 								var dynamicsSpecificationNode =  this.createDynamicsSpecificationNode(i,node[i]);
-								aspectPath.get("children").add(dynamicsSpecificationNode);
-								aspectPath[i] = dynamicsSpecificationNode;
+								parent.get("children").add(dynamicsSpecificationNode);
+								parent[i] = dynamicsSpecificationNode;
 							}
 							else if(metatype == "ParameterSpecificationNode"){
 								var parameterSpecificationNode =  this.createParameterSpecificationNode(i,node[i]);
-								aspectPath.get("children").add(parameterSpecificationNode);
-								aspectPath[i] = parameterSpecificationNode;
-							}
-							else if(metatype == "ParameterNode"){
-								var parameterNode =  this.createParameterNode(i,node[i]);
-								aspectPath.get("children").add(parameterNode);
-								aspectPath[i] = parameterNode; 
+								parent.get("children").add(parameterSpecificationNode);
+								parent[i] = parameterSpecificationNode;
 							}
 						}
 					}
 					
-					return aspectPath;
+					return parent;
+				},
+				
+				createSimulationTree : function(parent, node){				    
+					// node is always an array of variables
+					for(var i in node) {
+						if(typeof node[i] === "object") {
+							var metatype = node[i]._metaType;
+
+							if(metatype == "CompositeVariableNode"){
+								parent[i]=this.createCompositeVariableNode(i,node[i]);
+								this.createSimulationTree(parent[i], node[i]);
+							}
+							else if(metatype == "VariableNode"){
+								var variableNode =  this.createVariableNode(i,node[i]);
+								parent.get("children").add(variableNode);
+								parent[i] = variableNode;
+							}
+							else if(metatype == "ParameterNode"){
+								var parameterNode =  this.createParameterNode(i,node[i]);
+								parent.get("children").add(parameterNode);
+								parent[i] = parameterNode;
+							}
+						}
+					}
+					
+					return parent;
 				},
 				
 				/*Create and populate client entity nodes for the first time*/
@@ -221,6 +259,13 @@ define(function(require) {
 				createParameterNode : function(name,node){
 					var a = window[name] = new ParameterNode(
 							{name: name, _metaType : "ParameterNode"});
+					return a;
+				},
+				/*Creates and populates client aspect nodes for first time*/
+				createVariableNode : function(name,node){
+					var a = window[name] = new VariableNode(
+							{name: name, value : node.value, unit : node.unit, 
+								scalingFactor : node.scalingFactor,_metaType : "VariableNode"});
 					return a;
 				},
 		};

@@ -786,8 +786,6 @@ public class GeppettoServletController
 		
 		String update = "{\"aspectID\":" + '"' + aspectID + '"' + ",\"modelTree\": " + modelTree + "}}";
 
-		System.out.println(update);
-
 		// message the client with results
 		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, update);
 	}

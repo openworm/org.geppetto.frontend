@@ -64,7 +64,7 @@ define(function(require) {
 		           entities : [],
 		           position : null,
 		           id : "",
-		           isntancePath : "",
+		           instancePath : "",
 		           selected : false,
 		           visible : true,
 		           initialize : function(options){
@@ -85,7 +85,7 @@ define(function(require) {
 		           hide : function(){
 		        	   var message; 
 		        	   
-		        	   if(GEPPETTO.hideEntity(this.id)){
+		        	   if(GEPPETTO.hideEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.HIDE_ENTITY;
 		        	   }
 		        	   else{
@@ -105,7 +105,7 @@ define(function(require) {
 		           show : function(){
 		        	   var message; 
 		        	   
-		        	   if(GEPPETTO.showEntity(this.id)){
+		        	   if(GEPPETTO.showEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.SHOW_ENTITY;
 		        	   }
 		        	   else{
@@ -126,7 +126,7 @@ define(function(require) {
 		           unselect : function(){
 		        	   var message; 
 		        	   
-		        	   if(GEPPETTO.unselectEntity(this.id)){
+		        	   if(GEPPETTO.unselectEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY;
 		        	   }
 		        	   else{
@@ -147,7 +147,7 @@ define(function(require) {
 						
 					   var message; 
 		        	   
-		        	   if(GEPPETTO.selectEntity(this.id)){
+		        	   if(GEPPETTO.selectEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.SELECTING_ENTITY;
 		        	   }
 		        	   else{
@@ -166,9 +166,9 @@ define(function(require) {
 			            */
 					zoomTo : function(){
 						
-						GEPPETTO.zoomToEntity(this.id);
+						GEPPETTO.zoomToEntity(this.instancePath);
 						
-						return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.id;
+						return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath;
 					},
 					
 		           /**

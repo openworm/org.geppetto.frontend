@@ -47,7 +47,7 @@ define(function(require) {
 		var loading = false;
 
 		GEPPETTO.Simulation = {
-			simulationStates: new Array(),
+			simulationStates: [],
 
 			status: 0,
 			simulationURL: "",
@@ -184,7 +184,7 @@ define(function(require) {
 					loadStatus = GEPPETTO.Resources.SIMULATION_UNSPECIFIED;
 				}
 
-				this.simulationStates = new Array();
+				this.simulationStates = [];
 				//time simulation, display appropriate message if taking too long
 				this.loadTimer = setInterval(function simulationTakingTooLong(){
 					if(Simulation.loading){
@@ -358,7 +358,7 @@ define(function(require) {
 			clearWatchLists: function() {
 				santasLittleHelper("clear_watch", GEPPETTO.Resources.SIMULATION_CLEAR_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_CLEAR_WATCH, null);
 
-				GEPPETTO.Simulation.simulationStates = {};
+				GEPPETTO.Simulation.simulationStates = [];
 
 				return GEPPETTO.Resources.SIMULATION_CLEAR_WATCH;
 			},
@@ -408,7 +408,7 @@ define(function(require) {
 				this.loading = false;
 				
 				//Reset the simulation states
-				this.simulationStates={};
+				this.simulationStates=[];
 				
 				window.clearInterval(this.loadTimer);
 				this.loadTimer = 0;
@@ -443,14 +443,16 @@ define(function(require) {
 					return;
 				}
 
+				//traverse through simulation scene, find entities
 				for(var e in scene){
 					var entity = scene[e];
-					
+					//traverse entitie to get aspect(s)
 					for(var a in entity.aspects){
 						var aspect =entity.aspects[a];
 						
-						GEPPETTO.Simulation.watchTree = aspect.getSimulationTree();
-
+						//get the simulation tree for each aspect and store it
+						GEPPETTO.Simulation.watchTree = aspect.SimulationTree;
+						//send command to widgets that newd data is available
 						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
 
 						//update scene brightness

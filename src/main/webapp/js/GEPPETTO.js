@@ -77,7 +77,7 @@ define(function(require) {
 					var entity = entities[eindex];
 					for ( var a in entity.aspects) {
 						var aspect = entity.aspects[a];
-						var visualTree = aspect.getVisualizationTree();
+						var visualTree = aspect.VisualizationTree;
 						for ( var vm in visualTree) {
 							var node = visualTree[vm];
 

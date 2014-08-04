@@ -47,7 +47,7 @@ define(function(require) {
 		simulatorName : "",
 		modelURL : "",
 		instancePath : "",
-		ModelTree : null,
+		ModelTree : {},
 		VisualizationTree : {},
 		SimulationTree : {},
 		initialize : function(options){
@@ -112,27 +112,20 @@ define(function(require) {
 		 },
 
 		 /**
-		  * Get visualization tree for aspect
-		  * 
-		  * @name AspectNode.getVisualizationTree()
-		  */
-		 getVisualizationTree : function(){
-			 return this.VisualizationTree;	        	   
-		 },
-
-		 /**
-		  * Get model tree for aspect
+		  * Get formatted model tree for this aspect
 		  * 
 		  * @name AspectNode.getModelTree()
 		  */
 		 getModelTree : function(){
-			 if(this.ModelTree == null){
+			 //empty model tree, request server for it
+			 if(jQuery.isEmptyObject(this.ModelTree)){
 				 GEPPETTO.MessageSocket.send("get_model_tree", this.instancePath);
 				 
 				 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE;
 			 }
+			 //model tree isn't empty, was requested previously and stored
 			 else{
-				 var formattedNode = GEPPETTO.Utility.formatnode(this.ModelTree, 3, "");
+				 var formattedNode = GEPPETTO.Utility.formatmodeltree(this.ModelTree, 3, "");
 				 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
 				 formattedNode.replace(/"/g, "");
 
@@ -141,12 +134,22 @@ define(function(require) {
 		 },
 
 		 /**
-		  * Get simulation watch tree for aspect
+		  * Get formatted simulation watch tree for this aspect. 
 		  * 
 		  * @name AspectNode.getSimulationTree()
 		  */
 		 getSimulationTree : function(){
-			 return this.SimulationTree;       	   
+			 //simulation tree is empty
+			 if(jQuery.isEmptyObject(this.SimulationTree)){
+				 return GEPPETTO.Resources.NO_SIMULATION_TREE;
+			 }
+			 else{
+				 var formattedNode = GEPPETTO.Utility.formatsimulationtree(this.SimulationTree, 3, "");
+				 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
+				 formattedNode.replace(/"/g, "");
+
+				 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
+			 }       	   
 		 },
 	});
 });

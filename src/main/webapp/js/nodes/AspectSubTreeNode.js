@@ -30,57 +30,52 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Client class use to represent a variable node, used for simulation tree states.
- * 
- * @author  Jesus R. Martinez (jesus@metacell.us)
- */
 define(function(require) {
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		unit:"",
-		value : "",
-		scalingFactor : "",
-		_metaType : "",
-		
-		initialize : function(options){
-			this.name = options.name;
-			this.unit = options.unit;
-			this.value = options.value;
-			this.scalingFactor = options.scalingFactor;
-			this._metaType = options._metaType;
-		},
-		
-		/**
-		 * Get the type of tree this is
-		 *
-		 * @name ParameterSpecificationNode.getUnit()
-		 * @returns {String} - Unit for quantity
-		 */
-		getUnit : function(){
-			return this.unit;
-		},
-		
-		/**
-		 * Get value of quantity
-		 *
-		 * @name ParameterSpecificationNode.getValue()
-		 * @returns {String} - Value of quantity
-		 */
-		getValue : function(){
-			return this.value;
-		},
-		
-		/**
-		 * Get scaling factor
-		 *
-		 * @name ParameterSpecificationNode.getScalingFactor()
-		 * @returns {String} - Scaling Factor for value and unit
-		 */
-		getScalingFactor : function(){
-			return this.scalingFactor;
-		},
+		relations:[
+		           {
+		        	   type: Backbone.Many,
+		        	   key: 'children',
+		        	   relatedModel: Node
+		           }
+		           ],
+		           defaults : {
+		        	   children : []
+		           },
+		           id : "",
+		           type : "",
+		           
+		           initialize : function(options){
+		        	   this.id = options.id;
+		        	   this.name = options.name;
+		        	   this.type = options.type;
+		           },
+
+
+		           /**
+		            * Get the model interpreter associated with entity
+		            *
+		            * @name EntityNode.getId()
+		            * @returns {String} - ID of entity
+		            */
+		           getId : function(){
+		        	   return this.id;
+		           },
+
+		           /**
+		            * Get this entity's aspects
+		            *
+		            * @name CompositeVariableNode.getChildren()
+		            * 
+		            * @returns {List<Aspect>} - List of aspects
+		            *
+		            */
+		           getChildren : function(){
+		        	   var children = this.get("children");
+		        	   return children;
+		           }
 	});
 });

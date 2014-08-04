@@ -192,13 +192,14 @@ define(function(require) {
             GEPPETTO.FE.updateStopEvent();
         };
 
-        //received model tree from 
+        //received model tree from server
         messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
         	var update = JSON.parse(payload.get_model_tree);
-        	var aspectID = update.aspectID;
+        	var aspectInstancePath = update.aspectInstancePath;
         	var modelTree = update.modelTree;
         	
-        	GEPPETTO.NodeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
+        	//create client side model tree
+        	GEPPETTO.NodeFactory.createAspectModelTree(aspectInstancePath, modelTree.ModelTree);        	        	
         };
 
 		GEPPETTO.SimulationHandler = {

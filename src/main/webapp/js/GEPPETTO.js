@@ -68,9 +68,10 @@ define(function(require) {
 		/**
 		 * Updates the scene
 		 */
-		updateScene : function() {
+		updateScene : function(newRuntimeTree) {
+			VARS.needsUpdate = true;
 			if (VARS.needsUpdate) {
-				var entities = VARS.jsonscene;
+				var entities = newRuntimeTree;
 
 				for ( var eindex in entities) {
 
@@ -121,6 +122,10 @@ define(function(require) {
 					}
 				}
 				VARS.needsUpdate = false;
+			}
+			
+			if (VARS.customUpdate != null) {
+				GEPPETTO.customUpdate();
 			}
 		},
 
@@ -221,12 +226,11 @@ define(function(require) {
 		},
 
 		/**
-		 * @param jsonscene
+		 * @param runTimeTree
 		 */
-		populateScene : function(jsonscene) {
-			this.jsonscene = jsonscene;
-			for ( var eindex in jsonscene) {
-				GEPPETTO.loadEntity(jsonscene[eindex]);
+		populateScene : function(runTimeTree) {
+			for ( var eindex in runTimeTree) {
+				GEPPETTO.loadEntity(runTimeTree[eindex]);
 			}
 
 			GEPPETTO.calculateSceneCenter(VARS.scene);
@@ -234,17 +238,17 @@ define(function(require) {
 		},
 
 		/**
-		 * @param jsonscene
+		 * @param entityNode 
 		 */
-		loadEntity : function(jsonEntity, materialParam) {
+		loadEntity : function(entityNode, materialParam) {
 			var material = materialParam;// ==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
-			var aspects = jsonEntity.aspects;
-			var children = jsonEntity.children;
-			var position = jsonEntity.position;
+			var aspects = entityNode.aspects;
+			var children = entityNode.children;
+			var position = entityNode.position;
 			for ( var a in aspects) {
 				var aspect = aspects[a];
 				var meshes = GEPPETTO.getThreeObjectFromVisualizationTree(
-						aspect, jsonEntity.instancePath,
+						aspect, entityNode.instancePath,
 						true, material);
 				for ( var m in meshes) {
 					var mesh = meshes[m];
@@ -737,24 +741,11 @@ define(function(require) {
 				VARS.gui = null;
 			}
 
-			VARS.metadata = VARS.jsonscene[entityIndex].metadata;
-			VARS.metadata.ID = VARS.jsonscene[entityIndex].id;
+			VARS.metadata = VARS.runtimetree[entityIndex].metadata;
+			VARS.metadata.ID = VARS.runtimetree[entityIndex].id;
 
 			GEPPETTO.setupGUI();
 
-		},
-
-		/**
-		 * @param newJSONScene
-		 *            the id of the entity for which we want to display metadata
-		 */
-		updateJSONScene : function(newJSONScene) {
-			VARS.jsonscene = newJSONScene;
-			VARS.needsUpdate = true;
-			GEPPETTO.updateScene();
-			if (VARS.customUpdate != null) {
-				GEPPETTO.customUpdate();
-			}
 		},
 
 		/**
@@ -815,44 +806,6 @@ define(function(require) {
 				}
 			});
 			return threeObject;
-		},
-
-		/**
-		 * @param entityId
-		 *            the entity id
-		 */
-		getThreeReferencedObjectsFrom : function(entityId) {
-			var entity = GEPPETTO.getJSONEntityFromId(entityId);
-			var referencedIDs = [];
-			var threeObjects = [];
-			for ( var r in entity.references) {
-				referencedIDs.push(entity.references[r].entityId);
-			}
-
-			VARS.scene.traverse(function(child) {
-				if (child.hasOwnProperty("eid")) {
-					if (_.contains(referencedIDs, child.eid)) {
-						threeObjects.push(child);
-						var index = referencedIDs.indexOf(child.eid);
-						referencedIDs.splice(index, 1);
-					}
-				}
-			});
-
-			return threeObjects;
-		},
-
-		/**
-		 * @param entityId
-		 *            the entity id
-		 */
-		getJSONEntityFromId : function(entityId) {
-			for (e in VARS.jsonscene) {
-				if (VARS.jsonscene[e].id === entityId) {
-					return VARS.jsonscene[e];
-				}
-			}
-			return null;
 		},
 
 		selectEntity : function(instancePath) {
@@ -1011,7 +964,7 @@ define(function(require) {
 	require('GEPPETTO.Main')(GEPPETTO);
 	require('GEPPETTO.Tutorial')(GEPPETTO);
 	require("widgets/includeWidget")(GEPPETTO);
-	require('nodes/NodeFactory')(GEPPETTO);
+	require('nodes/RuntimeTreeFactory')(GEPPETTO);
 
 	return GEPPETTO;
 

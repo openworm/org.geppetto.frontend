@@ -47,32 +47,33 @@ define(function(require) {
 		var FunctionNode = require('nodes/FunctionNode');
 		var VariableNode = require('nodes/VariableNode');
 
-		GEPPETTO.NodeFactory = {
-				/**Creates the nodes for the first time depending on type*/
-				createNodes : function(scene){
-					for (var name in scene) {
-						var node = scene[name];
+		GEPPETTO.RuntimeTreeFactory = {
+				/**Creates the backbone nodes for the first time depending.
+				 */
+				createRuntimeTree : function(jsonRuntimeTree){
+					for (var name in jsonRuntimeTree) {
+						var node = jsonRuntimeTree[name];
 						if(node._metaType == "EntityNode"){
 							var entityNode = 
-								GEPPETTO.NodeFactory.createEntityNode(name,node);
+								GEPPETTO.RuntimeTreeFactory.createEntityNode(name,node);
 
 							//keep track of client entity nodes created
-							GEPPETTO.Simulation.entities[name]= entityNode;
+							GEPPETTO.Simulation.runTimeTree[name]= entityNode;
 						}
 					}
 
 				},
 
 				/**Update entities of scene with new server updates*/
-				updateSceneNodes : function(scene){
-					for (var key in scene) {
-						var node = scene[key];
+				updateRuntimeTree : function(jsonRuntimeTree){
+					for (var key in jsonRuntimeTree) {
+						var node = jsonRuntimeTree[key];
 						if(node._metaType == "EntityNode"){
 							//check to see if entitynode already exists
-							if(GEPPETTO.Simulation.entities.hasOwnProperty(key)){
+							if(GEPPETTO.Simulation.runTimeTree.hasOwnProperty(key)){
 								//retrieve entity node
 								var entityNode = 
-									GEPPETTO.Simulation.entities[key];
+									GEPPETTO.Simulation.runTimeTree[key];
 
 								//traverse through server update node to get aspects
 								for (var a in node) {
@@ -86,6 +87,8 @@ define(function(require) {
 											if(aspect.instancePath == nodeA.instancePath){
 												aspect.VisualizationTree = nodeA.VisualizationTree;
 												this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);	
+												
+												this.updateWidgets(aspect);
 											}
 										}
 									}
@@ -102,7 +105,7 @@ define(function(require) {
 				 * @param simulationTree - Server JSON update
 				 */
 				updateAspectSimulationTree : function(aspectInstancePath,simulationTreeUpdate){
-					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.entities, aspectInstancePath);	
+					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);	
 
 					//if client aspect has no simulation tree, let's created
 					if(jQuery.isEmptyObject(aspect.SimulationTree)){
@@ -123,6 +126,23 @@ define(function(require) {
 						}
 					}
 				},
+				
+				updateWidgets : function(aspect){
+					//TODO: Removed once plot widgets plot objects and not strings
+					GEPPETTO.Simulation.watchTree = aspect.SimulationTree;
+							
+					//send command to widgets that newd data is available
+					GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
+
+					//update scene brightness
+					for(var key in GEPPETTO.Simulation.listeners) {
+						//retrieve the simulate state from watch tree
+						var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, key);
+
+						//update simulation state
+						GEPPETTO.Simulation.listeners[key](simState);
+					}
+				},
 
 				/**Create Model Tree for aspect
 				 * 
@@ -130,7 +150,7 @@ define(function(require) {
 				 * @param modelTree - Server JSON update
 				 */
 				createAspectModelTree : function(aspectInstancePath, modelTree){
-					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.entities, aspectInstancePath);
+					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);
 
 					//create model tree and store it
 					aspect.ModelTree = this.modelJSONToNodes({}, modelTree);
@@ -257,7 +277,7 @@ define(function(require) {
 						//create aspect nodes
 						if(node._metaType == "AspectNode"){
 							var aspectNode = 
-								GEPPETTO.NodeFactory.createAspectNode(name, node);
+								GEPPETTO.RuntimeTreeFactory.createAspectNode(name, node);
 
 							//set aspectnode as property of entity
 							e[name] =aspectNode;

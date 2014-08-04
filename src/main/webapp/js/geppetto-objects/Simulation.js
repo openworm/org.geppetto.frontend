@@ -58,7 +58,7 @@ define(function(require) {
 			simState : null,
 			loading : false,
 			loadingTimer : null,
-			entities : {},
+			runTimeTree : {},
 			
 			StatusEnum: {
 				INIT: 0,
@@ -153,10 +153,10 @@ define(function(require) {
 					this.stop();
 				}
 
-				for(var e in this.entities){
+				for(var e in this.runTimeTree){
 					GEPPETTO.Utility.removeTags(e);
 				}
-				this.entities = [];
+				this.runTimeTree = [];
 				this.simulationURL = simulationURL;
 				this.listeners=[];
 				var loadStatus = GEPPETTO.Resources.LOADING_SIMULATION;
@@ -208,10 +208,10 @@ define(function(require) {
 					this.stop();
 				}
 				
-				for(var e in this.entities){
+				for(var e in this.runTimeTree){
 					GEPPETTO.Utility.removeTags(e);
 				}
-				this.entities = [];
+				this.runTimeTree = [];
 				this.listeners=[];
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 				//update ui based on success of webgl
@@ -417,8 +417,8 @@ define(function(require) {
 			getEntities : function(){
 				var formattedOutput="";
 				var indentation = "↪";
-				for(var e in this.entities){
-					var entity = this.entities[e];
+				for(var e in this.runTimeTree){
+					var entity = this.runTimeTree[e];
 					formattedOutput = formattedOutput+indentation + entity.id + " [Entity]\n";
 					for(var a in entity.aspects){
 						var aspect = entity.aspects[a];
@@ -433,38 +433,6 @@ define(function(require) {
 				} 
 				
 				return formattedOutput.replace(/"/g, "");
-			},
-			
-			/**
-			 * Updates the simulation states with new watched variables
-			 */
-			updateSimulationWatchTree: function(scene) {
-				if(!scene) {
-					return;
-				}
-
-				//traverse through simulation scene, find entities
-				for(var e in scene){
-					var entity = scene[e];
-					//traverse entitie to get aspect(s)
-					for(var a in entity.aspects){
-						var aspect =entity.aspects[a];
-						
-						//get the simulation tree for each aspect and store it
-						GEPPETTO.Simulation.watchTree = aspect.SimulationTree;
-						//send command to widgets that newd data is available
-						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
-
-						//update scene brightness
-						for(var key in this.listeners) {
-							//retrieve the simulate state from watch tree
-							var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, key);
-
-							//update simulation state
-							this.listeners[key](simState);
-						}
-					}
-				}
 			},
 
 			/**

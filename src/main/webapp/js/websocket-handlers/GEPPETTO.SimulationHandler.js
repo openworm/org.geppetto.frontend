@@ -72,14 +72,14 @@ define(function(require) {
 
         messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
             GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
-            var scene = JSON.parse(payload.update).scene;
+            var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
-            GEPPETTO.NodeFactory.createNodes(scene);
+            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);
             
             GEPPETTO.Simulation.setSimulationLoaded();
 
             //Populate scene
-            GEPPETTO.populateScene(GEPPETTO.Simulation.entities);
+            GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
 
             if(GEPPETTO.Tutorial.isTutorialOn()){
                 GEPPETTO.Tutorial.startPopover();
@@ -87,22 +87,20 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
-            var updateScene = JSON.parse(payload.update).scene;
-            updateTime(updateScene.time);
+            var updatedRunTime = JSON.parse(payload.update).scene;
+            updateTime(updatedRunTime.time);
 
-            GEPPETTO.NodeFactory.updateSceneNodes(updateScene);
-
-            GEPPETTO.Simulation.updateSimulationWatchTree(GEPPETTO.Simulation.entities);
+            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
 
             //Update if simulation hasn't been stopped
             if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
                 if(!GEPPETTO.isScenePopulated()) {
                     // the first time we need to create the objects
-                    GEPPETTO.populateScene(GEPPETTO.Simulation.entities);
+                    GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
                 }
                 else {
                     // any other time we just update them
-                    GEPPETTO.updateJSONScene(GEPPETTO.Simulation.entities);
+                    GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
         };

@@ -17,7 +17,6 @@ define(function(require) {
 			gui: null,
 			projector: null,
 			keyboard: new THREEx.KeyboardState(),
-			jsonscene: null,
 			needsUpdate: false,
 			metadata: {},
 			customUpdate: null,

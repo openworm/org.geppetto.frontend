@@ -433,6 +433,7 @@ input {
 	border-top-right-radius:3px;
 	width: 120px;
 	height: 35px;
+	z-index : 1000;
 }
 
 #consoleButtonContainer{

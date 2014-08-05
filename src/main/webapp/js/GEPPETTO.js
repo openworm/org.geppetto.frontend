@@ -46,6 +46,7 @@ define(function(require)
 	require('three');
 	require('vendor/THREEx.KeyboardState');
 	require('vendor/ColladaLoader');
+	require('vendor/OBJLoader');
 
 	/**
 	 * Local variables
@@ -327,6 +328,10 @@ define(function(require)
 					{
 						entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[0]));
 					}
+					else if (vobjects[0].type == "OBJ")
+					{
+						entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[0]));
+					}
 					else
 					{
 						if (!merge)
@@ -487,6 +492,16 @@ define(function(require)
 					threeObject = collada.scene;
 
 				} );
+				break;
+			case "OBJ":
+				var manager = new THREE.LoadingManager();
+				manager.onProgress = function ( item, loaded, total ) {
+
+					console.log( item, loaded, total );
+
+				};
+				var loader = new THREE.OBJLoader( manager );
+				threeObject=loader.parse(g.model);
 				break;
 			}
 			// add the geometry to a map indexed by the geometry id so we can

@@ -42,12 +42,12 @@ define(function(require) {
 		
 	return Node.Model.extend({
 		properties:{},
-		_metaType : "",
+		_metaType : "ParameterNode",
 		
 		initialize : function(options){
 			this.properties = options.properties;
 			this.name = options.name;
-			this._metaType = options._metaType;
+			this.instancePath = options.instancePath;
 		},
 		
 		/**

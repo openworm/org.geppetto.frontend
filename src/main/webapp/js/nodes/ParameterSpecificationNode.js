@@ -44,14 +44,14 @@ define(function(require) {
 		unit:"",
 		value : "",
 		scalingFactor : "",
-		_metaType : "",
+		_metaType : "ParameterSpecificationNode",
 		
 		initialize : function(options){
 			this.name = options.name;
 			this.unit = options.unit;
+			this.instancePath = options.instancePath;
 			this.value = options.value;
 			this.scalingFactor = options.scalingFactor;
-			this._metaType = options._metaType;
 		},
 		
 		/**

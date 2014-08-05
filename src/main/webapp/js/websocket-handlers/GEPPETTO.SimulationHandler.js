@@ -197,7 +197,7 @@ define(function(require) {
         	var modelTree = update.modelTree;
         	
         	//create client side model tree
-        	GEPPETTO.NodeFactory.createAspectModelTree(aspectInstancePath, modelTree.ModelTree);        	        	
+        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectInstancePath, modelTree.ModelTree);        	        	
         };
 
 		GEPPETTO.SimulationHandler = {

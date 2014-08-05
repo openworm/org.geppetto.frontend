@@ -43,12 +43,12 @@ define(function(require) {
 	return Node.Model.extend({
 		arguments : "",
 		expression : "",
-		_metaType : "",
 		
 		initialize : function(options){
+			this.name = options.name;
+			this.instancePath = options.instancePath;
 			this.arguments = options.arguments;
 			this.expression = options.expression;
-			this._metaType = options._metaType;
 		},
 		
 		/**

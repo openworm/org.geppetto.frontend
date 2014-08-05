@@ -46,7 +46,6 @@ define(function(require) {
 		modelInterpreterName : "",
 		simulatorName : "",
 		modelURL : "",
-		instancePath : "",
 		ModelTree : {},
 		VisualizationTree : {},
 		SimulationTree : {},
@@ -56,6 +55,7 @@ define(function(require) {
 			this.simulatorName = options.simulator;
 			this.modelURL = options.model;
 			this.instancePath = options.instancePath;
+			this.name = options.name;
 		},
 
 

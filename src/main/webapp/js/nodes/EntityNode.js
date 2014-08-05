@@ -64,11 +64,11 @@ define(function(require) {
 		           entities : [],
 		           position : null,
 		           id : "",
-		           instancePath : "",
 		           selected : false,
 		           visible : true,
 		           initialize : function(options){
 		        	   this.id = options.id;
+		        	   this.name = options.name;
 		        	   this.position = options.position;
 		        	   this.instancePath = options.instancePath;
 		        	   this.aspects = this.get("aspects").models;

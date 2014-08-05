@@ -87,7 +87,7 @@ define(function(require) {
 								
 								var metaType = node._metaType;
 
-								if(metaType == "VisualGroupNode"){
+								if(metaType == "CompositeNode"){
 									for ( var gindex in node) {
 										var vo = node[gindex];
 										var voType = vo._metaType;
@@ -299,7 +299,7 @@ define(function(require) {
 				if (node != null && typeof node === "object") {
 					var metaType = node._metaType;
 
-					if (metaType == "VisualGroupNode") {
+					if (metaType == "CompositeNode") {
 						var firstVO = node[Object.keys(node)[0]];
 
 						var firstVOmetaType = firstVO._metaType;

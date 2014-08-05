@@ -43,14 +43,14 @@ define(function(require) {
 		unit:"",
 		value : "",
 		scalingFactor : "",
-		_metaType : "",
+		_metaType : "VariableNode",
 		
 		initialize : function(options){
 			this.name = options.name;
+			this.instancePath = options.instancePath;
 			this.unit = options.unit;
 			this.value = options.value;
 			this.scalingFactor = options.scalingFactor;
-			this._metaType = options._metaType;
 		},
 		
 		/**

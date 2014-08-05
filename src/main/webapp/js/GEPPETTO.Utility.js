@@ -306,7 +306,7 @@ define(function(require) {
 						if(typeof node[i] === "object" && node[i]!=null && i!= "attributes") {
 							var type = node[i]._metaType;
 
-							if(type == "CompositeVariableNode"){
+							if(type == "CompositeNode"){
 								var indentation = "   ↪";
 								for(var j = 0; j < indent; j++) {
 									indentation = " " +indentation;
@@ -347,13 +347,13 @@ define(function(require) {
 
 							if(node[i] instanceof Array){
 								var array = node[i];
-								
+
 								for(var index in array){
 									formattedNode = 
 										this.formatsimulationtree(array[index], indent+1, formattedNode);
 								}
 							}
-							else if(type == "CompositeVariableNode"){
+							else if(type == "CompositeNode"){
 								var indentation = "   ↪";
 								for(var j = 0; j < indent; j++) {
 									indentation = " " +indentation;

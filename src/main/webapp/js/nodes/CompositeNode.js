@@ -51,11 +51,12 @@ define(function(require) {
 		        	   children : []
 		           },
 		           id : "",
-		           _metaType : "",
+		           _metaType : "CompositeVariableNode",
 		           
 		           initialize : function(options){
 		        	   this.id = options.id;
 		        	   this.name = options.name;
+		        	   this.instancePath = options.instancePath;
 		        	   this._metaType = options._metaType;
 		           },
 

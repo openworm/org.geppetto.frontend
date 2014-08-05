@@ -47,9 +47,11 @@ define(function(require) {
 		           },
 		           id : "",
 		           type : "",
+		           _metaType : "AspectSubTreeNode",
 		           
 		           initialize : function(options){
 		        	   this.id = options.id;
+		        	   this.instancePath = options.instancePath;
 		        	   this.name = options.name;
 		        	   this.type = options.type;
 		           },

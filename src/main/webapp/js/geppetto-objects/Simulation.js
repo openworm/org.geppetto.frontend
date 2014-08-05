@@ -156,7 +156,7 @@ define(function(require) {
 				for(var e in this.runTimeTree){
 					GEPPETTO.Utility.removeTags(e);
 				}
-				this.runTimeTree = [];
+				this.runTimeTree = {};
 				this.simulationURL = simulationURL;
 				this.listeners=[];
 				var loadStatus = GEPPETTO.Resources.LOADING_SIMULATION;
@@ -211,7 +211,7 @@ define(function(require) {
 				for(var e in this.runTimeTree){
 					GEPPETTO.Utility.removeTags(e);
 				}
-				this.runTimeTree = [];
+				this.runTimeTree = {};
 				this.listeners=[];
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 				//update ui based on success of webgl

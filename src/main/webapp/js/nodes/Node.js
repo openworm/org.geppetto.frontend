@@ -47,55 +47,30 @@ define([
 	return {
 		Model : Backbone.AssociatedModel.extend({
 		name : "",
-		parent : null,
+		instancePath : "",
+		_metaType : "",
 		
-
 		/**
-		 * Pauses the simulation
+		 * Gets the instance path of the node
 		 *
-		 * @name Node.setName(name)
-		 * @returns {String} - Status of Simulation after pausing it.
+		 * @name Node.getInstancePath()
+		 * @returns {String} - Instance path of  this node
 		 *
 		 */
-		setName : function(name){
-			this.name = name;
+		getInstancePath : function(){
+			return this.instancePath;
 		},
 		
-
 		/**
-		 * Pauses the simulation
+		 * Gets the name of the node
 		 *
 		 * @name Node.getName()
-		 * @returns {String} - Status of Simulation after pausing it.
+		 * @returns {String} - Name of the node
 		 *
 		 */
 		getName : function(){
 			return this.name;
-		},
-		
-
-		/**
-		 * Pauses the simulation
-		 *
-		 * @name Node.setParent()
-		 * @returns {String} - Status of Simulation after pausing it.
-		 *
-		 */
-		setParent : function(parent){
-			this.parent = parent;
-		},
-		
-
-		/**
-		 * Pauses the simulation
-		 *
-		 * @name Node.getParent()
-		 * @returns {String} - Status of Simulation after pausing it.
-		 *
-		 */
-		getParent : function(){
-			return this.parent;
-		}			
+		},		
 	})
 	};
 });

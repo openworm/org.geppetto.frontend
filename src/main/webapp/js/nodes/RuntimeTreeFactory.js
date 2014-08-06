@@ -325,7 +325,7 @@ define(function(require) {
 				/**Creates and populates client aspect nodes for first time*/
 				createAspectSubTreeNode : function(node){
 					var a = new AspectSubTreeNode(
-							{name : node.type,id: node.type,instancePath : options.instancePath, 
+							{name : node.type,id: node.type,instancePath : node.instancePath, 
 								_metaType : "AspectSubTreeNode"});
 					return a;
 				},
@@ -334,7 +334,7 @@ define(function(require) {
 				createCompositeNode : function(name,node){
 					var a = new CompositeNode(
 							{id: name, name : name, 
-								instancePath : options.instancePath,_metaType : "CompositeNode"});
+								instancePath : node.instancePath,_metaType : "CompositeNode"});
 					return a;
 				},
 
@@ -342,7 +342,7 @@ define(function(require) {
 				createFunctionNode : function(name,node){
 					var a = new FunctionNode(
 							{name: name, expression : node.expression, arguments : node.arguments,
-								instancePath : options.instancePath,_metaType : "FunctionNode"});
+								instancePath : node.instancePath,_metaType : "FunctionNode"});
 					return a;
 				},
 				/**Creates and populates client aspect nodes for first time*/
@@ -350,10 +350,11 @@ define(function(require) {
 					var a = new DynamicsSpecificationNode(
 							{name: name, value : node.value, unit : node.unit, 
 								scalingFactor : node.scalingFactor,
-								instancePath : options.instancePath, _metaType : "DynamicsSpecificationNode"});
+								instancePath : node.instancePath, _metaType : "DynamicsSpecificationNode"});
 
 					var f = new FunctionNode(
-							{expression : node._function.expression, arguments : node._function.arguments});
+							{expression : node._function.expression, 
+								instancePath : node.instancePath,arguments : node._function.arguments});
 
 					a.set("dynamics",f);
 
@@ -363,14 +364,14 @@ define(function(require) {
 				createParameterSpecificationNode : function(name,node){
 					var a = new ParameterSpecificationNode(
 							{name: name, value : node.value, unit : node.unit, 
-								scalingFactor : node.scalingFactor,instancePath : options.instancePath,
+								scalingFactor : node.scalingFactor,instancePath : node.instancePath,
 								_metaType : "ParameterSpecificationNode"});
 					return a;
 				},
 				/**Creates and populates client aspect nodes for first time*/
 				createParameterNode : function(name,node){
 					var a = new ParameterNode(
-							{name: name, instancePath : options.instancePath, properties : options.properties,
+							{name: name, instancePath : node.instancePath, properties : options.properties,
 								_metaType : "ParameterNode"});
 					return a;
 				},
@@ -378,7 +379,7 @@ define(function(require) {
 				createVariableNode : function(name,node){
 					var a = new VariableNode(
 							{name: name, value : node.value, unit : node.unit, 
-								scalingFactor : node.scalingFactor, instancePath : options.instancePath,
+								scalingFactor : node.scalingFactor, instancePath : node.instancePath,
 								_metaType : "VariableNode"});
 					return a;
 				},

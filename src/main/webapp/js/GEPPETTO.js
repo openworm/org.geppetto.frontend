@@ -45,6 +45,7 @@ define(function(require) {
 	require('three');
 	require('vendor/THREEx.KeyboardState');
 	require('vendor/ColladaLoader');
+	require('vendor/OBJLoader');
 
 	/**
 	 * Local variables
@@ -346,7 +347,12 @@ define(function(require) {
 						} else if (firstVOmetaType == "ColladaNode") {
 							entityObjects.push(GEPPETTO
 									.getThreeObjectFromJSONGeometry(instancePath,node[vg]));
-						} else if (firstVOmetaType == "CylinderNode"
+						}
+						else if (firstVOmetaType == "OBJNode")
+						{
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(instancePath,node[vg]));
+						}
+						else if (firstVOmetaType == "CylinderNode"
 								|| firstVOmetaType == "SphereNode")
 
 						{
@@ -420,7 +426,12 @@ define(function(require) {
 						} else if (metaType == "ColladaNode") {
 							entityObjects.push(GEPPETTO
 									.getThreeObjectFromJSONGeometry(aspect.instancePath,node));
-						} else if (metaType == "CylinderNode"
+						} 
+						else if (metaType == "OBJNode")
+						{
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(aspect.instancePath,node));
+						}
+						else if (metaType == "CylinderNode"
 								|| metaType == "SphereNode")
 
 						{
@@ -585,13 +596,23 @@ define(function(require) {
 				var loader = new THREE.ColladaLoader();
 				loader.options.convertUpAxis = true;
 				var xmlParser = new DOMParser();
-				var responseXML = xmlParser.parseFromString(g.model,
+				var responseXML = xmlParser.parseFromString(g.model.data,
 						"application/xml");
 				loader.parse(responseXML, function(collada) {
 
 					threeObject = collada.scene;
 
 				});
+				break;
+			case "OBJNode":
+				var manager = new THREE.LoadingManager();
+				manager.onProgress = function ( item, loaded, total ) {
+
+					console.log( item, loaded, total );
+
+				};
+				var loader = new THREE.OBJLoader( manager );
+				threeObject=loader.parse(g.model.data);
 				break;
 			}
 			// add the geometry to a map indexed by the geometry id so we can

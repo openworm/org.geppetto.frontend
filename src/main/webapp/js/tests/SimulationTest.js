@@ -98,7 +98,219 @@ define(function(require) {
 			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 
 		});
+		
+		module("Simulation - SPH Runtime Tree JLems");
+		asyncTest("Test Runtime Tree when Loading and Simulating JLems Simulation with variables", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var handler = {
+				checkUpdate : false,
+				onMessage: function(parsedServerMessage) {
+					// Switch based on parsed incoming message type
+					switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var scene = JSON.parse(payload.update).scene;
+							var entities=0, aspects=0, subtrees = 0;
+							
+				            GEPPETTO.NodeFactory.createNodes(scene);
 
+							for(var e in scene){
+								if(scene[e]._metaType == "EntityNode"){
+									entities++;
+									var entity = scene[e];
+									for(var a in entity){
+										if(entity[a]._metaType == "AspectNode"){
+											aspects++;
+											var aspect = entity[a];
+											for(var as in aspect){
+												if(aspect[as]._metaType == "AspectSubTreeNode"){
+													subtrees++;
+												}
+											}
+										}
+									}
+								}
+							}
+							ok(1, entities, "Entities number, matched");
+							ok(1, aspects, "Aspects number, matched");
+							ok(3, subtrees, "Subtrees number, matched");
+														
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
+							if(!this.checkUpdate){
+								var payload = JSON.parse(parsedServerMessage.data);
+								var scene = JSON.parse(payload.update).scene;
+								var entities=0, aspects=0, subtrees = 0, simTreePopulated=false, visTreePopulated=false;
+
+								for(var e in scene){
+									if(scene[e]._metaType == "EntityNode"){
+										entities++;
+										var entity = scene[e];
+										for(var a in entity){
+											if(entity[a]._metaType == "AspectNode"){
+												aspects++;
+												var aspect = entity[a];
+												for(var as in aspect){
+													var subtree = aspect[as];
+													if(subtree._metaType == "AspectSubTreeNode"){
+														if(subtree.type == "SimulationTree"){
+															for(var key in subtree){
+																if(typeof subtree[key] ==="object"){
+																	simTreePopulated = true;
+																}										
+															}
+														}
+														else if(subtree.type == "VisualizationTree"){
+															for(var key in subtree){
+																if(typeof subtree[key] ==="object"){
+																	visTreePopulated = true;
+																}										
+															}
+														}
+														subtrees++;
+													}
+												}
+											}
+										}
+									}
+								}
+								notEqual(false, simTreePopulated, "Simulation Tree has population");
+								notEqual(false, visTreePopulated, "Visualization has population");
+
+					            hhcell.electrical.getModelTree();
+
+								this.checkUpdate = true;
+							}
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+							var payload = JSON.parse(parsedServerMessage.data);
+				        	var update = JSON.parse(payload.get_model_tree);
+
+				        	var aspectID = update.aspectID;
+				        	var modelTree = update.modelTree;
+				        	
+				        	GEPPETTO.NodeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
+
+				        	notEqual(null, hhcell.electrical.ModelTree, "Model tree received, not empty");
+				        	start();
+				        	
+							break;
+					}
+				}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml');
+			Simulation.start();
+		});
+		
+		module("Simulation - Particle Runtime Tree");
+		asyncTest("Test Runtime Tree at Load", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var handler = {
+					checkUpdate : false,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+							//Simulation has been loaded and model need to be loaded
+							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+								var payload = JSON.parse(parsedServerMessage.data);
+								var scene = JSON.parse(payload.update).scene;
+								var entities=0, aspects=0, subtrees = 0;
+								
+					            GEPPETTO.NodeFactory.createNodes(scene);
+
+								for(var e in scene){
+									if(scene[e]._metaType == "EntityNode"){
+										entities++;
+										var entity = scene[e];
+										for(var a in entity){
+											if(entity[a]._metaType == "AspectNode"){
+												aspects++;
+												var aspect = entity[a];
+												for(var as in aspect){
+													if(aspect[as]._metaType == "AspectSubTreeNode"){
+														subtrees++;
+													}
+												}
+											}
+										}
+									}
+								}
+								ok(1, entities, "Entities number, matched");
+								ok(1, aspects, "Aspects number, matched");
+								ok(3, subtrees, "Subtrees number, matched");
+															
+								break;
+							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
+								if(!this.checkUpdate){
+									var payload = JSON.parse(parsedServerMessage.data);
+									var scene = JSON.parse(payload.update).scene;
+									var entities=0, aspects=0, subtrees = 0, simTreePopulated=false, visTreePopulated=false;
+
+									for(var e in scene){
+										if(scene[e]._metaType == "EntityNode"){
+											entities++;
+											var entity = scene[e];
+											for(var a in entity){
+												if(entity[a]._metaType == "AspectNode"){
+													aspects++;
+													var aspect = entity[a];
+													for(var as in aspect){
+														var subtree = aspect[as];
+														if(subtree._metaType == "AspectSubTreeNode"){
+															if(subtree.type == "SimulationTree"){
+																for(var key in subtree){
+																	if(typeof subtree[key] ==="object"){
+																		simTreePopulated = true;
+																	}										
+																}
+															}
+															else if(subtree.type == "VisualizationTree"){
+																for(var key in subtree){
+																	if(typeof subtree[key] ==="object"){
+																		visTreePopulated = true;
+																	}										
+																}
+															}
+															subtrees++;
+														}
+													}
+												}
+											}
+										}
+									}
+									notEqual(false, simTreePopulated, "Simulation Tree has population");
+									notEqual(false, visTreePopulated, "Visualization has population");
+
+						            sample.fluid.getModelTree();
+
+									this.checkUpdate = true;
+								}
+								break;
+							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+								var payload = JSON.parse(parsedServerMessage.data);
+					        	var update = JSON.parse(payload.get_model_tree);
+
+					        	var aspectID = update.aspectID;
+					        	var modelTree = update.modelTree;
+					        	
+					        	GEPPETTO.NodeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
+
+					        	ok(null, sample.fluid.ModelTree, "Model tree received, empty");
+					        	start();
+					        	
+								break;
+						}
+					}
+				};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml');
+			Simulation.start();
+		});
+		
 		module("Simulation with Scripts");
 		asyncTest("Test Simulation with Script", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
@@ -128,7 +340,6 @@ define(function(require) {
 
 		module("Simulation controls Test");
 		asyncTest("Test Simulation Controls", function() {
-			expect(1);
 			//wait half a second before testing, allows for socket connection to be established
 			GEPPETTO.MessageSocket.clearHandlers();
 

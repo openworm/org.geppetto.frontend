@@ -37,8 +37,7 @@
  * @author matteo@openworm.org (Matteo Cantarelli)
  */
 
-define(function(require)
-{
+define(function(require) {
 
 	var $ = require('jquery'), _ = require('underscore');
 
@@ -52,20 +51,16 @@ define(function(require)
 	 * Local variables
 	 */
 	var VARS;
-	
+
 	/**
 	 * Initialize the engine
 	 */
-	var GEPPETTO =
-	{
-		init : function(containerp)
-		{
-			if (!Detector.webgl)
-			{
+	var GEPPETTO = {
+		init : function(containerp) {
+			if (!Detector.webgl) {
 				Detector.addGetWebGLMessage();
 				return false;
-			} else
-			{
+			} else {
 				VARS = GEPPETTO.Init.initialize(containerp);
 				return true;
 			}
@@ -74,44 +69,64 @@ define(function(require)
 		/**
 		 * Updates the scene
 		 */
-		updateScene : function()
-		{
-			if (VARS.needsUpdate)
-			{
-				var entities = VARS.jsonscene;
+		updateScene : function(newRuntimeTree) {
+			VARS.needsUpdate = true;
+			if (VARS.needsUpdate) {
+				var entities = newRuntimeTree;
 
-				for ( var eindex in entities)
-				{
+				for ( var eindex in entities) {
 
 					var entity = entities[eindex];
-					for ( var a in entity.aspects)
-					{
+					for ( var a in entity.aspects) {
 						var aspect = entity.aspects[a];
-						for ( var vm in aspect.visualModel)
-						{
-							var visualModel = aspect.visualModel[vm];
-							var geometries = visualModel.objects;
+						var visualTree = aspect.VisualizationTree;
+						for ( var vm in visualTree) {
+							var node = visualTree[vm];
 
-							for ( var gindex in geometries)
-							{
-								GEPPETTO.updateGeometry(geometries[gindex]);
-							}
+							if (node != null
+									&& typeof node === "object") {
+								
+								var metaType = node._metaType;
 
-							var entityGeometry = VARS.visualModelMap[visualModel.id];
-							if (entityGeometry)
-							{
-								// if an entity is represented by a particle
-								// system we need to
-								// mark it as dirty for it to be updated
-								if (entityGeometry instanceof THREE.ParticleSystem)
-								{
-									entityGeometry.geometry.verticesNeedUpdate = true;
+								if(metaType == "CompositeNode"){
+									for ( var gindex in node) {
+										var vo = node[gindex];
+										var voType = vo._metaType;
+										if (voType == "ParticleNode"
+												|| metaType == "SphereNode"
+												|| metaType == "CylinderNode"
+												|| metaType == "ColladaNode") {
+											GEPPETTO.updateGeometry(aspect.instancePath,vo);
+										}
+									}
+									
 								}
+								else{
+									if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
+										metaType == "CylinderNode"|| metaType == "ColladaNode") {
+										
+										GEPPETTO.updateGeometry(aspect.instancePath,node);								
+									}
+								}
+							}
+						}
+						
+						var entityGeometry = VARS.visualModelMap[aspect.instancePath];
+						if (entityGeometry) {
+							// if an entity is represented by a particle
+							// system we need to
+							// mark it as dirty for it to be updated
+							if (entityGeometry instanceof THREE.ParticleSystem) {
+								entityGeometry.geometry.verticesNeedUpdate = true;
 							}
 						}
 					}
 				}
 				VARS.needsUpdate = false;
+			}
+			
+			if (VARS.customUpdate != null) {
+				GEPPETTO.customUpdate();
 			}
 		},
 
@@ -121,20 +136,17 @@ define(function(require)
 		 * @param g
 		 *            the update json geometry
 		 */
-		updateGeometry : function(g)
-		{
-			var threeObject = VARS.visualModelMap[g.id];
-			if (threeObject)
-			{
-				if (threeObject instanceof THREE.Vector3)
-				{
+		updateGeometry : function(instancepath, g) {
+			var threeObject = VARS.visualModelMap[instancepath+"."+g.id];
+			if (threeObject) {
+				if (threeObject instanceof THREE.Vector3) {
 					threeObject.x = g.position.x;
 					threeObject.y = g.position.y;
 					threeObject.z = g.position.z;
-				} else
-				{
+				} else {
 					// update the position
-					threeObject.position.set(g.position.x, g.position.y, g.position.z);
+					threeObject.position.set(g.position.x, g.position.y,
+							g.position.z);
 				}
 			}
 		},
@@ -150,8 +162,8 @@ define(function(require)
 		 * @returns a Cylinder translated and rotated in the scene according to
 		 *          the cartesian coordinated that describe it
 		 */
-		getCylinder : function(bottomBasePos, topBasePos, radiusTop, radiusBottom, material)
-		{
+		getCylinder : function(bottomBasePos, topBasePos, radiusTop,
+				radiusBottom, material) {
 			var cylinderAxis = new THREE.Vector3();
 			cylinderAxis.subVectors(topBasePos, bottomBasePos);
 
@@ -161,7 +173,8 @@ define(function(require)
 			midPoint.addVectors(bottomBasePos, topBasePos);
 			midPoint.multiplyScalar(0.5);
 
-			var c = new THREE.CylinderGeometry(radiusTop, radiusBottom, cylHeight, 6, 1, false);
+			var c = new THREE.CylinderGeometry(radiusTop, radiusBottom,
+					cylHeight, 6, 1, false);
 
 			c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
 
@@ -184,92 +197,93 @@ define(function(require)
 		 *            the lighting intensity from 0 (no illumination) to 1 (full
 		 *            illumination)
 		 */
-		lightUpEntity : function(jsonEntity, intensity)
-		{
-			if (intensity < 0)
-			{
+		lightUpEntity : function(jsonEntity, intensity) {
+			if (intensity < 0) {
 				intensity = 0;
 			}
-			if (intensity > 1)
-			{
+			if (intensity > 1) {
 				intensity = 1;
 			}
 
-			var getRGB = function(hexString)
-			{
-				return{
+			var getRGB = function(hexString) {
+				return {
 					r : parseInt(hexString.substr(2, 2), 16),
 					g : parseInt(hexString.substr(4, 2), 16),
 					b : parseInt(hexString.substr(6, 2), 16)
 				};
 			};
-			var scaleColor = function(color)
-			{
-				return (Math.floor(color + ((255 - color) * intensity))).toString(16);
+			var scaleColor = function(color) {
+				return (Math.floor(color + ((255 - color) * intensity)))
+						.toString(16);
 			};
 			var threeObject = GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
-			var originalColor = getRGB(threeObject.material.originalColor);
-			threeObject.material.color.setHex('0x' + scaleColor(originalColor.r) + scaleColor(originalColor.g) + scaleColor(originalColor.b));
-
+			if (threeObject != null) {
+				var originalColor = getRGB(threeObject.material.originalColor);
+				threeObject.material.color.setHex('0x'
+						+ scaleColor(originalColor.r)
+						+ scaleColor(originalColor.g)
+						+ scaleColor(originalColor.b));
+			}
 		},
 
 		/**
-		 * @param jsonscene
+		 * @param runTimeTree
 		 */
-		populateScene : function(jsonscene)
-		{
-			this.jsonscene = jsonscene;
-			for ( var eindex in jsonscene)
-			{
-				GEPPETTO.loadEntity(jsonscene[eindex]);
+		populateScene : function(runTimeTree) {
+			for ( var eindex in runTimeTree) {
+				GEPPETTO.loadEntity(runTimeTree[eindex]);
 			}
 
-			GEPPETTO.calculateSceneCenter();
+			GEPPETTO.calculateSceneCenter(VARS.scene);
 			GEPPETTO.updateCamera();
 		},
 
 		/**
-		 * @param jsonscene
+		 * @param entityNode 
 		 */
-		loadEntity : function(jsonEntity, materialParam)
-		{
-			var material=materialParam;//==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
-			var aspects = jsonEntity.aspects;
-			var children = jsonEntity.children;
-			var position = jsonEntity.position;
-			for ( var a in aspects)
-			{
+		loadEntity : function(entityNode, materialParam) {
+			var material = materialParam;// ==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
+			var aspects = entityNode.aspects;
+			var children = entityNode.children;
+			var position = entityNode.position;
+			VARS.entities[entityNode.instancePath] = {};
+			for ( var a in aspects) {
 				var aspect = aspects[a];
-				var meshes = GEPPETTO.getThreeObjectFromVisualModel(aspect.visualModel, aspect.instancePath, true,material);
-				for(var m in meshes)
-				{
-					var mesh=meshes[m];
+				var meshes = GEPPETTO.getThreeObjectFromVisualizationTree(
+						aspect, true, material);
+				for ( var m in meshes) {
+					var mesh = meshes[m];
+					mesh.name = aspect.instancePath;
 					VARS.scene.add(mesh);
-					if(position!=null){
-						mesh.position = new THREE.Vector3(position.x, position.y, position.z);
-						mesh.name = jsonEntity.id;
-						VARS.entities[mesh.name] = mesh;
+					if (position != null) {
+						mesh.position = new THREE.Vector3(position.x,
+								position.y, position.z);
 					}
+					VARS.aspects[mesh.eid] = mesh;
+					VARS.aspects[mesh.eid].visible = true;
+					VARS.aspects[mesh.eid].selected = false;
+					VARS.entities[entityNode.instancePath].selected = false;
+					VARS.entities[entityNode.instancePath][mesh.eid] = VARS.aspects[mesh.eid];
+					VARS.entities[entityNode.instancePath][mesh.eid].selected = false;
 				}
 			}
-			for ( var c in children)
-			{
-				GEPPETTO.loadEntity(children[c],material);
+			for ( var c in children) {
+				GEPPETTO.loadEntity(children[c], material);
 			}
 
 		},
-		
-		getMeshPhongMaterial : function()
-		{
-			var material = new THREE.MeshPhongMaterial(
-			{
+
+		getMeshPhongMaterial : function() {
+			var material = new THREE.MeshPhongMaterial({
 				opacity : 1,
 				ambient : 0x777777,
 				shininess : 2,
 				shading : THREE.SmoothShading
 			});
 
-			material.originalColor = '0x' + (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+			material.originalColor = '0x'
+					+ (0x1000000 + (Math.random()) * 0xffffff).toString(16)
+							.substr(1, 6);
 			material.color.setHex(material.originalColor);
 			return material;
 		},
@@ -279,128 +293,196 @@ define(function(require)
 		 *            if true all the visual models will be merged into one,
 		 *            otherwise an array of Three objects will be returned
 		 */
-		getThreeObjectFromVisualModel : function(visualModels, aspectInstancePath, merge,materialParam)
-		{
+		getThreeObjectFromVisualizationTree : function(aspect, merge, materialParam) {
 			var combined = new THREE.Geometry();
-			var material=materialParam==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
-			var	entityObjects=[];
-			for ( var vm in visualModels)
-			{
-				visualModel = visualModels[vm];
+			var material = materialParam == undefined ? GEPPETTO
+					.getMeshPhongMaterial() : materialParam;
+			var entityObjects = [];
+			var visualizationTree = aspect.VisualizationTree;
+			for ( var vm in visualizationTree) {
+				node = visualizationTree[vm];
+				if (node != null && typeof node === "object") {
+					var metaType = node._metaType;
+					//look for group of nodes
+					if (metaType == "CompositeNode") {
+						var firstVO = node[Object.keys(node)[0]];
+						var firstVOmetaType = firstVO._metaType;
 
-				var vobjects = visualModel.objects;
-				if (vobjects != null && vobjects.length)
-				{
-					if (vobjects[0].type == "Particle")
-					{
-						merge=false;
-						// assumes there are no particles mixed with
-						// other kind of
-						// geometry hence if the first one is a particle
-						// then they all are
-						// create the particle variables
-						var pMaterial = new THREE.ParticleBasicMaterial(
-						{
-							size : 5,
-							map : THREE.ImageUtils.loadTexture("images/particle.png"),
-							blending : THREE.AdditiveBlending,
-							depthTest : false,
-							transparent : true
-						});
-						pMaterial.color = new THREE.Color(0xffffff);
-						THREE.ColorConverter.setHSV(pMaterial.color, Math.random(), 1.0, 1.0);
-						pMaterial.originalColor = pMaterial.color.getHexString();
+						if (firstVOmetaType == "ParticleNode") {
+							merge = false;				
 
-						var geometry = new THREE.Geometry();
-						for ( var voIndex in vobjects)
-						{
-							var threeObject = GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[voIndex], pMaterial);
-							geometry.vertices.push(threeObject);
-						}
-						entityObject = new THREE.ParticleSystem(geometry, pMaterial);
-						entityObject.eid = aspectInstancePath;
-						// also update the particle system to sort the particles which enables the behaviour we want
-						entityObject.sortParticles = true;
-						VARS.visualModelMap[visualModel.id] = entityObject;
-						entityObjects.push(entityObject);
-					} 
-					else if (vobjects[0].type == "Collada")
-					{
-						entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[0]));
-					}
-					else if (vobjects[0].type == "OBJ")
-					{
-						entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[0]));
-					}
-					else
-					{
-						if (!merge)
-						{
-							// if we are not merging combine is local and only
-							// the visual objects within
-							// the same visual model will be combined
-							combined = new THREE.Geometry();
-						}
-						for ( var voIndex in vobjects)
-						{
-							var threeObject = GEPPETTO.getThreeObjectFromJSONGeometry(vobjects[voIndex], material);
-							THREE.GeometryUtils.merge(combined, threeObject);
-							threeObject.geometry.dispose();
-						}
-						if (!merge)
-						{
-							entityObject = new THREE.Mesh(combined, material);
-							// entityObject.eindex = eindex;
-							entityObject.eid = visualModel.id;
-							entityObject.geometry.dynamic = false;
+							var entityObject = GEPPETTO.createParticleSystem(aspect.instancePath, node);
 							entityObjects.push(entityObject);
+
+						} else if (firstVOmetaType == "ColladaNode") {
+							entityObjects.push(GEPPETTO
+									.getThreeObjectFromJSONGeometry(aspect.instancePath,node[vg]));
+						}
+						else if (firstVOmetaType == "OBJNode")
+						{
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(aspect.instancePath,node[vg]));
+						}
+						else if (firstVOmetaType == "CylinderNode"
+								|| firstVOmetaType == "SphereNode")
+
+						{
+							if (!merge) {
+								// if we are not merging combine is local and
+								// only
+								// the visual objects within
+								// the same visual model will be combined
+								combined = new THREE.Geometry();
+							}
+
+							for ( var key in node) {
+								var vg = node[key];
+
+								if (typeof vg === "object") {
+									var threeObject = GEPPETTO
+											.getThreeObjectFromJSONGeometry(aspect.instancePath,vg,
+													material);
+									THREE.GeometryUtils.merge(combined,
+											threeObject);
+									threeObject.geometry.dispose();
+								}
+							}
+
+							if (!merge) {
+								entityObject = new THREE.Mesh(combined,
+										material);
+								// entityObject.eindex = eindex;
+								entityObject.eid = aspect.instancePath;
+								entityObject.geometry.dynamic = false;
+								entityObjects.push(entityObject);
+							}
+						}
+					} else {
+						if (metaType == "ParticleNode") {
+							var entityObject = GEPPETTO.createParticleSystem(aspect.instancePath, visualizationTree);
+							entityObjects.push(entityObject);
+
+						}else if (metaType == "ColladaNode") {
+							entityObjects.push(GEPPETTO
+									.getThreeObjectFromJSONGeometry(aspect.instancePath,node));
+						} 
+						else if (metaType == "OBJNode")
+						{
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(aspect.instancePath,node));
+						}
+						else if (metaType == "CylinderNode"
+								|| metaType == "SphereNode")
+
+						{
+							if (!merge) {
+								combined = new THREE.Geometry();
+							}
+
+							if (typeof node === "object") {
+								var threeObject = GEPPETTO
+										.getThreeObjectFromJSONGeometry(aspect.instancePath,node,
+												material);
+								THREE.GeometryUtils
+										.merge(combined, threeObject);
+								threeObject.geometry.dispose();
+							}
+
+							if (!merge) {
+								entityObject = new THREE.Mesh(combined,
+										material);
+								// entityObject.eindex = eindex;
+								entityObject.eid = aspect.instancePath;
+								entityObject.geometry.dynamic = false;
+								entityObjects.push(entityObject);
+							}
 						}
 					}
 				}
 			}
-			//FIXME Matteo: this applies only to sphere/cylinders geometries, fix me as it's quite ugly 
-			if(merge)
-			{
+			// FIXME Matteo: this applies only to sphere/cylinders geometries,
+			// fix me as it's quite ugly
+			if (merge) {
 				entityObject = new THREE.Mesh(combined, material);
 				// entityObject.eindex = eindex;
-				entityObject.eid = aspectInstancePath;
+				entityObject.eid = aspect.instancePath;
 				entityObject.geometry.dynamic = false;
 				entityObjects.push(entityObject);
 			}
 			return entityObjects;
 		},
+		
+		createParticleSystem : function(instancePath, node){
+			var particleGeometry = new THREE.Geometry();
+			// assumes there are no particles mixed with
+			// other kind of
+			// geometry hence if the first one is a particle
+			// then they all are
+			// create the particle variables
+			var pMaterial = new THREE.ParticleBasicMaterial({
+				size : 5,
+				map : THREE.ImageUtils
+						.loadTexture("images/particle.png"),
+				blending : THREE.AdditiveBlending,
+				depthTest : false,
+				transparent : true
+			});
+			pMaterial.color = new THREE.Color(0xffffff);
+			THREE.ColorConverter.setHSV(pMaterial.color, Math
+					.random(), 1.0, 1.0);
+			pMaterial.originalColor = pMaterial.color
+					.getHexString();
+			for ( var vg in node) {
+				if (node[vg]._metaType == "ParticleNode") {
+					var threeObject = GEPPETTO
+							.getThreeObjectFromJSONGeometry(
+									instancePath,node[vg], pMaterial);
+					particleGeometry.vertices.push(threeObject);
+				}
+			}
+
+			var entityObject = new THREE.ParticleSystem(
+					particleGeometry, pMaterial);
+			entityObject.eid = instancePath;
+			// also update the particle system to sort the
+			// particles which enables the behaviour we want
+			entityObject.sortParticles = true;
+			VARS.visualModelMap[instancePath] = entityObject;
+
+			return entityObject;
+		},
 
 		/**
 		 * Compute the center of the scene.
 		 */
-		calculateSceneCenter : function()
-		{
+		calculateSceneCenter : function(scene) {
 			var aabbMin = null;
 			var aabbMax = null;
 
-			VARS.scene.traverse(function(child)
-			{
-				if (child instanceof THREE.Mesh || child instanceof THREE.ParticleSystem)
-				{
+			scene.traverse(function(child) {
+				if (child instanceof THREE.Mesh
+						|| child instanceof THREE.ParticleSystem) {
 					child.geometry.computeBoundingBox();
 
 					// If min and max vectors are null, first values become
 					// default min and max
-					if (aabbMin == null && aabbMax == null)
-					{
+					if (aabbMin == null && aabbMax == null) {
 						aabbMin = child.geometry.boundingBox.min;
 						aabbMax = child.geometry.boundingBox.max;
 					}
 
 					// Compare other meshes, particles BB's to find min and max
-					else
-					{
-						aabbMin.x = Math.min(aabbMin.x, child.geometry.boundingBox.min.x);
-						aabbMin.y = Math.min(aabbMin.y, child.geometry.boundingBox.min.y);
-						aabbMin.z = Math.min(aabbMin.z, child.geometry.boundingBox.min.z);
-						aabbMax.x = Math.max(aabbMax.x, child.geometry.boundingBox.max.x);
-						aabbMax.y = Math.max(aabbMax.y, child.geometry.boundingBox.max.y);
-						aabbMax.z = Math.max(aabbMax.z, child.geometry.boundingBox.max.z);
+					else {
+						aabbMin.x = Math.min(aabbMin.x,
+								child.geometry.boundingBox.min.x);
+						aabbMin.y = Math.min(aabbMin.y,
+								child.geometry.boundingBox.min.y);
+						aabbMin.z = Math.min(aabbMin.z,
+								child.geometry.boundingBox.min.z);
+						aabbMax.x = Math.max(aabbMax.x,
+								child.geometry.boundingBox.max.x);
+						aabbMax.y = Math.max(aabbMax.y,
+								child.geometry.boundingBox.max.y);
+						aabbMax.z = Math.max(aabbMax.z,
+								child.geometry.boundingBox.max.z);
 					}
 				}
 			});
@@ -417,7 +499,8 @@ define(function(require)
 
 			// Compute offset needed to move the camera back that much needed to
 			// center AABB
-			var offset = radius / Math.tan(Math.PI / 180.0 * VARS.camera.fov * 0.25);
+			var offset = radius
+					/ Math.tan(Math.PI / 180.0 * VARS.camera.fov * 0.25);
 
 			var camDir = new THREE.Vector3(0, 0, 1.0);
 			camDir.multiplyScalar(offset);
@@ -430,11 +513,11 @@ define(function(require)
 		/**
 		 * Update camera with new position and place to lookat
 		 */
-		updateCamera : function()
-		{
+		updateCamera : function() {
 			// Update camera
 			VARS.camera.rotationAutoUpdate = false;
-			VARS.camera.position.set(VARS.cameraPosition.x, VARS.cameraPosition.y, VARS.cameraPosition.z);
+			VARS.camera.position.set(VARS.cameraPosition.x,
+					VARS.cameraPosition.y, VARS.cameraPosition.z);
 			VARS.camera.lookAt(VARS.sceneCenter);
 			VARS.camera.up = new THREE.Vector3(0, 1, 0);
 			VARS.camera.rotationAutoUpdate = true;
@@ -444,13 +527,11 @@ define(function(require)
 		/**
 		 * @returns {Boolean}
 		 */
-		isScenePopulated : function()
-		{
+		isScenePopulated : function() {
 			return !(_.isEmpty(VARS.visualModelMap));
 		},
 
-		isCanvasCreated : function()
-		{
+		isCanvasCreated : function() {
 			return VARS.canvasCreated;
 		},
 
@@ -461,39 +542,43 @@ define(function(require)
 		 * @param material
 		 * @returns {Mesh} a three mesh representing the geometry
 		 */
-		getThreeObjectFromJSONGeometry : function(g, material)
-		{
+		getThreeObjectFromJSONGeometry : function(instancepath,g, material) {
 			var threeObject = null;
-			switch (g.type)
-			{
-			case "Particle":
+			switch (g._metaType) {
+			case "ParticleNode":
 				threeObject = new THREE.Vector3();
 				threeObject.x = g.position.x;
 				threeObject.y = g.position.y;
 				threeObject.z = g.position.z;
 
 				break;
-			case "Cylinder":
-				var lookAtV = new THREE.Vector3(g.distal.x, g.distal.y, g.distal.z);
-				var positionV = new THREE.Vector3(g.position.x, g.position.y, g.position.z);
-				threeObject = GEPPETTO.getCylinder(positionV, lookAtV, g.radiusTop, g.radiusBottom, material);
+			case "CylinderNode":
+				var lookAtV = new THREE.Vector3(g.distal.x, g.distal.y,
+						g.distal.z);
+				var positionV = new THREE.Vector3(g.position.x, g.position.y,
+						g.position.z);
+				threeObject = GEPPETTO.getCylinder(positionV, lookAtV,
+						g.radiusTop, g.radiusBottom, material);
 				break;
-			case "Sphere":
-				threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius, 20, 20), material);
-				threeObject.position.set(g.position.x, g.position.y, g.position.z);
+			case "SphereNode":
+				threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius,
+						20, 20), material);
+				threeObject.position.set(g.position.x, g.position.y,
+						g.position.z);
 				break;
-			case "Collada":
+			case "ColladaNode":
 				var loader = new THREE.ColladaLoader();
 				loader.options.convertUpAxis = true;
 				var xmlParser = new DOMParser();
-				var responseXML = xmlParser.parseFromString( g.model, "application/xml" );
-				loader.parse( responseXML, function ( collada ) {
+				var responseXML = xmlParser.parseFromString(g.model.data,
+						"application/xml");
+				loader.parse(responseXML, function(collada) {
 
 					threeObject = collada.scene;
 
-				} );
+				});
 				break;
-			case "OBJ":
+			case "OBJNode":
 				var manager = new THREE.LoadingManager();
 				manager.onProgress = function ( item, loaded, total ) {
 
@@ -501,26 +586,24 @@ define(function(require)
 
 				};
 				var loader = new THREE.OBJLoader( manager );
-				threeObject=loader.parse(g.model);
+				threeObject=loader.parse(g.model.data);
 				break;
 			}
+			threeObject.visible = true;
 			// add the geometry to a map indexed by the geometry id so we can
 			// find it
 			// for updating purposes
-			VARS.visualModelMap[g.id] = threeObject;
+			VARS.visualModelMap[instancepath + "." + g.id] = threeObject;
 			return threeObject;
 		},
 
 		/**
 		 * Sets up the HUD display with the scene stat's fps.
 		 */
-		setupStats : function()
-		{
+		setupStats : function() {
 			// Stats
-			if ($("#stats").length == 0)
-			{
-				if (VARS != null)
-				{
+			if ($("#stats").length == 0) {
+				if (VARS != null) {
 					VARS.stats = new Stats();
 					VARS.stats.domElement.style.float = 'right';
 					VARS.stats.domElement.style.position = 'absolute';
@@ -532,40 +615,32 @@ define(function(require)
 			}
 		},
 
-		showStats : function()
-		{
-			if ($("#stats").length == 0)
-			{
+		showStats : function() {
+			if ($("#stats").length == 0) {
 				GEPPETTO.setupStats();
-			} else
-			{
+			} else {
 				$("#stats").show();
 			}
 		},
 
-		hideStats : function()
-		{
+		hideStats : function() {
 			$("#stats").hide();
 		},
 
 		/**
 		 * Create a GUI element based on the available metadata
 		 */
-		setupGUI : function()
-		{
+		setupGUI : function() {
 			var data = !(_.isEmpty(VARS.metadata));
 
 			// GUI
-			if (!VARS.gui && data)
-			{
-				VARS.gui = new dat.GUI(
-				{
+			if (!VARS.gui && data) {
+				VARS.gui = new dat.GUI({
 					width : 400
 				});
 				GEPPETTO.addGUIControls(VARS.gui, VARS.metadata);
 			}
-			for (f in VARS.gui.__folders)
-			{
+			for (f in VARS.gui.__folders) {
 				// opens only the root folders
 				VARS.gui.__folders[f].open();
 			}
@@ -576,23 +651,17 @@ define(function(require)
 		 * @param gui
 		 * @param metadatap
 		 */
-		addGUIControls : function(parent, current_metadata)
-		{
-			if (current_metadata.hasOwnProperty("ID"))
-			{
+		addGUIControls : function(parent, current_metadata) {
+			if (current_metadata.hasOwnProperty("ID")) {
 				parent.add(current_metadata, "ID").listen();
 			}
-			for ( var m in current_metadata)
-			{
-				if (m != "ID")
-				{
-					if (typeof current_metadata[m] == "object")
-					{
+			for ( var m in current_metadata) {
+				if (m != "ID") {
+					if (typeof current_metadata[m] == "object") {
 						var folder = parent.addFolder(m);
 						// recursive call to populate the GUI with sub-metadata
 						GEPPETTO.addGUIControls(folder, current_metadata[m]);
-					} else
-					{
+					} else {
 						parent.add(current_metadata, m).listen();
 					}
 				}
@@ -602,8 +671,7 @@ define(function(require)
 		/**
 		 * Adds debug axis to the scene
 		 */
-		setupAxis : function()
-		{
+		setupAxis : function() {
 			// To use enter the axis length
 			VARS.scene.add(new THREE.AxisHelper(200));
 		},
@@ -611,8 +679,7 @@ define(function(require)
 		/**
 		 * Renders objects in the scene
 		 */
-		render : function()
-		{
+		render : function() {
 			VARS.renderer.render(VARS.scene, VARS.camera);
 		},
 
@@ -621,21 +688,19 @@ define(function(require)
 		 * @returns {Array} a list of objects intersected by the current mouse
 		 *          coordinates
 		 */
-		getIntersectedObjects : function()
-		{
+		getIntersectedObjects : function() {
 			// create a Ray with origin at the mouse position and direction into
 			// the
 			// scene (camera direction)
 			var vector = new THREE.Vector3(VARS.mouse.x, VARS.mouse.y, 1);
 			VARS.projector.unprojectVector(vector, VARS.camera);
 
-			var raycaster = new THREE.Raycaster(VARS.camera.position, vector.sub(VARS.camera.position).normalize());
+			var raycaster = new THREE.Raycaster(VARS.camera.position, vector
+					.sub(VARS.camera.position).normalize());
 
 			var visibleChildren = [];
-			VARS.scene.traverse(function(child)
-			{
-				if (child.visible)
-				{
+			VARS.scene.traverse(function(child) {
+				if (child.visible) {
 					visibleChildren.push(child);
 				}
 			});
@@ -651,16 +716,14 @@ define(function(require)
 		 *            the pressed key
 		 * @returns {boolean} true if the key is pressed
 		 */
-		isKeyPressed : function(key)
-		{
+		isKeyPressed : function(key) {
 			return VARS.keyboard.pressed(key);
 		},
 
 		/**
 		 * @returns {Number} A new id
 		 */
-		getNewId : function()
-		{
+		getNewId : function() {
 			return VARS.idCounter++;
 		},
 
@@ -668,63 +731,43 @@ define(function(require)
 		 * @param entityIndex
 		 *            the id of the entity for which we want to display metadata
 		 */
-		showMetadataForEntity : function(entityIndex)
-		{
-			if (VARS.gui)
-			{
+		showMetadataForEntity : function(entityIndex) {
+			if (VARS.gui) {
 				VARS.gui.domElement.parentNode.removeChild(VARS.gui.domElement);
 				VARS.gui = null;
 			}
 
-			VARS.metadata = VARS.jsonscene[entityIndex].metadata;
-			VARS.metadata.ID = VARS.jsonscene[entityIndex].id;
+			VARS.metadata = VARS.runtimetree[entityIndex].metadata;
+			VARS.metadata.ID = VARS.runtimetree[entityIndex].id;
 
 			GEPPETTO.setupGUI();
 
 		},
 
 		/**
-		 * @param newJSONScene
-		 *            the id of the entity for which we want to display metadata
-		 */
-		updateJSONScene : function(newJSONScene)
-		{
-			VARS.jsonscene = newJSONScene;
-			VARS.needsUpdate = true;
-			GEPPETTO.updateScene();
-			if (VARS.customUpdate != null)
-			{
-				GEPPETTO.customUpdate();
-			}
-		},
-
-		/**
 		 * Animate simulation
 		 */
-		animate : function()
-		{
+		animate : function() {
 			VARS.debugUpdate = VARS.needsUpdate; // so that we log only the
 			// cycles when we are
 			// updating the scene
-			if (GEPPETTO.Simulation.getSimulationStatus() == 2 && VARS.debugUpdate)
-			{
+			if (GEPPETTO.Simulation.getSimulationStatus() == 2
+					&& VARS.debugUpdate) {
 				GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_STARTING);
 			}
 			VARS.controls.update();
 			requestAnimationFrame(GEPPETTO.animate);
-			if (VARS.rotationMode)
-			{
+			if (VARS.rotationMode) {
 				var timer = new Date().getTime() * 0.0005;
 				VARS.camera.position.x = Math.floor(Math.cos(timer) * 200);
 				VARS.camera.position.z = Math.floor(Math.sin(timer) * 200);
 			}
 			GEPPETTO.render();
-			if (VARS.stats)
-			{
+			if (VARS.stats) {
 				VARS.stats.update();
 			}
-			if (GEPPETTO.Simulation.getSimulationStatus() == 2 && VARS.debugUpdate)
-			{
+			if (GEPPETTO.Simulation.getSimulationStatus() == 2
+					&& VARS.debugUpdate) {
 				GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
 			}
 		},
@@ -733,11 +776,9 @@ define(function(require)
 		 * @param aroundObject
 		 *            the object around which the rotation will happen
 		 */
-		enterRotationMode : function(aroundObject)
-		{
+		enterRotationMode : function(aroundObject) {
 			VARS.rotationMode = true;
-			if (aroundObject)
-			{
+			if (aroundObject) {
 				VARS.camera.lookAt(aroundObject);
 			}
 		},
@@ -745,8 +786,7 @@ define(function(require)
 		/**
 		 * Exit rotation mode
 		 */
-		exitRotationMode : function()
-		{
+		exitRotationMode : function() {
 			VARS.rotationMode = false;
 		},
 
@@ -754,126 +794,218 @@ define(function(require)
 		 * @param entityId
 		 *            the entity id
 		 */
-		getThreeObjectFromEntityId : function(entityId)
-		{
+		getThreeObjectFromEntityId : function(entityId) {
 			var threeObject = null;
-			VARS.scene.traverse(function(child)
-			{
-				if (child.hasOwnProperty("eid") && child.eid == entityId)
-				{
+			VARS.scene.traverse(function(child) {
+				if (child.hasOwnProperty("eid") && child.eid == entityId) {
 					threeObject = child;
 				}
 			});
 			return threeObject;
 		},
 
-		/**
-		 * @param entityId
-		 *            the entity id
-		 */
-		getThreeReferencedObjectsFrom : function(entityId)
-		{
-			var entity = GEPPETTO.getJSONEntityFromId(entityId);
-			var referencedIDs = [];
-			var threeObjects = [];
-			for ( var r in entity.references)
-			{
-				referencedIDs.push(entity.references[r].entityId);
-			}
-
-			VARS.scene.traverse(function(child)
-			{
-				if (child.hasOwnProperty("eid"))
-				{
-					if (_.contains(referencedIDs, child.eid))
-					{
-						threeObjects.push(child);
-						var index = referencedIDs.indexOf(child.eid);
-						referencedIDs.splice(index, 1);
+		unSelectAll : function() {
+			for ( var v in VARS.entities) {
+				var entity = VARS.entities[v];
+				for(var e in entity){
+					if(entity[e].selected == true){
+						entity.selected = false;
+						GEPPETTO.unselectAspect(entity[e].eid);
 					}
 				}
-			});
-
-			return threeObjects;
+			}
 		},
+		
+		selectEntity : function(instancePath) {
+			for ( var v in VARS.entities) {
+				if(v == instancePath){
+					var entity = VARS.entities[v];
+					if(entity.selected == false){
+						entity.selected = true;
+						for(var a in entity){
+							GEPPETTO.selectAspect(entity[a].eid);
+						}
 
-		/**
-		 * @param entityId
-		 *            the entity id
-		 */
-		getJSONEntityFromId : function(entityId)
-		{
-			for (e in VARS.jsonscene)
-			{
-				if (VARS.jsonscene[e].id === entityId)
-				{
-					return VARS.jsonscene[e];
+						return true;
+					}
 				}
 			}
-			return null;
-		},
-
-		selectEntity : function(name){
-			for(var v in VARS.entities){
-				if(v == name){
-					VARS.selected[0] = VARS.entities[v];
-					VARS.entities[v].material.color.setHex(0xFFFF33);
-				}
-			};
-			
 			return false;
 		},
 		
-		unselectEntity : function(){
-			if(VARS.selected.length >0 ){
-				VARS.selected[0].material.color.setHex(Math.random() * 0xffffff);
-				VARS.selected.splice(0,1);
+		unselectEntity : function(instancePath) {
+			for ( var v in VARS.entities) {
+				if(v == instancePath){
+					var entity = VARS.entities[v];
+					if(entity.selected == true){
+						entity.selected = false;
+						for(var a in entity){
+							GEPPETTO.unselectAspect(entity[a].eid);
+						}
+
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+
+		showEntity : function(instancePath) {
+			for ( var v in VARS.entities) {
+				if (v == instancePath) {
+					var entity = VARS.entities[v];
+					for(var a in entity){
+						GEPPETTO.showAspect(entity[a].eid);
+					}
+				}
+			}
+			;
+
+			return false;
+		},
+		
+		hideEntity : function(instancePath) {
+			for ( var v in VARS.entities) {
+				if (v == instancePath) {
+					var entity = VARS.entities[v];
+					for(var a in entity){
+						GEPPETTO.hideAspect(entity[a].eid);
+					}
+				}
+			}
+			;
+			return false;
+		},
+
+		zoomToEntity : function(instancePath) {
+			var entity = null;
+			for ( var e in VARS.entities) {
+				if ( e == instancePath) {
+					entity = VARS.entities[e];
+				}
+			}
+			
+			if(entity!=null){
+				GEPPETTO.calculateSceneCenter(entity);
+				GEPPETTO.updateCamera();
 			}
 		},
 		
-		resetCamera : function(){
-			GEPPETTO.calculateSceneCenter();
+		selectAspect : function(instancePath) {
+			for ( var v in VARS.aspects) {
+				if(v == instancePath){
+					if(VARS.aspects[v].selected == false){
+						VARS.aspects[v].material.color.setHex(0xFFFF33);
+						VARS.aspects[v].selected = true;
+					}
+					
+					return true;
+				}
+			}
+			return false;
+		},
+		
+		unselectAspect : function(instancePath) {
+			for ( var key in VARS.aspects) {
+				if(key == instancePath){
+					if(VARS.aspects[key].selected == true){
+						VARS.aspects[key].material.color.setHex(Math.random() * 0xffffff);
+						VARS.aspects[key].selected = false;
+					}
+					return true;
+				}
+			}
+
+			return false;
+		},
+
+		showAspect : function(instancePath) {
+			for ( var v in VARS.aspects) {
+				if (v == instancePath) {
+					if (VARS.aspects[v].visible == true) {
+						return false;
+					} else {
+						VARS.aspects[v].visible = true;
+						return true;
+					}
+				}
+			}
+			;
+
+			return false;
+		},
+		
+		hideAspect : function(instancePath) {
+			for ( var v in VARS.aspects) {
+				if (v == instancePath) {
+					if (VARS.aspects[v].visible == false) {
+						return false;
+					} else {
+						VARS.aspects[v].visible = false;
+						return true;
+					}
+				}
+			}
+			;
+			return false;
+		},
+
+		zoomToAspect : function(instancePath) {
+			var aspect;
+			for ( var a in VARS.aspects) {
+				if ( instancepath == a) {
+					aspect = VARS.aspects[a];
+				}
+			}
+			
+			if(aspect!=null){
+				GEPPETTO.calculateSceneCenter(aspect);
+				GEPPETTO.updateCamera();
+			}
+		},
+
+		resetCamera : function() {
+			GEPPETTO.calculateSceneCenter(VARS.scene);
 			GEPPETTO.updateCamera();
 		},
-		
+
 		/**
 		 * @param x
 		 * @param y
 		 */
-		incrementCameraPan : function(x, y){
+		incrementCameraPan : function(x, y) {
 			VARS.controls.incrementPanEnd(x, y);
 		},
-		
+
 		/**
 		 * @param x
 		 * @param y
 		 * @param z
 		 */
-		incrementCameraRotate : function(x, y, z){
+		incrementCameraRotate : function(x, y, z) {
 			VARS.controls.incrementRotationEnd(x, y, z);
 		},
-		
+
 		/**
 		 * @param z
 		 */
-		incrementCameraZoom : function(z){
+		incrementCameraZoom : function(z) {
 			VARS.controls.incrementZoomEnd(z);
 		},
-		
+
 		/**
 		 * @param msg
 		 */
-		log : function(msg)
-		{
-			if (VARS.debug)
-			{
+		log : function(msg) {
+			if (VARS.debug) {
 				var d = new Date();
 				var curr_hour = d.getHours();
 				var curr_min = d.getMinutes();
 				var curr_sec = d.getSeconds();
 				var curr_msec = d.getMilliseconds();
 
-				console.log(curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec + ' - ' + msg, "");
+				console.log(curr_hour + ":" + curr_min + ":" + curr_sec + ":"
+						+ curr_msec + ' - ' + msg, "");
 
 			}
 		},
@@ -885,11 +1017,11 @@ define(function(require)
 		 * @param opt_value
 		 * @param opt_noninteraction
 		 */
-		trackActivity : function(category, action, opt_label, opt_value, opt_noninteraction)
-		{
-			if (typeof _gaq != 'undefined')
-			{
-				_gaq.push([ '_trackEvent', category, action, opt_label, opt_value, opt_noninteraction ]);
+		trackActivity : function(category, action, opt_label, opt_value,
+				opt_noninteraction) {
+			if (typeof _gaq != 'undefined') {
+				_gaq.push([ '_trackEvent', category, action, opt_label,
+						opt_value, opt_noninteraction ]);
 			}
 		}
 	};
@@ -913,6 +1045,7 @@ define(function(require)
 	require('GEPPETTO.Main')(GEPPETTO);
 	require('GEPPETTO.Tutorial')(GEPPETTO);
 	require("widgets/includeWidget")(GEPPETTO);
+	require('nodes/RuntimeTreeFactory')(GEPPETTO);
 
 	return GEPPETTO;
 

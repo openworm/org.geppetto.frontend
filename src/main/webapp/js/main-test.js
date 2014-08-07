@@ -53,6 +53,7 @@ require.config({
 		'underscore': 'vendor/underscore.min',
 		'backbone': 'vendor/backbone.min',
 		'backbone-store': 'vendor/backbone-localStorage.min',
+		'backbone-associations' : 'vendor/backbone-associations-min',
 		'geppetto': "GEPPETTO",
 		'QUnit': 'vendor/qunit'
 	},
@@ -70,6 +71,7 @@ require.config({
 		'vendor/bootstrap.min': ["jquery"],
 		'vendor/codemirror-formats.min': ["codemirror"],
 		'vendor/backbone-localStorage.min': ["backbone"],
+		'backbone-associations' : ["backbone"],
 		'vendor/dat.gui.min': ["jquery"],
 		'vendor/stats.min': ["jquery"],
 		'vendor/Detector': ["jquery"],

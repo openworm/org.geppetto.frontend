@@ -52,6 +52,7 @@ require.config({
 		'underscore' : 'vendor/underscore.min',
 		'backbone' : 'vendor/backbone.min',
 		'backbone-store' : 'vendor/backbone-localStorage.min',
+		'backbone-associations' : 'vendor/backbone-associations-min',
 		'geppetto' : "GEPPETTO"
 	},
 	/*
@@ -64,10 +65,12 @@ require.config({
 		'vendor/TrackballControls' : ["three"],
 		'vendor/THREEx.KeyboardState' : ['three'],
 		'vendor/ColladaLoader' : ['three'],
+		'vendor/OBJLoader' : ['three'],
 		'vendor/ColorConverter' : ["three"],
 		'vendor/bootstrap.min' : ["jquery"],
 		'vendor/codemirror-formats.min' : ["codemirror"],
 		'vendor/backbone-localStorage.min' : ["backbone"],
+		'backbone-associations' : ["backbone"],
 		'vendor/dat.gui.min' : ["jquery"],
 		'vendor/stats.min' : ["jquery"],
 		'vendor/Detector' : ["jquery"],
@@ -85,6 +88,7 @@ var jqueryLib = [
   "three",
   "vendor/THREEx.KeyboardState",
   "vendor/ColladaLoader",
+  "vendor/OBJLoader",
   "vendor/jquery-ui-1.10.3.custom.min",
   "vendor/TrackballControls",
   "vendor/ColorConverter",

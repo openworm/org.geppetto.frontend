@@ -42,13 +42,12 @@
  * @author giovanni@openworm.org (Giovanni Idili)
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-
 define(function(require) {
 	return function(GEPPETTO) {
 		var loading = false;
 
 		GEPPETTO.Simulation = {
-			simulationStates: new Array(),
+			simulationStates: [],
 
 			status: 0,
 			simulationURL: "",
@@ -59,6 +58,8 @@ define(function(require) {
 			simState : null,
 			loading : false,
 			loadingTimer : null,
+			runTimeTree : {},
+			
 			StatusEnum: {
 				INIT: 0,
 				LOADED: 1,
@@ -152,6 +153,10 @@ define(function(require) {
 					this.stop();
 				}
 
+				for(var e in this.runTimeTree){
+					GEPPETTO.Utility.removeTags(e);
+				}
+				this.runTimeTree = {};
 				this.simulationURL = simulationURL;
 				this.listeners=[];
 				var loadStatus = GEPPETTO.Resources.LOADING_SIMULATION;
@@ -179,7 +184,7 @@ define(function(require) {
 					loadStatus = GEPPETTO.Resources.SIMULATION_UNSPECIFIED;
 				}
 
-				this.simulationStates = new Array();
+				this.simulationStates = [];
 				//time simulation, display appropriate message if taking too long
 				this.loadTimer = setInterval(function simulationTakingTooLong(){
 					if(Simulation.loading){
@@ -202,6 +207,11 @@ define(function(require) {
 				if(this.status == this.StatusEnum.STARTED || this.status == this.StatusEnum.PAUSED) {
 					this.stop();
 				}
+				
+				for(var e in this.runTimeTree){
+					GEPPETTO.Utility.removeTags(e);
+				}
+				this.runTimeTree = {};
 				this.listeners=[];
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 				//update ui based on success of webgl
@@ -348,7 +358,7 @@ define(function(require) {
 			clearWatchLists: function() {
 				santasLittleHelper("clear_watch", GEPPETTO.Resources.SIMULATION_CLEAR_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_CLEAR_WATCH, null);
 
-				GEPPETTO.Simulation.simulationStates = {};
+				GEPPETTO.Simulation.simulationStates = [];
 
 				return GEPPETTO.Resources.SIMULATION_CLEAR_WATCH;
 			},
@@ -398,45 +408,31 @@ define(function(require) {
 				this.loading = false;
 				
 				//Reset the simulation states
-				this.simulationStates={};
+				this.simulationStates=[];
 				
 				window.clearInterval(this.loadTimer);
 				this.loadTimer = 0;
 			},
-
-			selectEntity : function(name){
-				
-				GEPPETTO.selectEntity(name);
-				
-				return GEPPETTO.Resources.SELECTING_ENTITY + name;
-			},
 			
-			/**
-			 * Updates the simulation states with new watched variables
-			 */
-			updateSimulationWatchTree: function(watchTree) {
-				if(!watchTree) {
-					return;
-				}
-
-				GEPPETTO.Simulation.watchTree = watchTree;
-
-				//Create window objects for variables
-				for(var child in GEPPETTO.Simulation.watchTree) {
-					window[child]= GEPPETTO.Simulation.watchTree[child];
-				}
-
-				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
-				
-				//update scene brightness
-				for(var key in this.listeners) {
-					//retrieve the simulate state from watch tree
-					var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.watchTree, key);
-					
-					//update simulation state
-					this.listeners[key](simState);
+			getEntities : function(){
+				var formattedOutput="";
+				var indentation = "↪";
+				for(var e in this.runTimeTree){
+					var entity = this.runTimeTree[e];
+					formattedOutput = formattedOutput+indentation + entity.id + " [Entity]\n";
+					for(var a in entity.aspects){
+						var aspect = entity.aspects[a];
+						var aspectIndentation = "         ↪";
+						formattedOutput = formattedOutput+ aspectIndentation + aspect.id +  " [Aspect]\n";
+					}
+					indentation = "      ↪";
 				}
 				
+				if(formattedOutput.lastIndexOf("\n")>0) {
+					formattedOutput = formattedOutput.substring(0, formattedOutput.lastIndexOf("\n"));
+				} 
+				
+				return formattedOutput.replace(/"/g, "");
 			},
 
 			/**

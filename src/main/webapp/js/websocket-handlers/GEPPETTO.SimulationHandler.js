@@ -64,19 +64,22 @@ define(function(require) {
             STOP_WATCH: "stop_watch",
             CLEAR_WATCH: "clear_watch",
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
-            SIMULATION_OVER : "simulation_over"
+            SIMULATION_OVER : "simulation_over",
+            GET_MODEL_TREE : "get_model_tree"
         };
 
         var messageHandler = {};
 
         messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
             GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
-            var entities = JSON.parse(payload.update).entities;
+            var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
+            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);
+            
             GEPPETTO.Simulation.setSimulationLoaded();
 
             //Populate scene
-            GEPPETTO.populateScene(entities);
+            GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
 
             if(GEPPETTO.Tutorial.isTutorialOn()){
                 GEPPETTO.Tutorial.startPopover();
@@ -84,19 +87,20 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
-            var update = JSON.parse(payload.update);
-            GEPPETTO.Simulation.updateSimulationWatchTree(update.variable_watch);
-            updateTime(update.time);
+            var updatedRunTime = JSON.parse(payload.update).scene;
+            updateTime(updatedRunTime.time);
+
+            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
 
             //Update if simulation hasn't been stopped
             if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
                 if(!GEPPETTO.isScenePopulated()) {
                     // the first time we need to create the objects
-                    GEPPETTO.populateScene(update.entities);
+                    GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
                 }
                 else {
                     // any other time we just update them
-                    GEPPETTO.updateJSONScene(update.entities);
+                    GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
         };
@@ -165,7 +169,7 @@ define(function(require) {
             var queuePosition = simulatorInfo.queuePosition;
             GEPPETTO.FE.disableSimulationControls();
             GEPPETTO.FE.fullSimulatorNotification(simulatorName, queuePosition);
-        }
+        };
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {
             //variables watching
@@ -186,6 +190,15 @@ define(function(require) {
             GEPPETTO.FE.updateStopEvent();
         };
 
+        //received model tree from server
+        messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
+        	var update = JSON.parse(payload.get_model_tree);
+        	var aspectInstancePath = update.aspectInstancePath;
+        	var modelTree = update.modelTree;
+        	
+        	//create client side model tree
+        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectInstancePath, modelTree.ModelTree);        	        	
+        };
 
 		GEPPETTO.SimulationHandler = {
 			onMessage: function(parsedServerMessage) {

@@ -61,6 +61,8 @@ define(function(require) {
 		 * Handles autocomplete functionality for the console
 		 */
 		function autoComplete() {
+			//get the available tags for autocompletion in console
+			var tags = GEPPETTO.Utility.availableTags();
 
 			//bind console input area to autocomplete event
 			$("#commandInputArea").bind("keydown", function(event) {
@@ -72,22 +74,6 @@ define(function(require) {
 				.autocomplete({
 					minLength: 0,
 					source: function(request, response) {
-						//get the available tags for autocompletion in console
-						var tags = GEPPETTO.Utility.availableTags();
-						var original = $('#commandInputArea').val();
-						var split = original.split(".");
-						if(split.length > 1){
-							var lastObj = split[split.length-2];
-							if(window[lastObj]!="undefined" || 
-									window[lastObject!=null]){
-								var props =
-									Object.getOwnPropertyNames(window[lastObj]);
-								
-								for(var i=0; i<props.length;i++){
-									tags[tags.length] = props[i];
-								}
-							}
-						}
 						var matches = $.map(tags, function(tag) {
 							if(tag.toUpperCase().indexOf(request.term.toUpperCase()) === 0) {
 								return tag;

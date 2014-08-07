@@ -164,12 +164,12 @@ define(function(require) {
 			            * @name EntityNode.zoomTo()
 			            *
 			            */
-					zoomTo : function(){
+					/*zoomTo : function(){
 						
 						GEPPETTO.zoomToEntity(this.instancePath);
 						
 						return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath;
-					},
+					},*/
 					
 		           /**
 		            * Get the id associated with entity

@@ -45,6 +45,7 @@ define(function(require) {
 	require('three');
 	require('vendor/THREEx.KeyboardState');
 	require('vendor/ColladaLoader');
+	require('vendor/OBJLoader');
 
 	/**
 	 * Local variables
@@ -245,11 +246,12 @@ define(function(require) {
 			var aspects = entityNode.aspects;
 			var children = entityNode.children;
 			var position = entityNode.position;
+			VARS.entities[entityNode.instancePath] = {};
+			var index = 0;
 			for ( var a in aspects) {
 				var aspect = aspects[a];
 				var meshes = GEPPETTO.getThreeObjectFromVisualizationTree(
-						aspect, entityNode.instancePath,
-						true, material);
+						aspect, true, material);
 				for ( var m in meshes) {
 					var mesh = meshes[m];
 					VARS.scene.add(mesh);
@@ -257,8 +259,11 @@ define(function(require) {
 						mesh.position = new THREE.Vector3(position.x,
 								position.y, position.z);
 					}
-					VARS.entities[mesh.eid] = mesh;
-					VARS.entities[mesh.eid].visible = true;
+					VARS.aspects[mesh.eid] = mesh;
+					VARS.aspects[mesh.eid].visible = true;
+					VARS.aspects[mesh.eid].selected = false;
+					VARS.entities[entityNode.instancePath][index] = VARS.aspects[mesh.eid];
+					index++;
 				}
 			}
 			for ( var c in children) {
@@ -287,8 +292,7 @@ define(function(require) {
 		 *            if true all the visual models will be merged into one,
 		 *            otherwise an array of Three objects will be returned
 		 */
-		getThreeObjectFromVisualizationTree : function(aspect,
-				instancePath, merge, materialParam) {
+		getThreeObjectFromVisualizationTree : function(aspect, merge, materialParam) {
 			var combined = new THREE.Geometry();
 			var material = materialParam == undefined ? GEPPETTO
 					.getMeshPhongMaterial() : materialParam;
@@ -298,55 +302,26 @@ define(function(require) {
 				node = visualizationTree[vm];
 				if (node != null && typeof node === "object") {
 					var metaType = node._metaType;
-
+					//look for group of nodes
 					if (metaType == "CompositeNode") {
 						var firstVO = node[Object.keys(node)[0]];
-
 						var firstVOmetaType = firstVO._metaType;
 
 						if (firstVOmetaType == "ParticleNode") {
-							merge = false;
-							var particleGeometry = new THREE.Geometry();
-							// assumes there are no particles mixed with
-							// other kind of
-							// geometry hence if the first one is a particle
-							// then they all are
-							// create the particle variables
-							var pMaterial = new THREE.ParticleBasicMaterial({
-								size : 5,
-								map : THREE.ImageUtils
-										.loadTexture("images/particle.png"),
-								blending : THREE.AdditiveBlending,
-								depthTest : false,
-								transparent : true
-							});
-							pMaterial.color = new THREE.Color(0xffffff);
-							THREE.ColorConverter.setHSV(pMaterial.color, Math
-									.random(), 1.0, 1.0);
-							pMaterial.originalColor = pMaterial.color
-									.getHexString();
-							for ( var vg in node) {
-								if (node[vg]._metaType == "ParticleNode") {
-									var threeObject = GEPPETTO
-											.getThreeObjectFromJSONGeometry(
-													aspect.instancePath,node[vg], pMaterial);
-									particleGeometry.vertices.push(threeObject);
-								}
-							}
+							merge = false;				
 
-							entityObject = new THREE.ParticleSystem(
-									particleGeometry, pMaterial);
-							entityObject.eid = instancePath;
-							// also update the particle system to sort the
-							// particles which enables the behaviour we want
-							entityObject.sortParticles = true;
-							VARS.visualModelMap[aspect.instancePath] = entityObject;
+							var entityObject = GEPPETTO.createParticleSystem(aspect.instancePath, node);
 							entityObjects.push(entityObject);
 
 						} else if (firstVOmetaType == "ColladaNode") {
 							entityObjects.push(GEPPETTO
-									.getThreeObjectFromJSONGeometry(instancePath,node[vg]));
-						} else if (firstVOmetaType == "CylinderNode"
+									.getThreeObjectFromJSONGeometry(aspect.instancePath,node[vg]));
+						}
+						else if (firstVOmetaType == "OBJNode")
+						{
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(instancePath,node[vg]));
+						}
+						else if (firstVOmetaType == "CylinderNode"
 								|| firstVOmetaType == "SphereNode")
 
 						{
@@ -375,60 +350,29 @@ define(function(require) {
 								entityObject = new THREE.Mesh(combined,
 										material);
 								// entityObject.eindex = eindex;
-								entityObject.eid = instancePath;
+								entityObject.eid = aspect.instancePath;
 								entityObject.geometry.dynamic = false;
 								entityObjects.push(entityObject);
 							}
 						}
 					} else {
 						if (metaType == "ParticleNode") {
-							merge = false;
-							var particleGeometry = new THREE.Geometry();
-							// assumes there are no particles mixed with
-							// other kind of
-							// geometry hence if the first one is a particle
-							// then they all are
-							// create the particle variables
-							var pMaterial = new THREE.ParticleBasicMaterial({
-								size : 5,
-								map : THREE.ImageUtils
-										.loadTexture("images/particle.png"),
-								blending : THREE.AdditiveBlending,
-								depthTest : false,
-								transparent : true
-							});
-							pMaterial.color = new THREE.Color(0xffffff);
-							THREE.ColorConverter.setHSV(pMaterial.color, Math
-									.random(), 1.0, 1.0);
-							pMaterial.originalColor = pMaterial.color
-									.getHexString();
-
-							var threeObject = GEPPETTO
-									.getThreeObjectFromJSONGeometry(aspect.instancePath,node,
-											pMaterial);
-							particleGeometry.vertices.push(threeObject);
-
-							entityObject = new THREE.ParticleSystem(
-									particleGeometry, pMaterial);
-							entityObject.eid = instancePath;
-							// also update the particle system to sort the
-							// particles which enables the behaviour we want
-							entityObject.sortParticles = true;
-							VARS.visualModelMap[aspect.instancePath] = entityObject;
+							var entityObject = GEPPETTO.createParticleSystem(aspect.instancePath, visualizationTree);
 							entityObjects.push(entityObject);
 
-						} else if (metaType == "ColladaNode") {
+						}else if (metaType == "ColladaNode") {
 							entityObjects.push(GEPPETTO
 									.getThreeObjectFromJSONGeometry(aspect.instancePath,node));
-						} else if (metaType == "CylinderNode"
+						} 
+						else if (metaType == "OBJNode")
+						{
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(aspect.instancePath,node));
+						}
+						else if (metaType == "CylinderNode"
 								|| metaType == "SphereNode")
 
 						{
 							if (!merge) {
-								// if we are not merging combine is local and
-								// only
-								// the visual objects within
-								// the same visual model will be combined
 								combined = new THREE.Geometry();
 							}
 
@@ -445,7 +389,7 @@ define(function(require) {
 								entityObject = new THREE.Mesh(combined,
 										material);
 								// entityObject.eindex = eindex;
-								entityObject.eid = instancePath;
+								entityObject.eid = aspect.instancePath;
 								entityObject.geometry.dynamic = false;
 								entityObjects.push(entityObject);
 							}
@@ -458,11 +402,51 @@ define(function(require) {
 			if (merge) {
 				entityObject = new THREE.Mesh(combined, material);
 				// entityObject.eindex = eindex;
-				entityObject.eid = instancePath;
+				entityObject.eid = aspect.instancePath;
 				entityObject.geometry.dynamic = false;
 				entityObjects.push(entityObject);
 			}
 			return entityObjects;
+		},
+		
+		createParticleSystem : function(instancePath, node){
+			var particleGeometry = new THREE.Geometry();
+			// assumes there are no particles mixed with
+			// other kind of
+			// geometry hence if the first one is a particle
+			// then they all are
+			// create the particle variables
+			var pMaterial = new THREE.ParticleBasicMaterial({
+				size : 5,
+				map : THREE.ImageUtils
+						.loadTexture("images/particle.png"),
+				blending : THREE.AdditiveBlending,
+				depthTest : false,
+				transparent : true
+			});
+			pMaterial.color = new THREE.Color(0xffffff);
+			THREE.ColorConverter.setHSV(pMaterial.color, Math
+					.random(), 1.0, 1.0);
+			pMaterial.originalColor = pMaterial.color
+					.getHexString();
+			for ( var vg in node) {
+				if (node[vg]._metaType == "ParticleNode") {
+					var threeObject = GEPPETTO
+							.getThreeObjectFromJSONGeometry(
+									instancePath,node[vg], pMaterial);
+					particleGeometry.vertices.push(threeObject);
+				}
+			}
+
+			var entityObject = new THREE.ParticleSystem(
+					particleGeometry, pMaterial);
+			entityObject.eid = instancePath;
+			// also update the particle system to sort the
+			// particles which enables the behaviour we want
+			entityObject.sortParticles = true;
+			VARS.visualModelMap[instancePath] = entityObject;
+
+			return entityObject;
 		},
 
 		/**
@@ -585,7 +569,7 @@ define(function(require) {
 				var loader = new THREE.ColladaLoader();
 				loader.options.convertUpAxis = true;
 				var xmlParser = new DOMParser();
-				var responseXML = xmlParser.parseFromString(g.model,
+				var responseXML = xmlParser.parseFromString(g.model.data,
 						"application/xml");
 				loader.parse(responseXML, function(collada) {
 
@@ -593,7 +577,18 @@ define(function(require) {
 
 				});
 				break;
+			case "OBJNode":
+				var manager = new THREE.LoadingManager();
+				manager.onProgress = function ( item, loaded, total ) {
+
+					console.log( item, loaded, total );
+
+				};
+				var loader = new THREE.OBJLoader( manager );
+				threeObject=loader.parse(g.model.data);
+				break;
 			}
+			threeObject.visible = true;
 			// add the geometry to a map indexed by the geometry id so we can
 			// find it
 			// for updating purposes
@@ -811,15 +806,11 @@ define(function(require) {
 		selectEntity : function(instancePath) {
 			for ( var v in VARS.entities) {
 				if(v == instancePath){
-					for ( var s in VARS.selected) {
-						if (VARS.selected[s].eid == instancePath ) {
-							return false;
-						}
+					var entity = VARS.entities[v];
+					for(var a in entity){
+						GEPPETTO.selectAspect(entity[a].eid);
 					}
-					var index = VARS.selected.length;
-					VARS.selected[index] = VARS.entities[v];
-					VARS.entities[v].material.color.setHex(0xFFFF33);
-
+					
 					return true;
 				}
 			}
@@ -827,25 +818,25 @@ define(function(require) {
 		},
 		
 		unselectEntity : function(instancePath) {
-			for ( var key in VARS.selected) {
-				if(VARS.selected[key].eid == instancePath){
-					VARS.selected[key].material.color.setHex(Math.random() * 0xffffff);
-					VARS.selected.splice(key, 1);
+			for ( var v in VARS.entities) {
+				if(v == instancePath){
+					var entity = VARS.entities[v];
+					for(var a in entity){
+						GEPPETTO.unselectAspect(entity[a].eid);
+					}
+					
 					return true;
 				}
 			}
-
 			return false;
 		},
 
 		showEntity : function(instancePath) {
 			for ( var v in VARS.entities) {
 				if (v == instancePath) {
-					if (VARS.entities[v].visible == true) {
-						return false;
-					} else {
-						VARS.entities[v].visible = true;
-						return true;
+					var entity = VARS.entities[v];
+					for(var a in entity){
+						GEPPETTO.showAspect(entity[a].eid);
 					}
 				}
 			}
@@ -857,11 +848,9 @@ define(function(require) {
 		hideEntity : function(instancePath) {
 			for ( var v in VARS.entities) {
 				if (v == instancePath) {
-					if (VARS.entities[v].visible == false) {
-						return false;
-					} else {
-						VARS.entities[v].visible = false;
-						return true;
+					var entity = VARS.entities[v];
+					for(var a in entity){
+						GEPPETTO.hideAspect(entity[a].eid);
 					}
 				}
 			}
@@ -870,15 +859,88 @@ define(function(require) {
 		},
 
 		zoomToEntity : function(instancePath) {
-			var entity;
-			for ( var v in VARS.entities) {
-				if (v == instancePath) {
-					entity = VARS.entities[v];
+			var entity = null;
+			for ( var e in VARS.entities) {
+				if ( e == instancePath) {
+					entity = VARS.entities[e];
 				}
 			}
 			
 			if(entity!=null){
 				GEPPETTO.calculateSceneCenter(entity);
+				GEPPETTO.updateCamera();
+			}
+		},
+		
+		selectAspect : function(instancePath) {
+			for ( var v in VARS.aspects) {
+				if(v == instancePath){
+					if(VARS.aspects[v].selected == false){
+						VARS.aspects[v].material.color.setHex(0xFFFF33);
+						VARS.aspects[v].selected = true;
+					}
+					
+					return true;
+				}
+			}
+			return false;
+		},
+		
+		unselectAspect : function(instancePath) {
+			for ( var key in VARS.aspects) {
+				if(key == instancePath){
+					if(VARS.aspects[key].selected == true){
+						VARS.aspects[key].material.color.setHex(Math.random() * 0xffffff);
+						VARS.aspects[key].selected = false;
+					}
+					return true;
+				}
+			}
+
+			return false;
+		},
+
+		showAspect : function(instancePath) {
+			for ( var v in VARS.aspects) {
+				if (v == instancePath) {
+					if (VARS.aspects[v].visible == true) {
+						return false;
+					} else {
+						VARS.aspects[v].visible = true;
+						return true;
+					}
+				}
+			}
+			;
+
+			return false;
+		},
+		
+		hideAspect : function(instancePath) {
+			for ( var v in VARS.aspects) {
+				if (v == instancePath) {
+					if (VARS.aspects[v].visible == false) {
+						return false;
+					} else {
+						VARS.aspects[v].visible = false;
+						return true;
+					}
+				}
+			}
+			;
+			return false;
+		},
+
+		zoomToAspect : function(instancePath) {
+			var aspect;
+			for ( var a in VARS.aspects) {
+				if ( instancepath == a) {
+					aspect = VARS.aspects[a];
+				}
+			}
+			
+			if(aspect!=null){
+				GEPPETTO.calculateSceneCenter(aspect);
 				GEPPETTO.updateCamera();
 			}
 		},

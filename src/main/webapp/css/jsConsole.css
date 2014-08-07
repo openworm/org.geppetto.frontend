@@ -19,8 +19,10 @@
 	   -moz-box-shadow:none;
 	        box-shadow:none;
 }
+
+
 #console {
-	background:rgba(66,59,59,0.50);
+	background:rgba(66,59,59,0.80);
 	color: #ccc;
 	padding:20px 20px 18px 20px;
 	height: 250px;

@@ -12,6 +12,7 @@ define(function(require) {
 			controls: null,
 			scene: null,
 			entities : {},
+			aspects : {},
 			renderer: null,
 			stats: null,
 			gui: null,

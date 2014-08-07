@@ -417,11 +417,13 @@ input {
 	width: 100%;
 }
 
+
 #consoleButton {
 	margin: 0 auto;
 	margin-bottom:26px;
 	position: relative;
-	background: rgba(66,59,59,0.50);
+	background: rgba(66,59,59,0.80);
+	
 	color: #fd6808;
 	bottom: -26px;
 	border-color: #2e2828;

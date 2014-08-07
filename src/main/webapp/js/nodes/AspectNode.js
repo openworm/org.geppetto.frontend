@@ -60,22 +60,88 @@ define(function(require) {
 
 
 		/**
-		 * Hides the aspect
-		 *
-		 * @name AspectNode.hide()
-		 */
-		 hide : function(){
-		 },
+         * Hides the aspect
+         *
+         * @name AspectNode.hide()
+         *
+         */
+        hide : function(){
+     	   var message; 
+     	   
+     	   if(GEPPETTO.hideAspect(this.instancePath)){
+     		   message = GEPPETTO.Resources.HIDE_ASPECT;
+     	   }
+     	   else{
+     		   message = GEPPETTO.Resources.ASPECT_ALREADY_HIDDING;
+     	   }
+     	   this.visible = false;
+     	   
+			   return message;
+        },
 
-		 /**
-		  * Shows the aspect
-		  *
-		  * @name AspectNode.show()
-		  */
-		 show : function(){
-		 },
+        /**
+         * Shows the aspect
+         *
+         * @name AspectNode.show()
+         *
+         */
+        show : function(){
+     	   var message; 
+     	   
+     	   if(GEPPETTO.showAspect(this.instancePath)){
+     		   message = GEPPETTO.Resources.SHOW_ASPECT;
+     	   }
+     	   else{
+     		   message = GEPPETTO.Resources.ASPECT_ALREADY_VISIBLE;
+     	   }
+     	   this.visible = true;
+     	   
+			   return message;
+     	   						
+        },
+        
+        /**
+         * Unselects the aspect
+         *
+         * @name AspectNode.unselect()
+         *
+         */
+        unselect : function(){
+     	   var message; 
+     	   
+     	   if(GEPPETTO.unselectAspect(this.instancePath)){
+     		   message = GEPPETTO.Resources.UNSELECTING_ASPECT;
+     	   }
+     	   else{
+     		   message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
+     	   }
+     	   this.selected = false;
+     	   
+			   return message;
+        },
 
-		 /**
+        /**
+         * Selects the aspect
+         *
+         * @name AspectNode.unselect()
+         *
+         */
+        select : function(){
+
+        	var message; 
+
+        	if(GEPPETTO.selectAspect(this.instancePath)){
+        		message = GEPPETTO.Resources.SELECTING_ASPECT;
+        	}
+        	else{
+        		message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
+        	}
+        	this.selected = true;
+
+        	return message;
+        },
+
+        /**
 		  * Get the model interpreter associated with aspect
 		  *
 		  * @name AspectNode.getId()

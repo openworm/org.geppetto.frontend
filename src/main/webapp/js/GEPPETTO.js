@@ -247,13 +247,13 @@ define(function(require) {
 			var children = entityNode.children;
 			var position = entityNode.position;
 			VARS.entities[entityNode.instancePath] = {};
-			var index = 0;
 			for ( var a in aspects) {
 				var aspect = aspects[a];
 				var meshes = GEPPETTO.getThreeObjectFromVisualizationTree(
 						aspect, true, material);
 				for ( var m in meshes) {
 					var mesh = meshes[m];
+					mesh.name = aspect.instancePath;
 					VARS.scene.add(mesh);
 					if (position != null) {
 						mesh.position = new THREE.Vector3(position.x,
@@ -262,8 +262,9 @@ define(function(require) {
 					VARS.aspects[mesh.eid] = mesh;
 					VARS.aspects[mesh.eid].visible = true;
 					VARS.aspects[mesh.eid].selected = false;
-					VARS.entities[entityNode.instancePath][index] = VARS.aspects[mesh.eid];
-					index++;
+					VARS.entities[entityNode.instancePath].selected = false;
+					VARS.entities[entityNode.instancePath][mesh.eid] = VARS.aspects[mesh.eid];
+					VARS.entities[entityNode.instancePath][mesh.eid].selected = false;
 				}
 			}
 			for ( var c in children) {
@@ -319,7 +320,7 @@ define(function(require) {
 						}
 						else if (firstVOmetaType == "OBJNode")
 						{
-							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(instancePath,node[vg]));
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(aspect.instancePath,node[vg]));
 						}
 						else if (firstVOmetaType == "CylinderNode"
 								|| firstVOmetaType == "SphereNode")
@@ -803,15 +804,30 @@ define(function(require) {
 			return threeObject;
 		},
 
+		unSelectAll : function() {
+			for ( var v in VARS.entities) {
+				var entity = VARS.entities[v];
+				for(var e in entity){
+					if(entity[e].selected == true){
+						entity.selected = false;
+						GEPPETTO.unselectAspect(entity[e].eid);
+					}
+				}
+			}
+		},
+		
 		selectEntity : function(instancePath) {
 			for ( var v in VARS.entities) {
 				if(v == instancePath){
 					var entity = VARS.entities[v];
-					for(var a in entity){
-						GEPPETTO.selectAspect(entity[a].eid);
+					if(entity.selected == false){
+						entity.selected = true;
+						for(var a in entity){
+							GEPPETTO.selectAspect(entity[a].eid);
+						}
+
+						return true;
 					}
-					
-					return true;
 				}
 			}
 			return false;
@@ -821,11 +837,14 @@ define(function(require) {
 			for ( var v in VARS.entities) {
 				if(v == instancePath){
 					var entity = VARS.entities[v];
-					for(var a in entity){
-						GEPPETTO.unselectAspect(entity[a].eid);
+					if(entity.selected == true){
+						entity.selected = false;
+						for(var a in entity){
+							GEPPETTO.unselectAspect(entity[a].eid);
+						}
+
+						return true;
 					}
-					
-					return true;
 				}
 			}
 			return false;

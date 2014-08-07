@@ -244,6 +244,19 @@ define(function(require) {
 			
 			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
 
+			SELECTING_ASPECT : "Selecting aspect.",
+			UNSELECTING_ASPECT : "Unselecting entity.",
+			SHOW_ASPECT : "Showing entity.",
+			ASPECT_ALREADY_VISIBLE : "Aspect already visible.",
+			HIDE_ASPECT : "Hiding entity.",
+			ASPECT_ALREADY_HIDDING : "Aspect already invisible.",
+			ZOOM_TO_ASPECT : "Zooming to aspect.",
+			
+			ASPECT_ALREADY_SELECTED : "Aspect already selected",
+			
+			ASPECT_NOT_SELECTED : "Aspect not selected, can't uselect what it isn't selected.",
+
+			
 			/**
 			 * GEPPETTO resources
 			 */

@@ -35,7 +35,7 @@ define(function (require) {
             
             this.hide();
             
-            React.renderComponent(LoadingSpinner({show:true}), $('#modal-region').get(0));
+            React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
         },
 
         loadSimulationTemplate: function() {
@@ -65,16 +65,15 @@ define(function (require) {
                 this.loadSimulationTemplate();
             }
 
-            GEPPETTO.on('simulation:configloaded', this.setSimulationXML);
-            
-            if(GEPPETTO.tutorialEnabled) {
-                $(this.getDOMNode()).on('shown.bs.modal', function(){
+            GEPPETTO.on('simulation:configloaded', this.setSimulationXML);          
+            $(this.getDOMNode()).on('shown.bs.modal', function(){
+                if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.select-model').popover({
                         content: 'You can load a sample simulation from the list available. Alternatively, you can enter the URL of your own simulation in the input field above. Open the dropdown list and select the third simulation. Then press continue to go to the next step',
                         placement: 'auto bottom'
                     }).popover('show');
-                });
-            }
+                }
+            }); 
         },
         
         componentWillUnmount: function(){
@@ -85,11 +84,12 @@ define(function (require) {
             var url = event.target.value;
             if(url) {
                 this.loadSimulationURL(url);
-                if(GEPPETTO.tutorialEnabled) {
+                if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.load-sim-button').popover({
                         title: 'Load Simulation',
                         content: 'Use the Load button to load the simulation. Click the button now to continue with tutorial.',
                     }).popover('show');
+                    GEPPETTO.tutorialLoadingStep = true;
                 } 
             }
             this.setState({disableLoad:!url, simulationUrl: url});

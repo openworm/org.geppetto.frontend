@@ -99,6 +99,11 @@ div#preloaded-images {
 	font-weight: 300;
 }
 
+.spinner-backdrop {
+	width:100%;
+	height:100%;
+}
+
 .spinner-container {
 	position:absolute;
 	left: 35%;

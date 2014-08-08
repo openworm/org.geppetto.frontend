@@ -24,9 +24,11 @@ define(function(require) {
 		render: function () {
             return (
             	<div className="modal fade">
-            		<div className="spinner-container">
-            			<div className="asterisk icon-spin"></div>
-            			<p id="loadingmodaltext" className="orange">{this.props.text}</p>
+            		<div className="spinner-backdrop">
+	            		<div className="spinner-container">
+	            			<div className="asterisk icon-spin"></div>
+	            			<p id="loadingmodaltext" className="orange">{this.props.text}</p>
+	            		</div>
             		</div>
             	</div>
             	);

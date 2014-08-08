@@ -355,8 +355,9 @@ input {
 	overflow: visible;
 }
 
-#helpmodal .modal-body{
+.help-modal .modal-body{
 	overflow-y: auto;
+	max-height : 500px;
 }
 
 .dropdown-menu {

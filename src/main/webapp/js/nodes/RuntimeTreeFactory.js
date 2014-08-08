@@ -168,7 +168,7 @@ define(function(require) {
 					aspect.ModelTree = this.modelJSONToNodes(subTree, modelTree);
 
 					//notify user received tree was empty
-					if(jQuery.isEmptyObject(aspect.ModelTree)){
+					if(aspect.ModelTree.getChildren().length==0){
 						var indent = "    ";
 						GEPPETTO.Console.log(indent + GEPPETTO.Resources.EMPTY_MODEL_TREE);
 					}else{

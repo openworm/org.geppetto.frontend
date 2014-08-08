@@ -174,7 +174,7 @@ define(function(require) {
 			 * Creates Javascript Console
 			 */
 			createConsole: function() {
-              var consoleElement = $("#console");
+             	var consoleElement = $("#console");
 				// Create the sandbox console:
 				console = new GEPPETTO.Sandbox.View({
 					el: consoleElement,
@@ -184,10 +184,6 @@ define(function(require) {
 					placeholder: "// type a javascript command and hit enter (help() for info)"
 				});
 
-                var width = $("#footer").width();
-
-				consoleElement.css("width", width - 40);
-
 				//allow console to be resizable
 				consoleElement.resizable({
 					handles: 'n',
@@ -195,14 +191,9 @@ define(function(require) {
 					autoHide: true,
 					maxHeight: 400,
 					resize: function(event, ui) {
-						consoleElement.style.top = "0px";
+						consoleElement.get(0).style.top = "0px";
 						$(document.getElementById('footer')).height(ui.size.height + 86);
-					}
-				});
-
-				//handles resizing the JS console when the windows is resized
-				$(window).resize(function() {
-					consoleElement.css("width", width - 40);
+					}.bind(this)
 				});
 
 				autoComplete();

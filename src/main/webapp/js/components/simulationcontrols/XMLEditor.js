@@ -76,11 +76,11 @@ define(function (require) {
                     lineNumbers: true,
                     theme: "lesser-dark",
                     extraKeys: {
-                        "F11": function (cm) {
+                        "F11": function () {
                             self.setFullScreen(!self.isFullScreen());
                         },
-                        "Esc": function (cm) {
-                            if (self.isFullScreen(cm)) {
+                        "Esc": function () {
+                            if (self.isFullScreen()) {
                                 self.setFullScreen(false);
                             }
                         }

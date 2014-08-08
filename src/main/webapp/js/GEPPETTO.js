@@ -39,7 +39,9 @@
 
 define(function(require) {
 
-	var $ = require('jquery'), _ = require('underscore');
+	var $ = require('jquery'), 
+		_ = require('underscore'), 
+		Backbone = require('backbone');
 
 	require('vendor/Detector');
 	require('three');
@@ -1026,13 +1028,15 @@ define(function(require) {
 		}
 	};
 
+    _.extend(GEPPETTO, Backbone.Events);
+
 	require('SandboxConsole')(GEPPETTO);
 	require('GEPPETTO.Resources')(GEPPETTO);
 	require('GEPPETTO.Init')(GEPPETTO);
 	require('GEPPETTO.Vanilla')(GEPPETTO);
 	require('GEPPETTO.FE')(GEPPETTO);
 	require('GEPPETTO.ScriptRunner')(GEPPETTO);
-	require('GEPPETTO.SimulationContentEditor')(GEPPETTO);
+	//require('GEPPETTO.SimulationContentEditor')(GEPPETTO);
 	require('GEPPETTO.JSEditor')(GEPPETTO);
 	require('GEPPETTO.Console')(GEPPETTO);
 	require('GEPPETTO.Utility')(GEPPETTO);
@@ -1043,9 +1047,10 @@ define(function(require) {
 	require('geppetto-objects/Simulation')(GEPPETTO);
 	require('geppetto-objects/G')(GEPPETTO);
 	require('GEPPETTO.Main')(GEPPETTO);
-	require('GEPPETTO.Tutorial')(GEPPETTO);
+	//require('GEPPETTO.Tutorial')(GEPPETTO);
 	require("widgets/includeWidget")(GEPPETTO);
 	require('nodes/RuntimeTreeFactory')(GEPPETTO);
+
 
 	return GEPPETTO;
 

@@ -138,6 +138,7 @@ define(function(require) {
 				else {
 					return GEPPETTO.Resources.SIMULATION_NOT_LOADED;
 				}
+
 			},
 
 			/**
@@ -168,7 +169,6 @@ define(function(require) {
 					GEPPETTO.FE.update(webGLStarted);
 					//Keep going with load of simulation only if webgl container was created
 					if(webGLStarted) {
-						GEPPETTO.FE.activateLoader("show", GEPPETTO.Resources.LOADING_SIMULATION);
 						if(this.status == this.StatusEnum.INIT) {
 							//we call it only the first time
 							GEPPETTO.animate();
@@ -185,12 +185,6 @@ define(function(require) {
 				}
 
 				this.simulationStates = [];
-				//time simulation, display appropriate message if taking too long
-				this.loadTimer = setInterval(function simulationTakingTooLong(){
-					if(Simulation.loading){
-						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
-					}
-				},15000);
 				this.loading = true;
 
 				return loadStatus;
@@ -218,7 +212,6 @@ define(function(require) {
 				GEPPETTO.FE.update(webGLStarted);
 				//Keep going with load of simulation only if webgl container was created
 				if(webGLStarted) {
-					GEPPETTO.FE.activateLoader("show", GEPPETTO.Resources.LOADING_SIMULATION);
 					if(GEPPETTO.Simulation.status == GEPPETTO.Simulation.StatusEnum.INIT) {
 						//we call it only the first time
 						GEPPETTO.animate();
@@ -229,12 +222,6 @@ define(function(require) {
 					GEPPETTO.FE.SimulationReloaded();
 				}
 
-				//time simulation, display appropriate message if taking too long
-				setInterval(function simulationTakingTooLong(){
-					if(Simulation.loading){
-						$('#loadingmodaltext').html(GEPPETTO.Resources.LOADING_SIMULATION_SLOW);
-					}
-				},15000);
 				this.loading = true;
 				
 				return GEPPETTO.Resources.LOADING_SIMULATION;
@@ -408,10 +395,7 @@ define(function(require) {
 				this.loading = false;
 				
 				//Reset the simulation states
-				this.simulationStates=[];
-				
-				window.clearInterval(this.loadTimer);
-				this.loadTimer = 0;
+				this.simulationStates=[];				
 			},
 			
 			getEntities : function(){

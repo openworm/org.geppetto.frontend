@@ -35,7 +35,6 @@
  */
 define(function(require) {
 	return function(GEPPETTO) {
-		var $ = require('jquery');
 
 		var updateTime = function(time) {
 			if(time) {
@@ -74,16 +73,12 @@ define(function(require) {
             GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
             var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
-            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);
-            
+            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);           
             GEPPETTO.Simulation.setSimulationLoaded();
-
+            GEPPETTO.trigger('simulation:modelloaded');
+            
             //Populate scene
             GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
-
-            if(GEPPETTO.Tutorial.isTutorialOn()){
-                GEPPETTO.Tutorial.startPopover();
-            }
         };
 
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
@@ -105,17 +100,13 @@ define(function(require) {
             }
         };
 
-        messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {
-            //Load simulation file into display area
-            GEPPETTO.SimulationContentEditor.loadSimulationInfo(payload.configuration);
-            //Auto Format Simulation FIle display
-            GEPPETTO.SimulationContentEditor.autoFormat();
+        messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {            
+            GEPPETTO.trigger('simulation:configloaded', payload.configuration);
 
         };
 
         messageHandler[messageTypes.SIMULATION_LOADED] = function() {
-            $('#start').removeAttr('disabled');
-            $('#loadingmodal').modal('hide');
+            GEPPETTO.trigger('simulation:loaded');
         };
 
         messageHandler[messageTypes.FIRE_SIM_SCRIPTS] = function(payload) {
@@ -127,23 +118,19 @@ define(function(require) {
                 //run the received scripts
                 GEPPETTO.ScriptRunner.fireScripts(scripts);
             }
-            else {
-                //hide loading modal, no scripts associated with simulation
-                $('#loadingmodal').modal('hide');
-            }
         };
 
         //Simulation has been started, enable pause button
         messageHandler[messageTypes.SIMULATION_STARTED] = function() {
-            GEPPETTO.FE.updateStartEvent();
+            GEPPETTO.trigger('simulation:started');
         };
 
         messageHandler[messageTypes.SIMULATION_STOPPED] = function() {
-            GEPPETTO.FE.updateStopEvent();
+            GEPPETTO.trigger('simulation:stopped');
         };
 
         messageHandler[messageTypes.SIMULATION_PAUSED] = function() {
-            GEPPETTO.FE.updatePauseEvent();
+            GEPPETTO.trigger('simulation:paused');
         };
 
         messageHandler[messageTypes.LIST_WATCH_VARS] = function(payload) {

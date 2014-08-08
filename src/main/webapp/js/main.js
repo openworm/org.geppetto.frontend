@@ -46,14 +46,18 @@ require.config({
 	 * E.G. If depenedency it's used more than once, it goes in here.
 	 */
 	paths : {
-		'jquery' :"vendor/jquery-1.9.1.min",
-		'three' : 'vendor/three.min',
-		'codemirror' :"vendor/codemirror.min",
-		'underscore' : 'vendor/underscore.min',
-		'backbone' : 'vendor/backbone.min',
+		jquery :"vendor/jquery-1.9.1.min",
+		three : 'vendor/three.min',
+		codemirror :"vendor/codemirror.min",
+		underscore : 'vendor/underscore.min',
+		backbone : 'vendor/backbone.min',
 		'backbone-store' : 'vendor/backbone-localStorage.min',
 		'backbone-associations' : 'vendor/backbone-associations-min',
-		'geppetto' : "GEPPETTO"
+		geppetto : 'GEPPETTO',
+		react: 'vendor/react',
+		jsx: 'vendor/jsx',
+        JSXTransformer: 'vendor/JSXTransformer',
+        text: 'vendor/text'
 	},
 	/*
 	 * Notes what dependencies are needed prior to loading each library, values on the right
@@ -76,6 +80,9 @@ require.config({
 		'vendor/Detector' : ["jquery"],
 		'vendor/jquery.cookie' : ["jquery"],
 		'vendor/rAF': ["jquery"],
+		JSXTransformer: {
+            exports: "JSXTransformer"
+        }
 	}
 });
 
@@ -110,6 +117,9 @@ require(jqueryLib, function($, geppetto){
 		window.G = GEPPETTO.G;
 		window.Widgets = GEPPETTO.Widgets;
 		window.help = GEPPETTO.Utility.help;
+		
+        require(['components/app'],function(){});
+
 	});
 });
 

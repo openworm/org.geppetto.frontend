@@ -71,12 +71,12 @@ define(function(require) {
 			};
 
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
+			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/development/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
 		});
 
 		module("Simulation Load From Content Tests 2");
 		asyncTest("Test Load Simulation", function() {
-			expect(1);
+			expect(1)
 			GEPPETTO.MessageSocket.clearHandlers();
 
 			var handler = {
@@ -113,7 +113,7 @@ define(function(require) {
 							var scene = JSON.parse(payload.update).scene;
 							var entities=0, aspects=0, subtrees = 0;
 							
-				            GEPPETTO.NodeFactory.createNodes(scene);
+				            GEPPETTO.RuntimeTreeFactory.createNodes(scene);
 
 							for(var e in scene){
 								if(scene[e]._metaType == "EntityNode"){
@@ -190,7 +190,7 @@ define(function(require) {
 				        	var aspectID = update.aspectID;
 				        	var modelTree = update.modelTree;
 				        	
-				        	GEPPETTO.NodeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
+				        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
 
 				        	notEqual(null, hhcell.electrical.ModelTree, "Model tree received, not empty");
 				        	start();
@@ -219,7 +219,7 @@ define(function(require) {
 								var scene = JSON.parse(payload.update).scene;
 								var entities=0, aspects=0, subtrees = 0;
 								
-					            GEPPETTO.NodeFactory.createNodes(scene);
+					            GEPPETTO.RuntimeTreeFactory.createNodes(scene);
 
 								for(var e in scene){
 									if(scene[e]._metaType == "EntityNode"){
@@ -296,7 +296,7 @@ define(function(require) {
 					        	var aspectID = update.aspectID;
 					        	var modelTree = update.modelTree;
 					        	
-					        	GEPPETTO.NodeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
+					        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
 
 					        	ok(null, sample.fluid.ModelTree, "Model tree received, empty");
 					        	start();

@@ -14,7 +14,7 @@ define(function (require) {
             'Click this button to continue with tutorial.',
 
         onClick: function () {
-            React.renderComponent(LoadSimModal({show:true}), document.getElementById('modal-region'));
+            React.renderComponent(LoadSimModal({show:true, keyboard:false}), document.getElementById('modal-region'));
         },
 
         componentDidMount: function() {

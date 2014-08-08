@@ -249,6 +249,12 @@ input {
 .modal-footer .popover {
 	position: relative;
 }
+
+.modal-dialog.fullscreen {
+	width:95%;
+	height:85%;
+}
+
 .squareB {
 	width: 24px;
 	height: 24px;
@@ -443,10 +449,16 @@ input {
 	-webkit-transform: translateZ(0);
 }
 
+.expand-editor.icon-fullscreen {
+	position: absolute;
+	top: 70px;
+	right: 15px;
+}
+
 
 .CodeMirror {
 	border: 1px solid #cccccc;
-	width: 100%;
+	width: 95%;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;

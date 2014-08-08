@@ -1025,7 +1025,11 @@ define(function(require) {
 				_gaq.push([ '_trackEvent', category, action, opt_label,
 						opt_value, opt_noninteraction ]);
 			}
-		}
+		},
+
+		winHeight: function() {
+			return window.innerHeight || (document.documentElement || document.body).clientHeight;
+		},
 	};
 
     _.extend(GEPPETTO, Backbone.Events);

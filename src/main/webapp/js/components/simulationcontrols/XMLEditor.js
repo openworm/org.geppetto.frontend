@@ -21,8 +21,35 @@ define(function (require) {
             }, 20);
         },
 
+        showFullscreen: function() {
+            this.setFullScreen(true);
+        },
+
+        setFullScreen: function(fullscreen) {
+
+            var wrap = this.xmlEditor.getWrapperElement();
+            if(fullscreen) {
+                $('.modal-dialog').addClass('fullscreen');
+                wrap.className += " CodeMirror-fullscreen";
+                wrap.style.height = GEPPETTO.winHeight() + "px";
+                document.documentElement.style.overflow = "hidden";
+            }
+            else {
+                $('.modal-dialog').removeClass('fullscreen');
+                wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
+                wrap.style.height = "";
+                document.documentElement.style.overflow = "";
+            }
+
+            this.xmlEditor.focus();
+
+            setTimeout(function() {
+                this.xmlEditor.refresh();
+            }.bind(this), 20);           
+        },
+
         isFullScreen: function (cm) {
-            return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
+            return /\bCodeMirror-fullscreen\b/.test(this.xmlEditor.getWrapperElement().className);
         },
 
         componentDidUpdate: function() {
@@ -32,6 +59,13 @@ define(function (require) {
                 var totalChars = this.xmlEditor.getTextArea().value.length;
                 this.xmlEditor.autoFormatRange({line:0, ch:0}, {line:totalLines, ch:totalChars});
             }
+
+            CodeMirror.on(window, "resize", function() {
+                var showing = document.body.getElementsByClassName("CodeMirror-fullscreen")[0];
+                if(showing) {
+                    showing.CodeMirror.getWrapperElement().style.height = GEPPETTO.winHeight() + "px";
+                }                
+            });
         },
 
         componentDidMount: function () {
@@ -43,11 +77,11 @@ define(function (require) {
                     theme: "lesser-dark",
                     extraKeys: {
                         "F11": function (cm) {
-                            self.setFullScreen(cm, !self.isFullScreen(cm));
+                            self.setFullScreen(!self.isFullScreen());
                         },
                         "Esc": function (cm) {
                             if (self.isFullScreen(cm)) {
-                                self.setFullScreen(cm, false);
+                                self.setFullScreen(false);
                             }
                         }
                     }
@@ -69,6 +103,7 @@ define(function (require) {
                     <div className="col-sm-10">
                         <textarea id="xmlCodeEditor" className="form-control" placeholder="" />
                     </div>
+                    <i className="icon-fullscreen expand-editor pull-right" onClick={this.showFullscreen}></i>
                 </div>
                 );
         }

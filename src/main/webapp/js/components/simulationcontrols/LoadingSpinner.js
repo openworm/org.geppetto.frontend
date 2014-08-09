@@ -23,7 +23,7 @@ define(function(require) {
 		
 		render: function () {
             return (
-            	<div className="modal fade">
+            	<div className="modal fade" id="loading-spinner">
             		<div className="spinner-backdrop">
 	            		<div className="spinner-container">
 	            			<div className="asterisk icon-spin"></div>

@@ -43,7 +43,8 @@
  */
 define(function(require) {
 	return function(GEPPETTO) {
-		var $ = require('jquery');
+		var $ = require('jquery')
+		InfoModal = require('jsx!components/popups/InfoModal');
 
 		GEPPETTO.Main = {
 
@@ -81,6 +82,7 @@ define(function(require) {
 					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
                         var infomodalBtn = $('#infomodal-btn');
 
+        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("Zzz");
 						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
 						infomodalBtn.html("Yes");
@@ -92,8 +94,6 @@ define(function(require) {
 							//unbind click event so we can reuse same modal for other alerts
 							infomodalBtn.unbind('click');
 						});
-
-						$('#infomodal').modal();
 					}
 
 					//second check, user isn't there or didn't click yes, disconnect

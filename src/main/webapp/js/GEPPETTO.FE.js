@@ -39,7 +39,10 @@ define(function(require) {
 
 	return function(GEPPETTO) {
 
-		var $ = require('jquery');
+		var React = require('react'),
+		 $ = require('jquery'),
+	     InfoModal = require('jsx!components/popups/InfoModal'),
+	     ErrorModal = require('jsx!components/popups/ErrorModal');
 		/**
 		 * Create the container for holding the canvas
 		 *
@@ -115,6 +118,7 @@ define(function(require) {
 			 * @param msg
 			 */
 			observersDialog: function(title, msg) {
+	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 				$('#infomodal-title').html(title);
 				$('#infomodal-text').html(msg);
 				$('#infomodal-btn').html("<i class='icon-eye-open '></i> Observe").click(function() {
@@ -123,7 +127,6 @@ define(function(require) {
 					//unbind click event so we can reuse same modal for other alerts
 					$('#infomodal-btn').unbind('click');
 				});
-				$('#infomodal').modal();
 
 				//black out welcome message
 				$('#welcomeMessageModal').css('opacity', '0.0');
@@ -138,10 +141,12 @@ define(function(require) {
 			 * @param msg - Message to display
 			 */
 			infoDialog: function(title, msg) {
+	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 				$('#infomodal-title').html(title);
 				$('#infomodal-text').html(msg);
 				$('#infomodal-btn').html("OK").off('click');
-				$('#infomodal').modal();
+				//hide loading spinner
+				$('#loading-spinner').modal();
 			},
 			
 			/**
@@ -156,6 +161,7 @@ define(function(require) {
 			 * @param exception - Exception to display
 			 */
 			errorDialog: function(title, msg, code, source, exception) {
+	            React.renderComponent(ErrorModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 				$('#errormodal-title').html(title);
 				$('#errormodal-text').html(msg);
 				$('#error_code').html("> Error Code: "+code);
@@ -166,7 +172,6 @@ define(function(require) {
 					$('#error_exception').html("Exception : " + exception);
 				}
 				$('#errormodal-btn').html("OK").off('click');
-				$('#errormodal').modal();
 			},
 
 			/**

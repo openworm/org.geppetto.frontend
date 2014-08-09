@@ -37,6 +37,14 @@ div#preloaded-images {
     font-family : 'Helvetica Neue';
 }
 
+.loading-modal {
+    top : 15%;
+}
+
+.welcome-modal {
+    top : 15%;
+}
+
 .help-modal h4 {
     color:#fd6808;
 }
@@ -358,11 +366,16 @@ input {
 
 /* Overwrite Modal body overflow values.*/
 .modal {
-	overflow: visible;
+	overflow: hidden;
+	overflow-y : hidden;
 }
 
-.help-modal .modal-body{
-	overflow-y: auto;
+#help-modal {
+	top : 10%;
+}
+
+#help-modal .modal-body{
+	overflow-y : auto;
 	max-height : 500px;
 }
 
@@ -542,7 +555,6 @@ input {
 }
 
 #infomodal .modal-body{
-	overflow: auto;
 	max-height: 50%;
 }
 

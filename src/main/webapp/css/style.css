@@ -37,6 +37,14 @@ div#preloaded-images {
     font-family : 'Helvetica Neue';
 }
 
+#help-button {
+	background : linear-gradient(to bottom, #27d5db, #0e6c6f);
+}
+
+#help-modal .btn-info, #help-button {
+	background : linear-gradient(to bottom, #27d5db, #0e6c6f);
+}
+
 #loading-modal {
     top : 10%;
 }
@@ -694,7 +702,7 @@ input {
 	border-radius: 0px;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
-	width: 55px;
+	width: 65px;
 	height: auto;
 	filter: alpha(opacity = 85);
 	opacity: .85;

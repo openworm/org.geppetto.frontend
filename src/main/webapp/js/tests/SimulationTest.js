@@ -113,7 +113,7 @@ define(function(require) {
 							var scene = JSON.parse(payload.update).scene;
 							var entities=0, aspects=0, subtrees = 0;
 							
-				            GEPPETTO.RuntimeTreeFactory.createNodes(scene);
+				            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 
 							for(var e in scene){
 								if(scene[e]._metaType == "EntityNode"){
@@ -187,7 +187,7 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 				        	var update = JSON.parse(payload.get_model_tree);
 
-				        	var aspectID = update.aspectID;
+				        	var aspectID = update.aspectInstancePath;
 				        	var modelTree = update.modelTree;
 				        	
 				        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
@@ -219,7 +219,7 @@ define(function(require) {
 								var scene = JSON.parse(payload.update).scene;
 								var entities=0, aspects=0, subtrees = 0;
 								
-					            GEPPETTO.RuntimeTreeFactory.createNodes(scene);
+					            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 
 								for(var e in scene){
 									if(scene[e]._metaType == "EntityNode"){
@@ -242,6 +242,8 @@ define(function(require) {
 								ok(1, aspects, "Aspects number, matched");
 								ok(3, subtrees, "Subtrees number, matched");
 															
+								Simulation.start();
+
 								break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
 								if(!this.checkUpdate){
@@ -293,7 +295,7 @@ define(function(require) {
 								var payload = JSON.parse(parsedServerMessage.data);
 					        	var update = JSON.parse(payload.get_model_tree);
 
-					        	var aspectID = update.aspectID;
+					        	var aspectID = update.aspectInstancePath;
 					        	var modelTree = update.modelTree;
 					        	
 					        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
@@ -308,7 +310,6 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml');
-			Simulation.start();
 		});
 		
 		module("Simulation with Scripts");
@@ -353,6 +354,7 @@ define(function(require) {
 							Simulation.setSimulationLoaded();
 							Simulation.start();
 							ok(true, "Simulation loaded, passed");
+							start();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 							ok(true, "Simulation Started, passed");
@@ -364,7 +366,6 @@ define(function(require) {
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STOPPED:
 							ok(true, "Simulation Stopped, passed");
-							start();
 							break;
 					}
 

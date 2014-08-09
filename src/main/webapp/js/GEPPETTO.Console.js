@@ -163,7 +163,7 @@ define(function(require) {
 				}
 				else {
 					$('#footer').height('');
-					//$('#footerHeader').css("bottom", "0px");
+					$('#footerHeader').css("bottom", "0px");
 					$('#console').slideToggle(200);
 				}
 

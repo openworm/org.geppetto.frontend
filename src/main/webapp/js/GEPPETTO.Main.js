@@ -43,7 +43,8 @@
  */
 define(function(require) {
 	return function(GEPPETTO) {
-		var $ = require('jquery')
+		var $ = require('jquery'),
+		React = require('react'),
 		InfoModal = require('jsx!components/popups/InfoModal');
 
 		GEPPETTO.Main = {
@@ -75,7 +76,7 @@ define(function(require) {
 			 * Idle check
 			 */
 			idleCheck : function(){
-				var allowedTime = 6, timeOut = 7;
+				var allowedTime = 1, timeOut = 2;
 				if(!GEPPETTO.Main.disconnected) {
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there
@@ -98,12 +99,12 @@ define(function(require) {
 
 					//second check, user isn't there or didn't click yes, disconnect
 					if(GEPPETTO.Main.idleTime > timeOut) {
+        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("");
 						$('#infomodal-text').html(GEPPETTO.Resources.DISCONNECT_MESSAGE);
 						$('#infomodal-footer').remove();
 						$('#infomodal-header').remove();
-						$('#infomodal').modal();
-
+						
 						GEPPETTO.Main.idleTime = 0;
 						GEPPETTO.Main.disconnected = true;
 						GEPPETTO.FE.disableSimulationControls();

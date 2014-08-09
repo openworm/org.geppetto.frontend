@@ -26,9 +26,9 @@ define(function (require) {
         getDefaultProps: function() {
             return {
                 label: 'Load Simulation',
-                className: 'pull-right',
+                className: 'pull-right openload',
                 icon:'icon-folder-open-alt',
-                onClick: this.onClick
+                onClick: this.onClick,
             }
         }
 

@@ -148,7 +148,7 @@ define(function(require) {
 				$('#infomodal-text').html(msg);
 				$('#infomodal-btn').html("OK").off('click');
 				//hide loading spinner
-				GEPPETTO.once('simulation:not_loaded', this.hide);
+				GEPPETTO.trigger('simulation:not_loaded');
 			},
 			
 			/**
@@ -174,7 +174,7 @@ define(function(require) {
 					$('#error_exception').html("Exception : " + exception);
 				}
 				$('#errormodal-btn').html("OK").off('click');
-				GEPPETTO.once('simulation:not_loaded', this.hide);
+				GEPPETTO.trigger('simulation:not_loaded');
 			},
 
 			/**
@@ -201,7 +201,7 @@ define(function(require) {
 			 */
 			disableSimulationControls: function() {
 				//Disable 'load simulation' button and click events
-                var openLoad = $("#openload");
+                var openLoad = $(".openload");
 				openLoad.attr('disabled', 'disabled');
 				openLoad.click(function(e) {
 					return false;

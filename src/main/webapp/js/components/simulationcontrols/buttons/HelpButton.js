@@ -17,7 +17,7 @@ define(function (require) {
         getDefaultProps: function() {
             return {
                 label: 'Help',
-                className: 'pull-right btn-info',
+                className: 'pull-right btn-info help-button',
                 icon:'icon-info-sign',
                 onClick: this.onClick
             }

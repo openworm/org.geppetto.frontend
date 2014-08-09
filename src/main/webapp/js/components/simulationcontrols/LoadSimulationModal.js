@@ -101,7 +101,7 @@ define(function (require) {
         },
 
         render: function () {
-            return <div className="modal fade loading-modal">
+            return <div className="modal fade" id="loading-modal"> 
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">

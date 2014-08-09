@@ -16,13 +16,9 @@ define(function (require) {
         },
 
         render: function () {
-        	$('.help-modal').on('shown', function () {
-        		alert("new height");
-        	    $('.help-modal .modal-body').css('max-height', $(window).height() * 0.7);
-        	});
             return <div className="modal fade" id="help-modal">
                 <div className="modal-dialog">
-                    <div className="modal-content help-modal">
+                    <div className="modal-content">
                         <div className="modal-header">
                             <Button type="button" className="btn btn-info pull-left" icon="icon-play" onClick={this.startTutorial}>Start Tutorial </Button>
                             <a className="btn btn-info pull-right" icon="icon-file-text" href="http://docs.geppetto.org" target="_blank">Docs </a>

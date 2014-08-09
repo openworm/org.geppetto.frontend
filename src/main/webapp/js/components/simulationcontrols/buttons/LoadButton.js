@@ -15,6 +15,8 @@ define(function (require) {
 
         onClick: function () {
             React.renderComponent(LoadSimModal({show:true, keyboard:false}), document.getElementById('modal-region'));
+            $('#loading-modal').css('max-height', $(window).height() * 0.9);
+            $("#loading-modal").css("margin-right", "-20px");
         },
 
         componentDidMount: function() {

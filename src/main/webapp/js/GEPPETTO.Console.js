@@ -163,7 +163,7 @@ define(function(require) {
 				}
 				else {
 					$('#footer').height('');
-					$('#footerHeader').css("bottom", "0px");
+					//$('#footerHeader').css("bottom", "0px");
 					$('#console').slideToggle(200);
 				}
 
@@ -192,7 +192,6 @@ define(function(require) {
 					maxHeight: 400,
 					resize: function(event, ui) {
 						consoleElement.get(0).style.top = "0px";
-						$(document.getElementById('footer')).height(ui.size.height + 86);
 					}.bind(this)
 				});
 

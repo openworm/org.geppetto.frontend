@@ -33,27 +33,27 @@ div#preloaded-images {
     background-color: #fd6808;
 }
 
-.help-modal {
+#help-modal {
     font-family : 'Helvetica Neue';
 }
 
-.loading-modal {
-    top : 15%;
+#loading-modal {
+    top : 10%;
 }
 
 .welcome-modal {
     top : 15%;
 }
 
-.help-modal h4 {
+#help-modal h4 {
     color:#fd6808;
 }
 
-.help-modal h4.modal-title {
+#help-modal h4.modal-title {
     text-align: center;
 }
 
-.help-modal .btn, .help-modal .label {
+#help-modal .btn, #help-modal .label {
     margin-left:3px;
     margin-right:3px;
 }
@@ -194,8 +194,9 @@ div#preloaded-images {
 }
 
 #sim-toolbar {
+	position : fixed;
 	padding-top: 6px;
-    padding-right: 5px;
+    right: 5px;
     margin-right: 0;
 }
 
@@ -376,7 +377,6 @@ input {
 
 #help-modal .modal-body{
 	overflow-y : auto;
-	max-height : 500px;
 }
 
 .dropdown-menu {
@@ -390,14 +390,6 @@ input {
 	float: right;
 }
 
-.loading.modal.fade {
-	top: -25%;
-	background: rgba(255, 255, 255, 0);
-}
-.loading.modal.fade.in {
-	top: 40%;
-	background: rgba(255, 255, 255, 0);
-}
 .icon-4x {
 	font-size: 4em;
 }
@@ -479,9 +471,10 @@ input {
 }
 
 #footer {
-	position: absolute;
+	position: fixed;
 	bottom: 0px;
 	width: 100%;
+	max-height : 60%;
 }
 
 #console {
@@ -537,7 +530,11 @@ input {
 #infomodal {
 	z-index : 9999;
 	top : 35%;
-	width : 500px;
+}
+
+#errormodal {
+	z-index : 9999;
+	top : 25%;
 }
 
 #error_code {
@@ -654,7 +651,7 @@ input {
 #shareTab {
 	bottom : 0px;
 	right : 280px;
-	position : absolute;
+	position : fixed;
 	z-index : 10;
 }
 
@@ -666,7 +663,7 @@ input {
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
 	color : #fd6808;
-	width : 55px;
+	width : 65px;
 	height:32px;
 	border : 0px;
 }
@@ -681,7 +678,7 @@ input {
 }
 
 #geppetto-share a {
-	width: 15px;
+	width: 35px;
 }
 
 .btn:focus {

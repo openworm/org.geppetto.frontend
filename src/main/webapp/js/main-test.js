@@ -55,7 +55,11 @@ require.config({
 		'backbone-store': 'vendor/backbone-localStorage.min',
 		'backbone-associations' : 'vendor/backbone-associations-min',
 		'geppetto': "GEPPETTO",
-		'QUnit': 'vendor/qunit'
+		'QUnit': 'vendor/qunit',
+		react: 'vendor/react',
+		jsx: 'vendor/jsx',
+	    JSXTransformer: 'vendor/JSXTransformer',
+	    text: 'vendor/text'
 	},
 	/*
 	 * Notes what dependencies are needed prior to loading each library, values on the right

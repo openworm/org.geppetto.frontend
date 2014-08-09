@@ -128,6 +128,8 @@ define(function(require) {
 					$('#infomodal-btn').unbind('click');
 				});
 
+				GEPPETTO.once('simulation:not_loaded', this.hide);
+
 				//black out welcome message
 				$('#welcomeMessageModal').css('opacity', '0.0');
 			},
@@ -146,7 +148,7 @@ define(function(require) {
 				$('#infomodal-text').html(msg);
 				$('#infomodal-btn').html("OK").off('click');
 				//hide loading spinner
-				$('#loading-spinner').modal();
+				GEPPETTO.once('simulation:not_loaded', this.hide);
 			},
 			
 			/**
@@ -172,6 +174,7 @@ define(function(require) {
 					$('#error_exception').html("Exception : " + exception);
 				}
 				$('#errormodal-btn').html("OK").off('click');
+				GEPPETTO.once('simulation:not_loaded', this.hide);
 			},
 
 			/**

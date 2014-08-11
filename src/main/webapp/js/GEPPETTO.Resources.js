@@ -163,7 +163,27 @@ define(function(require) {
 			HELP_ALREADY_VISIBLE: "Help Window is already visible",
 
 			HELP_ALREADY_HIDDEN: "Help Window is already hidden",
+			
+			CAMERA_PAN_INCREMENT: "Panning increment",
+			
+			CAMERA_ROTATE_INCREMENT: "Rotation increment",
+			
+			CAMERA_ZOOM_INCREMENT: "Zoom increment",
+			
+			CAMERA_RESET: "Camera reset",
+			
+			/**
+			 * Node resources
+			 */
 
+			RETRIEVING_MODEL_TREE : 'Model tree requested',
+			
+			EMPTY_MODEL_TREE : 'Model tree received, but is empty.',
+			
+			NO_SIMULATION_TREE : 'Simulation tree is not available.',
+
+			RETRIEVING_SIMULATION_TREE : 'Simulation tree: ',
+			
 			/**
 			 * GEPPETTO.Main resources
 			 */
@@ -212,10 +232,31 @@ define(function(require) {
 			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
 					" Okay and enjoy the show!",
 					
-			SELECTING_ENTITY : "Selecting entity ",
+			SELECTING_ENTITY : "Selecting entity.",
+			UNSELECTING_ENTITY : "Unselecting entity.",
+			SHOW_ENTITY : "Showing entity.",
+			ENTITY_ALREADY_VISIBLE : "Entity already visible.",
+			HIDE_ENTITY : "Hiding entity.",
+			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
+			ZOOM_TO_ENTITY : "Zooming to entity.",
 			
-			ENTITY_ALREADY_SELECTED : "Entity Already Selected",
+			ENTITY_ALREADY_SELECTED : "Entity already selected",
+			
+			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
 
+			SELECTING_ASPECT : "Selecting aspect.",
+			UNSELECTING_ASPECT : "Unselecting entity.",
+			SHOW_ASPECT : "Showing entity.",
+			ASPECT_ALREADY_VISIBLE : "Aspect already visible.",
+			HIDE_ASPECT : "Hiding entity.",
+			ASPECT_ALREADY_HIDDING : "Aspect already invisible.",
+			ZOOM_TO_ASPECT : "Zooming to aspect.",
+			
+			ASPECT_ALREADY_SELECTED : "Aspect already selected",
+			
+			ASPECT_NOT_SELECTED : "Aspect not selected, can't uselect what it isn't selected.",
+
+			
 			/**
 			 * GEPPETTO resources
 			 */

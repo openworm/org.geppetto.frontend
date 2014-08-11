@@ -43,7 +43,9 @@
  */
 define(function(require) {
 	return function(GEPPETTO) {
-		var $ = require('jquery');
+		var $ = require('jquery'),
+		React = require('react'),
+		InfoModal = require('jsx!components/popups/InfoModal');
 
 		GEPPETTO.Main = {
 
@@ -74,13 +76,14 @@ define(function(require) {
 			 * Idle check
 			 */
 			idleCheck : function(){
-				var allowedTime = 6, timeOut = 7;
+				var allowedTime = 1, timeOut = 2;
 				if(!GEPPETTO.Main.disconnected) {
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there
 					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
                         var infomodalBtn = $('#infomodal-btn');
 
+        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("Zzz");
 						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
 						infomodalBtn.html("Yes");
@@ -92,18 +95,16 @@ define(function(require) {
 							//unbind click event so we can reuse same modal for other alerts
 							infomodalBtn.unbind('click');
 						});
-
-						$('#infomodal').modal();
 					}
 
 					//second check, user isn't there or didn't click yes, disconnect
 					if(GEPPETTO.Main.idleTime > timeOut) {
+        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("");
 						$('#infomodal-text').html(GEPPETTO.Resources.DISCONNECT_MESSAGE);
 						$('#infomodal-footer').remove();
 						$('#infomodal-header').remove();
-						$('#infomodal').modal();
-
+						
 						GEPPETTO.Main.idleTime = 0;
 						GEPPETTO.Main.disconnected = true;
 						GEPPETTO.FE.disableSimulationControls();
@@ -137,12 +138,13 @@ define(function(require) {
 // ============================================================================
 // Application logic.
 // ============================================================================
+
 		$(document).ready(function() {
 
 			GEPPETTO.FE.initialEvents();
 			
 			//Increment the idle time counter every minute.
-			var idleInterval = setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
+			setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
             var here = $(this);
 			//Zero the idle timer on mouse movement.
 			here.mousemove(function(e) {
@@ -162,6 +164,7 @@ define(function(require) {
 
 			//Initialize websocket functionality
 			GEPPETTO.Main.init();
+		
 		});
-	}
+	};
 });

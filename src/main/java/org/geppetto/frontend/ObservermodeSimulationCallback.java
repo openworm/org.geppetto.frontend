@@ -69,7 +69,7 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 	 * 
 	 */
 	@Override
-	public void updateReady(SimulationEvents event, String sceneUpdate, String variableWatchTree)
+	public void updateReady(SimulationEvents event, String sceneUpdate)
 	{
 
 		long start = System.currentTimeMillis();
@@ -105,8 +105,8 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 			{
 				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
 
-				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{ \"entities\":" + sceneUpdate + ", \"variable_watch\": " + variableWatchTree + "}";
+				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
+				update = "{ "+sceneUpdate + "}";
 
 				break;
 			}

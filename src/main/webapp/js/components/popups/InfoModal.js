@@ -51,10 +51,10 @@ define(function (require) {
         			<div className="modal-content">
         				<div className="modal-header" id="infomodal-header">
         					<button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
-        					<h3 id="infomodal-title" className="pagination-centered"></h3>
+        					<h3 id="infomodal-title" className="text-center"></h3>
         				</div>
         				<div className="modal-body">
-        			 		<p id="infomodal-text"></p>
+        			 		<p id="infomodal-text" className="text-center"></p>
         			 	</div>
         			 	<div className="modal-footer" id="infomodal-footer">
         			 		<button  id="infomodal-btn" className="btn btn-warning" data-dismiss="modal" aria-hidden="true">Ok</button>

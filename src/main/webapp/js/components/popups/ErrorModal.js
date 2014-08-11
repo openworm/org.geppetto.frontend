@@ -53,7 +53,7 @@ define(function (require) {
         					<button type="button" className="close" data-dismiss="modal" aria-hidden="true">
     						×
     						</button>
-    						<h3 id="errormodal-title" className="pagination-centered"></h3>
+    						<h3 id="errormodal-title" className="text-center"></h3>
         				</div>
         				<div className="modal-body">
 	        				<p id="errormodal-text">

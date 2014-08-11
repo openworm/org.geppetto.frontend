@@ -14,7 +14,6 @@ define(function(require) {
 		
 		componentDidMount: function(){
 			GEPPETTO.once('simulation:loaded', this.hide);
-			GEPPETTO.once('simulation:not_loaded', this.hide);
 			setTimeout((function(){
 				if(GEPPETTO.Simulation.loading){
 					this.setProps({text: 'Loading is taking longer than usual...'});

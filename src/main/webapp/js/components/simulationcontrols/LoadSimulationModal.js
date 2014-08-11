@@ -135,7 +135,7 @@ define(function (require) {
                                     <label htmlFor="selectSample" className="col-sm-2 control-label">Sample</label>
                                     <div className="col-sm-10">
                                         <select className="form-control select-model" onChange={this.onSelectSimulationUrl}>
-                                            <option value="">Select Model...</option>
+                                            <option value="">Select Simulation from list...</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml">LEMS Sample Hodgkin-Huxley Neuron</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml">PCISPH Small Liquid Scene</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml">PCISPH Small Elastic Scene</option>
@@ -149,8 +149,8 @@ define(function (require) {
                             </form>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-info" onClick={this.hide}>Cancel</button>
-                            <button type="button" className="btn btn-info load-sim-button" disabled={this.state.disableLoad} onClick={this.loadSimulation}>Load</button>
+                            <button type="button" className="btn" onClick={this.hide}>Cancel</button>
+                            <button type="button" className="btn btn-warning load-sim-button" disabled={this.state.disableLoad} onClick={this.loadSimulation}>Load</button>
                         </div>
                     </div>
                 </div>

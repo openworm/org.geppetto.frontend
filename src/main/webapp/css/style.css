@@ -41,7 +41,7 @@ div#preloaded-images {
 	background : linear-gradient(to bottom, #27d5db, #0e6c6f);
 }
 
-#help-modal .btn-info, #help-button {
+.btn-info {
 	background : linear-gradient(to bottom, #27d5db, #0e6c6f);
 }
 
@@ -49,8 +49,13 @@ div#preloaded-images {
     top : 10%;
 }
 
+#loading-modal .modal-content {
+	width : 700px;
+}
+
 .welcome-modal {
     top : 15%;
+    font-family: 'Helvetica Neue';
 }
 
 #help-modal h4 {
@@ -256,7 +261,7 @@ input {
 }
 
 .modal-content {
-	max-width: 600px;
+	max-width: 700px;
 }
 
 .modal-footer {

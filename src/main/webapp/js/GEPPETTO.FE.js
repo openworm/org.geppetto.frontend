@@ -148,7 +148,7 @@ define(function(require) {
 				$('#infomodal-text').html(msg);
 				$('#infomodal-btn').html("OK").off('click');
 				//hide loading spinner
-				GEPPETTO.trigger('simulation:not_loaded');
+	            $('#loading-spinner').modal('hide');
 			},
 			
 			/**
@@ -174,7 +174,7 @@ define(function(require) {
 					$('#error_exception').html("Exception : " + exception);
 				}
 				$('#errormodal-btn').html("OK").off('click');
-				GEPPETTO.trigger('simulation:not_loaded');
+	            $('#loading-spinner').modal('hide');
 			},
 
 			/**

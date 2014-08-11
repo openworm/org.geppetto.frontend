@@ -9,6 +9,7 @@ body {
 	overflow: hidden;
 	height: 100%;
 	width: 100%;
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
 div#preloaded-images {
@@ -37,20 +38,8 @@ div#preloaded-images {
     font-family : 'Helvetica Neue';
 }
 
-#help-button {
-	background : linear-gradient(to bottom, #27d5db, #0e6c6f);
-}
-
-.btn-info {
-	background : linear-gradient(to bottom, #27d5db, #0e6c6f);
-}
-
-#loading-modal {
-    top : 10%;
-}
-
 #loading-modal .modal-content {
-	width : 700px;
+    width : 700px;
 }
 
 .welcome-modal {
@@ -540,6 +529,7 @@ input {
 	clear: none;
 }
 
+<<<<<<< HEAD
 #infomodal {
 	z-index : 9999;
 	top : 35%;
@@ -550,6 +540,8 @@ input {
 	top : 25%;
 }
 
+=======
+>>>>>>> 49b106b... Fix xml editor full screen mode
 #error_code {
 	font-size : 14px;
 	color : #fd6808;

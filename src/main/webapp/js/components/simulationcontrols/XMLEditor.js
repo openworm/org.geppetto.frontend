@@ -4,23 +4,6 @@ define(function (require) {
 
     return React.createClass({
 
-        setFullScreen: function (cm, full) {
-            var wrap = cm.getWrapperElement();
-            if (full) {
-                wrap.className += " CodeMirror-fullscreen";
-                document.documentElement.style.overflow = "hidden";
-            }
-            else {
-                wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
-                wrap.style.height = "";
-                document.documentElement.style.overflow = "";
-            }
-            cm.focus();
-            setTimeout(function () {
-                cm.refresh();
-            }, 20);
-        },
-
         showFullscreen: function() {
             this.setFullScreen(true);
         },

@@ -59,12 +59,21 @@ define(function(require) {
 		var ContextMenuViewItems = Backbone.View.extend({
 			template: _.template($('#tplContextMenuItems').html()),
 			
+//			events : {
+//				'click li' :  function(e) {console.log("kuake");}
+//			},
+//			taka: function(event){
+//				console.log("takakakaka");
+//			},
+			
 			initialize: function (options) {
 				this.items = options.items;
 			},
 			render: function () {
 				 
 				this.$el.append(this.template(this.items.toJSON()));
+				
+//				this.$el.html(this.template());	   
 				 
 				registeredItems[this.items.get("cid")] = this.items.get("action");
 				 
@@ -112,6 +121,7 @@ define(function(require) {
 				var entire = registeredItem.toString();
 				var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
 				GEPPETTO.Console.executeCommand("var node = " + JSON.stringify(this.data));
+//				GEPPETTO.Console.executeCommand("var node = " + JSON.stringify(this.data));
 				GEPPETTO.Console.executeCommand(body);
 			},
 	        

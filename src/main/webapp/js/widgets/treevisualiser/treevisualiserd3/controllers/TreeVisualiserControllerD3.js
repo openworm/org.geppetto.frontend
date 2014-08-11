@@ -119,7 +119,10 @@ define(function(require) {
 			
 			getCommands: function(node) {
 				groups = [
-				          [{label:"Open with D3 Widget", action: GEPPETTO.TreeVisualiserControllerD3.actionMenu, icon:"icon3"}]
+				          [{label:"Open with D3 Widget",
+				        	action: GEPPETTO.TreeVisualiserControllerD3.actionMenu,
+				        	icon:"icon3",
+				        	option: {option1: "option1"}}]
 				          ];
 				
 				return groups;

@@ -859,6 +859,8 @@ define(function(require) {
 					for(var a in entity){
 						GEPPETTO.showAspect(entity[a].eid);
 					}
+					
+					return true;
 				}
 			}
 			;
@@ -873,6 +875,8 @@ define(function(require) {
 					for(var a in entity){
 						GEPPETTO.hideAspect(entity[a].eid);
 					}
+					
+					return true;
 				}
 			}
 			;

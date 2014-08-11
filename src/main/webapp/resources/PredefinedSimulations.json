@@ -20,11 +20,15 @@
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/HindmarshRose/GEPPETTO.xml"
         },
         {
-        	"name" : "NeuroML Purkinje Cell (No Simulation)",
-            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/Purkinje/GEPPETTO.xml"
+        	"name" : "EyeWire Ganglion Cell (No Simulation)",
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/obj/Eyewire/GEPPETTO.xml"
         },
         {
         	"name" : "NeuroML C.elegans PVDR Neuron (No Simulation)",
             "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/PVDR/GEPPETTO.xml"
+        },
+        {
+        	"name" : "NeuroML Purkinje Cell (No Simulation)",
+            "url" : "https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/Purkinje/GEPPETTO.xml"
         }
 ]}

@@ -94,7 +94,7 @@ define(function(require) {
 
 							//unbind click event so we can reuse same modal for other alerts
 							infomodalBtn.unbind('click');
-						});
+						});                                         
 					}
 
 					//second check, user isn't there or didn't click yes, disconnect

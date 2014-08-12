@@ -163,10 +163,9 @@ define(function(require) {
 				}
 				else {
 					$('#footer').height('');
-					$('#footerHeader').css("bottom", "0px");
 					$('#console').slideToggle(200);
 				}
-
+				$('#footerHeader').css("bottom", "-10px");
 				this.visible = mode;
 			},
 
@@ -184,7 +183,7 @@ define(function(require) {
 					placeholder: "// type a javascript command and hit enter (help() for info)"
 				});
 
-                $("#footer").css("bottom","-10px");
+
 				//allow console to be resizable
 				consoleElement.resizable({
 					handles: 'n',

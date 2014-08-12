@@ -21,9 +21,17 @@ define(function (require) {
                     keyboard: true, 
                     show: false, 
                     remote: '', 
-                    handleHidden: (function(){ React.unmountComponentAtNode($(this.getDOMNode()).parent().get(0))}).bind(this)
+                    handleHidden: (function(){ 
+                        React.unmountComponentAtNode($(this.getDOMNode()).parent().get(0))}).bind(this)
                 }
-            }, 
+            },
+            //Close modal if one is currently open
+            componentWillMount: function() {
+                if($('.modal')) {
+                    $('.modal').modal('hide');
+                }
+            },
+            
             componentDidMount: function () {
                 var $modal = $(this.getDOMNode()).modal({
                     backdrop: this.props.backdrop, keyboard: this.props.keyboard, show: this.props.show, remote: this.props.remote
@@ -48,6 +56,8 @@ define(function (require) {
                         $modal.off(bsModalEvents[prop], this.props[prop])
                     }
                 }.bind(this))
+                
+                $modal.modal('hide');
             }, 
             hide: function () {
                 $(this.getDOMNode()).modal('hide');

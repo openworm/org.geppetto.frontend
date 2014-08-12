@@ -45,47 +45,62 @@ define(function (require) {
             require('jsx!components/bootstrap/modal')
         ],
         
+        getDefaultProps: function() {
+            return {
+                title: 'There was an error',
+                text: '',
+                code: '',
+                source: '',
+                exception: '' 
+            }
+        },
+        
+        shareTwitter: function() {
+            GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');
+        },
+        
         render: function (){
-        	return <div className="modal fade" id="errormodal">
-        			<div className="modal-dialog">
-        			<div className="modal-content">
-        				<div className="modal-header" id="errormodal-header">
-        					<button type="button" className="close" data-dismiss="modal" aria-hidden="true">
-    						×
-    						</button>
-    						<h3 id="errormodal-title" className="text-center"></h3>
-        				</div>
-        				<div className="modal-body">
-	        				<p id="errormodal-text">
-	        				</p>
-	        				<div className="panel panel-default">
-	            				<div className="panel-heading">
-	              				<h4 className="panel-title">
-	                			<a id="error_code" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"></a>
-	              				</h4>
-	            				</div>
-	            				<div id="collapseOne" className="panel-collapse collapse">
-	              				<div className="panel-body">
-	              					<p id="error_source"></p>
-	              					<p id="error_exception"></p>
-	              				</div>
-	            				</div>
-	         	 			</div>
-	        			 	</div>
-        			 	<div className="modal-footer" id="errormodal-footer">
-	        			 	<button  className="btn btn-warning" onclick="GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');" aria-hidden="true">
-	    					<i className="icon-twitter"></i> Shame on you
-	    					</button>
-		    				<button  className="btn btn-warning" onclick="window.open('https://github.com/openworm/org.geppetto/issues/new')" aria-hidden="true">
-		    					<i className="icon-bug"></i> Open issue
-		    				</button>
-		    				<button  id="errormodal-btn" className="btn btn-info" data-dismiss="modal" aria-hidden="true">
-		    					Close
-		    				</button>
-        			 	</div>
-        			 </div>
-              		 </div>
-        		  </div>
+        	return (
+                    <div className="modal fade" id="errormodal">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header" id="errormodal-header">
+                              <button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
+                              <h3 id="errormodal-title" className="text-center">{this.props.title}</h3>
+                            </div>
+                            <div className="modal-body">
+                              <p id="errormodal-text">
+                              </p>
+                              <div className="panel panel-default">
+                                <div className="panel-heading">
+                                  <h4 className="panel-title">
+                                   <a id="error_code" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">{'> Error Code: '+this.props.code}</a>
+                                 </h4>
+                               </div>
+                               <div id="collapseOne" className="panel-collapse collapse">
+                                <div className="panel-body">
+                                 <p id="error_source">{this.props.source}</p>
+                                 <p id="error_exception">{this.props.exception}</p>
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                         <div className="modal-footer" id="errormodal-footer">
+                          <button  className="btn btn-warning" onClick={this.shareTwitter} aria-hidden="true">
+                           <i className="icon-twitter"></i> Shame on you
+                         </button>
+                         <a className="btn btn-warning" href="https://github.com/openworm/org.geppetto/issues/new" target="_blank" aria-hidden="true">
+                           <i className="icon-bug"></i> Open issue
+                         </a>
+                         <button id="errormodal-btn" className="btn btn-info" data-dismiss="modal" aria-hidden="true">
+                           Close
+                         </button>
+                       </div>
+                      </div>
+                      </div>
+                      </div>    
+
+                    );
         }
     });
 

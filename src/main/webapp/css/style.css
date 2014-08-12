@@ -543,6 +543,9 @@ input {
 	max-height: 50%;
 }
 
+#infomodal, #errormodal {
+	top : 25%;
+}
 
 .sr-only{
 	left: 25px;

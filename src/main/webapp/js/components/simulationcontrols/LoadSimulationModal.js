@@ -143,6 +143,7 @@ define(function (require) {
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/HindmarshRose/GEPPETTO.xml">Hindmarsh-Rose Spiking Neuron</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/Purkinje/GEPPETTO.xml">NeuroML Purkinje Cell (No Simulation)</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/PVDR/GEPPETTO.xml">NeuroML C.elegans PVDR Neuron (No Simulation)</option>
+                                            <option value="https://raw.github.com/openworm/org.geppetto.samples/master/obj/Eyewire/GEPPETTO.xml">EyeWire Ganglion Cell (No Simulation)</option>
                                         </select>
                                     </div>
                                 </div>

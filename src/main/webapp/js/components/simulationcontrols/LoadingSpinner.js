@@ -16,9 +16,9 @@ define(function(require) {
 			GEPPETTO.once('simulation:loaded', this.hide);
 			setTimeout((function(){
 				if(GEPPETTO.Simulation.loading){
-					this.setProps({text: 'Loading is taking longer than usual...'});
+					this.setProps({text: 'Loading is taking longer than usual, either a big simulation is being loaded or bandwidth is limited'});
 				}
-			}).bind(this), 15000);
+			}).bind(this), 20000);
 		},
 		
 		render: function () {

@@ -82,7 +82,7 @@ define(function(require) {
 			 * Copies console history to OS clipboard
 			 *
 			 * @name G.copyHistoryToClipboard()
-			 */
+			 
 			copyHistoryToClipboard: function() {
 
 				var commandsString = "";
@@ -132,7 +132,7 @@ define(function(require) {
 				}
 
 			},
-
+			*/
 			/**
 			 * Toggles debug statement on/off
 			 *

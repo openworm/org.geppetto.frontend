@@ -82,7 +82,9 @@ define(function(require) {
 			 * Copies console history to OS clipboard
 			 *
 			 * @name G.copyHistoryToClipboard()
-			 
+			 */
+			/*
+			 * Matteo: commenting out until fixed
 			copyHistoryToClipboard: function() {
 
 				var commandsString = "";

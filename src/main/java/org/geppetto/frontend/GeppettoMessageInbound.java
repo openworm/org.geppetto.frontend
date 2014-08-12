@@ -245,6 +245,12 @@ public class GeppettoMessageInbound extends MessageInbound
 				_servletController.disableUser(requestID, this);
 				break;
 			}
+			case GET_MODEL_TREE:
+			{
+				String instancePath = gmsg.data;
+				
+				_servletController.getModelTree(requestID,instancePath,this);
+			}
 			default:
 			{
 				// NOTE: no other messages expected for now

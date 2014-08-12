@@ -43,7 +43,9 @@
  */
 define(function(require) {
 	return function(GEPPETTO) {
-		var $ = require('jquery');
+		var $ = require('jquery'),
+		React = require('react'),
+		InfoModal = require('jsx!components/popups/InfoModal');
 
 		GEPPETTO.Main = {
 
@@ -74,13 +76,14 @@ define(function(require) {
 			 * Idle check
 			 */
 			idleCheck : function(){
-				var allowedTime = 6, timeOut = 7;
+				var allowedTime = 2, timeOut = 4;
 				if(!GEPPETTO.Main.disconnected) {
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there
 					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
                         var infomodalBtn = $('#infomodal-btn');
 
+        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("Zzz");
 						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
 						infomodalBtn.html("Yes");
@@ -91,19 +94,17 @@ define(function(require) {
 
 							//unbind click event so we can reuse same modal for other alerts
 							infomodalBtn.unbind('click');
-						});
-
-						$('#infomodal').modal();
+						});                                         
 					}
 
 					//second check, user isn't there or didn't click yes, disconnect
 					if(GEPPETTO.Main.idleTime > timeOut) {
+        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("");
 						$('#infomodal-text').html(GEPPETTO.Resources.DISCONNECT_MESSAGE);
 						$('#infomodal-footer').remove();
 						$('#infomodal-header').remove();
-						$('#infomodal').modal();
-
+						
 						GEPPETTO.Main.idleTime = 0;
 						GEPPETTO.Main.disconnected = true;
 						GEPPETTO.FE.disableSimulationControls();
@@ -137,45 +138,7 @@ define(function(require) {
 // ============================================================================
 // Application logic.
 // ============================================================================
-		var setupCameraControls = function() {
-			$(document).ready(function() {
-				// Toolbar controls
 
-				$("#w").click(function(event) {
-					GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
-				}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.resetCamera()');
-					});
-
-				$("#rw").click(function(event) {
-					GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
-				}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
-					}).next().click(function(event) {
-						GEPPETTO.Console.executeCommand('G.resetCamera()');
-					});
-
-				$("#zo").click(function(event) {
-					GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
-				});
-
-				$("#zi").click(function(event) {
-					GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
-				});
-
-			});
-		};
-		
 		$(document).ready(function() {
 
 			GEPPETTO.FE.initialEvents();
@@ -201,9 +164,7 @@ define(function(require) {
 
 			//Initialize websocket functionality
 			GEPPETTO.Main.init();
-			
-			// hookup camera controls
-			setupCameraControls();
+		
 		});
 	};
 });

@@ -37,492 +37,180 @@
  */
 define(function(require) {
 
-	return function(GEPPETTO) {
+    return function(GEPPETTO) {
 
-		var $ = require('jquery');
-		/**
-		 * Create the container for holding the canvas
-		 *
-		 * @returns {DivElement}
-		 */
-		GEPPETTO.FE = {
-				
-			/*
-			 * Handles events that are executed as soon as page is finished loading
-			 */
-			initialEvents : function(){
-				
-				GEPPETTO.Console.createConsole();
-				
-				//disable welcome message buttons
-				$('#skipTutorial').attr('disabled', 'disabled');
-				$('#startTutorial').attr('disabled', 'disabled');
-				GEPPETTO.Vanilla.enableKeyboard(false);
-				
-				GEPPETTO.FE.checkWelcomeMessageCookie();
-				
-				//handles clicking on help button 
-				$("#helpButton").click(function() {
-					var modalVisible = $('#helpmodal').hasClass('in');
-					var command = (modalVisible) ? "false" : "true";
-					GEPPETTO.Console.executeCommand("G.showHelpWindow("+command+")");
-				});
+        var React = require('react'),
+                $ = require('jquery'),
+                InfoModal = require('jsx!components/popups/InfoModal'),
+                ErrorModal = require('jsx!components/popups/ErrorModal');
+        /**
+         * Create the container for holding the canvas
+         *
+         * @returns {DivElement}
+         */
+        GEPPETTO.FE = {
+            /*
+             * Handles events that are executed as soon as page is finished loading
+             */
+            initialEvents: function() {
 
-				/*
-				 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows
-				 * multiple modals to be open simultaneously without going in an infinite loop.
-				 */
-				$.fn.modal.Constructor.prototype.enforceFocus = function() {};
+                GEPPETTO.Console.createConsole();
 
-				//Populate the 'loading simulation' modal's drop down menu with sample simulations
-				$('#loadSimModal').on('shown', GEPPETTO.FE.loadingModalUIUpdate());
-				
-				$('#start').click(function() {
-					GEPPETTO.Console.executeCommand("Simulation.start()");
-				});
+                GEPPETTO.Vanilla.enableKeyboard(false);
 
-				$('#pause').click(function() {
-					GEPPETTO.Console.executeCommand("Simulation.pause()");
-				});
-
-				$('#stop').click(function() {
-					GEPPETTO.Console.executeCommand("Simulation.stop()");
-				});
-
-				$('#load').click(function() {
-					//Update the simulation controls visibility
-					GEPPETTO.FE.updateLoadEvent();
-					//loading from simulation file editor's
-					if(GEPPETTO.SimulationContentEditor.isEditing()) {
-						var simulation = GEPPETTO.SimulationContentEditor.getEditedSimulation().replace(/\s+/g, ' ');
-						GEPPETTO.Console.executeCommand("Simulation.loadFromContent('" + simulation + "')");
-						GEPPETTO.SimulationContentEditor.setEditing(false);
-					}
-					//loading simulation url
-					else {
-						GEPPETTO.Console.executeCommand('Simulation.load("' + $('#url').val() + '")');
-					}
-
-					$('#loadSimModal').modal("hide");
-				});
+                /*
+                 * Dude to bootstrap bug, multiple modals can't be open at same time. This line allows
+                 * multiple modals to be open simultaneously without going in an infinite loop.
+                 */
+                $.fn.modal.Constructor.prototype.enforceFocus = function() {
+                };
 
                 var share = $("#share");
 
-				share.click(function() {
+                share.click(function() {
 
-					//toggle button class
-					share.toggleClass('clicked');
+                    //toggle button class
+                    share.toggleClass('clicked');
 
-					//user has clicked the console button
+                    //user has clicked the console button
                     var command = (share.hasClass('clicked')) ? "true" : "false";
-					GEPPETTO.Console.executeCommand("G.showShareBar("+command+")");
-					return false;
-				});
-				
-				//handles launching tutorial if button inside help dialog is pressed
-				GEPPETTO.FE.launchTutorial();
-			},
-			
-			/**
-			 * Enables controls after connection is established
-			 */
-			postSocketConnection : function(){
-				//change welcome message button from Loading... to Start
-				$('#startTutorial').html("<icon class='icon-comment'></icon> Start Tutorial");
-				$('#startTutorial').removeAttr('disabled');
-				$('#skipTutorial').removeAttr('disabled');
-				$('#openload').removeAttr('disabled');
-				//enable keyboard controls
-				GEPPETTO.Vanilla.enableKeyboard(true);
-			},
-			
-			createContainer: function() {
-				$("#sim canvas").remove();
+                    GEPPETTO.Console.executeCommand("G.showShareBar(" + command + ")");
+                    return false;
+                });
 
-				return $("#sim").get(0);
-			},
-			
-			/**
-			 * Launches tutorial from button inside help modal 
-			 */
-			launchTutorial : function(){
-				$("#launch-tutorial").click(function(){
-					GEPPETTO.Console.executeCommand("G.showHelpWindow(false)");
+            },
+            /**
+             * Enables controls after connection is established
+             */
+            postSocketConnection: function() {
+                GEPPETTO.Vanilla.enableKeyboard(true);
+            },
+            createContainer: function() {
+                $("#sim canvas").remove();
+                return $("#sim").get(0);
+            },
+            /**
+             * Handles updating the front end after re-loading the simulation
+             */
+            SimulationReloaded: function() {
+                //delete all existing widgets
+                GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+            },
+            /**
+             * Show error message if webgl failed to start
+             */
+            update: function(webGLStarted) {
+                //
+                if (!webGLStarted) {
+                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
+                    GEPPETTO.FE.disableSimulationControls();
+                }
+            },
+            /**
+             * Show dialog informing users of server being used and
+             * gives them the option to Observer ongoing simulation.
+             *
+             * @param msg
+             */
+            observersDialog: function(title, msg) {
+                React.renderComponent(
+                        InfoModal({
+                            show: true,
+                            keyboard: false,
+                            title: title,
+                            txt: msg,
+                            onClick: GEPPETTO.Main.observe,
+                            buttonLabel: '<i class="icon-eye-open "></i> Observe'
+                        }),
+                        document.getElementById('modal-region'));
 
-					if(!GEPPETTO.Simulation.isLoaded()){
-						GEPPETTO.Tutorial.startTutorial();
-					}
-					else{
-						$('#infomodal-title').html(GEPPETTO.Resources.STOP_SIMULATION_TUTORIAL);
-						$('#infomodal-text').html(GEPPETTO.Resources.STOP_SIMULATION_TUTORIAL_MSG);
-						
-						var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-						GEPPETTO.FE.update(webGLStarted);
-						
-						$('#infomodal-btn').html("Okay").click(function() {
-							
-							$('#infomodal').on('hidden', function() { 
-								//unbind hidden event so we can reuse same modal for other alerts
-								$('#infomodal').unbind('hidden');
-								if(!GEPPETTO.Tutorial.isTutorialOn()){
-									//reset sample drop down menu for tutorial purposes
-									$('#dropdowndisplaytext').html("Select simulation from list...");
-									$('#url').val("");
-									GEPPETTO.Tutorial.startTutorial();
-								}
-							});
-						});
-						$('#infomodal').modal();
-					}
-				});
-			},
-
-			/**
-			 * Handles updating the front end after re-loading the simulation
-			 */
-			SimulationReloaded: function() {
-				//delete all existing widgets
-				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-			},
-
-			/**
-			 * Show error message if webgl failed to start
-			 */
-			update: function(webGLStarted) {
-				//
-				if(!webGLStarted) {
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
-					GEPPETTO.FE.disableSimulationControls();
-				}
-			},
-
-			/**
-			 * Show dialog informing users of server being used and
-			 * gives them the option to Observer ongoing simulation.
-			 *
-			 * @param msg
-			 */
-			observersDialog: function(title, msg) {
-				$('#infomodal-title').html(title);
-				$('#infomodal-text').html(msg);
-				$('#infomodal-btn').html("<i class='icon-eye-open '></i> Observe").click(function() {
-					GEPPETTO.Main.observe();
-
-					//unbind click event so we can reuse same modal for other alerts
-					$('#infomodal-btn').unbind('click');
-				});
-				$('#infomodal').modal();
-
-				//black out welcome message
-				$('#welcomeMessageModal').css('opacity', '0.0');
-			},
-
-			/**
-			 * Basic Dialog box with message to display.
-			 *
-			 * @method
-			 *
-			 * @param title - Title of message
-			 * @param msg - Message to display
-			 */
-			infoDialog: function(title, msg) {
-				$('#infomodal-title').html(title);
-				$('#infomodal-text').html(msg);
-				$('#infomodal-btn').html("OK").off('click');
-				$('#infomodal').modal();
-			},
-			
-			/**
-			 * Dialog box to display error messages.
-			 *
-			 * @method
-			 *
-			 * @param title - Notifying error
-			 * @param msg - Message to display for error
-			 * @param code - Error code of message
-			 * @param source - Source error to display
-			 * @param exception - Exception to display
-			 */
-			errorDialog: function(title, msg, code, source, exception) {
-				$('#errormodal-title').html(title);
-				$('#errormodal-text').html(msg);
-				$('#error_code').html("> Error Code: "+code);
-				if(source!=""){
-					$('#error_source').html("Source : " +source);
-				}
-				if(exception !=""){
-					$('#error_exception').html("Exception : " + exception);
-				}
-				$('#errormodal-btn').html("OK").off('click');
-				$('#errormodal').modal();
-			},
-
-			/**
-			 * Create bootstrap alert to notify users they are in observer mode
-			 *
-			 * @param title
-			 * @param alertMsg
-			 * @param popoverMsg
-			 */
-			observersAlert: function(title, alertMsg, popoverMsg) {
-				//if welcome message is open, return normal opacity after user clicked observed
-				if(($('#welcomeMessageModal').hasClass('in'))) {
-					$('#welcomeMessageModal').css('opacity', '1.0');
-				}
-				$('#alertbox-text').html(alertMsg);
-				$('#alertbox').show();
-				$("#infopopover").popover({title: title,
-					content: popoverMsg});
-			},
-
-			/**
-			 * Look for Simulations that may have been embedded as parameter in the URL
-			 */
-			searchForURLEmbeddedSimulation: function() {
-				//Get the URL with which Geppetto was loaded
-				var urlLocation = window.location.href;
-				//Split url looking for simulation parameters
-				var vars = urlLocation.split("?sim=");
-
-				//Load simulation if simulation parameters where found
-				if(vars.length > 1) {
-					var urlVal = decodeURIComponent(vars[1]);
-					$('#url').val(urlVal);
-					//Simulation found, load it
-					GEPPETTO.Console.executeCommand('Simulation.load("' + urlVal + '")');
-				}
-			},
-
-			/**
-			 * Populate Load Modal with drop down menu of
-			 * predefined sample simulations stored in JSON file.
-			 *
-			 */
-			loadingModalUIUpdate: function() {
-				//Read JSON file storing predefined sample simulations
-				$.getJSON('resources/PredefinedSimulations.json', function(json) {
-
-					//Get access to <ul> html element in load modal to add list items
-					var ul = document.getElementById('dropdownmenu');
-
-					//Loop through simulations found in JSON file
-					for(var i in json.simulations) {
-						//Create <li> element and add url attribute storing simulation's url
-						var li = document.createElement('li');
-						li.setAttribute('url', json.simulations[i].url);
-
-						//Create <a> element to add simulation name, add to <li> element
-						var a = document.createElement('a');
-						a.innerHTML = json.simulations[i].name;
-						li.appendChild(a);
-
-						//Add <li> element to load modal's dropdownmenu
-						if(ul != null) {
-							ul.appendChild(li);
-						}
-					}
-
-					//Add click listener to sample simulations dropdown menu
-					$('#dropdownmenu li').click(function() {
-
-						GEPPETTO.SimulationContentEditor.setEditing(false);
-
-						//Get the name and url of selected simulation
-						var selectedURL = $(this).attr('url');
-						var selectedName = $(this).text();
-
-						//Add selected simulation's url to URL input field
-						$('#url').val(selectedURL);
-						//Change drop down menu name to selected simulation's name
-						$('#dropdowndisplaytext').html(selectedName);
-
-						GEPPETTO.Main.simulationFileTemplate = selectedURL;
-
-						//Custom Content editor is visible, update with new sample simulation chosen
-						if($('#customRadio').val() == "active") {
-							GEPPETTO.FE.updateEditor(selectedURL);
-						}
-					});
-
-					$('#url').keydown(function() {
-						//reset sample drop down menu if url field modified
-						$('#dropdowndisplaytext').html("Select simulation from list...");
-
-						//reset simulation file used in editor to template
-						GEPPETTO.Main.simulationFileTemplate = "resources/template.xml";
-					});
-
-				});
-
-                var customRadio = $("#customRadio");
-
-				//Responds to user selecting url radio button
-				$("#urlRadio").click(function() {
-					customRadio.val("inactive");
-					$('#customInputDiv').hide();
-					$('#urlInput').show();
-				});
-
-				//Responds to user selecting Custom radio button
-				customRadio.click(function() {
-					//Handles the events related the content edit area
-					customRadio.val("active");
-					$('#urlInput').hide();
-					$('#customInputDiv').show();
-
-					//update editor with latest simulation file selected
-					GEPPETTO.FE.updateEditor(GEPPETTO.Main.simulationFileTemplate);
-				});
-
-			},
-
-			/**
-			 * Updates the editor with new simulation file
-			 *
-			 * @param selectedSimulation
-			 */
-			updateEditor: function(selectedSimulation) {
-				GEPPETTO.SimulationContentEditor.loadEditor();
-
-				//load template simulation
-				if(selectedSimulation === "resources/template.xml") {
-					GEPPETTO.SimulationContentEditor.loadTemplateSimulation(selectedSimulation);
-				}
-				//load sample simulation, request info from the servlet
-				else {
-					GEPPETTO.MessageSocket.send("sim", selectedSimulation);
-				}
-			},
-
-			/**
-			 * If simulation is being controlled by another user, hide the
-			 * control and load buttons. Show "Observe" button only.
-			 */
-			disableSimulationControls: function() {
-				//Disable 'load simulation' button and click events
+                //black out welcome message
+                $('#welcomeMessageModal').css('opacity', '0.0');
+            },
+            /**
+             * Basic Dialog box with message to display.
+             *
+             * @method
+             *
+             * @param title - Title of message
+             * @param msg - Message to display
+             */
+            infoDialog: function(title, msg) {
+                React.renderComponent(InfoModal({
+                    show: true,
+                    keyboard: false,
+                    title: title,
+                    text: msg,
+                }), document.getElementById('modal-region'));
+            },
+            /**
+             * Dialog box to display error messages.
+             *
+             * @method
+             *
+             * @param title - Notifying error
+             * @param msg - Message to display for error
+             * @param code - Error code of message
+             * @param source - Source error to display
+             * @param exception - Exception to display
+             */
+            errorDialog: function(title, msg, code, source, exception) {
+                React.renderComponent(ErrorModal({
+                    show: true,
+                    keyboard: false,
+                    title: title,
+                    text: msg,
+                    code: code,
+                    source: source,
+                    exception: exception
+                }), document.getElementById('modal-region'));
+            },
+            /**
+             * Create bootstrap alert to notify users they are in observer mode
+             *
+             * @param title
+             * @param alertMsg
+             * @param popoverMsg
+             */
+            observersAlert: function(title, alertMsg, popoverMsg) {
+                //if welcome message is open, return normal opacity after user clicked observed
+                if (($('#welcomeMessageModal').hasClass('in'))) {
+                    $('#welcomeMessageModal').css('opacity', '1.0');
+                }
+                $('#alertbox-text').html(alertMsg);
+                $('#alertbox').show();
+                $("#infopopover").popover({title: title,
+                    content: popoverMsg});
+            },
+            /**
+             * If simulation is being controlled by another user, hide the
+             * control and load buttons. Show "Observe" button only.
+             */
+            disableSimulationControls: function() {
+                //Disable 'load simulation' button and click events
                 var openLoad = $("#openload");
-				openLoad.attr('disabled', 'disabled');
-				openLoad.click(function(e) {
-					return false;
-				});
+                openLoad.attr('disabled', 'disabled');
+                openLoad.click(function(e) {
+                    return false;
+                });
 
-				$('#consoleButton').attr('disabled', 'disabled');
+                $('#consoleButton').attr('disabled', 'disabled');
 
-				//disable keyboard
-				document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
-			},
+                //disable keyboard
+                document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
+            },
+            /**
+             * Show Notification letting user now of full simulator
+             */
+            fullSimulatorNotification: function(simulatorName, queuePosition) {
 
-			activateLoader: function(state, msg) {
-				$('#loadingmodaltext').html(msg);
-				$('#loadingmodal').modal(state);
-			},
+                $('#capacityNotificationTitle').html(simulatorName + GEPPETTO.Resources.SIMULATOR_UNAVAILABLE);
 
-			/**
-			 * Update the simulation controls button's visibility after
-			 * user's interaction.
-			 */
-			updateLoadEvent: function() {
-				$('#pause').attr('disabled', 'disabled');
-				$('#stop').attr('disabled', 'disabled');
-			},
+                $('#queuePosition').html(queuePosition);
 
-			/**
-			 * Update the simulation controls button's visibility after
-			 * user's interaction.
-			 */
-			updateStartEvent: function() {
-				$('#start').attr('disabled', 'disabled');
-				$('#stop').attr('disabled', 'disabled');
-				$('#pause').removeAttr('disabled');
-			},
+                $('#multiUserNotification').modal();
+            }
+        };
 
-			/**
-			 * Update the simulation controls button's visibility after
-			 * user's interaction.
-			 */
-			updateStopEvent: function() {
-				$('#start').removeAttr('disabled');
-				$('#pause').attr('disabled', 'disabled');
-				$('#stop').attr('disabled', 'disabled');
-				
-				//send signal to all widgets to reset data sets
-				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
-			},
-
-			/**
-			 * Update the simulation controls button's visibility after
-			 * user's interaction.
-			 */
-			updatePauseEvent: function() {
-				$('#start').removeAttr('disabled');
-				$('#pause').attr('disabled', 'disabled');
-				$('#stop').removeAttr('disabled');
-			},
-
-			/**
-			 * Checks cookie for flag to hide welcome message at startup.
-			 */
-			checkWelcomeMessageCookie: function() {
-				var welcomeMessageCookie = $.cookie("hideWelcomeMessage");
-
-				if(welcomeMessageCookie != null) {
-					if(!welcomeMessageCookie) {
-						this.showWelcomeMessage();
-					}
-				}
-
-				else {
-					this.showWelcomeMessage();
-				}
-			},
-
-			/**
-			 * Show Welcome Message window.
-			 */
-			showWelcomeMessage: function() {
-				$('#welcomeMessageModal').modal('show');
-
-				//Closes welcome modal window when pressing enter
-				$('#welcomeMessageModal').keydown(function(event) {
-					if(event.keyCode == 13) {
-						$('#welcomeMessageModal').modal('hide');
-						return false;
-					}
-				});
-
-				$("#skipTutorial").on("click", function(event) {
-					if($('#welcomeMsgCookie').hasClass("checked")) {
-						$.cookie("hideWelcomeMessage", true);
-					}
-				});
-				
-				$("#startTutorial").on("click", function(event) {
-					GEPPETTO.Tutorial.startTutorial();
-				});
-
-				$('#welcomeMessageModal').on('hide', function(event) {
-					if($('#welcomeMsgCookie').hasClass("checked")) {
-						$.cookie("hideWelcomeMessage", true);
-					}
-				});
-
-				$("#welcomeMsgCookie").on("click", function(event) {
-					$(this).toggleClass('checked');
-				});
-			},
-
-			/**
-			 * Show Notification letting user now of full simulator
-			 */
-			fullSimulatorNotification: function(simulatorName, queuePosition) {
-
-				$('#capacityNotificationTitle').html(simulatorName + GEPPETTO.Resources.SIMULATOR_UNAVAILABLE);
-
-				$('#queuePosition').html(queuePosition);
-
-				$('#multiUserNotification').modal();
-			}
-		};
-
-	};
+    };
 });

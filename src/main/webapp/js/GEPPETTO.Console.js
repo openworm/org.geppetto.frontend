@@ -184,6 +184,7 @@ define(function(require) {
 					placeholder: "// type a javascript command and hit enter (help() for info)"
 				});
 
+                $("#footer").css("bottom","-10px");
 				//allow console to be resizable
 				consoleElement.resizable({
 					handles: 'n',

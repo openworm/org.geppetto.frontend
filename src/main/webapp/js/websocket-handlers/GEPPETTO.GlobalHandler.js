@@ -69,12 +69,6 @@ define(function(require) {
 
         //Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_LOADING_SIM] = function(payload) {
-            //if welcome message is open, return normal opacity after user clicked observed
-            if(($('#welcomeMessageModal').hasClass('in'))) {
-                $('#welcomeMessageModal').modal('hide');
-            }
-            $('#loadingmodal').modal('hide');
-            $('#start').attr('disabled', 'disabled');
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INVALID_SIMULATION_FILE, payload.message);
         };
 
@@ -83,13 +77,6 @@ define(function(require) {
             var code = JSON.parse(payload.message).error_code;
             var source = JSON.parse(payload.message).source;
             var exception = JSON.parse(payload.message).exception;
-
-            //if welcome message is open, return normal opacity after user clicked observed
-            if(($('#welcomeMessageModal').hasClass('in'))) {
-                $('#welcomeMessageModal').modal('hide');
-            }
-            $('#loadingmodal').modal('hide');
-            $('#start').attr('disabled', 'disabled');
             GEPPETTO.FE.errorDialog(GEPPETTO.Resources.ERROR, msg, code, source, exception);
 
         };
@@ -98,7 +85,6 @@ define(function(require) {
             var version = payload.geppetto_version;
             var geppettoVersion = GEPPETTO.Resources.GEPPETTO_VERSION_HOLDER.replace("$1", version);
             GEPPETTO.Console.log(geppettoVersion);
-            GEPPETTO.FE.searchForURLEmbeddedSimulation();
         };
 
         //Notify user with alert they are now in Observer mode
@@ -112,21 +98,11 @@ define(function(require) {
 
         //Simulation server became available
         messageHandler[messageTypes.SERVER_AVAILABLE] = function(payload){
-            //if welcome message is open, return normal opacity after user clicked observed
-            if(($('#welcomeMessageModal').hasClass('in'))) {
-                $('#welcomeMessageModal').modal('hide');
-            }
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.SERVER_AVAILABLE, payload.message);
-            $("#multiUserNotification").modal('hide');
         };
 
         //Simulation server already in use
         messageHandler[messageTypes.SERVER_UNAVAILABLE] = function(payload){
-            //if welcome message is open, return normal opacity after user clicked observed
-            if(($('#welcomeMessageModal').hasClass('in'))) {
-                $('#welcomeMessageModal').modal('hide');
-            }
-            GEPPETTO.FE.disableSimulationControls();
             GEPPETTO.FE.observersDialog(GEPPETTO.Resources.SERVER_UNAVAILABLE, payload.message);
         };
 

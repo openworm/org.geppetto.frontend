@@ -58,7 +58,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 	 * 
 	 */
 	@Override
-	public void updateReady(SimulationEvents event, String sceneUpdate, String variableWatchTree)
+	public void updateReady(SimulationEvents event, String sceneUpdate)
 	{
 		long start = System.currentTimeMillis();
 		Date date = new Date(start);
@@ -79,7 +79,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 				_user.setIsSimulationLoaded(true);
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
 				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{ "+ sceneUpdate + "}";
+				update = "{"+ sceneUpdate + "}";
 
 				break;
 			}
@@ -87,10 +87,8 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 			{
 				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
 
-				// pack sceneUpdate and variableWatchTree in the same JSON string
-				variableWatchTree=variableWatchTree.substring(1, variableWatchTree.length()-1);
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
-				update = "{ "+sceneUpdate + ", "+variableWatchTree + "}";
+				update = "{ "+sceneUpdate + "}";
 
 				break;
 			}

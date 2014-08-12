@@ -12,12 +12,12 @@ define(function(require) {
 			controls: null,
 			scene: null,
 			entities : {},
+			aspects : {},
 			renderer: null,
 			stats: null,
 			gui: null,
 			projector: null,
 			keyboard: new THREEx.KeyboardState(),
-			jsonscene: null,
 			needsUpdate: false,
 			metadata: {},
 			customUpdate: null,
@@ -47,7 +47,7 @@ define(function(require) {
 		var setupCamera = function() {
 			// Camera
 			var SCREEN_WIDTH = $(VARS.container).width(), SCREEN_HEIGHT = $(VARS.container).height();
-			var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+			var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 500000;
 			VARS.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 			VARS.scene.add(VARS.camera);
 			VARS.camera.position.set(VARS.cameraPosition.x, VARS.cameraPosition.y, VARS.cameraPosition.z);
@@ -122,11 +122,16 @@ define(function(require) {
 					var intersects = GEPPETTO.getIntersectedObjects();
 
 					if ( intersects.length > 0 ) {
-						GEPPETTO.unselectEntity();
-						VARS.selected[0] = intersects[ 0 ].object;
-						GEPPETTO.Console.executeCommand('Simulation.selectEntity("'+ VARS.selected[0].name + '")' );
+						var selected = intersects[ 0 ].object.name;
+
+						if(selected == ""){
+							selected = intersects[ 0 ].object.parent.name;
+						}
+						if(VARS.aspects.hasOwnProperty(selected) ||
+								VARS.entities.hasOwnProperty(selected))
+						GEPPETTO.Console.executeCommand(selected + '.select()' );
 					}else{
-						GEPPETTO.unselectEntity();
+						GEPPETTO.unSelectAll();
 					}
 						
 			}, false);

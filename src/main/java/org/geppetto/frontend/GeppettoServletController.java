@@ -781,6 +781,15 @@ public class GeppettoServletController
 		}
 	}
 
+	public void getModelTree(String requestID,String aspectInstancePath, GeppettoMessageInbound visitor){
+		String modelTree = visitor.getSimulationService().getModelTree(aspectInstancePath);
+		
+		String update = "{\"aspectInstancePath\":" + '"' + aspectInstancePath + '"' + ",\"modelTree\": " + modelTree + "}}";
+
+		// message the client with results
+		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, update);
+	}
+	
 	/**
 	 * Sends parsed data from script to visitor client
 	 * 

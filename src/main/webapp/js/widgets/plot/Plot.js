@@ -229,7 +229,7 @@ define(function(require) {
 			updateDataSet: function() {
 				for(var key in this.datasets) {
 					var label = this.datasets[key].label;
-					var newValue = this.getState(GEPPETTO.Simulation.watchTree, label);
+					var newValue = this.getState(GEPPETTO.Simulation.runTimeTree, label);
 
 					if(!this.labelsUpdated) {
 						var unit = newValue.unit;

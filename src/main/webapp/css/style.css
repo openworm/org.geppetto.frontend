@@ -20,6 +20,10 @@ div#preloaded-images {
         width: 1px;
 }
 
+#javascriptEditor {
+	top : 10%;	
+}
+
 .javascriptCode_loading {
 	display : none;
 }

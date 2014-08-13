@@ -83,6 +83,8 @@ define(function(require) {
 			 *
 			 * @name G.copyHistoryToClipboard()
 			 */
+			/*
+			 * Matteo: commenting out until fixed
 			copyHistoryToClipboard: function() {
 
 				var commandsString = "";
@@ -132,7 +134,7 @@ define(function(require) {
 				}
 
 			},
-
+			*/
 			/**
 			 * Toggles debug statement on/off
 			 *

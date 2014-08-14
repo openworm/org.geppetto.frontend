@@ -404,13 +404,13 @@ define(function(require) {
 
 						var thisKeypressTime = new Date();
 
-						var tags = GEPPETTO.Utility.availableTags();
+						var commands = GEPPETTO.Utility.availableCommands();
 
 						//detects double tab
 						if(thisKeypressTime - lastKeypressTime <= delta) {
 							var suggestions = "";
-							for(var i = 0; i < tags.length; i++) {
-								var tag = tags[i];
+							for(var i = 0; i < commands.length; i++) {
+								var tag = commands[i];
 								if(tag.indexOf($('#commandInputArea').val()) != -1) {
 									if((i + 1) % 3 == 0) {
 										suggestions = suggestions + tag + "\n";
@@ -434,7 +434,7 @@ define(function(require) {
 							var textAreaValue = this.textarea.val();
 
 							//narrow down the matches found from commands
-							var matches = $.map(tags, function(tag) {
+							var matches = $.map(commands, function(tag) {
 								if(tag.toUpperCase().indexOf(textAreaValue.toUpperCase()) === 0) {
 									return tag;
 								}
@@ -570,7 +570,7 @@ define(function(require) {
 						item._class = "error";
 					}
 
-					//Replace < and > tags with html equivalent in order to
+					//Replace < and > commands with html equivalent in order to
 					//display in console area
 					str = command.replace(/\</g, "&lt;");
 					var formattedCommand = str.replace(/\>/g, "&gt;");

@@ -52,7 +52,10 @@ define(function(require) {
 				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
 					GEPPETTO.Console.toggleConsole();
 				}
-
+				
+				else if(GEPPETTO.isKeyPressed("ctrl+alt+s")) {
+					GEPPETTO.Scatter3dController.toggle();
+				}
 			},
 			
 			isKeyboardEnabled : function(){

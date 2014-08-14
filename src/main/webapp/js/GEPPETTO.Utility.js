@@ -37,9 +37,16 @@
 define(function(require) {
 	return function(GEPPETTO) {
 		var $ = require('jquery');
+		//keeps track of API commands
+		var commands = [];
+		//suggestions for autocomplete
 		var tags = [];
+		//Objects to display in Help
 		var helpObjectsMap;
+		//Formatted help node message
 		var helpMsg = GEPPETTO.Resources.ALL_COMMANDS_AVAILABLE_MESSAGE;
+		
+		
 		var getHelpObjectsMap = function() {
 			if(helpObjectsMap == null) {
 				helpObjectsMap = {"G": GEPPETTO.G.help(), "Simulation": GEPPETTO.Simulation.help()};
@@ -74,7 +81,7 @@ define(function(require) {
 				 * @returns - Formmatted commands with descriptions
 				 */
 				extractCommandsFromFile: function(script, Object, objectName) {
-					var commands = objectName + GEPPETTO.Resources.COMMANDS;
+					var commandsFormatted = objectName + GEPPETTO.Resources.COMMANDS;
 
 					var descriptions = [];
 
@@ -127,12 +134,12 @@ define(function(require) {
 								}
 							}
 							//format and keep track of all commands available
-							commands += ("      -- " + functionName + "\n" + matchedDescription + "\n");
+							commandsFormatted += ("      -- " + functionName + "\n" + matchedDescription + "\n");
 						}
 						;
 					}
 					//returned formatted string with commands and description, remove last two blank lines
-					return commands.substring(0, commands.length - 2);
+					return commandsFormatted.substring(0, commandsFormatted.length - 2);
 				},
 
 				/**
@@ -140,38 +147,45 @@ define(function(require) {
 				 *
 				 * @returns {Array}
 				 */
-				availableTags: function() {
-					if(tags.length == 0) {
-						var commands = "\n";
+				availableCommands: function() {
+					if(commands.length == 0) {
+						var commandsFormatted = "\n";
 						var map = getHelpObjectsMap();
 						for(var g in map) {
-							commands += '\n' + map[g];
+							commandsFormatted += '\n' + map[g];
 						}
-						var commandsSplitByLine = commands.split("\n");
-						var tagsCount = 0;
+						var commandsSplitByLine = commandsFormatted.split("\n");
+						var commandsCount = 0;
 						for(var i = 0; i < commandsSplitByLine.length; i++) {
 							var line = commandsSplitByLine[i].trim();
 							if(line.substring(0, 2) == "--") {
 								var command = line.substring(3, line.length);
-								tags[tagsCount] = command;
-								tagsCount++;
+								commands[commandsCount] = command;
+								commandsCount++;
 							}
 						}
 					}
-					return tags;
+					return commands;
 				},
 
+				availableTags : function(){
+					if(tags.length == 0) {
+						tags.concat(commands);
+					}
+					return tags;
+				},
+				
 				/**
-				 * Remove tags that correspond to target object
+				 * Remove commands that correspond to target object
 				 *
 				 * @param targetObject - Object whose command should no longer exist
 				 */
-				removeAutocompleteTags: function(targetObject) {
+				removeAutocompleteCommands: function(targetObject) {
 
-					//loop through tags and match the commands for object
-					for(var index = 0; index < tags.length; index++) {
-						if(tags[index].indexOf(targetObject + ".") !== -1) {
-							tags.splice(index, 1);
+					//loop through commands and match the commands for object
+					for(var index = 0; index < commands.length; index++) {
+						if(commands[index].indexOf(targetObject + ".") !== -1) {
+							commands.splice(index, 1);
 							//go back one index spot after deletion
 							index--;
 						}
@@ -215,9 +229,9 @@ define(function(require) {
 						}
 					});
 
-					var commands = id + GEPPETTO.Resources.COMMANDS;
+					var commandsFormmatted = id + GEPPETTO.Resources.COMMANDS;
 
-					var tagsCount = tags.length;
+					var commandsCount = commands.length;
 
 					var proto = object.__proto__;
 					//	find all functions of object Simulation
@@ -240,8 +254,8 @@ define(function(require) {
 							}
 
 							if(isCommand) {
-								tags[tagsCount] = functionName;
-								tagsCount++;
+								commands[commandsCount] = functionName;
+								commandsCount++;
 								//match the function to comment
 								var matchedDescription = "";
 								for(var i = 0; i < descriptions.length; i++) {
@@ -269,7 +283,7 @@ define(function(require) {
 									}
 								}
 								//format and keep track of all commands available
-								commands += ("      -- " + functionName + "\n" + matchedDescription + "\n");
+								commandsFormmatted += ("      -- " + functionName + "\n" + matchedDescription + "\n");
 							}
 						}
 						;
@@ -283,9 +297,9 @@ define(function(require) {
 					tags.push(tagName);
 				},
 
-				removeTags: function(id) {
+				removeCommands: function(id) {
 
-					GEPPETTO.Utility.removeAutocompleteTags(id);
+					GEPPETTO.Utility.removeAutocompleteCommands(id);
 					delete getHelpObjectsMap()[id];
 
 				},

@@ -288,7 +288,7 @@ define(function(require) {
 					var olddata = new Array(3);
 					for(var dataKey in data) {
 						currentLabel = data[dataKey].label;
-						newValues[dataKey] = this.getState(GEPPETTO.Simulation.watchTree, currentLabel);
+						newValues[dataKey] = this.getState(GEPPETTO.Simulation.runTimeTree, currentLabel);
 						
 						olddata = data[dataKey].values;
 						if(olddata.length > this.options.limit) {

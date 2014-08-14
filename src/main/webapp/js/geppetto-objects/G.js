@@ -44,7 +44,9 @@ define(function(require) {
 	return function(GEPPETTO) {
 
 		var debugMode = false;
-		var $ = require('jquery');
+		var $ = require('jquery'),
+		React = require('react'),
+        ClipboardModal = require('jsx!components/popups/ClipboardModal');
 
 		/**
 		 * Adds widget to Geppetto
@@ -83,8 +85,6 @@ define(function(require) {
 			 *
 			 * @name G.copyHistoryToClipboard()
 			 */
-			/*
-			 * Matteo: commenting out until fixed
 			copyHistoryToClipboard: function() {
 
 				var commandsString = "";
@@ -118,12 +118,14 @@ define(function(require) {
 						message = GEPPETTO.Resources.COPY_TO_CLIPBOARD_MAC;
 					}
 
-					GEPPETTO.JSEditor.loadEditor();
+					 React.renderComponent(ClipboardModal({
+		                    show: true,
+		                    keyboard: false,
+		                    title: message,
+		                }), document.getElementById('modal-region'));
 
-					$('#jsEditor-title').html(message);
-					$('#javascriptEditor').modal();
-
-					$('#javascriptEditor').on('shown', function() {
+					$('#javascriptEditor').on('shown.bs.modal', function() {
+						GEPPETTO.JSEditor.loadEditor();
 						GEPPETTO.JSEditor.loadCode(commandsString);
 					});
 
@@ -134,7 +136,6 @@ define(function(require) {
 				}
 
 			},
-			*/
 			/**
 			 * Toggles debug statement on/off
 			 *

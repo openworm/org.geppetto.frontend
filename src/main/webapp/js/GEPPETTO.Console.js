@@ -165,7 +165,6 @@ define(function(require) {
 					$('#footer').height('');
 					$('#console').slideToggle(200);
 				}
-				$('#footerHeader').css("bottom", "-10px");
 				this.visible = mode;
 			},
 

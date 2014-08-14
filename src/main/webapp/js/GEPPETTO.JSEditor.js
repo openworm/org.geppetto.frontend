@@ -81,15 +81,14 @@ define(function(require) {
 			 * Load the editor, create it if it doesn't exist
 			 */
 			loadEditor: function() {
-				if(jsEditor == null) {
-					GEPPETTO.JSEditor.createJSEditor();
-				}
+				GEPPETTO.JSEditor.createJSEditor();
 			},
 
 			/**
 			 * Create JSEditor, use to display command history
 			 */
 			createJSEditor: function() {
+				$("#javascriptCode").removeClass("javascriptCode_loading");
 				//create the editor with given options
 				jsEditor = CodeMirror.fromTextArea(document.getElementById("javascriptCode"),
 					{

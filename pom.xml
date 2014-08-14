@@ -9,7 +9,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>3.0.0.RELEASE</spring.version>
-	</properties>
+    </properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -95,8 +95,45 @@
 		</dependency>
 	</dependencies>
 	<build>
-
 		<plugins>
+			<plugin>
+				<groupId>com.github.bringking</groupId>
+				<artifactId>requirejs-maven-plugin</artifactId>
+				<version>2.0.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>optimize</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- path to optimizer json config file -->
+					<configFile>
+						${project.basedir}/src/main/webapp/build.js
+					</configFile>
+					<!-- optional path to optimizer executable -->
+					<optimizerFile>
+						${project.basedir}/src/main/webapp/r.js
+					</optimizerFile>
+					<!-- optional parameters to optimizer executable -->
+					<optimizerParameters>
+						<parameter>optimize=uglify</parameter>
+						<paramater>baseUrl=${project.basedir}/src/main/webapp/js</paramater>
+						<paramater>out=${project.basedir}/src/main/webapp/js/main-built.js</paramater>
+					</optimizerParameters>
+					<!-- Whether or not to process configFile with maven filters. If you 
+						use this option, some options in your configFile must resolve to absolute 
+						paths (see below) -->
+					<filterConfig>
+						true
+					</filterConfig>
+					<!-- Skip requirejs optimization if true -->
+					<skip>
+						false
+					</skip>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -106,13 +143,13 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
-    			<groupId>org.apache.maven.plugins</groupId>
-    			<artifactId>maven-surefire-plugin</artifactId>
-    			<version>2.15</version>
-    			<configuration>
-    				<skipTests>true</skipTests>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.15</version>
+				<configuration>
+					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 
@@ -135,7 +172,7 @@
 						<Web-ContextPath>/</Web-ContextPath>
 						<Import-Package>org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
-						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>						
+						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>
 					</instructions>
 				</configuration>
 				<executions>
@@ -210,11 +247,11 @@
 						<phase>install</phase>
 						<goals>
 							<goal>jsdoc3</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-	</plugins>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -241,15 +278,15 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
-	
+
 			</plugins>
 		</pluginManagement>
 		<resources>
-        <resource>
-          <directory>src/main/resources</directory>
-          <filtering>true</filtering>
-        </resource>
-      </resources>   
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>		
+		</resources>
 	</build>
 	<repositories>
 		<repository>

@@ -20,6 +20,14 @@ div#preloaded-images {
         width: 1px;
 }
 
+#javascriptEditor {
+	top : 10%;	
+}
+
+.javascriptCode_loading {
+	display : none;
+}
+
 .icon-question-sign {
     margin-left: 5px;
     font-size: 20px;

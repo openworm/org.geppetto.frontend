@@ -13,17 +13,16 @@
 		<link rel="stylesheet" href="css/codemirror.css" />
 		<link rel="stylesheet" href="css/lesser-dark.css" />
 		<link rel="stylesheet" href="css/jsConsole.css" />
-		<link rel="stylesheet" href="css/style.css" />
-	</head>
-	<link rel="icon" 
-      type="image/png" 
-      href="images/favicon.png"/>
+		<link rel="stylesheet" href="css/styletest.css" />
+                <link rel="icon" type="image/png" href="images/favicon.png"/>
+	</head>	
 	<body>
+            
         <div id="modal-region"></div>
 
-        <div id="preloaded-images">
-            <img src="images/welcomebckg.png" width="1" height="1" alt="" />
-            <img src="images/welcomebckg@2x.png" width="1" height="1" alt="" />
+        <div>
+            <img src="images/welcomebckg.png" width="1" height="1" alt="" style="display:none;" />
+            <img src="images/welcomebckg@2x.png" width="1" height="1" alt="" style="display:none;"/>
         </div>
         <div id="controls">
 
@@ -70,10 +69,10 @@
 
             <!-- The sandbox template: -->
         <script type="text/template" id="tplSandbox">
-        		<pre class="output"></pre>
-        		<div class="input">
-        			<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
-        </div>
+            <pre class="output"></pre>
+            <div class="input">
+        	<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
+            </div>
         </script>
 
             <!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
@@ -124,5 +123,4 @@
         <noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" id="contact" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
             <!-- end olark code -->
     </body>
-</body>
 </html>

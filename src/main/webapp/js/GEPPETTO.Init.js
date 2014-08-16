@@ -130,8 +130,6 @@ define(function(require) {
 						if(VARS.aspects.hasOwnProperty(selected) ||
 								VARS.entities.hasOwnProperty(selected))
 						GEPPETTO.Console.executeCommand(selected + '.select()' );
-					}else{
-						GEPPETTO.unSelectAll();
 					}
 						
 			}, false);

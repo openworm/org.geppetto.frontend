@@ -110,10 +110,10 @@ define(function(require) {
      	   var message; 
      	   
      	   if(GEPPETTO.unselectAspect(this.instancePath)){
-     		   message = GEPPETTO.Resources.UNSELECTING_ASPECT;
+     		   message = GEPPETTO.Resources.UNSELECTING_ASPECT + this.instancePath + ".";
      	   }
      	   else{
-     		   message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
+     		   message = GEPPETTO.Resources.ASPECT_NOT_SELECTED + this.instancePath + ".";
      	   }
      	   this.selected = false;
      	   
@@ -131,10 +131,10 @@ define(function(require) {
         	var message; 
 
         	if(GEPPETTO.selectAspect(this.instancePath)){
-        		message = GEPPETTO.Resources.SELECTING_ASPECT;
+        		message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath + ".";
         	}
         	else{
-        		message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
+        		message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED + this.instancePath + ".";
         	}
         	this.selected = true;
 

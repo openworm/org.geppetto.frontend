@@ -127,10 +127,10 @@ define(function(require) {
 		        	   var message; 
 		        	   
 		        	   if(GEPPETTO.unselectEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY;
+		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY + this.instancePath + ".";
 		        	   }
 		        	   else{
-		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
+		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED + this.instancePath + ".";
 		        	   }
 		        	   this.selected = false;
 		        	   
@@ -148,10 +148,10 @@ define(function(require) {
 					   var message; 
 		        	   
 		        	   if(GEPPETTO.selectEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.SELECTING_ENTITY;
+		        		   message = GEPPETTO.Resources.SELECTING_ENTITY + this.instancePath + ".";
 		        	   }
 		        	   else{
-		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
+		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED + this.instancePath + ".";
 		        	   }
 		        	   this.selected = true;
 		        	   

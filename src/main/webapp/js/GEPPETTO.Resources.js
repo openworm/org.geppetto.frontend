@@ -232,8 +232,9 @@ define(function(require) {
 			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
 					" Okay and enjoy the show!",
 					
-			SELECTING_ENTITY : "Selecting entity.",
-			UNSELECTING_ENTITY : "Unselecting entity.",
+			SELECTING_ENTITY : "Selecting entity ",
+			UNSELECTING_ENTITY : "Unselecting entity ",
+			CANT_FIND_ENTITY : "Entity not found, can't use selection on it",
 			SHOW_ENTITY : "Showing entity.",
 			ENTITY_ALREADY_VISIBLE : "Entity already visible.",
 			HIDE_ENTITY : "Hiding entity.",

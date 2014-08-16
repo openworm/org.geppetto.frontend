@@ -30,54 +30,23 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Client class used for an Array. The server generates nodes that have an array as parent,
+ * this node class is used to represent an array as a node and keep in line with the 
+ * backbone associations models.
+ * 
+ * @author  Jesus R. Martinez (jesus@metacell.us)
+ */
 define(function(require) {
+
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
-	
+		
 	return Node.Model.extend({
-		relations:[
-		           {
-		        	   type: Backbone.Many,
-		        	   key: 'children',
-		        	   relatedModel: Node
-		           }
-		           ],
-		           defaults : {
-		        	   children : []
-		           },
-		           id : "",
-		           type : "",
-		           _metaType : "AspectSubTreeNode",
-		           
-		           initialize : function(options){
-		        	   this.id = options.id;
-		        	   this.instancePath = options.instancePath;
-		        	   this.name = options.name;
-		        	   this.type = options.type;
-		           },
-
-
-		           /**
-		            * Get the model interpreter associated with entity
-		            *
-		            * @name EntityNode.getId()
-		            * @returns {String} - ID of entity
-		            */
-		           getId : function(){
-		        	   return this.id;
-		           },
-
-		           /**
-		            * Get this entity's aspects
-		            *
-		            * @name CompositeVariableNode.getChildren()
-		            * 
-		            * @returns {List<Aspect>} - List of aspects
-		            *
-		            */
-		           getChildren : function(){
-		        	   var children = this.get("children");
-		        	   return children;
-		           }
+		properties:{},
+		_metaType : "ArrayNode",
+		
+		initialize : function(options){
+		}
 	});
 });

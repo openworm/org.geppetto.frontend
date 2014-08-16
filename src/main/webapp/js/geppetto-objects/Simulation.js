@@ -155,7 +155,7 @@ define(function(require) {
 				}
 
 				for(var e in this.runTimeTree){
-					GEPPETTO.Utility.removeTags(e);
+					GEPPETTO.Console.removeCommands(e);
 				}
 				this.runTimeTree = {};
 				this.simulationURL = simulationURL;
@@ -203,7 +203,7 @@ define(function(require) {
 				}
 				
 				for(var e in this.runTimeTree){
-					GEPPETTO.Utility.removeTags(e);
+					GEPPETTO.Console.removeCommands(e);
 				}
 				this.runTimeTree = {};
 				this.listeners=[];
@@ -375,6 +375,42 @@ define(function(require) {
 			 *
 			 * Outputs list of commands with descriptions associated with the Simulation object.
 			 *
+			 * @name GEPPETTO.Simulation.selectEntity()
+			 * @returns  Returns list of all commands for the Simulation object
+			 */
+			selectEntity: function(entity) {
+				var message = GEPPETTO.Resources.CANT_FIND_ENTITY;
+				for(var e in this.runTimeTree){
+					if(e == entity.instancePath){
+						if(GEPPETTO.selectEntity(entity.instancePath)){
+							message = GEPPETTO.Resources.SELECTING_ENTITY + entity.instancePath + ".";
+						}
+						else{
+							message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED + entity.instancePath + ".";
+						}
+					}
+				}
+				return message;
+			},
+			
+			/**
+			 *
+			 * Outputs list of commands with descriptions associated with the Simulation object.
+			 *
+			 * @name GEPPETTO.Simulation.getSelection()
+			 * @returns  Returns list of all entities selected
+			 */
+			getSelection : function() {
+				var formattedOutput="";
+				var indentation = "↪";
+
+				return GEPPETTO.Utility.formatSelection(this.runTimeTree,formattedOutput, indentation);
+			},
+			
+			/**
+			 *
+			 * Outputs list of commands with descriptions associated with the Simulation object.
+			 *
 			 * @name GEPPETTO.Simulation.help()
 			 * @returns  Returns list of all commands for the Simulation object
 			 */
@@ -398,25 +434,18 @@ define(function(require) {
 				this.simulationStates=[];				
 			},
 			
+			/**
+			 *
+			 * Outputs list of commands with descriptions associated with the Simulation object.
+			 *
+			 * @name GEPPETTO.Simulation.getEntities()
+			 * @returns  Returns list of all entities selected
+			 */
 			getEntities : function(){
 				var formattedOutput="";
 				var indentation = "↪";
-				for(var e in this.runTimeTree){
-					var entity = this.runTimeTree[e];
-					formattedOutput = formattedOutput+indentation + entity.id + " [Entity]\n";
-					for(var a in entity.aspects){
-						var aspect = entity.aspects[a];
-						var aspectIndentation = "         ↪";
-						formattedOutput = formattedOutput+ aspectIndentation + aspect.id +  " [Aspect]\n";
-					}
-					indentation = "      ↪";
-				}
-				
-				if(formattedOutput.lastIndexOf("\n")>0) {
-					formattedOutput = formattedOutput.substring(0, formattedOutput.lastIndexOf("\n"));
-				} 
-				
-				return formattedOutput.replace(/"/g, "");
+
+				return GEPPETTO.Utility.formatEntitiesTree(this.runTimeTree,formattedOutput, indentation);				
 			},
 
 			/**

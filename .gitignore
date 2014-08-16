@@ -2,6 +2,7 @@
 *.DS_Store
 src/main/webapp/META-INF
 src/main/webapp/js/jsdocs 
+node_modules*
 
 # Package Files #
 *.jar
@@ -10,6 +11,7 @@ src/main/webapp/js/jsdocs
 
 # Editor byproducts
 *.swp
+.settings/*
 /target
 *~
 

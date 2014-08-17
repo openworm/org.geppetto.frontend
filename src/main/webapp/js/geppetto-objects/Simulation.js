@@ -153,7 +153,8 @@ define(function(require) {
 				if(this.status == this.StatusEnum.STARTED || this.status == this.StatusEnum.PAUSED) {
 					this.stop();
 				}
-
+				
+				//remove commands for all entities previously loaded
 				for(var e in this.runTimeTree){
 					GEPPETTO.Console.removeCommands(e);
 				}
@@ -202,6 +203,7 @@ define(function(require) {
 					this.stop();
 				}
 				
+				//remove commands for all entities previously loaded
 				for(var e in this.runTimeTree){
 					GEPPETTO.Console.removeCommands(e);
 				}

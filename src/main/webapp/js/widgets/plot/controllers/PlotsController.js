@@ -102,6 +102,9 @@ define(function(require) {
 				//remove all existing plotting widgets
 				for(var i = 0; i < plots.length; i++) {
 					var plot = plots[i];
+					
+					//remove commands 
+					GEPPETTO.Console.removeCommands(plot.getId());
 
 					plot.destroy();
 				}

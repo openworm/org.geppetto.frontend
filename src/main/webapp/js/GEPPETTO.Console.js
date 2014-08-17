@@ -494,6 +494,15 @@ define(function(require) {
 						index--;
 					}
 				}
+				
+				//loop through tags and match the tags for object
+				for(var index = 0; index < tags.length; index++) {
+					if(tags[index].indexOf(targetObject + ".") !== -1) {
+						tags.splice(index, 1);
+						//go back one index spot after deletion
+						index--;
+					}
+				}
 			},
 		};
 	};

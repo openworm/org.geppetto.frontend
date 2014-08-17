@@ -27,10 +27,11 @@ define(function (require) {
         },
 
         loadSimulation: function() {
+        	//Send command to load via console
             if(this.state.loadFromURL) {
-                GEPPETTO.Simulation.load(this.state.simulationUrl);
+                GEPPETTO.Console.executeCommand('GEPPETTO.Simulation.load("' + this.state.simulationUrl + '")');
             } else {
-                GEPPETTO.Simulation.loadFromContent(this.state.simulationXML);
+                GEPPETTO.Console.executeCommand('GEPPETTO.Simulation.loadFromContent("' + this.state.simulationXML + '")');
             }
             
             this.hide();

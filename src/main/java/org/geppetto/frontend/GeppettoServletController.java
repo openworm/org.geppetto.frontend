@@ -605,7 +605,7 @@ public class GeppettoServletController
 			}
 			catch(GeppettoExecutionException e)
 			{
-				e.printStackTrace();
+				_logger.error("Unable to stop simulation for exiting user");
 			}
 
 			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
@@ -636,7 +636,7 @@ public class GeppettoServletController
 				}
 				catch(GeppettoExecutionException e)
 				{
-					e.printStackTrace();
+					_logger.error("Unable to stop simulation for exiting user");
 				}
 
 				// Notify all observers
@@ -777,7 +777,7 @@ public class GeppettoServletController
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			_logger.error("Unable to read GEPPETTO.properties file");
 		}
 	}
 

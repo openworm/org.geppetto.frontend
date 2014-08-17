@@ -99,9 +99,13 @@ define(function(require) {
 
 					//second check, user isn't there or didn't click yes, disconnect
 					if(GEPPETTO.Main.idleTime > timeOut) {
-        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
-						$('#infomodal-title').html("");
-						$('#infomodal-text').html(GEPPETTO.Resources.DISCONNECT_MESSAGE);
+						React.renderComponent(InfoModal({
+		                    show: true,
+		                    keyboard: false,
+		                    title: "",
+		                    text: GEPPETTO.Resources.DISCONNECT_MESSAGE,
+		                }), document.getElementById('modal-region'));
+						
 						$('#infomodal-footer').remove();
 						$('#infomodal-header').remove();
 						

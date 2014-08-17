@@ -29,14 +29,10 @@ define(function (require) {
         loadSimulation: function() {
         	//Send command to load via console
             if(this.state.loadFromURL) {
-                GEPPETTO.Console.executeCommand('GEPPETTO.Simulation.load("' + this.state.simulationUrl + '")');
+                GEPPETTO.Console.executeCommand('Simulation.load("' + this.state.simulationUrl + '")');
             } else {
-                GEPPETTO.Console.executeCommand('GEPPETTO.Simulation.loadFromContent("' + this.state.simulationXML + '")');
+                GEPPETTO.Console.executeCommand('Simulation.loadFromContent("' + this.state.simulationXML + '")');
             }
-            
-            this.hide();
-            
-            React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
         },
 
         loadSimulationTemplate: function() {
@@ -74,7 +70,11 @@ define(function (require) {
                         placement: 'auto bottom'
                     }).popover('show');
                 }
-            }); 
+            });
+            
+            GEPPETTO.on('simulation:show_spinner',function(){
+            	React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
+            });
         },
         
         componentWillUnmount: function(){

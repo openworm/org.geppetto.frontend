@@ -11,7 +11,7 @@ define(function (require) {
         popoverContent: "Once you have loaded a simulation, it's time to see it in action by pressing Start. Click it now to see the simulation in action",
 
         onClick: function() {
-            GEPPETTO.Simulation.start();
+            GEPPETTO.Console.executeCommand("Simulation.start()");
         },
 
         componentDidMount: function() {

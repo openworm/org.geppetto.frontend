@@ -188,6 +188,8 @@ define(function(require) {
 				this.simulationStates = [];
 				this.loading = true;
 
+                GEPPETTO.trigger('simulation:show_spinner');
+
 				return loadStatus;
 			},
 
@@ -226,6 +228,8 @@ define(function(require) {
 
 				this.loading = true;
 				
+                GEPPETTO.trigger('simulation:show_spinner');
+
 				return GEPPETTO.Resources.LOADING_SIMULATION;
 			},
 

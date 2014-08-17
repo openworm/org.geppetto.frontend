@@ -277,27 +277,20 @@ define(function(require) {
 				var returnMessage;
 
 				if(mode) {
-					var modalVisible = $('#helpmodal').hasClass('in');
-					//don't try to show help window again if already visible
-					if(modalVisible){
-						returnMessage = GEPPETTO.Resources.HELP_ALREADY_VISIBLE;
-					}
-					//show help window if it isn't visible
-					else{
-						returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
-						$('#helpmodal').modal('show');
-					}
+	                GEPPETTO.trigger('simulation:show_helpwindow');
+					returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
 				}
-				else {
-					var modalVisible = $('#helpmodal').hasClass('in');
+				else {	                
+					var modalVisible = $('#help-modal').hasClass('in');
 					//don't try to hide already hidden help window
 					if(!modalVisible){
 						returnMessage = GEPPETTO.Resources.HELP_ALREADY_HIDDEN;
 					}
 					//hide help window
 					else{
+		                GEPPETTO.trigger('simulation:hide_helpwindow');
 						returnMessage = GEPPETTO.Resources.HIDE_HELP_WINDOW;
-						$('#helpmodal').modal('hide');
+						$('#help-modal').modal('hide');
 					}
 				}
 				return returnMessage;

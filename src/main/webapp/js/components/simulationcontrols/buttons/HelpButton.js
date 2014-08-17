@@ -8,11 +8,23 @@ define(function (require) {
         mixins: [require('mixins/Button')],
 
         onClick: function() {
-            React.renderComponent(HelpModal({show:true}), document.getElementById('modal-region'));
-        	$("#help-modal").css("margin-right", "-20px");
-        	$('#help-modal').css('max-height', $(window).height() * 0.7);
-        	$('#help-modal .modal-body').css('max-height', $(window).height() * 0.5);
+            GEPPETTO.Console.executeCommand("G.showHelpWindow(true)");
         },
+        
+        componentDidMount: function() {
+        	
+        	GEPPETTO.on('simulation:show_helpwindow',function(){
+        		React.renderComponent(HelpModal({show:true}), document.getElementById('modal-region'));
+				$("#help-modal").css("margin-right", "-20px");
+				$('#help-modal').css('max-height', $(window).height() * 0.7);
+				$('#help-modal .modal-body').css('max-height', $(window).height() * 0.5);
+            });
+        	
+            GEPPETTO.on('simulation:hide_helpwindow',function(){
+            	React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
+            });
+        },
+        
 
         getDefaultProps: function() {
             return {

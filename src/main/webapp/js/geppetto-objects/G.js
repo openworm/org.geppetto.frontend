@@ -125,8 +125,10 @@ define(function(require) {
 		                }), document.getElementById('modal-region'));
 
 					$('#javascriptEditor').on('shown.bs.modal', function() {
-						GEPPETTO.JSEditor.loadEditor();
-						GEPPETTO.JSEditor.loadCode(commandsString);
+						if($("#javascriptEditor").hasClass("in")){
+							GEPPETTO.JSEditor.loadEditor();
+							GEPPETTO.JSEditor.loadCode(commandsString);
+						}
 					});
 
 					return GEPPETTO.Resources.COPY_CONSOLE_HISTORY;

@@ -196,7 +196,11 @@ define(function(require) {
 
 							/*Match type of node and created*/
 							if(metatype == "CompositeNode"){
-								parent[i]=this.createCompositeNode(i,node[i]);
+								var compositeNode =this.createCompositeNode(i,node[i]);
+								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
+									parent.get("children").add(compositeNode);
+								}
+								parent[i] = compositeNode;
 								//traverse through children of composite node
 								this.modelJSONToNodes(parent[i], node[i]);
 							}
@@ -322,6 +326,12 @@ define(function(require) {
 							if(node.type == "VisualizationTree"){
 								a.VisualizationTree = node;
 							}		
+							else if(node.type == "SimulationTree"){
+								a.SimulationTree = {};
+							}
+							else if(node.type == "ModelTree"){
+								a.ModelTree = {};
+							}	
 						}
 					}
 

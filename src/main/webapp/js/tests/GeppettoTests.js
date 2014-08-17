@@ -42,7 +42,7 @@ define(function(require) {
 	var run = function() {
 		module("Global Scope Test");
 		test("Global scope Test", function() {
-			notEqual(help(), null, "Global help() command available, passed");
+			notEqual(GEPPETTO.Console.help(), null, "Global help() command available, passed");
 		});
 
 		module("G Object Test");
@@ -68,56 +68,70 @@ define(function(require) {
 			equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
 		});
 
-		test("Test Copy History To Clipboard", function() {
-
-			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
-
-			//add some commands to history
-			GEPPETTO.Console.executeCommand("G.help();");
-			GEPPETTO.Console.executeCommand("help();");
-			GEPPETTO.Console.executeCommand("Simulation.start()");
-
-			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "Commands copied, test passed");
-		});
-
-		test("Test Add Widget", function() {
-			G.addWidget(Widgets.PLOT);
-
-			equal(GEPPETTO.PlotsController.getWidgets().length, 1, "Plot widget created, test passed");
-
-			G.removeWidget(Widgets.PLOT);
-		});
-
-		test("Test Remove Widget", function() {
-			G.addWidget(Widgets.PLOT);
-
-			equal(GEPPETTO.PlotsController.getWidgets().length, 1, "Plot widget created");
-
-			G.removeWidget(Widgets.PLOT);
-
-			equal(GEPPETTO.PlotsController.getWidgets().length, 0, "Plot widget removed, test passed");
-		});
-
-		test("Test Widget", function() {
+		test("Test Plot Widget", function() {
 			G.addWidget(Widgets.PLOT);
 
 			equal(GEPPETTO.PlotsController.getWidgets().length, 1, "Plot widget created");
 
 			var plot = GEPPETTO.PlotsController.getWidgets()[0];
 
-			equal(plot.isVisible(), true, "Default visibility test passed");
+			equal(plot.isVisible(), true, "Test Default Widget Visibility");
 
 			plot.hide();
 
-			equal(plot.isVisible(), false, "Hide test passed");
+			equal(plot.isVisible(), false, "Test hide()");
 
 			plot.show();
 
-			equal(plot.isVisible(), true, "Show test passed");
+			equal(plot.isVisible(), true, "Test show()");
 
 			plot.destroy();
 
-			equal($("#" + plot.getId()).html(), null, "Widget successfully destroyed, passed");
+			equal($("#" + plot.getId()).html(), null, "Test destroy()");
+		});
+		
+		test("Test Popup Widget", function() {
+			G.addWidget(Widgets.POPUP);
+
+			equal(GEPPETTO.PopupsController.getWidgets().length, 1, "Popup widget.");
+
+			var pop = GEPPETTO.PopupsController.getWidgets()[0];
+
+			equal(pop.isVisible(), true, "Test Default Visibility");
+
+			pop.hide();
+
+			equal(pop.isVisible(), false, "Test hide()");
+
+			pop.show();
+
+			equal(pop.isVisible(), true, "Test show()");
+
+			pop.destroy();
+
+			equal($("#" + pop.getId()).html(), null, "Test destroy()");
+		});
+		
+		test("Test Scattered-3D Widget", function() {
+			G.addWidget(Widgets.SCATTER3D);
+
+			equal(GEPPETTO.Scatter3dController.getWidgets().length, 1, "Scatter widget created");
+
+			var scatter = GEPPETTO.Scatter3dController.getWidgets()[0];
+
+			equal(scatter.isVisible(), true, "Test Default Visibility");
+
+			scatter.hide();
+
+			equal(scatter.isVisible(), false, "Test hide()");
+
+			scatter.show();
+
+			equal(scatter.isVisible(), true, "Test show()");
+
+			scatter.destroy();
+
+			equal($("#" + scatter.getId()).html(), null, "Test destroy()");
 		});
 		
 		test("Test Commands", function() {
@@ -141,7 +155,7 @@ define(function(require) {
 
 			G.showHelpWindow(false);
 			
-			var modalVisible = $('#helpmodal').hasClass('in');
+			var modalVisible = $('#help-modal').hasClass('in');
 			
 			equal(modalVisible, false, "Help Window Hidden");
 			
@@ -151,9 +165,18 @@ define(function(require) {
 		});
 		
 		
+		test("Test Copy History To Clipboard", function() {
 
+			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
+
+			//add some commands to history
+			GEPPETTO.Console.executeCommand("G.help();");
+			GEPPETTO.Console.executeCommand("help();");
+			GEPPETTO.Console.executeCommand("Simulation.start()");
+
+			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "Commands copied, test passed");		
+		});
 	};
-
 	return {run: run};
 
 });

@@ -56,6 +56,13 @@ define(function(require) {
 				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PopupsController, popupID);
 			},
 			
+			/**
+			 * Returns all plotting widgets objects
+			 */
+			getWidgets: function() {
+				return popups;
+			},
+			
 			addPopupWidget : function(){
 				//Popup widget number
 				var index = (popups.length + 1);
@@ -65,10 +72,10 @@ define(function(require) {
 				var id = name;
 
 				//create popup widget
-				var p = window[name] = new Popup({id:id, name:name,visible:false});
+				var p = window[name] = new Popup({id:id, name:name,visible:true});
 
 				//create help command for plot
-				p.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+				p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
 				//store in local stack
 				popups.push(p);

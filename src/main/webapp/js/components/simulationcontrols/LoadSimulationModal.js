@@ -31,7 +31,9 @@ define(function (require) {
             if(this.state.loadFromURL) {
                 GEPPETTO.Console.executeCommand('Simulation.load("' + this.state.simulationUrl + '")');
             } else {
-                GEPPETTO.Console.executeCommand('Simulation.loadFromContent("' + this.state.simulationXML + '")');
+            	//Format XLM string before sending command to load simulation
+            	var content = this.state.simulationXML.replace(/\s+/g, ' ');
+            	GEPPETTO.Console.executeCommand("Simulation.loadFromContent('" + content + "')");
             }
         },
 

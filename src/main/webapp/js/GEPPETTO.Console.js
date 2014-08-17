@@ -351,6 +351,45 @@ define(function(require) {
 			 * @param id - Id of object
 			 * @returns
 			 */
+			updateTags: function(instancePath, object) {
+				var nonTags = ["constructor()", "initialize(options)"];
+				
+				var tagsCount = tags.length;
+				
+				var proto = object.__proto__;
+				//	find all functions of object Simulation
+				for(var prop in proto) {
+					if(typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
+						var f = proto[prop].toString();
+						//get the argument for this function
+						var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
+
+						var functionName = instancePath + "." + prop + "(" + parameter + ")";
+
+						var isTag = true;
+						for(var c = 0; c < nonTags.length; c++) {
+							if(functionName.indexOf(nonTags[c]) != -1) {
+								isTag = false;
+							}
+						}
+
+						if(isTag) {
+							tags[tagsCount] = functionName;
+							tagsCount++;							
+						}
+					}
+				}
+			},
+			
+			/**
+			 * Update commands for help option. Usually called after widget
+			 * is created.
+			 *
+			 * @param scriptLocation - Location of files from where to read the comments
+			 * @param object - Object whose commands will be added
+			 * @param id - Id of object
+			 * @returns
+			 */
 			updateCommands: function(scriptLocation, object, id) {
 				var nonCommands = ["constructor()", "initialize(options)"];
 

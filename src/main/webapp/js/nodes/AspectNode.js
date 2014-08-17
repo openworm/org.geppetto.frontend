@@ -46,6 +46,7 @@ define(function(require) {
 		modelInterpreterName : "",
 		simulatorName : "",
 		modelURL : "",
+		selected : false,
 		ModelTree : {},
 		VisualizationTree : {},
 		SimulationTree : {},

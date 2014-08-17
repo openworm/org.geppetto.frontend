@@ -404,7 +404,12 @@ define(function(require) {
 				var formattedOutput="";
 				var indentation = "↪";
 
-				return GEPPETTO.Utility.formatSelection(this.runTimeTree,formattedOutput, indentation);
+				var selection = GEPPETTO.Utility.formatSelection(this.runTimeTree,formattedOutput, indentation);
+				if(selection ==  ""){
+					selection = GEPPETTO.RESOURCES.NO_ENTITIES_SELECTED;
+				}
+				
+				return selection;
 			},
 			
 			/**

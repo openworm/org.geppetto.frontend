@@ -823,7 +823,7 @@ define(function(require) {
 				if(v == instancePath){
 					var entity = VARS.entities[v];
 					if(entity.selected == false){
-						entity.selected = true;
+						VARS.entities[v].selected = true;
 						for(var a in entity){
 							GEPPETTO.selectAspect(entity[a].eid);
 						}
@@ -840,7 +840,7 @@ define(function(require) {
 				if(v == instancePath){
 					var entity = VARS.entities[v];
 					if(entity.selected == true){
-						entity.selected = false;
+						VARS.entities[v].selected = false;
 						for(var a in entity){
 							GEPPETTO.unselectAspect(entity[a].eid);
 						}

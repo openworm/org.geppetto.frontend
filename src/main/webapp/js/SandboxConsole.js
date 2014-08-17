@@ -568,7 +568,10 @@ define(function(require) {
 										tag = "." + tags[1];	
 									}
 									else{ 
-										tag = tags[1];
+										//if tag is part of input, add next part of object
+										if(inputSplit[inputSplit.length-1] == tag){
+											tag = tags[1];
+										}
 									}
 								}
 							}

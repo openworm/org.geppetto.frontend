@@ -200,8 +200,10 @@ define(function(require) {
 				formatSelection : function(tree,formattedOutput, indentation){
 					for(var e in tree){
 						var entity = tree[e];
-						formattedOutput = formattedOutput+indentation + entity.id + "\n";
-						indentation = "      ↪";
+						if(entity.selected == true){
+							formattedOutput = formattedOutput+indentation + entity.id + "\n";
+							indentation = "      ↪";
+						}
 					}
 					
 					if(formattedOutput.lastIndexOf("\n")>0) {

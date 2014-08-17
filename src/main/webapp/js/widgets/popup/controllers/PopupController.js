@@ -76,7 +76,7 @@ define(function(require) {
 				this.registerHandler(id);
 
 				//add commands to console autocomplete and help option
-				GEPPETTO.Utility.updateCommands("js/widgets/popup/Popup.js", p, id);
+				GEPPETTO.Console.updateCommands("js/widgets/popup/Popup.js", p, id);
 
 				return p;
 			},
@@ -87,7 +87,6 @@ define(function(require) {
 					var popup = popups[i];
 
 					popup.destroy();
-					i++;
 				}
 
 				popups = new Array();

@@ -312,7 +312,7 @@ define(function(require) {
 							{id: aspect.id,modelInterpreter: aspect.modelInterpreter,
 								simulator: aspect.simulator,model : aspect.model,
 								instancePath : aspect.instancePath});
-					
+					GEPPETTO.Console.updateTags(aspect.instancePath, a);
 					GEPPETTO.Console.addTag(aspect.instancePath);
 
 					//create visualization subtree only at first

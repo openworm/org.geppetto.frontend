@@ -104,7 +104,6 @@ define(function(require) {
 					var plot = plots[i];
 
 					plot.destroy();
-					i--;
 				}
 
 				plots = new Array();

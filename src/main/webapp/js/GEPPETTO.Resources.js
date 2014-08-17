@@ -235,6 +235,7 @@ define(function(require) {
 			SELECTING_ENTITY : "Selecting entity ",
 			UNSELECTING_ENTITY : "Unselecting entity ",
 			CANT_FIND_ENTITY : "Entity not found, can't use selection on it",
+			NO_ENTITIES_SELECTED : "No entities are currently selected.",
 			SHOW_ENTITY : "Showing entity.",
 			ENTITY_ALREADY_VISIBLE : "Entity already visible.",
 			HIDE_ENTITY : "Hiding entity.",

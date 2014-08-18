@@ -12,7 +12,7 @@ module.exports = function(grunt) {
         },
         files: {
           // target.css file: source.less file
-          "src/main/webapp/css/styletest.css": "src/main/webapp/less/main.less"
+          "src/main/webapp/css/main.css": "src/main/webapp/less/main.less"
         }
       }
     },

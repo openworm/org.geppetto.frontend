@@ -135,6 +135,32 @@
 				</configuration>
 			</plugin>
 			<plugin>
+			    <groupId>pl.allegro</groupId>
+			    <artifactId>grunt-maven-plugin</artifactId>
+			    <version>1.4.1</version>
+			    <configuration>
+			        <!-- relative to src/main/webapp/, default: static -->
+			        <jsSourceDirectory>.</jsSourceDirectory>
+			
+			        <!-- example options usage to get verbose output in logs -->
+			        <gruntOptions>
+			            <gruntOption>--verbose</gruntOption>
+			        </gruntOptions>
+			
+			        <!-- example npm install env variable -->
+			        <npmEnvironmentVar>
+			            <PHANTOMJS_CDNURL>http://cnpmjs.org/downloads</PHANTOMJS_CDNURL>
+			        </npmEnvironmentVar>			
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>grunt</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>

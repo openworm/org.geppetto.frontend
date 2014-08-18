@@ -15,12 +15,12 @@ define(function(require) {
 		componentDidMount: function(){
 			GEPPETTO.once('simulation:loaded', this.hide);
 			setTimeout((function(){
-				if(GEPPETTO.Simulation.loading){
+				if(GEPPETTO.Simulation.loading && this.isMounted()){
 					this.setProps({text: 'Loading is taking longer than usual, either a big simulation is being loaded or bandwidth is limited'});
 				}
 			}).bind(this), 20000);
 		},
-		
+				
 		render: function () {
             return (
             	<div className="modal fade" id="loading-spinner">

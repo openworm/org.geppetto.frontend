@@ -64,8 +64,6 @@ define(function (require) {
                 this.setState({disableLoad:true});
                 this.loadSimulationTemplate();
             }
-
-           // GEPPETTO.on('simulation:configloaded', this.setSimulationXML);       
             
             this.listenTo(GEPPETTO, 'simulation:configloaded', this.setSimulationXML);
             this.listenTo($(this.getDOMNode()),'shown.bs.modal', function(){
@@ -78,10 +76,6 @@ define(function (require) {
             });
         },
         
-        //componentWillUnmount: function(){
-        //	GEPPETTO.off('simulation:configloaded');
-        //},
-
         onSelectSimulationUrl: function(event) {
             var url = event.target.value;
             if(url) {

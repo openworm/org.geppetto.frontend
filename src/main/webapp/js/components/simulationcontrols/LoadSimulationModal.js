@@ -3,8 +3,8 @@ define(function (require) {
     var React = require('react'),
         $ = require('jquery'),
         XMLEditor = require('jsx!./XMLEditor'),
-        GEPPETTO = require('geppetto'),
-        LoadingSpinner = require('jsx!./LoadingSpinner');
+        GEPPETTO = require('geppetto');
+        
 
     return React.createClass({
         mixins: [
@@ -72,10 +72,6 @@ define(function (require) {
                         placement: 'auto bottom'
                     }).popover('show');
                 }
-            });
-            
-            GEPPETTO.on('simulation:show_spinner',function(){
-            	React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
             });
         },
         

@@ -50,7 +50,6 @@ define(function(require) {
 		           defaults : {
 		        	   children : []
 		           },
-		           id : "",
 		           _metaType : "CompositeVariableNode",
 		           
 		           initialize : function(options){
@@ -58,17 +57,6 @@ define(function(require) {
 		        	   this.name = options.name;
 		        	   this.instancePath = options.instancePath;
 		        	   this._metaType = options._metaType;
-		           },
-
-
-		           /**
-		            * Get the model interpreter associated with entity
-		            *
-		            * @name EntityNode.getId()
-		            * @returns {String} - ID of entity
-		            */
-		           getId : function(){
-		        	   return this.id;
 		           },
 
 		           /**

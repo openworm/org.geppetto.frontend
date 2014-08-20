@@ -112,7 +112,7 @@ define(function(require) {
 						labelFormatter: function(label, series){
 		        		var split = label.split(".");
 						var shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
-		        		return '<a href="javascript:void(0)" class="legendLabel" rel="tooltip" title="'+label+'">'+shortLabel+'</a>';
+		        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
 		        	}
 		        };
 		        
@@ -139,12 +139,7 @@ define(function(require) {
 				else {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
-				
-				$("#"+state).tooltip({
-				    'show': true,
-			        'placement': 'right',
-				});
-				
+												
 				return "Line plot added to widget";
 			},
 

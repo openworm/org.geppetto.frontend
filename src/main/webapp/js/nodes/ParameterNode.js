@@ -47,6 +47,7 @@ define(function(require) {
 		initialize : function(options){
 			this.properties = options.properties;
 			this.name = options.name;
+     	   	this.id = options.id;
 			this.instancePath = options.instancePath;
 		},
 		

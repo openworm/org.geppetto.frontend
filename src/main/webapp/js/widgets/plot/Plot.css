@@ -51,21 +51,20 @@
 .legendLabel {
 	background:rgba(66,59,59,0.90)!important;
 	color:white;
+	font-weight: 200;
+	font-style: normal;
+	font-size: 11px;
+	text-decoration: inherit;
+	-webkit-font-smoothing: antialiased;
 }
 
 .ui-widget-content a {
 	color:white;
 }
 
-.ui-tooltip {
-    padding: 10px 20px;
-    color: white;
-    border-radius: 20px;
-    font: bold 14px "Helvetica Neue", Sans-Serif;
-    text-transform: uppercase;
-    box-shadow: 0 0 7px black;
-    background: black;
-    border: 2px solid white;
+.ui-tooltip div {
+	background: rgba(66,59,59,0.90)!important;
+	color : orange;
 }
 
 

@@ -45,7 +45,6 @@ define(function(require) {
 		           defaults : {
 		        	   children : []
 		           },
-		           id : "",
 		           type : "",
 		           _metaType : "AspectSubTreeNode",
 		           
@@ -54,17 +53,6 @@ define(function(require) {
 		        	   this.instancePath = options.instancePath;
 		        	   this.name = options.name;
 		        	   this.type = options.type;
-		           },
-
-
-		           /**
-		            * Get the model interpreter associated with entity
-		            *
-		            * @name EntityNode.getId()
-		            * @returns {String} - ID of entity
-		            */
-		           getId : function(){
-		        	   return this.id;
 		           },
 
 		           /**

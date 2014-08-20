@@ -64,6 +64,7 @@ define(function(require) {
 			this.scalingFactor = options.scalingFactor;
 			this.dynamics = options.dynamics;
 			this.name = options.name;
+			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this._metaType = options._metaType;
 		},

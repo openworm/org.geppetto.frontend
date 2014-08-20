@@ -42,7 +42,6 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		id:"",
 		modelInterpreterName : "",
 		simulatorName : "",
 		modelURL : "",

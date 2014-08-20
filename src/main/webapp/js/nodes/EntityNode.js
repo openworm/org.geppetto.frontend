@@ -63,7 +63,6 @@ define(function(require) {
 		           aspects : [],
 		           entities : [],
 		           position : null,
-		           id : "",
 		           selected : false,
 		           visible : true,
 		           initialize : function(options){
@@ -170,16 +169,6 @@ define(function(require) {
 						
 						return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath;
 					},*/
-					
-		           /**
-		            * Get the id associated with entity
-		            *
-		            * @name EntityNode.getId()
-		            * @returns {String} - ID of entity
-		            */
-		           getId : function(){
-		        	   return this.id;
-		           },
 
 		           /**
 		            * Get this entity's aspects

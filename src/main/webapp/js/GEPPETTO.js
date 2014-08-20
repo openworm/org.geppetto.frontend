@@ -81,7 +81,7 @@ define(function(require) {
 					var entity = entities[eindex];
 					for ( var a in entity.aspects) {
 						var aspect = entity.aspects[a];
-						var visualTree = aspect.VisualizationTree;
+						var visualTree = aspect.VisualizationTree.content;
 						for ( var vm in visualTree) {
 							var node = visualTree[vm];
 
@@ -300,7 +300,7 @@ define(function(require) {
 			var material = materialParam == undefined ? GEPPETTO
 					.getMeshPhongMaterial() : materialParam;
 			var entityObjects = [];
-			var visualizationTree = aspect.VisualizationTree;
+			var visualizationTree = aspect.VisualizationTree.content;
 			for ( var vm in visualizationTree) {
 				node = visualizationTree[vm];
 				if (node != null && typeof node === "object") {

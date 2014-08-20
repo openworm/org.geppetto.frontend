@@ -8,7 +8,8 @@ define(function (require) {
 
     return React.createClass({
         mixins: [
-            require('jsx!components/bootstrap/modal')
+            require('jsx!components/bootstrap/modal'),
+            require('jsx!mixins/Events'),           
         ],
 
         getInitialState: function() {
@@ -63,9 +64,9 @@ define(function (require) {
                 this.setState({disableLoad:true});
                 this.loadSimulationTemplate();
             }
-
-            GEPPETTO.on('simulation:configloaded', this.setSimulationXML);          
-            $(this.getDOMNode()).on('shown.bs.modal', function(){
+            
+            this.listenTo(GEPPETTO, 'simulation:configloaded', this.setSimulationXML);
+            this.listenTo($(this.getDOMNode()),'shown.bs.modal', function(){
                 if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.select-model').popover({
                         content: 'You can load a sample simulation from the list available. Alternatively, you can enter the URL of your own simulation in the input field above. Open the dropdown list and select the third simulation. Then press continue to go to the next step',
@@ -75,10 +76,6 @@ define(function (require) {
             });
         },
         
-        componentWillUnmount: function(){
-        	GEPPETTO.off('simulation:configloaded');
-        },
-
         onSelectSimulationUrl: function(event) {
             var url = event.target.value;
             if(url) {

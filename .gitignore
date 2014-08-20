@@ -2,7 +2,8 @@
 *.DS_Store
 src/main/webapp/META-INF
 src/main/webapp/js/jsdocs 
-node_modules*
+node_modules/
+node/
 
 # Build js, css
 bin/

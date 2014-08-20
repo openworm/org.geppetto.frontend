@@ -104,7 +104,7 @@ define(function(require) {
 		asyncTest("Test Runtime Tree when Loading and Simulating JLems Simulation with variables", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
-				checkUpdate : false,
+				checkUpdate2 : false,
 				onMessage: function(parsedServerMessage) {
 					// Switch based on parsed incoming message type
 					switch(parsedServerMessage.type) {
@@ -140,8 +140,8 @@ define(function(require) {
 							 GEPPETTO.ScriptRunner.runScript(payload.run_script);
 							 break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
-							if(!this.checkUpdate){
-								this.checkUpdate = true;
+							if(!this.checkUpdate2){
+								this.checkUpdate2 = true;
 
 								var payload = JSON.parse(parsedServerMessage.data);
 								var scene = JSON.parse(payload.update).scene;

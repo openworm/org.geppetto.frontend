@@ -53,6 +53,22 @@
 	color:white;
 }
 
+.ui-widget-content a {
+	color:white;
+}
+
+.ui-tooltip {
+    padding: 10px 20px;
+    color: white;
+    border-radius: 20px;
+    font: bold 14px "Helvetica Neue", Sans-Serif;
+    text-transform: uppercase;
+    box-shadow: 0 0 7px black;
+    background: black;
+    border: 2px solid white;
+}
+
+
 .axisLabel {
     position: absolute;
     text-align: center;

@@ -169,6 +169,7 @@ div#preloaded-images {
 	float: left;
 	bottom: -15px;
 	position: relative;
+	z-index : 3;
 }
 
 @media 
@@ -492,7 +493,7 @@ input {
 }
 
 #footer {
-	position: fixed;
+	position: absolute;
 	bottom: 0px;
 	width: 100%;
 	max-height : 60%;
@@ -519,7 +520,7 @@ input {
 	border-top-right-radius:3px;
 	width: 120px;
 	height: 35px;
-	z-index : 1000;
+	z-index : 3;
 }
 
 #consoleButtonContainer{

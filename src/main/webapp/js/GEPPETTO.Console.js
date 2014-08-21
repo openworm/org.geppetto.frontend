@@ -183,6 +183,12 @@ define(function(require) {
 					if(!this.visible) {
 						$('#console').slideToggle(200);
 						$('#commandInputArea').focus();
+						
+						//fix initial offset created in bottom of console when it's first toggled
+						var offset = $("#footer").css("bottom");
+						if(offset!="-10px"){
+							$("#footer").css("bottom","-10px");
+						}
 					}
 				}
 				else {

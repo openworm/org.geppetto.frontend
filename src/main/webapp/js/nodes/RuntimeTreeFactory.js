@@ -58,6 +58,8 @@ define(function(require) {
 							var entityNode = 
 								GEPPETTO.RuntimeTreeFactory.createEntityNode(name,node);
 
+							GEPPETTO.Console.updateCommands("js/nodes/EntityNode.js", entityNode, name);
+
 							//keep track of client entity nodes created
 							GEPPETTO.Simulation.runTimeTree[name]= entityNode;
 							
@@ -73,6 +75,8 @@ define(function(require) {
 							var entityNode = 
 								GEPPETTO.RuntimeTreeFactory.createEntityNode(name,node);
 							
+							GEPPETTO.Console.updateTags(entityNode.instancePath, entityNode);
+
 							runTimeRef[name] = entityNode;
 							parentNode.get("entities").add(entityNode);
 							
@@ -217,10 +221,8 @@ define(function(require) {
 								parent.get("children").add(arrayNode);
 								for(var index in array){
 									parent[i][index] = {};
-									var arrayObject = this.modelJSONNodes(parent[i][index], array[index]);
-									if(!jQuery.isEmptyObject(arrayObject)){
-										arrayNode.get("children").add(arrayObject);
-									}
+									var arrayObject = this.modelJSONNodes(arrayNode, array[index]);
+									parent[i][index] = arrayObject;
 								}
 							}
 							
@@ -233,10 +235,6 @@ define(function(require) {
 								parent[i] = compositeNode;
 								//traverse through children of composite node
 								this.modelJSONToNodes(parent[i], node[i]);
-								if(jQuery.isEmptyObject(parent)){
-									parent[i] = compositeNode;
-									return compositeNode;
-								}
 							}
 							else if(metatype == "FunctionNode"){
 								var functionNode =  this.createFunctionNode(i,node[i]);
@@ -327,7 +325,6 @@ define(function(require) {
 							{id:entity.id, name : entity.name,
 								instancePath : entity.instancePath,position : entity.position});
 					//add commands to console autocomplete and help option
-					GEPPETTO.Console.updateCommands("js/nodes/EntityNode.js", e, name);
 					GEPPETTO.Console.addTag(entity.instancePath);
 
 					for (var name in entity) {

@@ -279,8 +279,8 @@ define(function(require) {
 					VARS.aspects[mesh.eid].visible = true;
 					VARS.aspects[mesh.eid].selected = false;
 					VARS.entities[entityNode.instancePath].selected = false;
-					VARS.entities[entityNode.instancePath][mesh.eid] = VARS.aspects[mesh.eid];
-					VARS.entities[entityNode.instancePath][mesh.eid].selected = false;
+					VARS.entities[entityNode.instancePath][aspect.id] = VARS.aspects[mesh.eid];
+					VARS.entities[entityNode.instancePath][aspect.id].selected = false;
 				}
 			}
 			for ( var c in children) {

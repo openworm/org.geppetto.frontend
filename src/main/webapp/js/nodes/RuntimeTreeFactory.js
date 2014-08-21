@@ -60,9 +60,25 @@ define(function(require) {
 
 							//keep track of client entity nodes created
 							GEPPETTO.Simulation.runTimeTree[name]= entityNode;
+							
+							this.traverseEntities(node, entityNode, GEPPETTO.Simulation.runTimeTree[name]);
 						}
 					}
-
+				},
+				
+				traverseEntities: function(entities, parentNode, runTimeRef){
+					for (var name in entities) {
+						var node = entities[name];
+						if(node._metaType == "EntityNode"){
+							var entityNode = 
+								GEPPETTO.RuntimeTreeFactory.createEntityNode(name,node);
+							
+							runTimeRef[name] = entityNode;
+							parentNode.get("entities").add(entityNode);
+							
+							this.traverseEntities(node);
+						}
+					}
 				},
 
 				/**Update entities of scene with new server updates*/
@@ -269,10 +285,8 @@ define(function(require) {
 								parent.get("children").add(arrayNode);
 								for(var index in array){
 									parent[i][index] = {};
-									var arrayObject = this.createSimulationTree(parent[i][index], array[index]);
-									if(!jQuery.isEmptyObject(arrayObject)){
-										arrayNode.get("children").add(arrayObject);
-									}
+									var arrayObject = this.createSimulationTree(arrayNode, array[index]);
+									parent[i][index] = arrayObject;
 								}
 							}
 							//if object is CompositeNode, do recursion to find children
@@ -282,10 +296,6 @@ define(function(require) {
 								//add to parent if applicable
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
 									parent.get("children").add(compositeNode);
-								}
-								if(jQuery.isEmptyObject(parent)){
-									parent[i] = compositeNode;
-									return compositeNode;
 								}
 								parent[i] = compositeNode;
 							}

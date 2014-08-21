@@ -234,10 +234,24 @@ define(function(require) {
 		populateScene : function(runTimeTree) {
 			for ( var eindex in runTimeTree) {
 				GEPPETTO.loadEntity(runTimeTree[eindex]);
+				var childEntities = runTimeTree[eindex].getEntities();
+				if(childEntities!=null){
+					GEPPETTO.traverseEntities(childEntities);
+				}
 			}
 
 			GEPPETTO.calculateSceneCenter(VARS.scene);
 			GEPPETTO.updateCamera();
+		},
+		
+		traverseEntities : function(entities){
+			for ( var i=0; i<entities.length; i++) {
+				var e = entities.at(i);
+				if(e.getEntities()!=null){
+					GEPPETTO.traverseEntities(e.getEntities());
+				}
+				GEPPETTO.loadEntity(e);
+			}
 		},
 
 		/**

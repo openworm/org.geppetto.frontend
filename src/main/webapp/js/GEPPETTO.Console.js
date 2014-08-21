@@ -325,10 +325,10 @@ define(function(require) {
 			},
 
 			/**
-			 * Returns the commands associated with the object
+			 * Gets the commands associated with the object 
 			 *
 			 * @param id - Id of object for commands
-			 * @returns
+			 * @returns the commands associated with the object
 			 */
 			getObjectCommands: function(id) {
 				return GEPPETTO.Console.getHelpObjectsMap()[id];
@@ -349,7 +349,7 @@ define(function(require) {
 			 * @param scriptLocation - Location of files from where to read the comments
 			 * @param object - Object whose commands will be added
 			 * @param id - Id of object
-			 * @returns
+			 * @returns {}
 			 */
 			updateTags: function(instancePath, object) {
 				var nonTags = ["constructor()", "initialize(options)"];
@@ -388,7 +388,7 @@ define(function(require) {
 			 * @param scriptLocation - Location of files from where to read the comments
 			 * @param object - Object whose commands will be added
 			 * @param id - Id of object
-			 * @returns
+			 * @returns {}
 			 */
 			updateCommands: function(scriptLocation, object, id) {
 				var nonCommands = ["constructor()", "initialize(options)"];

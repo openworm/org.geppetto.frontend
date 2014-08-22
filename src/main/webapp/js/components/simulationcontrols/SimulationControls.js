@@ -25,6 +25,10 @@ define(function(require) {
 
             var self = this;
 
+            GEPPETTO.on('simulation:modelloaded', function(){
+                self.setState({disableStart:false, disablePause:true, disableStop:true});
+            });
+            
             GEPPETTO.on('simulation:started', function(){
                 self.setState({disableStart:true, disablePause:false, disableStop:false});
             });

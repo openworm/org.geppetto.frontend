@@ -106,8 +106,16 @@ define(function(require) {
 											var aspect = entityNode.aspects[aspectKey];
 											//update subtrees of matched aspect with new data
 											if(aspect.instancePath == nodeA.instancePath){
-												aspect.VisualizationTree.content = nodeA.VisualizationTree;
-												this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);																									
+												if(nodeA.VisualizationTree.modified){
+													aspect.VisualizationTree.content = nodeA.VisualizationTree;
+													aspect.VisualizationTree.modified = true;
+												}
+												if(nodeA.SimulationTree.modified){
+													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
+												}
+												if(nodeA.ModelTree.modified){
+													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
+												}
 											}
 										}
 									}
@@ -134,7 +142,7 @@ define(function(require) {
 						//create SubTreeNode to store simulation tree
 						var subTree = new AspectSubTreeNode({name : "SimulationTree",
 							instancePath : path ,
-							_metaType : "AspectSubTreeNode"});
+							_metaType : "AspectSubTreeNode", modified : false});
 						aspect.SimulationTree = this.createSimulationTree(subTree, simulationTreeUpdate);
 						
 						GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
@@ -153,6 +161,7 @@ define(function(require) {
 							//set existing node with new value
 							existingNode.value = newNode.value;
 						}
+
 					}
 				},
 				
@@ -177,15 +186,11 @@ define(function(require) {
 				 */
 				createAspectModelTree : function(aspectInstancePath, modelTree){
 					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);
-
-					var subTree = new AspectSubTreeNode({name : "ModelTree",
-												instancePath : aspectInstancePath + ".ModelTree",
-												_metaType : "AspectSubTreeNode"});
 					
-					//create model tree and store it
-					aspect.ModelTree = this.modelJSONToNodes(subTree, modelTree);
+					//populate model tree with server nodes
+					this.modelJSONToNodes(aspect.ModelTree, modelTree);
 					
-					GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
+					GEPPETTO.Console.updateTags(aspect.ModelTree.instancePath, aspect.ModelTree);
 
 					//notify user received tree was empty
 					if(aspect.ModelTree.getChildren().length==0){
@@ -359,8 +364,8 @@ define(function(require) {
 						if(node._metaType == "AspectSubTreeNode"){
 							if(node.type == "VisualizationTree"){
 								var subTree = new AspectSubTreeNode({name : "VisualizationTree",
-									instancePath : a.instancePath + ".VisualizationTree",
-									_metaType : "AspectSubTreeNode"});
+									instancePath : node.instancePath + ".VisualizationTree",
+									modified : node.modified, _metaType : "AspectSubTreeNode"});
 								
 								a.VisualizationTree = subTree;
 								
@@ -372,7 +377,15 @@ define(function(require) {
 								a.SimulationTree = {};
 							}
 							else if(node.type == "ModelTree"){
-								a.ModelTree = {};
+								var subTree = new AspectSubTreeNode({name : "VisualizationTree",
+									instancePath : node.instancePath + ".VisualizationTree",
+									modified : node.modified, _metaType : "AspectSubTreeNode"});
+								
+								a.ModelTree = subTree;
+								
+								a.ModelTree["content"] = node;
+								
+								GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
 							}	
 						}
 					}

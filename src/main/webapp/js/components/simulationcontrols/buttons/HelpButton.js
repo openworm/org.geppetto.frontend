@@ -1,6 +1,7 @@
 define(function (require) {
 
     var React = require('react'),
+    	GEPPETTO = require('geppetto');
     	$ = require('jquery'),
         HelpModal = require('jsx!components/help/HelpModal');
 

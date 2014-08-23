@@ -75,7 +75,7 @@ define(function (require) {
                 }
             });
         },
-        
+
         onSelectSimulationUrl: function(event) {
             var url = event.target.value;
             if(url) {

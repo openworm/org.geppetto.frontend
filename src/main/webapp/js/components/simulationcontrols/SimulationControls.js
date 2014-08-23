@@ -47,7 +47,7 @@ define(function(require) {
         },
 
         render: function () {
-            return React.DOM.div({className:'simulation-control'},
+            return React.DOM.div({className:'simulation-controls'},
                 HelpButton({disabled:false}),
                 StopButton({disabled:this.state.disableStop}),
                 PauseButton({disabled:this.state.disablePause}),

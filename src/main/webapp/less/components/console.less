@@ -1,0 +1,81 @@
+#console {
+    width: 100%;
+}
+
+#consoleButton {
+    margin: 0 auto;
+    margin-bottom:26px;
+    position: relative;
+    background: rgba(66,59,59,0.80);
+    color: @orange;
+    bottom: -26px;
+    border-color: #2e2828;
+    border-width: 0;
+    box-shadow:none;
+    text-shadow: none;
+    border-radius:0px;
+    border-top-left-radius:3px;
+    border-top-right-radius:3px;
+    width: 120px;
+    height: 35px;
+    z-index : 1000;
+}
+
+#consoleButtonContainer{
+    width:120px;
+    margin: 0 auto;
+}
+
+#consoleButton .icon-terminal{
+    margin-right: 5px;
+}
+
+#fullscreen {
+    position: absolute;
+    top: 66px;
+    right: 38px;
+    cursor: pointer;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+#fullscreen:hover {
+    color: #fd6808;
+}
+
+#javascriptFullscreen {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    cursor: pointer;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+#javascriptFullscreen:hover {
+    color: @orange;
+}
+
+.CodeMirror-fullscreen {
+    display: block;
+    position: fixed!important;
+    top: 0!important;
+    left: 0!important;
+    width: 100%!important;
+    height: 100%!important;
+    z-index: 9999!important;
+    -webkit-backface-visibility: hidden; 
+    -webkit-transform: translateZ(0);
+}
+
+.CodeMirror {
+    border: 1px solid #cccccc;
+    width: 95%;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}

@@ -1,6 +1,7 @@
 define(function(require){
 
 	var $ = require('jquery'),
+		GEPPETTO = require('geppetto'),
 		React = require('react'),
 		LoadingSpinner = require('jsx!./simulationcontrols/LoadingSpinner'),
 		IntroModal = require('jsx!./tutorial/IntroModal'),

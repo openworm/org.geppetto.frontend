@@ -311,6 +311,34 @@
 										<ignore />
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+				                  <pluginExecutionFilter>
+				                    <groupId>com.github.bringking</groupId>
+									<artifactId>requirejs-maven-plugin</artifactId>
+				                    <versionRange>[2.0.4,)</versionRange>
+				                    <goals>
+				                        <goal>optimize</goal>
+				                    </goals>
+				                  </pluginExecutionFilter>
+				                  <action>
+				                    <execute />
+				                  </action>
+				                </pluginExecution>
+				                <pluginExecution>
+				                  <pluginExecutionFilter>
+				                    <groupId>com.github.eirslett</groupId>
+		       						<artifactId>frontend-maven-plugin</artifactId>
+				                    <versionRange>[0.0.16,)</versionRange>
+				                    <goals>
+				                        <goal>npm</goal>
+				                        <goal>install-node-and-npm</goal>
+				                        <goal>grunt</goal>
+				                    </goals>
+				                  </pluginExecutionFilter>
+				                  <action>
+				                    <execute />
+				                  </action>
+				                </pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>

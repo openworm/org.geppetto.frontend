@@ -67,6 +67,31 @@ define(function(require) {
 		        	   return this.id;
 		           },
 
+		           
+		           getChildrenNodes : function(node, children){
+		        	   var childrenTmp = children;
+		        	   
+		        	   // node is always an array of variables
+						for(var i in node) {
+					//		console.log(node[i]);
+							if(typeof node[i] === "object" && node[i]!=null && i!= "attributes") {
+								var type = node[i]._metaType;
+				
+								if(node[i] instanceof Array){
+									var array = node[i];
+									for(var index in array){
+										children.push(this.getChildrenNodes(array[index], childrenTmp));
+									}
+								}
+								else if(type == "CompositeNode" || type == "ParameterNode" || type  == "VariableNode"){
+									children.push(node[i]); 
+								}
+							}
+						}
+						
+						return childrenTmp;
+		           },
+		           
 		           /**
 		            * Get this entity's aspects
 		            *
@@ -77,6 +102,8 @@ define(function(require) {
 		            */
 		           getChildren : function(){
 		        	   var children = this.get("children");
+		        	   
+		        	   //var children = this.getChildrenNodes(this, new Array());
 		        	   return children;
 		           }
 	});

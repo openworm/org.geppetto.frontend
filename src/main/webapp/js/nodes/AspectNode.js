@@ -49,6 +49,8 @@ define(function(require) {
 		ModelTree : {},
 		VisualizationTree : {},
 		SimulationTree : {},
+		_metaType : "AspectNode",
+		
 		initialize : function(options){
 			this.id = options.id;
 			this.modelInterpreterName = options.modelInterpreter;
@@ -217,5 +219,19 @@ define(function(require) {
 				 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
 			 }       	   
 		 },
+		 
+		 getChildren : function(){
+			 var children = new Array();
+			 if (!$.isEmptyObject(this.ModelTree)){
+				 children.push(this.ModelTree);
+			 }
+			 if (!$.isEmptyObject(this.SimulationTree)){
+				 children.push(this.SimulationTree);
+			 }
+			 if (!$.isEmptyObject(this.VisualizationTree)){
+				 children.push(this.VisualizationTree);
+			 }
+			 return children; 
+		 }
 	});
 });

@@ -39,6 +39,7 @@
 define(function(require) {
 
 	var Widget = require('widgets/Widget');
+	var Node = require('nodes/Node');
 
 	return {
 		TreeVisualiser: Widget.View.extend({
@@ -66,13 +67,14 @@ define(function(require) {
 	
 				if (state!= null) {	
 					var dataset = this.createDataset();
-					if (typeof(state) === 'string'){
+//					if (typeof(state) === 'string'){
 						dataset.variableToDisplay = state;
-						this.datasets.push(dataset);
-					}
-					else{
 						dataset.data = state;
-					}
+//						this.datasets.push(dataset);
+//					}
+//					else{
+//						dataset.data = state;
+//					}
 					return dataset;
 				}
 				return null;

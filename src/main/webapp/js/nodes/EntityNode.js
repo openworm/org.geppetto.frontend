@@ -66,6 +66,7 @@ define(function(require) {
 		           id : "",
 		           selected : false,
 		           visible : true,
+		           _metaType : "EntityNode",
 		           initialize : function(options){
 		        	   this.id = options.id;
 		        	   this.name = options.name;
@@ -217,5 +218,17 @@ define(function(require) {
 		        	   var entities = this.get("entities");
 		        	   return entities;
 		           },
+		           
+		           getChildren : function(){
+		        	   var children = new Array();
+		        	   if (this.aspects.length > 0){
+		        		   children = children.concat(this.aspects);
+		        	   }
+		        	   if (this.get("entities").length > 0){
+		        		   children = children.concat(this.get("entities"));
+		        	   }
+		        	   
+		        	   return children;
+		           }
 	});
 });

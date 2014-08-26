@@ -123,10 +123,11 @@ define(function(require) {
 				autoPlace : this.options.autoPlace
 			});
 			// Testing With Real Data
-			this.generateRealDataTestTreeForDAT();
+			//this.generateRealDataTestTreeForDAT();
 
 			// Testing With Variable
-			// this.setData("hhcell");
+			//this.setData(hhcell);
+//			this.setData(purkinje);
 
 			this.dialog.append(this.gui.domElement);
 
@@ -138,43 +139,79 @@ define(function(require) {
 		setData : function(state, options) {
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(
 					this, state, options);
+			this.prepareTree(this.gui, dataset.data);
+			dataset.isDisplayed = true;
 			this.datasets.push(dataset);
-
-			if (typeof (state) != 'string') {
-				this.prepareTree(this.gui, state);
-			}
+			
+//			if (typeof (state) != 'string') {
+//				this.prepareTree(this.gui, state);
+//			}
 			return "Metadata or variables to display added to tree visualiser";
 		},
 
 		prepareTree : function(parent, data) {
-			for ( var key in data) {
-				if (data[key] !== null && typeof data[key] === 'object') {
-					parentFolder = parent.addFolder(key);
-					this.prepareTree(parentFolder, data[key]);
-				} else {
-					if (data[key] === null) {
-						data[key] = '';
+//			for ( var key in data) {
+				if (data !== null && typeof data === 'object') {
+//					parent.add(data, key).listen();
+//				}
+//				else{
+					
+					
+					//TODO: Remove when visualizationtree is not set as AspectSubTreeNode					
+					if (data.type == "VisualizationTree"){
+						label = data.type;
+						parentFolder = parent.addFolder(label);
 					}
-					parent.add(data, key).listen();
+					else{
+						if (data.getName() === undefined){
+							label = data.getId();
+						}
+						else{
+							label = data.getName();
+						}
+						parentFolder = parent.addFolder(label);
+						
+						var children = data.getChildren();
+						if (children.length > 0){
+							var parentFolderTmp = parentFolder; 
+							for (var childIndex in children){
+								this.prepareTree(parentFolderTmp, children[childIndex]);
+							}
+						}
+					}	
+					
+					console.log(label);
+					console.log(data);
+					
 				}
-			}
+//				else {
+//					if (data[key] === null) {
+//						data[key] = '';
+//					}
+//					parent.add(data, key).listen();
+//				}
+//			}
 		},
 
+//		createHierarchicalTree : function() {
+//			
+//		},
+		
 		updateData : function() {
 			for ( var key in this.datasets) {
 				dataset = this.datasets[key];
 
 				if (dataset.variableToDisplay != null) {
-					newData = this.getState(GEPPETTO.Simulation.watchTree,
-							dataset.variableToDisplay);
-					newDataObject = {};
-					newDataObject[dataset.variableToDisplay] = newData;
+//					newData = this.getState(GEPPETTO.Simulation.runTimeTree,
+//							dataset.variableToDisplay);
+//					newDataObject = {};
+//					newDataObject[dataset.variableToDisplay] = newData;
 					if (!dataset.isDisplayed) {
-						dataset.data = newDataObject;
+//						dataset.data = newDataObject;
 						this.prepareTree(this.gui, dataset.data);
-						dataset.isDisplayed = true;
+//						dataset.isDisplayed = true;
 					} else {
-						$.extend(true, dataset.data, newDataObject);
+//						$.extend(true, dataset.data, newDataObject);
 					}
 				}
 			}

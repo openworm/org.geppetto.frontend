@@ -278,6 +278,11 @@ define(function(require) {
 		 * Updates a data set, use for time series
 		 */
 		updateDataSet: function() {
+//			console.log("xyz");
+//			console.log(hhcell.electrical.SimulationTree.hr_chaotic_pop[0].x);
+//			console.log(hhcell.electrical.SimulationTree.hr_chaotic_pop[0].y);
+//			console.log(hhcell.electrical.SimulationTree.hr_chaotic_pop[0].z);
+			
 			if (this.options.plotEachN == null || !(this.numberPoints++ % this.options.plotEachN)){
 				for(var key in this.datasets) {
 					var reIndex = false;
@@ -288,7 +293,7 @@ define(function(require) {
 					var olddata = new Array(3);
 					for(var dataKey in data) {
 						currentLabel = data[dataKey].label;
-						newValues[dataKey] = this.getState(GEPPETTO.Simulation.watchTree, currentLabel);
+						newValues[dataKey] = this.getState(GEPPETTO.Simulation.runTimeTree, currentLabel);
 						
 						olddata = data[dataKey].values;
 						if(olddata.length > this.options.limit) {

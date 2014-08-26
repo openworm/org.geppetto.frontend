@@ -52,6 +52,8 @@ define(function(require) {
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this,options);
 
 			this.options = this.defaultTreeVisualiserOptions;
+			
+//			console.log("takkkkaaa")
 				
 //			Testing With Real Data
 //			this.generateRealDataTestTreeForD3();
@@ -111,7 +113,7 @@ define(function(require) {
 				dataset = this.datasets[key];
 				
 				if (dataset.variableToDisplay != null){
-					newdata = this.getState(GEPPETTO.Simulation.watchTree, dataset.variableToDisplay);
+					newdata = this.getState(GEPPETTO.Simulation.runTimeTree, dataset.variableToDisplay);
 					if (!dataset.isDisplayed){
 						dataset.data = newdata;
 						this.prepareTree('', dataset.data, dataset);

@@ -379,23 +379,39 @@ define(function(require) {
 
 			/**
 			 *
-			 * Outputs list of commands with descriptions associated with the Simulation object.
+			 * Selects the entity passed as a parameter
 			 *
-			 * @name GEPPETTO.Simulation.selectEntity()
-			 * @returns  Returns list of all commands for the Simulation object
+			 * @name GEPPETTO.Simulation.selectEntity(entity)
+			 * @returns - Success or failure message 
 			 */
 			selectEntity: function(entity) {
 				var message = GEPPETTO.Resources.CANT_FIND_ENTITY;
-				for(var e in this.runTimeTree){
-					if(e == entity.instancePath){
-						if(GEPPETTO.selectEntity(entity.instancePath)){
-							message = GEPPETTO.Resources.SELECTING_ENTITY + entity.instancePath + ".";
-						}
-						else{
-							message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED + entity.instancePath + ".";
-						}
-					}
+				if(GEPPETTO.selectEntity(entity.instancePath)){
+					message = GEPPETTO.Resources.SELECTING_ENTITY + entity.instancePath + ".";
 				}
+				else{
+					message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED + entity.instancePath + ".";
+				}
+				
+				return message;
+			},
+			
+			/**
+			 *
+			 * Unselect entity
+			 *
+			 * @name GEPPETTO.Simulation.unselectEntity(entity)
+			 * @returns  - Success or failure message for unselecting entity
+			 */
+			unselectEntity: function(entity) {
+				var message = GEPPETTO.Resources.CANT_FIND_ENTITY;
+				if(GEPPETTO.unselectEntity(entity.instancePath)){
+					message = GEPPETTO.Resources.UNSELECTING_ENTITY + entity.instancePath + ".";
+				}
+				else{
+					message = GEPPETTO.Resources.ENTITY_NOT_SELECTED + entity.instancePath + ".";
+				}
+				
 				return message;
 			},
 			

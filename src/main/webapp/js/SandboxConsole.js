@@ -519,8 +519,15 @@ define(function(require) {
 						
 						var parameter = mostCommon.match(/\(.*?\)/);
 
+						//remove parameter from function/command string
 						if(parameter!=null){
-							parameter = parameter[0].replace(/[()]/gi, '').split(',');
+							var parameterQuotation = mostCommon.match(/\".*?\"/);
+							if(parameterQuotation!=null){
+								parameter = parameterQuotation[0].replace(/[""""]/gi, '').split(',');
+							}
+							else{
+								parameter = parameter[0].replace(/[()]/gi, '').split(',');
+							}
 						}
 						mostCommon = mostCommon.replace(parameter,"");
 
@@ -529,9 +536,16 @@ define(function(require) {
 						// Get the value, and the parts between which the tab character will be inserted
 						var value = this.textarea.val();
 						
-						// Set the caret (cursor) position to just after the inserted tab character
+						// Set the caret (cursor) position to appropriate place
 						if(value.slice(-1)==")" && parameter!=""){
-							this.setCaret(value.length-1);
+							//cursor set in between quotation for parameter
+							if(value.indexOf('""')!=-1){
+								this.setCaret(value.length-2);
+							}
+							//cursor set in between parentheses
+							else{
+								this.setCaret(value.length-1);
+							}
 						}else{
 							this.setCaret(value.length);
 						}

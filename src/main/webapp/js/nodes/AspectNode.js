@@ -42,10 +42,10 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		id:"",
 		modelInterpreterName : "",
 		simulatorName : "",
 		modelURL : "",
+		selected : false,
 		ModelTree : {},
 		VisualizationTree : {},
 		SimulationTree : {},
@@ -71,7 +71,7 @@ define(function(require) {
      	   var message; 
      	   
      	   if(GEPPETTO.hideAspect(this.instancePath)){
-     		   message = GEPPETTO.Resources.HIDE_ASPECT;
+     		   message = GEPPETTO.Resources.HIDE_ASPECT + this.instancePath;
      	   }
      	   else{
      		   message = GEPPETTO.Resources.ASPECT_ALREADY_HIDDING;
@@ -91,7 +91,7 @@ define(function(require) {
      	   var message; 
      	   
      	   if(GEPPETTO.showAspect(this.instancePath)){
-     		   message = GEPPETTO.Resources.SHOW_ASPECT;
+     		   message = GEPPETTO.Resources.SHOW_ASPECT + this.instancePath;
      	   }
      	   else{
      		   message = GEPPETTO.Resources.ASPECT_ALREADY_VISIBLE;
@@ -112,7 +112,7 @@ define(function(require) {
      	   var message; 
      	   
      	   if(GEPPETTO.unselectAspect(this.instancePath)){
-     		   message = GEPPETTO.Resources.UNSELECTING_ASPECT;
+     		   message = GEPPETTO.Resources.UNSELECTING_ASPECT + this.instancePath;
      	   }
      	   else{
      		   message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
@@ -133,7 +133,7 @@ define(function(require) {
         	var message; 
 
         	if(GEPPETTO.selectAspect(this.instancePath)){
-        		message = GEPPETTO.Resources.SELECTING_ASPECT;
+        		message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
         	}
         	else{
         		message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;

@@ -72,7 +72,7 @@ define(function(require) {
 						left: 15,
 						bottom: 15
 					}
-				}
+				},
 			},
 
 			initialize: function(options) {
@@ -82,7 +82,7 @@ define(function(require) {
 				this.datasets = [];
 				this.options = this.defaultPlotOptions;
 				this.render();
-				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");
+				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");				
 			},
 
 			/**
@@ -107,6 +107,15 @@ define(function(require) {
 					}
 				}
 
+				//set label legends to shorter label
+				this.options.legend = {
+						labelFormatter: function(label, series){
+		        		var split = label.split(".");
+						var shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
+		        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
+		        	}
+		        };
+		        
 				if (state!= null) {					
 					if(state instanceof Array){
 						this.datasets.push({
@@ -130,7 +139,7 @@ define(function(require) {
 				else {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
-
+												
 				return "Line plot added to widget";
 			},
 

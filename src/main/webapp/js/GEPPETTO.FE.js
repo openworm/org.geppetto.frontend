@@ -187,14 +187,11 @@ define(function(require) {
              * control and load buttons. Show "Observe" button only.
              */
             disableSimulationControls: function() {
-                //Disable 'load simulation' button and click events
-                var openLoad = $("#openload");
-                openLoad.attr('disabled', 'disabled');
-                openLoad.click(function(e) {
-                    return false;
-                });
-
+                GEPPETTO.trigger('simulation:disable_all');
+                
+                //disable console buttons
                 $('#consoleButton').attr('disabled', 'disabled');
+                $('#commandInputArea').attr('disabled', 'disabled');
 
                 //disable keyboard
                 document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);

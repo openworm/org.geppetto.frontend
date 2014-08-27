@@ -33,6 +33,7 @@
 define(function(require) {
 
 	var run = function() {
+		
 		module("Run Script Test");
 		asyncTest("Run Script Test 1", function() {
 			expect(1);
@@ -51,7 +52,7 @@ define(function(require) {
 			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
 		});
 
-		module("Simulation Load From Content Tests");
+		module("Simulation Load From Content Test");
 		asyncTest("Test Load Simulation from content", function() {
 			expect(1);
 			GEPPETTO.MessageSocket.clearHandlers();
@@ -74,7 +75,7 @@ define(function(require) {
 			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openworm.org/simulationSchema ../../src/main/resources/schema/simulationSchema.xsd "> <tns:configuration> <tns:outputFormat>RAW</tns:outputFormat> </tns:configuration> <tns:aspects> <tns:modelInterpreter>sphModelInterpreter</tns:modelInterpreter> <tns:modelURL>https://raw.github.com/openworm/org.geppetto.samples/development/SPH/LiquidSmall/sphModel_liquid_780.xml</tns:modelURL> <tns:simulator>sphSimulator</tns:simulator> <tns:id>sph</tns:id> </tns:aspects> <tns:name>sph</tns:name> </tns:simulation>');
 		});
 
-		module("Simulation Load From Content Tests 2");
+		module("Simulation Load From URL");
 		asyncTest("Test Load Simulation", function() {
 			expect(1)
 			GEPPETTO.MessageSocket.clearHandlers();
@@ -103,7 +104,7 @@ define(function(require) {
 		asyncTest("Test Runtime Tree when Loading and Simulating JLems Simulation with variables", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
-				checkUpdate : false,
+				checkUpdate2 : false,
 				onMessage: function(parsedServerMessage) {
 					// Switch based on parsed incoming message type
 					switch(parsedServerMessage.type) {
@@ -111,76 +112,43 @@ define(function(require) {
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
 							var payload = JSON.parse(parsedServerMessage.data);
 							var scene = JSON.parse(payload.update).scene;
-							var entities=0, aspects=0, subtrees = 0;
-							
-				            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 
-							for(var e in scene){
-								if(scene[e]._metaType == "EntityNode"){
-									entities++;
-									var entity = scene[e];
-									for(var a in entity){
-										if(entity[a]._metaType == "AspectNode"){
-											aspects++;
-											var aspect = entity[a];
-											for(var as in aspect){
-												if(aspect[as]._metaType == "AspectSubTreeNode"){
-													subtrees++;
-												}
-											}
-										}
-									}
-								}
-							}
-							ok(1, entities, "Entities number, matched");
-							ok(1, aspects, "Aspects number, matched");
-							ok(3, subtrees, "Subtrees number, matched");
-														
+							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+
+							notEqual(null, hhcell, "Entities checked");
+							equal(1, hhcell.get('aspects').length, "Aspects checked");
+							equal(false, jQuery.isEmptyObject(hhcell.electrical.VisualizationTree), "Test Visualization at load");
+							equal(true, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model tree at load");
+							equal(true, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Test Visualization tree at load");
+
 							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
+							var payload = JSON.parse(parsedServerMessage.data);
+
+							//Reads scripts received for the simulation
+							var scripts = JSON.parse(payload.get_scripts).scripts;
+
+							//make sure object isn't empty
+							if(!jQuery.isEmptyObject(scripts)) {
+								//run the received scripts
+								GEPPETTO.ScriptRunner.fireScripts(scripts);
+							}
+							break;
+							
+						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
+							 var payload = JSON.parse(parsedServerMessage.data);
+							 GEPPETTO.ScriptRunner.runScript(payload.run_script);
+							 break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
-							if(!this.checkUpdate){
+							if(!this.checkUpdate2){
+								this.checkUpdate2 = true;
+
 								var payload = JSON.parse(parsedServerMessage.data);
 								var scene = JSON.parse(payload.update).scene;
-								var entities=0, aspects=0, subtrees = 0, simTreePopulated=false, visTreePopulated=false;
 
-								for(var e in scene){
-									if(scene[e]._metaType == "EntityNode"){
-										entities++;
-										var entity = scene[e];
-										for(var a in entity){
-											if(entity[a]._metaType == "AspectNode"){
-												aspects++;
-												var aspect = entity[a];
-												for(var as in aspect){
-													var subtree = aspect[as];
-													if(subtree._metaType == "AspectSubTreeNode"){
-														if(subtree.type == "SimulationTree"){
-															for(var key in subtree){
-																if(typeof subtree[key] ==="object"){
-																	simTreePopulated = true;
-																}										
-															}
-														}
-														else if(subtree.type == "VisualizationTree"){
-															for(var key in subtree){
-																if(typeof subtree[key] ==="object"){
-																	visTreePopulated = true;
-																}										
-															}
-														}
-														subtrees++;
-													}
-												}
-											}
-										}
-									}
-								}
-								notEqual(false, simTreePopulated, "Simulation Tree has population");
-								notEqual(false, visTreePopulated, "Visualization has population");
-
+					            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
+								equal(false, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Simulation tree check after udpate");
 					            hhcell.electrical.getModelTree();
-
-								this.checkUpdate = true;
 							}
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
@@ -192,7 +160,8 @@ define(function(require) {
 				        	
 				        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
 
-				        	notEqual(null, hhcell.electrical.ModelTree, "Model tree received, not empty");
+							equal(false, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model Tree Command");
+
 				        	start();
 				        	
 							break;
@@ -202,7 +171,6 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml');
-			Simulation.start();
 		});
 		
 		module("Simulation - Particle Runtime Tree");
@@ -217,78 +185,45 @@ define(function(require) {
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
 								var payload = JSON.parse(parsedServerMessage.data);
 								var scene = JSON.parse(payload.update).scene;
-								var entities=0, aspects=0, subtrees = 0;
 								
 					            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 
-								for(var e in scene){
-									if(scene[e]._metaType == "EntityNode"){
-										entities++;
-										var entity = scene[e];
-										for(var a in entity){
-											if(entity[a]._metaType == "AspectNode"){
-												aspects++;
-												var aspect = entity[a];
-												for(var as in aspect){
-													if(aspect[as]._metaType == "AspectSubTreeNode"){
-														subtrees++;
-													}
-												}
-											}
-										}
-									}
-								}
-								ok(1, entities, "Entities number, matched");
-								ok(1, aspects, "Aspects number, matched");
-								ok(3, subtrees, "Subtrees number, matched");
-															
-								Simulation.start();
+								notEqual(null, sample, "Entities checked");
+								equal(1, sample.get('aspects').length, "Aspects checked");
+								equal(false, jQuery.isEmptyObject(sample.fluid.VisualizationTree), "Test Visualization at load");
+								equal(true, jQuery.isEmptyObject(sample.fluid.ModelTree), "Test Model tree at load");
+								equal(true, jQuery.isEmptyObject(sample.fluid.SimulationTree), "Test Visualization tree at load");
 
 								break;
+							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
+								var payload = JSON.parse(parsedServerMessage.data);
+
+								//Reads scripts received for the simulation
+								var scripts = JSON.parse(payload.get_scripts).scripts;
+
+								//make sure object isn't empty
+								if(!jQuery.isEmptyObject(scripts)) {
+									//run the received scripts
+									GEPPETTO.ScriptRunner.fireScripts(scripts);
+								}
+								break;
+								
+							case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
+								 var payload = JSON.parse(parsedServerMessage.data);
+								 GEPPETTO.ScriptRunner.runScript(payload.run_script);
+								 break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
 								if(!this.checkUpdate){
+									this.checkUpdate = true;
+
 									var payload = JSON.parse(parsedServerMessage.data);
 									var scene = JSON.parse(payload.update).scene;
-									var entities=0, aspects=0, subtrees = 0, simTreePopulated=false, visTreePopulated=false;
 
-									for(var e in scene){
-										if(scene[e]._metaType == "EntityNode"){
-											entities++;
-											var entity = scene[e];
-											for(var a in entity){
-												if(entity[a]._metaType == "AspectNode"){
-													aspects++;
-													var aspect = entity[a];
-													for(var as in aspect){
-														var subtree = aspect[as];
-														if(subtree._metaType == "AspectSubTreeNode"){
-															if(subtree.type == "SimulationTree"){
-																for(var key in subtree){
-																	if(typeof subtree[key] ==="object"){
-																		simTreePopulated = true;
-																	}										
-																}
-															}
-															else if(subtree.type == "VisualizationTree"){
-																for(var key in subtree){
-																	if(typeof subtree[key] ==="object"){
-																		visTreePopulated = true;
-																	}										
-																}
-															}
-															subtrees++;
-														}
-													}
-												}
-											}
-										}
-									}
-									notEqual(false, simTreePopulated, "Simulation Tree has population");
-									notEqual(false, visTreePopulated, "Visualization has population");
+						            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
+
+									equal(false, jQuery.isEmptyObject(sample.fluid.SimulationTree), "Simulation tree check");
 
 						            sample.fluid.getModelTree();
-
-									this.checkUpdate = true;
 								}
 								break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
@@ -300,7 +235,8 @@ define(function(require) {
 					        	
 					        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
 
-					        	ok(null, sample.fluid.ModelTree, "Model tree received, empty");
+								equal(false, jQuery.isEmptyObject(sample.fluid.ModelTree), "Test Model Tree Command");
+
 					        	start();
 					        	
 								break;
@@ -322,9 +258,24 @@ define(function(require) {
 						//Simulation has been loaded and model need to be loaded
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
 							ok(true, "Simulation content Loaded, passed");
-
-							//start();
 							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
+							var payload = JSON.parse(parsedServerMessage.data);
+
+							//Reads scripts received for the simulation
+							var scripts = JSON.parse(payload.get_scripts).scripts;
+
+							//make sure object isn't empty
+							if(!jQuery.isEmptyObject(scripts)) {
+								//run the received scripts
+								GEPPETTO.ScriptRunner.fireScripts(scripts);
+							}
+							break;
+							
+						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
+							 var payload = JSON.parse(parsedServerMessage.data);
+							 GEPPETTO.ScriptRunner.runScript(payload.run_script);
+							 break;
 						//We are not starting simulation from here, must come from associated scrip
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 							ok(true, "Simulation started, script read");
@@ -336,7 +287,6 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml');
-			Simulation.start();
 		});
 
 		module("Simulation controls Test");
@@ -489,30 +439,6 @@ define(function(require) {
 			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 
 		});
-
-		module("Watch variables test3");
-		asyncTest("Test clear watch Simulation variables", function() {
-			expect(1);
-			GEPPETTO.MessageSocket.clearHandlers();
-
-			var handler = {
-				onMessage: function(parsedServerMessage) {
-
-					// Switch based on parsed incoming message type
-					switch(parsedServerMessage.type) {
-						//Simulation has been loaded successfully
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
-							ok(true, "Simulation loaded, passed");
-							start();
-							break;
-					}
-				}
-			};
-
-			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
-		});
-
 	};
 
 	return {run: run};

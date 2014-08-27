@@ -46,6 +46,12 @@ define(function(require) {
 	
 	return function(GEPPETTO) {
 		var $ = require('jquery');
+		//keeps track of API commands
+		var commands = [];
+		//suggestions for autocomplete
+		var tags = [];
+		var helpObjectsMap = {};
+		
 		/**
 		 * Handles user clicking the "Javascript Console" button, which
 		 * toggles the console.
@@ -62,7 +68,7 @@ define(function(require) {
 		 */
 		function autoComplete() {
 			//get the available tags for autocompletion in console
-			var tags = GEPPETTO.Utility.availableTags();
+			var tags = GEPPETTO.Console.availableTags();
 
 			//bind console input area to autocomplete event
 			$("#commandInputArea").bind("keydown", function(event) {
@@ -100,7 +106,7 @@ define(function(require) {
 
 							//only one suggestion
 							if(suggestionsSize == 1) {
-								if(inpt.val() !== firstElementText) {
+								if(inpt.val() !== firstElementText) {									
 									inpt.val(firstElementText); //change the input to the first match
 
 									inpt[0].selectionStart = original.length; //highlight from end of input
@@ -142,6 +148,24 @@ define(function(require) {
 		GEPPETTO.Console = {
 			visible : false,
 			
+			/**
+			 * Global help functions with all commands in global objects.
+			 *
+			 * @returns {String} - Message with help notes.
+			 */
+			help: function() {
+
+				var map = GEPPETTO.Console.getHelpObjectsMap();
+
+				var helpMsg = "";
+				
+				for(var g in map) {
+					helpMsg += '\n\n' + map[g];
+				}
+
+				return helpMsg;
+			},
+			
 			toggleConsole: function() {
 
 				//user has clicked the console button
@@ -159,6 +183,12 @@ define(function(require) {
 					if(!this.visible) {
 						$('#console').slideToggle(200);
 						$('#commandInputArea').focus();
+						
+						//fix initial offset created in bottom of console when it's first toggled
+						var offset = $("#footer").css("bottom");
+						if(offset!="-10px"){
+							$("#footer").css("bottom","-10px");
+						}
 					}
 				}
 				else {
@@ -190,8 +220,19 @@ define(function(require) {
 					autoHide: true,
 					maxHeight: 400,
 					resize: function(event, ui) {
+						if(ui.size.height > ($("#footerHeader").height()*.75)){
+							$("#console").height($("#footerHeader").height()*.75);
+							event.preventDefault();
+						}
 						consoleElement.get(0).style.top = "0px";
 					}.bind(this)
+				});
+
+				//handles resizing the JS console when the windows is resized
+				$(window).resize(function() {
+					if($('#console').height() > ($("#footerHeader").height()*.75)){
+						//$('#console').height($("#footerHeader").height()*.65);
+					}
 				});
 
 				autoComplete();
@@ -249,7 +290,226 @@ define(function(require) {
 				var justCommand = command.substring(0, command.indexOf("("));
 				var commandParams = command.substring(command.indexOf("(") + 1, command.lastIndexOf(")"));
 				GEPPETTO.trackActivity("Console", justCommand, commandParams);
-			}
+			},
+			
+
+			/**
+			 * Available commands stored in an array, used for autocomplete. 
+			 *
+			 * @returns {Array}
+			 */
+			availableCommands: function() {
+				if(commands.length == 0) {
+					var commandsFormatted = "\n";
+					var map = GEPPETTO.Console.getHelpObjectsMap();
+					for(var g in map) {
+						commandsFormatted += '\n' + map[g];
+					}
+					var commandsSplitByLine = commandsFormatted.split("\n");
+					var commandsCount = 0;
+					for(var i = 0; i < commandsSplitByLine.length; i++) {
+						var line = commandsSplitByLine[i].trim();
+						if(line.substring(0, 2) == "--") {
+							var command = line.substring(3, line.length);
+							commands[commandsCount] = command;
+							commandsCount++;
+						}
+					}
+				}
+				return commands;
+			},
+
+			addTag : function(tag){
+				tags[tags.length] = tag;
+			},
+			
+			availableTags : function(){
+				if(tags.length == 0) {
+					tags = tags.concat(GEPPETTO.Console.availableCommands());
+				}
+				return tags;
+			},
+
+			/**
+			 * Gets the commands associated with the object 
+			 *
+			 * @param id - Id of object for commands
+			 * @returns the commands associated with the object
+			 */
+			getObjectCommands: function(id) {
+				return GEPPETTO.Console.getHelpObjectsMap()[id];
+			},
+
+			getHelpObjectsMap : function(){
+				if(jQuery.isEmptyObject(helpObjectsMap)){
+					helpObjectsMap = {"G": GEPPETTO.G.help(), "Simulation": GEPPETTO.Simulation.help()};
+				}
+				
+				return helpObjectsMap;
+			},
+			
+			/**
+			 * Update commands for help option. Usually called after widget
+			 * is created.
+			 *
+			 * @param scriptLocation - Location of files from where to read the comments
+			 * @param object - Object whose commands will be added
+			 * @param id - Id of object
+			 * @returns {}
+			 */
+			updateTags: function(instancePath, object) {
+				var nonTags = ["constructor()", "initialize(options)"];
+				
+				var tagsCount = tags.length;
+				
+				var proto = object.__proto__;
+				//	find all functions of object Simulation
+				for(var prop in proto) {
+					if(typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
+						var f = proto[prop].toString();
+						//get the argument for this function
+						var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
+
+						var functionName = instancePath + "." + prop + "(" + parameter + ")";
+
+						var isTag = true;
+						for(var c = 0; c < nonTags.length; c++) {
+							if(functionName.indexOf(nonTags[c]) != -1) {
+								isTag = false;
+							}
+						}
+
+						if(isTag) {
+							tags[tagsCount] = functionName;
+							tagsCount++;							
+						}
+					}
+				}
+			},
+			
+			/**
+			 * Update commands for help option. Usually called after widget
+			 * is created.
+			 *
+			 * @param scriptLocation - Location of files from where to read the comments
+			 * @param object - Object whose commands will be added
+			 * @param id - Id of object
+			 * @returns {}
+			 */
+			updateCommands: function(scriptLocation, object, id) {
+				var nonCommands = ["constructor()", "initialize(options)"];
+
+				var descriptions = [];
+
+				//retrieve the script to get the comments for all the methods
+				$.ajax({
+					async: false,
+					type: 'GET',
+					url: scriptLocation,
+					dataType: "text",
+					//at success, read the file and extract the comments
+					success: function(data) {
+						var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+						descriptions = data.match(STRIP_COMMENTS);
+					}
+				});
+
+				var commandsFormmatted = id + GEPPETTO.Resources.COMMANDS;
+
+				var commandsCount = commands.length;
+				var tagsCount = tags.length;
+				
+				var proto = object.__proto__;
+				//	find all functions of object Simulation
+				for(var prop in proto) {
+					if(typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
+						var f = proto[prop].toString();
+						//get the argument for this function
+						var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
+
+						var functionName = id + "." + prop + "(" + parameter + ")";
+
+						var isCommand = true;
+						for(var c = 0; c < nonCommands.length; c++) {
+							if(functionName.indexOf(nonCommands[c]) != -1) {
+								isCommand = false;
+							}
+						}
+
+						if(isCommand) {
+							commands[commandsCount] = functionName;
+							commandsCount++;
+							tags[tagsCount] = functionName;
+							tagsCount++;
+							//match the function to comment
+							var matchedDescription = "";
+							for(var i = 0; i < descriptions.length; i++) {
+								var description = descriptions[i].toString();
+
+								//items matched
+								if(description.indexOf(prop) != -1) {
+
+									/*series of formatting of the comments for the function, removes unnecessary
+									 * blank and special characters.
+									 */
+									var splitComments = description.replace(/\*/g, "").split("\n");
+									splitComments.splice(0, 1);
+									splitComments.splice(splitComments.length - 1, 1);
+									for(var s = 0; s < splitComments.length; s++) {
+										var line = splitComments[s].trim();
+										if(line != "") {
+											//ignore the name line, already have it
+											if(line.indexOf("@name") == -1) {
+												//build description for function
+												matchedDescription += "         " + line + "\n";
+											}
+										}
+									}
+								}
+							}
+							//format and keep track of all commands available
+							commandsFormmatted += ("      -- " + functionName + "\n" + matchedDescription + "\n");
+						}
+					}
+					;
+				}
+
+				//after commands and comments are extract, update global help option
+				GEPPETTO.Console.getHelpObjectsMap()[id] = commandsFormmatted.substring(0, commandsFormmatted.length - 2);
+			},
+
+
+			removeCommands: function(id) {
+				GEPPETTO.Console.removeAutocompleteCommands(id);
+				delete GEPPETTO.Console.getHelpObjectsMap()[id];
+
+			},
+			
+			/**
+			 * Remove commands that correspond to target object
+			 *
+			 * @param targetObject - Object whose command should no longer exist
+			 */
+			removeAutocompleteCommands: function(targetObject) {
+
+				//loop through commands and match the commands for object
+				for(var index = 0; index < commands.length; index++) {
+					if(commands[index].indexOf(targetObject + ".") !== -1) {
+						commands.splice(index, 1);
+						//go back one index spot after deletion
+						index--;
+					}
+				}
+				
+				//loop through tags and match the tags for object
+				for(var index = 0; index < tags.length; index++) {
+					if(tags[index].indexOf(targetObject + ".") !== -1) {
+						tags.splice(index, 1);
+						//go back one index spot after deletion
+						index--;
+					}
+				}
+			},
 		};
 	};
 });

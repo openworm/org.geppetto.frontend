@@ -15,8 +15,6 @@ define(function (require) {
 
         onClick: function () {
             React.renderComponent(LoadSimModal({show:true, keyboard:false}), document.getElementById('modal-region'));
-            $('#loading-modal').css('max-height', $(window).height() * 0.9);
-            $("#loading-modal").css("margin-right", "-20px");
         },
 
         componentDidMount: function() {
@@ -26,9 +24,9 @@ define(function (require) {
         getDefaultProps: function() {
             return {
                 label: 'Load Simulation',
-                className: 'pull-right openload',
+                className: 'pull-right',
                 icon:'icon-folder-open-alt',
-                onClick: this.onClick,
+                onClick: this.onClick
             }
         }
 

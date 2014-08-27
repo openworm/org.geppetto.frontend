@@ -232,25 +232,27 @@ define(function(require) {
 			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
 					" Okay and enjoy the show!",
 					
-			SELECTING_ENTITY : "Selecting entity.",
-			UNSELECTING_ENTITY : "Unselecting entity.",
-			SHOW_ENTITY : "Showing entity.",
+			SELECTING_ENTITY : "Selecting entity ",
+			UNSELECTING_ENTITY : "Unselecting entity ",
+			CANT_FIND_ENTITY : "Entity not found, can't use selection on it",
+			NO_ENTITIES_SELECTED : "No entities are currently selected.",
+			SHOW_ENTITY : "Showing entity ",
 			ENTITY_ALREADY_VISIBLE : "Entity already visible.",
-			HIDE_ENTITY : "Hiding entity.",
+			HIDE_ENTITY : "Hiding entity ",
 			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
-			ZOOM_TO_ENTITY : "Zooming to entity.",
+			ZOOM_TO_ENTITY : "Zooming to entity ",
 			
 			ENTITY_ALREADY_SELECTED : "Entity already selected",
 			
 			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
 
-			SELECTING_ASPECT : "Selecting aspect.",
-			UNSELECTING_ASPECT : "Unselecting entity.",
-			SHOW_ASPECT : "Showing entity.",
+			SELECTING_ASPECT : "Selecting aspect ",
+			UNSELECTING_ASPECT : "Unselecting aspect ",
+			SHOW_ASPECT : "Showing aspect ",
 			ASPECT_ALREADY_VISIBLE : "Aspect already visible.",
-			HIDE_ASPECT : "Hiding entity.",
+			HIDE_ASPECT : "Hiding aspect ",
 			ASPECT_ALREADY_HIDDING : "Aspect already invisible.",
-			ZOOM_TO_ASPECT : "Zooming to aspect.",
+			ZOOM_TO_ASPECT : "Zooming to aspect ",
 			
 			ASPECT_ALREADY_SELECTED : "Aspect already selected",
 			

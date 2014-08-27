@@ -3,12 +3,13 @@ define(function (require) {
     var React = require('react'),
         $ = require('jquery'),
         XMLEditor = require('jsx!./XMLEditor'),
-        GEPPETTO = require('geppetto'),
-        LoadingSpinner = require('jsx!./LoadingSpinner');
+        GEPPETTO = require('geppetto');
+        
 
     return React.createClass({
         mixins: [
-            require('jsx!components/bootstrap/modal')
+            require('jsx!components/bootstrap/modal'),
+            require('jsx!mixins/Events'),           
         ],
 
         getInitialState: function() {
@@ -27,15 +28,14 @@ define(function (require) {
         },
 
         loadSimulation: function() {
+        	//Send command to load via console
             if(this.state.loadFromURL) {
-                GEPPETTO.Simulation.load(this.state.simulationUrl);
+                GEPPETTO.Console.executeCommand('Simulation.load("' + this.state.simulationUrl + '")');
             } else {
-                GEPPETTO.Simulation.loadFromContent(this.state.simulationXML);
+            	//Format XLM string before sending command to load simulation
+            	var content = this.state.simulationXML.replace(/\s+/g, ' ');
+            	GEPPETTO.Console.executeCommand("Simulation.loadFromContent('" + content + "')");
             }
-            
-            this.hide();
-            
-            React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
         },
 
         loadSimulationTemplate: function() {
@@ -64,20 +64,16 @@ define(function (require) {
                 this.setState({disableLoad:true});
                 this.loadSimulationTemplate();
             }
-
-            GEPPETTO.on('simulation:configloaded', this.setSimulationXML);          
-            $(this.getDOMNode()).on('shown.bs.modal', function(){
+            
+            this.listenTo(GEPPETTO, 'simulation:configloaded', this.setSimulationXML);
+            this.listenTo($(this.getDOMNode()),'shown.bs.modal', function(){
                 if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.select-model').popover({
                         content: 'You can load a sample simulation from the list available. Alternatively, you can enter the URL of your own simulation in the input field above. Open the dropdown list and select the third simulation. Then press continue to go to the next step',
                         placement: 'auto bottom'
                     }).popover('show');
                 }
-            }); 
-        },
-        
-        componentWillUnmount: function(){
-        	GEPPETTO.off('simulation:configloaded');
+            });
         },
 
         onSelectSimulationUrl: function(event) {

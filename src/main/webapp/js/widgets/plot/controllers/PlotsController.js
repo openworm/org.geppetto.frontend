@@ -82,7 +82,7 @@ define(function(require) {
 				var p = window[name] = new Plot({id:id, name:name,visible:true});
 
 				//create help command for plot
-				p.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+				p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
 				//store in local stack
 				plots.push(p);
@@ -90,7 +90,7 @@ define(function(require) {
 				this.registerHandler(id);
 
 				//add commands to console autocomplete and help option
-				GEPPETTO.Utility.updateCommands("js/widgets/plot/Plot.js", p, id);
+				GEPPETTO.Console.updateCommands("js/widgets/plot/Plot.js", p, id);
 
 				return p;
 			},
@@ -102,9 +102,11 @@ define(function(require) {
 				//remove all existing plotting widgets
 				for(var i = 0; i < plots.length; i++) {
 					var plot = plots[i];
+					
+					//remove commands 
+					GEPPETTO.Console.removeCommands(plot.getId());
 
 					plot.destroy();
-					i--;
 				}
 
 				plots = new Array();

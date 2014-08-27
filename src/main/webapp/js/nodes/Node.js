@@ -48,6 +48,7 @@ define([
 		Model : Backbone.AssociatedModel.extend({
 		name : "",
 		instancePath : "",
+		id: "",
 		_metaType : "",
 		
 		/**
@@ -71,6 +72,16 @@ define([
 		getName : function(){
 			return this.name;
 		},		
+		
+        /**
+         * Get the id associated with node
+         *
+         * @name Node.getId()
+         * @returns {String} - ID of node
+         */
+        getId : function(){
+     	   return this.id;
+        },
 	})
 	};
 });

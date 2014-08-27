@@ -5,7 +5,7 @@ define(function (require) {
         Button = require('../bootstrap/button'),
         GEPPETTO = require('geppetto');
 
-    var Modal = React.createClass({
+    return React.createClass({
         mixins: [
             require('jsx!components/bootstrap/modal')
         ],
@@ -53,10 +53,6 @@ define(function (require) {
 
             </div>
         }
-    });
-
-    if(!$.cookie('geppetto_hideWelcomeMessage')){
-        React.renderComponent(Modal({show:true}), document.getElementById('modal-region'));
-    }
+    });    
 
 });

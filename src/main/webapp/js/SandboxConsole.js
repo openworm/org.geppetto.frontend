@@ -156,7 +156,7 @@ define(function(require) {
 					// Set up the View Options
 					this.resultPrefix = opts.resultPrefix || "  => ";
 					this.tabCharacter = opts.tabCharacter || "\t";
-					this.placeholder = opts.placeholder || "// type some javascript and hit enter (:help for info)";
+					this.placeholder = opts.placeholder || "// type some javascript and hit enter (help() for info)";
 					this.helpText = opts.helpText || "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.";
 
 					// Bind to the model's change event to update the View
@@ -271,7 +271,7 @@ define(function(require) {
 					// If submitting a command, set the currentHistory to blank (empties the textarea on update)
 					this.currentHistory = "";
 
-					// Run the command past the special commands to check for ':help' and ':clear' etc.
+					// Run the command past the special commands to check for 'help()' and ':clear' etc.
 					if(!this.specialCommands(command)) {
 
 						// If if wasn't a special command, pass off to the Sandbox Model to evaluate and save
@@ -356,7 +356,7 @@ define(function(require) {
 						this.currentHistory = "";
 						this.updateInputArea();
 
-						// Run the command past the special commands to check for ':help' and ':clear' etc.
+						// Run the command past the special commands to check for 'help()' and ':clear' etc.
 						if(!this.specialCommands(val)) {
 
 							// If if wasn't a special command, pass off to the Sandbox Model to evaluate and save
@@ -404,69 +404,68 @@ define(function(require) {
 
 						var thisKeypressTime = new Date();
 
-						var tags = GEPPETTO.Utility.availableTags();
-
-						//detects double tab
-						if(thisKeypressTime - lastKeypressTime <= delta) {
-							var suggestions = "";
-							for(var i = 0; i < tags.length; i++) {
-								var tag = tags[i];
-								if(tag.indexOf($('#commandInputArea').val()) != -1) {
-									if((i + 1) % 3 == 0) {
-										suggestions = suggestions + tag + "\n";
-									}
-									else {
-										var formatSpaceAmount = 60 - tag.length;
-										var spacing = "";
-										for(var x = 0; x < formatSpaceAmount; x++) {
-											spacing = spacing + " ";
+						var commands = GEPPETTO.Console.availableCommands();
+						
+						var input = $('#commandInputArea').val();
+						
+						//case where input entered by user is an object path or has object on left
+						//Example  "Simulation.s"
+						if(input.split(".").length>1){
+							commands = GEPPETTO.Console.availableTags();
+							
+							//detects double tab
+							if(thisKeypressTime - lastKeypressTime <= delta) {							
+								this.showCommandsSuggestions(this.getSuggestions(commands,input) + "\n");
+								thisKeypressTime = 0;
+								doubleTab = true;
+							}
+							else {
+								this.singleTab(commands, thisKeypressTime);
+							}			
+						}
+						//input entered doesn't match that of an object path yet
+						//Example "Si" 
+						else{
+							//detects double tab, displays most of commands available
+							if(thisKeypressTime - lastKeypressTime <= delta) {							
+								var suggestions = "";
+								//loop through commands that match input and display them formatted
+								var ownLineCommands = [];
+								for(var i = 0; i < commands.length; i++) {
+									var tag = commands[i];
+									if(tag.indexOf($('#commandInputArea').val()) != -1) {
+										if(tag.length <= 80){
+											if((i + 1) % 2 == 0) {
+												suggestions = suggestions + tag + "\n";
+											}
+											else {
+												var formatSpaceAmount = 90 - tag.length;
+												var spacing = "";
+												for(var x = 0; x < formatSpaceAmount; x++) {
+													spacing = spacing + " ";
+												}
+												suggestions = suggestions + tag + spacing;
+											}
 										}
-										suggestions = suggestions + tag + spacing;
+										else{
+											ownLineCommands[ownLineCommands.length] = tag;
+										}
 									}
 								}
-							}
-							this.showCommandsSuggestions(suggestions + "\n");
-							thisKeypressTime = 0;
-							doubleTab = true;
-						}
-						else {
-
-							var textAreaValue = this.textarea.val();
-
-							//narrow down the matches found from commands
-							var matches = $.map(tags, function(tag) {
-								if(tag.toUpperCase().indexOf(textAreaValue.toUpperCase()) === 0) {
-									return tag;
+								for(var i = 0; i < ownLineCommands.length; i++) {
+									var tag = ownLineCommands[i];
+									suggestions = suggestions + tag + "\n";
 								}
-							});
 
-							var mostCommon = null;
-
-							if(matches.length > 1) {
-								var A = matches.slice(0).sort(),
-									word1 = A[0], word2 = A[A.length - 1],
-									i = 0;
-								while(word1.charAt(i) == word2.charAt(i))++i;
-
-								//match up most common part
-								mostCommon = word1.substring(0, i);
-
+								this.showCommandsSuggestions(suggestions + "\n");
+								thisKeypressTime = 0;
+								doubleTab = true;
 							}
-							else if(matches.length == 1) {
-								mostCommon = matches[0];
-							}
-
-							if(mostCommon != null) {
-								this.textarea.val(mostCommon);//change the input to the first match
-
-								// Get the value, and the parts between which the tab character will be inserted
-								var value = this.textarea.val(),
-									caret = this.getCaret();
-
-								// Set the caret (cursor) position to just after the inserted tab character
-								this.setCaret(caret + value.length);
-							}
+							else {
+								this.singleTab(commands, thisKeypressTime);
+							}					
 						}
+											
 						lastKeypressTime = thisKeypressTime;
 
 						return false;
@@ -479,8 +478,124 @@ define(function(require) {
 
 				// Checks for special commands. If any are found, performs their action and returns true
 				specialCommands: function(command) {
+					if(command == "help()"){						
+						this.evaluate("GEPPETTO.Console.help()");
+						return true;
+					}
 					// If no special commands, return false so the command gets evaluated
 					return false;
+				},
+				
+				singleTab : function(commands){
+					var textAreaValue = this.textarea.val();
+
+					//narrow down the matches found from commands
+					var matches = $.map(commands, function(tag) {
+						if(tag.toUpperCase().indexOf(textAreaValue.toUpperCase()) === 0) {
+							return tag;
+						}
+					});
+
+					var mostCommon = null;
+
+					if(matches.length > 1) {
+						var A = matches.slice(0).sort(),
+							word1 = A[0], word2 = A[A.length - 1],
+							i = 0;
+						while(word1.charAt(i) == word2.charAt(i))++i;
+
+						//match up most common part
+						mostCommon = word1.substring(0, i);
+
+					}
+					
+					if(matches.length == 1) {
+						//match up most common part
+						mostCommon = matches[0];
+
+					}
+
+					if(mostCommon != null) {
+						this.textarea.val(mostCommon);//change the input to the first match
+
+						// Get the value, and the parts between which the tab character will be inserted
+						var value = this.textarea.val(),
+							caret = this.getCaret();
+
+						// Set the caret (cursor) position to just after the inserted tab character
+						this.setCaret(caret + value.length);
+					}
+				},
+				
+				/**
+				 * Matches suggestions in commands from input
+				 */
+				getSuggestions : function(commands,input){
+					var suggestions = "";
+					var inputSplit = input.split(".");
+					var simplifyInput = "";
+					//remove entered input from match commands, no need to display input as 
+					//part of suggestions 
+					if(inputSplit.length > 1){
+						if(inputSplit[inputSplit.length-1]==""){
+							inputSplit.pop(inputSplit.length-1);
+						}
+						simplifyInput = input.replace("."+inputSplit[inputSplit.length-1], "");
+					}
+					
+					var addedTags  = {};
+					for(var i = 0; i < commands.length; i++) {
+						var tag = commands[i];
+						if(tag.indexOf(input) != -1 && tag!=input) {
+							//remove text area input from tag
+							//Example if input is "sample.fluid" and matched commands is 
+							//"sample.fluid.bioPhys" then tag will be ".bioPhys"
+							tag = tag.replace(simplifyInput,"");
+							//remove any remaining dots at beginning of tag
+							if(tag.substring(0,1)=="."){
+								tag = tag.substring(1);
+							}
+							
+							//split matched tags, and show only first object in path
+							//if tag is "bioPhys.naChans.k.q" only first part of object is shown 
+							//as part of autosuggest
+							var tags = tag.split(".");
+							if(tags.length > 1){
+								tag = tags[0];
+								if(!(tag in addedTags)){
+									//if input area has dot, add one to suggestion
+									if(input.substring(input.length-1)!="."){
+										tag = "." + tags[1];	
+									}
+									else{ 
+										//if tag is part of input, add next part of object
+										if(inputSplit[inputSplit.length-1] == tag){
+											tag = tags[1];
+										}
+									}
+								}
+							}
+							
+							//formats the matched commands for suggestions, we keep track if suggestions is 
+							//already added as well to avoid duplicates
+							if(!(tag in addedTags)){
+								if((i + 1) % 3 == 0) {
+									suggestions = suggestions + tag + "\n";
+								}
+								else {
+									var formatSpaceAmount = 60 - tag.length;
+									var spacing = "";
+									for(var x = 0; x < formatSpaceAmount; x++) {
+										spacing = spacing + " ";
+									}
+									suggestions = suggestions + tag + spacing;
+								}
+								addedTags[tag] = {};
+							}
+						}
+					}
+					
+					return suggestions;
 				},
 
 				// Adds a new item to the history
@@ -570,7 +685,7 @@ define(function(require) {
 						item._class = "error";
 					}
 
-					//Replace < and > tags with html equivalent in order to
+					//Replace < and > commands with html equivalent in order to
 					//display in console area
 					str = command.replace(/\</g, "&lt;");
 					var formattedCommand = str.replace(/\>/g, "&gt;");

@@ -107,9 +107,13 @@ var jqueryLib = [
   "vendor/Detector",
   "vendor/jquery.cookie",
   "vendor/rAF"
+
 ];
 
 require(jqueryLib, function($, geppetto){
+	
+	require(['components/app'],function(){});
+	
 	$(function(){
 		window.GEPPETTO = require('geppetto');
 		//Alias G, Simulation, and help() to global vars for easy access
@@ -118,7 +122,8 @@ require(jqueryLib, function($, geppetto){
 		window.Widgets = GEPPETTO.Widgets;
 		window.help = GEPPETTO.Utility.help;
 		
-        require(['components/app'],function(){});
+        
+
 
 	});
 });

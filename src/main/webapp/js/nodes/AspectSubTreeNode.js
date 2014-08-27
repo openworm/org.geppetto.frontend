@@ -33,7 +33,7 @@
 define(function(require) {
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
-
+	
 	return Node.Model.extend({
 		relations:[
 		           {
@@ -45,8 +45,8 @@ define(function(require) {
 		           defaults : {
 		        	   children : []
 		           },
-		           id : "",
 		           type : "",
+		           modified : false,
 		           _metaType : "AspectSubTreeNode",
 		           
 		           initialize : function(options){
@@ -54,17 +54,7 @@ define(function(require) {
 		        	   this.instancePath = options.instancePath;
 		        	   this.name = options.name;
 		        	   this.type = options.type;
-		           },
-
-
-		           /**
-		            * Get the model interpreter associated with entity
-		            *
-		            * @name EntityNode.getId()
-		            * @returns {String} - ID of entity
-		            */
-		           getId : function(){
-		        	   return this.id;
+		        	   this.modified = options.modified;
 		           },
 
 		           

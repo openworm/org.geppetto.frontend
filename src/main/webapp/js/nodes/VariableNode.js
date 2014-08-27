@@ -47,6 +47,7 @@ define(function(require) {
 		
 		initialize : function(options){
 			this.name = options.name;
+			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.unit = options.unit;
 			this.value = options.value;

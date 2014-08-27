@@ -63,7 +63,6 @@ define(function(require) {
 		           aspects : [],
 		           entities : [],
 		           position : null,
-		           id : "",
 		           selected : false,
 		           visible : true,
 		           _metaType : "EntityNode",
@@ -87,7 +86,7 @@ define(function(require) {
 		        	   var message; 
 		        	   
 		        	   if(GEPPETTO.hideEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.HIDE_ENTITY;
+		        		   message = GEPPETTO.Resources.HIDE_ENTITY + this.instancePath;
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
@@ -107,7 +106,7 @@ define(function(require) {
 		        	   var message; 
 		        	   
 		        	   if(GEPPETTO.showEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.SHOW_ENTITY;
+		        		   message = GEPPETTO.Resources.SHOW_ENTITY + this.instancePath;
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
@@ -128,7 +127,7 @@ define(function(require) {
 		        	   var message; 
 		        	   
 		        	   if(GEPPETTO.unselectEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY;
+		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY + this.instancePath;
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
@@ -149,10 +148,10 @@ define(function(require) {
 					   var message; 
 		        	   
 		        	   if(GEPPETTO.selectEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.SELECTING_ENTITY;
+		        		   message = GEPPETTO.Resources.SELECTING_ENTITY + this.instancePath;
 		        	   }
 		        	   else{
-		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
+		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED ;
 		        	   }
 		        	   this.selected = true;
 		        	   
@@ -171,16 +170,6 @@ define(function(require) {
 						
 						return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath;
 					},*/
-					
-		           /**
-		            * Get the id associated with entity
-		            *
-		            * @name EntityNode.getId()
-		            * @returns {String} - ID of entity
-		            */
-		           getId : function(){
-		        	   return this.id;
-		           },
 
 		           /**
 		            * Get this entity's aspects

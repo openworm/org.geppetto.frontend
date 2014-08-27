@@ -364,7 +364,7 @@ define(function(require) {
 						if(node._metaType == "AspectSubTreeNode"){
 							if(node.type == "VisualizationTree"){
 								var subTree = new AspectSubTreeNode({name : "VisualizationTree",
-									instancePath : node.instancePath + ".VisualizationTree",
+									instancePath : node.instancePath,
 									modified : node.modified, _metaType : "AspectSubTreeNode"});
 								
 								a.VisualizationTree = subTree;
@@ -377,8 +377,8 @@ define(function(require) {
 								a.SimulationTree = {};
 							}
 							else if(node.type == "ModelTree"){
-								var subTree = new AspectSubTreeNode({name : "VisualizationTree",
-									instancePath : node.instancePath + ".VisualizationTree",
+								var subTree = new AspectSubTreeNode({name : "ModelTree",
+									instancePath : node.instancePath,
 									modified : node.modified, _metaType : "AspectSubTreeNode"});
 								
 								a.ModelTree = subTree;

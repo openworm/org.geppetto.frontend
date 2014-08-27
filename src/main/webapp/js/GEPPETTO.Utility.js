@@ -99,6 +99,19 @@ define(function(require) {
 												//build description for function
 												matchedDescription += "         " + line + "\n";
 											}
+											
+											//ignore the name line, already have it
+											if(line.indexOf("@returns") != -1) {
+												//build description for function
+												var match = line.match(/\{.*?\}/);
+												
+												if(match!=null){
+													if(match[0] == "{String}" && parameter!=""){
+														functionName = functionName.replace("(","(\"");
+														functionName = functionName.replace(")","\")");
+													}
+												}
+											}
 										}
 									}
 								}

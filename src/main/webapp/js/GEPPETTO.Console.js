@@ -109,7 +109,7 @@ define(function(require) {
 								if(inpt.val() !== firstElementText) {									
 									inpt.val(firstElementText); //change the input to the first match
 
-									inpt[0].selectionStart = original.length; //highlight from end of input
+									inpt[0].selectionStart = original.length; //highlight from beginning of input
 									inpt[0].selectionEnd = firstElementText.length;//highlight to the end
 								}
 							}

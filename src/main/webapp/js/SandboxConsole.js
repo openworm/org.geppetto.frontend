@@ -516,14 +516,26 @@ define(function(require) {
 					}
 
 					if(mostCommon != null) {
+						
+						var parameter = mostCommon.match(/\(.*?\)/);
+
+						if(parameter!=null){
+							parameter = parameter[0].replace(/[()]/gi, '').split(',');
+						}
+						mostCommon = mostCommon.replace(parameter,"");
+
 						this.textarea.val(mostCommon);//change the input to the first match
 
 						// Get the value, and the parts between which the tab character will be inserted
-						var value = this.textarea.val(),
-							caret = this.getCaret();
-
+						var value = this.textarea.val();
+						
 						// Set the caret (cursor) position to just after the inserted tab character
-						this.setCaret(caret + value.length);
+						if(value.slice(-1)==")" && parameter!=""){
+							this.setCaret(value.length-1);
+						}else{
+							this.setCaret(value.length);
+						}
+						
 					}
 				},
 				

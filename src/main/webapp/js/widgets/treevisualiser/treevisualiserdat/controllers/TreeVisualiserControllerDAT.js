@@ -91,10 +91,7 @@ define(function(require) {
 				this.registerHandler(id);
 
 				// add commands to console autocomplete and help option
-				GEPPETTO.Utility
-						.updateCommands(
-								"js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",
-								tvdat, id);
+				GEPPETTO.Console.updateCommands("js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",	tvdat, id);
 
 				return tvdat;
 			},

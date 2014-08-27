@@ -67,14 +67,8 @@ define(function(require) {
 	
 				if (state!= null) {	
 					var dataset = this.createDataset();
-//					if (typeof(state) === 'string'){
-						dataset.variableToDisplay = state;
-						dataset.data = state;
-//						this.datasets.push(dataset);
-//					}
-//					else{
-//						dataset.data = state;
-//					}
+					dataset.variableToDisplay = state;
+					dataset.data = state;
 					return dataset;
 				}
 				return null;

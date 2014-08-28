@@ -423,12 +423,12 @@ define(function(require) {
 			 * @returns  Returns list of all entities selected
 			 */
 			getSelection : function() {
-				var formattedOutput="";
-				var indentation = "↪";
-
-				var selection = GEPPETTO.Utility.formatSelection(this.runTimeTree,formattedOutput, indentation);
-				if(selection ==  ""){
-					selection = GEPPETTO.RESOURCES.NO_ENTITIES_SELECTED;
+				var selection = new Array();
+				
+				for(var e in this.runTimeTree){
+					if(this.runTimeTree[e].selected){
+						selection[selection.length] = this.runTimeTree[e].id;
+					}
 				}
 				
 				return selection;

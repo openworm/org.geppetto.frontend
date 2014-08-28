@@ -184,7 +184,7 @@ define(function(require) {
 		  */
 		 getModelTree : function(){
 			 //empty model tree, request server for it
-			 if(jQuery.isEmptyObject(this.ModelTree)){
+			 if(this.ModelTree.getChildren().length==0){
 				 GEPPETTO.MessageSocket.send("get_model_tree", this.instancePath);
 				 
 				 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE;

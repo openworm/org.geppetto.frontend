@@ -43,28 +43,17 @@ define(function(require) {
 
 	return TreeVisualiser.TreeVisualiser.extend({
 		
-		
 		defaultTreeVisualiserOptions:  {
 			width: 400,
 		},
 		
 		initialize : function(options){
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this,options);
-
 			this.options = this.defaultTreeVisualiserOptions;
-			
-//			console.log("takkkkaaa")
-				
-//			Testing With Real Data
-//			this.generateRealDataTestTreeForD3();
-			
-//			Testing With Variable
-//			this.setData("hhcell");
 		},
 		
 		setData : function(state, options){
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
-			dataset.data = {};
 			dataset.links = [];
 			dataset.nodes = {};
 			dataset.svg = null;
@@ -72,38 +61,53 @@ define(function(require) {
 			
 			this.datasets.push(dataset);
 			
-			if (typeof(state) != 'string'){
-				this.prepareTree('', state, dataset);
-				this.paintTree();
-			}	
+			this.prepareTree('', dataset.data, dataset);
+			this.paintTree();
 
 			return "Metadata or variables to display added to tree visualiser";
 		},
 		
 		prepareTree: function(parent, data, dataset){
-			for (var key in data){
-				nodeName = (parent != '')?parent + "." + key:key;
-				if (data[key] !== null && typeof data[key] === 'object'){
-					dataset.nodes[nodeName] = {name: key};
-					if (parent != ''){
-						var link = {};
-						link.source = dataset.nodes[parent];
-						link.target = dataset.nodes[nodeName];
-						link.type = "suit";
-						dataset.links.push(link);
-					}
-					this.prepareTree(nodeName, data[key], dataset);
+			nodeName = data.instancePath;
+			
+			//TODO: Remove once all getName are implemented in all nodes
+			if (data.getName() === undefined){label = data.getId();}
+			else{label = data.getName();}
+			
+			
+			if (data._metaType != "VariableNode") {
+				dataset.nodes[nodeName] = {name: label};
+				if (parent != ''){
+					var link = {};
+					link.source = dataset.nodes[parent];
+					link.target = dataset.nodes[nodeName];
+					link.type = "suit";
+					dataset.links.push(link);
+				}
+				//TODO: Remove when entitynode and aspectnode getChildren works as getchildren in other nodes					
+				var children = [];
+				if (data._metaType != "EntityNode" & data._metaType != "AspectNode"){
+					children = data.getChildren().models;
 				}
 				else{
-					if (data[key] === null){data[key] = '';}
-					dataset.nodes[nodeName] = {name: key + "=" + data[key]};
-					if (parent != ''){
-						var link = {};
-						link.source = dataset.nodes[parent];
-						link.target = dataset.nodes[nodeName];
-						link.type = "suit";
-						dataset.links.push(link);
+					children = data.getChildren();
+				}
+				if (children.length > 0){
+					var parentFolderTmp = nodeName; 
+					for (var childIndex in children){
+						this.prepareTree(parentFolderTmp, children[childIndex], dataset);
 					}
+				}
+				
+			}
+			else{
+				dataset.nodes[nodeName] = {name: label + "=" + data.getValue()};
+				if (parent != ''){
+					var link = {};
+					link.source = dataset.nodes[parent];
+					link.target = dataset.nodes[nodeName];
+					link.type = "suit";
+					dataset.links.push(link);
 				}
 			}
 		},
@@ -113,22 +117,13 @@ define(function(require) {
 				dataset = this.datasets[key];
 				
 				if (dataset.variableToDisplay != null){
-					newdata = this.getState(GEPPETTO.Simulation.runTimeTree, dataset.variableToDisplay);
-					if (!dataset.isDisplayed){
-						dataset.data = newdata;
-						this.prepareTree('', dataset.data, dataset);
-						this.paintTree();
-					}
-					else{
-						$.extend(true, dataset.data, newdata);
-						dataset.links = [];
-						dataset.nodes = {};
-						this.prepareTree('', dataset.data, dataset);
-						
-						var nodes = dataset.force.nodes();
-						$.extend(true, nodes, d3.values(dataset.nodes));
-						dataset.svg.selectAll("text").data(nodes).text(function(d) { return d.name; });
-					}
+					dataset.links = [];
+					dataset.nodes = {};
+					this.prepareTree('', dataset.data, dataset);
+					
+					var nodes = dataset.force.nodes();
+					$.extend(true, nodes, d3.values(dataset.nodes));
+					dataset.svg.selectAll("text").data(nodes).text(function(d) { return d.name; });
 				}
 			}
 		},
@@ -212,37 +207,6 @@ define(function(require) {
 					}
 				}	
 			}	
-		},
-		
-		generateRealDataTestTreeForD3: function(){
-			this.setData(this.getTestingData());
-		},
-		
-		getTestingData: function(){
-			return {"electrical":{"hhpop":[{"bioPhys1":{"membraneProperties":{"naChans":{"gDensity":{"value":4.1419823201649315,"unit":null,"scale":null},"na":{"m":{"q":{"value":0.21040640018173135,"unit":null,"scale":null}},"h":{"q":{"value":0.4046102327961389,"unit":null,"scale":null}}}},"kChans":{"k":{"n":{"q":{"value":0.42015716873953574,"unit":null,"scale":null}}}}}},"spiking":{"value":0,"unit":null,"scale":null},"v":{"value":-0.047481204346777425,"unit":null,"scale":null}}]}};
-		},
-		
-		getTestingData2: function(){
-			return {"electrical2":
-			{"hhpop":[
-				       {"bioPhys1":
-				          	{"membraneProperties":
-				          		{"naChans":
-				          			{"gDensity":{"value":4.1419823201649315,"unit":null,"scale":null},
-				          			"na":{
-				          				"m":
-				          					{"q":{"value":0.21040640018173135,"unit":null,"scale":null}},
-				          				"h":
-				          					{"q":{"value":0.4046102327961389,"unit":null,"scale":null}}}},
-				          		"kChans":
-				          			{"k":
-				          				{"n":
-				          					{"q":{"value":0.42015716873953574,"unit":null,"scale":null}}}}}},
-				       "spiking":{"value":0,"unit":null,"scale":null},
-				       "v":{"value":-0.047481204346777425,"unit":null,"scale":null}}
-				       ]
-					}
-			};
 		}
 		
 

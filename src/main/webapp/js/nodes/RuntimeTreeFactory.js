@@ -52,32 +52,32 @@ define(function(require) {
 				/**Creates the backbone nodes for the first time depending.
 				 */
 				createRuntimeTree : function(jsonRuntimeTree){
-					for (var name in jsonRuntimeTree) {
-						var node = jsonRuntimeTree[name];
+					for (var id in jsonRuntimeTree) {
+						var node = jsonRuntimeTree[id];
 						if(node._metaType == "EntityNode"){
 							var entityNode = 
-								GEPPETTO.RuntimeTreeFactory.createEntityNode(name,node);
+								GEPPETTO.RuntimeTreeFactory.createEntityNode(node);
 
-							GEPPETTO.Console.updateCommands("js/nodes/EntityNode.js", entityNode, name);
+							GEPPETTO.Console.updateCommands("js/nodes/EntityNode.js", entityNode, id);
 
 							//keep track of client entity nodes created
-							GEPPETTO.Simulation.runTimeTree[name]= entityNode;
+							GEPPETTO.Simulation.runTimeTree[id]= entityNode;
 							
-							this.traverseEntities(node, entityNode, GEPPETTO.Simulation.runTimeTree[name]);
+							this.traverseEntities(node, entityNode, GEPPETTO.Simulation.runTimeTree[id]);
 						}
 					}
 				},
 				
 				traverseEntities: function(entities, parentNode, runTimeRef){
-					for (var name in entities) {
-						var node = entities[name];
+					for (var id in entities) {
+						var node = entities[id];
 						if(node._metaType == "EntityNode"){
 							var entityNode = 
-								GEPPETTO.RuntimeTreeFactory.createEntityNode(name,node);
+								GEPPETTO.RuntimeTreeFactory.createEntityNode(node);
 							
 							GEPPETTO.Console.updateTags(entityNode.instancePath, entityNode);
 
-							runTimeRef[name] = entityNode;
+							runTimeRef[id] = entityNode;
 							parentNode.get("entities").add(entityNode);
 							
 							this.traverseEntities(node);
@@ -87,14 +87,14 @@ define(function(require) {
 
 				/**Update entities of scene with new server updates*/
 				updateRuntimeTree : function(jsonRuntimeTree){
-					for (var key in jsonRuntimeTree) {
-						var node = jsonRuntimeTree[key];
+					for (var id in jsonRuntimeTree) {
+						var node = jsonRuntimeTree[id];
 						if(node._metaType == "EntityNode"){
 							//check to see if entitynode already exists
-							if(GEPPETTO.Simulation.runTimeTree.hasOwnProperty(key)){
+							if(GEPPETTO.Simulation.runTimeTree.hasOwnProperty(id)){
 								//retrieve entity node
 								var entityNode = 
-									GEPPETTO.Simulation.runTimeTree[key];
+									GEPPETTO.Simulation.runTimeTree[id];
 
 								//traverse through server update node to get aspects
 								for (var a in node) {
@@ -102,8 +102,8 @@ define(function(require) {
 									//match aspect in server update
 									if(nodeA._metaType == "AspectNode"){
 										//match aspect in existing entity node
-										for (var aspectKey in entityNode.aspects) {
-											var aspect = entityNode.aspects[aspectKey];
+										for (var aspectId in entityNode.aspects) {
+											var aspect = entityNode.aspects[aspectId];
 											//update subtrees of matched aspect with new data
 											if(aspect.instancePath == nodeA.instancePath){
 												if(nodeA.VisualizationTree.modified){
@@ -233,7 +233,7 @@ define(function(require) {
 							
 							/*Match type of node and created*/
 							if(metatype == "CompositeNode"){
-								var compositeNode =this.createCompositeNode(i,node[i]);
+								var compositeNode =this.createCompositeNode(node[i]);
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
 									parent.get("children").add(compositeNode);
 								}
@@ -242,21 +242,21 @@ define(function(require) {
 								this.modelJSONToNodes(parent[i], node[i]);
 							}
 							else if(metatype == "FunctionNode"){
-								var functionNode =  this.createFunctionNode(i,node[i]);
+								var functionNode =  this.createFunctionNode(node[i]);
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
 									parent.get("children").add(functionNode);
 								}
 								parent[i] = functionNode;
 							}
 							else if(metatype == "DynamicsSpecificationNode"){
-								var dynamicsSpecificationNode =  this.createDynamicsSpecificationNode(i,node[i]);
+								var dynamicsSpecificationNode =  this.createDynamicsSpecificationNode(node[i]);
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
 									parent.get("children").add(dynamicsSpecificationNode);
 								}
 								parent[i] = dynamicsSpecificationNode;
 							}
 							else if(metatype == "ParameterSpecificationNode"){
-								var parameterSpecificationNode =  this.createParameterSpecificationNode(i,node[i]);
+								var parameterSpecificationNode =  this.createParameterSpecificationNode(node[i]);
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
 									parent.get("children").add(parameterSpecificationNode);
 								}
@@ -294,7 +294,7 @@ define(function(require) {
 							}
 							//if object is CompositeNode, do recursion to find children
 							else if(metatype == "CompositeNode"){
-								var compositeNode=this.createCompositeNode(i,node[i]);
+								var compositeNode=this.createCompositeNode(node[i]);
 								this.createSimulationTree(compositeNode, node[i]);
 								//add to parent if applicable
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
@@ -303,7 +303,7 @@ define(function(require) {
 								parent[i] = compositeNode;
 							}
 							else if(metatype == "VariableNode"){
-								var variableNode =  this.createVariableNode(i,node[i]);
+								var variableNode =  this.createVariableNode(node[i]);
 								//add to parent if applicable
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
 									parent.get("children").add(variableNode);
@@ -311,7 +311,7 @@ define(function(require) {
 								parent[i] = variableNode;
 							}
 							else if(metatype == "ParameterNode"){
-								var parameterNode =  this.createParameterNode(i,node[i]);
+								var parameterNode =  this.createParameterNode(node[i]);
 								//add to parent if applicable
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
 									parent.get("children").add(parameterNode);
@@ -325,22 +325,22 @@ define(function(require) {
 				},
 
 				/**Create and populate client entity nodes for the first time*/
-				createEntityNode : function(name,entity){
-					var e = window[name] = new EntityNode(
-							{id:entity.id, name : entity.name,
+				createEntityNode : function(entity){
+					var e = window[entity.id] = new EntityNode(
+							{id:entity.id, name : entity.id,
 								instancePath : entity.instancePath,position : entity.position});
 					//add commands to console autocomplete and help option
 					GEPPETTO.Console.addTag(entity.instancePath);
 
-					for (var name in entity) {
-						var node = entity[name];
+					for (var id in entity) {
+						var node = entity[id];
 						//create aspect nodes
 						if(node._metaType == "AspectNode"){
 							var aspectNode = 
-								GEPPETTO.RuntimeTreeFactory.createAspectNode(name, node);
+								GEPPETTO.RuntimeTreeFactory.createAspectNode(node);
 
 							//set aspectnode as property of entity
-							e[name] =aspectNode;
+							e[id] =aspectNode;
 							//add aspect node to entity
 							e.get("aspects").add(aspectNode);
 						}
@@ -350,9 +350,10 @@ define(function(require) {
 				},
 
 				/**Creates and populates client aspect nodes for first time*/
-				createAspectNode : function(name,aspect){
-					var a = window[name] = new AspectNode(
+				createAspectNode : function(aspect){
+					var a = window[aspect.id] = new AspectNode(
 							{id: aspect.id,modelInterpreter: aspect.modelInterpreter,
+								name : aspect.id,
 								simulator: aspect.simulator,model : aspect.model,
 								instancePath : aspect.instancePath});
 					GEPPETTO.Console.updateTags(aspect.instancePath, a);
@@ -406,9 +407,9 @@ define(function(require) {
 				},
 				
 				/**Creates and populates client aspect nodes for first time*/
-				createCompositeNode : function(name,node){
+				createCompositeNode : function(node){
 					var a = new CompositeNode(
-							{id: node.id, name : name, 
+							{id: node.id, name : node.id, 
 								instancePath : node.instancePath,_metaType : "CompositeNode"});
 					
 					GEPPETTO.Console.updateTags(node.instancePath, a);
@@ -418,9 +419,9 @@ define(function(require) {
 				},
 
 				/**Creates and populates client aspect nodes for first time*/
-				createFunctionNode : function(name,node){
+				createFunctionNode : function(node){
 					var a = new FunctionNode(
-							{id: node.id, name: name, expression : node.expression, arguments : node.arguments,
+							{id: node.id, name: node.id, expression : node.expression, arguments : node.arguments,
 								instancePath : node.instancePath,_metaType : "FunctionNode"});
 					
 					GEPPETTO.Console.updateTags(node.instancePath, a);
@@ -429,9 +430,9 @@ define(function(require) {
 					return a;
 				},
 				/**Creates and populates client aspect nodes for first time*/
-				createDynamicsSpecificationNode : function(name,node){
+				createDynamicsSpecificationNode : function(node){
 					var a = new DynamicsSpecificationNode(
-							{id: node.id, name: name, value : node.value, unit : node.unit, 
+							{id: node.id, name: node.id, value : node.value, unit : node.unit, 
 								scalingFactor : node.scalingFactor,
 								instancePath : node.instancePath, _metaType : "DynamicsSpecificationNode"});
 					var f = new FunctionNode(
@@ -445,9 +446,9 @@ define(function(require) {
 					return a;
 				},
 				/**Creates and populates client aspect nodes for first time*/
-				createParameterSpecificationNode : function(name,node){
+				createParameterSpecificationNode : function(node){
 					var a = new ParameterSpecificationNode(
-							{id : node.id, name: name, value : node.value, unit : node.unit, 
+							{id : node.id, name: node.id, value : node.value, unit : node.unit, 
 								scalingFactor : node.scalingFactor,instancePath : node.instancePath,
 								_metaType : "ParameterSpecificationNode"});
 
@@ -456,9 +457,9 @@ define(function(require) {
 					return a;
 				},
 				/**Creates and populates client aspect nodes for first time*/
-				createParameterNode : function(name,node){
+				createParameterNode : function(node){
 					var a = new ParameterNode(
-							{id: node.ide, name: name, instancePath : node.instancePath, properties : options.properties,
+							{id: node.ide, name: node.id, instancePath : node.instancePath, properties : options.properties,
 								_metaType : "ParameterNode"});
 					
 					GEPPETTO.Console.updateTags(node.instancePath, a);
@@ -467,7 +468,7 @@ define(function(require) {
 					return a;
 				},
 				/**Creates and populates client aspect nodes for first time*/
-				createVariableNode : function(name,node){
+				createVariableNode : function(node){
 					var a = new VariableNode(
 							{id: node.id, name: node.id, value : node.value, unit : node.unit, 
 								scalingFactor : node.scalingFactor, instancePath : node.instancePath,

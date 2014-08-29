@@ -257,6 +257,11 @@ define(function(require) {
 							equal(true,TestOne.selected,"TestOne entity selected succesfully ");
 							TestOne.unselect();
 							equal(false,TestOne.selected,"TestOne entity unselected succesfully ");
+							Simulation.selectEntity(TestOne);
+							var id = TestOne.getId();
+							var selection = Simulation.getSelection();
+							equal(id,selection[0], "Testing selectEntity Command");
+							
 							start();
 							break;
 					}

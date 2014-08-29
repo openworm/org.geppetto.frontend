@@ -386,7 +386,7 @@ define(function(require) {
 			 */
 			selectEntity: function(entity) {
 				var message = GEPPETTO.Resources.CANT_FIND_ENTITY;
-				if(GEPPETTO.selectEntity(entity.instancePath)){
+				if(entity.select()){
 					message = GEPPETTO.Resources.SELECTING_ENTITY + entity.instancePath + ".";
 				}
 				else{
@@ -405,7 +405,7 @@ define(function(require) {
 			 */
 			unselectEntity: function(entity) {
 				var message = GEPPETTO.Resources.CANT_FIND_ENTITY;
-				if(GEPPETTO.unselectEntity(entity.instancePath)){
+				if(entity.unselect()){
 					message = GEPPETTO.Resources.UNSELECTING_ENTITY + entity.instancePath + ".";
 				}
 				else{

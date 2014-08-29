@@ -112,9 +112,11 @@ define(function(require) {
 												}
 												if(nodeA.SimulationTree.modified){
 													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
+													aspect.SimulationTree.modified = true;
 												}
 												if(nodeA.ModelTree.modified){
 													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
+													aspect.ModelTree.modified = true;
 												}
 											}
 										}
@@ -142,7 +144,7 @@ define(function(require) {
 						//create SubTreeNode to store simulation tree
 						var subTree = new AspectSubTreeNode({name : "SimulationTree",
 							instancePath : path ,
-							_metaType : "AspectSubTreeNode", modified : false});
+							_metaType : "AspectSubTreeNode", modified : true});
 						aspect.SimulationTree = this.createSimulationTree(subTree, simulationTreeUpdate);
 						
 						GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
@@ -189,6 +191,7 @@ define(function(require) {
 					
 					//populate model tree with server nodes
 					this.modelJSONToNodes(aspect.ModelTree, modelTree);
+					aspect.ModelTree.modified = true;
 					
 					GEPPETTO.Console.updateTags(aspect.ModelTree.instancePath, aspect.ModelTree);
 

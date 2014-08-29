@@ -140,6 +140,8 @@ define(function(require) {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
 				
+				$.widget.bridge('uitooltip', $.ui.tooltip);
+				
 				$(".legendLabel").tooltip();
 				
 				return "Line plot added to widget";

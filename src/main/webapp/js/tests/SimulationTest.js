@@ -119,8 +119,10 @@ define(function(require) {
 							equal(1, hhcell.get('aspects').length, "Aspects checked");
 							equal(false, jQuery.isEmptyObject(hhcell.electrical.VisualizationTree), "Test Visualization at load");
 							equal(false, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model tree at load");
-							equal(true, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Test Visualization tree at load");
-
+							equal(true, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Test Visualization tree at load");							
+							equal(true, hhcell.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
+							equal(false, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag");
+							
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
 							var payload = JSON.parse(parsedServerMessage.data);
@@ -148,7 +150,9 @@ define(function(require) {
 
 					            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
 								equal(false, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Simulation tree check after udpate");
-					            hhcell.electrical.getModelTree();
+								equal(false, hhcell.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
+								equal(false, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag"); 
+								hhcell.electrical.getModelTree();
 							}
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
@@ -161,6 +165,7 @@ define(function(require) {
 				        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
 
 							equal(false, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model Tree Command");
+							equal(true, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag"); 
 
 				        	start();
 				        	
@@ -173,7 +178,6 @@ define(function(require) {
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml');
 		});
 		
-		module("Simulation - Particle Runtime Tree");
 		asyncTest("Test Runtime Tree at Load", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {

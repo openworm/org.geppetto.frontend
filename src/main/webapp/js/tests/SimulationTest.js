@@ -150,7 +150,7 @@ define(function(require) {
 
 					            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
 								equal(false, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Simulation tree check after udpate");
-								equal(false, hhcell.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
+								notEqual(true, hhcell.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
 								equal(false, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag"); 
 								hhcell.electrical.getModelTree();
 							}

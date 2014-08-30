@@ -127,6 +127,9 @@ define(function(require) {
 		        	   
 		        	   if(GEPPETTO.unselectEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY + this.instancePath;
+		        		   
+		        		 //Notify any widgets listening that there has been a changed to selection 
+		        		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
@@ -148,6 +151,9 @@ define(function(require) {
 		        	   
 		        	   if(GEPPETTO.selectEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.SELECTING_ENTITY + this.instancePath;
+		        		   
+		        		   //Notify any widgets listening that there has been a changed to selection 
+		        		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED ;

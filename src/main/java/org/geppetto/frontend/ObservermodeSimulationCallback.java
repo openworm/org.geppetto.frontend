@@ -69,7 +69,7 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 	 * 
 	 */
 	@Override
-	public void updateReady(SimulationEvents event, String sceneUpdate)
+	public void updateReady(SimulationEvents event, String requestID, String sceneUpdate)
 	{
 
 		long start = System.currentTimeMillis();

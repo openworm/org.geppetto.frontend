@@ -100,6 +100,7 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_SCRIPTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_STARTED:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case LOAD_MODEL:
 			case SCENE_UPDATE:

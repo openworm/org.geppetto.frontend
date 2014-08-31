@@ -340,15 +340,30 @@ define(function(require) {
 				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 			},
 			
-			setLegends : function(labels){
+			/**
+			 * Sets the legend for a variable
+			 * 
+			 @name setLegend(variable, legend)
+			 * @param variable -
+			 *            variable to change display label in legends
+			 * @param legend - new legend name
+			 */
+			setLegend : function(variable, legend){
 				//set label legends to shorter label
 				this.options.legend = {
 						labelFormatter: function(label, series){
-		        		var split = label.split(".");
-						var shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
-		        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+labels[0]+'</div>';
+							var shortLabel; 
+							if(variable.getInstancePath() != label){
+								var split = label.split(".");
+								shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
+							}else{
+								shortLabel = legend;
+							}
+							return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
 		        	}
 		        };
+				
+				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
 			},
 
 			/**

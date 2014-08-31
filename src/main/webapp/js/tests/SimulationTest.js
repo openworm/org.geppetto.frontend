@@ -100,7 +100,7 @@ define(function(require) {
 
 		});
 		
-		module("Simulation - Runtime Tree JLems");
+		module("Simulation - Runtime Tree");
 		asyncTest("Test Runtime Tree when Loading and Simulating JLems Simulation with variables", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
@@ -178,7 +178,7 @@ define(function(require) {
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml');
 		});
 		
-		asyncTest("Test Runtime Tree at Load", function() {
+		asyncTest("Test Runtime Tree at Load and SimulationTree with variables for SPH + ModelTree", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
 					checkUpdate : false,
@@ -273,119 +273,6 @@ define(function(require) {
 				}
 			};
 
-			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
-		});
-		
-		module("Simulation with Scripts");
-		asyncTest("Test Simulation with Script", function() {
-			GEPPETTO.MessageSocket.clearHandlers();
-			var handler = {
-				onMessage: function(parsedServerMessage) {
-					// Switch based on parsed incoming message type
-					switch(parsedServerMessage.type) {
-						//Simulation has been loaded and model need to be loaded
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
-							ok(true, "Simulation content Loaded, passed");
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
-							var payload = JSON.parse(parsedServerMessage.data);
-
-							//Reads scripts received for the simulation
-							var scripts = JSON.parse(payload.get_scripts).scripts;
-
-							//make sure object isn't empty
-							if(!jQuery.isEmptyObject(scripts)) {
-								//run the received scripts
-								GEPPETTO.ScriptRunner.fireScripts(scripts);
-							}
-							break;
-							
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
-							 var payload = JSON.parse(parsedServerMessage.data);
-							 GEPPETTO.ScriptRunner.runScript(payload.run_script);
-							 break;
-						//We are not starting simulation from here, must come from associated scrip
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
-							ok(true, "Simulation started, script read");
-							start();
-							break;
-					}
-				}
-			};
-
-			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load('https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1Script.xml');
-		});
-
-		module("Simulation controls Test");
-		asyncTest("Test Simulation Controls", function() {
-			//wait half a second before testing, allows for socket connection to be established
-			GEPPETTO.MessageSocket.clearHandlers();
-
-			var handler = {
-				onMessage: function(parsedServerMessage) {
-
-					// Switch based on parsed incoming message type
-					switch(parsedServerMessage.type) {
-						//Simulation has been started successfully
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
-							Simulation.setSimulationLoaded();
-							Simulation.start();
-							ok(true, "Simulation loaded, passed");
-							start();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
-							ok(true, "Simulation Started, passed");
-							Simulation.pause();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_PAUSED:
-							ok(true, "Simulation Paused, passed");
-							Simulation.stop();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STOPPED:
-							ok(true, "Simulation Stopped, passed");
-							break;
-					}
-
-				}
-			};
-
-			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
-		});
-
-		module("Simulation controls Test 2");
-		asyncTest("Test Variable Watch in Plot", function() {
-			expect(4);
-
-			GEPPETTO.MessageSocket.clearHandlers();
-			var handler = {
-				onMessage: function(parsedServerMessage) {
-
-					// Switch based on parsed incoming message type
-					switch(parsedServerMessage.type) {
-						//Simulation has been started successfully
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
-							ok(true, "Simulation loaded, passed");
-							Simulation.setSimulationLoaded();
-							Simulation.start();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
-							ok(true, "Simulation Started, passed");
-							GEPPETTO.G.addWidget(Widgets.PLOT);
-							ok(GEPPETTO.PlotsController.getWidgets().length > 0, "Plot widget created, passed");
-
-							var plot = GEPPETTO.PlotsController.getWidgets()[0];
-							plot.hide();
-
-							notEqual(plot.getDataSets(), null, "Plot has variable data, passed");
-							start();
-							break;
-					}
-
-				}
-			};
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		});

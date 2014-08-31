@@ -108,11 +108,14 @@ define(function(require) {
 					}
 				}
 
+				var labelsMap = this.labelsMap;
+				
 				//set label legends to shorter label
 				this.options.legend = {
 						labelFormatter: function(label, series){
 		        		var split = label.split(".");
 						var shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
+						labelsMap[label] = {label : shortLabel};
 		        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
 		        	}
 		        };
@@ -132,9 +135,7 @@ define(function(require) {
 							label : id,
 							variable : state,
 							data : [ [0,value] ]
-						});
-						
-						this.labelsMap[id] = {label : id};
+						});						
 					}
 				}
 
@@ -147,8 +148,10 @@ define(function(require) {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
 				
+				//fix conflict between jquery and bootstrap tooltips
 				$.widget.bridge('uitooltip', $.ui.tooltip);
 				
+				//show tooltip for legends
 				$(".legendLabel").tooltip();
 				
 				return "Line plot added to widget";
@@ -349,21 +352,30 @@ define(function(require) {
 			 * @param legend - new legend name
 			 */
 			setLegend : function(variable, legend){
+				var labelsMap = this.labelsMap;
+				
 				//set label legends to shorter label
 				this.options.legend = {
 						labelFormatter: function(label, series){
-							var shortLabel; 
+							var shortLabel;
 							if(variable.getInstancePath() != label){
-								var split = label.split(".");
-								shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
-							}else{
+								shortLabel = labelsMap[label].label;
+							}
+							else{
 								shortLabel = legend;
+								labelsMap[label].label = shortLabel;
 							}
 							return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
 		        	}
 		        };
 				
 				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
+				
+				//fix conflict between jquery and bootstrap tooltips
+				$.widget.bridge('uitooltip', $.ui.tooltip);
+				
+				//show tooltip for legends
+				$(".legendLabel").tooltip();
 			},
 
 			/**

@@ -37,18 +37,25 @@ define(function(require) {
 		
 		GEPPETTO.MenuManager = {
 				
-			registerNewCommandProvider: function(nodeType, handler) {
-				commandsItem = [];
-				if (nodeType in commandsProviders){
-					commandsItem = commandsProviders[nodeType];
+			registerNewCommandProvider: function(nodeTypes, handler) {
+				for (var nodeTypeKey in nodeTypes){
+					nodeType = nodeTypes[nodeTypeKey];
+					commandsItem = [];
+					if (nodeType in commandsProviders){
+						commandsItem = commandsProviders[nodeType];
+					}
+					commandsItem.push(handler);	
+					commandsProviders[nodeType] = commandsItem;
 				}
-				commandsItem.push(handler);	
-				commandsProviders[nodeType] = commandsItem;
 			},
 			
 			
 			getCommandsProvidersFor: function(nodeType) {
-				return commandsProviders[nodeType];
+				var commandsProvidersForNodeType = [];
+				if (nodeType in commandsProviders){
+					commandsProvidersForNodeType = commandsProviders[nodeType];
+				}
+				return commandsProvidersForNodeType;
 			}
 			
 			

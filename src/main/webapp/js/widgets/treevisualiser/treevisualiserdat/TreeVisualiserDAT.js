@@ -53,63 +53,16 @@ define(function(require) {
 		},
 
 		manageRightClickEvent : function(event) {
-//			nodeName = $(event.target).html();
-//			node = this.findVariableInTree(dataset.data, nodeName);
-
-			
-			var node = null;
 			var ascendantsElements = $(event.target).parentsUntil("#" + this.id,".folder").get().reverse();
+			var nodeString = "";
 			for (var ascendantsElementKey in ascendantsElements){
-//			for (var ascendantsElementKey = 0; ascendantsElementKey < ascendantsElements.length -1 ; ascendantsElementKey++) {	
 				var label = $(ascendantsElements[ascendantsElementKey]).find(".title").first().html();
-				if (node == null){
-					for (var datasetKey in this.datasets){
-						dataset = this.datasets[datasetKey]; 
-						if (dataset.variableToDisplay == ""){
-							for (var dataLabel in dataset.data){
-								if (dataLabel == label){
-									node = dataset.data;
-								}
-							}
-						}
-						else if (dataset.variableToDisplay == label){
-							node = dataset;
-						}
-					}
-				}
-				node = node[label];
+				nodeString += label + ".";
 			}
-			
-			
-//			$($(event.target).parentsUntil("#" + this.id,".folder").get().reverse()).each(function(){
-//				var label = $(this).find(".title").first().html();
-//				console.log("entrando");
-//				if (node == null){
-//					for (var dataset in datasetsTmp){
-//						if (dataset.variableToDisplay == label){
-//							node = dataset;
-//						}
-//					}
-//				}
-//				node = node[label];
-//			});
-			
-			console.log("node", node);
-			
-			this.showContextMenu(event, node);
-		},
+			nodeString = nodeString.substring(0,nodeString.length-1);
 
-		findVariableInTree : function(tree, label) {
-			if (tree.hasOwnProperty(label)) {
-				return tree[label];
-			}
-			for (var name in tree) {
-				var result = this.findVariableInTree(tree[name], label);
-				if (result !== undefined) {
-					return result;
-				}
-			}
-			return undefined;
+			var node = eval(nodeString);
+			this.showContextMenu(event, node);
 		},
 
 		initialize : function(options) {
@@ -154,7 +107,7 @@ define(function(require) {
 				if (!dataset.isDisplayed) {
 					dataset.valueDict[data.instancePath] = {};
 					dataset.valueDict[data.instancePath][label] = data.getValue();
-					parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
+					dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
 				}
 				else{
 					dataset.valueDict[data.instancePath][label] = data.getValue();

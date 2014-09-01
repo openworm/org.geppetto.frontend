@@ -230,22 +230,23 @@ define(function(require) {
 			},
 
 			showContextMenu: function (event, data) {
-
-				var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor("nodeType");
+				var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor(data._metaType);
 				
-				var groups = [];	
-				for (var handlerIndex = 0; handlerIndex < handlers.length; handlerIndex++){
-					groups = groups.concat(handlers[handlerIndex](data));
+				if (handlers.length >0){
+					var groups = [];	
+					for (var handlerIndex = 0; handlerIndex < handlers.length; handlerIndex++){
+						groups = groups.concat(handlers[handlerIndex](data));
+					}
+				
+				    this.contextMenu.show({
+				        top: event.pageY,
+				        left: event.pageX + 1,
+				        groups: groups,
+	//			        registeredItems: registeredItems,
+				        data: data
+				    });
 				}
-			
-			    this.contextMenu.show({
-			        top: event.pageY,
-			        left: event.pageX + 1,
-			        groups: groups,
-//			        registeredItems: registeredItems,
-			        data: data
-			    });
-
+			    
 			    event.preventDefault();
 			    return false;
 			},

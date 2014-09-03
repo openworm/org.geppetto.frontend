@@ -62,9 +62,15 @@
 	color:white;
 }
 
+.ui-tooltip {
+	padding : 0px;
+	background : transparent;
+}
+
 .ui-tooltip div {
-	background: rgba(66,59,59,0.90)!important;
-	color : orange;
+	background: rgb(61, 61, 190)!important;
+	color : white;
+	padding : 0px;
 }
 
 

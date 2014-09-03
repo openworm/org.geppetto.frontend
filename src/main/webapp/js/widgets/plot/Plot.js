@@ -82,7 +82,7 @@ define(function(require) {
 				this.datasets = [];
 				this.options = this.defaultPlotOptions;
 				this.render();
-				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");				
+				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");						
 			},
 
 			/**
@@ -139,7 +139,11 @@ define(function(require) {
 				else {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
-												
+				
+				$.widget.bridge('uitooltip', $.ui.tooltip);
+				
+				$(".legendLabel").tooltip();
+				
 				return "Line plot added to widget";
 			},
 

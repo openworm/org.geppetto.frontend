@@ -100,7 +100,7 @@ define(function(require) {
 
 		});
 		
-		module("Simulation - SPH Runtime Tree JLems");
+		module("Simulation - Runtime Tree JLems");
 		asyncTest("Test Runtime Tree when Loading and Simulating JLems Simulation with variables", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
@@ -118,9 +118,11 @@ define(function(require) {
 							notEqual(null, hhcell, "Entities checked");
 							equal(1, hhcell.get('aspects').length, "Aspects checked");
 							equal(false, jQuery.isEmptyObject(hhcell.electrical.VisualizationTree), "Test Visualization at load");
-							equal(true, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model tree at load");
-							equal(true, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Test Visualization tree at load");
-
+							equal(false, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model tree at load");
+							equal(true, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Test Visualization tree at load");							
+							equal(true, hhcell.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
+							equal(false, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag");
+							
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
 							var payload = JSON.parse(parsedServerMessage.data);
@@ -148,7 +150,9 @@ define(function(require) {
 
 					            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
 								equal(false, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Simulation tree check after udpate");
-					            hhcell.electrical.getModelTree();
+								notEqual(true, hhcell.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
+								equal(false, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag"); 
+								hhcell.electrical.getModelTree();
 							}
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
@@ -161,6 +165,7 @@ define(function(require) {
 				        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
 
 							equal(false, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model Tree Command");
+							equal(true, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag"); 
 
 				        	start();
 				        	
@@ -173,7 +178,6 @@ define(function(require) {
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml');
 		});
 		
-		module("Simulation - Particle Runtime Tree");
 		asyncTest("Test Runtime Tree at Load", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var handler = {
@@ -191,7 +195,7 @@ define(function(require) {
 								notEqual(null, sample, "Entities checked");
 								equal(1, sample.get('aspects').length, "Aspects checked");
 								equal(false, jQuery.isEmptyObject(sample.fluid.VisualizationTree), "Test Visualization at load");
-								equal(true, jQuery.isEmptyObject(sample.fluid.ModelTree), "Test Model tree at load");
+								equal(false, jQuery.isEmptyObject(sample.fluid.ModelTree), "Test Model tree at load");
 								equal(true, jQuery.isEmptyObject(sample.fluid.SimulationTree), "Test Visualization tree at load");
 
 								break;
@@ -222,23 +226,8 @@ define(function(require) {
 						            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
 
 									equal(false, jQuery.isEmptyObject(sample.fluid.SimulationTree), "Simulation tree check");
-
-						            sample.fluid.getModelTree();
+									start();
 								}
-								break;
-							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
-								var payload = JSON.parse(parsedServerMessage.data);
-					        	var update = JSON.parse(payload.get_model_tree);
-
-					        	var aspectID = update.aspectInstancePath;
-					        	var modelTree = update.modelTree;
-					        	
-					        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
-
-								equal(false, jQuery.isEmptyObject(sample.fluid.ModelTree), "Test Model Tree Command");
-
-					        	start();
-					        	
 								break;
 						}
 					}
@@ -246,6 +235,46 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml');
+		});
+		
+		module("Simulation Selection");
+		asyncTest("Test Simulation Selection", function() {
+			//wait half a second before testing, allows for socket connection to be established
+			GEPPETTO.MessageSocket.clearHandlers();
+
+			var handler = {
+				onMessage: function(parsedServerMessage) {
+
+					// Switch based on parsed incoming message type
+					switch(parsedServerMessage.type) {
+						//Simulation has been started successfully
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							Simulation.setSimulationLoaded();
+							var payload = JSON.parse(parsedServerMessage.data);
+							var scene = JSON.parse(payload.update).scene;
+
+							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+
+							ok(true, "Simulation loaded, passed");
+							notEqual(null, TestOne, "Entities checked");
+							TestOne.select();
+							equal(true,TestOne.selected,"TestOne entity selected succesfully ");
+							TestOne.unselect();
+							equal(false,TestOne.selected,"TestOne entity unselected succesfully ");
+							Simulation.selectEntity(TestOne);
+							var id = TestOne.getId();
+							var selection = Simulation.getSelection();
+							equal(id,selection[0], "Testing selectEntity Command");
+							
+							start();
+							break;
+					}
+
+				}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		});
 		
 		module("Simulation with Scripts");
@@ -390,7 +419,6 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
-
 		});
 
 		module("Watch variables test 1");

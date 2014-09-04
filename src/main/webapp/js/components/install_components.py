@@ -3,24 +3,18 @@
 import os, sys, json, distutils.core,subprocess, shutil, glob
 from subprocess import call
 
-serverHome = os.environ['SERVER_HOME']
 config = json.loads(open(os.path.join(os.path.dirname(__file__), 'bower.json')).read())
 componentsfile = open(os.path.join(os.path.dirname(__file__), 'components.js'),'w')
 
-def main(argv):
+print subprocess.check_output(['bower','install'])
 
-    print subprocess.check_output(['bower','install'])
+componentsfile.write('define(function(require) {\n');
 
-    componentsfile.write('define(function(require) {\n');
+for dependency in config['dependencies']:
+    componentConfig = json.loads(open(os.path.join(os.path.dirname(__file__), dependency+'/bower.json')).read())
 
-    for dependency in config['dependencies']:
-        componentConfig = json.loads(open(os.path.join(os.path.dirname(__file__), dependency+'/bower.json')).read())
+    if 'main' in componentConfig:
+        componentsfile.write("require('jsx!./"+dependency+"/"+componentConfig['main']+"');\n")
 
-        if 'main' in componentConfig:
-            componentsfile.write("require('jsx!./"+dependency+"/"+componentConfig['main']+"');\n")
-
-    componentsfile.write('});');
-    componentsfile.close();
-
-if __name__ == "__main__":
-	main(sys.argv[1:])
+componentsfile.write('});');
+componentsfile.close();

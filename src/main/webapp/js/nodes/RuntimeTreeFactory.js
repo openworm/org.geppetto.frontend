@@ -115,8 +115,9 @@ define(function(require) {
 													aspect.SimulationTree.modified = true;
 												}
 												if(nodeA.ModelTree.modified){
-													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
-													aspect.ModelTree.modified = true;
+													/*Do nothing, should never be true. Model Tree is created upon 
+													 * request by using Entity.aspect.getModelTree() command 
+													 */
 												}
 											}
 										}
@@ -379,6 +380,7 @@ define(function(require) {
 							e[id] =aspectNode;
 							//add aspect node to entity
 							e.get("aspects").add(aspectNode);
+							aspectNode.setParentEntity(e);
 						}
 					}
 

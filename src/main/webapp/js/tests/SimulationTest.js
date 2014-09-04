@@ -77,7 +77,7 @@ define(function(require) {
 
 		module("Simulation Load From URL");
 		asyncTest("Test Load Simulation", function() {
-			expect(1)
+			expect(1);
 			GEPPETTO.MessageSocket.clearHandlers();
 
 			var handler = {
@@ -150,8 +150,9 @@ define(function(require) {
 
 					            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
 								equal(false, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Simulation tree check after udpate");
-								notEqual(true, hhcell.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
+								notEqual(false, hhcell.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
 								equal(false, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag"); 
+								equal(true, hhcell.electrical.SimulationTree.modified, "Test Simulation tree modified flag"); 
 								hhcell.electrical.getModelTree();
 							}
 							break;
@@ -175,7 +176,7 @@ define(function(require) {
 			};
 
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml');
+			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/referencing_variables/LEMS/SingleComponentHH/GEPPETTO.xml');
 		});
 		
 		asyncTest("Test Runtime Tree at Load and SimulationTree with variables for SPH + ModelTree", function() {
@@ -234,7 +235,7 @@ define(function(require) {
 				};
 
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml');
+			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/referencing_variables/SPH/LiquidSmall/GEPPETTO.xml');
 		});
 		
 		module("Simulation Selection");
@@ -255,14 +256,16 @@ define(function(require) {
 
 							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 
+							GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+							
 							ok(true, "Simulation loaded, passed");
-							notEqual(null, TestOne, "Entities checked");
-							TestOne.select();
-							equal(true,TestOne.selected,"TestOne entity selected succesfully ");
-							TestOne.unselect();
-							equal(false,TestOne.selected,"TestOne entity unselected succesfully ");
-							Simulation.selectEntity(TestOne);
-							var id = TestOne.getId();
+							notEqual(null, sample, "Entities checked");
+							sample.select();
+							equal(true,sample.selected,"Sample entity selected succesfully ");
+							sample.unselect();
+							equal(false,sample.selected,"Sample entity unselected succesfully ");
+							Simulation.selectEntity(sample);
+							var id = sample.getId();
 							var selection = Simulation.getSelection();
 							equal(id,selection[0], "Testing selectEntity Command");
 							
@@ -274,7 +277,7 @@ define(function(require) {
 			};
 
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
+			Simulation.load("https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml");
 		});
 
 		module("Get simulation variables test");

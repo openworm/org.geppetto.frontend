@@ -19572,6 +19572,21 @@ define('SandboxConsole',['require','backbone','jquery','underscore','vendor/back
 				},
 
 
+				verifyCommand : function(command){
+					// Evaluate the command and store the eval result, adding some basic classes for syntax-highlighting
+					try {
+						var result = this.model.get('iframe') ? this.iframeEval(command) : eval.call(window, command);
+						if(_.isUndefined(result)) {
+							return false;
+						}
+					}
+					catch(error) {
+						return false;
+					}
+					
+					return true;
+				},
+				
 				// Creates the sandbox iframe, if needed, and stores it
 				iframeSetup: function() {
 					this.sandboxFrame = $('<iframe width="0" height="0"/>').css({visibility: 'hidden'}).appendTo('body')[0];
@@ -38413,10 +38428,21 @@ define('GEPPETTO.ScriptRunner',['require'],function(require) {
 							return;
 						}
 						else {
-							GEPPETTO.Console.executeCommand(command);
+							if(waitingForPreviousCommand){
+								return;
+							}
+							else{
+								GEPPETTO.Console.executeCommand(command);
+								var clone = commands.slice();
+								remainingCommands = clone.splice(i+1, clone.length-1);
+							}
 						}
 					}
 				}
+			},
+			
+			nextCommand : function(command){
+				
 			},
 
 			/**
@@ -38458,6 +38484,8 @@ define('GEPPETTO.ScriptRunner',['require'],function(require) {
 							if(watchedRequestsIDS.length <= 0) {
 								//reset flag if no longer waiting for commands to process
 								waitingForPreviousCommand = false;
+								
+								GEPPETTO.ScriptRunner.executeScriptCommands(remainingCommands);
 							}
 						}
 					}
@@ -39969,6 +39997,8 @@ define('websocket-handlers/GEPPETTO.SimulationHandler',['require'],function(requ
                     GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
+            
+            GEPPETTO.RuntimeTreeFactory.resetSubtreesDirtyFlag(GEPPETTO.Simulation.runTimeTree);
         };
 
         messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {            
@@ -39992,7 +40022,26 @@ define('websocket-handlers/GEPPETTO.SimulationHandler',['require'],function(requ
         };
 
         //Simulation has been started, enable pause button
-        messageHandler[messageTypes.SIMULATION_STARTED] = function() {
+        messageHandler[messageTypes.SIMULATION_STARTED] = function(payload) {
+        	var updatedRunTime = JSON.parse(payload.update).scene;
+            updateTime(updatedRunTime.time);
+
+            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
+
+            //Update if simulation hasn't been stopped
+            if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
+                if(!GEPPETTO.isScenePopulated()) {
+                    // the first time we need to create the objects
+                    GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+                }
+                else {
+                    // any other time we just update them
+                    GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
+                }
+            }
+            
+            GEPPETTO.RuntimeTreeFactory.resetSubtreesDirtyFlag(GEPPETTO.Simulation.runTimeTree);
+            
             GEPPETTO.trigger('simulation:started');
         };
 
@@ -41483,7 +41532,8 @@ define('widgets/WidgetsListener',['require','jquery'],function(require) {
 			WIDGET_EVENT_TYPE: {
 				DELETE: "delete",
 				UPDATE: "update",
-				RESET_DATA : "reset"
+				RESET_DATA : "reset",
+				SELECTION_CHANGED : "selection_changed",
 			},
 			_subscribers: [],
 
@@ -41940,6 +41990,7 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 			xaxisLabel: null,
 			yaxisLabel: null,
 			labelsUpdated: false,
+			labelsMap : {},
 
 			/**
 			 * Default options for plot widget, used if none specified when plot
@@ -42015,10 +42066,16 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 					}
 					
 					else{
+						var value = state.getValue();
+						var id = state.getInstancePath();
+						
 						this.datasets.push({
-							label : state,
-							data : [ [] ]
+							label : id,
+							variable : state,
+							data : [ [0,value] ]
 						});
+						
+						this.labelsMap[id] = {label : id};
 					}
 				}
 
@@ -42030,6 +42087,8 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 				else {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
+				
+				$.widget.bridge('uitooltip', $.ui.tooltip);
 				
 				$(".legendLabel").tooltip();
 				
@@ -42101,10 +42160,10 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 			 * @param set -
 			 *            Data set to be removed from the plot
 			 */
-			removeDataSet: function(set) {
-				if(set != null) {
+			removeDataSet: function(state) {
+				if(state != null) {
 					for(var key in this.datasets) {
-						if(set == this.datasets[key].label) {
+						if(state.getId() == this.datasets[key].label) {
 							this.datasets.splice(key, 1);
 						}
 					}
@@ -42130,11 +42189,10 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 			 */
 			updateDataSet: function() {
 				for(var key in this.datasets) {
-					var label = this.datasets[key].label;
-					var newValue = this.getState(GEPPETTO.Simulation.runTimeTree, label);
+					var newValue = this.datasets[key].variable.getValue();
 
 					if(!this.labelsUpdated) {
-						var unit = newValue.unit;
+						var unit = this.datasets[key].variable.getUnit();
 						if(unit != null) {
 							var labelY = unit;
 							//Matteo: commented until this can move as it doesn't make sense for it to be static.
@@ -42155,7 +42213,7 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 						reIndex = true;
 					}
 
-					oldata.push([ oldata.length, newValue.value]);
+					oldata.push([ oldata.length, newValue]);
 
 					if(reIndex) {
 						// re-index data
@@ -42221,6 +42279,10 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 					}
 				}
 				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+			},
+			
+			setLabels : function(labels){
+				
 			},
 
 			/**
@@ -43946,6 +44008,9 @@ define('nodes/EntityNode',['require','nodes/Node','nodes/AspectNode','jquery'],f
 		        	   
 		        	   if(GEPPETTO.unselectEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY + this.instancePath;
+		        		   
+		        		 //Notify any widgets listening that there has been a changed to selection 
+		        		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
@@ -43967,6 +44032,9 @@ define('nodes/EntityNode',['require','nodes/Node','nodes/AspectNode','jquery'],f
 		        	   
 		        	   if(GEPPETTO.selectEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.SELECTING_ENTITY + this.instancePath;
+		        		   
+		        		   //Notify any widgets listening that there has been a changed to selection 
+		        		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED ;
@@ -44721,9 +44789,11 @@ define('nodes/RuntimeTreeFactory',['require','nodes/AspectNode','nodes/EntityNod
 												}
 												if(nodeA.SimulationTree.modified){
 													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
+													aspect.SimulationTree.modified = true;
 												}
 												if(nodeA.ModelTree.modified){
 													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
+													aspect.ModelTree.modified = true;
 												}
 											}
 										}
@@ -44734,6 +44804,39 @@ define('nodes/RuntimeTreeFactory',['require','nodes/AspectNode','nodes/EntityNod
 					}
 
 					this.updateWidgets();
+				},
+				
+				/**Update entities of scene with new server updates*/
+				resetSubtreesDirtyFlag : function(jsonRuntimeTree){
+					for (var id in jsonRuntimeTree) {
+						var node = jsonRuntimeTree[id];
+						if(node._metaType == "EntityNode"){
+							//check to see if entitynode already exists
+							if(GEPPETTO.Simulation.runTimeTree.hasOwnProperty(id)){
+								//retrieve entity node
+								var entityNode = 
+									GEPPETTO.Simulation.runTimeTree[id];
+
+								//traverse through server update node to get aspects
+								for (var a in node) {
+									var nodeA = node[a];
+									//match aspect in server update
+									if(nodeA._metaType == "AspectNode"){
+										//match aspect in existing entity node
+										for (var aspectId in entityNode.aspects) {
+											var aspect = entityNode.aspects[aspectId];
+											//update subtrees of matched aspect with new data
+											if(aspect.instancePath == nodeA.instancePath){
+												aspect.VisualizationTree.modified = false;
+												aspect.SimulationTree.modified = false;
+												aspect.ModelTree.modified = false;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				},
 
 				/**Update and create simulation Tree for aspect
@@ -44751,7 +44854,7 @@ define('nodes/RuntimeTreeFactory',['require','nodes/AspectNode','nodes/EntityNod
 						//create SubTreeNode to store simulation tree
 						var subTree = new AspectSubTreeNode({name : "SimulationTree",
 							instancePath : path ,
-							_metaType : "AspectSubTreeNode", modified : false});
+							_metaType : "AspectSubTreeNode", modified : true});
 						aspect.SimulationTree = this.createSimulationTree(subTree, simulationTreeUpdate);
 						
 						GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
@@ -44798,6 +44901,7 @@ define('nodes/RuntimeTreeFactory',['require','nodes/AspectNode','nodes/EntityNod
 					
 					//populate model tree with server nodes
 					this.modelJSONToNodes(aspect.ModelTree, modelTree);
+					aspect.ModelTree.modified = true;
 					
 					GEPPETTO.Console.updateTags(aspect.ModelTree.instancePath, aspect.ModelTree);
 

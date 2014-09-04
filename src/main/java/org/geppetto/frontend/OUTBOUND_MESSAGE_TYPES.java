@@ -69,7 +69,7 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	FIRE_SIM_SCRIPTS("fire_sim_scripts"),
 	SIMULATION_OVER("simulation_over"),
 	GET_MODEL_TREE("get_model_tree");
-
+	
 	private OUTBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;
 	}

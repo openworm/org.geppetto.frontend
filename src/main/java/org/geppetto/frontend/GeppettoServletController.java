@@ -302,7 +302,7 @@ public class GeppettoServletController
 		{
 			url = new URL(simulation);
 			// simulation is URL, initialize simulation services
-			visitor.getSimulationService().init(url, _simulationCallbackListener);
+			visitor.getSimulationService().init(url, requestID, _simulationCallbackListener);
 			postLoadSimulation(requestID, visitor);
 			loaded = true;
 		}
@@ -313,7 +313,7 @@ public class GeppettoServletController
 		{
 			try
 			{
-				visitor.getSimulationService().init(simulation, _simulationCallbackListener);
+				visitor.getSimulationService().init(simulation, requestID, _simulationCallbackListener);
 				postLoadSimulation(requestID, visitor);
 				loaded = true;
 			}
@@ -379,9 +379,7 @@ public class GeppettoServletController
 	{
 		try
 		{
-			controllingUser.getSimulationService().start();
-			// notify user simulation has started
-			messageClient(requestID, controllingUser, OUTBOUND_MESSAGE_TYPES.SIMULATION_STARTED);
+			controllingUser.getSimulationService().start(requestID);
 		}
 		catch(GeppettoExecutionException e)
 		{

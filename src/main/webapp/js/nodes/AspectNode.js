@@ -49,6 +49,7 @@ define(function(require) {
 		ModelTree : {},
 		VisualizationTree : {},
 		SimulationTree : {},
+		parentEntity : null,
 		initialize : function(options){
 			this.id = options.id;
 			this.modelInterpreterName = options.modelInterpreter;
@@ -111,13 +112,17 @@ define(function(require) {
      	   
      	   if(GEPPETTO.unselectAspect(this.instancePath)){
      		   message = GEPPETTO.Resources.UNSELECTING_ASPECT + this.instancePath;
+     		   this.selected = false;
+
+     		   this.parentEntity.selected = false;
+
+     		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
      	   }
      	   else{
      		   message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
      	   }
-     	   this.selected = false;
      	   
-			   return message;
+		   return message;
         },
 
         /**
@@ -132,11 +137,15 @@ define(function(require) {
 
         	if(GEPPETTO.selectAspect(this.instancePath)){
         		message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
+            	this.selected = true;
+            	
+            	this.parentEntity.selected = true;
+
+     		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
         	}
         	else{
         		message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
         	}
-        	this.selected = true;
 
         	return message;
         },
@@ -216,6 +225,14 @@ define(function(require) {
 
 				 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
 			 }       	   
+		 },
+		 
+		 getParentEntity : function(){
+			 return this.parentEntity;
+		 },
+		 
+		 setParentEntity : function(e){
+			 this.parentEntity = e;
 		 },
 	});
 });

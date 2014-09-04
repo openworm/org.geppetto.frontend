@@ -181,6 +181,8 @@ define(function(require) {
 			EMPTY_MODEL_TREE : 'Model tree received, but is empty.',
 			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
+			
+			NO_VISUALIZATION_TREE : 'Simulation tree is not available.',
 
 			RETRIEVING_SIMULATION_TREE : 'Simulation tree: ',
 			

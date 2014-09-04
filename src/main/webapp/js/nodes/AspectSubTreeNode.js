@@ -68,6 +68,44 @@ define(function(require) {
 		           getChildren : function(){
 		        	   var children = this.get("children");
 		        	   return children;
+		           },
+		           
+		           print : function(){
+		  			 //simulation tree is empty
+		  			 if(this.getChildren().length==0){
+		  				 if(this.type=="SimulationTree"){
+			  				 	return GEPPETTO.Resources.NO_SIMULATION_TREE;
+						 }
+						 else if(this.type=="VisualizationTree"){
+							 return GEPPETTO.Resources.NO_VISUALIZATION_TREE;
+						 }
+						 if(this.type=="ModelTree"){
+							 return GEPPETTO.Resources.EMPTY_MODEL_TREE;
+						 }
+		  			 }
+		  			 else{
+		  				 if(this.type=="SimulationTree"){
+		  					 var formattedNode = GEPPETTO.Utility.formatsimulationtree(this, 3, "");
+		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
+		  					 formattedNode.replace(/"/g, "");
+
+		  					 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
+		  				 }
+		  				 else if(this.type=="VisualizationTree"){
+		  					 var formattedNode = GEPPETTO.Utility.formatVisualizationTree(this, 3, "");
+		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
+		  					 formattedNode.replace(/"/g, "");
+
+		  					 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
+		  				 }
+		  				 else if(this.type=="ModelTree"){
+		  					 var formattedNode = GEPPETTO.Utility.formatmodeltree(this, 3, "");
+		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
+		  					 formattedNode.replace(/"/g, "");
+
+		  					 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE + "\n" + formattedNode;
+		  				 }
+		  			 }
 		           }
 	});
 });

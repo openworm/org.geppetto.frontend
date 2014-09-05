@@ -228,13 +228,12 @@ define(function(require) {
 					this.modelJSONToNodes(aspect.ModelTree, modelTree);
 					aspect.ModelTree.modified = true;
 					
-					GEPPETTO.Console.updateTags(aspect.ModelTree.instancePath, aspect.ModelTree);
-
 					//notify user received tree was empty
 					if(aspect.ModelTree.getChildren().length==0){
 						var indent = "    ";
 						GEPPETTO.Console.log(indent + GEPPETTO.Resources.EMPTY_MODEL_TREE);
 					}else{
+						GEPPETTO.Console.executeCommand(aspect.ModelTree.instancePath + ".print()");
 						aspect.ModelTree.print();
 					}
 				},
@@ -402,9 +401,7 @@ define(function(require) {
 								
 								a.VisualizationTree = subTree;
 								
-								a.VisualizationTree["content"] = node;
-								
-								GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
+								a.VisualizationTree["content"] = node;								
 							}		
 							else if(node.type == "SimulationTree"){
 								a.SimulationTree = {};
@@ -414,9 +411,7 @@ define(function(require) {
 								
 								a.ModelTree = subTree;
 								
-								a.ModelTree["content"] = node;
-								
-								GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
+								a.ModelTree["content"] = node;								
 							}	
 						}
 					}

@@ -203,7 +203,7 @@ define(function(require) {
 								for(var j = 0; j < indent; j++) {
 									indentation = " " + indentation;
 								}
-								formattedNode = formattedNode + indentation + i + " : float\n";
+								formattedNode = formattedNode + indentation + i + " : " + type + "\n";
 							}
 						}
 					}
@@ -211,7 +211,7 @@ define(function(require) {
 				},
 				
 				/**
-				 * Utility function for formatting output of simulation tree	
+				 * Utility function for formatting output of visualization tree	
 				 *
 				 * @param node  - Node to traverse and print data
 				 * @param indent - Indentation used for start of node
@@ -231,7 +231,7 @@ define(function(require) {
 
 								for(var index in array){
 									formattedNode = 
-										this.formatsimulationtree(array[index], indent+1, formattedNode);
+										this.formatVisualizationTree(array[index], indent+1, formattedNode);
 								}
 							}
 							else if(type == "CompositeNode"){
@@ -242,14 +242,14 @@ define(function(require) {
 								formattedNode = formattedNode + indentation + i +"\n";
 
 								// we know it's a complex type - recurse! recurse!
-								formattedNode = GEPPETTO.Utility.formatsimulationtree(node[i], indent + 2, formattedNode);
+								formattedNode = GEPPETTO.Utility.formatVisualizationTree(node[i], indent + 2, formattedNode);
 							}
-							else if(type == "SphereNode" || type  == "CylinderNode"){
+							else if(type == "SphereNode" || type  == "CylinderNode" || type  == "ParticleNode"){
 								var indentation = "   ↪";
 								for(var j = 0; j < indent; j++) {
 									indentation = " " + indentation;
 								}
-								formattedNode = formattedNode + indentation + i + " : float\n";
+								formattedNode = formattedNode + indentation + i + " : " + type + "\n";
 							}
 						}
 					}

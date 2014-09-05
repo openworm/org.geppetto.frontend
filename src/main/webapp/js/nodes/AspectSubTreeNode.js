@@ -77,7 +77,11 @@ define(function(require) {
 			  				 	return GEPPETTO.Resources.NO_SIMULATION_TREE;
 						 }
 						 else if(this.type=="VisualizationTree"){
-							 return GEPPETTO.Resources.NO_VISUALIZATION_TREE;
+							 var formattedNode = GEPPETTO.Utility.formatVisualizationTree(this.content, 3, "");
+		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
+		  					 formattedNode.replace(/"/g, "");
+
+		  					 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
 						 }
 						 if(this.type=="ModelTree"){
 							 return GEPPETTO.Resources.EMPTY_MODEL_TREE;

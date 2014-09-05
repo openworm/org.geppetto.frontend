@@ -267,7 +267,7 @@ define(function(require) {
 							Simulation.selectEntity(sample);
 							var id = sample.getId();
 							var selection = Simulation.getSelection();
-							equal(id,selection[0], "Testing selectEntity Command");
+							equal(id,selection[0].getId(), "Testing selectEntity Command");
 							
 							start();
 							break;

@@ -224,5 +224,19 @@ define(function(require) {
 		 setParentEntity : function(e){
 			 this.parentEntity = e;
 		 },
+		 
+		 /**
+          * Print out formatted node
+          */
+         print : function(){
+      	   var formattedNode="Name : " + this.name + "\n"+
+			   "      Id: " + this.id +"\n" + 
+			   "      InstancePath : " + this.instancePath+"\n"+
+      	   	   "      SubTree : ModelTree \n"+
+      	   	   "      SubTree : VisualizationTree \n"+
+      	   	   "      SubTree : SimulationTree \n";
+      	   
+      	   return formattedNode;
+         }
 	});
 });

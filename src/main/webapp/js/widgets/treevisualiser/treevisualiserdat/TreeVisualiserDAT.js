@@ -48,6 +48,19 @@ define(function(require) {
 			autoPlace : false
 		},
 
+		initialize : function(options) {
+			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this, options);
+
+			this.options = this.defaultTreeVisualiserOptions;
+
+			this.gui = new dat.GUI({
+				width : this.options.width,
+				autoPlace : this.options.autoPlace
+			});
+
+			this.dialog.append(this.gui.domElement);
+		},
+		
 		events : {
 			'contextmenu .title' : 'manageRightClickEvent'
 		},
@@ -63,23 +76,6 @@ define(function(require) {
 
 			var node = eval(nodeString);
 			this.showContextMenu(event, node);
-		},
-
-		initialize : function(options) {
-			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this, options);
-
-			this.options = this.defaultTreeVisualiserOptions;
-
-			this.gui = new dat.GUI({
-				width : this.options.width,
-				autoPlace : this.options.autoPlace
-			});
-
-			this.dialog.append(this.gui.domElement);
-
-			// Delegate key and mouse events to View input
-			// this.contextMenu = new ContextMenuView.View();
-
 		},
 
 		setData : function(state, options) {

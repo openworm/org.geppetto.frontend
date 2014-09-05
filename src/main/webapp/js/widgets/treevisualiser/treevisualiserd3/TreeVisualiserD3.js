@@ -44,12 +44,19 @@ define(function(require) {
 	return TreeVisualiser.TreeVisualiser.extend({
 		
 		defaultTreeVisualiserOptions:  {
-			width: 400,
+			width: 460,
+			height: 460
 		},
 		
 		initialize : function(options){
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this,options);
 			this.options = this.defaultTreeVisualiserOptions;
+		},
+		
+		manageRightClickEvent : function(data, index) {
+			console.log("events");
+			
+			this.showContextMenu(event, node);
 		},
 		
 		setData : function(state, options){
@@ -76,7 +83,7 @@ define(function(require) {
 			
 			
 			if (data._metaType != "VariableNode") {
-				dataset.nodes[nodeName] = {name: label};
+				dataset.nodes[nodeName] = {name: label, variable: data};
 				if (parent != ''){
 					var link = {};
 					link.source = dataset.nodes[parent];
@@ -141,16 +148,23 @@ define(function(require) {
 						this.force = d3.layout.force()
 						    .nodes(d3.values(dataset.nodes))
 						    .links(dataset.links)
-						    .size([this.width, this.height])
+						    .size([this.options.width, this.options.height])
 						    .linkDistance(60)
 						    .charge(-300)
 						    .on("tick", tick)
 						    .start();
 			
 						this.svg = d3.select("#"+this.id).append("svg")
-						    .attr("width", this.width)
-						    .attr("height", this.height);
-			
+						    .attr("width", this.options.width)
+						    .attr("height", this.options.height)
+						    .on("contextmenu",						    	
+							 function(contextVariable) {
+						    	return function(data, index){ 
+						    		d3_target = d3.select(d3.event.target);
+						    		contextVariable.showContextMenu(d3.event, d3_target.datum()["variable"]);
+					            }
+						    }(this));
+						    
 						// Per-type markers, as they don't inherit styles.
 						this.svg.append("defs").selectAll("marker")
 						    .data(["suit", "licensing", "resolved"])
@@ -175,7 +189,8 @@ define(function(require) {
 						    .data(this.force.nodes())
 						  .enter().append("circle")
 						    .attr("r", 6)
-						    .call(this.force.drag);
+						    .call(this.force.drag);   
+							    
 			
 						var text = this.svg.append("g").selectAll("text")
 						    .data(this.force.nodes())

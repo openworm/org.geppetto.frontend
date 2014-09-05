@@ -74,11 +74,7 @@ define(function(require) {
 				var id = name;
 
 				// create tree visualiser widget
-				var tvdat = window[name] = new TreeVisualiserDAT({
-					id : id,
-					name : name,
-					visible : false
-				});
+				var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 500, height: 500});
 
 				// create help command for plot
 				tvdat.help = function() {
@@ -128,40 +124,45 @@ define(function(require) {
 			},
 
 			getCommands : function(node) {
-				var groups = [ [ {
-					label : "Add to Chart",
-					icon : "icon0",
-					position : 0,
-					groups : [ [ {
-						label : "Add to New Chart",
-						action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-						icon : "icon01",
-						position : 0
-					}, {
-						label : "Add to Chart 1",
-						action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-						icon : "icon02",
-						position : 1
-					} ] ]
-				}, {
-					label : "Add as new line",
-					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-					icon : "icon1",
-					position : 1
-				} ],
+//				var groups = [ [ {
+//					label : "Add to Chart",
+//					icon : "icon0",
+//					position : 0,
+//					groups : [ [ {
+//						label : "Add to New Chart",
+//						action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+//						icon : "icon01",
+//						position : 0
+//					}, {
+//						label : "Add to Chart 1",
+//						action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+//						icon : "icon02",
+//						position : 1
+//					} ] ]
+//				}, {
+//					label : "Add as new line",
+//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+//					icon : "icon1",
+//					position : 1
+//				} ],
+//
+//				[ {
+//					label : "Save to file as a Chart",
+//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+//					icon : "icon2"
+//				} ] ];
 
-				[ {
-					label : "Save to file as a Chart",
-					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-					icon : "icon2"
-				} ] ];
-
+				var groups = [[{label:"Open with DAT Widget",
+						        action: GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+						        option: {option1: "option1"}}]];
+				
 				return groups;
 
 			},
 
 			actionMenu : function(node) {
-				window.alert("Action for node:" + node.toSource());
+				tv = GEPPETTO.TreeVisualiserControllerDAT.addTreeVisualiserD3Widget();
+				tv.setData(node);
 			}
 		};
 

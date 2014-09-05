@@ -55,7 +55,7 @@ define(function(require) {
 //				this.name = options.name;
 //				this.visible = options.visible;
 				this.render();
-				this.setSize(500,500);
+				this.setSize(options.width,options.height);
 	
 			},
 			

@@ -184,3 +184,33 @@
 .contextMenuView > ul > li li {
 	/*min-width: 100%;*/
 }
+
+/* SCROLL BAR*/
+
+.ui-widget-content::-webkit-scrollbar,
+.ui-widget-content::-webkit-scrollbar-button,
+.ui-widget-content::-webkit-scrollbar-track,
+.ui-widget-content::-webkit-scrollbar-track-piece,
+.ui-widget-content::-webkit-scrollbar-thumb,
+.ui-widget-content::-webkit-scrollbar-corner,
+.ui-widget-content::-webkit-resizer {
+	background: transparent;
+}
+.ui-widget-content::-webkit-scrollbar {
+	width:  7px;
+	height: 7px;
+	-webkit-border-radius: 4px;
+	        border-radius: 4px;
+}
+.ui-widget-content::-webkit-scrollbar-track-piece {
+	-webkit-border-radius: 5px;
+	        border-radius: 5px;
+}
+.ui-widget-content::-webkit-scrollbar-thumb {
+	background: #4f4f4f;
+	        border-radius: 5px;
+}
+.ui-widget-content::-webkit-scrollbar-button {
+	width:0;
+	height:0;
+}	

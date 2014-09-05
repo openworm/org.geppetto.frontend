@@ -14,6 +14,7 @@ define(function(require) {
 				label: "Not specified",
 				action: "Not specified",
 				icon: "Not specified",
+				option: "Not specified",
 			},
 			initialize: function(attributes){
 				if (typeof attributes.groups != 'undefined'){
@@ -59,12 +60,13 @@ define(function(require) {
 		var ContextMenuViewItems = Backbone.View.extend({
 			template: _.template($('#tplContextMenuItems').html()),
 			
-//			events : {
-//				'click li' :  function(e) {console.log("kuake");}
-//			},
-//			taka: function(event){
-//				console.log("takakakaka");
-//			},
+			events : {
+				'click' :  'testing'
+			},
+			
+			testing : function(event){
+				console.log("taka");
+			},
 			
 			initialize: function (options) {
 				this.items = options.items;
@@ -75,7 +77,7 @@ define(function(require) {
 				
 //				this.$el.html(this.template());	   
 				 
-				registeredItems[this.items.get("cid")] = this.items.get("action");
+				registeredItems[this.$el.find("li").attr("id")] = {action: this.items.get("action"), option: this.items.get("option")};
 				 
 				if (this.items.has("groups")){
 					var contextMenuViewItemsElement = this.$el.find("li");
@@ -115,14 +117,20 @@ define(function(require) {
 			},
 			manageMenuClickEvent: function(event){
 				//TODO: Check if this can be done through and event in the menu view items
-				var itemId = $(event.target).data('id');
+				var itemId = $(event.target).attr('id');
 				var registeredItem = this.registeredItems[itemId];
 				
-				var entire = registeredItem.toString();
-				var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
-				GEPPETTO.Console.executeCommand("var node = " + JSON.stringify(this.data));
-//				GEPPETTO.Console.executeCommand("var node = " + JSON.stringify(this.data));
-				GEPPETTO.Console.executeCommand(body);
+				//This works if we pass the action as a pointer to a function
+				//if (typeof registeredItem === "function") registeredItem.apply(null, [this.data]);
+
+				//This works if we pass the action as a pointer to a function and we executes the code inside the function but the function itself
+				//var entire = registeredItem.toString();
+				//var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
+				//GEPPETTO.Console.executeCommand("var node = eval(" + this.data.getInstancePath() + ");");
+				//GEPPETTO.Console.executeCommand(body);
+				
+				//This works if we pass the action as the function name
+				GEPPETTO.Console.executeCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
 			},
 	        
 	        render: function () {
@@ -158,6 +166,8 @@ define(function(require) {
 	            return this;
 	        },
 	        initialize: function () {
+	        	this,registeredItems = {};
+	        	
 	            this.$el.appendTo(this.parentSelector);
 	            
 	            var self = this;

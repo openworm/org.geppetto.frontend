@@ -71,7 +71,7 @@ define(function(require) {
 				var id = name;
 
 				//create tree visualiser widget
-				var tvd3 = window[name] = new TreeVisualiserD3({id:id, name:name,visible:false});
+				var tvd3 = window[name] = new TreeVisualiserD3({id:id, name:name,visible:false, width: 500, height: 500});
 
 				//create help command for plot
 				tvd3.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
@@ -118,12 +118,37 @@ define(function(require) {
 			},
 			
 			getCommands: function(node) {
-				groups = [
-				          [{label:"Open with D3 Widget",
-				        	action: GEPPETTO.TreeVisualiserControllerD3.actionMenu,
-				        	icon:"icon3",
-				        	option: {option1: "option1"}}]
-				          ];
+				var group1 = [{
+							label:"Open with D3 Widget",
+				        	action: "GEPPETTO.TreeVisualiserControllerD3.actionMenu",
+							//action: GEPPETTO.TreeVisualiserControllerD3.actionMenu,
+				        	//option: {option1: "option1"}
+							}];
+				
+				
+				var availableWidgets = GEPPETTO.TreeVisualiserControllerD3.getWidgets();
+				if (availableWidgets.length > 0){
+					var group1Add =  [ {
+						label : "Add to D3 Widget",
+						position : 0
+					} ] ;
+					
+					var subgroups1Add = [];
+					for (var availableWidgetIndex in availableWidgets){
+						var availableWidget = availableWidgets[availableWidgetIndex];
+						subgroups1Add = subgroups1Add.concat([{
+																label: "Add to " + availableWidget.name,
+																action: availableWidget.id + ".setData",
+																position: availableWidgetIndex
+																}]);
+					}
+					
+					group1Add[0]["groups"] = [subgroups1Add];
+					
+					group1 = group1.concat(group1Add);
+				}
+				
+				var groups = [group1];
 				
 				return groups;
 				

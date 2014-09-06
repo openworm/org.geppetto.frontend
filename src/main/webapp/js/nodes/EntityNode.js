@@ -210,5 +210,23 @@ define(function(require) {
 		        	   var entities = this.get("entities");
 		        	   return entities;
 		           },
+
+		           /**
+		            * Print out formatted node
+		            */
+		           print : function(){
+		        	   var formattedNode="Name : " + this.name + "\n"+
+					   "      Id: " + this.id +"\n" + 
+					   "      InstancePath : " + this.instancePath+"\n";
+		        	   for(var e in this.entities){
+		        		   formattedNode =formattedNode + "      " + "Entity: " + this.entities[e].instancePath;
+		        	   }
+		        	   
+		        	   for(var e in this.aspects){
+	        			   formattedNode = formattedNode +   "      "  + "Aspect: " + this.aspects[e].instancePath;
+	        		   }
+		        	   
+		        	   return formattedNode;
+		           }
 	});
 });

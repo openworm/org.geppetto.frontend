@@ -200,11 +200,7 @@ define(function(require) {
 			 }
 			 //model tree isn't empty, was requested previously and stored
 			 else{
-				 var formattedNode = GEPPETTO.Utility.formatmodeltree(this.ModelTree, 3, "");
-				 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-				 formattedNode.replace(/"/g, "");
-
-				 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE + "\n" + formattedNode;
+				 return this.ModelTree;
 			 }
 		 },
 
@@ -214,17 +210,11 @@ define(function(require) {
 		  * @name AspectNode.getSimulationTree()
 		  */
 		 getSimulationTree : function(){
-			 //simulation tree is empty
-			 if(jQuery.isEmptyObject(this.SimulationTree)){
-				 return GEPPETTO.Resources.NO_SIMULATION_TREE;
-			 }
-			 else{
-				 var formattedNode = GEPPETTO.Utility.formatsimulationtree(this.SimulationTree, 3, "");
-				 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-				 formattedNode.replace(/"/g, "");
-
-				 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
-			 }       	   
+			 return this.SimulationTree;       	   
+		 },
+		 
+		 getVisualizationTree : function(){
+			 return this.VisualizationTree;
 		 },
 		 
 		 getParentEntity : function(){
@@ -234,5 +224,19 @@ define(function(require) {
 		 setParentEntity : function(e){
 			 this.parentEntity = e;
 		 },
+		 
+		 /**
+          * Print out formatted node
+          */
+         print : function(){
+      	   var formattedNode="Name : " + this.name + "\n"+
+			   "      Id: " + this.id +"\n" + 
+			   "      InstancePath : " + this.instancePath+"\n"+
+      	   	   "      SubTree : ModelTree \n"+
+      	   	   "      SubTree : VisualizationTree \n"+
+      	   	   "      SubTree : SimulationTree \n";
+      	   
+      	   return formattedNode;
+         }
 	});
 });

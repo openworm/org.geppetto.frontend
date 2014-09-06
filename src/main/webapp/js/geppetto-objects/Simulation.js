@@ -427,7 +427,7 @@ define(function(require) {
 				
 				for(var e in this.runTimeTree){
 					if(this.runTimeTree[e].selected){
-						selection[selection.length] = this.runTimeTree[e].id;
+						selection[selection.length] = this.runTimeTree[e];
 					}
 				}
 				

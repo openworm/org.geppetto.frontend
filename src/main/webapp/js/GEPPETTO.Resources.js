@@ -216,6 +216,9 @@ define(function(require) {
 			SERVER_AVAILABLE: "Server Available",
 
 			WEBGL_FAILED: "Initializing Error: Unable to initialize WebGL",
+			
+			WEBGL_MESSAGE : "Unable to detect WebGl in your browser. \n" +
+						"Try updating your browser and video card drivers to resolve issue",
 
 			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 

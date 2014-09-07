@@ -67,6 +67,15 @@ define(function(require) {
 				return true;
 			}
 		},
+		
+		webGLAvailable : function(){
+			if (!Detector.webgl) {
+				Detector.addGetWebGLMessage();
+				return false;
+			} else {
+				return true;
+			}
+		},
 
 		/**
 		 * Updates the scene

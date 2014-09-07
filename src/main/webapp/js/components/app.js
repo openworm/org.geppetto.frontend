@@ -10,8 +10,7 @@ define(function(require){
 		IntroModal = require('jsx!./tutorial/IntroModal'),
 		utils = require('./utils');
 
-    require('./components.js');
-
+    require('./components');
     
     GEPPETTO.on('simulation:show_spinner',function(){
     	React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));

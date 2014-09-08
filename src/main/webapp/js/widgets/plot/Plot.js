@@ -83,7 +83,13 @@ define(function(require) {
 				this.datasets = [];
 				this.options = this.defaultPlotOptions;
 				this.render();
-				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");						
+				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");		
+				
+				//fix conflict between jquery and bootstrap tooltips
+				$.widget.bridge('uitooltip', $.ui.tooltip);
+				
+				//show tooltip for legends
+				$(".legendLabel").tooltip();
 			},
 
 			/**
@@ -224,8 +230,8 @@ define(function(require) {
 			 */
 			removeDataSet: function(state) {
 				if(state != null) {
-					for(var key in this.datasets) {
-						if(state.getId() == this.datasets[key].label) {
+					for(var key=0;key<this.datasets.length;key++) {
+						if(state.getInstancePath() == this.datasets[key].label) {
 							this.datasets.splice(key, 1);
 						}
 					}
@@ -370,12 +376,6 @@ define(function(require) {
 		        };
 				
 				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
-				
-				//fix conflict between jquery and bootstrap tooltips
-				$.widget.bridge('uitooltip', $.ui.tooltip);
-				
-				//show tooltip for legends
-				$(".legendLabel").tooltip();
 			},
 
 			/**
@@ -391,7 +391,7 @@ define(function(require) {
 			 */
 			cleanDataSets: function() {
 				// update corresponding data set
-				for(var key in this.datasets) {
+				for(var key=0;key<this.datasets.length;key++) {
 					this.datasets[key].data = [[]];
 				}
 			},

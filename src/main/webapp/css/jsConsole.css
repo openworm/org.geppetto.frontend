@@ -5,8 +5,8 @@
  */
 
 #console,
-#console pre.output,
-#console pre.output span,
+#console div.output,
+#console div.output span,
 #console textarea,
 #console textarea:focus {
 	font-size:12px;
@@ -33,30 +33,30 @@
 	top : 0px;
 	z-index : 3;
 }
-#console pre.output {
+#console div.output {
 	display:block;
-	white-space:pre;
 	width:100%;
 	max-height:90%;
 	height: 87%;
 	position:relative;
 	overflow-y: auto;
+	overflow-x: hidden;
 	padding:0;
 	margin:0 0 10px;
 	border:0 none;
 	background:transparent
 }
 
-#console pre.output span           { color:#f7f7f7; }
-#console pre.output span.command   { color:#ccc; }
-#console pre.output span.prefix    { color:#777; }
-#console pre.output span.undefined { color:#777; }
-#console pre.output span.string    { color:#fd6808; }
-#console pre.output span.number    { color:#7f7; }
-#console pre.output span.error     { color:#f77; }
-#console pre.output span.debug     { color: gold; }
-#console pre.output span.message     { color: #fd6808; }
-#console pre.output span.commandsSuggestions     { color: grey; }
+#console div.output span           { color:#f7f7f7; }
+#console div.output span.command   { color:#ccc; }
+#console div.output span.prefix    { color:#777; }
+#console div.output span.undefined { color:#777; }
+#console div.output span.string    { color:#fd6808; }
+#console div.output span.number    { color:#7f7; }
+#console div.output span.error     { color:#f77; }
+#console div.output span.debug     { color: gold; }
+#console div.output span.message     { color: #fd6808; }
+#console div.output span.commandsSuggestions     { color: grey; white-space:pre; }
 
 #console .input {
 	padding:0 0 0 15px;
@@ -88,30 +88,30 @@
 }
 
 
-#console pre.output::-webkit-scrollbar,
-#console pre.output::-webkit-scrollbar-button,
-#console pre.output::-webkit-scrollbar-track,
-#console pre.output::-webkit-scrollbar-track-piece,
-#console pre.output::-webkit-scrollbar-thumb,
-#console pre.output::-webkit-scrollbar-corner,
-#console pre.output::-webkit-resizer {
+#console div.output::-webkit-scrollbar,
+#console div.output::-webkit-scrollbar-button,
+#console div.output::-webkit-scrollbar-track,
+#console div.output::-webkit-scrollbar-track-piece,
+#console div.output::-webkit-scrollbar-thumb,
+#console div.output::-webkit-scrollbar-corner,
+#console div.output::-webkit-resizer {
 	background: transparent;
 }
-#console pre.output::-webkit-scrollbar {
+#console div.output::-webkit-scrollbar {
 	width:  7px;
 	height: 7px;
 	-webkit-border-radius: 4px;
 	        border-radius: 4px;
 }
-#console pre.output::-webkit-scrollbar-track-piece {
+#console div.output::-webkit-scrollbar-track-piece {
 	-webkit-border-radius: 5px;
 	        border-radius: 5px;
 }
-#console pre.output::-webkit-scrollbar-thumb {
+#console div.output::-webkit-scrollbar-thumb {
 	background: #4f4f4f;
 	        border-radius: 5px;
 }
-#console pre.output::-webkit-scrollbar-button {
+#console div.output::-webkit-scrollbar-button {
 	width:0;
 	height:0;
 }

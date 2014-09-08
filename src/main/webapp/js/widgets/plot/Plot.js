@@ -376,6 +376,12 @@ define(function(require) {
 		        };
 				
 				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
+				
+				//fix conflict between jquery and bootstrap tooltips
+				$.widget.bridge('uitooltip', $.ui.tooltip);
+				
+				//show tooltip for legends
+				$(".legendLabel").tooltip();
 			},
 
 			/**

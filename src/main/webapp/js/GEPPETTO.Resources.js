@@ -186,6 +186,8 @@ define(function(require) {
 
 			RETRIEVING_SIMULATION_TREE : 'Simulation tree: ',
 			
+			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
+			
 			/**
 			 * GEPPETTO.Main resources
 			 */

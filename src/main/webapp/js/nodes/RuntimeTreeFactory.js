@@ -316,7 +316,7 @@ define(function(require) {
 								var array = node[i];
 								parent[i] = [];
 								var arrayNode = new CompositeNode(
-										{id: i, name : i,_metaType : "CompositeNode"});
+										{id: i, name : i,instancePath : node.instancePath+"."+i,_metaType : "CompositeNode"});
 								parent.get("children").add(arrayNode);
 								for(var index in array){
 									parent[i][index] = {};

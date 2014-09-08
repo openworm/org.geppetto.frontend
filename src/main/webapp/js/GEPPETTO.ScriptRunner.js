@@ -66,7 +66,7 @@ define(function(require) {
 					if(command != "") {
 						//if it's the wait command,  call the the wait function 
 						//with all remanining commands left to execute as parameter.
-						if(command.indexOf("GEPPETTO.G.wait") > -1) {
+						if(command.indexOf("G.wait") > -1) {
 							//get the ms time for waiting
 							var parameter = command.match(/\((.*?)\)/);
 							var ms = parameter[1];

@@ -73,7 +73,7 @@ define(function(require) {
 				//create tree visualiser widget
 				var tvd3 = window[name] = new TreeVisualiserD3({id:id, name:name,visible:false, width: 500, height: 500});
 
-				//create help command for plot
+				//create help command for tree visualiser d3
 				tvd3.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
 
 				//store in local stack

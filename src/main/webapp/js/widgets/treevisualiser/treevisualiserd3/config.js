@@ -67,6 +67,15 @@ define(function(require) {
 		require("widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3")(GEPPETTO);
 		
 		// Register Commands
-		GEPPETTO.MenuManager.registerNewCommandProvider(["AspectSubTreeNode"], GEPPETTO.TreeVisualiserControllerD3.getCommands);
+		GEPPETTO.MenuManager.registerNewCommandProvider(["EntityNode",
+		                                                 "AspectNode",
+		                                                 "AspectSubTreeNode",
+		                                                 "CompositeNode",
+		                                                 "DynamicsSpecificationNode",
+		                                                 "FunctionNode",
+		                                                 "ParameterNode",
+		                                                 "ParameterSpecificationNode",
+		                                                 "VariableNode"],
+		                                                 GEPPETTO.TreeVisualiserControllerD3.getCommands);
 	};
 });

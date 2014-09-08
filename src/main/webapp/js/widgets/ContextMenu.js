@@ -86,6 +86,9 @@ define(function(require) {
 						contextMenuViewItemsElement.append(contextMenuViewGroupsTmp2.render().el.childNodes);
 					});
 				 }
+				else{
+					this.$el.find("li").addClass("contextMenuLink");
+				}
 				 
 				 return this;
 	        }
@@ -113,7 +116,7 @@ define(function(require) {
 	        template: _.template($('#tplContextMenu').html()),
 	        parentSelector: 'body',
 			events : {
-				'click li' : 'manageMenuClickEvent'
+				'click .contextMenuLink' : 'manageMenuClickEvent'
 			},
 			manageMenuClickEvent: function(event){
 				//TODO: Check if this can be done through and event in the menu view items

@@ -51,12 +51,19 @@ define(function(require) {
 		initialize : function(options){
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this,options);
 			this.options = this.defaultTreeVisualiserOptions;
-		},
-		
-		manageRightClickEvent : function(data, index) {
-			console.log("events");
 			
-			this.showContextMenu(event, node);
+			this.treeVisualiserD3Container = $("#" +this.id);
+			this.treeVisualiserD3Container.on("dialogresizestop", function(event, ui) {
+			    //TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
+				var datasets = window[this.id].datasets;
+				for (var datasetIndex in datasets){
+					var width = $(this).innerWidth()-20;
+					var height = $(this).innerHeight()-20;
+					datasets[datasetIndex].svg.attr("width", width).attr("height", height);
+					datasets[datasetIndex].force.size([width, height]).resume();
+				}
+				event.stopPropagation();
+		    });
 		},
 		
 		setData : function(state, options){
@@ -142,31 +149,35 @@ define(function(require) {
 					if (!dataset.isDisplayed){
 						dataset.isDisplayed = true;
 						
-						this.width = 860;
-						this.height = 500;
+//						this.width = 860;
+//						this.height = 500;
+						var width = this.treeVisualiserD3Container.innerWidth()-20;
+						var height = this.treeVisualiserD3Container.innerHeight()-20;
 			
-						this.force = d3.layout.force()
+						dataset.force = d3.layout.force()
 						    .nodes(d3.values(dataset.nodes))
 						    .links(dataset.links)
-						    .size([this.options.width, this.options.height])
+						    .size([width, height])
 						    .linkDistance(60)
 						    .charge(-300)
 						    .on("tick", tick)
 						    .start();
 			
-						this.svg = d3.select("#"+this.id).append("svg")
-						    .attr("width", this.options.width)
-						    .attr("height", this.options.height)
+						dataset.svg = d3.select("#"+this.id).append("svg")
+						    .attr("width", width)
+						    .attr("height", height)
 						    .on("contextmenu",						    	
 							 function(contextVariable) {
 						    	return function(data, index){ 
 						    		d3_target = d3.select(d3.event.target);
-						    		contextVariable.showContextMenu(d3.event, d3_target.datum()["variable"]);
+						    		if (typeof d3_target.datum() != 'undefined'){
+						    			contextVariable.showContextMenu(d3.event, d3_target.datum()["variable"]);
+						    		}
 					            }
 						    }(this));
 						    
 						// Per-type markers, as they don't inherit styles.
-						this.svg.append("defs").selectAll("marker")
+						dataset.svg.append("defs").selectAll("marker")
 						    .data(["suit", "licensing", "resolved"])
 						  .enter().append("marker")
 						    .attr("id", function(d) { return d; })
@@ -179,28 +190,29 @@ define(function(require) {
 						  .append("path")
 						    .attr("d", "M0,-5L10,0L0,5");
 			
-						var path = this.svg.append("g").selectAll("path")
-						    .data(this.force.links())
+						var path = dataset.svg.append("g").selectAll("path")
+						    .data(dataset.force.links())
 						  .enter().append("path")
 						    .attr("class", function(d) { return "link " + d.type; })
 						    .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
 			
-						var circle = this.svg.append("g").selectAll("circle")
-						    .data(this.force.nodes())
+						var circle = dataset.svg.append("g").selectAll("circle")
+						    .data(dataset.force.nodes())
 						  .enter().append("circle")
 						    .attr("r", 6)
-						    .call(this.force.drag);   
+						    .call(dataset.force.drag);
 							    
 			
-						var text = this.svg.append("g").selectAll("text")
-						    .data(this.force.nodes())
+						var text = dataset.svg.append("g").selectAll("text")
+						    .data(dataset.force.nodes())
 						  .enter().append("text")
 						    .attr("x", 8)
 						    .attr("y", ".31em")
 						    .text(function(d) { return d.name; });
+						    
 						
-						dataset.svg = this.svg;
-						dataset.force = this.force;
+//						dataset.svg = this.svg;
+//						dataset.force = this.force;
 			
 						// Use elliptical arc path segments to doubly-encode directionality.
 						function tick() {

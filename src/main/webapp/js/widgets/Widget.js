@@ -247,7 +247,9 @@ define(function(require) {
 				    });
 				}
 			    
-				if (event!=null){event.preventDefault();}
+				if (event!=null){
+					event.preventDefault();
+				}
 			    
 			    return false;
 			},

@@ -17,9 +17,13 @@ define(function(require){
     
     var simParam = utils.getQueryStringParameter('sim');
 
-	if(simParam) {
-		GEPPETTO.Console.executeCommand('Simulation.load("' + simParam + '")');
-	}else if(!$.cookie('geppetto_hideWelcomeMessage')){
-        React.renderComponent(IntroModal({show:true}), document.getElementById('modal-region'));
-    }
+	var webGLStarted = GEPPETTO.webGLAvailable();
+
+	if(webGLStarted){
+		if(simParam) {
+			GEPPETTO.Console.executeCommand('Simulation.load("' + simParam + '")');
+		}else if(!$.cookie('geppetto_hideWelcomeMessage')){
+			React.renderComponent(IntroModal({show:true}), document.getElementById('modal-region'));
+		}
+	}
 });

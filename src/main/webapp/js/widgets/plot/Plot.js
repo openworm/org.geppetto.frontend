@@ -49,6 +49,7 @@ define(function(require) {
 			xaxisLabel: null,
 			yaxisLabel: null,
 			labelsUpdated: false,
+			labelsMap : {},
 
 			/**
 			 * Default options for plot widget, used if none specified when plot
@@ -82,7 +83,13 @@ define(function(require) {
 				this.datasets = [];
 				this.options = this.defaultPlotOptions;
 				this.render();
-				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");						
+				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");		
+				
+				//fix conflict between jquery and bootstrap tooltips
+				$.widget.bridge('uitooltip', $.ui.tooltip);
+				
+				//show tooltip for legends
+				$(".legendLabel").tooltip();
 			},
 
 			/**
@@ -107,11 +114,14 @@ define(function(require) {
 					}
 				}
 
+				var labelsMap = this.labelsMap;
+				
 				//set label legends to shorter label
 				this.options.legend = {
 						labelFormatter: function(label, series){
 		        		var split = label.split(".");
 						var shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
+						labelsMap[label] = {label : shortLabel};
 		        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
 		        	}
 		        };
@@ -124,10 +134,14 @@ define(function(require) {
 					}
 					
 					else{
+						var value = state.getValue();
+						var id = state.getInstancePath();
+						
 						this.datasets.push({
-							label : state,
-							data : [ [] ]
-						});
+							label : id,
+							variable : state,
+							data : [ [0,value] ]
+						});						
 					}
 				}
 
@@ -140,8 +154,10 @@ define(function(require) {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
 				
+				//fix conflict between jquery and bootstrap tooltips
 				$.widget.bridge('uitooltip', $.ui.tooltip);
 				
+				//show tooltip for legends
 				$(".legendLabel").tooltip();
 				
 				return "Line plot added to widget";
@@ -212,10 +228,10 @@ define(function(require) {
 			 * @param set -
 			 *            Data set to be removed from the plot
 			 */
-			removeDataSet: function(set) {
-				if(set != null) {
-					for(var key in this.datasets) {
-						if(set == this.datasets[key].label) {
+			removeDataSet: function(state) {
+				if(state != null) {
+					for(var key=0;key<this.datasets.length;key++) {
+						if(state.getInstancePath() == this.datasets[key].label) {
 							this.datasets.splice(key, 1);
 						}
 					}
@@ -241,11 +257,10 @@ define(function(require) {
 			 */
 			updateDataSet: function() {
 				for(var key in this.datasets) {
-					var label = this.datasets[key].label;
-					var newValue = this.getState(GEPPETTO.Simulation.runTimeTree, label);
+					var newValue = this.datasets[key].variable.getValue();
 
 					if(!this.labelsUpdated) {
-						var unit = newValue.unit;
+						var unit = this.datasets[key].variable.getUnit();
 						if(unit != null) {
 							var labelY = unit;
 							//Matteo: commented until this can move as it doesn't make sense for it to be static.
@@ -266,7 +281,7 @@ define(function(require) {
 						reIndex = true;
 					}
 
-					oldata.push([ oldata.length, newValue.value]);
+					oldata.push([ oldata.length, newValue]);
 
 					if(reIndex) {
 						// re-index data
@@ -333,6 +348,35 @@ define(function(require) {
 				}
 				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 			},
+			
+			/**
+			 * Sets the legend for a variable
+			 * 
+			 @name setLegend(variable, legend)
+			 * @param variable -
+			 *            variable to change display label in legends
+			 * @param legend - new legend name
+			 */
+			setLegend : function(variable, legend){
+				var labelsMap = this.labelsMap;
+				
+				//set label legends to shorter label
+				this.options.legend = {
+						labelFormatter: function(label, series){
+							var shortLabel;
+							if(variable.getInstancePath() != label){
+								shortLabel = labelsMap[label].label;
+							}
+							else{
+								shortLabel = legend;
+								labelsMap[label].label = shortLabel;
+							}
+							return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
+		        	}
+		        };
+				
+				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
+			},
 
 			/**
 			 * Retrieve the data sets for the plot
@@ -347,7 +391,7 @@ define(function(require) {
 			 */
 			cleanDataSets: function() {
 				// update corresponding data set
-				for(var key in this.datasets) {
+				for(var key=0;key<this.datasets.length;key++) {
 					this.datasets[key].data = [[]];
 				}
 			},

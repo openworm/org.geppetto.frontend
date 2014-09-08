@@ -115,8 +115,9 @@ define(function(require) {
 													aspect.SimulationTree.modified = true;
 												}
 												if(nodeA.ModelTree.modified){
-													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
-													aspect.ModelTree.modified = true;
+													/*Do nothing, should never be true. Model Tree is created upon 
+													 * request by using Entity.aspect.getModelTree() command 
+													 */
 												}
 											}
 										}
@@ -177,6 +178,7 @@ define(function(require) {
 						//create SubTreeNode to store simulation tree
 						var subTree = new AspectSubTreeNode({name : "SimulationTree",
 							instancePath : path ,
+							type : "SimulationTree",
 							_metaType : "AspectSubTreeNode", modified : true});
 						aspect.SimulationTree = this.createSimulationTree(subTree, simulationTreeUpdate);
 						
@@ -226,19 +228,13 @@ define(function(require) {
 					this.modelJSONToNodes(aspect.ModelTree, modelTree);
 					aspect.ModelTree.modified = true;
 					
-					GEPPETTO.Console.updateTags(aspect.ModelTree.instancePath, aspect.ModelTree);
-
 					//notify user received tree was empty
 					if(aspect.ModelTree.getChildren().length==0){
 						var indent = "    ";
 						GEPPETTO.Console.log(indent + GEPPETTO.Resources.EMPTY_MODEL_TREE);
 					}else{
-						//print formatted model tree
-						var formattedNode = GEPPETTO.Utility.formatmodeltree(aspect.ModelTree, 3, "");
-						formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-						formattedNode.replace(/"/g, "");
-
-						GEPPETTO.Console.log(formattedNode);
+						GEPPETTO.Console.executeCommand(aspect.ModelTree.instancePath + ".print()");
+						aspect.ModelTree.print();
 					}
 				},
 
@@ -379,6 +375,7 @@ define(function(require) {
 							e[id] =aspectNode;
 							//add aspect node to entity
 							e.get("aspects").add(aspectNode);
+							aspectNode.setParentEntity(e);
 						}
 					}
 
@@ -400,29 +397,21 @@ define(function(require) {
 						var node = aspect[aspectKey];
 						if(node._metaType == "AspectSubTreeNode"){
 							if(node.type == "VisualizationTree"){
-								var subTree = new AspectSubTreeNode({name : "VisualizationTree",
-									instancePath : node.instancePath,
-									modified : node.modified, _metaType : "AspectSubTreeNode"});
+								var subTree = this.createAspectSubTreeNode(node);
 								
 								a.VisualizationTree = subTree;
 								
-								a.VisualizationTree["content"] = node;
-								
-								GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
+								a.VisualizationTree["content"] = node;								
 							}		
 							else if(node.type == "SimulationTree"){
 								a.SimulationTree = {};
 							}
 							else if(node.type == "ModelTree"){
-								var subTree = new AspectSubTreeNode({name : "ModelTree",
-									instancePath : node.instancePath,
-									modified : node.modified, _metaType : "AspectSubTreeNode"});
+								var subTree = this.createAspectSubTreeNode(node);
 								
 								a.ModelTree = subTree;
 								
-								a.ModelTree["content"] = node;
-								
-								GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
+								a.ModelTree["content"] = node;								
 							}	
 						}
 					}
@@ -433,8 +422,8 @@ define(function(require) {
 				/**Creates and populates client aspect nodes for first time*/
 				createAspectSubTreeNode : function(node){
 					var a = new AspectSubTreeNode(
-							{name : node.type,id: node.id,instancePath : node.instancePath, 
-								_metaType : "AspectSubTreeNode"});
+							{name : node.type, type: node.type, id: node.id,instancePath : node.instancePath, 
+								_metaType : "AspectSubTreeNode", modified : node.modified});
 					
 					GEPPETTO.Console.updateTags(node.instancePath, a);
 					GEPPETTO.Console.addTag(node.instancePath);

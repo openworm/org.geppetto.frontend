@@ -60,4 +60,10 @@ define(function(require) {
 
     React.renderComponent(Controls({},''), document.getElementById('sim-toolbar'));
 
+    var webGLStarted = GEPPETTO.webGLAvailable();
+
+	//make sure webgl started correctly, if it didn't disable simulation controls
+	if(!webGLStarted) {
+	    GEPPETTO.trigger('simulation:disable_all');
+	}	
 });

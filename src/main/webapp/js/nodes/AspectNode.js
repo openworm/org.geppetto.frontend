@@ -50,7 +50,7 @@ define(function(require) {
 		VisualizationTree : {},
 		SimulationTree : {},
 		_metaType : "AspectNode",
-		
+		parentEntity : null,
 		initialize : function(options){
 			this.id = options.id;
 			this.modelInterpreterName = options.modelInterpreter;
@@ -113,13 +113,17 @@ define(function(require) {
      	   
      	   if(GEPPETTO.unselectAspect(this.instancePath)){
      		   message = GEPPETTO.Resources.UNSELECTING_ASPECT + this.instancePath;
+     		   this.selected = false;
+
+     		   this.parentEntity.selected = false;
+
+     		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
      	   }
      	   else{
      		   message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
      	   }
-     	   this.selected = false;
      	   
-			   return message;
+		   return message;
         },
 
         /**
@@ -134,11 +138,15 @@ define(function(require) {
 
         	if(GEPPETTO.selectAspect(this.instancePath)){
         		message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
+            	this.selected = true;
+            	
+            	this.parentEntity.selected = true;
+
+     		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
         	}
         	else{
         		message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
         	}
-        	this.selected = true;
 
         	return message;
         },
@@ -193,11 +201,7 @@ define(function(require) {
 			 }
 			 //model tree isn't empty, was requested previously and stored
 			 else{
-				 var formattedNode = GEPPETTO.Utility.formatmodeltree(this.ModelTree, 3, "");
-				 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-				 formattedNode.replace(/"/g, "");
-
-				 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE + "\n" + formattedNode;
+				 return this.ModelTree;
 			 }
 		 },
 
@@ -207,19 +211,35 @@ define(function(require) {
 		  * @name AspectNode.getSimulationTree()
 		  */
 		 getSimulationTree : function(){
-			 //simulation tree is empty
-			 if(jQuery.isEmptyObject(this.SimulationTree)){
-				 return GEPPETTO.Resources.NO_SIMULATION_TREE;
-			 }
-			 else{
-				 var formattedNode = GEPPETTO.Utility.formatsimulationtree(this.SimulationTree, 3, "");
-				 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-				 formattedNode.replace(/"/g, "");
-
-				 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
-			 }       	   
+			 return this.SimulationTree;       	   
 		 },
 		 
+		 getVisualizationTree : function(){
+			 return this.VisualizationTree;
+		 },
+		 
+		 getParentEntity : function(){
+			 return this.parentEntity;
+		 },
+		 
+		 setParentEntity : function(e){
+			 this.parentEntity = e;
+		 },
+		 
+		 /**
+          * Print out formatted node
+          */
+         print : function(){
+      	   var formattedNode="Name : " + this.name + "\n"+
+			   "      Id: " + this.id +"\n" + 
+			   "      InstancePath : " + this.instancePath+"\n"+
+      	   	   "      SubTree : ModelTree \n"+
+      	   	   "      SubTree : VisualizationTree \n"+
+      	   	   "      SubTree : SimulationTree \n";
+      	   
+      	   return formattedNode;
+         },
+
 		 getChildren : function(){
 			 var children = new Array();
 			 if (!$.isEmptyObject(this.ModelTree)){

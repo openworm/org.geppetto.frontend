@@ -68,7 +68,7 @@
 
             <!-- The sandbox template: -->
         <script type="text/template" id="tplSandbox">
-            <pre class="output"></pre>
+            <div class="output"></div>
             <div class="input">
         	<textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
             </div>
@@ -85,8 +85,8 @@
 
             <!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
             <!--  Don't change space, templates are sensitive to white spacing -->
-        <script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
-<span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
+        <script type="text/template" id="tplCommand"><% if (! _hidden) { %><div><span class="command"><%= command %></span></div>
+<div><span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span></div>
 <% } %></script>
 
         <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>

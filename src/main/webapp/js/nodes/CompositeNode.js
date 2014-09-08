@@ -70,6 +70,21 @@ define(function(require) {
 		           getChildren : function(){
 		        	   var children = this.get("children");
 		        	   return children;
+		           },
+		           
+		           /**
+		            * Print out formatted node
+		            */
+		           print : function(){
+		        	   var formattedNode="Name : " + this.name + "\n"+
+					   "      Id: " + this.id +"\n" + 
+					   "      InstancePath : " + this.instancePath+"\n";
+		        	   for(var e=0;e<this.getChildren().length; e++){
+		        		   var child = this.getChildren().at(e);
+		        		   formattedNode =formattedNode + "      " +  child._metaType + ": " + child.id+"\n";
+		        	   }
+		        	   
+		        	   return formattedNode;
 		           }
 	});
 });

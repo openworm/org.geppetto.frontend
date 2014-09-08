@@ -72,8 +72,6 @@ define(function(require) {
 		        	   this.position = options.position;
 		        	   this.instancePath = options.instancePath;
 		        	   this.aspects = this.get("aspects").models;
-		        	   this.selected = options.selected;
-		        	   this.visible = options.visible;
 		           },
 
 		           /**
@@ -107,11 +105,11 @@ define(function(require) {
 		        	   
 		        	   if(GEPPETTO.showEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.SHOW_ENTITY + this.instancePath;
+			        	   this.visible = true;
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
 		        	   }
-		        	   this.visible = true;
 		        	   
 					   return message;
 		        	   						
@@ -128,14 +126,14 @@ define(function(require) {
 		        	   
 		        	   if(GEPPETTO.unselectEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY + this.instancePath;
-		        		   
+			        	   this.selected = false;
+
 		        		 //Notify any widgets listening that there has been a changed to selection 
 		        		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 		        	   }
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
 		        	   }
-		        	   this.selected = false;
 		        	   
 					   return message;
 		           },
@@ -152,6 +150,7 @@ define(function(require) {
 		        	   
 		        	   if(GEPPETTO.selectEntity(this.instancePath)){
 		        		   message = GEPPETTO.Resources.SELECTING_ENTITY + this.instancePath;
+			        	   this.selected = true;
 		        		   
 		        		   //Notify any widgets listening that there has been a changed to selection 
 		        		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
@@ -159,7 +158,6 @@ define(function(require) {
 		        	   else{
 		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED ;
 		        	   }
-		        	   this.selected = true;
 		        	   
 					   return message;
 					},
@@ -213,8 +211,26 @@ define(function(require) {
 		        	   var entities = this.get("entities");
 		        	   return entities;
 		           },
-		           
-		           getChildren : function(){
+
+		           /**
+		            * Print out formatted node
+		            */
+		           print : function(){
+		        	   var formattedNode="Name : " + this.name + "\n"+
+					   "      Id: " + this.id +"\n" + 
+					   "      InstancePath : " + this.instancePath+"\n";
+		        	   for(var e in this.entities){
+		        		   formattedNode =formattedNode + "      " + "Entity: " + this.entities[e].instancePath;
+		        	   }
+		        	   
+		        	   for(var e in this.aspects){
+	        			   formattedNode = formattedNode +   "      "  + "Aspect: " + this.aspects[e].instancePath;
+	        		   }
+		        	   
+		        	   return formattedNode;
+		           },
+
+					getChildren : function(){
 		        	   var children = new Array();
 		        	   if (this.aspects.length > 0){
 		        		   children = children.concat(this.aspects);

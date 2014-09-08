@@ -123,7 +123,26 @@ define(function(require) {
         };
 
         //Simulation has been started, enable pause button
-        messageHandler[messageTypes.SIMULATION_STARTED] = function() {
+        messageHandler[messageTypes.SIMULATION_STARTED] = function(payload) {
+        	var updatedRunTime = JSON.parse(payload.update).scene;
+            updateTime(updatedRunTime.time);
+
+            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
+
+            //Update if simulation hasn't been stopped
+            if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
+                if(!GEPPETTO.isScenePopulated()) {
+                    // the first time we need to create the objects
+                    GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+                }
+                else {
+                    // any other time we just update them
+                    GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
+                }
+            }
+            
+            GEPPETTO.RuntimeTreeFactory.resetSubtreesDirtyFlag(GEPPETTO.Simulation.runTimeTree);
+            
             GEPPETTO.trigger('simulation:started');
         };
 

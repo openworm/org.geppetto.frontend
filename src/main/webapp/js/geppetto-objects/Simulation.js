@@ -427,7 +427,7 @@ define(function(require) {
 				
 				for(var e in this.runTimeTree){
 					if(this.runTimeTree[e].selected){
-						selection[selection.length] = this.runTimeTree[e].id;
+						selection[selection.length] = this.runTimeTree[e];
 					}
 				}
 				
@@ -480,13 +480,13 @@ define(function(require) {
 			 * The transfer function should accept the value of the watched var and output a
 			 * number between 0 and 1, corresponding to min and max brightness.
 			 * If no transfer function is specified then brightess = value
-			 * @param entityName
-			 * @param varName
+			 * @param entity
+			 * @param variable
 			 * @param transferFunction
 			 */
-			addBrightnessFunction: function(entityName, varName, transferFunction) {	
-				this.listeners[varName] = (function (simState){
-					GEPPETTO.lightUpEntity(entityName, transferFunction ? transferFunction(simState.value) : simState.value);
+			addBrightnessFunction: function(entity, variable, transferFunction) {	
+				this.listeners[variable.getInstancePath()] = (function (simState){
+					GEPPETTO.lightUpEntity(entity.getInstancePath(), transferFunction ? transferFunction(simState.value) : simState.value);
 				});
 			},
 
@@ -494,8 +494,8 @@ define(function(require) {
 			 * Clear brightness transfer functions on simulation state
 			 * @param varName
 			 */
-			clearBrightnessFunctions: function(varName) {
-				this.listeners[varName] = null;
+			clearBrightnessFunctions: function(variable) {
+				this.listeners[variable.getId()] = null;
 			}
 		};
 

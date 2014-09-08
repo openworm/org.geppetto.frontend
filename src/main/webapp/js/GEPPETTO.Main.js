@@ -94,6 +94,10 @@ define(function(require) {
 
 							//unbind click event so we can reuse same modal for other alerts
 							infomodalBtn.unbind('click');
+							
+							if(GEPPETTO.Simulation.isLoading()){
+				                GEPPETTO.trigger('simulation:show_spinner');
+							}
 						});                                         
 					}
 
@@ -144,31 +148,32 @@ define(function(require) {
 // ============================================================================
 
 		$(document).ready(function() {
-
-			GEPPETTO.FE.initialEvents();
-			
-			//Increment the idle time counter every minute.
-			setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
-            var here = $(this);
-			//Zero the idle timer on mouse movement.
-			here.mousemove(function(e) {
-				GEPPETTO.Main.idleTime = 0;
-			});
-			here.keypress(function(e) {
-				GEPPETTO.Main.idleTime = 0;
-			});
-
 			//Create canvas 
-			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+			var webGLStarted = GEPPETTO.webGLAvailable();
 
 			//make sure webgl started correctly
 			if(!webGLStarted) {
-				//TODO: Display message if doesn't support webgl
+				GEPPETTO.FE.update(false);
 			}
+			else{
+				GEPPETTO.FE.initialEvents();
+				
+				//Increment the idle time counter every minute.
+				setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
+	            var here = $(this);
+				//Zero the idle timer on mouse movement.
+				here.mousemove(function(e) {
+					GEPPETTO.Main.idleTime = 0;
+				});
+				here.keypress(function(e) {
+					GEPPETTO.Main.idleTime = 0;
+				});
+				
+				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
-			//Initialize websocket functionality
-			GEPPETTO.Main.init();
-		
+				//Initialize websocket functionality
+				GEPPETTO.Main.init();
+			}		
 		});
 	};
 });

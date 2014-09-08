@@ -178,9 +178,11 @@ define(function(require) {
 
 			RETRIEVING_MODEL_TREE : 'Model tree requested',
 			
-			EMPTY_MODEL_TREE : 'Model tree received, but is empty.',
+			EMPTY_MODEL_TREE : 'Model is empty, nothing to see here.',
 			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
+			
+			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',
 
 			RETRIEVING_SIMULATION_TREE : 'Simulation tree: ',
 			
@@ -214,6 +216,9 @@ define(function(require) {
 			SERVER_AVAILABLE: "Server Available",
 
 			WEBGL_FAILED: "Initializing Error: Unable to initialize WebGL",
+			
+			WEBGL_MESSAGE : "Unable to detect WebGl in your browser. \n" +
+						"Try updating your browser and video card drivers to resolve issue",
 
 			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 

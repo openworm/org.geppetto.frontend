@@ -115,7 +115,7 @@ define(function(require) {
 				
 			}
 			else{
-				dataset.nodes[nodeName] = {name: label + "=" + data.getValue()};
+				dataset.nodes[nodeName] = {name: label + "=" + data.getValue(), variable: data};
 				if (parent != ''){
 					var link = {};
 					link.source = dataset.nodes[parent];

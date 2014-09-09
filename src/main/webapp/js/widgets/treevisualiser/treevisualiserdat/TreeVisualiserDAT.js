@@ -96,9 +96,6 @@ define(function(require) {
 			if (data.getName() === undefined){label = data.getId();}
 			else{label = data.getName();}
 			
-//			console.log(label);
-//			console.log(data);
-			
 			if (data._metaType == "VariableNode") {
 				if (!dataset.isDisplayed) {
 					dataset.valueDict[data.instancePath] = {};

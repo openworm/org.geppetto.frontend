@@ -89,7 +89,7 @@ define(function(require) {
 			else{label = data.getName();}
 			
 			
-			if (data._metaType != "VariableNode") {
+			if (data._metaType != "VariableNode" & data._metaType != "DynamicsSpecificationNode" & data._metaType != "ParameterSpecificationNode") {
 				dataset.nodes[nodeName] = {name: label, variable: data};
 				if (parent != ''){
 					var link = {};
@@ -115,7 +115,7 @@ define(function(require) {
 				
 			}
 			else{
-				dataset.nodes[nodeName] = {name: label + "=" + data.getValue(), variable: data};
+				dataset.nodes[nodeName] = {name: label + "=" + data.getValue() + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):""), variable: data};
 				if (parent != ''){
 					var link = {};
 					link.source = dataset.nodes[parent];

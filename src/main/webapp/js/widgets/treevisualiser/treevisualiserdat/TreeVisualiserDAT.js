@@ -96,14 +96,14 @@ define(function(require) {
 			if (data.getName() === undefined){label = data.getId();}
 			else{label = data.getName();}
 			
-			if (data._metaType == "VariableNode") {
+			if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode") {
 				if (!dataset.isDisplayed) {
 					dataset.valueDict[data.instancePath] = {};
-					dataset.valueDict[data.instancePath][label] = data.getValue();
+					dataset.valueDict[data.instancePath][label] = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
 					dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
 				}
 				else{
-					dataset.valueDict[data.instancePath][label] = data.getValue();
+					dataset.valueDict[data.instancePath][label] = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
 				}
 			}
 			else{

@@ -77,8 +77,9 @@ define(function(require) {
 		            */
 		           print : function(){
 		        	   var formattedNode="Name : " + this.name + "\n"+
-					   "      Id: " + this.id +"\n" + 
-					   "      InstancePath : " + this.instancePath+"\n";
+					   "    Id: " + this.id +"\n" + 
+					   "    InstancePath : " + this.instancePath+"\n"+
+		        	   "    Children : \n";
 		        	   for(var e=0;e<this.getChildren().length; e++){
 		        		   var child = this.getChildren().at(e);
 		        		   formattedNode =formattedNode + "      " +  child._metaType + ": " + child.id+"\n";

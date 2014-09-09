@@ -81,7 +81,7 @@ define(function(require) {
 		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
 		  					 formattedNode.replace(/"/g, "");
 
-		  					 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
+		  					 return GEPPETTO.Resources.RETRIEVING_VISUALIZATION_TREE + "\n" + formattedNode;
 						 }
 						 if(this.type=="ModelTree"){
 							 return GEPPETTO.Resources.EMPTY_MODEL_TREE;
@@ -100,7 +100,7 @@ define(function(require) {
 		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
 		  					 formattedNode.replace(/"/g, "");
 
-		  					 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
+		  					 return GEPPETTO.Resources.RETRIEVING_VISUALIZATION_TREE + "\n" + formattedNode;
 		  				 }
 		  				 else if(this.type=="ModelTree"){
 		  					 var formattedNode = GEPPETTO.Utility.formatmodeltree(this, 3, "");

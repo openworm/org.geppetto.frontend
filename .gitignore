@@ -16,6 +16,7 @@ src/main/webapp/css/main.css
 *.ear
 
 # Editor byproducts
+.idea/
 *.swp
 .settings/
 /target

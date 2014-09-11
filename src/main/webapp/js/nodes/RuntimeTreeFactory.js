@@ -318,8 +318,9 @@ define(function(require) {
 								var arrayNode = new CompositeNode(
 										{id: i, name : i,instancePath : node.instancePath+"."+i,_metaType : "CompositeNode"});
 								parent.get("children").add(arrayNode);
-								for(var index in array){
+								for(var index=0;index<array.length;index++){
 									parent[i][index] = {};
+									arrayNode.instancePath = node.instancePath+"."+i+  "[" + index +"]";
 									var arrayObject = this.createSimulationTree(arrayNode, array[index]);
 									parent[i][index] = arrayObject;
 								}

@@ -71,5 +71,16 @@ define(function(require) {
 		getExpression : function(){
 			return this.expression;
 		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function(){
+			return "Name : " + this.name + "\n"+
+			   "    Id: " + this.id +"\n" + 
+			   "    InstancePath : " + this.instancePath+"\n"+
+			   "    Arguments : " + this.arguments + "\n" + 
+			   "    Expression : " + this.expression + "\n";
+		}
 	});
 });

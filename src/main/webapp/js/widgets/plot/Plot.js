@@ -95,7 +95,7 @@ define(function(require) {
 			/**
 			 * Takes data series and plots them. To plot array(s) , use it as
 			 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
-			 * plotData("objectName") Multiples arrays can be specified at once in
+			 * plotData(object) Multiples arrays can be specified at once in
 			 * this method, but only one object at a time.
 			 *
 			 * @name plotData(state, options)
@@ -352,7 +352,7 @@ define(function(require) {
 			/**
 			 * Sets the legend for a variable
 			 * 
-			 @name setLegend(variable, legend)
+			 * @name setLegend(variable, legend)
 			 * @param variable -
 			 *            variable to change display label in legends
 			 * @param legend - new legend name

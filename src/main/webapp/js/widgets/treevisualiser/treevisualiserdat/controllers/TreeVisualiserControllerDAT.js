@@ -74,7 +74,7 @@ define(function(require) {
 				var id = name;
 
 				// create tree visualiser widget
-				var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 500, height: 500});
+				var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 260, height: 350});
 
 				// create help command for plot
 				tvdat.help = function() {

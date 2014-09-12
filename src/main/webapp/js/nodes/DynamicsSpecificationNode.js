@@ -116,7 +116,7 @@ define(function(require) {
 			   "    InstancePath : " + this.instancePath+"\n"+
 			   "    Value : " + this.value + "\n" + 
 			   "    Unit : " + this.unit + "\n" + 
-			   "    ScalingFactor : " + this.scalingFactor + "\n",
+			   "    ScalingFactor : " + this.scalingFactor + "\n"+
 			   "    Dynamics : " + this.dynamics + "\n";
 		}
 	});

@@ -176,7 +176,7 @@ define(function(require) {
 			 * @param options -
 			 *            options for the plotting widget, if null uses default
 			 */
-			plotXYData: function(newDataX, newDataY, options) {
+			plotXYData: function(dataX, dataY, options) {
 
 				// If no options specify by user, use default options
 				if(options != null) {
@@ -223,7 +223,7 @@ define(function(require) {
 			},
 			/**
 			 * Removes the data set from the plot. EX:
-			 * removeDataSet(dummyDouble)
+			 * removeDataSet(state)
 			 *
 			 * @param set -
 			 *            Data set to be removed from the plot

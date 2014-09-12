@@ -39157,10 +39157,6 @@ define('GEPPETTO.Console',['require','jquery'],function(require) {
 						}
 
 						if(isCommand) {
-							commands[commandsCount] = functionName;
-							commandsCount++;
-							tags[tagsCount] = functionName;
-							tagsCount++;
 							//match the function to comment
 							var matchedDescription = "";
 							for(var i = 0; i < descriptions.length; i++) {
@@ -39185,6 +39181,11 @@ define('GEPPETTO.Console',['require','jquery'],function(require) {
 											}
 										}
 									}
+									
+									commands[commandsCount] = functionName;
+									commandsCount++;
+									tags[tagsCount] = functionName;
+									tagsCount++;
 								}
 							}
 							//format and keep track of all commands available
@@ -39196,6 +39197,10 @@ define('GEPPETTO.Console',['require','jquery'],function(require) {
 
 				//after commands and comments are extract, update global help option
 				GEPPETTO.Console.getHelpObjectsMap()[id] = commandsFormmatted.substring(0, commandsFormmatted.length - 2);
+				
+				if(proto.__proto__ != null){
+					GEPPETTO.Console.updateCommands(scriptLocation, proto, id);
+				}
 			},
 
 
@@ -41333,19 +41338,18 @@ define('GEPPETTO.Main',['require','jquery','react','jsx!components/popups/InfoMo
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there
 					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
-                        var infomodalBtn = $('#infomodal-btn');
 
         	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("Zzz");
 						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
-						infomodalBtn.html("Yes");
+						$('#infomodal-btn').html("Yes");
 
-						infomodalBtn.html("Yes").click(function() {
+						$('#infomodal-btn').html("Yes").click(function() {
 							$('#infomodal').modal('hide');
 							GEPPETTO.Main.idleTime = 0;
 
 							//unbind click event so we can reuse same modal for other alerts
-							infomodalBtn.unbind('click');
+							$('#infomodal-btn').unbind('click');
 							
 							if(GEPPETTO.Simulation.isLoading()){
 				                GEPPETTO.trigger('simulation:show_spinner');
@@ -41856,7 +41860,7 @@ define('widgets/Widget',['require','backbone','jquery'],function(require) {
 			/**
 			 * Gets the name of the widget
 			 *
-			 * @getName()
+			 * @name getName()
 			 * @returns {String} - Name of widget
 			 */
 			getName: function() {
@@ -41865,7 +41869,7 @@ define('widgets/Widget',['require','backbone','jquery'],function(require) {
 
 			/**
 			 * Sets the name of the widget
-			 *
+			 * @name setName(name)
 			 * @param name - Name of widget
 			 */
 			setName: function(name) {
@@ -41877,6 +41881,9 @@ define('widgets/Widget',['require','backbone','jquery'],function(require) {
 				return "Widget has been renamed to " + this.name;
 			},
 
+			/**
+			 * @name setPosition(left,top)
+			 */
 			setPosition: function(left, top) {
 
 				this.position.left = left;
@@ -41886,6 +41893,9 @@ define('widgets/Widget',['require','backbone','jquery'],function(require) {
 				return this.name + " Widget's position has been updated";
 			},
 
+			/**
+			 * @name setSize(h,w)
+			 */
 			setSize: function(h, w) {
 				this.size.height = h;
 				this.size.width = w;
@@ -41894,10 +41904,16 @@ define('widgets/Widget',['require','backbone','jquery'],function(require) {
 				return this.name + " Widget has been resized";
 			},
 
+			/**
+			 * @name getPosition()
+			 */
 			getPosition: function() {
 				return this.position;
 			},
 
+			/**
+			 * @name getSize()
+			 */
 			getSize: function() {
 				return this.size;
 			},
@@ -42168,7 +42184,7 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 			 * @param options -
 			 *            options for the plotting widget, if null uses default
 			 */
-			plotXYData: function(newDataX, newDataY, options) {
+			plotXYData: function(dataX, dataY, options) {
 
 				// If no options specify by user, use default options
 				if(options != null) {
@@ -42215,7 +42231,7 @@ define('widgets/plot/Plot',['require','widgets/Widget','jquery'],function(requir
 			},
 			/**
 			 * Removes the data set from the plot. EX:
-			 * removeDataSet(dummyDouble)
+			 * removeDataSet(state)
 			 *
 			 * @param set -
 			 *            Data set to be removed from the plot
@@ -44494,6 +44510,16 @@ define('nodes/ParameterNode',['require','nodes/Node','jquery'],function(require)
 		getProperties : function(){
 			return this.properties;
 		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function(){
+			return "Name : " + this.name + "\n"+
+			   "    Id: " + this.id +"\n" + 
+			   "    InstancePath : " + this.instancePath+"\n"+
+			   "    Properties : " + this.properties + "\n";
+		}
 	});
 });
 
@@ -44583,6 +44609,18 @@ define('nodes/ParameterSpecificationNode',['require','nodes/Node','jquery'],func
 		getScalingFactor : function(){
 			return this.scalingFactor;
 		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function(){
+			return "Name : " + this.name + "\n"+
+			   "    Id: " + this.id +"\n" + 
+			   "    InstancePath : " + this.instancePath+"\n"+
+			   "    Value : " + this.value + "\n" + 
+			   "    Unit : " + this.unit + "\n" + 
+			   "    ScalingFactor : " + this.scalingFactor + "\n";
+		}
 	});
 });
 
@@ -44659,6 +44697,17 @@ define('nodes/FunctionNode',['require','nodes/Node','jquery'],function(require) 
 		getExpression : function(){
 			return this.expression;
 		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function(){
+			return "Name : " + this.name + "\n"+
+			   "    Id: " + this.id +"\n" + 
+			   "    InstancePath : " + this.instancePath+"\n"+
+			   "    Arguments : " + this.arguments + "\n" + 
+			   "    Expression : " + this.expression + "\n";
+		}
 	});
 });
 
@@ -44769,6 +44818,19 @@ define('nodes/DynamicsSpecificationNode',['require','nodes/Node','nodes/Function
 		 */
 		getDynamics : function(){
 			return this.get("dynamics");
+		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function(){
+			return "Name : " + this.name + "\n"+
+			   "    Id: " + this.id +"\n" + 
+			   "    InstancePath : " + this.instancePath+"\n"+
+			   "    Value : " + this.value + "\n" + 
+			   "    Unit : " + this.unit + "\n" + 
+			   "    ScalingFactor : " + this.scalingFactor + "\n"+
+			   "    Dynamics : " + this.dynamics + "\n";
 		}
 	});
 });

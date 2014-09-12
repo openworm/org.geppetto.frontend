@@ -85,6 +85,9 @@ define(function(require) {
 					this.status = this.StatusEnum.STARTED;
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_START);
 
+					//reset data for any open plot widget
+					GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+					 
 					return GEPPETTO.Resources.SIMULATION_STARTED;
 				}
 				else {

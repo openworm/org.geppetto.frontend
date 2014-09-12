@@ -124,7 +124,7 @@ define(function(require) {
 			/**
 			 * Gets the name of the widget
 			 *
-			 * @getName()
+			 * @name getName()
 			 * @returns {String} - Name of widget
 			 */
 			getName: function() {
@@ -133,7 +133,7 @@ define(function(require) {
 
 			/**
 			 * Sets the name of the widget
-			 *
+			 * @name setName(name)
 			 * @param name - Name of widget
 			 */
 			setName: function(name) {
@@ -145,6 +145,9 @@ define(function(require) {
 				return "Widget has been renamed to " + this.name;
 			},
 
+			/**
+			 * @name setPosition(left,top)
+			 */
 			setPosition: function(left, top) {
 
 				this.position.left = left;
@@ -154,6 +157,9 @@ define(function(require) {
 				return this.name + " Widget's position has been updated";
 			},
 
+			/**
+			 * @name setSize(h,w)
+			 */
 			setSize: function(h, w) {
 				this.size.height = h;
 				this.size.width = w;
@@ -162,10 +168,16 @@ define(function(require) {
 				return this.name + " Widget has been resized";
 			},
 
+			/**
+			 * @name getPosition()
+			 */
 			getPosition: function() {
 				return this.position;
 			},
 
+			/**
+			 * @name getSize()
+			 */
 			getSize: function() {
 				return this.size;
 			},

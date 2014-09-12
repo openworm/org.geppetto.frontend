@@ -77,7 +77,7 @@ define(function(require) {
 				//registers remove handler for widget
 				$("#" + widgetID).on("remove", function() {
 					//remove tags and delete object upon destroying widget
-					GEPPETTO.Utility.removeTags(widgetID);
+					GEPPETTO.Console.removeCommands(widgetID);
 
 					var widgets = controller.getWidgets();
 
@@ -110,6 +110,12 @@ define(function(require) {
 					var top = ui.position.top;
 
 					GEPPETTO.Console.executeCommand(widgetID + ".setPosition(" + left + "," + top + ")");
+				});
+
+				//bind close button on widget event to destroy command
+				$("#" + widgetID).bind('dialogclose', function(event) {
+					//destroy widget
+					GEPPETTO.Console.executeCommand(widgetID + ".destroy()");
 				});
 			},
 

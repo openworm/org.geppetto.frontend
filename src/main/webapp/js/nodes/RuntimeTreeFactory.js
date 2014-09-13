@@ -106,18 +106,26 @@ define(function(require) {
 											var aspect = entityNode.aspects[aspectId];
 											//update subtrees of matched aspect with new data
 											if(aspect.instancePath == nodeA.instancePath){
-												if(nodeA.VisualizationTree.modified){
-													aspect.VisualizationTree.content = nodeA.VisualizationTree;
-													aspect.VisualizationTree.modified = true;
+												if(nodeA.VisualizationTree != undefined){
+													if(nodeA.VisualizationTree.modified){
+														aspect.VisualizationTree.content = nodeA.VisualizationTree;
+														aspect.VisualizationTree.modified = true;
+													}
 												}
-												if(nodeA.SimulationTree.modified){
-													this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
-													aspect.SimulationTree.modified = true;
+												if(nodeA.SimulationTree != undefined){
+													if(nodeA.SimulationTree.modified){
+														this.updateAspectSimulationTree(aspect.instancePath,nodeA.SimulationTree);
+														if(aspect.SimulationTree != undefined){
+															aspect.SimulationTree.modified = true;
+														}
+													}
 												}
-												if(nodeA.ModelTree.modified){
-													/*Do nothing, should never be true. Model Tree is created upon 
-													 * request by using Entity.aspect.getModelTree() command 
-													 */
+												if(nodeA.ModelTree != undefined){
+													if(nodeA.ModelTree.modified){
+														/*Do nothing, should never be true. Model Tree is created upon 
+														 * request by using Entity.aspect.getModelTree() command 
+														 */
+													}
 												}
 											}
 										}

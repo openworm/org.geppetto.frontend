@@ -167,6 +167,8 @@ define(function(require) {
 
 							equal(false, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model Tree Command");
 							equal(true, hhcell.electrical.ModelTree.modified, "Test Model tree modified flag"); 
+				        	notEqual(null, hhcell.electrical.ModelTree.getId(), "Model Tree has ID");
+				        	notEqual(null, hhcell.electrical.ModelTree.getInstancePath(), "Model Tree has Instance Path");
 
 				        	start();
 				        	

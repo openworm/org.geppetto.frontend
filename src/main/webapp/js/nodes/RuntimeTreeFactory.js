@@ -188,7 +188,8 @@ define(function(require) {
 							instancePath : path ,
 							type : "SimulationTree",
 							_metaType : "AspectSubTreeNode", modified : true});
-						aspect.SimulationTree = this.createSimulationTree(subTree, simulationTreeUpdate);
+						this.createSimulationTree(subTree, simulationTreeUpdate);
+						aspect.SimulationTree = subTree;
 						
 						GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
 					}
@@ -323,41 +324,47 @@ define(function(require) {
 							if(node[i] instanceof Array){
 								var array = node[i];
 								parent[i] = [];
+								//create parent composite node for array nodes
 								var arrayNode = new CompositeNode(
 										{id: i, name : i,instancePath : node.instancePath+"."+i,_metaType : "CompositeNode"});
 								parent.get("children").add(arrayNode);
+								//create nodes for each array index 
 								for(var index=0;index<array.length;index++){
 									parent[i][index] = {};
-									arrayNode.instancePath = node.instancePath+"."+i+  "[" + index +"]";
+									//create nodes for each array index node
 									var arrayObject = this.createSimulationTree(arrayNode, array[index]);
-									parent[i][index] = arrayObject;
+									//set instance path of created array node and set as property
+									if(arrayObject.getChildren().length>0){
+										arrayObject.instancePath = arrayNode.instancePath+ "["+index +"]";
+										parent[i][index] = arrayObject;
+									}
 								}
 							}
 							//if object is CompositeNode, do recursion to find children
 							else if(metatype == "CompositeNode"){
-								var compositeNode=this.createCompositeNode(node[i]);
-								this.createSimulationTree(compositeNode, node[i]);
+								var newNode=this.createCompositeNode(node[i]);
+								this.createSimulationTree(newNode, node[i]);
 								//add to parent if applicable
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
-									parent.get("children").add(compositeNode);
+									parent.get("children").add(newNode);
 								}
-								parent[i] = compositeNode;
+								parent[i] = newNode;
 							}
 							else if(metatype == "VariableNode"){
-								var variableNode =  this.createVariableNode(node[i]);
+								var newNode =  this.createVariableNode(node[i]);
 								//add to parent if applicable
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
-									parent.get("children").add(variableNode);
+									parent.get("children").add(newNode);
 								}
-								parent[i] = variableNode;
+								parent[i] = newNode;
 							}
 							else if(metatype == "ParameterNode"){
-								var parameterNode =  this.createParameterNode(node[i]);
+								var newNode =  this.createParameterNode(node[i]);
 								//add to parent if applicable
 								if(parent._metaType == "CompositeNode" || parent._metaType == "AspectSubTreeNode"){
-									parent.get("children").add(parameterNode);
+									parent.get("children").add(newNode);
 								}
-								parent[i] = parameterNode;
+								parent[i] = newNode;
 							}
 						}
 					}

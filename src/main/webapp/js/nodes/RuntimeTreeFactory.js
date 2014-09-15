@@ -132,38 +132,38 @@ define(function(require) {
 				
 				/**Update entities of scene with new server updates*/
 				resetSubtreesDirtyFlag : function(jsonRuntimeTree){
-//					for (var id in jsonRuntimeTree) {
-//						var node = jsonRuntimeTree[id];
-//						if(node._metaType == "EntityNode"){
-//							//check to see if entitynode already exists
-//							if(GEPPETTO.Simulation.runTimeTree.hasOwnProperty(id)){
-//								//retrieve entity node
-//								var entityNode = 
-//									GEPPETTO.Simulation.runTimeTree[id];
-//
-//								//traverse through server update node to get aspects
-////								for (var a in node) {
-////									var nodeA = node[a];
-//								var childrenNode = node.getChildren();
-//								for (var a in childrenNode) {
-//									var nodeA = childrenNode[a];
-//									//match aspect in server update
-//									if(nodeA._metaType == "AspectNode"){
-//										//match aspect in existing entity node
-//										for (var aspectId in entityNode.aspects) {
-//											var aspect = entityNode.aspects[aspectId];
-//											//update subtrees of matched aspect with new data
-//											if(aspect.instancePath == nodeA.instancePath){
-//												aspect.VisualizationTree.modified = false;
-//												aspect.SimulationTree.modified = false;
-//												aspect.ModelTree.modified = false;
-//											}
-//										}
-//									}
-//								}
-//							}
-//						}
-//					}
+					for (var id in jsonRuntimeTree) {
+						var node = jsonRuntimeTree[id];
+						if(node._metaType == "EntityNode"){
+							//check to see if entitynode already exists
+							if(GEPPETTO.Simulation.runTimeTree.hasOwnProperty(id)){
+								//retrieve entity node
+								var entityNode = 
+									GEPPETTO.Simulation.runTimeTree[id];
+
+								//traverse through server update node to get aspects
+//								for (var a in node) {
+//									var nodeA = node[a];
+								var childrenNode = node.getChildren();
+								for (var a in childrenNode) {
+									var nodeA = childrenNode[a];
+									//match aspect in server update
+									if(nodeA._metaType == "AspectNode"){
+										//match aspect in existing entity node
+										for (var aspectId in entityNode.aspects) {
+											var aspect = entityNode.aspects[aspectId];
+											//update subtrees of matched aspect with new data
+											if(aspect.instancePath == nodeA.instancePath){
+												aspect.VisualizationTree.modified = false;
+												aspect.SimulationTree.modified = false;
+												aspect.ModelTree.modified = false;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				},
 
 				/**Update and create simulation Tree for aspect

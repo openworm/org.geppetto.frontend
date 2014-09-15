@@ -44,7 +44,7 @@ define(function(require) {
 	return TreeVisualiser.TreeVisualiser.extend({
 
 		defaultTreeVisualiserOptions : {
-			width : 300,
+			width : "auto",
 			autoPlace : false
 		},
 

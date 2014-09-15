@@ -39,204 +39,230 @@
 define(function(require) {
 
 	var Node = require('nodes/Node');
+	var AspectSubTreeNode = require('nodes/AspectSubTreeNode');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		modelInterpreterName : "",
-		simulatorName : "",
-		modelURL : "",
-		selected : false,
-		ModelTree : {},
-		VisualizationTree : {},
-		SimulationTree : {},
-		parentEntity : null,
-		initialize : function(options){
-			this.id = options.id;
-			this.modelInterpreterName = options.modelInterpreter;
-			this.simulatorName = options.simulator;
-			this.modelURL = options.model;
-			this.instancePath = options.instancePath;
-			this.name = options.name;
-		},
+		relations:[
+		           {
+		        	   type:Backbone.Many,
+		        	   key:'children',
+		        	   relatedModel:AspectSubTreeNode,
+		           },
+		           ],
+
+		           defaults : {
+		        	   children : []
+		           },
+		           modelInterpreterName : "",
+		           simulatorName : "",
+		           modelURL : "",
+		           selected : false,
+		           ModelTree : {},
+		           VisualizationTree : {},
+		           SimulationTree : {},
+		           parentEntity : null,
+		           initialize : function(options){
+		        	   this.id = options.id;
+		        	   this.modelInterpreterName = options.modelInterpreter;
+		        	   this.simulatorName = options.simulator;
+		        	   this.modelURL = options.model;
+		        	   this.instancePath = options.instancePath;
+		        	   this.name = options.name;
+		           },
 
 
-		/**
-         * Hides the aspect
-         *
-         * @name AspectNode.hide()
-         *
-         */
-        hide : function(){
-     	   var message; 
-     	   
-     	   if(GEPPETTO.hideAspect(this.instancePath)){
-     		   message = GEPPETTO.Resources.HIDE_ASPECT + this.instancePath;
-     	   }
-     	   else{
-     		   message = GEPPETTO.Resources.ASPECT_ALREADY_HIDDING;
-     	   }
-     	   this.visible = false;
-     	   
-			   return message;
-        },
+		           /**
+		            * Hides the aspect
+		            *
+		            * @name AspectNode.hide()
+		            *
+		            */
+		           hide : function(){
+		        	   var message; 
 
-        /**
-         * Shows the aspect
-         *
-         * @name AspectNode.show()
-         *
-         */
-        show : function(){
-     	   var message; 
-     	   
-     	   if(GEPPETTO.showAspect(this.instancePath)){
-     		   message = GEPPETTO.Resources.SHOW_ASPECT + this.instancePath;
-     	   }
-     	   else{
-     		   message = GEPPETTO.Resources.ASPECT_ALREADY_VISIBLE;
-     	   }
-     	   this.visible = true;
-     	   
-			   return message;
-     	   						
-        },
-        
-        /**
-         * Unselects the aspect
-         *
-         * @name AspectNode.unselect()
-         *
-         */
-        unselect : function(){
-     	   var message; 
-     	   
-     	   if(GEPPETTO.unselectAspect(this.instancePath)){
-     		   message = GEPPETTO.Resources.UNSELECTING_ASPECT + this.instancePath;
-     		   this.selected = false;
+		        	   if(GEPPETTO.hideAspect(this.instancePath)){
+		        		   message = GEPPETTO.Resources.HIDE_ASPECT + this.instancePath;
+		        	   }
+		        	   else{
+		        		   message = GEPPETTO.Resources.ASPECT_ALREADY_HIDDING;
+		        	   }
+		        	   this.visible = false;
 
-     		   this.parentEntity.selected = false;
+		        	   return message;
+		           },
 
-     		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
-     	   }
-     	   else{
-     		   message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
-     	   }
-     	   
-		   return message;
-        },
+		           /**
+		            * Shows the aspect
+		            *
+		            * @name AspectNode.show()
+		            *
+		            */
+		           show : function(){
+		        	   var message; 
 
-        /**
-         * Selects the aspect
-         *
-         * @name AspectNode.unselect()
-         *
-         */
-        select : function(){
+		        	   if(GEPPETTO.showAspect(this.instancePath)){
+		        		   message = GEPPETTO.Resources.SHOW_ASPECT + this.instancePath;
+		        	   }
+		        	   else{
+		        		   message = GEPPETTO.Resources.ASPECT_ALREADY_VISIBLE;
+		        	   }
+		        	   this.visible = true;
 
-        	var message; 
+		        	   return message;
 
-        	if(GEPPETTO.selectAspect(this.instancePath)){
-        		message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
-            	this.selected = true;
-            	
-            	this.parentEntity.selected = true;
+		           },
 
-     		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
-        	}
-        	else{
-        		message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
-        	}
+		           /**
+		            * Unselects the aspect
+		            *
+		            * @name AspectNode.unselect()
+		            *
+		            */
+		           unselect : function(){
+		        	   var message; 
 
-        	return message;
-        },
+		        	   if(GEPPETTO.unselectAspect(this.instancePath)){
+		        		   message = GEPPETTO.Resources.UNSELECTING_ASPECT + this.instancePath;
+		        		   this.selected = false;
 
-        /**
-		  * Get the model interpreter associated with aspect
-		  *
-		  * @name AspectNode.getId()
-		  */
-		 getId : function(){
-			 return this.id;
-		 },
+		        		   this.parentEntity.selected = false;
 
-		 /**
-		  * Get the model interpreter associated with aspect
-		  *
-		  * @name AspectNode.getModelInterpreterName()
-		  */
-		 getModelInterpreterName : function(){
-			 return this.modelInterpreterName;
-		 },
+		        		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+		        	   }
+		        	   else{
+		        		   message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
+		        	   }
 
-		 /**
-		  * Get the simulator interpreter associated with aspect
-		  *
-		  * @name AspectNode.getSimulatorName()
-		  */
-		 getSimulatorName : function(){
-			 return this.simulatorName;
-		 },
+		        	   return message;
+		           },
 
-		 /**
-		  * Get model URL associated with the aspect
-		  *
-		  * @name AspectNode.getModelURL()
-		  */
-		 getModelURL : function(){
-			 return this.modelURL;
-		 },
+		           /**
+		            * Selects the aspect
+		            *
+		            * @name AspectNode.unselect()
+		            *
+		            */
+		           select : function(){
 
-		 /**
-		  * Get formatted model tree for this aspect
-		  * 
-		  * @name AspectNode.getModelTree()
-		  */
-		 getModelTree : function(){
-			 //empty model tree, request server for it
-			 if(this.ModelTree.getChildren().length==0){
-				 GEPPETTO.MessageSocket.send("get_model_tree", this.instancePath);
-				 
-				 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE;
-			 }
-			 //model tree isn't empty, was requested previously and stored
-			 else{
-				 return this.ModelTree;
-			 }
-		 },
+		        	   var message; 
 
-		 /**
-		  * Get formatted simulation watch tree for this aspect. 
-		  * 
-		  * @name AspectNode.getSimulationTree()
-		  */
-		 getSimulationTree : function(){
-			 return this.SimulationTree;       	   
-		 },
-		 
-		 getVisualizationTree : function(){
-			 return this.VisualizationTree;
-		 },
-		 
-		 getParentEntity : function(){
-			 return this.parentEntity;
-		 },
-		 
-		 setParentEntity : function(e){
-			 this.parentEntity = e;
-		 },
-		 
-		 /**
-          * Print out formatted node
-          */
-         print : function(){
-      	   var formattedNode="Name : " + this.name + "\n"+
-			   "      Id: " + this.id +"\n" + 
-			   "      InstancePath : " + this.instancePath+"\n"+
-      	   	   "      SubTree : ModelTree \n"+
-      	   	   "      SubTree : VisualizationTree \n"+
-      	   	   "      SubTree : SimulationTree \n";
-      	   
-      	   return formattedNode;
-         }
+		        	   if(GEPPETTO.selectAspect(this.instancePath)){
+		        		   message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
+		        		   this.selected = true;
+
+		        		   this.parentEntity.selected = true;
+
+		        		   GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+		        	   }
+		        	   else{
+		        		   message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
+		        	   }
+
+		        	   return message;
+		           },
+
+		           /**
+		            * Get the model interpreter associated with aspect
+		            *
+		            * @name AspectNode.getId()
+		            */
+		           getId : function(){
+		        	   return this.id;
+		           },
+
+		           /**
+		            * Get this entity's children entities
+		            * 
+		            * @name EntityNode.getChildren()
+		            * 
+		            * @returns {List<Aspect>} - All children e.g. aspects and entities
+		            *
+		            */
+		           getChildren : function(){
+		        	   var subtrees = this.get("children");
+		        	   
+		        	   return subtrees;
+		           },
+		           
+		           /**
+		            * Get the model interpreter associated with aspect
+		            *
+		            * @name AspectNode.getModelInterpreterName()
+		            */
+		           getModelInterpreterName : function(){
+		        	   return this.modelInterpreterName;
+		           },
+
+		           /**
+		            * Get the simulator interpreter associated with aspect
+		            *
+		            * @name AspectNode.getSimulatorName()
+		            */
+		           getSimulatorName : function(){
+		        	   return this.simulatorName;
+		           },
+
+		           /**
+		            * Get model URL associated with the aspect
+		            *
+		            * @name AspectNode.getModelURL()
+		            */
+		           getModelURL : function(){
+		        	   return this.modelURL;
+		           },
+
+		           /**
+		            * Get formatted model tree for this aspect
+		            * 
+		            * @name AspectNode.getModelTree()
+		            */
+		           getModelTree : function(){
+		        	   //empty model tree, request server for it
+		        	   if(this.ModelTree.getChildren().length==0){
+		        		   GEPPETTO.MessageSocket.send("get_model_tree", this.instancePath);
+
+		        		   return GEPPETTO.Resources.RETRIEVING_MODEL_TREE;
+		        	   }
+		        	   //model tree isn't empty, was requested previously and stored
+		        	   else{
+		        		   return this.ModelTree;
+		        	   }
+		           },
+
+		           /**
+		            * Get formatted simulation watch tree for this aspect. 
+		            * 
+		            * @name AspectNode.getSimulationTree()
+		            */
+		           getSimulationTree : function(){
+		        	   return this.SimulationTree;       	   
+		           },
+
+		           getVisualizationTree : function(){
+		        	   return this.VisualizationTree;
+		           },
+
+		           getParentEntity : function(){
+		        	   return this.parentEntity;
+		           },
+
+		           setParentEntity : function(e){
+		        	   this.parentEntity = e;
+		           },
+
+		           /**
+		            * Print out formatted node
+		            */
+		           print : function(){
+		        	   var formattedNode="Name : " + this.name + "\n"+
+		        	   "      Id: " + this.id +"\n" + 
+		        	   "      InstancePath : " + this.instancePath+"\n"+
+		        	   "      SubTree : ModelTree \n"+
+		        	   "      SubTree : VisualizationTree \n"+
+		        	   "      SubTree : SimulationTree \n";
+
+		        	   return formattedNode;
+		           }
 	});
 });

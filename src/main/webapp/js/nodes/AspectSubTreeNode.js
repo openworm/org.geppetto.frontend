@@ -62,7 +62,7 @@ define(function(require) {
 		            *
 		            * @name CompositeVariableNode.getChildren()
 		            * 
-		            * @returns {List<Aspect>} - List of aspects
+		            * @returns {List<Node>} - List of children nodes
 		            *
 		            */
 		           getChildren : function(){

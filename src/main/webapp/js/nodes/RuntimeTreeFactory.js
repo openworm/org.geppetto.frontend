@@ -191,6 +191,8 @@ define(function(require) {
 						this.createSimulationTree(subTree, simulationTreeUpdate);
 						aspect.SimulationTree = subTree;
 						
+						aspect.get("children").add(subTree);
+						
 						GEPPETTO.Console.updateTags(subTree.instancePath, subTree);
 					}
 					/*client side simulation tree already exists, update it*/
@@ -417,6 +419,8 @@ define(function(require) {
 								
 								a.VisualizationTree = subTree;
 								
+								a.get("children").add(subTree);
+								
 								a.VisualizationTree["content"] = node;								
 							}		
 							else if(node.type == "SimulationTree"){
@@ -427,7 +431,8 @@ define(function(require) {
 								
 								a.ModelTree = subTree;
 								
-								a.ModelTree["content"] = node;								
+								a.get("children").add(subTree);
+
 							}	
 						}
 					}

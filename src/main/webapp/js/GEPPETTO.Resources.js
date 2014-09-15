@@ -300,7 +300,21 @@ define(function(require) {
 			/**
 			 * Socket Messages
 			 */
-			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto servlet. \nReload page if problems persits"
+			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto servlet. \nReload page if problems persits",
+			
+			/**
+			 * Node Resources
+			 */
+			ENTITY_NODE : "EntityNode", 
+			ASPECT_NODE : "AspectNode",
+			ASPECT_SUBTREE_NODE : "AspectSubTreeNode",
+			VARIABLE_NODE : "VariableNode",
+			FUNCTION_NODE : "FunctionNode",
+			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
+			PARAMETER_NODE : "ParameterNode",
+			COMPOSITE_NODE : "CompositeNode",
+			DYNAMICS_NODE : "DynamicsSpecificationNode"
+				
 		}
 	}
 });

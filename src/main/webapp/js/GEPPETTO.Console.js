@@ -139,10 +139,14 @@ define(function(require) {
 									var A = elementsText.slice(0).sort(),
 										word1 = A[0], word2 = A[A.length - 1],
 										i = 0;
-									while(word1.charAt(i) == word2.charAt(i))++i;
-
-									//match up to dot for most common part
-									var mostCommon = word1.substring(0, i);
+									if(word1 != word2){
+										while(word1.charAt(i) == word2.charAt(i))++i;
+										//match up most common part
+										mostCommon = word1.substring(0, i);
+									}
+									else{
+										mostCommon = word1;
+									}
 
 									if(inpt.val().indexOf(mostCommon) == -1) {
 										inpt.val(mostCommon);//change the input to the first match

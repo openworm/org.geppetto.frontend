@@ -84,46 +84,41 @@ define(function(require) {
 		prepareTree: function(parent, data, dataset){
 			nodeName = data.instancePath;
 			
-			//TODO: Remove once all getName are implemented in all nodes
-			if (data.getName() === undefined){label = data.getId();}
-			else{label = data.getName();}
-			
-			
-			if (data._metaType != "VariableNode" & data._metaType != "DynamicsSpecificationNode" & data._metaType != "ParameterSpecificationNode") {
-				dataset.nodes[nodeName] = {name: label, variable: data};
-				if (parent != ''){
-					var link = {};
-					link.source = dataset.nodes[parent];
-					link.target = dataset.nodes[nodeName];
-					link.type = "suit";
-					dataset.links.push(link);
-				}
-				//TODO: Remove when entitynode and aspectnode getChildren works as getchildren in other nodes					
-				var children = [];
-				if (data._metaType != "EntityNode" & data._metaType != "AspectNode"){
-					children = data.getChildren().models;
+			if (nodeName != null){
+				//TODO: Remove once all getName are implemented in all nodes
+				if (data.getName() === undefined){label = data.getId();}
+				else{label = data.getName();}
+				
+				
+				if (data._metaType != "VariableNode" & data._metaType != "DynamicsSpecificationNode" & data._metaType != "ParameterSpecificationNode") {
+					dataset.nodes[nodeName] = {name: label, variable: data};
+					if (parent != ''){
+						var link = {};
+						link.source = dataset.nodes[parent];
+						link.target = dataset.nodes[nodeName];
+						link.type = "suit";
+						dataset.links.push(link);
+					}
+					var children = data.getChildren().models;
+					if (children.length > 0){
+						var parentFolderTmp = nodeName; 
+						for (var childIndex in children){
+							this.prepareTree(parentFolderTmp, children[childIndex], dataset);
+						}
+					}
+					
 				}
 				else{
-					children = data.getChildren();
-				}
-				if (children.length > 0){
-					var parentFolderTmp = nodeName; 
-					for (var childIndex in children){
-						this.prepareTree(parentFolderTmp, children[childIndex], dataset);
+					dataset.nodes[nodeName] = {name: label + "=" + data.getValue() + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):""), variable: data};
+					if (parent != ''){
+						var link = {};
+						link.source = dataset.nodes[parent];
+						link.target = dataset.nodes[nodeName];
+						link.type = "suit";
+						dataset.links.push(link);
 					}
 				}
-				
-			}
-			else{
-				dataset.nodes[nodeName] = {name: label + "=" + data.getValue() + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):""), variable: data};
-				if (parent != ''){
-					var link = {};
-					link.source = dataset.nodes[parent];
-					link.target = dataset.nodes[nodeName];
-					link.type = "suit";
-					dataset.links.push(link);
-				}
-			}
+			}	
 		},
 		
 		updateData: function(){

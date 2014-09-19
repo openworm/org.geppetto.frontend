@@ -231,14 +231,9 @@ define(function(require) {
 		           },
 
 					getChildren : function(){
-		        	   var children = new Array();
-		        	   if (this.aspects.length > 0){
-		        		   children = children.concat(this.aspects);
-		        	   }
-		        	   if (this.get("entities").length > 0){
-		        		   children = children.concat(this.get("entities"));
-		        	   }
-		        	   
+		        	   var children = new Backbone.Collection();
+		        	   children.add(this.get("aspects").models);
+		        	   children.add(this.get("entities").models);
 		        	   return children;
 		           }
 	});

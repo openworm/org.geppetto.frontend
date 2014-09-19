@@ -241,16 +241,10 @@ define(function(require) {
          },
 
 		 getChildren : function(){
-			 var children = new Array();
-			 if (!$.isEmptyObject(this.ModelTree)){
-				 children.push(this.ModelTree);
-			 }
-			 if (!$.isEmptyObject(this.SimulationTree)){
-				 children.push(this.SimulationTree);
-			 }
-			 if (!$.isEmptyObject(this.VisualizationTree)){
-				 children.push(this.VisualizationTree);
-			 }
+			 var children = new Backbone.Collection();
+			 children.add(this.ModelTree);
+			 children.add(this.SimulationTree);
+			 children.add(this.VisualizationTree);
 			 return children; 
 		 }
 	});

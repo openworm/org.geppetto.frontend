@@ -91,40 +91,34 @@ define(function(require) {
 		},
 
 		prepareTree : function(parent, data) {
-			
-			//TODO: Remove once all getName are implemented in all nodes
-			if (data.getName() === undefined){label = data.getId();}
-			else{label = data.getName();}
-			
-			if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode") {
-				if (!dataset.isDisplayed) {
-					dataset.valueDict[data.instancePath] = {};
-					dataset.valueDict[data.instancePath][label] = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
-					dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
-				}
-				else{
-					dataset.valueDict[data.instancePath][label] = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
-				}
-			}
-			else{
-				if (!dataset.isDisplayed) {
-					parentFolder = parent.addFolder(label);
-				}
-				//TODO: Remove when entitynode and aspectnode getChildren works as getchildren in other nodes					
-				var children = [];
-				if (data._metaType != "EntityNode" & data._metaType != "AspectNode"){
-					children = data.getChildren().models;
-				}
-				else{
-					children = data.getChildren();
-				}
-				if (children.length > 0){
-					var parentFolderTmp = parentFolder; 
-					for (var childIndex in children){
-						this.prepareTree(parentFolderTmp, children[childIndex]);
+			if (data._metaType != null){
+				//TODO: Remove once all getName are implemented in all nodes
+				if (data.getName() === undefined){label = data.getId();}
+				else{label = data.getName();}
+				
+				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode") {
+					if (!dataset.isDisplayed) {
+						dataset.valueDict[data.instancePath] = {};
+						dataset.valueDict[data.instancePath][label] = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
+						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
+					}
+					else{
+						dataset.valueDict[data.instancePath][label] = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
 					}
 				}
-			}
+				else{
+					if (!dataset.isDisplayed) {
+						parentFolder = parent.addFolder(label);
+					}
+					var children = data.getChildren().models;
+					if (children.length > 0){
+						var parentFolderTmp = parentFolder; 
+						for (var childIndex in children){
+							this.prepareTree(parentFolderTmp, children[childIndex]);
+						}
+					}
+				}
+			}	
 		},
 		
 		updateData : function() {

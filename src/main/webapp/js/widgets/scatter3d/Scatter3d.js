@@ -188,7 +188,12 @@ define(function(require) {
 				var data = this.datasets[key].data;
 				$("#legendBox").append("<div id='datasetLegend" + key + "' class='datasetLegend'><div class='legendColor' style='background: #" + (this.options.colours[key]).toString(16) + ";'></div></div>");
 				$("#datasetLegend" + key).append("<div id='datasetLegendText" + key + "' class='datasetLegendText'></div>");
-				$("#datasetLegendText" + key).append("<span style='color:RGB(" + this.options.axisColours[key].r + "," + this.options.axisColours[key].g + "," + this.options.axisColours[key].b + ")'>" + this.datasets[key].label +"</span>");
+				for(var dataKey in data) {
+					$("#datasetLegendText" + key).append("<span style='color:RGB(" + this.options.axisColours[dataKey].r + "," + this.options.axisColours[dataKey].g + "," + this.options.axisColours[dataKey].b + ")'>" + data[dataKey].label +"</span>");
+					if (dataKey != data.length -1){
+						$("#datasetLegendText" + key).append("<br>");
+					}
+				}
 			}
 		},
 		
@@ -227,19 +232,19 @@ define(function(require) {
 						this.datasets.push(dataset);
 					}
 					else{
+						
+						dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial({linewidth: 4, color: this.options.colours[this.datasets.length]})};
 						for (var key=0; key<state.length; key++){
 							var variableState = state[key];
 							
-							var value = variableState.getValue();
 							var id = variableState.getInstancePath();
-							
-							this.datasets.push({
+							dataset.data.push({
 								label: id,
 								variable : variableState,
-								data : [ [0,value] ],
-								curves : [],lineBasicMaterial: new THREE.LineBasicMaterial({linewidth: 4, color: this.options.colours[this.datasets.length]})								
+								values: []
 							});
-						}	
+						}
+						this.datasets.push(dataset);	
 					}
 					//Painting legend
 					if (this.options.axis && this.options.legend === true){this.paintLegend();}
@@ -282,19 +287,27 @@ define(function(require) {
 		updateDataSet: function() {
 			if (this.options.plotEachN == null || !(this.numberPoints++ % this.options.plotEachN)){
 				for(var key in this.datasets) {
-					var newValue = this.datasets[key].variable.getValue();
-
-					var oldata = this.datasets[key].data;;
 					var reIndex = false;
-
-					if(oldata.length > this.limit) {
-						oldata.splice(0, 1);
-						reIndex = true;
+					var data = this.datasets[key].data;
+					
+					var newValues = new Array(3);
+					var olddata = new Array(3);
+					for(var dataKey in data) {
+						var newValue = data[dataKey].variable.getValue();
+						currentLabel = data[dataKey].label;
+						newValues[dataKey] = newValue;
+						
+						olddata = data[dataKey].values;
+						if(olddata.length > this.options.limit) {
+							olddata.splice(0, 1);
+							reIndex = true;
+						}
+						
+						olddata.push(newValues[dataKey]);
+						this.datasets[key].data[dataKey].values = olddata;
 					}
-
-					oldata.push([ oldata.length, newValue]);
 										
-					if(this.scene != null && this.datasets[key].data[0].length>1){
+					if(this.scene != null && this.datasets[key].data[0].values.length>1){
 						//TODO: This solution adds a new line for each new vertex until a limit. When this limit is reached
 						// it behaves as a FIFO (deleting first line and adding a new one).
 						// I also tried to have just one single line and remove/add vertex (which I think will have a better performance/elegance)
@@ -328,6 +341,7 @@ define(function(require) {
 							 line = this.paintThreeLine(
 									[this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-2], this.datasets[key].data[0].values[this.datasets[key].data[0].values.length-1]],
 									[this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-2], this.datasets[key].data[1].values[this.datasets[key].data[1].values.length-1]],
+									[this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-2], this.datasets[key].data[2].values[this.datasets[key].data[2].values.length-1]],
 									this.datasets[key].lineBasicMaterial
 							);
 						}

@@ -26,7 +26,12 @@ define(function (require) {
         },
 
         onClickCustom: function() {
-            this.loadSimulationURL(this.url);
+        	//load simulation xml if url isn't null
+        	if(this.url!=null){
+        		this.loadSimulationURL(this.url);
+        		//set waiting message until xml received from server
+        		this.setState({disableLoad:null, simulationXML:"Loading Simulation XML, please wait..."});
+        	}
             this.setState({loadFromURL: false});
         },
 
@@ -103,7 +108,10 @@ define(function (require) {
         },
 
         onChangeXML:function(xml) {
-            this.setState({disableLoad:!xml, simulationXML:xml});
+        	//only change xml if it's editing
+        	if(GEPPETTO.JSEditor.isEditing()){
+        		this.setState({disableLoad:!xml, simulationXML:xml});
+        	}
         },
 
         render: function () {

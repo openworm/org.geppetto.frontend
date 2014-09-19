@@ -340,9 +340,9 @@ define(function(require) {
 
 				// Focuses the input textarea
 				focus: function(e) {
-					e.preventDefault();
-					this.textarea.focus();
-					return false;
+					//e.preventDefault();
+					//this.textarea.focus();
+					//return false;
 				},
 
 				// The keydown handler, that controls all the input

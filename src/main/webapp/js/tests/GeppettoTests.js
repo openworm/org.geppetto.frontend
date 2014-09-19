@@ -167,7 +167,7 @@ define(function(require) {
 		
 		test("Test Copy History To Clipboard", function() {
 
-			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
+			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "No commands to copy, test passed");
 
 			//add some commands to history
 			GEPPETTO.Console.executeCommand("G.help();");

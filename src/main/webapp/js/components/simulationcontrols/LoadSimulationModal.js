@@ -74,6 +74,13 @@ define(function (require) {
                     }).popover('show');
                 }
             });
+
+            $(this.getDOMNode()).keypress((function(e) {
+                if(e.which == 13) {
+                    e.preventDefault();
+                    this.loadSimulation();
+                }
+            }).bind(this));
         },
 
         onSelectSimulationUrl: function(event) {
@@ -147,7 +154,7 @@ define(function (require) {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn" onClick={this.hide}>Cancel</button>
-                            <button type="button" className="btn btn-warning load-sim-button" disabled={this.state.disableLoad} onClick={this.loadSimulation}>Load</button>
+                            <button type="submit" className="btn btn-warning load-sim-button" disabled={this.state.disableLoad} onClick={this.loadSimulation}>Load</button>
                         </div>
                     </div>
                 </div>

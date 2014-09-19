@@ -595,11 +595,8 @@ public class GeppettoServletController
 			// Controlling user is leaving, but simulation might still be running.
 			try
 			{
-				if(exitingVisitor.getSimulationService().isRunning())
-				{
-					// Pause running simulation upon controlling user's exit
-					exitingVisitor.getSimulationService().stop();
-				}
+				// Pause running simulation upon controlling user's exit
+				exitingVisitor.getSimulationService().stop();
 			}
 			catch(GeppettoExecutionException e)
 			{

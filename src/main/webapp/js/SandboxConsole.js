@@ -500,12 +500,16 @@ define(function(require) {
 
 					if(matches.length > 1) {
 						var A = matches.slice(0).sort(),
-							word1 = A[0], word2 = A[A.length - 1],
-							i = 0;
-						while(word1.charAt(i) == word2.charAt(i))++i;
-
-						//match up most common part
-						mostCommon = word1.substring(0, i);
+						word1 = A[0], word2 = A[A.length - 1],
+						i = 0;
+						if(word1 != word2){
+							while(word1.charAt(i) == word2.charAt(i))++i;
+							//match up most common part
+							mostCommon = word1.substring(0, i);
+						}
+						else{
+							mostCommon = word1;
+						}
 
 					}
 					

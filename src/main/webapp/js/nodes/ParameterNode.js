@@ -60,5 +60,15 @@ define(function(require) {
 		getProperties : function(){
 			return this.properties;
 		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function(){
+			return "Name : " + this.name + "\n"+
+			   "    Id: " + this.id +"\n" + 
+			   "    InstancePath : " + this.instancePath+"\n"+
+			   "    Properties : " + this.properties + "\n";
+		}
 	});
 });

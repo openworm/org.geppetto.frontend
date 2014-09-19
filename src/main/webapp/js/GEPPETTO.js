@@ -106,8 +106,7 @@ define(function(require) {
 											var voType = vo._metaType;
 											if (voType == "ParticleNode"
 												|| metaType == "SphereNode"
-													|| metaType == "CylinderNode"
-														|| metaType == "ColladaNode") {
+													|| metaType == "CylinderNode") {
 												GEPPETTO.updateGeometry(aspect.instancePath,vo);
 											}
 										}
@@ -115,7 +114,7 @@ define(function(require) {
 									}
 									else{
 										if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
-												metaType == "CylinderNode"|| metaType == "ColladaNode") {
+												metaType == "CylinderNode") {
 
 											GEPPETTO.updateGeometry(aspect.instancePath,node);								
 										}

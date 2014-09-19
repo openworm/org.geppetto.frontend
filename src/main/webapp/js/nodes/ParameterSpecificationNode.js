@@ -84,5 +84,17 @@ define(function(require) {
 		getScalingFactor : function(){
 			return this.scalingFactor;
 		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function(){
+			return "Name : " + this.name + "\n"+
+			   "    Id: " + this.id +"\n" + 
+			   "    InstancePath : " + this.instancePath+"\n"+
+			   "    Value : " + this.value + "\n" + 
+			   "    Unit : " + this.unit + "\n" + 
+			   "    ScalingFactor : " + this.scalingFactor + "\n";
+		}
 	});
 });

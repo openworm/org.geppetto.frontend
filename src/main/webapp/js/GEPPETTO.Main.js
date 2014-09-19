@@ -81,19 +81,18 @@ define(function(require) {
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there
 					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
-                        var infomodalBtn = $('#infomodal-btn');
 
         	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("Zzz");
 						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
-						infomodalBtn.html("Yes");
+						$('#infomodal-btn').html("Yes");
 
-						infomodalBtn.html("Yes").click(function() {
+						$('#infomodal-btn').html("Yes").click(function() {
 							$('#infomodal').modal('hide');
 							GEPPETTO.Main.idleTime = 0;
 
 							//unbind click event so we can reuse same modal for other alerts
-							infomodalBtn.unbind('click');
+							$('#infomodal-btn').unbind('click');
 							
 							if(GEPPETTO.Simulation.isLoading()){
 				                GEPPETTO.trigger('simulation:show_spinner');

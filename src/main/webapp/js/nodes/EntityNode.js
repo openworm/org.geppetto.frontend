@@ -60,8 +60,7 @@ define(function(require) {
 		        	   entities : [],
 		           },
 		           
-		           aspects : [],
-		           entities : [],
+		           children : [],
 		           position : null,
 		           selected : false,
 		           visible : true,
@@ -184,19 +183,8 @@ define(function(require) {
 		            *
 		            */
 		           getAspects : function(){
-		        	   var formattedOutput="";
-						var indentation = "↪";
-						for(var a in this.aspects){
-							var aspect = this.aspects[a];
-							formattedOutput = formattedOutput+indentation + aspect.id + " [Aspect]\n";
-							indentation = "      " + indentation;
-						}
-						
-						if(formattedOutput.lastIndexOf("\n")>0) {
-							formattedOutput = formattedOutput.substring(0, formattedOutput.lastIndexOf("\n"));
-						} 
-						
-						return formattedOutput.replace(/"/g, "");
+		        	   var entities = this.get("aspects");
+		        	   return entities;
 		           },
 		           
 		           /**
@@ -204,12 +192,27 @@ define(function(require) {
 		            * 
 		            * @name EntityNode.getEntities()
 		            * 
-		            * @returns {List<Aspect>} - List of aspects
+		            * @returns {List<Entity>} - List of entities
 		            *
 		            */
 		           getEntities : function(){
 		        	   var entities = this.get("entities");
 		        	   return entities;
+		           },
+		           
+		           /**
+		            * Get this entity's children entities
+		            * 
+		            * @name EntityNode.getChildren()
+		            * 
+		            * @returns {List<Aspect>} - All children e.g. aspects and entities
+		            *
+		            */
+		           getChildren : function(){
+		        	   var entities = this.get("entities");
+		        	   var aspects = this.get("aspects");
+		    
+		        	   return entities.add(aspects.toJSON());
 		           },
 
 		           /**

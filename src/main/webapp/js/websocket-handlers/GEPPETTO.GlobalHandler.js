@@ -69,6 +69,7 @@ define(function(require) {
 
         //Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_LOADING_SIM] = function(payload) {
+            GEPPETTO.trigger('geppetto:error', payload.message);
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INVALID_SIMULATION_FILE, payload.message);
         };
 
@@ -77,6 +78,9 @@ define(function(require) {
             var code = JSON.parse(payload.message).error_code;
             var source = JSON.parse(payload.message).source;
             var exception = JSON.parse(payload.message).exception;
+
+            GEPPETTO.trigger('geppetto:error', msg);
+
             GEPPETTO.FE.errorDialog(GEPPETTO.Resources.ERROR, msg, code, source, exception);
 
         };
@@ -103,6 +107,7 @@ define(function(require) {
 
         //Simulation server already in use
         messageHandler[messageTypes.SERVER_UNAVAILABLE] = function(payload){
+            GEPPETTO.trigger('geppetto:error', payload.message);
             GEPPETTO.FE.observersDialog(GEPPETTO.Resources.SERVER_UNAVAILABLE, payload.message);
         };
 

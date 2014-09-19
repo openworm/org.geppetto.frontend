@@ -51,12 +51,27 @@ define(function(require) {
 		//suggestions for autocomplete
 		var tags = [];
 		var helpObjectsMap = {};
+		var nonCommands;
 		
 		/**
 		 * Handles user clicking the "Javascript Console" button, which
 		 * toggles the console.
 		 */
 		$(document).ready(function() {
+			/*
+			 * Set of commands being inherited from Backbone ojects, ignored them while displaying 
+			 * autocomplete commands.
+			 */
+			nonCommands = ["constructor()", "initialize(options)","on(t,e,i)","once(t,e,r)","off(t,e,r)","trigger(t)","stopListening(t,e,r)","listenTo(e,r,s)",
+			                   "listenToOnce(e,r,s)","bind(t,e,i)","unbind(t,e,r)","$(t)","initialize()","remove()","setElement(t,i)","delegateEvents(t)",
+			                   "undelegateEvents()","_ensureElement()","constructor(a,c)","on(a,c,d)","off(a,c,d)","get(a)","set(a,c,d)","_set(a,c)",
+			                   "_setAttr(c={})","_bubbleEvent(a,c,d)","_isEventAvailable(a,c)","_setupParents(a,c)","_createCollection(a,c)","_processPendingEvents()",
+			                   "_transformRelatedModel(a,c)","_transformCollectionType(a,c,d)","trigger(a)","toJSON(a)","clone(a)","cleanup(a)","render()", "getState(tree,state)",
+			                   "destroy(a)","_getAttr(a)","on(t,e,i)","once(t,e,r)","off(t,e,r)","trigger(t)","stopListening(t,e,r)","listenTo(e,r,s)","listenToOnce(e,r,s)",
+			                   "bind(t,e,i)","unbind(t,e,r)","initialize()","toJSON(t)","sync()","get(t)","escape(t)","has(t)","set(t,e,r)",
+			                   "unset(t,e)","clear(t)","hasChanged(t)","changedAttributes(t)","previous(t)","previousAttributes()","fetch(t)","save(t,e,r)","destroy(t)",
+			                   "url()","parse(t,e)","clone()","isNew()","isValid(t)","_validate(t,e)","keys()","values()","pairs()","invert()","pick()","omit()"];
+			
 			//JS Console Button clicked
 			$('#consoleButton').click(function() {
 				GEPPETTO.Console.toggleConsole();
@@ -124,10 +139,14 @@ define(function(require) {
 									var A = elementsText.slice(0).sort(),
 										word1 = A[0], word2 = A[A.length - 1],
 										i = 0;
-									while(word1.charAt(i) == word2.charAt(i))++i;
-
-									//match up to dot for most common part
-									var mostCommon = word1.substring(0, i);
+									if(word1 != word2){
+										while(word1.charAt(i) == word2.charAt(i))++i;
+										//match up most common part
+										mostCommon = word1.substring(0, i);
+									}
+									else{
+										mostCommon = word1;
+									}
 
 									if(inpt.val().indexOf(mostCommon) == -1) {
 										inpt.val(mostCommon);//change the input to the first match
@@ -397,8 +416,6 @@ define(function(require) {
 			 * @returns {}
 			 */
 			updateCommands: function(scriptLocation, object, id) {
-				var nonCommands = ["constructor()", "initialize(options)"];
-
 				var descriptions = [];
 
 				//retrieve the script to get the comments for all the methods
@@ -476,6 +493,10 @@ define(function(require) {
 
 				//after commands and comments are extract, update global help option
 				GEPPETTO.Console.getHelpObjectsMap()[id] = commandsFormmatted.substring(0, commandsFormmatted.length - 2);
+				
+				if(proto.__proto__ != null){
+					GEPPETTO.Console.updateCommands(scriptLocation, proto, id);
+				}
 			},
 
 

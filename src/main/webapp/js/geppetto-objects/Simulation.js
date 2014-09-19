@@ -82,9 +82,14 @@ define(function(require) {
 				if(this.isLoaded()) {
 					GEPPETTO.MessageSocket.send("start", null);
 
+					if(this.status == this.StatusEnum.STOPPED){
+						//reset data for any open plot widget after simulation was stopped and then started again
+						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+					}
+					
 					this.status = this.StatusEnum.STARTED;
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_START);
-
+					 
 					return GEPPETTO.Resources.SIMULATION_STARTED;
 				}
 				else {

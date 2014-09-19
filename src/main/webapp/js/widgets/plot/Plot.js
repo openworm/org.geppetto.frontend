@@ -95,7 +95,7 @@ define(function(require) {
 			/**
 			 * Takes data series and plots them. To plot array(s) , use it as
 			 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
-			 * plotData("objectName") Multiples arrays can be specified at once in
+			 * plotData(object) Multiples arrays can be specified at once in
 			 * this method, but only one object at a time.
 			 *
 			 * @name plotData(state, options)
@@ -176,7 +176,7 @@ define(function(require) {
 			 * @param options -
 			 *            options for the plotting widget, if null uses default
 			 */
-			plotXYData: function(newDataX, newDataY, options) {
+			plotXYData: function(dataX, dataY, options) {
 
 				// If no options specify by user, use default options
 				if(options != null) {
@@ -223,7 +223,7 @@ define(function(require) {
 			},
 			/**
 			 * Removes the data set from the plot. EX:
-			 * removeDataSet(dummyDouble)
+			 * removeDataSet(state)
 			 *
 			 * @param set -
 			 *            Data set to be removed from the plot
@@ -352,7 +352,7 @@ define(function(require) {
 			/**
 			 * Sets the legend for a variable
 			 * 
-			 @name setLegend(variable, legend)
+			 * @name setLegend(variable, legend)
 			 * @param variable -
 			 *            variable to change display label in legends
 			 * @param legend - new legend name

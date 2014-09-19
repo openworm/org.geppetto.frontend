@@ -107,6 +107,8 @@ define(function(require) {
 					GEPPETTO.Console.removeCommands(plot.getId());
 
 					plot.destroy();
+					
+					i--;
 				}
 
 				plots = new Array();

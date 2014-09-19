@@ -70,7 +70,9 @@ define(function(require) {
         var messageHandler = {};
 
         messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
+        	var initTime = new Date()-GEPPETTO.Simulation.initializationTime;
+        	
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
             var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
             GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);           

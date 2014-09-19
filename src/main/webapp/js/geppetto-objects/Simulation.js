@@ -59,6 +59,7 @@ define(function(require) {
 			loading : false,
 			loadingTimer : null,
 			runTimeTree : {},
+			initializationTime : null,
 			
 			StatusEnum: {
 				INIT: 0,
@@ -180,6 +181,8 @@ define(function(require) {
 							GEPPETTO.animate();
 						}
 						GEPPETTO.MessageSocket.send("init_url", simulationURL);
+						this.initializationTime = new Date();
+						GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 						loading = true;
 						GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
 						GEPPETTO.FE.SimulationReloaded();

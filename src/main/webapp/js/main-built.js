@@ -39780,6 +39780,8 @@ define('websocket-handlers/GEPPETTO.MessageSocket',['require'],function(require)
 				}
 
 				GEPPETTO.MessageSocket.socket.send(messageTemplate(requestID, command, parameter));
+				
+				GEPPETTO.Console.log("Sending command via socket "+ command);
 			},
 
 			isReady: function() {
@@ -40054,7 +40056,9 @@ define('websocket-handlers/GEPPETTO.SimulationHandler',['require'],function(requ
         var messageHandler = {};
 
         messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
+        	var initTime = new Date()-GEPPETTO.Simulation.initializationTime;
+        	
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
             var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
             GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);           
@@ -40320,6 +40324,7 @@ define('geppetto-objects/Simulation',['require'],function(require) {
 			loading : false,
 			loadingTimer : null,
 			runTimeTree : {},
+			initializationTime : null,
 			
 			StatusEnum: {
 				INIT: 0,
@@ -40441,6 +40446,8 @@ define('geppetto-objects/Simulation',['require'],function(require) {
 							GEPPETTO.animate();
 						}
 						GEPPETTO.MessageSocket.send("init_url", simulationURL);
+						this.initializationTime = new Date();
+						GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 						loading = true;
 						GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
 						GEPPETTO.FE.SimulationReloaded();

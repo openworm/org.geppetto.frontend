@@ -103,6 +103,7 @@ define(function(require) {
 		module("Simulation - Runtime Tree");
 		asyncTest("Test Runtime Tree when Loading and Simulating JLems Simulation with variables", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
 			var handler = {
 				checkUpdate2 : false,
 				onMessage: function(parsedServerMessage) {
@@ -110,11 +111,18 @@ define(function(require) {
 					switch(parsedServerMessage.type) {
 						//Simulation has been loaded and model need to be loaded
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
 							var scene = JSON.parse(payload.update).scene;
 
 							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 
+							var passTimeTest = false;
+							if(time < 4){
+								passTimeTest = true;
+							}
+							
+							equal(true, passTimeTest, "Simulation loaded within time limit");
 							notEqual(null, hhcell, "Entities checked");
 							equal(1, hhcell.get('aspects').length, "Aspects checked");
 							equal(false, jQuery.isEmptyObject(hhcell.electrical.VisualizationTree), "Test Visualization at load");
@@ -179,6 +187,7 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/referencing_variables/LEMS/SingleComponentHH/GEPPETTO.xml');
+			initializationTime = new Date();	
 		});
 		
 		asyncTest("Test Runtime Tree at Load and SimulationTree with variables for SPH + ModelTree", function() {

@@ -11,6 +11,8 @@ define(function (require) {
             require('jsx!components/bootstrap/modal'),
             require('jsx!mixins/Events'),           
         ],
+        
+        url : null,
 
         getInitialState: function() {
             return {
@@ -24,6 +26,7 @@ define(function (require) {
         },
 
         onClickCustom: function() {
+            this.loadSimulationURL(this.url);
             this.setState({loadFromURL: false});
         },
 
@@ -86,7 +89,7 @@ define(function (require) {
         onSelectSimulationUrl: function(event) {
             var url = event.target.value;
             if(url) {
-                this.loadSimulationURL(url);
+            	this.url = url;
                 if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.load-sim-button').popover({
                         title: 'Load Simulation',

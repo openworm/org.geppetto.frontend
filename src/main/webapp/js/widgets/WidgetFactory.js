@@ -34,23 +34,31 @@
 /**
  * Class used to create widgets and handle widget events from parent class.
  */
-
-/**
- * Enum use to hold different types of widgets
- */
-
 define(function(require) {
 
 	return function(GEPPETTO) {
+		/**
+		 * 
+		 * Widgets
+		 * 
+		 * Different types of widgets that exist in Geppetto
+		 * 
+		 * @enum 
+		 */
 		GEPPETTO.Widgets = {
 			PLOT: 0,
 			POPUP : 1,
 			SCATTER3D: 2
 		};
 
+		/**
+		 * @exports Widgets/GEPPETTO.WidgetFactory
+		 */
 		GEPPETTO.WidgetFactory = {
 			/**
 			 * Adds widget to Geppetto
+			 * 
+			 * @param {GEPPETTO.Widgets} widgetType - Widget to add to Geppetto
 			 */
 			addWidget: function(widgetType) {
 				var widget = null;
@@ -77,6 +85,8 @@ define(function(require) {
 
 			/**
 			 * Removes widget from Geppetto
+			 * 
+			 * @param {GEPPETTO.Widgets} widgetType - Widget to remove from Geppetto
 			 */
 			removeWidget: function(widgetType) {
 				switch(widgetType) {

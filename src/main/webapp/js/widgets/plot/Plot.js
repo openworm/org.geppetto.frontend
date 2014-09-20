@@ -32,10 +32,9 @@
  *******************************************************************************/
 /**
  * Plot Widget class
- *
+ * @module Widgets/Plot
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-
 define(function(require) {
 
 	var Widget = require('widgets/Widget');
@@ -76,6 +75,11 @@ define(function(require) {
 				},
 			},
 
+			/**
+			 * Initializes the plot given a set of options
+			 * 
+		     * @param {Object} options - Object with options for the plot widget
+		     */
 			initialize: function(options) {
 				this.id = options.id;
 				this.name = options.name;
@@ -98,11 +102,9 @@ define(function(require) {
 			 * plotData(object) Multiples arrays can be specified at once in
 			 * this method, but only one object at a time.
 			 *
-			 * @name plotData(state, options)
-			 * @param state -
-			 *            series to plot, can be array of data or an geppetto simulation variable
-			 * @param options -
-			 *            options for the plotting widget, if null uses default
+			 * @command plotData(state, options)
+			 * @param {Object} state - series to plot, can be array of data or an geppetto simulation variable
+			 * @param {Object} options - options for the plotting widget, if null uses default
 			 */
 			plotData: function(state, options) {
 
@@ -168,13 +170,10 @@ define(function(require) {
 			 * array(s) , use it as plotData([[1,2],[2,3]]) To plot an object ,
 			 * use it as plotData(objectNameX,objectNameY)
 			 *
-			 * @name plotData(dataX,dataY, options)
-			 * @param newDataX -
-			 *            series to plot on X axis, can be array or an object
-			 * @param newDataY -
-			 *            series to plot on Y axis, can be array or an object
-			 * @param options -
-			 *            options for the plotting widget, if null uses default
+			 * @command plotData(dataX,dataY, options)
+			 * @param {Object} dataX - series to plot on X axis, can be array or an object
+			 * @param {Object} dataY - series to plot on Y axis, can be array or an object
+			 * @param options - options for the plotting widget, if null uses default
 			 */
 			plotXYData: function(dataX, dataY, options) {
 
@@ -223,10 +222,10 @@ define(function(require) {
 			},
 			/**
 			 * Removes the data set from the plot. EX:
-			 * removeDataSet(state)
+			 * 
+			 * @command removeDataSet(state)
 			 *
-			 * @param set -
-			 *            Data set to be removed from the plot
+			 * @param {Object} state -Data set to be removed from the plot
 			 */
 			removeDataSet: function(state) {
 				if(state != null) {
@@ -305,23 +304,23 @@ define(function(require) {
 				}
 			},
 
-			/**
-			 * Plots a function against a data series
-			 *
-			 * @name dataFunction(func, data, options)
-			 * @param func - function to plot vs data
-			 * @param data - data series to plot against function
-			 * @param options - options for plotting widget
-			 */
-			plotDataFunction: function(func, data, options) {
-
-			},
+//			/**
+//			 * Plots a function against a data series
+//			 *
+//			 * @command dataFunction(func, data, options)
+//			 * @param func - function to plot vs data
+//			 * @param data - data series to plot against function
+//			 * @param options - options for plotting widget
+//			 */
+//			plotDataFunction: function(func, data, options) {
+//
+//			},
 
 			/**
 			 * Resets the plot widget, deletes all the data series but does not
 			 * destroy the widget window.
 			 *
-			 * @name resetPlot()
+			 * @command resetPlot()
 			 */
 			resetPlot: function() {
 				if(this.plot != null) {
@@ -336,8 +335,8 @@ define(function(require) {
 			 *
 			 * Set the options for the plotting widget
 			 *
-			 * @name setOptions(options)
-			 * @param options
+			 * @command setOptions(options)
+			 * @param {Object} options - options to modify the plot widget
 			 */
 			setOptions: function(options) {
 				this.options = options;
@@ -352,10 +351,9 @@ define(function(require) {
 			/**
 			 * Sets the legend for a variable
 			 * 
-			 * @name setLegend(variable, legend)
-			 * @param variable -
-			 *            variable to change display label in legends
-			 * @param legend - new legend name
+			 * @command setLegend(variable, legend)
+			 * @param {Object} variable - variable to change display label in legends
+			 * @param {String} legend - new legend name
 			 */
 			setLegend : function(variable, legend){
 				var labelsMap = this.labelsMap;
@@ -405,7 +403,9 @@ define(function(require) {
 			/**
 			 * Sets a label next to the Y Axis
 			 *
-			 * @param label - Label to use for Y Axis
+			 * @command setAxisLabel(labelY, labelX)
+			 * @param {String} labelY - Label to use for Y Axis
+			 * @param {String} labelX - Label to use for X Axis
 			 */
 			setAxisLabel: function(labelY, labelX) {
 				this.options.yaxis.axisLabel = labelY;

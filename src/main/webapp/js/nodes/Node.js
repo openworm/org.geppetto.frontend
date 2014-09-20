@@ -33,6 +33,7 @@
 /**
  * The parent node from where all other nodes extend
  * 
+ * @module nodes/Node
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define([
@@ -54,8 +55,8 @@ define([
 		/**
 		 * Gets the instance path of the node
 		 *
-		 * @name Node.getInstancePath()
-		 * @returns {String} - Instance path of  this node
+		 * @command Node.getInstancePath()
+		 * @returns {String} Instance path of  this node
 		 *
 		 */
 		getInstancePath : function(){
@@ -65,8 +66,8 @@ define([
 		/**
 		 * Gets the name of the node
 		 *
-		 * @name Node.getName()
-		 * @returns {String} - Name of the node
+		 * @command Node.getName()
+		 * @returns {String} Name of the node
 		 *
 		 */
 		getName : function(){
@@ -76,7 +77,7 @@ define([
 		/**
 		 * Sets the name of the node
 		 *
-		 * @name Node.setName()
+		 * @command Node.setName()
 		 *
 		 */
 		setName : function(newname){
@@ -86,8 +87,8 @@ define([
         /**
          * Get the id associated with node
          *
-         * @name Node.getId()
-         * @returns {String} - ID of node
+         * @command Node.getId()
+         * @returns {String} ID of node
          */
         getId : function(){
      	   return this.id;

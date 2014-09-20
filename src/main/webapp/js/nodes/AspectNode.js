@@ -34,6 +34,7 @@
  * Client class use to represent an Aspect. It stores that aspect's properties along with its
  * population, visualization and model tree.
  * 
+ * @module nodes/AspectNode
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -62,6 +63,12 @@ define(function(require) {
 		           VisualizationTree : {},
 		           SimulationTree : {},
 		           parentEntity : null,
+		           
+		           /**
+					 * Initializes this node with passed attributes
+					 * 
+				     * @param {Object} options - Object with options attributes to initialize node
+				     */
 		           initialize : function(options){
 		        	   this.id = options.id;
 		        	   this.modelInterpreterName = options.modelInterpreter;
@@ -75,7 +82,7 @@ define(function(require) {
 		           /**
 		            * Hides the aspect
 		            *
-		            * @name AspectNode.hide()
+		            * @command AspectNode.hide()
 		            *
 		            */
 		           hide : function(){
@@ -95,7 +102,7 @@ define(function(require) {
 		           /**
 		            * Shows the aspect
 		            *
-		            * @name AspectNode.show()
+		            * @command AspectNode.show()
 		            *
 		            */
 		           show : function(){
@@ -116,7 +123,7 @@ define(function(require) {
 		           /**
 		            * Unselects the aspect
 		            *
-		            * @name AspectNode.unselect()
+		            * @command AspectNode.unselect()
 		            *
 		            */
 		           unselect : function(){
@@ -140,7 +147,7 @@ define(function(require) {
 		           /**
 		            * Selects the aspect
 		            *
-		            * @name AspectNode.unselect()
+		            * @command AspectNode.unselect()
 		            *
 		            */
 		           select : function(){
@@ -165,7 +172,7 @@ define(function(require) {
 		           /**
 		            * Get the model interpreter associated with aspect
 		            *
-		            * @name AspectNode.getId()
+		            * @command AspectNode.getId()
 		            */
 		           getId : function(){
 		        	   return this.id;
@@ -174,9 +181,9 @@ define(function(require) {
 		           /**
 		            * Get this entity's children entities
 		            * 
-		            * @name EntityNode.getChildren()
+		            * @command EntityNode.getChildren()
 		            * 
-		            * @returns {List<Aspect>} - All children e.g. aspects and entities
+		            * @returns {List<Aspect>} All children e.g. aspects and entities
 		            *
 		            */
 		           getChildren : function(){
@@ -188,7 +195,7 @@ define(function(require) {
 		           /**
 		            * Get the model interpreter associated with aspect
 		            *
-		            * @name AspectNode.getModelInterpreterName()
+		            * @command AspectNode.getModelInterpreterName()
 		            */
 		           getModelInterpreterName : function(){
 		        	   return this.modelInterpreterName;
@@ -197,7 +204,7 @@ define(function(require) {
 		           /**
 		            * Get the simulator interpreter associated with aspect
 		            *
-		            * @name AspectNode.getSimulatorName()
+		            * @command AspectNode.getSimulatorName()
 		            */
 		           getSimulatorName : function(){
 		        	   return this.simulatorName;
@@ -206,7 +213,7 @@ define(function(require) {
 		           /**
 		            * Get model URL associated with the aspect
 		            *
-		            * @name AspectNode.getModelURL()
+		            * @command AspectNode.getModelURL()
 		            */
 		           getModelURL : function(){
 		        	   return this.modelURL;
@@ -215,7 +222,7 @@ define(function(require) {
 		           /**
 		            * Get formatted model tree for this aspect
 		            * 
-		            * @name AspectNode.getModelTree()
+		            * @command AspectNode.getModelTree()
 		            */
 		           getModelTree : function(){
 		        	   //empty model tree, request server for it
@@ -233,12 +240,17 @@ define(function(require) {
 		           /**
 		            * Get formatted simulation watch tree for this aspect. 
 		            * 
-		            * @name AspectNode.getSimulationTree()
+		            * @command AspectNode.getSimulationTree()
 		            */
 		           getSimulationTree : function(){
 		        	   return this.SimulationTree;       	   
 		           },
 
+		           /**
+		            * Get formatted visualization watch tree for this aspect. 
+		            * 
+		            * @command AspectNode.getVisualizationTree()
+		            */
 		           getVisualizationTree : function(){
 		        	   return this.VisualizationTree;
 		           },

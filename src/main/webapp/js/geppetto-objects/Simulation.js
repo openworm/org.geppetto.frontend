@@ -36,8 +36,6 @@
  * Class for the Simulation Object. Handles user's request to start, stop, pause,
  * and/or load a simulation.
  *
- * @constructor
- *
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @author giovanni@openworm.org (Giovanni Idili)
  * @author  Jesus R. Martinez (jesus@metacell.us)
@@ -46,6 +44,9 @@ define(function(require) {
 	return function(GEPPETTO) {
 		var loading = false;
 
+		/**
+		 * @exports geppetto-objects/Simulation
+		 */
 		GEPPETTO.Simulation = {
 			simulationStates: [],
 
@@ -61,6 +62,12 @@ define(function(require) {
 			runTimeTree : {},
 			initializationTime : null,
 			
+			/**
+			 * Simulation.Status
+			 * 
+			 * Different statutes a Simulation can be on
+			 * @enum
+			 */
 			StatusEnum: {
 				INIT: 0,
 				LOADED: 1,
@@ -76,8 +83,8 @@ define(function(require) {
 			/**
 			 * Start the simulation.
 			 *
-			 * @name GEPPETTO.Simulation.start()
-			 * @returns {String} - Simulation status after starting it.
+			 * @command GEPPETTO.Simulation.start()
+			 * @returns {String}  Simulation status after starting it.
 			 */
 			start: function() {
 				if(this.isLoaded()) {
@@ -101,8 +108,8 @@ define(function(require) {
 			/**
 			 * Pauses the simulation
 			 *
-			 * @name GEPPETTO.Simulation.pause()
-			 * @returns {String} - Status of Simulation after pausing it.
+			 * @command GEPPETTO.Simulation.pause()
+			 * @returns {String}  Status of Simulation after pausing it.
 			 *
 			 */
 			pause: function() {
@@ -123,8 +130,8 @@ define(function(require) {
 			/**
 			 * Stops the simulation.
 			 *
-			 * @name GEPPETTO.Simulation.stop()
-			 * @returns {String} - Status of simulation after stopping it.
+			 * @command GEPPETTO.Simulation.stop()
+			 * @returns {String} Status of simulation after stopping it.
 			 */
 			stop: function() {
 				if(this.status == this.StatusEnum.PAUSED || this.status == this.StatusEnum.STARTED) {
@@ -150,10 +157,10 @@ define(function(require) {
 			/**
 			 * Loads a simulation from a URL.
 			 *
-			 * @name GEPPETTO.Simulation.load(simulationURL)
-			 * @param simulationURL - URL of simulation file to be loaded, use string format as in 
+			 * @command GEPPETTO.Simulation.load(simulationURL)
+			 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
 			 *                              Simulation.load("http://url.com")
-			 * @returns {String} - Status of attempt to load simulation using url.
+			 * @returns {String}  Status of attempt to load simulation using url.
 			 */
 			load: function(simulationURL) {
 				if(this.status == this.StatusEnum.STARTED || this.status == this.StatusEnum.PAUSED) {
@@ -204,9 +211,9 @@ define(function(require) {
 			/**
 			 * Loads a simulation using the content's from the simulation file editor.
 			 *
-			 * @name GEPPETTO.Simulation.loadFromContent(content)
-			 * @param content - Content of simulation to be loaded.
-			 * @returns {String} - Status of attempt to load simulation from content window.
+			 * @command GEPPETTO.Simulation.loadFromContent(content)
+			 * @param {XML} content - XML content of simulation to be loaded.
+			 * @returns {String} Status of attempt to load simulation from content window.
 			 */
 			loadFromContent: function(content) {
 				if(this.status == this.StatusEnum.STARTED || this.status == this.StatusEnum.PAUSED) {
@@ -244,17 +251,29 @@ define(function(require) {
 			/**
 			 * Checks status of the simulation, whether it has been loaded or not.
 			 *
-			 * @name GEPPETTO.Simulation.isLoaded()
-			 * @returns {Boolean} - True if simulation has been loaded, false if not.
+			 * @command GEPPETTO.Simulation.isLoaded()
+			 * @returns {Boolean} True if simulation has been loaded, false if not.
 			 */
 			isLoaded: function() {
 				return this.status != this.StatusEnum.INIT;
 			},
 			
+			/**
+			 * Checks status of the simulation, whether it has been started or not.
+			 *
+			 * @command GEPPETTO.Simulation.isStarted()
+			 * @returns {Boolean} True if simulation has been started, false if not.
+			 */
 			isStarted: function() {
 				return this.status == this.StatusEnum.STARTED;
 			},
 
+			/**
+			 * Checks status of the simulation, whether it's loading or not.
+			 *
+			 * @command GEPPETTO.Simulation.isLoading()
+			 * @returns {Boolean} True if simulation is loading, false if not.
+			 */
 			isLoading: function() {
 				return loading;
 			},
@@ -266,8 +285,7 @@ define(function(require) {
 			/**
 			 * List watchable variables for the simulation.
 			 *
-			 * @name GEPPETTO.Simulation.listWatchableVariables()
-			 * @returns {String} - status after requesting list of watchable variables.
+			 * @command GEPPETTO.Simulation.listWatchableVariables()
 			 */
 			listWatchableVariables: function() {
 				if(this.isLoaded()) {
@@ -285,8 +303,8 @@ define(function(require) {
 			/**
 			 * List forceable variables for the simulation.
 			 *
-			 * @name GEPPETTO.Simulation.listForceableVariables()
-			 * @returns {String} - status after requesting list of forceable variables.
+			 * @command GEPPETTO.Simulation.listForceableVariables()
+			 * @returns {String} - Status after requesting list of forceable variables.
 			 */
 			listForceableVariables: function() {
 				if(this.isLoaded()) {
@@ -304,9 +322,9 @@ define(function(require) {
 			/**
 			 * Add watchlists to the simulation.
 			 *
-			 * @name GEPPETTO.Simulation.addWatchLists()
-			 * @param watchLists - listing variables to be watched.
-			 * @returns {String} - status after request.
+			 * @command GEPPETTO.Simulation.addWatchLists()
+			 * @param {Array} watchLists - Array listing variables to be watched.
+			 * @returns {String} Status after request.
 			 */
 			addWatchLists: function(watchLists) {
 				santasLittleHelper("set_watch", GEPPETTO.Resources.SIMULATION_SET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_SET_WATCH, watchLists);
@@ -317,8 +335,8 @@ define(function(require) {
 			/**
 			 * Retrieve watchlists available the simulation.
 			 *
-			 * @name GEPPETTO.Simulation.getWatchLists()
-			 * @returns {String} - status after request.
+			 * @command GEPPETTO.Simulation.getWatchLists()
+			 * @returns {String} Status after request.
 			 */
 			getWatchLists: function() {
 				santasLittleHelper("get_watch", GEPPETTO.Resources.SIMULATION_GET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_GET_WATCH, null);
@@ -329,8 +347,8 @@ define(function(require) {
 			/**
 			 * Start watching variables for the simulation.
 			 *
-			 * @name GEPPETTO.Simulation.startWatch()
-			 * @returns {String} - status after request.
+			 * @command GEPPETTO.Simulation.startWatch()
+			 * @returns {String} Status after request.
 			 */
 			startWatch: function() {
 				santasLittleHelper("start_watch", GEPPETTO.Resources.SIMULATION_START_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_START_WATCH, null);
@@ -341,8 +359,8 @@ define(function(require) {
 			/**
 			 * Stop watching variables for the simulation.
 			 *
-			 * @name GEPPETTO.Simulation.stopWatch()
-			 * @returns {String} - status after request.
+			 * @command GEPPETTO.Simulation.stopWatch()
+			 * @returns {String} Status after request.
 			 */
 			stopWatch: function() {
 				santasLittleHelper("stop_watch", GEPPETTO.Resources.SIMULATION_STOP_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_STOP_WATCH, null);
@@ -353,8 +371,8 @@ define(function(require) {
 			/**
 			 * Clears all watch lists for the given simulation
 			 *
-			 * @name GEPPETTO.Simulation.clearWatchLists()
-			 * @returns {String} - status after request.
+			 * @command GEPPETTO.Simulation.clearWatchLists()
+			 * @returns {String} Status after request.
 			 */
 			clearWatchLists: function() {
 				santasLittleHelper("clear_watch", GEPPETTO.Resources.SIMULATION_CLEAR_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_CLEAR_WATCH, null);
@@ -367,8 +385,8 @@ define(function(require) {
 			/**
 			 * Gets tree for variables being watched if any.
 			 *
-			 * @name GEPPETTO.Simulation.getWatchTree()
-			 * @returns {String} - status after request.
+			 * @command GEPPETTO.Simulation.getWatchTree()
+			 * @returns {String} Simulation tree nicely formatted 
 			 */
 			getWatchTree: function() {
 				var watched_variables = GEPPETTO.Resources.WATCHED_SIMULATION_STATES + "";
@@ -389,8 +407,9 @@ define(function(require) {
 			 *
 			 * Selects the entity passed as a parameter
 			 *
-			 * @name GEPPETTO.Simulation.selectEntity(entity)
-			 * @returns - Success or failure message 
+			 * @command GEPPETTO.Simulation.selectEntity(entity)
+			 * 
+			 * @param {Entity} entity - Entity to be selected
 			 */
 			selectEntity: function(entity) {
 				var message = GEPPETTO.Resources.CANT_FIND_ENTITY;
@@ -408,8 +427,8 @@ define(function(require) {
 			 *
 			 * Unselect entity
 			 *
-			 * @name GEPPETTO.Simulation.unselectEntity(entity)
-			 * @returns  - Success or failure message for unselecting entity
+			 * @command GEPPETTO.Simulation.unselectEntity(entity)
+			 * @param {Entity} entity - Entity to be unselected
 			 */
 			unselectEntity: function(entity) {
 				var message = GEPPETTO.Resources.CANT_FIND_ENTITY;
@@ -427,8 +446,8 @@ define(function(require) {
 			 *
 			 * Outputs list of commands with descriptions associated with the Simulation object.
 			 *
-			 * @name GEPPETTO.Simulation.getSelection()
-			 * @returns  Returns list of all entities selected
+			 * @command GEPPETTO.Simulation.getSelection()
+			 * @returns  {Array} Returns list of all entities selected
 			 */
 			getSelection : function() {
 				var selection = new Array();
@@ -446,7 +465,7 @@ define(function(require) {
 			 *
 			 * Outputs list of commands with descriptions associated with the Simulation object.
 			 *
-			 * @name GEPPETTO.Simulation.help()
+			 * @command GEPPETTO.Simulation.help()
 			 * @returns  Returns list of all commands for the Simulation object
 			 */
 			help: function() {
@@ -460,6 +479,9 @@ define(function(require) {
 				return this.status;
 			},
 
+			/**
+			 * Sets status to simulation loaded, resets simulation states
+			 */
 			setSimulationLoaded: function() {
 				this.status = GEPPETTO.Simulation.StatusEnum.LOADED;
 				loading = false;
@@ -473,8 +495,8 @@ define(function(require) {
 			 *
 			 * Outputs list of commands with descriptions associated with the Simulation object.
 			 *
-			 * @name GEPPETTO.Simulation.getEntities()
-			 * @returns  Returns list of all entities selected
+			 * @command GEPPETTO.Simulation.getEntities()
+			 * @returns {Array} Returns list of all entities selected
 			 */
 			getEntities : function(){
 				var formattedOutput="";
@@ -488,9 +510,12 @@ define(function(require) {
 			 * The transfer function should accept the value of the watched var and output a
 			 * number between 0 and 1, corresponding to min and max brightness.
 			 * If no transfer function is specified then brightess = value
-			 * @param entity
-			 * @param variable
-			 * @param transferFunction
+			 * 
+			 * @command GEPPETTO.Simulation.addBrightnessFunction(entity, variable, transferFunction)
+			 * 
+			 * @param {Object} entity - Entity to apply brightness function
+			 * @param {Object} variable - Variable used to determines brightness level
+			 * @param {Function} transferFunction - Function to set brightness to entity
 			 */
 			addBrightnessFunction: function(entity, variable, transferFunction) {	
 				this.listeners[variable.getInstancePath()] = (function (simState){
@@ -500,7 +525,7 @@ define(function(require) {
 
 			/**
 			 * Clear brightness transfer functions on simulation state
-			 * @param varName
+			 * @param {VariableNode} variable - VariableNode to reset brightness function
 			 */
 			clearBrightnessFunctions: function(variable) {
 				this.listeners[variable.getId()] = null;

@@ -35,9 +35,7 @@
  *
  * Class that handles creationg and loading of JS Console.
  * Handles events associated with the console as well.
- *
- * @constructor
- *
+ * 
  * @author Jesus Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -163,6 +161,8 @@ define(function(require) {
 
 		/**
 		 * Toggle javascript console's visibility via button
+		 * 
+		 * @class GEPPETTO.Console
 		 */
 		GEPPETTO.Console = {
 			visible : false,
@@ -476,7 +476,7 @@ define(function(require) {
 										var line = splitComments[s].trim();
 										if(line != "") {
 											//ignore the name line, already have it
-											if(line.indexOf("@name") == -1) {
+											if(line.indexOf("@command") == -1) {
 												//build description for function
 												matchedDescription += "         " + line + "\n";
 											}
@@ -492,7 +492,9 @@ define(function(require) {
 				}
 
 				//after commands and comments are extract, update global help option
-				GEPPETTO.Console.getHelpObjectsMap()[id] = commandsFormmatted.substring(0, commandsFormmatted.length - 2);
+				if(GEPPETTO.Console.getHelpObjectsMap()[id]==null){
+					GEPPETTO.Console.getHelpObjectsMap()[id] = commandsFormmatted.substring(0, commandsFormmatted.length - 2);
+				}
 				
 				if(proto.__proto__ != null){
 					GEPPETTO.Console.updateCommands(scriptLocation, proto, id);

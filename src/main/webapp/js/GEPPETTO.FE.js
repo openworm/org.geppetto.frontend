@@ -33,7 +33,6 @@
 /**
  * Front end, user interface, methods for handling updates to the UI
  *
- * @constructor
  */
 define(function(require) {
 
@@ -45,8 +44,7 @@ define(function(require) {
                 ErrorModal = require('jsx!components/popups/ErrorModal');
         /**
          * Create the container for holding the canvas
-         *
-         * @returns {DivElement}
+         * @class GEPPETTO.FE
          */
         GEPPETTO.FE = {
             /*

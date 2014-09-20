@@ -33,8 +33,6 @@
 /**
  * Controller class for plotting widget. Use to make calls to widget from inside Geppetto.
  *
- * @constructor
- *
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -45,13 +43,16 @@ define(function(require) {
 
 		var plotsON = false;
 
+		/**
+		 * @exports Widgets/Plot/PlotsController
+		 */
 		GEPPETTO.PlotsController = {
 
 			/**
 			 * Registers widget events to detect and execute following actions.
 			 * Used when widget is destroyed.
 			 *
-			 * @param plotID
+			 * @param {String} plotID - ID of plot to register
 			 */
 			registerHandler: function(plotID) {
 				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PlotsController, plotID);
@@ -59,6 +60,8 @@ define(function(require) {
 
 			/**
 			 * Returns all plotting widgets objects
+			 * 
+			 * @returns {Array} Array containing all plots
 			 */
 			getWidgets: function() {
 				return plots;
@@ -66,8 +69,6 @@ define(function(require) {
 
 			/**
 			 * Creates plotting widget
-			 *
-			 * @ return {Widget} - Plotting widget
 			 */
 			addPlotWidget: function() {
 
@@ -138,7 +139,11 @@ define(function(require) {
 				}
 			},
 
-			//receives updates from widget listener class to update plotting widget(s)
+			/**
+			 * Receives updates from widget listener class to update plotting widget(s)
+			 * 
+			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+			 */
 			update: function(event) {
 				//delete plot widget(s)
 				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {

@@ -33,6 +33,7 @@
 /**
  * Client class use to represent a parameter specification node, used for model tree properties.
  * 
+ * @module nodes/ParameterSpecificationNode
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -46,6 +47,11 @@ define(function(require) {
 		scalingFactor : "",
 		_metaType : "ParameterSpecificationNode",
 		
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+	     * @param {Object} options - Object with options attributes to initialize node
+	     */
 		initialize : function(options){
 			this.name = options.name;
 			this.id = options.id;
@@ -58,8 +64,8 @@ define(function(require) {
 		/**
 		 * Get the type of tree this is
 		 *
-		 * @name ParameterSpecificationNode.getUnit()
-		 * @returns {String} - Unit for quantity
+		 * @command ParameterSpecificationNode.getUnit()
+		 * @returns {String} Unit for quantity
 		 */
 		getUnit : function(){
 			return this.unit;
@@ -68,8 +74,8 @@ define(function(require) {
 		/**
 		 * Get value of quantity
 		 *
-		 * @name ParameterSpecificationNode.getValue()
-		 * @returns {String} - Value of quantity
+		 * @command ParameterSpecificationNode.getValue()
+		 * @returns {String} Value of quantity
 		 */
 		getValue : function(){
 			return this.value;
@@ -78,8 +84,8 @@ define(function(require) {
 		/**
 		 * Get scaling factor
 		 *
-		 * @name ParameterSpecificationNode.getScalingFactor()
-		 * @returns {String} - Scaling Factor for value and unit
+		 * @command ParameterSpecificationNode.getScalingFactor()
+		 * @returns {String} Scaling Factor for value and unit
 		 */
 		getScalingFactor : function(){
 			return this.scalingFactor;

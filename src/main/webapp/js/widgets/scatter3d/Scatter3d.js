@@ -33,6 +33,7 @@
 /**
  * Scatter3d Widget class
  *
+ * @module Widgets/Scatter3d
  * @author Boris Marin
  * @author Adrian Quintana
  */
@@ -76,6 +77,11 @@ define(function(require) {
 			normalizeData: false //Not working properly
 		},
 
+		/**
+		 * Initializes the scatter3d widget given a set of options
+		 * 
+	     * @param {Object} options - Object with options for the Scatter3d widget
+	     */
 		initialize: function(options) {
 			this.id = options.id;
 			this.name = options.name;
@@ -124,7 +130,7 @@ define(function(require) {
 		/**
 		 * Initializing Camera Aspects
 		 *
-		 * @name initializeCamera()
+		 * @command initializeCamera()
 		 */
 		initializeCamera: function(){
 			var fov = this.options.fov; // camera field-of-view in degrees
@@ -140,7 +146,7 @@ define(function(require) {
 		/**
 		 * Paint Axis Helper and/or Grid Helper
 		 *
-		 * @name helpers()
+		 * @command helpers()
 		 */
 		helpers: function(){
 			//PAINTING AXIS
@@ -175,7 +181,7 @@ define(function(require) {
 		/**
 		 * Display legend from dataset labels
 		 *
-		 * @name paintLegend()
+		 * @command paintLegend()
 		 */
 		paintLegend: function(){
 			if ($('#legendBox').length > 0){
@@ -205,7 +211,7 @@ define(function(require) {
 		 * plotData(["objectName","objectName2","objectName3"]) Multiples arrays can be specified at once in
 		 * this method, but only one object at a time.
 		 *
-		 * @name plotData(state, options)
+		 * @command plotData(state, options)
 		 * @param state -
 		 *            series to plot, can be array of data or an array of geppetto simulation variables
 		 * @param options -
@@ -367,7 +373,7 @@ define(function(require) {
 		 * Takes data series and 3d plots them. To plot array(s) , use it as
 		 * plotData([[1,2],[2,3],[3,4]]) 
 		 *
-		 * @name plotData(state, options)
+		 * @command plotData(state, options)
 		 * @param newDataX, newDataY, newDataZ
 		 *            series to plot, each of them can be an array of data or 
 		 *            an object containing a name(label) and array of data
@@ -407,7 +413,7 @@ define(function(require) {
 		/**
 		 * Scatter3ds a function against a data series
 		 *
-		 * @name dataFunction(func, data, options)
+		 * @command dataFunction(func, data, options)
 		 * @param func - function to scatter3d vs data
 		 * @param data - data series to scatter3d against function
 		 * @param options - options for scatter3dting widget
@@ -420,7 +426,7 @@ define(function(require) {
 		 * Resets the scatter3d widget, deletes all the data series but does not
 		 * destroy the widget window.
 		 *
-		 * @name resetScatter3d()
+		 * @command resetScatter3d()
 		 */
 		resetScatter3d: function() {
 			this.datasets = [];
@@ -442,7 +448,7 @@ define(function(require) {
 
 		/**
 		 * Sets labels and the legend
-		 * @name setAxisLabel(labelX, labelY, labelZ, datasetsIndex)
+		 * @command setAxisLabel(labelX, labelY, labelZ, datasetsIndex)
 		 * @param labelX, labelY, labelZ - labels for each axis
 		 * @param datasetsIndex - 0 by default
 		 *

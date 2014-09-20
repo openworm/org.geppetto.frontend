@@ -49,6 +49,11 @@ define(function(require) {
 		var FunctionNode = require('nodes/FunctionNode');
 		var VariableNode = require('nodes/VariableNode');
 
+		/**
+		 * Node factory where all nodes get created and updated
+		 * 
+		 *@class RuntimeTreeFactory
+		 */
 		GEPPETTO.RuntimeTreeFactory = {
 				/**Creates the backbone nodes for the first time depending.
 				 */
@@ -69,6 +74,9 @@ define(function(require) {
 					}
 				},
 				
+				/**
+				 * Traverse through entities to create children
+				 */
 				traverseEntities: function(entities, parentNode, runTimeRef){
 					for (var id in entities) {
 						var node = entities[id];

@@ -33,6 +33,7 @@
 /**
  * Client class use to represent a composite variable node, used for simulation tree state variables.
  * 
+ * @module nodes/CompositeNode
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -52,6 +53,11 @@ define(function(require) {
 		           },
 		           _metaType : "CompositeVariableNode",
 		           
+		           /**
+					 * Initializes this node with passed attributes
+					 * 
+				     * @param {Object} options - Object with options attributes to initialize node
+				     */
 		           initialize : function(options){
 		        	   this.id = options.id;
 		        	   this.name = options.name;
@@ -62,7 +68,7 @@ define(function(require) {
 		           /**
 		            * Get this entity's aspects
 		            *
-		            * @name CompositeVariableNode.getChildren()
+		            * @command CompositeVariableNode.getChildren()
 		            * 
 		            * @returns {List<Aspect>} - List of aspects
 		            *

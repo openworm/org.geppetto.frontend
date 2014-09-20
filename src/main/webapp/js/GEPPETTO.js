@@ -36,7 +36,6 @@
  * 
  * @author matteo@openworm.org (Matteo Cantarelli)
  */
-
 define(function(require) {
 
 	var $ = require('jquery'), 
@@ -56,6 +55,8 @@ define(function(require) {
 
 	/**
 	 * Initialize the engine
+	 * 
+	 * @class GEPPETTO
 	 */
 	var GEPPETTO = {
 		init : function(containerp) {

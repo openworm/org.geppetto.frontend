@@ -33,8 +33,6 @@
 /**
  * Controller class for popup widget. Use to make calls to widget from inside Geppetto.
  *
- * @constructor
- *
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -43,26 +41,32 @@ define(function(require) {
 		var Popup = require('widgets/popup/Popup');
 		var popups = new Array();
 
+		/**
+		 * @exports Widgets/Popup/PopupController
+		 */
 		GEPPETTO.PopupsController = {
-			
-
 			/**
 			 * Registers widget events to detect and execute following actions.
 			 * Used when widget is destroyed.
 			 *
-			 * @param plotID
+			 * @param {String} popupID - ID of popup to register
 			 */
 			registerHandler: function(popupID) {
 				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PopupsController, popupID);
 			},
 			
 			/**
-			 * Returns all plotting widgets objects
+			 * Returns all popup widgets objects
+			 * 
+			 * @returns {Array} Array containing all plots
 			 */
 			getWidgets: function() {
 				return popups;
 			},
 			
+			/**
+			 * Creates popup widget
+			 */
 			addPopupWidget : function(){
 				//Popup widget number
 				var index = (popups.length + 1);
@@ -88,6 +92,9 @@ define(function(require) {
 				return p;
 			},
 		
+			/**
+			 * Removes existing popup widgets
+			 */
 			removePopupWidgets : function(){
 				//remove all existing popup widgets
 				for(var i = 0; i < popups.length; i++) {
@@ -99,7 +106,11 @@ define(function(require) {
 				popups = new Array();
 			},
 			
-			//receives updates from widget listener class to update plotting widget(s)
+			/**
+			 * Receives updates from widget listener class to update popup widget(s)
+			 * 
+			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+			 */
 			update: function(event) {
 				//delete popup widget(s)
 				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {

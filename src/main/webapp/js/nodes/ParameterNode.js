@@ -33,6 +33,7 @@
 /**
  * Client class use to represent a parameter node, used for model tree properties.
  * 
+ * @module nodes/ParameterNode
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -44,6 +45,11 @@ define(function(require) {
 		properties:{},
 		_metaType : "ParameterNode",
 		
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+	     * @param {Object} options - Object with options attributes to initialize node
+	     */
 		initialize : function(options){
 			this.properties = options.properties;
 			this.name = options.name;
@@ -54,8 +60,8 @@ define(function(require) {
 		/**
 		 * Get properties for this node
 		 *
-		 * @name ParameterNode.getProperties()
-		 * @returns {String} - Unit for quantity
+		 * @command ParameterNode.getProperties()
+		 * @returns {String} Unit for quantity
 		 */
 		getProperties : function(){
 			return this.properties;

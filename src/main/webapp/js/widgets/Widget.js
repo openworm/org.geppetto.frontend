@@ -33,14 +33,9 @@
 /**
  *
  * Base Widget Class, all widgets extend this class.
- *
+ * @module Widgets/Widget
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-
-/**
- * Parent Widget Base class
- */
-
 define(function(require) {
 
 	var Backbone = require('backbone');
@@ -68,9 +63,9 @@ define(function(require) {
 			/**
 			 * Initializes the widget
 			 *
-			 * @param id - id of widget
-			 * @param name - name of widget
-			 * @param visibility - visibility of widget window
+			 * @param {String} id - id of widget
+			 * @param {String} name - name of widget
+			 * @param {String} visibility - visibility of widget window
 			 */
 			initialize: function(options) {
 				this.id = options.id;
@@ -81,7 +76,7 @@ define(function(require) {
 			/**
 			 * Destroy the widget, remove it from DOM
 			 *
-			 * @name destroy()
+			 * @command destroy()
 			 * @returns {String} - Action Message
 			 */
 			destroy: function() {
@@ -94,7 +89,7 @@ define(function(require) {
 			 *
 			 * Hides the widget
 			 *
-			 * @name hide()
+			 * @command hide()
 			 * @returns {String} - Action Message
 			 */
 			hide: function() {
@@ -108,7 +103,7 @@ define(function(require) {
 			/**
 			 *  Opens widget dialog
 			 *
-			 * @name show()
+			 * @command show()
 			 * @returns {String} - Action Message
 			 */
 			show: function() {
@@ -124,7 +119,7 @@ define(function(require) {
 			/**
 			 * Gets the name of the widget
 			 *
-			 * @name getName()
+			 * @command getName()
 			 * @returns {String} - Name of widget
 			 */
 			getName: function() {
@@ -133,8 +128,8 @@ define(function(require) {
 
 			/**
 			 * Sets the name of the widget
-			 * @name setName(name)
-			 * @param name - Name of widget
+			 * @command setName(name)
+			 * @param {String} name - Name of widget
 			 */
 			setName: function(name) {
 				this.name = name;
@@ -146,7 +141,9 @@ define(function(require) {
 			},
 
 			/**
-			 * @name setPosition(left,top)
+			 * @command setPosition(left,top)
+			 * @param {Integer} left -Left position of the widget
+			 * @param {Integer} top - Top position of the widget
 			 */
 			setPosition: function(left, top) {
 
@@ -158,7 +155,10 @@ define(function(require) {
 			},
 
 			/**
-			 * @name setSize(h,w)
+			 * Sets the size of the widget
+			 * @command setSize(h,w)
+			 * @param {Integer} h - Height of the widget
+			 * @param {Integer} w - Width of the widget
 			 */
 			setSize: function(h, w) {
 				this.size.height = h;
@@ -169,14 +169,18 @@ define(function(require) {
 			},
 
 			/**
-			 * @name getPosition()
+			 * Returns the position of the widget
+			 * @command getPosition()
+			 * @returns {Object} - Position of the widget
 			 */
 			getPosition: function() {
 				return this.position;
 			},
 
 			/**
-			 * @name getSize()
+			 * Returns the size of the widget
+			 * @command getSize()
+			 * @returns {Object} - Size of the widget
 			 */
 			getSize: function() {
 				return this.size;
@@ -185,7 +189,7 @@ define(function(require) {
 			/**
 			 * Gets the ID of the widget
 			 *
-			 * @name getId()
+			 * @command getId()
 			 * @returns {String} - ID of widget
 			 */
 			getId: function() {
@@ -195,7 +199,7 @@ define(function(require) {
 			/**
 			 * Returns whether widget is visible or not
 			 *
-			 * @name isVisible()
+			 * @command isVisible()
 			 * @returns {Boolean} - Widget visibility state
 			 */
 			isVisible: function() {

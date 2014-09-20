@@ -33,6 +33,7 @@
 /**
  * Client class use to represent a function. Used to store properties of model tree
  * 
+ * @module nodes/FunctionNode
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -44,6 +45,11 @@ define(function(require) {
 		arguments : "",
 		expression : "",
 		
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+	     * @param {Object} options Object with options attributes to initialize node
+	     */
 		initialize : function(options){
 			this.name = options.name;
      	   	this.id = options.id;
@@ -55,8 +61,8 @@ define(function(require) {
 		/**
 		 * Get arguments for function
 		 *
-		 * @name FunctionNode.getArguments()
-		 * @returns {String} - Arguments for function
+		 * @command FunctionNode.getArguments()
+		 * @returns {String} Arguments for function
 		 */
 		getArguments : function(){
 			return this.arguments;
@@ -65,8 +71,8 @@ define(function(require) {
 		/**
 		 * Get function's expression
 		 *
-		 * @name FunctionNode.getExpression()
-		 * @returns {String} - Expression for function
+		 * @command FunctionNode.getExpression()
+		 * @returns {String} Expression for function
 		 */
 		getExpression : function(){
 			return this.expression;

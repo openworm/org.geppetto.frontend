@@ -33,8 +33,6 @@
 /**
  * Controller class for scatter3d widget. Use to make calls to widget from inside Geppetto.
  *
- * @constructor
- *
  * @author Boris Marin
  * @author Adrian Quintana
  */
@@ -46,6 +44,9 @@ define(function(require) {
 
     var scatter3dON = false;
 
+    /**
+     * @exports Widgets/Scatter3d/Scatter3dController
+     */
     GEPPETTO.Scatter3dController = {
 
       /**

@@ -34,6 +34,7 @@
  * Client class use to represent an Entity. It stores that aspect's properties along with its
  * population, visualization and model tree.
  * 
+ * @module nodes/EntityNode
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -64,6 +65,12 @@ define(function(require) {
 		           position : null,
 		           selected : false,
 		           visible : true,
+		           
+		           /**
+					 * Initializes this node with passed attributes
+					 * 
+				     * @param {Object} options - Object with options attributes to initialize node
+				     */
 		           initialize : function(options){
 		        	   this.id = options.id;
 		        	   this.name = options.name;
@@ -75,7 +82,7 @@ define(function(require) {
 		           /**
 		            * Hides the entity
 		            *
-		            * @name EntityNode.hide()
+		            * @command EntityNode.hide()
 		            *
 		            */
 		           hide : function(){
@@ -95,7 +102,7 @@ define(function(require) {
 		           /**
 		            * Shows the entity
 		            *
-		            * @name EntityNode.show()
+		            * @command EntityNode.show()
 		            *
 		            */
 		           show : function(){
@@ -116,7 +123,7 @@ define(function(require) {
 		           /**
 		            * Unselects the entity
 		            *
-		            * @name EntityNode.unselect()
+		            * @command EntityNode.unselect()
 		            *
 		            */
 		           unselect : function(){
@@ -139,7 +146,7 @@ define(function(require) {
 		           /**
 		            * Selects the entity
 		            *
-		            * @name EntityNode.unselect()
+		            * @command EntityNode.unselect()
 		            *
 		            */
 				   select : function(){
@@ -163,7 +170,7 @@ define(function(require) {
 					/**
 			            * Zooms to entity
 			            *
-			            * @name EntityNode.zoomTo()
+			            * @command EntityNode.zoomTo()
 			            *
 			            */
 					/*zoomTo : function(){
@@ -176,9 +183,9 @@ define(function(require) {
 		           /**
 		            * Get this entity's aspects
 		            *
-		            * @name EntityNode.getAspects()
+		            * @command EntityNode.getAspects()
 		            * 
-		            * @returns {List<Aspect>} - List of aspects
+		            * @returns {List<Aspect>} List of aspects
 		            *
 		            */
 		           getAspects : function(){
@@ -189,9 +196,9 @@ define(function(require) {
 		           /**
 		            * Get this entity's children entities
 		            * 
-		            * @name EntityNode.getEntities()
+		            * @command EntityNode.getEntities()
 		            * 
-		            * @returns {List<Entity>} - List of entities
+		            * @returns {List<Entity>} List of entities
 		            *
 		            */
 		           getEntities : function(){
@@ -202,9 +209,9 @@ define(function(require) {
 		           /**
 		            * Get this entity's children entities
 		            * 
-		            * @name EntityNode.getChildren()
+		            * @command EntityNode.getChildren()
 		            * 
-		            * @returns {List<Aspect>} - All children e.g. aspects and entities
+		            * @returns {List<Aspect>} All children e.g. aspects and entities
 		            *
 		            */
 		           getChildren : function(){

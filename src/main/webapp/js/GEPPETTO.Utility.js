@@ -95,7 +95,7 @@ define(function(require) {
 										var line = splitComments[s].trim();
 										if(line != "") {
 											//ignore the name line, already have it
-											if(line.indexOf("@name") == -1) {
+											if(line.indexOf("@command") == -1) {
 												//build description for function
 												matchedDescription += "         " + line + "\n";
 											}

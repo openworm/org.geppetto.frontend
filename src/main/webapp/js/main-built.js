@@ -19189,9 +19189,9 @@ define('SandboxConsole',['require','backbone','jquery','underscore','vendor/back
 
 				// Focuses the input textarea
 				focus: function(e) {
-					e.preventDefault();
-					this.textarea.focus();
-					return false;
+					//e.preventDefault();
+					//this.textarea.focus();
+					//return false;
 				},
 
 				// The keydown handler, that controls all the input
@@ -39779,9 +39779,9 @@ define('websocket-handlers/GEPPETTO.MessageSocket',['require'],function(require)
 					GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
 				}
 
-				GEPPETTO.MessageSocket.socket.send(messageTemplate(requestID, command, parameter));
+				GEPPETTO.MessageSocket.socket.send(messageTemplate(requestID, command, parameter));		
 				
-				GEPPETTO.Console.log("Sending command via socket "+ command);
+				GEPPETTO.Console.debugLog("sending message "+ command);
 			},
 
 			isReady: function() {
@@ -43142,7 +43142,12 @@ define('widgets/scatter3d/Scatter3d',['require','widgets/Widget','jquery'],funct
 				var data = this.datasets[key].data;
 				$("#legendBox").append("<div id='datasetLegend" + key + "' class='datasetLegend'><div class='legendColor' style='background: #" + (this.options.colours[key]).toString(16) + ";'></div></div>");
 				$("#datasetLegend" + key).append("<div id='datasetLegendText" + key + "' class='datasetLegendText'></div>");
-				$("#datasetLegendText" + key).append("<span style='color:RGB(" + this.options.axisColours[key].r + "," + this.options.axisColours[key].g + "," + this.options.axisColours[key].b + ")'>" + this.datasets[key].label +"</span>");
+				for(var dataKey in data) {
+					$("#datasetLegendText" + key).append("<span style='color:RGB(" + this.options.axisColours[dataKey].r + "," + this.options.axisColours[dataKey].g + "," + this.options.axisColours[dataKey].b + ")'>" + data[dataKey].label +"</span>");
+					if (dataKey != data.length -1){
+						$("#datasetLegendText" + key).append("<br>");
+					}
+				}
 			}
 		},
 		
@@ -43181,18 +43186,19 @@ define('widgets/scatter3d/Scatter3d',['require','widgets/Widget','jquery'],funct
 						this.datasets.push(dataset);
 					}
 					else{
+						
+						dataset = {curves: [], data: [], lineBasicMaterial: new THREE.LineBasicMaterial({linewidth: 4, color: this.options.colours[this.datasets.length]})};
 						for (var key=0; key<state.length; key++){
 							var variableState = state[key];
 							
-							var value = variableState.getValue();
 							var id = variableState.getInstancePath();
-							
-							this.datasets.push({
+							dataset.data.push({
 								label: id,
 								variable : variableState,
-								data : [ [0,value] ]
+								values: []
 							});
-						}	
+						}
+						this.datasets.push(dataset);	
 					}
 					//Painting legend
 					if (this.options.axis && this.options.legend === true){this.paintLegend();}
@@ -43235,19 +43241,27 @@ define('widgets/scatter3d/Scatter3d',['require','widgets/Widget','jquery'],funct
 		updateDataSet: function() {
 			if (this.options.plotEachN == null || !(this.numberPoints++ % this.options.plotEachN)){
 				for(var key in this.datasets) {
-					var newValue = this.datasets[key].variable.getValue();
-
-					var oldata = this.datasets[key].data;;
 					var reIndex = false;
-
-					if(oldata.length > this.limit) {
-						oldata.splice(0, 1);
-						reIndex = true;
+					var data = this.datasets[key].data;
+					
+					var newValues = new Array(3);
+					var olddata = new Array(3);
+					for(var dataKey in data) {
+						var newValue = data[dataKey].variable.getValue();
+						currentLabel = data[dataKey].label;
+						newValues[dataKey] = newValue;
+						
+						olddata = data[dataKey].values;
+						if(olddata.length > this.options.limit) {
+							olddata.splice(0, 1);
+							reIndex = true;
+						}
+						
+						olddata.push(newValues[dataKey]);
+						this.datasets[key].data[dataKey].values = olddata;
 					}
-
-					oldata.push([ oldata.length, newValue]);
 										
-					if(this.scene != null && this.datasets[key].data[0].length>1){
+					if(this.scene != null && this.datasets[key].data[0].values.length>1){
 						//TODO: This solution adds a new line for each new vertex until a limit. When this limit is reached
 						// it behaves as a FIFO (deleting first line and adding a new one).
 						// I also tried to have just one single line and remove/add vertex (which I think will have a better performance/elegance)
@@ -46967,6 +46981,8 @@ define('components/simulationcontrols/LoadSimulationModal',['require','react','j
             require('jsx!components/bootstrap/modal'),
             require('jsx!mixins/Events'),           
         ],
+        
+        url : null,
 
         getInitialState: function() {
             return {
@@ -46980,6 +46996,12 @@ define('components/simulationcontrols/LoadSimulationModal',['require','react','j
         },
 
         onClickCustom: function() {
+        	//load simulation xml if url isn't null
+        	if(this.url!=null){
+        		this.loadSimulationURL(this.url);
+        		//set waiting message until xml received from server
+        		this.setState({disableLoad:null, simulationXML:"Loading Simulation XML, please wait..."});
+        	}
             this.setState({loadFromURL: false});
         },
 
@@ -47042,7 +47064,7 @@ define('components/simulationcontrols/LoadSimulationModal',['require','react','j
         onSelectSimulationUrl: function(event) {
             var url = event.target.value;
             if(url) {
-                this.loadSimulationURL(url);
+            	this.url = url;
                 if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.load-sim-button').popover({
                         title: 'Load Simulation',
@@ -47056,7 +47078,10 @@ define('components/simulationcontrols/LoadSimulationModal',['require','react','j
         },
 
         onChangeXML:function(xml) {
-            this.setState({disableLoad:!xml, simulationXML:xml});
+        	//only change xml if it's editing
+        	if(GEPPETTO.JSEditor.isEditing()){
+        		this.setState({disableLoad:!xml, simulationXML:xml});
+        	}
         },
 
         render: function () {

@@ -640,10 +640,10 @@ define(function(require) {
 					VARS.stats = new Stats();
 					VARS.stats.domElement.style.float = 'right';
 					VARS.stats.domElement.style.position = 'absolute';
-					VARS.stats.domElement.style.bottom = '0px';
-					VARS.stats.domElement.style.right = '0px';
+					VARS.stats.domElement.style.top = '60px';
+					VARS.stats.domElement.style.right = '5px';
 					VARS.stats.domElement.style.zIndex = 100;
-					$('#footerHeader').append(VARS.stats.domElement);
+					$('#controls').append(VARS.stats.domElement);
 				}
 			}
 		},

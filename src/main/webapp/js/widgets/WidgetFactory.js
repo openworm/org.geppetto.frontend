@@ -43,12 +43,12 @@ define(function(require) {
 		 * 
 		 * Different types of widgets that exist in Geppetto
 		 * 
-		 * @enum 
+		 * @enum
 		 */
 		GEPPETTO.Widgets = {
-			PLOT: 0,
+			PLOT : 0,
 			POPUP : 1,
-			SCATTER3D: 2
+			SCATTER3D : 2
 		};
 
 		/**
@@ -58,26 +58,27 @@ define(function(require) {
 			/**
 			 * Adds widget to Geppetto
 			 * 
-			 * @param {GEPPETTO.Widgets} widgetType - Widget to add to Geppetto
+			 * @param {GEPPETTO.Widgets}
+			 *            widgetType - Widget to add to Geppetto
 			 */
-			addWidget: function(widgetType) {
+			addWidget : function(widgetType) {
 				var widget = null;
 
-				switch(widgetType) {
-					//create plotting widget
-					case GEPPETTO.Widgets.PLOT:
-						widget = GEPPETTO.PlotsController.addPlotWidget();
-						break;
-					//create popup widget
-					case GEPPETTO.Widgets.POPUP:
-						widget = GEPPETTO.PopupsController.addPopupWidget();
-						break;
-					//create scatter widget			
-					case GEPPETTO.Widgets.SCATTER3D:
-						widget = GEPPETTO.Scatter3dController.addScatter3dWidget();
-						break;
-					default:
-						break;
+				switch (widgetType) {
+				// create plotting widget
+				case GEPPETTO.Widgets.PLOT:
+					widget = GEPPETTO.PlotsController.addPlotWidget();
+					break;
+				// create popup widget
+				case GEPPETTO.Widgets.POPUP:
+					widget = GEPPETTO.PopupsController.addPopupWidget();
+					break;
+				// create scatter widget
+				case GEPPETTO.Widgets.SCATTER3D:
+					widget = GEPPETTO.Scatter3dController.addScatter3dWidget();
+					break;
+				default:
+					break;
 				}
 
 				return widget;
@@ -86,24 +87,25 @@ define(function(require) {
 			/**
 			 * Removes widget from Geppetto
 			 * 
-			 * @param {GEPPETTO.Widgets} widgetType - Widget to remove from Geppetto
+			 * @param {GEPPETTO.Widgets}
+			 *            widgetType - Widget to remove from Geppetto
 			 */
-			removeWidget: function(widgetType) {
-				switch(widgetType) {
-					//removes plotting widget from geppetto
-					case GEPPETTO.Widgets.PLOT:
-						GEPPETTO.PlotsController.removePlotWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-					//removes popup widget from geppetto
-					case GEPPETTO.Widgets.POPUP:
-						GEPPETTO.PlotsController.removePopupWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-					//removes scatter3d widget from geppetto
-					case GEPPETTO.Widgets.SCATTER3D:
-						GEPPETTO.Scatter3dController.removeScatter3dWidgets();
-						return GEPPETTO.Resources.REMOVE_SCATTER3D_WIDGETS;
-					default:
-						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
+			removeWidget : function(widgetType) {
+				switch (widgetType) {
+				// removes plotting widget from geppetto
+				case GEPPETTO.Widgets.PLOT:
+					GEPPETTO.PlotsController.removePlotWidgets();
+					return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
+					// removes popup widget from geppetto
+				case GEPPETTO.Widgets.POPUP:
+					GEPPETTO.PlotsController.removePopupWidgets();
+					return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
+					// removes scatter3d widget from geppetto
+				case GEPPETTO.Widgets.SCATTER3D:
+					GEPPETTO.Scatter3dController.removeScatter3dWidgets();
+					return GEPPETTO.Resources.REMOVE_SCATTER3D_WIDGETS;
+				default:
+					return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
 				}
 			}
 		};

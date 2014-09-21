@@ -31,8 +31,9 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Listener class for widgets. Receives updates from Geppetto that need to be transmitted to all widgets.
- *
+ * Listener class for widgets. Receives updates from Geppetto that need to be
+ * transmitted to all widgets.
+ * 
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -49,96 +50,114 @@ define(function(require) {
 			/**
 			 * WIDGET_EVENT_TYPE
 			 * 
-			 * Event types that tell widgets what to do 
+			 * Event types that tell widgets what to do
 			 * 
 			 * @enum
 			 */
-			WIDGET_EVENT_TYPE: {
-				DELETE: "delete",
-				UPDATE: "update",
+			WIDGET_EVENT_TYPE : {
+				DELETE : "delete",
+				UPDATE : "update",
 				RESET_DATA : "reset",
 				SELECTION_CHANGED : "selection_changed",
 			},
-			_subscribers: [],
+			_subscribers : [],
 
 			/**
 			 * Subscribes widget controller class to listener
-			 *
-			 * @param {Widgets/Controller} controller - Controller class to be subscribed to listener
-			 * @param {String} widgetID - ID of widget to register to global widgets listener
+			 * 
+			 * @param {Widgets/Controller}
+			 *            controller - Controller class to be subscribed to
+			 *            listener
+			 * @param {String}
+			 *            widgetID - ID of widget to register to global widgets
+			 *            listener
 			 */
-			subscribe: function(controller, widgetID) {
+			subscribe : function(controller, widgetID) {
 
 				var addController = true;
-				
-				//traverse through existing subscribed controller to figure out whether to add new one or not
-				for(var i = 0, len = this._subscribers.length; i < len; i++) {
-					if(this._subscribers[ i ] === controller) {
+
+				// traverse through existing subscribed controller to figure out
+				// whether to add new one or not
+				for ( var i = 0, len = this._subscribers.length; i < len; i++) {
+					if (this._subscribers[i] === controller) {
 						addController = false;
 					}
 				}
-				
-				//subscribe controller only if it hasn't been already subscribed
-				if(addController) {
+
+				// subscribe controller only if it hasn't been already
+				// subscribed
+				if (addController) {
 					this._subscribers.push(controller);
 
 					GEPPETTO.Console.debugLog('added new observer');
 				}
 
-				//registers remove handler for widget
+				// registers remove handler for widget
 				$("#" + widgetID).on("remove", function() {
-					//remove tags and delete object upon destroying widget
+					// remove tags and delete object upon destroying widget
 					GEPPETTO.Console.removeCommands(widgetID);
 
 					var widgets = controller.getWidgets();
 
-					for(var p in widgets) {
-						if(widgets[p].getId() == this.id) {
+					for ( var p in widgets) {
+						if (widgets[p].getId() == this.id) {
 							widgets.splice(p, 1);
 							break;
 						}
 					}
 				});
 
-				//register resize handler for widget
-				$("#" + widgetID).on("dialogresizestop", function(event, ui) {
+				// register resize handler for widget
+				$("#" + widgetID)
+						.on(
+								"dialogresizestop",
+								function(event, ui) {
 
-					var height = ui.size.height;
-					var width = ui.size.width;
+									var height = ui.size.height;
+									var width = ui.size.width;
 
-					GEPPETTO.Console.executeCommand(widgetID + ".setSize(" + height + "," + width + ")");
+									GEPPETTO.Console.executeCommand(widgetID
+											+ ".setSize(" + height + ","
+											+ width + ")");
 
-					var left = ui.position.left;
-					var top = ui.position.top;
+									var left = ui.position.left;
+									var top = ui.position.top;
 
-					window[widgetID].setPosition(left, top);
-				});
+									window[widgetID].setPosition(left, top);
+								});
 
-				//register drag handler for widget
-				$("#" + widgetID).on("dialogdragstop", function(event, ui) {
+				// register drag handler for widget
+				$("#" + widgetID)
+						.on(
+								"dialogdragstop",
+								function(event, ui) {
 
-					var left = ui.position.left;
-					var top = ui.position.top;
+									var left = ui.position.left;
+									var top = ui.position.top;
 
-					GEPPETTO.Console.executeCommand(widgetID + ".setPosition(" + left + "," + top + ")");
-				});
+									GEPPETTO.Console.executeCommand(widgetID
+											+ ".setPosition(" + left + ","
+											+ top + ")");
+								});
 
-				//bind close button on widget event to destroy command
+				// bind close button on widget event to destroy command
 				$("#" + widgetID).bind('dialogclose', function(event) {
-					//destroy widget
+					// destroy widget
 					GEPPETTO.Console.executeCommand(widgetID + ".destroy()");
 				});
 			},
 
 			/**
 			 * Unsubscribe widget controller class from lobal widgets listener
-			 *
-			 * @param {Widgets/Controller} controller - Controller class to be unsubscribed from listener
-			 *
+			 * 
+			 * @param {Widgets/Controller}
+			 *            controller - Controller class to be unsubscribed from
+			 *            listener
+			 * 
 			 */
-			unsubscribe: function(controller) {
-				for(var i = 0, len = this._subscribers.length; i < len; i++) {
-					if(this._subscribers[ i ] === controller) {
+			unsubscribe : function(controller) {
+				for ( var i = 0, len = this._subscribers.length; i < len; i++) {
+					if (this._subscribers[i] === controller) {
 						this._subscribers.splice(i, 1);
 						return true;
 					}
@@ -148,12 +167,14 @@ define(function(require) {
 
 			/**
 			 * Update all subscribed controller classes with new changes
-			 *
-			 * @param {Object} arguments - Set arguments with information to update the widgets
+			 * 
+			 * @param {Object}
+			 *            arguments - Set arguments with information to update
+			 *            the widgets
 			 */
-			update: function(arguments) {
-				for(var i = 0, len = this._subscribers.length; i < len; i++) {
-					this._subscribers[ i ].update(arguments);
+			update : function(arguments) {
+				for ( var i = 0, len = this._subscribers.length; i < len; i++) {
+					this._subscribers[i].update(arguments);
 				}
 			}
 		};

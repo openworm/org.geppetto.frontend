@@ -31,99 +31,108 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a composite variable node, used for simulation tree state variables.
+ * Client class use to represent a composite variable node, used for simulation
+ * tree state variables.
  * 
  * @module nodes/AspectSubTreeNode
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
-	
+
 	return Node.Model.extend({
-		relations:[
-		           {
-		        	   type: Backbone.Many,
-		        	   key: 'children',
-		        	   relatedModel: Node
-		           }
-		           ],
-		           defaults : {
-		        	   children : []
-		           },
-		           type : "",
-		           modified : false,
-		           _metaType : "AspectSubTreeNode",
-		           
-		           /**
-					 * Initializes this node with passed attributes
-					 * 
-				     * @param {Object} options - Object with options attributes to initialize node
-				     */
-		           initialize : function(options){
-		        	   this.id = options.id;
-		        	   this.instancePath = options.instancePath;
-		        	   this.name = options.name;
-		        	   this.type = options.type;
-		        	   this.modified = options.modified;
-		           },
+		relations : [ {
+			type : Backbone.Many,
+			key : 'children',
+			relatedModel : Node
+		} ],
+		defaults : {
+			children : []
+		},
+		type : "",
+		modified : false,
+		_metaType : "AspectSubTreeNode",
 
-		           /**
-		            * Get this entity's aspects
-		            *
-		            * @command CompositeVariableNode.getChildren()
-		            * 
-		            * @returns {List<Node>} - List of children nodes
-		            *
-		            */
-		           getChildren : function(){
-		        	   var children = this.get("children");
-		        	   return children;
-		           },
-		           
-		           /**
-		            * Print out formatted node
-		            */
-		           print : function(){
-		  			 //simulation tree is empty
-		  			 if(this.getChildren().length==0){
-		  				 if(this.type=="SimulationTree"){
-			  				 	return GEPPETTO.Resources.NO_SIMULATION_TREE;
-						 }
-						 else if(this.type=="VisualizationTree"){
-							 var formattedNode = GEPPETTO.Utility.formatVisualizationTree(this.content, 3, "");
-		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-		  					 formattedNode.replace(/"/g, "");
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object}
+		 *            options - Object with options attributes to initialize
+		 *            node
+		 */
+		initialize : function(options) {
+			this.id = options.id;
+			this.instancePath = options.instancePath;
+			this.name = options.name;
+			this.type = options.type;
+			this.modified = options.modified;
+		},
 
-		  					 return GEPPETTO.Resources.RETRIEVING_VISUALIZATION_TREE + "\n" + formattedNode;
-						 }
-						 if(this.type=="ModelTree"){
-							 return GEPPETTO.Resources.EMPTY_MODEL_TREE;
-						 }
-		  			 }
-		  			 else{
-		  				 if(this.type=="SimulationTree"){
-		  					 var formattedNode = GEPPETTO.Utility.formatsimulationtree(this, 3, "");
-		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-		  					 formattedNode.replace(/"/g, "");
+		/**
+		 * Get this entity's aspects
+		 * 
+		 * @command CompositeVariableNode.getChildren()
+		 * 
+		 * @returns {List<Node>} - List of children nodes
+		 * 
+		 */
+		getChildren : function() {
+			var children = this.get("children");
+			return children;
+		},
 
-		  					 return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n" + formattedNode;
-		  				 }
-		  				 else if(this.type=="VisualizationTree"){
-		  					 var formattedNode = GEPPETTO.Utility.formatVisualizationTree(this, 3, "");
-		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-		  					 formattedNode.replace(/"/g, "");
+		/**
+		 * Print out formatted node
+		 */
+		print : function() {
+			// simulation tree is empty
+			if (this.getChildren().length == 0) {
+				if (this.type == "SimulationTree") {
+					return GEPPETTO.Resources.NO_SIMULATION_TREE;
+				} else if (this.type == "VisualizationTree") {
+					var formattedNode = GEPPETTO.Utility
+							.formatVisualizationTree(this.content, 3, "");
+					formattedNode = formattedNode.substring(0, formattedNode
+							.lastIndexOf("\n"));
+					formattedNode.replace(/"/g, "");
 
-		  					 return GEPPETTO.Resources.RETRIEVING_VISUALIZATION_TREE + "\n" + formattedNode;
-		  				 }
-		  				 else if(this.type=="ModelTree"){
-		  					 var formattedNode = GEPPETTO.Utility.formatmodeltree(this, 3, "");
-		  					 formattedNode = formattedNode.substring(0, formattedNode.lastIndexOf("\n"));
-		  					 formattedNode.replace(/"/g, "");
+					return GEPPETTO.Resources.RETRIEVING_VISUALIZATION_TREE
+							+ "\n" + formattedNode;
+				}
+				if (this.type == "ModelTree") {
+					return GEPPETTO.Resources.EMPTY_MODEL_TREE;
+				}
+			} else {
+				if (this.type == "SimulationTree") {
+					var formattedNode = GEPPETTO.Utility.formatsimulationtree(
+							this, 3, "");
+					formattedNode = formattedNode.substring(0, formattedNode
+							.lastIndexOf("\n"));
+					formattedNode.replace(/"/g, "");
 
-		  					 return GEPPETTO.Resources.RETRIEVING_MODEL_TREE + "\n" + formattedNode;
-		  				 }
-		  			 }
-		           }
+					return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n"
+							+ formattedNode;
+				} else if (this.type == "VisualizationTree") {
+					var formattedNode = GEPPETTO.Utility
+							.formatVisualizationTree(this, 3, "");
+					formattedNode = formattedNode.substring(0, formattedNode
+							.lastIndexOf("\n"));
+					formattedNode.replace(/"/g, "");
+
+					return GEPPETTO.Resources.RETRIEVING_VISUALIZATION_TREE
+							+ "\n" + formattedNode;
+				} else if (this.type == "ModelTree") {
+					var formattedNode = GEPPETTO.Utility.formatmodeltree(this,
+							3, "");
+					formattedNode = formattedNode.substring(0, formattedNode
+							.lastIndexOf("\n"));
+					formattedNode.replace(/"/g, "");
+
+					return GEPPETTO.Resources.RETRIEVING_MODEL_TREE + "\n"
+							+ formattedNode;
+				}
+			}
+		}
 	});
 });

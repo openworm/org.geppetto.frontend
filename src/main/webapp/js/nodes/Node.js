@@ -34,66 +34,62 @@
  * The parent node from where all other nodes extend
  * 
  * @module nodes/Node
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define([
-	'jquery',
-	'underscore',
-	'backbone',
-    
-    //Add requirement for Backbone-associations module
-    'backbone-associations'
- 
-], function (require) {
+define([ 'jquery', 'underscore', 'backbone',
+
+// Add requirement for Backbone-associations module
+'backbone-associations'
+
+], function(require) {
 	return {
 		Model : Backbone.AssociatedModel.extend({
-		name : "",
-		instancePath : "",
-		id: "",
-		_metaType : "",
-		
-		/**
-		 * Gets the instance path of the node
-		 *
-		 * @command Node.getInstancePath()
-		 * @returns {String} Instance path of  this node
-		 *
-		 */
-		getInstancePath : function(){
-			return this.instancePath;
-		},
-		
-		/**
-		 * Gets the name of the node
-		 *
-		 * @command Node.getName()
-		 * @returns {String} Name of the node
-		 *
-		 */
-		getName : function(){
-			return this.name;
-		},	
-		
-		/**
-		 * Sets the name of the node
-		 *
-		 * @command Node.setName()
-		 *
-		 */
-		setName : function(newname){
-			this.name =  newname;
-		},
-		
-        /**
-         * Get the id associated with node
-         *
-         * @command Node.getId()
-         * @returns {String} ID of node
-         */
-        getId : function(){
-     	   return this.id;
-        },
-	})
+			name : "",
+			instancePath : "",
+			id : "",
+			_metaType : "",
+
+			/**
+			 * Gets the instance path of the node
+			 * 
+			 * @command Node.getInstancePath()
+			 * @returns {String} Instance path of this node
+			 * 
+			 */
+			getInstancePath : function() {
+				return this.instancePath;
+			},
+
+			/**
+			 * Gets the name of the node
+			 * 
+			 * @command Node.getName()
+			 * @returns {String} Name of the node
+			 * 
+			 */
+			getName : function() {
+				return this.name;
+			},
+
+			/**
+			 * Sets the name of the node
+			 * 
+			 * @command Node.setName()
+			 * 
+			 */
+			setName : function(newname) {
+				this.name = newname;
+			},
+
+			/**
+			 * Get the id associated with node
+			 * 
+			 * @command Node.getId()
+			 * @returns {String} ID of node
+			 */
+			getId : function() {
+				return this.id;
+			},
+		})
 	};
 });
-    

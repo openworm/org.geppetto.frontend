@@ -31,27 +31,29 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a variable node, used for simulation tree states.
+ * Client class use to represent a variable node, used for simulation tree
+ * states.
  * 
  * @module nodes/VariableNode
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		unit:"",
+		unit : "",
 		value : "",
 		scalingFactor : "",
 		_metaType : "VariableNode",
-		
+
 		/**
 		 * Initializes this node with passed attributes
 		 * 
-	     * @param {Object} options Object with options attributes to initialize node
-	     */
-		initialize : function(options){
+		 * @param {Object}
+		 *            options Object with options attributes to initialize node
+		 */
+		initialize : function(options) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
@@ -59,47 +61,46 @@ define(function(require) {
 			this.value = options.value;
 			this.scalingFactor = options.scalingFactor;
 		},
-		
+
 		/**
 		 * Get the type of tree this is
-		 *
+		 * 
 		 * @command ParameterSpecificationNode.getUnit()
 		 * @returns {String} Unit for quantity
 		 */
-		getUnit : function(){
+		getUnit : function() {
 			return this.unit;
 		},
-		
+
 		/**
 		 * Get value of quantity
-		 *
+		 * 
 		 * @command ParameterSpecificationNode.getValue()
 		 * @returns {String} Value of quantity
 		 */
-		getValue : function(){
+		getValue : function() {
 			return this.value;
 		},
-		
+
 		/**
 		 * Get scaling factor
-		 *
+		 * 
 		 * @command ParameterSpecificationNode.getScalingFactor()
 		 * @returns {String} Scaling Factor for value and unit
 		 */
-		getScalingFactor : function(){
+		getScalingFactor : function() {
 			return this.scalingFactor;
 		},
-		
+
 		/**
 		 * Print out formatted node
 		 */
-		print : function(){
-			return "Name : " + this.name + "\n"+
-			   "    Id: " + this.id +"\n" + 
-			   "    InstancePath : " + this.instancePath+"\n"+
-			   "    Value : " + this.value + "\n" + 
-			   "    Unit : " + this.unit + "\n" + 
-			   "    ScalingFactor : " + this.scalingFactor + "\n";
+		print : function() {
+			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+					+ "    InstancePath : " + this.instancePath + "\n"
+					+ "    Value : " + this.value + "\n" + "    Unit : "
+					+ this.unit + "\n" + "    ScalingFactor : "
+					+ this.scalingFactor + "\n";
 		}
 	});
 });

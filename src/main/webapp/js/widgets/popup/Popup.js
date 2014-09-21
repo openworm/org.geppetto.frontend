@@ -32,7 +32,7 @@
  *******************************************************************************/
 /**
  * Popup Widget
- *
+ * 
  * @module Widgets/Popup
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
@@ -43,29 +43,30 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Widget.View.extend({
-		
+
 		/**
 		 * Initialize the popup widget
 		 */
-		initialize : function(options){
+		initialize : function(options) {
 			this.id = options.id;
 			this.name = options.name;
 			this.visible = options.visible;
 			this.render();
-			this.setSize(100,300);
-			//set class pop up
-			$("#"+this.id).addClass("popup");
+			this.setSize(100, 300);
+			// set class pop up
+			$("#" + this.id).addClass("popup");
 		},
-		
+
 		/**
 		 * Sets the message that is displayed inside the widget
 		 * 
 		 * @command setMessage(msg)
-		 * @param {String} msg - The message that is displayed inside the widget
+		 * @param {String}
+		 *            msg - The message that is displayed inside the widget
 		 */
-		setMessage : function(msg){
-			$("#"+this.id).html(msg);
-			
+		setMessage : function(msg) {
+			$("#" + this.id).html(msg);
+
 			return "Setting new Message for " + this.id;
 		}
 	});

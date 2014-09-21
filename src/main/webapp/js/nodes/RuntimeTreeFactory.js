@@ -124,12 +124,11 @@ define(function(require) {
 						{
 							if(receivedAspect.VisualizationTree.modified)
 							{
-								aspectNode.VisualizationTree.content = receivedAspect.VisualizationTree;
-								aspectNode.VisualizationTree.modified = true;
+								aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
+								aspect.VisualizationTree.modified = true;
 							}
 						}
 						//Let's take the chance to set all the modified flags to false
-						aspect.VisualizationTree.modified = false;
 						aspect.SimulationTree.modified = false;
 						aspect.ModelTree.modified = false;
 					}

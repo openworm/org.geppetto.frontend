@@ -49,9 +49,8 @@ define(function(require) {
 		/**
 		 * Initializes this node with passed attributes
 		 * 
-		 * @param {Object}
-		 *            options - Object with options attributes to initialize
-		 *            node
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
 		 */
 		initialize : function(options) {
 			this.properties = options.properties;

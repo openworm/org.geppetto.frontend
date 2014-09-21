@@ -87,9 +87,9 @@ define(function(require) {
 					colours : [ 0xedc240, 0xafd8f8, 0xcb4b4b, 0x4da74d,
 							0x9440ed ], // Colours range for the lines
 					limit : 400, // Maximum number of samples to be displayed
-					// in the Scatter 3d
+									// in the Scatter 3d
 					plotEachN : null, // If define it will behave as a
-					// sampling factor
+										// sampling factor
 					normalizeData : false
 				// Not working properly
 				},
@@ -157,7 +157,7 @@ define(function(require) {
 				 */
 				initializeCamera : function() {
 					var fov = this.options.fov; // camera field-of-view in
-					// degrees
+												// degrees
 					var width = this.renderer.domElement.width;
 					var height = this.renderer.domElement.height;
 					var aspect = width / height; // view aspect ratio

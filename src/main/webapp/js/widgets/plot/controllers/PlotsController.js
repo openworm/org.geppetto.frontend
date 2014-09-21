@@ -31,9 +31,8 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Controller class for plotting widget. Use to make calls to widget from inside
- * Geppetto.
- * 
+ * Controller class for plotting widget. Use to make calls to widget from inside Geppetto.
+ *
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -52,13 +51,11 @@ define(function(require) {
 			/**
 			 * Registers widget events to detect and execute following actions.
 			 * Used when widget is destroyed.
-			 * 
-			 * @param {String}
-			 *            plotID - ID of plot to register
+			 *
+			 * @param {String} plotID - ID of plot to register
 			 */
-			registerHandler : function(plotID) {
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PlotsController,
-						plotID);
+			registerHandler: function(plotID) {
+				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PlotsController, plotID);
 			},
 
 			/**
@@ -66,42 +63,35 @@ define(function(require) {
 			 * 
 			 * @returns {Array} Array containing all plots
 			 */
-			getWidgets : function() {
+			getWidgets: function() {
 				return plots;
 			},
 
 			/**
 			 * Creates plotting widget
 			 */
-			addPlotWidget : function() {
+			addPlotWidget: function() {
 
-				// Plot widget number
+				//Plot widget number
 				var index = (plots.length + 1);
 
-				// Name of plotting widget
+				//Name of plotting widget
 				var name = "Plot" + index;
 				var id = name;
 
-				// create plotting widget
-				var p = window[name] = new Plot({
-					id : id,
-					name : name,
-					visible : true
-				});
+				//create plotting widget
+				var p = window[name] = new Plot({id:id, name:name,visible:true});
 
-				// create help command for plot
-				p.help = function() {
-					return GEPPETTO.Console.getObjectCommands(id);
-				};
+				//create help command for plot
+				p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
-				// store in local stack
+				//store in local stack
 				plots.push(p);
 
 				this.registerHandler(id);
 
-				// add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("js/widgets/plot/Plot.js", p,
-						id);
+				//add commands to console autocomplete and help option
+				GEPPETTO.Console.updateCommands("js/widgets/plot/Plot.js", p, id);
 
 				return p;
 			},
@@ -109,16 +99,16 @@ define(function(require) {
 			/**
 			 * Removes existing plotting widgets
 			 */
-			removePlotWidgets : function() {
-				// remove all existing plotting widgets
-				for ( var i = 0; i < plots.length; i++) {
+			removePlotWidgets: function() {
+				//remove all existing plotting widgets
+				for(var i = 0; i < plots.length; i++) {
 					var plot = plots[i];
-
-					// remove commands
+					
+					//remove commands 
 					GEPPETTO.Console.removeCommands(plot.getId());
 
 					plot.destroy();
-
+					
 					i--;
 				}
 
@@ -128,21 +118,21 @@ define(function(require) {
 			/**
 			 * Toggles plotting widget on and off
 			 */
-			toggle : function() {
-				// if there aren't plotting widgets to toggle, create one
-				if (plots.length == 0) {
-					GEPPETTO.Console
-							.executeCommand('G.addWidget(GEPPETTO.Widgets.PLOT)');
+			toggle: function() {
+				//if there aren't plotting widgets to toggle, create one
+				if(plots.length == 0) {
+					GEPPETTO.Console.executeCommand('G.addWidget(GEPPETTO.Widgets.PLOT)');
 				}
-				// plot widgets exist, toggle them
-				else if (plots.length > 0) {
+				//plot widgets exist, toggle them
+				else if(plots.length > 0) {
 					plotsON = !plotsON;
 
-					for ( var p in plots) {
+					for(var p in plots) {
 						var plot = plots[p];
-						if (plotsON) {
+						if(plotsON) {
 							plot.hide();
-						} else {
+						}
+						else {
 							plot.show();
 						}
 					}
@@ -150,34 +140,32 @@ define(function(require) {
 			},
 
 			/**
-			 * Receives updates from widget listener class to update plotting
-			 * widget(s)
+			 * Receives updates from widget listener class to update plotting widget(s)
 			 * 
-			 * @param {WIDGET_EVENT_TYPE}
-			 *            event - Event that tells widgets what to do
+			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 			 */
-			update : function(event) {
-				// delete plot widget(s)
-				if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+			update: function(event) {
+				//delete plot widget(s)
+				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 					this.removePlotWidgets();
 				}
-
-				// reset plot's datasets
-				else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-					for ( var i = 0; i < plots.length; i++) {
+				
+				//reset plot's datasets
+				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+					for(var i = 0; i < plots.length; i++) {
 						var plot = plots[i];
-
+						
 						plot.cleanDataSets();
 					}
 				}
 
-				// update plotting widgets
-				else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-					// loop through all existing widgets
-					for ( var i = 0; i < plots.length; i++) {
+				//update plotting widgets
+				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+					//loop through all existing widgets
+					for(var i = 0; i < plots.length; i++) {
 						var plot = plots[i];
 
-						// update plot with new data set
+						//update plot with new data set
 						plot.updateDataSet();
 					}
 				}

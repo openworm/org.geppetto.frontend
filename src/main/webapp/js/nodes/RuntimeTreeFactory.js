@@ -118,6 +118,7 @@ define(function(require) {
 					for (var aspectId in entity.aspects) 
 					{
 						var aspect = entity.aspects[aspectId];
+						
 						var receivedAspect=eval("jsonRuntimeTree."+aspect.getInstancePath());
 						if(receivedAspect.VisualizationTree != undefined)
 						{
@@ -127,6 +128,10 @@ define(function(require) {
 								aspectNode.VisualizationTree.modified = true;
 							}
 						}
+						//Let's take the chance to set all the modified flags to false
+						aspect.VisualizationTree.modified = false;
+						aspect.SimulationTree.modified = false;
+						aspect.ModelTree.modified = false;
 					}
 					for (var entityid in node.entities)
 					{
@@ -168,41 +173,6 @@ define(function(require) {
 					this.updateWidgets();
 				},
 				
-				/**Update entities of scene with new server updates*/
-				resetSubtreesDirtyFlag : function(jsonRuntimeTree){
-					for (var id in jsonRuntimeTree) {
-						var node = jsonRuntimeTree[id];
-						if(node._metaType == GEPPETTO.Resources.ENTITY_NODE){
-							//check to see if entitynode already exists
-							if(GEPPETTO.Simulation.runTimeTree.hasOwnProperty(id)){
-								//retrieve entity node
-								var entityNode = 
-									GEPPETTO.Simulation.runTimeTree[id];
-
-								//traverse through server update node to get aspects
-//								for (var a in node) {
-//									var nodeA = node[a];
-								var childrenNode = node.getChildren();
-								for (var a in childrenNode) {
-									var nodeA = childrenNode[a];
-									//match aspect in server update
-									if(nodeA._metaType == GEPPETTO.Resources.ASPECT_NODE){
-										//match aspect in existing entity node
-										for (var aspectId in entityNode.aspects) {
-											var aspect = entityNode.aspects[aspectId];
-											//update subtrees of matched aspect with new data
-											if(aspect.instancePath == nodeA.instancePath){
-												aspect.VisualizationTree.modified = false;
-												aspect.SimulationTree.modified = false;
-												aspect.ModelTree.modified = false;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				},
 
 				/**Update and create simulation Tree for aspect
 				 * 

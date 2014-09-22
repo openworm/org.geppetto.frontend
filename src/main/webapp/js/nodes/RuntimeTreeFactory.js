@@ -200,8 +200,100 @@ define(function(require) {
 				updateWidgets : function(){
 					//send command to widgets that newd data is available
 					GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
-				return parent;
-			},
+					
+					//update scene brightness
+					for(var key in GEPPETTO.Simulation.listeners) {
+						//retrieve the simulate state from watch tree
+						var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, key);
+
+						//update simulation state
+						GEPPETTO.Simulation.listeners[key](simState);
+					}
+				},
+
+				/**Create Model Tree for aspect
+				 * 
+				 * @param aspectInstancePath - Path of aspect to populate
+				 * @param modelTree - Server JSON update
+				 */
+				createAspectModelTree : function(aspectInstancePath, modelTree){
+					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);
+					
+					//populate model tree with server nodes
+					this.modelJSONToNodes(aspect.ModelTree, modelTree);
+					aspect.ModelTree.modified = true;
+					
+					//notify user received tree was empty
+					if(aspect.ModelTree.getChildren().length==0){
+						var indent = "    ";
+						GEPPETTO.Console.log(indent + GEPPETTO.Resources.EMPTY_MODEL_TREE);
+					}else{
+						GEPPETTO.Console.executeCommand(aspect.ModelTree.instancePath + ".print()");
+						aspect.ModelTree.print();
+					}
+				},
+
+				/**Create Model Tree using JSON server update
+				 * 
+				 * @param parent - Used to store the created client nodes
+				 * @param node - JSON server update nodes
+				 */
+				modelJSONToNodes : function(parent, node){				    
+					//traverse through nodes to create model tree
+					for(var i in node) {
+						if(typeof node[i] === "object") {
+							var metatype = node[i]._metaType;
+
+							//if object is array, do recursion to find more objects
+							if(node[i] instanceof Array){
+								var array = node[i];
+								parent[i] = [];
+								var arrayNode = new CompositeNode(
+										{id: i, name : i,_metaType : GEPPETTO.Resources.COMPOSITE_NODE});
+								parent.get("children").add(arrayNode);
+								for(var index in array){
+									parent[i][index] = {};
+									var arrayObject = this.modelJSONNodes(arrayNode, array[index]);
+									parent[i][index] = arrayObject;
+								}
+							}
+							
+							/*Match type of node and created*/
+							if(metatype == GEPPETTO.Resources.COMPOSITE_NODE){
+								var compositeNode =this.createCompositeNode(node[i]);
+								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+									parent.get("children").add(compositeNode);
+								}
+								parent[i] = compositeNode;
+								//traverse through children of composite node
+								this.modelJSONToNodes(parent[i], node[i]);
+							}
+							else if(metatype == GEPPETTO.Resources.FUNCTION_NODE){
+								var functionNode =  this.createFunctionNode(node[i]);
+								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+									parent.get("children").add(functionNode);
+								}
+								parent[i] = functionNode;
+							}
+							else if(metatype == GEPPETTO.Resources.DYNAMICS_NODE){
+								var dynamicsSpecificationNode =  this.createDynamicsSpecificationNode(node[i]);
+								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+									parent.get("children").add(dynamicsSpecificationNode);
+								}
+								parent[i] = dynamicsSpecificationNode;
+							}
+							else if(metatype == GEPPETTO.Resources.PARAMETER_SPEC_NODE){
+								var parameterSpecificationNode =  this.createParameterSpecificationNode(node[i]);
+								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+									parent.get("children").add(parameterSpecificationNode);
+								}
+								parent[i] = parameterSpecificationNode;
+							}
+						}
+					}
+
+					return parent;
+				},
 
 			/**
 			 * Create Simulation Tree

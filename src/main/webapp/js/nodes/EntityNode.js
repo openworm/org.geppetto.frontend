@@ -63,7 +63,7 @@ define(function(require) {
 				position : null,
 				selected : false,
 				visible : true,
-
+				_metaType : "EntityNode",
 				/**
 				 * Initializes this node with passed attributes
 				 * 

@@ -49,6 +49,11 @@ define(function(require) {
 			autoPlace : false
 		},
 
+		/**
+		 * Initializes the TreeVisualiserDAT given a set of options
+		 * 
+		 * @param {Object} options - Object with options for the TreeVisualiserDAT widget
+		 */
 		initialize : function(options) {
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this, options);
 
@@ -62,10 +67,18 @@ define(function(require) {
 			this.dialog.append(this.gui.domElement);
 		},
 		
+		/**
+		 * Action events associated with this widget
+		 */
 		events : {
 			'contextmenu .title' : 'manageRightClickEvent'
 		},
 
+		/**
+		 * Register right click event with widget
+		 * 
+		 * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
+		 */
 		manageRightClickEvent : function(event) {
 			var ascendantsElements = $(event.target).parentsUntil("#" + this.id,".folder").get().reverse();
 			var nodeString = "";
@@ -79,6 +92,12 @@ define(function(require) {
 			this.showContextMenu(event, node);
 		},
 
+		/**
+		 * Sets the data used inside the TreeVisualiserDAT for rendering. 
+		 * 
+		 * @param {Array} state - Array of variables used to display inside TreeVisualiserDAT
+		 * @param {Object} options - Set of options passed to widget to customize it
+		 */
 		setData : function(state, options) {
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
 			dataset.valueDict = {};
@@ -91,6 +110,12 @@ define(function(require) {
 			return "Metadata or variables to display added to tree visualiser";
 		},
 
+		/**
+		 * Prepares the tree for painting it on the widget
+		 * 
+		 * @param {Object} parent - Parent tree to paint
+		 * @param {Array} data - Data to paint
+		 */
 		prepareTree : function(parent, data) {
 			if (data._metaType != null){
 				//TODO: Remove once all getName are implemented in all nodes
@@ -122,6 +147,9 @@ define(function(require) {
 			}	
 		},
 		
+		/**
+		 * Updates the data that the TreeVisualiserDAT is rendering
+		 */
 		updateData : function() {
 			for ( var key in this.datasets) {
 				dataset = this.datasets[key];

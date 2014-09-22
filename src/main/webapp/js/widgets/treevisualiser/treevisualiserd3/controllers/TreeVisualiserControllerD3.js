@@ -50,7 +50,7 @@ define(function(require) {
 			 * Registers widget events to detect and execute following actions.
 			 * Used when widget is destroyed.
 			 *
-			 * @param plotID
+			 * @param {String} treeVisualiserD3ID - ID of widget to register handler
 			 */
 			registerHandler: function(treeVisualiserD3ID) {
 				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.TreeVisualiserControllerD3, treeVisualiserD3ID);
@@ -58,11 +58,16 @@ define(function(require) {
 
 			/**
 			 * Returns all plotting widgets objects
+			 * 
+			 * @returns {Array} Array of TreeVisualiserD3ID widgets that exist
 			 */
 			getWidgets: function() {
 				return treeVisualisersD3;
 			},
 			
+			/**
+			 * Adds a new TreeVisualizer3D Widget to Geppetto
+			 */
 			addTreeVisualiserD3Widget : function(){
 				//Popup widget number
 				var index = (treeVisualisersD3.length + 1);
@@ -88,6 +93,9 @@ define(function(require) {
 				return tvd3;
 			},
 		
+			/**
+			 * Remove the TreeVisualizer3D widget
+			 */
 			removeTreeVisualiserD3Widgets : function(){
 				//remove all existing popup widgets
 				for(var i = 0; i < treeVisualisersD3.length; i++) {
@@ -100,7 +108,11 @@ define(function(require) {
 				treeVisualisersD3 = new Array();
 			},
 			
-			//receives updates from widget listener class to update tree visualiser widget(s)
+			/**
+			 * Receives updates from widget listener class to update TreeVisualizer3D widget(s)
+			 * 
+			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+			 */
 			update: function(event) {
 				//delete treevisualiser widget(s)
 				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
@@ -118,6 +130,12 @@ define(function(require) {
 				}
 			},
 			
+			/**
+			 * Retrieve commands for a specific variable node
+			 * 
+			 * @param {Node} node - Geppetto Node used for extracting commands
+			 * @returns {Array} Set of commands associated with this node 
+			 */
 			getCommands: function(node) {
 				var group1 = [{
 							label:"Open with D3 Widget",
@@ -155,6 +173,9 @@ define(function(require) {
 				
 			},
 			
+			/**
+			 * Register action menu with the TreeVisualizer3D widget
+			 */
 			actionMenu: function(node){
 				tv = GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
 				tv.setData(node);

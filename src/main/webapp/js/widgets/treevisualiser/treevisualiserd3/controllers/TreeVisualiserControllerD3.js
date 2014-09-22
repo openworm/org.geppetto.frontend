@@ -35,6 +35,7 @@
  *
  * @constructor
  *
+ * @module Widgets/TreeVisualizerControllerD3
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {

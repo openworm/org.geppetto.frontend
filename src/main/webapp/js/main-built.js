@@ -41920,10 +41920,12 @@ function loadCss(url) {
 ;
 define("widgets/WidgetUtility", function(){});
 
-define('widgets/ContextMenu',['require'],function(require) {
+define('widgets/ContextMenu',['require','underscore'],function(require) {
 	return function(GEPPETTO) {
 	
 		var registeredItems = {};
+		
+		var _ = require('underscore');
 		
 		/*
 		 * MODELS AND COLLECTIONS

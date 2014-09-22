@@ -35,8 +35,6 @@
  * Main class for handling user interface evens associated with: Simulation Controls,
  * alert & info messages, and server side communication
  *
- * @constructor
- *
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @author giovanni@openworm.org (Giovanni Idili)
  * @author  Jesus R. Martinez (jesus@metacell.us)
@@ -47,6 +45,9 @@ define(function(require) {
 		React = require('react'),
 		InfoModal = require('jsx!components/popups/InfoModal');
 
+		/**
+		 * @class GEPPETTO.Main
+		 */
 		GEPPETTO.Main = {
 
 			StatusEnum: {

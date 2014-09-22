@@ -1,3 +1,6 @@
+/**
+ * @module Widgets/ContextMenu
+ */
 define(function(require) {
 	return function(GEPPETTO) {
 	

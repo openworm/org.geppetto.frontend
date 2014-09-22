@@ -1,3 +1,6 @@
+/**
+ * @class GEPPETTO.Init
+ */
 define(function(require) {
 	return function(GEPPETTO) {
 		var $ = require('jquery');

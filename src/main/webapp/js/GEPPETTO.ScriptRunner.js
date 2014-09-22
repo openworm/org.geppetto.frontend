@@ -35,8 +35,6 @@
  *
  * Handles running script inside Geppetto.
  *
- * @constructor
-
  * @author   (jesus@metacell.us)
  */
 define(function(require) {
@@ -52,8 +50,7 @@ define(function(require) {
 
 		/**
 		 * Executes a set of commands from a script
-		 *
-		 * @param commands - commands to execute
+		 * @class GEPPETTO.ScriptRunner
 		 */
 		GEPPETTO.ScriptRunner = {
 			executeScriptCommands: function(commands) {

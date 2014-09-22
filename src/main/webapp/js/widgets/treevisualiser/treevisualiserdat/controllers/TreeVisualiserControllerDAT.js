@@ -34,7 +34,7 @@
  * Controller class for treevisualiser widget. Use to make calls to widget from
  * inside Geppetto.
  * 
- * @constructor
+ * @module Widgets/TreeVisualizerControllerDAT
  * 
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */

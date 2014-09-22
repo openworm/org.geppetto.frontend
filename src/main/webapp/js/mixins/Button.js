@@ -1,5 +1,10 @@
-define(function(require) {
 
+define(function(require) {
+	/**
+	 * Button used as part of GEPPETTO Components
+	 * 
+	 * @mixin Button
+	 */
     var React = require('react');
 
     return {

@@ -1,3 +1,8 @@
+/**
+ * Popovers used as part of GEPPETTO Components
+ * 
+ * @mixin TutorialMixin
+ */
 define(function (require) {
     var React = require('react'),
         GEPPETTO = require('geppetto'),
@@ -16,6 +21,10 @@ define(function (require) {
             $(this.getDOMNode()).popover('destroy');
         },
 
+        /**
+         * Show Popover
+         * @returns {HTML-Element} Created Popover
+         */
         showPopover: function() {
             $(this.getDOMNode()).popover({
                 title: this.props.popoverTitle,

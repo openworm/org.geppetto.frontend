@@ -33,6 +33,7 @@
 /**
  * Tree Visualiser Widget
  * 
+ * @module Widgets/TreeVisualizerDAT
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 

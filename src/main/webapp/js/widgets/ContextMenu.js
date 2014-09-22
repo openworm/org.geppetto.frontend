@@ -3,6 +3,8 @@ define(function(require) {
 	
 		var registeredItems = {};
 		
+		var _ = require('underscore');
+		
 		/*
 		 * MODELS AND COLLECTIONS
 		 */

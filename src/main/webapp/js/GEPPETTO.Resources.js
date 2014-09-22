@@ -288,6 +288,9 @@ define(function(require) {
 			 */
 			WIDGET_CREATED: " widget created",
 			REMOVE_PLOT_WIDGETS: "Plotting widget(s) removed",
+			REMOVE_POPUP_WIDGETS: "Popup widget(s) removed",
+			REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",
+			REMOVE_TREEVISUALISERD3_WIDGETS: "Tree Visualiser D3 widget(s) removed",
 			NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
 
 			/**

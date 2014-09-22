@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,32 +30,36 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
-/**
- * Loads widget scripts
- *  
- * @author Jesus Martinez (jesus@metacell.us)
- */
-
-//Widget Classes
-define(function(require){
+define(function(require) {
 	return function(GEPPETTO) {
+		
+		var commandsProviders = {};
+		
+		GEPPETTO.MenuManager = {
+				
+			registerNewCommandProvider: function(nodeTypes, handler) {
+				for (var nodeTypeKey in nodeTypes){
+					nodeType = nodeTypes[nodeTypeKey];
+					commandsItem = [];
+					if (nodeType in commandsProviders){
+						commandsItem = commandsProviders[nodeType];
+					}
+					commandsItem.push(handler);	
+					commandsProviders[nodeType] = commandsItem;
+				}
+			},
+			
+			
+			getCommandsProvidersFor: function(nodeType) {
+				var commandsProvidersForNodeType = [];
+				if (nodeType in commandsProviders){
+					commandsProvidersForNodeType = commandsProviders[nodeType];
+				}
+				return commandsProvidersForNodeType;
+			}
+			
+			
 
-	require('widgets/WidgetFactory')(GEPPETTO);
-	require('widgets/WidgetsListener')(GEPPETTO);
-	require("widgets/WidgetUtility");
-	require("widgets/ContextMenu")(GEPPETTO);
-	//Plot Widget
-	require("widgets/plot/config")(GEPPETTO);
-	//Popup Widget
-	require("widgets/popup/config")(GEPPETTO);
-	//Scatter3d Widget
-	require("widgets/scatter3d/config")(GEPPETTO);	
-	//TreeVisualiser DAT Widget
-	require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-	//TreeVisualiser D3 Widget
-	require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-	
-	loadCss("js/widgets/Widget.css");
-	};
+		};
+	}
 });

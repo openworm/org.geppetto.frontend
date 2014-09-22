@@ -71,6 +71,7 @@ define(function(require) {
 				this.id = options.id;
 				this.name = options.name;
 				this.visible = options.visible;
+				this.contextMenu = new GEPPETTO.ContextMenuView();
 			},
 
 			/**
@@ -244,6 +245,31 @@ define(function(require) {
 				return current;
 			},
 
+			showContextMenu: function (event, data) {
+				var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor(data._metaType);
+				
+				if (handlers.length >0){
+					var groups = [];	
+					for (var handlerIndex = 0; handlerIndex < handlers.length; handlerIndex++){
+						groups = groups.concat(handlers[handlerIndex](data));
+					}
+				
+				    this.contextMenu.show({
+				        top: event.pageY,
+				        left: event.pageX + 1,
+				        groups: groups,
+	//			        registeredItems: registeredItems,
+				        data: data
+				    });
+				}
+			    
+				if (event!=null){
+					event.preventDefault();
+				}
+			    
+			    return false;
+			},
+			
 			/**
 			 * Renders the widget dialog window
 			 */
@@ -265,6 +291,8 @@ define(function(require) {
 						}
 					});
 
+				this.$el = $("#"+this.id);
+				
 				//Take focus away from close button
 				$(".ui-dialog-titlebar-close").blur();
 

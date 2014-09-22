@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,30 +32,50 @@
  *******************************************************************************/
 
 /**
- * Loads widget scripts
- *  
- * @author Jesus Martinez (jesus@metacell.us)
+ * Loads tree visualiser scripts
+ *
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 
-//Widget Classes
-define(function(require){
-	return function(GEPPETTO) {
 
-	require('widgets/WidgetFactory')(GEPPETTO);
-	require('widgets/WidgetsListener')(GEPPETTO);
-	require("widgets/WidgetUtility");
-	require("widgets/ContextMenu")(GEPPETTO);
-	//Plot Widget
-	require("widgets/plot/config")(GEPPETTO);
-	//Popup Widget
-	require("widgets/popup/config")(GEPPETTO);
-	//Scatter3d Widget
-	require("widgets/scatter3d/config")(GEPPETTO);	
-	//TreeVisualiser DAT Widget
-	require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-	//TreeVisualiser D3 Widget
-	require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
+/*
+ * Libraries used by Tree Visualizer widget
+ */
+
+require.config({
+	  paths: {
+	    "d3": "widgets/treevisualiser/treevisualiserd3/vendor/d3.min"
+	  }
+	});
+
+var reqs = [];
+reqs.push("d3");
+
+define("d3.global", ["d3"], function(_) {
+	  d3 = _;
+	});
+
+require(reqs, function(d3) {
+	window.d3 = d3;
+	loadCss("js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.css");
 	
-	loadCss("js/widgets/Widget.css");
+});
+
+//Load TreeVisualiserController and other classes using GEPPETTO
+define(function(require) {
+	return function(GEPPETTO) {
+		require("widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3")(GEPPETTO);
+		
+		// Register Commands
+		GEPPETTO.MenuManager.registerNewCommandProvider(["EntityNode",
+		                                                 "AspectNode",
+		                                                 "AspectSubTreeNode",
+		                                                 "CompositeNode",
+		                                                 "DynamicsSpecificationNode",
+		                                                 "FunctionNode",
+		                                                 "ParameterNode",
+		                                                 "ParameterSpecificationNode",
+		                                                 "VariableNode"],
+		                                                 GEPPETTO.TreeVisualiserControllerD3.getCommands);
 	};
 });

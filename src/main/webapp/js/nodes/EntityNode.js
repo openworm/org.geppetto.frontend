@@ -220,10 +220,10 @@ define(function(require) {
 				 * 
 				 */
 				getChildren : function() {
-					var entities = this.get("entities");
-					var aspects = this.get("aspects");
-
-					return entities.add(aspects.toJSON());
+					 var children = new Backbone.Collection();
+					 children.add(this.get("aspects").models);
+					 children.add(this.get("entities").models);
+					 return children;
 				},
 
 				/**

@@ -62,7 +62,7 @@ define(function(require) {
 				VisualizationTree : {},
 				SimulationTree : {},
 				parentEntity : null,
-
+				_metaType : "AspectNode",
 				/**
 				 * Initializes this node with passed attributes
 				 * 
@@ -86,7 +86,6 @@ define(function(require) {
 				 */
 				hide : function() {
 					var message;
-
 					if (GEPPETTO.hideAspect(this.instancePath)) {
 						message = GEPPETTO.Resources.HIDE_ASPECT
 								+ this.instancePath;
@@ -94,7 +93,6 @@ define(function(require) {
 						message = GEPPETTO.Resources.ASPECT_ALREADY_HIDDING;
 					}
 					this.visible = false;
-
 					return message;
 				},
 
@@ -106,7 +104,6 @@ define(function(require) {
 				 */
 				show : function() {
 					var message;
-
 					if (GEPPETTO.showAspect(this.instancePath)) {
 						message = GEPPETTO.Resources.SHOW_ASPECT
 								+ this.instancePath;
@@ -114,11 +111,8 @@ define(function(require) {
 						message = GEPPETTO.Resources.ASPECT_ALREADY_VISIBLE;
 					}
 					this.visible = true;
-
 					return message;
-
 				},
-
 				/**
 				 * Unselects the aspect
 				 * 
@@ -127,23 +121,18 @@ define(function(require) {
 				 */
 				unselect : function() {
 					var message;
-
 					if (GEPPETTO.unselectAspect(this.instancePath)) {
 						message = GEPPETTO.Resources.UNSELECTING_ASPECT
 								+ this.instancePath;
 						this.selected = false;
-
 						this.parentEntity.selected = false;
-
 						GEPPETTO.WidgetsListener
 								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {
 						message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
 					}
-
 					return message;
 				},
-
 				/**
 				 * Selects the aspect
 				 * 
@@ -151,14 +140,11 @@ define(function(require) {
 				 * 
 				 */
 				select : function() {
-
 					var message;
-
 					if (GEPPETTO.selectAspect(this.instancePath)) {
 						message = GEPPETTO.Resources.SELECTING_ASPECT
 								+ this.instancePath;
 						this.selected = true;
-
 						this.parentEntity.selected = true;
 
 						GEPPETTO.WidgetsListener
@@ -279,6 +265,13 @@ define(function(require) {
 							+ "      SubTree : SimulationTree \n";
 
 					return formattedNode;
-				}
+				},
+				getChildren : function(){
+					 var children = new Backbone.Collection();
+					 children.add(this.ModelTree);
+					 children.add(this.SimulationTree);
+					 children.add(this.VisualizationTree);
+					 return children; 
+				 }
 			});
 });

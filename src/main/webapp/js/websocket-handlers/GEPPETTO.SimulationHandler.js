@@ -101,7 +101,6 @@ define(function(require) {
                 }
             }
             
-            GEPPETTO.RuntimeTreeFactory.resetSubtreesDirtyFlag(GEPPETTO.Simulation.runTimeTree);
         };
 
         messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {            
@@ -142,9 +141,7 @@ define(function(require) {
                     GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
-            
-            GEPPETTO.RuntimeTreeFactory.resetSubtreesDirtyFlag(GEPPETTO.Simulation.runTimeTree);
-            
+                       
             GEPPETTO.trigger('simulation:started');
         };
 

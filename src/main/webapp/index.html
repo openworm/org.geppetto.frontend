@@ -74,6 +74,15 @@
             </div>
         </script>
 
+		<!-- The contextual menu template: -->
+		<script type="text/template" id="tplContextMenu">
+		</script>
+		<script type="text/template" id="tplContextMenuItems">
+           <li id="<%= this.cid %>">
+               <%= label %>
+           </li>
+		</script>
+
             <!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
             <!--  Don't change space, templates are sensitive to white spacing -->
         <script type="text/template" id="tplCommand"><% if (! _hidden) { %><div><span class="command"><%= command %></span></div>

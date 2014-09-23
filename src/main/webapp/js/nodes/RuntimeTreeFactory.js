@@ -49,6 +49,10 @@ define(function(require) {
 		var FunctionNode = require('nodes/FunctionNode');
 		var VariableNode = require('nodes/VariableNode');
 		var simulationTreeCreated=false;
+		
+		/**
+		 * @class GEPPETTO.RuntimeTreeFactory
+		 */
 		GEPPETTO.RuntimeTreeFactory = {
 				/**Creates the backbone nodes for the first time depending.
 				 */
@@ -73,6 +77,8 @@ define(function(require) {
 
 			/**
 			 * Traverse through entities to create children
+			 * 
+			 * * @name RuntimeTreeFactory#traverseEntities
 			 */
 			traverseEntities : function(entities, parentNode, runTimeRef) {
 				for ( var id in entities) {

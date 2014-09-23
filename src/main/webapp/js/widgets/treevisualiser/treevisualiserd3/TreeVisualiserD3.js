@@ -33,6 +33,7 @@
 /**
  * Tree Visualiser Widget
  *
+ * @module Widgets/TreeVisualizerD3
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 
@@ -48,6 +49,11 @@ define(function(require) {
 			height: 460
 		},
 		
+		/**
+		 * Initializes the TreeVisualiser3D given a set of options
+		 * 
+		 * @param {Object} options - Object with options for the TreeVisualiser3D widget
+		 */
 		initialize : function(options){
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this,options);
 			this.options = this.defaultTreeVisualiserOptions;
@@ -66,6 +72,12 @@ define(function(require) {
 		    });
 		},
 		
+		/**
+		 * Sets the data used inside the TreeVisualiser3D for rendering. 
+		 * 
+		 * @param {Array} state - Array of variables used to display inside TreeVisualiser3D
+		 * @param {Object} options - Set of options passed to widget to customize it
+		 */
 		setData : function(state, options){
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
 			dataset.links = [];
@@ -81,6 +93,13 @@ define(function(require) {
 			return "Metadata or variables to display added to tree visualiser";
 		},
 		
+		/**
+		 * Prepares the tree for painting it on the widget
+		 * 
+		 * @param {Object} parent - Parent tree to paint
+		 * @param {Array} data - Data to paint
+		 * @param {Array} dataset - Sets within the data object to paint
+		 */
 		prepareTree: function(parent, data, dataset){
 			nodeName = data.instancePath;
 			
@@ -121,6 +140,9 @@ define(function(require) {
 			}	
 		},
 		
+		/**
+		 * Updates the data that the TreeVisualiser3D is rendering
+		 */
 		updateData: function(){
 			for(var key in this.datasets) {
 				dataset = this.datasets[key];
@@ -137,6 +159,9 @@ define(function(require) {
 			}
 		},
 		
+		/**
+		 * Paints the tree for the widget
+		 */
 		paintTree: function(){
 			for(var key in this.datasets) {
 				dataset = this.datasets[key];

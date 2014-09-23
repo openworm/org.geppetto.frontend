@@ -35,6 +35,9 @@ define(function(require) {
 		
 		var commandsProviders = {};
 		
+		/**
+		 * @class GEPPETTO.MenuManager
+		 */
 		GEPPETTO.MenuManager = {
 				
 			registerNewCommandProvider: function(nodeTypes, handler) {

@@ -113,13 +113,26 @@ define(function(require) {
 			 }
 		});
 		
+		/**
+		 * @module Widgets/ContextMenu
+		 */
 		GEPPETTO.ContextMenuView = Backbone.View.extend({
 	        className: 'contextMenuView',
 	        template: _.template($('#tplContextMenu').html()),
 	        parentSelector: 'body',
+	        
+	        /**
+	         * Events that can be registered with the widget
+	         */
 			events : {
 				'click .contextMenuLink' : 'manageMenuClickEvent'
 			},
+			
+			/**
+			 * Register right click event with this widget
+			 * 
+			 * @param {GEPPETTO.ContextMenuView.events} event - Registe event with this widget  
+			 */
 			manageMenuClickEvent: function(event){
 				//TODO: Check if this can be done through and event in the menu view items
 				var itemId = $(event.target).attr('id');
@@ -138,6 +151,9 @@ define(function(require) {
 				GEPPETTO.Console.executeCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
 			},
 	        
+			/**
+			 * Renders the Context Menu widget
+			 */
 	        render: function () {
 	        	this.$el.html(this.template());	            
 	            
@@ -170,6 +186,10 @@ define(function(require) {
 	
 	            return this;
 	        },
+
+	        /**
+	         * Initializes the ContextMenu given a set of options
+	         */
 	        initialize: function () {
 	        	this,registeredItems = {};
 	        	
@@ -182,6 +202,11 @@ define(function(require) {
 	            });
 	        },
 	
+	        /**
+	         * Shows the context menu 
+	         * 
+	         * @param {Object} options - Options used to customize the context menu widget
+	         */
 	        show: function (options) {
 	            if (options.top === undefined || options.left === undefined) throw "ContextMenu must be shown with top/left coordinates.";
 	            if (options.groups === undefined) throw "ContextMenu needs ContextMenuGroups to be shown.";

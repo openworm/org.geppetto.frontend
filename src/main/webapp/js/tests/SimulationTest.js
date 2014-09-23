@@ -122,7 +122,7 @@ define(function(require) {
 								passTimeTest = true;
 							}
 							
-							equal(true, passTimeTest, "Simulation loaded within time limit");
+							equal(true, passTimeTest, "Simulation loaded within time limit: " + time);
 							notEqual(null, hhcell, "Entities checked");
 							equal(1, hhcell.get('aspects').length, "Aspects checked");
 							equal(false, jQuery.isEmptyObject(hhcell.electrical.VisualizationTree), "Test Visualization at load");

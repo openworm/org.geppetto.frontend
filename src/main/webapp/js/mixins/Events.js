@@ -1,7 +1,12 @@
 define(function (require) {
-
+	/**@lends Events*/
 	var _ = require('underscore');
 	
+	/**
+     * Events used as part of GEPPETTO Components
+     * 
+     * @mixin Events
+     */
     return {
     	
     	eventHash: [],

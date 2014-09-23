@@ -31,33 +31,51 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a parameter node, used for model tree properties.
+ * Client class use to represent a parameter node, used for model tree
+ * properties.
  * 
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @module nodes/ParameterNode
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
-		
+
 	return Node.Model.extend({
-		properties:{},
+		properties : {},
 		_metaType : "ParameterNode",
-		
-		initialize : function(options){
+
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
+		 */
+		initialize : function(options) {
 			this.properties = options.properties;
 			this.name = options.name;
+			this.id = options.id;
 			this.instancePath = options.instancePath;
 		},
-		
+
 		/**
 		 * Get properties for this node
-		 *
-		 * @name ParameterNode.getProperties()
-		 * @returns {String} - Unit for quantity
+		 * 
+		 * @command ParameterNode.getProperties()
+		 * @returns {String} Unit for quantity
 		 */
-		getProperties : function(){
+		getProperties : function() {
 			return this.properties;
 		},
+
+		/**
+		 * Print out formatted node
+		 */
+		print : function() {
+			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+					+ "    InstancePath : " + this.instancePath + "\n"
+					+ "    Properties : " + this.properties + "\n";
+		}
 	});
 });

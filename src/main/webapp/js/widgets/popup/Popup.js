@@ -33,6 +33,7 @@
 /**
  * Popup Widget
  *
+ * @module Widgets/Popup
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 
@@ -43,6 +44,9 @@ define(function(require) {
 
 	return Widget.View.extend({
 		
+		/**
+		 * Initialize the popup widget
+		 */
 		initialize : function(options){
 			this.id = options.id;
 			this.name = options.name;
@@ -53,6 +57,12 @@ define(function(require) {
 			$("#"+this.id).addClass("popup");
 		},
 		
+		/**
+		 * Sets the message that is displayed inside the widget
+		 * 
+		 * @command setMessage(msg)
+		 * @param {String} msg - The message that is displayed inside the widget
+		 */
 		setMessage : function(msg){
 			$("#"+this.id).html(msg);
 			

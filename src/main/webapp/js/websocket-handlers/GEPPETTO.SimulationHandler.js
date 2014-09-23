@@ -70,7 +70,9 @@ define(function(require) {
         var messageHandler = {};
 
         messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL);
+        	var initTime = new Date()-GEPPETTO.Simulation.initializationTime;
+        	
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
             var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
             GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);           
@@ -98,6 +100,7 @@ define(function(require) {
                     GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
+            
         };
 
         messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {            
@@ -121,7 +124,24 @@ define(function(require) {
         };
 
         //Simulation has been started, enable pause button
-        messageHandler[messageTypes.SIMULATION_STARTED] = function() {
+        messageHandler[messageTypes.SIMULATION_STARTED] = function(payload) {
+        	var updatedRunTime = JSON.parse(payload.update).scene;
+            updateTime(updatedRunTime.time);
+
+            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
+
+            //Update if simulation hasn't been stopped
+            if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
+                if(!GEPPETTO.isScenePopulated()) {
+                    // the first time we need to create the objects
+                    GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+                }
+                else {
+                    // any other time we just update them
+                    GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
+                }
+            }
+                       
             GEPPETTO.trigger('simulation:started');
         };
 

@@ -31,56 +31,75 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a variable node, used for simulation tree states.
+ * Client class use to represent a variable node, used for simulation tree
+ * states.
  * 
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @module nodes/VariableNode
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		unit:"",
+		unit : "",
 		value : "",
 		scalingFactor : "",
 		_metaType : "VariableNode",
-		
-		initialize : function(options){
+
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object} options - Object with options attributes to initialize node
+		 */
+		initialize : function(options) {
 			this.name = options.name;
+			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.unit = options.unit;
 			this.value = options.value;
 			this.scalingFactor = options.scalingFactor;
 		},
-		
+
 		/**
 		 * Get the type of tree this is
-		 *
-		 * @name ParameterSpecificationNode.getUnit()
-		 * @returns {String} - Unit for quantity
+		 * 
+		 * @command ParameterSpecificationNode.getUnit()
+		 * @returns {String} Unit for quantity
 		 */
-		getUnit : function(){
+		getUnit : function() {
 			return this.unit;
 		},
-		
+
 		/**
 		 * Get value of quantity
-		 *
-		 * @name ParameterSpecificationNode.getValue()
-		 * @returns {String} - Value of quantity
+		 * 
+		 * @command ParameterSpecificationNode.getValue()
+		 * @returns {String} Value of quantity
 		 */
-		getValue : function(){
+		getValue : function() {
 			return this.value;
 		},
-		
+
 		/**
 		 * Get scaling factor
-		 *
-		 * @name ParameterSpecificationNode.getScalingFactor()
-		 * @returns {String} - Scaling Factor for value and unit
+		 * 
+		 * @command ParameterSpecificationNode.getScalingFactor()
+		 * @returns {String} Scaling Factor for value and unit
 		 */
-		getScalingFactor : function(){
+		getScalingFactor : function() {
 			return this.scalingFactor;
 		},
+
+		/**
+		 * Print out formatted node
+		 */
+		print : function() {
+			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+					+ "    InstancePath : " + this.instancePath + "\n"
+					+ "    Value : " + this.value + "\n" + "    Unit : "
+					+ this.unit + "\n" + "    ScalingFactor : "
+					+ this.scalingFactor + "\n";
+		}
 	});
 });

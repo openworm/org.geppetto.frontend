@@ -7,7 +7,7 @@ define(function (require) {
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
 
         onClick: function() {
-            GEPPETTO.Simulation.stop();
+            GEPPETTO.Console.executeCommand("Simulation.stop()");
         },
 
         componentDidMount: function() {

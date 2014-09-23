@@ -1,3 +1,6 @@
+/**
+ * @class GEPPETTO.Init
+ */
 define(function(require) {
 	return function(GEPPETTO) {
 		var $ = require('jquery');
@@ -130,8 +133,6 @@ define(function(require) {
 						if(VARS.aspects.hasOwnProperty(selected) ||
 								VARS.entities.hasOwnProperty(selected))
 						GEPPETTO.Console.executeCommand(selected + '.select()' );
-					}else{
-						GEPPETTO.unSelectAll();
 					}
 						
 			}, false);

@@ -37,6 +37,8 @@
  */
 /**
  * Load CSS File
+ * 
+ * @module WidgetUtility
  * @param url
  */
 function loadCss(url) {

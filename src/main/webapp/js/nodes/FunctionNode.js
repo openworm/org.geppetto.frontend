@@ -31,44 +31,62 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a function. Used to store properties of model tree
+ * Client class use to represent a function. Used to store properties of model
+ * tree
  * 
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @module nodes/FunctionNode
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
-		
+
 	return Node.Model.extend({
 		arguments : "",
 		expression : "",
-		
-		initialize : function(options){
+
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object} options - Object with options attributes to initialize node
+		 */
+		initialize : function(options) {
 			this.name = options.name;
+			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.arguments = options.arguments;
 			this.expression = options.expression;
 		},
-		
+
 		/**
 		 * Get arguments for function
-		 *
-		 * @name FunctionNode.getArguments()
-		 * @returns {String} - Arguments for function
+		 * 
+		 * @command FunctionNode.getArguments()
+		 * @returns {String} Arguments for function
 		 */
-		getArguments : function(){
+		getArguments : function() {
 			return this.arguments;
 		},
-		
+
 		/**
 		 * Get function's expression
-		 *
-		 * @name FunctionNode.getExpression()
-		 * @returns {String} - Expression for function
+		 * 
+		 * @command FunctionNode.getExpression()
+		 * @returns {String} Expression for function
 		 */
-		getExpression : function(){
+		getExpression : function() {
 			return this.expression;
 		},
+
+		/**
+		 * Print out formatted node
+		 */
+		print : function() {
+			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+					+ "    InstancePath : " + this.instancePath + "\n"
+					+ "    Arguments : " + this.arguments + "\n"
+					+ "    Expression : " + this.expression + "\n";
+		}
 	});
 });

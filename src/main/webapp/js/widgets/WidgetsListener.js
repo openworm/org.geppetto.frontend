@@ -33,40 +33,52 @@
 /**
  * Listener class for widgets. Receives updates from Geppetto that need to be transmitted to all widgets.
  *
- * @constructor
- *
  * @author Jesus R Martinez (jesus@metacell.us)
  */
-
 define(function(require) {
 
 	var $ = require('jquery');
 
 	return function(GEPPETTO) {
 
+		/**
+		 * @exports Widgets/GEPPETTO.WidgetsListener
+		 */
 		GEPPETTO.WidgetsListener = {
 
+			/**
+			 * WIDGET_EVENT_TYPE
+			 * 
+			 * Event types that tell widgets what to do 
+			 * 
+			 * @enum
+			 */
 			WIDGET_EVENT_TYPE: {
 				DELETE: "delete",
 				UPDATE: "update",
-				RESET_DATA : "reset"
+				RESET_DATA : "reset",
+				SELECTION_CHANGED : "selection_changed",
 			},
 			_subscribers: [],
 
 			/**
 			 * Subscribes widget controller class to listener
 			 *
-			 * @param obj - Controller Class subscribing
-			 * @returns {Boolean}
+			 * @param {Widgets/Controller} controller - Controller class to be subscribed to listener
+			 * @param {String} widgetID - ID of widget to register to global widgets listener
 			 */
 			subscribe: function(controller, widgetID) {
 
 				var addController = true;
+				
+				//traverse through existing subscribed controller to figure out whether to add new one or not
 				for(var i = 0, len = this._subscribers.length; i < len; i++) {
 					if(this._subscribers[ i ] === controller) {
 						addController = false;
 					}
 				}
+				
+				//subscribe controller only if it hasn't been already subscribed
 				if(addController) {
 					this._subscribers.push(controller);
 
@@ -76,7 +88,7 @@ define(function(require) {
 				//registers remove handler for widget
 				$("#" + widgetID).on("remove", function() {
 					//remove tags and delete object upon destroying widget
-					GEPPETTO.Utility.removeTags(widgetID);
+					GEPPETTO.Console.removeCommands(widgetID);
 
 					var widgets = controller.getWidgets();
 
@@ -110,20 +122,24 @@ define(function(require) {
 
 					GEPPETTO.Console.executeCommand(widgetID + ".setPosition(" + left + "," + top + ")");
 				});
+
+				//bind close button on widget event to destroy command
+				$("#" + widgetID).bind('dialogclose', function(event) {
+					//destroy widget
+					GEPPETTO.Console.executeCommand(widgetID + ".destroy()");
+				});
 			},
 
 			/**
-			 * Unsubscribe widget controller class
+			 * Unsubscribe widget controller class from lobal widgets listener
 			 *
-			 * @param obj - Controller class to be unsubscribed from listener
+			 * @param {Widgets/Controller} controller - Controller class to be unsubscribed from listener
 			 *
-			 * @returns {Boolean}
 			 */
-			unsubscribe: function(obj) {
+			unsubscribe: function(controller) {
 				for(var i = 0, len = this._subscribers.length; i < len; i++) {
-					if(this._subscribers[ i ] === obj) {
+					if(this._subscribers[ i ] === controller) {
 						this._subscribers.splice(i, 1);
-						GEPPETTO.Console.log('removed existing observer');
 						return true;
 					}
 				}
@@ -131,9 +147,9 @@ define(function(require) {
 			},
 
 			/**
-			 * Update all subscribed controller classes of the changes
+			 * Update all subscribed controller classes with new changes
 			 *
-			 * @param newData
+			 * @param {Object} arguments - Set arguments with information to update the widgets
 			 */
 			update: function(arguments) {
 				for(var i = 0, len = this._subscribers.length; i < len; i++) {

@@ -51,7 +51,30 @@
 .legendLabel {
 	background:rgba(66,59,59,0.90)!important;
 	color:white;
+	font-weight: 200;
+	font-style: normal;
+	font-size: 11px;
+	text-decoration: inherit;
+	-webkit-font-smoothing: antialiased;
 }
+
+.ui-widget-content a {
+	color:white;
+}
+
+.ui-tooltip {
+	padding : 0px;
+	background : transparent;
+	max-width : 1000px;
+}
+
+.ui-tooltip div {
+	background: rgb(61, 61, 190)!important;
+	color : white;
+	padding : 0px;
+	max-width : 1000px;
+}
+
 
 .axisLabel {
     position: absolute;

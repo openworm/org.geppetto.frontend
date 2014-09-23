@@ -35,8 +35,6 @@
  *
  * Creates Javascript editor to display commands.
  *
- * @constructor
- *
  * @author Jesus Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -76,6 +74,11 @@ define(function(require) {
 				});
 		}
 
+		/**
+		 * Javascript editor for simulation files
+		 * 
+		 * @class GEPPETTO.JSEditor
+		 */
 		GEPPETTO.JSEditor = {
 			/**
 			 * Load the editor, create it if it doesn't exist

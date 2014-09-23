@@ -178,11 +178,15 @@ define(function(require) {
 
 			RETRIEVING_MODEL_TREE : 'Model tree requested',
 			
-			EMPTY_MODEL_TREE : 'Model tree received, but is empty.',
+			EMPTY_MODEL_TREE : 'Model is empty, nothing to see here.',
 			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
+			
+			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',
 
 			RETRIEVING_SIMULATION_TREE : 'Simulation tree: ',
+			
+			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
 			
 			/**
 			 * GEPPETTO.Main resources
@@ -214,6 +218,9 @@ define(function(require) {
 			SERVER_AVAILABLE: "Server Available",
 
 			WEBGL_FAILED: "Initializing Error: Unable to initialize WebGL",
+			
+			WEBGL_MESSAGE : "Unable to detect WebGl in your browser. \n" +
+						"Try updating your browser and video card drivers to resolve issue",
 
 			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 
@@ -232,25 +239,27 @@ define(function(require) {
 			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
 					" Okay and enjoy the show!",
 					
-			SELECTING_ENTITY : "Selecting entity.",
-			UNSELECTING_ENTITY : "Unselecting entity.",
-			SHOW_ENTITY : "Showing entity.",
+			SELECTING_ENTITY : "Selecting entity ",
+			UNSELECTING_ENTITY : "Unselecting entity ",
+			CANT_FIND_ENTITY : "Entity not found, can't use selection on it",
+			NO_ENTITIES_SELECTED : "No entities are currently selected.",
+			SHOW_ENTITY : "Showing entity ",
 			ENTITY_ALREADY_VISIBLE : "Entity already visible.",
-			HIDE_ENTITY : "Hiding entity.",
+			HIDE_ENTITY : "Hiding entity ",
 			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
-			ZOOM_TO_ENTITY : "Zooming to entity.",
+			ZOOM_TO_ENTITY : "Zooming to entity ",
 			
 			ENTITY_ALREADY_SELECTED : "Entity already selected",
 			
 			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
 
-			SELECTING_ASPECT : "Selecting aspect.",
-			UNSELECTING_ASPECT : "Unselecting entity.",
-			SHOW_ASPECT : "Showing entity.",
+			SELECTING_ASPECT : "Selecting aspect ",
+			UNSELECTING_ASPECT : "Unselecting aspect ",
+			SHOW_ASPECT : "Showing aspect ",
 			ASPECT_ALREADY_VISIBLE : "Aspect already visible.",
-			HIDE_ASPECT : "Hiding entity.",
+			HIDE_ASPECT : "Hiding aspect ",
 			ASPECT_ALREADY_HIDDING : "Aspect already invisible.",
-			ZOOM_TO_ASPECT : "Zooming to aspect.",
+			ZOOM_TO_ASPECT : "Zooming to aspect ",
 			
 			ASPECT_ALREADY_SELECTED : "Aspect already selected",
 			
@@ -279,6 +288,9 @@ define(function(require) {
 			 */
 			WIDGET_CREATED: " widget created",
 			REMOVE_PLOT_WIDGETS: "Plotting widget(s) removed",
+			REMOVE_POPUP_WIDGETS: "Popup widget(s) removed",
+			REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",
+			REMOVE_TREEVISUALISERD3_WIDGETS: "Tree Visualiser D3 widget(s) removed",
 			NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
 
 			/**
@@ -291,7 +303,21 @@ define(function(require) {
 			/**
 			 * Socket Messages
 			 */
-			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto servlet. \nReload page if problems persits"
+			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto servlet. \nReload page if problems persits",
+			
+			/**
+			 * Node Resources
+			 */
+			ENTITY_NODE : "EntityNode", 
+			ASPECT_NODE : "AspectNode",
+			ASPECT_SUBTREE_NODE : "AspectSubTreeNode",
+			VARIABLE_NODE : "VariableNode",
+			FUNCTION_NODE : "FunctionNode",
+			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
+			PARAMETER_NODE : "ParameterNode",
+			COMPOSITE_NODE : "CompositeNode",
+			DYNAMICS_NODE : "DynamicsSpecificationNode"
+				
 		}
 	}
 });

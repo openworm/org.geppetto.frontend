@@ -32,8 +32,18 @@
  *******************************************************************************/
 define(function(require) {
 	return function(GEPPETTO) {
+		/**
+		 * @class GEPPETTO.Share
+		 */
 		GEPPETTO.Share = {
 			visible : false,
+			/**
+			 * Shares Geppetto on Facebook
+			 * 
+			 * @param {URL} linkURL - URL to share
+			 * @param {String} title - Title of sharing post
+			 * @param {String} text - Test of sharing post
+			 */
 			facebook: function(linkURL, title, img, text) {
 				var url = 'http://www.facebook.com/sharer.php?s=100';
 				url += '&p[title]=' + encodeURIComponent(title);
@@ -42,6 +52,12 @@ define(function(require) {
 				url += '&p[images][0]=' + encodeURIComponent(img);
 				this.popup(url);
 			},
+			/**
+			 * Shares Geppetto on Twitter
+			 * 
+			 * @param {URL} linkURL - URL to share
+			 * @param {String} title - Title of sharing post
+			 */
 			twitter: function(linkURL, title) {
 				var url = 'http://twitter.com/share?';
 				url += 'text=' + encodeURIComponent(title);
@@ -49,12 +65,30 @@ define(function(require) {
 				url += '&counturl=' + encodeURIComponent(linkURL);
 				this.popup(url);
 			},
+			
+			/**
+			 * General method to display popup window with either facebook or twitter share
+			 * 
+			 * @param {URL} url - URL to share
+			 */
 			popup: function(url) {
 				window.open(url, '', 'toolbar=0,status=0,width=626, height=436');
 			},
+			
+			/**
+			 * Toggles sharing popup on and off
+			 * 
+			 * @param {boolean} mode - Sets popup visible or invisible
+			 */
 			setVisible : function(mode){
 				this.visible = mode;
 			},
+			
+			/**
+			 * Returns visibility of popup window
+			 * 
+			 * @returns {boolean} Visibility of popup window
+			 */
 			isVisible : function(){
 				return this.visible;
 			}

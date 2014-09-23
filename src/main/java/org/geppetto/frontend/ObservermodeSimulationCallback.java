@@ -69,7 +69,7 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 	 * 
 	 */
 	@Override
-	public void updateReady(SimulationEvents event, String sceneUpdate)
+	public void updateReady(SimulationEvents event, String requestID, String sceneUpdate)
 	{
 
 		long start = System.currentTimeMillis();
@@ -137,6 +137,7 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 		String jsonExceptionMsg=e==null?"":e.getMessage();
 		String jsonErrorMsg=errorMessage==null?"":errorMessage;
 		String error = "{ \"error_code\":" + errorCode.toString() + ", \"source\":" + classSource + ", \"message\": " + jsonErrorMsg + ", \"exception\": " + jsonExceptionMsg +"}";
+		logger.error(errorMessage,e);
 		for(GeppettoMessageInbound connection : controller.getConnections())
 		{
 			// Notify all connected clients about update either to load model or update current one.

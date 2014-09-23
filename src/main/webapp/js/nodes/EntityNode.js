@@ -31,191 +31,220 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent an Entity. It stores that aspect's properties along with its
- * population, visualization and model tree.
+ * Client class use to represent an Entity. It stores that aspect's properties
+ * along with its population, visualization and model tree.
  * 
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @module nodes/EntityNode
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
 	var AspectNode = require('nodes/AspectNode');
 	var $ = require('jquery');
 
-	return Node.Model.extend({
-		relations:[
-		           {
-		        	   type:Backbone.Many,
-		        	   key:'aspects',
-		        	   relatedModel:AspectNode,
-		           },
-		           {
-		        	   type: Backbone.Many,
-		        	   key: 'entities',
-		        	   relatedModel: Backbone.Self
-		           }
-		           ],
+	return Node.Model
+			.extend({
+				relations : [ {
+					type : Backbone.Many,
+					key : 'aspects',
+					relatedModel : AspectNode,
+				}, {
+					type : Backbone.Many,
+					key : 'entities',
+					relatedModel : Backbone.Self
+				} ],
 
-		           defaults : {
-		        	   aspects : [],
-		        	   entities : [],
-		           },
-		           
-		           aspects : [],
-		           entities : [],
-		           position : null,
-		           id : "",
-		           selected : false,
-		           visible : true,
-		           initialize : function(options){
-		        	   this.id = options.id;
-		        	   this.name = options.name;
-		        	   this.position = options.position;
-		        	   this.instancePath = options.instancePath;
-		        	   this.aspects = this.get("aspects").models;
-		        	   this.selected = options.selected;
-		        	   this.visible = options.visible;
-		           },
+				defaults : {
+					aspects : [],
+					entities : [],
+				},
 
-		           /**
-		            * Hides the entity
-		            *
-		            * @name EntityNode.hide()
-		            *
-		            */
-		           hide : function(){
-		        	   var message; 
-		        	   
-		        	   if(GEPPETTO.hideEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.HIDE_ENTITY;
-		        	   }
-		        	   else{
-		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
-		        	   }
-		        	   this.visible = false;
-		        	   
-					   return message;
-		           },
+				children : [],
+				position : null,
+				selected : false,
+				visible : true,
+				_metaType : "EntityNode",
+				/**
+				 * Initializes this node with passed attributes
+				 * 
+				 * @param {Object} options - Object with options attributes to
+				 *                           initialize node
+				 */
+				initialize : function(options) {
+					this.id = options.id;
+					this.name = options.name;
+					this.position = options.position;
+					this.instancePath = options.instancePath;
+					this.aspects = this.get("aspects").models;
+				},
 
-		           /**
-		            * Shows the entity
-		            *
-		            * @name EntityNode.show()
-		            *
-		            */
-		           show : function(){
-		        	   var message; 
-		        	   
-		        	   if(GEPPETTO.showEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.SHOW_ENTITY;
-		        	   }
-		        	   else{
-		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
-		        	   }
-		        	   this.visible = true;
-		        	   
-					   return message;
-		        	   						
-		           },
-		           
-		           /**
-		            * Unselects the entity
-		            *
-		            * @name EntityNode.unselect()
-		            *
-		            */
-		           unselect : function(){
-		        	   var message; 
-		        	   
-		        	   if(GEPPETTO.unselectEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.UNSELECTING_ENTITY;
-		        	   }
-		        	   else{
-		        		   message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
-		        	   }
-		        	   this.selected = false;
-		        	   
-					   return message;
-		           },
+				/**
+				 * Hides the entity
+				 * 
+				 * @command EntityNode.hide()
+				 * 
+				 */
+				hide : function() {
+					var message;
 
-		           /**
-		            * Selects the entity
-		            *
-		            * @name EntityNode.unselect()
-		            *
-		            */
-				   select : function(){
-						
-					   var message; 
-		        	   
-		        	   if(GEPPETTO.selectEntity(this.instancePath)){
-		        		   message = GEPPETTO.Resources.SELECTING_ENTITY;
-		        	   }
-		        	   else{
-		        		   message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
-		        	   }
-		        	   this.selected = true;
-		        	   
-					   return message;
-					},
-					
-					/**
-			            * Zooms to entity
-			            *
-			            * @name EntityNode.zoomTo()
-			            *
-			            */
-					/*zoomTo : function(){
-						
-						GEPPETTO.zoomToEntity(this.instancePath);
-						
-						return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath;
-					},*/
-					
-		           /**
-		            * Get the id associated with entity
-		            *
-		            * @name EntityNode.getId()
-		            * @returns {String} - ID of entity
-		            */
-		           getId : function(){
-		        	   return this.id;
-		           },
+					if (GEPPETTO.hideEntity(this.instancePath)) {
+						message = GEPPETTO.Resources.HIDE_ENTITY
+								+ this.instancePath;
+					} else {
+						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
+					}
+					this.visible = false;
 
-		           /**
-		            * Get this entity's aspects
-		            *
-		            * @name EntityNode.getAspects()
-		            * 
-		            * @returns {List<Aspect>} - List of aspects
-		            *
-		            */
-		           getAspects : function(){
-		        	   var formattedOutput="";
-						var indentation = "↪";
-						for(var a in this.aspects){
-							var aspect = this.aspects[a];
-							formattedOutput = formattedOutput+indentation + aspect.id + " [Aspect]\n";
-							indentation = "      " + indentation;
-						}
-						
-						if(formattedOutput.lastIndexOf("\n")>0) {
-							formattedOutput = formattedOutput.substring(0, formattedOutput.lastIndexOf("\n"));
-						} 
-						
-						return formattedOutput.replace(/"/g, "");
-		           },
-		           
-		           /**
-		            * Get this entity's children entities
-		            * 
-		            * @name EntityNode.getEntities()
-		            * 
-		            * @returns {List<Aspect>} - List of aspects
-		            *
-		            */
-		           getEntities : function(){
-		        	   var entities = this.get("entities");
-		        	   return entities;
-		           },
-	});
+					return message;
+				},
+
+				/**
+				 * Shows the entity
+				 * 
+				 * @command EntityNode.show()
+				 * 
+				 */
+				show : function() {
+					var message;
+
+					if (GEPPETTO.showEntity(this.instancePath)) {
+						message = GEPPETTO.Resources.SHOW_ENTITY
+								+ this.instancePath;
+						this.visible = true;
+					} else {
+						message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
+					}
+
+					return message;
+
+				},
+
+				/**
+				 * Unselects the entity
+				 * 
+				 * @command EntityNode.unselect()
+				 * 
+				 */
+				unselect : function() {
+					var message;
+
+					if (GEPPETTO.unselectEntity(this.instancePath)) {
+						message = GEPPETTO.Resources.UNSELECTING_ENTITY
+								+ this.instancePath;
+						this.selected = false;
+
+						// Notify any widgets listening that there has been a
+						// changed to selection
+						GEPPETTO.WidgetsListener
+								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+					} else {
+						message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
+					}
+
+					return message;
+				},
+
+				/**
+				 * Selects the entity
+				 * 
+				 * @command EntityNode.unselect()
+				 * 
+				 */
+				select : function() {
+
+					var message;
+
+					if (GEPPETTO.selectEntity(this.instancePath)) {
+						message = GEPPETTO.Resources.SELECTING_ENTITY
+								+ this.instancePath;
+						this.selected = true;
+
+						// Notify any widgets listening that there has been a
+						// changed to selection
+						GEPPETTO.WidgetsListener
+								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+					} else {
+						message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
+					}
+
+					return message;
+				},
+
+				/**
+				 * Zooms to entity
+				 * 
+				 * @command EntityNode.zoomTo()
+				 * 
+				 */
+				/*
+				 * zoomTo : function(){
+				 * 
+				 * GEPPETTO.zoomToEntity(this.instancePath);
+				 * 
+				 * return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; },
+				 */
+
+				/**
+				 * Get this entity's aspects
+				 * 
+				 * @command EntityNode.getAspects()
+				 * 
+				 * @returns {List<Aspect>} List of aspects
+				 * 
+				 */
+				getAspects : function() {
+					var entities = this.get("aspects");
+					return entities;
+				},
+
+				/**
+				 * Get this entity's children entities
+				 * 
+				 * @command EntityNode.getEntities()
+				 * 
+				 * @returns {List<Entity>} List of entities
+				 * 
+				 */
+				getEntities : function() {
+					var entities = this.get("entities");
+					return entities;
+				},
+
+				/**
+				 * Get this entity's children entities
+				 * 
+				 * @command EntityNode.getChildren()
+				 * 
+				 * @returns {List<Aspect>} All children e.g. aspects and
+				 *          entities
+				 * 
+				 */
+				getChildren : function() {
+					 var children = new Backbone.Collection();
+					 children.add(this.get("aspects").models);
+					 children.add(this.get("entities").models);
+					 return children;
+				},
+
+				/**
+				 * Print out formatted node
+				 */
+				print : function() {
+					var formattedNode = "Name : " + this.name + "\n"
+							+ "      Id: " + this.id + "\n"
+							+ "      InstancePath : " + this.instancePath
+							+ "\n";
+					for ( var e in this.entities) {
+						formattedNode = formattedNode + "      " + "Entity: "
+								+ this.entities[e].instancePath;
+					}
+
+					for ( var e in this.aspects) {
+						formattedNode = formattedNode + "      " + "Aspect: "
+								+ this.aspects[e].instancePath;
+					}
+
+					return formattedNode;
+				}
+			});
 });

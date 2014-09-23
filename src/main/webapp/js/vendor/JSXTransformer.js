@@ -11893,7 +11893,7 @@
 
             return (
                 transformed.code +
-                '//# sourceMappingURL=data:application/json;base64,' +
+                '//## sourceMappingURL=data:application/json;base64,' +
                 buffer.Buffer(JSON.stringify(map)).toString('base64')
                 );
         } else {

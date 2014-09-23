@@ -40,7 +40,6 @@ define(function (require) {
                 this.xmlEditor.setValue(this.props.simulationXML);
                 var totalLines = this.xmlEditor.lineCount();
                 var totalChars = this.xmlEditor.getTextArea().value.length;
-                this.xmlEditor.autoFormatRange({line:0, ch:0}, {line:totalLines, ch:totalChars});
             }
 
             CodeMirror.on(window, "resize", function() {
@@ -49,6 +48,8 @@ define(function (require) {
                     showing.CodeMirror.getWrapperElement().style.height = GEPPETTO.winHeight() + "px";
                 }                
             });
+
+            this.xmlEditor.autoFormatRange({line:0, ch:0}, {line:totalLines, ch:totalChars});
         },
 
         componentDidMount: function () {

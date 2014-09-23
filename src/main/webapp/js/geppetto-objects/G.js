@@ -35,9 +35,7 @@
  *
  * Global objects. Handles global operations; clearing js console history commands,
  * turning on/off debug statements, copying history commands, help info, etc.
- *=-
- * @constructor
-
+ * 
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -49,10 +47,7 @@ define(function(require) {
         ClipboardModal = require('jsx!components/popups/ClipboardModal');
 
 		/**
-		 * Adds widget to Geppetto
-		 *
-		 * @name GEPPETTO.G.addWidget(widgetType)
-		 * @param widgetType - Type of widget to add
+		 * @exports geppetto-objects/G
 		 */
 		GEPPETTO.G = {
 			addWidget: function(type) {
@@ -63,7 +58,7 @@ define(function(require) {
 			/**
 			 * Gets list of available widgets
 			 *
-			 * @name G.availableWidgets()
+			 * @command G.availableWidgets()
 			 * @returns {List} - List of available widget types
 			 */
 			availableWidgets: function() {
@@ -73,7 +68,7 @@ define(function(require) {
 			/**
 			 * Clears the console history
 			 *
-			 * @name G.clear()
+			 * @command G.clear()
 			 */
 			clear: function() {
 				GEPPETTO.Console.getConsole().clear();
@@ -83,7 +78,7 @@ define(function(require) {
 			/**
 			 * Copies console history to OS clipboard
 			 *
-			 * @name G.copyHistoryToClipboard()
+			 * @command G.copyHistoryToClipboard()
 			 */
 			copyHistoryToClipboard: function() {
 
@@ -125,8 +120,10 @@ define(function(require) {
 		                }), document.getElementById('modal-region'));
 
 					$('#javascriptEditor').on('shown.bs.modal', function() {
-						GEPPETTO.JSEditor.loadEditor();
-						GEPPETTO.JSEditor.loadCode(commandsString);
+						if($("#javascriptEditor").hasClass("in")){
+							GEPPETTO.JSEditor.loadEditor();
+							GEPPETTO.JSEditor.loadCode(commandsString);
+						}
 					});
 
 					return GEPPETTO.Resources.COPY_CONSOLE_HISTORY;
@@ -139,7 +136,7 @@ define(function(require) {
 			/**
 			 * Toggles debug statement on/off
 			 *
-			 * @name G.debug(toggle)
+			 * @command G.debug(toggle)
 			 * @param toggle - toggles debug statements
 			 *
 			 */
@@ -159,8 +156,8 @@ define(function(require) {
 			/**
 			 * Gets the object for the current Simulation, if any.
 			 *
-			 * @name G.getCurrentSimulation()
-			 * @returns Returns current Simulation object if it exists
+			 * @command G.getCurrentSimulation()
+			 * @returns {Simulation} Returns current Simulation object if it exists
 			 */
 			getCurrentSimulation: function() {
 				//return simulation object if one has been loaded
@@ -175,8 +172,8 @@ define(function(require) {
 			/**
 			 * Get all commands and descriptions available for object G.
 			 *
-			 * @name G.help()
-			 * @returns {String} - All commands and descriptions for G.
+			 * @command G.help()
+			 * @returns {String} All commands and descriptions for G.
 			 */
 			help: function() {
 				return GEPPETTO.Utility.extractCommandsFromFile("js/geppetto-objects/G.js", GEPPETTO.G, "G");
@@ -185,8 +182,8 @@ define(function(require) {
 			/**
 			 * Removes widget from Geppetto
 			 *
-			 * @name G.removeWidget(widgetType)
-			 * @param widgetType - Type of widget to remove
+			 * @command G.removeWidget(widgetType)
+			 * @param {WIDGET_EVENT_TYPE} type - Type of widget to remove fro GEPPETTO
 			 */
 			removeWidget: function(type) {
 				return GEPPETTO.WidgetFactory.removeWidget(type);
@@ -196,8 +193,8 @@ define(function(require) {
 			 * Takes the URL corresponding to a script, executes
 			 * commands inside the script.
 			 *
-			 * @name G.runScript(scriptURL)
-			 * @param scriptURL - URL of script to execute
+			 * @command G.runScript(scriptURL)
+			 * @param {URL} scriptURL - URL of script to execute
 			 */
 			runScript: function(scriptURL) {
 
@@ -209,8 +206,8 @@ define(function(require) {
 			/**
 			 * Show or hide console using command
 			 *
-			 * @name G.showConsole(mode)
-			 * @param mode - "true" to show, "false" to hide.
+			 * @command G.showConsole(mode)
+			 * @param {boolean} mode - "true" to show, "false" to hide.
 			 */
 			showConsole: function(mode) {
 				var returnMessage;
@@ -230,8 +227,8 @@ define(function(require) {
 			/**
 			 * Show or hide share bar
 			 *
-			 * @name G.showShareBar(mode)
-			 * @param mode - "true" to show, "false" to hide.
+			 * @command G.showShareBar(mode)
+			 * @param {boolean} mode - "true" to show, "false" to hide.
 			 */
 			showShareBar: function(mode) {
 				var returnMessage;
@@ -270,34 +267,27 @@ define(function(require) {
 			/**
 			 * Show or hide help window using command
 			 *
-			 * @name G.showHelpWindow(mode)
-			 * @param mode - "true" to show, "false" to hide.
+			 * @command G.showHelpWindow(mode)
+			 * @param {boolean} mode - "true" to show, "false" to hide.
 			 */
 			showHelpWindow: function(mode) {
 				var returnMessage;
 
 				if(mode) {
-					var modalVisible = $('#helpmodal').hasClass('in');
-					//don't try to show help window again if already visible
-					if(modalVisible){
-						returnMessage = GEPPETTO.Resources.HELP_ALREADY_VISIBLE;
-					}
-					//show help window if it isn't visible
-					else{
-						returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
-						$('#helpmodal').modal('show');
-					}
+	                GEPPETTO.trigger('simulation:show_helpwindow');
+					returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
 				}
-				else {
-					var modalVisible = $('#helpmodal').hasClass('in');
+				else {	                
+					var modalVisible = $('#help-modal').hasClass('in');
 					//don't try to hide already hidden help window
 					if(!modalVisible){
 						returnMessage = GEPPETTO.Resources.HELP_ALREADY_HIDDEN;
 					}
 					//hide help window
 					else{
+		                GEPPETTO.trigger('simulation:hide_helpwindow');
 						returnMessage = GEPPETTO.Resources.HIDE_HELP_WINDOW;
-						$('#helpmodal').modal('hide');
+						$('#help-modal').modal('hide');
 					}
 				}
 				return returnMessage;
@@ -305,7 +295,7 @@ define(function(require) {
 			
 			/**
 			 * Opens window to share geppetto on twitter
-			 * @name G.shareOnTwitter()
+			 * @command G.shareOnTwitter()
 			 */
 			shareOnTwitter : function(){
 				var shareURL = 'http://geppetto.org';
@@ -322,7 +312,7 @@ define(function(require) {
 			/**
 			 * Opens window to share facebook on twitter
 			 * 
-			 * @name - G.shareOnFacebook()
+			 * @command - G.shareOnFacebook()
 			 */
 			shareOnFacebook : function(){
 				var shareURL = 'http://geppetto.org';
@@ -336,6 +326,13 @@ define(function(require) {
 				return GEPPETTO.Resources.SHARE_ON_FACEBOOK;
 			},
 			
+			/**
+			 * Shows a popup widget, used to display a message. 
+			 * 
+			 * @param {Integer} x - x coordinate of popup widget position
+			 * @param {Integer} y - y coordinate of popup widget position
+			 * @param {Strin} message - Message to display inside widget 
+			 */
 			showPopup : function(x,y,message){
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(GEPPETTO.Widgets.POPUP);
 				newWidget.setPosition(x,y);
@@ -348,7 +345,7 @@ define(function(require) {
 			 * Waits certain amount of time before running next command. Must be
 			 * used inside a script.
 			 *
-			 * @name G.wait(ms)
+			 * @command G.wait(ms)
 			 */
 			wait: function() {
 				return GEPPETTO.Resources.INVALID_WAIT_USE;
@@ -357,9 +354,9 @@ define(function(require) {
 			/**
 			 * Waits some amount of time before executing a set of commands
 			 *
-			 * @name G.wait(commands,ms)
-			 * @param commands - commands to execute
-			 * @param ms - milliseconds to wait before executing commands
+			 * @command G.wait(commands,ms)
+			 * @param {Array} commands - Array of commands to execute
+			 * @param {Integer} ms - Milliseconds to wait before executing commands
 			 */
 			wait: function(commands, ms) {
 				setTimeout(function() {
@@ -373,7 +370,7 @@ define(function(require) {
 			/**
 			 * State of debug statements, whether they are turned on or off.
 			 *
-			 * @name - G.isDebugOn()
+			 * @command - G.isDebugOn()
 			 * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
 			 */
 			isDebugOn: function() {
@@ -383,7 +380,7 @@ define(function(require) {
 			/**
 			 * Resets Camera to initial position - same as after loading.
 			 *
-			 * @name - G.resetCamera()
+			 * @command - G.resetCamera()
 			 */
 			resetCamera: function() {
 				GEPPETTO.resetCamera();
@@ -394,9 +391,9 @@ define(function(require) {
 			/**
 			 * Increments camera pan.
 			 *
-			 * @name - G.incrementCameraPan()
-			 * @param x - x coordinate of pan increment vector
-			 * @param y - y coordinate of pan increment vector
+			 * @command - G.incrementCameraPan()
+			 * @param {Integer} x - x coordinate of pan increment vector
+			 * @param {Integer} y - y coordinate of pan increment vector
 			 */
 			incrementCameraPan: function(x, y) {
 				GEPPETTO.incrementCameraPan(x, y);
@@ -407,10 +404,10 @@ define(function(require) {
 			/**
 			 * Increments camera rotation.
 			 *
-			 * @name - G.incrementCameraRotate()
-			 * @param x - x coordinate of rotate increment vector
-			 * @param y - y coordinate of rotate increment vector
-			 * @param z - z coordinate of rotate increment vector
+			 * @command - G.incrementCameraRotate()
+			 * @param {Integer} x - x coordinate of rotate increment vector
+			 * @param {Integer} y - y coordinate of rotate increment vector
+			 * @param {Integer} z - z coordinate of rotate increment vector
 			 */
 			incrementCameraRotate: function(x, y, z) {
 				GEPPETTO.incrementCameraRotate(x, y, z);
@@ -421,8 +418,8 @@ define(function(require) {
 			/**
 			 * Increments camera zoom.
 			 *
-			 * @name - G.incrementCameraZoom()
-			 * @param z - z coordinate for zoom increment vector
+			 * @command - G.incrementCameraZoom()
+			 * @param {Integer} z - z coordinate for zoom increment vector
 			 */
 			incrementCameraZoom: function(z) {
 				GEPPETTO.incrementCameraZoom(z);

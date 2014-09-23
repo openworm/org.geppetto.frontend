@@ -34,27 +34,37 @@
 /**
  * Class used to create widgets and handle widget events from parent class.
  */
-
-/**
- * Enum use to hold different types of widgets
- */
-
 define(function(require) {
 
 	return function(GEPPETTO) {
+		/**
+		 * 
+		 * Widgets
+		 * 
+		 * Different types of widgets that exist in Geppetto
+		 * 
+		 * @enum
+		 */
 		GEPPETTO.Widgets = {
-			PLOT: 0,
+			PLOT : 0,
 			POPUP : 1,
-			SCATTER3D: 2
+			SCATTER3D: 2,
+			TREEVISUALISERDAT: 3,
+			TREEVISUALISERD3: 4
 		};
 
+		/**
+		 * @exports Widgets/GEPPETTO.WidgetFactory
+		 */
 		GEPPETTO.WidgetFactory = {
 			/**
 			 * Adds widget to Geppetto
+			 * 
+			 * @param {GEPPETTO.Widgets}
+			 *            widgetType - Widget to add to Geppetto
 			 */
-			addWidget: function(widgetType) {
+			addWidget : function(widgetType) {
 				var widget = null;
-
 				switch(widgetType) {
 					//create plotting widget
 					case GEPPETTO.Widgets.PLOT:
@@ -68,6 +78,14 @@ define(function(require) {
 					case GEPPETTO.Widgets.SCATTER3D:
 						widget = GEPPETTO.Scatter3dController.addScatter3dWidget();
 						break;
+					//create tree visualiser DAT widget				
+					case GEPPETTO.Widgets.TREEVISUALISERDAT:
+						widget = GEPPETTO.TreeVisualiserControllerDAT.addTreeVisualiserDATWidget();
+						break;
+					//create tree visualiser D3 widget				
+					case GEPPETTO.Widgets.TREEVISUALISERD3:
+						widget = GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
+						break;	
 					default:
 						break;
 				}
@@ -77,6 +95,9 @@ define(function(require) {
 
 			/**
 			 * Removes widget from Geppetto
+			 * 
+			 * @param {GEPPETTO.Widgets}
+			 *            widgetType - Widget to remove from Geppetto
 			 */
 			removeWidget: function(widgetType) {
 				switch(widgetType) {
@@ -87,11 +108,19 @@ define(function(require) {
 					//removes popup widget from geppetto
 					case GEPPETTO.Widgets.POPUP:
 						GEPPETTO.PlotsController.removePopupWidgets();
-						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
+						return GEPPETTO.Resources.REMOVE_POPUP_WIDGETS;
 					//removes scatter3d widget from geppetto
 					case GEPPETTO.Widgets.SCATTER3D:
 						GEPPETTO.Scatter3dController.removeScatter3dWidgets();
-						return GEPPETTO.Resources.REMOVE_SCATTER3D_WIDGETS;
+						return GEPPETTO.Resources.REMOVE_SCATTER3D_WIDGETS;	
+					//removes tree visualiser DAT widget from geppetto						
+					case GEPPETTO.Widgets.TREEVISUALISERDAT:
+						GEPPETTO.TreeVisualiserController.removeTreeVisualiserDATWidgets();
+						return GEPPETTO.Resources.REMOVE_TREEVISUALISERDAT_WIDGETS;
+					//removes tree visualiser D3 widget from geppetto												
+					case GEPPETTO.Widgets.TREEVISUALISERD3:
+						GEPPETTO.TreeVisualiserController.removeTreeVisualiserD3Widgets();
+						return GEPPETTO.Resources.REMOVE_TREEVISUALISERD3_WIDGETS;	
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
 				}

@@ -17,7 +17,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * furnished t do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -33,45 +33,63 @@
 /**
  * The parent node from where all other nodes extend
  * 
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @module nodes/Node
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define([
-	'jquery',
-	'underscore',
-	'backbone',
-    
-    //Add requirement for Backbone-associations module
-    'backbone-associations'
- 
-], function (require) {
+define([ 'jquery', 'underscore', 'backbone',
+
+// Add requirement for Backbone-associations module
+'backbone-associations'
+
+], function(require) {
 	return {
 		Model : Backbone.AssociatedModel.extend({
-		name : "",
-		instancePath : "",
-		_metaType : "",
-		
-		/**
-		 * Gets the instance path of the node
-		 *
-		 * @name Node.getInstancePath()
-		 * @returns {String} - Instance path of  this node
-		 *
-		 */
-		getInstancePath : function(){
-			return this.instancePath;
-		},
-		
-		/**
-		 * Gets the name of the node
-		 *
-		 * @name Node.getName()
-		 * @returns {String} - Name of the node
-		 *
-		 */
-		getName : function(){
-			return this.name;
-		},		
-	})
+			name : "",
+			instancePath : "",
+			id : "",
+			_metaType : "",
+
+			/**
+			 * Gets the instance path of the node
+			 * 
+			 * @command Node.getInstancePath()
+			 * @returns {String} Instance path of this node
+			 * 
+			 */
+			getInstancePath : function() {
+				return this.instancePath;
+			},
+
+			/**
+			 * Gets the name of the node
+			 * 
+			 * @command Node.getName()
+			 * @returns {String} Name of the node
+			 * 
+			 */
+			getName : function() {
+				return this.name;
+			},
+
+			/**
+			 * Sets the name of the node
+			 * 
+			 * @command Node.setName()
+			 * 
+			 */
+			setName : function(newname) {
+				this.name = newname;
+			},
+
+			/**
+			 * Get the id associated with node
+			 * 
+			 * @command Node.getId()
+			 * @returns {String} ID of node
+			 */
+			getId : function() {
+				return this.id;
+			},
+		})
 	};
 });
-    

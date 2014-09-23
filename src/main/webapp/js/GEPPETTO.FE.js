@@ -33,7 +33,6 @@
 /**
  * Front end, user interface, methods for handling updates to the UI
  *
- * @constructor
  */
 define(function(require) {
 
@@ -45,8 +44,7 @@ define(function(require) {
                 ErrorModal = require('jsx!components/popups/ErrorModal');
         /**
          * Create the container for holding the canvas
-         *
-         * @returns {DivElement}
+         * @class GEPPETTO.FE
          */
         GEPPETTO.FE = {
             /*
@@ -104,6 +102,7 @@ define(function(require) {
                 if (!webGLStarted) {
                     GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
                     GEPPETTO.FE.disableSimulationControls();
+                    GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBGL_FAILED, GEPPETTO.Resources.WEBGL_MESSAGE);
                 }
             },
             /**
@@ -187,14 +186,11 @@ define(function(require) {
              * control and load buttons. Show "Observe" button only.
              */
             disableSimulationControls: function() {
-                //Disable 'load simulation' button and click events
-                var openLoad = $("#openload");
-                openLoad.attr('disabled', 'disabled');
-                openLoad.click(function(e) {
-                    return false;
-                });
-
+                GEPPETTO.trigger('simulation:disable_all');
+                
+                //disable console buttons
                 $('#consoleButton').attr('disabled', 'disabled');
+                $('#commandInputArea').attr('disabled', 'disabled');
 
                 //disable keyboard
                 document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);

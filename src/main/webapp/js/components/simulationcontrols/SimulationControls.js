@@ -25,6 +25,10 @@ define(function(require) {
 
             var self = this;
 
+            GEPPETTO.on('simulation:modelloaded', function(){
+                self.setState({disableStart:false, disablePause:true, disableStop:true});
+            });
+            
             GEPPETTO.on('simulation:started', function(){
                 self.setState({disableStart:true, disablePause:false, disableStop:false});
             });
@@ -36,10 +40,14 @@ define(function(require) {
             GEPPETTO.on('simulation:stopped', function(){
                 self.setState({disableStart:false, disablePause:true, disableStop:true});
             });
+            
+            GEPPETTO.on('simulation:disable_all', function(){
+                self.setState({disableLoad : true, disableStart:true, disablePause:true, disableStop:true});
+            });
         },
 
         render: function () {
-            return React.DOM.div({className:'simulation-control'},
+            return React.DOM.div({className:'simulation-controls'},
                 HelpButton({disabled:false}),
                 StopButton({disabled:this.state.disableStop}),
                 PauseButton({disabled:this.state.disablePause}),
@@ -52,4 +60,10 @@ define(function(require) {
 
     React.renderComponent(Controls({},''), document.getElementById('sim-toolbar'));
 
+    var webGLStarted = GEPPETTO.webGLAvailable();
+
+	//make sure webgl started correctly, if it didn't disable simulation controls
+	if(!webGLStarted) {
+	    GEPPETTO.trigger('simulation:disable_all');
+	}	
 });

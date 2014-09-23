@@ -33,8 +33,6 @@
 /**
  * Controller class for scatter3d widget. Use to make calls to widget from inside Geppetto.
  *
- * @constructor
- *
  * @author Boris Marin
  * @author Adrian Quintana
  */
@@ -46,6 +44,9 @@ define(function(require) {
 
     var scatter3dON = false;
 
+    /**
+     * @exports Widgets/Scatter3d/Scatter3dController
+     */
     GEPPETTO.Scatter3dController = {
 
       /**
@@ -80,14 +81,14 @@ define(function(require) {
         var p = window[name] = new Scatter3d({id:id, name:name,visible:true});
 
         //create help command for scatter3d
-        p.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+        p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
         scatter3ds.push(p);
 
         this.registerHandler(id);
 
         //add commands to console autocomplete and help option
-        GEPPETTO.Utility.updateCommands("js/widgets/scatter3d/Scatter3d.js", p, id);
+        GEPPETTO.Console.updateCommands("js/widgets/scatter3d/Scatter3d.js", p, id);
 
         return p;
       },
@@ -101,7 +102,6 @@ define(function(require) {
           var scatter3d = scatter3ds[i];
 
           scatter3d.destroy();
-          i--;
         }
 
         scatter3ds = new Array();

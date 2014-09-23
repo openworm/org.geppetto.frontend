@@ -33,14 +33,9 @@
 /**
  *
  * Base Widget Class, all widgets extend this class.
- *
+ * @module Widgets/Widget
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-
-/**
- * Parent Widget Base class
- */
-
 define(function(require) {
 
 	var Backbone = require('backbone');
@@ -68,20 +63,21 @@ define(function(require) {
 			/**
 			 * Initializes the widget
 			 *
-			 * @param id - id of widget
-			 * @param name - name of widget
-			 * @param visibility - visibility of widget window
+			 * @param {String} id - id of widget
+			 * @param {String} name - name of widget
+			 * @param {String} visibility - visibility of widget window
 			 */
 			initialize: function(options) {
 				this.id = options.id;
 				this.name = options.name;
 				this.visible = options.visible;
+				this.contextMenu = new GEPPETTO.ContextMenuView();
 			},
 
 			/**
 			 * Destroy the widget, remove it from DOM
 			 *
-			 * @name destroy()
+			 * @command destroy()
 			 * @returns {String} - Action Message
 			 */
 			destroy: function() {
@@ -94,7 +90,7 @@ define(function(require) {
 			 *
 			 * Hides the widget
 			 *
-			 * @name hide()
+			 * @command hide()
 			 * @returns {String} - Action Message
 			 */
 			hide: function() {
@@ -108,7 +104,7 @@ define(function(require) {
 			/**
 			 *  Opens widget dialog
 			 *
-			 * @name show()
+			 * @command show()
 			 * @returns {String} - Action Message
 			 */
 			show: function() {
@@ -124,7 +120,7 @@ define(function(require) {
 			/**
 			 * Gets the name of the widget
 			 *
-			 * @getName()
+			 * @command getName()
 			 * @returns {String} - Name of widget
 			 */
 			getName: function() {
@@ -133,8 +129,8 @@ define(function(require) {
 
 			/**
 			 * Sets the name of the widget
-			 *
-			 * @param name - Name of widget
+			 * @command setName(name)
+			 * @param {String} name - Name of widget
 			 */
 			setName: function(name) {
 				this.name = name;
@@ -145,6 +141,11 @@ define(function(require) {
 				return "Widget has been renamed to " + this.name;
 			},
 
+			/**
+			 * @command setPosition(left,top)
+			 * @param {Integer} left -Left position of the widget
+			 * @param {Integer} top - Top position of the widget
+			 */
 			setPosition: function(left, top) {
 
 				this.position.left = left;
@@ -154,6 +155,12 @@ define(function(require) {
 				return this.name + " Widget's position has been updated";
 			},
 
+			/**
+			 * Sets the size of the widget
+			 * @command setSize(h,w)
+			 * @param {Integer} h - Height of the widget
+			 * @param {Integer} w - Width of the widget
+			 */
 			setSize: function(h, w) {
 				this.size.height = h;
 				this.size.width = w;
@@ -162,10 +169,20 @@ define(function(require) {
 				return this.name + " Widget has been resized";
 			},
 
+			/**
+			 * Returns the position of the widget
+			 * @command getPosition()
+			 * @returns {Object} - Position of the widget
+			 */
 			getPosition: function() {
 				return this.position;
 			},
 
+			/**
+			 * Returns the size of the widget
+			 * @command getSize()
+			 * @returns {Object} - Size of the widget
+			 */
 			getSize: function() {
 				return this.size;
 			},
@@ -173,7 +190,7 @@ define(function(require) {
 			/**
 			 * Gets the ID of the widget
 			 *
-			 * @name getId()
+			 * @command getId()
 			 * @returns {String} - ID of widget
 			 */
 			getId: function() {
@@ -183,7 +200,7 @@ define(function(require) {
 			/**
 			 * Returns whether widget is visible or not
 			 *
-			 * @name isVisible()
+			 * @command isVisible()
 			 * @returns {Boolean} - Widget visibility state
 			 */
 			isVisible: function() {
@@ -228,6 +245,31 @@ define(function(require) {
 				return current;
 			},
 
+			showContextMenu: function (event, data) {
+				var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor(data._metaType);
+				
+				if (handlers.length >0){
+					var groups = [];	
+					for (var handlerIndex = 0; handlerIndex < handlers.length; handlerIndex++){
+						groups = groups.concat(handlers[handlerIndex](data));
+					}
+				
+				    this.contextMenu.show({
+				        top: event.pageY,
+				        left: event.pageX + 1,
+				        groups: groups,
+	//			        registeredItems: registeredItems,
+				        data: data
+				    });
+				}
+			    
+				if (event!=null){
+					event.preventDefault();
+				}
+			    
+			    return false;
+			},
+			
 			/**
 			 * Renders the widget dialog window
 			 */
@@ -249,6 +291,8 @@ define(function(require) {
 						}
 					});
 
+				this.$el = $("#"+this.id);
+				
 				//Take focus away from close button
 				$(".ui-dialog-titlebar-close").blur();
 

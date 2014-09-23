@@ -35,8 +35,6 @@
  * Main class for handling user interface evens associated with: Simulation Controls,
  * alert & info messages, and server side communication
  *
- * @constructor
- *
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @author giovanni@openworm.org (Giovanni Idili)
  * @author  Jesus R. Martinez (jesus@metacell.us)
@@ -47,6 +45,9 @@ define(function(require) {
 		React = require('react'),
 		InfoModal = require('jsx!components/popups/InfoModal');
 
+		/**
+		 * @class GEPPETTO.Main
+		 */
 		GEPPETTO.Main = {
 
 			StatusEnum: {
@@ -81,27 +82,34 @@ define(function(require) {
 					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
 					//first time check, asks if user is still there
 					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
-                        var infomodalBtn = $('#infomodal-btn');
 
         	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
 						$('#infomodal-title').html("Zzz");
 						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
-						infomodalBtn.html("Yes");
+						$('#infomodal-btn').html("Yes");
 
-						infomodalBtn.html("Yes").click(function() {
+						$('#infomodal-btn').html("Yes").click(function() {
 							$('#infomodal').modal('hide');
 							GEPPETTO.Main.idleTime = 0;
 
 							//unbind click event so we can reuse same modal for other alerts
-							infomodalBtn.unbind('click');
+							$('#infomodal-btn').unbind('click');
+							
+							if(GEPPETTO.Simulation.isLoading()){
+				                GEPPETTO.trigger('simulation:show_spinner');
+							}
 						});                                         
 					}
 
 					//second check, user isn't there or didn't click yes, disconnect
 					if(GEPPETTO.Main.idleTime > timeOut) {
-        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
-						$('#infomodal-title').html("");
-						$('#infomodal-text').html(GEPPETTO.Resources.DISCONNECT_MESSAGE);
+						React.renderComponent(InfoModal({
+		                    show: true,
+		                    keyboard: false,
+		                    title: "",
+		                    text: GEPPETTO.Resources.DISCONNECT_MESSAGE,
+		                }), document.getElementById('modal-region'));
+						
 						$('#infomodal-footer').remove();
 						$('#infomodal-header').remove();
 						
@@ -140,31 +148,32 @@ define(function(require) {
 // ============================================================================
 
 		$(document).ready(function() {
-
-			GEPPETTO.FE.initialEvents();
-			
-			//Increment the idle time counter every minute.
-			setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
-            var here = $(this);
-			//Zero the idle timer on mouse movement.
-			here.mousemove(function(e) {
-				GEPPETTO.Main.idleTime = 0;
-			});
-			here.keypress(function(e) {
-				GEPPETTO.Main.idleTime = 0;
-			});
-
 			//Create canvas 
-			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+			var webGLStarted = GEPPETTO.webGLAvailable();
 
 			//make sure webgl started correctly
 			if(!webGLStarted) {
-				//TODO: Display message if doesn't support webgl
+				GEPPETTO.FE.update(false);
 			}
+			else{
+				GEPPETTO.FE.initialEvents();
+				
+				//Increment the idle time counter every minute.
+				setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
+	            var here = $(this);
+				//Zero the idle timer on mouse movement.
+				here.mousemove(function(e) {
+					GEPPETTO.Main.idleTime = 0;
+				});
+				here.keypress(function(e) {
+					GEPPETTO.Main.idleTime = 0;
+				});
+				
+				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
-			//Initialize websocket functionality
-			GEPPETTO.Main.init();
-		
+				//Initialize websocket functionality
+				GEPPETTO.Main.init();
+			}		
 		});
 	};
 });

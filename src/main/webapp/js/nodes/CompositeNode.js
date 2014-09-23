@@ -31,57 +31,67 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a composite variable node, used for simulation tree state variables.
+ * Client class use to represent a composite variable node, used for simulation
+ * tree state variables.
  * 
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @module nodes/CompositeNode
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		relations:[
-		           {
-		        	   type: Backbone.Many,
-		        	   key: 'children',
-		        	   relatedModel: Node
-		           }
-		           ],
-		           defaults : {
-		        	   children : []
-		           },
-		           id : "",
-		           _metaType : "CompositeVariableNode",
-		           
-		           initialize : function(options){
-		        	   this.id = options.id;
-		        	   this.name = options.name;
-		        	   this.instancePath = options.instancePath;
-		        	   this._metaType = options._metaType;
-		           },
+		relations : [ {
+			type : Backbone.Many,
+			key : 'children',
+			relatedModel : Node
+		} ],
+		defaults : {
+			children : []
+		},
+		_metaType : "CompositeVariableNode",
 
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
+		 */
+		initialize : function(options) {
+			this.id = options.id;
+			this.name = options.name;
+			this.instancePath = options.instancePath;
+			this._metaType = options._metaType;
+		},
 
-		           /**
-		            * Get the model interpreter associated with entity
-		            *
-		            * @name EntityNode.getId()
-		            * @returns {String} - ID of entity
-		            */
-		           getId : function(){
-		        	   return this.id;
-		           },
+		/**
+		 * Get this entity's aspects
+		 * 
+		 * @command CompositeVariableNode.getChildren()
+		 * 
+		 * @returns {List<Aspect>} - List of aspects
+		 * 
+		 */
+		getChildren : function() {
+			var children = this.get("children");
+			return children;
+		},
 
-		           /**
-		            * Get this entity's aspects
-		            *
-		            * @name CompositeVariableNode.getChildren()
-		            * 
-		            * @returns {List<Aspect>} - List of aspects
-		            *
-		            */
-		           getChildren : function(){
-		        	   var children = this.get("children");
-		        	   return children;
-		           }
+		/**
+		 * Print out formatted node
+		 */
+		print : function() {
+			var formattedNode = "Name : " + this.name + "\n" + "    Id: "
+					+ this.id + "\n" + "    InstancePath : "
+					+ this.instancePath + "\n" + "    Children : \n";
+			for ( var e = 0; e < this.getChildren().length; e++) {
+				var child = this.getChildren().at(e);
+				formattedNode = formattedNode + "      " + child._metaType
+						+ ": " + child.id + "\n";
+			}
+
+			return formattedNode;
+		}
 	});
 });

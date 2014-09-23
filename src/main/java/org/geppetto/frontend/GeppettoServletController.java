@@ -302,7 +302,7 @@ public class GeppettoServletController
 		{
 			url = new URL(simulation);
 			// simulation is URL, initialize simulation services
-			visitor.getSimulationService().init(url, _simulationCallbackListener);
+			visitor.getSimulationService().init(url, requestID, _simulationCallbackListener);
 			postLoadSimulation(requestID, visitor);
 			loaded = true;
 		}
@@ -313,7 +313,7 @@ public class GeppettoServletController
 		{
 			try
 			{
-				visitor.getSimulationService().init(simulation, _simulationCallbackListener);
+				visitor.getSimulationService().init(simulation, requestID, _simulationCallbackListener);
 				postLoadSimulation(requestID, visitor);
 				loaded = true;
 			}
@@ -379,9 +379,7 @@ public class GeppettoServletController
 	{
 		try
 		{
-			controllingUser.getSimulationService().start();
-			// notify user simulation has started
-			messageClient(requestID, controllingUser, OUTBOUND_MESSAGE_TYPES.SIMULATION_STARTED);
+			controllingUser.getSimulationService().start(requestID);
 		}
 		catch(GeppettoExecutionException e)
 		{
@@ -597,15 +595,12 @@ public class GeppettoServletController
 			// Controlling user is leaving, but simulation might still be running.
 			try
 			{
-				if(exitingVisitor.getSimulationService().isRunning())
-				{
-					// Pause running simulation upon controlling user's exit
-					exitingVisitor.getSimulationService().stop();
-				}
+				// Pause running simulation upon controlling user's exit
+				exitingVisitor.getSimulationService().stop();
 			}
 			catch(GeppettoExecutionException e)
 			{
-				e.printStackTrace();
+				_logger.error("Unable to stop simulation for exiting user");
 			}
 
 			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
@@ -636,7 +631,7 @@ public class GeppettoServletController
 				}
 				catch(GeppettoExecutionException e)
 				{
-					e.printStackTrace();
+					_logger.error("Unable to stop simulation for exiting user");
 				}
 
 				// Notify all observers
@@ -777,7 +772,7 @@ public class GeppettoServletController
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			_logger.error("Unable to read GEPPETTO.properties file");
 		}
 	}
 

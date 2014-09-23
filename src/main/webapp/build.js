@@ -14,5 +14,6 @@
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text'
     },
-    name: 'main'
+    name : "main",
+    waitSeconds : 200,
 })

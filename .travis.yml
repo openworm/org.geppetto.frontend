@@ -4,11 +4,4 @@ install:
     - git clone https://github.com/openworm/org.geppetto.core.git -b $TRAVIS_BRANCH
     - cd org.geppetto.core
     - mvn install
-    - cd ..
-    
-    
-    
- 
- 
-
-
+    - cd .. 

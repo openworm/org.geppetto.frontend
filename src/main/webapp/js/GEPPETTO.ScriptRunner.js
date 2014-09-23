@@ -35,8 +35,6 @@
  *
  * Handles running script inside Geppetto.
  *
- * @constructor
-
  * @author   (jesus@metacell.us)
  */
 define(function(require) {
@@ -52,8 +50,7 @@ define(function(require) {
 
 		/**
 		 * Executes a set of commands from a script
-		 *
-		 * @param commands - commands to execute
+		 * @class GEPPETTO.ScriptRunner
 		 */
 		GEPPETTO.ScriptRunner = {
 			executeScriptCommands: function(commands) {
@@ -66,7 +63,7 @@ define(function(require) {
 					if(command != "") {
 						//if it's the wait command,  call the the wait function 
 						//with all remanining commands left to execute as parameter.
-						if(command.indexOf("GEPPETTO.G.wait") > -1) {
+						if(command.indexOf("G.wait") > -1) {
 							//get the ms time for waiting
 							var parameter = command.match(/\((.*?)\)/);
 							var ms = parameter[1];
@@ -79,10 +76,22 @@ define(function(require) {
 							return;
 						}
 						else {
-							GEPPETTO.Console.executeCommand(command);
+							//waiting for previous command to be done, exit loop
+							if(waitingForPreviousCommand){
+								return;
+							}
+							//execute command
+							else{
+								GEPPETTO.Console.executeCommand(command);
+								//keep track of reamaining commands
+								var clone = commands.slice();
+								remainingCommands = clone.splice(i+1, clone.length-1);
+							}
 						}
 					}
 				}
+				
+				runningScript = false;
 			},
 
 			/**
@@ -124,6 +133,9 @@ define(function(require) {
 							if(watchedRequestsIDS.length <= 0) {
 								//reset flag if no longer waiting for commands to process
 								waitingForPreviousCommand = false;
+								
+								//execute remaining commands
+								GEPPETTO.ScriptRunner.executeScriptCommands(remainingCommands);
 							}
 						}
 					}

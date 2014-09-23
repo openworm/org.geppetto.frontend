@@ -58,7 +58,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 	 * 
 	 */
 	@Override
-	public void updateReady(SimulationEvents event, String sceneUpdate)
+	public void updateReady(SimulationEvents event, String requestID, String sceneUpdate)
 	{
 		long start = System.currentTimeMillis();
 		Date date = new Date(start);
@@ -83,8 +83,15 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 
 				break;
 			}
+			case START_SIMULATION:
+				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_STARTED;
+
+				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
+				update = "{ "+sceneUpdate + "}";
+
+				break;
 			case SCENE_UPDATE:
-			{
+			{	
 				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
 
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
@@ -102,7 +109,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 
 		// Notify all connected clients about update either to load model or
 		// update current one.
-		GeppettoServletController.getInstance().messageClient(null, _user, action, update);
+		GeppettoServletController.getInstance().messageClient(requestID, _user, action, update);
 
 		logger.info("Simulation Frontend Update Finished: Took:" + (System.currentTimeMillis() - start));
 	}
@@ -118,6 +125,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 		String jsonExceptionMsg=e==null?"":e.toString();
 		String jsonErrorMsg=errorMessage==null?"":errorMessage;
 		String error = "{ \"error_code\": \"" + errorCode.toString() + "\", \"source\": \"" + classSource + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg +"\"}";
+		logger.error(errorMessage,e);
 		// Notify all connected clients about update either to load model or update current one.
 		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.ERROR, error);
 	}

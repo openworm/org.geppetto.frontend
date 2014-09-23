@@ -1,3 +1,6 @@
+ /**
+ * @module components/LoadSimulationModal
+ */
 define(function (require) {
 
     var React = require('react'),
@@ -114,6 +117,9 @@ define(function (require) {
         	}
         },
 
+        /**
+         * @example
+         */
         render: function () {
             return <div className="modal fade" id="loading-modal"> 
                 <div className="modal-dialog">

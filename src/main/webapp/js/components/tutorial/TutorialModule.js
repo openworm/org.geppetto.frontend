@@ -1,3 +1,6 @@
+ /**
+ * @module components/TutorialModule
+ */
 define(function (require) {
 
     var React = require('react'),
@@ -10,21 +13,33 @@ define(function (require) {
             require('jsx!components/bootstrap/modal')
         ],
 
+        /**
+         * Don't show tutorial if user already did it
+         */
         dontShowNextTime: function(val){
             console.log(val);
         },
 
+        /**
+         * Starts the tutorial 
+         */
         startTutorial: function(){
             GEPPETTO.tutorialEnabled = true;
             GEPPETTO.trigger('start:tutorial');
             this.hide();
         },
 
+        /**
+         * Ignore tutorial, and go on with geppetto
+         */
         skipTutorial: function() {
             GEPPETTO.tutorialEnabled = false;
             this.hide();
         },
 
+        /**
+         * Render the tutorial modal component
+         */
         render: function () {
             return <div className="modal fade lead pagination-centered welcome-modal" data-backdrop="static" data-keyboard="false">
                 <div className="modal-dialog">

@@ -96,6 +96,7 @@
 	</dependencies>
 	<build>
 		<plugins>
+		
 			<plugin>
 				<groupId>com.github.bringking</groupId>
 				<artifactId>requirejs-maven-plugin</artifactId>
@@ -264,15 +265,20 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>com.github.phasebash</groupId>
+				<groupId>com.phasebash.jsdoc</groupId>
 				<artifactId>jsdoc3-maven-plugin</artifactId>
-				<version>1.0.4</version>
+				<version>1.1.0</version>
 				<configuration>
 					<recursive>true</recursive>
 					<directoryRoots>
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/nodes</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/bootstrap</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/cameracontrols</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/help</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/popups</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/tutorial</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/mixins</directoryRoot>
 					</directoryRoots>
 					<sourceFiles>

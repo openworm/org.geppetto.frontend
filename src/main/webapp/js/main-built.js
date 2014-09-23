@@ -19942,6 +19942,9 @@ define('GEPPETTO.Resources',['require'],function(require) {
 	}
 });
 
+/**
+ * @class GEPPETTO.Init
+ */
 define('GEPPETTO.Init',['require','jquery','three','vendor/THREEx.KeyboardState'],function(require) {
 	return function(GEPPETTO) {
 		var $ = require('jquery');
@@ -37876,77 +37879,93 @@ define('jsx',['JSXTransformer', 'text'], function (JSXTransformer, text) {
 
 
 /** @jsx React.DOM */
-
+/**
+ * Bootstrap modal
+ *
+ * @module components/modal
+ */
 define('components/bootstrap/modal',['require','react','jquery'],function (require) {
-    var React = require('react'),
-        $ = require('jquery');
+	var React = require('react'),
+	$ = require('jquery');
 
-    return function () {
-        var handlerProps =
-            ['handleShow', 'handleShown', 'handleHide', 'handleHidden']
+	return function () {
+		var handlerProps =
+			['handleShow', 'handleShown', 'handleHide', 'handleHidden']
 
-        var bsModalEvents = {
-            handleShow: 'show.bs.modal', handleShown: 'shown.bs.modal', handleHide: 'hide.bs.modal', handleHidden: 'hidden.bs.modal'
-        }
+		var bsModalEvents = {
+				handleShow: 'show.bs.modal', handleShown: 'shown.bs.modal', handleHide: 'hide.bs.modal', handleHidden: 'hidden.bs.modal'
+		}
 
-        return {
-            propTypes: {
-                handleShow: React.PropTypes.func, handleShown: React.PropTypes.func, handleHide: React.PropTypes.func, handleHidden: React.PropTypes.func, backdrop: React.PropTypes.bool, keyboard: React.PropTypes.bool, show: React.PropTypes.bool, remote: React.PropTypes.string
-            }, 
-            getDefaultProps: function () {
-                return {
-                    backdrop: true, 
-                    keyboard: true, 
-                    show: false, 
-                    remote: '', 
-                    handleHidden: (function(){ 
-                        React.unmountComponentAtNode($(this.getDOMNode()).parent().get(0))}).bind(this)
-                }
-            },
-            //Close modal if one is currently open
-            componentWillMount: function() {
-                if($('.modal')) {
-                    $('.modal').modal('hide');
-                }
-            },
-            
-            componentDidMount: function () {
-                var $modal = $(this.getDOMNode()).modal({
-                    backdrop: this.props.backdrop, keyboard: this.props.keyboard, show: this.props.show, remote: this.props.remote
-                })
-                handlerProps.forEach(function (prop) {
-                    if (this[prop]) {
-                        $modal.on(bsModalEvents[prop], this[prop])
-                    }
-                    if (this.props[prop]) {
-                        $modal.on(bsModalEvents[prop], this.props[prop])
-                    }
-                }.bind(this));
-      
-            }, 
-            componentWillUnmount: function () {
-                var $modal = $(this.getDOMNode())
-                handlerProps.forEach(function (prop) {
-                    if (this[prop]) {
-                        $modal.off(bsModalEvents[prop], this[prop])
-                    }
-                    if (this.props[prop]) {
-                        $modal.off(bsModalEvents[prop], this.props[prop])
-                    }
-                }.bind(this))
-                
-                $modal.modal('hide');
-            }, 
-            hide: function () {
-                $(this.getDOMNode()).modal('hide');
-            }, 
-            show: function () {
-                $(this.getDOMNode()).modal('show');
-            }, 
-            toggle: function () {
-                $(this.getDOMNode()).modal('toggle');
-            }, 
-            renderCloseButton: function () {
+		return {
+			propTypes: {
+				handleShow: React.PropTypes.func, handleShown: React.PropTypes.func, handleHide: React.PropTypes.func, handleHidden: React.PropTypes.func, backdrop: React.PropTypes.bool, keyboard: React.PropTypes.bool, show: React.PropTypes.bool, remote: React.PropTypes.string
+			},
+			/**
+			 * Get default properties of modal component
+			 * 
+			 * @returns {Object} Properties for modal component
+			 */
+			getDefaultProps: function () {
+				return {
+					backdrop: true, 
+					keyboard: true, 
+					show: false, 
+					remote: '', 
+					handleHidden: (function(){ 
+						React.unmountComponentAtNode($(this.getDOMNode()).parent().get(0))}).bind(this)
+				}
+			},
+			/**Close modal if one is currently open*/
+			componentWillMount: function() {
+				if($('.modal')) {
+					$('.modal').modal('hide');
+				}
+			},
+
+			/**Modal mounted fine, handle event logic inside it*/
+			componentDidMount: function () {
+				var $modal = $(this.getDOMNode()).modal({
+					backdrop: this.props.backdrop, keyboard: this.props.keyboard, show: this.props.show, remote: this.props.remote
+				})
+				handlerProps.forEach(function (prop) {
+					if (this[prop]) {
+						$modal.on(bsModalEvents[prop], this[prop])
+					}
+					if (this.props[prop]) {
+						$modal.on(bsModalEvents[prop], this.props[prop])
+					}
+				}.bind(this));
+
+			}, 
+
+			/**Unmount the modal, hide it */
+			componentWillUnmount: function () {
+				var $modal = $(this.getDOMNode())
+				handlerProps.forEach(function (prop) {
+					if (this[prop]) {
+						$modal.off(bsModalEvents[prop], this[prop])
+					}
+					if (this.props[prop]) {
+						$modal.off(bsModalEvents[prop], this.props[prop])
+					}
+				}.bind(this))
+
+				$modal.modal('hide');
+			}, 
+			/**Hide modal*/
+			hide: function () {
+				$(this.getDOMNode()).modal('hide');
+			}, 
+			/**Show modal*/
+			show: function () {
+				$(this.getDOMNode()).modal('show');
+			}, 
+			/**Toggle modal visibility*/
+			toggle: function () {
+				$(this.getDOMNode()).modal('toggle');
+			}, 
+			/**Render close button inside modal*/
+			renderCloseButton: function () {
                 return React.DOM.button(
                 {type:"button",
                 className:"close",
@@ -37995,6 +38014,7 @@ define('components/bootstrap/modal',['require','react','jquery'],function (requi
  /**
  * Modal used to display info messages received from server
  *
+ * @module components/InfoModal
  */
 define('components/popups/InfoModal',['require','react','jquery','jsx!components/bootstrap/modal'],function (require) {
 
@@ -38005,16 +38025,24 @@ define('components/popups/InfoModal',['require','react','jquery','jsx!components
         mixins: [
             require('jsx!components/bootstrap/modal')
         ],
-        
+
+        /**
+         * Get default properties of modal component
+         * 
+         * @returns {Object} Properties for modal component
+         */
         getDefaultProps: function() {
-            return {
-                title: 'Message',
-                text: '',
-                buttonLabel: 'Ok', 
-                onClick: function(){}              
-            }
+        	return {
+        		title: 'Message',
+        		text: '',
+        		buttonLabel: 'Ok', 
+        		onClick: function(){}              
+        	}
         },
-        
+
+        /**
+         * Render information modal component
+         */
         render: function (){
         	return React.DOM.div( {className:"modal fade", id:"infomodal"}, 
         			React.DOM.div( {className:"modal-dialog"}, 
@@ -38075,6 +38103,7 @@ define('components/popups/InfoModal',['require','react','jquery','jsx!components
  /**
  * Modal used to display error messages received from server
  *
+ * @module components/ErrorModal
  */
 define('components/popups/ErrorModal',['require','react','jquery','jsx!components/bootstrap/modal'],function (require) {
 
@@ -38085,21 +38114,32 @@ define('components/popups/ErrorModal',['require','react','jquery','jsx!component
         mixins: [
             require('jsx!components/bootstrap/modal')
         ],
-        
+
+        /**
+         * Get default properties of modal component
+         * 
+         * @returns {Object} Properties for modal component
+         */
         getDefaultProps: function() {
-            return {
-                title: 'There was an error',
-                text: '',
-                code: '',
-                source: '',
-                exception: '' 
-            }
+        	return {
+        		title: 'There was an error',
+        		text: '',
+        		code: '',
+        		source: '',
+        		exception: '' 
+        	}
         },
-        
+
+        /**
+         * Share error on twitter functionality, connects event
+         */
         shareTwitter: function() {
-            GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');
+        	GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');
         },
-        
+
+        /**
+         * Render error modal component
+         */
         render: function (){
         	return (
                     React.DOM.div( {className:"modal fade", id:"errormodal"}, 
@@ -38396,8 +38436,6 @@ define('GEPPETTO.FE',['require','react','jquery','jsx!components/popups/InfoModa
  *
  * Handles running script inside Geppetto.
  *
- * @constructor
-
  * @author   (jesus@metacell.us)
  */
 define('GEPPETTO.ScriptRunner',['require'],function(require) {
@@ -38413,8 +38451,7 @@ define('GEPPETTO.ScriptRunner',['require'],function(require) {
 
 		/**
 		 * Executes a set of commands from a script
-		 *
-		 * @param commands - commands to execute
+		 * @class GEPPETTO.ScriptRunner
 		 */
 		GEPPETTO.ScriptRunner = {
 			executeScriptCommands: function(commands) {
@@ -39647,8 +39684,18 @@ define('GEPPETTO.Utility',['require','jquery'],function(require) {
  *******************************************************************************/
 define('GEPPETTO.Share',['require'],function(require) {
 	return function(GEPPETTO) {
+		/**
+		 * @class GEPPETTO.Share
+		 */
 		GEPPETTO.Share = {
 			visible : false,
+			/**
+			 * Shares Geppetto on Facebook
+			 * 
+			 * @param {URL} linkURL - URL to share
+			 * @param {String} title - Title of sharing post
+			 * @param {String} text - Test of sharing post
+			 */
 			facebook: function(linkURL, title, img, text) {
 				var url = 'http://www.facebook.com/sharer.php?s=100';
 				url += '&p[title]=' + encodeURIComponent(title);
@@ -39657,6 +39704,12 @@ define('GEPPETTO.Share',['require'],function(require) {
 				url += '&p[images][0]=' + encodeURIComponent(img);
 				this.popup(url);
 			},
+			/**
+			 * Shares Geppetto on Twitter
+			 * 
+			 * @param {URL} linkURL - URL to share
+			 * @param {String} title - Title of sharing post
+			 */
 			twitter: function(linkURL, title) {
 				var url = 'http://twitter.com/share?';
 				url += 'text=' + encodeURIComponent(title);
@@ -39664,12 +39717,30 @@ define('GEPPETTO.Share',['require'],function(require) {
 				url += '&counturl=' + encodeURIComponent(linkURL);
 				this.popup(url);
 			},
+			
+			/**
+			 * General method to display popup window with either facebook or twitter share
+			 * 
+			 * @param {URL} url - URL to share
+			 */
 			popup: function(url) {
 				window.open(url, '', 'toolbar=0,status=0,width=626, height=436');
 			},
+			
+			/**
+			 * Toggles sharing popup on and off
+			 * 
+			 * @param {boolean} mode - Sets popup visible or invisible
+			 */
 			setVisible : function(mode){
 				this.visible = mode;
 			},
+			
+			/**
+			 * Returns visibility of popup window
+			 * 
+			 * @returns {boolean} Visibility of popup window
+			 */
 			isVisible : function(){
 				return this.visible;
 			}
@@ -39714,6 +39785,9 @@ define('GEPPETTO.MenuManager',['require'],function(require) {
 		
 		var commandsProviders = {};
 		
+		/**
+		 * @class GEPPETTO.MenuManager
+		 */
 		GEPPETTO.MenuManager = {
 				
 			registerNewCommandProvider: function(nodeTypes, handler) {
@@ -40914,9 +40988,10 @@ define('geppetto-objects/Simulation',['require'],function(require) {
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  */
- /**
- * Modal used to display info messages received from server
+/**
+ * Bootstrap button
  *
+ * @module components/ClipboardModal
  */
 define('components/popups/ClipboardModal',['require','react','jquery','jsx!components/bootstrap/modal'],function (require) {
 
@@ -40928,15 +41003,23 @@ define('components/popups/ClipboardModal',['require','react','jquery','jsx!compo
             require('jsx!components/bootstrap/modal')
         ],
         
+        /**
+         * Get default properties of modal component
+         * 
+         * @returns {Object} Properties for modal component
+         */
         getDefaultProps: function() {
-            return {
-                title: 'Message',
-                text: '',
-                buttonLabel: 'Ok', 
-                onClick: function(){}              
-            }
+        	return {
+        		title: 'Message',
+        		text: '',
+        		buttonLabel: 'Ok', 
+        		onClick: function(){}              
+        	}
         },
-        
+
+        /**
+         * Render Clipboard Modal component 
+         */
         render: function (){
         	return React.DOM.div( {className:"modal fade", id:"javascriptEditor"}, 
         			React.DOM.div( {className:"modal-dialog"}, 
@@ -41432,8 +41515,6 @@ define('geppetto-objects/G',['require','jquery','react','jsx!components/popups/C
  * Main class for handling user interface evens associated with: Simulation Controls,
  * alert & info messages, and server side communication
  *
- * @constructor
- *
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @author giovanni@openworm.org (Giovanni Idili)
  * @author  Jesus R. Martinez (jesus@metacell.us)
@@ -41444,6 +41525,9 @@ define('GEPPETTO.Main',['require','jquery','react','jsx!components/popups/InfoMo
 		React = require('react'),
 		InfoModal = require('jsx!components/popups/InfoModal');
 
+		/**
+		 * @class GEPPETTO.Main
+		 */
 		GEPPETTO.Main = {
 
 			StatusEnum: {
@@ -41617,7 +41701,7 @@ define('widgets/WidgetFactory',['require'],function(require) {
 		 * 
 		 * Widgets
 		 * 
-		 * Different types of widgets that exist in Geppetto
+		 * Different types of widgets that exist
 		 * 
 		 * @enum
 		 */
@@ -42035,13 +42119,26 @@ define('widgets/ContextMenu',['require','underscore'],function(require) {
 			 }
 		});
 		
+		/**
+		 * @module Widgets/ContextMenu
+		 */
 		GEPPETTO.ContextMenuView = Backbone.View.extend({
 	        className: 'contextMenuView',
 	        template: _.template($('#tplContextMenu').html()),
 	        parentSelector: 'body',
+	        
+	        /**
+	         * Events that can be registered with the widget
+	         */
 			events : {
 				'click .contextMenuLink' : 'manageMenuClickEvent'
 			},
+			
+			/**
+			 * Register right click event with this widget
+			 * 
+			 * @param {GEPPETTO.ContextMenuView.events} event - Registe event with this widget  
+			 */
 			manageMenuClickEvent: function(event){
 				//TODO: Check if this can be done through and event in the menu view items
 				var itemId = $(event.target).attr('id');
@@ -42060,6 +42157,9 @@ define('widgets/ContextMenu',['require','underscore'],function(require) {
 				GEPPETTO.Console.executeCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
 			},
 	        
+			/**
+			 * Renders the Context Menu widget
+			 */
 	        render: function () {
 	        	this.$el.html(this.template());	            
 	            
@@ -42092,6 +42192,10 @@ define('widgets/ContextMenu',['require','underscore'],function(require) {
 	
 	            return this;
 	        },
+
+	        /**
+	         * Initializes the ContextMenu given a set of options
+	         */
 	        initialize: function () {
 	        	this,registeredItems = {};
 	        	
@@ -42104,6 +42208,11 @@ define('widgets/ContextMenu',['require','underscore'],function(require) {
 	            });
 	        },
 	
+	        /**
+	         * Shows the context menu 
+	         * 
+	         * @param {Object} options - Options used to customize the context menu widget
+	         */
 	        show: function (options) {
 	            if (options.top === undefined || options.left === undefined) throw "ContextMenu must be shown with top/left coordinates.";
 	            if (options.groups === undefined) throw "ContextMenu needs ContextMenuGroups to be shown.";
@@ -43141,7 +43250,6 @@ define('widgets/plot/config',['require','widgets/plot/controllers/PlotsControlle
  * @module Widgets/Popup
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-
 define('widgets/popup/Popup',['require','widgets/Widget','jquery'],function(require) {
 
 	var Widget = require('widgets/Widget');
@@ -44429,6 +44537,7 @@ define('widgets/treevisualiser/TreeVisualiser',['require','widgets/Widget','node
 /**
  * Tree Visualiser Widget
  * 
+ * @module Widgets/TreeVisualizerDAT
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 
@@ -44444,6 +44553,11 @@ define('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT',['require','
 			autoPlace : false
 		},
 
+		/**
+		 * Initializes the TreeVisualiserDAT given a set of options
+		 * 
+		 * @param {Object} options - Object with options for the TreeVisualiserDAT widget
+		 */
 		initialize : function(options) {
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this, options);
 
@@ -44457,10 +44571,18 @@ define('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT',['require','
 			this.dialog.append(this.gui.domElement);
 		},
 		
+		/**
+		 * Action events associated with this widget
+		 */
 		events : {
 			'contextmenu .title' : 'manageRightClickEvent'
 		},
 
+		/**
+		 * Register right click event with widget
+		 * 
+		 * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
+		 */
 		manageRightClickEvent : function(event) {
 			var ascendantsElements = $(event.target).parentsUntil("#" + this.id,".folder").get().reverse();
 			var nodeString = "";
@@ -44474,6 +44596,12 @@ define('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT',['require','
 			this.showContextMenu(event, node);
 		},
 
+		/**
+		 * Sets the data used inside the TreeVisualiserDAT for rendering. 
+		 * 
+		 * @param {Array} state - Array of variables used to display inside TreeVisualiserDAT
+		 * @param {Object} options - Set of options passed to widget to customize it
+		 */
 		setData : function(state, options) {
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
 			dataset.valueDict = {};
@@ -44486,6 +44614,12 @@ define('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT',['require','
 			return "Metadata or variables to display added to tree visualiser";
 		},
 
+		/**
+		 * Prepares the tree for painting it on the widget
+		 * 
+		 * @param {Object} parent - Parent tree to paint
+		 * @param {Array} data - Data to paint
+		 */
 		prepareTree : function(parent, data) {
 			if (data._metaType != null){
 				//TODO: Remove once all getName are implemented in all nodes
@@ -44517,6 +44651,9 @@ define('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT',['require','
 			}	
 		},
 		
+		/**
+		 * Updates the data that the TreeVisualiserDAT is rendering
+		 */
 		updateData : function() {
 			for ( var key in this.datasets) {
 				dataset = this.datasets[key];
@@ -44566,7 +44703,7 @@ define('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT',['require','
  * Controller class for treevisualiser widget. Use to make calls to widget from
  * inside Geppetto.
  * 
- * @constructor
+ * @module Widgets/TreeVisualizerControllerDAT
  * 
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
@@ -44578,151 +44715,169 @@ define('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserContr
 
 		GEPPETTO.TreeVisualiserControllerDAT = {
 
-			/**
-			 * Registers widget events to detect and execute following actions.
-			 * Used when widget is destroyed.
-			 * 
-			 * @param plotID
-			 */
-			registerHandler : function(treeVisualiserDATID) {
-				GEPPETTO.WidgetsListener.subscribe(
-						GEPPETTO.TreeVisualiserControllerDAT,
-						treeVisualiserDATID);
-			},
+				/**
+				 * Registers widget events to detect and execute following actions.
+				 * Used when widget is destroyed.
+				 *
+				 * @param {String} treeVisualiserDATID - ID of widget to register handler
+				 */
+				registerHandler : function(treeVisualiserDATID) {
+					GEPPETTO.WidgetsListener.subscribe(
+							GEPPETTO.TreeVisualiserControllerDAT,
+							treeVisualiserDATID);
+				},
 
-			/**
-			 * Returns all plotting widgets objects
-			 */
-			getWidgets : function() {
-				return treeVisualisersDAT;
-			},
+				/**
+				 * Returns all TreeVisualizerDAT widgets objects
+				 */
+				getWidgets : function() {
+					return treeVisualisersDAT;
+				},
 
-			addTreeVisualiserDATWidget : function() {
-				// Popup widget number
-				var index = (treeVisualisersDAT.length + 1);
+				/**
+				 * Adds a new TreeVisualizerDAT Widget to Geppetto
+				 */
+				addTreeVisualiserDATWidget : function() {
+					// Popup widget number
+					var index = (treeVisualisersDAT.length + 1);
 
-				// Name of popup widget
-				var name = "TreeVisualiserDAT" + index;
-				var id = name;
+					// Name of popup widget
+					var name = "TreeVisualiserDAT" + index;
+					var id = name;
 
-				// create tree visualiser widget
-				var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 260, height: 350});
+					// create tree visualiser widget
+					var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 260, height: 350});
 
-				// create help command for plot
-				tvdat.help = function() {
-					return GEPPETTO.Utility.getObjectCommands(id);
-				};
+					// create help command for plot
+					tvdat.help = function() {
+						return GEPPETTO.Utility.getObjectCommands(id);
+					};
 
-				// store in local stack
-				treeVisualisersDAT.push(tvdat);
+					// store in local stack
+					treeVisualisersDAT.push(tvdat);
 
-				this.registerHandler(id);
+					this.registerHandler(id);
 
-				// add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",	tvdat, id);
+					// add commands to console autocomplete and help option
+					GEPPETTO.Console.updateCommands("js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",	tvdat, id);
 
-				return tvdat;
-			},
+					return tvdat;
+				},
 
-			removeTreeVisualiserDATWidgets : function() {
-				// remove all existing popup widgets
-				for (var i = 0; i < treeVisualisersDAT.length; i++) {
-					var treeVisualiserDAT = treeVisualisersDAT[i];
-
-					treeVisualiserDAT.destroy();
-					i++;
-				}
-
-				treeVisualisersDAT = new Array();
-			},
-
-			// receives updates from widget listener class to update tree
-			// visualiser widget(s)
-			update : function(event) {
-				// delete treevisualiser widget(s)
-				if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removeTreeVisualiserDATWidgets();
-				}
-				// update treevisualiser widgets
-				else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-					// loop through all existing widgets
+				/**
+				 * Remove the TreeVisualizerDAT widget
+				 */
+				removeTreeVisualiserDATWidgets : function() {
+					// remove all existing popup widgets
 					for (var i = 0; i < treeVisualisersDAT.length; i++) {
 						var treeVisualiserDAT = treeVisualisersDAT[i];
 
-						// update treevisualiser with new data set
-						treeVisualiserDAT.updateData();
+						treeVisualiserDAT.destroy();
+						i++;
 					}
-				}
-			},
 
-			getCommands : function(node) {
-//				var groups = [ [ {
+					treeVisualisersDAT = new Array();
+				},
+
+				/**
+				 * Receives updates from widget listener class to update TreeVisualizerDAT widget(s)
+				 * 
+				 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+				 */
+				update : function(event) {
+					// delete treevisualiser widget(s)
+					if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+						this.removeTreeVisualiserDATWidgets();
+					}
+					// update treevisualiser widgets
+					else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+						// loop through all existing widgets
+						for (var i = 0; i < treeVisualisersDAT.length; i++) {
+							var treeVisualiserDAT = treeVisualisersDAT[i];
+
+							// update treevisualiser with new data set
+							treeVisualiserDAT.updateData();
+						}
+					}
+				},
+
+				/**
+				 * Retrieve commands for a specific variable node
+				 * 
+				 * @param {Node} node - Geppetto Node used for extracting commands
+				 * @returns {Array} Set of commands associated with this node 
+				 */
+				getCommands : function(node) {
+//					var groups = [ [ {
 //					label : "Add to Chart",
 //					icon : "icon0",
 //					position : 0,
 //					groups : [ [ {
-//						label : "Add to New Chart",
-//						action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//						icon : "icon01",
-//						position : 0
+//					label : "Add to New Chart",
+//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+//					icon : "icon01",
+//					position : 0
 //					}, {
-//						label : "Add to Chart 1",
-//						action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//						icon : "icon02",
-//						position : 1
+//					label : "Add to Chart 1",
+//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
+//					icon : "icon02",
+//					position : 1
 //					} ] ]
-//				}, {
+//					}, {
 //					label : "Add as new line",
 //					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
 //					icon : "icon1",
 //					position : 1
-//				} ],
-//
-//				[ {
+//					} ],
+
+//					[ {
 //					label : "Save to file as a Chart",
 //					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
 //					icon : "icon2"
-//				} ] ];
-				
-				var group1 = [{
-					label:"Open with DAT Widget",
-		        	action: "GEPPETTO.TreeVisualiserControllerDAT.actionMenu",
-		        	//option: {option1: "option1"}
+//					} ] ];
+
+					var group1 = [{
+						label:"Open with DAT Widget",
+						action: "GEPPETTO.TreeVisualiserControllerDAT.actionMenu",
+						//option: {option1: "option1"}
 					}];
-		
-		
-				var availableWidgets = GEPPETTO.TreeVisualiserControllerDAT.getWidgets();
-				if (availableWidgets.length > 0){
-					var group1Add =  [ {
-						label : "Add to DAT Widget",
-						position : 0
-					} ] ;
-					
-					var subgroups1Add = [];
-					for (var availableWidgetIndex in availableWidgets){
-						var availableWidget = availableWidgets[availableWidgetIndex];
-						subgroups1Add = subgroups1Add.concat([{
-																label: "Add to " + availableWidget.name,
-																action: availableWidget.id + ".setData",
-																position: availableWidgetIndex
-																}]);
+
+
+					var availableWidgets = GEPPETTO.TreeVisualiserControllerDAT.getWidgets();
+					if (availableWidgets.length > 0){
+						var group1Add =  [ {
+							label : "Add to DAT Widget",
+							position : 0
+						} ] ;
+
+						var subgroups1Add = [];
+						for (var availableWidgetIndex in availableWidgets){
+							var availableWidget = availableWidgets[availableWidgetIndex];
+							subgroups1Add = subgroups1Add.concat([{
+								label: "Add to " + availableWidget.name,
+								action: availableWidget.id + ".setData",
+								position: availableWidgetIndex
+							}]);
+						}
+
+						group1Add[0]["groups"] = [subgroups1Add];
+
+						group1 = group1.concat(group1Add);
 					}
-					
-					group1Add[0]["groups"] = [subgroups1Add];
-					
-					group1 = group1.concat(group1Add);
+
+					var groups = [group1];
+
+					return groups;
+
+				},
+
+				/**
+				 * Register action menu with the TreeVisualizer3D widget
+				 */
+				actionMenu : function(node) {
+					tv = GEPPETTO.TreeVisualiserControllerDAT.addTreeVisualiserDATWidget();
+					tv.setData(node);
 				}
-				
-				var groups = [group1];
-				
-				return groups;
-
-			},
-
-			actionMenu : function(node) {
-				tv = GEPPETTO.TreeVisualiserControllerDAT.addTreeVisualiserDATWidget();
-				tv.setData(node);
-			}
 		};
 
 	};
@@ -44831,6 +44986,7 @@ define('widgets/treevisualiser/treevisualiserdat/config',['require','widgets/tre
 /**
  * Tree Visualiser Widget
  *
+ * @module Widgets/TreeVisualizerD3
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 
@@ -44846,6 +45002,11 @@ define('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3',['require','wi
 			height: 460
 		},
 		
+		/**
+		 * Initializes the TreeVisualiser3D given a set of options
+		 * 
+		 * @param {Object} options - Object with options for the TreeVisualiser3D widget
+		 */
 		initialize : function(options){
 			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this,options);
 			this.options = this.defaultTreeVisualiserOptions;
@@ -44864,6 +45025,12 @@ define('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3',['require','wi
 		    });
 		},
 		
+		/**
+		 * Sets the data used inside the TreeVisualiser3D for rendering. 
+		 * 
+		 * @param {Array} state - Array of variables used to display inside TreeVisualiser3D
+		 * @param {Object} options - Set of options passed to widget to customize it
+		 */
 		setData : function(state, options){
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
 			dataset.links = [];
@@ -44879,6 +45046,13 @@ define('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3',['require','wi
 			return "Metadata or variables to display added to tree visualiser";
 		},
 		
+		/**
+		 * Prepares the tree for painting it on the widget
+		 * 
+		 * @param {Object} parent - Parent tree to paint
+		 * @param {Array} data - Data to paint
+		 * @param {Array} dataset - Sets within the data object to paint
+		 */
 		prepareTree: function(parent, data, dataset){
 			nodeName = data.instancePath;
 			
@@ -44919,6 +45093,9 @@ define('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3',['require','wi
 			}	
 		},
 		
+		/**
+		 * Updates the data that the TreeVisualiser3D is rendering
+		 */
 		updateData: function(){
 			for(var key in this.datasets) {
 				dataset = this.datasets[key];
@@ -44935,6 +45112,9 @@ define('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3',['require','wi
 			}
 		},
 		
+		/**
+		 * Paints the tree for the widget
+		 */
 		paintTree: function(){
 			for(var key in this.datasets) {
 				dataset = this.datasets[key];
@@ -45070,6 +45250,7 @@ define('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3',['require','wi
  *
  * @constructor
  *
+ * @module Widgets/TreeVisualizerControllerD3
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3',['require','widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3'],function(require) {
@@ -45084,7 +45265,7 @@ define('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserContro
 			 * Registers widget events to detect and execute following actions.
 			 * Used when widget is destroyed.
 			 *
-			 * @param plotID
+			 * @param {String} treeVisualiserD3ID - ID of widget to register handler
 			 */
 			registerHandler: function(treeVisualiserD3ID) {
 				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.TreeVisualiserControllerD3, treeVisualiserD3ID);
@@ -45092,11 +45273,16 @@ define('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserContro
 
 			/**
 			 * Returns all plotting widgets objects
+			 * 
+			 * @returns {Array} Array of TreeVisualiserD3ID widgets that exist
 			 */
 			getWidgets: function() {
 				return treeVisualisersD3;
 			},
 			
+			/**
+			 * Adds a new TreeVisualizer3D Widget to Geppetto
+			 */
 			addTreeVisualiserD3Widget : function(){
 				//Popup widget number
 				var index = (treeVisualisersD3.length + 1);
@@ -45122,6 +45308,9 @@ define('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserContro
 				return tvd3;
 			},
 		
+			/**
+			 * Remove the TreeVisualizer3D widget
+			 */
 			removeTreeVisualiserD3Widgets : function(){
 				//remove all existing popup widgets
 				for(var i = 0; i < treeVisualisersD3.length; i++) {
@@ -45134,7 +45323,11 @@ define('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserContro
 				treeVisualisersD3 = new Array();
 			},
 			
-			//receives updates from widget listener class to update tree visualiser widget(s)
+			/**
+			 * Receives updates from widget listener class to update TreeVisualizer3D widget(s)
+			 * 
+			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+			 */
 			update: function(event) {
 				//delete treevisualiser widget(s)
 				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
@@ -45152,6 +45345,12 @@ define('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserContro
 				}
 			},
 			
+			/**
+			 * Retrieve commands for a specific variable node
+			 * 
+			 * @param {Node} node - Geppetto Node used for extracting commands
+			 * @returns {Array} Set of commands associated with this node 
+			 */
 			getCommands: function(node) {
 				var group1 = [{
 							label:"Open with D3 Widget",
@@ -45189,6 +45388,9 @@ define('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserContro
 				
 			},
 			
+			/**
+			 * Register action menu with the TreeVisualizer3D widget
+			 */
 			actionMenu: function(node){
 				tv = GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
 				tv.setData(node);
@@ -46501,7 +46703,7 @@ define('nodes/DynamicsSpecificationNode',['require','nodes/Node','nodes/Function
 		/**
 		 * Get dynamics function node for this specifications node
 		 * 
-		 * @returns {FunctionNode} Specifies dynamics for node
+		 * @returns {Object} Specifies dynamics for node
 		 */
 		getDynamics : function() {
 			return this.get("dynamics");
@@ -46678,6 +46880,10 @@ define('nodes/RuntimeTreeFactory',['require','nodes/AspectNode','nodes/EntityNod
 		var FunctionNode = require('nodes/FunctionNode');
 		var VariableNode = require('nodes/VariableNode');
 		var simulationTreeCreated=false;
+		
+		/**
+		 * @class GEPPETTO.RuntimeTreeFactory
+		 */
 		GEPPETTO.RuntimeTreeFactory = {
 				/**Creates the backbone nodes for the first time depending.
 				 */
@@ -46702,6 +46908,8 @@ define('nodes/RuntimeTreeFactory',['require','nodes/AspectNode','nodes/EntityNod
 
 			/**
 			 * Traverse through entities to create children
+			 * 
+			 * * @name RuntimeTreeFactory#traverseEntities
 			 */
 			traverseEntities : function(entities, parentNode, runTimeRef) {
 				for ( var id in entities) {
@@ -48295,13 +48503,13 @@ define('geppetto',['require','jquery','underscore','backbone','vendor/Detector',
 
 /** @jsx React.DOM */
 define('mixins/Events',['require','underscore'],function (require) {
-
+	/**@lends Events*/
 	var _ = require('underscore');
 	
 	/**
      * Events used as part of GEPPETTO Components
      * 
-     * @mixin 
+     * @mixin Events
      */
     return {
     	
@@ -48329,6 +48537,10 @@ define('mixins/Events',['require','underscore'],function (require) {
 });
 
 /** @jsx React.DOM */
+ /**
+ * Help Button
+ * @module components/HelpButton
+ */
 define('components/simulationcontrols/LoadingSpinner',['require','react','geppetto','jsx!components/bootstrap/modal','jsx!mixins/Events'],function(require) {
 
 	var React = require('react'),
@@ -48372,16 +48584,16 @@ define('components/simulationcontrols/LoadingSpinner',['require','react','geppet
         }		
 	});
 });
+/**
+ * Popovers used as part of GEPPETTO Components
+ * 
+ * @mixin TutorialMixin
+ */
 define('mixins/TutorialMixin',['require','react','geppetto','jquery'],function (require) {
     var React = require('react'),
         GEPPETTO = require('geppetto'),
         $ = require('jquery');
 
-    /**
-     * Popovers used as part of GEPPETTO Components
-     * 
-     * @mixin 
-     */
     return {
         getDefaultProps: function () {
             return {
@@ -48395,6 +48607,10 @@ define('mixins/TutorialMixin',['require','react','geppetto','jquery'],function (
             $(this.getDOMNode()).popover('destroy');
         },
 
+        /**
+         * Show Popover
+         * @returns {HTML-Element} Created Popover
+         */
         showPopover: function() {
             $(this.getDOMNode()).popover({
                 title: this.props.popoverTitle,
@@ -48410,6 +48626,11 @@ define('mixins/TutorialMixin',['require','react','geppetto','jquery'],function (
     };
 });
 
+/**
+ * Bootstrap button
+ *
+ * @module components/button
+ */
 define('components/bootstrap/button',['require','react','mixins/TutorialMixin'],function (require) {
 
     var React = require('react');
@@ -48420,29 +48641,40 @@ define('components/bootstrap/button',['require','react','mixins/TutorialMixin'],
 
         displayName: 'Button',
 
+        /**
+         * Get default properties of button component
+         * 
+         * @returns {Object} Properties for button component
+         */
         getDefaultProps: function() {
-            return {
-                disabled: false,
-                className: ''
-            }
+        	return {
+        		disabled: false,
+        		className: ''
+        	}
         },
 
+        /**
+         * Render button 
+         */
         render: function () {
-            return (
-                React.DOM.button({
-                    type: 'button',
-                    className: 'btn ' + this.props.className,
-                    'data-toggle': this.props['data-toggle'],
-                    onClick: this.props.onClick,
-                    disabled: this.props.disabled
-                }, React.DOM.i({className: this.props.icon}, " " + this.props.children))
-                );
+        	return (
+        			React.DOM.button({
+        				type: 'button',
+        				className: 'btn ' + this.props.className,
+        				'data-toggle': this.props['data-toggle'],
+        				onClick: this.props.onClick,
+        				disabled: this.props.disabled
+        			}, React.DOM.i({className: this.props.icon}, " " + this.props.children))
+        	);
         }
     });
 });
 
 
 /** @jsx React.DOM */
+ /**
+ * @module components/IntroModal
+ */
 define('components/tutorial/IntroModal',['require','react','jquery','../bootstrap/button','geppetto','jsx!components/bootstrap/modal'],function (require) {
 
     var React = require('react'),
@@ -48455,20 +48687,33 @@ define('components/tutorial/IntroModal',['require','react','jquery','../bootstra
             require('jsx!components/bootstrap/modal')
         ],
 
+        /**
+         * Read from cookie and don't show welcome message again if user
+         * previously selected so
+         */
         dontShowNextTime: function(val){
             $.cookie('geppetto_hideWelcomeMessage', true);
         },
 
+        /**
+         * Starts the tutorial
+         */
         startTutorial: function(){
             GEPPETTO.trigger('start:tutorial');
             GEPPETTO.tutorialEnabled = true;
             this.hide();
         },
 
+        /**
+         * Skip tutorial, continue to geppetto
+         */
         skipTutorial: function() {
             this.hide();
         },
 
+        /**
+         * Render the welcome message 
+         */
         render: function () {
             return React.DOM.div( {className:"modal fade lead pagination-centered welcome-modal", 'data-backdrop':"static", 'data-keyboard':"false"}, 
                 React.DOM.div( {className:"modal-dialog"}, 
@@ -48501,6 +48746,9 @@ define('components/tutorial/IntroModal',['require','react','jquery','../bootstra
     });    
 
 });
+ /**
+ * @class components/utils
+ */
 define('components/utils',['require'],function(require){
 
 	function getParameterByName(name) {
@@ -48518,6 +48766,9 @@ define('components/utils',['require'],function(require){
 
 
 /** @jsx React.DOM */
+ /**
+ * @module components/XMLEditor
+ */
 define('components/simulationcontrols/XMLEditor',['require','react','codemirror'],function (require) {
     var React = require('react');
     require('codemirror');
@@ -48615,6 +48866,9 @@ define('components/simulationcontrols/XMLEditor',['require','react','codemirror'
 });
 
 /** @jsx React.DOM */
+ /**
+ * @module components/LoadSimulationModal
+ */
 define('components/simulationcontrols/LoadSimulationModal',['require','react','jquery','jsx!./XMLEditor','geppetto','jsx!components/bootstrap/modal','jsx!mixins/Events'],function (require) {
 
     var React = require('react'),
@@ -48731,6 +48985,9 @@ define('components/simulationcontrols/LoadSimulationModal',['require','react','j
         	}
         },
 
+        /**
+         * @example
+         */
         render: function () {
             return React.DOM.div( {className:"modal fade", id:"loading-modal"},  
                 React.DOM.div( {className:"modal-dialog"}, 
@@ -48791,15 +49048,15 @@ define('components/simulationcontrols/LoadSimulationModal',['require','react','j
     });
 
 });
-define('mixins/Button',['require','react'],function(require) {
 
+define('mixins/Button',['require','react'],function(require) {
+	/**
+	 * Button used as part of GEPPETTO Components
+	 * 
+	 * @mixin Button
+	 */
     var React = require('react');
 
-    /**
-     * Button used as part of GEPPETTO Components
-     * 
-     * @mixin 
-     */
     return {
         displayName: 'Button',
 
@@ -48817,6 +49074,10 @@ define('mixins/Button',['require','react'],function(require) {
     };
 });
 
+ /**
+ * Load Button
+ * @module components/LoadButton
+ */
 define('components/simulationcontrols/buttons/LoadButton',['require','react','geppetto','jsx!components/simulationcontrols/LoadSimulationModal','mixins/TutorialMixin','mixins/Button'],function (require) {
 
     var React = require('react'),
@@ -48852,6 +49113,10 @@ define('components/simulationcontrols/buttons/LoadButton',['require','react','ge
     });
 });
 
+ /**
+ * Start Button
+ * @module components/StartButton
+ */
 define('components/simulationcontrols/buttons/StartButton',['require','react','geppetto','mixins/TutorialMixin','mixins/Button'],function (require) {
 
     var React = require('react'),
@@ -48890,6 +49155,10 @@ define('components/simulationcontrols/buttons/StartButton',['require','react','g
     });
 });
 
+ /**
+ * Pause Button
+ * @module components/PauseButton
+ */
 define('components/simulationcontrols/buttons/PauseButton',['require','react','geppetto','mixins/TutorialMixin','mixins/Button'],function (require) {
 
     var React = require('react'),
@@ -48920,6 +49189,10 @@ define('components/simulationcontrols/buttons/PauseButton',['require','react','g
     });
 });
 
+ /**
+ * Stop Button
+ * @module components/StopButton
+ */
 define('components/simulationcontrols/buttons/StopButton',['require','react','geppetto','mixins/TutorialMixin','mixins/Button'],function (require) {
 
     var React = require('react'),
@@ -48952,6 +49225,11 @@ define('components/simulationcontrols/buttons/StopButton',['require','react','ge
 
 
 /** @jsx React.DOM */
+/**
+ * Bootstrap button
+ *
+ * @module components/HelpModal
+ */
 define('components/help/HelpModal',['require','react','../bootstrap/button','geppetto','jsx!components/bootstrap/modal'],function (require) {
 
     var React = require('react'),
@@ -48963,12 +49241,18 @@ define('components/help/HelpModal',['require','react','../bootstrap/button','gep
             require('jsx!components/bootstrap/modal')
         ],
 
+        /**
+         * Start the tutorial event
+         */
         startTutorial: function() {
-            GEPPETTO.trigger('start:tutorial');
-            GEPPETTO.tutorialEnabled = true;
-            this.hide();
+        	GEPPETTO.trigger('start:tutorial');
+        	GEPPETTO.tutorialEnabled = true;
+        	this.hide();
         },
 
+        /**
+         * Render the help modal 
+         */
         render: function () {
             return React.DOM.div( {className:"modal fade", id:"help-modal"}, 
                 React.DOM.div( {className:"modal-dialog"}, 
@@ -49044,6 +49328,10 @@ define('components/help/HelpModal',['require','react','../bootstrap/button','gep
     });
 
 });
+ /**
+ * Help Button
+ * @module components/HelpButton
+ */
 define('components/simulationcontrols/buttons/HelpButton',['require','react','geppetto','jquery','jsx!components/help/HelpModal','mixins/Button'],function (require) {
 
     var React = require('react'),
@@ -49086,6 +49374,9 @@ define('components/simulationcontrols/buttons/HelpButton',['require','react','ge
 
 
 /** @jsx React.DOM */
+ /**
+ * @module components/SimulationControls
+ */
 define('components/simulationcontrols/SimulationControls',['require','react','./buttons/LoadButton','./buttons/StartButton','./buttons/PauseButton','./buttons/StopButton','./buttons/HelpButton','geppetto'],function(require) {
 
     var React = require('react');
@@ -49157,65 +49448,104 @@ define('components/simulationcontrols/SimulationControls',['require','react','./
 });
 
 /** @jsx React.DOM */
+/**
+ * Bootstrap button
+ *
+ * @module components/CameraControls
+ */
 define('components/cameracontrols/CameraControls',['require','react','geppetto','mixins/TutorialMixin'],function(require) {
 
-    var React = require('react');
-    var GEPPETTO = require('geppetto');
+	var React = require('react');
+	var GEPPETTO = require('geppetto');
 
-    var Controls = React.createClass({displayName: 'Controls',
+	var Controls = React.createClass({displayName: 'Controls',
 
-        mixins:[require('mixins/TutorialMixin')],
+		mixins:[require('mixins/TutorialMixin')],
 
-        popoverTitle: 'Camera Controls',
+		popoverTitle: 'Camera Controls',
 
-        popoverText: 'Use these controls to pan, rotate, and zoom the camera.',
+		popoverText: 'Use these controls to pan, rotate, and zoom the camera.',
 
-        popoverTemplate: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div><button class="btn btn-info tutorial-next"><i class="icon-check"></i></button></div>',
+		popoverTemplate: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div><button class="btn btn-info tutorial-next"><i class="icon-check"></i></button></div>',
 
-        panLeft: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
-        },
+		/**
+		 * Pan camera left event
+		 */
+		panLeft: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
+		},
 
-        panRight: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
-        },
+		/**
+		 * Pan camera right event, connect event to console
+		 */
+		panRight: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
+		},
 
-        panUp: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
-        },
+		/**
+		 * Pan camera up event, connect event to console
+		 */
+		panUp: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
+		},
 
-        panDown: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
-        },
+		/**
+		 * Pan camera down event, connect event to console
+		 */
+		panDown: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
+		},
 
-        rotateUp: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
-        },
+		/**
+		 * Rotate camera up event, connect event to console
+		 */
+		rotateUp: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
+		},
 
-        rotateDown: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
-        },
+		/**
+		 * Rotate camera down event, connect event to console
+		 */
+		rotateDown: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
+		},
 
-        rotateLeft: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
-        },
+		/**
+		 * Rotate camera left event, connect event to console
+		 */
+		rotateLeft: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
+		},
 
-        rotateRight: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
-        },
+		/**
+		 * Rotate camera right event, connect event to console
+		 */
+		rotateRight: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
+		},
 
-        cameraHome: function() {
-            GEPPETTO.Console.executeCommand('G.resetCamera()');
-        },
+		/**
+		 * Reset camera view event, connect event to console
+		 */
+		cameraHome: function() {
+			GEPPETTO.Console.executeCommand('G.resetCamera()');
+		},
 
-        zoomIn: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
-        },
+		/**
+		 * Zoom in camera control event, connect event to console
+		 */
+		zoomIn: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
+		},
 
-        zoomOut: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
-        },
+		/**
+		 * Zoom out camera control event, connect event to console
+		 */
+		zoomOut: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
+		},
 
+        /**Modal mounted fine, handle event logic inside it*/
         componentDidMount: function() {
             GEPPETTO.on('start:tutorial', (function() {               
                 GEPPETTO.once('tutorial:cameracontrols', (function(){
@@ -49231,6 +49561,9 @@ define('components/cameracontrols/CameraControls',['require','react','geppetto',
             }).bind(this));
         },
 
+        /**
+         * Render the Cameral Controls Components
+         */
         render: function () {
             return (
             	React.DOM.div( {className:"position-toolbar"}, 
@@ -49258,6 +49591,9 @@ define('components/cameracontrols/CameraControls',['require','react','geppetto',
     React.renderComponent(Controls({},''), document.getElementById('camera-controls'));
 
 });
+ /**
+ * @class components/app
+ */
 define('components/app',['require','jquery','geppetto','react','jsx!./simulationcontrols/LoadingSpinner','jsx!./tutorial/IntroModal','./utils','jsx!./simulationcontrols/SimulationControls','jsx!./cameracontrols/CameraControls','jsx!./tutorial/IntroModal'],function(require){
 
 	var $ = require('jquery'),

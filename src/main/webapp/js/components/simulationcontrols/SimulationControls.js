@@ -1,3 +1,6 @@
+ /**
+ * @module components/SimulationControls
+ */
 define(function(require) {
 
     var React = require('react');

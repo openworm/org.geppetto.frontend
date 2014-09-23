@@ -1,3 +1,7 @@
+ /**
+ * Pause Button
+ * @module components/PauseButton
+ */
 define(function (require) {
 
     var React = require('react'),

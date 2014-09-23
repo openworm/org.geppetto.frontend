@@ -1,3 +1,6 @@
+ /**
+ * @module components/IntroModal
+ */
 define(function (require) {
 
     var React = require('react'),
@@ -10,20 +13,33 @@ define(function (require) {
             require('jsx!components/bootstrap/modal')
         ],
 
+        /**
+         * Read from cookie and don't show welcome message again if user
+         * previously selected so
+         */
         dontShowNextTime: function(val){
             $.cookie('geppetto_hideWelcomeMessage', true);
         },
 
+        /**
+         * Starts the tutorial
+         */
         startTutorial: function(){
             GEPPETTO.trigger('start:tutorial');
             GEPPETTO.tutorialEnabled = true;
             this.hide();
         },
 
+        /**
+         * Skip tutorial, continue to geppetto
+         */
         skipTutorial: function() {
             this.hide();
         },
 
+        /**
+         * Render the welcome message 
+         */
         render: function () {
             return <div className="modal fade lead pagination-centered welcome-modal" data-backdrop="static" data-keyboard="false">
                 <div className="modal-dialog">

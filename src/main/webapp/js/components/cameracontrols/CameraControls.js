@@ -1,62 +1,101 @@
+/**
+ * Bootstrap button
+ *
+ * @module components/CameraControls
+ */
 define(function(require) {
 
-    var React = require('react');
-    var GEPPETTO = require('geppetto');
+	var React = require('react');
+	var GEPPETTO = require('geppetto');
 
-    var Controls = React.createClass({
+	var Controls = React.createClass({
 
-        mixins:[require('mixins/TutorialMixin')],
+		mixins:[require('mixins/TutorialMixin')],
 
-        popoverTitle: 'Camera Controls',
+		popoverTitle: 'Camera Controls',
 
-        popoverText: 'Use these controls to pan, rotate, and zoom the camera.',
+		popoverText: 'Use these controls to pan, rotate, and zoom the camera.',
 
-        popoverTemplate: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div><button class="btn btn-info tutorial-next"><i class="icon-check"></i></button></div>',
+		popoverTemplate: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div><button class="btn btn-info tutorial-next"><i class="icon-check"></i></button></div>',
 
-        panLeft: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
-        },
+		/**
+		 * Pan camera left event
+		 */
+		panLeft: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
+		},
 
-        panRight: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
-        },
+		/**
+		 * Pan camera right event, connect event to console
+		 */
+		panRight: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
+		},
 
-        panUp: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
-        },
+		/**
+		 * Pan camera up event, connect event to console
+		 */
+		panUp: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
+		},
 
-        panDown: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
-        },
+		/**
+		 * Pan camera down event, connect event to console
+		 */
+		panDown: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
+		},
 
-        rotateUp: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
-        },
+		/**
+		 * Rotate camera up event, connect event to console
+		 */
+		rotateUp: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
+		},
 
-        rotateDown: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
-        },
+		/**
+		 * Rotate camera down event, connect event to console
+		 */
+		rotateDown: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
+		},
 
-        rotateLeft: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
-        },
+		/**
+		 * Rotate camera left event, connect event to console
+		 */
+		rotateLeft: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
+		},
 
-        rotateRight: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
-        },
+		/**
+		 * Rotate camera right event, connect event to console
+		 */
+		rotateRight: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
+		},
 
-        cameraHome: function() {
-            GEPPETTO.Console.executeCommand('G.resetCamera()');
-        },
+		/**
+		 * Reset camera view event, connect event to console
+		 */
+		cameraHome: function() {
+			GEPPETTO.Console.executeCommand('G.resetCamera()');
+		},
 
-        zoomIn: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
-        },
+		/**
+		 * Zoom in camera control event, connect event to console
+		 */
+		zoomIn: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
+		},
 
-        zoomOut: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
-        },
+		/**
+		 * Zoom out camera control event, connect event to console
+		 */
+		zoomOut: function() {
+			GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
+		},
 
+        /**Modal mounted fine, handle event logic inside it*/
         componentDidMount: function() {
             GEPPETTO.on('start:tutorial', (function() {               
                 GEPPETTO.once('tutorial:cameracontrols', (function(){
@@ -72,6 +111,9 @@ define(function(require) {
             }).bind(this));
         },
 
+        /**
+         * Render the Cameral Controls Components
+         */
         render: function () {
             return (
             	<div className="position-toolbar">

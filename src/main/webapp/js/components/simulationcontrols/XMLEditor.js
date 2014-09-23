@@ -1,3 +1,6 @@
+ /**
+ * @module components/XMLEditor
+ */
 define(function (require) {
     var React = require('react');
     require('codemirror');

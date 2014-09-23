@@ -1,3 +1,7 @@
+ /**
+ * Help Button
+ * @module components/HelpButton
+ */
 define(function(require) {
 
 	var React = require('react'),

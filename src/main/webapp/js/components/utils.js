@@ -1,3 +1,6 @@
+ /**
+ * @class components/utils
+ */
 define(function(require){
 
 	function getParameterByName(name) {

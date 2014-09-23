@@ -1,3 +1,7 @@
+ /**
+ * Start Button
+ * @module components/StartButton
+ */
 define(function (require) {
 
     var React = require('react'),

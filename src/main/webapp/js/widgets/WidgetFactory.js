@@ -41,7 +41,7 @@ define(function(require) {
 		 * 
 		 * Widgets
 		 * 
-		 * Different types of widgets that exist in Geppetto
+		 * Different types of widgets that exist
 		 * 
 		 * @enum
 		 */

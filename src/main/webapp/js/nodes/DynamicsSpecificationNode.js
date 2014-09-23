@@ -108,7 +108,7 @@ define(function(require) {
 		/**
 		 * Get dynamics function node for this specifications node
 		 * 
-		 * @returns {FunctionNode} Specifies dynamics for node
+		 * @returns {Object} Specifies dynamics for node
 		 */
 		getDynamics : function() {
 			return this.get("dynamics");

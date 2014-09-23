@@ -1,3 +1,6 @@
+ /**
+ * @class components/app
+ */
 define(function(require){
 
 	var $ = require('jquery'),

@@ -1,3 +1,8 @@
+/**
+ * Bootstrap button
+ *
+ * @module components/HelpModal
+ */
 define(function (require) {
 
     var React = require('react'),
@@ -9,12 +14,18 @@ define(function (require) {
             require('jsx!components/bootstrap/modal')
         ],
 
+        /**
+         * Start the tutorial event
+         */
         startTutorial: function() {
-            GEPPETTO.trigger('start:tutorial');
-            GEPPETTO.tutorialEnabled = true;
-            this.hide();
+        	GEPPETTO.trigger('start:tutorial');
+        	GEPPETTO.tutorialEnabled = true;
+        	this.hide();
         },
 
+        /**
+         * Render the help modal 
+         */
         render: function () {
             return <div className="modal fade" id="help-modal">
                 <div className="modal-dialog">

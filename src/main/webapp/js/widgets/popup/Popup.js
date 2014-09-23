@@ -36,7 +36,6 @@
  * @module Widgets/Popup
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-
 define(function(require) {
 
 	var Widget = require('widgets/Widget');

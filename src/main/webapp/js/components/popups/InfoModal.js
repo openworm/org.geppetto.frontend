@@ -34,6 +34,7 @@
  /**
  * Modal used to display info messages received from server
  *
+ * @module components/InfoModal
  */
 define(function (require) {
 
@@ -44,16 +45,24 @@ define(function (require) {
         mixins: [
             require('jsx!components/bootstrap/modal')
         ],
-        
+
+        /**
+         * Get default properties of modal component
+         * 
+         * @returns {Object} Properties for modal component
+         */
         getDefaultProps: function() {
-            return {
-                title: 'Message',
-                text: '',
-                buttonLabel: 'Ok', 
-                onClick: function(){}              
-            }
+        	return {
+        		title: 'Message',
+        		text: '',
+        		buttonLabel: 'Ok', 
+        		onClick: function(){}              
+        	}
         },
-        
+
+        /**
+         * Render information modal component
+         */
         render: function (){
         	return <div className="modal fade" id="infomodal">
         			<div className="modal-dialog">

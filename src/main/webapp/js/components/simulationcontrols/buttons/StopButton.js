@@ -1,3 +1,7 @@
+ /**
+ * Stop Button
+ * @module components/StopButton
+ */
 define(function (require) {
 
     var React = require('react'),

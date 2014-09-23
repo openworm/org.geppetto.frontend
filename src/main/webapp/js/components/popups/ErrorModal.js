@@ -34,6 +34,7 @@
  /**
  * Modal used to display error messages received from server
  *
+ * @module components/ErrorModal
  */
 define(function (require) {
 
@@ -44,21 +45,32 @@ define(function (require) {
         mixins: [
             require('jsx!components/bootstrap/modal')
         ],
-        
+
+        /**
+         * Get default properties of modal component
+         * 
+         * @returns {Object} Properties for modal component
+         */
         getDefaultProps: function() {
-            return {
-                title: 'There was an error',
-                text: '',
-                code: '',
-                source: '',
-                exception: '' 
-            }
+        	return {
+        		title: 'There was an error',
+        		text: '',
+        		code: '',
+        		source: '',
+        		exception: '' 
+        	}
         },
-        
+
+        /**
+         * Share error on twitter functionality, connects event
+         */
         shareTwitter: function() {
-            GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');
+        	GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');
         },
-        
+
+        /**
+         * Render error modal component
+         */
         render: function (){
         	return (
                     <div className="modal fade" id="errormodal">

@@ -31,9 +31,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  */
- /**
- * Modal used to display info messages received from server
+/**
+ * Bootstrap button
  *
+ * @module components/ClipboardModal
  */
 define(function (require) {
 
@@ -45,15 +46,23 @@ define(function (require) {
             require('jsx!components/bootstrap/modal')
         ],
         
+        /**
+         * Get default properties of modal component
+         * 
+         * @returns {Object} Properties for modal component
+         */
         getDefaultProps: function() {
-            return {
-                title: 'Message',
-                text: '',
-                buttonLabel: 'Ok', 
-                onClick: function(){}              
-            }
+        	return {
+        		title: 'Message',
+        		text: '',
+        		buttonLabel: 'Ok', 
+        		onClick: function(){}              
+        	}
         },
-        
+
+        /**
+         * Render Clipboard Modal component 
+         */
         render: function (){
         	return <div className="modal fade" id="javascriptEditor">
         			<div className="modal-dialog">

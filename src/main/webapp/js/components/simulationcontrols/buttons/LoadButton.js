@@ -1,3 +1,7 @@
+ /**
+ * Load Button
+ * @module components/LoadButton
+ */
 define(function (require) {
 
     var React = require('react'),

@@ -44,7 +44,7 @@ define(function(require) {
 		var debugMode = false;
 		var $ = require('jquery'),
 		React = require('react'),
-        ClipboardModal = require('jsx!components/popups/ClipboardModal');
+        ClipboardModal = require('jsx!components/dist/popups/ClipboardModal');
 
 		/**
 		 * @exports geppetto-objects/G

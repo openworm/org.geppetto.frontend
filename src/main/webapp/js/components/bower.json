@@ -6,11 +6,11 @@
         "**/*.txt"
     ],
     "dependencies": {
-        "simulationcontrols": "https://github.com/mlolson/geppetto-simulationcontrols.git",
-        "cameracontrols": "https://github.com/mlolson/geppetto-cameracontrols.git",
-        "help": "https://github.com/mlolson/geppetto-help.git",
-        "tutorial": "https://github.com/mlolson/geppetto-tutorial.git",
-        "popups": "https://github.com/mlolson/geppetto-popups.git",
-        "bootstrap": "https://github.com/mlolson/geppetto-bootstrap.git"
+        "simulationcontrols": "https://github.com/mlolson/geppetto-components/raw/master/simulationcontrols.zip",
+        "cameracontrols": "https://github.com/mlolson/geppetto-components/raw/master/cameracontrols.zip",
+        "help": "https://github.com/mlolson/geppetto-components/raw/master/help.zip",
+        "tutorial": "https://github.com/mlolson/geppetto-components/raw/master/tutorial.zip",
+        "popups": "https://github.com/mlolson/geppetto-components/raw/master/popups.zip",
+        "bootstrap": "https://github.com/mlolson/geppetto-components/raw/master/bootstrap.zip"
     }
 }

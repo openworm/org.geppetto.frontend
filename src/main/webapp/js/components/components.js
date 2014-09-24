@@ -1,5 +1,5 @@
 define(function(require) {
-require('jsx!./simulationcontrols/SimulationControls');
-require('jsx!./cameracontrols/CameraControls');
-require('jsx!./tutorial/IntroModal');
+require('jsx!./dist/simulationcontrols/SimulationControls');
+require('jsx!./dist/cameracontrols/CameraControls');
+require('jsx!./dist/tutorial/IntroModal');
 });

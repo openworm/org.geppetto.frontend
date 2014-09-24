@@ -11,10 +11,10 @@ print subprocess.check_output(['bower','install'])
 componentsfile.write('define(function(require) {\n');
 
 for dependency in config['dependencies']:
-    componentConfig = json.loads(open(os.path.join(os.path.dirname(__file__), dependency+'/bower.json')).read())
+    componentConfig = json.loads(open(os.path.join(os.path.dirname(__file__), 'dist/'+dependency+'/bower.json')).read())
 
     if 'main' in componentConfig:
-        componentsfile.write("require('jsx!./"+dependency+"/"+componentConfig['main']+"');\n")
+        componentsfile.write("require('jsx!./dist/"+dependency+"/"+componentConfig['main']+"');\n")
 
 componentsfile.write('});');
 componentsfile.close();

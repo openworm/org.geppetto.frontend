@@ -46962,12 +46962,14 @@ define('nodes/RuntimeTreeFactory',['require','nodes/AspectNode','nodes/EntityNod
 						var aspect = entity.aspects[aspectId];
 						
 						var receivedAspect=eval("jsonRuntimeTree."+aspect.getInstancePath());
-						if(receivedAspect.VisualizationTree != undefined)
-						{
-							if(receivedAspect.VisualizationTree.modified)
+						if(receivedAspect != undefined){
+							if(receivedAspect.VisualizationTree != undefined)
 							{
-								aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
-								aspect.VisualizationTree.modified = true;
+								if(receivedAspect.VisualizationTree.modified)
+								{
+									aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
+									aspect.VisualizationTree.modified = true;
+								}
 							}
 						}
 						//Let's take the chance to set all the modified flags to false

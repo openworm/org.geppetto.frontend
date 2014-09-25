@@ -110,7 +110,7 @@ define(function(require) {
 							{
 								if(child.SimulationTree.modified)
 								{
-									if(jQuery.isEmptyObject(aspectNode.SimulationTree))
+									if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.Simulation==undefined)
 									{
 										this.createAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
 									}
@@ -131,12 +131,14 @@ define(function(require) {
 						var aspect = entity.aspects[aspectId];
 						
 						var receivedAspect=eval("jsonRuntimeTree."+aspect.getInstancePath());
-						if(receivedAspect.VisualizationTree != undefined)
-						{
-							if(receivedAspect.VisualizationTree.modified)
+						if(receivedAspect != undefined){
+							if(receivedAspect.VisualizationTree != undefined)
 							{
-								aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
-								aspect.VisualizationTree.modified = true;
+								if(receivedAspect.VisualizationTree.modified)
+								{
+									aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
+									aspect.VisualizationTree.modified = true;
+								}
 							}
 						}
 						//Let's take the chance to set all the modified flags to false

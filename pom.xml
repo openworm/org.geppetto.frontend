@@ -294,12 +294,6 @@
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/nodes</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/components/bootstrap</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/components/cameracontrols</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/components/help</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/components/popups</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/components/tutorial</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/mixins</directoryRoot>
 					</directoryRoots>
 					<sourceFiles>
 						<sourceFile>src/main/webapp/js/GEPPETTO.js</sourceFile>
@@ -353,6 +347,20 @@
 				                    <versionRange>[2.0.4,)</versionRange>
 				                    <goals>
 				                        <goal>optimize</goal>
+				                    </goals>
+				                  </pluginExecutionFilter>
+				                  <action>
+				                    <execute />
+				                  </action>
+				                </pluginExecution>
+				                <pluginExecution>
+				                  <pluginExecutionFilter>
+				                    <groupId>org.codehaus.mojo</groupId>
+                					<artifactId>exec-maven-plugin</artifactId>
+				                    <versionRange>[1.2.1,)</versionRange>
+				                    <goals>
+				                        <goal>exec</goal>
+				                        <goal>generate-resources</goal>
 				                    </goals>
 				                  </pluginExecutionFilter>
 				                  <action>

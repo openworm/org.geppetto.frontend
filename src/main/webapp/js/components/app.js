@@ -6,18 +6,16 @@ define(function(require){
 	var $ = require('jquery'),
 		GEPPETTO = require('geppetto'),
 		React = require('react'),
-		LoadingSpinner = require('jsx!./simulationcontrols/LoadingSpinner'),
-		IntroModal = require('jsx!./tutorial/IntroModal'),
+		LoadingSpinner = require('jsx!./dist/simulationcontrols/LoadingSpinner'),
+		IntroModal = require('jsx!./dist/tutorial/IntroModal'),
 		utils = require('./utils');
 
-    require('jsx!./simulationcontrols/SimulationControls');
-    require('jsx!./cameracontrols/CameraControls');
-    require('jsx!./tutorial/IntroModal');
+    require('./components');
     
     GEPPETTO.on('simulation:show_spinner',function(){
     	React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
-    });    
-    
+    });
+
     var simParam = utils.getQueryStringParameter('sim');
 
 	var webGLStarted = GEPPETTO.webGLAvailable();

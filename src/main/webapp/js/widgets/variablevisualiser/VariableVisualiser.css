@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,32 +31,65 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-/**
- * Loads widget scripts
- *  
- * @author Jesus Martinez (jesus@metacell.us)
- */
+.varvis {
+    width:100%;
+}
 
-//Widget Classes
-define(function(require){
-	return function(GEPPETTO) {
+.varvis table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+}
 
-	require('widgets/WidgetFactory')(GEPPETTO);
-	require('widgets/WidgetsListener')(GEPPETTO);
-	require("widgets/WidgetUtility");
-	require("widgets/ContextMenu")(GEPPETTO);
-	//Plot Widget
-	require("widgets/plot/config")(GEPPETTO);
-	//Popup Widget
-	require("widgets/popup/config")(GEPPETTO);
-	//Scatter3d Widget
-	require("widgets/scatter3d/config")(GEPPETTO);	
-	//TreeVisualiser DAT Widget
-	require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-	//TreeVisualiser D3 Widget
-	require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-	//VariableVisualiser widget
-	require("widgets/variablevisualiser/config")(GEPPETTO);
-	loadCss("js/widgets/Widget.css");
-	};
-});
+.varvis tr {
+    color:#ffffff;
+}
+
+.varvis tr:last-child td:last-child {
+    border-bottom-right-radius:4px;
+}
+.varvis table tr:first-child td:first-child {
+    border-top-left-radius:4px;
+}
+
+.varvis table tr:first-child td:last-child {
+    border-top-right-radius:4px;
+}
+
+.varvis tr:last-child td:first-child{
+    border-bottom-left-radius:4px;
+}
+
+.varvis td{
+    vertical-align:middle;
+    border:1px solid orange;
+    border-width:0px 1px 1px 0px;
+    text-align:left;
+    padding:9px;
+    font-size:11px;
+    font-family:Arial;
+    font-weight:normal;
+}
+
+.varvis tr:last-child td{
+    border-width:0 1px 0 0;
+}
+
+.varvis tr td:last-child{
+    border-width:0 0 1px 0;
+}
+
+.varvis tr:last-child td:last-child{
+    border-width:0 0 0 0;
+}
+
+.varvis tr:first-child td:first-child{
+    border-width:0 0 1px 0;
+}
+
+.varvis tr:first-child td:last-child{
+    border-width:0 0 1px 1px;
+}

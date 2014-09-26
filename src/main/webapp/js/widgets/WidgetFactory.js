@@ -50,7 +50,8 @@ define(function(require) {
 			POPUP : 1,
 			SCATTER3D: 2,
 			TREEVISUALISERDAT: 3,
-			TREEVISUALISERD3: 4
+			TREEVISUALISERD3: 4,
+			VARIABLEVISUALISER: 5
 		};
 
 		/**
@@ -85,7 +86,11 @@ define(function(require) {
 					//create tree visualiser D3 widget				
 					case GEPPETTO.Widgets.TREEVISUALISERD3:
 						widget = GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
-						break;	
+						break;
+					//create variable visualiser dynatable widget
+					case GEPPETTO.Widgets.VARIABLEVISUALISER:
+						widget = GEPPETTO.VariableVisualiserController.addVariableVisualiserWidget();
+						break;
 					default:
 						break;
 				}
@@ -120,7 +125,11 @@ define(function(require) {
 					//removes tree visualiser D3 widget from geppetto												
 					case GEPPETTO.Widgets.TREEVISUALISERD3:
 						GEPPETTO.TreeVisualiserController.removeTreeVisualiserD3Widgets();
-						return GEPPETTO.Resources.REMOVE_TREEVISUALISERD3_WIDGETS;	
+						return GEPPETTO.Resources.REMOVE_TREEVISUALISERD3_WIDGETS;
+					//removes variable visualiser dynatable widget from geppetto
+					case GEPPETTO.Widgets.REMOVE_VARIABLEVISUALISER_WIDGETS:
+						GEPPETTO.VariableVisualiserController.removeVariableVisualiserWidgets();
+						return GEPPETTO.Resources.REMOVE_VARIABLEVISUALISER_WIDGETS;
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
 				}

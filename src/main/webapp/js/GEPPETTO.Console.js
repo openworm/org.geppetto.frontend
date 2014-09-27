@@ -532,7 +532,7 @@ define(function(require) {
 						index--;
 					}
 				}
-			},
+			}
 		};
 	};
 });

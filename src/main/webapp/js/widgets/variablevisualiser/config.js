@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,31 +32,18 @@
  *******************************************************************************/
 
 /**
- * Loads widget scripts
- *  
- * @author Jesus Martinez (jesus@metacell.us)
+ * Loads variable visualiser scripts
+ *
+ * @author Dan Kruchinin (dkruchinin@acm.org)
+ */
+/*
+ * Configure what dependencies are needed for each library
  */
 
-//Widget Classes
-define(function(require){
+//Load PlotsController and other classes using GEPPETTO
+define(function(require) {
 	return function(GEPPETTO) {
-
-	require('widgets/WidgetFactory')(GEPPETTO);
-	require('widgets/WidgetsListener')(GEPPETTO);
-	require("widgets/WidgetUtility");
-	require("widgets/ContextMenu")(GEPPETTO);
-	//Plot Widget
-	require("widgets/plot/config")(GEPPETTO);
-	//Popup Widget
-	require("widgets/popup/config")(GEPPETTO);
-	//Scatter3d Widget
-	require("widgets/scatter3d/config")(GEPPETTO);	
-	//TreeVisualiser DAT Widget
-	require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-	//TreeVisualiser D3 Widget
-	require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-	//VariableVisualiser widget
-	require("widgets/variablevisualiser/config")(GEPPETTO);
-	loadCss("js/widgets/Widget.css");
+		require("widgets/variablevisualiser/controllers/VariableVisualiserController")(GEPPETTO);
+		loadCss("js/widgets/variablevisualiser/VariableVisualiser.css");
 	};
 });

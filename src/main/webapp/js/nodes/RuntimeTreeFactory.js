@@ -108,12 +108,9 @@ define(function(require) {
 							var aspectNode=eval(child.instancePath);
 							if(child.SimulationTree != undefined)
 							{
-								if(child.SimulationTree.modified)
+								if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.Simulation==undefined)
 								{
-									if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.Simulation==undefined)
-									{
-										this.createAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
-									}
+									this.createAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
 								}
 							}
 						}
@@ -134,16 +131,9 @@ define(function(require) {
 						if(receivedAspect != undefined){
 							if(receivedAspect.VisualizationTree != undefined)
 							{
-								if(receivedAspect.VisualizationTree.modified)
-								{
-									aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
-									aspect.VisualizationTree.modified = true;
-								}
+								aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
 							}
 						}
-						//Let's take the chance to set all the modified flags to false
-						aspect.SimulationTree.modified = false;
-						aspect.ModelTree.modified = false;
 					}
 					for (var entityid in node.entities)
 					{

@@ -31,11 +31,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a function. Used to store properties of model
- * tree
+ * Client class use to represent a parameter specification node, used for model
+ * tree properties.
  * 
- * @module nodes/FunctionNode
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * @module nodes/TextMetadataNode
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 
@@ -43,41 +43,30 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		arguments : "",
-		expression : "",
-		_metaType : "FunctionNode",
+		value : "",
+		_metaType : "TextMetadataNode",
 
 		/**
 		 * Initializes this node with passed attributes
 		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
 		 */
 		initialize : function(options) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this.arguments = options.arguments;
-			this.expression = options.expression;
+			this.value = options.value;
 		},
 
 		/**
-		 * Get arguments for function
+		 * Get value of quantity
 		 * 
-		 * @command FunctionNode.getArguments()
-		 * @returns {String} Arguments for function
+		 * @command ParameterSpecificationNode.getValue()
+		 * @returns {String} Value of quantity
 		 */
-		getArguments : function() {
-			return this.arguments;
-		},
-
-		/**
-		 * Get function's expression
-		 * 
-		 * @command FunctionNode.getExpression()
-		 * @returns {String} Expression for function
-		 */
-		getExpression : function() {
-			return this.expression;
+		getValue : function() {
+			return this.value;
 		},
 
 		/**
@@ -86,8 +75,7 @@ define(function(require) {
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Arguments : " + this.arguments + "\n"
-					+ "    Expression : " + this.expression + "\n";
+					+ "    Value : " + this.value + "\n";
 		}
 	});
 });

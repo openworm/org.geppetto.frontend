@@ -1,0 +1,31 @@
+{
+  "name": "cameracontrols",
+  "version": "0.0.1",
+  "authors": [
+    "Matt Olson <mattlolson@gmail.com>"
+  ],
+  "description": "camera controls for geppetto",
+  "moduleType": [
+    "amd"
+  ],
+  "main": "CameraControls",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    ".",
+    "test",
+    "tests"
+  ],
+  "_cacheHeaders": {
+    "ETag": "\"3769279bbaec102793cff53ba7d33b31856abebe\"",
+    "Content-Length": "2175",
+    "Content-Type": "application/zip"
+  },
+  "_release": "e-tag:3769279bb",
+  "_source": "https://github.com/mlolson/geppetto-components/raw/master/cameracontrols.zip",
+  "_target": "*",
+  "_originalSource": "https://github.com/mlolson/geppetto-components/raw/master/cameracontrols.zip"
+}

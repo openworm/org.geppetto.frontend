@@ -1,0 +1,30 @@
+{
+  "name": "popups",
+  "version": "0.0.1",
+  "authors": [
+    "Matt Olson <mattlolson@gmail.com>"
+  ],
+  "description": "Modals for geppetto",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    ".",
+    "test",
+    "tests"
+  ],
+  "_cacheHeaders": {
+    "ETag": "\"79a7c19200b049dbecd308b2c019cbeae2e34444\"",
+    "Content-Length": "5977",
+    "Content-Type": "application/zip"
+  },
+  "_release": "e-tag:79a7c1920",
+  "_source": "https://github.com/mlolson/geppetto-components/raw/master/popups.zip",
+  "_target": "*",
+  "_originalSource": "https://github.com/mlolson/geppetto-components/raw/master/popups.zip"
+}

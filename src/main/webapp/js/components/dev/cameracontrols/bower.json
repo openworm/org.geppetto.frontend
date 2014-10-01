@@ -1,0 +1,22 @@
+{
+  "name": "cameracontrols",
+  "version": "0.0.1",
+  "authors": [
+    "Matt Olson <mattlolson@gmail.com>"
+  ],
+  "description": "camera controls for geppetto",
+  "moduleType": [
+    "amd"
+  ],
+  "main":"CameraControls",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    ".",
+    "test",
+    "tests"
+  ]
+}

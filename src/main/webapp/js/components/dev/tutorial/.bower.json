@@ -1,0 +1,31 @@
+{
+  "name": "tutorial",
+  "version": "0.0.1",
+  "authors": [
+    "Matt Olson <mattlolson@gmail.com>"
+  ],
+  "description": "geppetto tutorial components",
+  "moduleType": [
+    "amd"
+  ],
+  "main": "IntroModal",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    ".",
+    "test",
+    "tests"
+  ],
+  "_cacheHeaders": {
+    "ETag": "\"b36423d41e9d8c583c7cfa14f05f49b2e342ddc1\"",
+    "Content-Length": "3358",
+    "Content-Type": "application/zip"
+  },
+  "_release": "e-tag:b36423d41",
+  "_source": "https://github.com/mlolson/geppetto-components/raw/master/tutorial.zip",
+  "_target": "*",
+  "_originalSource": "https://github.com/mlolson/geppetto-components/raw/master/tutorial.zip"
+}

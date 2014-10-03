@@ -1,20 +1,38 @@
 #!/usr/bin/python
 
-import os, sys, json, distutils.core,subprocess, shutil, glob
-from subprocess import call
+import os
+import json
+import subprocess
+import sys
 
-config = json.loads(open(os.path.join(os.path.dirname(__file__), 'bower.json')).read())
-componentsfile = open(os.path.join(os.path.dirname(__file__), 'components.js'),'w')
 
-print subprocess.check_output(['bower','install'])
+def load_json(fname):
+    with open(fname) as f:
+        return json.load(f)
 
-componentsfile.write('define(function(require) {\n');
+owd = os.getcwd()
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-for dependency in config['dependencies']:
-    componentConfig = json.loads(open(os.path.join(os.path.dirname(__file__), 'dist/'+dependency+'/bower.json')).read())
+config = load_json('bower.json')
 
-    if 'main' in componentConfig:
-        componentsfile.write("require('jsx!./dist/"+dependency+"/"+componentConfig['main']+"');\n")
+try:
+    print subprocess.check_output(['bower', 'install'],
+                                  stderr=subprocess.STDOUT)
+except subprocess.CalledProcessError as e:
+    print 'ERROR: bower install returned:', e.returncode, ':', e.output
+    sys.exit(1)
+    
+    
+with open('components.js', 'w') as componentsfile:
+    componentsfile.write('define(function(require) {\n')
+    for dependency in config['dependencies']:
+        componentConfig = load_json(
+            os.path.join('dist', dependency, 'bower.json')).get('main')
 
-componentsfile.write('});');
-componentsfile.close();
+        if componentConfig:
+            componentsfile.write(
+                "require('jsx!./dist/" + dependency + "/" + componentConfig + "');\n")
+
+    componentsfile.write('});')
+
+os.chdir(owd)

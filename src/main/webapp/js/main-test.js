@@ -71,6 +71,7 @@ require.config({
 		'vendor/TrackballControls': ["three"],
 		'vendor/THREEx.KeyboardState': ['three'],
 		'vendor/ColladaLoader': ['three'],
+		'vendor/OBJLoader' : ['three'],
 		'vendor/ColorConverter': ["three"],
 		'vendor/bootstrap.min': ["jquery"],
 		'vendor/codemirror-formats.min': ["codemirror"],
@@ -105,6 +106,7 @@ jqueryLib.push("geppetto");
 jqueryLib.push("three");
 jqueryLib.push("vendor/THREEx.KeyboardState");
 jqueryLib.push("vendor/ColladaLoader");
+jqueryLib.push("vendor/OBJLoader");
 jqueryLib.push("vendor/jquery-ui-1.10.3.custom.min");
 jqueryLib.push("vendor/TrackballControls");
 jqueryLib.push("vendor/ColorConverter");

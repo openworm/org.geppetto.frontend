@@ -44,7 +44,7 @@ define(function(require) {
 		var debugMode = false;
 		var $ = require('jquery'),
 		React = require('react'),
-        ClipboardModal = require('jsx!components/dist/popups/ClipboardModal');
+        ClipboardModal = require('jsx!components/dev/popups/ClipboardModal');
 
 		/**
 		 * @exports geppetto-objects/G
@@ -370,7 +370,6 @@ define(function(require) {
 			/**
 			 * State of debug statements, whether they are turned on or off.
 			 *
-			 * @command - G.isDebugOn()
 			 * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
 			 */
 			isDebugOn: function() {

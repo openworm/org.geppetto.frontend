@@ -317,6 +317,7 @@ define(function(require) {
 			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
 			TEXT_METADATA_NODE : "TextMetadataNode",
 			PARAMETER_NODE : "ParameterNode",
+			CONNECTION_NODE : "ConnectionNode",
 			COMPOSITE_NODE : "CompositeNode",
 			DYNAMICS_NODE : "DynamicsSpecificationNode"
 				

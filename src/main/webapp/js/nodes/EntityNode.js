@@ -40,6 +40,7 @@
 define(function(require) {
 	var Node = require('nodes/Node');
 	var AspectNode = require('nodes/AspectNode');
+	var ConnectionNode = require('nodes/ConnectionNode');
 	var $ = require('jquery');
 
 	return Node.Model
@@ -52,11 +53,16 @@ define(function(require) {
 					type : Backbone.Many,
 					key : 'entities',
 					relatedModel : Backbone.Self
-				} ],
+				},{
+					type : Backbone.Many,
+					key : 'connections',
+					relatedModel : Backbone.Self
+				}  ],
 
 				defaults : {
 					aspects : [],
 					entities : [],
+					connections : [],
 				},
 
 				children : [],
@@ -209,6 +215,19 @@ define(function(require) {
 					var entities = this.get("entities");
 					return entities;
 				},
+				
+				/**
+				 * Get this entity's connections
+				 * 
+				 * @command EntityNode.getConnections()
+				 * 
+				 * @returns {List<ConnectionNode>} List of connections
+				 * 
+				 */
+				getConnections : function() {
+					var connections = this.get("connections");
+					return connections;
+				},
 
 				/**
 				 * Get this entity's children entities
@@ -223,6 +242,7 @@ define(function(require) {
 					 var children = new Backbone.Collection();
 					 children.add(this.get("aspects").models);
 					 children.add(this.get("entities").models);
+					 children.add(this.get("connections").models);
 					 return children;
 				},
 
@@ -242,6 +262,11 @@ define(function(require) {
 					for ( var e in this.aspects) {
 						formattedNode = formattedNode + "      " + "Aspect: "
 								+ this.aspects[e].instancePath;
+					}
+					
+					for ( var e in this.connections) {
+						formattedNode = formattedNode + "      " + "Connection: "
+								+ this.connections[e].id;
 					}
 
 					return formattedNode;

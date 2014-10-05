@@ -43,6 +43,7 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Node.Model.extend({
+		properties : {},
 		value : "",
 		_metaType : "TextMetadataNode",
 
@@ -57,6 +58,7 @@ define(function(require) {
 			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.value = options.value;
+			this.properties = options.properties;
 		},
 
 		/**
@@ -68,6 +70,16 @@ define(function(require) {
 		getValue : function() {
 			return this.value;
 		},
+		
+		/**
+		 * Get properties for this node
+		 * 
+		 * @command ParameterNode.getProperties()
+		 * @returns {String} Unit for quantity
+		 */
+		getProperties : function() {
+			return this.properties;
+		},
 
 		/**
 		 * Print out formatted node
@@ -75,7 +87,8 @@ define(function(require) {
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n";
+					+ "    Value : " + this.value + "\n"
+					+ "    Properties : " + this.properties + "\n";
 		}
 	});
 });

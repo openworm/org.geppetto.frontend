@@ -92,38 +92,36 @@ define(function(require) {
 					for ( var a in entity.aspects) {
 						var aspect = entity.aspects[a];
 						var visualTree = aspect.VisualizationTree;
-						if(visualTree.modified){
-							for ( var vm in visualTree.content) {
-								var node = visualTree.content[vm];
+						for ( var vm in visualTree.content) {
+							var node = visualTree.content[vm];
 
-								if (node != null
-										&& typeof node === "object") {
+							if (node != null
+									&& typeof node === "object") {
 
-									var metaType = node._metaType;
+								var metaType = node._metaType;
 
-									if(metaType == "CompositeNode"){
-										for ( var gindex in node) {
-											var vo = node[gindex];
-											var voType = vo._metaType;
-											if (voType == "ParticleNode"
-												|| metaType == "SphereNode"
-													|| metaType == "CylinderNode") {
-												GEPPETTO.updateGeometry(aspect.instancePath,vo);
-											}
+								if(metaType == "CompositeNode"){
+									for ( var gindex in node) {
+										var vo = node[gindex];
+										var voType = vo._metaType;
+										if (voType == "ParticleNode"
+											|| metaType == "SphereNode"
+												|| metaType == "CylinderNode") {
+											GEPPETTO.updateGeometry(aspect.instancePath,vo);
 										}
-
 									}
-									else{
-										if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
-												metaType == "CylinderNode") {
 
-											GEPPETTO.updateGeometry(aspect.instancePath,node);								
-										}
+								}
+								else{
+									if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
+											metaType == "CylinderNode") {
+
+										GEPPETTO.updateGeometry(aspect.instancePath,node);								
 									}
 								}
 							}
 						}
-						
+
 						var entityGeometry = VARS.visualModelMap[aspect.instancePath];
 						if (entityGeometry) {
 							// if an entity is represented by a particle

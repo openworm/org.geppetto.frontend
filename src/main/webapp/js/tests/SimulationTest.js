@@ -123,12 +123,12 @@ define(function(require) {
 								passTimeTest = true;
 							}
 
-							equal(true, passTimeTest, "Simulation loaded within time limit: " + time);
-							notEqual(null, hhcell, "Entities checked");
-							equal(1, hhcell.get('aspects').length, "Aspects checked");
-							equal(false, jQuery.isEmptyObject(hhcell.electrical.VisualizationTree), "Test Visualization at load");
-							equal(false, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model tree at load");
-							equal(false, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Test Simulation tree at load");							
+							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
+							notEqual(hhcell, null,"Entities checked");
+							equal(hhcell.get('aspects').length, 1, "Aspects checked");
+							equal(jQuery.isEmptyObject(hhcell.electrical.VisualizationTree),false,"Test Visualization at load");
+							equal(jQuery.isEmptyObject(hhcell.electrical.ModelTree),false,"Test Model tree at load");
+							equal(jQuery.isEmptyObject(hhcell.electrical.SimulationTree),true,"Test Simulation tree at load");							
 
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
@@ -160,7 +160,7 @@ define(function(require) {
 									var scene = JSON.parse(payload.update).scene;
 
 									GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
-									equal(false, jQuery.isEmptyObject(hhcell.electrical.SimulationTree), "Simulation tree check after udpate");
+									notEqual(hhcell.electrical.SimulationTree.getChildren(), null,"Simulation tree check after udpate");
 									hhcell.electrical.getModelTree();
 								}
 							}
@@ -174,9 +174,8 @@ define(function(require) {
 
 							GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
 
-							equal(false, jQuery.isEmptyObject(hhcell.electrical.ModelTree), "Test Model Tree Command");
-							notEqual(null, hhcell.electrical.ModelTree.getId(), "Model Tree has ID");
-							notEqual(null, hhcell.electrical.ModelTree.getInstancePath(), "Model Tree has Instance Path");
+							equal(jQuery.isEmptyObject(hhcell.electrical.ModelTree),false,"Test Model Tree Command");
+							notEqual(hhcell.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
 
 							start();
 
@@ -187,6 +186,59 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/referencing_variables/LEMS/SingleComponentHH/GEPPETTO.xml');
+			initializationTime = new Date();	
+		});
+
+		module("Test Network Connections");
+		asyncTest("Test  Network", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							var scene = JSON.parse(payload.update).scene;
+
+							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+
+							var passTimeTest = false;
+							if(time < 10){
+								passTimeTest = true;
+							}
+
+							equal(passTimeTest,true,"Simulation loaded within time limit: " + time);
+							notEqual(purkinje_1,null,"Entities checked");
+							equal(purkinje_1.getChildren().length,3,"Purkinje 1 Children checked; entities, aspects and connections");
+							equal(1, purkinje_1.get('aspects').length, "Aspects checked");
+							equal(jQuery.isEmptyObject(purkinje_1.electrical.VisualizationTree),false,"Test Visualization at load");
+							equal(jQuery.isEmptyObject(purkinje_1.electrical.ModelTree),false, "Test Model tree at load");
+							equal(jQuery.isEmptyObject(purkinje_1.electrical.SimulationTree),true,"Test Simulation tree at load");							
+
+							equal(purkinje_2.getChildren().length,5,"Purkinje 2 Children checked");
+							equal(purkinje_2.get('aspects').length,1, "Aspects checked");
+							equal(jQuery.isEmptyObject(purkinje_2.electrical.VisualizationTree),false,"Test Visualization at load");
+							equal(jQuery.isEmptyObject(purkinje_2.electrical.ModelTree),false,"Test Model tree at load");
+							equal(jQuery.isEmptyObject(purkinje_2.electrical.SimulationTree),true,"Test Simulation tree at load");							
+							equal(purkinje_1.getConnections().length,2, "Purkinje 1 connections checked");
+							equal(purkinje_2.getConnections().length,1, "Purkinje 2 connections checked");
+							equal(purkinje_2.purkinje_3.getConnections().length,2, "Purkinje 3 connections checked");
+							equal(purkinje_2.purkinje_4.getConnections().length,2, "Purkinje 4 connections checked");
+							equal(purkinje_2.purkinje_5.getConnections().length,1, "Purkinje 5 connections checked");
+							start();
+							break;
+						}
+					}
+			};
+
+			Simulation.stop();
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/NeuroML/Purkinje/PurkinjeDuo.xml');
 			initializationTime = new Date();	
 		});
 		
@@ -213,13 +265,13 @@ define(function(require) {
 								passTimeTest = true;
 							}
 
-							equal(true, passTimeTest, "Simulation loaded within time limit: " + time);
-							notEqual(null, c302, "Entities checked");
-							equal(300, c302.getChildren().length, "C302 Children checked");
-							equal(1, c302.get('aspects').length, "Aspects checked");
-							equal(false, jQuery.isEmptyObject(c302.electrical.VisualizationTree), "Test Visualization at load");
-							equal(false, jQuery.isEmptyObject(c302.electrical.ModelTree), "Test Model tree at load");
-							equal(true, jQuery.isEmptyObject(c302.electrical.SimulationTree), "Test Visualization tree at load");							
+							equal(passTimeTest,true, "Simulation loaded within time limit: " + time);
+							notEqual(c302,null,"Entities checked");
+							equal(c302.getChildren().length,300, "C302 Children checked");
+							equal(c302.get('aspects').length,1, "Aspects checked");
+							equal(jQuery.isEmptyObject(c302.electrical.VisualizationTree),false, "Test Visualization at load");
+							equal(jQuery.isEmptyObject(c302.electrical.ModelTree),false, "Test Model tree at load");
+							equal(jQuery.isEmptyObject(c302.electrical.SimulationTree),true, "Test Simulation tree at load");							
 
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
@@ -251,8 +303,13 @@ define(function(require) {
 									var scene = JSON.parse(payload.update).scene;
 
 									GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
-									equal(false, jQuery.isEmptyObject(c302.electrical.SimulationTree), "Simulation tree check after udpate");
-									notEqual(false, c302.electrical.VisualizationTree.modified, "Test Visualization tree modified flag");
+									
+									notEqual(c302.ADAL_0.electrical.SimulationTree.getChildren(),null, "ADAL_0 Simulation tree check after udpate");
+									notEqual(c302.ADAR_0.electrical.SimulationTree.getChildren(),null, "ADAR_0 Simulation tree check after udpate");
+									notEqual(c302.BDUR_0.electrical.SimulationTree.getChildren(),null, "BDUR_0 Simulation tree check after udpate");
+									notEqual(c302.I1R_0.electrical.SimulationTree.getChildren(),null, "I1R_0 Simulation tree check after udpate");
+									notEqual(c302.I2L_0.electrical.SimulationTree.getChildren(),null, "I2L_0 Simulation tree check after udpate");
+									notEqual(c302.PVDR_0.electrical.SimulationTree.getChildren(),null, "PVDR_0 Simulation tree check after udpate");
 									start();
 								}
 							}
@@ -282,11 +339,11 @@ define(function(require) {
 								
 					            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 
-								notEqual(null, sample, "Entities checked");
-								equal(1, sample.get('aspects').length, "Aspects checked");
-								equal(false, jQuery.isEmptyObject(sample.fluid.VisualizationTree), "Test Visualization at load");
-								equal(false, jQuery.isEmptyObject(sample.fluid.ModelTree), "Test Model tree at load");
-								equal(true, jQuery.isEmptyObject(sample.fluid.SimulationTree), "Test Visualization tree at load");
+								notEqual(sample,null,"Entities checked");
+								equal(sample.get('aspects').length,1,"Aspects checked");
+								equal(jQuery.isEmptyObject(sample.fluid.VisualizationTree),false,"Test Visualization at load");
+								equal(jQuery.isEmptyObject(sample.fluid.ModelTree),false,"Test Model tree at load");
+								equal(jQuery.isEmptyObject(sample.fluid.SimulationTree),true, "Test Visualization tree at load");
 
 								break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
@@ -319,7 +376,7 @@ define(function(require) {
 
 										GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
 
-										equal(false, jQuery.isEmptyObject(sample.fluid.SimulationTree), "Simulation tree check");
+										notEqual(sample.fluid.SimulationTree.getChildren(),null,"Simulation tree check");
 										start();
 									}
 								}
@@ -352,15 +409,15 @@ define(function(require) {
 							GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
 							
 							ok(true, "Simulation loaded, passed");
-							notEqual(null, sample, "Entities checked");
+							notEqual(sample,null,"Entities checked");
 							sample.select();
-							equal(true,sample.selected,"Sample entity selected succesfully ");
+							equal(sample.selected,true,"Sample entity selected succesfully ");
 							sample.unselect();
-							equal(false,sample.selected,"Sample entity unselected succesfully ");
+							equal(sample.selected,false,"Sample entity unselected succesfully ");
 							Simulation.selectEntity(sample);
 							var id = sample.getId();
 							var selection = Simulation.getSelection();
-							equal(id,selection[0].getId(), "Testing selectEntity Command");
+							equal(selection[0].getId(),id, "Testing selectEntity Command");
 							
 							start();
 							break;

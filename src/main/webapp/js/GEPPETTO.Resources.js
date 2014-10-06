@@ -316,6 +316,7 @@ define(function(require) {
 			FUNCTION_NODE : "FunctionNode",
 			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
 			PARAMETER_NODE : "ParameterNode",
+			CONNECTION_NODE : "ConnectionNode",
 			COMPOSITE_NODE : "CompositeNode",
 			DYNAMICS_NODE : "DynamicsSpecificationNode"
 				

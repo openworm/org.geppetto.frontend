@@ -187,7 +187,7 @@ define(function(require) {
 					var subTree = new AspectSubTreeNode({name : "SimulationTree",
 						instancePath : path ,
 						type : "SimulationTree",
-						_metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE, modified : true});
+						_metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE});
 					this.createSimulationTree(subTree, simulationTreeUpdate);
 					aspect.SimulationTree = subTree;
 					
@@ -220,7 +220,6 @@ define(function(require) {
 					
 					//populate model tree with server nodes
 					this.modelJSONToNodes(aspect.ModelTree, modelTree);
-					aspect.ModelTree.modified = true;
 					
 					//notify user received tree was empty
 					if(aspect.ModelTree.getChildren().length==0){
@@ -459,7 +458,6 @@ define(function(require) {
 					id : node.id,
 					instancePath : node.instancePath,
 					_metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE,
-					modified : node.modified
 				});
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);

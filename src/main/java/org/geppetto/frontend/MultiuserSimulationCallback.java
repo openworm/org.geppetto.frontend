@@ -40,6 +40,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
+import org.geppetto.frontend.controllers.GeppettoMessageInbound;
+import org.geppetto.frontend.controllers.GeppettoServletController;
 
 public class MultiuserSimulationCallback implements ISimulationCallbackListener
 {

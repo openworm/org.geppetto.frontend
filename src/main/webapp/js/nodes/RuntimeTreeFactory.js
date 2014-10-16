@@ -70,7 +70,7 @@ define(function(require) {
 							var entityNode = 
 								GEPPETTO.RuntimeTreeFactory.createEntityNode(node);
 							GEPPETTO.Console.updateCommands(
-									"js/nodes/EntityNode.js", entityNode, id);
+									"assets/js/nodes/EntityNode.js", entityNode, id);
 
 							// keep track of client entity nodes created
 							GEPPETTO.Simulation.runTimeTree[id] = entityNode;

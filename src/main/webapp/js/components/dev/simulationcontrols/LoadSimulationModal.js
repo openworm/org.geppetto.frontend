@@ -43,7 +43,7 @@ define(function (require) {
             $.ajax(
                 {
                     type: "GET",
-                    url: 'resources/template.xml',
+                    url: 'assets/resources/template.xml',
                     dataType: "xml",
                     success: function(result) {
                     	self.setState({simulationXML: (new XMLSerializer()).serializeToString(result)});

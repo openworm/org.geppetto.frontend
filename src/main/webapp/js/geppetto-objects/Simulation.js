@@ -487,7 +487,7 @@ define(function(require) {
 			 * @returns  Returns list of all commands for the Simulation object
 			 */
 			help: function() {
-				return GEPPETTO.Utility.extractCommandsFromFile("js/geppetto-objects/Simulation.js", GEPPETTO.Simulation, "Simulation");
+				return GEPPETTO.Utility.extractCommandsFromFile("assets/js/geppetto-objects/Simulation.js", GEPPETTO.Simulation, "Simulation");
 			},
 
 			/**

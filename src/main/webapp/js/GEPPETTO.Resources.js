@@ -318,8 +318,8 @@ define(function(require) {
 			PARAMETER_NODE : "ParameterNode",
 			CONNECTION_NODE : "ConnectionNode",
 			COMPOSITE_NODE : "CompositeNode",
-			DYNAMICS_NODE : "DynamicsSpecificationNode"
-				
+			DYNAMICS_NODE : "DynamicsSpecificationNode",
+			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
 		}
 	}
 });

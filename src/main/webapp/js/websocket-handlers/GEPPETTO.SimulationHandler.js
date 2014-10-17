@@ -145,11 +145,11 @@ define(function(require) {
             GEPPETTO.trigger('simulation:started');
         };
 
-        messageHandler[messageTypes.SIMULATION_STOPPED] = function() {
+        messageHandler[messageTypes.SIMULATION_STOPPED] = function(payload) {
             GEPPETTO.trigger('simulation:stopped');
         };
 
-        messageHandler[messageTypes.SIMULATION_PAUSED] = function() {
+        messageHandler[messageTypes.SIMULATION_PAUSED] = function(payload) {
             GEPPETTO.trigger('simulation:paused');
         };
 

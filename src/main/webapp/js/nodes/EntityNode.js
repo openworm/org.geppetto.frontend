@@ -56,7 +56,7 @@ define(function(require) {
 				},{
 					type : Backbone.Many,
 					key : 'connections',
-					relatedModel : Backbone.Self
+					relatedModel : ConnectionNode
 				}  ],
 
 				defaults : {
@@ -81,7 +81,6 @@ define(function(require) {
 					this.name = options.name;
 					this.position = options.position;
 					this.instancePath = options.instancePath;
-					this.aspects = this.get("aspects").models;
 				},
 
 				/**
@@ -182,13 +181,12 @@ define(function(require) {
 				 * @command EntityNode.zoomTo()
 				 * 
 				 */
-				/*
-				 * zoomTo : function(){
-				 * 
-				 * GEPPETTO.zoomToEntity(this.instancePath);
-				 * 
-				 * return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; },
-				 */
+				 zoomTo : function(){
+				 
+				 GEPPETTO.zoomToEntity(this.instancePath);
+				 
+				 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; },
+				 
 
 				/**
 				 * Get this entity's aspects
@@ -199,7 +197,7 @@ define(function(require) {
 				 * 
 				 */
 				getAspects : function() {
-					var entities = this.get("aspects");
+					var entities = this.get("aspects").models;
 					return entities;
 				},
 
@@ -212,7 +210,7 @@ define(function(require) {
 				 * 
 				 */
 				getEntities : function() {
-					var entities = this.get("entities");
+					var entities = this.get("entities").models;
 					return entities;
 				},
 				

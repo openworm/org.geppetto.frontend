@@ -31,18 +31,34 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a parameter node, used for model tree
- * properties.
+ * Client class use to represent a connection node, used to store the connections
+ * between two entities in Geppetto.
  * 
- * @module nodes/ParameterNode
+ * @module nodes/ConnectionNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
+	var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
+		relations : [ {
+			type : Backbone.Many,
+			key : 'customNodes',
+			relatedModel : Node,
+		}, {
+			type : Backbone.Many,
+			key : 'visualObjectReferenceNodes',
+			relatedModel : VisualObjectReferenceNode
+		}],
+
+		defaults : {
+			customNodes : [],
+			visualObjectReferenceNodes : [],
+		},
+
 		properties : {},
 		_metaType : "ConnectionNode",
 		entityInstancePath : null,
@@ -62,12 +78,13 @@ define(function(require) {
 		},
 
 		/**
-		 * Get type of connection
+		 * Get Instance path of entity this connection is connected to
 		 * 
-		 * @command ConnectionNode.getType()
-		 * @returns {String} Entity ID for this connection 
+		 * @command ConnectionNode.getEntityInstancePath()
+		 * @returns {String} Entity instance patch for entity this connection 
+		 *                   is connected to
 		 */
-		getEntityId : function() {
+		getEntityInstancePath : function() {
 			return this.entityInstancePath;
 		},
 		
@@ -81,6 +98,24 @@ define(function(require) {
 			return this.type;
 		},
 
+		/**
+		 * Returns array of custom nodes for this connection
+		 */
+		getCustomNodes : function(){
+			return this.get("customNodes");
+		},
+		
+		/**
+		 * Returns array of visual object reference nodes for this connection
+		 */
+		getVisualObjectReferenceNodes : function(){
+			return this.get("visualObjectReferenceNodes");
+		},
+		
+		highlight : function(mode){
+			
+		},
+		
 		/**
 		 * Print out formatted node
 		 */

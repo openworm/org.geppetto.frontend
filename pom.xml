@@ -301,6 +301,12 @@
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/nodes</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/dev/bootstrap</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/dev/cameracontrols</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/dev/help</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/dev/popups</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/dev/tutorial</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/mixins</directoryRoot>
 					</directoryRoots>
 					<sourceFiles>
 						<sourceFile>src/main/webapp/js/GEPPETTO.js</sourceFile>

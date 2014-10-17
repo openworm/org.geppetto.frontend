@@ -49,6 +49,7 @@ define(function(require) {
 		var FunctionNode = require('nodes/FunctionNode');
 		var VariableNode = require('nodes/VariableNode');
 		var ConnectionNode = require('nodes/ConnectionNode');
+		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 		var simulationTreeCreated=false;
 		
 		/**
@@ -121,32 +122,33 @@ define(function(require) {
 						}
 					}
 				},
-				
+
 				/**Update all visual trees for a given entity*/
 				updateEntityVisualTrees : function(entity, jsonRuntimeTree){
-					for (var aspectId in entity.aspects) 
+					for (var id in entity) 
 					{
-						var aspect = entity.aspects[aspectId];
-						
-						var receivedAspect=eval("jsonRuntimeTree."+aspect.getInstancePath());
-						if(receivedAspect != undefined){
+						if(entity[id]._metaType ==GEPPETTO.Resources.ASPECT_NODE )
+						{
+							var receivedAspect = entity[id];
+							//match received aspect to client one
+							var aspect =  GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, receivedAspect.instancePath);
 							if(receivedAspect.VisualizationTree != undefined)
 							{
 								aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
 							}
 						}
-					}
-					for (var entityid in node.entities)
-					{
-						this.updateEntityVisualTrees(node.entities[entityid],jsonRuntimeTree);
+						//traverse inside entity looking for more updates in visualization tree
+						else if(entity[id]._metaType ==GEPPETTO.Resources.ENTITY_NODE){
+							this.updateEntityVisualTrees(entity[id],jsonRuntimeTree);
+						}
 					}
 				},
-				
+
 				/**Update entities of scene with new server updates*/
 				updateVisualTrees : function(jsonRuntimeTree){
-					for(var c in GEPPETTO.Simulation.runTimeTree)
+					for(var c in jsonRuntimeTree)
 					{
-						var node=GEPPETTO.Simulation.runTimeTree[c];
+						var node = jsonRuntimeTree[c];
 						if(node._metaType==GEPPETTO.Resources.ENTITY_NODE)
 						{
 							this.updateEntityVisualTrees(node,jsonRuntimeTree);
@@ -559,6 +561,35 @@ define(function(require) {
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);
 
+				for(var key in node){
+					if(typeof node[key] == "object"){
+						if(node[key].metaType==GEPPETTO.Resources.PARAMETER_NODE){
+							var custom = this.createParameterNode(node[key]);
+							a.get("customNodes").add(custom);
+						}
+						if(node[key].metaType==GEPPETTO.Resources.PARAMETER_SPEC_NODE){
+							var custom = this.createParameterSpecificationNode(node[key]);
+							a.get("customNodes").add(custom);
+						}
+						if(node[key].metaType==GEPPETTO.Resources.VISUAL_REFERENCE_NODE){
+							var vis = this.createVisualReferenceNode(node[key]);
+							a.get("visualObjectReferenceNodes").add(vis);
+						}
+					}
+				}
+				return a;
+			},
+			/** Creates and populates client connection nodes for first time */
+			createVisualReferenceNode : function(node) {
+				var a = new VisualObjectReferenceNode({
+					id : node.id,
+					type : node.type,
+					aspectInstancePath : node.aspectInstancePath,
+					visualObjectID : node.visualObjectID,
+				});
+
+				GEPPETTO.Console.updateTags(node.instancePath, a);
+				
 				return a;
 			},
 			/** Creates and populates client aspect nodes for first time */

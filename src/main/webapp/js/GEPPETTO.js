@@ -89,8 +89,8 @@ define(function(require) {
 				for ( var eindex in entities) {
 
 					var entity = entities[eindex];
-					for ( var a in entity.aspects) {
-						var aspect = entity.aspects[a];
+					for ( var a in entity.getAspects()) {
+						var aspect = entity.getAspects()[a];
 						var visualTree = aspect.VisualizationTree;
 						for ( var vm in visualTree.content) {
 							var node = visualTree.content[vm];
@@ -104,10 +104,9 @@ define(function(require) {
 									for ( var gindex in node) {
 										var vo = node[gindex];
 										var voType = vo._metaType;
-										if (voType == "ParticleNode"
-											|| metaType == "SphereNode"
-												|| metaType == "CylinderNode") {
-											GEPPETTO.updateGeometry(aspect.instancePath,vo);
+										if (voType == "ParticleNode" || voType == "SphereNode"
+												|| voType == "CylinderNode"){
+											GEPPETTO.updateGeometry(vo);
 										}
 									}
 
@@ -115,8 +114,7 @@ define(function(require) {
 								else{
 									if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
 											metaType == "CylinderNode") {
-
-										GEPPETTO.updateGeometry(aspect.instancePath,node);								
+										GEPPETTO.updateGeometry(node);								
 									}
 								}
 							}
@@ -147,8 +145,8 @@ define(function(require) {
 		 * @param g
 		 *            the update json geometry
 		 */
-		updateGeometry : function(instancepath, g) {
-			var threeObject = VARS.visualModelMap[instancepath+"."+g.id];
+		updateGeometry : function(g) {
+			var threeObject = VARS.visualModelMap[g.instancePath];
 			if (threeObject) {
 				if (threeObject instanceof THREE.Vector3) {
 					threeObject.x = g.position.x;
@@ -256,7 +254,7 @@ define(function(require) {
 		 */
 		loadEntity : function(entityNode,parentNode, materialParam) {
 			var material = materialParam;// ==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
-			var aspects = entityNode.aspects;
+			var aspects = entityNode.getAspects();
 			var children = entityNode.getEntities();
 			var position = entityNode.position;
 			if(parentNode == null){
@@ -297,9 +295,9 @@ define(function(require) {
 			}
 			for ( var c =0 ; c< children.length; c++) {
 				if(parentNode !=null){
-					GEPPETTO.loadEntity(children.at(c), parentNode[entityNode.id], material);
+					GEPPETTO.loadEntity(children[c], parentNode[entityNode.id], material);
 				}else{
-					GEPPETTO.loadEntity(children.at(c), VARS.entities[entityNode.instancePath],  material);
+					GEPPETTO.loadEntity(children[c], VARS.entities[entityNode.instancePath],  material);
 				}
 			}
 
@@ -343,16 +341,16 @@ define(function(require) {
 						if (firstVOmetaType == "ParticleNode") {
 							merge = false;				
 
-							var entityObject = GEPPETTO.createParticleSystem(aspect.instancePath, node);
+							var entityObject = GEPPETTO.createParticleSystem(node);
 							entityObjects.push(entityObject);
 
 						} else if (firstVOmetaType == "ColladaNode") {
 							entityObjects.push(GEPPETTO
-									.getThreeObjectFromJSONGeometry(aspect.instancePath,node[vg]));
+									.getThreeObjectFromJSONGeometry(node[vg]));
 						}
 						else if (firstVOmetaType == "OBJNode")
 						{
-							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(aspect.instancePath,node[vg]));
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(node[vg]));
 						}
 						else if (firstVOmetaType == "CylinderNode"
 								|| firstVOmetaType == "SphereNode")
@@ -371,8 +369,7 @@ define(function(require) {
 
 								if (typeof vg === "object") {
 									var threeObject = GEPPETTO
-											.getThreeObjectFromJSONGeometry(aspect.instancePath,vg,
-													material);
+											.getThreeObjectFromJSONGeometry(vg,material);
 									THREE.GeometryUtils.merge(combined,
 											threeObject);
 									threeObject.geometry.dispose();
@@ -390,16 +387,16 @@ define(function(require) {
 						}
 					} else {
 						if (metaType == "ParticleNode") {
-							var entityObject = GEPPETTO.createParticleSystem(aspect.instancePath, visualizationTree);
+							var entityObject = GEPPETTO.createParticleSystem(visualizationTree);
 							entityObjects.push(entityObject);
 
 						}else if (metaType == "ColladaNode") {
 							entityObjects.push(GEPPETTO
-									.getThreeObjectFromJSONGeometry(aspect.instancePath,node));
+									.getThreeObjectFromJSONGeometry(node));
 						} 
 						else if (metaType == "OBJNode")
 						{
-							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(aspect.instancePath,node));
+							entityObjects.push(GEPPETTO.getThreeObjectFromJSONGeometry(node));
 						}
 						else if (metaType == "CylinderNode"
 								|| metaType == "SphereNode")
@@ -411,8 +408,7 @@ define(function(require) {
 
 							if (typeof node === "object") {
 								var threeObject = GEPPETTO
-										.getThreeObjectFromJSONGeometry(aspect.instancePath,node,
-												material);
+										.getThreeObjectFromJSONGeometry(node,material);
 								THREE.GeometryUtils
 										.merge(combined, threeObject);
 								threeObject.geometry.dispose();
@@ -442,7 +438,7 @@ define(function(require) {
 			return entityObjects;
 		},
 		
-		createParticleSystem : function(instancePath, node){
+		createParticleSystem : function(node){
 			var particleGeometry = new THREE.Geometry();
 			// assumes there are no particles mixed with
 			// other kind of
@@ -465,19 +461,18 @@ define(function(require) {
 			for ( var vg in node) {
 				if (node[vg]._metaType == "ParticleNode") {
 					var threeObject = GEPPETTO
-							.getThreeObjectFromJSONGeometry(
-									instancePath,node[vg], pMaterial);
+							.getThreeObjectFromJSONGeometry(node[vg], pMaterial);
 					particleGeometry.vertices.push(threeObject);
 				}
 			}
 
 			var entityObject = new THREE.ParticleSystem(
 					particleGeometry, pMaterial);
-			entityObject.eid = instancePath;
+			entityObject.eid = node.instancePath;
 			// also update the particle system to sort the
 			// particles which enables the behaviour we want
 			entityObject.sortParticles = true;
-			VARS.visualModelMap[instancePath] = entityObject;
+			VARS.visualModelMap[node.instancePath] = entityObject;
 
 			return entityObject;
 		},
@@ -574,7 +569,7 @@ define(function(require) {
 		 * @param material
 		 * @returns {Mesh} a three mesh representing the geometry
 		 */
-		getThreeObjectFromJSONGeometry : function(instancepath,g, material) {
+		getThreeObjectFromJSONGeometry : function(g, material) {
 			var threeObject = null;
 			switch (g._metaType) {
 			case "ParticleNode":
@@ -625,7 +620,7 @@ define(function(require) {
 			// add the geometry to a map indexed by the geometry id so we can
 			// find it
 			// for updating purposes
-			VARS.visualModelMap[instancepath + "." + g.id] = threeObject;
+			VARS.visualModelMap[g.instancePath] = threeObject;
 			return threeObject;
 		},
 

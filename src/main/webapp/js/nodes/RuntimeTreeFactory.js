@@ -45,6 +45,7 @@ define(function(require) {
 		var CompositeNode = require('nodes/CompositeNode');
 		var ParameterNode = require('nodes/ParameterNode');
 		var ParameterSpecificationNode = require('nodes/ParameterSpecificationNode');
+		var TextMetadataNode = require('nodes/TextMetadataNode');
 		var DynamicsSpecificationNode = require('nodes/DynamicsSpecificationNode');
 		var FunctionNode = require('nodes/FunctionNode');
 		var VariableNode = require('nodes/VariableNode');
@@ -288,6 +289,16 @@ define(function(require) {
 								}
 								parent[i] = parameterSpecificationNode;
 							}
+							else if(metatype == GEPPETTO.Resources.TEXT_METADATA_NODE){
+								var textMetadataNode =  this.createTextMetadataNode(node[i]);
+								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+									parent.get("children").add(textMetadataNode);
+								}
+								parent[i] = textMetadataNode;
+							}
+							
+							
+							
 						}
 					}
 
@@ -471,7 +482,7 @@ define(function(require) {
 			createCompositeNode : function(node) {
 				var a = new CompositeNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					instancePath : node.instancePath,
 					_metaType : GEPPETTO.Resources.COMPOSITE_NODE
 				});
@@ -485,7 +496,7 @@ define(function(require) {
 			createFunctionNode : function(node) {
 				var a = new FunctionNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					expression : node.expression,
 					arguments : node.arguments,
 					instancePath : node.instancePath,
@@ -500,7 +511,7 @@ define(function(require) {
 			createDynamicsSpecificationNode : function(node) {
 				var a = new DynamicsSpecificationNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					value : node.value,
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,
@@ -522,7 +533,7 @@ define(function(require) {
 			createParameterSpecificationNode : function(node) {
 				var a = new ParameterSpecificationNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					value : node.value,
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,
@@ -533,11 +544,24 @@ define(function(require) {
 				GEPPETTO.Console.updateTags(node.instancePath, a);
 				return a;
 			},
+			createTextMetadataNode : function(node) {
+				var a = new TextMetadataNode({
+					id : node.id,
+					name : node.name,
+					value : node.value,
+					instancePath : node.instancePath,
+					_metaType : GEPPETTO.Resources.TEXT_METADATA_NODE
+				});
+
+				GEPPETTO.Console.updateTags(node.instancePath, a);
+				GEPPETTO.Console.addTag(node.instancePath);
+				return a;
+			},
 			/** Creates and populates client aspect nodes for first time */
 			createParameterNode : function(node) {
 				var a = new ParameterNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					instancePath : node.instancePath,
 					properties : node.properties,
 					_metaType : GEPPETTO.Resources.PARAMETER_NODE
@@ -565,7 +589,7 @@ define(function(require) {
 			createVariableNode : function(node) {
 				var a = new VariableNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					value : node.value,
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,

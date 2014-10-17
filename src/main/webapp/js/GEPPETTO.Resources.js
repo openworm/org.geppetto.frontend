@@ -315,6 +315,7 @@ define(function(require) {
 			VARIABLE_NODE : "VariableNode",
 			FUNCTION_NODE : "FunctionNode",
 			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
+			TEXT_METADATA_NODE : "TextMetadataNode",
 			PARAMETER_NODE : "ParameterNode",
 			CONNECTION_NODE : "ConnectionNode",
 			COMPOSITE_NODE : "CompositeNode",

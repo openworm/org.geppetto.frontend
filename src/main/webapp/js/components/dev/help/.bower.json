@@ -1,0 +1,30 @@
+{
+  "name": "help",
+  "version": "0.0.1",
+  "authors": [
+    "Matt Olson <mattlolson@gmail.com>"
+  ],
+  "description": "help dialog component",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    ".",
+    "test",
+    "tests"
+  ],
+  "_cacheHeaders": {
+    "ETag": "\"744b58491652c246e1bb85df6cc1394b63ec721f\"",
+    "Content-Length": "2594",
+    "Content-Type": "application/zip"
+  },
+  "_release": "e-tag:744b58491",
+  "_source": "https://github.com/mlolson/geppetto-components/raw/master/help.zip",
+  "_target": "*",
+  "_originalSource": "https://github.com/mlolson/geppetto-components/raw/master/help.zip"
+}

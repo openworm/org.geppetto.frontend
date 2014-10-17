@@ -124,7 +124,7 @@ define(function(require) {
 				});
 
 				//bind close button on widget event to destroy command
-				$("#" + widgetID).bind('dialogclose', function(event) {
+				$(".ui-dialog-titlebar-close").click( function() { 
 					//destroy widget
 					GEPPETTO.Console.executeCommand(widgetID + ".destroy()");
 				});

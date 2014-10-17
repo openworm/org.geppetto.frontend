@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -30,42 +30,20 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
- * Popup Widget
+ * Loads variable visualiser scripts
  *
- * @module Widgets/Popup
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Dan Kruchinin (dkruchinin@acm.org)
  */
+/*
+ * Configure what dependencies are needed for each library
+ */
+
+//Load PlotsController and other classes using GEPPETTO
 define(function(require) {
-
-	var Widget = require('widgets/Widget');
-	var $ = require('jquery');
-
-	return Widget.View.extend({
-		
-		/**
-		 * Initialize the popup widget
-		 */
-		initialize : function(options){
-			this.id = options.id;
-			this.name = options.name;
-			this.visible = options.visible;
-			this.render();
-			this.setSize(100,300);
-			//set class pop up
-			$("#"+this.id).addClass("popup");
-		},
-		
-		/**
-		 * Sets the message that is displayed inside the widget
-		 * 
-		 * @command setMessage(msg)
-		 * @param {String} msg - The message that is displayed inside the widget
-		 */
-		setMessage : function(msg){
-			$("#"+this.id).html(msg);
-			
-			return "Setting new Message for " + this.id;
-		}
-	});
+	return function(GEPPETTO) {
+		require("widgets/variablevisualiser/controllers/VariableVisualiserController")(GEPPETTO);
+		loadCss("js/widgets/variablevisualiser/VariableVisualiser.css");
+	};
 });

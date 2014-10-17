@@ -48,6 +48,7 @@ define(function(require) {
 		var DynamicsSpecificationNode = require('nodes/DynamicsSpecificationNode');
 		var FunctionNode = require('nodes/FunctionNode');
 		var VariableNode = require('nodes/VariableNode');
+		var ConnectionNode = require('nodes/ConnectionNode');
 		var simulationTreeCreated=false;
 		
 		/**
@@ -108,12 +109,9 @@ define(function(require) {
 							var aspectNode=eval(child.instancePath);
 							if(child.SimulationTree != undefined)
 							{
-								if(child.SimulationTree.modified)
+								if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.Simulation==undefined)
 								{
-									if(jQuery.isEmptyObject(aspectNode.SimulationTree))
-									{
-										this.createAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
-									}
+									this.createAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
 								}
 							}
 						}
@@ -131,17 +129,12 @@ define(function(require) {
 						var aspect = entity.aspects[aspectId];
 						
 						var receivedAspect=eval("jsonRuntimeTree."+aspect.getInstancePath());
-						if(receivedAspect.VisualizationTree != undefined)
-						{
-							if(receivedAspect.VisualizationTree.modified)
+						if(receivedAspect != undefined){
+							if(receivedAspect.VisualizationTree != undefined)
 							{
 								aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
-								aspect.VisualizationTree.modified = true;
 							}
 						}
-						//Let's take the chance to set all the modified flags to false
-						aspect.SimulationTree.modified = false;
-						aspect.ModelTree.modified = false;
 					}
 					for (var entityid in node.entities)
 					{
@@ -327,6 +320,9 @@ define(function(require) {
 								_metaType : GEPPETTO.Resources.COMPOSITE_NODE
 							});
 							parent.get("children").add(arrayNode);
+							
+							GEPPETTO.Console.updateTags(arrayNode.instancePath, arrayNode);
+														
 							// create nodes for each array index
 							for ( var index = 0; index < array.length; index++) {
 								parent[i][index] = {};
@@ -340,6 +336,7 @@ define(function(require) {
 											+ "[" + index + "]";
 									parent[i][index] = arrayObject;
 								}
+								GEPPETTO.Console.updateTags(arrayObject.instancePath, arrayObject);
 							}
 						}
 						// if object is CompositeNode, do recursion to find
@@ -400,6 +397,15 @@ define(function(require) {
 						e.get("aspects").add(aspectNode);
 						aspectNode.setParentEntity(e);
 					}
+					if (node._metaType == GEPPETTO.Resources.CONNECTION_NODE) {
+						var connectionNode = GEPPETTO.RuntimeTreeFactory
+								.createConnectionNode(node);
+
+						// set connection as property of entity
+						e[id] = connectionNode;
+						// add aspect node to entity
+						e.get("connections").add(connectionNode);
+					}
 				}
 
 				return e;
@@ -416,7 +422,6 @@ define(function(require) {
 					instancePath : aspect.instancePath
 				});
 				GEPPETTO.Console.updateTags(aspect.instancePath, a);
-				GEPPETTO.Console.addTag(aspect.instancePath);
 
 				// create visualization subtree only at first
 				for ( var aspectKey in aspect) {
@@ -458,7 +463,6 @@ define(function(require) {
 				});
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);
-				GEPPETTO.Console.addTag(node.instancePath);
 
 				return a;
 			},
@@ -473,7 +477,6 @@ define(function(require) {
 				});
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);
-				GEPPETTO.Console.addTag(node.instancePath);
 
 				return a;
 			},
@@ -490,7 +493,6 @@ define(function(require) {
 				});
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);
-				GEPPETTO.Console.addTag(node.instancePath);
 
 				return a;
 			},
@@ -513,7 +515,6 @@ define(function(require) {
 
 				a.set("dynamics", f);
 				GEPPETTO.Console.updateTags(node.instancePath, a);
-				GEPPETTO.Console.addTag(node.instancePath);
 
 				return a;
 			},
@@ -530,21 +531,33 @@ define(function(require) {
 				});
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);
-				GEPPETTO.Console.addTag(node.instancePath);
 				return a;
 			},
 			/** Creates and populates client aspect nodes for first time */
 			createParameterNode : function(node) {
 				var a = new ParameterNode({
-					id : node.ide,
+					id : node.id,
 					name : node.id,
 					instancePath : node.instancePath,
-					properties : options.properties,
+					properties : node.properties,
 					_metaType : GEPPETTO.Resources.PARAMETER_NODE
 				});
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);
-				GEPPETTO.Console.addTag(node.instancePath);
+
+				return a;
+			},
+			/** Creates and populates client connection nodes for first time */
+			createConnectionNode : function(node) {
+				var a = new ConnectionNode({
+					id : node.id,
+					type : node.type,
+					entityInstancePath : node.entityInstancePath,
+					instancePath : node.instancePath,
+					_metaType : GEPPETTO.Resources.CONNECTION_NODE
+				});
+
+				GEPPETTO.Console.updateTags(node.instancePath, a);
 
 				return a;
 			},
@@ -560,7 +573,6 @@ define(function(require) {
 					_metaType : GEPPETTO.Resources.VARIABLE_NODE
 				});
 				GEPPETTO.Console.updateTags(node.instancePath, a);
-				GEPPETTO.Console.addTag(node.instancePath);
 				return a;
 			},
 		};

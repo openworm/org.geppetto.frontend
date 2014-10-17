@@ -379,6 +379,8 @@ define(function(require) {
 			updateTags: function(instancePath, object) {
 				var nonTags = ["constructor()", "initialize(options)"];
 				
+				tags[tags.length] = instancePath;
+				
 				var tagsCount = tags.length;
 				
 				var proto = object.__proto__;
@@ -532,7 +534,7 @@ define(function(require) {
 						index--;
 					}
 				}
-			},
+			}
 		};
 	};
 });

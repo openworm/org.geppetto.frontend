@@ -2,7 +2,7 @@ define(function (require) {
 
     var React = require('react'),
         GEPPETTO = require('geppetto'),
-        LoadSimModal = require('jsx!components/simulationcontrols/LoadSimulationModal');
+        LoadSimModal = require('jsx!../LoadSimulationModal');
 
 
     return React.createClass({

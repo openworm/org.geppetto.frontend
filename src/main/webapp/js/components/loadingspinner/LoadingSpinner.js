@@ -4,10 +4,7 @@ define(function(require) {
 		GEPPETTO = require('geppetto');
 	
 	return React.createClass({		
-		mixins: [
-            require('jsx!components/bootstrap/modal'),
-            require('jsx!mixins/Events')
-        ],
+		mixins: [require('jsx!mixins/bootstrap/modal')],
 
 		getDefaultProps: function() {
 			return {
@@ -16,10 +13,7 @@ define(function(require) {
 		},
 		
 		componentDidMount: function(){
-            this.listenTo(GEPPETTO, 'simulation:loaded', this.hide);
-            this.listenTo(GEPPETTO, 'simulation:modelloaded', this.hide);
-            this.listenTo(GEPPETTO, 'geppetto:error', this.hide);
-
+			GEPPETTO.once('simulation:loaded', this.hide);
 			setTimeout((function(){
 				if(GEPPETTO.Simulation.loading && this.isMounted()){
 					this.setProps({text: 'Loading is taking longer than usual, either a big simulation is being loaded or bandwidth is limited'});

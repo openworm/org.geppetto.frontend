@@ -1,0 +1,15 @@
+{
+    "name": "org.geppetto.frontend.components",
+    "version": "1.0.0",
+    "ignore": [
+        ".jshintrc",
+        "**/*.txt"
+    ],
+    "dependencies": {
+        "simulationcontrols": "https://github.com/mlolson/geppetto-components/raw/master/simulationcontrols.zip",
+        "cameracontrols": "https://github.com/mlolson/geppetto-components/raw/master/cameracontrols.zip",
+        "help": "https://github.com/mlolson/geppetto-components/raw/master/help.zip",
+        "tutorial": "https://github.com/mlolson/geppetto-components/raw/master/tutorial.zip",
+        "bootstrap": "https://github.com/mlolson/geppetto-components/raw/master/bootstrap.zip"
+    }
+}

@@ -7,7 +7,7 @@ define(function(require) {
 
 		require('three');
 		require('vendor/THREEx.KeyboardState');
-
+		
 		var VARS = {
 			debug: false,
 			camera: null,

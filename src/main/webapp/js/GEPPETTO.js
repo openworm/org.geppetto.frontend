@@ -198,15 +198,14 @@ define(function(require) {
 			threeObject.position.add(midPoint);
 			return threeObject;
 		},
-
 		/**
-		 * @param jsonEntity
-		 *            the id of the entity to light up
-		 * @param intensity
-		 *            the lighting intensity from 0 (no illumination) to 1 (full
-		 *            illumination)
+		 * @param {AspectNode} aspect - the aspect containing the entity to be lit
+		 * @param {String} entityName - the name of the entity to be rotated (in the 3d model)
+		 * @param {Float}
+		 *            intensity - the lighting intensity from 0 (no
+		 *            illumination) to 1 (full illumination)
 		 */
-		lightUpEntity : function(jsonEntity, intensity) {
+		lightUpEntity : function(aspect, entityName, intensity) {
 			if (intensity < 0) {
 				intensity = 0;
 			}
@@ -225,7 +224,7 @@ define(function(require) {
 				return (Math.floor(color + ((255 - color) * intensity)))
 						.toString(16);
 			};
-			var threeObject = GEPPETTO.getThreeObjectFromEntityId(jsonEntity);
+			var threeObject = GEPPETTO.getNamedThreeObjectFromInstancePath(aspect.getInstancePath(), entityName);
 			if (threeObject != null) {
 				var originalColor = getRGB(threeObject.material.originalColor);
 				threeObject.material.color.setHex('0x'
@@ -234,6 +233,22 @@ define(function(require) {
 						+ scaleColor(originalColor.b));
 			}
 		},
+
+		/**
+		 * Set object local rotation, with respect to z (Euler angle)
+		 * @param {AspectNode} aspect - the aspect containing the entity to rotate
+		 * @param {String} entityName - the name of the entity to be rotated (in the 3d model)
+		 * @param {Float} angle - 
+		 *            the angle (radians) of the local rotation around z
+		 */
+		setLocalRotationZ : function(aspect, entityName, angle) {
+			//TODO: the first arg should be a vis tree
+			var threeObject = GEPPETTO.getNamedThreeObjectFromInstancePath(aspect.getInstancePath(), entityName);
+			if (threeObject != null) {
+				threeObject.rotation.z = angle;
+			}
+		},
+
 
 		/**
 		 * @param runTimeTree
@@ -829,6 +844,19 @@ define(function(require) {
 				}
 			});
 			return threeObject;
+		},
+
+		getNamedThreeObjectFromInstancePath : function(aspectIP, name) {
+			//TODO: we should be manipulating the VisualizationTree 
+			//      instead of jumping through such hoops...
+			if (name != ""){
+				return VARS.scene.getObjectByName(aspectIP, true).getObjectByName(name, true);
+			}
+			else{
+				//This is to handle aberrations such as hhcell.electrical being both
+				// the aspect AND the name of the entity to be lit 
+				return VARS.scene.getObjectByName(aspectIP, true);
+			}
 		},
 
 		unSelectAll : function() {

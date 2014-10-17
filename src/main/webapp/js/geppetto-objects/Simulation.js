@@ -506,29 +506,67 @@ define(function(require) {
 			},
 
 			/**
-			 * Add a transfer function to a watched var's sim state.
-			 * The transfer function should accept the value of the watched var and output a
-			 * number between 0 and 1, corresponding to min and max brightness.
-			 * If no transfer function is specified then brightess = value
+			 * Modulates the brightness of an aspect visualization, given a watched node
+			 * and a normalization function. The normalization function should receive
+			 * the value of the watched node and output a number between 0 and 1,
+			 * corresponding to min and max brightness. If no normalization function is
+			 * specified, then brightness = value
 			 * 
-			 * @command GEPPETTO.Simulation.addBrightnessFunction(entity, variable, transferFunction)
-			 * 
-			 * @param {Object} entity - Entity to apply brightness function
-			 * @param {Object} variable - Variable used to determines brightness level
-			 * @param {Function} transferFunction - Function to set brightness to entity
+			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
+			 * @param {String} entityName - Name of the entity to be lit
+			 * @param {VariableNode} modulation - Variable which modulates the brightness
+			 * @param {Function} normalizationFunction
 			 */
-			addBrightnessFunction: function(entity, variable, transferFunction) {	
-				this.listeners[variable.getInstancePath()] = (function (simState){
-					GEPPETTO.lightUpEntity(entity.getInstancePath(), transferFunction ? transferFunction(simState.value) : simState.value);
+			addBrightnessFunction: function(aspect, entityName, modulation, normalizationFunction) {
+				this.addOnNodeUpdatedCallback(modulation, function(varnode){
+			    	GEPPETTO.lightUpEntity(aspect, entityName,
+			    			normalizationFunction ? normalizationFunction(varnode.getValue()) : varnode.getValue());
 				});
 			},
 
+			clearBrightnessFunctions: function(varnode) {
+				this.clearOnNodeUpdateCallback(varnode);
+			},
+
 			/**
-			 * Clear brightness transfer functions on simulation state
-			 * @param {VariableNode} variable - VariableNode to reset brightness function
+			 * Callback to be called whenever a watched node changes
+			 *
+			 * @param {VariableNode} varnode - VariableNode to couple callback to
+			 * @param {Function} callback - Callback function to be called whenever _variable_ changes
 			 */
-			clearBrightnessFunctions: function(variable) {
-				this.listeners[variable.getId()] = null;
+			addOnNodeUpdatedCallback: function(varnode, callback) {
+				this.listeners[varnode.getInstancePath()] = callback;
+			},
+			
+			/**
+			 * Clears callbacks coupled to changes in a node 
+			 * 
+			 * @param {VariableNode} varnode - VariableNode to which callbacks are coupled
+			 */
+			clearOnNodeUpdateCallback: function(varnode) {
+				this.listeners[varnode.getInstancePath()] = null;
+			},
+
+
+			/**
+			 * Dynamically change the visual representation of an aspect,
+			 * modulated by the value of a watched node. The _transformation_
+			 * to be applied to the aspect visual representation should be a
+			 * function receiving the aspect and the watched node's value,
+			 * which can be normalized via the _normalization_ function. The
+			 * latter is a function which receives the watched node's value
+			 * an returns a float between 0 and 1.
+			 * 
+			 * @param {AspectNode} visualAspect - Aspect which contains the VisualizationTree with the entity to be dynamically changed
+			 * @param {String} visualEntityName - Name of visual entity in the visualAspect VisualizationTree
+			 * @param {VariableNode} dynVar - Dynamical variable which will modulate the transformation
+			 * @param {Function} transformation - Transformation to act upon the visualEntity, given the modulation value
+			 * @param {Function} normalization - Function to be applied to the dynamical variable, normalizing it to a suitable range according to _transformation_
+			 */	
+			addDynamicVisualization: function(visualAspect, visualEntityName, dynVar, transformation, normalization){
+				//TODO: things should be VisualizationTree centric instead of aspect centric...  
+		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
+		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getValue()) : watchedNode.getValue());});
 			}
 		};
 

@@ -1,0 +1,22 @@
+{
+    "name": "logo",
+    "version": "0.0.1",
+    "authors": [
+        "Matt Olson <mattlolson@gmail.com>"
+    ],
+    "description": "geppetto logo",
+    "moduleType": [
+        "amd"
+    ],
+    "main":"logo",
+    "license": "MIT",
+    "private": true,
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        ".",
+        "test",
+        "tests"
+    ]
+}

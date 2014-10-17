@@ -482,7 +482,7 @@ define(function(require) {
 			createCompositeNode : function(node) {
 				var a = new CompositeNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					instancePath : node.instancePath,
 					_metaType : GEPPETTO.Resources.COMPOSITE_NODE
 				});
@@ -496,7 +496,7 @@ define(function(require) {
 			createFunctionNode : function(node) {
 				var a = new FunctionNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					expression : node.expression,
 					arguments : node.arguments,
 					instancePath : node.instancePath,
@@ -511,7 +511,7 @@ define(function(require) {
 			createDynamicsSpecificationNode : function(node) {
 				var a = new DynamicsSpecificationNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					value : node.value,
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,
@@ -533,7 +533,7 @@ define(function(require) {
 			createParameterSpecificationNode : function(node) {
 				var a = new ParameterSpecificationNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					value : node.value,
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,
@@ -547,7 +547,7 @@ define(function(require) {
 			createTextMetadataNode : function(node) {
 				var a = new TextMetadataNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					value : node.value,
 					instancePath : node.instancePath,
 					_metaType : GEPPETTO.Resources.TEXT_METADATA_NODE
@@ -561,7 +561,7 @@ define(function(require) {
 			createParameterNode : function(node) {
 				var a = new ParameterNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					instancePath : node.instancePath,
 					properties : node.properties,
 					_metaType : GEPPETTO.Resources.PARAMETER_NODE
@@ -589,7 +589,7 @@ define(function(require) {
 			createVariableNode : function(node) {
 				var a = new VariableNode({
 					id : node.id,
-					name : node.id,
+					name : node.name,
 					value : node.value,
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,

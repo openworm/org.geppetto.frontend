@@ -40,8 +40,8 @@ define(function(require) {
 
         var React = require('react'),
                 $ = require('jquery'),
-                InfoModal = require('jsx!components/dev/popups/InfoModal'),
-                ErrorModal = require('jsx!components/dev/popups/ErrorModal');
+                InfoModal = require('jsx!components/popups/InfoModal'),
+                ErrorModal = require('jsx!components/popups/ErrorModal');
         /**
          * Create the container for holding the canvas
          * @class GEPPETTO.FE

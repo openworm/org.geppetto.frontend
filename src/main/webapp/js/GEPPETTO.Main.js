@@ -43,7 +43,7 @@ define(function(require) {
 	return function(GEPPETTO) {
 		var $ = require('jquery'),
 		React = require('react'),
-		InfoModal = require('jsx!components/dev/popups/InfoModal');
+		InfoModal = require('jsx!components/popups/InfoModal');
 
 		/**
 		 * @class GEPPETTO.Main

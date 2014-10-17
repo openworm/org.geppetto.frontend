@@ -122,10 +122,21 @@ define(function(require) {
 				if (data.getName() === undefined){label = data.getId();}
 				else{label = data.getName();}
 				
-				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode") {
+				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" | data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = {};
-						dataset.valueDict[data.instancePath][label] = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
+						var labelValue = "";
+						if (data._metaType == "TextMetadataNode"){
+							labelValue = data.getValue();
+						}
+						else if (data._metaType == "FunctionNode") {
+							labelValue = data.getExpression();
+						}
+						else{
+							labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
+						}
+						
+						dataset.valueDict[data.instancePath][label] = labelValue; 
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
 					}
 					else{

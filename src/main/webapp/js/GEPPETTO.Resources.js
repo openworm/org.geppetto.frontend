@@ -291,6 +291,7 @@ define(function(require) {
 			REMOVE_POPUP_WIDGETS: "Popup widget(s) removed",
 			REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",
 			REMOVE_TREEVISUALISERD3_WIDGETS: "Tree Visualiser D3 widget(s) removed",
+			REMOTE_VARIABLEVISUALISER_WIDGETS: "Variable Visualiser widget(s) removed",
 			NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
 
 			/**
@@ -314,7 +315,9 @@ define(function(require) {
 			VARIABLE_NODE : "VariableNode",
 			FUNCTION_NODE : "FunctionNode",
 			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
+			TEXT_METADATA_NODE : "TextMetadataNode",
 			PARAMETER_NODE : "ParameterNode",
+			CONNECTION_NODE : "ConnectionNode",
 			COMPOSITE_NODE : "CompositeNode",
 			DYNAMICS_NODE : "DynamicsSpecificationNode"
 				

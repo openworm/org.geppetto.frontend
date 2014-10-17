@@ -8,11 +8,9 @@ define(function (require) {
 
     return React.createClass({
         mixins: [
-            require('jsx!components/bootstrap/modal'),
-            require('jsx!mixins/Events'),           
+            require('jsx!mixins/bootstrap/modal'),
+            require('jsx!mixins/Events')
         ],
-        
-        url : null,
 
         getInitialState: function() {
             return {
@@ -26,12 +24,6 @@ define(function (require) {
         },
 
         onClickCustom: function() {
-        	//load simulation xml if url isn't null
-        	if(this.url!=null){
-        		this.loadSimulationURL(this.url);
-        		//set waiting message until xml received from server
-        		this.setState({disableLoad:null, simulationXML:"Loading Simulation XML, please wait..."});
-        	}
             this.setState({loadFromURL: false});
         },
 
@@ -75,6 +67,9 @@ define(function (require) {
             
             this.listenTo(GEPPETTO, 'simulation:configloaded', this.setSimulationXML);
             this.listenTo($(this.getDOMNode()),'shown.bs.modal', function(){
+            	if(GEPPETTO.Simulation.isLoaded()){
+            		$("#modelUrl").val(GEPPETTO.Simulation.simulationURL);
+            	}
                 if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.select-model').popover({
                         content: 'You can load a sample simulation from the list available. Alternatively, you can enter the URL of your own simulation in the input field above. Open the dropdown list and select the third simulation. Then press continue to go to the next step',
@@ -82,19 +77,12 @@ define(function (require) {
                     }).popover('show');
                 }
             });
-
-            $(this.getDOMNode()).keypress((function(e) {
-                if(e.which == 13) {
-                    e.preventDefault();
-                    this.loadSimulation();
-                }
-            }).bind(this));
         },
 
         onSelectSimulationUrl: function(event) {
             var url = event.target.value;
             if(url) {
-            	this.url = url;
+                this.loadSimulationURL(url);
                 if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.load-sim-button').popover({
                         title: 'Load Simulation',
@@ -108,10 +96,7 @@ define(function (require) {
         },
 
         onChangeXML:function(xml) {
-        	//only change xml if it's editing
-        	if(GEPPETTO.JSEditor.isEditing()){
-        		this.setState({disableLoad:!xml, simulationXML:xml});
-        	}
+            this.setState({disableLoad:!xml, simulationXML:xml});
         },
 
         render: function () {
@@ -153,8 +138,8 @@ define(function (require) {
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml">LEMS Sample Hodgkin-Huxley Neuron</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml">PCISPH Small Liquid Scene</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml">PCISPH Small Elastic Scene</option>
+                                            //Matteo: I had to remove the Hindmarsh Rose example as opposite to commenting it out as comments were ignored for some reason and it was still showing
                                             <option value="https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/C302/GEPPETTO.xml">C302 Experimental network of integrate and fire neurons</option>
-                                            <option value="https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/HindmarshRose/GEPPETTO.xml">Hindmarsh Rose Spiking Neuron</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/Purkinje/GEPPETTO.xml">NeuroML Purkinje Cell (No Simulation)</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/PVDR/GEPPETTO.xml">NeuroML C.elegans PVDR Neuron (No Simulation)</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/obj/Eyewire/GEPPETTO.xml">EyeWire Ganglion Cell (No Simulation)</option>
@@ -165,7 +150,7 @@ define(function (require) {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn" onClick={this.hide}>Cancel</button>
-                            <button type="submit" className="btn btn-warning load-sim-button" disabled={this.state.disableLoad} onClick={this.loadSimulation}>Load</button>
+                            <button type="button" className="btn btn-warning load-sim-button" disabled={this.state.disableLoad} onClick={this.loadSimulation}>Load</button>
                         </div>
                     </div>
                 </div>

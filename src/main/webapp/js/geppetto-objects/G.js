@@ -370,7 +370,6 @@ define(function(require) {
 			/**
 			 * State of debug statements, whether they are turned on or off.
 			 *
-			 * @command - G.isDebugOn()
 			 * @returns {boolean} Returns true or false depending if debug statements are turned on or off.
 			 */
 			isDebugOn: function() {

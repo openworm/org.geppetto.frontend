@@ -1,5 +1,8 @@
 language: java
 
+before_script:
+    - npm install -g bower
+
 install:
     - git clone https://github.com/openworm/org.geppetto.core.git -b $TRAVIS_BRANCH
     - cd org.geppetto.core

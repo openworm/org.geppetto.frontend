@@ -4,6 +4,7 @@ src/main/webapp/META-INF
 src/main/webapp/js/jsdocs 
 node_modules/
 node/
+src/main/webapp/js/components/dist/
 
 # Build js, css
 bin/
@@ -20,4 +21,6 @@ src/main/webapp/css/main.css
 *.swp
 .settings/
 /target
+.idea/
+*.iml
 *~

@@ -3,7 +3,7 @@ define(function (require) {
     var React = require('react'),
     	GEPPETTO = require('geppetto');
     	$ = require('jquery'),
-        HelpModal = require('jsx!components/help/HelpModal');
+        HelpModal = require('jsx!../../help/HelpModal');
 
     return React.createClass({
         mixins: [require('mixins/Button')],

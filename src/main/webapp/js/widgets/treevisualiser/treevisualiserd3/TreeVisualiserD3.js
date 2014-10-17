@@ -109,7 +109,8 @@ define(function(require) {
 				else{label = data.getName();}
 				
 				
-				if (data._metaType != "VariableNode" & data._metaType != "DynamicsSpecificationNode" & data._metaType != "ParameterSpecificationNode") {
+				if (data._metaType != "VariableNode" & data._metaType != "DynamicsSpecificationNode" & data._metaType != "ParameterSpecificationNode"
+					& data._metaType != "TextMetadataNode" & data._metaType != "FunctionNode") {
 					dataset.nodes[nodeName] = {name: label, variable: data};
 					if (parent != ''){
 						var link = {};
@@ -128,7 +129,18 @@ define(function(require) {
 					
 				}
 				else{
-					dataset.nodes[nodeName] = {name: label + "=" + data.getValue() + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):""), variable: data};
+					var labelValue = "";
+					if (data._metaType == "TextMetadataNode"){
+						labelValue = data.getValue();
+					}
+					else if (data._metaType == "FunctionNode") {
+						labelValue = data.getExpression();
+					}
+					else{
+						labelValue = data.getValue() + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
+					}
+					
+					dataset.nodes[nodeName] = {name: label + "=" + labelValue, variable: data};
 					if (parent != ''){
 						var link = {};
 						link.source = dataset.nodes[parent];

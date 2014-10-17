@@ -55,7 +55,8 @@ define(function(require){
 	require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
 	//TreeVisualiser D3 Widget
 	require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-	
+	//VariableVisualiser widget
+	require("widgets/variablevisualiser/config")(GEPPETTO);
 	loadCss("js/widgets/Widget.css");
 	};
 });

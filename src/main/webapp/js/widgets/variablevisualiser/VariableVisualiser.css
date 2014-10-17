@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *      OpenWorm - http://openworm.org/people.html
+ *     	OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,42 +30,27 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Popup Widget
- *
- * @module Widgets/Popup
- * @author Jesus R. Martinez (jesus@metacell.us)
- */
-define(function(require) {
 
-	var Widget = require('widgets/Widget');
-	var $ = require('jquery');
+.varvis_header {
+    width: 100%;
+    font-size: 14px;
+    color: white;
+    float: left;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-	return Widget.View.extend({
-		
-		/**
-		 * Initialize the popup widget
-		 */
-		initialize : function(options){
-			this.id = options.id;
-			this.name = options.name;
-			this.visible = options.visible;
-			this.render();
-			this.setSize(100,300);
-			//set class pop up
-			$("#"+this.id).addClass("popup");
-		},
-		
-		/**
-		 * Sets the message that is displayed inside the widget
-		 * 
-		 * @command setMessage(msg)
-		 * @param {String} msg - The message that is displayed inside the widget
-		 */
-		setMessage : function(msg){
-			$("#"+this.id).html(msg);
-			
-			return "Setting new Message for " + this.id;
-		}
-	});
-});
+.varvis_body {
+    width: 100%;
+    height: 100%;
+    font-size: 74px;
+    font-weight: bold;
+    color: #287F86;
+    opacity: .6;
+    float: left;
+    text-align: center;
+    vertical-align: middle;
+    resize: both;
+}

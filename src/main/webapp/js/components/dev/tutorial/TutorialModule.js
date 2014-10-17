@@ -2,12 +2,12 @@ define(function (require) {
 
     var React = require('react'),
         $ = require('jquery'),
-        Button = require('../bootstrap/button'),
+        Button = require('mixins/bootstrap/button'),
         GEPPETTO = require('geppetto');
 
     var Modal = React.createClass({
         mixins: [
-            require('jsx!../bootstrap/modal')
+            require('jsx!mixins/bootstrap/modal')
         ],
 
         dontShowNextTime: function(val){

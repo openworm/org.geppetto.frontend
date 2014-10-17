@@ -6,8 +6,7 @@ define(function(require){
 	var $ = require('jquery'),
 		GEPPETTO = require('geppetto'),
 		React = require('react'),
-		LoadingSpinner = require('jsx!./dev/simulationcontrols/LoadingSpinner'),
-		IntroModal = require('jsx!./dev/tutorial/IntroModal'),
+		LoadingSpinner = require('jsx!./loadingspinner/LoadingSpinner'),
 		utils = require('./utils');
 
     require('./components');
@@ -20,11 +19,7 @@ define(function(require){
 
 	var webGLStarted = GEPPETTO.webGLAvailable();
 
-	if(webGLStarted){
-		if(simParam) {
-			GEPPETTO.Console.executeCommand('Simulation.load("' + simParam + '")');
-		}else if(!$.cookie('geppetto_hideWelcomeMessage')){
-			React.renderComponent(IntroModal({show:true}), document.getElementById('modal-region'));
-		}
+	if(webGLStarted && simParam) {
+		GEPPETTO.Console.executeCommand('Simulation.load("' + simParam + '")');
 	}
 });

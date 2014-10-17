@@ -37,12 +37,11 @@
  */
 define(function (require) {
 
-    var React = require('react')
-        $ = require('jquery');
+    var React = require('react');
 
     return React.createClass({
         mixins: [
-            require('jsx!components/bootstrap/modal')
+            require('jsx!mixins/bootstrap/modal')
         ],
         
         getDefaultProps: function() {

@@ -42,22 +42,33 @@ define(function(require) {
 	var run = function() {
 		module("Global Scope Test");
 		test("Global scope Test", function() {
-			notEqual(GEPPETTO.Console.help(), null, "Global help() command available, passed");
+			var help = GEPPETTO.Console.help();
+			var commandCount = help.match(/--/g);  
+			notEqual(help, null, "Global help() command test.");
+			equal(48, commandCount.length, "Global help() - Looking for 48 commands in help() command.");
+			
+			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
+
+			G.showHelpWindow(false);
+			
+			var modalVisible = $('#help-modal').hasClass('in');
+			
+			equal(modalVisible, false, "Help Window Hidden");
 		});
 
 		module("G Object Test");
 		test("Test Get Current Simulation", function() {
-			equal(G.getCurrentSimulation(), GEPPETTO.Resources.NO_SIMULATION_TO_GET, "No simulation, passed.");
+			equal(G.getCurrentSimulation(), GEPPETTO.Resources.NO_SIMULATION_TO_GET, "Testing no simulation scenario.");
 		});
 
 		test("Test Debug Mode", function() {
 			G.debug(true);
 
-			equal(G.isDebugOn(), true, "Debug Mode on, passed");
+			equal(G.isDebugOn(), true, "Testing debug mode on scenario");
 
 			G.debug(false);
 
-			equal(G.isDebugOn(), false, "Debug Mode Off, passed.");
+			equal(G.isDebugOn(), false, "Testing debug mode off scenario");
 		});
 
 		test("Test G Object help method", function() {
@@ -150,14 +161,6 @@ define(function(require) {
 			G.showShareBar(false);
 			
 			equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
-						
-			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
-
-			G.showHelpWindow(false);
-			
-			var modalVisible = $('#help-modal').hasClass('in');
-			
-			equal(modalVisible, false, "Help Window Hidden");
 			
 			equal(G.shareOnTwitter(), GEPPETTO.Resources.SHARE_ON_TWITTER, "Share On Twitter");
 						
@@ -167,7 +170,7 @@ define(function(require) {
 		
 		test("Test Copy History To Clipboard", function() {
 
-			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "No commands to copy, test passed");
+			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
 
 			//add some commands to history
 			GEPPETTO.Console.executeCommand("G.help();");

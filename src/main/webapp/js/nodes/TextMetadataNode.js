@@ -31,32 +31,21 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a specification node, used for model tree
- * properties.
+ * Client class use to represent a parameter specification node, used for model
+ * tree properties.
  * 
- * @module nodes/DynamicsSpecificationNode
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * @module nodes/TextMetadataNode
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var FunctionNode = require('nodes/FunctionNode');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		relations : [ {
-			type : Backbone.One,
-			key : 'dynamics',
-			relatedModel : FunctionNode,
-		} ],
-		defaults : {
-			dynamics : {}
-		},
-		unit : "",
+		properties : {},
 		value : "",
-		scalingFactor : "",
-		dynamics : null,
-		_metaType : "",
+		_metaType : "TextMetadataNode",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -65,53 +54,31 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.unit = options.unit;
-			this.value = options.value;
-			this.scalingFactor = options.scalingFactor;
-			this.dynamics = options.dynamics;
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-		},
-
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command DynamicsSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function() {
-			return this.unit;
+			this.value = options.value;
+			this.properties = options.properties;
 		},
 
 		/**
 		 * Get value of quantity
 		 * 
-		 * @command DynamicsSpecificationNode.getValue()
+		 * @command ParameterSpecificationNode.getValue()
 		 * @returns {String} Value of quantity
 		 */
 		getValue : function() {
 			return this.value;
 		},
-
+		
 		/**
-		 * Get scaling factor
+		 * Get properties for this node
 		 * 
-		 * @command DynamicsSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
+		 * @command ParameterNode.getProperties()
+		 * @returns {String} Unit for quantity
 		 */
-		getScalingFactor : function() {
-			return this.scalingFactor;
-		},
-
-		/**
-		 * Get dynamics function node for this specifications node
-		 * 
-		 * @returns {Object} Specifies dynamics for node
-		 */
-		getDynamics : function() {
-			return this.get("dynamics");
+		getProperties : function() {
+			return this.properties;
 		},
 
 		/**
@@ -120,10 +87,8 @@ define(function(require) {
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n" + "    Dynamics : "
-					+ this.dynamics + "\n";
+					+ "    Value : " + this.value + "\n"
+					+ "    Properties : " + this.properties + "\n";
 		}
 	});
 });

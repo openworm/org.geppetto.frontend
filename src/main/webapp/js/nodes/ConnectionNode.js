@@ -31,32 +31,22 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a specification node, used for model tree
+ * Client class use to represent a parameter node, used for model tree
  * properties.
  * 
- * @module nodes/DynamicsSpecificationNode
+ * @module nodes/ParameterNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var FunctionNode = require('nodes/FunctionNode');
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		relations : [ {
-			type : Backbone.One,
-			key : 'dynamics',
-			relatedModel : FunctionNode,
-		} ],
-		defaults : {
-			dynamics : {}
-		},
-		unit : "",
-		value : "",
-		scalingFactor : "",
-		dynamics : null,
-		_metaType : "",
+		properties : {},
+		_metaType : "ConnectionNode",
+		entityInstancePath : null,
+		type : null,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -65,65 +55,39 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.unit = options.unit;
-			this.value = options.value;
-			this.scalingFactor = options.scalingFactor;
-			this.dynamics = options.dynamics;
-			this.name = options.name;
 			this.id = options.id;
+			this.entityInstancePath = options.entityInstancePath;
+			this.type = options.type;
 			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
 		},
 
 		/**
-		 * Get the type of tree this is
+		 * Get type of connection
 		 * 
-		 * @command DynamicsSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
+		 * @command ConnectionNode.getType()
+		 * @returns {String} Entity ID for this connection 
 		 */
-		getUnit : function() {
-			return this.unit;
+		getEntityId : function() {
+			return this.entityInstancePath;
 		},
-
+		
 		/**
-		 * Get value of quantity
+		 * Get type of connection
 		 * 
-		 * @command DynamicsSpecificationNode.getValue()
-		 * @returns {String} Value of quantity
+		 * @command ConnectionNode.getType()
+		 * @returns {String} Type of connection
 		 */
-		getValue : function() {
-			return this.value;
-		},
-
-		/**
-		 * Get scaling factor
-		 * 
-		 * @command DynamicsSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
-		 */
-		getScalingFactor : function() {
-			return this.scalingFactor;
-		},
-
-		/**
-		 * Get dynamics function node for this specifications node
-		 * 
-		 * @returns {Object} Specifies dynamics for node
-		 */
-		getDynamics : function() {
-			return this.get("dynamics");
+		getType : function() {
+			return this.type;
 		},
 
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n" + "    Dynamics : "
-					+ this.dynamics + "\n";
+			return "Id : " + this.id + "\n" 
+					+ "    EntityInstancePath : " + this.entityInstancePath + "\n"
+					+ "    Type : " + this.type + "\n";
 		}
 	});
 });

@@ -49,7 +49,7 @@ define(function(require) {
 				}
 			};
 			GEPPETTO.MessageSocket.addHandler(handler);
-			G.runScript("http://127.0.0.1:8080/resources/testscript1.js");
+			G.runScript("http://127.0.0.1:8080/org.geppetto.frontend/resources/testscript1.js");
 		});
 
 		module("Simulation Load From Content Test");

@@ -380,7 +380,9 @@ define(function(require) {
 					id : entity.id,
 					name : entity.id,
 					instancePath : entity.instancePath,
-					position : entity.position
+					position : entity.position,
+					domainType : entity.domainType,
+					_metaType : entity._metaType
 				});
 				// add commands to console autocomplete and help option
 				GEPPETTO.Console.addTag(entity.instancePath);
@@ -420,7 +422,9 @@ define(function(require) {
 					name : aspect.id,
 					simulator : aspect.simulator,
 					model : aspect.model,
-					instancePath : aspect.instancePath
+					domainType : aspect.domainType,
+					instancePath : aspect.instancePath,
+					_metaType : GEPPETTO.Resources.ASPECT_NODE
 				});
 				GEPPETTO.Console.updateTags(aspect.instancePath, a);
 
@@ -459,6 +463,7 @@ define(function(require) {
 					type : node.type,
 					id : node.id,
 					instancePath : node.instancePath,
+					domainType : node.domainType,
 					_metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE,
 				});
 
@@ -473,6 +478,7 @@ define(function(require) {
 					id : node.id,
 					name : node.id,
 					instancePath : node.instancePath,
+					domainType : node.domainType,
 					_metaType : GEPPETTO.Resources.COMPOSITE_NODE
 				});
 
@@ -489,6 +495,7 @@ define(function(require) {
 					expression : node.expression,
 					arguments : node.arguments,
 					instancePath : node.instancePath,
+					domainType : node.domainType,
 					_metaType : GEPPETTO.Resources.FUNCTION_NODE
 				});
 
@@ -505,6 +512,7 @@ define(function(require) {
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,
 					instancePath : node.instancePath,
+					domainType : node.domainType,
 					_metaType : GEPPETTO.Resources.DYNAMICS_NODE
 				});
 				var f = new FunctionNode({
@@ -527,6 +535,7 @@ define(function(require) {
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,
 					instancePath : node.instancePath,
+					domainType : node.domainType,
 					_metaType : GEPPETTO.Resources.PARAMETER_SPEC_NODE
 				});
 
@@ -540,6 +549,7 @@ define(function(require) {
 					name : node.id,
 					instancePath : node.instancePath,
 					properties : node.properties,
+					domainType : node.domainType,
 					_metaType : GEPPETTO.Resources.PARAMETER_NODE
 				});
 
@@ -554,6 +564,7 @@ define(function(require) {
 					type : node.type,
 					entityInstancePath : node.entityInstancePath,
 					instancePath : node.instancePath,
+					domainType : node.domainType,
 					_metaType : GEPPETTO.Resources.CONNECTION_NODE
 				});
 
@@ -561,15 +572,15 @@ define(function(require) {
 
 				for(var key in node){
 					if(typeof node[key] == "object"){
-						if(node[key].metaType==GEPPETTO.Resources.PARAMETER_NODE){
+						if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_NODE){
 							var custom = this.createParameterNode(node[key]);
 							a.get("customNodes").add(custom);
 						}
-						if(node[key].metaType==GEPPETTO.Resources.PARAMETER_SPEC_NODE){
+						if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_SPEC_NODE){
 							var custom = this.createParameterSpecificationNode(node[key]);
 							a.get("customNodes").add(custom);
 						}
-						if(node[key].metaType==GEPPETTO.Resources.VISUAL_REFERENCE_NODE){
+						if(node[key]._metaType==GEPPETTO.Resources.VISUAL_REFERENCE_NODE){
 							var vis = this.createVisualReferenceNode(node[key]);
 							a.get("visualObjectReferenceNodes").add(vis);
 						}
@@ -583,7 +594,9 @@ define(function(require) {
 					id : node.id,
 					type : node.type,
 					aspectInstancePath : node.aspectInstancePath,
+					domainType : node.domainType,
 					visualObjectID : node.visualObjectID,
+					_metaType : GEPPETTO.Resources.VISUAL_REFERENCE_NODE,
 				});
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);
@@ -599,6 +612,7 @@ define(function(require) {
 					unit : node.unit,
 					scalingFactor : node.scalingFactor,
 					instancePath : node.instancePath,
+					domainType : node.domainType,
 					_metaType : GEPPETTO.Resources.VARIABLE_NODE
 				});
 				GEPPETTO.Console.updateTags(node.instancePath, a);

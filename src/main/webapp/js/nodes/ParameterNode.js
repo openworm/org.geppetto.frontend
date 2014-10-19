@@ -44,7 +44,6 @@ define(function(require) {
 
 	return Node.Model.extend({
 		properties : {},
-		_metaType : "ParameterNode",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -57,6 +56,8 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
+			this.domainType = options.domainType;
+			this._metaType = options._metaType;
 		},
 
 		/**

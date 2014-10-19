@@ -28,7 +28,6 @@ with open('components.js', 'w') as componentsfile:
     for dependency in config['dependencies']:
         componentConfig = load_json(
             os.path.join('dist', dependency, 'bower.json')).get('main')
-
         if componentConfig:
             componentsfile.write(
                 "require('jsx!./dist/" + dependency + "/" + componentConfig + "');\n")

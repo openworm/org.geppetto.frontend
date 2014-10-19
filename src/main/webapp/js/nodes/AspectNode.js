@@ -62,7 +62,6 @@ define(function(require) {
 				VisualizationTree : {},
 				SimulationTree : {},
 				parentEntity : null,
-				_metaType : "AspectNode",
 				/**
 				 * Initializes this node with passed attributes
 				 * 
@@ -76,6 +75,8 @@ define(function(require) {
 					this.modelURL = options.model;
 					this.instancePath = options.instancePath;
 					this.name = options.name;
+					this._metaType = options._metaType;
+					this.domainType = options.domainType;
 				},
 
 				/**
@@ -86,7 +87,7 @@ define(function(require) {
 				 */
 				hide : function() {
 					var message;
-					if (GEPPETTO.hideAspect(this.instancePath)) {
+					if (GEPPETTO.SceneController.hideAspect(this.instancePath)) {
 						message = GEPPETTO.Resources.HIDE_ASPECT
 								+ this.instancePath;
 					} else {
@@ -104,7 +105,7 @@ define(function(require) {
 				 */
 				show : function() {
 					var message;
-					if (GEPPETTO.showAspect(this.instancePath)) {
+					if (GEPPETTO.SceneController.showAspect(this.instancePath)) {
 						message = GEPPETTO.Resources.SHOW_ASPECT
 								+ this.instancePath;
 					} else {
@@ -113,26 +114,7 @@ define(function(require) {
 					this.visible = true;
 					return message;
 				},
-				/**
-				 * Unselects the aspect
-				 * 
-				 * @command AspectNode.unselect()
-				 * 
-				 */
-				unselect : function() {
-					var message;
-					if (GEPPETTO.unselectAspect(this.instancePath)) {
-						message = GEPPETTO.Resources.UNSELECTING_ASPECT
-								+ this.instancePath;
-						this.selected = false;
-						this.parentEntity.selected = false;
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
-					} else {
-						message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
-					}
-					return message;
-				},
+				
 				/**
 				 * Selects the aspect
 				 * 
@@ -141,12 +123,12 @@ define(function(require) {
 				 */
 				select : function() {
 					var message;
-					if (GEPPETTO.selectAspect(this.instancePath)) {
+					if (GEPPETTO.SceneController.selectAspect(this.instancePath)) {
 						message = GEPPETTO.Resources.SELECTING_ASPECT
 								+ this.instancePath;
 						this.selected = true;
 						this.parentEntity.selected = true;
-
+						GEPPETTO.SceneController.setGhostEffect(true);
 						GEPPETTO.WidgetsListener
 								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {
@@ -156,6 +138,28 @@ define(function(require) {
 					return message;
 				},
 
+				/**
+				 * Unselects the aspect
+				 * 
+				 * @command AspectNode.unselect()
+				 * 
+				 */
+				unselect : function() {
+					var message;
+					if (GEPPETTO.SceneController.unselectAspect(this.instancePath)) {
+						message = GEPPETTO.Resources.UNSELECTING_ASPECT
+								+ this.instancePath;
+						this.selected = false;
+						this.parentEntity.selected = false;
+						GEPPETTO.SceneController.setGhostEffect(false);
+						GEPPETTO.WidgetsListener
+								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+					} else {
+						message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
+					}
+					return message;
+				},
+				
 				/**
 				 * Get the model interpreter associated with aspect
 				 * 

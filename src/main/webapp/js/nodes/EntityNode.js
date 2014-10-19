@@ -69,7 +69,6 @@ define(function(require) {
 				position : null,
 				selected : false,
 				visible : true,
-				_metaType : "EntityNode",
 				/**
 				 * Initializes this node with passed attributes
 				 * 
@@ -81,6 +80,8 @@ define(function(require) {
 					this.name = options.name;
 					this.position = options.position;
 					this.instancePath = options.instancePath;
+					this._metaType = options._metaType;
+					this.domainType = options.domainType;
 				},
 
 				/**
@@ -92,7 +93,7 @@ define(function(require) {
 				hide : function() {
 					var message;
 
-					if (GEPPETTO.hideEntity(this.instancePath)) {
+					if (GEPPETTO.SceneController.hideEntity(this.instancePath)) {
 						message = GEPPETTO.Resources.HIDE_ENTITY
 								+ this.instancePath;
 					} else {
@@ -112,7 +113,7 @@ define(function(require) {
 				show : function() {
 					var message;
 
-					if (GEPPETTO.showEntity(this.instancePath)) {
+					if (GEPPETTO.SceneController.showEntity(this.instancePath)) {
 						message = GEPPETTO.Resources.SHOW_ENTITY
 								+ this.instancePath;
 						this.visible = true;
@@ -125,6 +126,34 @@ define(function(require) {
 				},
 
 				/**
+				 * Selects the entity
+				 * 
+				 * @command EntityNode.unselect()
+				 * 
+				 */
+				select : function() {
+
+					var message;
+
+					if (GEPPETTO.SceneController.selectEntity(this.instancePath)) {
+						message = GEPPETTO.Resources.SELECTING_ENTITY
+								+ this.instancePath;
+						this.selected = true;
+
+						GEPPETTO.SceneController.setGhostEffect(true);
+
+						// Notify any widgets listening that there has been a
+						// changed to selection
+						GEPPETTO.WidgetsListener
+								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+					} else {
+						message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
+					}
+
+					return message;
+				},
+				
+				/**
 				 * Unselects the entity
 				 * 
 				 * @command EntityNode.unselect()
@@ -133,10 +162,12 @@ define(function(require) {
 				unselect : function() {
 					var message;
 
-					if (GEPPETTO.unselectEntity(this.instancePath)) {
+					if (GEPPETTO.SceneController.unselectEntity(this.instancePath)) {
 						message = GEPPETTO.Resources.UNSELECTING_ENTITY
 								+ this.instancePath;
 						this.selected = false;
+						
+						GEPPETTO.SceneController.setGhostEffect(false);
 
 						// Notify any widgets listening that there has been a
 						// changed to selection
@@ -150,32 +181,6 @@ define(function(require) {
 				},
 
 				/**
-				 * Selects the entity
-				 * 
-				 * @command EntityNode.unselect()
-				 * 
-				 */
-				select : function() {
-
-					var message;
-
-					if (GEPPETTO.selectEntity(this.instancePath)) {
-						message = GEPPETTO.Resources.SELECTING_ENTITY
-								+ this.instancePath;
-						this.selected = true;
-
-						// Notify any widgets listening that there has been a
-						// changed to selection
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
-					} else {
-						message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
-					}
-
-					return message;
-				},
-
-				/**
 				 * Zooms to entity
 				 * 
 				 * @command EntityNode.zoomTo()
@@ -183,9 +188,10 @@ define(function(require) {
 				 */
 				 zoomTo : function(){
 				 
-				 GEPPETTO.zoomToEntity(this.instancePath);
+					 GEPPETTO.SceneController.zoomToEntity(this.instancePath);
 				 
-				 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; },
+					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
+			     },
 				 
 
 				/**
@@ -242,6 +248,14 @@ define(function(require) {
 					 children.add(this.get("entities").models);
 					 children.add(this.get("connections").models);
 					 return children;
+				},
+				
+				showInputConnections : function(mode){
+					
+				},
+				
+				showOutputConnections : function(mode){
+					
 				},
 
 				/**

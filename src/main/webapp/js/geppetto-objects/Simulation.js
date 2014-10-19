@@ -61,7 +61,12 @@ define(function(require) {
 			loadingTimer : null,
 			runTimeTree : {},
 			initializationTime : null,
-			
+			selectionOptions : {
+				show_inputs : true,
+				show_outputs : true,
+				draw_connections_lines : true,
+				hide_not_selected : false
+			},
 			/**
 			 * Simulation.Status
 			 * 
@@ -185,7 +190,7 @@ define(function(require) {
 					if(webGLStarted) {
 						if(this.status == this.StatusEnum.INIT) {
 							//we call it only the first time
-							GEPPETTO.animate();
+							GEPPETTO.SceneController.animate();
 						}
 						GEPPETTO.MessageSocket.send("init_url", simulationURL);
 						this.initializationTime = new Date();
@@ -233,7 +238,7 @@ define(function(require) {
 				if(webGLStarted) {
 					if(GEPPETTO.Simulation.status == GEPPETTO.Simulation.StatusEnum.INIT) {
 						//we call it only the first time
-						GEPPETTO.animate();
+						GEPPETTO.SceneController.animate();
 					}
 
 					GEPPETTO.MessageSocket.send("init_sim", content);
@@ -536,6 +541,32 @@ define(function(require) {
 			 */
 			addOnNodeUpdatedCallback: function(varnode, callback) {
 				this.listeners[varnode.getInstancePath()] = callback;
+			},
+			
+			/**
+			 * Sets options that happened during selection of an entity. For instance, 
+			 * user can set things that happened during selection as if connections inputs and outputs are shown,
+			 * if connection lines are drawn and if other entities that were not selected are still visible.
+			 * 
+			 * @param {Object} options - New set of options for selection process
+			 */
+			setOnSelectionOptions : function(options){
+				if(options.show_inputs != null){
+					this.selectionOptions.show_inputs = options.show_inputs;
+				}
+				if(options.show_outputs != null){
+					this.selectionOptions.show_outputs = options.show_outputs;
+				}
+				if(options.draw_connection_lines != null){
+					this.selectionOptions.draw_connection_lines = options.draw_connection_lines;
+				}
+				if(options.hide_not_selected != null){
+					this.selectionOptions.hide_not_selected = options.hide_not_selected;
+				}
+			},
+			
+			showUnselected : function(mode){
+				
 			},
 			
 			/**

@@ -37,12 +37,11 @@
  */
 define(function (require) {
 
-    var React = require('react')
-        $ = require('jquery');
+    var React = require('react');
 
     return React.createClass({
         mixins: [
-            require('jsx!../bootstrap/modal')
+            require('jsx!mixins/bootstrap/modal')
         ],
         
         getDefaultProps: function() {
@@ -55,21 +54,18 @@ define(function (require) {
         },
         
         render: function (){
-        	return <div className="modal fade" id="javascriptEditor">
+        	return <div className="modal fade" id="infomodal">
         			<div className="modal-dialog">
         			<div className="modal-content">
         				<div className="modal-header" id="infomodal-header">
         					<button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
-        					<h3 id="jsEditor-title" className="text-center">{this.props.title}</h3>
+        					<h3 id="infomodal-title" className="text-center">{this.props.title}</h3>
         				</div>
         				<div className="modal-body">
-	        				<div class="controls">
-	        					<textarea id="javascriptCode" name="javascriptCode" className="javascriptCode_loading"></textarea>
-	        					<button id="javascriptFullscreen" type="button" className="button icon-fullscreen"></button>
-	        				</div>
-	        			</div>
-        				<div className="modal-footer" id="infomodal-footer">
-        			 		<button  id="jsEditor-btn" className="btn btn-warning" data-dismiss="modal" aria-hidden="true"  dangerouslySetInnerHTML={{__html: this.props.buttonLabel}}>
+        			 		<p id="infomodal-text">{this.props.text}</p>
+        			 	</div>
+        			 	<div className="modal-footer" id="infomodal-footer">
+        			 		<button  id="infomodal-btn" className="btn btn-warning" data-dismiss="modal" aria-hidden="true" onClick={this.props.onClick} dangerouslySetInnerHTML={{__html: this.props.buttonLabel}}>
                                                 </button>
         			 	</div>
         			 </div>

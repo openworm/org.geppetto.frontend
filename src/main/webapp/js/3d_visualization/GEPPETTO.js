@@ -76,129 +76,15 @@ define(function(require) {
 				return true;
 			}
 		},
-
-		/**
-		 * Updates the scene
-		 */
-		updateScene : function(newRuntimeTree) {
-			VARS.needsUpdate = true;
-			if (VARS.needsUpdate) {
-				var entities = newRuntimeTree;
-
-				for ( var eindex in entities) {
-
-					var entity = entities[eindex];
-					for ( var a in entity.getAspects()) {
-						var aspect = entity.getAspects()[a];
-						var visualTree = aspect.VisualizationTree;
-						for ( var vm in visualTree.content) {
-							var node = visualTree.content[vm];
-
-							if (node != null
-									&& typeof node === "object") {
-
-								var metaType = node._metaType;
-
-								if(metaType == "CompositeNode"){
-									for ( var gindex in node) {
-										var vo = node[gindex];
-										var voType = vo._metaType;
-										if (voType == "ParticleNode" || voType == "SphereNode"
-												|| voType == "CylinderNode"){
-											GEPPETTO.updateGeometry(vo);
-										}
-									}
-
-								}
-								else{
-									if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
-											metaType == "CylinderNode") {
-										GEPPETTO.updateGeometry(node);								
-									}
-								}
-							}
-						}
-
-						var entityGeometry = VARS.visualModelMap[aspect.instancePath];
-						if (entityGeometry) {
-							// if an entity is represented by a particle
-							// system we need to
-							// mark it as dirty for it to be updated
-							if (entityGeometry instanceof THREE.ParticleSystem) {
-								entityGeometry.geometry.verticesNeedUpdate = true;
-							}
-						}
-					}
-				}
-				VARS.needsUpdate = false;
-			}
-			
-			if (VARS.customUpdate != null) {
-				GEPPETTO.customUpdate();
-			}
-		},
-
-		/**
-		 * Updates a THREE geometry from the json one
-		 * 
-		 * @param g
-		 *            the update json geometry
-		 */
-		updateGeometry : function(g) {
-			var threeObject = VARS.visualModelMap[g.instancePath];
-			if (threeObject) {
-				if (threeObject instanceof THREE.Vector3) {
-					threeObject.x = g.position.x;
-					threeObject.y = g.position.y;
-					threeObject.z = g.position.z;
-				} else {
-					// update the position
-					threeObject.position.set(g.position.x, g.position.y,
-							g.position.z);
-				}
-			}
-		},
 		
 		updateVisualMap : function(instancePath, object){
 			VARS.visualModelMap[instancePath] = object;
 		},
 		
-		/**
-		 * @param {AspectNode} aspect - the aspect containing the entity to be lit
-		 * @param {String} entityName - the name of the entity to be rotated (in the 3d model)
-		 * @param {Float}
-		 *            intensity - the lighting intensity from 0 (no
-		 *            illumination) to 1 (full illumination)
-		 */
-		lightUpEntity : function(aspect, entityName, intensity) {
-			if (intensity < 0) {
-				intensity = 0;
-			}
-			if (intensity > 1) {
-				intensity = 1;
-			}
-
-			var getRGB = function(hexString) {
-				return {
-					r : parseInt(hexString.substr(2, 2), 16),
-					g : parseInt(hexString.substr(4, 2), 16),
-					b : parseInt(hexString.substr(6, 2), 16)
-				};
-			};
-			var scaleColor = function(color) {
-				return (Math.floor(color + ((255 - color) * intensity)))
-						.toString(16);
-			};
-			var threeObject = GEPPETTO.getNamedThreeObjectFromInstancePath(aspect.getInstancePath(), entityName);
-			if (threeObject != null) {
-				var originalColor = getRGB(threeObject.material.originalColor);
-				threeObject.material.color.setHex('0x'
-						+ scaleColor(originalColor.r)
-						+ scaleColor(originalColor.g)
-						+ scaleColor(originalColor.b));
-			}
+		getVARS : function(){
+			return VARS;
 		},
-
+		
 		/**
 		 * Set object local rotation, with respect to z (Euler angle)
 		 * @param {AspectNode} aspect - the aspect containing the entity to rotate
@@ -214,74 +100,6 @@ define(function(require) {
 			}
 		},
 
-
-		/**
-		 * @param runTimeTree
-		 */
-		populateScene : function(runTimeTree) {
-			for ( var eindex in runTimeTree) {
-				//we load each entity attached as sibling in runtime tree, we send null 
-				//as second parameter to make it clear this entity has no parent. 
-				GEPPETTO.loadEntity(runTimeTree[eindex],null);
-			}
-
-			GEPPETTO.calculateSceneCenter(VARS.scene);
-			GEPPETTO.updateCamera();
-		},
-
-		/**
-		 * @param entityNode 
-		 */
-		loadEntity : function(entityNode,parentNode, materialParam) {
-			var material = materialParam;// ==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
-			var aspects = entityNode.getAspects();
-			var children = entityNode.getEntities();
-			var position = entityNode.position;
-			if(parentNode == null){
-				VARS.entities[entityNode.instancePath] = {};
-			}else{
-				parentNode[entityNode.id] = {};
-			}
-			
-			for ( var a in aspects) {
-				var aspect = aspects[a];
-				var meshes = GEPPETTO.THREEFactory.generate3DObjects(aspect, true, material);
-				for ( var m in meshes) {
-					var mesh = meshes[m];
-					mesh.name = aspect.instancePath;
-					VARS.scene.add(mesh);
-					if (position != null) {
-						mesh.position = new THREE.Vector3(position.x,
-								position.y, position.z);
-					}
-					VARS.aspects[mesh.eid] = mesh;
-					VARS.aspects[mesh.eid].visible = true;
-					VARS.aspects[mesh.eid].selected = false;
-					VARS.aspects[mesh.eid].type = "Aspect";
-					if(parentNode!=null){
-						parentNode[entityNode.id].selected = false;
-						parentNode[entityNode.id].type = "Entity";
-						parentNode[entityNode.id].eid =  entityNode.instancePath;
-						parentNode[entityNode.id][aspect.id] = VARS.aspects[mesh.eid];
-						parentNode[entityNode.id][aspect.id].selected = false;
-					}else{
-						VARS.entities[entityNode.instancePath].selected = false;
-						VARS.entities[entityNode.instancePath].type = "Entity";
-						VARS.entities[entityNode.instancePath][aspect.id] = VARS.aspects[mesh.eid];
-						VARS.entities[entityNode.instancePath][aspect.id].selected = false;
-					}
-				}
-			}
-			for ( var c =0 ; c< children.length; c++) {
-				if(parentNode !=null){
-					GEPPETTO.loadEntity(children[c], parentNode[entityNode.id], material);
-				}else{
-					GEPPETTO.loadEntity(children[c], VARS.entities[entityNode.instancePath],  material);
-				}
-			}
-
-		},
-		
 		/**
 		 * Compute the center of the scene.
 		 */
@@ -357,12 +175,19 @@ define(function(require) {
 		},
 
 		/**
-		 * @returns {Boolean}
+		 * Status of scene, populated or not
+		 * 
+		 * @returns {Boolean} True or false depending whether scene is populated or not
 		 */
 		isScenePopulated : function() {
 			return !(_.isEmpty(VARS.visualModelMap));
 		},
 
+		/**
+		 * Has canvas been created? 
+		 * 
+		 * @returns {Boolean] True or false if canvas has been created or not
+		 */
 		isCanvasCreated : function() {
 			return VARS.canvasCreated;
 		},
@@ -384,17 +209,20 @@ define(function(require) {
 				}
 			}
 		},
-
-		showStats : function() {
-			if ($("#stats").length == 0) {
-				GEPPETTO.setupStats();
-			} else {
-				$("#stats").show();
+		
+		/**
+		 * Displays HUD for FPS stats
+		 */
+		toggleStats : function(mode) {
+			if(mode){
+				if ($("#stats").length == 0) {
+					GEPPETTO.setupStats();
+				} else {
+					$("#stats").show();
+				}
+			}else{
+				$("#stats").hide();
 			}
-		},
-
-		hideStats : function() {
-			$("#stats").hide();
 		},
 
 		/**
@@ -515,34 +343,6 @@ define(function(require) {
 		},
 
 		/**
-		 * Animate simulation
-		 */
-		animate : function() {
-			VARS.debugUpdate = VARS.needsUpdate; // so that we log only the
-			// cycles when we are
-			// updating the scene
-			if (GEPPETTO.Simulation.getSimulationStatus() == 2
-					&& VARS.debugUpdate) {
-				GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_STARTING);
-			}
-			VARS.controls.update();
-			requestAnimationFrame(GEPPETTO.animate);
-			if (VARS.rotationMode) {
-				var timer = new Date().getTime() * 0.0005;
-				VARS.camera.position.x = Math.floor(Math.cos(timer) * 200);
-				VARS.camera.position.z = Math.floor(Math.sin(timer) * 200);
-			}
-			GEPPETTO.render();
-			if (VARS.stats) {
-				VARS.stats.update();
-			}
-			if (GEPPETTO.Simulation.getSimulationStatus() == 2
-					&& VARS.debugUpdate) {
-				GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
-			}
-		},
-
-		/**
 		 * @param aroundObject
 		 *            the object around which the rotation will happen
 		 */
@@ -584,183 +384,6 @@ define(function(require) {
 				//This is to handle aberrations such as hhcell.electrical being both
 				// the aspect AND the name of the entity to be lit 
 				return VARS.scene.getObjectByName(aspectIP, true);
-			}
-		},
-
-		unSelectAll : function() {
-			for ( var v in VARS.entities) {
-				var entity = VARS.entities[v];
-				for(var e in entity){
-					if(entity[e].selected == true){
-						entity.selected = false;
-						GEPPETTO.unselectAspect(entity[e].eid);
-					}
-				}
-			}
-		},
-		
-		selectEntity : function(instancePath) {
-			var entity = GEPPETTO.Utility.deepFind(VARS.entities,instancePath);
-			var selected = false;
-
-			for(var a in entity){
-				var child = entity[a];
-				if(child.type == "Entity"){
-					GEPPETTO.selectEntity(child.eid);
-				}
-				else if(child.type == "Aspect"){
-					selected = GEPPETTO.selectAspect(child.eid);
-				}
-			}
-			
-			for ( var v in VARS.aspects) {
-				if(v != instancePath){
-					if(VARS.aspects[v].selected == false){
-						VARS.aspects[v].material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
-						VARS.aspects[v].selected = false;
-						return true;
-					}					
-				}
-			}
-
-			return selected;
-		},
-
-		unselectEntity : function(instancePath) {
-			var entity = GEPPETTO.Utility.deepFind(VARS.entities,instancePath);
-
-			var selected = false;
-			for(var a in entity){
-				var child = entity[a];
-				if(child.type == "Entity"){
-					GEPPETTO.unselectEntity(child.eid);
-				}
-				else if(child.type == "Aspect"){
-					selected = GEPPETTO.unselectAspect(child.eid);
-				}
-			}
-			return selected;
-		},
-
-		showEntity : function(instancePath) {
-			var visible = false;
-			var entity = GEPPETTO.Utility.deepFind(VARS.entities,instancePath);
-
-			for(var a in entity){
-				var child = entity[a];
-				if(child.type == "Entity"){
-					GEPPETTO.showEntity(child.eid);
-				}
-				else if(child.type == "Aspect"){
-					visible = GEPPETTO.showAspect(child.eid);
-				}
-			}
-
-			return visible;
-		},
-
-		hideEntity : function(instancePath) {
-			var entity = GEPPETTO.Utility.deepFind(VARS.entities,instancePath);
-			var visible = false;
-			
-			for(var a in entity){
-				var child = entity[a];
-				if(typeof(child) ===  "object"){
-					if(child.type == "Entity"){
-						GEPPETTO.hideEntity(child.eid);
-					}
-					else if(child.type == "Aspect"){
-						visible = GEPPETTO.hideAspect(child.eid);
-					}
-				}
-			}
-
-			return visible;
-		},
-
-		zoomToEntity : function(instancePath) {
-			var entity = null;
-			for ( var e in VARS.entities) {
-				if ( e == instancePath) {
-					entity = VARS.entities[e];
-				}
-			}
-			
-			if(entity!=null){
-				GEPPETTO.calculateSceneCenter(entity);
-				GEPPETTO.updateCamera();
-			}
-		},
-		
-		selectAspect : function(instancePath) {
-			for ( var v in VARS.aspects) {
-				if(v == instancePath){
-					if(VARS.aspects[v].selected == false){
-						VARS.aspects[v].material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
-						VARS.aspects[v].selected = true;
-						return true;
-					}					
-				}
-			}
-			return false;
-		},
-		
-		unselectAspect : function(instancePath) {
-			for ( var key in VARS.aspects) {
-				if(key == instancePath){
-					if(VARS.aspects[key].selected == true){
-						VARS.aspects[key].material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-						VARS.aspects[key].selected = false;
-						return true;
-					}
-				}
-			}
-
-			return false;
-		},
-
-		showAspect : function(instancePath) {
-			for ( var v in VARS.aspects) {
-				if (v == instancePath) {
-					if (VARS.aspects[v].visible == true) {
-						return false;
-					} else {
-						VARS.aspects[v].visible = true;
-						return true;
-					}
-				}
-			}
-			;
-
-			return false;
-		},
-		
-		hideAspect : function(instancePath) {
-			for ( var v in VARS.aspects) {
-				if (v == instancePath) {
-					if (VARS.aspects[v].visible == false) {
-						return false;
-					} else {
-						VARS.aspects[v].visible = false;
-						return true;
-					}
-				}
-			}
-			;
-			return false;
-		},
-
-		zoomToAspect : function(instancePath) {
-			var aspect;
-			for ( var a in VARS.aspects) {
-				if ( instancepath == a) {
-					aspect = VARS.aspects[a];
-				}
-			}
-			
-			if(aspect!=null){
-				GEPPETTO.calculateSceneCenter(aspect);
-				GEPPETTO.updateCamera();
 			}
 		},
 
@@ -834,8 +457,9 @@ define(function(require) {
 
 	require('SandboxConsole')(GEPPETTO);
 	require('GEPPETTO.Resources')(GEPPETTO);
-	require('GEPPETTO.Init')(GEPPETTO);
-	require('GEPPETTO.THREEFactory')(GEPPETTO);
+	require('3d_visualization/GEPPETTO.Init')(GEPPETTO);
+	require('3d_visualization/GEPPETTO.SceneFactory')(GEPPETTO);
+	require('3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
 	require('GEPPETTO.Vanilla')(GEPPETTO);
 	require('GEPPETTO.FE')(GEPPETTO);
 	require('GEPPETTO.ScriptRunner')(GEPPETTO);

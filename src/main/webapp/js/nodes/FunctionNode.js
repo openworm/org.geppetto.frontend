@@ -57,6 +57,8 @@ define(function(require) {
 			this.instancePath = options.instancePath;
 			this.arguments = options.arguments;
 			this.expression = options.expression;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**

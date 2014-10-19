@@ -44,7 +44,6 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		_metaType : "VisualObjectReferenceNode",
 		aspectInstancePath : null,
 		visualObjectID : null,
 
@@ -59,6 +58,8 @@ define(function(require) {
 			this.aspectInstancePath = options.aspectInstancePath;
 			this.visualObjectID = options.visualObjectID;
 			this.instancePath = options.instancePath;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**

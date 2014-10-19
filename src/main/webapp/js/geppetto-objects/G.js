@@ -44,7 +44,7 @@ define(function(require) {
 		var debugMode = false;
 		var $ = require('jquery'),
 		React = require('react'),
-        ClipboardModal = require('jsx!components/dev/popups/ClipboardModal');
+        ClipboardModal = require('jsx!components/popups/ClipboardModal');
 
 		/**
 		 * @exports geppetto-objects/G
@@ -144,11 +144,11 @@ define(function(require) {
 				debugMode = mode;
 
 				if(mode) {
-					GEPPETTO.showStats();
+					GEPPETTO.toggleStats(true);
 					return GEPPETTO.Resources.DEBUG_ON;
 				}
 				else {
-					GEPPETTO.hideStats();
+					GEPPETTO.toggleStats(false);
 					return GEPPETTO.Resources.DEBUG_OFF;
 				}
 			},

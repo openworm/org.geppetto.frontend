@@ -50,11 +50,11 @@ define(function(require) {
 				
 				COLORS : {
 						DEFAULT : 0X199e8,
-						GHOST : 0X50199e8,
+						GHOST : 0X199e8,
 						SELECTED : 0Xffcc00,
 						INPUT_TO_SELECTED : 0Xffdfc6,
 						OUTPUT_TO_SELECTED : 0Xff5a02,
-						HIGHLIGHTED : 0Xff1a02,
+						HIGHLIGHTED : 0Xff1a02, 
 						INPUT_AND_OUTPUT : 0X649615,
 				},
 

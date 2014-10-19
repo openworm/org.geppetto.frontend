@@ -8,7 +8,7 @@ define(function (require) {
 
     return React.createClass({
         mixins: [
-            require('jsx!../bootstrap/modal'),
+            require('jsx!mixins/bootstrap/modal'),
             require('jsx!mixins/Events')
         ],
 

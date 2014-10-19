@@ -60,7 +60,6 @@ define(function(require) {
 		},
 
 		properties : {},
-		_metaType : "ConnectionNode",
 		entityInstancePath : null,
 		type : null,
 
@@ -75,6 +74,8 @@ define(function(require) {
 			this.entityInstancePath = options.entityInstancePath;
 			this.type = options.type;
 			this.instancePath = options.instancePath;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**
@@ -113,6 +114,10 @@ define(function(require) {
 		},
 		
 		highlight : function(mode){
+			
+		},
+		
+		showConnectionLine : function(mode){
 			
 		},
 		

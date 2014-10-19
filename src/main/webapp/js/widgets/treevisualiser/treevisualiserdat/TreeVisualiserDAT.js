@@ -125,22 +125,12 @@ define(function(require) {
 				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" | data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = {};
-						var labelValue = "";
-						if (data._metaType == "TextMetadataNode"){
-							labelValue = data.getValue();
-						}
-						else if (data._metaType == "FunctionNode") {
-							labelValue = data.getExpression();
-						}
-						else{
-							labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
-						}
 						
-						dataset.valueDict[data.instancePath][label] = labelValue; 
+						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data); 
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
 					}
 					else{
-						dataset.valueDict[data.instancePath][label] = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
+						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
 					}
 				}
 				else{
@@ -151,7 +141,9 @@ define(function(require) {
 					if (children.length > 0){
 						var parentFolderTmp = parentFolder; 
 						for (var childIndex in children){
-							this.prepareTree(parentFolderTmp, children[childIndex]);
+							if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
+								this.prepareTree(parentFolderTmp, children[childIndex]);
+							}
 						}
 					}
 				}
@@ -170,6 +162,19 @@ define(function(require) {
 			}
 		},
 
+		getValueFromData : function(data){
+			var labelValue = "";
+			if (data._metaType == "TextMetadataNode"){
+				labelValue = data.getValue();
+			}
+			else if (data._metaType == "FunctionNode") {
+				labelValue = data.getExpression();
+			}
+			else{
+				labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
+			}
+			return labelValue;
+		}
 
 	});
 });

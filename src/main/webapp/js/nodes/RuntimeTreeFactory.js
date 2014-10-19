@@ -595,6 +595,7 @@ define(function(require) {
 					type : node.type,
 					aspectInstancePath : node.aspectInstancePath,
 					domainType : node.domainType,
+					instancePath : node.instancePath,
 					visualObjectID : node.visualObjectID,
 					_metaType : GEPPETTO.Resources.VISUAL_REFERENCE_NODE,
 				});

@@ -24,18 +24,12 @@ define(function(require) {
 				 * @param {EntityNode} parentNode - Parent of entity to load
 				 * @param materialParam - Material to apply to entity 
 				 */
-				loadEntity : function(entityNode,parentNode, materialParam) {
+				loadEntity : function(entityNode, materialParam) {
 					var material = materialParam;// ==undefined?GEPPETTO.getMeshPhongMaterial():materialParam;
 					//extract aspects, entities and position from entityNode
 					var aspects = entityNode.getAspects();
 					var children = entityNode.getEntities();
 					var position = entityNode.position;
-					
-					if(parentNode == null){
-						GEPPETTO.getVARS().entities[entityNode.instancePath] = {};
-					}else{
-						parentNode[entityNode.id] = {};
-					}
 					
 					for ( var a in aspects) {
 						var aspect = aspects[a];
@@ -48,31 +42,13 @@ define(function(require) {
 								mesh.position = new THREE.Vector3(position.x,
 										position.y, position.z);
 							}
-							GEPPETTO.getVARS().aspects[mesh.eid] = mesh;
-							GEPPETTO.getVARS().aspects[mesh.eid].visible = true;
-							GEPPETTO.getVARS().aspects[mesh.eid].selected = false;
-							GEPPETTO.getVARS().aspects[mesh.eid]._metaType = GEPPETTO.Resources.ASPECT_NODE;
-							if(parentNode!=null){
-								parentNode[entityNode.id].selected = false;
-								parentNode[entityNode.id]._metaType = GEPPETTO.Resources.ENTITY_NODE;
-								parentNode[entityNode.id].eid =  entityNode.instancePath;
-								parentNode[entityNode.id][aspect.id] = GEPPETTO.getVARS().aspects[mesh.eid];
-								parentNode[entityNode.id][aspect.id].selected = false;
-							}else{
-								GEPPETTO.getVARS().entities[entityNode.instancePath].selected = false;
-								GEPPETTO.getVARS().entities[entityNode.instancePath]._metaType = GEPPETTO.Resources.ENTITY_NODE;
-								GEPPETTO.getVARS().entities[entityNode.instancePath].path = entityNode.instancePath;
-								GEPPETTO.getVARS().entities[entityNode.instancePath][aspect.id] = GEPPETTO.getVARS().aspects[mesh.eid];
-								GEPPETTO.getVARS().entities[entityNode.instancePath][aspect.id].selected = false;
-							}
+							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
+							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].visible = true;
+							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].selected = false;
 						}
 					}
 					for ( var c =0 ; c< children.length; c++) {
-						if(parentNode !=null){
-							GEPPETTO.SceneFactory.loadEntity(children[c], parentNode[entityNode.id], material);
-						}else{
-							GEPPETTO.SceneFactory.loadEntity(children[c], GEPPETTO.getVARS().entities[entityNode.instancePath],  material);
-						}
+						GEPPETTO.SceneFactory.loadEntity(children[c], material);
 					}
 
 				},
@@ -227,11 +203,11 @@ define(function(require) {
 									entityObjects.push(entityObject);
 
 								} else if (firstVOmetaType == "ColladaNode") {
-									entityObjects.push(GEPPETTO.SceneFactory.JsonTo3D(node[vg]));
+									entityObjects.push(GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]));
 								}
 								else if (firstVOmetaType == "OBJNode")
 								{
-									entityObjects.push(GEPPETTO.SceneFactory.JsonTo3D(node[vg]));
+									entityObjects.push(GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]));
 								}
 								else if (firstVOmetaType == "CylinderNode"
 									|| firstVOmetaType == "SphereNode")
@@ -249,7 +225,7 @@ define(function(require) {
 										var vg = node[key];
 
 										if (typeof vg === "object") {
-											var threeObject = GEPPETTO.SceneFactory.JsonTo3D(vg,material);
+											var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(vg,material);
 											THREE.GeometryUtils.merge(combined,
 													threeObject);
 											threeObject.geometry.dispose();
@@ -260,7 +236,7 @@ define(function(require) {
 										entityObject = new THREE.Mesh(combined,
 												material);
 										// entityObject.eindex = eindex;
-										entityObject.eid = aspect.instancePath;
+										entityObject.aspectInstancePath = aspect.instancePath;
 										entityObject.geometry.dynamic = false;
 										entityObjects.push(entityObject);
 									}
@@ -271,11 +247,11 @@ define(function(require) {
 									entityObjects.push(entityObject);
 
 								}else if (metaType == "ColladaNode") {
-									entityObjects.push(GEPPETTO.SceneFactory.JsonTo3D(node));
+									entityObjects.push(GEPPETTO.SceneFactory.jsonGeometryTo3D(node));
 								} 
 								else if (metaType == "OBJNode")
 								{
-									entityObjects.push(GEPPETTO.SceneFactory.JsonTo3D(node));
+									entityObjects.push(GEPPETTO.SceneFactory.jsonGeometryTo3D(node));
 								}
 								else if (metaType == "CylinderNode"|| metaType == "SphereNode")
 								{
@@ -284,14 +260,14 @@ define(function(require) {
 									}
 
 									if (typeof node === "object") {
-										var threeObject = GEPPETTO.SceneFactory.JsonTo3D(node,material);
+										var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node,material);
 										THREE.GeometryUtils.merge(combined, threeObject);
 										threeObject.geometry.dispose();
 									}
 
 									if (!merge) {
 										entityObject = new THREE.Mesh(combined,material);
-										entityObject.eid = aspect.instancePath;
+										entityObject.aspectInstancePath = aspect.instancePath;
 										entityObject.geometry.dynamic = false;
 										entityObjects.push(entityObject);
 									}
@@ -303,7 +279,7 @@ define(function(require) {
 					// fix me as it's quite ugly
 					if (merge) {
 						entityObject = new THREE.Mesh(combined, material);
-						entityObject.eid = aspect.instancePath;
+						entityObject.aspectInstancePath = aspect.instancePath;
 						entityObject.geometry.dynamic = false;
 						entityObjects.push(entityObject);
 					}
@@ -329,18 +305,17 @@ define(function(require) {
 					pMaterial.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 					for ( var vg in node) {
 						if (node[vg]._metaType == "ParticleNode") {
-							var threeObject = GEPPETTO.SceneFactory.JsonTo3D(node[vg], pMaterial);
+							var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg], pMaterial);
 							particleGeometry.vertices.push(threeObject);
 						}
 					}
 
 					var entityObject = new THREE.ParticleSystem(
 							particleGeometry, pMaterial);
-					entityObject.eid = node.instancePath;
 					// also update the particle system to sort the
 					// particles which enables the behaviour we want
 					entityObject.sortParticles = true;
-					GEPPETTO.updateVisualMap(node.instancePath,entityObject);
+					GEPPETTO.getVARS().visualModelMap[node.instancePath]=entityObject;
 
 					return entityObject;
 				},
@@ -352,7 +327,7 @@ define(function(require) {
 				 * @param material
 				 * @returns {Mesh} a three mesh representing the geometry
 				 */
-				JsonTo3D : function(g, material) {
+				jsonGeometryTo3D : function(g, material) {
 					var threeObject = null;
 					switch (g._metaType) {
 					case "ParticleNode":
@@ -400,7 +375,7 @@ define(function(require) {
 					// find it
 					// for updating purposes
 					threeObject.instancePath = g.instancePath;
-					GEPPETTO.updateVisualMap(g.instancePath,threeObject);
+					GEPPETTO.getVARS().visualModelMap[g.instancePath]=threeObject;
 					return threeObject;
 				},
 		};

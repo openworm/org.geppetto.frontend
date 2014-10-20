@@ -565,10 +565,41 @@ define(function(require) {
 				}
 			},
 			
-			showUnselected : function(mode){
-				
+			/**
+			 * Options set for the selection event, turning on/off connections and lines.
+			 * 
+			 * @returns {Object} Options for selection.
+			 */
+			getSelectionOptions : function(){
+				return this.selectionOptions;
 			},
 			
+			/**
+			 * Show unselected entities, leaving selected one(s) visible.
+			 * 
+			 * @param {boolean} mode - Toggle flag for showing unselected entities.
+			 */
+			showUnselected : function(mode){
+				this.toggleUnSelected(this.runTimeTree, mode);
+			},
+
+			toggleUnSelected : function(entities, mode){
+				for(var e in entities){
+					var entity = entities[e];
+					if(entity.selected == false){
+						if(mode){
+							entity.show();
+						}
+						else{
+							entity.hide();
+						}
+					}
+					if(entity.getEntities()!=null){
+						this.toggleUnSelected(entity.getEntities(), mode);
+					}
+				}
+			},
+
 			/**
 			 * Clears callbacks coupled to changes in a node 
 			 * 

@@ -575,14 +575,17 @@ define(function(require) {
 						if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_NODE){
 							var custom = this.createParameterNode(node[key]);
 							a.get("customNodes").add(custom);
+							a[key] = custom;
 						}
 						if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_SPEC_NODE){
 							var custom = this.createParameterSpecificationNode(node[key]);
 							a.get("customNodes").add(custom);
+							a[key] = custom;
 						}
 						if(node[key]._metaType==GEPPETTO.Resources.VISUAL_REFERENCE_NODE){
 							var vis = this.createVisualReferenceNode(node[key]);
 							a.get("visualObjectReferenceNodes").add(vis);
+							a[key] = vis;
 						}
 					}
 				}

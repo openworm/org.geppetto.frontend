@@ -77,10 +77,6 @@ define(function(require) {
 			}
 		},
 		
-		updateVisualMap : function(instancePath, object){
-			VARS.visualModelMap[instancePath] = object;
-		},
-		
 		getVARS : function(){
 			return VARS;
 		},
@@ -358,20 +354,6 @@ define(function(require) {
 		 */
 		exitRotationMode : function() {
 			VARS.rotationMode = false;
-		},
-
-		/**
-		 * @param entityId
-		 *            the entity id
-		 */
-		getThreeObjectFromEntityId : function(entityId) {
-			var threeObject = null;
-			VARS.scene.traverse(function(child) {
-				if (child.hasOwnProperty("eid") && child.eid == entityId) {
-					threeObject = child;
-				}
-			});
-			return threeObject;
 		},
 
 		getNamedThreeObjectFromInstancePath : function(aspectIP, name) {

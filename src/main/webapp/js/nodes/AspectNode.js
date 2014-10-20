@@ -128,7 +128,6 @@ define(function(require) {
 								+ this.instancePath;
 						this.selected = true;
 						this.parentEntity.selected = true;
-						GEPPETTO.SceneController.setGhostEffect(true);
 						GEPPETTO.WidgetsListener
 								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {
@@ -151,7 +150,6 @@ define(function(require) {
 								+ this.instancePath;
 						this.selected = false;
 						this.parentEntity.selected = false;
-						GEPPETTO.SceneController.setGhostEffect(false);
 						GEPPETTO.WidgetsListener
 								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {

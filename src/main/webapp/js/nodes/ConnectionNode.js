@@ -122,6 +122,22 @@ define(function(require) {
 		},
 		
 		/**
+		 * Get this entity's children entities
+		 * 
+		 * @command EntityNode.getChildren()
+		 * 
+		 * @returns {List<Aspect>} All children e.g. aspects and
+		 *          entities
+		 * 
+		 */
+		getChildren : function() {
+			 var children = new Backbone.Collection();
+			 children.add(this.get("customNodes").models);
+			 children.add(this.get("connections").models);
+			 return children;
+		},
+		
+		/**
 		 * Print out formatted node
 		 */
 		print : function() {

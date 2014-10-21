@@ -562,6 +562,7 @@ define(function(require) {
 				var a = new ConnectionNode({
 					id : node.id,
 					type : node.type,
+					name : node.name,
 					entityInstancePath : node.entityInstancePath,
 					instancePath : node.instancePath,
 					domainType : node.domainType,

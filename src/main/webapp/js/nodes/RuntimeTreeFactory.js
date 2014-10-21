@@ -49,6 +49,7 @@ define(function(require) {
 		var FunctionNode = require('nodes/FunctionNode');
 		var VariableNode = require('nodes/VariableNode');
 		var ConnectionNode = require('nodes/ConnectionNode');
+		var TextMetadataNode = require('nodes/TextMetadataNode');
 		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 		var simulationTreeCreated=false;
 		
@@ -578,12 +579,17 @@ define(function(require) {
 							a.get("customNodes").add(custom);
 							a[key] = custom;
 						}
-						if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_SPEC_NODE){
+						else if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_SPEC_NODE){
 							var custom = this.createParameterSpecificationNode(node[key]);
 							a.get("customNodes").add(custom);
 							a[key] = custom;
 						}
-						if(node[key]._metaType==GEPPETTO.Resources.VISUAL_REFERENCE_NODE){
+						else if(node[key]._metaType==GEPPETTO.Resources.TEXT_METADATA_NODE){
+							var custom = this.createTextMetadataNode(node[key]);
+							a.get("customNodes").add(custom);
+							a[key] = custom;
+						}
+						else if(node[key]._metaType==GEPPETTO.Resources.VISUAL_REFERENCE_NODE){
 							var vis = this.createVisualReferenceNode(node[key]);
 							a.get("visualObjectReferenceNodes").add(vis);
 							a[key] = vis;
@@ -597,11 +603,27 @@ define(function(require) {
 				var a = new VisualObjectReferenceNode({
 					id : node.id,
 					type : node.type,
+					name : node.name,
 					aspectInstancePath : node.aspectInstancePath,
 					domainType : node.domainType,
 					instancePath : node.instancePath,
 					visualObjectID : node.visualObjectID,
 					_metaType : GEPPETTO.Resources.VISUAL_REFERENCE_NODE,
+				});
+
+				GEPPETTO.Console.updateTags(node.instancePath, a);
+				
+				return a;
+			},
+			/** Creates and populates client connection nodes for first time */
+			createTextMetadataNode : function(node) {
+				var a = new TextMetadataNode({
+					id : node.id,
+					text : node.text,
+					name : node.name,
+					aspectInstancePath : node.aspectInstancePath,
+					instancePath : node.instancePath,
+					_metaType : GEPPETTO.Resources.TEXT_METADATA_NODE,
 				});
 
 				GEPPETTO.Console.updateTags(node.instancePath, a);

@@ -74,11 +74,9 @@ define(function(require) {
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n";
+			return "ID : " + this.name + "\n" 
+					+ "    Name : " + this.name + "\n"
+					+ "    text : " + this.text + "\n";
 		}
 	});
 });

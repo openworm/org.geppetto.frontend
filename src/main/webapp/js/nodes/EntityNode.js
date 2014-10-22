@@ -221,7 +221,7 @@ define(function(require) {
 					}
 								
 					for(var e in entities){
-						this.traverseSelection(entities[e]);
+						this.traverseSelection(entities[e],apply);
 					}
 				},
 				

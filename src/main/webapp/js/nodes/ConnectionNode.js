@@ -133,7 +133,7 @@ define(function(require) {
 		getChildren : function() {
 			 var children = new Backbone.Collection();
 			 children.add(this.get("customNodes").models);
-			 children.add(this.get("connections").models);
+			 children.add(this.get("visualObjectReferenceNodes").models);
 			 return children;
 		},
 		
@@ -142,6 +142,7 @@ define(function(require) {
 		 */
 		print : function() {
 			return "Id : " + this.id + "\n" 
+					+ "    Name : " + this.name + "\n"
 					+ "    EntityInstancePath : " + this.entityInstancePath + "\n"
 					+ "    Type : " + this.type + "\n";
 		}

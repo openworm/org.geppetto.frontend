@@ -7,15 +7,14 @@ define(function(require) {
 
 		require('three');
 		require('vendor/THREEx.KeyboardState');
-
+		
 		var VARS = {
 			debug: false,
 			camera: null,
 			container: null,
 			controls: null,
 			scene: null,
-			entities : {},
-			aspects : {},
+			meshes : {},
 			renderer: null,
 			stats: null,
 			gui: null,

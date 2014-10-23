@@ -56,7 +56,7 @@ define(function(require) {
 				},{
 					type : Backbone.Many,
 					key : 'connections',
-					relatedModel : Backbone.Self
+					relatedModel : ConnectionNode
 				}  ],
 
 				defaults : {
@@ -69,7 +69,6 @@ define(function(require) {
 				position : null,
 				selected : false,
 				visible : true,
-				_metaType : "EntityNode",
 				/**
 				 * Initializes this node with passed attributes
 				 * 
@@ -81,27 +80,8 @@ define(function(require) {
 					this.name = options.name;
 					this.position = options.position;
 					this.instancePath = options.instancePath;
-					this.aspects = this.get("aspects").models;
-				},
-
-				/**
-				 * Hides the entity
-				 * 
-				 * @command EntityNode.hide()
-				 * 
-				 */
-				hide : function() {
-					var message;
-
-					if (GEPPETTO.hideEntity(this.instancePath)) {
-						message = GEPPETTO.Resources.HIDE_ENTITY
-								+ this.instancePath;
-					} else {
-						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
-					}
-					this.visible = false;
-
-					return message;
+					this._metaType = options._metaType;
+					this.domainType = options.domainType;
 				},
 
 				/**
@@ -113,10 +93,12 @@ define(function(require) {
 				show : function() {
 					var message;
 
-					if (GEPPETTO.showEntity(this.instancePath)) {
+					if (this.visible == false) {
 						message = GEPPETTO.Resources.SHOW_ENTITY
 								+ this.instancePath;
 						this.visible = true;
+						
+						this.traverseVisilibity(this, true);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
 					}
@@ -124,28 +106,24 @@ define(function(require) {
 					return message;
 
 				},
-
+				
 				/**
-				 * Unselects the entity
+				 * Hides the entity
 				 * 
-				 * @command EntityNode.unselect()
+				 * @command EntityNode.hide()
 				 * 
 				 */
-				unselect : function() {
+				hide : function() {
 					var message;
 
-					if (GEPPETTO.unselectEntity(this.instancePath)) {
-						message = GEPPETTO.Resources.UNSELECTING_ENTITY
+					if (this.visible == true) {
+						message = GEPPETTO.Resources.HIDE_ENTITY
 								+ this.instancePath;
-						this.selected = false;
-
-						// Notify any widgets listening that there has been a
-						// changed to selection
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+						this.traverseVisilibity(this, false);
 					} else {
-						message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
+						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
 					}
+					this.visible = false;
 
 					return message;
 				},
@@ -160,10 +138,29 @@ define(function(require) {
 
 					var message;
 
-					if (GEPPETTO.selectEntity(this.instancePath)) {
+					if (this.selected==false) {
+						
+						this.traverseSelection(this, true);
+						
 						message = GEPPETTO.Resources.SELECTING_ENTITY
 								+ this.instancePath;
+						
 						this.selected = true;
+
+						GEPPETTO.SceneController.setGhostEffect(true);
+						
+						if(Simulation.getSelectionOptions().show_inputs){
+							//this.showInputConnections(true);
+						}
+						if(Simulation.getSelectionOptions().show_ouput){
+							this.showOutputConnections(true);
+						}
+						if(Simulation.getSelectionOptions().draw_connection_lines){
+							this.drawConnectionLines(true);
+						}
+						if(Simulation.getSelectionOptions().hide_not_selected){
+							Simulation.showUnselected(false);
+						}
 
 						// Notify any widgets listening that there has been a
 						// changed to selection
@@ -175,6 +172,81 @@ define(function(require) {
 
 					return message;
 				},
+				
+				/**
+				 * Unselects the entity
+				 * 
+				 * @command EntityNode.unselect()
+				 * 
+				 */
+				unselect : function() {
+					var message;
+
+					if (this.selected == true) {
+						message = GEPPETTO.Resources.UNSELECTING_ENTITY
+								+ this.instancePath;
+						this.selected = false;
+						
+						this.traverseSelection(this, false);
+						
+						GEPPETTO.SceneController.setGhostEffect(false);
+
+						// Notify any widgets listening that there has been a
+						// changed to selection
+						GEPPETTO.WidgetsListener
+								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+					} else {
+						message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
+					}
+
+					return message;
+				},
+				
+				/**
+				 * Helper method for selecting entity and all its children
+				 * Not a console command
+				 */
+				traverseSelection : function(entity, apply){
+					var aspects = entity.getAspects();
+					var entities = entity.getEntities();
+					
+					for(var a in aspects){
+						var aspect = aspects[a];
+						if(apply){
+							aspect.select();
+						}
+						else{
+							aspect.unselect();
+						}
+					}
+								
+					for(var e in entities){
+						this.traverseSelection(entities[e],apply);
+					}
+				},
+				
+				/**
+				 * Helper method for showing/hiding entity and all its children.
+				 * Not a console command. 
+				 */
+				traverseVisibility : function(entity, apply){
+					var aspects = entity.getAspects();
+					var entities = entity.getEntities();
+					
+					for(var e in entities){
+						this.traverseVisibility(entities[e]);
+					}
+					
+					for(var a in aspects){
+						var aspect = aspects[a];
+						if(mode){
+							aspect.show();
+						}
+						else{
+							aspect.hide();
+						}
+					}
+				},
 
 				/**
 				 * Zooms to entity
@@ -182,13 +254,13 @@ define(function(require) {
 				 * @command EntityNode.zoomTo()
 				 * 
 				 */
-				/*
-				 * zoomTo : function(){
-				 * 
-				 * GEPPETTO.zoomToEntity(this.instancePath);
-				 * 
-				 * return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; },
-				 */
+				 zoomTo : function(){
+				 
+					 GEPPETTO.SceneController.zoomToEntity(this.instancePath);
+				 
+					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
+			     },
+				 
 
 				/**
 				 * Get this entity's aspects
@@ -199,7 +271,7 @@ define(function(require) {
 				 * 
 				 */
 				getAspects : function() {
-					var entities = this.get("aspects");
+					var entities = this.get("aspects").models;
 					return entities;
 				},
 
@@ -212,7 +284,7 @@ define(function(require) {
 				 * 
 				 */
 				getEntities : function() {
-					var entities = this.get("entities");
+					var entities = this.get("entities").models;
 					return entities;
 				},
 				
@@ -225,7 +297,7 @@ define(function(require) {
 				 * 
 				 */
 				getConnections : function() {
-					var connections = this.get("connections");
+					var connections = this.get("connections").models;
 					return connections;
 				},
 
@@ -244,6 +316,35 @@ define(function(require) {
 					 children.add(this.get("entities").models);
 					 children.add(this.get("connections").models);
 					 return children;
+				},
+				
+				showInputConnections : function(mode){
+					if(this.selected == false){
+						this.select();
+					}
+					var paths = new Array();
+					for(var c in this.getConnections()){
+						var connection = this.getConnections()[c];
+						
+						if(connection.getType() == GEPPETTO.Resources.INPUT_CONNECTION){
+							var entity = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree,connection.getEntityInstancePath());
+							paths.push(entity.getEntityInstancePath());
+						}
+					}
+					
+					if(!Simulation.getSelectionOptions().show_inputs){
+						GEPPETTO.SceneController.showConnections(paths,GEPPETTO.Resources.INPUT_CONNECTION);
+					}
+				},
+				
+				showOutputConnections : function(mode){
+					if(this.selected == false){
+						this.select();
+					}
+					
+					if(!Simulation.getSelectionOptions().show_outputs){
+						
+					}
 				},
 
 				/**

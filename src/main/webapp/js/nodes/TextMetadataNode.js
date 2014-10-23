@@ -34,18 +34,16 @@
  * Client class use to represent a parameter specification node, used for model
  * tree properties.
  * 
- * @module nodes/TextMetadataNode
- * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ * @module nodes/ParameterSpecificationNode
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
 	var $ = require('jquery');
-
+	
 	return Node.Model.extend({
-		properties : {},
-		value : "",
-		_metaType : "TextMetadataNode",
+		text : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -57,38 +55,28 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this.value = options.value;
-			this.properties = options.properties;
+			this.text = options.text;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get value of quantity
+		 * Get scaling factor
 		 * 
-		 * @command ParameterSpecificationNode.getValue()
-		 * @returns {String} Value of quantity
+		 * @command ParameterSpecificationNode.getScalingFactor()
+		 * @returns {String} Scaling Factor for value and unit
 		 */
-		getValue : function() {
-			return this.value;
-		},
-		
-		/**
-		 * Get properties for this node
-		 * 
-		 * @command ParameterNode.getProperties()
-		 * @returns {String} Unit for quantity
-		 */
-		getProperties : function() {
-			return this.properties;
+		getText : function() {
+			return this.text;
 		},
 
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n"
-					+ "    Properties : " + this.properties + "\n";
+			return "ID : " + this.name + "\n" 
+					+ "    Name : " + this.name + "\n"
+					+ "    text : " + this.text + "\n";
 		}
 	});
 });

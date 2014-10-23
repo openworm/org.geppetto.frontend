@@ -47,6 +47,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			name : "",
 			instancePath : "",
 			id : "",
+			domainType : "",
 			_metaType : "",
 
 			/**
@@ -90,6 +91,14 @@ define([ 'jquery', 'underscore', 'backbone',
 			getId : function() {
 				return this.id;
 			},
+			
+			getDomainType : function(){
+				return this.domainType;
+			},
+			
+			setDomainType : function(newDomainType){
+				this.domainType = newDomainType;
+			}
 		})
 	};
 });

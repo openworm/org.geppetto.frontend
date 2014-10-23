@@ -31,10 +31,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a function. Used to store properties of model
- * tree
+ * Client class use to represent a visual object reference node. This node 
+ * points to a specific object within an aspect, stores object's id and aspect's
+ * instancepath to keep track of location.
  * 
- * @module nodes/FunctionNode
+ * @module nodes/VisualObjectReferenceNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -43,53 +44,55 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		arguments : "",
-		expression : "",
-		_metaType : "FunctionNode",
+		aspectInstancePath : null,
+		visualObjectID : null,
 
 		/**
 		 * Initializes this node with passed attributes
 		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
 		 */
 		initialize : function(options) {
-			this.name = options.name;
 			this.id = options.id;
+			this.aspectInstancePath = options.aspectInstancePath;
+			this.visualObjectID = options.visualObjectID;
 			this.instancePath = options.instancePath;
-			this.arguments = options.arguments;
-			this.expression = options.expression;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get arguments for function
+		 * Get aspect instance path for visual reference
 		 * 
-		 * @command FunctionNode.getArguments()
-		 * @returns {String} Arguments for function
+		 * @command VisualObjectReferenceNode.getAspectInstancePath()
+		 * @returns {String} Aspect instance path for this visual reference node 
 		 */
-		getArguments : function() {
-			return this.arguments;
+		getAspectInstancePath : function() {
+			return this.aspectInstancePath;
 		},
-
+		
 		/**
-		 * Get function's expression
+		 * Get ID of object this visual reference node refers to
 		 * 
-		 * @command FunctionNode.getExpression()
-		 * @returns {String} Expression for function
+		 * @command VisualObjectReferenceNode.getVisualObjectID()
+		 * @returns {String} ID of visual object this node references
 		 */
-		getExpression : function() {
-			return this.expression;
+		getVisualObjectID : function() {
+			return this.visualObjectID;
+		},
+		
+		highlight : function(mode){
+			
 		},
 
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Arguments : " + this.arguments + "\n"
-					+ "    Expression : " + this.expression + "\n";
+			return "Id : " + this.id + "\n" 
+					+ "    AspectInstancePath : " + this.aspectInstancePath + "\n"
+					+ "    VisualObjectID : " + this.visualObjectID + "\n";
 		}
 	});
 });

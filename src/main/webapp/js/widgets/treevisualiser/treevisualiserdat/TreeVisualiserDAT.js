@@ -127,7 +127,7 @@ define(function(require) {
 						dataset.valueDict[data.instancePath] = {};
 						
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data); 
-						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
+						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
 					}
 					else{
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
@@ -165,7 +165,8 @@ define(function(require) {
 		getValueFromData : function(data){
 			var labelValue = "";
 			if (data._metaType == "TextMetadataNode"){
-				labelValue = data.getValue();
+//				labelValue = data.getText();
+				labelValue = "Taka";
 			}
 			else if (data._metaType == "FunctionNode") {
 				labelValue = data.getExpression();

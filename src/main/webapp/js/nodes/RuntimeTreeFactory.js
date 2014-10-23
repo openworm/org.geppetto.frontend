@@ -631,8 +631,8 @@ define(function(require) {
 			createTextMetadataNode : function(node) {
 				var a = new TextMetadataNode({
 					id : node.id,
-					text : node.text,
 					name : node.name,
+					value: node.value,
 					aspectInstancePath : node.aspectInstancePath,
 					instancePath : node.instancePath,
 					_metaType : GEPPETTO.Resources.TEXT_METADATA_NODE,

@@ -165,8 +165,7 @@ define(function(require) {
 		getValueFromData : function(data){
 			var labelValue = "";
 			if (data._metaType == "TextMetadataNode"){
-//				labelValue = data.getText();
-				labelValue = "Taka";
+				labelValue = data.getValue();
 			}
 			else if (data._metaType == "FunctionNode") {
 				labelValue = data.getExpression();

@@ -136,6 +136,15 @@ define(function(require) {
 				 */
 				select : function() {
 
+					var selection = Simulation.getSelection();
+					if(selection.length > 0){
+						for(var key in selection){
+							var entity = selection[key];
+							
+							entity.unselect();
+						}
+					}
+					
 					var message;
 
 					if (this.selected==false) {
@@ -150,9 +159,9 @@ define(function(require) {
 						GEPPETTO.SceneController.setGhostEffect(true);
 						
 						if(Simulation.getSelectionOptions().show_inputs){
-							//this.showInputConnections(true);
+							this.showInputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().show_ouput){
+						if(Simulation.getSelectionOptions().show_outputs){
 							this.showOutputConnections(true);
 						}
 						if(Simulation.getSelectionOptions().draw_connection_lines){
@@ -189,7 +198,26 @@ define(function(require) {
 						
 						this.traverseSelection(this, false);
 						
-						GEPPETTO.SceneController.setGhostEffect(false);
+						if(Simulation.getSelection().length ==0){
+							GEPPETTO.SceneController.setGhostEffect(false);
+						}
+						else{
+							GEPPETTO.SceneController.setGhostEffect(true);
+						}
+						
+						if(Simulation.getSelectionOptions().show_inputs){
+							this.showInputConnections(false);
+						}
+						if(Simulation.getSelectionOptions().show_outputs){
+							this.showOutputConnections(false);
+						}
+						if(Simulation.getSelectionOptions().draw_connection_lines){
+							this.drawConnectionLines(false);
+						}
+						if(Simulation.getSelectionOptions().hide_not_selected){
+							Simulation.showUnselected(true);
+						}
+
 
 						// Notify any widgets listening that there has been a
 						// changed to selection
@@ -319,7 +347,7 @@ define(function(require) {
 				},
 				
 				showInputConnections : function(mode){
-					if(this.selected == false){
+					if(this.selected == false && (mode)){
 						this.select();
 					}
 					var paths = new Array();
@@ -327,23 +355,43 @@ define(function(require) {
 						var connection = this.getConnections()[c];
 						
 						if(connection.getType() == GEPPETTO.Resources.INPUT_CONNECTION){
-							var entity = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree,connection.getEntityInstancePath());
-							paths.push(entity.getEntityInstancePath());
+							var references = connection.getVisualObjectReferenceNodes();
+							for(var r in references){
+								paths.push(references[r].getAspectInstancePath());
+							}
 						}
 					}
 					
-					if(!Simulation.getSelectionOptions().show_inputs){
+					if(mode){
 						GEPPETTO.SceneController.showConnections(paths,GEPPETTO.Resources.INPUT_CONNECTION);
+					}
+					else{
+						GEPPETTO.SceneController.hideConnections(paths);
 					}
 				},
 				
 				showOutputConnections : function(mode){
-					if(this.selected == false){
+					if(this.selected == false && (mode)){
 						this.select();
 					}
 					
-					if(!Simulation.getSelectionOptions().show_outputs){
+					var paths = new Array();
+					for(var c in this.getConnections()){
+						var connection = this.getConnections()[c];
 						
+						if(connection.getType() == GEPPETTO.Resources.OUTPUT_CONNECTION){
+							var references = connection.getVisualObjectReferenceNodes();
+							for(var r in references){
+								paths.push(references[r].getAspectInstancePath());
+							}
+						}
+					}
+					
+					if(mode){
+						GEPPETTO.SceneController.showConnections(paths,GEPPETTO.Resources.OUTPUT_CONNECTION);
+					}
+					else{
+						GEPPETTO.SceneController.hideConnections(paths);
 					}
 				},
 

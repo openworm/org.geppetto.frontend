@@ -129,7 +129,7 @@ define(function(require) {
 						if(selected == ""){
 							selected = intersects[ 0 ].object.parent.name;
 						}
-						if(VARS.aspects.hasOwnProperty(selected) ||
+						if(VARS.meshes.hasOwnProperty(selected) ||
 								VARS.entities.hasOwnProperty(selected))
 						GEPPETTO.Console.executeCommand(selected + '.select()' );
 					}

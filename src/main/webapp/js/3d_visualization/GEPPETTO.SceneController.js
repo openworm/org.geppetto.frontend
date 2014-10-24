@@ -77,14 +77,6 @@ define(function(require) {
 					}
 				},
 				
-				unSelectAll : function() {
-					for ( var v in GEPPETTO.getVARS().meshes) {
-						var mesh = GEPPETTO.getVARS().meshes[v];
-						mesh.selected = false;
-						GEPPETTO.SceneController.unselectAspect(mesh[e].aspectInstancePath);
-					}
-				},
-				
 				setGhostEffect : function(apply){
 					GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().meshes,apply);
 				},
@@ -113,6 +105,7 @@ define(function(require) {
 								GEPPETTO.getVARS().meshes[v].material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
 								GEPPETTO.getVARS().meshes[v].material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 								GEPPETTO.getVARS().meshes[v].selected = true;
+								GEPPETTO.getVARS().meshes[v].ghosted = false;
 								return true;
 							}					
 						}
@@ -126,6 +119,8 @@ define(function(require) {
 							if(GEPPETTO.getVARS().meshes[key].selected == true){
 								GEPPETTO.getVARS().meshes[key].material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 								GEPPETTO.getVARS().meshes[key].selected = false;
+								GEPPETTO.getVARS().meshes[key].ghosted = false;
+					
 								return true;
 							}
 						}
@@ -178,18 +173,46 @@ define(function(require) {
 				
 				showConnections : function(paths,type){
 					for(var e in paths){
-						var mesh = GEPPETTO.Utility.deepFind(GEPPETTO.getVARS().meshes,e);
+						var mesh = GEPPETTO.getVARS().meshes[paths[e]];
 						
 						if(type==GEPPETTO.Resources.INPUT_CONNECTION){
-							mesh.material.color.setHex(GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
+							if(mesh.output){
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
+							}else{
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
+							}
+							mesh.input = true;
 						}else if(type == GEPPETTO.Resources.OUTPUT_CONNECTION){
-							mesh.material.color.setHex(GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED);
+							if(mesh.input){
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
+							}else{
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED);
+							}
+							mesh.output = true;
 						}
 						
-						mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						if(!mesh.selected){
-							child.material.transparent = true;
-							child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+							mesh.material.transparent = true;
+							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+							mesh.ghosted = true;
+						}
+					}
+				},
+				
+				hideConnections : function(paths){
+					for(var e in paths){
+						var mesh = GEPPETTO.getVARS().meshes[paths[e]];
+						
+						if(!mesh.selected){
+							mesh.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+							mesh.material.transparent = true;
+							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+							mesh.ghosted = true;
+						}
+						else{
+							mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+							mesh.material.transparent = true;
+							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
 					}
 				},

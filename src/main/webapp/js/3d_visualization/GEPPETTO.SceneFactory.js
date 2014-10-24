@@ -44,7 +44,10 @@ define(function(require) {
 							}
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].visible = true;
+							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].ghosted = false;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].selected = false;
+							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].input = false;
+							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].output = false;
 						}
 					}
 					for ( var c =0 ; c< children.length; c++) {

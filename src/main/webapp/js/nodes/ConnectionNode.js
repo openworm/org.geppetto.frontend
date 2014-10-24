@@ -110,7 +110,7 @@ define(function(require) {
 		 * Returns array of visual object reference nodes for this connection
 		 */
 		getVisualObjectReferenceNodes : function(){
-			return this.get("visualObjectReferenceNodes");
+			return this.get("visualObjectReferenceNodes").models;
 		},
 		
 		highlight : function(mode){

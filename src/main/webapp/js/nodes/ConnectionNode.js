@@ -101,6 +101,7 @@ define(function(require) {
 
 		/**
 		 * Returns array of custom nodes for this connection
+		 * @returns {Array} Array of nodes for custom properties of connection node.
 		 */
 		getCustomNodes : function(){
 			return this.get("customNodes");
@@ -108,15 +109,28 @@ define(function(require) {
 		
 		/**
 		 * Returns array of visual object reference nodes for this connection
+		 * @returns {Array} Array of nodes for visual object references
 		 */
 		getVisualObjectReferenceNodes : function(){
 			return this.get("visualObjectReferenceNodes").models;
 		},
 		
+		/**
+		 * Highlight the visual references of this connection
+		 * @param {boolean} - Highlight or unhighlight reference nodes
+		 */
 		highlight : function(mode){
+			var references = this.getVisualObjectReferenceNodes();
 			
+			//highlight all reference nodes
+			for(var ref in references){
+				references[ref].highlight(mode);
+			}
 		},
 		
+		/**
+		 * Show lines for connections of this entity
+		 */
 		showConnectionLine : function(mode){
 			
 		},

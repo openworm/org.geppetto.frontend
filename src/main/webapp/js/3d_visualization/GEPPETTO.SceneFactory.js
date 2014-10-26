@@ -2,6 +2,7 @@
  * GEPPETTO Visualisation engine built on top of THREE.js. Displays a scene as
  * defined on org.geppetto.core. Factory class for creating and updating THREE Js objects
  * 
+ * @author matteo@openworm.org (Matteo Cantarelli)
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -42,6 +43,8 @@ define(function(require) {
 								mesh.position = new THREE.Vector3(position.x,
 										position.y, position.z);
 							}
+							//keep track of aspects created by storing them in VARS property object
+							//under meshes
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].visible = true;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].ghosted = false;
@@ -50,19 +53,19 @@ define(function(require) {
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].output = false;
 						}
 					}
+					//load children entities
 					for ( var c =0 ; c< children.length; c++) {
 						GEPPETTO.SceneFactory.loadEntity(children[c], material);
 					}
-
 				},
 
 				/**
 				 * Updates the scene
+				 * @param {Object} newRuntimeTree - New update received to update the 3D scene
 				 */
 				updateScene : function(newRuntimeTree) {
 					var entities = newRuntimeTree;
 					for ( var eindex in entities) {
-
 						var entity = entities[eindex];
 						for ( var a in entity.getAspects()) {
 							var aspect = entity.getAspects()[a];
@@ -70,11 +73,9 @@ define(function(require) {
 							for ( var vm in visualTree.content) {
 								var node = visualTree.content[vm];
 
-								if (node != null
-										&& typeof node === "object") {
+								if (node != null&& typeof node === "object") {
 
 									var metaType = node._metaType;
-
 									if(metaType == "CompositeNode"){
 										for ( var gindex in node) {
 											var vo = node[gindex];
@@ -84,7 +85,6 @@ define(function(require) {
 												GEPPETTO.SceneFactory.updateGeometry(vo);
 											}
 										}
-
 									}
 									else{
 										if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
@@ -111,8 +111,7 @@ define(function(require) {
 				/**
 				 * Updates a THREE geometry from the json one
 				 * 
-				 * @param g
-				 *            the update json geometry
+				 * @param {String} g - the updated json geometry
 				 */
 				updateGeometry : function(g) {
 					var threeObject = GEPPETTO.getVARS().visualModelMap[g.instancePath];

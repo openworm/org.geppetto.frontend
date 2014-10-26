@@ -18,7 +18,9 @@ define(function(require) {
 		GEPPETTO.SceneController = {
 				
 				/**
-				 * @param runTimeTree
+				 * Populate the scene with given runtimetree object.
+				 * 
+				 * @param runTimeTree - Object with scene to populate
 				 */
 				populateScene : function(runTimeTree) {
 					for ( var eindex in runTimeTree) {
@@ -31,7 +33,9 @@ define(function(require) {
 				},
 				
 				/**
-				 * Updates the scene
+				 * Updates the scene call, tells factory to do it's job updating meshes
+				 * 
+				 * @param {Object} newRuntimeTree - New server update.
 				 */
 				updateScene : function(newRuntimeTree) {
 					GEPPETTO.getVARS().needsUpdate = true;
@@ -42,11 +46,12 @@ define(function(require) {
 				},
 				
 				/**
+				 * Light up the entity 
+				 * 
 				 * @param {AspectNode} aspect - the aspect containing the entity to be lit
 				 * @param {String} entityName - the name of the entity to be rotated (in the 3d model)
-				 * @param {Float}
-				 *            intensity - the lighting intensity from 0 (no
-				 *            illumination) to 1 (full illumination)
+				 * @param {Float} intensity - the lighting intensity from 0 
+				 *                            (no illumination) to 1 (full illumination)
 				 */
 				lightUpEntity : function(aspect, entityName, intensity) {
 					if (intensity < 0) {
@@ -77,10 +82,19 @@ define(function(require) {
 					}
 				},
 				
+				/**
+				 * Set ghost effect, bridge between other classes and ghost effect call
+				 * @param {boolean} apply - Turn on or off the ghost effect
+				 */
 				setGhostEffect : function(apply){
 					GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().meshes,apply);
 				},
 				
+				/**
+				 * Apply ghost effect to all meshes that are not selected
+				 * @param {Array} meshes - Array of meshes to apply ghost effect to . 
+				 * @param {boolean} apply - Ghost effect on or off
+				 */
 				ghostEffect : function(meshes,apply){
 					for ( var v in meshes) {
 						var child = meshes[v];
@@ -98,6 +112,10 @@ define(function(require) {
 					}
 				},
 
+				/**
+				 * Selects an aspect given the path of it. Color changes to yellow, and opacity become 100%.
+				 * @param {String} instancePath - Path of aspect of mesh to select
+				 */
 				selectAspect : function(instancePath) {
 					for ( var v in GEPPETTO.getVARS().meshes) {
 						if(v == instancePath){
@@ -113,9 +131,15 @@ define(function(require) {
 					return false;
 				},
 
+				/**
+				 * Unselect aspect, or mesh as far as tree js is concerned.
+				 * @param {String} instancePath - Path of the mesh/aspect to select
+				 */
 				unselectAspect : function(instancePath) {
+					//match instancePath to mesh store in variables properties
 					for ( var key in GEPPETTO.getVARS().meshes) {
 						if(key == instancePath){
+							//make sure that path was selected in the first place
 							if(GEPPETTO.getVARS().meshes[key].selected == true){
 								GEPPETTO.getVARS().meshes[key].material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 								GEPPETTO.getVARS().meshes[key].selected = false;
@@ -127,13 +151,33 @@ define(function(require) {
 					}
 					return false;
 				},
+				
+				/**
+				 * Unselects all the selected entities
+				 */
+				unSelectAll : function(){
+					var selection = Simulation.getSelection();
+					if(selection.length > 0){
+						for(var key in selection){
+							var entity = selection[key];
+							entity.unselect();
+						}
+					}
+				},
 
+				/**
+				 * Show aspect, make it visible.
+				 * @param {String} instancePath - Instance path of aspect to make visible
+				 */
 				showAspect : function(instancePath) {
 					for ( var v in GEPPETTO.getVARS().meshes) {
 						if (v == instancePath) {
+							//if already visible, return false for unsuccessful operation
 							if (GEPPETTO.getVARS().meshes[v].visible == true) {
 								return false;
-							} else {
+							} 
+							//make mesh visible
+							else {
 								GEPPETTO.getVARS().meshes[v].visible = true;
 								return true;
 							}
@@ -142,6 +186,10 @@ define(function(require) {
 					return false;
 				},
 
+				/**
+				 * Hide aspect
+				 * @param {String} instancePath - Path of the aspect to make invisible
+				 */
 				hideAspect : function(instancePath) {
 					for ( var v in GEPPETTO.getVARS().meshes) {
 						if (v == instancePath) {
@@ -170,12 +218,22 @@ define(function(require) {
 						GEPPETTO.updateCamera();
 					}
 				},
-				
+
+				/**
+				 * Change color for meshes that are connected to other meshes. Color
+				 * depends on whether that mesh (aspect) is an output, input or both connection.
+				 * 
+				 * @param {Array} paths - Array containing the paths of meshes (aspects) that are 
+				 *                the connections.
+				 * @param {String} type - Type of connection, input or output
+				 */
 				showConnections : function(paths,type){
 					for(var e in paths){
 						var mesh = GEPPETTO.getVARS().meshes[paths[e]];
 						
+						//determine whether connection is input or output
 						if(type==GEPPETTO.Resources.INPUT_CONNECTION){
+							//figure out if connection is both, input and output
 							if(mesh.output){
 								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
 							}else{
@@ -183,6 +241,7 @@ define(function(require) {
 							}
 							mesh.input = true;
 						}else if(type == GEPPETTO.Resources.OUTPUT_CONNECTION){
+							//figure out if connection is both, input and output
 							if(mesh.input){
 								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
 							}else{
@@ -191,6 +250,7 @@ define(function(require) {
 							mesh.output = true;
 						}
 						
+						//if mesh is not selected, give it a ghost effect
 						if(!mesh.selected){
 							mesh.material.transparent = true;
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
@@ -199,16 +259,32 @@ define(function(require) {
 					}
 				},
 				
+				/**
+				 * Hide connections. Undoes changes done by show connections, in which 
+				 * the connections were shown and ghost effects apply after selection.
+				 * 
+				 * @param {Array} paths - Array of aspects that have the connections
+				 */
 				hideConnections : function(paths){
 					for(var e in paths){
 						var mesh = GEPPETTO.getVARS().meshes[paths[e]];
 						
+						//if mesh is not selected, give it ghost or default color and opacity
 						if(!mesh.selected){
-							mesh.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
-							mesh.material.transparent = true;
-							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
-							mesh.ghosted = true;
+							//if there are nodes still selected, give it a ghost effect. If not nodes are
+							//selected, give the meshes old default color
+							if(Simulation.getSelection().length>0){
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+								mesh.material.transparent = true;
+								mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								mesh.ghosted = true;
+							}else{
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+								mesh.material.transparent = true;
+								mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+							}
 						}
+						//if mesh is selected, make it look like so
 						else{
 							mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
 							mesh.material.transparent = true;
@@ -218,6 +294,14 @@ define(function(require) {
 				},
 				
 				showConnectionLines : function(entities){
+					
+				},
+				
+				highlight : function(paths){
+					
+				},
+				
+				unhighlight : function(paths){
 					
 				},
 				

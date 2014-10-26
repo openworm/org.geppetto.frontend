@@ -123,11 +123,27 @@ define(function(require) {
 				 */
 				select : function() {
 					var message;
-					if (GEPPETTO.SceneController.selectAspect(this.instancePath)) {
-						message = GEPPETTO.Resources.SELECTING_ASPECT
-								+ this.instancePath;
+					if (!this.selected) {
+						GEPPETTO.SceneController.selectAspect(this.instancePath);				
+						message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
 						this.selected = true;
 						this.parentEntity.selected = true;
+						GEPPETTO.SceneController.setGhostEffect(true);
+						
+						//look on the simulation selection options and perform necessary
+						//operations
+						if(Simulation.getSelectionOptions().show_inputs){
+							this.parentEntity.showInputConnections(true);
+						}
+						if(Simulation.getSelectionOptions().show_outputs){
+							this.parentEntity.showOutputConnections(true);
+						}
+						if(Simulation.getSelectionOptions().draw_connection_lines){
+							this.parentEntity.drawConnectionLines(true);
+						}
+						if(Simulation.getSelectionOptions().hide_not_selected){
+							Simulation.showUnselected(true);
+						}
 						GEPPETTO.WidgetsListener
 								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {
@@ -145,11 +161,38 @@ define(function(require) {
 				 */
 				unselect : function() {
 					var message;
-					if (GEPPETTO.SceneController.unselectAspect(this.instancePath)) {
+					if (this.selected) {
 						message = GEPPETTO.Resources.UNSELECTING_ASPECT
 								+ this.instancePath;
+						GEPPETTO.SceneController.unselectAspect(this.instancePath);
 						this.selected = false;
 						this.parentEntity.selected = false;
+						
+						//don't apply ghost effect to meshes if nothing is left selected after
+						//unselecting this entity
+						if(Simulation.getSelection().length ==0){
+							GEPPETTO.SceneController.setGhostEffect(false);
+						}
+						//update ghost effect after unselection of this entity
+						else{
+							GEPPETTO.SceneController.setGhostEffect(true);
+						}
+						
+						//look on the simulation selection options and perform necessary
+						//operations
+						if(Simulation.getSelectionOptions().show_inputs){
+							this.parentEntity.showInputConnections(false);
+						}
+						if(Simulation.getSelectionOptions().show_outputs){
+							this.parentEntity.showOutputConnections(false);
+						}
+						if(Simulation.getSelectionOptions().draw_connection_lines){
+							this.parentEntity.drawConnectionLines(false);
+						}
+						if(Simulation.getSelectionOptions().hide_not_selected){
+							Simulation.showUnselected(true);
+						}
+					
 						GEPPETTO.WidgetsListener
 								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {

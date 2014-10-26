@@ -82,6 +82,10 @@ define(function(require) {
 			return this.visualObjectID;
 		},
 		
+		/**
+		 * Highlight visual object reference node
+		 * @param {boolean} mode - Highlight or unhighlight the visual reference
+		 */
 		highlight : function(mode){
 			
 		},

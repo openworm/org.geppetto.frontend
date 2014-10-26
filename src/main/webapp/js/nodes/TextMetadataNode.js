@@ -34,6 +34,7 @@
  * Client class use to represent a parameter specification node, used for model
  * tree properties.
  * 
+<<<<<<< HEAD
  * @module nodes/ParameterSpecificationNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
@@ -43,7 +44,7 @@ define(function(require) {
 	var $ = require('jquery');
 
 	return Node.Model.extend({
-		text : "",
+		value : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -56,27 +57,28 @@ define(function(require) {
 			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.text = options.text;
+			this.value = options.value;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get scaling factor
+		 * Get value of quantity
 		 * 
-		 * @command ParameterSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
+		 * @command ParameterSpecificationNode.getValue()
+		 * @returns {String} Value of quantity
 		 */
-		getText : function() {
-			return this.text;
+		getValue : function() {
+			return this.value;
 		},
-
+		
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
 			return "ID : " + this.name + "\n" 
 					+ "    Name : " + this.name + "\n"
-					+ "    text : " + this.text + "\n";
+					+ "    value : " + this.text + "\n";
 		}
 	});
 });

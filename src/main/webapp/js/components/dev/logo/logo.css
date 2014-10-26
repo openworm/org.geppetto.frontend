@@ -1,3 +1,11 @@
 #geppettologo {
-    background-image: url(./geppetto-logo.png);
+    background-image: url(./geppetto.png);
+}
+
+@media
+(-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+    #geppettologo {
+        background-image: url(./geppetto@2x.png);
+    }
 }

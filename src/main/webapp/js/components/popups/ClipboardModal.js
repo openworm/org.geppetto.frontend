@@ -63,7 +63,7 @@ define(function (require) {
         					<h3 id="jsEditor-title" className="text-center">{this.props.title}</h3>
         				</div>
         				<div className="modal-body">
-	        				<div class="controls">
+	        				<div className="controls">
 	        					<textarea id="javascriptCode" name="javascriptCode" className="javascriptCode_loading"></textarea>
 	        					<button id="javascriptFullscreen" type="button" className="button icon-fullscreen"></button>
 	        				</div>

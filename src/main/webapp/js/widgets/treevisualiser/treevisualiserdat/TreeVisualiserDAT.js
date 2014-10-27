@@ -123,7 +123,7 @@ define(function(require) {
 				if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
 				else{label = data.getName();}
 				
-				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" | data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode") {
+				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" | data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "VisualObjectReferenceNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = {};
 						
@@ -175,6 +175,9 @@ define(function(require) {
 			}
 			else if (data._metaType == "FunctionNode") {
 				labelValue = data.getExpression();
+			}
+			else if (data._metaType == "VisualObjectReferenceNode") {
+				labelValue = data.getAspectInstancePath() + " -> " + data.getVisualObjectID();
 			}
 			else{
 				labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");

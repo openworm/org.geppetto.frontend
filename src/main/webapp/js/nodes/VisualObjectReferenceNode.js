@@ -55,6 +55,7 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.id = options.id;
+			this.name = options.name;
 			this.aspectInstancePath = options.aspectInstancePath;
 			this.visualObjectID = options.visualObjectID;
 			this.instancePath = options.instancePath;
@@ -91,6 +92,7 @@ define(function(require) {
 		 */
 		print : function() {
 			return "Id : " + this.id + "\n" 
+					+ "    Name : " + this.name + "\n"
 					+ "    AspectInstancePath : " + this.aspectInstancePath + "\n"
 					+ "    VisualObjectID : " + this.visualObjectID + "\n";
 		}

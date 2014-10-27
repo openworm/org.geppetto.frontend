@@ -34,8 +34,8 @@
  * Client class use to represent a parameter specification node, used for model
  * tree properties.
  * 
-<<<<<<< HEAD
- * @module nodes/ParameterSpecificationNode
+ * @module nodes/TextMetadataNode
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {

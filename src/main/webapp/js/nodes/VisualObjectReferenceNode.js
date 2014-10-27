@@ -87,7 +87,16 @@ define(function(require) {
 		 * @param {boolean} mode - Highlight or unhighlight the visual reference
 		 */
 		highlight : function(mode){
+			var pathToObject = this.getAspectInstancePath()+ ".VisualizationTree." + this.getVisualObjectID();
+			if(mode){
+				GEPPETTO.SceneController.split(this.getAspectInstancePath());
+			}
+			else{
+				GEPPETTO.SceneController.merge(this.getAspectInstancePath());
+			}
+			GEPPETTO.SceneController.highlight(pathToObject,mode);
 			
+			return GEPPETTO.Resources.HIGHLIGHTING + pathToObject;
 		},
 
 		/**

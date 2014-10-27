@@ -202,6 +202,19 @@ define(function(require) {
 				},
 				
 				/**
+				 * Zooms to aspect
+				 * 
+				 * @command AspectNode.zoomTo()
+				 * 
+				 */
+				 zoomTo : function(){
+				 
+					 GEPPETTO.SceneController.zoom([this.instancePath]);
+				 
+					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
+			     },
+				
+				/**
 				 * Get the model interpreter associated with aspect
 				 * 
 				 * @command AspectNode.getId()
@@ -311,12 +324,5 @@ define(function(require) {
 
 					return formattedNode;
 				},
-				getChildren : function(){
-					 var children = new Backbone.Collection();
-					 children.add(this.ModelTree);
-					 children.add(this.SimulationTree);
-					 children.add(this.VisualizationTree);
-					 return children; 
-				 }
 			});
 });

@@ -264,6 +264,7 @@ define(function(require) {
 			HIDE_ENTITY : "Hiding entity ",
 			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
 			ZOOM_TO_ENTITY : "Zooming to entity ",
+			HIGHLIGHTING : "Highlighting object ",
 			
 			ENTITY_ALREADY_SELECTED : "Entity already selected",
 			

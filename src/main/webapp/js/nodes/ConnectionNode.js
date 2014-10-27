@@ -132,7 +132,9 @@ define(function(require) {
 		 * Show lines for connections of this entity
 		 */
 		showConnectionLine : function(mode){
-			
+			var from;
+			var to;
+			GEPPETTO.SceneController.drawLine(from,to);
 		},
 		
 		/**

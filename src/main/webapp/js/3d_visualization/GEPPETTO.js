@@ -109,6 +109,7 @@ define(function(require) {
 					threeObject.rotation.z = angle;
 				}
 			},
+			
 
 			/**
 			 * Compute the center of the scene.

@@ -278,6 +278,29 @@ define(function(require) {
 						}
 					}
 				},
+				
+				/**
+				 * Helper method for showing/hiding entity and all its children.
+				 * Not a console command. 
+				 * @param {EntityNode} entity - Entity to traverse and alter visibility
+				 * @param {boolean} apply - Visible or invisible
+				 */
+				traverseZoom : function(entity){
+					var aspects = entity.getAspects();
+					var entities = entity.getEntities();
+					var aspectPaths = new Array();
+					
+					for(var e in entities){
+						this.traverseZoom(entities[e]);
+					}
+					
+					for(var a in aspects){
+						var aspect = aspects[a];
+						aspectPaths.push(aspect.getInstancePath());
+					}
+					
+					return aspectPaths;
+				},
 
 				/**
 				 * Zooms to entity
@@ -287,7 +310,8 @@ define(function(require) {
 				 */
 				 zoomTo : function(){
 				 
-					 GEPPETTO.SceneController.zoomToEntity(this.instancePath);
+					 var paths = this.traverseZoom(this);
+					 GEPPETTO.SceneController.zoom(paths);
 				 
 					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
 			     },

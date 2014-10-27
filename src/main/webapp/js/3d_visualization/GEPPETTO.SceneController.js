@@ -205,18 +205,60 @@ define(function(require) {
 					return false;
 				},
 
-				zoomToAspect : function(instancePath) {
-					var aspect;
-					for ( var a in GEPPETTO.getVARS().meshes) {
-						if ( instancepath == a) {
-							aspect = GEPPETTO.getVARS().meshes[a];
+				zoom : function(paths) {
+					var aabbMin = null;
+					var aabbMax = null;
+					
+					for(var p in paths){
+						var mesh = GEPPETTO.getVARS().meshes[p];
+						
+						mesh.geometry.computeBoundingBox();
+
+						// If min and max vectors are null, first values become
+						// default min and max
+						if (aabbMin == null && aabbMax == null) {
+							aabbMin = mesh.geometry.boundingBox.min;
+							aabbMax = mesh.geometry.boundingBox.max;
+						}
+
+						// Compare other meshes, particles BB's to find min and max
+						else {
+							aabbMin.x = Math.min(aabbMin.x,
+									mesh.geometry.boundingBox.min.x);
+							aabbMin.y = Math.min(aabbMin.y,
+									mesh.geometry.boundingBox.min.y);
+							aabbMin.z = Math.min(aabbMin.z,
+									mesh.geometry.boundingBox.min.z);
+							aabbMax.x = Math.max(aabbMax.x,
+									mesh.geometry.boundingBox.max.x);
+							aabbMax.y = Math.max(aabbMax.y,
+									mesh.geometry.boundingBox.max.y);
+							aabbMax.z = Math.max(aabbMax.z,
+									mesh.geometry.boundingBox.max.z);
 						}
 					}
+					// Compute world AABB center
+					GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
+					GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
+					GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
 
-					if(aspect!=null){
-						GEPPETTO.calculateSceneCenter(aspect);
-						GEPPETTO.updateCamera();
-					}
+					// Compute world AABB "radius"
+					var diag = new THREE.Vector3();
+					diag = diag.subVectors(aabbMax, aabbMin);
+					var radius = diag.length() * 0.5;
+
+					// Compute offset needed to move the camera back that much needed to
+					// center AABB
+					var offset = radius
+					/ Math.tan(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.25);
+
+					var camDir = new THREE.Vector3(0, 0, 1.0);
+					camDir.multiplyScalar(offset);
+
+					// Store camera position
+					GEPPETTO.getVARS().cameraPosition = new THREE.Vector3();
+					GEPPETTO.getVARS().cameraPosition.addVectors(GEPPETTO.getVARS().sceneCenter, camDir);
+					GEPPETTO.updateCamera();
 				},
 
 				/**
@@ -293,16 +335,66 @@ define(function(require) {
 					}
 				},
 				
-				showConnectionLines : function(entities){
+				showConnectionLines : function(from,to){
 					
 				},
 				
-				highlight : function(paths){
+				hideConnectionLines : function(from, to){
 					
 				},
 				
-				unhighlight : function(paths){
+				/**
+				 * Highlight part of a mesh
+				 * 
+				 * @param {String} path - Path of mesh to highlight
+				 * @param {boolean} mode - Highlight or unhighlight
+				 */
+				highlight : function(path, mode){
+					var mesh = GEPPETTO.getVARS().visualModelMap[path];
 					
+					if(mode){
+						mesh.material.color.setHex(GEPPETTO.Resources.COLORS.HIGHLIGHTED);
+						mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+					}else{
+						mesh.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+						mesh.material.transparent = true;
+						mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+					}
+				},
+				
+				split : function(aspectPath){
+					var mesh = GEPPETTO.getVARS().meshes[aspectPath];
+					if(!mesh.split){
+						GEPPETTO.getVARS().scene.remove(mesh);
+
+						var map = mesh.mergedMeshesPaths;
+
+						var group = new THREE.Object3D();
+						for(var v in map){
+							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
+							m.visible = true;
+							m.geometry.dynamic = false;
+							group.add(m);							
+						}
+						group.position = mesh.position;
+						GEPPETTO.getVARS().scene.add(group);				
+						mesh.split = true;
+					}
+				},
+				
+				merge : function(aspectPath){
+					var mesh = GEPPETTO.getVARS().meshes[aspectPath];
+
+					if(mesh.split){
+						var map = mesh.mergedMeshesPaths;
+						for(var v in map){
+							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
+							m.visible = false;
+							GEPPETTO.getVARS().scene.remove(m);							
+						}
+					}					
+					mesh.split = false;
+					GEPPETTO.getVARS().scene.add(mesh);
 				},
 				
 				/**

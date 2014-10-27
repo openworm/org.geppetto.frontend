@@ -46,9 +46,10 @@ define(function(require) {
 
 		defaultTreeVisualiserOptions : {
 			width : "auto",
-			autoPlace : false
+			autoPlace : false,
+			expandNodes: false
 		},
-
+		
 		/**
 		 * Initializes the TreeVisualiserDAT given a set of options
 		 * 
@@ -128,6 +129,7 @@ define(function(require) {
 						
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data); 
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
+						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
 					}
 					else{
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
@@ -136,6 +138,7 @@ define(function(require) {
 				else{
 					if (!dataset.isDisplayed) {
 						parentFolder = parent.addFolder(label);
+						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
 					}
 					var children = data.getChildren().models;
 					if (children.length > 0){
@@ -144,6 +147,9 @@ define(function(require) {
 							if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
 								this.prepareTree(parentFolderTmp, children[childIndex]);
 							}
+						}
+						if (this.options.expandNodes){
+							parentFolderTmp.open();
 						}
 					}
 				}

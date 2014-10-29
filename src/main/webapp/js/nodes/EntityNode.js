@@ -307,8 +307,7 @@ define(function(require) {
 				 * @command EntityNode.zoomTo()
 				 * 
 				 */
-				 zoomTo : function(){
-				 
+				 zoomTo : function(){		 
 					 var paths = this.traverseZoom(this);
 					 GEPPETTO.SceneController.zoom(paths);
 				 

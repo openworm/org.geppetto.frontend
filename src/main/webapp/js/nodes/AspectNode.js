@@ -60,7 +60,6 @@ define(function(require) {
 				ModelTree : {},
 				VisualizationTree : {},
 				SimulationTree : {},
-				parentEntity : null,
 				/**
 				 * Initializes this node with passed attributes
 				 * 
@@ -126,19 +125,19 @@ define(function(require) {
 						GEPPETTO.SceneController.selectAspect(this.instancePath);				
 						message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
 						this.selected = true;
-						this.parentEntity.selected = true;
+						this.getParent().selected = true;
 						GEPPETTO.SceneController.setGhostEffect(true);
 						
 						//look on the simulation selection options and perform necessary
 						//operations
 						if(Simulation.getSelectionOptions().show_inputs){
-							this.parentEntity.showInputConnections(true);
+							this.getParent().showInputConnections(true);
 						}
 						if(Simulation.getSelectionOptions().show_outputs){
-							this.parentEntity.showOutputConnections(true);
+							this.getParent().showOutputConnections(true);
 						}
 						if(Simulation.getSelectionOptions().draw_connection_lines){
-							this.parentEntity.drawConnectionLines(true);
+							this.getParent().drawConnectionLines(true);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(true);
@@ -165,7 +164,7 @@ define(function(require) {
 								+ this.instancePath;
 						GEPPETTO.SceneController.unselectAspect(this.instancePath);
 						this.selected = false;
-						this.parentEntity.selected = false;
+						this.getParent().selected = false;
 						
 						//don't apply ghost effect to meshes if nothing is left selected after
 						//unselecting this entity
@@ -180,13 +179,13 @@ define(function(require) {
 						//look on the simulation selection options and perform necessary
 						//operations
 						if(Simulation.getSelectionOptions().show_inputs){
-							this.parentEntity.showInputConnections(false);
+							this.getParent().showInputConnections(false);
 						}
 						if(Simulation.getSelectionOptions().show_outputs){
-							this.parentEntity.showOutputConnections(false);
+							this.getParent().showOutputConnections(false);
 						}
 						if(Simulation.getSelectionOptions().draw_connection_lines){
-							this.parentEntity.drawConnectionLines(false);
+							this.getParent().drawConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(true);
@@ -300,14 +299,6 @@ define(function(require) {
 				 */
 				getVisualizationTree : function() {
 					return this.VisualizationTree;
-				},
-
-				getParentEntity : function() {
-					return this.parentEntity;
-				},
-
-				setParentEntity : function(e) {
-					this.parentEntity = e;
 				},
 
 				/**

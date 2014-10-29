@@ -72,6 +72,7 @@ define(function(require) {
 			this.id = options.id;
 			this.entityInstancePath = options.entityInstancePath;
 			this.type = options.type;
+			this.name = options.name;
 			this.instancePath = options.instancePath;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;

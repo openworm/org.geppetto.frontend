@@ -108,7 +108,6 @@ define([ 'jquery', 'underscore', 'backbone',
 			getParent : function(){
 				return this.parent;
 			}
-			
 		})
 	};
 });

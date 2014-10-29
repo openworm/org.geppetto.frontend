@@ -770,12 +770,12 @@ public class GeppettoServletController {
 		String modelTree = visitor.getSimulationService().getModelTree(
 				aspectInstancePath);
 
-		String update = "{\"aspectInstancePath\":" + '"' + aspectInstancePath
-				+ '"' + ",\"modelTree\":{" + modelTree + "}}";
+//		String update = "{\"aspectInstancePath\":" + '"' + aspectInstancePath
+//				+ '"' + ",\"modelTree\":{" + modelTree + "}}";
 
 		// message the client with results
 		this.messageClient(requestID, visitor,
-				OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, update);
+				OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, modelTree);
 	}
 
 	/**

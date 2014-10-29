@@ -149,9 +149,9 @@ define(function(require) {
 				});
 
 				// Compute world AABB center
-				VARS.sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
-				VARS.sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
-				VARS.sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
+				GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
+				GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
+				GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
 
 				// Compute world AABB "radius"
 				var diag = new THREE.Vector3();
@@ -161,14 +161,14 @@ define(function(require) {
 				// Compute offset needed to move the camera back that much needed to
 				// center AABB
 				var offset = radius
-				/ Math.tan(Math.PI / 180.0 * VARS.camera.fov * 0.25);
+				/ Math.tan(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.25);
 
 				var camDir = new THREE.Vector3(0, 0, 1.0);
 				camDir.multiplyScalar(offset);
 
 				// Store camera position
-				VARS.cameraPosition = new THREE.Vector3();
-				VARS.cameraPosition.addVectors(VARS.sceneCenter, camDir);
+				GEPPETTO.getVARS().cameraPosition = new THREE.Vector3();
+				GEPPETTO.getVARS().cameraPosition.addVectors(GEPPETTO.getVARS().sceneCenter, camDir);
 			},
 
 			/**
@@ -176,13 +176,13 @@ define(function(require) {
 			 */
 			updateCamera : function() {
 				// Update camera
-				VARS.camera.rotationAutoUpdate = false;
-				VARS.camera.position.set(VARS.cameraPosition.x,
-						VARS.cameraPosition.y, VARS.cameraPosition.z);
-				VARS.camera.lookAt(VARS.sceneCenter);
-				VARS.camera.up = new THREE.Vector3(0, 1, 0);
-				VARS.camera.rotationAutoUpdate = true;
-				VARS.controls.target = VARS.sceneCenter;
+				GEPPETTO.getVARS().camera.rotationAutoUpdate = false;
+				GEPPETTO.getVARS().camera.position.set(GEPPETTO.getVARS().cameraPosition.x,
+						GEPPETTO.getVARS().cameraPosition.y, GEPPETTO.getVARS().cameraPosition.z);
+				GEPPETTO.getVARS().camera.lookAt(GEPPETTO.getVARS().sceneCenter);
+				GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
+				GEPPETTO.getVARS().camera.rotationAutoUpdate = true;
+				GEPPETTO.getVARS().controls.target = GEPPETTO.getVARS().sceneCenter;
 			},
 
 			/**
@@ -191,7 +191,7 @@ define(function(require) {
 			 * @returns {Boolean} True or false depending whether scene is populated or not
 			 */
 			isScenePopulated : function() {
-				return !(_.isEmpty(VARS.visualModelMap));
+				return !(_.isEmpty(GEPPETTO.getVARS().visualModelMap));
 			},
 
 			/**
@@ -200,7 +200,7 @@ define(function(require) {
 			 * @returns {Boolean] True or false if canvas has been created or not
 			 */
 			isCanvasCreated : function() {
-				return VARS.canvasCreated;
+				return GEPPETTO.getVARS().canvasCreated;
 			},
 
 			/**
@@ -210,13 +210,13 @@ define(function(require) {
 				// Stats
 				if ($("#stats").length == 0) {
 					if (VARS != null) {
-						VARS.stats = new Stats();
-						VARS.stats.domElement.style.float = 'right';
-						VARS.stats.domElement.style.position = 'absolute';
-						VARS.stats.domElement.style.top = '60px';
-						VARS.stats.domElement.style.right = '5px';
-						VARS.stats.domElement.style.zIndex = 100;
-						$('#controls').append(VARS.stats.domElement);
+						GEPPETTO.getVARS().stats = new Stats();
+						GEPPETTO.getVARS().stats.domElement.style.float = 'right';
+						GEPPETTO.getVARS().stats.domElement.style.position = 'absolute';
+						GEPPETTO.getVARS().stats.domElement.style.top = '60px';
+						GEPPETTO.getVARS().stats.domElement.style.right = '5px';
+						GEPPETTO.getVARS().stats.domElement.style.zIndex = 100;
+						$('#controls').append(GEPPETTO.getVARS().stats.domElement);
 					}
 				}
 			},
@@ -240,18 +240,18 @@ define(function(require) {
 			 * Create a GUI element based on the available metadata
 			 */
 			setupGUI : function() {
-				var data = !(_.isEmpty(VARS.metadata));
+				var data = !(_.isEmpty(GEPPETTO.getVARS().metadata));
 
 				// GUI
-				if (!VARS.gui && data) {
-					VARS.gui = new dat.GUI({
+				if (!GEPPETTO.getVARS().gui && data) {
+					GEPPETTO.getVARS().gui = new dat.GUI({
 						width : 400
 					});
-					GEPPETTO.addGUIControls(VARS.gui, VARS.metadata);
+					GEPPETTO.addGUIControls(GEPPETTO.getVARS().gui, GEPPETTO.getVARS().metadata);
 				}
-				for (f in VARS.gui.__folders) {
+				for (f in GEPPETTO.getVARS().gui.__folders) {
 					// opens only the root folders
-					VARS.gui.__folders[f].open();
+					GEPPETTO.getVARS().gui.__folders[f].open();
 				}
 
 			},
@@ -284,14 +284,14 @@ define(function(require) {
 			 */
 			setupAxis : function() {
 				// To use enter the axis length
-				VARS.scene.add(new THREE.AxisHelper(200));
+				GEPPETTO.getVARS().scene.add(new THREE.AxisHelper(200));
 			},
 
 			/**
 			 * Renders objects in the scene
 			 */
 			render : function() {
-				VARS.renderer.render(VARS.scene, VARS.camera);
+				GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene, GEPPETTO.getVARS().camera);
 			},
 
 			/**
@@ -304,14 +304,14 @@ define(function(require) {
 				// create a Ray with origin at the mouse position and direction into
 				// the
 				// scene (camera direction)
-				var vector = new THREE.Vector3(VARS.mouse.x, VARS.mouse.y, 1);
-				VARS.projector.unprojectVector(vector, VARS.camera);
+				var vector = new THREE.Vector3(GEPPETTO.getVARS().mouse.x, GEPPETTO.getVARS().mouse.y, 1);
+				GEPPETTO.getVARS().projector.unprojectVector(vector, GEPPETTO.getVARS().camera);
 
-				var raycaster = new THREE.Raycaster(VARS.camera.position, vector
-						.sub(VARS.camera.position).normalize());
+				var raycaster = new THREE.Raycaster(GEPPETTO.getVARS().camera.position, vector
+						.sub(GEPPETTO.getVARS().camera.position).normalize());
 
 				var visibleChildren = [];
-				VARS.scene.traverse(function(child) {
+				GEPPETTO.getVARS().scene.traverse(function(child) {
 					if (child.visible) {
 						visibleChildren.push(child);
 					}
@@ -327,7 +327,7 @@ define(function(require) {
 			 * @returns {boolean} True if the key is pressed
 			 */
 			isKeyPressed : function(key) {
-				return VARS.keyboard.pressed(key);
+				return GEPPETTO.getVARS().keyboard.pressed(key);
 			},
 
 			/**
@@ -336,7 +336,7 @@ define(function(require) {
 			 * @returns {Number} A new id
 			 */
 			getNewId : function() {
-				return VARS.idCounter++;
+				return GEPPETTO.getVARS().idCounter++;
 			},
 
 			/**
@@ -344,13 +344,13 @@ define(function(require) {
 			 * @param {String} entityIndex - the id of the entity for which we want to display metadata
 			 */
 			showMetadataForEntity : function(entityIndex) {
-				if (VARS.gui) {
-					VARS.gui.domElement.parentNode.removeChild(VARS.gui.domElement);
-					VARS.gui = null;
+				if (GEPPETTO.getVARS().gui) {
+					GEPPETTO.getVARS().gui.domElement.parentNode.removeChild(GEPPETTO.getVARS().gui.domElement);
+					GEPPETTO.getVARS().gui = null;
 				}
 
-				VARS.metadata = VARS.runtimetree[entityIndex].metadata;
-				VARS.metadata.ID = VARS.runtimetree[entityIndex].id;
+				GEPPETTO.getVARS().metadata = GEPPETTO.getVARS().runtimetree[entityIndex].metadata;
+				GEPPETTO.getVARS().metadata.ID = GEPPETTO.getVARS().runtimetree[entityIndex].id;
 
 				GEPPETTO.setupGUI();
 
@@ -360,9 +360,9 @@ define(function(require) {
 			 * @param {Entity} aroundObject - The object around which the rotation will happen
 			 */
 			enterRotationMode : function(aroundObject) {
-				VARS.rotationMode = true;
+				GEPPETTO.getVARS().rotationMode = true;
 				if (aroundObject) {
-					VARS.camera.lookAt(aroundObject);
+					GEPPETTO.getVARS().camera.lookAt(aroundObject);
 				}
 			},
 
@@ -370,24 +370,24 @@ define(function(require) {
 			 * Exit rotation mode
 			 */
 			exitRotationMode : function() {
-				VARS.rotationMode = false;
+				GEPPETTO.getVARS().rotationMode = false;
 			},
 
 			getNamedThreeObjectFromInstancePath : function(aspectIP, name) {
 				//TODO: we should be manipulating the VisualizationTree 
 				//      instead of jumping through such hoops...
 				if (name != ""){
-					return VARS.scene.getObjectByName(aspectIP, true).getObjectByName(name, true);
+					return GEPPETTO.getVARS().scene.getObjectByName(aspectIP, true).getObjectByName(name, true);
 				}
 				else{
 					//This is to handle aberrations such as hhcell.electrical being both
 					// the aspect AND the name of the entity to be lit 
-					return VARS.scene.getObjectByName(aspectIP, true);
+					return GEPPETTO.getVARS().scene.getObjectByName(aspectIP, true);
 				}
 			},
 
 			resetCamera : function() {
-				GEPPETTO.calculateSceneCenter(VARS.scene);
+				GEPPETTO.calculateSceneCenter(GEPPETTO.getVARS().scene);
 				GEPPETTO.updateCamera();
 			},
 
@@ -396,7 +396,7 @@ define(function(require) {
 			 * @param y
 			 */
 			incrementCameraPan : function(x, y) {
-				VARS.controls.incrementPanEnd(x, y);
+				GEPPETTO.getVARS().controls.incrementPanEnd(x, y);
 			},
 
 			/**
@@ -405,21 +405,21 @@ define(function(require) {
 			 * @param z
 			 */
 			incrementCameraRotate : function(x, y, z) {
-				VARS.controls.incrementRotationEnd(x, y, z);
+				GEPPETTO.getVARS().controls.incrementRotationEnd(x, y, z);
 			},
 
 			/**
 			 * @param z
 			 */
 			incrementCameraZoom : function(z) {
-				VARS.controls.incrementZoomEnd(z);
+				GEPPETTO.getVARS().controls.incrementZoomEnd(z);
 			},
 
 			/**
 			 * @param msg
 			 */
 			log : function(msg) {
-				if (VARS.debug) {
+				if (GEPPETTO.getVARS().debug) {
 					var d = new Date();
 					var curr_hour = d.getHours();
 					var curr_min = d.getMinutes();

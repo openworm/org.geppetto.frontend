@@ -213,7 +213,7 @@ define(function(require) {
 					var aabbMax = null;
 					
 					for(var p in paths){
-						var mesh = GEPPETTO.getVARS().meshes[p];
+						var mesh = GEPPETTO.getVARS().meshes[paths[p]];
 						
 						mesh.geometry.computeBoundingBox();
 

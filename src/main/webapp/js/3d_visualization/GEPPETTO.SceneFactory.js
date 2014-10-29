@@ -165,6 +165,7 @@ define(function(require) {
 					midPoint.multiplyScalar(distance);
 
 					threeObject.position.add(midPoint);
+					
 					return threeObject;
 				},	
 

@@ -41,7 +41,6 @@ define(function(require) {
 
 	var Node = require('nodes/Node');
 	var AspectSubTreeNode = require('nodes/AspectSubTreeNode');
-	var $ = require('jquery');
 
 	return Node.Model
 			.extend({

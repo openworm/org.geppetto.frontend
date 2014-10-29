@@ -175,7 +175,7 @@ define(function(require) {
 
 					this.updateWidgets();
 				},
-
+				
 				/**Update and create simulation Tree for aspect
 				 * 
 				 * @param aspectInstancePath - Path of aspect to update
@@ -218,7 +218,7 @@ define(function(require) {
 				 * @param aspectInstancePath - Path of aspect to populate
 				 * @param modelTree - Server JSON update
 				 */
-				createAspectModelTree : function(aspectInstancePath, modelTree){
+				populateAspectModelTree : function(aspectInstancePath, modelTree){
 					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);
 
 					//populate model tree with server nodes
@@ -447,6 +447,17 @@ define(function(require) {
 
 								a.VisualizationTree = subTree;
 								subTree.setParent(a);
+								
+								for(var key in node){
+									if(typeof node[key] == "object"){
+										if(node[key]._metaType==GEPPETTO.Resources.VISUAL_GROUP_NODE){
+											var vg = this.createVisualGroup(node[key]);
+											vg.setParent(subTree);
+											subTree.get("children").add(vg);
+											subTree[key] = vg;
+										}
+									}
+								}
 								a.get("children").add(subTree);
 								
 								a.VisualizationTree["content"] = node;
@@ -458,7 +469,6 @@ define(function(require) {
 								a.ModelTree = subTree;
 
 								a.get("children").add(subTree);
-
 							}
 						}
 					}
@@ -471,7 +481,7 @@ define(function(require) {
 					var a = new AspectSubTreeNode({
 						name : node.type,
 						type : node.type,
-						id : node.id,
+						id : node.name,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE,
@@ -486,7 +496,7 @@ define(function(require) {
 				createCompositeNode : function(node) {
 					var a = new CompositeNode({
 						id : node.id,
-						name : node.id,
+						name : node.name,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.COMPOSITE_NODE
@@ -501,7 +511,7 @@ define(function(require) {
 				createFunctionNode : function(node) {
 					var a = new FunctionNode({
 						id : node.id,
-						name : node.id,
+						name : node.name,
 						expression : node.expression,
 						arguments : node.arguments,
 						instancePath : node.instancePath,
@@ -517,7 +527,7 @@ define(function(require) {
 				createDynamicsSpecificationNode : function(node) {
 					var a = new DynamicsSpecificationNode({
 						id : node.id,
-						name : node.id,
+						name : node.name,
 						value : node.value,
 						unit : node.unit,
 						scalingFactor : node.scalingFactor,
@@ -540,7 +550,7 @@ define(function(require) {
 				createParameterSpecificationNode : function(node) {
 					var a = new ParameterSpecificationNode({
 						id : node.id,
-						name : node.id,
+						name : node.name,
 						value : node.value,
 						unit : node.unit,
 						scalingFactor : node.scalingFactor,
@@ -552,11 +562,11 @@ define(function(require) {
 					GEPPETTO.Console.updateTags(node.instancePath, a);
 					return a;
 				},
-				/** Creates and populates client aspect nodes for first time */
+				/** Creates and populates client parameter nodes for first time */
 				createParameterNode : function(node) {
 					var a = new ParameterNode({
 						id : node.id,
-						name : node.id,
+						name : node.name,
 						instancePath : node.instancePath,
 						properties : node.properties,
 						domainType : node.domainType,
@@ -647,7 +657,7 @@ define(function(require) {
 				createVariableNode : function(node) {
 					var a = new VariableNode({
 						id : node.id,
-						name : node.id,
+						name : node.name,
 						value : node.value,
 						unit : node.unit,
 						scalingFactor : node.scalingFactor,
@@ -655,6 +665,48 @@ define(function(require) {
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VARIABLE_NODE
 					});
+					GEPPETTO.Console.updateTags(node.instancePath, a);
+					return a;
+				},
+				/** Creates and populates client visual group nodes for first time */
+				createVisualGroupElementNode : function(node) {
+					var a = new VisualGroupElementNode({
+						id : node.id,
+						name : node.name,
+						color : node.color,
+						value : node.value,
+						scalingFactor : node.scalingFactor,
+						instancePath : node.instancePath,
+						domainType : node.domainType,
+						_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE
+					});
+					GEPPETTO.Console.updateTags(node.instancePath, a);
+					return a;
+				},
+				/** Creates and populates client Visual Group nodes for first time */
+				createVisualGroupNode : function(node) {
+					var a = new VisualGroupNode({
+						id : node.id,
+						name : node.name,
+						type : node.type,
+						lowSpectrumColor : node.lowSpectrumColor,
+						highSpectrumColor : node.highSpectrumColor,
+						instancePath : node.instancePath,
+						domainType : node.domainType,
+						_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE
+					});
+					
+					for(var key in node){
+						if(typeof node[key] == "object"){
+							if(node[key]._metaType==GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE){
+								var element = this.createVisualGroupElementNode(node[key]);
+								element.setParent(a);
+								a.get("visualGroupElements").add(element);
+								a[key] = element;
+							}
+						}
+					}
+						
 					GEPPETTO.Console.updateTags(node.instancePath, a);
 					return a;
 				},

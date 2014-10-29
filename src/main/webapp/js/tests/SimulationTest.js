@@ -172,7 +172,7 @@ define(function(require) {
 							var aspectID = update.aspectInstancePath;
 							var modelTree = update.modelTree;
 
-							GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectID, modelTree.ModelTree);        	        	
+							GEPPETTO.RuntimeTreeFactory.populateAspectModelTree(aspectID, modelTree.ModelTree);        	        	
 
 							equal(jQuery.isEmptyObject(hhcell.electrical.ModelTree),false,"Test Model Tree Command");
 							notEqual(hhcell.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
@@ -406,7 +406,7 @@ define(function(require) {
 
 							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 
-							GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+							GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree);
 							
 							ok(true, "Simulation loaded, passed");
 							notEqual(sample,null,"Entities checked");

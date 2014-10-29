@@ -41,7 +41,6 @@
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		aspectInstancePath : null,
@@ -84,6 +83,7 @@ define(function(require) {
 		
 		/**
 		 * Highlight visual object reference node
+		 * @command VisualObjectReferenceNode.highlight()
 		 * @param {boolean} mode - Highlight or unhighlight the visual reference
 		 */
 		highlight : function(mode){
@@ -94,7 +94,7 @@ define(function(require) {
 			else{
 				GEPPETTO.SceneController.merge(this.getAspectInstancePath());
 			}
-			GEPPETTO.SceneController.highlight(pathToObject,mode);
+			GEPPETTO.SceneController.highlight(this.getAspectInstancePath(),pathToObject,mode);
 			
 			return GEPPETTO.Resources.HIGHLIGHTING + pathToObject;
 		},

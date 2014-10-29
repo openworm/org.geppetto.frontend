@@ -59,7 +59,6 @@ define(function(require) {
 			visualObjectReferenceNodes : [],
 		},
 
-		properties : {},
 		entityInstancePath : null,
 		type : null,
 
@@ -101,14 +100,17 @@ define(function(require) {
 
 		/**
 		 * Returns array of custom nodes for this connection
+		 * 
+		 * @command ConnectionNode.getCustomNodes()
 		 * @returns {Array} Array of nodes for custom properties of connection node.
 		 */
 		getCustomNodes : function(){
-			return this.get("customNodes");
+			return this.get("customNodes").models;
 		},
 		
 		/**
 		 * Returns array of visual object reference nodes for this connection
+		 * @command ConnectionNode.getVisualObjectReferenceNodes()
 		 * @returns {Array} Array of nodes for visual object references
 		 */
 		getVisualObjectReferenceNodes : function(){
@@ -117,6 +119,7 @@ define(function(require) {
 		
 		/**
 		 * Highlight the visual references of this connection
+		 * @command ConnectionNode.highlight()
 		 * @param {boolean} - Highlight or unhighlight reference nodes
 		 */
 		highlight : function(mode){
@@ -126,12 +129,15 @@ define(function(require) {
 			for(var ref in references){
 				references[ref].highlight(mode);
 			}
+			
+			return GEPPETTO.Resources.HIGHLIGHTING + this.id;
 		},
 		
 		/**
 		 * Show lines for connections of this entity
+		 * @command ConnectionNode.showConnectionsLine()
 		 */
-		showConnectionLine : function(mode){
+		showConnectionsLine : function(mode){
 			var from;
 			var to;
 			GEPPETTO.SceneController.drawLine(from,to);
@@ -140,8 +146,7 @@ define(function(require) {
 		/**
 		 * Get this entity's children entities
 		 * 
-		 * @command EntityNode.getChildren()
-		 * 
+		 * @command ConnectionNode.getChildren()
 		 * @returns {List<Aspect>} All children e.g. aspects and
 		 *          entities
 		 * 

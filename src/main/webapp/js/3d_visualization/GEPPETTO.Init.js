@@ -15,6 +15,7 @@ define(function(require) {
 			controls: null,
 			scene: null,
 			meshes : {},
+			splitMeshes : {},
 			renderer: null,
 			stats: null,
 			gui: null,

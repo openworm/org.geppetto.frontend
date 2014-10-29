@@ -31,24 +31,20 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a composite variable node, used for simulation
- * tree state variables.
+ * Client class use to represent a VisualGroupElement Node, used for visualization tree
+ * properties.
  * 
- * @module nodes/CompositeNode
+ * @module nodes/VisualGroupElementNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
+
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		relations : [ {
-			type : Backbone.Many,
-			key : 'children',
-			relatedModel : Node
-		} ],
-		defaults : {
-			children : []
-		},
+		value : "",
+		scalingFactor : "",
+		color : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -57,40 +53,53 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.id = options.id;
+			this.value = options.value;
+			this.scalingFactor = options.scalingFactor;
+			this.color = options.color;
 			this.name = options.name;
+			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
 			this.domainType = options.domainType;
+			this._metaType = options._metaType;
 		},
 
 		/**
-		 * Get this entity's aspects
+		 * Get value of quantity
 		 * 
-		 * @command CompositeVariableNode.getChildren()
-		 * 
-		 * @returns {List<Aspect>} - List of aspects
-		 * 
+		 * @command VisualGroupElementNode.getValue()
+		 * @returns {String} Value of quantity
 		 */
-		getChildren : function() {
-			var children = this.get("children");
-			return children;
+		getValue : function() {
+			return this.value;
+		},
+
+		/**
+		 * Get scaling factor
+		 * 
+		 * @command VisualGroupElementNode.getScalingFactor()
+		 * @returns {String} Scaling Factor for value and unit
+		 */
+		getScalingFactor : function() {
+			return this.scalingFactor;
+		},
+		
+		/**
+		 * Get color of element
+		 * 
+		 * @command VisualGroupElementNode.getValue()
+		 * @returns {String} Color of VisualGroupElementNode
+		 */
+		getColor : function() {
+			return this.color;
 		},
 
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
-			var formattedNode = "Name : " + this.name + "\n" + "    Id: "
-					+ this.id + "\n" + "    InstancePath : "
-					+ this.instancePath + "\n" + "    Children : \n";
-			for ( var e = 0; e < this.getChildren().length; e++) {
-				var child = this.getChildren().at(e);
-				formattedNode = formattedNode + "      " + child._metaType
-						+ ": " + child.id + "\n";
-			}
-
-			return formattedNode;
+			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+					+ "    InstancePath : " + this.instancePath + "\n"
+					+ "    Properties : " + this.properties + "\n";
 		}
 	});
 });

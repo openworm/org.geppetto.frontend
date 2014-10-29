@@ -56,6 +56,7 @@ define(function(require) {
 					OUTPUT_TO_SELECTED : 0Xff5a02,
 					HIGHLIGHTED : 0Xff1a02, 
 					INPUT_AND_OUTPUT : 0X649615,
+					SPLIT : 0XCFCFA6
 			},
 
 			OPACITY : {
@@ -339,6 +340,8 @@ define(function(require) {
 			DYNAMICS_NODE : "DynamicsSpecificationNode",
 			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
 			TEXT_METADATA_NODE : "TextMetadataNode",
+			VISUAL_GROUP : "VisualGroupNode",
+			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
 			INPUT_CONNECTION : "FROM",
 			OUTPUT_CONNECTION : "TO"
 		}

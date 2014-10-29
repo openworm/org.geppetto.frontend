@@ -41,7 +41,6 @@ define(function(require) {
 	var Node = require('nodes/Node');
 	var AspectNode = require('nodes/AspectNode');
 	var ConnectionNode = require('nodes/ConnectionNode');
-	var $ = require('jquery');
 
 	return Node.Model
 			.extend({

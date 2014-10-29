@@ -41,7 +41,6 @@ define(function(require) {
 
 	var Node = require('nodes/Node');
 	var FunctionNode = require('nodes/FunctionNode');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		relations : [ {

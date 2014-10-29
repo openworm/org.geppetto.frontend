@@ -155,7 +155,7 @@ define(function(require) {
 							cylHeight, 6, 1, false);
 
 					c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-
+					
 					var threeObject = new THREE.Mesh(c, material);
 
 					threeObject.lookAt(cylinderAxis);

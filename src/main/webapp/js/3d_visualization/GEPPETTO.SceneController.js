@@ -205,6 +205,9 @@ define(function(require) {
 					return false;
 				},
 
+				/**
+				 * Takes few paths, 3D point locations, and computes center of it to focus camera.
+				 */
 				zoom : function(paths) {
 					var aabbMin = null;
 					var aabbMax = null;
@@ -349,49 +352,88 @@ define(function(require) {
 				 * @param {String} path - Path of mesh to highlight
 				 * @param {boolean} mode - Highlight or unhighlight
 				 */
-				highlight : function(path, mode){
-					var mesh = GEPPETTO.getVARS().visualModelMap[path];
+				highlight : function(aspectPath, objectPath, mode){
+					var splitMesh = GEPPETTO.getVARS().splitMeshes[aspectPath];
 					
-					if(mode){
-						mesh.material.color.setHex(GEPPETTO.Resources.COLORS.HIGHLIGHTED);
-						mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-					}else{
-						mesh.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-						mesh.material.transparent = true;
-						mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-					}
+					splitMesh.traverse(function (child) {
+					    if (child instanceof THREE.Mesh) {
+					    	if(child.instancePath == objectPath){
+					    		if(mode){
+					    			child.material.color.setHex(GEPPETTO.Resources.COLORS.HIGHLIGHTED);
+					    			child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+					    		}else{
+					    			child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+					    			child.material.transparent = true;
+					    			child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+					    		}
+					    	}
+					    }
+					});					
 				},
 				
+				/**
+				 * Split merged mesh into individual meshes
+				 * 
+				 * @param {String} aspectPath - Path of aspect, corresponds to mesh
+				 */
 				split : function(aspectPath){
+					//get mesh from map
 					var mesh = GEPPETTO.getVARS().meshes[aspectPath];
+					//make sure it wasn't split already by checking flag
 					if(!mesh.split){
+						//remove from scene
 						GEPPETTO.getVARS().scene.remove(mesh);
+						mesh.geometry.dispose();
 
+						//get map of all meshes that merged mesh was merging
 						var map = mesh.mergedMeshesPaths;
 
+						//group to hold new individual meshes
 						var group = new THREE.Object3D();
+						//loop through individual meshes, add them to group, set new material to them
 						for(var v in map){
 							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
 							m.visible = true;
-							m.geometry.dynamic = false;
+							//new material and color, this to override shared merged mesh material
+							m.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
+							m.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
 							group.add(m);							
 						}
+						//give position or merge mesh to new group
 						group.position = mesh.position;
-						GEPPETTO.getVARS().scene.add(group);				
+						//add to scene
+						GEPPETTO.getVARS().scene.add(group);
+						//keep track that split mesh exist for easy access
+						GEPPETTO.getVARS().splitMeshes[aspectPath] = group;
 						mesh.split = true;
 					}
 				},
 				
+				/**
+				 * Merge mesh that was split before
+				 * 
+				 * @param {String} aspectPath - Path to aspect that points to mesh
+				 */
 				merge : function(aspectPath){
+					//get mesh from map 
 					var mesh = GEPPETTO.getVARS().meshes[aspectPath];
 
+					//make sure it's split before doing merging
 					if(mesh.split){
+						//get all paths of meshes, need to re-apply merged material
+						//to override previous one used during splitting 
 						var map = mesh.mergedMeshesPaths;
 						for(var v in map){
+							//get mesh from visual map
 							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
 							m.visible = false;
-							GEPPETTO.getVARS().scene.remove(m);							
+							//apply same material to mesh as parent (merged mesh)
+							m.material = mesh.material;						
 						}
+						//retrieve split mesh that is on the scene
+						var splitMesh = GEPPETTO.getVARS().splitMeshes[aspectPath];
+						//remove split mesh from scene
+						GEPPETTO.getVARS().scene.remove(splitMesh);	
 					}					
 					mesh.split = false;
 					GEPPETTO.getVARS().scene.add(mesh);

@@ -7,15 +7,15 @@ define(function(require) {
 
 		require('three');
 		require('vendor/THREEx.KeyboardState');
-
+		
 		var VARS = {
 			debug: false,
 			camera: null,
 			container: null,
 			controls: null,
 			scene: null,
-			entities : {},
-			aspects : {},
+			meshes : {},
+			splitMeshes : {},
 			renderer: null,
 			stats: null,
 			gui: null,
@@ -130,9 +130,11 @@ define(function(require) {
 						if(selected == ""){
 							selected = intersects[ 0 ].object.parent.name;
 						}
-						if(VARS.aspects.hasOwnProperty(selected) ||
-								VARS.entities.hasOwnProperty(selected))
-						GEPPETTO.Console.executeCommand(selected + '.select()' );
+						if(VARS.meshes.hasOwnProperty(selected) ||
+								VARS.entities.hasOwnProperty(selected)){
+							GEPPETTO.SceneController.unSelectAll();
+							GEPPETTO.Console.executeCommand(selected + '.select()' );
+						}
 					}
 						
 			}, false);

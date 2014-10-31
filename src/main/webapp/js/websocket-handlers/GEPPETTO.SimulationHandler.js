@@ -80,7 +80,7 @@ define(function(require) {
             GEPPETTO.trigger('simulation:modelloaded');
             
             //Populate scene
-            GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+            GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree);
         };
 
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
@@ -93,11 +93,11 @@ define(function(require) {
             if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
                 if(!GEPPETTO.isScenePopulated()) {
                     // the first time we need to create the objects
-                    GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+                    GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree);
                 }
                 else {
                     // any other time we just update them
-                    GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
+                    GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
             
@@ -138,18 +138,18 @@ define(function(require) {
                 }
                 else {
                     // any other time we just update them
-                    GEPPETTO.updateScene(GEPPETTO.Simulation.runTimeTree);
+                    GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
                        
             GEPPETTO.trigger('simulation:started');
         };
 
-        messageHandler[messageTypes.SIMULATION_STOPPED] = function() {
+        messageHandler[messageTypes.SIMULATION_STOPPED] = function(payload) {
             GEPPETTO.trigger('simulation:stopped');
         };
 
-        messageHandler[messageTypes.SIMULATION_PAUSED] = function() {
+        messageHandler[messageTypes.SIMULATION_PAUSED] = function(payload) {
             GEPPETTO.trigger('simulation:paused');
         };
 
@@ -199,12 +199,9 @@ define(function(require) {
 
         //received model tree from server
         messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
-        	var update = JSON.parse(payload.get_model_tree);
-        	var aspectInstancePath = update.aspectInstancePath;
-        	var modelTree = update.modelTree;
-        	
+        	var update = JSON.parse(payload.get_model_tree);        	
         	//create client side model tree
-        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectInstancePath, modelTree.ModelTree);        	        	
+        	GEPPETTO.RuntimeTreeFactory.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);        	        	
         };
 
 		GEPPETTO.SimulationHandler = {

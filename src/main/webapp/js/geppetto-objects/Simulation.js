@@ -61,7 +61,12 @@ define(function(require) {
 			loadingTimer : null,
 			runTimeTree : {},
 			initializationTime : null,
-			
+			selectionOptions : {
+				show_inputs : true,
+				show_outputs : true,
+				draw_connections_lines : true,
+				hide_not_selected : false
+			},
 			/**
 			 * Simulation.Status
 			 * 
@@ -185,7 +190,7 @@ define(function(require) {
 					if(webGLStarted) {
 						if(this.status == this.StatusEnum.INIT) {
 							//we call it only the first time
-							GEPPETTO.animate();
+							GEPPETTO.SceneController.animate();
 						}
 						GEPPETTO.MessageSocket.send("init_url", simulationURL);
 						this.initializationTime = new Date();
@@ -233,7 +238,7 @@ define(function(require) {
 				if(webGLStarted) {
 					if(GEPPETTO.Simulation.status == GEPPETTO.Simulation.StatusEnum.INIT) {
 						//we call it only the first time
-						GEPPETTO.animate();
+						GEPPETTO.SceneController.animate();
 					}
 
 					GEPPETTO.MessageSocket.send("init_sim", content);
@@ -506,29 +511,124 @@ define(function(require) {
 			},
 
 			/**
-			 * Add a transfer function to a watched var's sim state.
-			 * The transfer function should accept the value of the watched var and output a
-			 * number between 0 and 1, corresponding to min and max brightness.
-			 * If no transfer function is specified then brightess = value
+			 * Modulates the brightness of an aspect visualization, given a watched node
+			 * and a normalization function. The normalization function should receive
+			 * the value of the watched node and output a number between 0 and 1,
+			 * corresponding to min and max brightness. If no normalization function is
+			 * specified, then brightness = value
 			 * 
-			 * @command GEPPETTO.Simulation.addBrightnessFunction(entity, variable, transferFunction)
-			 * 
-			 * @param {Object} entity - Entity to apply brightness function
-			 * @param {Object} variable - Variable used to determines brightness level
-			 * @param {Function} transferFunction - Function to set brightness to entity
+			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
+			 * @param {String} entityName - Name of the entity to be lit
+			 * @param {VariableNode} modulation - Variable which modulates the brightness
+			 * @param {Function} normalizationFunction
 			 */
-			addBrightnessFunction: function(entity, variable, transferFunction) {	
-				this.listeners[variable.getInstancePath()] = (function (simState){
-					GEPPETTO.lightUpEntity(entity.getInstancePath(), transferFunction ? transferFunction(simState.value) : simState.value);
+			addBrightnessFunction: function(aspect, entityName, modulation, normalizationFunction) {
+				this.addOnNodeUpdatedCallback(modulation, function(varnode){
+			    	GEPPETTO.lightUpEntity(aspect, entityName,
+			    			normalizationFunction ? normalizationFunction(varnode.getValue()) : varnode.getValue());
 				});
 			},
 
+			clearBrightnessFunctions: function(varnode) {
+				this.clearOnNodeUpdateCallback(varnode);
+			},
+
 			/**
-			 * Clear brightness transfer functions on simulation state
-			 * @param {VariableNode} variable - VariableNode to reset brightness function
+			 * Callback to be called whenever a watched node changes
+			 *
+			 * @param {VariableNode} varnode - VariableNode to couple callback to
+			 * @param {Function} callback - Callback function to be called whenever _variable_ changes
 			 */
-			clearBrightnessFunctions: function(variable) {
-				this.listeners[variable.getId()] = null;
+			addOnNodeUpdatedCallback: function(varnode, callback) {
+				this.listeners[varnode.getInstancePath()] = callback;
+			},
+			
+			/**
+			 * Sets options that happened during selection of an entity. For instance, 
+			 * user can set things that happened during selection as if connections inputs and outputs are shown,
+			 * if connection lines are drawn and if other entities that were not selected are still visible.
+			 * 
+			 * @param {Object} options - New set of options for selection process
+			 */
+			setOnSelectionOptions : function(options){
+				if(options.show_inputs != null){
+					this.selectionOptions.show_inputs = options.show_inputs;
+				}
+				if(options.show_outputs != null){
+					this.selectionOptions.show_outputs = options.show_outputs;
+				}
+				if(options.draw_connection_lines != null){
+					this.selectionOptions.draw_connection_lines = options.draw_connection_lines;
+				}
+				if(options.hide_not_selected != null){
+					this.selectionOptions.hide_not_selected = options.hide_not_selected;
+				}
+			},
+			
+			/**
+			 * Options set for the selection event, turning on/off connections and lines.
+			 * 
+			 * @returns {Object} Options for selection.
+			 */
+			getSelectionOptions : function(){
+				return this.selectionOptions;
+			},
+			
+			/**
+			 * Show unselected entities, leaving selected one(s) visible.
+			 * 
+			 * @param {boolean} mode - Toggle flag for showing unselected entities.
+			 */
+			showUnselected : function(mode){
+				this.toggleUnSelected(this.runTimeTree, mode);
+			},
+
+			toggleUnSelected : function(entities, mode){
+				for(var e in entities){
+					var entity = entities[e];
+					if(entity.selected == false){
+						if(mode){
+							entity.show();
+						}
+						else{
+							entity.hide();
+						}
+					}
+					if(entity.getEntities()!=null){
+						this.toggleUnSelected(entity.getEntities(), mode);
+					}
+				}
+			},
+
+			/**
+			 * Clears callbacks coupled to changes in a node 
+			 * 
+			 * @param {VariableNode} varnode - VariableNode to which callbacks are coupled
+			 */
+			clearOnNodeUpdateCallback: function(varnode) {
+				this.listeners[varnode.getInstancePath()] = null;
+			},
+
+
+			/**
+			 * Dynamically change the visual representation of an aspect,
+			 * modulated by the value of a watched node. The _transformation_
+			 * to be applied to the aspect visual representation should be a
+			 * function receiving the aspect and the watched node's value,
+			 * which can be normalized via the _normalization_ function. The
+			 * latter is a function which receives the watched node's value
+			 * an returns a float between 0 and 1.
+			 * 
+			 * @param {AspectNode} visualAspect - Aspect which contains the VisualizationTree with the entity to be dynamically changed
+			 * @param {String} visualEntityName - Name of visual entity in the visualAspect VisualizationTree
+			 * @param {VariableNode} dynVar - Dynamical variable which will modulate the transformation
+			 * @param {Function} transformation - Transformation to act upon the visualEntity, given the modulation value
+			 * @param {Function} normalization - Function to be applied to the dynamical variable, normalizing it to a suitable range according to _transformation_
+			 */	
+			addDynamicVisualization: function(visualAspect, visualEntityName, dynVar, transformation, normalization){
+				//TODO: things should be VisualizationTree centric instead of aspect centric...  
+		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
+		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getValue()) : watchedNode.getValue());});
 			}
 		};
 

@@ -106,3 +106,15 @@ border-left: 3px solid #85ea0e;
 color: #85ea0e;
 }
 
+.entitynodetv {
+	border-left: 3px solid #EEA236;
+}
+.aspectnodetv {
+	border-left: 3px solid #0a0a0a;
+}
+.dg .cr.string.textmetadatanodetv {
+	border-left: 3px solid #FFFFFF;
+}
+.dg .cr.string.textmetadatanodetv input[type=text] {
+color: #FFFFFF;
+}

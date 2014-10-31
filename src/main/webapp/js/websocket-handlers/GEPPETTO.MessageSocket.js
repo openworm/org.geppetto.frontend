@@ -89,6 +89,9 @@ define(function(require) {
 				//Detects problems when connecting to Geppetto server
 				GEPPETTO.MessageSocket.socket.onerror = function(evt) {
 					var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
+					if(GEPPETTO.Simulation.isLoading()){
+						GEPPETTO.Simulation.stop();
+					}
 
 					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
 				};

@@ -47,7 +47,9 @@ define([ 'jquery', 'underscore', 'backbone',
 			name : "",
 			instancePath : "",
 			id : "",
+			domainType : "",
 			_metaType : "",
+			parent : null,
 
 			/**
 			 * Gets the instance path of the node
@@ -90,6 +92,22 @@ define([ 'jquery', 'underscore', 'backbone',
 			getId : function() {
 				return this.id;
 			},
+			
+			getDomainType : function(){
+				return this.domainType;
+			},
+			
+			setDomainType : function(newDomainType){
+				this.domainType = newDomainType;
+			},
+			
+			setParent : function(parent){
+				this.parent = parent;
+			},
+			
+			getParent : function(){
+				return this.parent;
+			}
 		})
 	};
 });

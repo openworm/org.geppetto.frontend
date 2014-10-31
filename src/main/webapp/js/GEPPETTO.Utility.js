@@ -291,6 +291,7 @@ define(function(require) {
 					return formattedOutput.replace(/"/g, "");
 				},
 				
+				
 				/**
 				 * Search obj for the value of node within using path.
 				 * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will

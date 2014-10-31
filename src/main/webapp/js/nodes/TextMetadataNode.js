@@ -36,16 +36,14 @@
  * 
  * @module nodes/TextMetadataNode
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
-		properties : {},
 		value : "",
-		_metaType : "TextMetadataNode",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -57,8 +55,10 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
+			this.text = options.text;
 			this.value = options.value;
-			this.properties = options.properties;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**
@@ -72,23 +72,12 @@ define(function(require) {
 		},
 		
 		/**
-		 * Get properties for this node
-		 * 
-		 * @command ParameterNode.getProperties()
-		 * @returns {String} Unit for quantity
-		 */
-		getProperties : function() {
-			return this.properties;
-		},
-
-		/**
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n"
-					+ "    Properties : " + this.properties + "\n";
+			return "ID : " + this.name + "\n" 
+					+ "    Name : " + this.name + "\n"
+					+ "    value : " + this.text + "\n";
 		}
 	});
 });

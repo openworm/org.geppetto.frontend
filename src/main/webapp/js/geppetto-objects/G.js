@@ -144,11 +144,11 @@ define(function(require) {
 				debugMode = mode;
 
 				if(mode) {
-					GEPPETTO.showStats();
+					GEPPETTO.toggleStats(true);
 					return GEPPETTO.Resources.DEBUG_ON;
 				}
 				else {
-					GEPPETTO.hideStats();
+					GEPPETTO.toggleStats(false);
 					return GEPPETTO.Resources.DEBUG_OFF;
 				}
 			},

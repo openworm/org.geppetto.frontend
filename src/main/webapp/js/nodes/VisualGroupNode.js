@@ -31,30 +31,31 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a specification node, used for model tree
+ * Client class use to represent a VisualGroup Node, used for visualization tree
  * properties.
  * 
- * @module nodes/DynamicsSpecificationNode
+ * @module nodes/VisualGroupNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var FunctionNode = require('nodes/FunctionNode');
+	var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
 
 	return Node.Model.extend({
 		relations : [ {
-			type : Backbone.One,
-			key : 'dynamics',
-			relatedModel : FunctionNode,
-		} ],
+			type : Backbone.Many,
+			key : 'visualGroupElements',
+			relatedModel : VisualGroupElementNode,
+		}],
+
 		defaults : {
-			dynamics : {}
+			visualGroupElements : [],
 		},
-		unit : "",
-		value : "",
-		scalingFactor : "",
-		dynamics : null,
+
+		type : "",
+		highSpectrumColor : "",
+		lowSpectrumColor : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -63,66 +64,93 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.unit = options.unit;
-			this.value = options.value;
-			this.scalingFactor = options.scalingFactor;
-			this.dynamics = options.dynamics;
+			this.type = options.type;
+			this.highSpectrumColor = options.highSpectrumColor;
+			this.lowSpectrumColor = options.lowSpectrumColor;
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
 			this.domainType = options.domainType;
+			this._metaType = options._metaType;
 		},
 
 		/**
-		 * Get the type of tree this is
+		 * Get type of Visual Group Node
 		 * 
-		 * @command DynamicsSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
+		 * @command VisualGroupNode.getType()
+		 * @returns {String} Type of Visual Group
 		 */
-		getUnit : function() {
-			return this.unit;
+		getType : function() {
+			return this.type;
 		},
 
 		/**
-		 * Get value of quantity
+		 * Get low spectrum color
 		 * 
-		 * @command DynamicsSpecificationNode.getValue()
-		 * @returns {String} Value of quantity
+		 * @command VisualGroupNode.getLowSpectrumColor()
+		 * @returns {String} Low Spectrum Color
 		 */
-		getValue : function() {
-			return this.value;
-		},
-
-		/**
-		 * Get scaling factor
-		 * 
-		 * @command DynamicsSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
-		 */
-		getScalingFactor : function() {
+		getLowSpectrumColor : function() {
 			return this.scalingFactor;
 		},
-
+		
 		/**
-		 * Get dynamics function node for this specifications node
+		 * Get high spectrum color of visual group
 		 * 
-		 * @returns {Object} Specifies dynamics for node
+		 * @command VisualGroupNode.getHighSpectrumColor()
+		 * @returns {String} High Spectrum color of visual gorup
 		 */
-		getDynamics : function() {
-			return this.get("dynamics");
+		getHighSpectrumColor : function() {
+			return this.highSpectrumColor;
 		},
 
+		/**
+		 * Get this visual group's elements
+		 * 
+		 * @command VisualGroupNode.getVisualGroupElements()
+		 * @returns {Array} Array of Visual Group Elements
+		 * 
+		 */
+		getVisualGroupElements : function() {
+			var connections = this.get("visualGroupElements").models;
+			return connections;
+		},
+
+		/**
+		 * Get this visual group children
+		 * 
+		 * @command VisualGroupNode.getChildren()
+		 * @returns {List<Aspect>} All children e.g. Visual Group Element Nodes
+		 */
+		getChildren : function() {
+			 var children = new Backbone.Collection();
+			 children.add(this.get("visualGroupElements").models);
+			 return children;
+		},
+		
+		show : function(mode){
+			
+			var visualizationTree = this.getParent();
+			
+			if(mode){
+				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
+			}
+			else{
+				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
+			}
+			
+			GEPPETTO.SceneController.showVisualGroups(visualizationTree,
+					this.getName(), this.getVisualGroupElements()[0].getColor(),mode);
+		},
+		
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n" + "    Dynamics : "
-					+ this.dynamics + "\n";
+					+ "    Type : " + this.type + "\n"
+					+ "    HighSpectrumColor : " + this.highSpectrumColor + "\n"
+					+ "    LowSpectrumColor : " + this.lowSpectrumColor + "\n";
 		}
 	});
 });

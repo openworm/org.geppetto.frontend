@@ -53,7 +53,7 @@ require.config({
 		backbone : 'vendor/backbone.min',
 		'backbone-store' : 'vendor/backbone-localStorage.min',
 		'backbone-associations' : 'vendor/backbone-associations-min',
-		geppetto : 'GEPPETTO',
+		geppetto : '3d_visualization/GEPPETTO',
 		react: 'vendor/react',
 		jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',

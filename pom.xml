@@ -291,7 +291,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>com.phasebash.jsdoc</groupId>
 				<artifactId>jsdoc3-maven-plugin</artifactId>
 				<version>1.1.0</version>
@@ -301,12 +301,11 @@
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/nodes</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/3d_visualization</directoryRoot>
 					</directoryRoots>
 					<sourceFiles>
-						<sourceFile>src/main/webapp/js/GEPPETTO.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.Console.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.FE.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.Init.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.JSEditor.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.Main.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.MenuManager.js</sourceFile>
@@ -323,7 +322,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin> -->
 		</plugins>
 		<pluginManagement>
 			<plugins>

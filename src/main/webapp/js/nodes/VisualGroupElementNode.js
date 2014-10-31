@@ -31,10 +31,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a parameter node, used for model tree
+ * Client class use to represent a VisualGroupElement Node, used for visualization tree
  * properties.
  * 
- * @module nodes/ParameterNode
+ * @module nodes/VisualGroupElementNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -42,7 +42,9 @@ define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		properties : {},
+		value : "",
+		scalingFactor : "",
+		color : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -51,7 +53,9 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.properties = options.properties;
+			this.value = options.value;
+			this.scalingFactor = options.scalingFactor;
+			this.color = options.color;
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
@@ -60,13 +64,46 @@ define(function(require) {
 		},
 
 		/**
-		 * Get properties for this node
+		 * Get value of quantity
 		 * 
-		 * @command ParameterNode.getProperties()
-		 * @returns {String} Unit for quantity
+		 * @command VisualGroupElementNode.getValue()
+		 * @returns {String} Value of quantity
 		 */
-		getProperties : function() {
-			return this.properties;
+		getValue : function() {
+			return this.value;
+		},
+
+		/**
+		 * Get scaling factor
+		 * 
+		 * @command VisualGroupElementNode.getScalingFactor()
+		 * @returns {String} Scaling Factor for value and unit
+		 */
+		getScalingFactor : function() {
+			return this.scalingFactor;
+		},
+		
+		/**
+		 * Get color of element
+		 * 
+		 * @command VisualGroupElementNode.getValue()
+		 * @returns {String} Color of VisualGroupElementNode
+		 */
+		getColor : function() {
+			return this.color;
+		},
+		
+		show : function(mode){
+			var visualizationTree = this.getParent().getParent();
+			
+			if(mode){
+				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
+			}
+			else{
+				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
+			}
+			
+			GEPPETTO.SceneController.showVisualGroups(visualizationTree, this.getParent().getName(), this.getColor(),mode);			
 		},
 
 		/**

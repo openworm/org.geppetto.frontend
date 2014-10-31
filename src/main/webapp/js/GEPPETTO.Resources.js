@@ -45,7 +45,24 @@
  */
 define(function(require) {
 	return function(GEPPETTO) {
+
 		GEPPETTO.Resources = {
+				
+			COLORS : {
+					DEFAULT : 0X199e8,
+					GHOST : 0X199e8,
+					SELECTED : 0Xffcc00,
+					INPUT_TO_SELECTED : 0Xffdfc6,
+					OUTPUT_TO_SELECTED : 0Xff5a02,
+					HIGHLIGHTED : 0Xff1a02, 
+					INPUT_AND_OUTPUT : 0X649615,
+					SPLIT : 0XCFCFA6
+			},
+
+			OPACITY : {
+					DEFAULT : 1,
+					GHOST : .25,
+			},
 			SIMULATION_LOADED: "Simulation Loaded",
 			SIMULATION_STARTED: "Simulation Started",
 
@@ -248,6 +265,7 @@ define(function(require) {
 			HIDE_ENTITY : "Hiding entity ",
 			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
 			ZOOM_TO_ENTITY : "Zooming to entity ",
+			HIGHLIGHTING : "Highlighting object ",
 			
 			ENTITY_ALREADY_SELECTED : "Entity already selected",
 			
@@ -319,8 +337,13 @@ define(function(require) {
 			PARAMETER_NODE : "ParameterNode",
 			CONNECTION_NODE : "ConnectionNode",
 			COMPOSITE_NODE : "CompositeNode",
-			DYNAMICS_NODE : "DynamicsSpecificationNode"
-				
+			DYNAMICS_NODE : "DynamicsSpecificationNode",
+			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
+			TEXT_METADATA_NODE : "TextMetadataNode",
+			VISUAL_GROUP_NODE : "VisualGroupNode",
+			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
+			INPUT_CONNECTION : "FROM",
+			OUTPUT_CONNECTION : "TO"
 		}
 	}
 });

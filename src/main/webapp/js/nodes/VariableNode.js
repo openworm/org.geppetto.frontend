@@ -39,13 +39,11 @@
  */
 define(function(require) {
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		unit : "",
 		value : "",
 		scalingFactor : "",
-		_metaType : "VariableNode",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -59,6 +57,8 @@ define(function(require) {
 			this.unit = options.unit;
 			this.value = options.value;
 			this.scalingFactor = options.scalingFactor;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**

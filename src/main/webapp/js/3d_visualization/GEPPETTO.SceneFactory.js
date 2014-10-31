@@ -39,8 +39,8 @@ define(function(require) {
 							mesh.name = aspect.instancePath;
 							GEPPETTO.getVARS().scene.add(mesh);
 							if (position != null) {
-								mesh.position = new THREE.Vector3(position.x,
-										position.y, position.z);
+								mesh.position.set(position.x, position.y,
+										position.z);
 							}
 							//keep track of aspects created by storing them in VARS property object
 							//under meshes

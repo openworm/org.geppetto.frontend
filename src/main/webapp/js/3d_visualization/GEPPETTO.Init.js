@@ -131,8 +131,10 @@ define(function(require) {
 							selected = intersects[ 0 ].object.parent.name;
 						}
 						if(VARS.meshes.hasOwnProperty(selected) ||
-								VARS.entities.hasOwnProperty(selected))
-						GEPPETTO.Console.executeCommand(selected + '.select()' );
+								VARS.entities.hasOwnProperty(selected)){
+							GEPPETTO.SceneController.unSelectAll();
+							GEPPETTO.Console.executeCommand(selected + '.select()' );
+						}
 					}
 						
 			}, false);

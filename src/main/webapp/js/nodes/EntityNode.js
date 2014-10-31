@@ -97,7 +97,7 @@ define(function(require) {
 								+ this.instancePath;
 						this.visible = true;
 						
-						this.traverseVisilibity(this, true);
+						this.traverseVisibility(this, true);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
 					}
@@ -118,7 +118,7 @@ define(function(require) {
 					if (this.visible == true) {
 						message = GEPPETTO.Resources.HIDE_ENTITY
 								+ this.instancePath;
-						this.traverseVisilibity(this, false);
+						this.traverseVisibility(this, false);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
 					}
@@ -259,7 +259,7 @@ define(function(require) {
 				 * @param {EntityNode} entity - Entity to traverse and alter visibility
 				 * @param {boolean} apply - Visible or invisible
 				 */
-				traverseVisibility : function(entity, apply){
+				traverseVisibility : function(entity, mode){
 					var aspects = entity.getAspects();
 					var entities = entity.getEntities();
 					

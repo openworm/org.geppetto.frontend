@@ -128,6 +128,21 @@ define(function(require) {
 			 return children;
 		},
 		
+		show : function(mode){
+			
+			var visualizationTree = this.getParent();
+			
+			if(mode){
+				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
+			}
+			else{
+				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
+			}
+			
+			GEPPETTO.SceneController.showVisualGroups(visualizationTree,
+					this.getName(), this.getVisualGroupElements()[0].getColor(),mode);
+		},
+		
 		/**
 		 * Print out formatted node
 		 */

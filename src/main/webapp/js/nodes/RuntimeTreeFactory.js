@@ -51,6 +51,8 @@ define(function(require) {
 		var ConnectionNode = require('nodes/ConnectionNode');
 		var TextMetadataNode = require('nodes/TextMetadataNode');
 		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
+		var VisualGroupNode = require('nodes/VisualGroupNode');
+		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
 		var simulationTreeCreated=false;
 
 		/**
@@ -451,7 +453,7 @@ define(function(require) {
 								for(var key in node){
 									if(typeof node[key] == "object"){
 										if(node[key]._metaType==GEPPETTO.Resources.VISUAL_GROUP_NODE){
-											var vg = this.createVisualGroup(node[key]);
+											var vg = this.createVisualGroupNode(node[key]);
 											vg.setParent(subTree);
 											subTree.get("children").add(vg);
 											subTree[key] = vg;
@@ -591,36 +593,65 @@ define(function(require) {
 
 					GEPPETTO.Console.updateTags(node.instancePath, a);
 
+					this.createVisualReferences(a,node);
+					return a;
+				},
+				
+				createVisualReferences : function(a,node){
 					for(var key in node){
 						if(typeof node[key] == "object"){
-							if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_NODE){
+							if(node[key]._metaType==GEPPETTO.Resources.COMPOSITE_NODE){
+								var composite = this.createCompositeNode(node[key]);
+								composite.setParent(a);
+								a.get("customNodes").add(composite);
+								a[key] = composite;
+								this.createVisualReferences(composite, node[key]);
+							}
+							else if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_NODE){
 								var custom = this.createParameterNode(node[key]);
 								custom.setParent(a);
-								a.get("customNodes").add(custom);
-								a[key] = custom;
+								if(a._metaType ==GEPPETTO.Resources.COMPOSITE_NODE){
+									a.get("children").add(custom);
+								}else{
+									a.get("customNodes").add(custom);
+									a[key] = custom;
+								}
 							}
 							else if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_SPEC_NODE){
 								var custom = this.createParameterSpecificationNode(node[key]);
 								custom.setParent(a);
-								a.get("customNodes").add(custom);
-								a[key] = custom;
+								if(a._metaType ==GEPPETTO.Resources.COMPOSITE_NODE){
+									a.get("children").add(custom);
+								}else{
+									a.get("customNodes").add(custom);
+									a[key] = custom;
+								}
 							}
 							else if(node[key]._metaType==GEPPETTO.Resources.TEXT_METADATA_NODE){
 								var custom = this.createTextMetadataNode(node[key]);
 								custom.setParent(a);
-								a.get("customNodes").add(custom);
-								a[key] = custom;
+								if(a._metaType ==GEPPETTO.Resources.COMPOSITE_NODE){
+									a.get("children").add(custom);
+								}else{
+									a.get("customNodes").add(custom);
+									a[key] = custom;
+								}
 							}
 							else if(node[key]._metaType==GEPPETTO.Resources.VISUAL_REFERENCE_NODE){
 								var vis = this.createVisualReferenceNode(node[key]);
 								vis.setParent(a);
-								a.get("visualObjectReferenceNodes").add(vis);
-								a[key] = vis;
+								if(a._metaType ==GEPPETTO.Resources.COMPOSITE_NODE){
+									a.get("children").add(vis);
+								}else{
+									a.get("visualObjectReferenceNodes").add(vis);
+									a[key] = vis;
+								}
+								
 							}
 						}
 					}
-					return a;
 				},
+				
 				/** Creates and populates client connection nodes for first time */
 				createVisualReferenceNode : function(node) {
 					var a = new VisualObjectReferenceNode({

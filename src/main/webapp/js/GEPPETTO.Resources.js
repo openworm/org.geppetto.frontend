@@ -340,7 +340,7 @@ define(function(require) {
 			DYNAMICS_NODE : "DynamicsSpecificationNode",
 			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
 			TEXT_METADATA_NODE : "TextMetadataNode",
-			VISUAL_GROUP : "VisualGroupNode",
+			VISUAL_GROUP_NODE : "VisualGroupNode",
 			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
 			INPUT_CONNECTION : "FROM",
 			OUTPUT_CONNECTION : "TO"

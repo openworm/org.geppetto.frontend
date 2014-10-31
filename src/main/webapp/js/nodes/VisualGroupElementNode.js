@@ -92,6 +92,19 @@ define(function(require) {
 		getColor : function() {
 			return this.color;
 		},
+		
+		show : function(mode){
+			var visualizationTree = this.getParent().getParent();
+			
+			if(mode){
+				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
+			}
+			else{
+				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
+			}
+			
+			GEPPETTO.SceneController.showVisualGroups(visualizationTree, this.getParent().getName(), this.getColor(),mode);			
+		},
 
 		/**
 		 * Print out formatted node

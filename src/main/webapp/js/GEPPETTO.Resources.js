@@ -56,19 +56,21 @@ define(function(require) {
 					OUTPUT_TO_SELECTED : 0Xff5a02,
 					HIGHLIGHTED : 0Xff1a02, 
 					INPUT_AND_OUTPUT : 0X649615,
-					ENTITY_NODE: 0xffffff,
-					ASPECT_NODE: 0x000000,
-					ASPECT_SUBTREE_NODE: 0x333333,
-					COMPOSITE_NODE: 0x660000,
-					CONNECTION_NODE: 0x993300,
-					DYNAMICS_SPECIFICATION_NODE: 0xcc9900,
-					FUNCTION_NODE: 0x006600,
-					PARAMETER_NODE: 0x336666,
-					PARAMETER_SPECIFICATION_NODE: 0x0099ff,
-					TEXT_METADATA_NODE: 0x000066,
-					URL_METADATA_NODE: 0x330066,
-					VARIABLE_NODE: 0x99ff99,
-					VISUAL_OBJECT_REFERENCE_NODE: 0x660066,
+					SPLIT : 0XCFCFA6,
+					ENTITY_NODE: 0xcc0000,
+					ASPECT_NODE: 0xcc6600,
+					ASPECT_SUBTREE_NODE: 0xcccc00,
+					COMPOSITE_NODE: 0x66cc00,
+					CONNECTION_NODE: 0x00cc00,
+					DYNAMICS_SPECIFICATION_NODE: 0x00cc66,
+					FUNCTION_NODE: 0x00cccc,
+					PARAMETER_NODE: 0x0066cc,
+					PARAMETER_SPECIFICATION_NODE: 0x0000cc,
+					TEXT_METADATA_NODE: 0x6600cc,
+					URL_METADATA_NODE: 0xcc00cc,
+					VARIABLE_NODE: 0xcc0066,
+					VISUAL_OBJECT_REFERENCE_NODE: 0x606060,
+					VISUAL_GROUP_ELEMENT_NODE:0xffffff,
 			},
 
 			OPACITY : {
@@ -277,11 +279,10 @@ define(function(require) {
 			HIDE_ENTITY : "Hiding entity ",
 			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
 			ZOOM_TO_ENTITY : "Zooming to entity ",
-			
-			ENTITY_ALREADY_SELECTED : "Entity already selected",
-			
+			HIGHLIGHTING : "Highlighting object ",
+			NO_REFERENCES_TO_HIGHLIGHT : "Connection has no Visual References to highlight.",
+			ENTITY_ALREADY_SELECTED : "Entity already selected",	
 			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
-
 			SELECTING_ASPECT : "Selecting aspect ",
 			UNSELECTING_ASPECT : "Unselecting aspect ",
 			SHOW_ASPECT : "Showing aspect ",
@@ -289,10 +290,12 @@ define(function(require) {
 			HIDE_ASPECT : "Hiding aspect ",
 			ASPECT_ALREADY_HIDDING : "Aspect already invisible.",
 			ZOOM_TO_ASPECT : "Zooming to aspect ",
-			
 			ASPECT_ALREADY_SELECTED : "Aspect already selected",
-			
 			ASPECT_NOT_SELECTED : "Aspect not selected, can't uselect what it isn't selected.",
+			SHOWING_VISUAL_GROUPS : "Showing visual group ",
+			HIDING_VISUAL_GROUPS : "Hiding visual group ",
+			NO_VISUAL_GROUP_ELEMENTS : "No elements inside visual group to show ",
+			MISSING_PARAMETER : "Command is missing parameter.",
 
 			
 			/**
@@ -351,6 +354,8 @@ define(function(require) {
 			DYNAMICS_NODE : "DynamicsSpecificationNode",
 			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
 			TEXT_METADATA_NODE : "TextMetadataNode",
+			VISUAL_GROUP_NODE : "VisualGroupNode",
+			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
 			INPUT_CONNECTION : "FROM",
 			OUTPUT_CONNECTION : "TO"
 		}

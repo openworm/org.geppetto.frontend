@@ -199,14 +199,13 @@ define(function(require) {
 
         //received model tree from server
         messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
-        	var update = JSON.parse(payload.get_model_tree);
-        	
+        	var update = JSON.parse(payload.get_model_tree);      
         	for (var updateIndex in update){
 	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
 	        	var modelTree = update[updateIndex].modelTree;
 	        	
 	        	//create client side model tree
-	        	GEPPETTO.RuntimeTreeFactory.createAspectModelTree(aspectInstancePath, modelTree.ModelTree);
+	        	GEPPETTO.RuntimeTreeFactory.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
         	}
         };
 

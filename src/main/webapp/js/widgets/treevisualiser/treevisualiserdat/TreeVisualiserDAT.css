@@ -109,70 +109,76 @@ color: #85ea0e;
 
 /*  NODE STYLE BY METATYPE*/
 .entitynodetv {
-	border-left: 3px solid #ffffff;
+	border-left: 3px solid #cc0000;
 }
 .aspectnodetv {
-	border-left: 3px solid #000000;
+	border-left: 3px solid #cc6600;
 }
 .aspectsubtreenodetv {
-	border-left: 3px solid #333333;
+	border-left: 3px solid #cccc00;
 }
 .compositenodetv {
-	border-left: 3px solid #660000;
+	border-left: 3px solid #66cc00;
 }
 
 
 .dg .cr.string.connectionnodetv {
-	border-left: 3px solid #993300;
+	border-left: 3px solid #00cc00;
 }
 .dg .cr.string.connectionnodetv input[type=text] {
-	color: #993300;
+	color: #00cc00;
 }
 .dg .cr.string.dynamicsspecificationnodetv {
-	border-left: 3px solid #cc9900;
+	border-left: 3px solid #00cc66;
 }
 .dg .cr.string.dynamicsspecificationnodetv input[type=text] {
-	color: #cc9900;
+	color: #00cc66;
 }
 .dg .cr.string.functionnodetv {
-	border-left: 3px solid #006600;
+	border-left: 3px solid #00cccc;
 }
 .dg .cr.string.functionnodetv input[type=text] {
-	color: #006600;
+	color: #00cccc;
 }
 .dg .cr.string.parameternodetv {
-	border-left: 3px solid #336666;
+	border-left: 3px solid #0066cc;
 }
 .dg .cr.string.parameternodetv input[type=text] {
-	color: #336666;
+	color: #0066cc;
 }
 .dg .cr.string.parameterspecificationnodetv {
-	border-left: 3px solid #0099ff;
+	border-left: 3px solid #0000cc;
 }
 .dg .cr.string.parameterspecificationnodetv input[type=text] {
-	color: #0099ff;
+	color: #0000cc;
 }
 .dg .cr.string.textmetadatanodetv {
-	border-left: 3px solid #000066;
+	border-left: 3px solid #6600cc;
 }
 .dg .cr.string.textmetadatanodetv input[type=text] {
-	color: #000066;
+	color: #6600cc;
 }
 .dg .cr.string.urlmetadatanodetv {
-	border-left: 3px solid #330066;
+	border-left: 3px solid #cc00cc;
 }
 .dg .cr.string.urlmetadatanodetv input[type=text] {
-	color: #330066;
+	color: #cc00cc;
 }
 .dg .cr.string.variablenodetv {
-	border-left: 3px solid #99ff99;
+	border-left: 3px solid #cc0066;
 }
 .dg .cr.string.variablenodetv input[type=text] {
-	color: #99ff99;
+	color: #cc0066;
 }
 .dg .cr.string.visualobjectreferencenodetv {
-	border-left: 3px solid #660066;
+	border-left: 3px solid #606060;
 }
 .dg .cr.string.visualobjectreferencenodetv input[type=text] {
-	color: #660066;
+	color: #606060;
+}
+.dg .cr.string.visualgroupelementnodetv {
+	border-left: 3px solid #ffffff;
+}
+.dg .cr.string.visualgroupelementnodetv input[type=text] {
+	color: #ffffff;
 }

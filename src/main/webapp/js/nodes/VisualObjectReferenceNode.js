@@ -41,7 +41,6 @@
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		aspectInstancePath : null,
@@ -55,7 +54,6 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.id = options.id;
-			this.name = options.name;
 			this.aspectInstancePath = options.aspectInstancePath;
 			this.visualObjectID = options.visualObjectID;
 			this.instancePath = options.instancePath;
@@ -83,8 +81,22 @@ define(function(require) {
 			return this.visualObjectID;
 		},
 		
+		/**
+		 * Highlight visual object reference node
+		 * @command VisualObjectReferenceNode.highlight()
+		 * @param {boolean} mode - Highlight or unhighlight the visual reference
+		 */
 		highlight : function(mode){
+			var pathToObject = this.getAspectInstancePath()+ ".VisualizationTree." + this.getVisualObjectID();
+			if(mode){
+				GEPPETTO.SceneController.split(this.getAspectInstancePath());
+			}
+			else{
+				GEPPETTO.SceneController.merge(this.getAspectInstancePath());
+			}
+			GEPPETTO.SceneController.highlight(this.getAspectInstancePath(),pathToObject,mode);
 			
+			return GEPPETTO.Resources.HIGHLIGHTING + pathToObject;
 		},
 
 		/**
@@ -92,7 +104,6 @@ define(function(require) {
 		 */
 		print : function() {
 			return "Id : " + this.id + "\n" 
-					+ "    Name : " + this.name + "\n"
 					+ "    AspectInstancePath : " + this.aspectInstancePath + "\n"
 					+ "    VisualObjectID : " + this.visualObjectID + "\n";
 		}

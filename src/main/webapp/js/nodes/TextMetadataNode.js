@@ -35,15 +35,15 @@
  * tree properties.
  * 
  * @module nodes/TextMetadataNode
- * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
-	
+
 	return Node.Model.extend({
+		value : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -55,6 +55,7 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
+			this.text = options.text;
 			this.value = options.value;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
@@ -69,15 +70,14 @@ define(function(require) {
 		getValue : function() {
 			return this.value;
 		},
-
+		
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
 			return "ID : " + this.name + "\n" 
 					+ "    Name : " + this.name + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n";
+					+ "    value : " + this.text + "\n";
 		}
 	});
 });

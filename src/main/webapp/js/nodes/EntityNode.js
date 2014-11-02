@@ -41,7 +41,6 @@ define(function(require) {
 	var Node = require('nodes/Node');
 	var AspectNode = require('nodes/AspectNode');
 	var ConnectionNode = require('nodes/ConnectionNode');
-	var $ = require('jquery');
 
 	return Node.Model
 			.extend({
@@ -98,7 +97,7 @@ define(function(require) {
 								+ this.instancePath;
 						this.visible = true;
 						
-						this.traverseVisilibity(this, true);
+						this.traverseVisibility(this, true);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
 					}
@@ -119,7 +118,7 @@ define(function(require) {
 					if (this.visible == true) {
 						message = GEPPETTO.Resources.HIDE_ENTITY
 								+ this.instancePath;
-						this.traverseVisilibity(this, false);
+						this.traverseVisibility(this, false);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
 					}
@@ -135,24 +134,25 @@ define(function(require) {
 				 * 
 				 */
 				select : function() {
-
+					//unselect all other selected entities prior to selecting this one
+					GEPPETTO.SceneController.unSelectAll();
+					
 					var message;
-
-					if (this.selected==false) {
-						
+					if (!this.selected) {
+						//traverse through children to select them as well
 						this.traverseSelection(this, true);
 						
-						message = GEPPETTO.Resources.SELECTING_ENTITY
-								+ this.instancePath;
-						
+						message = GEPPETTO.Resources.SELECTING_ENTITY + this.instancePath;
 						this.selected = true;
-
+						//apply ghost effect to unselected nodes
 						GEPPETTO.SceneController.setGhostEffect(true);
 						
+						//look on the simulation selection options and perform necessary
+						//operations
 						if(Simulation.getSelectionOptions().show_inputs){
-							//this.showInputConnections(true);
+							this.showInputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().show_ouput){
+						if(Simulation.getSelectionOptions().show_outputs){
 							this.showOutputConnections(true);
 						}
 						if(Simulation.getSelectionOptions().draw_connection_lines){
@@ -182,14 +182,37 @@ define(function(require) {
 				unselect : function() {
 					var message;
 
-					if (this.selected == true) {
+					if (this.selected) {
 						message = GEPPETTO.Resources.UNSELECTING_ENTITY
 								+ this.instancePath;
 						this.selected = false;
 						
 						this.traverseSelection(this, false);
-						
-						GEPPETTO.SceneController.setGhostEffect(false);
+
+						//don't apply ghost effect to meshes if nothing is left selected after
+						//unselecting this entity
+						if(Simulation.getSelection().length ==0){
+							GEPPETTO.SceneController.setGhostEffect(false);
+						}
+						//update ghost effect after unselection of this entity
+						else{
+							GEPPETTO.SceneController.setGhostEffect(true);
+						}
+				
+						//look on the simulation selection options and perform necessary
+						//operations
+						if(Simulation.getSelectionOptions().show_inputs){
+							this.showInputConnections(false);
+						}
+						if(Simulation.getSelectionOptions().show_outputs){
+							this.showOutputConnections(false);
+						}
+						if(Simulation.getSelectionOptions().draw_connection_lines){
+							this.drawConnectionLines(false);
+						}
+						if(Simulation.getSelectionOptions().hide_not_selected){
+							Simulation.showUnselected(true);
+						}
 
 						// Notify any widgets listening that there has been a
 						// changed to selection
@@ -213,10 +236,15 @@ define(function(require) {
 					for(var a in aspects){
 						var aspect = aspects[a];
 						if(apply){
-							aspect.select();
+							if(!aspect.selected){
+								GEPPETTO.SceneController.selectAspect(aspect.getInstancePath());
+								aspect.selected = true;
+								aspect.selected = true;
+							}
 						}
 						else{
-							aspect.unselect();
+							GEPPETTO.SceneController.unselectAspect(aspect.instancePath);
+							aspect.selected = false;
 						}
 					}
 								
@@ -228,8 +256,10 @@ define(function(require) {
 				/**
 				 * Helper method for showing/hiding entity and all its children.
 				 * Not a console command. 
+				 * @param {EntityNode} entity - Entity to traverse and alter visibility
+				 * @param {boolean} apply - Visible or invisible
 				 */
-				traverseVisibility : function(entity, apply){
+				traverseVisibility : function(entity, mode){
 					var aspects = entity.getAspects();
 					var entities = entity.getEntities();
 					
@@ -247,6 +277,29 @@ define(function(require) {
 						}
 					}
 				},
+				
+				/**
+				 * Helper method for showing/hiding entity and all its children.
+				 * Not a console command. 
+				 * @param {EntityNode} entity - Entity to traverse and alter visibility
+				 * @param {boolean} apply - Visible or invisible
+				 */
+				traverseZoom : function(entity){
+					var aspects = entity.getAspects();
+					var entities = entity.getEntities();
+					var aspectPaths = new Array();
+					
+					for(var e in entities){
+						this.traverseZoom(entities[e]);
+					}
+					
+					for(var a in aspects){
+						var aspect = aspects[a];
+						aspectPaths.push(aspect.getInstancePath());
+					}
+					
+					return aspectPaths;
+				},
 
 				/**
 				 * Zooms to entity
@@ -254,9 +307,9 @@ define(function(require) {
 				 * @command EntityNode.zoomTo()
 				 * 
 				 */
-				 zoomTo : function(){
-				 
-					 GEPPETTO.SceneController.zoomToEntity(this.instancePath);
+				 zoomTo : function(){		 
+					 var paths = this.traverseZoom(this);
+					 GEPPETTO.SceneController.zoom(paths);
 				 
 					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
 			     },
@@ -266,7 +319,6 @@ define(function(require) {
 				 * Get this entity's aspects
 				 * 
 				 * @command EntityNode.getAspects()
-				 * 
 				 * @returns {List<Aspect>} List of aspects
 				 * 
 				 */
@@ -279,7 +331,6 @@ define(function(require) {
 				 * Get this entity's children entities
 				 * 
 				 * @command EntityNode.getEntities()
-				 * 
 				 * @returns {List<Entity>} List of entities
 				 * 
 				 */
@@ -292,7 +343,6 @@ define(function(require) {
 				 * Get this entity's connections
 				 * 
 				 * @command EntityNode.getConnections()
-				 * 
 				 * @returns {List<ConnectionNode>} List of connections
 				 * 
 				 */
@@ -305,10 +355,7 @@ define(function(require) {
 				 * Get this entity's children entities
 				 * 
 				 * @command EntityNode.getChildren()
-				 * 
-				 * @returns {List<Aspect>} All children e.g. aspects and
-				 *          entities
-				 * 
+				 * @returns {List<Aspect>} All children e.g. aspects and entities
 				 */
 				getChildren : function() {
 					 var children = new Backbone.Collection();
@@ -318,37 +365,104 @@ define(function(require) {
 					 return children;
 				},
 				
+				/**
+				 * Show input connections for this entity
+				 * @command EntityNode.showInputConnections()
+				 * @param {boolean} mode- Show/hide input connections for this entity
+				 */
 				showInputConnections : function(mode){
-					if(this.selected == false){
+					if(mode == null || mode == undefined){
+						return GEPPETTO.Resources.MISSING_PARAMETER;
+					}
+					
+					if(this.selected == false && (mode)){
 						this.select();
 					}
 					var paths = new Array();
+					//match all aspect paths that are connected to this entity
 					for(var c in this.getConnections()){
 						var connection = this.getConnections()[c];
 						
 						if(connection.getType() == GEPPETTO.Resources.INPUT_CONNECTION){
-							var entity = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree,connection.getEntityInstancePath());
-							paths.push(entity.getEntityInstancePath());
+							var entity = 
+								GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, connection.getEntityInstancePath());
+							
+							paths = paths.concat(this.getAspectPaths(entity));
 						}
 					}
 					
-					if(!Simulation.getSelectionOptions().show_inputs){
+					//show/hide connections
+					if(mode){
 						GEPPETTO.SceneController.showConnections(paths,GEPPETTO.Resources.INPUT_CONNECTION);
+					}
+					else{
+						GEPPETTO.SceneController.hideConnections(paths);
 					}
 				},
 				
+				/**
+				 * Get all the instance paths of the aspects associated with this entity. 
+				 * Including children entitis aspects paths.  
+				 */
+				getAspectPaths : function(entity){
+					var aspects = entity.getAspects();
+					var entities = entity.getEntities();
+					
+					var paths = new Array();
+					for(var a in aspects){
+						var aspect = aspects[a];
+						
+						paths.push(aspect.getInstancePath());
+					}
+					
+					for(var e in entities){
+						var ent = entities[e];
+						
+						paths = paths.concat(this.getAspectPaths(ent));
+					}
+					return paths;
+				},
+				
+				/**
+				 * Show output connections for this entity.
+				 
+				 * @command EntityNode.showOutputConnections()
+				 * @param {boolean} mode - Show or hide output connections
+				 */
 				showOutputConnections : function(mode){
-					if(this.selected == false){
+					if(mode == null || mode == undefined){
+						return GEPPETTO.Resources.MISSING_PARAMETER;
+					}
+					
+					//unselect all previously selected nodes
+					if(this.selected == false && (mode)){
 						this.select();
 					}
 					
-					if(!Simulation.getSelectionOptions().show_outputs){
+					var paths = new Array();
+					for(var c in this.getConnections()){
+						var connection = this.getConnections()[c];
 						
+						if(connection.getType() == GEPPETTO.Resources.OUTPUT_CONNECTION){
+							var entity = 
+								GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, connection.getEntityInstancePath());
+							
+							paths = paths.concat(this.getAspectPaths(entity));
+						}
+					}
+					
+					//show/hide output connections call
+					if(mode){
+						GEPPETTO.SceneController.showConnections(paths,GEPPETTO.Resources.OUTPUT_CONNECTION);
+					}
+					else{
+						GEPPETTO.SceneController.hideConnections(paths);
 					}
 				},
 
 				/**
 				 * Print out formatted node
+				 * @command EntityNode.print()
 				 */
 				print : function() {
 					var formattedNode = "Name : " + this.name + "\n"

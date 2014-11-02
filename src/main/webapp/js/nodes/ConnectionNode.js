@@ -59,7 +59,6 @@ define(function(require) {
 			visualObjectReferenceNodes : [],
 		},
 
-		properties : {},
 		entityInstancePath : null,
 		type : null,
 
@@ -102,31 +101,62 @@ define(function(require) {
 
 		/**
 		 * Returns array of custom nodes for this connection
+		 * 
+		 * @command ConnectionNode.getCustomNodes()
+		 * @returns {Array} Array of nodes for custom properties of connection node.
 		 */
 		getCustomNodes : function(){
-			return this.get("customNodes");
+			return this.get("customNodes").models;
 		},
 		
 		/**
 		 * Returns array of visual object reference nodes for this connection
+		 * @command ConnectionNode.getVisualObjectReferenceNodes()
+		 * @returns {Array} Array of nodes for visual object references
 		 */
 		getVisualObjectReferenceNodes : function(){
-			return this.get("visualObjectReferenceNodes");
+			return this.get("visualObjectReferenceNodes").models;
 		},
 		
+		/**
+		 * Highlight the visual references of this connection
+		 * @command ConnectionNode.highlight()
+		 * @param {boolean} - Highlight or unhighlight reference nodes
+		 */
 		highlight : function(mode){
 			
+			if(mode == null || mode == undefined){
+				return GEPPETTO.Resources.MISSING_PARAMETER;
+			}
+			var references = this.getVisualObjectReferenceNodes();
+			var message = GEPPETTO.Resources.HIGHLIGHTING + this.id;
+			
+			if(references.length > 0){
+				//highlight all reference nodes
+				for(var ref in references){
+					references[ref].highlight(mode);
+				}
+			}else{
+				message = GEPPETTO.Resources.NO_REFERENCES_TO_HIGHLIGHT;
+			}
+						
+			return message;
 		},
 		
-		showConnectionLine : function(mode){
-			
+		/**
+		 * Show lines for connections of this entity
+		 * @command ConnectionNode.showConnectionsLine()
+		 */
+		showConnectionsLine : function(mode){
+			var from;
+			var to;
+			GEPPETTO.SceneController.drawLine(from,to);
 		},
 		
 		/**
 		 * Get this entity's children entities
 		 * 
-		 * @command EntityNode.getChildren()
-		 * 
+		 * @command ConnectionNode.getChildren()
 		 * @returns {List<Aspect>} All children e.g. aspects and
 		 *          entities
 		 * 
@@ -140,6 +170,7 @@ define(function(require) {
 		
 		/**
 		 * Print out formatted node
+		 * @command EntityNode.print()
 		 */
 		print : function() {
 			return "Id : " + this.id + "\n" 

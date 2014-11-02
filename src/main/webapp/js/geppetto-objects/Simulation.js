@@ -518,13 +518,13 @@ define(function(require) {
 			 * specified, then brightness = value
 			 * 
 			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
-			 * @param {String} entityName - Name of the entity to be lit
+			 * @param {String} objectPath - Name of the entity to be lit
 			 * @param {VariableNode} modulation - Variable which modulates the brightness
 			 * @param {Function} normalizationFunction
 			 */
-			addBrightnessFunction: function(aspect, entityName, modulation, normalizationFunction) {
-				this.addOnNodeUpdatedCallback(modulation, function(varnode){
-			    	GEPPETTO.lightUpEntity(aspect, entityName,
+			addBrightnessFunction: function(aspect, objectPath,normalizationFunction) {
+				this.addOnNodeUpdatedCallback(objectPath, function(varnode){
+			    	GEPPETTO.SceneController.lightUpEntity(aspect, objectPath.getInstancePath(),
 			    			normalizationFunction ? normalizationFunction(varnode.getValue()) : varnode.getValue());
 				});
 			},

@@ -40,7 +40,6 @@
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		unit : "",

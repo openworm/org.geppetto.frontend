@@ -54,6 +54,7 @@ define(function(require) {
 		var VisualGroupNode = require('nodes/VisualGroupNode');
 		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
 		var simulationTreeCreated=false;
+		var connections = 0;
 
 		/**
 		 * @class GEPPETTO.RuntimeTreeFactory
@@ -96,6 +97,7 @@ define(function(require) {
 									entityNode);
 
 							runTimeRef[id] = entityNode;
+							entityNode.setParent(parentNode);
 							parentNode.get("entities").add(entityNode);
 
 							this.traverseEntities(node);
@@ -397,7 +399,7 @@ define(function(require) {
 					});
 					
 					GEPPETTO.Console.updateTags(e.instancePath, e);
-
+					
 					for ( var id in entity) {
 						var node = entity[id];
 						// create aspect nodes
@@ -422,7 +424,6 @@ define(function(require) {
 							e.get("connections").add(connectionNode);
 						}
 					}
-
 					return e;
 				},
 

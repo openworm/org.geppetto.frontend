@@ -41,7 +41,6 @@ define(function(require) {
 
 	var Node = require('nodes/Node');
 	var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		relations : [ {

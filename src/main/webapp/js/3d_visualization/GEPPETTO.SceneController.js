@@ -150,6 +150,7 @@ define(function(require) {
 									GEPPETTO.SceneController.merge(instancePath);
 								}
 								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+								mesh.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 								mesh.selected = false;
 								mesh.ghosted = false;
 					
@@ -219,34 +220,41 @@ define(function(require) {
 				zoom : function(paths) {
 					var aabbMin = null;
 					var aabbMax = null;
-					
+
 					for(var p in paths){
 						var mesh = GEPPETTO.getVARS().meshes[paths[p]];
-						
-						mesh.geometry.computeBoundingBox();
 
-						// If min and max vectors are null, first values become
-						// default min and max
-						if (aabbMin == null && aabbMax == null) {
-							aabbMin = mesh.geometry.boundingBox.min;
-							aabbMax = mesh.geometry.boundingBox.max;
-						}
+						mesh.traverse(function(child) {
+							if (child instanceof THREE.Mesh
+									|| child instanceof THREE.ParticleSystem) {
+								child.geometry.computeBoundingBox();
 
-						// Compare other meshes, particles BB's to find min and max
-						else {
-							aabbMin.x = Math.min(aabbMin.x,
-									mesh.geometry.boundingBox.min.x);
-							aabbMin.y = Math.min(aabbMin.y,
-									mesh.geometry.boundingBox.min.y);
-							aabbMin.z = Math.min(aabbMin.z,
-									mesh.geometry.boundingBox.min.z);
-							aabbMax.x = Math.max(aabbMax.x,
-									mesh.geometry.boundingBox.max.x);
-							aabbMax.y = Math.max(aabbMax.y,
-									mesh.geometry.boundingBox.max.y);
-							aabbMax.z = Math.max(aabbMax.z,
-									mesh.geometry.boundingBox.max.z);
-						}
+								child.geometry.computeBoundingBox();
+
+								// If min and max vectors are null, first values become
+								// default min and max
+								if (aabbMin == null && aabbMax == null) {
+									aabbMin = child.geometry.boundingBox.min;
+									aabbMax = child.geometry.boundingBox.max;
+								}
+
+								// Compare other meshes, particles BB's to find min and max
+								else {
+									aabbMin.x = Math.min(aabbMin.x,
+											mesh.geometry.boundingBox.min.x);
+									aabbMin.y = Math.min(aabbMin.y,
+											mesh.geometry.boundingBox.min.y);
+									aabbMin.z = Math.min(aabbMin.z,
+											mesh.geometry.boundingBox.min.z);
+									aabbMax.x = Math.max(aabbMax.x,
+											mesh.geometry.boundingBox.max.x);
+									aabbMax.y = Math.max(aabbMax.y,
+											mesh.geometry.boundingBox.max.y);
+									aabbMax.z = Math.max(aabbMax.z,
+											mesh.geometry.boundingBox.max.z);
+								}
+							}
+						});
 					}
 					// Compute world AABB center
 					GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
@@ -263,7 +271,7 @@ define(function(require) {
 					var offset = radius
 					/ Math.tan(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.25);
 
-					var camDir = new THREE.Vector3(0, 0, 1.0);
+					var camDir = new THREE.Vector3(1.0, 0, 0);
 					camDir.multiplyScalar(offset);
 
 					// Store camera position
@@ -368,10 +376,10 @@ define(function(require) {
 					    	if(child.instancePath == objectPath){
 					    		if(mode){
 					    			GEPPETTO.SceneController.colorMesh(child,GEPPETTO.Resources.COLORS.HIGHLIGHTED);
-					    			mesh.highlighted = true;
+					    			child.highlighted = true;
 					    		}else{
 					    			GEPPETTO.SceneController.colorMesh(child,GEPPETTO.Resources.COLORS.DEFAULT);
-					    			highlighted.highlighted = false;
+					    			child.highlighted = false;
 					    		}
 					    	}
 					    }
@@ -459,7 +467,7 @@ define(function(require) {
 					var paths = mesh.mergedMeshesPaths;
 					for(var id in paths){
 						//get 3d object from visualizationtree by using the object's instance path as search key 
-						var object = GEPPETTO.SceneController.get3DObjectInVisualizationTree(visualizationTree,paths[id]);
+						var object = GEPPETTO.get3DObjectInVisualizationTree(visualizationTree,paths[id]);
 						//get group elements list for 3d object
 						var groups = object.groups;
 						var highlighted = object.highlighted;
@@ -482,7 +490,11 @@ define(function(require) {
 						
 						if(!highlighted){
 							var object3D = GEPPETTO.getVARS().visualModelMap[paths[id]];
-							GEPPETTO.SceneController.colorMesh(object3D,GEPPETTO.Resources.COLORS.SPLIT);
+							if(mode){
+								GEPPETTO.SceneController.colorMesh(object3D,GEPPETTO.Resources.COLORS.SPLIT);
+							}else{
+								GEPPETTO.SceneController.colorMesh(object3D,GEPPETTO.Resources.COLORS.DEFAULT);
+							}
 						}
 					}				
 				},

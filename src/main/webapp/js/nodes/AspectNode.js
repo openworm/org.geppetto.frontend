@@ -60,6 +60,7 @@ define(function(require) {
 				ModelTree : {},
 				VisualizationTree : {},
 				SimulationTree : {},
+				visible : true,
 				/**
 				 * Initializes this node with passed attributes
 				 * 
@@ -85,7 +86,16 @@ define(function(require) {
 				 */
 				hide : function() {
 					var message;
-					if (GEPPETTO.SceneController.hideAspect(this.instancePath)) {
+					if (this.visible) {
+						GEPPETTO.SceneController.hideAspect(this.instancePath);
+						
+						//update visible flag on parents
+						var parent  = this.getParent();
+						while(parent!=null){
+							parent.visible = false;
+							parent = parent.getParent();
+						}
+						
 						message = GEPPETTO.Resources.HIDE_ASPECT
 								+ this.instancePath;
 					} else {
@@ -94,7 +104,6 @@ define(function(require) {
 					this.visible = false;
 					return message;
 				},
-
 				/**
 				 * Shows the aspect
 				 * 
@@ -103,7 +112,16 @@ define(function(require) {
 				 */
 				show : function() {
 					var message;
-					if (GEPPETTO.SceneController.showAspect(this.instancePath)) {
+					if (!this.visible) {
+						GEPPETTO.SceneController.showAspect(this.instancePath);
+						
+						//update visible flag on parents
+						var parent  = this.getParent();
+						while(parent!=null){
+							parent.visible = true;
+							parent = parent.getParent();
+						}
+						
 						message = GEPPETTO.Resources.SHOW_ASPECT
 								+ this.instancePath;
 					} else {
@@ -125,7 +143,13 @@ define(function(require) {
 						GEPPETTO.SceneController.selectAspect(this.instancePath);				
 						message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
 						this.selected = true;
-						this.getParent().selected = true;
+						
+						var parent  = this.getParent();
+						while(parent!=null){
+							parent.selected = true;
+							parent = parent.getParent();
+						}
+						
 						GEPPETTO.SceneController.setGhostEffect(true);
 						
 						//look on the simulation selection options and perform necessary
@@ -164,7 +188,12 @@ define(function(require) {
 								+ this.instancePath;
 						GEPPETTO.SceneController.unselectAspect(this.instancePath);
 						this.selected = false;
-						this.getParent().selected = false;
+						
+						var parent  = this.getParent();
+						while(parent!=null){
+							parent.selected = false;
+							parent = parent.getParent();
+						}
 						
 						//don't apply ghost effect to meshes if nothing is left selected after
 						//unselecting this entity

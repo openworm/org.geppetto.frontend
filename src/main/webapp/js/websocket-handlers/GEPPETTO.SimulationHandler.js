@@ -75,7 +75,10 @@ define(function(require) {
             GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
             var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
-            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);           
+            var startCreation = new Date();
+            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);
+            var endCreation = new Date() - startCreation;
+            GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");
             GEPPETTO.Simulation.setSimulationLoaded();
             GEPPETTO.trigger('simulation:modelloaded');
             

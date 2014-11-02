@@ -119,7 +119,7 @@ define(function(require) {
 			group[this.name] = {};
 			group[this.name].color = this.getColor();
 			
-			GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups,mode);			
+			GEPPETTO.SceneController.showVisualGroups(visualizationTree, group,mode);			
 		},
 
 		/**

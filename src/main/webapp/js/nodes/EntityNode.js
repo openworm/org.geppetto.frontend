@@ -92,12 +92,12 @@ define(function(require) {
 				show : function() {
 					var message;
 
-					if (this.visible == false) {
+					if (!this.visible) {
 						message = GEPPETTO.Resources.SHOW_ENTITY
 								+ this.instancePath;
 						this.visible = true;
 						
-						this.traverseVisibility(this, true);
+						this.showChildren(this, true);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
 					}
@@ -115,10 +115,10 @@ define(function(require) {
 				hide : function() {
 					var message;
 
-					if (this.visible == true) {
+					if (this.visible) {
 						message = GEPPETTO.Resources.HIDE_ENTITY
 								+ this.instancePath;
-						this.traverseVisibility(this, false);
+						this.showChildren(this, false);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
 					}
@@ -140,7 +140,13 @@ define(function(require) {
 					var message;
 					if (!this.selected) {
 						//traverse through children to select them as well
-						this.traverseSelection(this, true);
+						this.selectChildren(this, true);
+						
+						var parent  = this.getParent();
+						while(parent!=null){
+							parent.selected = true;
+							parent = parent.getParent();
+						}
 						
 						message = GEPPETTO.Resources.SELECTING_ENTITY + this.instancePath;
 						this.selected = true;
@@ -187,8 +193,14 @@ define(function(require) {
 								+ this.instancePath;
 						this.selected = false;
 						
-						this.traverseSelection(this, false);
+						this.selectChildren(this, false);
 
+						var parent  = this.getParent();
+						while(parent!=null){
+							parent.selected = false;
+							parent = parent.getParent();
+						}
+						
 						//don't apply ghost effect to meshes if nothing is left selected after
 						//unselecting this entity
 						if(Simulation.getSelection().length ==0){
@@ -229,7 +241,7 @@ define(function(require) {
 				 * Helper method for selecting entity and all its children
 				 * Not a console command
 				 */
-				traverseSelection : function(entity, apply){
+				selectChildren : function(entity, apply){
 					var aspects = entity.getAspects();
 					var entities = entity.getEntities();
 					
@@ -239,17 +251,17 @@ define(function(require) {
 							if(!aspect.selected){
 								GEPPETTO.SceneController.selectAspect(aspect.getInstancePath());
 								aspect.selected = true;
-								aspect.selected = true;
 							}
 						}
 						else{
 							GEPPETTO.SceneController.unselectAspect(aspect.instancePath);
 							aspect.selected = false;
+							entity.selected = false;
 						}
 					}
 								
 					for(var e in entities){
-						this.traverseSelection(entities[e],apply);
+						this.selectChildren(entities[e],apply);
 					}
 				},
 				
@@ -259,12 +271,12 @@ define(function(require) {
 				 * @param {EntityNode} entity - Entity to traverse and alter visibility
 				 * @param {boolean} apply - Visible or invisible
 				 */
-				traverseVisibility : function(entity, mode){
+				showChildren : function(entity, mode){
 					var aspects = entity.getAspects();
 					var entities = entity.getEntities();
 					
 					for(var e in entities){
-						this.traverseVisibility(entities[e]);
+						this.showChildren(entities[e],mode);
 					}
 					
 					for(var a in aspects){
@@ -284,13 +296,13 @@ define(function(require) {
 				 * @param {EntityNode} entity - Entity to traverse and alter visibility
 				 * @param {boolean} apply - Visible or invisible
 				 */
-				traverseZoom : function(entity){
+				getZoomPaths : function(entity){
 					var aspects = entity.getAspects();
 					var entities = entity.getEntities();
 					var aspectPaths = new Array();
 					
 					for(var e in entities){
-						this.traverseZoom(entities[e]);
+						this.getZoomPaths(entities[e]);
 					}
 					
 					for(var a in aspects){
@@ -308,7 +320,7 @@ define(function(require) {
 				 * 
 				 */
 				 zoomTo : function(){		 
-					 var paths = this.traverseZoom(this);
+					 var paths = this.getZoomPaths(this);
 					 GEPPETTO.SceneController.zoom(paths);
 				 
 					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 

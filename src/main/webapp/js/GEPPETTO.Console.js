@@ -46,7 +46,9 @@ define(function(require) {
 		var $ = require('jquery');
 		//keeps track of API commands
 		var commands = [];
-		//suggestions for autocomplete
+		/**suggestions for autocomplete
+		* Stores things in 
+		*/
 		var tags = {};
 		var suggestions = [];
 		var helpObjectsMap = {};
@@ -69,7 +71,10 @@ define(function(require) {
 			                   "destroy(a)","_getAttr(a)","on(t,e,i)","once(t,e,r)","off(t,e,r)","trigger(t)","stopListening(t,e,r)","listenTo(e,r,s)","listenToOnce(e,r,s)",
 			                   "bind(t,e,i)","unbind(t,e,r)","initialize()","toJSON(t)","sync()","get(t)","escape(t)","has(t)","set(t,e,r)",
 			                   "unset(t,e)","clear(t)","hasChanged(t)","changedAttributes(t)","previous(t)","previousAttributes()","fetch(t)","save(t,e,r)","destroy(t)",
-			                   "url()","parse(t,e)","clone()","isNew()","isValid(t)","_validate(t,e)","keys()","values()","pairs()","invert()","pick()","omit()"];
+			                   "url()","parse(t,e)","clone()","isNew()","isValid(t)","_validate(t,e)","keys()","values()","pairs()","invert()","pick()","omit()",
+			                   "selectChildren(entity,apply)", "showChildren(entity,mode)", "getZoomPaths(entity)", "getAspectsPaths(entity)","toggleUnSelected(entities,mode)",
+			                   "addOnNodeUpdatedCallback(varnode,callback)","traverseSelection(entities)","clearOnNodeUpdateCallback(varnode)", "updateDataSet()",
+			                   "showAllVisualGroupElements(visualizationTree,elements,mode)"];
 			
 			//JS Console Button clicked
 			$('#consoleButton').click(function() {
@@ -77,46 +82,60 @@ define(function(require) {
 			});			
 		});
 		
+		/**
+		 * Matches user input in console to terms in tags map, this to retrieve suggestions 
+		 * for autocompletion. 
+		 * 
+		 * @param {String} request - User input 
+		 * @param {Object} response - Object to give back response with suggestions to autocomplete
+		 */
 		function matches(request, response){
-			 var path = request.term.split(".");
-			  var depth = path.length;
-			  var node = GEPPETTO.Console.availableTags();
-			  var avail = new Array();
+			var path = request.term.split(".");
+			var depth = path.length;
+			var node = GEPPETTO.Console.availableTags();
+			var avail = new Array();
 
-			  var nodePath  ="";
-			  // descent into the path tree to get a list of suggestions
-			  for (var n = 1; n <= depth && typeof node !== "undefined"; n++) {
-			    var cur = path[n - 1];
-			    if(node[cur] != null || node[cur] != undefined){
-			    	node = node[cur];
-			    				    nodePath = nodePath.concat(cur) + ".";
-			    }
-			  }
+			var nodePath  ="";
+			// descent into the path tree to get a list of suggestions
+			for (var n = 1; n <= depth && typeof node !== "undefined"; n++) {
+				var cur = path[n - 1];
+				if(node[cur] != null || node[cur] != undefined){
+					node = node[cur];
+					nodePath = nodePath.concat(cur) + ".";
+				}
+			}
 
-			  if(nodePath == ""){
-			  	nodePath = nodePath.substring(0, nodePath.length - 1);
-			  }
+			if(nodePath == ""){
+				nodePath = nodePath.substring(0, nodePath.length - 1);
+			}
 
-			  // build a regex with the last directory entry being typed
-			  var last = path.pop();
-			  var re = new RegExp("^" + last + ".*", "i");
+			// build a regex with the last directory entry being typed
+			var last = path.pop();
+			try{
+				var re = new RegExp("^" + last + ".*", "i");
 
-			  // filter suggestions by matching with the regex
-			  for (var k in node) {
-			    if (k.match(re)) avail.push(nodePath + k);
-			  }
+				// filter suggestions by matching with the regex
+				for (var k in node) {
+					if (k.match(re)) avail.push(nodePath + k);
+				}
 
-			  suggestions = avail;
-			  
-			  // delegate back to autocomplete, but extract the last term
-			  response($.ui.autocomplete.filter(avail, last));
+				//save suggestions for request term
+				suggestions = avail;
+			}
+			catch(e){
+				
+			}
+
+			// delegate back to autocomplete, but extract the last term
+			response($.ui.autocomplete.filter(avail, last));
 		};
-		
+
 		/**
 		 * Handles autocomplete functionality for the console
 		 */
 		function autoComplete() {
-			var tags = GEPPETTO.Console.availableTags();
+
+			GEPPETTO.Console.populateTags();
 			//bind console input area to autocomplete event
 			$("#commandInputArea").bind("keydown", function(event) {
 				if(event.keyCode === $.ui.keyCode.TAB &&
@@ -366,14 +385,27 @@ define(function(require) {
 				return commands;
 			},
 			
+			/**
+			 * Gets maps of available tags used for autocompletion
+			 */
 			availableTags : function(){
 				if(jQuery.isEmptyObject(tags)) {
-					this.updateTags("Simulation", GEPPETTO.Simulation,true);
-					this.updateTags("G", GEPPETTO.G,true);
+					this.populateTags();
 				}
 				return tags;
 			},
 			
+			/**
+			 * Populates tags map at startup
+			 */
+			populateTags : function(){
+				this.updateTags("Simulation", GEPPETTO.Simulation,true);
+				this.updateTags("G", GEPPETTO.G,true);
+			},
+			
+			/**
+			 * Gets available suggestions already narrowed down from list of tags
+			 */
 			availableSuggestions : function(){
 				return suggestions;
 			},
@@ -405,9 +437,7 @@ define(function(require) {
 			 * @param id - Id of object
 			 * @returns {}
 			 */
-			updateTags: function(instancePath, object,original) {
-				var nonTags = ["constructor()", "initialize(options)"];
-												
+			updateTags: function(instancePath, object,original) {												
 				var proto = object.__proto__;
 				if(original){
 					proto = object;
@@ -422,8 +452,8 @@ define(function(require) {
 						var functionName = instancePath + "." + prop + "(" + parameter + ")";
 						var split = functionName.split(".");
 						var isTag = true;
-						for(var c = 0; c < nonTags.length; c++) {
-							if(functionName.indexOf(nonTags[c]) != -1) {
+						for(var c = 0; c < nonCommands.length; c++) {
+							if(functionName.indexOf(nonCommands[c]) != -1) {
 								isTag = false;
 							}
 						}

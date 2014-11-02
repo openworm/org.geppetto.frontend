@@ -291,7 +291,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin>
+			<plugin>
 				<groupId>com.phasebash.jsdoc</groupId>
 				<artifactId>jsdoc3-maven-plugin</artifactId>
 				<version>1.1.0</version>
@@ -322,7 +322,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>

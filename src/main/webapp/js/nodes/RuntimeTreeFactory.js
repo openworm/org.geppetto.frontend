@@ -395,8 +395,8 @@ define(function(require) {
 						domainType : entity.domainType,
 						_metaType : entity._metaType
 					});
-					// add commands to console autocomplete and help option
-					GEPPETTO.Console.addTag(entity.instancePath);
+					
+					GEPPETTO.Console.updateTags(e.instancePath, e);
 
 					for ( var id in entity) {
 						var node = entity[id];
@@ -602,10 +602,10 @@ define(function(require) {
 						if(typeof node[key] == "object"){
 							if(node[key]._metaType==GEPPETTO.Resources.COMPOSITE_NODE){
 								var composite = this.createCompositeNode(node[key]);
+								this.createVisualReferences(composite, node[key]);
 								composite.setParent(a);
 								a.get("customNodes").add(composite);
 								a[key] = composite;
-								this.createVisualReferences(composite, node[key]);
 							}
 							else if(node[key]._metaType==GEPPETTO.Resources.PARAMETER_NODE){
 								var custom = this.createParameterNode(node[key]);
@@ -650,6 +650,8 @@ define(function(require) {
 							}
 						}
 					}
+					
+					return a;
 				},
 				
 				/** Creates and populates client connection nodes for first time */
@@ -705,8 +707,9 @@ define(function(require) {
 						id : node.id,
 						name : node.name,
 						color : node.color,
-						value : node.value,
-						scalingFactor : node.scalingFactor,
+						value : node.parameter.value,
+						unit : node.parameter.unit,
+						scalingFactor : node.parameter.scalingFactor,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE

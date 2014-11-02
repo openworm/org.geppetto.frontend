@@ -124,14 +124,23 @@ define(function(require) {
 		 * @param {boolean} - Highlight or unhighlight reference nodes
 		 */
 		highlight : function(mode){
-			var references = this.getVisualObjectReferenceNodes();
 			
-			//highlight all reference nodes
-			for(var ref in references){
-				references[ref].highlight(mode);
+			if(mode == null || mode == undefined){
+				return GEPPETTO.Resources.MISSING_PARAMETER;
 			}
+			var references = this.getVisualObjectReferenceNodes();
+			var message = GEPPETTO.Resources.HIGHLIGHTING + this.id;
 			
-			return GEPPETTO.Resources.HIGHLIGHTING + this.id;
+			if(references.length > 0){
+				//highlight all reference nodes
+				for(var ref in references){
+					references[ref].highlight(mode);
+				}
+			}else{
+				message = GEPPETTO.Resources.NO_REFERENCES_TO_HIGHLIGHT;
+			}
+						
+			return message;
 		},
 		
 		/**
@@ -161,6 +170,7 @@ define(function(require) {
 		
 		/**
 		 * Print out formatted node
+		 * @command EntityNode.print()
 		 */
 		print : function() {
 			return "Id : " + this.id + "\n" 

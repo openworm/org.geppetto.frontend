@@ -43,6 +43,7 @@ define(function(require) {
 
 	return Node.Model.extend({
 		value : "",
+		unit : "",
 		scalingFactor : "",
 		color : "",
 
@@ -54,6 +55,7 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.value = options.value;
+			this.unit = options.unit;
 			this.scalingFactor = options.scalingFactor;
 			this.color = options.color;
 			this.name = options.name;
@@ -71,6 +73,16 @@ define(function(require) {
 		 */
 		getValue : function() {
 			return this.value;
+		},
+		
+		/**
+		 * Get unit of quantity
+		 * 
+		 * @command VisualGroupElementNode.getUnit()
+		 * @returns {String} Unit of quantity
+		 */
+		getUnit : function() {
+			return this.unit;
 		},
 
 		/**
@@ -103,7 +115,11 @@ define(function(require) {
 				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
 			}
 			
-			GEPPETTO.SceneController.showVisualGroups(visualizationTree, this.getParent().getName(), this.getColor(),mode);			
+			var group = {};
+			group[this.name] = {};
+			group[this.name].color = this.getColor();
+			
+			GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups,mode);			
 		},
 
 		/**

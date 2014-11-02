@@ -358,6 +358,7 @@ define(function(require) {
 					// add the geometry to a map indexed by the geometry id so we can
 					// find it for updating purposes
 					threeObject.instancePath = g.instancePath;
+					threeObject.highlighted = false;
 					GEPPETTO.getVARS().visualModelMap[g.instancePath]=threeObject;
 					return threeObject;
 				},

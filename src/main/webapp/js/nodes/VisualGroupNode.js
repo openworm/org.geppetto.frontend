@@ -91,7 +91,7 @@ define(function(require) {
 		 * @returns {String} Low Spectrum Color
 		 */
 		getLowSpectrumColor : function() {
-			return this.scalingFactor;
+			return this.lowSpectrumColor;
 		},
 		
 		/**
@@ -128,19 +128,62 @@ define(function(require) {
 			 return children;
 		},
 		
-		show : function(mode){
-			
+		show : function(mode){		
 			var visualizationTree = this.getParent();
+			var message;
+			var elements = this.getVisualGroupElements();
 			
 			if(mode){
 				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
+				message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
+
+				if(elements.length > 0){
+					this.showAllVisualGroupElements(visualizationTree,elements,mode);
+				}else{
+					message = GEPPETTO.Resources.NO_VISUAL_GROUP_ELEMENTS;
+				}
 			}
 			else{
 				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
+				message = GEPPETTO.Resources.HIDING_VISUAL_GROUPS + this.id;
+
+				if(elements.length > 0){
+					this.showAllVisualGroupElements(visualizationTree,elements,mode);
+				}else{
+					message = GEPPETTO.Resources.NO_VISUAL_GROUP_ELEMENTS;
+				}
 			}
 			
-			GEPPETTO.SceneController.showVisualGroups(visualizationTree,
-					this.getName(), this.getVisualGroupElements()[0].getColor(),mode);
+			return message;
+		},
+		
+		showAllVisualGroupElements : function(visualizationTree, elements,mode){
+			var groups = {};
+			
+			var total =0, mean =0;
+			
+			//calculate mean;
+			for(var el in elements){	
+				total = total + parseFloat(elements[el].getValue());
+			}					
+			mean = total/elements.length;
+			
+			//highlight all reference nodes
+			for(var el in elements){
+				groups[elements[el].getName()] = {};
+				var color = elements[el].getColor();
+				if(elements[el].getValue()!=null){
+					if(elements[el].getValue()<mean){
+						color = this.getLowSpectrumColor();
+					}
+					else if(elements[el].getValue()>=mean){
+						color = this.getHighSpectrumColor();
+					}
+				}
+				groups[elements[el].getName()].color = color;						
+			}
+			
+			GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups, mode);
 		},
 		
 		/**

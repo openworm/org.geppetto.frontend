@@ -266,11 +266,9 @@ define(function(require) {
 			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
 			ZOOM_TO_ENTITY : "Zooming to entity ",
 			HIGHLIGHTING : "Highlighting object ",
-			
-			ENTITY_ALREADY_SELECTED : "Entity already selected",
-			
+			NO_REFERENCES_TO_HIGHLIGHT : "Connection has no Visual References to highlight.",
+			ENTITY_ALREADY_SELECTED : "Entity already selected",	
 			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
-
 			SELECTING_ASPECT : "Selecting aspect ",
 			UNSELECTING_ASPECT : "Unselecting aspect ",
 			SHOW_ASPECT : "Showing aspect ",
@@ -278,10 +276,12 @@ define(function(require) {
 			HIDE_ASPECT : "Hiding aspect ",
 			ASPECT_ALREADY_HIDDING : "Aspect already invisible.",
 			ZOOM_TO_ASPECT : "Zooming to aspect ",
-			
 			ASPECT_ALREADY_SELECTED : "Aspect already selected",
-			
 			ASPECT_NOT_SELECTED : "Aspect not selected, can't uselect what it isn't selected.",
+			SHOWING_VISUAL_GROUPS : "Showing visual group ",
+			HIDING_VISUAL_GROUPS : "Hiding visual group ",
+			NO_VISUAL_GROUP_ELEMENTS : "No elements inside visual group to show ",
+			MISSING_PARAMETER : "Command is missing parameter.",
 
 			
 			/**

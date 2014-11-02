@@ -411,7 +411,7 @@ define(function(require) {
 						//case where input entered by user is an object path or has object on left
 						//Example  "Simulation.s"
 						if(input.split(".").length>1){
-							commands = GEPPETTO.Console.availableTags();
+							commands = GEPPETTO.Console.availableSuggestions();
 							
 							//detects double tab
 							if(thisKeypressTime - lastKeypressTime <= delta) {							
@@ -462,6 +462,7 @@ define(function(require) {
 								doubleTab = true;
 							}
 							else {
+								commands = GEPPETTO.Console.availableSuggestions();
 								this.singleTab(commands, thisKeypressTime);
 							}					
 						}

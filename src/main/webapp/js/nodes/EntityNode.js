@@ -365,11 +365,21 @@ define(function(require) {
 					 return children;
 				},
 				
+				/**
+				 * Show input connections for this entity
+				 * @command EntityNode.showInputConnections()
+				 * @param {boolean} mode- Show/hide input connections for this entity
+				 */
 				showInputConnections : function(mode){
+					if(mode == null || mode == undefined){
+						return GEPPETTO.Resources.MISSING_PARAMETER;
+					}
+					
 					if(this.selected == false && (mode)){
 						this.select();
 					}
 					var paths = new Array();
+					//match all aspect paths that are connected to this entity
 					for(var c in this.getConnections()){
 						var connection = this.getConnections()[c];
 						
@@ -381,6 +391,7 @@ define(function(require) {
 						}
 					}
 					
+					//show/hide connections
 					if(mode){
 						GEPPETTO.SceneController.showConnections(paths,GEPPETTO.Resources.INPUT_CONNECTION);
 					}
@@ -389,6 +400,10 @@ define(function(require) {
 					}
 				},
 				
+				/**
+				 * Get all the instance paths of the aspects associated with this entity. 
+				 * Including children entitis aspects paths.  
+				 */
 				getAspectPaths : function(entity){
 					var aspects = entity.getAspects();
 					var entities = entity.getEntities();
@@ -408,7 +423,18 @@ define(function(require) {
 					return paths;
 				},
 				
+				/**
+				 * Show output connections for this entity.
+				 
+				 * @command EntityNode.showOutputConnections()
+				 * @param {boolean} mode - Show or hide output connections
+				 */
 				showOutputConnections : function(mode){
+					if(mode == null || mode == undefined){
+						return GEPPETTO.Resources.MISSING_PARAMETER;
+					}
+					
+					//unselect all previously selected nodes
 					if(this.selected == false && (mode)){
 						this.select();
 					}
@@ -425,6 +451,7 @@ define(function(require) {
 						}
 					}
 					
+					//show/hide output connections call
 					if(mode){
 						GEPPETTO.SceneController.showConnections(paths,GEPPETTO.Resources.OUTPUT_CONNECTION);
 					}
@@ -435,6 +462,7 @@ define(function(require) {
 
 				/**
 				 * Print out formatted node
+				 * @command EntityNode.print()
 				 */
 				print : function() {
 					var formattedNode = "Name : " + this.name + "\n"

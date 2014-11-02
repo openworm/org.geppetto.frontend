@@ -72,7 +72,7 @@ define(function(require) {
 						return (Math.floor(color + ((255 - color) * intensity)))
 								.toString(16);
 					};
-					var threeObject = GEPPETTO.getNamedThreeObjectFromInstancePath(aspect.getInstancePath(), entityName);
+					var threeObject = GEPPETTO.get3DObjectInVisualizationTree(aspect.VisualizationTree, entityName);
 					if (threeObject != null) {
 						var originalColor = getRGB(threeObject.material.originalColor);
 						threeObject.material.color.setHex('0x'
@@ -119,11 +119,15 @@ define(function(require) {
 				selectAspect : function(instancePath) {
 					for ( var v in GEPPETTO.getVARS().meshes) {
 						if(v == instancePath){
-							if(GEPPETTO.getVARS().meshes[v].selected == false){
-								GEPPETTO.getVARS().meshes[v].material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
-								GEPPETTO.getVARS().meshes[v].material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-								GEPPETTO.getVARS().meshes[v].selected = true;
-								GEPPETTO.getVARS().meshes[v].ghosted = false;
+							var mesh = GEPPETTO.getVARS().meshes[v];
+							if(mesh.selected == false){
+								if(mesh.split){
+									GEPPETTO.SceneController.merge(instancePath);
+								}
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+								mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								mesh.selected = true;
+								mesh.ghosted = false;
 								return true;
 							}					
 						}
@@ -139,11 +143,15 @@ define(function(require) {
 					//match instancePath to mesh store in variables properties
 					for ( var key in GEPPETTO.getVARS().meshes) {
 						if(key == instancePath){
+							var mesh = GEPPETTO.getVARS().meshes[key];
 							//make sure that path was selected in the first place
-							if(GEPPETTO.getVARS().meshes[key].selected == true){
-								GEPPETTO.getVARS().meshes[key].material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-								GEPPETTO.getVARS().meshes[key].selected = false;
-								GEPPETTO.getVARS().meshes[key].ghosted = false;
+							if(mesh.selected == true){
+								if(mesh.split){
+									GEPPETTO.SceneController.merge(instancePath);
+								}
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+								mesh.selected = false;
+								mesh.ghosted = false;
 					
 								return true;
 							}
@@ -360,8 +368,10 @@ define(function(require) {
 					    	if(child.instancePath == objectPath){
 					    		if(mode){
 					    			GEPPETTO.SceneController.colorMesh(child,GEPPETTO.Resources.COLORS.HIGHLIGHTED);
+					    			mesh.highlighted = true;
 					    		}else{
 					    			GEPPETTO.SceneController.colorMesh(child,GEPPETTO.Resources.COLORS.DEFAULT);
+					    			highlighted.highlighted = false;
 					    		}
 					    	}
 					    }
@@ -443,48 +453,41 @@ define(function(require) {
 				/**
 				 * Shows a visual group
 				 */
-				showVisualGroups : function(visualizationTree,group, color, mode){
+				showVisualGroups : function(visualizationTree,visualGroups, mode){
 					var aspectPath = visualizationTree.getParent().getInstancePath();
 					var mesh = GEPPETTO.getVARS().meshes[aspectPath];
 					var paths = mesh.mergedMeshesPaths;
 					for(var id in paths){
 						//get 3d object from visualizationtree by using the object's instance path as search key 
-						var object = GEPPETTO.SceneController.get3DObjectInAspect(visualizationTree,paths[id]);
+						var object = GEPPETTO.SceneController.get3DObjectInVisualizationTree(visualizationTree,paths[id]);
 						//get group elements list for 3d object
 						var groups = object.groups;
-						var modified = false;
+						var highlighted = object.highlighted;
 						for(g in groups){
 							//match group to be shown to ones in object 3d
-							if(groups[g] == group){
+							if(groups[g] in visualGroups){
+								var visualGroup = visualGroups[groups[g]];
 								var object3D = GEPPETTO.getVARS().visualModelMap[paths[id]];
 								//color 3d object with color passed in
 								if(mode){
-									GEPPETTO.SceneController.colorMesh(object3D,color);
-									modified = true;
+									GEPPETTO.SceneController.colorMesh(object3D,visualGroup.color);
+									highlighted = true;
 								}else{
 									GEPPETTO.SceneController.colorMesh(object3D,GEPPETTO.Resources.COLORS.SPLIT);
-									modified = true;
+									highlighted = false;
 								}
 							}
+
 						}
 						
-						if(!modified){
+						if(!highlighted){
 							var object3D = GEPPETTO.getVARS().visualModelMap[paths[id]];
 							GEPPETTO.SceneController.colorMesh(object3D,GEPPETTO.Resources.COLORS.SPLIT);
 						}
 					}				
 				},
 				
-				/**
-				 * Gets 3D object from Visualization tree by feeding it the instance 
-				 * path of the 3D object as search key.
-				 */
-				get3DObjectInAspect : function(visualizationTree, objectPath){
-					var objectPathFormat = objectPath.replace(visualizationTree.getInstancePath()+".","");
-					var object = GEPPETTO.Utility.deepFind(visualizationTree.content, objectPathFormat);
-					
-					return object;
-				},
+				
 				
 				/**
 				 * Animate simulation

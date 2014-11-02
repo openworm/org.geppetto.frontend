@@ -104,7 +104,7 @@ define(function(require) {
 			 */
 			setLocalRotationZ : function(aspect, entityName, angle) {
 				//TODO: the first arg should be a vis tree
-				var threeObject = GEPPETTO.getNamedThreeObjectFromInstancePath(aspect.getInstancePath(), entityName);
+				var threeObject = GEPPETTO.get3DObjectInVisualizationTree(aspect.getInstancePath(), entityName);
 				if (threeObject != null) {
 					threeObject.rotation.z = angle;
 				}
@@ -373,17 +373,15 @@ define(function(require) {
 				GEPPETTO.getVARS().rotationMode = false;
 			},
 
-			getNamedThreeObjectFromInstancePath : function(aspectIP, name) {
-				//TODO: we should be manipulating the VisualizationTree 
-				//      instead of jumping through such hoops...
-				if (name != ""){
-					return GEPPETTO.getVARS().scene.getObjectByName(aspectIP, true).getObjectByName(name, true);
-				}
-				else{
-					//This is to handle aberrations such as hhcell.electrical being both
-					// the aspect AND the name of the entity to be lit 
-					return GEPPETTO.getVARS().scene.getObjectByName(aspectIP, true);
-				}
+			/**
+			 * Gets 3D object node from Visualization tree by feeding it the instance 
+			 * path of the 3D object as search key.
+			 */
+			get3DObjectInVisualizationTree : function(visualizationTree, objectPath){
+				var objectPathFormat = objectPath.replace(visualizationTree.getInstancePath()+".","");
+				var object = GEPPETTO.Utility.deepFind(visualizationTree.content, objectPathFormat);
+				
+				return object;
 			},
 
 			resetCamera : function() {

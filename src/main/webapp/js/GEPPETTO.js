@@ -452,7 +452,7 @@ define(function(require) {
 			var pMaterial = new THREE.ParticleBasicMaterial({
 				size : 5,
 				map : THREE.ImageUtils
-						.loadTexture("images/particle.png"),
+						.loadTexture("assets/images/particle.png"),
 				blending : THREE.AdditiveBlending,
 				depthTest : false,
 				transparent : true

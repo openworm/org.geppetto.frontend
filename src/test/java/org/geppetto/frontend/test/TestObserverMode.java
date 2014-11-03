@@ -40,11 +40,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.geppetto.frontend.GeppettoMessageInbound;
-import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
-import org.geppetto.frontend.SimulationServerConfig;
-import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
-import org.geppetto.frontend.GeppettoServletController;
+import org.geppetto.frontend.controllers.GeppettoMessageInbound;
+import org.geppetto.frontend.controllers.GeppettoMessageInbound.VisitorRunMode;
+import org.geppetto.frontend.controllers.SimulationServerConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

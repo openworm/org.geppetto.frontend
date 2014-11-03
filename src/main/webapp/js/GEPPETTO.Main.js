@@ -59,7 +59,7 @@ define(function(require) {
 			idleTime: 0,
 			disconnected: false,
 			status: 0,
-			simulationFileTemplate: "resources/template.xml",
+			simulationFileTemplate: "assets/resources/template.xml",
 			getVisitorStatus: function() {
 				return this.status;
 			},

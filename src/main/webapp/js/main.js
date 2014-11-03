@@ -34,6 +34,7 @@
  * Loads all scripts needed for Geppetto
  *  
  * @author Jesus Martinez (jesus@metacell.us)
+ * @author Matt Olson (matt@metacell.us)
  */
 
 /*

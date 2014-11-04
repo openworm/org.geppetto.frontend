@@ -123,7 +123,9 @@ define(function(require) {
 				if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
 				else{label = data.getName();}
 				
-				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" | data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "VisualObjectReferenceNode") {
+				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
+						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
+						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = {};
 						

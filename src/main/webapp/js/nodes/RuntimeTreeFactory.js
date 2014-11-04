@@ -299,6 +299,13 @@ define(function(require) {
 								}
 								parent[i] = parameterSpecificationNode;
 							}
+							else if(metatype == GEPPETTO.Resources.TEXT_METADATA_NODE){
+								var textMetadataNode =  this.createTextMetadataNode(node[i]);
+								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+									parent.get("children").add(textMetadataNode);
+								}
+								parent[i] = textMetadataNode;
+							}
 						}
 					}
 

@@ -39,7 +39,6 @@
  */
 define(function(require) {
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		relations : [ {
@@ -52,7 +51,6 @@ define(function(require) {
 		},
 		type : "",
 		modified : false,
-		_metaType : "AspectSubTreeNode",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -66,6 +64,8 @@ define(function(require) {
 			this.name = options.name;
 			this.type = options.type;
 			this.modified = options.modified;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**

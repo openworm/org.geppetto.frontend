@@ -31,20 +31,33 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a parameter node, used for model tree
- * properties.
+ * Client class use to represent a connection node, used to store the connections
+ * between two entities in Geppetto.
  * 
- * @module nodes/ParameterNode
+ * @module nodes/ConnectionNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
+	var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 
 	return Node.Model.extend({
-		properties : {},
-		_metaType : "ConnectionNode",
+		relations : [ {
+			type : Backbone.Many,
+			key : 'customNodes',
+			relatedModel : Node,
+		}, {
+			type : Backbone.Many,
+			key : 'visualObjectReferenceNodes',
+			relatedModel : VisualObjectReferenceNode
+		}],
+
+		defaults : {
+			customNodes : [],
+			visualObjectReferenceNodes : [],
+		},
+
 		entityInstancePath : null,
 		type : null,
 
@@ -58,16 +71,20 @@ define(function(require) {
 			this.id = options.id;
 			this.entityInstancePath = options.entityInstancePath;
 			this.type = options.type;
+			this.name = options.name;
 			this.instancePath = options.instancePath;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get type of connection
+		 * Get Instance path of entity this connection is connected to
 		 * 
-		 * @command ConnectionNode.getType()
-		 * @returns {String} Entity ID for this connection 
+		 * @command ConnectionNode.getEntityInstancePath()
+		 * @returns {String} Entity instance patch for entity this connection 
+		 *                   is connected to
 		 */
-		getEntityId : function() {
+		getEntityInstancePath : function() {
 			return this.entityInstancePath;
 		},
 		
@@ -82,10 +99,81 @@ define(function(require) {
 		},
 
 		/**
+		 * Returns array of custom nodes for this connection
+		 * 
+		 * @command ConnectionNode.getCustomNodes()
+		 * @returns {Array} Array of nodes for custom properties of connection node.
+		 */
+		getCustomNodes : function(){
+			return this.get("customNodes").models;
+		},
+		
+		/**
+		 * Returns array of visual object reference nodes for this connection
+		 * @command ConnectionNode.getVisualObjectReferenceNodes()
+		 * @returns {Array} Array of nodes for visual object references
+		 */
+		getVisualObjectReferenceNodes : function(){
+			return this.get("visualObjectReferenceNodes").models;
+		},
+		
+		/**
+		 * Highlight the visual references of this connection
+		 * @command ConnectionNode.highlight()
+		 * @param {boolean} - Highlight or unhighlight reference nodes
+		 */
+		highlight : function(mode){
+			
+			if(mode == null || mode == undefined){
+				return GEPPETTO.Resources.MISSING_PARAMETER;
+			}
+			var references = this.getVisualObjectReferenceNodes();
+			var message = GEPPETTO.Resources.HIGHLIGHTING + this.id;
+			
+			if(references.length > 0){
+				//highlight all reference nodes
+				for(var ref in references){
+					references[ref].highlight(mode);
+				}
+			}else{
+				message = GEPPETTO.Resources.NO_REFERENCES_TO_HIGHLIGHT;
+			}
+						
+			return message;
+		},
+		
+		/**
+		 * Show lines for connections of this entity
+		 * @command ConnectionNode.showConnectionsLine()
+		 */
+		showConnectionsLine : function(mode){
+			var from;
+			var to;
+			GEPPETTO.SceneController.drawLine(from,to);
+		},
+		
+		/**
+		 * Get this entity's children entities
+		 * 
+		 * @command ConnectionNode.getChildren()
+		 * @returns {List<Aspect>} All children e.g. aspects and
+		 *          entities
+		 * 
+		 */
+		getChildren : function() {
+			 var children = new Backbone.Collection();
+			 children.add(this.get("customNodes").models);
+			 children.add(this.get("visualObjectReferenceNodes").models);
+			 return children;
+		},
+		
+		/**
 		 * Print out formatted node
+		 * @command EntityNode.print()
 		 */
 		print : function() {
 			return "Id : " + this.id + "\n" 
+					+ "    Name : " + this.name + "\n"
 					+ "    EntityInstancePath : " + this.entityInstancePath + "\n"
 					+ "    Type : " + this.type + "\n";
 		}

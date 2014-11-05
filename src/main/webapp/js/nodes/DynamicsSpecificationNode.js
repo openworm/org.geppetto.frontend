@@ -41,7 +41,6 @@ define(function(require) {
 
 	var Node = require('nodes/Node');
 	var FunctionNode = require('nodes/FunctionNode');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		relations : [ {
@@ -56,7 +55,6 @@ define(function(require) {
 		value : "",
 		scalingFactor : "",
 		dynamics : null,
-		_metaType : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -73,6 +71,7 @@ define(function(require) {
 			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**

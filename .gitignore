@@ -1,7 +1,7 @@
 *.class
 *.DS_Store
 src/main/webapp/META-INF
-src/main/webapp/js/jsdocs 
+src/main/webapp/js/jsdocs
 node_modules/
 node/
 src/main/webapp/js/components/dist/
@@ -19,8 +19,11 @@ src/main/webapp/css/main.css
 # Editor byproducts
 .idea/
 *.swp
-.settings/
 /target
 .idea/
 *.iml
 *~
+/.externalToolBuilders/
+/.settings/
+/.project
+/.classpath

@@ -39,7 +39,6 @@
  */
 define(function(require) {
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		relations : [ {
@@ -50,7 +49,6 @@ define(function(require) {
 		defaults : {
 			children : []
 		},
-		_metaType : "CompositeVariableNode",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -63,6 +61,7 @@ define(function(require) {
 			this.name = options.name;
 			this.instancePath = options.instancePath;
 			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**

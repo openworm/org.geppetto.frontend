@@ -46,8 +46,11 @@ define(function(require) {
 		var $ = require('jquery');
 		//keeps track of API commands
 		var commands = [];
-		//suggestions for autocomplete
-		var tags = [];
+		/**suggestions for autocomplete
+		* Stores things in 
+		*/
+		var tags = {};
+		var suggestions = [];
 		var helpObjectsMap = {};
 		var nonCommands;
 		
@@ -68,21 +71,71 @@ define(function(require) {
 			                   "destroy(a)","_getAttr(a)","on(t,e,i)","once(t,e,r)","off(t,e,r)","trigger(t)","stopListening(t,e,r)","listenTo(e,r,s)","listenToOnce(e,r,s)",
 			                   "bind(t,e,i)","unbind(t,e,r)","initialize()","toJSON(t)","sync()","get(t)","escape(t)","has(t)","set(t,e,r)",
 			                   "unset(t,e)","clear(t)","hasChanged(t)","changedAttributes(t)","previous(t)","previousAttributes()","fetch(t)","save(t,e,r)","destroy(t)",
-			                   "url()","parse(t,e)","clone()","isNew()","isValid(t)","_validate(t,e)","keys()","values()","pairs()","invert()","pick()","omit()"];
+			                   "url()","parse(t,e)","clone()","isNew()","isValid(t)","_validate(t,e)","keys()","values()","pairs()","invert()","pick()","omit()",
+			                   "selectChildren(entity,apply)", "showChildren(entity,mode)", "getZoomPaths(entity)", "getAspectsPaths(entity)","toggleUnSelected(entities,mode)",
+			                   "addOnNodeUpdatedCallback(varnode,callback)","traverseSelection(entities)","clearOnNodeUpdateCallback(varnode)", "updateDataSet()",
+			                   "showAllVisualGroupElements(visualizationTree,elements,mode)"];
 			
 			//JS Console Button clicked
 			$('#consoleButton').click(function() {
 				GEPPETTO.Console.toggleConsole();
-			});
+			});			
 		});
+		
+		/**
+		 * Matches user input in console to terms in tags map, this to retrieve suggestions 
+		 * for autocompletion. 
+		 * 
+		 * @param {String} request - User input 
+		 * @param {Object} response - Object to give back response with suggestions to autocomplete
+		 */
+		function matches(request, response){
+			var path = request.term.split(".");
+			var depth = path.length;
+			var node = GEPPETTO.Console.availableTags();
+			var avail = new Array();
+
+			var nodePath  ="";
+			// descent into the path tree to get a list of suggestions
+			for (var n = 1; n <= depth && typeof node !== "undefined"; n++) {
+				var cur = path[n - 1];
+				if(node[cur] != null || node[cur] != undefined){
+					node = node[cur];
+					nodePath = nodePath.concat(cur) + ".";
+				}
+			}
+
+			if(nodePath == ""){
+				nodePath = nodePath.substring(0, nodePath.length - 1);
+			}
+
+			// build a regex with the last directory entry being typed
+			var last = path.pop();
+			try{
+				var re = new RegExp("^" + last + ".*", "i");
+
+				// filter suggestions by matching with the regex
+				for (var k in node) {
+					if (k.match(re)) avail.push(nodePath + k);
+				}
+
+				//save suggestions for request term
+				suggestions = avail;
+			}
+			catch(e){
+				
+			}
+
+			// delegate back to autocomplete, but extract the last term
+			response($.ui.autocomplete.filter(avail, last));
+		};
 
 		/**
 		 * Handles autocomplete functionality for the console
 		 */
 		function autoComplete() {
-			//get the available tags for autocompletion in console
-			var tags = GEPPETTO.Console.availableTags();
 
+			GEPPETTO.Console.populateTags();
 			//bind console input area to autocomplete event
 			$("#commandInputArea").bind("keydown", function(event) {
 				if(event.keyCode === $.ui.keyCode.TAB &&
@@ -92,14 +145,8 @@ define(function(require) {
 			})
 				.autocomplete({
 					minLength: 0,
-					source: function(request, response) {
-						var matches = $.map(tags, function(tag) {
-							if(tag.toUpperCase().indexOf(request.term.toUpperCase()) === 0) {
-								return tag;
-							}
-						});
-						response(matches);
-					},
+					delay : 0,
+					source: matches,
 					focus: function() {
 						// prevent value inserted on focus
 						return false;
@@ -337,16 +384,30 @@ define(function(require) {
 				}
 				return commands;
 			},
-
-			addTag : function(tag){
-				tags[tags.length] = tag;
-			},
 			
+			/**
+			 * Gets maps of available tags used for autocompletion
+			 */
 			availableTags : function(){
-				if(tags.length == 0) {
-					tags = tags.concat(GEPPETTO.Console.availableCommands());
+				if(jQuery.isEmptyObject(tags)) {
+					this.populateTags();
 				}
 				return tags;
+			},
+			
+			/**
+			 * Populates tags map at startup
+			 */
+			populateTags : function(){
+				this.updateTags("Simulation", GEPPETTO.Simulation,true);
+				this.updateTags("G", GEPPETTO.G,true);
+			},
+			
+			/**
+			 * Gets available suggestions already narrowed down from list of tags
+			 */
+			availableSuggestions : function(){
+				return suggestions;
 			},
 
 			/**
@@ -376,14 +437,11 @@ define(function(require) {
 			 * @param id - Id of object
 			 * @returns {}
 			 */
-			updateTags: function(instancePath, object) {
-				var nonTags = ["constructor()", "initialize(options)"];
-				
-				tags[tags.length] = instancePath;
-				
-				var tagsCount = tags.length;
-				
+			updateTags: function(instancePath, object,original) {												
 				var proto = object.__proto__;
+				if(original){
+					proto = object;
+				}
 				//	find all functions of object Simulation
 				for(var prop in proto) {
 					if(typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
@@ -392,17 +450,30 @@ define(function(require) {
 						var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
 
 						var functionName = instancePath + "." + prop + "(" + parameter + ")";
-
+						var split = functionName.split(".");
 						var isTag = true;
-						for(var c = 0; c < nonTags.length; c++) {
-							if(functionName.indexOf(nonTags[c]) != -1) {
+						for(var c = 0; c < nonCommands.length; c++) {
+							if(functionName.indexOf(nonCommands[c]) != -1) {
 								isTag = false;
 							}
 						}
 
 						if(isTag) {
-							tags[tagsCount] = functionName;
-							tagsCount++;							
+							var current=tags;
+							for(var i =0; i<split.length; i++){
+								if(tags.hasOwnProperty(split[i])){
+									current = tags[split[i]];
+								}
+								else{
+									if(current.hasOwnProperty(split[i])){
+										current = current[split[i]];
+									}else{
+										current[split[i]] = {};
+										current = current[split[i]];
+									}
+									
+								}
+							}
 						}
 					}
 				}
@@ -436,7 +507,6 @@ define(function(require) {
 				var commandsFormmatted = id + GEPPETTO.Resources.COMMANDS;
 
 				var commandsCount = commands.length;
-				var tagsCount = tags.length;
 				
 				var proto = object.__proto__;
 				//	find all functions of object Simulation
@@ -458,8 +528,6 @@ define(function(require) {
 						if(isCommand) {
 							commands[commandsCount] = functionName;
 							commandsCount++;
-							tags[tagsCount] = functionName;
-							tagsCount++;
 							//match the function to comment
 							var matchedDescription = "";
 							for(var i = 0; i < descriptions.length; i++) {

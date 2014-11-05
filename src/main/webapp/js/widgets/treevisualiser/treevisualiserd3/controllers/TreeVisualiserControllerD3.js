@@ -88,7 +88,10 @@ define(function(require) {
 				this.registerHandler(id);
 
 				//add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
+				GEPPETTO.Console.updateCommands("assets/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
+				
+				//update tags for autocompletion
+				GEPPETTO.Console.updateTags(tvd3.getId(), tvd3);
 
 				return tvd3;
 			},

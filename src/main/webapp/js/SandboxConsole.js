@@ -403,19 +403,19 @@ define(function(require) {
 						e.preventDefault();
 
 						var thisKeypressTime = new Date();
-
-						var commands = GEPPETTO.Console.availableCommands();
 						
 						var input = $('#commandInputArea').val();
+												
+						//retrieve array of available commands
+						var commands = GEPPETTO.Console.availableSuggestions();
 						
 						//case where input entered by user is an object path or has object on left
 						//Example  "Simulation.s"
 						if(input.split(".").length>1){
-							commands = GEPPETTO.Console.availableTags();
-							
 							//detects double tab
-							if(thisKeypressTime - lastKeypressTime <= delta) {							
-								this.showCommandsSuggestions(this.getSuggestions(commands,input) + "\n");
+							if(thisKeypressTime - lastKeypressTime <= delta) {
+								var suggestions = this.getSuggestions(commands,input);
+								this.showCommandsSuggestions(suggestions + "\n");
 								thisKeypressTime = 0;
 								doubleTab = true;
 							}
@@ -427,8 +427,9 @@ define(function(require) {
 						//Example "Si" 
 						else{
 							//detects double tab, displays most of commands available
-							if(thisKeypressTime - lastKeypressTime <= delta) {							
-								var suggestions = "";
+							if(thisKeypressTime - lastKeypressTime <= delta) {
+								commands = GEPPETTO.Console.availableCommands();
+								var suggestionsFormatted = "";
 								//loop through commands that match input and display them formatted
 								var ownLineCommands = [];
 								for(var i = 0; i < commands.length; i++) {
@@ -436,7 +437,7 @@ define(function(require) {
 									if(tag.indexOf($('#commandInputArea').val()) != -1) {
 										if(tag.length <= 80){
 											if((i + 1) % 2 == 0) {
-												suggestions = suggestions + tag + "\n";
+												suggestionsFormatted = suggestionsFormatted + tag + "\n";
 											}
 											else {
 												var formatSpaceAmount = 90 - tag.length;
@@ -444,7 +445,7 @@ define(function(require) {
 												for(var x = 0; x < formatSpaceAmount; x++) {
 													spacing = spacing + " ";
 												}
-												suggestions = suggestions + tag + spacing;
+												suggestionsFormatted = suggestionsFormatted + tag + spacing;
 											}
 										}
 										else{
@@ -454,10 +455,10 @@ define(function(require) {
 								}
 								for(var i = 0; i < ownLineCommands.length; i++) {
 									var tag = ownLineCommands[i];
-									suggestions = suggestions + tag + "\n";
+									suggestionsFormatted = suggestionsFormatted + tag + "\n";
 								}
 
-								this.showCommandsSuggestions(suggestions + "\n");
+								this.showCommandsSuggestions(suggestionsFormatted + "\n");
 								thisKeypressTime = 0;
 								doubleTab = true;
 							}

@@ -138,7 +138,7 @@ define(function(require) {
 
 					// node is always an array of variables
 					for(var i in node) {
-						if(typeof node[i] === "object" && node[i]!=null && i!= "attributes") {
+						if(typeof node[i] === "object" && node[i]!=null && i!= "attributes" && i!="parent") {
 							var type = node[i]._metaType;
 
 							if(type == "CompositeNode"){
@@ -290,6 +290,7 @@ define(function(require) {
 					
 					return formattedOutput.replace(/"/g, "");
 				},
+				
 				
 				/**
 				 * Search obj for the value of node within using path.

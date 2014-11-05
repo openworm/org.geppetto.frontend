@@ -32,9 +32,10 @@
  *******************************************************************************/
 
 /**
- * Loads tree visualiser scripts
+ * Loads connectivity scripts
  *
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ * @author Boris Marin
  */
 
 

@@ -34,6 +34,7 @@
  * Tree Visualiser Widget
  *
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ * @author Boris Marin 
  */
 
 define(function(require) {
@@ -47,14 +48,14 @@ define(function(require) {
 			
 			defaultConnectivityOptions:  {
 				width: 460,
-				height: 460
+				height: 460,
+				connectivityLayout: "matrix", //[matrix, hive, force]
 			},
 			
 			initialize : function(options){
 				Widget.View.prototype.initialize.call(this,options);
 				
 				this.options = this.defaultConnectivityOptions;
-				
 
 				this.render();
 				this.setSize(options.width,options.height);
@@ -62,15 +63,35 @@ define(function(require) {
 			},
 			
 			setData : function(state, options, dataset){
-				// If no options specify by user, use default options
-				if(options != null) {
-					$.extend(this.options, options);
-				}
+				this.setOptions(options);
 	
 				
 				return "Metadata or variables added to connectivity widget";
-			}
+			},
 			
+			/**
+			 *
+			 * Set the options for the connectivity widget
+			 *
+			 * @command setOptions(options)
+			 * @param {Object} options - options to modify the plot widget
+			 */
+			setOptions: function(options) {
+				if(options != null) {
+					$.extend(this.options, options);
+				}
+			},
+			
+			/**
+			 * Sets the legend for a variable
+			 * 
+			 * @command setLegend(variable, legend)
+			 * @param {Object} variable - variable to change display label in legends
+			 * @param {String} legend - new legend name
+			 */
+			setLegend : function(variable, legend){
+				
+			}
 			
 			
 	

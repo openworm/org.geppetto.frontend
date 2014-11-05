@@ -37,6 +37,7 @@
  *
  * @module Widgets/Connectivity
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ * @author Boris Marin
  */
 define(function(require) {
 	return function(GEPPETTO) {

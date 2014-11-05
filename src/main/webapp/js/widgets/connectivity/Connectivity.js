@@ -44,7 +44,8 @@ define(function(require) {
 
 	return Widget.View.extend({
 		
-			datasets: [],
+			dataset: null,
+			data: {},
 			
 			defaultConnectivityOptions:  {
 				width: 460,
@@ -59,12 +60,56 @@ define(function(require) {
 
 				this.render();
 				this.setSize(options.width,options.height);
+				
+				
 	
 			},
 			
-			setData : function(state, options, dataset){
+			setData : function(root, options){
 				this.setOptions(options);
 	
+				this.dataset = root;
+				
+				this.data = [];
+				
+				if (this.dataset._metaType == "EntityNode"){
+					var subEntities = this.dataset.getEntities();
+					this.data["nodes"] = {};
+					this.data["links"] = [];
+					this.data["graph"] = new Array(1);
+					this.data["multigraph"] = false;
+					this.data["directed"] = true;
+					for (var subEntityIndex in subEntities){
+						var nodeItem = {};
+						nodeItem["id"] = subEntities[subEntityIndex].getId();
+						this.data["nodes"][nodeItem["id"]] = nodeItem;
+
+						var connections = subEntities[subEntityIndex].getConnections();
+						for (var connectionIndex in connections){
+							var linkItem = {};
+							
+							var connectionItem = connections[connectionIndex];
+							if (connectionItem.getType() == "FROM"){
+								linkItem["source"] = connectionItem.getParent().getId();
+								linkItem["target"] = connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1);
+//								var customNodes = connectionItem.getCustomNodes();
+//								
+//								for (var customNodeIndex in connectionItem.getCustomNodes()){
+//									var customNodesChildren = customNodes[customNodeIndex].getChildren();
+//									for (var customNodeChildIndex in customNodesChildren){
+//										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
+//											linkItem["synapse"] = customNodesChildren[customNodeChildIndex].getValue();
+//										}
+//									}
+//								}
+								
+							}
+							
+							this.data["links"].push(linkItem);
+						}
+					}
+					console.log(this.data);
+				}
 				
 				return "Metadata or variables added to connectivity widget";
 			},

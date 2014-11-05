@@ -324,6 +324,7 @@ define(function(require) {
 			REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",
 			REMOVE_TREEVISUALISERD3_WIDGETS: "Tree Visualiser D3 widget(s) removed",
 			REMOTE_VARIABLEVISUALISER_WIDGETS: "Variable Visualiser widget(s) removed",
+			REMOVE_CONNECTIVITY_WIDGETS: "Connectivity widget(s) removed",
 			NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
 
 			/**

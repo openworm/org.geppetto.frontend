@@ -71,7 +71,7 @@ libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
  * Load libraries, and CSS after libraries are loaded
  */
 require(libraries,function($){
-	loadCss("js/widgets/plot/Plot.css");
+	loadCss("assets/js/widgets/plot/Plot.css");
 });	
 
 //Load PlotsController and other classes using GEPPETTO

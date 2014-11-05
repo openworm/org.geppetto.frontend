@@ -80,7 +80,9 @@ define(function(require) {
 				this.registerHandler(id);
 
 				//add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
+				GEPPETTO.Console.updateCommands("assets/js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
+				//update tags for autocompletion
+				GEPPETTO.Console.updateTags(vv.getId(),vv);
 				return vv;
 			},
 

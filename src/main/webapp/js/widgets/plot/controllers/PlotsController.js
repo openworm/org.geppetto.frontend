@@ -91,8 +91,9 @@ define(function(require) {
 				this.registerHandler(id);
 
 				//add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("js/widgets/plot/Plot.js", p, id);
-
+				GEPPETTO.Console.updateCommands("assets/js/widgets/plot/Plot.js", p, id);
+				//update tags for autocompletion
+				GEPPETTO.Console.updateTags(p.getId(), p);
 				return p;
 			},
 

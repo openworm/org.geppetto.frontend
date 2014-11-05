@@ -31,10 +31,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a parameter node, used for model tree
- * properties.
+ * Client class use to represent a visual object reference node. This node 
+ * points to a specific object within an aspect, stores object's id and aspect's
+ * instancepath to keep track of location.
  * 
- * @module nodes/ParameterNode
+ * @module nodes/VisualObjectReferenceNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -42,7 +43,8 @@ define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		properties : {},
+		aspectInstancePath : null,
+		visualObjectID : null,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -51,31 +53,59 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.properties = options.properties;
-			this.name = options.name;
 			this.id = options.id;
+			this.aspectInstancePath = options.aspectInstancePath;
+			this.visualObjectID = options.visualObjectID;
 			this.instancePath = options.instancePath;
-			this.domainType = options.domainType;
 			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get properties for this node
+		 * Get aspect instance path for visual reference
 		 * 
-		 * @command ParameterNode.getProperties()
-		 * @returns {String} Unit for quantity
+		 * @command VisualObjectReferenceNode.getAspectInstancePath()
+		 * @returns {String} Aspect instance path for this visual reference node 
 		 */
-		getProperties : function() {
-			return this.properties;
+		getAspectInstancePath : function() {
+			return this.aspectInstancePath;
+		},
+		
+		/**
+		 * Get ID of object this visual reference node refers to
+		 * 
+		 * @command VisualObjectReferenceNode.getVisualObjectID()
+		 * @returns {String} ID of visual object this node references
+		 */
+		getVisualObjectID : function() {
+			return this.visualObjectID;
+		},
+		
+		/**
+		 * Highlight visual object reference node
+		 * @command VisualObjectReferenceNode.highlight()
+		 * @param {boolean} mode - Highlight or unhighlight the visual reference
+		 */
+		highlight : function(mode){
+			var pathToObject = this.getAspectInstancePath()+ ".VisualizationTree." + this.getVisualObjectID();
+			if(mode){
+				GEPPETTO.SceneController.split(this.getAspectInstancePath());
+			}
+			else{
+				GEPPETTO.SceneController.merge(this.getAspectInstancePath());
+			}
+			GEPPETTO.SceneController.highlight(this.getAspectInstancePath(),pathToObject,mode);
+			
+			return GEPPETTO.Resources.HIGHLIGHTING + pathToObject;
 		},
 
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Properties : " + this.properties + "\n";
+			return "Id : " + this.id + "\n" 
+					+ "    AspectInstancePath : " + this.aspectInstancePath + "\n"
+					+ "    VisualObjectID : " + this.visualObjectID + "\n";
 		}
 	});
 });

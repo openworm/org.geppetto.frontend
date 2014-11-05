@@ -31,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-package org.geppetto.frontend;
+package org.geppetto.frontend.controllers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -40,19 +40,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 @Configurable
 public class GeppettoServlet extends WebSocketServlet
 {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	

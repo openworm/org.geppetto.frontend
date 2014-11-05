@@ -30,7 +30,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend;
+package org.geppetto.frontend.controllers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,8 +52,9 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.model.VariableList;
 import org.geppetto.core.data.model.WatchList;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
-import org.geppetto.frontend.GeppettoMessageInbound.VisitorRunMode;
-import org.geppetto.frontend.SimulationServerConfig.ServerBehaviorModes;
+import org.geppetto.frontend.*;
+import org.geppetto.frontend.controllers.GeppettoMessageInbound.VisitorRunMode;
+import org.geppetto.frontend.controllers.SimulationServerConfig.ServerBehaviorModes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -770,12 +771,12 @@ public class GeppettoServletController {
 		String modelTree = visitor.getSimulationService().getModelTree(
 				aspectInstancePath);
 
-		String update = "{\"aspectInstancePath\":" + '"' + aspectInstancePath
-				+ '"' + ",\"modelTree\":{" + modelTree + "}}";
+//		String update = "{\"aspectInstancePath\":" + '"' + aspectInstancePath
+//				+ '"' + ",\"modelTree\":{" + modelTree + "}}";
 
 		// message the client with results
 		this.messageClient(requestID, visitor,
-				OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, update);
+				OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, modelTree);
 	}
 
 	/**

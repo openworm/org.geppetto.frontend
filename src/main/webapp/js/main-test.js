@@ -34,6 +34,7 @@
  * Loads all scripts needed for Geppetto
  *
  * @author Jesus Martinez (jesus@metacell.us)
+ * @author Matt Olson (matt@metacell.us)
  */
 
 /*
@@ -54,7 +55,7 @@ require.config({
 		'backbone': 'vendor/backbone.min',
 		'backbone-store': 'vendor/backbone-localStorage.min',
 		'backbone-associations' : 'vendor/backbone-associations-min',
-		'geppetto': "GEPPETTO",
+		'geppetto': "3d_visualization/GEPPETTO",
 		'QUnit': 'vendor/qunit',
 		react: 'vendor/react',
 		jsx: 'vendor/jsx',

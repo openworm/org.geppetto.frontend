@@ -99,6 +99,7 @@ div[id^='TreeVisualiserDAT']
     background: #eee;
 }
 
+/*  GENERIC NODE STYLE */
 .dg .cr.string {
 border-left: 3px solid #85ea0e;
 }
@@ -106,3 +107,78 @@ border-left: 3px solid #85ea0e;
 color: #85ea0e;
 }
 
+/*  NODE STYLE BY METATYPE*/
+.entitynodetv {
+	border-left: 3px solid #cc0000;
+}
+.aspectnodetv {
+	border-left: 3px solid #cc6600;
+}
+.aspectsubtreenodetv {
+	border-left: 3px solid #cccc00;
+}
+.compositenodetv {
+	border-left: 3px solid #66cc00;
+}
+
+
+.dg .cr.string.connectionnodetv {
+	border-left: 3px solid #00cc00;
+}
+.dg .cr.string.connectionnodetv input[type=text] {
+	color: #00cc00;
+}
+.dg .cr.string.dynamicsspecificationnodetv {
+	border-left: 3px solid #00cc66;
+}
+.dg .cr.string.dynamicsspecificationnodetv input[type=text] {
+	color: #00cc66;
+}
+.dg .cr.string.functionnodetv {
+	border-left: 3px solid #00cccc;
+}
+.dg .cr.string.functionnodetv input[type=text] {
+	color: #00cccc;
+}
+.dg .cr.string.parameternodetv {
+	border-left: 3px solid #0066cc;
+}
+.dg .cr.string.parameternodetv input[type=text] {
+	color: #0066cc;
+}
+.dg .cr.string.parameterspecificationnodetv {
+	border-left: 3px solid #0000cc;
+}
+.dg .cr.string.parameterspecificationnodetv input[type=text] {
+	color: #0000cc;
+}
+.dg .cr.string.textmetadatanodetv {
+	border-left: 3px solid #6600cc;
+}
+.dg .cr.string.textmetadatanodetv input[type=text] {
+	color: #6600cc;
+}
+.dg .cr.string.urlmetadatanodetv {
+	border-left: 3px solid #cc00cc;
+}
+.dg .cr.string.urlmetadatanodetv input[type=text] {
+	color: #cc00cc;
+}
+.dg .cr.string.variablenodetv {
+	border-left: 3px solid #cc0066;
+}
+.dg .cr.string.variablenodetv input[type=text] {
+	color: #cc0066;
+}
+.dg .cr.string.visualobjectreferencenodetv {
+	border-left: 3px solid #606060;
+}
+.dg .cr.string.visualobjectreferencenodetv input[type=text] {
+	color: #606060;
+}
+.dg .cr.string.visualgroupelementnodetv {
+	border-left: 3px solid #ffffff;
+}
+.dg .cr.string.visualgroupelementnodetv input[type=text] {
+	color: #ffffff;
+}

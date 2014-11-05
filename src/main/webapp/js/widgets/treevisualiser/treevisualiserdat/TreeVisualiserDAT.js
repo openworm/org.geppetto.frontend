@@ -46,9 +46,10 @@ define(function(require) {
 
 		defaultTreeVisualiserOptions : {
 			width : "auto",
-			autoPlace : false
+			autoPlace : false,
+			expandNodes: false
 		},
-
+		
 		/**
 		 * Initializes the TreeVisualiserDAT given a set of options
 		 * 
@@ -119,15 +120,18 @@ define(function(require) {
 		prepareTree : function(parent, data) {
 			if (data._metaType != null){
 				//TODO: Remove once all getName are implemented in all nodes
-				if (data.getName() === undefined){label = data.getId();}
+				if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
 				else{label = data.getName();}
 				
-				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" | data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode") {
+				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
+						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
+						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = {};
 						
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data); 
-						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], data.getName()).listen();
+						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
+						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
 					}
 					else{
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
@@ -136,6 +140,7 @@ define(function(require) {
 				else{
 					if (!dataset.isDisplayed) {
 						parentFolder = parent.addFolder(label);
+						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
 					}
 					var children = data.getChildren().models;
 					if (children.length > 0){
@@ -144,6 +149,9 @@ define(function(require) {
 							if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
 								this.prepareTree(parentFolderTmp, children[childIndex]);
 							}
+						}
+						if (this.options.expandNodes){
+							parentFolderTmp.open();
 						}
 					}
 				}
@@ -169,6 +177,9 @@ define(function(require) {
 			}
 			else if (data._metaType == "FunctionNode") {
 				labelValue = data.getExpression();
+			}
+			else if (data._metaType == "VisualObjectReferenceNode") {
+				labelValue = data.getAspectInstancePath() + " -> " + data.getVisualObjectID();
 			}
 			else{
 				labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");

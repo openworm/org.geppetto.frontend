@@ -30,7 +30,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend;
+package org.geppetto.frontend.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -43,6 +43,10 @@ import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.simulation.ISimulation;
+import org.geppetto.frontend.GeppettoTransportMessage;
+import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
+import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+import org.geppetto.frontend.controllers.GeppettoServletController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -67,6 +71,7 @@ public class GeppettoMessageInbound extends MessageInbound
 
 	@Autowired
 	private ISimulation _simulationService;
+
 	private GeppettoServletController _servletController;
 	private final String _client_id;
 

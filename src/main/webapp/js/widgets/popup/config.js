@@ -40,6 +40,6 @@
 define(function(require) {
 	return function(GEPPETTO) {
 		require("widgets/popup/controllers/PopupController")(GEPPETTO);
-		loadCss("js/widgets/popup/Popup.css");
+		loadCss("assets/js/widgets/popup/Popup.css");
 	};
 });

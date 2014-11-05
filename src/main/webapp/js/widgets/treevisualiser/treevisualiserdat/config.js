@@ -43,7 +43,7 @@
 var reqs = [];
 reqs.push("widgets/treevisualiser/treevisualiserdat/vendor/dat.gui.min");
 require(reqs, function(d3) {
-	loadCss("js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
+	loadCss("assets/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
 });
 
 define(function(require) {

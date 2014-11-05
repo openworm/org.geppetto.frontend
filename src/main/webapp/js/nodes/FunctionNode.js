@@ -40,7 +40,6 @@
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var $ = require('jquery');
 
 	return Node.Model.extend({
 		arguments : "",
@@ -58,6 +57,8 @@ define(function(require) {
 			this.instancePath = options.instancePath;
 			this.arguments = options.arguments;
 			this.expression = options.expression;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
 		},
 
 		/**

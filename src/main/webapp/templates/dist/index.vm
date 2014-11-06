@@ -11,20 +11,17 @@
     <link rel="stylesheet" href="assets/css/lesser-dark.css" />
     <link rel="stylesheet" href="assets/css/jsConsole.css" />
 
-    <!-- build:template
-        <script>
-            var path = "<%= contextPath %>";
-            if(path === "") {
-                window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
-            } else if(path === "/") {
-                window.BUNDLE_CONTEXT_PATH = "";
-            } else {
-                window.BUNDLE_CONTEXT_PATH = path;
-            }
-
-            window.USE_SSL = <%= useSsl %>;
-        </script>
-    /build -->
+    <script>
+    var path = "/";
+    if(path === "") {
+    window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
+    } else if(path === "/") {
+    window.BUNDLE_CONTEXT_PATH = "";
+    } else {
+    window.BUNDLE_CONTEXT_PATH = path;
+    }
+    window.USE_SSL = true;
+    </script>
 
     <!-- build:template:dev
         <link rel="stylesheet/less" type="text/css" href="assets/less/main.less" />
@@ -32,10 +29,8 @@
         <script data-main="assets/js/main.js" src="assets/js/vendor/require.js"></script>
     /build -->
 
-    <!-- build:template:dist
-        <link rel="stylesheet" type="text/css" href="assets/css/main.css" />
-        <script data-main="assets/js/main-built.js" src="assets/js/vendor/require.js"></script>
-    /build -->
+    <link rel="stylesheet" type="text/css" href="assets/css/main.css" />
+    <script data-main="assets/js/main-built.js" src="assets/js/vendor/require.js"></script>
 
     <link rel="icon" type="image/png" href="assets/images/favicon.png"/>
 </head>

@@ -50,6 +50,12 @@ define(function(require) {
 		GEPPETTO.MessageSocket = {
 			socket:null,
 
+            //sets protocol to use for connection
+            protocol : window.USE_SSL ? "wss://" : "ws://",
+
+            //flag used to connect using ws protocol if wss failed
+            failsafe : false,
+
 			connect: function(host) {
 				if('WebSocket' in window) {
 					GEPPETTO.MessageSocket.socket = new WebSocket(host);
@@ -86,16 +92,24 @@ define(function(require) {
 					}
 				};
 
-				//Detects problems when connecting to Geppetto server
-				GEPPETTO.MessageSocket.socket.onerror = function(evt) {
-					var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
-					if(GEPPETTO.Simulation.isLoading()){
-						GEPPETTO.Simulation.stop();
-					}
-
-					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
-				};
-			},
+                //Detects problems when connecting to Geppetto server
+                GEPPETTO.MessageSocket.socket.onerror = function(evt) {
+                    var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
+                    if(GEPPETTO.Simulation.isLoading()) {
+                        GEPPETTO.Simulation.stop();
+                    }
+                    var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
+                    //Attempt to connect using ws first time wss fails,
+                    //if ws fails too then don't try again and display info error window
+                    if(GEPPETTO.MessageSocket.failsafe) {
+                        GEPPETTO.MessageSocket.protocol = "ws://";
+                        GEPPETTO.MessageSocket.failsafe = true;
+                        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+window.BUNDLE_CONTEXT_PATH+'/GeppettoServlet');
+                    } else {
+                        GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
+                    }
+                };
+            },
 
 			/**
 			 * Sends messages to the server

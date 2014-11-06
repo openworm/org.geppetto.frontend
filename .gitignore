@@ -19,11 +19,8 @@ src/main/webapp/css/main.css
 # Editor byproducts
 .idea/
 *.swp
+-.settings/
 /target
 .idea/
 *.iml
 *~
-/.externalToolBuilders/
-/.settings/
-/.project
-/.classpath

@@ -18,27 +18,7 @@
             </properties>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2.1</version>
-                        <executions>
-                            <execution>
-                                <configuration>
-                                    <executable>python</executable>
-                                    <workingDirectory>${project.basedir}/src/main/webapp/js/components/</workingDirectory>
-                                    <arguments>
-                                        <argument>install_components.py</argument>
-                                    </arguments>
-                                </configuration>
-                                <id>generation</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+
                     <plugin>
                         <groupId>com.github.bringking</groupId>
                         <artifactId>requirejs-maven-plugin</artifactId>

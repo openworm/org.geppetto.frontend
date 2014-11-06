@@ -54,7 +54,7 @@ require.config({
 		backbone : 'vendor/backbone.min',
 		'backbone-store' : 'vendor/backbone-localStorage.min',
 		'backbone-associations' : 'vendor/backbone-associations-min',
-		geppetto : '3d_visualization/GEPPETTO',
+		geppetto : 'GEPPETTO',
 		react: 'vendor/react',
 		jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
@@ -122,8 +122,6 @@ require(jqueryLib, function($, geppetto){
 		window.G = GEPPETTO.G;
 		window.Widgets = GEPPETTO.Widgets;
 		window.help = GEPPETTO.Utility.help;
-		
-        
 
 
 	});

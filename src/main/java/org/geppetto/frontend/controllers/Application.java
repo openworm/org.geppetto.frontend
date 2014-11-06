@@ -23,7 +23,7 @@ public class Application {
     public String home() {
 
         if (authService == null || authService.isAuthenticated()) {
-            return "home";
+            return "dist/index";
         } else {
             return "redirect:" + authService.authFailureRedirect();
         }
@@ -31,7 +31,7 @@ public class Application {
 
     @RequestMapping(value = "/GeppettoTests.html", method = RequestMethod.GET)
     public String test() {
-        return "geppettotests";
+        return "dist/geppettotests";
     }
 
 }

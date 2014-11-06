@@ -12,14 +12,28 @@ module.exports = function(grunt) {
                 },
                 files: {
                     // target.css file: source.less file
-                    "src/main/webapp/css/main.css": "src/main/webapp/less/main.less"
+                    'src/main/webapp/css/main.css': 'src/main/webapp/less/main.less'
                 }
             }
         },
         processhtml: {
+            options: {
+                data: {
+                    contextPath: grunt.option('contextPath'),
+                    useSsl: grunt.option('useSsl')
+                }
+            },
             dist: {
                 files: {
-                    'src/main/webapp/index.html': ['src/main/webapp/index.html']
+                    'src/main/webapp/templates/dist/index.vm': ['src/main/webapp/templates/home.vm'],
+                    'src/main/webapp/templates/dist/geppettotests.vm': ['src/main/webapp/templates/geppettotests.vm'],
+                    'src/main/webapp/WEB-INF/web.xml': ['src/main/webapp/WEB-INF/web.xml']
+                }
+            },
+            dev: {
+                files: {
+                    'src/main/webapp/templates/dist/index.vm': ['src/main/webapp/templates/home.vm'],
+                    'src/main/webapp/templates/dist/geppettotests.vm': ['src/main/webapp/templates/geppettotests.vm']
                 }
             }
         }
@@ -29,6 +43,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-processhtml');
 
     // Default task(s).
-    grunt.registerTask('default', ['less', 'processhtml:dist']);
+    grunt.registerTask('default', ['less', 'processhtml:dev']);
+    grunt.registerTask('dist', ['less', 'processhtml:dist']);
 
 };

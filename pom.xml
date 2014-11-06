@@ -41,7 +41,8 @@
                             </optimizerFile>
                             <!-- optional parameters to optimizer executable -->
                             <optimizerParameters>
-                                <parameter>optimize=uglify</parameter>
+                                <!-- Disable JS uglification -->
+                                <parameter>optimize=none</parameter>
                                 <paramater>baseUrl=${project.basedir}/src/main/webapp/js</paramater>
                                 <paramater>out=${project.basedir}/src/main/webapp/js/main-built.js</paramater>
                             </optimizerParameters>
@@ -272,17 +273,17 @@
     </dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
 
-			<plugin>
+            <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.15</version>

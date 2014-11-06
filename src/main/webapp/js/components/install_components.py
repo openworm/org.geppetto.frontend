@@ -30,7 +30,7 @@ with open('components.js', 'w') as componentsfile:
             os.path.join('dist', dependency, 'bower.json')).get('main')
         if componentConfig:
             componentsfile.write(
-                "require('jsx!./dist/" + dependency + "/" + componentConfig + "');\n")
+                "require('jsx!./dev/" + dependency + "/" + componentConfig + "');\n")
 
     componentsfile.write('});')
 

@@ -142,34 +142,6 @@ define(function(require) {
 				 * @returns {Array} Set of commands associated with this node 
 				 */
 				getCommands : function(node) {
-//					var groups = [ [ {
-//					label : "Add to Chart",
-//					icon : "icon0",
-//					position : 0,
-//					groups : [ [ {
-//					label : "Add to New Chart",
-//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//					icon : "icon01",
-//					position : 0
-//					}, {
-//					label : "Add to Chart 1",
-//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//					icon : "icon02",
-//					position : 1
-//					} ] ]
-//					}, {
-//					label : "Add as new line",
-//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//					icon : "icon1",
-//					position : 1
-//					} ],
-
-//					[ {
-//					label : "Save to file as a Chart",
-//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//					icon : "icon2"
-//					} ] ];
-
 					var group1 = [{
 						label:"Open with DAT Widget",
 						action: "GEPPETTO.TreeVisualiserControllerDAT.actionMenu",

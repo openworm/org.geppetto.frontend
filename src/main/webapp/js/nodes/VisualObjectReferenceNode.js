@@ -54,6 +54,7 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.id = options.id;
+			this.name = options.name;
 			this.aspectInstancePath = options.aspectInstancePath;
 			this.visualObjectID = options.visualObjectID;
 			this.instancePath = options.instancePath;

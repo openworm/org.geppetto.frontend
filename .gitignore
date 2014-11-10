@@ -20,10 +20,10 @@ src/main/webapp/css/main.css
 .idea/
 *.swp
 /target
+/bin
 .idea/
 *.iml
 *~
-+/.externalToolBuilders/
-+/.settings/
-+/.project
-+/.classpath
+/.externalToolBuilders/
+/.settings/
+.classpath

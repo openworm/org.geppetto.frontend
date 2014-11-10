@@ -33,6 +33,8 @@
 div[id^='TreeVisualiserDAT']
  {
  	overflow-y:auto !important;
+ 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-weight: 200 !important;
  }
  
 .ui-widget-content .dg.main.taller-than-window .close-button {
@@ -62,7 +64,6 @@ div[id^='TreeVisualiserDAT']
 
 .ui-widget-content .dg li:not(.folder) {
     background: rgba(66,59,59,0);
-    border-bottom: 1px solid #fd6808;
 }
 
 .ui-widget-content .dg li.save-row .button {
@@ -79,6 +80,8 @@ div[id^='TreeVisualiserDAT']
 
 .ui-widget-content .dg .c input[type=text] {
     background: rgba(66,59,59,0);
+    box-shadow:none!important;
+    webkit-box-shadow:none!important;
 }
 
 .ui-widget-content .dg .c input[type=text]:hover {
@@ -109,24 +112,28 @@ color: #85ea0e;
 
 /*  NODE STYLE BY METATYPE*/
 .entitynodetv {
-	border-left: 3px solid #cc0000;
+	border-left: 3px solid #0499e6;
+	background-color: #231f1f!important;
+	
 }
 .aspectnodetv {
-	border-left: 3px solid #cc6600;
+	border-left: 3px solid #fe4807;
+	background-color: #fe4807!important;
 }
 .aspectsubtreenodetv {
-	border-left: 3px solid #cccc00;
+	border-left: 3px solid #fe4807;
 }
 .compositenodetv {
-	border-left: 3px solid #66cc00;
+	border-left: 3px solid #2e2a2a;
+	background-color:#2e2a2a!important;
 }
 
 
 .dg .cr.string.connectionnodetv {
-	border-left: 3px solid #00cc00;
+	border-left: 3px solid #ff5a02;
 }
 .dg .cr.string.connectionnodetv input[type=text] {
-	color: #00cc00;
+	color: #ff5a02;
 }
 .dg .cr.string.dynamicsspecificationnodetv {
 	border-left: 3px solid #00cc66;
@@ -147,16 +154,16 @@ color: #85ea0e;
 	color: #0066cc;
 }
 .dg .cr.string.parameterspecificationnodetv {
-	border-left: 3px solid #0000cc;
+	border-left: 3px solid #42b6ff;
 }
 .dg .cr.string.parameterspecificationnodetv input[type=text] {
-	color: #0000cc;
+	color: #42b6ff;
 }
 .dg .cr.string.textmetadatanodetv {
-	border-left: 3px solid #6600cc;
+	border-left: 3px solid #10b7bd;
 }
 .dg .cr.string.textmetadatanodetv input[type=text] {
-	color: #6600cc;
+	color: #10b7bd;
 }
 .dg .cr.string.urlmetadatanodetv {
 	border-left: 3px solid #cc00cc;
@@ -165,20 +172,20 @@ color: #85ea0e;
 	color: #cc00cc;
 }
 .dg .cr.string.variablenodetv {
-	border-left: 3px solid #cc0066;
+	border-left: 3px solid #FFA500;
 }
 .dg .cr.string.variablenodetv input[type=text] {
-	color: #cc0066;
+	color: #FFA500;
 }
 .dg .cr.string.visualobjectreferencenodetv {
-	border-left: 3px solid #606060;
+	border-left: 3px solid #a462ff;
 }
 .dg .cr.string.visualobjectreferencenodetv input[type=text] {
-	color: #606060;
+	color: #a462ff;
 }
 .dg .cr.string.visualgroupelementnodetv {
-	border-left: 3px solid #ffffff;
+	border-left: 3px solid #a462ff;
 }
 .dg .cr.string.visualgroupelementnodetv input[type=text] {
-	color: #ffffff;
+	color: #a462ff;
 }

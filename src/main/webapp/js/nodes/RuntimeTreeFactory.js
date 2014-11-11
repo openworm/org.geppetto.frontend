@@ -523,6 +523,7 @@ define(function(require) {
 						id : node.id,
 						name : node.name,
 						expression : node.expression,
+						plotMetadata : node.plotMetadata,
 						arguments : node.arguments,
 						instancePath : node.instancePath,
 						domainType : node.domainType,

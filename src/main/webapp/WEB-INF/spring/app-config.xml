@@ -17,6 +17,11 @@
                    location="/"
                   />
 
+    <mvc:resources mapping="/jsdocs/**"
+                   location="/jsdocs/"
+            />
+
+
     <context:component-scan base-package="org.geppetto.frontend.controllers"/>
 
     <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">

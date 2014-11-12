@@ -48,12 +48,12 @@ define(function(require) {
 				/**
 				 * Light up the entity 
 				 * 
-				 * @param {AspectNode} aspect - the aspect containing the entity to be lit
-				 * @param {String} entityName - the name of the entity to be rotated (in the 3d model)
+				 * @param {String} aspectPath - the aspect path of the entity to be lit
+				 * @param {String} entityName - the name of the entity to be lit (in the 3d model)
 				 * @param {Float} intensity - the lighting intensity from 0 
 				 *                            (no illumination) to 1 (full illumination)
 				 */
-				lightUpEntity : function(aspect, entityName, intensity) {
+				lightUpEntity : function(meshPath, intensity) {
 					if (intensity < 0) {
 						intensity = 0;
 					}
@@ -72,9 +72,9 @@ define(function(require) {
 						return (Math.floor(color + ((255 - color) * intensity)))
 								.toString(16);
 					};
-					var threeObject = GEPPETTO.get3DObjectInVisualizationTree(aspect.VisualizationTree, entityName);
+					var threeObject = GEPPETTO.getVARS().meshes[meshPath];
 					if (threeObject != null) {
-						var originalColor = getRGB(threeObject.material.originalColor);
+						var originalColor = getRGB(GEPPETTO.Resources.COLORS.DEFAULT);
 						threeObject.material.color.setHex('0x'
 								+ scaleColor(originalColor.r)
 								+ scaleColor(originalColor.g)

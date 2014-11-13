@@ -183,6 +183,7 @@ define(function(require) {
 				 */
 				unselect : function() {
 					var message;
+					Simulation.showUnselected(false);
 					if (this.selected) {
 						message = GEPPETTO.Resources.UNSELECTING_ASPECT
 								+ this.instancePath;

@@ -601,10 +601,10 @@ define(function(require) {
 					var entity = entities[e];
 					if(entity.selected == false){
 						if(mode){
-							entity.show();
+							entity.hide();
 						}
 						else{
-							entity.hide();
+							entity.show();
 						}
 					}
 					if(entity.getEntities()!=null){

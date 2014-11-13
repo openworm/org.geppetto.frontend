@@ -110,6 +110,27 @@ define(function(require) {
 							child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
 					}
+
+					//apply ghost effect to those meshes that are split
+					for(var v in GEPPETTO.getVARS().splitMeshes){
+						var splitMesh = GEPPETTO.getVARS().splitMeshes[v];
+
+						splitMesh.traverse(function (child) {
+							if (child instanceof THREE.Mesh) {
+								if(apply && (!child.ghosted) && (!child.selected)){
+									child.ghosted = true;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+									child.material.transparent = true;
+									child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								}
+								else if((!apply) && (child.ghosted)){
+									child.ghosted = false;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+									child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								}
+							}
+						});	
+					}
 				},
 
 				/**
@@ -415,7 +436,7 @@ define(function(require) {
 							m.visible = true;
 							//new material and color, this to override shared merged mesh material
 							m.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
-							m.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
+							m.material.color.setHex(mesh.material.color.getHex());
 							group.add(m);							
 						}
 						//give position or merge mesh to new group

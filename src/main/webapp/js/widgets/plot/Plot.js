@@ -453,7 +453,7 @@ define(function(require) {
 			 * Takes a FunctionNode and plots the expresion and set the attributes from the plot metadata information
 			 *
 			 * @command plotFunctionNode(functionNode)
-			 * @param {FunctionNode} functionNode - Function Node to be displayed
+			 * @param {Node} functionNode - Function Node to be displayed
 			 */
 			plotFunctionNode: function(functionNode){
 				//Check there is metada information to plot

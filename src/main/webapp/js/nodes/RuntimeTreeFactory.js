@@ -465,6 +465,23 @@ define(function(require) {
 											vg.setParent(subTree);
 											subTree.get("children").add(vg);
 											subTree[key] = vg;
+										}else if(node[key]._metaType==GEPPETTO.Resources.COMPOSITE_NODE){
+											var c = node[key];
+											var element = this.createCompositeNode(c);
+											element.setParent(subTree);
+											subTree.get("children").add(element);
+											subTree[key] = element;
+											
+											for(var vg in c){
+												if(typeof c[vg] == "object"){
+													if(c[vg]._metaType==GEPPETTO.Resources.VISUAL_GROUP_NODE){
+														var group = this.createVisualGroupNode(c[vg]);
+														group.setParent(element);
+														element.get("children").add(group);
+														element[vg] = group;
+													}
+												}
+											}
 										}
 									}
 								}
@@ -716,9 +733,7 @@ define(function(require) {
 						id : node.id,
 						name : node.name,
 						color : node.color,
-						value : node.parameter.value,
-						unit : node.parameter.unit,
-						scalingFactor : node.parameter.scalingFactor,
+						parameter : node.parameter,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE

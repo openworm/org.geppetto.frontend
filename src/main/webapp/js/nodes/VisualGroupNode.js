@@ -133,6 +133,16 @@ define(function(require) {
 			var message;
 			var elements = this.getVisualGroupElements();
 			
+			var findVisTree = false;
+			while(!findVisTree){
+				if(visualizationTree._metaType!= GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+					visualizationTree = visualizationTree.getParent();
+				}
+				else{
+					findVisTree = true;
+				}
+			}
+			
 			if(mode){
 				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
 				message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
@@ -159,26 +169,34 @@ define(function(require) {
 		
 		showAllVisualGroupElements : function(visualizationTree, elements,mode){
 			var groups = {};
+			var allElements = [];
 			
 			var total =0, mean =0;
 			
 			//calculate mean;
-			for(var el in elements){	
-				total = total + parseFloat(elements[el].getValue());
+			for(var el in elements){
+				if(elements[el].getValue()!=null){
+					total = total + parseFloat(elements[el].getValue());
+					allElements.push(elements[el].getValue());
+				}
 			}					
 			mean = total/elements.length;
+			
+			var minDensity = Math.min.apply(null, allElements);
+			var maxDensity = Math.max.apply(null, allElements);
 			
 			//highlight all reference nodes
 			for(var el in elements){
 				groups[elements[el].getName()] = {};
 				var color = elements[el].getColor();
 				if(elements[el].getValue()!=null){
-					if(elements[el].getValue()<mean){
-						color = this.getLowSpectrumColor();
+					var intensity = 1;
+					if (maxDensity != minDensity)
+					{
+						intensity = (elements[el].getValue() - minDensity) / (maxDensity - minDensity);
 					}
-					else if(elements[el].getValue()>=mean){
-						color = this.getHighSpectrumColor();
-					}
+					
+					color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
 				}
 				groups[elements[el].getName()].color = color;						
 			}
@@ -197,3 +215,14 @@ define(function(require) {
 		}
 	});
 });
+
+function componentToHex(c)
+{
+	var hex = c.toString(16);
+	return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b)
+{
+	return "0X" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}

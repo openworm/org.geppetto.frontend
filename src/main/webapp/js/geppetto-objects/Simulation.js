@@ -531,13 +531,13 @@ define(function(require) {
 			 * specified, then brightness = value
 			 * 
 			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
-			 * @param {String} objectPath - Name of the entity to be lit
+			 * @param {String} objectReference - objectReference
 			 * @param {VariableNode} modulation - Variable which modulates the brightness
 			 * @param {Function} normalizationFunction
 			 */
-			addBrightnessFunction: function(aspect, objectPath,normalizationFunction) {
-				this.addOnNodeUpdatedCallback(objectPath, function(varnode){
-			    	GEPPETTO.SceneController.lightUpEntity(aspect, objectPath.getInstancePath(),
+			addBrightnessFunction: function(aspect,modulation,normalizationFunction) {
+				this.addOnNodeUpdatedCallback(modulation, function(varnode){
+			    	GEPPETTO.SceneController.lightUpEntity(aspect.getInstancePath(),
 			    			normalizationFunction ? normalizationFunction(varnode.getValue()) : varnode.getValue());
 				});
 			},
@@ -601,10 +601,10 @@ define(function(require) {
 					var entity = entities[e];
 					if(entity.selected == false){
 						if(mode){
-							entity.show();
+							entity.hide();
 						}
 						else{
-							entity.hide();
+							entity.show();
 						}
 					}
 					if(entity.getEntities()!=null){

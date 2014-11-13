@@ -48,12 +48,12 @@ define(function(require) {
 				/**
 				 * Light up the entity 
 				 * 
-				 * @param {AspectNode} aspect - the aspect containing the entity to be lit
-				 * @param {String} entityName - the name of the entity to be rotated (in the 3d model)
+				 * @param {String} aspectPath - the aspect path of the entity to be lit
+				 * @param {String} entityName - the name of the entity to be lit (in the 3d model)
 				 * @param {Float} intensity - the lighting intensity from 0 
 				 *                            (no illumination) to 1 (full illumination)
 				 */
-				lightUpEntity : function(aspect, entityName, intensity) {
+				lightUpEntity : function(meshPath, intensity) {
 					if (intensity < 0) {
 						intensity = 0;
 					}
@@ -72,9 +72,9 @@ define(function(require) {
 						return (Math.floor(color + ((255 - color) * intensity)))
 								.toString(16);
 					};
-					var threeObject = GEPPETTO.get3DObjectInVisualizationTree(aspect.VisualizationTree, entityName);
+					var threeObject = GEPPETTO.getVARS().meshes[meshPath];
 					if (threeObject != null) {
-						var originalColor = getRGB(threeObject.material.originalColor);
+						var originalColor = getRGB(GEPPETTO.Resources.COLORS.DEFAULT);
 						threeObject.material.color.setHex('0x'
 								+ scaleColor(originalColor.r)
 								+ scaleColor(originalColor.g)
@@ -109,6 +109,27 @@ define(function(require) {
 							child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 							child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
+					}
+
+					//apply ghost effect to those meshes that are split
+					for(var v in GEPPETTO.getVARS().splitMeshes){
+						var splitMesh = GEPPETTO.getVARS().splitMeshes[v];
+
+						splitMesh.traverse(function (child) {
+							if (child instanceof THREE.Mesh) {
+								if(apply && (!child.ghosted) && (!child.selected)){
+									child.ghosted = true;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+									child.material.transparent = true;
+									child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								}
+								else if((!apply) && (child.ghosted)){
+									child.ghosted = false;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+									child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								}
+							}
+						});	
 					}
 				},
 
@@ -415,7 +436,7 @@ define(function(require) {
 							m.visible = true;
 							//new material and color, this to override shared merged mesh material
 							m.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
-							m.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
+							m.material.color.setHex(mesh.material.color.getHex());
 							group.add(m);							
 						}
 						//give position or merge mesh to new group

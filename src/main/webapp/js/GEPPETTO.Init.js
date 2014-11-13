@@ -42,6 +42,8 @@ define(function(require) {
 		var setupScene = function() {
 			VARS.scene = new THREE.Scene();
 			VARS.visualModelMap = {};
+			VARS.meshes = {};
+			VARS.splitMeshes = {};
 		};
 
 		/**

@@ -136,7 +136,7 @@ define(function(require) {
 				select : function() {
 					//unselect all other selected entities prior to selecting this one
 					GEPPETTO.SceneController.unSelectAll();
-					
+										
 					var message;
 					if (!this.selected) {
 						//traverse through children to select them as well
@@ -187,6 +187,8 @@ define(function(require) {
 				 */
 				unselect : function() {
 					var message;
+					
+					Simulation.showUnselected(false);
 
 					if (this.selected) {
 						message = GEPPETTO.Resources.UNSELECTING_ENTITY
@@ -223,7 +225,7 @@ define(function(require) {
 							this.drawConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(true);
+							Simulation.showUnselected(false);
 						}
 
 						// Notify any widgets listening that there has been a

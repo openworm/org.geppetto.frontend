@@ -218,7 +218,7 @@ define(function(require) {
 							this.getParent().drawConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(true);
+							Simulation.showUnselected(false);
 						}
 					
 						GEPPETTO.WidgetsListener

@@ -225,7 +225,7 @@ define(function(require) {
 							this.drawConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(true);
+							Simulation.showUnselected(false);
 						}
 
 						// Notify any widgets listening that there has been a

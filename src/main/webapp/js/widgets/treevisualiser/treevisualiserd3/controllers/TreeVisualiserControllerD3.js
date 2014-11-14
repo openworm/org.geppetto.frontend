@@ -142,9 +142,7 @@ define(function(require) {
 			getCommands: function(node) {
 				var group1 = [{
 							label:"Open with D3 Widget",
-				        	action: "GEPPETTO.TreeVisualiserControllerD3.actionMenu",
-							//action: GEPPETTO.TreeVisualiserControllerD3.actionMenu,
-				        	//option: {option1: "option1"}
+				        	action: ["GEPPETTO.TreeVisualiserControllerD3.actionMenu(#node_instancepath#)"],
 							}];
 				
 				
@@ -160,7 +158,7 @@ define(function(require) {
 						var availableWidget = availableWidgets[availableWidgetIndex];
 						subgroups1Add = subgroups1Add.concat([{
 																label: "Add to " + availableWidget.name,
-																action: availableWidget.id + ".setData",
+																action: [availableWidget.id + ".setData(#node_instancepath#)"],
 																position: availableWidgetIndex
 																}]);
 					}

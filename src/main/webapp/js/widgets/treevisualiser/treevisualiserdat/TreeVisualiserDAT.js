@@ -81,16 +81,8 @@ define(function(require) {
 		 * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
 		 */
 		manageRightClickEvent : function(event) {
-			var ascendantsElements = $(event.target).parentsUntil("#" + this.id,".folder").get().reverse();
-			var nodeString = "";
-			for (var ascendantsElementKey in ascendantsElements){
-				var label = $(ascendantsElements[ascendantsElementKey]).find(".title").first().html();
-				nodeString += label + ".";
-			}
-			nodeString = nodeString.substring(0,nodeString.length-1);
-
-			var node = eval(nodeString);
-			this.showContextMenu(event, node);
+			//Read node from instancepath data property attached to dom element
+			this.showContextMenu(event, eval($(event.target).data("instancepath")));
 		},
 
 		/**
@@ -131,7 +123,10 @@ define(function(require) {
 						
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data); 
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
+						//Add class to dom element depending on node metatype
 						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
+						//Add instancepath as data attribute. This attribute will be used in the event framework
+						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
 					}
 					else{
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
@@ -140,7 +135,10 @@ define(function(require) {
 				else{
 					if (!dataset.isDisplayed) {
 						parentFolder = parent.addFolder(label);
+						//Add class to dom element depending on node metatype
 						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
+						//Add instancepath as data attribute. This attribute will be used in the event framework
+						$(parentFolder.domElement).find("li").data("instancepath", data.getInstancePath());
 					}
 					var children = data.getChildren().models;
 					if (children.length > 0){

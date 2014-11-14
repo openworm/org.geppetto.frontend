@@ -47,6 +47,7 @@ require.config({
 	 */
 	paths : {
 		'flot' :"widgets/plot/vendor/jquery.flot.min",
+		'mathjs' :"widgets/plot/vendor/math.min", 
 	},
 	/*
 	 * Notes what dependencies are needed prior to loading each library, values on the right
@@ -64,13 +65,20 @@ require.config({
  */
 var libraries = [];
 libraries.push("flot");
+libraries.push("mathjs");
 libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
 libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
+
+define("math.global", ["mathjs"], function(_) {
+	  math = _;
+	});
 
 /*
  * Load libraries, and CSS after libraries are loaded
  */
-require(libraries,function($){
+require(libraries,function(flot, math){
+//	console.log(math.parser());
+	window.math = math;
 	loadCss("assets/js/widgets/plot/Plot.css");
 });	
 

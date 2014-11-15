@@ -109,8 +109,21 @@ define(function(require) {
 				else{label = data.getName();}
 				
 				
-				if (data._metaType != "VariableNode" & data._metaType != "DynamicsSpecificationNode" & data._metaType != "ParameterSpecificationNode"
-					& data._metaType != "TextMetadataNode" & data._metaType != "FunctionNode") {
+				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
+						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
+						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
+					var labelValue = this.getValueFromData(data);
+					
+					dataset.nodes[nodeName] = {name: label + "=" + labelValue, variable: data};
+					if (parent != ''){
+						var link = {};
+						link.source = dataset.nodes[parent];
+						link.target = dataset.nodes[nodeName];
+						link.type = "suit";
+						dataset.links.push(link);
+					}
+				}
+				else{
 					dataset.nodes[nodeName] = {name: label, variable: data};
 					if (parent != ''){
 						var link = {};
@@ -125,28 +138,6 @@ define(function(require) {
 						for (var childIndex in children){
 							this.prepareTree(parentFolderTmp, children[childIndex], dataset);
 						}
-					}
-					
-				}
-				else{
-					var labelValue = "";
-					if (data._metaType == "TextMetadataNode"){
-						labelValue = data.getValue();
-					}
-					else if (data._metaType == "FunctionNode") {
-						labelValue = data.getExpression();
-					}
-					else{
-						labelValue = data.getValue() + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
-					}
-					
-					dataset.nodes[nodeName] = {name: label + "=" + labelValue, variable: data};
-					if (parent != ''){
-						var link = {};
-						link.source = dataset.nodes[parent];
-						link.target = dataset.nodes[nodeName];
-						link.type = "suit";
-						dataset.links.push(link);
 					}
 				}
 			}	

@@ -168,23 +168,6 @@ define(function(require) {
 					this.prepareTree(this.gui, dataset.data);
 				}
 			}
-		},
-
-		getValueFromData : function(data){
-			var labelValue = "";
-			if (data._metaType == "TextMetadataNode"){
-				labelValue = data.getValue();
-			}
-			else if (data._metaType == "FunctionNode") {
-				labelValue = data.getExpression();
-			}
-			else if (data._metaType == "VisualObjectReferenceNode") {
-				labelValue = data.getAspectInstancePath() + " -> " + data.getVisualObjectID();
-			}
-			else{
-				labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
-			}
-			return labelValue;
 		}
 
 	});

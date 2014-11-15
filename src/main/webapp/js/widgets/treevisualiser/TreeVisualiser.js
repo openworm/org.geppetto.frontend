@@ -80,6 +80,23 @@ define(function(require) {
 			
 			createDataset: function(){
 				return {variableToDisplay:'', data:{}, isDisplayed:false};
+			},
+			
+			getValueFromData : function(data){
+				var labelValue = "";
+				if (data._metaType == "TextMetadataNode"){
+					labelValue = data.getValue();
+				}
+				else if (data._metaType == "FunctionNode") {
+					labelValue = data.getExpression();
+				}
+				else if (data._metaType == "VisualObjectReferenceNode") {
+					labelValue = data.getAspectInstancePath() + " -> " + data.getVisualObjectID();
+				}
+				else{
+					labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
+				}
+				return labelValue;
 			}
 			
 			

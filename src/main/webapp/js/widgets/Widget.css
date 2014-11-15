@@ -135,9 +135,14 @@
 	list-style-type: none;
 }
 
+.contextMenuView ul:not(:first-child){
+	border-top: 1px solid #DDD;
+}
+
 .contextMenuView ul:first-child li:first-child{
 	border-top-left-radius: 7px;
 	border-top-right-radius: 7px;
+	border-top: 1px solid #DDD;
 }
 .contextMenuView ul:last-child li:last-child{
 	border-bottom-right-radius: 7px;
@@ -155,7 +160,6 @@
 	user-select: none;	
 	border-left: 1px solid #DDD;
 	border-right: 1px solid #DDD;
-	border-top: 1px solid #DDD;
 }
 
 .contextMenuView li:hover {

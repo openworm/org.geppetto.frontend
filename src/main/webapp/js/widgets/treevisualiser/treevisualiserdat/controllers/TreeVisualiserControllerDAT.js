@@ -144,43 +144,59 @@ define(function(require) {
 				getCommands : function(node) {
 					var group1 = [{
 						label:"Open with DAT Widget",
-						action: "GEPPETTO.TreeVisualiserControllerDAT.actionMenu",
+						action: ["GEPPETTO.TreeVisualiserControllerDAT.actionMenu(#node_instancepath#)"],
 						//option: {option1: "option1"}
 					}];
 
 
 					var availableWidgets = GEPPETTO.TreeVisualiserControllerDAT.getWidgets();
 					if (availableWidgets.length > 0){
-						var group1Add =  [ {
+						var group1Add =  {
 							label : "Add to DAT Widget",
 							position : 0
-						} ] ;
+						} ;
 
 						var subgroups1Add = [];
 						for (var availableWidgetIndex in availableWidgets){
 							var availableWidget = availableWidgets[availableWidgetIndex];
 							subgroups1Add = subgroups1Add.concat([{
 								label: "Add to " + availableWidget.name,
-								action: availableWidget.id + ".setData",
+								action: [availableWidget.id + ".setData(#node_instancepath#)"],
 								position: availableWidgetIndex
 							}]);
 						}
+						group1Add["groups"] = [subgroups1Add];
 
-						group1Add[0]["groups"] = [subgroups1Add];
-
-						group1 = group1.concat(group1Add);
+						group1.push(group1Add);
+					}
+					
+					var groups = [group1];
+					
+					if (node._metaType == "ConnectionNode"){
+						var connectionGroup = [{
+							label:"Highlight Connection",
+							action: ["GEPPETTO.SceneController.unSelectAll();","#node_instancepath#.highlight(true)"],
+						}];
+						
+						groups.push(connectionGroup);
+					}
+					if (node._metaType == "VisualGroupNode"){
+						var visualGroup = [{
+							label:"Show Visual Group",
+							action: ["#node_instancepath#.show(true)"],
+						}];
+						
+						groups.push(visualGroup);
 					}
 
-					var groups = [group1];
-
 					return groups;
-
 				},
 
 				/**
 				 * Register action menu with the TreeVisualizer3D widget
 				 */
 				actionMenu : function(node) {
+					//TODO: Once G.addWidget() returns the widget name this needs to be modified
 					tv = GEPPETTO.TreeVisualiserControllerDAT.addTreeVisualiserDATWidget();
 					tv.setData(node);
 				}

@@ -67,6 +67,8 @@ define(function(require) {
 				draw_connections_lines : true,
 				hide_not_selected : false
 			},
+			highlightedConnections : [],
+			
 			/**
 			 * Simulation.Status
 			 * 
@@ -585,6 +587,36 @@ define(function(require) {
 			 */
 			getSelectionOptions : function(){
 				return this.selectionOptions;
+			},
+			
+			/**
+			 * Unselects all selected entities
+			 * 
+			 * @command Simulation.unSelectAll()
+			 */
+			unSelectAll : function(){
+				var selection = this.getSelection();
+				if(selection.length > 0){
+					for(var key in selection){
+						var entity = selection[key];
+						entity.unselect();
+					}
+				}
+				
+				return GEPPETTO.Resources.UNSELECT_ALL;
+			},
+			
+			/**
+			 * Unhighlight all highlighted connections
+			 * 
+			 * @command Simulation.unHighlightAll()
+			 */
+			unHighlightAll : function(){
+				for(var hc in this.highlightedConnections){
+					this.highlightedConnections[hc].highlight(false);
+				}
+				
+				return GEPPETTO.Resources.HIGHLIGHT_ALL;
 			},
 			
 			/**

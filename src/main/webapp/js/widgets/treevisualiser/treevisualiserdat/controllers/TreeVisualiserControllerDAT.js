@@ -175,15 +175,31 @@ define(function(require) {
 					if (node._metaType == "ConnectionNode"){
 						var connectionGroup = [{
 							label:"Highlight Connection",
-							action: ["GEPPETTO.SceneController.unSelectAll();","#node_instancepath#.highlight(true)"],
+							action: ["Simulation.unHighlightAll();","#node_instancepath#.highlight(true)"],
 						}];
 						
 						groups.push(connectionGroup);
 					}
+					if (node._metaType == "EntityNode"){
+						var entity = [{
+							label:"Select Entity",
+							action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+						}];
+						
+						groups.push(entity);
+					}
+					if (node._metaType == "AspectNode"){
+						var aspect = [{
+							label:"Select Aspect",
+							action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+						}];
+						
+						groups.push(aspect);
+					}
 					if (node._metaType == "VisualGroupNode"){
 						var visualGroup = [{
 							label:"Show Visual Group",
-							action: ["#node_instancepath#.show(true)"],
+							action: ["Simulation.unSelectAll();","#node_instancepath#.show(true)"],
 						}];
 						
 						groups.push(visualGroup);

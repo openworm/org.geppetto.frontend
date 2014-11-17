@@ -71,12 +71,19 @@ define(function(require) {
 			 * Creates plotting widget
 			 */
 			addPlotWidget: function() {
-
+				
 				//Plot widget number
-				var index = (plots.length + 1);
-
+				var index = 1;
 				//Name of plotting widget
 				var name = "Plot" + index;
+				
+				for(var p in plots){
+					if(plots[p].getId() == name){
+						index++;
+						name = "Plot" + index;
+					}
+				}
+
 				var id = name;
 
 				//create plotting widget

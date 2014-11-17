@@ -272,6 +272,8 @@ define(function(require) {
 					
 			SELECTING_ENTITY : "Selecting entity ",
 			UNSELECTING_ENTITY : "Unselecting entity ",
+			UNSELECT_ALL : "Unselecting all entities ",
+			UNHIGHLIGHT_ALL : "Unhighlighting all connections ",
 			CANT_FIND_ENTITY : "Entity not found, can't use selection on it",
 			NO_ENTITIES_SELECTED : "No entities are currently selected.",
 			SHOW_ENTITY : "Showing entity ",

@@ -94,6 +94,7 @@ define(function(require) {
 
 					for(var p in widgets) {
 						if(widgets[p].getId() == this.id) {
+							widgets[p].destroy();
 							widgets.splice(p, 1);
 							break;
 						}
@@ -121,12 +122,6 @@ define(function(require) {
 					var top = ui.position.top;
 
 					GEPPETTO.Console.executeCommand(widgetID + ".setPosition(" + left + "," + top + ")");
-				});
-
-				//bind close button on widget event to destroy command
-				$(".ui-dialog-titlebar-close").click( function() { 
-					//destroy widget
-					GEPPETTO.Console.executeCommand(widgetID + ".destroy()");
 				});
 			},
 

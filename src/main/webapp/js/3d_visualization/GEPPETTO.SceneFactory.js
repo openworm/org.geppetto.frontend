@@ -262,7 +262,6 @@ define(function(require) {
 					threeObject = new THREE.Mesh(combined, material);
 					threeObject.aspectInstancePath = aspect.instancePath;
 					threeObject.geometry.dynamic = false;
-					threeObject.split = false;
 					threeObject.mergedMeshesPaths = mergedMeshesPaths;
 					aspectObjects.push(threeObject);
 					

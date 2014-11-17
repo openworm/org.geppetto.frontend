@@ -103,7 +103,7 @@
 	border-radius: 3px;
 	background:rgba(66,59,59,0.90)!important;
 	color:white;
-	z-index: 2;
+	z-index: 3;
 }
 
 .ui-dialog .ui-dialog-content {

@@ -133,8 +133,8 @@ define(function(require) {
 							selected = intersects[ 0 ].object.parent.name;
 						}
 						if(VARS.meshes.hasOwnProperty(selected) ||
-								VARS.entities.hasOwnProperty(selected)){
-							GEPPETTO.SceneController.unSelectAll();
+								VARS.splitMeshes.hasOwnProperty(selected)){
+							GEPPETTO.Simulation.unSelectAll();
 							GEPPETTO.Console.executeCommand(selected + '.select()' );
 						}
 					}

@@ -575,6 +575,7 @@ define(function(require) {
 			removeCommands: function(id) {
 				GEPPETTO.Console.removeAutocompleteCommands(id);
 				delete GEPPETTO.Console.getHelpObjectsMap()[id];
+				delete window[id];
 
 			},
 			

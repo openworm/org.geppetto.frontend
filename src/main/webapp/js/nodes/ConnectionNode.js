@@ -60,6 +60,7 @@ define(function(require) {
 
 		entityInstancePath : null,
 		type : null,
+		highlighted : null,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -127,6 +128,7 @@ define(function(require) {
 			if(mode == null || mode == undefined){
 				return GEPPETTO.Resources.MISSING_PARAMETER;
 			}
+			
 			var references = this.getVisualObjectReferenceNodes();
 			var message = GEPPETTO.Resources.HIGHLIGHTING + this.id;
 			
@@ -138,6 +140,9 @@ define(function(require) {
 			}else{
 				message = GEPPETTO.Resources.NO_REFERENCES_TO_HIGHLIGHT;
 			}
+			
+			this.highlighted = mode;
+			Simulation.highlightedConnections[this.getInstancePath()] = this;
 						
 			return message;
 		},

@@ -155,9 +155,6 @@ define(function(require) {
 						
 						//look on the simulation selection options and perform necessary
 						//operations
-						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(false);
-						}
 						if(Simulation.getSelectionOptions().show_inputs){
 							this.showInputConnections(true);
 						}
@@ -167,7 +164,9 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().draw_connection_lines){
 							this.drawConnectionLines(true);
 						}
-
+						if(Simulation.getSelectionOptions().hide_not_selected){
+							Simulation.showUnselected(false);
+						}
 						// Notify any widgets listening that there has been a
 						// changed to selection
 						GEPPETTO.WidgetsListener

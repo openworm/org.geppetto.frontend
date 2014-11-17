@@ -111,6 +111,8 @@ define(function(require) {
 								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 							}
 						}
+						child.output = false;
+						child.input = false;
 					}
 
 					//apply ghost effect to those meshes that are split
@@ -363,6 +365,9 @@ define(function(require) {
 							mesh.material.transparent = true;
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
+						
+						mesh.input = false
+						mesh.output = false;
 					}
 				},
 				
@@ -423,24 +428,12 @@ define(function(require) {
 						//keep track that split mesh exist for easy access
 						GEPPETTO.getVARS().splitMeshes[aspectPath] = splitMesh;
 					}
-//					else{
-//						//get map of all meshes that merged mesh was merging
-//						var map = mergedMesh.mergedMeshesPaths;
-//
-//						//loop through individual meshes, add them to group, set new material to them
-//						for(var v in map){
-//							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
-//							//new material and color, this to override shared merged mesh material
-//							m.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
-//						}
-//					}
 					
 					//if split mesh is not visible, add it to scene
 					if(!splitMesh.visible){
 						//switch visible flag to false for merged mesh and remove from scene
 						mergedMesh.visible = false;
 						GEPPETTO.getVARS().scene.remove(mergedMesh);
-						mergedMesh.geometry.dispose();
 						//add split mesh to scenne and set flag to visible
 						splitMesh.visible = true;						
 						GEPPETTO.getVARS().scene.add(splitMesh);
@@ -491,7 +484,7 @@ define(function(require) {
 							//get mesh from visual map
 							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
 							//apply same material to mesh as parent (merged mesh)
-							//m.material = mergedMesh.material;
+							m.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
 						}
 						//retrieve split mesh that is on the scene
 						var splitMesh = GEPPETTO.getVARS().splitMeshes[aspectPath];

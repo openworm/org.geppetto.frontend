@@ -625,13 +625,23 @@ define(function(require) {
 			 * @param {boolean} mode - Toggle flag for showing unselected entities.
 			 */
 			showUnselected : function(mode){
-				this.toggleUnSelected(this.runTimeTree, mode);
+				var selection = this.getSelection();
+				var visible = {};
+				for(var e in selection){
+					var entity = selection[e];
+					var connections = entity.getConnections();
+					for(var c in connections){
+						var con = connections[c];
+						visible[con.getEntityInstancePath()] = "";
+					}
+				}
+				this.toggleUnSelected(this.runTimeTree, mode,visible);
 			},
 
-			toggleUnSelected : function(entities, mode){
+			toggleUnSelected : function(entities, mode, visibleEntities){
 				for(var e in entities){
 					var entity = entities[e];
-					if(entity.selected == false){
+					if((!(entity.getInstancePath() in visibleEntities)) && entity.selected == false){
 						if(mode){
 							entity.hide();
 						}
@@ -640,7 +650,7 @@ define(function(require) {
 						}
 					}
 					if(entity.getEntities()!=null){
-						this.toggleUnSelected(entity.getEntities(), mode);
+						this.toggleUnSelected(entity.getEntities(), mode, visibleEntities);
 					}
 				}
 			},

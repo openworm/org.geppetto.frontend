@@ -59,6 +59,7 @@ define(function(require) {
 			this.expression = options.expression;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
+			this.plotMetadata = options.plotMetadata;
 		},
 
 		/**
@@ -80,6 +81,16 @@ define(function(require) {
 		getExpression : function() {
 			return this.expression;
 		},
+		
+		/**
+		 * Get plot metadata information for function
+		 * 
+		 * @command FunctionNode.getPlotMetadata()
+		 * @returns {Dict} Plot Metadata Dictionary containing info about how to plot
+		 */
+		getPlotMetadata : function () {
+			return this.plotMetadata;
+		},
 
 		/**
 		 * Print out formatted node
@@ -88,7 +99,8 @@ define(function(require) {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
 					+ "    Arguments : " + this.arguments + "\n"
-					+ "    Expression : " + this.expression + "\n";
+					+ "    Expression : " + this.expression + "\n"
+					+ "    PlotMetadata : " + this.plotMetadata + "\n";
 		}
 	});
 });

@@ -148,7 +148,13 @@ define(function(require) {
 				//GEPPETTO.Console.executeCommand(body);
 				
 				//This works if we pass the action as the function name
-				GEPPETTO.Console.executeCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
+				//GEPPETTO.Console.executeCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
+				
+				//TODO: We are not using the option parameter (registeredItem["option"])
+				for (var actionIndex in registeredItem["action"]){
+					var action = registeredItem["action"][actionIndex].replace("#node_instancepath#", this.data.getInstancePath());
+					GEPPETTO.Console.executeCommand(action);
+				}
 			},
 	        
 			/**

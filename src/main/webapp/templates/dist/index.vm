@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="assets/css/jsConsole.css" />
 
     <script>
-    var path = "/";
+    var path = "org.geppetto.frontend";
     if(path === "") {
     window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
     } else if(path === "/") {
@@ -20,17 +20,17 @@
     } else {
     window.BUNDLE_CONTEXT_PATH = path;
     }
-    window.USE_SSL = true;
+    window.USE_SSL = false;
     </script>
 
-    <!-- build:template:dev
-        <link rel="stylesheet/less" type="text/css" href="assets/less/main.less" />
-        <script src="assets/js/vendor/less-1.7.5.min.js" type="text/javascript"></script>
-        <script data-main="assets/js/main.js" src="assets/js/vendor/require.js"></script>
-    /build -->
+    <link rel="stylesheet/less" type="text/css" href="assets/less/main.less" />
+    <script src="assets/js/vendor/less-1.7.5.min.js" type="text/javascript"></script>
+    <script data-main="assets/js/main.js" src="assets/js/vendor/require.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="assets/css/main.css" />
-    <script data-main="assets/js/main-built.js" src="assets/js/vendor/require.js"></script>
+    <!-- build:template:dist
+        <link rel="stylesheet" type="text/css" href="assets/css/main.css" />
+        <script data-main="assets/js/main-built.js" src="assets/js/vendor/require.js"></script>
+    /build -->
 
     <link rel="icon" type="image/png" href="assets/images/favicon.png"/>
 </head>

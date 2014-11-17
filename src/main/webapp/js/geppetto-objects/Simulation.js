@@ -67,6 +67,8 @@ define(function(require) {
 				draw_connections_lines : true,
 				hide_not_selected : false
 			},
+			highlightedConnections : [],
+			
 			/**
 			 * Simulation.Status
 			 * 
@@ -531,13 +533,13 @@ define(function(require) {
 			 * specified, then brightness = value
 			 * 
 			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
-			 * @param {String} objectPath - Name of the entity to be lit
+			 * @param {String} objectReference - objectReference
 			 * @param {VariableNode} modulation - Variable which modulates the brightness
 			 * @param {Function} normalizationFunction
 			 */
-			addBrightnessFunction: function(aspect, objectPath,normalizationFunction) {
-				this.addOnNodeUpdatedCallback(objectPath, function(varnode){
-			    	GEPPETTO.SceneController.lightUpEntity(aspect, objectPath.getInstancePath(),
+			addBrightnessFunction: function(aspect,modulation,normalizationFunction) {
+				this.addOnNodeUpdatedCallback(modulation, function(varnode){
+			    	GEPPETTO.SceneController.lightUpEntity(aspect.getInstancePath(),
 			    			normalizationFunction ? normalizationFunction(varnode.getValue()) : varnode.getValue());
 				});
 			},
@@ -588,27 +590,67 @@ define(function(require) {
 			},
 			
 			/**
+			 * Unselects all selected entities
+			 * 
+			 * @command Simulation.unSelectAll()
+			 */
+			unSelectAll : function(){
+				var selection = this.getSelection();
+				if(selection.length > 0){
+					for(var key in selection){
+						var entity = selection[key];
+						entity.unselect();
+					}
+				}
+				
+				return GEPPETTO.Resources.UNSELECT_ALL;
+			},
+			
+			/**
+			 * Unhighlight all highlighted connections
+			 * 
+			 * @command Simulation.unHighlightAll()
+			 */
+			unHighlightAll : function(){
+				for(var hc in this.highlightedConnections){
+					this.highlightedConnections[hc].highlight(false);
+				}
+				
+				return GEPPETTO.Resources.HIGHLIGHT_ALL;
+			},
+			
+			/**
 			 * Show unselected entities, leaving selected one(s) visible.
 			 * 
 			 * @param {boolean} mode - Toggle flag for showing unselected entities.
 			 */
 			showUnselected : function(mode){
-				this.toggleUnSelected(this.runTimeTree, mode);
+				var selection = this.getSelection();
+				var visible = {};
+				for(var e in selection){
+					var entity = selection[e];
+					var connections = entity.getConnections();
+					for(var c in connections){
+						var con = connections[c];
+						visible[con.getEntityInstancePath()] = "";
+					}
+				}
+				this.toggleUnSelected(this.runTimeTree, mode,visible);
 			},
 
-			toggleUnSelected : function(entities, mode){
+			toggleUnSelected : function(entities, mode, visibleEntities){
 				for(var e in entities){
 					var entity = entities[e];
-					if(entity.selected == false){
+					if((!(entity.getInstancePath() in visibleEntities)) && entity.selected == false){
 						if(mode){
-							entity.show();
+							entity.hide();
 						}
 						else{
-							entity.hide();
+							entity.show();
 						}
 					}
 					if(entity.getEntities()!=null){
-						this.toggleUnSelected(entity.getEntities(), mode);
+						this.toggleUnSelected(entity.getEntities(), mode, visibleEntities);
 					}
 				}
 			},
@@ -642,6 +684,37 @@ define(function(require) {
 				//TODO: things should be VisualizationTree centric instead of aspect centric...  
 		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
 		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getValue()) : watchedNode.getValue());});
+			},
+			
+			/**
+			 * Search inside a node tree for all the nodes of a specific metaType.
+			 * 
+			 *  @param {Node} data - Root node. The function will look inside the tree hanging from this node
+			 *  @param {String} metaType - Type of node we are searching
+			 *  @param {Array} nodes - Array of nodes found
+			 *  
+			 */
+			searchNodeByMetaType: function(data, metaType, nodes){
+				//If data is the root node (first iteration) we create the variable to return
+				if (nodes == undefined){
+					nodes = [];
+				}
+				
+				//Check if the node type is the one we are looking for otherwise iterate through the children
+				if (data._metaType == metaType){
+					nodes.push(data);
+				}
+				else{
+					if (typeof data.getChildren === "function" && data.getChildren() != null){
+						var children = data.getChildren().models;
+						if (children.length > 0){
+							for (var childIndex in children){
+								this.searchNodeByMetaType(children[childIndex], metaType, nodes);
+							}
+						}
+					}
+				}
+				return nodes;
 			}
 		};
 
@@ -657,5 +730,5 @@ define(function(require) {
 				return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
 			}
 		};
-	}
+	};
 });

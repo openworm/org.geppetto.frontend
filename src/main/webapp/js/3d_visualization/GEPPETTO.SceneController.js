@@ -48,12 +48,12 @@ define(function(require) {
 				/**
 				 * Light up the entity 
 				 * 
-				 * @param {AspectNode} aspect - the aspect containing the entity to be lit
-				 * @param {String} entityName - the name of the entity to be rotated (in the 3d model)
+				 * @param {String} aspectPath - the aspect path of the entity to be lit
+				 * @param {String} entityName - the name of the entity to be lit (in the 3d model)
 				 * @param {Float} intensity - the lighting intensity from 0 
 				 *                            (no illumination) to 1 (full illumination)
 				 */
-				lightUpEntity : function(aspect, entityName, intensity) {
+				lightUpEntity : function(meshPath, intensity) {
 					if (intensity < 0) {
 						intensity = 0;
 					}
@@ -72,9 +72,9 @@ define(function(require) {
 						return (Math.floor(color + ((255 - color) * intensity)))
 								.toString(16);
 					};
-					var threeObject = GEPPETTO.get3DObjectInVisualizationTree(aspect.VisualizationTree, entityName);
+					var threeObject = GEPPETTO.getVARS().meshes[meshPath];
 					if (threeObject != null) {
-						var originalColor = getRGB(threeObject.material.originalColor);
+						var originalColor = getRGB(GEPPETTO.Resources.COLORS.DEFAULT);
 						threeObject.material.color.setHex('0x'
 								+ scaleColor(originalColor.r)
 								+ scaleColor(originalColor.g)
@@ -98,16 +98,43 @@ define(function(require) {
 				ghostEffect : function(meshes,apply){
 					for ( var v in meshes) {
 						var child = meshes[v];
-						if(apply && (!child.ghosted) && (!child.selected)){
-							child.ghosted = true;
-							child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
-							child.material.transparent = true;
-							child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+						if(child.visible){
+							if(apply && (!child.ghosted) && (!child.selected)){
+								child.ghosted = true;
+								child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+								child.material.transparent = true;
+								child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+							}
+							else if((!apply) && (child.ghosted)){
+								child.ghosted = false;
+								child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+							}
 						}
-						else if((!apply) && (child.ghosted)){
-							child.ghosted = false;
-							child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-							child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+						child.output = false;
+						child.input = false;
+					}
+
+					//apply ghost effect to those meshes that are split
+					for(var v in GEPPETTO.getVARS().splitMeshes){
+						var splitMesh = GEPPETTO.getVARS().splitMeshes[v];
+
+						if(splitMesh.visible){
+							splitMesh.traverse(function (child) {
+								if (child instanceof THREE.Mesh) {
+									if(apply && (!child.ghosted) && (!child.selected)){
+										child.ghosted = true;
+										child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+										child.material.transparent = true;
+										child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+									}
+									else if((!apply) && (child.ghosted)){
+										child.ghosted = false;
+										child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+										child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+									}
+								}
+							});
 						}
 					}
 				},
@@ -120,10 +147,10 @@ define(function(require) {
 					for ( var v in GEPPETTO.getVARS().meshes) {
 						if(v == instancePath){
 							var mesh = GEPPETTO.getVARS().meshes[v];
+							if(!mesh.visible){
+								GEPPETTO.SceneController.merge(instancePath);
+							}
 							if(mesh.selected == false){
-								if(mesh.split){
-									GEPPETTO.SceneController.merge(instancePath);
-								}
 								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
 								mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 								mesh.selected = true;
@@ -144,11 +171,11 @@ define(function(require) {
 					for ( var key in GEPPETTO.getVARS().meshes) {
 						if(key == instancePath){
 							var mesh = GEPPETTO.getVARS().meshes[key];
+							if(!mesh.visible){
+								GEPPETTO.SceneController.merge(instancePath);
+							}
 							//make sure that path was selected in the first place
 							if(mesh.selected == true){
-								if(mesh.split){
-									GEPPETTO.SceneController.merge(instancePath);
-								}
 								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 								mesh.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 								mesh.selected = false;
@@ -159,19 +186,6 @@ define(function(require) {
 						}
 					}
 					return false;
-				},
-				
-				/**
-				 * Unselects all the selected entities
-				 */
-				unSelectAll : function(){
-					var selection = Simulation.getSelection();
-					if(selection.length > 0){
-						for(var key in selection){
-							var entity = selection[key];
-							entity.unselect();
-						}
-					}
 				},
 
 				/**
@@ -351,6 +365,9 @@ define(function(require) {
 							mesh.material.transparent = true;
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
+						
+						mesh.input = false
+						mesh.output = false;
 					}
 				},
 				
@@ -370,6 +387,7 @@ define(function(require) {
 				 */
 				highlight : function(aspectPath, objectPath, mode){
 					var splitMesh = GEPPETTO.getVARS().splitMeshes[aspectPath];
+					var originalColor =  GEPPETTO.getVARS().meshes[aspectPath].material.color
 					
 					splitMesh.traverse(function (child) {
 					    if (child instanceof THREE.Mesh) {
@@ -381,6 +399,9 @@ define(function(require) {
 					    			GEPPETTO.SceneController.colorMesh(child,GEPPETTO.Resources.COLORS.DEFAULT);
 					    			child.highlighted = false;
 					    		}
+					    	}
+					    	else{
+					    		child.material.color.setHex(originalColor.getHex());
 					    	}
 					    }
 					});					
@@ -397,35 +418,52 @@ define(function(require) {
 				 */
 				split : function(aspectPath){
 					//get mesh from map
-					var mesh = GEPPETTO.getVARS().meshes[aspectPath];
-					//make sure it wasn't split already by checking flag
-					if(!mesh.split){
-						//remove from scene
-						GEPPETTO.getVARS().scene.remove(mesh);
-						mesh.geometry.dispose();
-
-						//get map of all meshes that merged mesh was merging
-						var map = mesh.mergedMeshesPaths;
-
-						//group to hold new individual meshes
-						var group = new THREE.Object3D();
-						//loop through individual meshes, add them to group, set new material to them
-						for(var v in map){
-							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
-							m.visible = true;
-							//new material and color, this to override shared merged mesh material
-							m.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
-							m.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
-							group.add(m);							
-						}
-						//give position or merge mesh to new group
-						group.position = mesh.position;
-						//add to scene
-						GEPPETTO.getVARS().scene.add(group);
+					var mergedMesh = GEPPETTO.getVARS().meshes[aspectPath];
+					
+					var splitMesh = GEPPETTO.getVARS().splitMeshes[aspectPath];
+					//create split Mesh if it doesn't exist
+					if(splitMesh == null || splitMesh == undefined){
+						splitMesh = GEPPETTO.SceneController.createSplitMesh(mergedMesh);
+						splitMesh.name = aspectPath;
 						//keep track that split mesh exist for easy access
-						GEPPETTO.getVARS().splitMeshes[aspectPath] = group;
-						mesh.split = true;
+						GEPPETTO.getVARS().splitMeshes[aspectPath] = splitMesh;
 					}
+					
+					//if split mesh is not visible, add it to scene
+					if(!splitMesh.visible){
+						//switch visible flag to false for merged mesh and remove from scene
+						mergedMesh.visible = false;
+						GEPPETTO.getVARS().scene.remove(mergedMesh);
+						//add split mesh to scenne and set flag to visible
+						splitMesh.visible = true;						
+						GEPPETTO.getVARS().scene.add(splitMesh);
+					}
+				},
+				
+				/**
+				 * Creates a mesh without merging its children.
+				 */
+				createSplitMesh : function(mergedMesh){
+					//get map of all meshes that merged mesh was merging
+					var map = mergedMesh.mergedMeshesPaths;
+
+					//group to hold new individual meshes
+					var splitMesh = new THREE.Object3D();
+					//loop through individual meshes, add them to group, set new material to them
+					for(var v in map){
+						var m = GEPPETTO.getVARS().visualModelMap[map[v]];
+						//new material and color, this to override shared merged mesh material
+						m.visible = true;
+						m.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
+						m.material.color.setHex(mergedMesh.material.color.getHex());
+						splitMesh.add(m);							
+					}
+					//give position or merge mesh to new group
+					splitMesh.position = mergedMesh.position;
+					//set visible flag to false until added to scene
+					splitMesh.visible = false;						
+					
+					return splitMesh;
 				},
 				
 				/**
@@ -435,42 +473,45 @@ define(function(require) {
 				 */
 				merge : function(aspectPath){
 					//get mesh from map 
-					var mesh = GEPPETTO.getVARS().meshes[aspectPath];
+					var mergedMesh = GEPPETTO.getVARS().meshes[aspectPath];
 
-					//make sure it's split before doing merging
-					if(mesh.split){
+					//if merged mesh is not visible, turn it on and turn split one off
+					if(!mergedMesh.visible){
 						//get all paths of meshes, need to re-apply merged material
 						//to override previous one used during splitting 
-						var map = mesh.mergedMeshesPaths;
+						var map = mergedMesh.mergedMeshesPaths;
 						for(var v in map){
 							//get mesh from visual map
 							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
-							m.visible = false;
 							//apply same material to mesh as parent (merged mesh)
-							m.material = mesh.material;						
+							m.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
 						}
 						//retrieve split mesh that is on the scene
 						var splitMesh = GEPPETTO.getVARS().splitMeshes[aspectPath];
+						splitMesh.visible = false;
 						//remove split mesh from scene
-						GEPPETTO.getVARS().scene.remove(splitMesh);	
+						GEPPETTO.getVARS().scene.remove(splitMesh);
 					}					
-					mesh.split = false;
-					GEPPETTO.getVARS().scene.add(mesh);
+					//add merged mesh to scene and set flag to true
+					mergedMesh.visible = true;
+					GEPPETTO.getVARS().scene.add(mergedMesh);
 				},
 				
 				/**
 				 * Shows a visual group
 				 */
 				showVisualGroups : function(visualizationTree,visualGroups, mode){
+					//aspect path of visualization tree parent
 					var aspectPath = visualizationTree.getParent().getInstancePath();
+					//corresponding merged
 					var mesh = GEPPETTO.getVARS().meshes[aspectPath];
 					var paths = mesh.mergedMeshesPaths;
 					for(var id in paths){
-						//get 3d object from visualizationtree by using the object's instance path as search key 
+						//get object from visualizationtree by using the object's instance path as search key 
 						var object = GEPPETTO.get3DObjectInVisualizationTree(visualizationTree,paths[id]);
-						//get group elements list for 3d object
+						//get group elements list for object
 						var groups = object.groups;
-						var highlighted = object.highlighted;
+						var highlighted = false;
 						for(g in groups){
 							//match group to be shown to ones in object 3d
 							if(groups[g] in visualGroups){

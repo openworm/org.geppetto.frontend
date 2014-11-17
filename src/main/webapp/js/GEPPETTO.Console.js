@@ -74,7 +74,7 @@ define(function(require) {
 			                   "url()","parse(t,e)","clone()","isNew()","isValid(t)","_validate(t,e)","keys()","values()","pairs()","invert()","pick()","omit()",
 			                   "selectChildren(entity,apply)", "showChildren(entity,mode)", "getZoomPaths(entity)", "getAspectsPaths(entity)","toggleUnSelected(entities,mode)",
 			                   "addOnNodeUpdatedCallback(varnode,callback)","traverseSelection(entities)","clearOnNodeUpdateCallback(varnode)", "updateDataSet()",
-			                   "showAllVisualGroupElements(visualizationTree,elements,mode)"];
+			                   "showAllVisualGroupElements(visualizationTree,elements,mode)","rgbToHex(r,g,b)","componentToHex(c)"];
 			
 			//JS Console Button clicked
 			$('#consoleButton').click(function() {
@@ -575,6 +575,7 @@ define(function(require) {
 			removeCommands: function(id) {
 				GEPPETTO.Console.removeAutocompleteCommands(id);
 				delete GEPPETTO.Console.getHelpObjectsMap()[id];
+				delete window[id];
 
 			},
 			
@@ -595,11 +596,9 @@ define(function(require) {
 				}
 				
 				//loop through tags and match the tags for object
-				for(var index = 0; index < tags.length; index++) {
-					if(tags[index].indexOf(targetObject + ".") !== -1) {
-						tags.splice(index, 1);
-						//go back one index spot after deletion
-						index--;
+				for(var t in tags) {
+					if(t.indexOf(targetObject) != -1) {
+						delete tags[t];
 					}
 				}
 			}

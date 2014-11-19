@@ -187,7 +187,7 @@ define(function(require) {
 			
 			//highlight all reference nodes
 			for(var el in elements){
-				groups[elements[el].getName()] = {};
+				groups[elements[el].getId()] = {};
 				var color = elements[el].getColor();
 				if(elements[el].getValue()!=null){
 					var intensity = 1;
@@ -198,7 +198,7 @@ define(function(require) {
 					
 					color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
 				}
-				groups[elements[el].getName()].color = color;						
+				groups[elements[el].getId()].color = color;						
 			}
 			
 			GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups, mode);

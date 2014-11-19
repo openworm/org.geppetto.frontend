@@ -131,8 +131,8 @@ define(function(require) {
 			}
 			
 			var group = {};
-			group[this.name] = {};
-			group[this.name].color = this.getColor();
+			group[this.getId()] = {};
+			group[this.getId()].color = this.getColor();
 			
 			GEPPETTO.SceneController.showVisualGroups(visualizationTree, group,mode);			
 		},

@@ -249,12 +249,6 @@ define(function(require) {
 					if(!this.visible) {
 						$('#console').slideToggle(200);
 						$('#commandInputArea').focus();
-						
-						//fix initial offset created in bottom of console when it's first toggled
-						var offset = $("#footer").css("bottom");
-						if(offset!="-10px"){
-							$("#footer").css("bottom","-10px");
-						}
 					}
 				}
 				else {
@@ -292,13 +286,6 @@ define(function(require) {
 						}
 						consoleElement.get(0).style.top = "0px";
 					}.bind(this)
-				});
-
-				//handles resizing the JS console when the windows is resized
-				$(window).resize(function() {
-					if($('#console').height() > ($("#footerHeader").height()*.75)){
-						//$('#console').height($("#footerHeader").height()*.65);
-					}
 				});
 
 				autoComplete();

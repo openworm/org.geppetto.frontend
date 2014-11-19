@@ -23,7 +23,7 @@ define(function(require) {
 				 * 
 				 * @param {EntityNode} entityNode - Entity Node to load 
 				 * @param {EntityNode} parentNode - Parent of entity to load
-				 * @param materialParam - Material to apply to entity 
+				 * @param Param - Material to apply to entity
 				 */
 				loadEntity : function(entityNode) {
 					//extract aspects, entities and position from entityNode

@@ -513,7 +513,8 @@ define(function(require) {
 					var a = new AspectSubTreeNode({
 						name : node.type,
 						type : node.type,
-						id : node.name,
+						id : node.id,
+						name : node.name,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE,

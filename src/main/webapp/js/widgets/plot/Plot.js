@@ -326,13 +326,13 @@ define(function(require) {
 				
 				//Parse func as a mathjs object
 				var parser = math.parser();
-				console.log(func);
+//				console.log(func);
 				var mathFunc = parser.eval(func);
 				var data_y = []; 
 				for (var dataIndex in data){
 					var dataElementString = data[dataIndex].valueOf();
 					value = mathFunc(dataElementString);
-					console.log(value);
+//					console.log(value);
 					//TODO: Understand why sometimes it returns an array and not a value
 					if (typeof value == 'object'){
 						data_y.push([data[dataIndex][0], value[0]]);

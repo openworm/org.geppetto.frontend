@@ -143,7 +143,7 @@ define(function(require) {
 				 */
 				getCommands : function(node) {
 					var group1 = [{
-						label:"Open with DAT Widget",
+						label: "Open with DAT Widget",
 						action: ["GEPPETTO.TreeVisualiserControllerDAT.actionMenu(#node_instancepath#)"],
 						//option: {option1: "option1"}
 					}];
@@ -204,18 +204,32 @@ define(function(require) {
 						
 						groups.push(visualGroup);
 					}
+					if (node._metaType == "FunctionNode"){
+						if (node.getPlotMetadata() != undefined){
+							var functionN = [{
+								label:"Plot Function",
+								action: ["GEPPETTO.TreeVisualiserControllerDAT.actionMenu2(#node_instancepath#)"],
+							}];
+							
+							groups.push(functionN);
+						}
+					}
 
 					return groups;
 				},
 
-				/**
-				 * Register action menu with the TreeVisualizer3D widget
-				 */
+				//TODO: Once G.addWidget() returns the widget name this needs to be modified
 				actionMenu : function(node) {
-					//TODO: Once G.addWidget() returns the widget name this needs to be modified
 					tv = GEPPETTO.TreeVisualiserControllerDAT.addTreeVisualiserDATWidget();
 					tv.setData(node);
-				}
+				},
+				
+				//TODO: Once G.addWidget() returns the widget name this needs to be modified
+				actionMenu2 : function(node) {
+					p = GEPPETTO.PlotsController.addPlotWidget();
+					p.plotFunctionNode(node);
+					p.setSize(200,450);
+				},
 		};
 
 	};

@@ -72,7 +72,8 @@ define(function(require) {
 		 * Action events associated with this widget
 		 */
 		events : {
-			'contextmenu .title' : 'manageRightClickEvent'
+			'contextmenu .title' : 'manageRightClickEvent',
+			'contextmenu .cr.string' : 'manageRightClickEvent'
 		},
 
 		/**
@@ -81,10 +82,14 @@ define(function(require) {
 		 * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
 		 */
 		manageRightClickEvent : function(event) {
+			var nodeInstancePath = $(event.target).data("instancepath");
+			if (nodeInstancePath == undefined){
+				nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
+			}
 			//Read node from instancepath data property attached to dom element
-			this.showContextMenu(event, eval($(event.target).data("instancepath")));
+			this.showContextMenu(event, eval(nodeInstancePath));
 		},
-
+		
 		/**
 		 * Sets the data used inside the TreeVisualiserDAT for rendering. 
 		 * 

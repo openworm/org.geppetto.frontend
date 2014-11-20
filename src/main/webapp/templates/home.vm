@@ -77,18 +77,7 @@
         </div>
     </div>
 </div>
-<div id="shareTab">
-    <button class="btn" id="share">
-        <icon class="icon-share icon-xlarge"></icon>
-    </button>
-</div>
-<div id="geppetto-share" class="col-md-1 share-panel">
-    <p>
-        <a class="btn btn-warning" onclick="G.shareOnFacebook()">
-            <i class="icon-xlarge icon-facebook"></i></a></p>
-    <p><a class="btn btn-warning" onclick="G.shareOnTwitter()"><i class="icon-xlarge icon-twitter"></i></a></p>
-    <!-- Commented until fully implemented <p><a class="btn btn-warning" href="#email"><i class="icon-xlarge icon-envelope"></i></a><p>-->
-</div>
+<div id="share-button"></div>
 
 <!-- The sandbox template: -->
 <script type="text/template" id="tplSandbox">

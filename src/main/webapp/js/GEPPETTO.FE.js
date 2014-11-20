@@ -63,18 +63,7 @@ define(function(require) {
                 $.fn.modal.Constructor.prototype.enforceFocus = function() {
                 };
 
-                var share = $("#share");
 
-                share.click(function() {
-
-                    //toggle button class
-                    share.toggleClass('clicked');
-
-                    //user has clicked the console button
-                    var command = (share.hasClass('clicked')) ? "true" : "false";
-                    GEPPETTO.Console.executeCommand("G.showShareBar(" + command + ")");
-                    return false;
-                });
 
             },
             /**

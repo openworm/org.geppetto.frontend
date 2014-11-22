@@ -520,7 +520,7 @@ define(function(require) {
 			 */
 			getEntities : function(){
 				var formattedOutput="";
-				var indentation = "↪";
+				var indentation = "���";
 
 				return GEPPETTO.Utility.formatEntitiesTree(this.runTimeTree,formattedOutput, indentation);				
 			},
@@ -541,6 +541,35 @@ define(function(require) {
 				this.addOnNodeUpdatedCallback(modulation, function(varnode){
 			    	GEPPETTO.SceneController.lightUpEntity(aspect.getInstancePath(),
 			    			normalizationFunction ? normalizationFunction(varnode.getValue()) : varnode.getValue());
+				});
+			},
+			
+			/**
+			 * Modulates a sound noise that is played with intensity correlated to a watched node
+			 * and a normalization function. The normalization function should receive
+			 * the value of the watched node and output a number between 0 and 1,
+			 * corresponding to min and max volume. If no normalization function is
+			 * specified, then volume = value
+			 * 
+			 * @param {VariableNode} modulation - Variable which modulates the volume
+			 * @param {Function} normalizationFunction
+			 */
+			listenTo: function(modulation,normalizationFunction) {
+				var snd = new Audio("./assets/sounds/Gray_noise.ogg");// buffers automatically when created
+				if (typeof snd.loop == 'boolean')
+				{
+				    snd.loop = true;
+				}
+				else
+				{
+				    snd.addEventListener('ended', function() {
+				        this.currentTime = 0;
+				        this.play();
+				    }, false);
+				}
+				snd.play();
+				this.addOnNodeUpdatedCallback(modulation, function(varnode){
+					snd.volume=normalizationFunction ? Math.abs(normalizationFunction(varnode.getValue())) : Math.abs(varnode.getValue());			    			
 				});
 			},
 

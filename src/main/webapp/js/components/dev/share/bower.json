@@ -1,0 +1,22 @@
+{
+    "name": "share",
+    "version": "0.0.1",
+    "authors": [
+        "Matt Olson <mattlolson@gmail.com>"
+    ],
+    "description": "Share controls for geppetto",
+    "moduleType": [
+        "amd"
+    ],
+    "main":"share",
+    "license": "MIT",
+    "private": true,
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        ".",
+        "test",
+        "tests"
+    ]
+}

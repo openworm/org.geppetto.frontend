@@ -43,6 +43,7 @@ define(function(require) {
 		var messageHandlers = [];
 		var clientID = null;
 		var nextID = 0;
+		var connectionInterval = 300;
 
 		/**
 		 * Web socket creation and communication
@@ -122,7 +123,7 @@ define(function(require) {
 					GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
 				}
 
-				this.waitForConnection(messageTemplate(requestID, command, parameter), 1000);
+				this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
 			},
 			
 			waitForConnection: function(messageTemplate, interval){

@@ -122,20 +122,14 @@ define(function(require) {
 					GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
 				}
 
-				//this.inventado = 0;
 				this.waitForConnection(messageTemplate(requestID, command, parameter), 1000);
 			},
 			
 			waitForConnection: function(messageTemplate, interval){
 				if (this.isReady() === 1) {
-//				if (this.inventado === 2) {	
-					console.log("sending to socket");
-					console.log(messageTemplate);
 					GEPPETTO.MessageSocket.socket.send(messageTemplate);
 				}
 				else{
-					console.log("waiting for socket");
-//					this.inventado++;
 					var that = this;
 			        setTimeout(function () {
 			            that.waitForConnection(messageTemplate);

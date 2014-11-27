@@ -144,7 +144,6 @@ define(function(require) {
 			}
 			
 			if(mode){
-				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
 				message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
 
 				if(elements.length > 0){
@@ -154,7 +153,6 @@ define(function(require) {
 				}
 			}
 			else{
-				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
 				message = GEPPETTO.Resources.HIDING_VISUAL_GROUPS + this.id;
 
 				if(elements.length > 0){

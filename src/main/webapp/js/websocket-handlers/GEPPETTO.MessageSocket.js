@@ -115,7 +115,6 @@ define(function(require) {
 			 * Sends messages to the server
 			 */
 			send: function(command, parameter) {
-
 				var requestID = this.createRequestID();
 
 				//if there's a script running let it know the requestID it's using to send one of it's commands
@@ -123,7 +122,25 @@ define(function(require) {
 					GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
 				}
 
-				GEPPETTO.MessageSocket.socket.send(messageTemplate(requestID, command, parameter));
+				//this.inventado = 0;
+				this.waitForConnection(messageTemplate(requestID, command, parameter), 1000);
+			},
+			
+			waitForConnection: function(messageTemplate, interval){
+				if (this.isReady() === 1) {
+//				if (this.inventado === 2) {	
+					console.log("sending to socket");
+					console.log(messageTemplate);
+					GEPPETTO.MessageSocket.socket.send(messageTemplate);
+				}
+				else{
+					console.log("waiting for socket");
+//					this.inventado++;
+					var that = this;
+			        setTimeout(function () {
+			            that.waitForConnection(messageTemplate);
+			        }, interval);
+				}
 			},
 
 			isReady: function() {

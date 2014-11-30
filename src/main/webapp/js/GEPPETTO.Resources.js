@@ -99,6 +99,8 @@ define(function(require) {
 			SIMULATION_UNSPECIFIED: "Simulation not specified",
 
 			SIMULATION_ALREADY_STOPPED: "Simulation was already stopped",
+			
+			SIMULATION_ALREADY_STARTED: "Simulation was already started",
 
 			LOADING_FROM_CONTENT: "Outbound Message Sent: Load Simulation from editing console",
 

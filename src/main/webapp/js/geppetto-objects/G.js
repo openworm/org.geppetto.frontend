@@ -52,7 +52,7 @@ define(function(require) {
 		GEPPETTO.G = {
 			addWidget: function(type) {
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
-				return newWidget.getName() + GEPPETTO.Resources.WIDGET_CREATED;
+				return newWidget;
 			},
 
 			/**

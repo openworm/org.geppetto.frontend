@@ -151,7 +151,11 @@ define(function(require) {
 					midPoint.addVectors(bottomBasePos, topBasePos);
 					midPoint.multiplyScalar(0.5);
 
-					var c = new THREE.CylinderGeometry(radiusTop, radiusBottom,
+					//convert radius values to float from string
+					var bottom = parseFloat(radiusBottom);
+					var top = parseFloat(radiusTop);
+					
+					var c = new THREE.CylinderGeometry(top, bottom,
 							cylHeight, 6, 1, false);
 
 					c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));

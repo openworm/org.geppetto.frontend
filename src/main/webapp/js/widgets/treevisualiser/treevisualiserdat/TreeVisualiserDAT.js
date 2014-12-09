@@ -124,17 +124,41 @@ define(function(require) {
 						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
 						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
 					if (!dataset.isDisplayed) {
-						dataset.valueDict[data.instancePath] = {};
+						dataset.valueDict[data.instancePath] = new function(){};
 						
-						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data); 
+						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+						
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
 						//Add class to dom element depending on node metatype
 						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
+						//$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
 						//Add instancepath as data attribute. This attribute will be used in the event framework
 						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
+						
+						//if no values are presentn for a group element,display theh color
+						if (data._metaType == "VisualGroupElementNode" 
+							&& dataset.valueDict[data.instancePath][label] == "null ") {
+							//set label to empty
+							dataset.valueDict[data.instancePath][label] = "";
+							
+							//add unique class label to label
+							var d = dataset.valueDict[data.instancePath]["controller"];
+							$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
+
+							//apply color to label by getting unique class and using jquery
+							var color = data.getColor();
+							color = color.replace("0X","#")
+							$("."+label + " .c").css("background-color",color);
+							$("."+label + " .c").css("border-spacing","5px");
+						}
+						
+						
 					}
 					else{
-						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
+						if(!set.__ul.closed){
+							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+						}
 					}
 				}
 				else{
@@ -147,12 +171,12 @@ define(function(require) {
 					}
 					var children = data.getChildren().models;
 					if (children.length > 0){
-						var parentFolderTmp = parentFolder; 
-						for (var childIndex in children){
-							if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
-								this.prepareTree(parentFolderTmp, children[childIndex]);
+						var parentFolderTmp = parentFolder;
+							for (var childIndex in children){
+								if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
+									this.prepareTree(parentFolderTmp, children[childIndex]);
+								}
 							}
-						}
 						if (this.options.expandNodes){
 							parentFolderTmp.open();
 						}

@@ -231,14 +231,10 @@ define(function(require) {
 					var aabbMin = null;
 					var aabbMax = null;
 
-					for(var p in paths){
-						var mesh = GEPPETTO.getVARS().meshes[paths[p]];
-
-						mesh.traverse(function(child) {
+						GEPPETTO.getVARS().scene.traverse(function(child) {
 							if (child instanceof THREE.Mesh
 									|| child instanceof THREE.ParticleSystem) {
-								child.geometry.computeBoundingBox();
-
+								if(paths.contains(child.instancePath)){
 								child.geometry.computeBoundingBox();
 
 								// If min and max vectors are null, first values become
@@ -264,8 +260,8 @@ define(function(require) {
 											mesh.geometry.boundingBox.max.z);
 								}
 							}
+							}
 						});
-					}
 					// Compute world AABB center
 					GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
 					GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;

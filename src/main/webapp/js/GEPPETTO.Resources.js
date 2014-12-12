@@ -249,6 +249,8 @@ define(function(require) {
 			SERVER_UNAVAILABLE: "Server Unavailable",
 
 			SERVER_AVAILABLE: "Server Available",
+			
+			SIMULATOR_FULL : "Simulation Full",
 
 			WEBGL_FAILED: "Initializing Error: Unable to initialize WebGL",
 			

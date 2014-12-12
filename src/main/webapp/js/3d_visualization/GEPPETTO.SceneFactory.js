@@ -56,6 +56,8 @@ define(function(require) {
 					for ( var c =0 ; c< children.length; c++) {
 						GEPPETTO.SceneFactory.loadEntity(children[c]);
 					}
+					
+					GEPPETTO.getVARS().scene.updateMatrixWorld(true);
 				},
 
 				/**
@@ -333,12 +335,14 @@ define(function(require) {
 								g.radiusTop, g.radiusBottom, material);
 						break;
 					case "SphereNode":
-						threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius,
-								20, 20), material);
+						var sphere = new THREE.SphereGeometry(g.radius,20, 20);
+						threeObject = new THREE.Mesh(sphere, material);
 						var x = parseFloat(g.position.x);
 						var y = parseFloat(g.position.y);
 						var z = parseFloat(g.position.z);
 						threeObject.position = new THREE.Vector3(x,y,z);
+						threeObject.geometry.computeBoundingSphere();
+						GEPPETTO.getVARS().scene.updateMatrixWorld(true);
 						break;
 					case "ColladaNode":
 						var loader = new THREE.ColladaLoader();

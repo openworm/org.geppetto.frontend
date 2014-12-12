@@ -237,7 +237,9 @@ define(function(require) {
 				 */
 				 zoomTo : function(){
 				 
-					 GEPPETTO.SceneController.zoom([this.instancePath]);
+					 var object = {};
+					 object[this.instancePath] = "";
+					 GEPPETTO.SceneController.zoom(object);
 				 
 					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
 			     },

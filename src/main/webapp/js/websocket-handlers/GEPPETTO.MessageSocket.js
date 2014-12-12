@@ -85,6 +85,9 @@ define(function(require) {
 				};
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
+					if(msg.data=="ping"){
+						return;
+					}
 					var parsedServerMessage = JSON.parse(msg.data);
 
 					//notify all handlers

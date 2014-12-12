@@ -17,7 +17,7 @@ public enum Resources {
 						" - you can join the ongoing simulation as an observer "),
 	SERVER_AVAILABLE("The current operator left the control of Geppetto." +
 						" Refresh your browser to attempt to assume control (first come, first served).");
-
+	
 	private Resources(final String text) {
 		this.text = text;
 	}

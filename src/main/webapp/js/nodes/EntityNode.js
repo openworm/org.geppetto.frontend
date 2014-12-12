@@ -300,7 +300,7 @@ define(function(require) {
 				getZoomPaths : function(entity){
 					var aspects = entity.getAspects();
 					var entities = entity.getEntities();
-					var aspectPaths = new Array();
+					var aspectPaths = {};
 					
 					for(var e in entities){
 						this.getZoomPaths(entities[e]);
@@ -308,7 +308,7 @@ define(function(require) {
 					
 					for(var a in aspects){
 						var aspect = aspects[a];
-						aspectPaths.push(aspect.getInstancePath());
+						aspectPaths[aspect.getInstancePath()]="";
 					}
 					
 					return aspectPaths;

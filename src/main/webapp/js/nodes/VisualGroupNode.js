@@ -56,6 +56,8 @@ define(function(require) {
 		type : "",
 		highSpectrumColor : "",
 		lowSpectrumColor : "",
+		minDensity : "",
+		maxDensity : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -180,8 +182,8 @@ define(function(require) {
 			}					
 			mean = total/elements.length;
 			
-			var minDensity = Math.min.apply(null, allElements);
-			var maxDensity = Math.max.apply(null, allElements);
+			this.minDensity = Math.min.apply(null, allElements);
+			this.maxDensity = Math.max.apply(null, allElements);
 			
 			//highlight all reference nodes
 			for(var el in elements){
@@ -189,9 +191,9 @@ define(function(require) {
 				var color = elements[el].getColor();
 				if(elements[el].getValue()!=null){
 					var intensity = 1;
-					if (maxDensity != minDensity)
+					if (this.maxDensity != this.minDensity)
 					{
-						intensity = (elements[el].getValue() - minDensity) / (maxDensity - minDensity);
+						intensity = (elements[el].getValue() - this.minDensity) / (this.maxDensity - this.minDensity);
 					}
 					
 					color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
@@ -200,6 +202,14 @@ define(function(require) {
 			}
 			
 			GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups, mode);
+		},
+		
+		getMinDensity : function(){
+			return this.minDensity;
+		},
+		
+		getMaxDensity : function(){
+			return this.maxDensity;
 		},
 		
 		/**

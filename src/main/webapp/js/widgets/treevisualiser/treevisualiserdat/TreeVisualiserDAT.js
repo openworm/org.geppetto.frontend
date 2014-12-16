@@ -141,18 +141,15 @@ define(function(require) {
 							//set label to empty
 							dataset.valueDict[data.instancePath][label] = "";
 							
-							//add unique class label to label
-							var d = dataset.valueDict[data.instancePath]["controller"];
 							$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
 
 							//apply color to label by getting unique class and using jquery
 							var color = data.getColor();
-							color = color.replace("0X","#")
+							color = color.replace("0X","#");
 							$("."+label + " .c").css("background-color",color);
-							$("."+label + " .c").css("border-spacing","5px");
-						}
-						
-						
+							$("."+label + " .c").css("width","60%");
+							$("."+label + " .c").css("height","95%");
+						}	
 					}
 					else{
 						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
@@ -168,6 +165,58 @@ define(function(require) {
 						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
 						//Add instancepath as data attribute. This attribute will be used in the event framework
 						$(parentFolder.domElement).find("li").data("instancepath", data.getInstancePath());
+						
+						//if no values are presentn for a group element,display theh color
+						if (data._metaType == "VisualGroupNode") {
+							
+							$(parentFolder.domElement).find("li").addClass(label);
+							
+							$("."+label).append( $('<a>').attr('class',label+"-mean"));
+							$("."+label+"-mean").css("float", "right");
+							$("."+label).css("width", "100%");
+							$("."+label+"-mean").css("width", "60%");
+							$("."+label+"-mean").css("height", "90%");
+							$("."+label+"-mean").css("color", "black");
+
+							if(data.getMinDensity() != data.getMaxDensity()){
+								$("."+label+"-mean").append(
+										$('<span>').attr('class', label+"-low").append(data.getMinDensity()));
+								$("."+label+"-mean").append(
+										$('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
+
+								$("."+label+"-low").css("width", "50%");
+								$("."+label+"-high").css("width", "50%");
+								$("."+label+"-low").css("height", "90%");
+								$("."+label+"-high").css("height", "90%");
+								$("."+label+"-low").css("text-align", "center");
+								$("."+label+"-high").css("text-align", "center");
+								$("."+label+"-low").css("float", "left");
+								$("."+label+"-high").css("float", "right");
+
+
+								var lowHexColor = rgbToHex(255, Math.floor(255), 0);
+								var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
+								
+								var lowcolor = lowHexColor.replace("0X","#");
+								var highcolor = highHexColor.replace("0X","#");
+								
+								$("."+label+"-low").css("background-color", lowcolor);
+								$("."+label+"-high").css("background-color", highcolor);
+							}else{
+								$("."+label+"-mean").append(
+										$('<span>').attr('class', label+"-text").append(data.getMinDensity()));
+
+								$("."+label+"-text").css("width", "60%");
+
+								var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
+								
+								var color = hex.replace("0X","#");
+
+								$("."+label+"-mean").css("text-align", "center");
+								$("."+label+"-mean").css("background-color", color);
+								$("."+label+"-text").css("background-color", color);
+							}
+						}
 					}
 					var children = data.getChildren().models;
 					if (children.length > 0){

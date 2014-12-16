@@ -205,11 +205,34 @@ define(function(require) {
 		},
 		
 		getMinDensity : function(){
-			return this.minDensity;
+			
+			var allElements = new Array();
+						
+			var elements = this.getVisualGroupElements();
+
+			//calculate mean;
+			for(var el in elements){
+				if(elements[el].getValue()!=null){
+					allElements.push(elements[el].getValue());
+				}
+			}
+			
+			return  Math.min.apply(null, allElements);
 		},
 		
 		getMaxDensity : function(){
-			return this.maxDensity;
+			var allElements = new Array();
+			
+			var elements = this.getVisualGroupElements();
+
+			//calculate mean;
+			for(var el in elements){
+				if(elements[el].getValue()!=null){
+					allElements.push(elements[el].getValue());
+				}
+			}
+			
+			return  Math.max.apply(null, allElements);
 		},
 		
 		/**
@@ -223,14 +246,3 @@ define(function(require) {
 		}
 	});
 });
-
-function componentToHex(c)
-{
-	var hex = c.toString(16);
-	return hex.length == 1 ? "0" + hex : hex;
-}
-
-function rgbToHex(r, g, b)
-{
-	return "0X" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}

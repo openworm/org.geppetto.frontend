@@ -202,17 +202,20 @@ define(function(require) {
 		},
 		
 		createMatrixLayout: function(){
-			var x = d3.scale.ordinal().rangeBands([0, this.options.innerWidth]),
+			var margin = {top: 50, right: 10, bottom: 10, left: 50};
+			var dim = (this.options.innerHeight < this.options.innerWidth)?(this.options.innerHeight):(this.options.innerWidth);
+			
+			var x = d3.scale.ordinal().rangeBands([0, dim - margin.top]),
 	        z = d3.scale.linear().domain([0, 4]).clamp(true),
 	        //c = d3.scale.category10().domain(d3.range(10));
 	        c = d3.scale.ordinal().range(["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]);
 	    
-			var margin = {top: 80, right: 0, bottom: 10, left: 80};
 			
 			this.svg
-			.attr("width", this.options.innerWidth + margin.left + margin.right)
-            .attr("height", this.options.innerHeight + margin.top + margin.bottom)
-			.style("margin-left", -margin.left + "px")
+			.attr("width", dim)
+            .attr("height", dim)
+			.style("padding-left", margin.left + "px")
+			.style("padding-top", margin.top + "px")
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		    var matrix = [];
@@ -245,8 +248,8 @@ define(function(require) {
 
 		    this.rect = this.svg.append("rect")
 		          .attr("class", "background")
-		          .attr("width", this.options.innerWidth)
-		          .attr("height", this.options.innerHeight);
+		          .attr("width", dim - margin.left)
+		          .attr("height", dim - margin.top);
 
 		        
 		    var row = this.svg.selectAll(".row")
@@ -278,9 +281,9 @@ define(function(require) {
 		          .attr("x1", -this.options.innerWidth);
 
 		      column.append("text")
-		          .attr("x", 6)
+		          .attr("x", 4)
 		          .attr("y", x.rangeBand() / 2)
-		          .attr("dy", ".32em")
+//		          .attr("dy", ".32em")
 		          .attr("text-anchor", "start")
 		          .text(function(d, i) { 
 		        	  return nodes[i].id; 

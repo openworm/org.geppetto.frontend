@@ -160,8 +160,8 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().show_outputs){
 							this.getParent().showOutputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().draw_connection_lines){
-							this.getParent().drawConnectionLines(true);
+						if(Simulation.getSelectionOptions().draw_connections_lines){
+							this.getParent().showConnectionLines(true);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(true);
@@ -183,6 +183,7 @@ define(function(require) {
 				 */
 				unselect : function() {
 					var message;
+					Simulation.showUnselected(false);
 					if (this.selected) {
 						message = GEPPETTO.Resources.UNSELECTING_ASPECT
 								+ this.instancePath;
@@ -213,11 +214,11 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().show_outputs){
 							this.getParent().showOutputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().draw_connection_lines){
-							this.getParent().drawConnectionLines(false);
+						if(Simulation.getSelectionOptions().draw_connections_lines){
+							this.getParent().showConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(true);
+							Simulation.showUnselected(false);
 						}
 					
 						GEPPETTO.WidgetsListener
@@ -236,7 +237,9 @@ define(function(require) {
 				 */
 				 zoomTo : function(){
 				 
-					 GEPPETTO.SceneController.zoom([this.instancePath]);
+					 var object = {};
+					 object[this.instancePath] = "";
+					 GEPPETTO.SceneController.zoom(object);
 				 
 					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
 			     },

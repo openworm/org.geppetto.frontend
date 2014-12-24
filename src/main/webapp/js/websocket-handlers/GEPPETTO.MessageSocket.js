@@ -43,12 +43,19 @@ define(function(require) {
 		var messageHandlers = [];
 		var clientID = null;
 		var nextID = 0;
+		var connectionInterval = 300;
 
 		/**
 		 * Web socket creation and communication
 		 */
 		GEPPETTO.MessageSocket = {
 			socket:null,
+
+            //sets protocol to use for connection
+            protocol : window.USE_SSL ? "wss://" : "ws://",
+
+            //flag used to connect using ws protocol if wss failed
+            failsafe : false,
 
 			connect: function(host) {
 				if('WebSocket' in window) {
@@ -78,6 +85,9 @@ define(function(require) {
 				};
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
+					if(msg.data=="ping"){
+						return;
+					}
 					var parsedServerMessage = JSON.parse(msg.data);
 
 					//notify all handlers
@@ -86,22 +96,29 @@ define(function(require) {
 					}
 				};
 
-				//Detects problems when connecting to Geppetto server
-				GEPPETTO.MessageSocket.socket.onerror = function(evt) {
-					var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
-					if(GEPPETTO.Simulation.isLoading()){
-						GEPPETTO.Simulation.stop();
-					}
-
-					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
-				};
-			},
+                //Detects problems when connecting to Geppetto server
+                GEPPETTO.MessageSocket.socket.onerror = function(evt) {
+                    var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
+                    if(GEPPETTO.Simulation.isLoading()) {
+                        GEPPETTO.Simulation.stop();
+                    }
+                    var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
+                    //Attempt to connect using ws first time wss fails,
+                    //if ws fails too then don't try again and display info error window
+                    if(GEPPETTO.MessageSocket.failsafe) {
+                        GEPPETTO.MessageSocket.protocol = "ws://";
+                        GEPPETTO.MessageSocket.failsafe = true;
+                        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+window.BUNDLE_CONTEXT_PATH+'/GeppettoServlet');
+                    } else {
+                        GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
+                    }
+                };
+            },
 
 			/**
 			 * Sends messages to the server
 			 */
 			send: function(command, parameter) {
-
 				var requestID = this.createRequestID();
 
 				//if there's a script running let it know the requestID it's using to send one of it's commands
@@ -109,7 +126,19 @@ define(function(require) {
 					GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
 				}
 
-				GEPPETTO.MessageSocket.socket.send(messageTemplate(requestID, command, parameter));
+				this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
+			},
+			
+			waitForConnection: function(messageTemplate, interval){
+				if (this.isReady() === 1) {
+					GEPPETTO.MessageSocket.socket.send(messageTemplate);
+				}
+				else{
+					var that = this;
+			        setTimeout(function () {
+			            that.waitForConnection(messageTemplate);
+			        }, interval);
+				}
 			},
 
 			isReady: function() {

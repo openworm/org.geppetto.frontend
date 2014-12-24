@@ -46,7 +46,7 @@
 	background-image: none;
 	background-position: 0% 0%;
 	background-repeat: repeat;
-	content: "×";
+	content: "x";
 	color:#fd6808;
 }
 
@@ -103,7 +103,7 @@
 	border-radius: 3px;
 	background:rgba(66,59,59,0.90)!important;
 	color:white;
-	z-index: 2;
+	z-index: 3;
 }
 
 .ui-dialog .ui-dialog-content {
@@ -135,9 +135,14 @@
 	list-style-type: none;
 }
 
+.contextMenuView ul:not(:first-child){
+	border-top: 1px solid #DDD;
+}
+
 .contextMenuView ul:first-child li:first-child{
 	border-top-left-radius: 7px;
 	border-top-right-radius: 7px;
+	border-top: 1px solid #DDD;
 }
 .contextMenuView ul:last-child li:last-child{
 	border-bottom-right-radius: 7px;
@@ -155,7 +160,6 @@
 	user-select: none;	
 	border-left: 1px solid #DDD;
 	border-right: 1px solid #DDD;
-	border-top: 1px solid #DDD;
 }
 
 .contextMenuView li:hover {

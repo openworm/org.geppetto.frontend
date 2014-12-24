@@ -23,7 +23,7 @@ define(function(require) {
 				 * 
 				 * @param {EntityNode} entityNode - Entity Node to load 
 				 * @param {EntityNode} parentNode - Parent of entity to load
-				 * @param materialParam - Material to apply to entity 
+				 * @param Param - Material to apply to entity
 				 */
 				loadEntity : function(entityNode) {
 					//extract aspects, entities and position from entityNode
@@ -56,6 +56,8 @@ define(function(require) {
 					for ( var c =0 ; c< children.length; c++) {
 						GEPPETTO.SceneFactory.loadEntity(children[c]);
 					}
+					
+					GEPPETTO.getVARS().scene.updateMatrixWorld(true);
 				},
 
 				/**
@@ -151,7 +153,11 @@ define(function(require) {
 					midPoint.addVectors(bottomBasePos, topBasePos);
 					midPoint.multiplyScalar(0.5);
 
-					var c = new THREE.CylinderGeometry(radiusTop, radiusBottom,
+					//convert radius values to float from string
+					var bottom = parseFloat(radiusBottom);
+					var top = parseFloat(radiusTop);
+					
+					var c = new THREE.CylinderGeometry(top, bottom,
 							cylHeight, 6, 1, false);
 
 					c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
@@ -262,7 +268,6 @@ define(function(require) {
 					threeObject = new THREE.Mesh(combined, material);
 					threeObject.aspectInstancePath = aspect.instancePath;
 					threeObject.geometry.dynamic = false;
-					threeObject.split = false;
 					threeObject.mergedMeshesPaths = mergedMeshesPaths;
 					aspectObjects.push(threeObject);
 					
@@ -330,10 +335,14 @@ define(function(require) {
 								g.radiusTop, g.radiusBottom, material);
 						break;
 					case "SphereNode":
-						threeObject = new THREE.Mesh(new THREE.SphereGeometry(g.radius,
-								20, 20), material);
-						threeObject.position.set(g.position.x, g.position.y,
-								g.position.z);
+						var sphere = new THREE.SphereGeometry(g.radius,20, 20);
+						threeObject = new THREE.Mesh(sphere, material);
+						var x = parseFloat(g.position.x);
+						var y = parseFloat(g.position.y);
+						var z = parseFloat(g.position.z);
+						threeObject.position = new THREE.Vector3(x,y,z);
+						threeObject.geometry.computeBoundingSphere();
+						GEPPETTO.getVARS().scene.updateMatrixWorld(true);
 						break;
 					case "ColladaNode":
 						var loader = new THREE.ColladaLoader();

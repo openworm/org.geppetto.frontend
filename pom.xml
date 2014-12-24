@@ -3,39 +3,22 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.1.9</version>
+	<version>0.2.0</version>
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>3.1.0.RELEASE</spring.version>
+        <contextPath>org.geppetto.frontend</contextPath>
+        <spring.version>3.1.0.RELEASE</spring.version>
     </properties>
     <profiles>
         <profile>
-            <id>prod</id>
+            <id>master</id>
+            <properties>
+                <contextPath>/</contextPath>
+            </properties>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2.1</version>
-                        <executions>
-                            <execution>
-                                <configuration>
-                                    <executable>python</executable>
-                                    <workingDirectory>${project.basedir}/src/main/webapp/js/components/</workingDirectory>
-                                    <arguments>
-                                        <argument>install_components.py</argument>
-                                    </arguments>
-                                </configuration>
-                                <id>generation</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+
                     <plugin>
                         <groupId>com.github.bringking</groupId>
                         <artifactId>requirejs-maven-plugin</artifactId>
@@ -58,7 +41,8 @@
                             </optimizerFile>
                             <!-- optional parameters to optimizer executable -->
                             <optimizerParameters>
-                                <parameter>optimize=uglify</parameter>
+                                <!-- Disable JS uglification -->
+                                <parameter>optimize=none</parameter>
                                 <paramater>baseUrl=${project.basedir}/src/main/webapp/js</paramater>
                                 <paramater>out=${project.basedir}/src/main/webapp/js/main-built.js</paramater>
                             </optimizerParameters>
@@ -104,10 +88,59 @@
                                 <goals>
                                     <goal>grunt</goal>
                                 </goals>
-
+                                <configuration>
+                                    <arguments>dist --contextPath ${contextPath} --useSsl true</arguments>
+                                </configuration>
                                 <phase>generate-resources</phase>
                             </execution>
 
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>development</id>
+            <properties>
+                <contextPath>org.geppetto.frontend</contextPath>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>0.0.16</version>
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <nodeVersion>v0.10.18</nodeVersion>
+                                    <npmVersion>1.3.8</npmVersion>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>grunt build</id>
+                                <goals>
+                                    <goal>grunt</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>--contextPath ${contextPath} --useSsl false</arguments>
+                                </configuration>
+                                <phase>generate-resources</phase>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
@@ -240,17 +273,17 @@
     </dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
 
-			<plugin>
+            <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.15</version>
@@ -275,7 +308,7 @@
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-ClassPath>.,{maven-dependencies},WEB-INF/classes</Bundle-ClassPath>
-						<Web-ContextPath>org.geppetto.frontend</Web-ContextPath>
+						<Web-ContextPath>${contextPath}</Web-ContextPath>
 						<Import-Package>org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
 						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>

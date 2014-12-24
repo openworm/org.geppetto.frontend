@@ -16,6 +16,7 @@ define(function(require) {
 			scene: null,
 			meshes : {},
 			splitMeshes : {},
+			connectionLines : {},
 			renderer: null,
 			stats: null,
 			gui: null,
@@ -42,6 +43,9 @@ define(function(require) {
 		var setupScene = function() {
 			VARS.scene = new THREE.Scene();
 			VARS.visualModelMap = {};
+			VARS.meshes = {};
+			VARS.splitMeshes = {};
+			VARS.connectionLines = {};
 		};
 
 		/**
@@ -131,8 +135,8 @@ define(function(require) {
 							selected = intersects[ 0 ].object.parent.name;
 						}
 						if(VARS.meshes.hasOwnProperty(selected) ||
-								VARS.entities.hasOwnProperty(selected)){
-							GEPPETTO.SceneController.unSelectAll();
+								VARS.splitMeshes.hasOwnProperty(selected)){
+							GEPPETTO.Simulation.unSelectAll();
 							GEPPETTO.Console.executeCommand(selected + '.select()' );
 						}
 					}

@@ -185,28 +185,31 @@ define(function(require) {
 					}
 				}
 
-				if(newDataX.name != null && newDataY.name != null) {
+				if(dataX.name != null && dataY.name != null) {
 					for(var dataset in this.datasets) {
-						if(newDataX.name + "/" + newDataY.name == this.datasets[dataset].label) {
-							return this.name + " widget is already plotting object " + newDataX.name + "/" + newDataY.name;
+						if(dataX.name + "/" + dataY.name == this.datasets[dataset].label) {
+							return this.name + " widget is already plotting object " + dataX.name + "/" + dataY.name;
 						}
 					}
 					this.datasets.push({
-						label: newDataX.name + "/" + newDataY.name,
+						label: dataX.name + "/" + dataY.name,
 						data: [
-							[ newDataX.value, newDataY.value ]
+							[ dataX.value, dataY.value ]
 						]
 					});
 				}
 				else {
 					this.datasets.push({
 						label: "",
-						data: newDataX
+						data: dataX
 					});
-					this.datasets.push({
-						label: "",
-						data: newDataY
-					});
+					
+					if (dataY != undefined){
+						this.datasets.push({
+							label: "",
+							data: dataY
+						});
+					}
 				}
 
 				var plotHolder = $("#" + this.id);
@@ -304,17 +307,44 @@ define(function(require) {
 				}
 			},
 
-//			/**
-//			 * Plots a function against a data series
-//			 *
-//			 * @command dataFunction(func, data, options)
-//			 * @param func - function to plot vs data
-//			 * @param data - data series to plot against function
-//			 * @param options - options for plotting widget
-//			 */
-//			plotDataFunction: function(func, data, options) {
-//
-//			},
+			/**
+			 * Plots a function against a data series
+			 *
+			 * @command dataFunction(func, data, options)
+			 * @param func - function to plot vs data
+			 * @param data - data series to plot against function
+			 * @param options - options for plotting widget
+			 */
+			plotDataFunction: function(func, data, options) {
+				// If no options specify by user, use default options
+				if(options != null) {
+					this.options = options;
+					if(this.options.xaxis.max > this.limit) {
+						this.limit = this.options.xaxis.max;
+					}
+				}
+				
+				//Parse func as a mathjs object
+				var parser = math.parser();
+//				console.log(func);
+				var mathFunc = parser.eval(func);
+				var data_y = []; 
+				for (var dataIndex in data){
+					var dataElementString = data[dataIndex].valueOf();
+					value = mathFunc(dataElementString);
+//					console.log(value);
+					//TODO: Understand why sometimes it returns an array and not a value
+					if (typeof value == 'object'){
+						data_y.push([data[dataIndex][0], value[0]]);
+					}
+					else{
+						data_y.push([data[dataIndex][0], value]);
+					}
+				}
+
+				//Plot values 
+				this.plotXYData(data_y);
+			},
 
 			/**
 			 * Resets the plot widget, deletes all the data series but does not
@@ -408,9 +438,62 @@ define(function(require) {
 			 * @param {String} labelX - Label to use for X Axis
 			 */
 			setAxisLabel: function(labelY, labelX) {
+				if (this.options.yaxis == undefined){
+					this.options["yaxis"] = {};
+				}
 				this.options.yaxis.axisLabel = labelY;
+				if (this.options.xaxis == undefined){
+					this.options["xaxis"] = {};
+				}
+				this.options.xaxis.axisLabel = labelX;
 				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
-			}
+			},
+			
+			/**
+			 * Takes a FunctionNode and plots the expresion and set the attributes from the plot metadata information
+			 *
+			 * @command plotFunctionNode(functionNode)
+			 * @param {Node} functionNode - Function Node to be displayed
+			 */
+			plotFunctionNode: function(functionNode){
+				//Check there is metada information to plot
+				if (functionNode.plotMetadata != null){
+					
+					//Read the information to plot
+					var expression = functionNode.getExpression();
+					var arguments = functionNode.getArguments();
 
-			});
+					var finalValue = parseFloat(functionNode.plotMetadata["FinalValue"]);
+					var initialValue = parseFloat(functionNode.plotMetadata["InitialValue"]);
+					var stepValue = parseFloat(functionNode.plotMetadata["StepValue"]);
+
+					var plotTitle = functionNode.plotMetadata["PlotTitle"];
+					var XAxisLabel = functionNode.plotMetadata["XAxisLabel"];
+					var YAxisLabel = functionNode.plotMetadata["YAxisLabel"];
+
+					//Create data series for plot 
+					//TODO: What are we going to do if we have two arguments?
+					var dataArray = [];
+					for (var i=initialValue; i<finalValue; i = i + stepValue){dataArray.push([i]);}
+
+					//Generate options from metadata information
+					options = {xaxis:{min:initialValue,max:finalValue,show:true,axisLabel:XAxisLabel}, yaxis:{axisLabel:YAxisLabel}};
+
+					//Convert from single expresion to parametired expresion (2x -> f(x)=2x)
+					var  parameterizedExpression = "f(";
+					for (var argumentIndex in arguments){
+						parameterizedExpression += arguments[argumentIndex] + ","; 
+					}
+					parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
+					parameterizedExpression += ") =" + expression;
+					
+					//Plot data function
+					this.plotDataFunction(parameterizedExpression, dataArray, options);
+
+					//Set title to widget
+					this.setName(plotTitle);
+				}
+			},
+
+		});
 });

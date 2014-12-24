@@ -33,100 +33,107 @@
 div[id^='TreeVisualiserDAT']
  {
  	overflow-y:auto !important;
+ 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-weight: 200 !important;
  }
  
- .dg.main.taller-than-window .close-button {
+.ui-widget-content .dg.main.taller-than-window .close-button {
     border-top: 1px solid #ddd;
 }
 
-.dg.main .close-button {
+.ui-widget-content .dg.main .close-button {
     background: rgba(66,59,59,0);
 }
- 
-.dg.main .close-button:hover {
+
+.ui-widget-content .dg.main .close-button:hover {
     background: rgba(33,29,29,0.4);
 }
 
-.dg {
+.ui-widget-content .dg {
     color: #e9e9e9;
     text-shadow: none !important;
 }
 
-.dg.main::-webkit-scrollbar {
+.ui-widget-content .dg.main::-webkit-scrollbar {
     background: #fafafa;
 }
 
-.dg.main::-webkit-scrollbar-thumb {
+.ui-widget-content .dg.main::-webkit-scrollbar-thumb {
     background: #bbb;
 }
- 
-.dg li:not(.folder) {
+
+.ui-widget-content .dg li:not(.folder) {
     background: rgba(66,59,59,0);
-    border-bottom: 1px solid #fd6808;
 }
- 
-.dg li.save-row .button {
+
+.ui-widget-content .dg li.save-row .button {
     text-shadow: none !important;
 }
 
-.dg li.title {
+.ui-widget-content .dg li.title {
     background: rgba(66,59,59,0)  url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;
 }
 
-.dg .cr.function:hover,.dg .cr.boolean:hover {
+.ui-widget-content .dg .cr.function:hover,.dg .cr.boolean:hover {
     background: #fff;
 }
- 
-.dg .c input[type=text] {
+
+.ui-widget-content .dg .c input[type=text] {
     background: rgba(66,59,59,0);
+    box-shadow:none!important;
+    webkit-box-shadow:none!important;
 }
- 
-.dg .c input[type=text]:hover {
+
+.ui-widget-content .dg .c input[type=text]:hover {
 	background: rgba(33,29,29,0.4);
 	cursor: pointer;
 }
- 
-.dg .c input[type=text]:focus {
+
+.ui-widget-content .dg .c input[type=text]:focus {
 	background: rgba(33,29,29,0.4);
 	cursor: pointer;
 }
- 
-.dg .c .slider {
+
+.ui-widget-content .dg .c .slider {
     background: #e9e9e9;
 }
 
-.dg .c .slider:hover {
+.ui-widget-content .dg .c .slider:hover {
     background: #eee;
 }
 
 /*  GENERIC NODE STYLE */
-.dg .cr.string {
+.ui-widget-content .dg .cr.string {
 border-left: 3px solid #85ea0e;
 }
-.dg .cr.string input[type=text] {
+.ui-widget-content .dg .cr.string input[type=text] {
 color: #85ea0e;
 }
 
 /*  NODE STYLE BY METATYPE*/
 .entitynodetv {
-	border-left: 3px solid #cc0000;
+	border-left: 3px solid #0499e6;
+	background-color: #231f1f!important;
+	
 }
 .aspectnodetv {
-	border-left: 3px solid #cc6600;
+	border-left: 3px solid #fe4807;
+	background-color: #fe4807!important;
 }
 .aspectsubtreenodetv {
-	border-left: 3px solid #cccc00;
+	border-left: 3px solid #fe4807;
 }
 .compositenodetv {
-	border-left: 3px solid #66cc00;
+	border-left: 3px solid #2e2a2a;
+	background-color:#2e2a2a!important;
 }
 
 
 .dg .cr.string.connectionnodetv {
-	border-left: 3px solid #00cc00;
+	border-left: 3px solid #ff5a02;
 }
 .dg .cr.string.connectionnodetv input[type=text] {
-	color: #00cc00;
+	color: #ff5a02;
 }
 .dg .cr.string.dynamicsspecificationnodetv {
 	border-left: 3px solid #00cc66;
@@ -147,16 +154,16 @@ color: #85ea0e;
 	color: #0066cc;
 }
 .dg .cr.string.parameterspecificationnodetv {
-	border-left: 3px solid #0000cc;
+	border-left: 3px solid #42b6ff;
 }
 .dg .cr.string.parameterspecificationnodetv input[type=text] {
-	color: #0000cc;
+	color: #42b6ff;
 }
 .dg .cr.string.textmetadatanodetv {
-	border-left: 3px solid #6600cc;
+	border-left: 3px solid #10b7bd;
 }
 .dg .cr.string.textmetadatanodetv input[type=text] {
-	color: #6600cc;
+	color: #10b7bd;
 }
 .dg .cr.string.urlmetadatanodetv {
 	border-left: 3px solid #cc00cc;
@@ -165,20 +172,20 @@ color: #85ea0e;
 	color: #cc00cc;
 }
 .dg .cr.string.variablenodetv {
-	border-left: 3px solid #cc0066;
+	border-left: 3px solid #FFA500;
 }
 .dg .cr.string.variablenodetv input[type=text] {
-	color: #cc0066;
+	color: #FFA500;
 }
 .dg .cr.string.visualobjectreferencenodetv {
-	border-left: 3px solid #606060;
+	border-left: 3px solid #a462ff;
 }
 .dg .cr.string.visualobjectreferencenodetv input[type=text] {
-	color: #606060;
+	color: #a462ff;
 }
 .dg .cr.string.visualgroupelementnodetv {
-	border-left: 3px solid #ffffff;
+	border-left: 3px solid #a462ff;
 }
 .dg .cr.string.visualgroupelementnodetv input[type=text] {
-	color: #ffffff;
+	color: #a462ff;
 }

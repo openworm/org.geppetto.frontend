@@ -266,7 +266,7 @@ define(function(require) {
 
 							/*Match type of node and created*/
 							if(metatype == GEPPETTO.Resources.COMPOSITE_NODE){
-								var compositeNode =this.createCompositeNode(node[i]);
+								var compositeNode =this.createCompositeNode(node[i],true);
 								compositeNode.setParent(parent);
 								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
 									parent.get("children").add(compositeNode);
@@ -360,7 +360,7 @@ define(function(require) {
 							// if object is CompositeNode, do recursion to find
 							// children
 							else if (metatype == GEPPETTO.Resources.COMPOSITE_NODE) {
-								var newNode = this.createCompositeNode(node[i]);
+								var newNode = this.createCompositeNode(node[i],true);
 								newNode.setParent(parent);
 								this.createSimulationTree(newNode, node[i]);
 								// add to parent if applicable
@@ -465,6 +465,28 @@ define(function(require) {
 											vg.setParent(subTree);
 											subTree.get("children").add(vg);
 											subTree[key] = vg;
+										}else if(node[key]._metaType==GEPPETTO.Resources.COMPOSITE_NODE){
+											var c = node[key];
+											var element = this.createCompositeNode(c,false);
+											element.setParent(subTree);
+											
+											var hasVisualGroup = false;
+											for(var vg in c){
+												if(typeof c[vg] == "object"){
+													if(c[vg]._metaType==GEPPETTO.Resources.VISUAL_GROUP_NODE){
+														var group = this.createVisualGroupNode(c[vg]);
+														group.setParent(element);
+														element.get("children").add(group);
+														element[vg] = group;
+														hasVisualGroup = true;
+													}
+												}
+											}
+											
+											if(hasVisualGroup){
+												subTree.get("children").add(element);
+												subTree[key] = element;
+											}
 										}
 									}
 								}
@@ -491,7 +513,8 @@ define(function(require) {
 					var a = new AspectSubTreeNode({
 						name : node.type,
 						type : node.type,
-						id : node.name,
+						id : node.id,
+						name : node.name,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE,
@@ -503,7 +526,7 @@ define(function(require) {
 				},
 
 				/** Creates and populates client aspect nodes for first time */
-				createCompositeNode : function(node) {
+				createCompositeNode : function(node, updateTags) {
 					var a = new CompositeNode({
 						id : node.id,
 						name : node.name,
@@ -512,8 +535,10 @@ define(function(require) {
 						_metaType : GEPPETTO.Resources.COMPOSITE_NODE
 					});
 
-					GEPPETTO.Console.updateTags(node.instancePath, a);
-
+					if(updateTags){
+						GEPPETTO.Console.updateTags(node.instancePath, a);
+					}
+					
 					return a;
 				},
 
@@ -523,6 +548,7 @@ define(function(require) {
 						id : node.id,
 						name : node.name,
 						expression : node.expression,
+						plotMetadata : node.plotMetadata,
 						arguments : node.arguments,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
@@ -609,7 +635,7 @@ define(function(require) {
 					for(var key in node){
 						if(typeof node[key] == "object"){
 							if(node[key]._metaType==GEPPETTO.Resources.COMPOSITE_NODE){
-								var composite = this.createCompositeNode(node[key]);
+								var composite = this.createCompositeNode(node[key],true);
 								this.createVisualReferences(composite, node[key]);
 								composite.setParent(a);
 								a.get("customNodes").add(composite);
@@ -715,9 +741,7 @@ define(function(require) {
 						id : node.id,
 						name : node.name,
 						color : node.color,
-						value : node.parameter.value,
-						unit : node.parameter.unit,
-						scalingFactor : node.parameter.scalingFactor,
+						parameter : node.parameter,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE

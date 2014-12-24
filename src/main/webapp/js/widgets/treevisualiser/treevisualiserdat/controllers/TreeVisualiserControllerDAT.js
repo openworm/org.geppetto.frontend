@@ -142,76 +142,94 @@ define(function(require) {
 				 * @returns {Array} Set of commands associated with this node 
 				 */
 				getCommands : function(node) {
-//					var groups = [ [ {
-//					label : "Add to Chart",
-//					icon : "icon0",
-//					position : 0,
-//					groups : [ [ {
-//					label : "Add to New Chart",
-//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//					icon : "icon01",
-//					position : 0
-//					}, {
-//					label : "Add to Chart 1",
-//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//					icon : "icon02",
-//					position : 1
-//					} ] ]
-//					}, {
-//					label : "Add as new line",
-//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//					icon : "icon1",
-//					position : 1
-//					} ],
-
-//					[ {
-//					label : "Save to file as a Chart",
-//					action : GEPPETTO.TreeVisualiserControllerDAT.actionMenu,
-//					icon : "icon2"
-//					} ] ];
-
 					var group1 = [{
-						label:"Open with DAT Widget",
-						action: "GEPPETTO.TreeVisualiserControllerDAT.actionMenu",
+						label: "Open with DAT Widget",
+						action: ["GEPPETTO.TreeVisualiserControllerDAT.actionMenu(#node_instancepath#)"],
 						//option: {option1: "option1"}
 					}];
 
 
 					var availableWidgets = GEPPETTO.TreeVisualiserControllerDAT.getWidgets();
 					if (availableWidgets.length > 0){
-						var group1Add =  [ {
+						var group1Add =  {
 							label : "Add to DAT Widget",
 							position : 0
-						} ] ;
+						} ;
 
 						var subgroups1Add = [];
 						for (var availableWidgetIndex in availableWidgets){
 							var availableWidget = availableWidgets[availableWidgetIndex];
 							subgroups1Add = subgroups1Add.concat([{
 								label: "Add to " + availableWidget.name,
-								action: availableWidget.id + ".setData",
+								action: [availableWidget.id + ".setData(#node_instancepath#)"],
 								position: availableWidgetIndex
 							}]);
 						}
+						group1Add["groups"] = [subgroups1Add];
 
-						group1Add[0]["groups"] = [subgroups1Add];
-
-						group1 = group1.concat(group1Add);
+						group1.push(group1Add);
+					}
+					
+					var groups = [group1];
+					
+					if (node._metaType == "ConnectionNode"){
+						var connectionGroup = [{
+							label:"Highlight Connection",
+							action: ["Simulation.unHighlightAll();","#node_instancepath#.highlight(true)"],
+						}];
+						
+						groups.push(connectionGroup);
+					}
+					if (node._metaType == "EntityNode"){
+						var entity = [{
+							label:"Select Entity",
+							action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+						}];
+						
+						groups.push(entity);
+					}
+					if (node._metaType == "AspectNode"){
+						var aspect = [{
+							label:"Select Aspect",
+							action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+						}];
+						
+						groups.push(aspect);
+					}
+					if (node._metaType == "VisualGroupNode"){
+						var visualGroup = [{
+							label:"Show Visual Group",
+							action: ["Simulation.unSelectAll();","#node_instancepath#.show(true)"],
+						}];
+						
+						groups.push(visualGroup);
+					}
+					if (node._metaType == "FunctionNode"){
+						if (node.getPlotMetadata() != undefined){
+							var functionN = [{
+								label:"Plot Function",
+								action: ["GEPPETTO.TreeVisualiserControllerDAT.actionMenu2(#node_instancepath#)"],
+							}];
+							
+							groups.push(functionN);
+						}
 					}
 
-					var groups = [group1];
-
 					return groups;
-
 				},
 
-				/**
-				 * Register action menu with the TreeVisualizer3D widget
-				 */
+				//TODO: Once G.addWidget() returns the widget name this needs to be modified
 				actionMenu : function(node) {
 					tv = GEPPETTO.TreeVisualiserControllerDAT.addTreeVisualiserDATWidget();
 					tv.setData(node);
-				}
+				},
+				
+				//TODO: Once G.addWidget() returns the widget name this needs to be modified
+				actionMenu2 : function(node) {
+					p = GEPPETTO.PlotsController.addPlotWidget();
+					p.plotFunctionNode(node);
+					p.setSize(200,450);
+				},
 		};
 
 	};

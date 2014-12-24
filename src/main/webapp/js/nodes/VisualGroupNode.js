@@ -56,6 +56,8 @@ define(function(require) {
 		type : "",
 		highSpectrumColor : "",
 		lowSpectrumColor : "",
+		minDensity : "",
+		maxDensity : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -133,8 +135,17 @@ define(function(require) {
 			var message;
 			var elements = this.getVisualGroupElements();
 			
+			var findVisTree = false;
+			while(!findVisTree){
+				if(visualizationTree._metaType!= GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+					visualizationTree = visualizationTree.getParent();
+				}
+				else{
+					findVisTree = true;
+				}
+			}
+			
 			if(mode){
-				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
 				message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
 
 				if(elements.length > 0){
@@ -144,7 +155,6 @@ define(function(require) {
 				}
 			}
 			else{
-				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
 				message = GEPPETTO.Resources.HIDING_VISUAL_GROUPS + this.id;
 
 				if(elements.length > 0){
@@ -159,31 +169,70 @@ define(function(require) {
 		
 		showAllVisualGroupElements : function(visualizationTree, elements,mode){
 			var groups = {};
+			var allElements = [];
 			
 			var total =0, mean =0;
 			
 			//calculate mean;
-			for(var el in elements){	
-				total = total + parseFloat(elements[el].getValue());
+			for(var el in elements){
+				if(elements[el].getValue()!=null){
+					total = total + parseFloat(elements[el].getValue());
+					allElements.push(elements[el].getValue());
+				}
 			}					
 			mean = total/elements.length;
 			
+			this.minDensity = Math.min.apply(null, allElements);
+			this.maxDensity = Math.max.apply(null, allElements);
+			
 			//highlight all reference nodes
 			for(var el in elements){
-				groups[elements[el].getName()] = {};
+				groups[elements[el].getId()] = {};
 				var color = elements[el].getColor();
 				if(elements[el].getValue()!=null){
-					if(elements[el].getValue()<mean){
-						color = this.getLowSpectrumColor();
+					var intensity = 1;
+					if (this.maxDensity != this.minDensity)
+					{
+						intensity = (elements[el].getValue() - this.minDensity) / (this.maxDensity - this.minDensity);
 					}
-					else if(elements[el].getValue()>=mean){
-						color = this.getHighSpectrumColor();
-					}
+					
+					color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
 				}
-				groups[elements[el].getName()].color = color;						
+				groups[elements[el].getId()].color = color;						
 			}
 			
 			GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups, mode);
+		},
+		
+		getMinDensity : function(){
+			
+			var allElements = new Array();
+						
+			var elements = this.getVisualGroupElements();
+
+			//calculate mean;
+			for(var el in elements){
+				if(elements[el].getValue()!=null){
+					allElements.push(elements[el].getValue());
+				}
+			}
+			
+			return  Math.min.apply(null, allElements);
+		},
+		
+		getMaxDensity : function(){
+			var allElements = new Array();
+			
+			var elements = this.getVisualGroupElements();
+
+			//calculate mean;
+			for(var el in elements){
+				if(elements[el].getValue()!=null){
+					allElements.push(elements[el].getValue());
+				}
+			}
+			
+			return  Math.max.apply(null, allElements);
 		},
 		
 		/**

@@ -72,7 +72,8 @@ define(function(require) {
 		 * Action events associated with this widget
 		 */
 		events : {
-			'contextmenu .title' : 'manageRightClickEvent'
+			'contextmenu .title' : 'manageRightClickEvent',
+			'contextmenu .cr.string' : 'manageRightClickEvent'
 		},
 
 		/**
@@ -81,18 +82,14 @@ define(function(require) {
 		 * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
 		 */
 		manageRightClickEvent : function(event) {
-			var ascendantsElements = $(event.target).parentsUntil("#" + this.id,".folder").get().reverse();
-			var nodeString = "";
-			for (var ascendantsElementKey in ascendantsElements){
-				var label = $(ascendantsElements[ascendantsElementKey]).find(".title").first().html();
-				nodeString += label + ".";
+			var nodeInstancePath = $(event.target).data("instancepath");
+			if (nodeInstancePath == undefined){
+				nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
 			}
-			nodeString = nodeString.substring(0,nodeString.length-1);
-
-			var node = eval(nodeString);
-			this.showContextMenu(event, node);
+			//Read node from instancepath data property attached to dom element
+			this.showContextMenu(event, eval(nodeInstancePath));
 		},
-
+		
 		/**
 		 * Sets the data used inside the TreeVisualiserDAT for rendering. 
 		 * 
@@ -127,29 +124,108 @@ define(function(require) {
 						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
 						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
 					if (!dataset.isDisplayed) {
-						dataset.valueDict[data.instancePath] = {};
+						dataset.valueDict[data.instancePath] = new function(){};
 						
-						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data); 
+						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+						
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
+						//Add class to dom element depending on node metatype
 						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
+						//$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
+						//Add instancepath as data attribute. This attribute will be used in the event framework
+						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
+						
+						//if no values are presentn for a group element,display theh color
+						if (data._metaType == "VisualGroupElementNode" 
+							&& dataset.valueDict[data.instancePath][label] == "null ") {
+							//set label to empty
+							dataset.valueDict[data.instancePath][label] = "";
+							
+							$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
+
+							//apply color to label by getting unique class and using jquery
+							var color = data.getColor();
+							color = color.replace("0X","#");
+							$("."+label + " .c").css("background-color",color);
+							$("."+label + " .c").css("width","60%");
+							$("."+label + " .c").css("height","95%");
+						}	
 					}
 					else{
-						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
+						if(!set.__ul.closed){
+							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+						}
 					}
 				}
 				else{
 					if (!dataset.isDisplayed) {
 						parentFolder = parent.addFolder(label);
+						//Add class to dom element depending on node metatype
 						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
+						//Add instancepath as data attribute. This attribute will be used in the event framework
+						$(parentFolder.domElement).find("li").data("instancepath", data.getInstancePath());
+						
+						//if no values are presentn for a group element,display theh color
+						if (data._metaType == "VisualGroupNode") {
+							
+							$(parentFolder.domElement).find("li").addClass(label);
+							
+							$("."+label).append( $('<a>').attr('class',label+"-mean"));
+							$("."+label+"-mean").css("float", "right");
+							$("."+label).css("width", "100%");
+							$("."+label+"-mean").css("width", "60%");
+							$("."+label+"-mean").css("height", "90%");
+							$("."+label+"-mean").css("color", "black");
+
+							if(data.getMinDensity() != data.getMaxDensity()){
+								$("."+label+"-mean").append(
+										$('<span>').attr('class', label+"-low").append(data.getMinDensity()));
+								$("."+label+"-mean").append(
+										$('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
+
+								$("."+label+"-low").css("width", "50%");
+								$("."+label+"-high").css("width", "50%");
+								$("."+label+"-low").css("height", "90%");
+								$("."+label+"-high").css("height", "90%");
+								$("."+label+"-low").css("text-align", "center");
+								$("."+label+"-high").css("text-align", "center");
+								$("."+label+"-low").css("float", "left");
+								$("."+label+"-high").css("float", "right");
+
+
+								var lowHexColor = rgbToHex(255, Math.floor(255), 0);
+								var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
+								
+								var lowcolor = lowHexColor.replace("0X","#");
+								var highcolor = highHexColor.replace("0X","#");
+								
+								$("."+label+"-low").css("background-color", lowcolor);
+								$("."+label+"-high").css("background-color", highcolor);
+							}else{
+								$("."+label+"-mean").append(
+										$('<span>').attr('class', label+"-text").append(data.getMinDensity()));
+
+								$("."+label+"-text").css("width", "60%");
+
+								var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
+								
+								var color = hex.replace("0X","#");
+
+								$("."+label+"-mean").css("text-align", "center");
+								$("."+label+"-mean").css("background-color", color);
+								$("."+label+"-text").css("background-color", color);
+							}
+						}
 					}
 					var children = data.getChildren().models;
 					if (children.length > 0){
-						var parentFolderTmp = parentFolder; 
-						for (var childIndex in children){
-							if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
-								this.prepareTree(parentFolderTmp, children[childIndex]);
+						var parentFolderTmp = parentFolder;
+							for (var childIndex in children){
+								if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
+									this.prepareTree(parentFolderTmp, children[childIndex]);
+								}
 							}
-						}
 						if (this.options.expandNodes){
 							parentFolderTmp.open();
 						}
@@ -168,23 +244,6 @@ define(function(require) {
 					this.prepareTree(this.gui, dataset.data);
 				}
 			}
-		},
-
-		getValueFromData : function(data){
-			var labelValue = "";
-			if (data._metaType == "TextMetadataNode"){
-				labelValue = data.getValue();
-			}
-			else if (data._metaType == "FunctionNode") {
-				labelValue = data.getExpression();
-			}
-			else if (data._metaType == "VisualObjectReferenceNode") {
-				labelValue = data.getAspectInstancePath() + " -> " + data.getVisualObjectID();
-			}
-			else{
-				labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
-			}
-			return labelValue;
 		}
 
 	});

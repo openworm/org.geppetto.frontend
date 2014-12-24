@@ -42,9 +42,7 @@ define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		value : "",
-		unit : "",
-		scalingFactor : "",
+		parameter : "",
 		color : "",
 
 		/**
@@ -54,9 +52,7 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.value = options.value;
-			this.unit = options.unit;
-			this.scalingFactor = options.scalingFactor;
+			this.parameter = options.parameter;
 			this.color = options.color;
 			this.name = options.name;
 			this.id = options.id;
@@ -72,7 +68,10 @@ define(function(require) {
 		 * @returns {String} Value of quantity
 		 */
 		getValue : function() {
-			return this.value;
+			if(this.parameter == "" || this.parameter==undefined){
+				return null;
+			}
+			return this.parameter.value;
 		},
 		
 		/**
@@ -82,7 +81,10 @@ define(function(require) {
 		 * @returns {String} Unit of quantity
 		 */
 		getUnit : function() {
-			return this.unit;
+			if(this.parameter == "" || this.parameter==undefined){
+				return null;
+			}
+			return this.parameter.unit;
 		},
 
 		/**
@@ -92,7 +94,10 @@ define(function(require) {
 		 * @returns {String} Scaling Factor for value and unit
 		 */
 		getScalingFactor : function() {
-			return this.scalingFactor;
+			if(this.parameter == "" || this.parameter==undefined){
+				return null;
+			}
+			return this.parameter.scalingFactor;
 		},
 		
 		/**
@@ -108,16 +113,19 @@ define(function(require) {
 		show : function(mode){
 			var visualizationTree = this.getParent().getParent();
 			
-			if(mode){
-				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
-			}
-			else{
-				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
+			var findVisTree = false;
+			while(!findVisTree){
+				if(visualizationTree._metaType!= GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+					visualizationTree = visualizationTree.getParent();
+				}
+				else{
+					findVisTree = true;
+				}
 			}
 			
 			var group = {};
-			group[this.name] = {};
-			group[this.name].color = this.getColor();
+			group[this.getId()] = {};
+			group[this.getId()].color = this.getColor();
 			
 			GEPPETTO.SceneController.showVisualGroups(visualizationTree, group,mode);			
 		},

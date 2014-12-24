@@ -45,6 +45,7 @@ define(function(require) {
 	return Node.Model.extend({
 		aspectInstancePath : null,
 		visualObjectID : null,
+		highlighted : false,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -54,6 +55,7 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.id = options.id;
+			this.name = options.name;
 			this.aspectInstancePath = options.aspectInstancePath;
 			this.visualObjectID = options.visualObjectID;
 			this.instancePath = options.instancePath;
@@ -88,13 +90,14 @@ define(function(require) {
 		 */
 		highlight : function(mode){
 			var pathToObject = this.getAspectInstancePath()+ ".VisualizationTree." + this.getVisualObjectID();
-			if(mode){
-				GEPPETTO.SceneController.split(this.getAspectInstancePath());
+			var targetObjects = {};
+			targetObjects[pathToObject] = "";		
+			GEPPETTO.SceneController.highlight(this.getAspectInstancePath(),targetObjects,mode);
+			
+			this.highlighted = mode;
+			if(this.getParent()._metaType == GEPPETTO.Resources.CONNECTION_NODE){
+				this.getParent().modified = mode;
 			}
-			else{
-				GEPPETTO.SceneController.merge(this.getAspectInstancePath());
-			}
-			GEPPETTO.SceneController.highlight(this.getAspectInstancePath(),pathToObject,mode);
 			
 			return GEPPETTO.Resources.HIGHLIGHTING + pathToObject;
 		},

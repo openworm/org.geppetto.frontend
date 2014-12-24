@@ -60,6 +60,7 @@ define(function(require) {
 
 		entityInstancePath : null,
 		type : null,
+		highlighted : null,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -127,17 +128,28 @@ define(function(require) {
 			if(mode == null || mode == undefined){
 				return GEPPETTO.Resources.MISSING_PARAMETER;
 			}
+			
 			var references = this.getVisualObjectReferenceNodes();
 			var message = GEPPETTO.Resources.HIGHLIGHTING + this.id;
 			
 			if(references.length > 0){
 				//highlight all reference nodes
+				var targetObjects = {};
+				var aspects = {};
 				for(var ref in references){
-					references[ref].highlight(mode);
+					var pathToObject = references[ref].getAspectInstancePath()+ ".VisualizationTree." + references[ref].getVisualObjectID();
+					targetObjects[pathToObject] = "";
+					if(!(references[ref].getAspectInstancePath() in aspects)){
+						aspects[references[ref].getAspectInstancePath()] = "";
+					}
 				}
+				GEPPETTO.SceneController.highlight(targetObjects,aspects,mode);
 			}else{
 				message = GEPPETTO.Resources.NO_REFERENCES_TO_HIGHLIGHT;
 			}
+			
+			this.highlighted = mode;
+			Simulation.highlightedConnections[this.getInstancePath()] = this;
 						
 			return message;
 		},

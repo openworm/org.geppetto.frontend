@@ -131,13 +131,15 @@ define(function(require) {
 							
 							var customNodes = connectionItem.getCustomNodes();
 							for (var customNodeIndex in connectionItem.getCustomNodes()){
-								var customNodesChildren = customNodes[customNodeIndex].getChildren().models;
-								for (var customNodeChildIndex in customNodesChildren){
-									if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
-										linkItem["synapse_type"] = customNodesChildren[customNodeChildIndex].getValue();
-									}
-									else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
-										linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
+								if ('getChildren' in customNodes[customNodeIndex]){
+									var customNodesChildren = customNodes[customNodeIndex].getChildren().models;
+									for (var customNodeChildIndex in customNodesChildren){
+										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
+											linkItem["synapse_type"] = customNodesChildren[customNodeChildIndex].getValue();
+										}
+										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
+											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
+										}
 									}
 								}
 							}

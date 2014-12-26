@@ -240,8 +240,14 @@ define(function(require) {
 		    // Precompute the orders.
 		    var orders = {
 		        id: d3.range(n).sort(function(a, b) { return d3.ascending(nodes[a].id, nodes[b].id); }),
+		        community: d3.range(n).sort(function(a, b) { return nodes[b].community - nodes[a].community; }),
 		        pre_count: d3.range(n).sort(function(a, b) { return nodes[b].pre_count - nodes[a].pre_count; }),
 		        post_count: d3.range(n).sort(function(a, b) { return nodes[b].post_count - nodes[a].post_count; }),
+		    };
+		    
+		    var colours = {
+		            id: function(d) {return c(d.z);},
+		            community: function(d) {return nodes[d.x].community == nodes[d.y].community ? c(nodes[d.x].community) : null;},
 		    };
 
 		    // The default sort order.
@@ -290,7 +296,9 @@ define(function(require) {
 		        	  return nodes[i].id; 
 		        	  });
 		      
-		      var legend = this.svg.selectAll('.legend')
+		    
+		    //LEGEND  
+		    var legend = this.svg.selectAll('.legend')
 		    	.data(c.domain())
 		    	.enter()
 		    	.append('g')
@@ -313,52 +321,60 @@ define(function(require) {
 		    .attr('x', legendRectSize + legendSpacing)
 		    .attr('y', legendRectSize - legendSpacing)
 		    .text(function(d) { return d; });
+		    
+		    //FILTERS AND EVENTS
+		    this.connectivityContainer.append("<div id='filters' style='width:" + sizeLegend.width + "px;left:" + (dim + this.widgetMargin) + "px;bottom:" + (margin.bottom + this.widgetMargin) + "px;'></div>");
+		    $('#filters').append("<span class='filtersLabel'>Order:</span><select id='order'><option value='id'>by Cell Name</option><option value='community'>by Louvain Community </option><option value='pre_count'>by # pre</option><option value='post_count'>by # post</option></select>");
+		    $('#filters').append("<span class='filtersLabel'>Colour:</span><select id='colour'><option value='id'>by Neuromodulator</option><option value='community'>by Louvain Community </option></select>");
 
-		      function row(row) {
-		        var cell = d3.select(this).selectAll(".cell")
-		            .data(row.filter(function(d) { return d.z;})) //only paint conns
-		          .enter().append("rect")
-		            .attr("class", "cell")
-		            .attr("x", function(d) { return x(d.x); })
-		            .attr("width", x.rangeBand())
-		            .attr("height", x.rangeBand())
-		            .attr("title", function(d) { return d.id;})
-		            .style("fill-opacity", function(d) { return z(d.z); })
-		            .style("fill", function(d) {return c(d.z); });
-		            //.on("mouseover", mouseover)
-		            //.on("mouseout", mouseout);
-		            
-		      }
-
-		       function mouseover(p) {
-		         d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
-		         d3.selectAll(".column text").classed("active", function(d, i) { return i == p.x; });
-		        }
-
-		       function mouseout() {
-		         d3.selectAll("text").classed("active", false);
-		       }
-
-		      d3.select("#order").on("change", function() {
-		        order(this.value);
-		      });
-
-		      function order(value) {
-		        x.domain(orders[value]);
-
-		        var t = this.svg.transition().duration(2500);
-
-		        t.selectAll(".row")
-		            .delay(function(d, i) { return x(i) * 4; })
-		            .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
-		          .selectAll(".cell")
-		            .delay(function(d) { return x(d.x) * 4; })
-		            .attr("x", function(d) { return x(d.x); });
-
-		        t.selectAll(".column")
-		            .delay(function(d, i) { return x(i) * 4; })
-		            .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
-		      }
+			d3.select("#colour").on("change", function(svg) {
+				return function() {
+					svg.selectAll(".cell").style("fill", colours[this.value]);
+				}
+			}(this.svg));
+			   
+			d3.select("#order").on("change", function(svg) {
+				return function() {
+					x.domain(orders[this.value]);
+			
+			        var t = svg.transition().duration(2500);
+			        t.selectAll(".row")
+			            .delay(function(d, i) { return x(i) * 4; })
+			            .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
+			            .selectAll(".cell")
+			            .delay(function(d) { return x(d.x) * 4; })
+			            .attr("x", function(d) { return x(d.x); });
+			
+			        t.selectAll(".column")
+			            .delay(function(d, i) { return x(i) * 4; })
+			            .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+				}
+			}(this.svg));
+		    
+		    // UTILITIES
+			function row(row) {
+				var cell = d3.select(this).selectAll(".cell")
+				    .data(row.filter(function(d) { return d.z;})) //only paint conns
+				    .enter().append("rect")
+				    .attr("class", "cell")
+				    .attr("x", function(d) { return x(d.x); })
+				    .attr("width", x.rangeBand())
+				    .attr("height", x.rangeBand())
+				    .attr("title", function(d) { return d.id;})
+				    .style("fill-opacity", function(d) { return z(d.z); })
+				    .style("fill", function(d) {return c(d.z); });
+				    //.on("mouseover", mouseover)
+				    //.on("mouseout", mouseout);
+			}
+			
+			function mouseover(p) {
+				d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
+				d3.selectAll(".column text").classed("active", function(d, i) { return i == p.x; });
+			}
+			
+			function mouseout() {
+			    d3.selectAll("text").classed("active", false);
+			}
 		},
 		
 		createNode: function(nodeId) {

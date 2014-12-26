@@ -33,3 +33,9 @@
 .legend {
     font-size: 12px;
   }
+#filters{
+	position: absolute;
+}
+.filtersLabel{
+	color: #FFFFFF;
+}

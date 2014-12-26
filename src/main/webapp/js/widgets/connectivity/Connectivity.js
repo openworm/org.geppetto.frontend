@@ -47,19 +47,18 @@ define(function(require) {
 		dataset: {},
 		
 		defaultConnectivityOptions:  {
-			width: 460,
-			height: 460,
+			width: 660,
+			height: 500,
 			connectivityLayout: "matrix", //[matrix, hive, force]
 		},
 		
 		initialize : function(options){
+			this.options = options;
 			Widget.View.prototype.initialize.call(this,options);
-			
-			this.options = this.defaultConnectivityOptions;
-			
+			this.setOptions(this.defaultConnectivityOptions);
 			
 			this.render();
-			this.setSize(options.width,options.height);
+			this.setSize(options.height, options.width);
 			
 			this.connectivityContainer = $("#" +this.id);
 			this.connectivityContainer.on("dialogresizestop", function(event, ui) {
@@ -84,9 +83,10 @@ define(function(require) {
 			this.mapping = {};
 			this.mappingSize = 0;
 			this.dataset["root"] = root;
+			this.widgetMargin = 20;
 			
-			this.options.innerWidth = this.connectivityContainer.innerWidth()-20;
-			this.options.innerHeight = this.connectivityContainer.innerHeight()-20;
+			this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
+			this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
 			
 			this.svg = d3.select("#"+this.id).append("svg")
             .attr("width", this.options.innerWidth)
@@ -150,7 +150,6 @@ define(function(require) {
 					}
 				}
 			}
-			console.log(this.dataset);
 		},
 		
 		createForceLayout: function(){
@@ -202,18 +201,20 @@ define(function(require) {
 		},
 		
 		createMatrixLayout: function(){
+			var legendRectSize = 18;
+			var legendSpacing = 4;
+			
 			var margin = {top: 50, right: 10, bottom: 10, left: 50};
-			var dim = (this.options.innerHeight < this.options.innerWidth)?(this.options.innerHeight):(this.options.innerWidth);
+			var sizeLegend = {width: 120};
+			var dim = (this.options.innerHeight < (this.options.innerWidth - sizeLegend.width))?(this.options.innerHeight):(this.options.innerWidth - sizeLegend.width);
 			
 			var x = d3.scale.ordinal().rangeBands([0, dim - margin.top]),
-	        z = d3.scale.linear().domain([0, 4]).clamp(true),
-	        //c = d3.scale.category10().domain(d3.range(10));
-	        c = d3.scale.ordinal().range(["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]);
-	    
+	        // Opacity
+			z = d3.scale.linear().domain([0, 4]).clamp(true),
+			// Colors
+	        c = d3.scale.category10();
 			
 			this.svg
-			.attr("width", dim)
-            .attr("height", dim)
 			.style("padding-left", margin.left + "px")
 			.style("padding-top", margin.top + "px")
 			.append("g")
@@ -245,6 +246,7 @@ define(function(require) {
 
 		    // The default sort order.
 		    x.domain(orders.id);
+		    
 
 		    this.rect = this.svg.append("rect")
 		          .attr("class", "background")
@@ -283,11 +285,34 @@ define(function(require) {
 		      column.append("text")
 		          .attr("x", 4)
 		          .attr("y", x.rangeBand() / 2)
-//		          .attr("dy", ".32em")
 		          .attr("text-anchor", "start")
 		          .text(function(d, i) { 
 		        	  return nodes[i].id; 
 		        	  });
+		      
+		      var legend = this.svg.selectAll('.legend')
+		    	.data(c.domain())
+		    	.enter()
+		    	.append('g')
+		    	.attr('class', 'legend')
+		    	.attr('transform', function(d, i) {
+				    var height = legendRectSize + legendSpacing;
+				    var offset = 0;
+				    var horz = -2 * legendRectSize + dim;
+				    var vert = i * height - offset;
+				    return 'translate(' + horz + ',' + vert + ')';
+				  });
+		    
+		    legend.append('rect')
+		    .attr('width', legendRectSize)
+		    .attr('height', legendRectSize)
+		    .style('fill', function(d) {return c(d); })
+		    .style('stroke', function(d) {return c(d); });
+		    
+		    legend.append('text')
+		    .attr('x', legendRectSize + legendSpacing)
+		    .attr('y', legendRectSize - legendSpacing)
+		    .text(function(d) { return d; });
 
 		      function row(row) {
 		        var cell = d3.select(this).selectAll(".cell")

@@ -69,9 +69,9 @@ define(function(require) {
 					window[this.id].svg.attr("width", width).attr("height", height);
 					window[this.id].force.size([width, height]).resume();
 				}
-//				else if (window[this.id].options.connectivityLayout == 'matrix') {
-//					window[this.id].rect.attr("width", width).attr("height", height);
-//				}
+				else if (window[this.id].options.connectivityLayout == 'matrix') {
+					window[this.id].createLayout();
+				}
 				event.stopPropagation();
 		    });
 		},
@@ -85,21 +85,9 @@ define(function(require) {
 			this.dataset["root"] = root;
 			this.widgetMargin = 20;
 			
-			this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
-			this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
-			
-			this.svg = d3.select("#"+this.id).append("svg")
-            .attr("width", this.options.innerWidth)
-            .attr("height", this.options.innerHeight);
-			
 			this.createDataFromConnections();
 			
-			if (this.options.connectivityLayout == 'matrix'){
-				this.createMatrixLayout();
-			}
-			else if (this.options.connectivityLayout == 'force') {
-				this.createForceLayout();
-			}
+			this.createLayout();
 			
 			return "Metadata or variables added to connectivity widget";
 		},
@@ -149,6 +137,25 @@ define(function(require) {
 						
 					}
 				}
+			}
+		},
+		
+		createLayout: function(){
+			$("svg").remove();
+			
+			this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
+			this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
+			
+			this.svg = d3.select("#"+this.id).append("svg")
+            .attr("width", this.options.innerWidth)
+            .attr("height", this.options.innerHeight);
+			
+			if (this.options.connectivityLayout == 'matrix'){
+				$("#filters").remove();
+				this.createMatrixLayout();
+			}
+			else if (this.options.connectivityLayout == 'force') {
+				this.createForceLayout();
 			}
 		},
 		
@@ -203,12 +210,12 @@ define(function(require) {
 		createMatrixLayout: function(){
 			var legendRectSize = 18;
 			var legendSpacing = 4;
-			
 			var margin = {top: 50, right: 10, bottom: 10, left: 50};
 			var sizeLegend = {width: 120};
-			var dim = (this.options.innerHeight < (this.options.innerWidth - sizeLegend.width))?(this.options.innerHeight):(this.options.innerWidth - sizeLegend.width);
 			
-			var x = d3.scale.ordinal().rangeBands([0, dim - margin.top]),
+			var matrixDim = (this.options.innerHeight < (this.options.innerWidth - sizeLegend.width))?(this.options.innerHeight):(this.options.innerWidth - sizeLegend.width);
+			
+			var x = d3.scale.ordinal().rangeBands([0, matrixDim - margin.top]),
 	        // Opacity
 			z = d3.scale.linear().domain([0, 4]).clamp(true),
 			// Colors
@@ -245,19 +252,20 @@ define(function(require) {
 		        post_count: d3.range(n).sort(function(a, b) { return nodes[b].post_count - nodes[a].post_count; }),
 		    };
 		    
-		    var colours = {
-		            id: function(d) {return c(d.z);},
-		            community: function(d) {return nodes[d.x].community == nodes[d.y].community ? c(nodes[d.x].community) : null;},
-		    };
+//		    TODO: Commented it out once Louvain Community detection was implemented
+//		    var colours = {
+//		            id: function(d) {return c(d.z);},
+//		            community: function(d) {return nodes[d.x].community == nodes[d.y].community ? c(nodes[d.x].community) : null;},
+//		    };
 
 		    // The default sort order.
 		    x.domain(orders.id);
 		    
 
-		    this.rect = this.svg.append("rect")
+		    var rect = this.svg.append("rect")
 		          .attr("class", "background")
-		          .attr("width", dim - margin.left)
-		          .attr("height", dim - margin.top);
+		          .attr("width", matrixDim - margin.left)
+		          .attr("height", matrixDim - margin.top);
 
 		        
 		    var row = this.svg.selectAll(".row")
@@ -306,7 +314,7 @@ define(function(require) {
 		    	.attr('transform', function(d, i) {
 				    var height = legendRectSize + legendSpacing;
 				    var offset = 0;
-				    var horz = -2 * legendRectSize + dim;
+				    var horz = -2 * legendRectSize + matrixDim;
 				    var vert = i * height - offset;
 				    return 'translate(' + horz + ',' + vert + ')';
 				  });
@@ -323,15 +331,17 @@ define(function(require) {
 		    .text(function(d) { return d; });
 		    
 		    //FILTERS AND EVENTS
-		    this.connectivityContainer.append("<div id='filters' style='width:" + sizeLegend.width + "px;left:" + (dim + this.widgetMargin) + "px;bottom:" + (margin.bottom + this.widgetMargin) + "px;'></div>");
-		    $('#filters').append("<span class='filtersLabel'>Order:</span><select id='order'><option value='id'>by Cell Name</option><option value='community'>by Louvain Community </option><option value='pre_count'>by # pre</option><option value='post_count'>by # post</option></select>");
-		    $('#filters').append("<span class='filtersLabel'>Colour:</span><select id='colour'><option value='id'>by Neuromodulator</option><option value='community'>by Louvain Community </option></select>");
+		    this.connectivityContainer.append("<div id='filters' style='width:" + sizeLegend.width + "px;left:" + (matrixDim + this.widgetMargin) + "px;top:" + (matrixDim - 40) + "px;'></div>");
+		    $('#filters').append("<span class='filtersLabel'>Order:</span><select id='order'><option value='id'>by Cell Name</option><option value='pre_count'>by # pre</option><option value='post_count'>by # post</option></select>");
+//		    TODO: Commented it out once Louvain Community detection was implemented
+//		    $('#filters').append("<span class='filtersLabel'>Order:</span><select id='order'><option value='id'>by Cell Name</option><option value='community'>by Louvain Community </option><option value='pre_count'>by # pre</option><option value='post_count'>by # post</option></select>");
+//		    $('#filters').append("<span class='filtersLabel'>Colour:</span><select id='colour'><option value='id'>by Neuromodulator</option><option value='community'>by Louvain Community </option></select>");
 
-			d3.select("#colour").on("change", function(svg) {
-				return function() {
-					svg.selectAll(".cell").style("fill", colours[this.value]);
-				}
-			}(this.svg));
+//			d3.select("#colour").on("change", function(svg) {
+//				return function() {
+//					svg.selectAll(".cell").style("fill", colours[this.value]);
+//				}
+//			}(this.svg));
 			   
 			d3.select("#order").on("change", function(svg) {
 				return function() {
@@ -401,17 +411,7 @@ define(function(require) {
 			}
 		},
 		
-		/**
-		 * Sets the legend for a variable
-		 * 
-		 * @command setLegend(variable, legend)
-		 * @param {Object} variable - variable to change display label in legends
-		 * @param {String} legend - new legend name
-		 */
-		setLegend : function(variable, legend){
-			
-		}
-		
+				
 
 	});
 });

@@ -33,6 +33,9 @@
 .legend {
     font-size: 12px;
   }
+.legendTitle{
+    font-size: 14px;
+  }
 #filters{
 	position: absolute;
 }

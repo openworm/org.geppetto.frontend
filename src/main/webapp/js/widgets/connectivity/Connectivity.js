@@ -160,14 +160,21 @@ define(function(require) {
 		},
 		
 		createForceLayout: function(){
-			var ncolor = d3.scale.category10();
-		    var scolor = d3.scale.category20().domain(["Acetylcholine","Acetylcholine_Tyramine",
-		                                          "Dopamine","FMRFamide","GABA","Generic_GJ",
-		                                          "Glutamate", "Octopamine", "Serotonin",
-		                                          "Serotonin_Acetylcholine","Serotonin_Glutamate"]);
+//		    var scolor = d3.scale.category20().domain(["Acetylcholine","Acetylcholine_Tyramine",
+//		                                          "Dopamine","FMRFamide","GABA","Generic_GJ",
+//		                                          "Glutamate", "Octopamine", "Serotonin",
+//		                                          "Serotonin_Acetylcholine","Serotonin_Glutamate"]);
+			var legendRectSize = 18;
+			var legendSpacing = 4;
+			var sizeLegend = {width: 120};
+			var legendPos = this.options.innerWidth - sizeLegend.width;
+			
+		    var scolor = d3.scale.category20();
+		    var ncolor = d3.scale.category10();
+			
 		    this.force = d3.layout.force()
 		        .charge(-250)
-		        .linkDistance(60)
+		        .linkDistance(100)
 		        .size([this.options.innerWidth, this.options.innerHeight]);
 
 		        
@@ -179,7 +186,7 @@ define(function(require) {
 	            .data(this.dataset.links)
 	            .enter().append("line")
 	            .attr("class", "link")
-	            .style("stroke", function(d) {return scolor(d.neurotransmitter);})
+	            .style("stroke", function(d) {return scolor(d.synapse_type);})
 	            .style("stroke-width", function(d) {return 0.5*d.weight;});
 
 	            
@@ -189,7 +196,9 @@ define(function(require) {
 	            .attr("class", "node")
 	            .attr("r", 5)  // radius
 	            .style("fill", function(d) {
-	                return ncolor(d.community); 
+//	                return ncolor(d.community);
+	            	console.log(d);
+	                return ncolor(d.id[0]);
 	            })
 	            .call(this.force.drag);
 
@@ -205,6 +214,74 @@ define(function(require) {
 	            node.attr("cx", function(d) { return d.x; })
 	                .attr("cy", function(d) { return d.y; });
 	        });
+	        
+	      //LEGEND
+	        //NODES
+	        this.svg.append('text')
+	        	.text('Nodes - Cell Types')
+	        	.attr('class', 'legendTitle')
+	        	.attr('x', -2 * legendRectSize + legendPos)
+	        	.attr('y', legendRectSize + legendSpacing);
+	        
+	        var vertPosLegend = 0;
+		    var legend = this.svg.selectAll('.legend')
+		    	.data(ncolor.domain())
+		    	.enter()
+		    	.append('g')
+		    	.attr('class', 'legend')
+		    	.attr('transform', function(d, i) {
+				    var height = legendRectSize + legendSpacing;
+				    var offset = 2 * legendRectSize;
+				    var horz = -2 * legendRectSize + legendPos;
+				    vertPosLegend = i * height + offset;
+				    return 'translate(' + horz + ',' + vertPosLegend + ')';
+				  });
+		    
+		    
+		    
+		    legend.append('rect')
+		    .attr('width', legendRectSize)
+		    .attr('height', legendRectSize)
+		    .style('fill', function(d) {return ncolor(d); })
+		    .style('stroke', function(d) {return ncolor(d); });
+		    
+		    legend.append('text')
+		    .attr('x', legendRectSize + legendSpacing)
+		    .attr('y', legendRectSize - legendSpacing)
+		    .text(function(d) { return d; });
+		    
+		  //LINKS
+	        this.svg.append('text')
+	        	.text('Links - Synapses Types')
+	        	.attr('class', 'legendTitle')
+	        	.attr('x', -2 * legendRectSize + legendPos)
+	        	.attr('y', vertPosLegend + 3 * legendRectSize);
+	        
+		    var legend = this.svg.selectAll('.legend2')
+		    	.data(scolor.domain())
+		    	.enter()
+		    	.append('g')
+		    	.attr('class', 'legend')
+		    	.attr('transform', function(d, i) {
+				    var height = legendRectSize + legendSpacing;
+				    var offset = vertPosLegend + 4 * legendRectSize;
+				    var horz = -2 * legendRectSize + legendPos;
+				    var vert = i * height + offset;
+				    return 'translate(' + horz + ',' + vert + ')';
+				  });
+		    
+		    
+		    
+		    legend.append('rect')
+		    .attr('width', legendRectSize)
+		    .attr('height', legendRectSize)
+		    .style('fill', function(d) {return scolor(d); })
+		    .style('stroke', function(d) {return scolor(d); });
+		    
+		    legend.append('text')
+		    .attr('x', legendRectSize + legendSpacing)
+		    .attr('y', legendRectSize - legendSpacing)
+		    .text(function(d) { return d; });
 		},
 		
 		createMatrixLayout: function(){

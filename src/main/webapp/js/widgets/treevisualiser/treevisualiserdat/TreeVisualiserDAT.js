@@ -98,12 +98,14 @@ define(function(require) {
 		 */
 		setData : function(state, options) {
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
-			dataset.valueDict = {};
 			
+			dataset.valueDict = {};
 			this.prepareTree(this.gui, dataset.data);
-
-			dataset.isDisplayed = true;
 			this.datasets.push(dataset);
+			
+			dataset.isDisplayed = true;
+			//Disable input elements
+			$(this.dialog).find("input").prop('disabled', true);
 
 			return "Metadata or variables to display added to tree visualiser";
 		},

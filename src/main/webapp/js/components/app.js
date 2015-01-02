@@ -20,6 +20,8 @@ define(function(require){
 	var webGLStarted = GEPPETTO.webGLAvailable();
 
 	if(webGLStarted && simParam) {
-		GEPPETTO.Console.executeCommand('Simulation.load("' + simParam + '")');
+		$(document).ready(function() {
+			GEPPETTO.Console.executeCommand('Simulation.load("' + simParam + '")');
+		});
 	}
 });

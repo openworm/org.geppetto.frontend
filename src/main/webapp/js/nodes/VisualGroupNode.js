@@ -56,6 +56,8 @@ define(function(require) {
 		type : "",
 		highSpectrumColor : "",
 		lowSpectrumColor : "",
+		minDensity : "",
+		maxDensity : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -144,7 +146,6 @@ define(function(require) {
 			}
 			
 			if(mode){
-				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
 				message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
 
 				if(elements.length > 0){
@@ -154,7 +155,6 @@ define(function(require) {
 				}
 			}
 			else{
-				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
 				message = GEPPETTO.Resources.HIDING_VISUAL_GROUPS + this.id;
 
 				if(elements.length > 0){
@@ -182,8 +182,8 @@ define(function(require) {
 			}					
 			mean = total/elements.length;
 			
-			var minDensity = Math.min.apply(null, allElements);
-			var maxDensity = Math.max.apply(null, allElements);
+			this.minDensity = Math.min.apply(null, allElements);
+			this.maxDensity = Math.max.apply(null, allElements);
 			
 			//highlight all reference nodes
 			for(var el in elements){
@@ -191,9 +191,9 @@ define(function(require) {
 				var color = elements[el].getColor();
 				if(elements[el].getValue()!=null){
 					var intensity = 1;
-					if (maxDensity != minDensity)
+					if (this.maxDensity != this.minDensity)
 					{
-						intensity = (elements[el].getValue() - minDensity) / (maxDensity - minDensity);
+						intensity = (elements[el].getValue() - this.minDensity) / (this.maxDensity - this.minDensity);
 					}
 					
 					color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
@@ -202,6 +202,37 @@ define(function(require) {
 			}
 			
 			GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups, mode);
+		},
+		
+		getMinDensity : function(){
+			
+			var allElements = new Array();
+						
+			var elements = this.getVisualGroupElements();
+
+			//calculate mean;
+			for(var el in elements){
+				if(elements[el].getValue()!=null){
+					allElements.push(elements[el].getValue());
+				}
+			}
+			
+			return  Math.min.apply(null, allElements);
+		},
+		
+		getMaxDensity : function(){
+			var allElements = new Array();
+			
+			var elements = this.getVisualGroupElements();
+
+			//calculate mean;
+			for(var el in elements){
+				if(elements[el].getValue()!=null){
+					allElements.push(elements[el].getValue());
+				}
+			}
+			
+			return  Math.max.apply(null, allElements);
 		},
 		
 		/**
@@ -215,14 +246,3 @@ define(function(require) {
 		}
 	});
 });
-
-function componentToHex(c)
-{
-	var hex = c.toString(16);
-	return hex.length == 1 ? "0" + hex : hex;
-}
-
-function rgbToHex(r, g, b)
-{
-	return "0X" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}

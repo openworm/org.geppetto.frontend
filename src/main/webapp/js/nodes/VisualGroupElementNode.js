@@ -123,13 +123,6 @@ define(function(require) {
 				}
 			}
 			
-			if(mode){
-				GEPPETTO.SceneController.split(visualizationTree.getParent().getInstancePath());
-			}
-			else{
-				GEPPETTO.SceneController.merge(visualizationTree.getParent().getInstancePath());
-			}
-			
 			var group = {};
 			group[this.getId()] = {};
 			group[this.getId()].color = this.getColor();

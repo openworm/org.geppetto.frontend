@@ -134,9 +134,16 @@ define(function(require) {
 			
 			if(references.length > 0){
 				//highlight all reference nodes
+				var targetObjects = {};
+				var aspects = {};
 				for(var ref in references){
-					references[ref].highlight(mode);
+					var pathToObject = references[ref].getAspectInstancePath()+ ".VisualizationTree." + references[ref].getVisualObjectID();
+					targetObjects[pathToObject] = "";
+					if(!(references[ref].getAspectInstancePath() in aspects)){
+						aspects[references[ref].getAspectInstancePath()] = "";
+					}
 				}
+				GEPPETTO.SceneController.highlight(targetObjects,aspects,mode);
 			}else{
 				message = GEPPETTO.Resources.NO_REFERENCES_TO_HIGHLIGHT;
 			}

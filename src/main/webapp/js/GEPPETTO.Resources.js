@@ -99,6 +99,8 @@ define(function(require) {
 			SIMULATION_UNSPECIFIED: "Simulation not specified",
 
 			SIMULATION_ALREADY_STOPPED: "Simulation was already stopped",
+			
+			SIMULATION_ALREADY_STARTED: "Simulation was already started",
 
 			LOADING_FROM_CONTENT: "Outbound Message Sent: Load Simulation from editing console",
 
@@ -247,6 +249,8 @@ define(function(require) {
 			SERVER_UNAVAILABLE: "Server Unavailable",
 
 			SERVER_AVAILABLE: "Server Available",
+			
+			SIMULATOR_FULL : "Simulation Full",
 
 			WEBGL_FAILED: "Initializing Error: Unable to initialize WebGL",
 			
@@ -326,6 +330,7 @@ define(function(require) {
 			REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",
 			REMOVE_TREEVISUALISERD3_WIDGETS: "Tree Visualiser D3 widget(s) removed",
 			REMOTE_VARIABLEVISUALISER_WIDGETS: "Variable Visualiser widget(s) removed",
+			REMOVE_CONNECTIVITY_WIDGETS: "Connectivity widget(s) removed",
 			NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
 
 			/**

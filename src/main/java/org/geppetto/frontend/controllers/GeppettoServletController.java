@@ -113,6 +113,8 @@ public class GeppettoServletController {
 	public void addConnection(GeppettoMessageInbound newVisitor) {
 		_connections.put(newVisitor.getConnectionID(), newVisitor);
 
+		_logger.info("New connection " + newVisitor.getConnectionID());
+		
 		performStartUpCheck(newVisitor);
 	}
 
@@ -125,6 +127,7 @@ public class GeppettoServletController {
 	public void removeConnection(GeppettoMessageInbound exitingVisitor) {
 		if (_connections.contains(exitingVisitor)) {
 			_connections.remove(exitingVisitor.getConnectionID());
+			_logger.info("Removing connection " + exitingVisitor.getConnectionID());
 			// Handle operations after user closes connection
 			postClosingConnectionCheck(exitingVisitor);
 		}
@@ -138,6 +141,17 @@ public class GeppettoServletController {
 	 */
 	private void performStartUpCheck(GeppettoMessageInbound newVisitor) {
 
+		for(GeppettoMessageInbound client : this.getConnections()){
+			CharBuffer buffer = CharBuffer.wrap("ping");
+			try {
+				client.getWsOutbound().writeTextMessage(buffer);
+			} catch (IOException e) {
+				_logger.error("Unable to communicate with client "
+						+ e.getMessage() + ". Removing connection.");
+				this.removeConnection(client);
+			}
+		}
+		
 		if (this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.OBSERVE) {
 			// Simulation is being used, notify new user controls are
 			// unavailable
@@ -145,17 +159,15 @@ public class GeppettoServletController {
 				simulationControlsUnavailable(newVisitor);
 			}
 		} else if (this._simulationServerConfig.getServerBehaviorMode() == ServerBehaviorModes.MULTIUSER) {
-			int simulatorCapacity = newVisitor.getSimulationService()
-					.getSimulationCapacity();
+			int simulatorCapacity = newVisitor.getSimulationService().getSimulationCapacity();
 
 			if ((this.getConnections().size() > simulatorCapacity)
 					&& (simulatorCapacity > 1)) {
 
-				int position = (this.getConnections().size() - newVisitor
-						.getSimulationService().getSimulationCapacity());
-				String update = "{ \"simulatorName\":" + '"'
-						+ newVisitor.getSimulationService().getSimulatorName()
-						+ '"' + ", \"queuePosition\": " + position + "}";
+				int position = (this.getConnections().size() - 
+						newVisitor.getSimulationService().getSimulationCapacity());
+				String update = "Simulation is full, you are number " + position + " on the" +
+						" waitlist";
 
 				_queueUsers.add(newVisitor);
 				messageClient(null, newVisitor,
@@ -191,15 +203,13 @@ public class GeppettoServletController {
 		switch (_simulationServerConfig.getServerBehaviorMode()) {
 		// Handle multi user mode
 		case MULTIUSER:
-			_simulationCallbackListener = new MultiuserSimulationCallback(
-					visitor);
+			_simulationCallbackListener = new MultiuserSimulationCallback(visitor);
 			loadInMultiUserMode(requestID, simulation, visitor);
 			break;
 
 			// Handle observe mode
 		case OBSERVE:
-			_simulationCallbackListener = ObservermodeSimulationCallback
-			.getInstance();
+			_simulationCallbackListener = ObservermodeSimulationCallback.getInstance();
 			loadInObserverMode(requestID, simulation, visitor);
 			break;
 		default:
@@ -292,8 +302,7 @@ public class GeppettoServletController {
 		try {
 			url = new URL(simulation);
 			// simulation is URL, initialize simulation services
-			visitor.getSimulationService().init(url, requestID,
-					_simulationCallbackListener);
+			visitor.getSimulationService().init(url, requestID,_simulationCallbackListener);
 			postLoadSimulation(requestID, visitor);
 			loaded = true;
 		}
@@ -303,8 +312,7 @@ public class GeppettoServletController {
 		 */
 		catch (MalformedURLException e) {
 			try {
-				visitor.getSimulationService().init(simulation, requestID,
-						_simulationCallbackListener);
+				visitor.getSimulationService().init(simulation, requestID,_simulationCallbackListener);
 				postLoadSimulation(requestID, visitor);
 				loaded = true;
 			} catch (GeppettoInitializationException e1) {
@@ -331,13 +339,10 @@ public class GeppettoServletController {
 	/**
 	 * Runs scripts that are specified in the simulation
 	 * 
-	 * @param requestID
-	 *            - requestID received from client
-	 * @param visitor
-	 *            - Visitor loading the simulation
+	 * @param requestID - requestID received from client
+	 * @param visitor - Visitor loading the simulation
 	 */
-	private void postLoadSimulation(String requestID,
-			GeppettoMessageInbound visitor) {
+	private void postLoadSimulation(String requestID,GeppettoMessageInbound visitor) {
 
 		messageClient(requestID, visitor,
 				OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
@@ -364,8 +369,7 @@ public class GeppettoServletController {
 	/**
 	 * Start the simulation
 	 */
-	public void startSimulation(String requestID,
-			GeppettoMessageInbound controllingUser) {
+	public void startSimulation(String requestID,GeppettoMessageInbound controllingUser) {
 		try {
 			controllingUser.getSimulationService().start(requestID);
 		} catch (GeppettoExecutionException e) {
@@ -376,8 +380,7 @@ public class GeppettoServletController {
 	/**
 	 * Pause the simulation
 	 */
-	public void pauseSimulation(String requestID,
-			GeppettoMessageInbound controllingUser) {
+	public void pauseSimulation(String requestID,GeppettoMessageInbound controllingUser) {
 		try {
 			controllingUser.getSimulationService().pause();
 			// notify user simulation has been paused
@@ -391,8 +394,7 @@ public class GeppettoServletController {
 	/**
 	 * Stop the running simulation
 	 */
-	public void stopSimulation(String requestID,
-			GeppettoMessageInbound controllingUser) {
+	public void stopSimulation(String requestID,GeppettoMessageInbound controllingUser) {
 		try {
 			controllingUser.getSimulationService().stop();
 			// notify user simulation has been stopped
@@ -409,8 +411,7 @@ public class GeppettoServletController {
 	 * @param observingVisitor
 	 *            - Geppetto visitor joining list of simulation observers
 	 */
-	public void observeSimulation(String requestID,
-			GeppettoMessageInbound observingVisitor) {
+	public void observeSimulation(String requestID,GeppettoMessageInbound observingVisitor) {
 		_observers.add(observingVisitor);
 
 		observingVisitor.setVisitorRunMode(VisitorRunMode.OBSERVING);
@@ -430,11 +431,9 @@ public class GeppettoServletController {
 	 * 
 	 * @throws JsonProcessingException
 	 */
-	public void listWatchableVariables(String requestID,
-			GeppettoMessageInbound visitor) throws JsonProcessingException {
+	public void listWatchableVariables(String requestID,GeppettoMessageInbound visitor) throws JsonProcessingException {
 		// get watchable variables for the entire simulation
-		VariableList vars = visitor.getSimulationService()
-				.listWatchableVariables();
+		VariableList vars = visitor.getSimulationService().listWatchableVariables();
 
 		// serialize
 		ObjectMapper mapper = new ObjectMapper();
@@ -450,11 +449,9 @@ public class GeppettoServletController {
 	 * 
 	 * @throws JsonProcessingException
 	 */
-	public void listForceableVariables(String requestID,
-			GeppettoMessageInbound visitor) throws JsonProcessingException {
+	public void listForceableVariables(String requestID,GeppettoMessageInbound visitor) throws JsonProcessingException {
 		// get forceable variables for the entire simulation
-		VariableList vars = visitor.getSimulationService()
-				.listForceableVariables();
+		VariableList vars = visitor.getSimulationService().listForceableVariables();
 
 		// serialize
 		ObjectMapper mapper = new ObjectMapper();
@@ -477,8 +474,7 @@ public class GeppettoServletController {
 			GeppettoInitializationException {
 		List<WatchList> lists = null;
 
-		lists = fromJSON(new TypeReference<List<WatchList>>() {
-		}, jsonLists);
+		lists = fromJSON(new TypeReference<List<WatchList>>() {}, jsonLists);
 		visitor.getSimulationService().addWatchLists(lists);
 
 		// serialize watch-lists
@@ -503,12 +499,10 @@ public class GeppettoServletController {
 	 * @param requestID
 	 * @throws JsonProcessingException
 	 */
-	public void startWatch(String requestID, GeppettoMessageInbound visitor)
-			throws JsonProcessingException {
+	public void startWatch(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException {
 		visitor.getSimulationService().startWatch();
 
-		List<WatchList> watchLists = visitor.getSimulationService()
-				.getWatchLists();
+		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
 
 		// serialize watch-lists
 		ObjectMapper mapper = new ObjectMapper();
@@ -590,14 +584,14 @@ public class GeppettoServletController {
 				_logger.error("Unable to stop simulation for exiting user");
 			}
 
-			int simulatorCapacity = exitingVisitor.getSimulationService()
-					.getSimulationCapacity();
+			int simulatorCapacity = exitingVisitor.getSimulationService().getSimulationCapacity();
 
-			if (this.getConnections().size() == simulatorCapacity) {
-				GeppettoMessageInbound nextVisitorInLine = this._queueUsers
-						.get(0);
+			int connectionsSize = this.getConnections().size(); 
+			if (connectionsSize >= simulatorCapacity) {
+				GeppettoMessageInbound nextVisitorInLine = this._queueUsers.get(0);
 				messageClient(null, nextVisitorInLine,
 						OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
+				this._queueUsers.remove(nextVisitorInLine);
 			}
 		}
 
@@ -624,8 +618,7 @@ public class GeppettoServletController {
 				for (GeppettoMessageInbound visitor : _observers) {
 					// visitor.setVisitorRunMode(VisitorRunMode.DEFAULT);
 					// send message to alert client of server availability
-					messageClient(null, visitor,
-							OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
+					messageClient(null, visitor,OUTBOUND_MESSAGE_TYPES.SERVER_AVAILABLE);
 				}
 
 				_simulationInUse = false;
@@ -657,17 +650,14 @@ public class GeppettoServletController {
 	 * 
 	 * @param requestID
 	 * 
-	 * @param connection
-	 *            - client to receive the message
-	 * @param type
-	 *            - type of message to be send
+	 * @param connection - client to receive the message
+	 * @param type - type of message to be send
 	 * @param string
 	 */
 	public void messageClient(String requestID,
 			GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type) {
 		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory
-				.getTransportMessage(requestID, type, null);
+		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, null);
 		String msg = new Gson().toJson(transportMsg);
 
 		// Send the message to the client
@@ -678,19 +668,15 @@ public class GeppettoServletController {
 	 * Requests JSONUtility class for a json object with simulation update to be
 	 * send to the client
 	 * 
-	 * @param connection
-	 *            - client to receive the simulation update
-	 * @param connection
-	 *            - Type of udpate to be send
-	 * @param reloadCanvas
-	 *            - update to be sent
+	 * @param connection - client to receive the simulation update
+	 * @param connection - Type of udpate to be send
+	 * @param reloadCanvas - update to be sent
 	 */
 	public void messageClient(String requestID,
 			GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type,
 			String update) {
 		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory
-				.getTransportMessage(requestID, type, update);
+		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, update);
 		String msg = new Gson().toJson(transportMsg);
 
 		sendMessage(connection, msg);
@@ -700,10 +686,8 @@ public class GeppettoServletController {
 	 * Sends a message to a specific user. The id of the WebSocket connection is
 	 * used to contact the desired user.
 	 * 
-	 * @param id
-	 *            - ID of WebSocket connection that will be sent a message
-	 * @param msg
-	 *            - The message the user will be receiving
+	 * @param id - ID of WebSocket connection that will be sent a message
+	 * @param msg - The message the user will be receiving
 	 */
 	public void sendMessage(GeppettoMessageInbound visitor, String msg) {
 		try {
@@ -717,6 +701,7 @@ public class GeppettoServletController {
 		} catch (IOException ignore) {
 			_logger.error("Unable to communicate with client "
 					+ ignore.getMessage());
+			this.removeConnection(visitor);
 		}
 	}
 
@@ -729,13 +714,11 @@ public class GeppettoServletController {
 		return _simulationInUse;
 	}
 
-	public void getSimulationConfiguration(String requestID, String url,
-			GeppettoMessageInbound visitor) {
+	public void getSimulationConfiguration(String requestID, String url,GeppettoMessageInbound visitor) {
 		String simulationConfiguration;
 
 		try {
-			simulationConfiguration = visitor.getSimulationService()
-					.getSimulationConfig(new URL(url));
+			simulationConfiguration = visitor.getSimulationService().getSimulationConfig(new URL(url));
 			messageClient(requestID, visitor,
 					OUTBOUND_MESSAGE_TYPES.SIMULATION_CONFIGURATION,
 					simulationConfiguration);
@@ -750,44 +733,32 @@ public class GeppettoServletController {
 		}
 	}
 
-	public void getVersionNumber(String requestID,
-			GeppettoMessageInbound visitor) {
+	public void getVersionNumber(String requestID,GeppettoMessageInbound visitor) {
 
 		Properties prop = new Properties();
 
 		try {
-			prop.load(GeppettoServletController.class
-					.getResourceAsStream("/Geppetto.properties"));
+			prop.load(GeppettoServletController.class.getResourceAsStream("/Geppetto.properties"));
 			messageClient(requestID, visitor,
-					OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION,
-					prop.getProperty("Geppetto.version"));
+					OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION,prop.getProperty("Geppetto.version"));
 		} catch (IOException e) {
 			_logger.error("Unable to read GEPPETTO.properties file");
 		}
 	}
 
-	public void getModelTree(String requestID, String aspectInstancePath,
-			GeppettoMessageInbound visitor) {
-		String modelTree = visitor.getSimulationService().getModelTree(
-				aspectInstancePath);
-
-//		String update = "{\"aspectInstancePath\":" + '"' + aspectInstancePath
-//				+ '"' + ",\"modelTree\":{" + modelTree + "}}";
+	public void getModelTree(String requestID, String aspectInstancePath,GeppettoMessageInbound visitor) {
+		String modelTree = visitor.getSimulationService().getModelTree(aspectInstancePath);
 
 		// message the client with results
-		this.messageClient(requestID, visitor,
-				OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, modelTree);
+		this.messageClient(requestID, visitor,OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, modelTree);
 	}
 
 	/**
 	 * Sends parsed data from script to visitor client
 	 * 
-	 * @param requestID
-	 *            - Requested ID for process
-	 * @param url
-	 *            - URL of script location
-	 * @param visitor
-	 *            - Client doing the operation
+	 * @param requestID - Requested ID for process
+	 * @param url - URL of script location
+	 * @param visitor - Client doing the operation
 	 */
 	public void sendScriptData(String requestID, URL url,
 			GeppettoMessageInbound visitor) {
@@ -795,19 +766,16 @@ public class GeppettoServletController {
 			String line = null;
 			StringBuilder sb = new StringBuilder();
 
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					url.openStream()));
+			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 
 			while ((line = br.readLine()) != null) {
 				sb.append(line + "\n");
 			}
 			String script = sb.toString();
 
-			messageClient(requestID, visitor,
-					OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT, script);
+			messageClient(requestID, visitor,OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT, script);
 		} catch (IOException e) {
-			messageClient(requestID, visitor,
-					OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+			messageClient(requestID, visitor,OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 		}
 	}
 

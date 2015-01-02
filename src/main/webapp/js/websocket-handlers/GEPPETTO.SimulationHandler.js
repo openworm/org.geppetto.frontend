@@ -174,11 +174,8 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.SIMULATOR_FULL] = function(payload) {
-            var simulatorInfo = JSON.parse(payload.simulatorFull);
-            var simulatorName = simulatorInfo.simulatorName;
-            var queuePosition = simulatorInfo.queuePosition;
             GEPPETTO.FE.disableSimulationControls();
-            GEPPETTO.FE.fullSimulatorNotification(simulatorName, queuePosition);
+        	GEPPETTO.FE.infoDialog(GEPPETTO.Resources.SIMULATOR_FULL, payload.message);
         };
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {

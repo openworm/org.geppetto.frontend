@@ -16,6 +16,7 @@ define(function(require) {
 			scene: null,
 			meshes : {},
 			splitMeshes : {},
+			connectionLines : {},
 			renderer: null,
 			stats: null,
 			gui: null,
@@ -44,6 +45,7 @@ define(function(require) {
 			VARS.visualModelMap = {};
 			VARS.meshes = {};
 			VARS.splitMeshes = {};
+			VARS.connectionLines = {};
 		};
 
 		/**

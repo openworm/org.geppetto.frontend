@@ -94,7 +94,7 @@ define(function(require) {
 			 * @returns {String}  Simulation status after starting it.
 			 */
 			start: function() {
-				if(this.isLoaded()) {
+				if(this.isLoaded() && (this.status != this.StatusEnum.STARTED)) {
 					GEPPETTO.MessageSocket.send("start", null);
 
 					if(this.status == this.StatusEnum.STOPPED){
@@ -106,6 +106,9 @@ define(function(require) {
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_START);
 					 
 					return GEPPETTO.Resources.SIMULATION_STARTED;
+				}
+				else if(this.isLoaded() && this.status == this.StatusEnum.STARTED){
+					return GEPPETTO.Resources.SIMULATION_ALREADY_STARTED;
 				}
 				else {
 					return GEPPETTO.Resources.UNABLE_TO_START_SIMULATION;

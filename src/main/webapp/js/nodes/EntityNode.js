@@ -161,8 +161,8 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().show_outputs){
 							this.showOutputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().draw_connection_lines){
-							this.drawConnectionLines(true);
+						if(Simulation.getSelectionOptions().draw_connections_lines){
+							this.showConnectionLines(true);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(false);
@@ -220,8 +220,8 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().show_outputs){
 							this.showOutputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().draw_connection_lines){
-							this.drawConnectionLines(false);
+						if(Simulation.getSelectionOptions().draw_connections_lines){
+							this.showConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(false);
@@ -300,7 +300,7 @@ define(function(require) {
 				getZoomPaths : function(entity){
 					var aspects = entity.getAspects();
 					var entities = entity.getEntities();
-					var aspectPaths = new Array();
+					var aspectPaths = {};
 					
 					for(var e in entities){
 						this.getZoomPaths(entities[e]);
@@ -308,7 +308,7 @@ define(function(require) {
 					
 					for(var a in aspects){
 						var aspect = aspects[a];
-						aspectPaths.push(aspect.getInstancePath());
+						aspectPaths[aspect.getInstancePath()]="";
 					}
 					
 					return aspectPaths;
@@ -434,6 +434,41 @@ define(function(require) {
 						paths = paths.concat(this.getAspectPaths(ent));
 					}
 					return paths;
+				},
+				
+				/**
+				 * Show connection lines for this entity.
+				 
+				 * @command EntityNode.showConnectionLines()
+				 * @param {boolean} mode - Show or hide connection lines
+				 */
+				showConnectionLines : function(mode){
+					if(mode == null || mode == undefined){
+						return GEPPETTO.Resources.MISSING_PARAMETER;
+					}
+					
+					var lines = {};
+					for(var c in this.getConnections()){
+						var connection = this.getConnections()[c];
+						
+						var entity = 
+							GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, connection.getEntityInstancePath());
+						
+						var paths = this.getAspectPaths(entity);
+						
+						for(var p in paths){
+							lines[paths[p]] = connection.getType();
+						}
+					}
+					
+					var origin = this.getAspects()[0].getInstancePath();
+					//show/hide connection lines
+					if(mode){
+						GEPPETTO.SceneController.showConnectionLines(origin,lines);
+					}
+					else{
+						GEPPETTO.SceneController.hideConnectionLines();
+					}
 				},
 				
 				/**

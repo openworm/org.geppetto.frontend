@@ -43,6 +43,7 @@ define(function(require) {
 		var messageHandlers = [];
 		var clientID = null;
 		var nextID = 0;
+		var connectionInterval = 300;
 
 		/**
 		 * Web socket creation and communication
@@ -84,6 +85,9 @@ define(function(require) {
 				};
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
+					if(msg.data=="ping"){
+						return;
+					}
 					var parsedServerMessage = JSON.parse(msg.data);
 
 					//notify all handlers
@@ -115,7 +119,6 @@ define(function(require) {
 			 * Sends messages to the server
 			 */
 			send: function(command, parameter) {
-
 				var requestID = this.createRequestID();
 
 				//if there's a script running let it know the requestID it's using to send one of it's commands
@@ -123,7 +126,19 @@ define(function(require) {
 					GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
 				}
 
-				GEPPETTO.MessageSocket.socket.send(messageTemplate(requestID, command, parameter));
+				this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
+			},
+			
+			waitForConnection: function(messageTemplate, interval){
+				if (this.isReady() === 1) {
+					GEPPETTO.MessageSocket.socket.send(messageTemplate);
+				}
+				else{
+					var that = this;
+			        setTimeout(function () {
+			            that.waitForConnection(messageTemplate);
+			        }, interval);
+				}
 			},
 
 			isReady: function() {

@@ -51,7 +51,8 @@ define(function(require) {
 			SCATTER3D: 2,
 			TREEVISUALISERDAT: 3,
 			TREEVISUALISERD3: 4,
-			VARIABLEVISUALISER: 5
+			VARIABLEVISUALISER: 5,
+			CONNECTIVITY: 6
 		};
 
 		/**
@@ -91,6 +92,10 @@ define(function(require) {
 					case GEPPETTO.Widgets.VARIABLEVISUALISER:
 						widget = GEPPETTO.VariableVisualiserController.addVariableVisualiserWidget();
 						break;
+					//create connectivity widget
+					case GEPPETTO.Widgets.CONNECTIVITY:
+						widget = GEPPETTO.ConnectivityController.addConnectivityWidget();
+						break;						
 					default:
 						break;
 				}
@@ -130,6 +135,10 @@ define(function(require) {
 					case GEPPETTO.Widgets.VARIABLEVISUALISER:
 						GEPPETTO.VariableVisualiserController.removeVariableVisualiserWidgets();
 						return GEPPETTO.Resources.REMOVE_VARIABLEVISUALISER_WIDGETS;
+						//create connectivity widget
+					case GEPPETTO.Widgets.CONNECTIVITY:
+						GEPPETTO.ConnectivityController.removeConnectivityWidget();
+						return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
 				}

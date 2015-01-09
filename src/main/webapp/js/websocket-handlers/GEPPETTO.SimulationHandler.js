@@ -137,7 +137,7 @@ define(function(require) {
             if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
                 if(!GEPPETTO.isScenePopulated()) {
                     // the first time we need to create the objects
-                    GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+                    GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree);
                 }
                 else {
                     // any other time we just update them
@@ -245,9 +245,9 @@ define(function(require) {
 
 				// print node
 				var arrayPart = (size != null) ? "[" + size + "]" : "";
-				var indentation = "   ↪";
+				var indentation = "   ���";
 				for(var j = 0; j < indent; j++) {
-					indentation = indentation.replace("↪", " ") + "   ↪ ";
+					indentation = indentation.replace("���", " ") + "   ��� ";
 				}
 				formattedNode = indentation + name + arrayPart;
 

@@ -329,6 +329,74 @@ define(function(require) {
 			initializationTime = new Date();	
 		});
 		
+		module("Test Recording Simulation");
+		asyncTest("Test Recordings in Simulation Tree", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							var scene = JSON.parse(payload.update).scene;
+
+							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
+							var payload = JSON.parse(parsedServerMessage.data);
+
+							//Reads scripts received for the simulation
+							var scripts = JSON.parse(payload.get_scripts).scripts;
+
+							//make sure object isn't empty
+							if(!jQuery.isEmptyObject(scripts)) {
+								//run the received scripts
+								GEPPETTO.ScriptRunner.fireScripts(scripts);
+							}
+							break;
+							
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
+							 this.startRequestID = parsedServerMessage.requestID;
+							 break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
+							break;
+						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
+							var payload = JSON.parse(parsedServerMessage.data);
+							GEPPETTO.ScriptRunner.runScript(payload.run_script);
+							break;
+						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.SIMULATION_OVER:
+							
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
+							if(parsedServerMessage.requestID == this.startRequestID){
+								if(!this.checkUpdate2){
+									this.checkUpdate2 = true;
+
+									var payload = JSON.parse(parsedServerMessage.data);
+									var scene = JSON.parse(payload.update).scene;
+
+									GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
+									
+									notEqual(purkinje.electrical.SimulationTree.P.neuron0.ge,null, "Recording variable ge present");
+									notEqual(purkinje.electrical.SimulationTree.P.neuron0.gi,null, "Recroding variable gi present");
+									start();
+								}
+							}
+							break;
+						}
+					}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/Recording/GEPPETTO.xml');
+			initializationTime = new Date();	
+		});
+		
 		module("Test SPH Simulation");
 		asyncTest("Test Runtime Tree at Load and SimulationTree with variables for SPH + ModelTree", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
@@ -395,7 +463,6 @@ define(function(require) {
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/referencing_variables/SPH/LiquidSmall/GEPPETTO.xml');
 		});
 		
-		/* Commented as it was failing 02/01/15
 		asyncTest("Test Simulation Selection", function() {
 			//wait half a second before testing, allows for socket connection to be established
 			GEPPETTO.MessageSocket.clearHandlers();
@@ -413,6 +480,7 @@ define(function(require) {
 
 							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
 							
+							Simulation.setOnSelectionOptions({draw_connection_lines:false});
 							ok(true, "Simulation loaded, passed");
 							notEqual(sample,null,"Entities checked");
 							sample.select();
@@ -433,7 +501,7 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load("https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml");
-		});*/
+		});
 
 		asyncTest("Test list simulation variables no crash - SPH", function() {
 			expect(2);

@@ -93,6 +93,7 @@ define(function(require) {
 				for (var i = 0; i < visualisers.length; i++) {
 					GEPPETTO.Console.removeCommands(visualisers[i].getId());
 					visualisers[i].destroy();
+					i--;
 				}
 
 				visualisers = [];

@@ -103,7 +103,6 @@ define(function(require) {
                     GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
-            
         };
 
         messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {            
@@ -194,7 +193,7 @@ define(function(require) {
         //handles the case where simulation is done executing all steps
         messageHandler[messageTypes.SIMULATION_OVER] = function() {
             //Updates the simulation controls visibility
-            GEPPETTO.FE.updateStopEvent();
+        	GEPPETTO.Console.executeCommand("Simulation.stop()");
         };
 
         //received model tree from server

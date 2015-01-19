@@ -140,9 +140,10 @@ define(function (require) {
 		 * @private
 		 */
 		setBody: function (content) {
-			if (typeof content == 'number') {
-				content = content.toFixed(2);
-			}
+			//TODO: Round content only if user specifies it in options
+//			if (typeof content == 'number') {
+//				content = content.toFixed(2);
+//			}
 
 			this.getSelector("varvis_body").html(content);
 		},

@@ -68,12 +68,9 @@ define(function(require) {
 			 * Creates popup widget
 			 */
 			addPopupWidget : function(){
-				//Popup widget number
-				var index = (popups.length + 1);
-
-				//Name of popup widget
-				var name = "Popup" + index;
-				var id = name;
+				//look for a name and id for the new widget
+				var id = getAvailableWidgetId("Popup", popups);
+				var name = id;
 
 				//create popup widget
 				var p = window[name] = new Popup({id:id, name:name,visible:true});

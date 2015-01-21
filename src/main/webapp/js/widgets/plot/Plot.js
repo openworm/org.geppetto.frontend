@@ -117,16 +117,12 @@ define(function(require) {
 				}
 
 				var labelsMap = this.labelsMap;
-				
-				//set label legends to shorter label
-				this.options.legend = {
-						labelFormatter: function(label, series){
-		        		var split = label.split(".");
-						var shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
-						labelsMap[label] = {label : shortLabel};
-		        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
-		        	}
-		        };
+	        	this.initializeLegend(function(label, series){
+	        		var split = label.split(".");
+					var shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
+					labelsMap[label] = {label : shortLabel};
+	        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
+	        	});
 		        
 				if (state!= null) {					
 					if(state instanceof Array){
@@ -156,15 +152,9 @@ define(function(require) {
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
 				
-				//fix conflict between jquery and bootstrap tooltips
-				$.widget.bridge('uitooltip', $.ui.tooltip);
-				
-				//show tooltip for legends
-				$(".legendLabel").tooltip();
-				
 				return "Line plot added to widget";
 			},
-
+			
 			/**
 			 * Takes two time series and plots one against the other. To plot
 			 * array(s) , use it as plotData([[1,2],[2,3]]) To plot an object ,
@@ -185,31 +175,16 @@ define(function(require) {
 					}
 				}
 
-				if(dataX.name != null && dataY.name != null) {
-					for(var dataset in this.datasets) {
-						if(dataX.name + "/" + dataY.name == this.datasets[dataset].label) {
-							return this.name + " widget is already plotting object " + dataX.name + "/" + dataY.name;
-						}
-					}
+				this.datasets.push({
+					label: dataX.name,
+					data: dataX.data
+				});
+				
+				if (dataY != undefined){
 					this.datasets.push({
-						label: dataX.name + "/" + dataY.name,
-						data: [
-							[ dataX.value, dataY.value ]
-						]
+						label: dataY.name,
+						data: dataY.data
 					});
-				}
-				else {
-					this.datasets.push({
-						label: "",
-						data: dataX
-					});
-					
-					if (dataY != undefined){
-						this.datasets.push({
-							label: "",
-							data: dataY
-						});
-					}
 				}
 
 				var plotHolder = $("#" + this.id);
@@ -315,7 +290,7 @@ define(function(require) {
 			 * @param data - data series to plot against function
 			 * @param options - options for plotting widget
 			 */
-			plotDataFunction: function(func, data, options) {
+			plotDataFunction: function(func, data_x, options) {
 				// If no options specify by user, use default options
 				if(options != null) {
 					this.options = options;
@@ -324,26 +299,34 @@ define(function(require) {
 					}
 				}
 				
+				var labelsMap = this.labelsMap;
+	        	this.initializeLegend(function(label, series){
+	        		var split = label.split(/-(.+)?/);
+					var shortLabel = split[1];
+					labelsMap[label] = {label : shortLabel};
+	        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
+	        	});
+				
 				//Parse func as a mathjs object
 				var parser = math.parser();
-//				console.log(func);
 				var mathFunc = parser.eval(func);
-				var data_y = []; 
-				for (var dataIndex in data){
-					var dataElementString = data[dataIndex].valueOf();
-					value = mathFunc(dataElementString);
-//					console.log(value);
+				var data = []; 
+				data.name = options.legendText;
+				data.data = [];
+				for (var data_xIndex in data_x){
+					var dataElementString = data_x[data_xIndex].valueOf();
+					data_y = mathFunc(dataElementString);
 					//TODO: Understand why sometimes it returns an array and not a value
 					if (typeof value == 'object'){
-						data_y.push([data[dataIndex][0], value[0]]);
+						data.data.push([data_x[data_xIndex][0], data_y[0]]);
 					}
 					else{
-						data_y.push([data[dataIndex][0], value]);
+						data.data.push([data_x[data_xIndex][0], data_y]);
 					}
 				}
 
 				//Plot values 
-				this.plotXYData(data_y);
+				this.plotXYData(data);
 			},
 
 			/**
@@ -386,30 +369,25 @@ define(function(require) {
 			 * @param {String} legend - new legend name
 			 */
 			setLegend : function(variable, legend){
-				var labelsMap = this.labelsMap;
+				//Check if it is a string or a geppetto object
+				var plotId = variable;
+				if ((typeof variable) != "string")	plotId = variable.getInstancePath();
 				
-				//set label legends to shorter label
-				this.options.legend = {
-						labelFormatter: function(label, series){
-							var shortLabel;
-							if(variable.getInstancePath() != label){
-								shortLabel = labelsMap[label].label;
-							}
-							else{
-								shortLabel = legend;
-								labelsMap[label].label = shortLabel;
-							}
-							return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
-		        	}
-		        };
+				var labelsMap = this.labelsMap;
+	        	this.initializeLegend(function(label, series){
+					var shortLabel;
+					
+					if(plotId != label){
+						shortLabel = labelsMap[label].label;
+					}
+					else{
+						shortLabel = legend;
+						labelsMap[label].label = shortLabel;
+					}
+					return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
+	        	});
 				
 				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
-				
-				//fix conflict between jquery and bootstrap tooltips
-				$.widget.bridge('uitooltip', $.ui.tooltip);
-				
-				//show tooltip for legends
-				$(".legendLabel").tooltip();
 			},
 
 			/**
@@ -428,6 +406,21 @@ define(function(require) {
 				for(var key=0;key<this.datasets.length;key++) {
 					this.datasets[key].data = [[]];
 				}
+			},
+			
+			/**
+			 * Initialize legend
+			 */
+			initializeLegend: function(labelFormatterFunction){
+				
+				//set label legends to shorter label
+				this.options.legend = {labelFormatter :labelFormatterFunction};
+				
+				//fix conflict between jquery and bootstrap tooltips
+				$.widget.bridge('uitooltip', $.ui.tooltip);
+				
+				//show tooltip for legends
+				$(".legendLabel").tooltip();
 			},
 			
 			/**
@@ -450,7 +443,7 @@ define(function(require) {
 			},
 			
 			/**
-			 * Takes a FunctionNode and plots the expresion and set the attributes from the plot metadata information
+			 * Takes a FunctionNode and plots the expression and set the attributes from the plot metadata information
 			 *
 			 * @command plotFunctionNode(functionNode)
 			 * @param {Node} functionNode - Function Node to be displayed
@@ -467,17 +460,16 @@ define(function(require) {
 					var initialValue = parseFloat(functionNode.plotMetadata["InitialValue"]);
 					var stepValue = parseFloat(functionNode.plotMetadata["StepValue"]);
 
+					//Create data series for plot 
+					//TODO: What are we going to do if we have two arguments?
+					var values = [];
+					for (var i=initialValue; i<finalValue; i = i + stepValue){values.push([i]);}
+
 					var plotTitle = functionNode.plotMetadata["PlotTitle"];
 					var XAxisLabel = functionNode.plotMetadata["XAxisLabel"];
 					var YAxisLabel = functionNode.plotMetadata["YAxisLabel"];
-
-					//Create data series for plot 
-					//TODO: What are we going to do if we have two arguments?
-					var dataArray = [];
-					for (var i=initialValue; i<finalValue; i = i + stepValue){dataArray.push([i]);}
-
 					//Generate options from metadata information
-					options = {xaxis:{min:initialValue,max:finalValue,show:true,axisLabel:XAxisLabel}, yaxis:{axisLabel:YAxisLabel}};
+					options = {xaxis:{min:initialValue,max:finalValue,show:true,axisLabel:XAxisLabel}, yaxis:{axisLabel:YAxisLabel}, legendText: plotTitle};
 
 					//Convert from single expresion to parametired expresion (2x -> f(x)=2x)
 					var  parameterizedExpression = "f(";
@@ -488,7 +480,7 @@ define(function(require) {
 					parameterizedExpression += ") =" + expression;
 					
 					//Plot data function
-					this.plotDataFunction(parameterizedExpression, dataArray, options);
+					this.plotDataFunction(parameterizedExpression, values, options);
 
 					//Set title to widget
 					this.setName(plotTitle);

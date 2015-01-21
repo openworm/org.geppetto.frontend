@@ -70,10 +70,10 @@ define(function(require) {
 			 * Creates new variable visualiser widget
 			 */
 			addVariableVisualiserWidget: function() {
-
-				var index = (visualisers.length + 1);
-				var name = "VarVis" + index;
-				var id = name;
+				//look for a name and id for the new widget
+				var id = getAvailableWidgetId("VarVis", visualisers);
+				var name = id;
+				
 				var vv = window[name] = new VarVis({id:id, name:name,visible:true});
 				vv.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 				visualisers.push(vv);

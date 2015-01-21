@@ -72,19 +72,9 @@ define(function(require) {
 			 */
 			addPlotWidget: function() {
 				
-				//Plot widget number
-				var index = 1;
-				//Name of plotting widget
-				var name = "Plot" + index;
-				
-				for(var p in plots){
-					if(plots[p].getId() == name){
-						index++;
-						name = "Plot" + index;
-					}
-				}
-
-				var id = name;
+				//look for a name and id for the new widget
+				var id = getAvailableWidgetId("Plot", plots);
+				var name = id;
 
 				//create plotting widget
 				var p = window[name] = new Plot({id:id, name:name,visible:true});
@@ -177,8 +167,52 @@ define(function(require) {
 						plot.updateDataSet();
 					}
 				}
-			}
+			},
+			
+			/**
+			 * Retrieve commands for a specific variable node
+			 * 
+			 * @param {Node} node - Geppetto Node used for extracting commands
+			 * @returns {Array} Set of commands associated with this node 
+			 */
+			getCommands : function(node) {
+				var groups = [];
+				
+				if (node._metaType == "FunctionNode"){
+					if (node.getPlotMetadata() != undefined){
+						var group1 = [{
+							label:"Plot Function",
+							action: ["var p = G.addWidget(Widgets.PLOT)", "p.plotFunctionNode(#node_instancepath#)", "p.setSize(200,450)"],
+						}];
+						
+						var availableWidgets = GEPPETTO.PlotsController.getWidgets();
+						if (availableWidgets.length > 0){
+							var group1Add =  {
+								label : "Add to Plot Widget",
+								position : 0
+							} ;
 
+							var subgroups1Add = [];
+							for (var availableWidgetIndex in availableWidgets){
+								var availableWidget = availableWidgets[availableWidgetIndex];
+								subgroups1Add = subgroups1Add.concat([{
+									label: "Add to " + availableWidget.name,
+									action: [availableWidget.id + ".plotFunctionNode(#node_instancepath#)"],
+									position: availableWidgetIndex
+								}]);
+							}
+							group1Add["groups"] = [subgroups1Add];
+
+							group1.push(group1Add);
+						}
+						
+						groups.push(group1);
+						
+					}
+				}
+
+				return groups;
+			}
 		};
 	};
 });

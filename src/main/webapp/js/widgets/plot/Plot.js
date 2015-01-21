@@ -301,8 +301,10 @@ define(function(require) {
 				
 				var labelsMap = this.labelsMap;
 	        	this.initializeLegend(function(label, series){
+	        		var shortLabel = label;
+	        		//FIXME: Adhoc solution for org.neuroml.export
 	        		var split = label.split(/-(.+)?/);
-					var shortLabel = split[1];
+	        		if (split.length > 1) shortLabel = split[1];
 					labelsMap[label] = {label : shortLabel};
 	        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
 	        	});

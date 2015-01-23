@@ -64,6 +64,13 @@ define(function(require) {
 				width : this.options.width,
 				autoPlace : this.options.autoPlace
 			});
+			
+			//This function allows to access a node by its data attribute (this function is required is the data property has been added by jquery) 			
+			$.fn.filterByData = function(prop, val) {
+			    return this.filter(
+			        function() { return $(this).data(prop)==val; }
+			    );
+			}
 
 			this.dialog.append(this.gui.domElement);
 		},
@@ -246,6 +253,31 @@ define(function(require) {
 					this.prepareTree(this.gui, dataset.data);
 				}
 			}
+		},
+		
+		/**
+		 * Expand or collapse node folder (and all the parent folder until the root node) in the widgets
+		 * 
+		 * @param {Node} node - Geppetto Node which identifies the folder to be expanded/collapsed.
+		 * @param {Boolean} expandEndNode - If true only final node is expanded/collapsed. Otherwise the whole path is expanded/collapsed
+		 */
+		toggleFolder : function(node, expandEndNode) {
+			var instancePath = node.getInstancePath();
+			if (expandEndNode){
+				this.getFolderByInstancePath(instancePath).trigger('click');
+			}
+			else{
+				var nodePathElements = instancePath.split(".");
+				var parentComponent = "";
+				for (var nodePathElementsIndex in nodePathElements){
+					this.getFolderByInstancePath(parentComponent + nodePathElements[nodePathElementsIndex]).trigger('click');
+					parentComponent += nodePathElements[nodePathElementsIndex] + "."
+				}	
+			}
+		},
+		
+		getFolderByInstancePath : function(instancePath){
+			return $(this.dialog).find('li').filterByData('instancepath', instancePath);
 		}
 
 	});

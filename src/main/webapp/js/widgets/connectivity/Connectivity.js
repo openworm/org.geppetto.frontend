@@ -329,7 +329,7 @@ define(function(require) {
 		        post_count: d3.range(n).sort(function(a, b) { return nodes[b].post_count - nodes[a].post_count; }),
 		    };
 		    
-//		    TODO: Commented it out once Louvain Community detection was implemented
+//		    TODO: Commented it out until we have Louvain Community detection was implemented
 //		    var colours = {
 //		            id: function(d) {return c(d.z);},
 //		            community: function(d) {return nodes[d.x].community == nodes[d.y].community ? c(nodes[d.x].community) : null;},

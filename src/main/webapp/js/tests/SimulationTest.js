@@ -439,6 +439,12 @@ define(function(require) {
 								 break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 								 this.startRequestID = parsedServerMessage.requestID;
+								 
+								 var payload = JSON.parse(parsedServerMessage.data);
+								
+								 var updatedRunTime = JSON.parse(payload.update).scene;
+						            
+								 GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
 								 break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
 								if(parsedServerMessage.requestID == this.startRequestID){

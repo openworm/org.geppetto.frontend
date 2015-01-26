@@ -113,6 +113,18 @@ define(function(require) {
 			dataset.isDisplayed = true;
 			//Disable input elements
 			$(this.dialog).find("input").prop('disabled', true);
+			
+			//Change input text to textarea
+			var testingSizeElement = $('<div></div>').css({'position': 'absolute', 'float': 'left', 'white-space': 'nowrap', 'visibility': 'hidden'}).appendTo($('body'));
+			$(this.dialog).find('.textmetadatanodetv').find('div > div > input[type="text"]').each(function(){
+				testingSizeElement.text($(this).val());
+				if (testingSizeElement.width() > $(this).width()){
+					$(this).closest('.textmetadatanodetv').height(60);
+					var textarea = $(document.createElement('textarea')).attr('readonly', true).attr('rows', 2);
+			        textarea.val($(this).val());
+				    $(this).replaceWith(textarea);
+				}
+			});
 
 			return "Metadata or variables to display added to tree visualiser";
 		},

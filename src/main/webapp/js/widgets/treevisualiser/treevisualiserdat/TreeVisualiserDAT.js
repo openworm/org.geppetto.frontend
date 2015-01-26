@@ -60,19 +60,14 @@ define(function(require) {
 
 			this.options = this.defaultTreeVisualiserOptions;
 
-			this.gui = new dat.GUI({
-				width : this.options.width,
-				autoPlace : this.options.autoPlace
-			});
-			
 			//This function allows to access a node by its data attribute (this function is required is the data property has been added by jquery) 			
 			$.fn.filterByData = function(prop, val) {
 			    return this.filter(
 			        function() { return $(this).data(prop)==val; }
 			    );
 			}
-
-			this.dialog.append(this.gui.domElement);
+			
+			this.initDATGUI();
 		},
 		
 		/**
@@ -290,7 +285,25 @@ define(function(require) {
 		
 		getFolderByInstancePath : function(instancePath){
 			return $(this.dialog).find('li').filterByData('instancepath', instancePath);
-		}
+		},
+		
+		reset : function () {
+			this.datasets = [];
+			
+			$(this.dialog).children().remove()
+
+			this.initDATGUI();
+		},
+		
+		initDATGUI : function () { 
+			this.gui = new dat.GUI({
+				width : this.options.width,
+				autoPlace : this.options.autoPlace
+			});
+			
+			this.dialog.append(this.gui.domElement);
+		}	
+		
 
 	});
 });

@@ -86,5 +86,9 @@ require(libraries,function(flot, math){
 define(function(require) {
 	return function(GEPPETTO) {
 		require("widgets/plot/controllers/PlotsController")(GEPPETTO);
+		
+		// Register Commands
+		GEPPETTO.MenuManager.registerNewCommandProvider(["FunctionNode"],
+		                                                 GEPPETTO.PlotsController.getCommands);
 	};
 });

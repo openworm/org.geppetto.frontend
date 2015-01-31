@@ -78,18 +78,21 @@ div[id^='TreeVisualiserDAT']
     background: #fff;
 }
 
-.ui-widget-content .dg .c input[type=text] {
+.ui-widget-content .dg .c input[type=text],
+.ui-widget-content .dg .c textarea{
     background: rgba(66,59,59,0);
     box-shadow:none!important;
     webkit-box-shadow:none!important;
 }
 
-.ui-widget-content .dg .c input[type=text]:hover {
+.ui-widget-content .dg .c input[type=text]:hover,
+.ui-widget-content .dg .c textarea:hover {
 	background: rgba(33,29,29,0.4);
 	cursor: pointer;
 }
 
-.ui-widget-content .dg .c input[type=text]:focus {
+.ui-widget-content .dg .c input[type=text]:focus,
+.ui-widget-content .dg .c textarea:focus {
 	background: rgba(33,29,29,0.4);
 	cursor: pointer;
 }
@@ -106,9 +109,18 @@ div[id^='TreeVisualiserDAT']
 .ui-widget-content .dg .cr.string {
 border-left: 3px solid #85ea0e;
 }
-.ui-widget-content .dg .cr.string input[type=text] {
+.ui-widget-content .dg .cr.string input[type=text],
+.ui-widget-content .dg .cr.string textarea {
 color: #85ea0e;
 }
+
+.ui-widget-content .dg .cr.string textarea {
+	width: 100%;
+	border: 0px;
+	margin-top: 5px;
+	line-height: 20px;
+	resize: none;
+}	
 
 /*  NODE STYLE BY METATYPE*/
 .entitynodetv {
@@ -162,7 +174,8 @@ color: #85ea0e;
 .dg .cr.string.textmetadatanodetv {
 	border-left: 3px solid #10b7bd;
 }
-.dg .cr.string.textmetadatanodetv input[type=text] {
+.dg .cr.string.textmetadatanodetv input[type=text],
+.dg .cr.string.textmetadatanodetv textarea {
 	color: #10b7bd;
 }
 .dg .cr.string.urlmetadatanodetv {

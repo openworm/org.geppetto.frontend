@@ -69,12 +69,9 @@ define(function(require) {
 			 * Adds a new TreeVisualizer3D Widget to Geppetto
 			 */
 			addTreeVisualiserD3Widget : function(){
-				//Popup widget number
-				var index = (treeVisualisersD3.length + 1);
-
-				//Name of popup widget
-				var name = "TreeVisualiserD3" + index;
-				var id = name;
+				//look for a name and id for the new widget
+				var id = getAvailableWidgetId("TreeVisualiserD3", treeVisualisersD3);
+				var name = id;
 
 				//create tree visualiser widget
 				var tvd3 = window[name] = new TreeVisualiserD3({id:id, name:name,visible:false, width: 500, height: 500});

@@ -234,9 +234,9 @@ define(function(require) {
 						GEPPETTO.getVARS().scene.traverse(function(child) {
 							if (child instanceof THREE.Mesh
 									|| child instanceof THREE.ParticleSystem) {
-								if(paths.contains(child.instancePath)){
+								if(paths.hasOwnProperty(child.aspectInstancePath)){
+									
 								child.geometry.computeBoundingBox();
-
 								// If min and max vectors are null, first values become
 								// default min and max
 								if (aabbMin == null && aabbMax == null) {
@@ -247,17 +247,17 @@ define(function(require) {
 								// Compare other meshes, particles BB's to find min and max
 								else {
 									aabbMin.x = Math.min(aabbMin.x,
-											mesh.geometry.boundingBox.min.x);
+											child.geometry.boundingBox.min.x);
 									aabbMin.y = Math.min(aabbMin.y,
-											mesh.geometry.boundingBox.min.y);
+											child.geometry.boundingBox.min.y);
 									aabbMin.z = Math.min(aabbMin.z,
-											mesh.geometry.boundingBox.min.z);
+											child.geometry.boundingBox.min.z);
 									aabbMax.x = Math.max(aabbMax.x,
-											mesh.geometry.boundingBox.max.x);
+											child.geometry.boundingBox.max.x);
 									aabbMax.y = Math.max(aabbMax.y,
-											mesh.geometry.boundingBox.max.y);
+											child.geometry.boundingBox.max.y);
 									aabbMax.z = Math.max(aabbMax.z,
-											mesh.geometry.boundingBox.max.z);
+											child.geometry.boundingBox.max.z);
 								}
 							}
 							}
@@ -367,46 +367,46 @@ define(function(require) {
 					var segments = Object.keys(lines).length;
 
 					var origin = GEPPETTO.getVARS().meshes[path].position;
-					var geometry = new THREE.Geometry();
-
-					var vertexColorMaterial = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors } );
 
 					for ( var aspectPath in lines ) {
+						
 						var type = lines[aspectPath];
 						var mesh = GEPPETTO.getVARS().meshes[aspectPath];
 						
-						geometry.vertices.push(origin, mesh.position );
+						var geometry = new THREE.Geometry();
+
+						geometry.vertices.push(origin.clone(),mesh.position.clone());
+						geometry.verticesNeedUpdate = true;
+						geometry.dynamic = true;
 						
-						var color = new THREE.Color();
+						var c;
+						
 						if(type==GEPPETTO.Resources.INPUT_CONNECTION){
 							//figure out if connection is both, input and output
 							if(mesh.output){
-								color.setHex(GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
-								geometry.colors.push(color);
+								c = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
 							}else{
-								color.setHex(GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
-								geometry.colors.push(color);
+								c = GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED;
 							}
 						}else if(type == GEPPETTO.Resources.OUTPUT_CONNECTION){
 							//figure out if connection is both, input and output
 							if(mesh.input){
-								color.setHex(GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
-								geometry.colors.push(color);
+								c = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
 							}
 							else{
-								color.setHex(GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED);
-								geometry.colors.push(color);
+								c = GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED;
 							}
 						}
-					
-					}
+						
+						var material = new THREE.LineBasicMaterial( { opacity: 1, linewidth: 3 } );
+						material.color.setHex(c);
 
-					geometry.computeBoundingSphere();
-
-					line = new THREE.Line( geometry, vertexColorMaterial, THREE.LinePieces );
-					GEPPETTO.getVARS().scene.add(line);
-					
-					GEPPETTO.getVARS().connectionLines[path] = line;
+						var line = new THREE.Line(geometry, material);
+						line.updateMatrix();
+						
+						GEPPETTO.getVARS().scene.add(line);
+						GEPPETTO.getVARS().connectionLines[aspectPath] = line;
+					}					
 				},
 
 				hideConnectionLines : function(){

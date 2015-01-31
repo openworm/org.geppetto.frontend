@@ -132,4 +132,13 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.ERROR, error);
 	}
 
+	@Override
+	public void message(String message)
+	{
+		String info = "{ \"content\": \"" + message +"\"}";
+		logger.info(message);
+		// Notify all connected clients about update either to load model or update current one.
+		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.INFO_MESSAGE, info);
+	}
+
 }

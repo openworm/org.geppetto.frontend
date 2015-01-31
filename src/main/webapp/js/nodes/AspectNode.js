@@ -214,7 +214,7 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().show_outputs){
 							this.getParent().showOutputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().draw_connections_lines){
+						if(Simulation.getSelectionOptions().draw_connection_lines){
 							this.getParent().showConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){

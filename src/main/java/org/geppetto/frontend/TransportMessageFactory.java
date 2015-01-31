@@ -69,6 +69,9 @@ public class TransportMessageFactory {
 			case ERROR:
 				params.add(new SimpleEntry<String, String>("message", update));
 				break;
+			case INFO_MESSAGE:
+				params.add(new SimpleEntry<String, String>("message", update));
+				break;
 			case ERROR_LOADING_SIMULATION:
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString()));
 				break;

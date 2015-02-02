@@ -13,7 +13,7 @@ def load_json(fname):
 owd = os.getcwd()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-config = load_json('bower.json')
+config = load_json('wormsim.bower.json')
 
 try:
     print subprocess.check_output(['bower', 'install'],

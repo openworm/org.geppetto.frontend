@@ -57,9 +57,3 @@ reqs.push("widgets/scatter3d/vendor/helvetiker_regular.typeface");
 require(reqs, function($) {
 	loadCss("assets/js/widgets/scatter3d/Scatter3d.css");
 });
-
-define(function(require) {
-	return function(GEPPETTO) {
-		require("widgets/scatter3d/controllers/Scatter3dController")(GEPPETTO);
-	};
-});

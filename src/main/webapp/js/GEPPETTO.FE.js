@@ -42,6 +42,15 @@ define(function(require) {
                 $ = require('jquery'),
                 InfoModal = require('jsx!components/popups/InfoModal'),
                 ErrorModal = require('jsx!components/popups/ErrorModal');
+        
+    	var PlotsController = require('widgets/plot/controllers/PlotsController');
+    	var Scatter3dController = require('widgets/scatter3d/controllers/Scatter3dController');
+    	var ConnectivityController = require('widgets/connectivity/controllers/ConnectivityController');
+    	var PopupsController = require('widgets/popup/controllers/PopupController');
+    	var TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
+    	var TreeVisualiserControllerD3 = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
+    	var VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
+    	
         /**
          * Create the container for holding the canvas
          * @class GEPPETTO.FE

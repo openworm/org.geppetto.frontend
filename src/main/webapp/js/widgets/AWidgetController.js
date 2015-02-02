@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,35 +30,75 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Loads widget scripts
- *  
- * @author Jesus Martinez (jesus@metacell.us)
+ *
+ * Base Widget Class, all widgets extend this class.
+ * @module Widgets/Widget
+ * @author  Jesus R. Martinez (jesus@metacell.us)
  */
+define(function(require) {
 
-//Widget Classes
-define(function(require){
-	return function(GEPPETTO) {
+	var Backbone = require('backbone');
+	var $ = require('jquery');
+	return {
+		/**
+		 * Creates base view for widget
+		 */
+		View: Backbone.View.extend({
 
-	require('widgets/WidgetFactory')(GEPPETTO);
-	require('widgets/WidgetsListener')(GEPPETTO);
-	require("widgets/WidgetUtility");
-	require("widgets/ContextMenu")(GEPPETTO);
-	//Plot Widget
-	require("widgets/plot/config");
-	//Popup Widget
-	require("widgets/popup/config");
-	//Scatter3d Widget
-	require("widgets/scatter3d/config");	
-	//TreeVisualiser DAT Widget
-	require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-	//TreeVisualiser D3 Widget
-	require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-	//VariableVisualiser widget
-	require("widgets/variablevisualiser/config");
-	//Connectivity Widget
-	require("widgets/connectivity/config");
-	loadCss("assets/js/widgets/Widget.css");
+			widgets : new Array(),
+			on : false,
+			
+			constructor: function() {
+			    // Call the original constructor
+			    Backbone.View.apply(this, arguments);
+			 },
+		
+			/**
+			 * Returns all plotting widgets objects
+			 * 
+			 * @returns {Array} Array containing all plots
+			 */
+			getWidgets: function() {
+				return this.widgets;
+			},
+			
+			/**
+			 * Toggles variable visualiser widget on and off
+			 */
+			toggle: function() {
+				if (this.widgets.length > 0) {
+					this.on = !this.on;
+					for (var w in this.widgets) {
+						var widget = this.widgets[w];
+						if (!this.on) {
+							widget.hide();
+						} else {
+							widget.show();
+						}
+					}
+				}
+			},
+			
+			/**
+			 * Removes existing plotting widgets
+			 */
+			removeWidgets: function() {
+				//remove all existing widgets
+				for(var i = 0; i < this.widgets.length; i++) {
+					var widget = this.widgets[i];
+					
+					//remove commands 
+					GEPPETTO.Console.removeCommands(widget.getId());
+
+					widget.destroy();
+					
+					i--;
+				}
+
+				this.widgets = new Array();
+			},
+		})
 	};
+
 });

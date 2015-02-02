@@ -64,8 +64,6 @@ require(reqs, function(d3) {
 //Load TreeVisualiserController and other classes using GEPPETTO
 define(function(require) {
 	return function(GEPPETTO) {
-		require("widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3")(GEPPETTO);
-		
 		// Register Commands
 		GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
 		                                                 "AspectSubTreeNode",
@@ -80,7 +78,6 @@ define(function(require) {
 		                                                 "VariableNode",
 		                                                 "VisualGroupElementNode",
 		                                                 "VisualGroupNode",
-		                                                 "VisualObjectReferenceNode"],
-		                                                 GEPPETTO.TreeVisualiserControllerD3.getCommands);
+		                                                 "VisualObjectReferenceNode"]);
 	};
 });

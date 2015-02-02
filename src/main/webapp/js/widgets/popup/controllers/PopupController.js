@@ -36,91 +36,69 @@
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function(require) {
-	return function(GEPPETTO) {
+	var Popup = require('widgets/popup/Popup');
+	var AWidgetController = require('widgets/AWidgetController');		
 
-		var Popup = require('widgets/popup/Popup');
-		var popups = new Array();
+	/**
+	 * @exports Widgets/Popup/PopupsController
+	 */
+	return AWidgetController.View.extend ({
 
+		initialize: function() {
+			this.widgets = Array();
+		},
+	
 		/**
-		 * @exports Widgets/Popup/PopupController
+		 * Creates popup widget
 		 */
-		GEPPETTO.PopupsController = {
-			/**
-			 * Registers widget events to detect and execute following actions.
-			 * Used when widget is destroyed.
-			 *
-			 * @param {String} popupID - ID of popup to register
-			 */
-			registerHandler: function(popupID) {
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PopupsController, popupID);
-			},
+		addPopupWidget : function(){
+			//Popup widget number
+			var index = 1;
+
+			//Name of popup widget
+			var name = "Popup" + index;
 			
-			/**
-			 * Returns all popup widgets objects
-			 * 
-			 * @returns {Array} Array containing all plots
-			 */
-			getWidgets: function() {
-				return popups;
-			},
-			
-			/**
-			 * Creates popup widget
-			 */
-			addPopupWidget : function(){
-				//Popup widget number
-				var index = (popups.length + 1);
+			var popups = this.getWidgets();
 
-				//Name of popup widget
-				var name = "Popup" + index;
-				var id = name;
-
-				//create popup widget
-				var p = window[name] = new Popup({id:id, name:name,visible:true});
-
-				//create help command for plot
-				p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
-
-				//store in local stack
-				popups.push(p);
-				
-				this.registerHandler(id);
-
-				//add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("assets/js/widgets/popup/Popup.js", p, id);
-				
-				//update tags for autocompletion
-				GEPPETTO.Console.updateTags(p.getId(), p);
-
-				return p;
-			},
-		
-			/**
-			 * Removes existing popup widgets
-			 */
-			removePopupWidgets : function(){
-				//remove all existing popup widgets
-				for(var i = 0; i < popups.length; i++) {
-					var popup = popups[i];
-
-					popup.destroy();
-				}
-
-				popups = new Array();
-			},
-			
-			/**
-			 * Receives updates from widget listener class to update popup widget(s)
-			 * 
-			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-			 */
-			update: function(event) {
-				//delete popup widget(s)
-				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removePopupWidgets();
+			for(var p in popups){
+				if(popups[p].getId() == name){
+					index++;
+					name = "Popup" + index;
 				}
 			}
-		};
-		
-	};
+			
+			var id = name;
+
+			//create popup widget
+			var p = window[name] = new Popup({id:id, name:name,visible:true});
+
+			//create help command for plot
+			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+
+			//store in local stack
+			popups.push(p);
+
+			GEPPETTO.WidgetsListener.subscribe(this, id);
+
+			//add commands to console autocomplete and help option
+			GEPPETTO.Console.updateCommands("assets/js/widgets/popup/Popup.js", p, id);
+
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(p.getId(), p);
+
+			return p;
+		},
+
+		/**
+		 * Receives updates from widget listener class to update popup widget(s)
+		 * 
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+		 */
+		update: function(event) {
+			//delete popup widget(s)
+			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
+			}
+		}	
+	});
 });

@@ -59,6 +59,7 @@ define(function(require) {
 			visible: true,
 			size: {height: 300, width: 350},
 			position: {left: "50%", top: "50%"},
+			
 
 			/**
 			 * Initializes the widget
@@ -296,6 +297,14 @@ define(function(require) {
 				//Take focus away from close button
 				$(".ui-dialog-titlebar-close").blur();
 
+			},
+			
+			registerEvent : function(event){
+				this.selectionStatus = status;
+			},
+			
+			getSelectionStatus : function(){
+				
 			}
 		})
 	};

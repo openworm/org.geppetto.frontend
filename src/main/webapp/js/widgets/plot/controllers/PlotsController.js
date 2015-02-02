@@ -67,7 +67,6 @@ define(function(require) {
 					name = "Plot" + index;
 				}
 			}
-
 			var id = name;
 
 			//create plotting widget

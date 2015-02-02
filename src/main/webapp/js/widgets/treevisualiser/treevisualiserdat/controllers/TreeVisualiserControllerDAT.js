@@ -69,28 +69,20 @@ define(function(require) {
 				}
 			}
 			var id = name;
-
 			var treeVisualisersDAT = this.getWidgets();
-
 			// create tree visualiser widget
 			var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 260, height: 350});
-
 			// create help command for plot
 			tvdat.help = function() {
 				return GEPPETTO.Utility.getObjectCommands(id);
 			};
-
 			// store in local stack
 			treeVisualisersDAT.push(tvdat);
-
 			this.registerHandler(id);
-
 			// add commands to console autocomplete and help option
 			GEPPETTO.Console.updateCommands("assets/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",	tvdat, id);
-
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
-
 			return tvdat;
 		},
 
@@ -103,7 +95,7 @@ define(function(require) {
 			var treeVisualisersDAT = this.getWidgets();
 			// delete treevisualiser widget(s)
 			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-				this.removeTreeVisualiserDATWidgets();
+				this.removeWidgets();
 			}
 			// update treevisualiser widgets
 			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
@@ -116,7 +108,7 @@ define(function(require) {
 				}
 			}
 		},
-
+		
 		/**
 		 * Retrieve commands for a specific variable node
 		 * 
@@ -129,15 +121,12 @@ define(function(require) {
 				action: ["GEPPETTO.TreeVisualiserControllerDAT.actionMenu(#node_instancepath#)"],
 				//option: {option1: "option1"}
 			}];
-
-
 			var availableWidgets = GEPPETTO.TreeVisualiserControllerDAT.getWidgets();
 			if (availableWidgets.length > 0){
 				var group1Add =  {
 						label : "Add to DAT Widget",
 						position : 0
 				} ;
-
 				var subgroups1Add = [];
 				for (var availableWidgetIndex in availableWidgets){
 					var availableWidget = availableWidgets[availableWidgetIndex];

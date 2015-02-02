@@ -101,7 +101,7 @@ define(function(require) {
 			var treeVisualisersD3 = this.getWidgets();
 			//delete treevisualiser widget(s)
 			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-				this.removeTreeVisualiserD3Widgets();
+				this.removeWidgets();
 			}
 			//update treevisualiser widgets
 			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {

@@ -51,9 +51,6 @@ define(function(require) {
 				
 				this.datasets = [];
 				
-//				this.id = options.id;
-//				this.name = options.name;
-//				this.visible = options.visible;
 				this.render();
 				this.setSize(options.width,options.height);
 	

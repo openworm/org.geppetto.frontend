@@ -398,7 +398,7 @@ define(function(require) {
 							}
 						}
 						
-						var material = new THREE.LineBasicMaterial( { opacity: 1, linewidth: 3 } );
+						var material = new THREE.LineBasicMaterial( { opacity: 1, linewidth: 2 } );
 						material.color.setHex(c);
 
 						var line = new THREE.Line(geometry, material);

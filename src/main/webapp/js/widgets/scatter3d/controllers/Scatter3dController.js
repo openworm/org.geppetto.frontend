@@ -78,7 +78,6 @@ define(function(require) {
 			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
 			scatter3ds.push(p);
-
 			this.registerHandler(id);
 
 			//add commands to console autocomplete and help option

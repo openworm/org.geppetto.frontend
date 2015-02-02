@@ -108,7 +108,6 @@ define(function(require) {
 				//loop through all existing widgets
 				for(var i = 0; i < connectivity.length; i++) {
 					var cnt = connectivity[i];
-
 					//update connectivity with new data set
 					cnt.updateData();
 				}
@@ -126,8 +125,6 @@ define(function(require) {
 //		label:"Open with D3 Widget",
 //		action: "GEPPETTO.TreeVisualiserControllerD3.actionMenu",
 //		}];
-
-
 //		var availableWidgets = GEPPETTO.TreeVisualiserControllerD3.getWidgets();
 //		if (availableWidgets.length > 0){
 //		var group1Add =  [ {

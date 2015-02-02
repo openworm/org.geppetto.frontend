@@ -81,3 +81,14 @@ require(libraries,function(flot, math){
 	window.math = math;
 	loadCss("assets/js/widgets/plot/Plot.css");
 });	
+
+//Load PlotsController and other classes using GEPPETTO
+define(function(require) {
+	return function(GEPPETTO) {
+		require("widgets/plot/controllers/PlotsController")(GEPPETTO);
+		
+		// Register Commands
+		GEPPETTO.MenuManager.registerNewCommandProvider(["FunctionNode"],
+		                                                 GEPPETTO.PlotsController.getCommands);
+	};
+});

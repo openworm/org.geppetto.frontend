@@ -128,9 +128,7 @@ define(function(require) {
 							threeObject.position.set(g.position.x, g.position.y,
 									g.position.z);
 						}
-					}
-					threeObject.geometry.verticesNeedUpdate = true;
-					
+					}					
 				},
 				
 				/**

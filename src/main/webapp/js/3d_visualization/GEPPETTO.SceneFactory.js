@@ -19,11 +19,9 @@ define(function(require) {
 		GEPPETTO.SceneFactory = {
 				
 				/**
-				 * Load entity in 3D 
+				 * Create Three.js objects associated with an entity.
 				 * 
 				 * @param {EntityNode} entityNode - Entity Node to load 
-				 * @param {EntityNode} parentNode - Parent of entity to load
-				 * @param Param - Material to apply to entity
 				 */
 				loadEntity : function(entityNode) {
 					//extract aspects, entities and position from entityNode
@@ -42,6 +40,7 @@ define(function(require) {
 								mesh.position.set(position.x, position.y,
 										position.z);
 							}
+							//TODO: those should go into the vistree instead
 							//keep track of aspects created by storing them in VARS property object
 							//under meshes
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
@@ -200,72 +199,69 @@ define(function(require) {
 					var aspectObjects = [];
 					var mergedMeshesPaths = new Array();
 					var visualizationTree = aspect.VisualizationTree.content;
-					for ( var vm in visualizationTree) {
-						node = visualizationTree[vm];
-						if (node != null && typeof node === "object") {
-							var metaType = node._metaType;
-							//look for group of nodes
-							if (metaType == "CompositeNode") {
-								var firstVO = node[Object.keys(node)[0]];
-								var firstVOmetaType = firstVO._metaType;
+					$.each(visualizationTree, function(vm, node) {
+						var metaType = node._metaType;
+						//look for group of nodes
+						if (metaType == "CompositeNode") {
+							var firstVO = node[Object.keys(node)[0]];
+							var firstVOmetaType = firstVO._metaType;
 
-								if (firstVOmetaType == "ParticleNode") {
-									var threeObject = GEPPETTO.SceneFactory.createParticleSystem(node);
-									mergedMeshesPaths.push(threeObject.instancePath);
-									aspectObjects.push(threeObject);
+							if (firstVOmetaType == "ParticleNode") {
+								var threeObject = GEPPETTO.SceneFactory.createParticleSystem(node);
+								mergedMeshesPaths.push(threeObject.instancePath);
+								aspectObjects.push(threeObject);
 
-								} else if (firstVOmetaType == "ColladaNode") {
-									var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]);
-									mergedMeshesPaths.push(threeObject.instancePath);
-									aspectObjects.push(threeObject);
-								}
-								else if (firstVOmetaType == "OBJNode")
-								{
-									var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]);
-									mergedMeshesPaths.push(threeObject.instancePath);
-									aspectObjects.push(threeObject);
-								}
-								else if (firstVOmetaType == "CylinderNode" || firstVOmetaType == "SphereNode")
-								{									
-									for ( var key in node) {
-										var vg = node[key];
-										if (typeof vg === "object") {
-											var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(vg,material);
-											mergedMeshesPaths.push(threeObject.instancePath);
-											THREE.GeometryUtils.merge(combined,threeObject);
-											threeObject.geometry.dispose();
-										}
-									}
-								}
-							} else {
-								if (metaType == "ParticleNode") {
-									var threeObject = GEPPETTO.SceneFactory.createParticleSystem(visualizationTree);
-									mergedMeshesPaths.push(threeObject.instancePath);
-									aspectObjects.push(threeObject);
-
-								}else if (metaType == "ColladaNode") {
-									var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node);
-									mergedMeshesPaths.push(threeObject.instancePath);
-									aspectObjects.push(threeObject);
-								} 
-								else if (metaType == "OBJNode")
-								{
-									var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node);
-									mergedMeshesPaths.push(threeObject.instancePath);
-									aspectObjects.push(threeObject);
-								}
-								else if (metaType == "CylinderNode"|| metaType == "SphereNode")
-								{
-									if (typeof node === "object") {
-										var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node,material);
+							} else if (firstVOmetaType == "ColladaNode") {
+								var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]);
+								mergedMeshesPaths.push(threeObject.instancePath);
+								aspectObjects.push(threeObject);
+							}
+							else if (firstVOmetaType == "OBJNode")
+							{
+								var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]);
+								mergedMeshesPaths.push(threeObject.instancePath);
+								aspectObjects.push(threeObject);
+							}
+							else if (firstVOmetaType == "CylinderNode" || firstVOmetaType == "SphereNode")
+							{									
+								for ( var key in node) {
+									var vg = node[key];
+									if (typeof vg === "object") {
+										var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(vg,material);
 										mergedMeshesPaths.push(threeObject.instancePath);
-										THREE.GeometryUtils.merge(combined, threeObject);
+										THREE.GeometryUtils.merge(combined,threeObject);
 										threeObject.geometry.dispose();
 									}
 								}
 							}
+						} else {
+							if (metaType == "ParticleNode") {
+								var threeObject = GEPPETTO.SceneFactory.createParticleSystem(visualizationTree);
+								mergedMeshesPaths.push(threeObject.instancePath);
+								aspectObjects.push(threeObject);
+
+							}else if (metaType == "ColladaNode") {
+								var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node);
+								mergedMeshesPaths.push(threeObject.instancePath);
+								aspectObjects.push(threeObject);
+							} 
+							else if (metaType == "OBJNode")
+							{
+								var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node);
+								mergedMeshesPaths.push(threeObject.instancePath);
+								aspectObjects.push(threeObject);
+							}
+							else if (metaType == "CylinderNode"|| metaType == "SphereNode")
+							{
+								if (typeof node === "object") {
+									var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node,material);
+									mergedMeshesPaths.push(threeObject.instancePath);
+									THREE.GeometryUtils.merge(combined, threeObject);
+									threeObject.geometry.dispose();
+								}
+							}
 						}
-					}
+					});
 
 					threeObject = new THREE.Mesh(combined, material);
 					threeObject.aspectInstancePath = aspect.instancePath;

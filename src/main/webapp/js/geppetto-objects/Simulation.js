@@ -68,7 +68,6 @@ define(function(require) {
 				hide_not_selected : false
 			},
 			highlightedConnections : [],
-			selected : new Array(),
 			
 			/**
 			 * Simulation.Status
@@ -100,7 +99,7 @@ define(function(require) {
 
 					if(this.status == this.StatusEnum.STOPPED){
 						//reset data for any open plot widget after simulation was stopped and then started again
-						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+						GEPPETTO.trigger("widgets:restart");
 					}
 					
 					this.status = this.StatusEnum.STARTED;
@@ -203,7 +202,7 @@ define(function(require) {
 						GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 						loading = true;
 						GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-						GEPPETTO.FE.SimulationReloaded();
+						GEPPETTO.trigger('simulation:restart');
 					}
 				}
 
@@ -249,7 +248,7 @@ define(function(require) {
 
 					GEPPETTO.MessageSocket.send("init_sim", content);
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_FROM_CONTENT);
-					GEPPETTO.FE.SimulationReloaded();
+					GEPPETTO.trigger("simulation:restart");
 				}
 
 				this.loading = true;
@@ -461,11 +460,30 @@ define(function(require) {
 			 * @returns  {Array} Returns list of all entities selected
 			 */
 			getSelection : function() {
-				return this.selected;;
+				var selection = this.traverseSelection(this.runTimeTree);
+				
+				return selection;
 			},
-			
-			setSelected : function(node){
-				this.selected.push(node);
+
+			/**
+			 * Helper method that traverses through run time tree looking for selected 
+			 * entities.
+			 */
+			traverseSelection : function(entities){
+				var selection = new Array();
+				for(var e in entities){
+					var entity = entities[e];
+					if(entity.selected){
+						if(entity.getEntities().length==0){
+							selection[selection.length] = entity;
+						}
+					}
+					if(entity.getEntities().length >0){
+						selection = selection.concat(this.traverseSelection(entity.getEntities()));
+					}
+				}
+
+				return selection;
 			},
 			
 			/**
@@ -590,7 +608,6 @@ define(function(require) {
 					}
 				}
 				
-				this.selected = new Array();
 				return GEPPETTO.Resources.UNSELECT_ALL;
 			},
 			
@@ -616,11 +633,8 @@ define(function(require) {
 				var selection = this.getSelection();
 				var visible = {};
 				for(var e in selection){
-					var node = selection[e];
-					if(node._metaType == GEPPETTO.Resources.ASPECT_NODE){
-						node = selection[e].getParent();
-					}
-					var connections = node.getConnections();
+					var entity = selection[e];
+					var connections = entity.getConnections();
 					for(var c in connections){
 						var con = connections[c];
 						visible[con.getEntityInstancePath()] = "";

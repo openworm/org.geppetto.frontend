@@ -66,6 +66,9 @@ define(function(require) {
          * @returns {Boolean}
          */
         init : function(containerp) {
+        	
+            GEPPETTO.events();
+
             if (!Detector.webgl) {
                 Detector.addGetWebGLMessage();
                 return false;
@@ -74,6 +77,18 @@ define(function(require) {
                 return true;
             }
         },
+        
+        events : function(){
+        	GEPPETTO.on('simulation:selection_changed', function(){
+				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+            });
+			GEPPETTO.on('simulation:restart', function(){
+				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+			});
+			GEPPETTO.on('widgets:restart', function(){
+				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+			});
+        },        
 
         /**
          *
@@ -163,7 +178,7 @@ define(function(require) {
             var offset = radius
                 / Math.tan(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.25);
 
-            var camDir = new THREE.Vector3(0, 0, 1.0);
+            var camDir = new THREE.Vector3(1, 0, 0);
             camDir.multiplyScalar(offset);
 
             // Store camera position

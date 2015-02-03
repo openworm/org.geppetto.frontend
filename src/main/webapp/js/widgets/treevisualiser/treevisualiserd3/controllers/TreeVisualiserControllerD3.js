@@ -105,10 +105,9 @@ define(function(require) {
 					var treeVisualiserD3 = this.widgets[i];
 					
 					if(treeVisualiserD3.registeredEvents.indexOf(event)>-1){
-						var selected = Simulation.getSelection();
-						treeVisualiserD3.reset();
+						var selected = GEPPETTO.Simulation.getSelection();
 						//update treevisualiser with new data set
-						treeVisualiserD3.setData(selected[s]);
+						treeVisualiserD3.setData(selected[0]);
 					}
 				}
 			}

@@ -304,7 +304,7 @@ define(function(require) {
 			/**
 			 * Register event with widget
 			 * 
-			 * @command Widget.registerEvent(event)
+			 * @command registerEvent(event)
 			 */
 			registerEvent : function(event){
 				this.registeredEvents.push(event);

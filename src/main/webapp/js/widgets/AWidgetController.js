@@ -100,10 +100,6 @@ define(function(require) {
 
 				this.widgets = new Array();
 			},
-			
-			registerEvent : function(event){
-				this.registeredEvents.push(event);
-			}
 		})
 	};
 

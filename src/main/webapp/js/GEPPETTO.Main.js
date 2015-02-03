@@ -48,8 +48,8 @@ define(function(require) {
 		Scatter3dController = require('widgets/scatter3d/controllers/Scatter3dController');
 		ConnectivityController = require('widgets/connectivity/controllers/ConnectivityController');
 		PopupsController = require('widgets/popup/controllers/PopupController');
-		TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
-		TreeVisualiserControllerD3 = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
+		TreeVisualiserControllerD3 = require('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
+		TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
 		VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
 		
 

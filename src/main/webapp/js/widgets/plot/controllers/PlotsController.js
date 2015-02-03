@@ -59,10 +59,8 @@ define(function(require) {
 			//Name of plotting widget
 			var name = "Plot" + index;
 
-			var plots = this.getWidgets();
-
-			for(var p in plots){
-				if(plots[p].getId() == name){
+			for(var p in this.widgets){
+				if(this.widgets[p].getId() == name){
 					index++;
 					name = "Plot" + index;
 				}
@@ -76,7 +74,7 @@ define(function(require) {
 			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
 			//store in local stack
-			plots.push(p);
+			this.widgets.push(p);
 
 			GEPPETTO.WidgetsListener.subscribe(this, id);
 
@@ -93,8 +91,6 @@ define(function(require) {
 		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
 		update: function(event) {
-			var plots = this.getWidgets();
-
 			//delete plot widget(s)
 			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
@@ -102,8 +98,8 @@ define(function(require) {
 
 			//reset plot's datasets
 			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-				for(var i = 0; i < plots.length; i++) {
-					var plot = plots[i];
+				for(var i = 0; i < this.widgets.length; i++) {
+					var plot = this.widgets[i];
 
 					plot.cleanDataSets();
 				}
@@ -112,8 +108,8 @@ define(function(require) {
 			//update plotting widgets
 			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
 				//loop through all existing widgets
-				for(var i = 0; i < plots.length; i++) {
-					var plot = plots[i];
+				for(var i = 0; i < this.widgets.length; i++) {
+					var plot = this.widgets[i];
 
 					//update plot with new data set
 					plot.updateDataSet();

@@ -58,10 +58,8 @@ define(function(require) {
 			//Name of popup widget
 			var name = "Popup" + index;
 			
-			var popups = this.getWidgets();
-
-			for(var p in popups){
-				if(popups[p].getId() == name){
+			for(var p in this.widgets){
+				if(this.widgets[p].getId() == name){
 					index++;
 					name = "Popup" + index;
 				}
@@ -76,7 +74,7 @@ define(function(require) {
 			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
 			//store in local stack
-			popups.push(p);
+			this.widgets.push(p);
 
 			GEPPETTO.WidgetsListener.subscribe(this, id);
 

@@ -68,6 +68,7 @@ define(function(require) {
 				hide_not_selected : false
 			},
 			highlightedConnections : [],
+			selected : new Array(),
 			
 			/**
 			 * Simulation.Status
@@ -460,28 +461,11 @@ define(function(require) {
 			 * @returns  {Array} Returns list of all entities selected
 			 */
 			getSelection : function() {
-				var selection = this.traverseSelection(this.runTimeTree);
-				
-				return selection;
+				return this.selected;;
 			},
-
-			/**
-			 * Helper method that traverses through run time tree looking for selected 
-			 * entities.
-			 */
-			traverseSelection : function(entities){
-				var selection = new Array();
-				for(var e in entities){
-					var entity = entities[e];
-					if(entity.selected){
-						selection[selection.length] = entity;
-					}
-					if(entity.getEntities().length >0){
-						selection = selection.concat(this.traverseSelection(entity.getEntities()));
-					}
-				}
-
-				return selection;
+			
+			setSelected : function(node){
+				this.selected.push(node);
 			},
 			
 			/**
@@ -606,6 +590,7 @@ define(function(require) {
 					}
 				}
 				
+				this.selected = new Array();
 				return GEPPETTO.Resources.UNSELECT_ALL;
 			},
 			
@@ -631,8 +616,11 @@ define(function(require) {
 				var selection = this.getSelection();
 				var visible = {};
 				for(var e in selection){
-					var entity = selection[e];
-					var connections = entity.getConnections();
+					var node = selection[e];
+					if(node._metaType == GEPPETTO.Resources.ASPECT_NODE){
+						node = selection[e].getParent();
+					}
+					var connections = node.getConnections();
 					for(var c in connections){
 						var con = connections[c];
 						visible[con.getEntityInstancePath()] = "";

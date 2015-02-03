@@ -60,16 +60,13 @@ define(function(require) {
 			//Name of TreeVisualiserDAT widget
 			var name = "TreeVisualiserDAT" + index;
 
-			var plots = this.getWidgets();
-
-			for(var p in plots){
-				if(plots[p].getId() == name){
+			for(var p in this.widgets){
+				if(this.widgets[p].getId() == name){
 					index++;
 					name = "TreeVisualiserDAT" + index;
 				}
 			}
 			var id = name;
-			var treeVisualisersDAT = this.getWidgets();
 			// create tree visualiser widget
 			var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 260, height: 350});
 			// create help command for plot
@@ -77,8 +74,10 @@ define(function(require) {
 				return GEPPETTO.Utility.getObjectCommands(id);
 			};
 			// store in local stack
-			treeVisualisersDAT.push(tvdat);
-			this.registerHandler(id);
+			this.widgets.push(tvdat);
+			
+			GEPPETTO.WidgetsListener.subscribe(this, id);
+
 			// add commands to console autocomplete and help option
 			GEPPETTO.Console.updateCommands("assets/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",	tvdat, id);
 			//update tags for autocompletion
@@ -96,6 +95,19 @@ define(function(require) {
 			// delete treevisualiser widget(s)
 			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
+			}
+			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED) {
+				//loop through all existing widgets
+				for(var i = 0; i < this.widgets.length; i++) {
+					var treeVisualiser = this.widgets[i];
+					
+					if(treeVisualiser.registeredEvents.indexOf(event)>-1){
+						var selected = GEPPETTO.Simulation.getSelection();
+						treeVisualiser.reset();
+						//update treevisualiser with new data set
+						treeVisualiser.setData(selected[0]);
+					}
+				}
 			}
 			// update treevisualiser widgets
 			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {

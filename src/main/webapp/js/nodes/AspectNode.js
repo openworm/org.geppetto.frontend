@@ -166,8 +166,9 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(true);
 						}
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+						GEPPETTO.Simulation.setSelected(this);
+						//Notify Widgets Selection took place
+						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {
 						message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
 					}

@@ -47,11 +47,13 @@ define(function(require) {
 		View: Backbone.View.extend({
 
 			widgets : new Array(),
-			on : false,
+			on : true,
+			registeredEvents : null,
 			
 			constructor: function() {
 			    // Call the original constructor
 			    Backbone.View.apply(this, arguments);
+			    registeredEvents = new Array();
 			 },
 		
 			/**
@@ -98,6 +100,10 @@ define(function(require) {
 
 				this.widgets = new Array();
 			},
+			
+			registerEvent : function(event){
+				this.registeredEvents.push(event);
+			}
 		})
 	};
 

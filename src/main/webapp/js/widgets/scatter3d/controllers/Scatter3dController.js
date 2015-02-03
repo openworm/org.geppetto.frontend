@@ -62,10 +62,8 @@ define(function(require) {
 			//Name of scatter widget
 			var name = "Scatter3d" + index;
 
-			var scatter3ds = this.getWidgets();
-
-			for(var p in scatter3ds){
-				if(scatter3ds[p].getId() == name){
+			for(var p in this.widgets){
+				if(this.widgets[p].getId() == name){
 					index++;
 					name = "Scatter3d" + index;
 				}
@@ -77,8 +75,9 @@ define(function(require) {
 			//create help command for scatter3d
 			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
-			scatter3ds.push(p);
-			this.registerHandler(id);
+			this.widgets.push(p);
+
+			GEPPETTO.WidgetsListener.subscribe(this, id);
 
 			//add commands to console autocomplete and help option
 			GEPPETTO.Console.updateCommands("assets/js/widgets/scatter3d/Scatter3d.js", p, id);
@@ -91,7 +90,6 @@ define(function(require) {
 
 		//receives updates from widget listener class to update scatter3d widget(s)
 		update: function(event) {
-			var scatter3ds = this.getWidgets();
 			//delete scatter3d widget(s)
 			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
@@ -108,8 +106,8 @@ define(function(require) {
 			//update scatter3d widgets
 			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
 				//loop through all existing widgets
-				for(var i = 0; i < scatter3ds.length; i++) {
-					var scatter3d = scatter3ds[i];
+				for(var i = 0; i < this.widgets.length; i++) {
+					var scatter3d = this.widgets[i];
 
 					//update scatter3d with new data set
 					scatter3d.updateDataSet();

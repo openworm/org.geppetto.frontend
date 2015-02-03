@@ -60,10 +60,8 @@ define(function(require) {
 			//Name of TreeVisualiserD3 widget
 			var name = "TreeVisualiserD3" + index;
 
-			var plots = this.getWidgets();
-
-			for(var p in plots){
-				if(plots[p].getId() == name){
+			for(var p in this.widgets){
+				if(this.widgets[p].getId() == name){
 					index++;
 					name = "TreeVisualiserD3" + index;
 				}
@@ -71,7 +69,6 @@ define(function(require) {
 
 			var id = name;
 
-			var treeVisualisersD3 = this.getWidgets();
 			//create tree visualiser widget
 			var tvd3 = window[name] = new TreeVisualiserD3({id:id, name:name,visible:false, width: 500, height: 500});
 
@@ -79,9 +76,9 @@ define(function(require) {
 			tvd3.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
 
 			//store in local stack
-			treeVisualisersD3.push(tvd3);
-
-			this.registerHandler(id);
+			this.widgets.push(tvd3);
+			
+			GEPPETTO.WidgetsListener.subscribe(this, id);
 
 			//add commands to console autocomplete and help option
 			GEPPETTO.Console.updateCommands("assets/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
@@ -98,16 +95,28 @@ define(function(require) {
 		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
 		update: function(event) {
-			var treeVisualisersD3 = this.getWidgets();
 			//delete treevisualiser widget(s)
 			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
 			}
+			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED) {
+				//loop through all existing widgets
+				for(var i = 0; i < this.widgets.length; i++) {
+					var treeVisualiserD3 = this.widgets[i];
+					
+					if(treeVisualiserD3.registeredEvents.indexOf(event)>-1){
+						var selected = Simulation.getSelection();
+						treeVisualiserD3.reset();
+						//update treevisualiser with new data set
+						treeVisualiserD3.setData(selected[s]);
+					}
+				}
+			}
 			//update treevisualiser widgets
 			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
 				//loop through all existing widgets
-				for(var i = 0; i < treeVisualisersD3.length; i++) {
-					var treeVisualiserD3 = treeVisualisersD3[i];
+				for(var i = 0; i < this.widgets.length; i++) {
+					var treeVisualiserD3 = this.widgets[i];
 
 					//update treevisualiser with new data set
 					treeVisualiserD3.updateData();

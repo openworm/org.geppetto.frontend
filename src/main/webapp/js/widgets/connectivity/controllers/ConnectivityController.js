@@ -61,10 +61,8 @@ define(function(require) {
 			//Name of plotting widget
 			var name = "Connectivity" + index;
 
-			var connectivity = this.getWidgets();
-
-			for(var p in connectivity){
-				if(connectivity[p].getId() == name){
+			for(var p in this.widgets){
+				if(this.widgets[p].getId() == name){
 					index++;
 					name = "Connectivity" + index;
 				}
@@ -79,9 +77,9 @@ define(function(require) {
 			cnt.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
 
 			//store in local stack
-			connectivity.push(cnt);
-
-			this.registerHandler(id);
+			this.widgets.push(cnt);
+			
+			GEPPETTO.WidgetsListener.subscribe(this, id);
 
 			//add commands to console autocomplete and help option
 			GEPPETTO.Console.updateCommands("assets/js/widgets/connectivity/Connectivity.js", cnt, id);
@@ -98,7 +96,6 @@ define(function(require) {
 		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
 		update: function(event) {
-			var connectivity = this.getWidgets();
 			//delete connectivity widget(s)
 			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
@@ -106,8 +103,8 @@ define(function(require) {
 			//update connectivity widgets
 			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
 				//loop through all existing widgets
-				for(var i = 0; i < connectivity.length; i++) {
-					var cnt = connectivity[i];
+				for(var i = 0; i < this.widgets.length; i++) {
+					var cnt = this.widgets[i];
 					//update connectivity with new data set
 					cnt.updateData();
 				}

@@ -58,10 +58,8 @@ define(function(require) {
 			//Name of var vis widget
 			var name = "VarVis" + index;
 
-			var visualisers = this.getWidgets();
-
-			for(var p in visualisers){
-				if(visualisers[p].getId() == name){
+			for(var p in this.widgets){
+				if(this.widgets[p].getId() == name){
 					index++;
 					name = "VarVis" + index;
 				}
@@ -70,8 +68,9 @@ define(function(require) {
 			var id = name;
 			var vv = window[name] = new VarVis({id:id, name:name,visible:true});
 			vv.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
-			visualisers.push(vv);
-			this.registerHandler(id);
+			this.widgets.push(vv);
+
+			GEPPETTO.WidgetsListener.subscribe(this, id);
 
 			//add commands to console autocomplete and help option
 			GEPPETTO.Console.updateCommands("assets/js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
@@ -86,7 +85,6 @@ define(function(require) {
 		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
 		update: function(event) {
-			var visualisers = this.getWidgets();
 			//delete a widget(s)
 			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
@@ -94,15 +92,15 @@ define(function(require) {
 
 			//reset widget's datasets
 			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-				for (var i = 0; i < visualisers.length; i++) {
-					visualisers[i].clearVariable();
+				for (var i = 0; i < this.widgets.length; i++) {
+					this.widgets[i].clearVariable();
 				}
 			}
 
 			//update widgets
 			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-				for (var i = 0; i < visualisers.length; i++) {
-					visualisers[i].updateVariable();
+				for (var i = 0; i < this.widgets.length; i++) {
+					this.widgets[i].updateVariable();
 				}
 			}
 		}

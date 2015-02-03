@@ -59,6 +59,7 @@ define(function(require) {
 			visible: true,
 			size: {height: 300, width: 350},
 			position: {left: "50%", top: "50%"},
+			registeredEvents : null,
 			
 
 			/**
@@ -73,6 +74,7 @@ define(function(require) {
 				this.name = options.name;
 				this.visible = options.visible;
 				this.contextMenu = new GEPPETTO.ContextMenuView();
+				this.registeredEvents = new Array();
 			},
 
 			/**
@@ -299,13 +301,14 @@ define(function(require) {
 
 			},
 			
+			/**
+			 * Register event with widget
+			 * 
+			 * @command Widget.registerEvent(event)
+			 */
 			registerEvent : function(event){
-				this.selectionStatus = status;
+				this.registeredEvents.push(event);
 			},
-			
-			getSelectionStatus : function(){
-				
-			}
 		})
 	};
 

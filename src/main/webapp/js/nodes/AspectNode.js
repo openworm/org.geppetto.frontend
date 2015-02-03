@@ -166,7 +166,7 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(true);
 						}
-						//Notify Widgets Selection took place
+						//signal selection has changed in simulation
 						GEPPETTO.trigger("simulation:selection_changed");
 					} else {
 						message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
@@ -221,6 +221,7 @@ define(function(require) {
 							Simulation.showUnselected(false);
 						}
 					
+						//trigger event that selection has been changed
 						GEPPETTO.trigger("simulation:selection_changed");
 					} else {
 						message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;

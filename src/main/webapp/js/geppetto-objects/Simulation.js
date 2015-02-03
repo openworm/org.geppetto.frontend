@@ -202,6 +202,7 @@ define(function(require) {
 						GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 						loading = true;
 						GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+						//trigger simulation restart event
 						GEPPETTO.trigger('simulation:restart');
 					}
 				}

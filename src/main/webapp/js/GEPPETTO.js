@@ -67,6 +67,7 @@ define(function(require) {
          */
         init : function(containerp) {
         	
+        	//setup listeners for geppetto events that can be triggered
             GEPPETTO.events();
 
             if (!Detector.webgl) {
@@ -78,14 +79,20 @@ define(function(require) {
             }
         },
 
+        /**
+         * Code that listens to events being triggered
+         */
         events : function(){
         	GEPPETTO.on('simulation:selection_changed', function(){
+        		//notify widgets that selection has changed in scene
         		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
         	});
         	GEPPETTO.on('simulation:restart', function(){
+        		//delete existing widgets, to allow new ones for new simulation
         		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
         	});
         	GEPPETTO.on('widgets:restart', function(){
+        		//notify widgets a restart of data is needed
         		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
         	});
         },        

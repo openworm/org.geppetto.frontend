@@ -77,17 +77,17 @@ define(function(require) {
                 return true;
             }
         },
-        
+
         events : function(){
         	GEPPETTO.on('simulation:selection_changed', function(){
-				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
-            });
-			GEPPETTO.on('simulation:restart', function(){
-				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-			});
-			GEPPETTO.on('widgets:restart', function(){
-				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
-			});
+        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+        	});
+        	GEPPETTO.on('simulation:restart', function(){
+        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+        	});
+        	GEPPETTO.on('widgets:restart', function(){
+        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+        	});
         },        
 
         /**

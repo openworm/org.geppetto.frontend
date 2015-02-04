@@ -41,6 +41,7 @@ define(function(require) {
 										position.z);
 							}
 							//TODO: those should go into the vistree instead
+							//TODO: why is that done at jsonGeometryTo3D as well?
 							//keep track of aspects created by storing them in VARS property object
 							//under meshes
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
@@ -143,36 +144,53 @@ define(function(require) {
 				 * @returns a Cylinder translated and rotated in the scene according to
 				 *          the cartesian coordinated that describe it
 				 */
-				getCylinder : function(bottomBasePos, topBasePos, radiusTop,
+				//TODO: need review, probably overcomplicating things
+				//      just need to create, rotate, translate.
+				createAndPosition3DCylinder : function(startPoint, endPoint, radiusTop,
 						radiusBottom, material) {
-					var cylinderAxis = new THREE.Vector3();
-					cylinderAxis.subVectors(topBasePos, bottomBasePos);
-
-					var cylHeight = cylinderAxis.length();
-
-					var midPoint = new THREE.Vector3();
-					midPoint.addVectors(bottomBasePos, topBasePos);
-					midPoint.multiplyScalar(0.5);
-
-					//convert radius values to float from string
-					var bottom = parseFloat(radiusBottom);
-					var top = parseFloat(radiusTop);
 					
-					var c = new THREE.CylinderGeometry(top, bottom,
-							cylHeight, 6, 1, false);
+				    bottomBasePos = new THREE.Vector3().fromArray(startPoint);
+				    topBasePos = new THREE.Vector3().fromArray(endPoint);
+				    var cylinderAxis = new THREE.Vector3();
+				    cylinderAxis.subVectors(topBasePos, bottomBasePos);
+				    var cylHeight = cylinderAxis.length();
 
-					c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+				    var midPoint = new THREE.Vector3();
+				    midPoint.addVectors(bottomBasePos, topBasePos);
+				    midPoint.multiplyScalar(0.5);
+
+				    var c = new THREE.CylinderGeometry(radiusTop, radiusBottom,
+								       cylHeight, 6, 1, false);
+
+				    c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+				    
+				    var threeObject = new THREE.Mesh(c, material);
+
+				    threeObject.lookAt(cylinderAxis);
+				    var distance = midPoint.length();
+
+				    midPoint.transformDirection(threeObject.matrix);
+				    midPoint.multiplyScalar(distance);
+
+				    threeObject.position.add(midPoint);
+				    
+				    return threeObject;
+				},	
+
+				/**
+				 * Creates a sphere
+				 * 
+				 * @param position
+				 * @param radiusBottom
+				 * @param material
+				 * @returns a Sphere positionated in the scene
+				 */
+				 createAndPosition3dSphere : function(position, radius, material) {
 					
-					var threeObject = new THREE.Mesh(c, material);
+					var sphere = new THREE.SphereGeometry(radius, 20, 20);
+					threeObject = new THREE.Mesh(sphere, material);
+					threeObject.position.fromArray(position);
 
-					threeObject.lookAt(cylinderAxis);
-					var distance = midPoint.length();
-
-					midPoint.transformDirection(threeObject.matrix);
-					midPoint.multiplyScalar(distance);
-
-					threeObject.position.add(midPoint);
-					
 					return threeObject;
 				},	
 
@@ -207,32 +225,36 @@ define(function(require) {
 							var firstVOmetaType = firstVO._metaType;
 
 							if (firstVOmetaType == "ParticleNode") {
+								//TODO: All other cases involve node[vg], but this one
 								var threeObject = GEPPETTO.SceneFactory.createParticleSystem(node);
 								mergedMeshesPaths.push(threeObject.instancePath);
 								aspectObjects.push(threeObject);
 
 							} else if (firstVOmetaType == "ColladaNode") {
+								//TODO: vg is undefined here...
 								var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]);
 								mergedMeshesPaths.push(threeObject.instancePath);
 								aspectObjects.push(threeObject);
 							}
 							else if (firstVOmetaType == "OBJNode")
 							{
+								//TODO: vg is undefined here...
 								var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]);
 								mergedMeshesPaths.push(threeObject.instancePath);
 								aspectObjects.push(threeObject);
 							}
 							else if (firstVOmetaType == "CylinderNode" || firstVOmetaType == "SphereNode")
 							{									
-								for ( var key in node) {
-									var vg = node[key];
+								$.each(node, function(key, vg) {
 									if (typeof vg === "object") {
+										//TODO: vg only makes sense in here.
 										var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(vg,material);
 										mergedMeshesPaths.push(threeObject.instancePath);
+										//TODO: why doesn't that go into aspectObjects?
 										THREE.GeometryUtils.merge(combined,threeObject);
 										threeObject.geometry.dispose();
 									}
-								}
+								});
 							}
 						} else {
 							if (metaType == "ParticleNode") {
@@ -315,6 +337,7 @@ define(function(require) {
 				 * @returns {Mesh} a three mesh representing the geometry
 				 */
 				jsonGeometryTo3D : function(g, material) {
+					//TODO: why is the center only computed for the sphere?
 					var threeObject = null;
 					switch (g._metaType) {
 					case "ParticleNode":
@@ -325,35 +348,40 @@ define(function(require) {
 
 						break;
 					case "CylinderNode":
-						var lookAtV = new THREE.Vector3(g.distal.x, g.distal.y,
-								g.distal.z);
-						var positionV = new THREE.Vector3(g.position.x, g.position.y,
-								g.position.z);
-						threeObject = GEPPETTO.SceneFactory.getCylinder(positionV, lookAtV,
-								g.radiusTop, g.radiusBottom, material);
+						var endPoint = [g.distal.x, g.distal.y, g.distal.z];
+						var startPoint = [g.position.x, g.position.y, g.position.z];
+						threeObject = GEPPETTO.SceneFactory.createAndPosition3DCylinder(startPoint, endPoint,
+								parseFloat(g.radiusTop), parseFloat(g.radiusBottom), material);
 						threeObject.geometry.verticesNeedUpdate = true;
 						break;
 					case "SphereNode":
-						var sphere = new THREE.SphereGeometry(g.radius,20, 20);
-						threeObject = new THREE.Mesh(sphere, material);
-						var x = parseFloat(g.position.x);
-						var y = parseFloat(g.position.y);
-						var z = parseFloat(g.position.z);
+//						var sphere = new THREE.SphereGeometry(g.radius,20, 20);
+//						threeObject = new THREE.Mesh(sphere, material);
+						var position = [g.position.x, g.position.y,
+								g.position.z];
+						threeObject = GEPPETTO.SceneFactory.createAndPosition3DSphere(position, parseFloat(g.radius), material);
+//						var x = parseFloat(g.position.x);
+//						var y = parseFloat(g.position.y);
+//						var z = parseFloat(g.position.z);
 						threeObject.geometry.verticesNeedUpdate = true;
 						
-						threeObject.geometry.computeBoundingBox();
-						var aabbMin = null;
-						var aabbMax = null;
-						
-						aabbMin = threeObject.geometry.boundingBox.min;
-						aabbMax = threeObject.geometry.boundingBox.max;
-						
-						// Compute world AABB center
-						x = (aabbMax.x + aabbMin.x) * 0.5;
-						y = (aabbMax.y + aabbMin.y) * 0.5;
-						z = (aabbMax.z + aabbMin.z) * 0.5;
-						threeObject.position.set(x,y,z);
-						threeObject.updateMatrixWorld(true);
+						//TODO: why is the center only computed for the sphere?
+						//TODO: why is all this logic done only for the sphere? 
+
+//						threeObject.geometry.computeBoundingBox();
+//						var aabbMin = null;
+//						var aabbMax = null;
+//						
+//						aabbMin = threeObject.geometry.boundingBox.min;
+//						aabbMax = threeObject.geometry.boundingBox.max;
+//						
+//
+//						// Compute world AABB center
+//						x = (aabbMax.x + aabbMin.x) * 0.5;
+//						y = (aabbMax.y + aabbMin.y) * 0.5;
+//						z = (aabbMax.z + aabbMin.z) * 0.5;
+//						threeObject.position.set(x,y,z);
+//						threeObject.updateMatrixWorld(true);
 						break;
 					case "ColladaNode":
 						var loader = new THREE.ColladaLoader();
@@ -377,8 +405,11 @@ define(function(require) {
 					threeObject.visible = true;
 					// add the geometry to a map indexed by the geometry id so we can
 					// find it for updating purposes
+					//TODO: it will be decorated with .aspectInstancePath in generate3dObject. Erase?
 					threeObject.instancePath = g.instancePath;
+					//TODO: add geppettoId
 					threeObject.highlighted = false;
+					//TODO: that should be the vistree? why is it also done at the loadEntity level??
 					GEPPETTO.getVARS().visualModelMap[g.instancePath]=threeObject;
 					return threeObject;
 				},

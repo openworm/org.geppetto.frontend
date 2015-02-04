@@ -97,16 +97,6 @@ define(function(require) {
 									}
 								}
 							}
-
-							var entityGeometry = GEPPETTO.getVARS().visualModelMap[aspect.instancePath];
-							if (entityGeometry) {
-								// if an entity is represented by a particle
-								// system we need to
-								// mark it as dirty for it to be updated
-								if (entityGeometry instanceof THREE.ParticleSystem) {
-									entityGeometry.geometry.verticesNeedUpdate = true;
-								}
-							}
 						}
 					}
 				},
@@ -161,7 +151,8 @@ define(function(require) {
 				   
 				    threeObject.lookAt(axis);
 				    threeObject.position.fromArray(midPoint.toArray());
-				    
+
+					threeObject.geometry.verticesNeedUpdate = true;
 				    return threeObject;
 				},	
 
@@ -179,6 +170,7 @@ define(function(require) {
 					threeObject = new THREE.Mesh(sphere, material);
 					threeObject.position.fromArray(position);
 
+					threeObject.geometry.verticesNeedUpdate = true;
 					return threeObject;
 				},	
 
@@ -314,6 +306,7 @@ define(function(require) {
 					entityObject.sortParticles = true;
 					GEPPETTO.getVARS().visualModelMap[node.instancePath]=entityObject;
 
+                    entityObject.geometry.verticesNeedUpdate = true;
 					return entityObject;
 				},
 
@@ -340,13 +333,11 @@ define(function(require) {
 						var startPoint = [g.position.x, g.position.y, g.position.z];
 						threeObject = GEPPETTO.SceneFactory.createAndPosition3DCylinder(startPoint, endPoint,
 								parseFloat(g.radiusTop), parseFloat(g.radiusBottom), material);
-						threeObject.geometry.verticesNeedUpdate = true;
 						break;
 
 					case "SphereNode":
 						var position = [g.position.x, g.position.y, g.position.z];
 						threeObject = GEPPETTO.SceneFactory.createAndPosition3DSphere(position, parseFloat(g.radius), material);
-						threeObject.geometry.verticesNeedUpdate = true;
 						break;
 
 					case "ColladaNode":

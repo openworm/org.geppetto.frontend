@@ -148,4 +148,10 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 		
 	}
 
+	@Override
+	public void message(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

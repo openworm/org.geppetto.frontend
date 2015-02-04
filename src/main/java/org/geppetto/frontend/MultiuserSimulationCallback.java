@@ -132,4 +132,10 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.ERROR, error);
 	}
 
+	@Override
+	public void message(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

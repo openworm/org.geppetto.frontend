@@ -52,6 +52,7 @@ define(function(require) {
      */
     var VARS;
 
+    
     /**
      * Initialize the engine
      *
@@ -73,7 +74,7 @@ define(function(require) {
                 VARS = GEPPETTO.Init.initialize(containerp);
                 return true;
             }
-        },
+        },      
 
         /**
          *
@@ -163,7 +164,7 @@ define(function(require) {
             var offset = radius
                 / Math.tan(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.25);
 
-            var camDir = new THREE.Vector3(0, 0, 1.0);
+            var camDir = new THREE.Vector3(1, 0, 0);
             camDir.multiplyScalar(offset);
 
             // Store camera position
@@ -454,6 +455,7 @@ define(function(require) {
 
     require('SandboxConsole')(GEPPETTO);
     require('GEPPETTO.Resources')(GEPPETTO);
+    require('GEPPETTO.Events')(GEPPETTO);
     require('GEPPETTO.Init')(GEPPETTO);
     require('3d_visualization/GEPPETTO.SceneFactory')(GEPPETTO);
     require('3d_visualization/GEPPETTO.SceneController')(GEPPETTO);

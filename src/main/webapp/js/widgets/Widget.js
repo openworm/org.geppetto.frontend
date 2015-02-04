@@ -59,6 +59,8 @@ define(function(require) {
 			visible: true,
 			size: {height: 300, width: 350},
 			position: {left: "50%", top: "50%"},
+			registeredEvents : null,
+			
 
 			/**
 			 * Initializes the widget
@@ -72,6 +74,7 @@ define(function(require) {
 				this.name = options.name;
 				this.visible = options.visible;
 				this.contextMenu = new GEPPETTO.ContextMenuView();
+				this.registeredEvents = new Array();
 			},
 
 			/**
@@ -296,7 +299,16 @@ define(function(require) {
 				//Take focus away from close button
 				$(".ui-dialog-titlebar-close").blur();
 
-			}
+			},
+			
+			/**
+			 * Register event with widget
+			 * 
+			 * @command registerEvent(event)
+			 */
+			registerEvent : function(event){
+				this.registeredEvents.push(event);
+			},
 		})
 	};
 

@@ -39,172 +39,166 @@
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
-	return function(GEPPETTO) {
+	var AWidgetController = require('widgets/AWidgetController');
+	var TreeVisualiserDAT = require('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT');
 
-		var TreeVisualiserDAT = require('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT');
-		var treeVisualisersDAT = new Array();
+	/**
+	 * @exports Widgets/Connectivity/TreeVisualiserControllerDATController
+	 */
+	return AWidgetController.View.extend ({
 
-		GEPPETTO.TreeVisualiserControllerDAT = {
+		initialize: function() {
+			this.widgets = new Array();
+			
+			// Register Commands
+			GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
+			                                                 "AspectSubTreeNode",
+			                                                 "CompositeNode",
+			                                                 "ConnectionNode",
+			                                                 "DynamicsSpecificationNode",
+			                                                 "EntityNode",
+			                                                 "FunctionNode",
+			                                                 "ParameterNode",
+			                                                 "ParameterSpecificationNode",
+			                                                 "TextMetadataNode",
+			                                                 "VariableNode",
+			                                                 "VisualGroupElementNode",
+			                                                 "VisualGroupNode",
+			                                                 "VisualObjectReferenceNode"],this.getCommands);
+		},
 
-			/**
-			 * Registers widget events to detect and execute following actions.
-			 * Used when widget is destroyed.
-			 *
-			 * @param {String} treeVisualiserDATID - ID of widget to register handler
-			 */
-			registerHandler : function(treeVisualiserDATID) {
-				GEPPETTO.WidgetsListener.subscribe(
-						GEPPETTO.TreeVisualiserControllerDAT,
-						treeVisualiserDATID);
-			},
+		/**
+		 * Adds a new TreeVisualizerDAT Widget to Geppetto
+		 */
+		addTreeVisualiserDATWidget : function() {
+			//look for a name and id for the new widget
+			var id = this.getAvailableWidgetId("TreeVisualiserDAT", this.widgets);
+			var name = id;
 
-			/**
-			 * Returns all TreeVisualizerDAT widgets objects
-			 */
-			getWidgets : function() {
-				return treeVisualisersDAT;
-			},
+			// create tree visualiser widget
+			var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 260, height: 350});
+			// create help command for plot
+			tvdat.help = function() {
+				return GEPPETTO.Utility.getObjectCommands(id);
+			};
+			// store in local stack
+			this.widgets.push(tvdat);
 
-			/**
-			 * Adds a new TreeVisualizerDAT Widget to Geppetto
-			 */
-			addTreeVisualiserDATWidget : function() {
-				//look for a name and id for the new widget
-				var id = getAvailableWidgetId("TreeVisualiserDAT", treeVisualisersDAT);
-				var name = id;
+			GEPPETTO.WidgetsListener.subscribe(this, id);
 
-				// create tree visualiser widget
-				var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 260, height: 350});
+			// add commands to console autocomplete and help option
+			GEPPETTO.Console.updateCommands("assets/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",	tvdat, id);
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
+			return tvdat;
+		},
 
-				// create help command for plot
-				tvdat.help = function() {
-					return GEPPETTO.Utility.getObjectCommands(id);
-				};
+		/**
+		 * Receives updates from widget listener class to update TreeVisualizerDAT widget(s)
+		 * 
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+		 */
+		update : function(event) {
+			var treeVisualisersDAT = this.getWidgets();
+			// delete treevisualiser widget(s)
+			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
+			}
+			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED) {
+				//loop through all existing widgets
+				for(var i = 0; i < this.widgets.length; i++) {
+					var treeVisualiser = this.widgets[i];
 
-				// store in local stack
-				treeVisualisersDAT.push(tvdat);
-
-				this.registerHandler(id);
-
-				// add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("assets/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",	tvdat, id);
-
-				//update tags for autocompletion
-				GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
-				
-				return tvdat;
-			},
-
-			/**
-			 * Remove the TreeVisualizerDAT widget
-			 */
-			removeTreeVisualiserDATWidgets : function() {
-				// remove all existing popup widgets
+					if(treeVisualiser.registeredEvents.indexOf(event)>-1){
+						var selected = GEPPETTO.Simulation.getSelection();
+						treeVisualiser.reset();
+						//update treevisualiser with new data set
+						treeVisualiser.setData(selected[0]);
+					}
+				}
+			}
+			// update treevisualiser widgets
+			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+				// loop through all existing widgets
 				for (var i = 0; i < treeVisualisersDAT.length; i++) {
 					var treeVisualiserDAT = treeVisualisersDAT[i];
 
-					treeVisualiserDAT.destroy();
-					i++;
+					// update treevisualiser with new data set
+					treeVisualiserDAT.updateData();
 				}
+			}
+		},
 
-				treeVisualisersDAT = new Array();
-			},
-
-			/**
-			 * Receives updates from widget listener class to update TreeVisualizerDAT widget(s)
-			 * 
-			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-			 */
-			update : function(event) {
-				// delete treevisualiser widget(s)
-				if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removeTreeVisualiserDATWidgets();
-				}
-				// update treevisualiser widgets
-				else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-					// loop through all existing widgets
-					for (var i = 0; i < treeVisualisersDAT.length; i++) {
-						var treeVisualiserDAT = treeVisualisersDAT[i];
-
-						// update treevisualiser with new data set
-						treeVisualiserDAT.updateData();
-					}
-				}
-			},
-
-			/**
-			 * Retrieve commands for a specific variable node
-			 * 
-			 * @param {Node} node - Geppetto Node used for extracting commands
-			 * @returns {Array} Set of commands associated with this node 
-			 */
-			getCommands : function(node) {
-				var group1 = [{
-					label: "Open with DAT Widget",
-					action: ["var tv = G.addWidget(Widgets.TREEVISUALISERDAT)", "tv.setData(#node_instancepath#)"],
-				}];
+		/**
+		 * Retrieve commands for a specific variable node
+		 * 
+		 * @param {Node} node - Geppetto Node used for extracting commands
+		 * @returns {Array} Set of commands associated with this node 
+		 */
+		getCommands : function(node) {
+			var group1 = [{
+				label: "Open with DAT Widget",
+				action: ["var tv = G.addWidget(Widgets.TREEVISUALISERDAT)", "tv.setData(#node_instancepath#)"],
+			}];
 
 
-				var availableWidgets = GEPPETTO.TreeVisualiserControllerDAT.getWidgets();
-				if (availableWidgets.length > 0){
-					var group1Add =  {
+			var availableWidgets = this.getWidgets();
+			if (availableWidgets.length > 0){
+				var group1Add =  {
 						label : "Add to DAT Widget",
 						position : 0
-					} ;
+				} ;
 
-					var subgroups1Add = [];
-					for (var availableWidgetIndex in availableWidgets){
-						var availableWidget = availableWidgets[availableWidgetIndex];
-						subgroups1Add = subgroups1Add.concat([{
-							label: "Add to " + availableWidget.name,
-							action: [availableWidget.id + ".setData(#node_instancepath#)"],
-							position: availableWidgetIndex
-						}]);
-					}
-					group1Add["groups"] = [subgroups1Add];
+				var subgroups1Add = [];
+				for (var availableWidgetIndex in availableWidgets){
+					var availableWidget = availableWidgets[availableWidgetIndex];
+					subgroups1Add = subgroups1Add.concat([{
+						label: "Add to " + availableWidget.name,
+						action: [availableWidget.id + ".setData(#node_instancepath#)"],
+						position: availableWidgetIndex
+					}]);
+				}
+				group1Add["groups"] = [subgroups1Add];
 
-					group1.push(group1Add);
-				}
-				
-				var groups = [group1];
-				
-				if (node._metaType == "ConnectionNode"){
-					var connectionGroup = [{
-						label:"Highlight Connection",
-						action: ["Simulation.unHighlightAll();","#node_instancepath#.highlight(true)"],
-					}];
-					
-					groups.push(connectionGroup);
-				}
-				if (node._metaType == "EntityNode"){
-					var entity = [{
-						label:"Select Entity",
-						action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
-					}];
-					
-					groups.push(entity);
-				}
-				if (node._metaType == "AspectNode"){
-					var aspect = [{
-						label:"Select Aspect",
-						action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
-					}];
-					
-					groups.push(aspect);
-				}
-				if (node._metaType == "VisualGroupNode"){
-					var visualGroup = [{
-						label:"Show Visual Group",
-						action: ["Simulation.unSelectAll();","#node_instancepath#.show(true)"],
-					}];
-					
-					groups.push(visualGroup);
-				}
-
-				return groups;
+				group1.push(group1Add);
 			}
-				
-		};
 
-	};
+			var groups = [group1];
+
+			if (node._metaType == "ConnectionNode"){
+				var connectionGroup = [{
+					label:"Highlight Connection",
+					action: ["Simulation.unHighlightAll();","#node_instancepath#.highlight(true)"],
+				}];
+
+				groups.push(connectionGroup);
+			}
+			if (node._metaType == "EntityNode"){
+				var entity = [{
+					label:"Select Entity",
+					action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+				}];
+
+				groups.push(entity);
+			}
+			if (node._metaType == "AspectNode"){
+				var aspect = [{
+					label:"Select Aspect",
+					action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+				}];
+
+				groups.push(aspect);
+			}
+			if (node._metaType == "VisualGroupNode"){
+				var visualGroup = [{
+					label:"Show Visual Group",
+					action: ["Simulation.unSelectAll();","#node_instancepath#.show(true)"],
+				}];
+
+				groups.push(visualGroup);
+			}
+
+			return groups;
+		},
+	});
 });

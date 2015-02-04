@@ -226,11 +226,6 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(false);
 						}
-
-						// Notify any widgets listening that there has been a
-						// changed to selection
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
 					}

@@ -166,8 +166,8 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(true);
 						}
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+						//signal selection has changed in simulation
+						GEPPETTO.trigger(Events.Select);
 					} else {
 						message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
 					}
@@ -214,15 +214,15 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().show_outputs){
 							this.getParent().showOutputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().draw_connections_lines){
+						if(Simulation.getSelectionOptions().draw_connection_lines){
 							this.getParent().showConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(false);
 						}
 					
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+						//trigger event that selection has been changed
+						GEPPETTO.trigger(Events.Selection);
 					} else {
 						message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
 					}

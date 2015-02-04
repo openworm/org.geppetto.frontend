@@ -36,115 +36,63 @@
  * @author Dan Kruchinin (dkruchinin@acm.org)
  */
 define(function(require) {
-	return function(GEPPETTO) {
 
-		var VarVis = require('widgets/variablevisualiser/VariableVisualiser');
-		var visualisers = [];
-		var vvisON = true;
+	var AWidgetController = require('widgets/AWidgetController');
+	var VarVis = require('widgets/variablevisualiser/VariableVisualiser');
+
+	/**
+	 * @exports Widgets/VariableVisualiser/VariableVisualiserController
+	 */
+	return AWidgetController.View.extend ({
+
+		initialize: function() {
+			this.widgets = new Array();
+		},
 
 		/**
-		 * @exports Widgets/VariableVisualiser/VariableVisualiserController
+		 * Creates new variable visualiser widget
 		 */
-		GEPPETTO.VariableVisualiserController = {
+		addVariableVisualiserWidget: function() {
+			//look for a name and id for the new widget
+			var id = this.getAvailableWidgetId("VarVis", this.widgets);
+			var name = id;
+			var vv = window[name] = new VarVis({id:id, name:name,visible:true});
+			vv.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+			this.widgets.push(vv);
 
-			/**
-			 * Registers widget events to detect and execute following actions.
-			 * Used when widget is destroyed.
-			 *
-			 * @param {String} vvisID - ID of the variable visualiser to register
-			 */
-			registerHandler: function(vvisID) {
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.VariableVisualiserController, vvisID);
-			},
+			GEPPETTO.WidgetsListener.subscribe(this, id);
 
-			/**
-			 * Returns all variables visualiser widgets
-			 *
-			 * @returns {Array} Array of variable visualiser widgets
-			 */
-			getWidgets: function() {
-				return visualisers;
-			},
+			//add commands to console autocomplete and help option
+			GEPPETTO.Console.updateCommands("assets/js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(vv.getId(),vv);
+			return vv;
+		},
 
-			/**
-			 * Creates new variable visualiser widget
-			 */
-			addVariableVisualiserWidget: function() {
-				//look for a name and id for the new widget
-				var id = getAvailableWidgetId("VarVis", visualisers);
-				var name = id;
-				
-				var vv = window[name] = new VarVis({id:id, name:name,visible:true});
-				vv.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
-				visualisers.push(vv);
-				this.registerHandler(id);
+		/**
+		 * Receives updates from widget listener class to update variable visualiser widget(s)
+		 *
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+		 */
+		update: function(event) {
+			//delete a widget(s)
+			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
+			}
 
-				//add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("assets/js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
-				//update tags for autocompletion
-				GEPPETTO.Console.updateTags(vv.getId(),vv);
-				return vv;
-			},
-
-			/**
-			 * Removes existing variable visualiser widgets
-			 */
-			removeVariableVisualiserWidgets: function() {
-				for (var i = 0; i < visualisers.length; i++) {
-					GEPPETTO.Console.removeCommands(visualisers[i].getId());
-					visualisers[i].destroy();
-					i--;
-				}
-
-				visualisers = [];
-			},
-
-			/**
-			 * Toggles variable visualiser widget on and off
-			 */
-			toggle: function() {
-				if (visualisers.length == 0) {
-					GEPPETTO.Console.executeCommand('G.addWidget(GEPPETTO.Widgets.VARIABLEVISUALISER)');
-				}
-				else if (visualisers.length > 0) {
-					vvisON = !vvisON;
-
-					for (var vv in visualisers) {
-						var vvis = visualisers[vv];
-						if (!vvisON) {
-							vvis.hide();
-						} else {
-							vvis.show();
-						}
-					}
-				}
-			},
-
-			/**
-			 * Receives updates from widget listener class to update variable visualiser widget(s)
-			 *
-			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-			 */
-			update: function(event) {
-				//delete a widget(s)
-				if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removeVariableVisualiserWidgets();
-				}
-
-				//reset widget's datasets
-				else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-					for (var i = 0; i < visualisers.length; i++) {
-						visualisers[i].clearVariable();
-					}
-				}
-
-				//update widgets
-				else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-					for (var i = 0; i < visualisers.length; i++) {
-						visualisers[i].updateVariable();
-					}
+			//reset widget's datasets
+			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+				for (var i = 0; i < this.widgets.length; i++) {
+					this.widgets[i].clearVariable();
 				}
 			}
-		};
-	};
+
+			//update widgets
+			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+				for (var i = 0; i < this.widgets.length; i++) {
+					this.widgets[i].updateVariable();
+				}
+			}
+		}
+	});
 });

@@ -129,8 +129,6 @@ define(function(require) {
 									g.position.z);
 						}
 					}
-					threeObject.geometry.verticesNeedUpdate = true;
-					
 				},
 				
 				/**
@@ -327,7 +325,6 @@ define(function(require) {
 				 * @returns {Mesh} a three mesh representing the geometry
 				 */
 				jsonGeometryTo3D : function(g, material) {
-					//TODO: why is the center only computed for the sphere?
 					var threeObject = null;
 					switch (g._metaType) {
 					case "ParticleNode":
@@ -337,6 +334,7 @@ define(function(require) {
 						threeObject.z = g.position.z;
 
 						break;
+
 					case "CylinderNode":
 						var endPoint = [g.distal.x, g.distal.y, g.distal.z];
 						var startPoint = [g.position.x, g.position.y, g.position.z];
@@ -344,41 +342,18 @@ define(function(require) {
 								parseFloat(g.radiusTop), parseFloat(g.radiusBottom), material);
 						threeObject.geometry.verticesNeedUpdate = true;
 						break;
-					case "SphereNode":
-//						var sphere = new THREE.SphereGeometry(g.radius,20, 20);
-//						threeObject = new THREE.Mesh(sphere, material);
-						var position = [g.position.x, g.position.y,
-								g.position.z];
-						threeObject = GEPPETTO.SceneFactory.createAndPosition3DSphere(position, parseFloat(g.radius), material);
-//						var x = parseFloat(g.position.x);
-//						var y = parseFloat(g.position.y);
-//						var z = parseFloat(g.position.z);
-						threeObject.geometry.verticesNeedUpdate = true;
-						
-						//TODO: why is the center only computed for the sphere?
-						//TODO: why is all this logic done only for the sphere? 
 
-//						threeObject.geometry.computeBoundingBox();
-//						var aabbMin = null;
-//						var aabbMax = null;
-//						
-//						aabbMin = threeObject.geometry.boundingBox.min;
-//						aabbMax = threeObject.geometry.boundingBox.max;
-//						
-//
-//						// Compute world AABB center
-//						x = (aabbMax.x + aabbMin.x) * 0.5;
-//						y = (aabbMax.y + aabbMin.y) * 0.5;
-//						z = (aabbMax.z + aabbMin.z) * 0.5;
-//						threeObject.position.set(x,y,z);
-//						threeObject.updateMatrixWorld(true);
+					case "SphereNode":
+						var position = [g.position.x, g.position.y, g.position.z];
+						threeObject = GEPPETTO.SceneFactory.createAndPosition3DSphere(position, parseFloat(g.radius), material);
+						threeObject.geometry.verticesNeedUpdate = true;
 						break;
+
 					case "ColladaNode":
 						var loader = new THREE.ColladaLoader();
 						loader.options.convertUpAxis = true;
 						var xmlParser = new DOMParser();
-						var responseXML = xmlParser.parseFromString(g.model.data,
-						"application/xml");
+						var responseXML = xmlParser.parseFromString(g.model.data, "application/xml");
 						loader.parse(responseXML, function(collada) {
 							threeObject = collada.scene;
 						});

@@ -134,58 +134,48 @@ define(function(require) {
 				},
 				
 				/**
-				 * Creates a cylinder
+				 * Creates and positions a Three.js cylinder object
 				 * 
-				 * @param bottomBasePos
-				 * @param topBasePos
-				 * @param radiusTop
-				 * @param radiusBottom
-				 * @param material
-				 * @returns a Cylinder translated and rotated in the scene according to
-				 *          the cartesian coordinated that describe it
+				 * @param {Array} startPoint   - (x,y,z) coordinates for the center of the bottom base
+				 * @param {Array} endPoint     - (x,y,z) coordinates for the center of the top base
+				 * @param {Float} radiusTop    - radius of the top base
+				 * @param {Float} radiusBottom - radius of the bottom base
+				 * @param {Three.js Material}  - material
+				 * @returns a Three.js Cylinder correctly positioned w.r.t the global frame of reference
 				 */
-				//TODO: need review, probably overcomplicating things
-				//      just need to create, rotate, translate.
+				//TODO: needs review, tried to remove some steps that looked overcomplicated
+				//      Just need to create, rotate, translate...
 				createAndPosition3DCylinder : function(startPoint, endPoint, radiusTop,
 						radiusBottom, material) {
 					
 				    bottomBasePos = new THREE.Vector3().fromArray(startPoint);
 				    topBasePos = new THREE.Vector3().fromArray(endPoint);
-				    var cylinderAxis = new THREE.Vector3();
-				    cylinderAxis.subVectors(topBasePos, bottomBasePos);
-				    var cylHeight = cylinderAxis.length();
 
+				    var axis = new THREE.Vector3();
+				    axis.subVectors(topBasePos, bottomBasePos);
 				    var midPoint = new THREE.Vector3();
-				    midPoint.addVectors(bottomBasePos, topBasePos);
-				    midPoint.multiplyScalar(0.5);
+				    midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
 
 				    var c = new THREE.CylinderGeometry(radiusTop, radiusBottom,
-								       cylHeight, 6, 1, false);
-
+								       axis.length(), 6, 1, false);
 				    c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-				    
 				    var threeObject = new THREE.Mesh(c, material);
-
-				    threeObject.lookAt(cylinderAxis);
-				    var distance = midPoint.length();
-
-				    midPoint.transformDirection(threeObject.matrix);
-				    midPoint.multiplyScalar(distance);
-
-				    threeObject.position.add(midPoint);
+				   
+				    threeObject.lookAt(axis);
+				    threeObject.position.fromArray(midPoint.toArray());
 				    
 				    return threeObject;
 				},	
 
 				/**
-				 * Creates a sphere
+				 * Creates and positions a Three.js sphere object
 				 * 
-				 * @param position
-				 * @param radiusBottom
-				 * @param material
-				 * @returns a Sphere positionated in the scene
+				 * @param {Array} position  - (x,y,z) coordinates for the center of the sphere 
+				 * @param {Float} radius    -  sphere radius  the top base
+				 * @param {Three.js Material}  - material
+				 * @returns a Three.js sphere correctly positioned w.r.t the global frame of reference
 				 */
-				 createAndPosition3dSphere : function(position, radius, material) {
+				 createAndPosition3DSphere : function(position, radius, material) {
 					
 					var sphere = new THREE.SphereGeometry(radius, 20, 20);
 					threeObject = new THREE.Mesh(sphere, material);

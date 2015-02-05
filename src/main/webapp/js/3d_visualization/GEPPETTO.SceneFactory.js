@@ -37,11 +37,22 @@ define(function(require) {
 						for ( var m in meshes) {
 							var mesh = meshes[m];
 							mesh.name = aspect.instancePath;
-							GEPPETTO.getVARS().scene.add(mesh);
 							if (position != null) {
-								mesh.position.set(position.x, position.y,
+								var p = new THREE.Vector3(position.x, position.y,
 										position.z);
+								var translation =new THREE.Matrix4().makeTranslation( p.x, p.y, p.z );
+								mesh.geometry.applyMatrix(translation);
+								mesh.geometry.verticesNeedUpdate= true;
+								mesh.geometry.dynamic = true;
+								mesh.geometry.normalsNeedUpdate = true;
+								var bb = mesh.geometry.boundingBox;
+								bb.translate(mesh.localToWorld( new THREE.Vector3()));
+								mesh.localToWorld(p);
+								mesh.position.copy(p);
+								mesh.matrixAutoUpdate = true;
+								mesh.updateMatrix();
 							}
+							GEPPETTO.getVARS().scene.add(mesh);
 							//keep track of aspects created by storing them in VARS property object
 							//under meshes
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
@@ -341,21 +352,21 @@ define(function(require) {
 						var x = parseFloat(g.position.x);
 						var y = parseFloat(g.position.y);
 						var z = parseFloat(g.position.z);
-						threeObject.geometry.verticesNeedUpdate = true;
-						
-						threeObject.geometry.computeBoundingBox();
-						var aabbMin = null;
-						var aabbMax = null;
-						
-						aabbMin = threeObject.geometry.boundingBox.min;
-						aabbMax = threeObject.geometry.boundingBox.max;
-						
-						// Compute world AABB center
-						x = (aabbMax.x + aabbMin.x) * 0.5;
-						y = (aabbMax.y + aabbMin.y) * 0.5;
-						z = (aabbMax.z + aabbMin.z) * 0.5;
-						threeObject.position.set(x,y,z);
-						threeObject.updateMatrixWorld(true);
+//						threeObject.geometry.verticesNeedUpdate = true;
+//						
+//						threeObject.geometry.computeBoundingBox();
+//						var aabbMin = null;
+//						var aabbMax = null;
+//						
+//						aabbMin = threeObject.geometry.boundingBox.min;
+//						aabbMax = threeObject.geometry.boundingBox.max;
+//						
+//						// Compute world AABB center
+//						x = (aabbMax.x + aabbMin.x) * 0.5;
+//						y = (aabbMax.y + aabbMin.y) * 0.5;
+//						z = (aabbMax.z + aabbMin.z) * 0.5;
+//						threeObject.position.set(x,y,z);
+//						threeObject.updateMatrixWorld(true);
 						break;
 					case "ColladaNode":
 						var loader = new THREE.ColladaLoader();

@@ -181,10 +181,54 @@ define(function(require) {
             GEPPETTO.getVARS().camera.position.set(GEPPETTO.getVARS().cameraPosition.x,
                 GEPPETTO.getVARS().cameraPosition.y, GEPPETTO.getVARS().cameraPosition.z);
             GEPPETTO.getVARS().camera.lookAt(GEPPETTO.getVARS().sceneCenter);
-            GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
+            GEPPETTO.getVARS().camera.up = new THREE.Vector3(1, 0, 0);
             GEPPETTO.getVARS().camera.rotationAutoUpdate = true;
             GEPPETTO.getVARS().controls.target = GEPPETTO.getVARS().sceneCenter;
+            GEPPETTO.getVARS().camera.updateProjectionMatrix();
         },
+        
+        boundingBox: function(obj) {
+            if (obj instanceof THREE.Mesh) {
+
+                var geometry = obj.geometry;
+                geometry.computeBoundingBox();
+                return  geometry.boundingBox;
+
+            }
+
+            if (obj instanceof THREE.Object3D) {
+
+                var bb = new THREE.Box3();
+                for (var i=0;i < obj.children.length;i++) {
+                    bb.union(GEPPETTO.boundingBox(obj.children[i]));
+                }
+                return bb;
+            }
+        },
+        
+    	shapeCenterOfGravity: function (obj) {
+        	return GEPPETTO.boundingBox(obj).center();
+    	},
+    	
+    	/** */
+    	pointCameraTo : function(node) {
+    	     // Refocus camera to the center of the new object
+    	     var COG;
+    	     if ( node instanceof THREE.Vector3 ) {
+    	       COG = node;
+    	     } else {
+    	       COG = GEPPETTO.shapeCenterOfGravity(node);
+    	     }
+    	     var v = new THREE.Vector3();
+    	     v.subVectors(COG,GEPPETTO.getVARS().controls.target);
+    	     GEPPETTO.getVARS().camera.position.addVectors(GEPPETTO.getVARS().camera.position,v);
+    	     
+    	     // retrieve camera orientation
+    	     
+    	     GEPPETTO.getVARS().camera.lookAt(COG);
+    	     GEPPETTO.getVARS().controls.target.set( COG.x,COG.y,COG.z );  
+    	 },
+
 
         /**
          * Status of scene, populated or not

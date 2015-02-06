@@ -64,7 +64,7 @@ define(function(require) {
 			selectionOptions : {
 				show_inputs : true,
 				show_outputs : true,
-				draw_connections_lines : true,
+				draw_connection_lines : true,
 				hide_not_selected : false
 			},
 			highlightedConnections : [],

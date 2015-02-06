@@ -72,11 +72,9 @@ define(function(require) {
        * @ return {Widget} - Scatter3d widget
        */
       addScatter3dWidget: function() {
-
-        var index = (scatter3ds.length + 1);
-
-        var name = "Scatter3d" + index;
-        var id = name;
+		//look for a name and id for the new widget
+		var id = getAvailableWidgetId("Scatter3d", scatter3ds);
+		var name = id;
 
         var p = window[name] = new Scatter3d({id:id, name:name,visible:true});
 

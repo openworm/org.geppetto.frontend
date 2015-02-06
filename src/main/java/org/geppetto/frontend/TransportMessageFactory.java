@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  * 
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011 - 2015 OpenWorm.
  * http://openworm.org
  * 
  * All rights reserved. This program and the accompanying materials
@@ -67,6 +67,9 @@ public class TransportMessageFactory {
 			case RELOAD_CANVAS:
 				break;	
 			case ERROR:
+				params.add(new SimpleEntry<String, String>("message", update));
+				break;
+			case INFO_MESSAGE:
 				params.add(new SimpleEntry<String, String>("message", update));
 				break;
 			case ERROR_LOADING_SIMULATION:

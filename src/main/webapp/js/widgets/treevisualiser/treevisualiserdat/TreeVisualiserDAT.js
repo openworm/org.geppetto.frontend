@@ -60,12 +60,14 @@ define(function(require) {
 
 			this.options = this.defaultTreeVisualiserOptions;
 
-			this.gui = new dat.GUI({
-				width : this.options.width,
-				autoPlace : this.options.autoPlace
-			});
-
-			this.dialog.append(this.gui.domElement);
+			//This function allows to access a node by its data attribute (this function is required is the data property has been added by jquery) 			
+			$.fn.filterByData = function(prop, val) {
+			    return this.filter(
+			        function() { return $(this).data(prop)==val; }
+			    );
+			}
+			
+			this.initDATGUI();
 		},
 		
 		/**
@@ -106,6 +108,18 @@ define(function(require) {
 			dataset.isDisplayed = true;
 			//Disable input elements
 			$(this.dialog).find("input").prop('disabled', true);
+			
+			//Change input text to textarea
+			var testingSizeElement = $('<div></div>').css({'position': 'absolute', 'float': 'left', 'white-space': 'nowrap', 'visibility': 'hidden'}).appendTo($('body'));
+			$(this.dialog).find('.textmetadatanodetv').find('div > div > input[type="text"]').each(function(){
+				testingSizeElement.text($(this).val());
+				if (testingSizeElement.width() > $(this).width()){
+					$(this).closest('.textmetadatanodetv').height(60);
+					var textarea = $(document.createElement('textarea')).attr('readonly', true).attr('rows', 2);
+			        textarea.val($(this).val());
+				    $(this).replaceWith(textarea);
+				}
+			});
 
 			return "Metadata or variables to display added to tree visualiser";
 		},
@@ -246,7 +260,50 @@ define(function(require) {
 					this.prepareTree(this.gui, dataset.data);
 				}
 			}
-		}
+		},
+		
+		/**
+		 * Expand or collapse node folder (and all the parent folder until the root node) in the widgets
+		 * 
+		 * @param {Node} node - Geppetto Node which identifies the folder to be expanded/collapsed.
+		 * @param {Boolean} expandEndNode - If true only final node is expanded/collapsed. Otherwise the whole path is expanded/collapsed
+		 */
+		toggleFolder : function(node, expandEndNode) {
+			var instancePath = node.getInstancePath();
+			if (expandEndNode){
+				this.getFolderByInstancePath(instancePath).trigger('click');
+			}
+			else{
+				var nodePathElements = instancePath.split(".");
+				var parentComponent = "";
+				for (var nodePathElementsIndex in nodePathElements){
+					this.getFolderByInstancePath(parentComponent + nodePathElements[nodePathElementsIndex]).trigger('click');
+					parentComponent += nodePathElements[nodePathElementsIndex] + "."
+				}	
+			}
+		},
+		
+		getFolderByInstancePath : function(instancePath){
+			return $(this.dialog).find('li').filterByData('instancepath', instancePath);
+		},
+		
+		reset : function () {
+			this.datasets = [];
+			
+			$(this.dialog).children().remove()
+
+			this.initDATGUI();
+		},
+		
+		initDATGUI : function () { 
+			this.gui = new dat.GUI({
+				width : this.options.width,
+				autoPlace : this.options.autoPlace
+			});
+			
+			this.dialog.append(this.gui.domElement);
+		}	
+		
 
 	});
 });

@@ -103,7 +103,6 @@ define(function(require) {
                     GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
                 }
             }
-            
         };
 
         messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {            
@@ -137,7 +136,7 @@ define(function(require) {
             if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
                 if(!GEPPETTO.isScenePopulated()) {
                     // the first time we need to create the objects
-                    GEPPETTO.populateScene(GEPPETTO.Simulation.runTimeTree);
+                    GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree);
                 }
                 else {
                     // any other time we just update them
@@ -194,7 +193,7 @@ define(function(require) {
         //handles the case where simulation is done executing all steps
         messageHandler[messageTypes.SIMULATION_OVER] = function() {
             //Updates the simulation controls visibility
-            GEPPETTO.FE.updateStopEvent();
+        	GEPPETTO.Console.executeCommand("Simulation.stop()");
         };
 
         //received model tree from server
@@ -245,9 +244,9 @@ define(function(require) {
 
 				// print node
 				var arrayPart = (size != null) ? "[" + size + "]" : "";
-				var indentation = "   ↪";
+				var indentation = "   ���";
 				for(var j = 0; j < indent; j++) {
-					indentation = indentation.replace("↪", " ") + "   ↪ ";
+					indentation = indentation.replace("���", " ") + "   ��� ";
 				}
 				formattedNode = indentation + name + arrayPart;
 

@@ -43,7 +43,7 @@ define(function(require) {
 	return function(GEPPETTO) {
 
 		var Connectivity = require('widgets/connectivity/Connectivity');
-		var connectivity = new Array();
+		var connectivities = new Array();
 
 		GEPPETTO.ConnectivityController = {
 
@@ -63,19 +63,16 @@ define(function(require) {
 			 * @returns {Array} Array of connectivity widgets that exist
 			 */
 			getWidgets: function() {
-				return connectivity;
+				return connectivities;
 			},
 			
 			/**
 			 * Adds a new TreeVisualizer3D Widget to Geppetto
 			 */
 			addConnectivityWidget : function(){
-				//Popup widget number
-				var index = (connectivity.length + 1);
-
-				//Name of popup widget
-				var name = "Connectivity" + index;
-				var id = name;
+				//look for a name and id for the new widget
+				var id = getAvailableWidgetId("Connectivity", connectivities);
+				var name = id;
 
 				//create tree visualiser widget
 				var cnt = window[name] = new Connectivity({id:id, name:name,visible:false, width: 500, height: 500});
@@ -84,7 +81,7 @@ define(function(require) {
 				cnt.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
 
 				//store in local stack
-				connectivity.push(cnt);
+				connectivities.push(cnt);
 				
 				this.registerHandler(id);
 
@@ -102,14 +99,14 @@ define(function(require) {
 			 */
 			removeConnectivityWidgets : function(){
 				//remove all existing popup widgets
-				for(var i = 0; i < connectivity.length; i++) {
-					var cnt = connectivity[i];
+				for(var i = 0; i < connectivities.length; i++) {
+					var cnt = connectivities[i];
 
 					cnt.destroy();
 					i++;
 				}
 
-				connectivity = new Array();
+				connectivities = new Array();
 			},
 			
 			/**
@@ -125,8 +122,8 @@ define(function(require) {
 				//update connectivity widgets
 				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
 					//loop through all existing widgets
-					for(var i = 0; i < connectivity.length; i++) {
-						var cnt = connectivity[i];
+					for(var i = 0; i < connectivities.length; i++) {
+						var cnt = connectivities[i];
 
 						//update connectivity with new data set
 						cnt.updateData();

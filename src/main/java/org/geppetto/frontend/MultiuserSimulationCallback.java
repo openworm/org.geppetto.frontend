@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  * 
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011 - 2015 OpenWorm.
  * http://openworm.org
  * 
  * All rights reserved. This program and the accompanying materials
@@ -130,6 +130,15 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 		logger.error(errorMessage,e);
 		// Notify all connected clients about update either to load model or update current one.
 		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.ERROR, error);
+	}
+
+	@Override
+	public void message(String message)
+	{
+		String info = "{ \"content\": \"" + message +"\"}";
+		logger.info(message);
+		// Notify all connected clients about update either to load model or update current one.
+		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.INFO_MESSAGE, info);
 	}
 
 }

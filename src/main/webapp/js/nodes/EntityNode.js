@@ -161,7 +161,7 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().show_outputs){
 							this.showOutputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().draw_connections_lines){
+						if(Simulation.getSelectionOptions().draw_connection_lines){
 							this.showConnectionLines(true);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){
@@ -220,7 +220,7 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().show_outputs){
 							this.showOutputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().draw_connections_lines){
+						if(Simulation.getSelectionOptions().draw_connection_lines){
 							this.showConnectionLines(false);
 						}
 						if(Simulation.getSelectionOptions().hide_not_selected){

@@ -129,6 +129,8 @@ define(function(require) {
 									g.position.z);
 						}
 					}
+					threeObject.geometry.verticesNeedUpdate = true;
+					
 				},
 				
 				/**
@@ -333,6 +335,7 @@ define(function(require) {
 								g.position.z);
 						threeObject = GEPPETTO.SceneFactory.getCylinder(positionV, lookAtV,
 								g.radiusTop, g.radiusBottom, material);
+						threeObject.geometry.verticesNeedUpdate = true;
 						break;
 					case "SphereNode":
 						var sphere = new THREE.SphereGeometry(g.radius,20, 20);
@@ -340,9 +343,21 @@ define(function(require) {
 						var x = parseFloat(g.position.x);
 						var y = parseFloat(g.position.y);
 						var z = parseFloat(g.position.z);
-						threeObject.position = new THREE.Vector3(x,y,z);
-						threeObject.geometry.computeBoundingSphere();
-						GEPPETTO.getVARS().scene.updateMatrixWorld(true);
+						threeObject.geometry.verticesNeedUpdate = true;
+						
+						threeObject.geometry.computeBoundingBox();
+						var aabbMin = null;
+						var aabbMax = null;
+						
+						aabbMin = threeObject.geometry.boundingBox.min;
+						aabbMax = threeObject.geometry.boundingBox.max;
+						
+						// Compute world AABB center
+						x = (aabbMax.x + aabbMin.x) * 0.5;
+						y = (aabbMax.y + aabbMin.y) * 0.5;
+						z = (aabbMax.z + aabbMin.z) * 0.5;
+						threeObject.position.set(x,y,z);
+						threeObject.updateMatrixWorld(true);
 						break;
 					case "ColladaNode":
 						var loader = new THREE.ColladaLoader();

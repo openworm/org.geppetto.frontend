@@ -241,7 +241,7 @@ define(function(require) {
 					bb.translate(mesh.localToWorld( new THREE.Vector3()));
 					
 					// Compute world AABB center
-					GEPPETTO.getVARS().sceneCenter = GEPPETTO.shapeCenterOfGravity(mesh);
+					GEPPETTO.getVARS().sceneCenter = bb.center();
 
 					GEPPETTO.pointCameraTo(GEPPETTO.getVARS().sceneCenter);
 					
@@ -261,9 +261,7 @@ define(function(require) {
 					GEPPETTO.getVARS().camera.position.addVectors(dir,GEPPETTO.getVARS().controls.target);
 		            GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
 		            GEPPETTO.getVARS().camera.rotationAutoUpdate = true;
-		            GEPPETTO.getVARS().camera.updateProjectionMatrix();
-		            
-		            GEPPETTO.render();
+		            GEPPETTO.getVARS().camera.updateProjectionMatrix();		            
 				},
 
 				/**

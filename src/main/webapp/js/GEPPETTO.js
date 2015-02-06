@@ -124,27 +124,30 @@ define(function(require) {
                     || child instanceof THREE.ParticleSystem) {
                     child.geometry.computeBoundingBox();
 
+                    var bb = child.geometry.boundingBox;
+					bb.translate(child.localToWorld( new THREE.Vector3()));
+					
                     // If min and max vectors are null, first values become
                     // default min and max
                     if (aabbMin == null && aabbMax == null) {
-                        aabbMin = child.geometry.boundingBox.min;
-                        aabbMax = child.geometry.boundingBox.max;
+                        aabbMin = bb.min;
+                        aabbMax = bb.max;
                     }
 
                     // Compare other meshes, particles BB's to find min and max
                     else {
                         aabbMin.x = Math.min(aabbMin.x,
-                            child.geometry.boundingBox.min.x);
+                            bb.min.x);
                         aabbMin.y = Math.min(aabbMin.y,
-                            child.geometry.boundingBox.min.y);
+                            bb.min.y);
                         aabbMin.z = Math.min(aabbMin.z,
-                            child.geometry.boundingBox.min.z);
+                            bb.min.z);
                         aabbMax.x = Math.max(aabbMax.x,
-                            child.geometry.boundingBox.max.x);
+                            bb.max.x);
                         aabbMax.y = Math.max(aabbMax.y,
-                            child.geometry.boundingBox.max.y);
+                            bb.max.y);
                         aabbMax.z = Math.max(aabbMax.z,
-                            child.geometry.boundingBox.max.z);
+                            bb.max.z);
                     }
                 }
             });
@@ -159,17 +162,22 @@ define(function(require) {
             diag = diag.subVectors(aabbMax, aabbMin);
             var radius = diag.length() * 0.5;
 
-            // Compute offset needed to move the camera back that much needed to
-            // center AABB
-            var offset = radius
-                / Math.tan(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.25);
+            GEPPETTO.pointCameraTo(GEPPETTO.getVARS().sceneCenter);
+			
+			// Compute offset needed to move the camera back that much needed to
+			// center AABB
+			var offset = radius
+			/ Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.5);
 
-            var camDir = new THREE.Vector3(1, 0, 0);
-            camDir.multiplyScalar(offset);
+		    var dir = new THREE.Vector3();
+		    dir.subVectors( GEPPETTO.getVARS().camera.position, GEPPETTO.getVARS().controls.target );
+		    dir.setLength( offset );
 
-            // Store camera position
-            GEPPETTO.getVARS().cameraPosition = new THREE.Vector3();
-            GEPPETTO.getVARS().cameraPosition.addVectors(GEPPETTO.getVARS().sceneCenter, camDir);
+			// Store camera position
+			GEPPETTO.getVARS().camera.position.addVectors(dir,GEPPETTO.getVARS().controls.target);
+            GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
+            GEPPETTO.getVARS().camera.rotationAutoUpdate = true;
+            GEPPETTO.getVARS().camera.updateProjectionMatrix();
         },
 
         /**
@@ -431,7 +439,7 @@ define(function(require) {
 
         resetCamera : function() {
             GEPPETTO.calculateSceneCenter(GEPPETTO.getVARS().scene);
-            GEPPETTO.updateCamera();
+            //GEPPETTO.updateCamera();
         },
 
         /**

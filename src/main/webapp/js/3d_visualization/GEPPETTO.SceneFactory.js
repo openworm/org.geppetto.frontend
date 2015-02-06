@@ -41,13 +41,13 @@ define(function(require) {
 								var p = new THREE.Vector3(position.x, position.y,
 										position.z);
 								var translation =new THREE.Matrix4().makeTranslation( p.x, p.y, p.z );
-								mesh.geometry.applyMatrix(translation);
+								mesh.applyMatrix(translation);
 								mesh.geometry.verticesNeedUpdate= true;
 								mesh.geometry.dynamic = true;
 								mesh.geometry.normalsNeedUpdate = true;
+								mesh.geometry.computeBoundingBox();
 								var bb = mesh.geometry.boundingBox;
 								bb.translate(mesh.localToWorld( new THREE.Vector3()));
-								mesh.localToWorld(p);
 								mesh.position.copy(p);
 								mesh.matrixAutoUpdate = true;
 								mesh.updateMatrix();

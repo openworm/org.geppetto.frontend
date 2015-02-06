@@ -129,7 +129,6 @@ define(function(require) {
 									g.position.z);
 						}
 					}
-					threeObject.geometry.verticesNeedUpdate = true;
 					
 				},
 				

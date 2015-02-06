@@ -57,7 +57,7 @@ define(function(require) {
 		 */
 		addScatter3dWidget: function() {
 			//look for a name and id for the new widget
-			var id = this.getAvailableWidgetId("Scatter3d", scatter3ds);
+			var id = this.getAvailableWidgetId("Scatter3d", this.widgets);
 			var name = id;
 
 			var p = window[name] = new Scatter3d({id:id, name:name,visible:true});

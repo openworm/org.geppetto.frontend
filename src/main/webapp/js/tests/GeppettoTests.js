@@ -82,9 +82,9 @@ define(function(require) {
 		test("Test Plot Widget", function() {
 			G.addWidget(Widgets.PLOT);
 
-			equal(GEPPETTO.PlotsController.getWidgets().length, 1, "Plot widget created");
+			equal(GEPPETTO.Main.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
 
-			var plot = GEPPETTO.PlotsController.getWidgets()[0];
+			var plot = GEPPETTO.Main.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
 
 			equal(plot.isVisible(), true, "Test Default Widget Visibility");
 
@@ -104,9 +104,9 @@ define(function(require) {
 		test("Test Popup Widget", function() {
 			G.addWidget(Widgets.POPUP);
 
-			equal(GEPPETTO.PopupsController.getWidgets().length, 1, "Popup widget.");
+			equal(GEPPETTO.Main.getController(Widgets.POPUP).getWidgets().length, 1, "Popup widget.");
 
-			var pop = GEPPETTO.PopupsController.getWidgets()[0];
+			var pop = GEPPETTO.Main.getController(GEPPETTO.Widgets.POPUP).getWidgets()[0];
 
 			equal(pop.isVisible(), true, "Test Default Visibility");
 
@@ -126,9 +126,9 @@ define(function(require) {
 		test("Test Scattered-3D Widget", function() {
 			G.addWidget(Widgets.SCATTER3D);
 
-			equal(GEPPETTO.Scatter3dController.getWidgets().length, 1, "Scatter widget created");
+			equal(GEPPETTO.Main.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
 
-			var scatter = GEPPETTO.Scatter3dController.getWidgets()[0];
+			var scatter = GEPPETTO.Main.getController(GEPPETTO.Widgets.SCATTER3D).getWidgets()[0];
 
 			equal(scatter.isVisible(), true, "Test Default Visibility");
 

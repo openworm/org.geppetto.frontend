@@ -236,7 +236,7 @@ define(function(require) {
 				 * 
 				 */
 				 zoomTo : function(){
-					 GEPPETTO.SceneController.zoom(this.instancePath);
+					 GEPPETTO.SceneController.zoomToMesh(this.instancePath);
 				 
 					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
 			     },

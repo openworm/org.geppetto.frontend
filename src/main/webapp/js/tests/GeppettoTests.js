@@ -145,6 +145,72 @@ define(function(require) {
 			equal($("#" + scatter.getId()).html(), null, "Test destroy()");
 		});
 		
+		test("Test VARIABLEVISUALISER Widget", function() {
+			G.addWidget(Widgets.VARIABLEVISUALISER);
+
+			equal(GEPPETTO.Main.getController(Widgets.VARIABLEVISUALISER).getWidgets().length, 1, "VARIABLEVISUALISER widget created");
+
+			var VARIABLEVISUALISER = GEPPETTO.Main.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).getWidgets()[0];
+
+			equal(VARIABLEVISUALISER.isVisible(), true, "Test Default Visibility");
+
+			VARIABLEVISUALISER.hide();
+
+			equal(VARIABLEVISUALISER.isVisible(), false, "Test hide()");
+
+			VARIABLEVISUALISER.show();
+
+			equal(VARIABLEVISUALISER.isVisible(), true, "Test show()");
+
+			VARIABLEVISUALISER.destroy();
+
+			equal($("#" + VARIABLEVISUALISER.getId()).html(), null, "Test destroy()");
+		});
+		
+		test("Test TREEVISUALISERDAT Widget", function() {
+			G.addWidget(Widgets.TREEVISUALISERDAT);
+
+			equal(GEPPETTO.Main.getController(Widgets.TREEVISUALISERDAT).getWidgets().length, 1, "TREEVISUALISERDAT widget created");
+
+			var TREEVISUALISERDAT = GEPPETTO.Main.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets()[0];
+
+			equal(TREEVISUALISERDAT.isVisible(), true, "Test Default Visibility");
+
+			TREEVISUALISERDAT.hide();
+
+			equal(TREEVISUALISERDAT.isVisible(), false, "Test hide()");
+
+			TREEVISUALISERDAT.show();
+
+			equal(TREEVISUALISERDAT.isVisible(), true, "Test show()");
+
+			TREEVISUALISERDAT.destroy();
+
+			equal($("#" + TREEVISUALISERDAT.getId()).html(), null, "Test destroy()");
+		});
+		
+		test("Test TreeVisualizerD3 Widget", function() {
+			G.addWidget(Widgets.TREEVISUALISERD3);
+
+			equal(GEPPETTO.Main.getController(Widgets.TREEVISUALISERD3).getWidgets().length, 1, "TREEVISUALISERD3 widget created");
+
+			var TREEVISUALISERD3 = GEPPETTO.Main.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets()[0];
+
+			equal(TREEVISUALISERD3.isVisible(), true, "Test Default Visibility");
+
+			TREEVISUALISERD3.hide();
+
+			equal(TREEVISUALISERD3.isVisible(), false, "Test hide()");
+
+			TREEVISUALISERD3.show();
+
+			equal(TREEVISUALISERD3.isVisible(), true, "Test show()");
+
+			TREEVISUALISERD3.destroy();
+
+			equal($("#" + TREEVISUALISERD3.getId()).html(), null, "Test destroy()");
+		});
+		
 		test("Test Commands", function() {
 			G.showConsole(true);
 			

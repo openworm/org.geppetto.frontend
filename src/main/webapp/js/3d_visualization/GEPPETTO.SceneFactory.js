@@ -42,14 +42,10 @@ define(function(require) {
 										position.z);
 								var translation =new THREE.Matrix4().makeTranslation( p.x, p.y, p.z );
 								mesh.applyMatrix(translation);
-								mesh.geometry.verticesNeedUpdate= true;
-								mesh.geometry.dynamic = true;
-								mesh.geometry.normalsNeedUpdate = true;
 								mesh.geometry.computeBoundingBox();
 								var bb = mesh.geometry.boundingBox;
 								bb.translate(mesh.localToWorld( new THREE.Vector3()));
 								mesh.position.copy(p);
-								mesh.matrixAutoUpdate = true;
 								mesh.updateMatrix();
 							}
 							GEPPETTO.getVARS().scene.add(mesh);
@@ -61,6 +57,8 @@ define(function(require) {
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].selected = false;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].input = false;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].output = false;
+							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].parent = 
+																	entityNode.getInstancePath();
 						}
 					}
 					//load children entities
@@ -68,7 +66,7 @@ define(function(require) {
 						GEPPETTO.SceneFactory.loadEntity(children[c]);
 					}
 					
-					GEPPETTO.getVARS().scene.updateMatrixWorld(true);
+					//GEPPETTO.getVARS().scene.updateMatrixWorld(true);
 				},
 
 				/**
@@ -352,21 +350,7 @@ define(function(require) {
 						var x = parseFloat(g.position.x);
 						var y = parseFloat(g.position.y);
 						var z = parseFloat(g.position.z);
-//						threeObject.geometry.verticesNeedUpdate = true;
-//						
-//						threeObject.geometry.computeBoundingBox();
-//						var aabbMin = null;
-//						var aabbMax = null;
-//						
-//						aabbMin = threeObject.geometry.boundingBox.min;
-//						aabbMax = threeObject.geometry.boundingBox.max;
-//						
-//						// Compute world AABB center
-//						x = (aabbMax.x + aabbMin.x) * 0.5;
-//						y = (aabbMax.y + aabbMin.y) * 0.5;
-//						z = (aabbMax.z + aabbMin.z) * 0.5;
-//						threeObject.position.set(x,y,z);
-//						threeObject.updateMatrixWorld(true);
+						threeObject.position.set(x,y,z);
 						break;
 					case "ColladaNode":
 						var loader = new THREE.ColladaLoader();

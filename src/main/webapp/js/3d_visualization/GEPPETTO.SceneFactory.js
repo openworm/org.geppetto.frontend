@@ -101,6 +101,7 @@ define(function(require) {
 					}
 				},
 
+
 				updateGeometry : function(g) {
 					var threeObject = GEPPETTO.getVARS().visualModelMap[g.instancePath];
 					if (threeObject) {
@@ -124,18 +125,26 @@ define(function(require) {
 							"particle": GEPPETTO.SceneFactory.getParticleMaterial()
 					};
 					var aspectObjects = [];
+					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(aspect.VisualizationTree.content, materials);
+
+					if(threeDeeObjList.length > 0){
+						var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
+						//investigate need to obj.dispose for obj in threeDeeObjList
+						mergedObjs.aspectInstancePath = aspect.instancePath;
+						aspectObjects.push(mergedObjs);
+					}
+
+					return aspectObjects;
+				},
+				
+
+				walkVisTreeGen3DObjs: function(visTree, materials) {
 					var threeDeeObj = null;
 					var threeDeeObjList = [];
 
-					var visualizationTree = aspect.VisualizationTree.content;
-					$.each(visualizationTree, function(vm, node) {
+					$.each(visTree, function(key, node) {
 						if(node._metaType === 'CompositeNode'){
-							$.each(node, function(key, subnode) {
-								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(subnode, materials);
-								if(threeDeeObj){
-									threeDeeObjList.push(threeDeeObj);
-								}
-							});
+							threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(node, materials);
 						}
 						else{
 							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(node, materials)
@@ -144,16 +153,7 @@ define(function(require) {
 							}
 						}
 					});
-
-					if(threeDeeObjList.length > 0){
-						var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
-						//investigate need to obj.dispose for obj in threeDeeObjList
-
-						mergedObjs.aspectInstancePath = aspect.instancePath;
-						aspectObjects.push(mergedObjs);
-					}
-
-					return aspectObjects;
+					return threeDeeObjList;
 				},
 
 
@@ -189,12 +189,13 @@ define(function(require) {
 						ret = merged;
 						break;
 					case "ColladaOrThreeOBJ":
-						var merged = new THREE.Geometry();
-						objArray.forEach(function(obj){
-							THREE.GeometryUtils.merge(merged, obj);
-							mergedMeshesPaths.push(obj.instancePath);
-						});
-						ret = merged;
+						//TODO: can we have multiple collada / OBJ ? Do we merge them?
+						//var merged = new THREE.Geometry();
+						//objArray.forEach(function(obj){
+						//THREE.GeometryUtils.merge(merged, obj);
+						//mergedMeshesPaths.push(obj.instancePath);
+						//});
+						ret = objArray[0];
 						break;
 					}
 					ret.mergedMeshesPaths = mergedMeshesPaths;
@@ -256,6 +257,7 @@ define(function(require) {
 					});
 					return scene;
 				},
+
 
 				loadThreeOBJModelFromNode: function(node){
 					var manager = new THREE.LoadingManager();
@@ -347,6 +349,7 @@ define(function(require) {
 					material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 					return material;
 				},
+
 
 				getParticleMaterial : function(){
 					var pMaterial = new THREE.ParticleBasicMaterial({

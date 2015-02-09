@@ -424,7 +424,7 @@ define(function(require) {
 			 * @param id - Id of object
 			 * @returns {}
 			 */
-			updateTags: function(instancePath, object,original) {												
+			updateTags: function(instancePath, object,original) {
 				var proto = object.__proto__;
 				if(original){
 					proto = object;
@@ -463,7 +463,7 @@ define(function(require) {
 							}
 						}
 					}
-				}
+				}				
 			},
 			
 			/**

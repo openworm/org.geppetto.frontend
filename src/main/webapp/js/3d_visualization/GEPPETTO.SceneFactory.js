@@ -37,16 +37,27 @@ define(function(require) {
 						for ( var m in meshes) {
 							var mesh = meshes[m];
 							mesh.name = aspect.instancePath;
+							var p = mesh.position.clone();
 							if (position != null) {
-								var p = new THREE.Vector3(position.x, position.y,
+								p = new THREE.Vector3(position.x, position.y,
 										position.z);
+								mesh.geometry.verticesNeedUpdate= true;
+								mesh.geometry.dynamic= true;
 								var translation =new THREE.Matrix4().makeTranslation( p.x, p.y, p.z );
-								mesh.applyMatrix(translation);
+								mesh.geometry.applyMatrix(translation);
+								mesh.position.copy(p);
+								mesh.geometry.computeFaceNormals();
+								  mesh.geometry.computeVertexNormals();
+								  mesh.geometry.normalsNeedUpdate = true;
+								  mesh.geometry.verticesNeedUpdate = true;
+								  mesh.geometry.dynamic = true;
+							}
+							if(mesh.geometry != null || undefined){
 								mesh.geometry.computeBoundingBox();
 								var bb = mesh.geometry.boundingBox;
 								bb.translate(mesh.localToWorld( new THREE.Vector3()));
-								mesh.position.copy(p);
-								mesh.updateMatrix();
+								mesh.matrixAutoUpdate = true;
+								mesh.updateMatrixWorld(true);
 							}
 							GEPPETTO.getVARS().scene.add(mesh);
 							//keep track of aspects created by storing them in VARS property object
@@ -57,8 +68,6 @@ define(function(require) {
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].selected = false;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].input = false;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].output = false;
-							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].parent = 
-																	entityNode.getInstancePath();
 						}
 					}
 					//load children entities
@@ -66,7 +75,7 @@ define(function(require) {
 						GEPPETTO.SceneFactory.loadEntity(children[c]);
 					}
 					
-					//GEPPETTO.getVARS().scene.updateMatrixWorld(true);
+					GEPPETTO.getVARS().scene.updateMatrixWorld(true);
 				},
 
 				/**
@@ -219,7 +228,10 @@ define(function(require) {
 								if (firstVOmetaType == "ParticleNode") {
 									var threeObject = GEPPETTO.SceneFactory.createParticleSystem(node);
 									mergedMeshesPaths.push(threeObject.instancePath);
+									threeObject.aspectInstancePath = aspect.instancePath;
 									aspectObjects.push(threeObject);
+									
+									return aspectObjects;
 
 								} else if (firstVOmetaType == "ColladaNode") {
 									var threeObject = GEPPETTO.SceneFactory.jsonGeometryTo3D(node[vg]);
@@ -279,7 +291,6 @@ define(function(require) {
 					threeObject.geometry.dynamic = false;
 					threeObject.mergedMeshesPaths = mergedMeshesPaths;
 					aspectObjects.push(threeObject);
-					
 					return aspectObjects;
 				},
 
@@ -313,6 +324,14 @@ define(function(require) {
 					// also update the particle system to sort the
 					// particles which enables the behaviour we want
 					entityObject.sortParticles = true;
+					
+					entityObject.geometry.computeBoundingBox();
+					var bb = entityObject.geometry.boundingBox;
+					bb.translate(entityObject.localToWorld( new THREE.Vector3()));
+					entityObject.position.copy(bb.center());
+					entityObject.matrixAutoUpdate = true;
+					entityObject.updateMatrixWorld(true);
+					
 					GEPPETTO.getVARS().visualModelMap[node.instancePath]=entityObject;
 
 					return entityObject;
@@ -350,7 +369,8 @@ define(function(require) {
 						var x = parseFloat(g.position.x);
 						var y = parseFloat(g.position.y);
 						var z = parseFloat(g.position.z);
-						threeObject.position.set(x,y,z);
+						threeObject.position.set(g.position.x, g.position.y,
+								g.position.z);
 						break;
 					case "ColladaNode":
 						var loader = new THREE.ColladaLoader();

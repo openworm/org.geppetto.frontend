@@ -113,86 +113,77 @@ define(function(require) {
 
 
         /**
-         * Compute the center of the scene.
+         * Reset camera for scene.
          */
-        calculateSceneCenter : function(scene) {
-            var aabbMin = null;
-            var aabbMax = null;
+        resetCamera : function() {
+        	GEPPETTO.getVARS().controls.reset();
 
-            scene.traverse(function(child) {
-                if (child instanceof THREE.Mesh
-                    || child instanceof THREE.ParticleSystem) {
-                    child.geometry.computeBoundingBox();
+        	var aabbMin = null;
+        	var aabbMax = null;
 
-                    var bb = child.geometry.boundingBox;
-					bb.translate(child.localToWorld( new THREE.Vector3()));
-					
-                    // If min and max vectors are null, first values become
-                    // default min and max
-                    if (aabbMin == null && aabbMax == null) {
-                        aabbMin = bb.min;
-                        aabbMax = bb.max;
-                    }
+        	GEPPETTO.getVARS().scene.traverse(function(child) {
+        		if (child instanceof THREE.Mesh
+        				|| child instanceof THREE.PointCloud) {
+        			child.geometry.computeBoundingBox();
 
-                    // Compare other meshes, particles BB's to find min and max
-                    else {
-                        aabbMin.x = Math.min(aabbMin.x,
-                            bb.min.x);
-                        aabbMin.y = Math.min(aabbMin.y,
-                            bb.min.y);
-                        aabbMin.z = Math.min(aabbMin.z,
-                            bb.min.z);
-                        aabbMax.x = Math.max(aabbMax.x,
-                            bb.max.x);
-                        aabbMax.y = Math.max(aabbMax.y,
-                            bb.max.y);
-                        aabbMax.z = Math.max(aabbMax.z,
-                            bb.max.z);
-                    }
-                }
-            });
+        			var bb = child.geometry.boundingBox;
+        			bb.translate(child.localToWorld( new THREE.Vector3()));
 
-            // Compute world AABB center
-            GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
-            GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
-            GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
+        			// If min and max vectors are null, first values become
+        			// default min and max
+        			if (aabbMin == null && aabbMax == null) {
+        				aabbMin = bb.min;
+        				aabbMax = bb.max;
+        			}
 
-            // Compute world AABB "radius"
-            var diag = new THREE.Vector3();
-            diag = diag.subVectors(aabbMax, aabbMin);
-            var radius = diag.length() * 0.5;
+        			// Compare other meshes, particles BB's to find min and max
+        			else {
+        				aabbMin.x = Math.min(aabbMin.x,
+        						bb.min.x);
+        				aabbMin.y = Math.min(aabbMin.y,
+        						bb.min.y);
+        				aabbMin.z = Math.min(aabbMin.z,
+        						bb.min.z);
+        				aabbMax.x = Math.max(aabbMax.x,
+        						bb.max.x);
+        				aabbMax.y = Math.max(aabbMax.y,
+        						bb.max.y);
+        				aabbMax.z = Math.max(aabbMax.z,
+        						bb.max.z);
+        			}
+        		}
+        	});
 
-            GEPPETTO.pointCameraTo(GEPPETTO.getVARS().sceneCenter);
-			
-			// Compute offset needed to move the camera back that much needed to
-			// center AABB
-			var offset = radius
-			/ Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.5);
+        	// Compute world AABB center
+        	GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
+        	GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
+        	GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
 
-		    var dir = new THREE.Vector3();
-		    dir.subVectors( GEPPETTO.getVARS().camera.position, GEPPETTO.getVARS().controls.target );
-		    dir.setLength( offset );
-
-			// Store camera position
-			GEPPETTO.getVARS().camera.position.addVectors(dir,GEPPETTO.getVARS().controls.target);
-            GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
-            GEPPETTO.getVARS().camera.rotationAutoUpdate = true;
-            GEPPETTO.getVARS().camera.updateProjectionMatrix();
+        	GEPPETTO.updateCamera(aabbMax, aabbMin);
         },
 
         /**
          * Update camera with new position and place to lookat
          */
-        updateCamera : function() {
-            // Update camera
-            GEPPETTO.getVARS().camera.rotationAutoUpdate = false;
-            GEPPETTO.getVARS().camera.position.set(GEPPETTO.getVARS().cameraPosition.x,
-                GEPPETTO.getVARS().cameraPosition.y, GEPPETTO.getVARS().cameraPosition.z);
-            GEPPETTO.getVARS().camera.lookAt(GEPPETTO.getVARS().sceneCenter);
-            GEPPETTO.getVARS().camera.up = new THREE.Vector3(1, 0, 0);
-            GEPPETTO.getVARS().camera.rotationAutoUpdate = true;
-            GEPPETTO.getVARS().controls.target = GEPPETTO.getVARS().sceneCenter;
-            GEPPETTO.getVARS().camera.updateProjectionMatrix();
+        updateCamera : function(aabbMax, aabbMin) {
+        	// Compute world AABB "radius"
+        	var diag = new THREE.Vector3();
+        	diag = diag.subVectors(aabbMax, aabbMin);
+        	var radius = diag.length() * 0.5;
+
+        	GEPPETTO.pointCameraTo(GEPPETTO.getVARS().sceneCenter);
+
+        	// Compute offset needed to move the camera back that much needed to
+        	// center AABB
+        	var offset = radius
+        	/ Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.5);
+        	
+        	var dir = new THREE.Vector3(0, 0, 1);
+            dir.multiplyScalar(offset);
+
+        	// Store camera position
+        	GEPPETTO.getVARS().camera.position.addVectors(dir,GEPPETTO.getVARS().controls.target);
+        	GEPPETTO.getVARS().camera.updateProjectionMatrix();
         },
         
         boundingBox: function(obj) {
@@ -435,11 +426,6 @@ define(function(require) {
             var object = GEPPETTO.Utility.deepFind(visualizationTree.content, objectPathFormat);
 
             return object;
-        },
-
-        resetCamera : function() {
-            GEPPETTO.calculateSceneCenter(GEPPETTO.getVARS().scene);
-            //GEPPETTO.updateCamera();
         },
 
         /**

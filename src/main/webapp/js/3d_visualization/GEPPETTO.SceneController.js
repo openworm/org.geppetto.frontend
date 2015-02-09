@@ -28,8 +28,6 @@ define(function(require) {
 						//as second parameter to make it clear this entity has no parent. 
 						GEPPETTO.SceneFactory.loadEntity(runTimeTree[eindex]);
 					}
-					GEPPETTO.calculateSceneCenter(GEPPETTO.getVARS().scene);
-					GEPPETTO.updateCamera();
 				},
 				
 				/**
@@ -228,6 +226,8 @@ define(function(require) {
 				 * Takes few paths, 3D point locations, and computes center of it to focus camera.
 				 */
 				zoomToMesh : function(path) {
+					GEPPETTO.getVARS().controls.reset();
+					
 					var aabbMin = null;
 					var aabbMax = null;
 
@@ -243,25 +243,7 @@ define(function(require) {
 					// Compute world AABB center
 					GEPPETTO.getVARS().sceneCenter = bb.center();
 
-					GEPPETTO.pointCameraTo(GEPPETTO.getVARS().sceneCenter);
-					
-					// Compute world AABB "radius"
-					var radius = mesh.geometry.boundingBox.size().length() * 0.5;
-
-					// Compute offset needed to move the camera back that much needed to
-					// center AABB
-					var offset = radius
-					/ Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.5);
-
-				    var dir = new THREE.Vector3();
-				    dir.subVectors( GEPPETTO.getVARS().camera.position, GEPPETTO.getVARS().controls.target );
-				    dir.setLength( offset );
-
-					// Store camera position
-					GEPPETTO.getVARS().camera.position.addVectors(dir,GEPPETTO.getVARS().controls.target);
-		            GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
-		            GEPPETTO.getVARS().camera.rotationAutoUpdate = true;
-		            GEPPETTO.getVARS().camera.updateProjectionMatrix();		            
+					GEPPETTO.updateCamera(aabbMax, aabbMin);	            
 				},
 				
 
@@ -269,10 +251,16 @@ define(function(require) {
 				 * Takes few paths, 3D point locations, and computes center of it to focus camera.
 				 */
 				zoomToMeshes : function(path) {
-					scene.traverse(function(child) {
+					GEPPETTO.getVARS().controls.reset();
+
+					var aabbMin = null;
+					var aabbMax = null;
+
+					for(var meshInstancePath in GEPPETTO.getVARS().meshes){
+						var child = GEPPETTO.getVARS().meshes[meshInstancePath];
 						if (child instanceof THREE.Mesh
-								|| child instanceof THREE.ParticleSystem) {
-							if(child.parent == path){
+								|| child instanceof THREE.PointCloud) {
+							if(meshInstancePath.startsWith(path)){
 								child.geometry.computeBoundingBox();
 
 								var bb = child.geometry.boundingBox;
@@ -302,34 +290,14 @@ define(function(require) {
 								}
 							}
 						}
-					});
+					}
 
 					// Compute world AABB center
 					GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
 					GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
 					GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
 
-					// Compute world AABB "radius"
-					var diag = new THREE.Vector3();
-					diag = diag.subVectors(aabbMax, aabbMin);
-					var radius = diag.length() * 0.5;
-
-					GEPPETTO.pointCameraTo(GEPPETTO.getVARS().sceneCenter);
-
-					// Compute offset needed to move the camera back that much needed to
-					// center AABB
-					var offset = radius
-					/ Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.5);
-
-					var dir = new THREE.Vector3();
-					dir.subVectors( GEPPETTO.getVARS().camera.position, GEPPETTO.getVARS().controls.target );
-					dir.setLength( offset );
-
-					// Store camera position
-					GEPPETTO.getVARS().camera.position.addVectors(dir,GEPPETTO.getVARS().controls.target);
-					GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
-					GEPPETTO.getVARS().camera.rotationAutoUpdate = true;
-					GEPPETTO.getVARS().camera.updateProjectionMatrix();
+					GEPPETTO.updateCamera(aabbMax, aabbMin)
 				},
 
 
@@ -413,16 +381,18 @@ define(function(require) {
 				showConnectionLines : function(path,lines){					
 					var segments = Object.keys(lines).length;
 
-					var origin = GEPPETTO.getVARS().meshes[path].position;
+					var mesh = GEPPETTO.getVARS().meshes[path];
+					var origin = mesh.geometry.boundingBox.center();
 
 					for ( var aspectPath in lines ) {
 						
 						var type = lines[aspectPath];
-						var mesh = GEPPETTO.getVARS().meshes[aspectPath];
+						var destinationMesh = GEPPETTO.getVARS().meshes[aspectPath];
+						var destination = destinationMesh.geometry.boundingBox.center();
 						
 						var geometry = new THREE.Geometry();
 
-						geometry.vertices.push(origin.clone(),mesh.position.clone());
+						geometry.vertices.push(origin,destination);
 						geometry.verticesNeedUpdate = true;
 						geometry.dynamic = true;
 						

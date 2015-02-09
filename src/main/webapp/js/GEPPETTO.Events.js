@@ -42,6 +42,7 @@
 			Select : "simulation:selection_changed",
 			Simulation_restarted : "simulation:restarted",
 			Widgets_restarted : "widgts:restarted",
+			Simulation_loaded : 'simulation:modelloaded',
 		};
 define(function(require) {
 	return function(GEPPETTO) {
@@ -55,6 +56,9 @@ define(function(require) {
 	        		//notify widgets that selection has changed in scene
 	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 	        	});
+				GEPPETTO.on(Events.Simulation_loaded, function(){
+					G.resetCamera();
+				});
 	        	GEPPETTO.on(Events.Simulation_restarted, function(){
 	        		//delete existing widgets, to allow new ones for new simulation
 	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);

@@ -80,10 +80,11 @@ define(function(require) {
             var endCreation = new Date() - startCreation;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");
             GEPPETTO.Simulation.setSimulationLoaded();
-            GEPPETTO.trigger('simulation:modelloaded');
             
             //Populate scene
-            GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree);
+            GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree); 
+            
+            GEPPETTO.trigger('simulation:modelloaded');
         };
 
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {

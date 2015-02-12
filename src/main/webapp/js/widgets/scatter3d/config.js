@@ -40,17 +40,13 @@
  * Configure what dependencies are needed for each library
  */
 require.config({
-	paths : {
-		"threelib" :"widgets/scatter3d/vendor/three.min",
-	},
 	shim: {
-		"widgets/scatter3d/vendor/OrbitControls" : ["threelib"],
-		"widgets/scatter3d/vendor/helvetiker_regular.typeface" : ["threelib"]
+		"widgets/scatter3d/vendor/OrbitControls" : ["three"],
+		"widgets/scatter3d/vendor/helvetiker_regular.typeface" : ["three"]
 	}
 });
 
 var reqs = [];
-reqs.push("threelib");
 reqs.push("widgets/scatter3d/vendor/OrbitControls");
 reqs.push("widgets/scatter3d/vendor/helvetiker_regular.typeface");
 

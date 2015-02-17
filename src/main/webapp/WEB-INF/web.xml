@@ -42,6 +42,11 @@
             templates/index.htm
         </welcome-file>
     </welcome-file-list>
+    
+    <mime-mapping>
+   		<extension>json</extension>
+    	<mime-type>application/json</mime-type>
+	</mime-mapping>
 
     <servlet>
         <servlet-name>GeppettoServlet</servlet-name>

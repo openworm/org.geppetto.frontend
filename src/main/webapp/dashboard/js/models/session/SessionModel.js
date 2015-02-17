@@ -13,7 +13,7 @@ define(
                 }
             },
 
-            url: "/api/session.json",
+            url: "api/session.json",
 
             initialize: function () {
                 this.fetch();

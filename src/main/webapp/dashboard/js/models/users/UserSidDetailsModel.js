@@ -5,7 +5,7 @@ define([
 ], function($, _, Backbone){
 
     var UserDetailsModel = Backbone.Model.extend({
-        url:    "/api/session.json",
+        url:    "api/session.json",
 
         initialize : function () {
         },

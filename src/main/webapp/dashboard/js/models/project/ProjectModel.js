@@ -7,12 +7,12 @@ define([
 
     var ProjectModel = Backbone.Model.extend({
         id: "",
-        url : '/api/project',
+        url : 'api/project',
 
         methodToURL: {
             'read': "",
-            'create': "/api/project",
-            'update': "/api/project",
+            'create': "api/project",
+            'update': "api/project",
             'delete': ""
         },
 

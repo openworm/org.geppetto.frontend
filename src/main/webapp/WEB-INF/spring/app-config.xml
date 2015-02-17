@@ -20,8 +20,13 @@
     <mvc:resources mapping="/jsdocs/**"
                    location="/jsdocs/"
             />
+            
     <mvc:resources mapping="/dashboard/**"
                    location="/dashboard/"
+            />     
+
+	<mvc:resources mapping="/api/**"
+                   location="/dashboard/api/"
             />     
 
 

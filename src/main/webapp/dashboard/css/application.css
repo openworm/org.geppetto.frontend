@@ -28,7 +28,7 @@ code {
 }
 
 #logo {
-    background-image: url("/imgs/logo@2x.png");
+    background-image: url("../imgs/logo@2x.png");
     background-size: 150px 38px;
     height: 38px;
     width: 150px;

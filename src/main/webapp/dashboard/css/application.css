@@ -1,0 +1,140 @@
+html {
+    min-height: 100%;
+    position: relative;
+}
+body {
+    margin-bottom: 60px;
+}
+.footer {
+    background-color: #f5f5f5;
+    bottom: 0;
+    height: 60px;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+}
+body > .container {
+    padding: 60px 15px 0;
+}
+.container .text-muted {
+    margin: 20px 0;
+}
+.footer > .container {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+code {
+    font-size: 80%;
+}
+
+#logo {
+    background-image: url("/imgs/logo@2x.png");
+    background-size: 150px 38px;
+    height: 38px;
+    width: 150px;
+    margin-top: -10px;
+}
+
+#filter {
+    width: 100%;
+}
+
+.filter-form{
+    width: 34%;
+}
+
+.vertical-center {
+    min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+    min-height: 100vh; /* These two lines are counted as one :-)       */
+
+    display: flex;
+    align-items: center;
+}
+
+
+.projects {
+    overflow: auto;
+    height: 79vh;
+}
+
+.dark-well {
+    background-color: #707070;
+    border: 1px solid #707070;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    margin-bottom: 20px;
+    min-height: 20px;
+    padding: 19px;
+}
+
+.project-preview-tn{
+    width: 100px;
+    height: 100px;
+}
+
+.project-preview{
+    float: left;
+    width: 25%;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.project-preview-caption{
+    color: #f5f5f5;
+}
+
+.peoject-heading{
+    margin-bottom: 15px;
+    margin-top: -15px;
+}
+
+.experiments{
+    margin-top: 15px;
+}
+
+.instance-path{
+    text-align:left!important;
+}
+
+dt, dd{
+    margin-bottom: 7px;
+}
+
+.collapse-striped > div:nth-child(4n + 1) > div,
+.collapse-striped > div:nth-child(4n + 2) > div {
+    background-color: #fefefe;
+}
+
+.experiment-panel-heading{
+    border: none;
+}
+
+.circle {
+    position: relative;
+    width: 0.7em; height: 0.7em;
+    border-radius: 50%;
+    background: lightblue;
+    margin-top: 2px;
+}
+
+.QUEUED{
+    background: lightblue;
+}
+
+.RUNNING{
+    background: blue;
+}
+
+.ERROR{
+    background: red;
+}
+
+.COMPLETED{
+    background: green;
+
+}
+
+.DELETED{
+    background: grey;
+
+}

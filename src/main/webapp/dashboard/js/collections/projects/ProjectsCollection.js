@@ -7,7 +7,7 @@ define([
 
     var ProjectsCollection = Backbone.Collection.extend({
         model: ProjectModel,
-        url: "/api/project/all.json",
+        url: "api/project/all.json",
 
         initialize: function (options) {
             _.bindAll(this,'search', 'parse', "getLimitedString");

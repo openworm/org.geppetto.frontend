@@ -7,10 +7,29 @@ define([
 
     var ProjectsCollection = Backbone.Collection.extend({
         model: ProjectModel,
-        url: "api/project/all.json",
+        url: "/api/project/all.json",
 
         initialize: function (options) {
-            _.bindAll(this,'search');
+            _.bindAll(this,'search', 'parse', "getLimitedString");
+        },
+
+        parse: function(data){
+            var that = this;
+            _.each(data, function(item){
+                item.displayName = that.getLimitedString(item.name, 15);
+            });
+            return data;
+        },
+
+        getLimitedString: function(originString, limit){
+            if (originString == null){
+                return "";
+            }
+            if (originString.length > limit){
+                return originString.slice(0,limit - 3) + "...";
+            } else {
+                return originString;
+            }
         },
 
         search: function (criteria) {

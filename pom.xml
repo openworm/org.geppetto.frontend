@@ -270,6 +270,22 @@
             <artifactId>httpclient-osgi</artifactId>
             <version>4.4-alpha1</version>
         </dependency>
+        
+        <dependency>
+			<groupId>org.restlet.osgi</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>2.2.3</version>
+		</dependency>		
+		<dependency>
+			<groupId>org.restlet.osgi</groupId>
+			<artifactId>org.restlet.ext.json</artifactId>
+			<version>2.2.3</version>
+		</dependency>		
+		<dependency>
+			<groupId>de.twentyeleven.skysail</groupId>
+			<artifactId>org.json-osgi</artifactId>
+			<version>20080701</version>
+		</dependency>
     </dependencies>
 	<build>
 		<plugins>
@@ -495,6 +511,11 @@
 			<id>com.springsource.repository.libraries.external</id>
 			<name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
 			<url>http://repository.springsource.com/maven/libraries/external</url>
+		</repository>
+		<repository>
+			<id>maven-restlet</id>
+			<name>Restlet maven repository</name>
+			<url>http://maven.restlet.com</url>
 		</repository>
 	</repositories>
 </project>

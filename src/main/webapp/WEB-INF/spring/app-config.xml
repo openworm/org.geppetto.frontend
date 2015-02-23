@@ -44,5 +44,8 @@
 		<property name="loadedScene" value="#{ null }" />
 		<property name="isSimulationLoaded" value="false" />
 	</bean>
+	
+	<bean id="restletServer" class="org.geppetto.frontend.server.DashboardServer">
+	</bean>	
 
 </beans>

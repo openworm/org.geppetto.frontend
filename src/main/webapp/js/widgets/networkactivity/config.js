@@ -46,13 +46,13 @@
 require.config({
 	  paths: {
 	    "d3": "widgets/networkactivity/vendor/d3",
-	    "cubism": "widgets/networkactivity/vendor/cubism.v1"
+	    "d3.horizon": "widgets/networkactivity/vendor/horizon/horizon.js"
 	  }
 	});
 
 var reqs = [];
 reqs.push("d3");
-reqs.push("cubism");
+reqs.push("d3.horizon");
 
 define("d3.global", ["d3"], function(_) {
 	  d3 = _;

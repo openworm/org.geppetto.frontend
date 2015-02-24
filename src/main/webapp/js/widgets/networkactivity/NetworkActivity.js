@@ -50,7 +50,7 @@ define(function(require) {
 		defaultNetworkActivityOptions:  {
 			width: 660,
 			height: 500,
-			networkActivityLayout: "matrix", //[matrix, hive, force]
+			networkActivityLayout: "list", //[matrix, hive, force]
 		},
 		
 		initialize : function(options){
@@ -70,7 +70,7 @@ define(function(require) {
 					window[this.id].svg.attr("width", width).attr("height", height);
 					window[this.id].force.size([width, height]).resume();
 				}
-				else if (window[this.id].options.networkActivityLayout == 'matrix') {
+				else if (window[this.id].options.networkActivityLayout == 'list') {
 					window[this.id].createLayout();
 				}
 				event.stopPropagation();
@@ -92,6 +92,7 @@ define(function(require) {
 			
 			return "Metadata or variables added to the network activity widget";
 		},
+		
 		
 		createDataFromConnections: function(){
 			if (this.dataset["root"]._metaType == "EntityNode"){
@@ -151,9 +152,10 @@ define(function(require) {
             .attr("width", this.options.innerWidth)
             .attr("height", this.options.innerHeight);
 			
-			if (this.options.networkActivityLayout == 'matrix'){
+			if (this.options.networkActivityLayout == 'list'){
 				$("#filters").remove();
-				this.createMatrixLayout();
+				this.createListLayout();
+				//this.createMatrixLayout();
 			}
 			else if (this.options.networkActivityLayout == 'force') {
 				this.createForceLayout();
@@ -285,15 +287,33 @@ define(function(require) {
 		    .text(function(d) { return d; });
 		},
 		
-		createMatrixLayout: function(){
+		createListLayout: function(){
 			var legendRectSize = 18;
 			var legendSpacing = 4;
 			var margin = {top: 50, right: 10, bottom: 10, left: 50};
 			var sizeLegend = {width: 120};
 			
-			var matrixDim = (this.options.innerHeight < (this.options.innerWidth - sizeLegend.width))?(this.options.innerHeight):(this.options.innerWidth - sizeLegend.width);
 			
-			var x = d3.scale.ordinal().rangeBands([0, matrixDim - margin.top]),
+			var listDim = (this.options.innerHeight < (this.options.innerWidth - sizeLegend.width))?(this.options.innerHeight):(this.options.innerWidth - sizeLegend.width);
+			
+			var width = 960,
+		    height = 500;
+
+			var chart = d3.horizon()
+			    .width(width)
+			    .height(height)
+			    .bands(1)
+			    .mode("mirror")
+			    .interpolate("basis");
+
+			var GERD=[2.21367, 2.74826, 1.96158, 1.80213, 0.39451, 1.52652, 3.01937, 1.44122, 3.84137, 2.20646, 2.78056, 0.5921, 1.14821, 2.64107, 1.78988, 4.2504, 1.26841, 3.33499, 3.3609, 1.67862, 0.41322, 1.81965, 1.13693, 1.75922, 0.67502, 1.65519, 1.24252, 0.48056, 1.85642, 0.92523, 1.38357, 3.61562, 2.99525, 0.84902, 1.82434, 2.78518];
+			var growth=[2.48590317, 3.10741128, 1.89308521, 3.21494841, 5.19813626, 1.65489834, 1.04974368, 7.63563272, 2.85477157, 1.47996142, 2.99558644, -6.90796403, 1.69192342, -3.99988322, -0.42935239, 4.84602001, 0.43108032, 3.96559062, 6.16184325, 2.67806902, 5.56185685, 1.18517739, 2.33052515, 1.59773989, 4.34962928, -1.60958484, 4.03428262, 3.34920254, -0.17459255, 2.784, -0.06947685, 3.93555895, 2.71404473, 9.00558548, 2.09209263, 3.02171711];
+			
+			svg.data([growth]).call(chart);
+			
+			
+			/*
+			var x = d3.scale.ordinal().rangeBands([0, listDim - margin.top]),
 	        // Opacity
 			z = d3.scale.linear().domain([0, 4]).clamp(true),
 			// Colors
@@ -308,6 +328,7 @@ define(function(require) {
 		    var nodes = this.dataset.nodes;
 		    var n = nodes.length;
 
+		    
 		    // Compute index per node.
 		    nodes.forEach(function(node, i) {
 		    	node.pre_count = 0;
@@ -463,6 +484,7 @@ define(function(require) {
 			function mouseout() {
 			    d3.selectAll("text").classed("active", false);
 			}
+			*/
 		},
 		
 		createNode: function(nodeId) {

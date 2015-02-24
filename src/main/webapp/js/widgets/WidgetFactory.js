@@ -52,7 +52,8 @@ define(function(require) {
 			TREEVISUALISERDAT: 3,
 			TREEVISUALISERD3: 4,
 			VARIABLEVISUALISER: 5,
-			CONNECTIVITY: 6
+			CONNECTIVITY: 6,
+			NETWORKACTIVITY: 7
 		};
 
 		/**
@@ -95,7 +96,11 @@ define(function(require) {
 					//create connectivity widget
 					case GEPPETTO.Widgets.CONNECTIVITY:
 						widget = GEPPETTO.ConnectivityController.addConnectivityWidget();
-						break;						
+						break;
+					//create connectivity widget
+					case GEPPETTO.Widgets.NETWORKACTIVITY:
+						widget = GEPPETTO.NetworkActivityController.addNetworkActivityWidget();
+						break;	
 					default:
 						break;
 				}
@@ -139,6 +144,9 @@ define(function(require) {
 					case GEPPETTO.Widgets.CONNECTIVITY:
 						GEPPETTO.ConnectivityController.removeConnectivityWidget();
 						return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
+					case GEPPETTO.Widgets.NETWORKACTIVITY:
+						GEPPETTO.NetworkActivityController.removeNetworkActivityWidget();
+						return GEPPETTO.Resources.REMOVE_NETWORKACTIVITY_WIDGETS;
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
 				}

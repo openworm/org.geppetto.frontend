@@ -60,27 +60,3 @@ require(reqs, function(d3) {
 	loadCss("assets/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.css");
 	
 });
-
-//Load TreeVisualiserController and other classes using GEPPETTO
-define(function(require) {
-	return function(GEPPETTO) {
-		require("widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3")(GEPPETTO);
-		
-		// Register Commands
-		GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
-		                                                 "AspectSubTreeNode",
-		                                                 "CompositeNode",
-		                                                 "ConnectionNode",
-		                                                 "DynamicsSpecificationNode",
-		                                                 "EntityNode",
-		                                                 "FunctionNode",
-		                                                 "ParameterNode",
-		                                                 "ParameterSpecificationNode",
-		                                                 "TextMetadataNode",
-		                                                 "VariableNode",
-		                                                 "VisualGroupElementNode",
-		                                                 "VisualGroupNode",
-		                                                 "VisualObjectReferenceNode"],
-		                                                 GEPPETTO.TreeVisualiserControllerD3.getCommands);
-	};
-});

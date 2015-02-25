@@ -57,7 +57,7 @@ define(function(require) {
 				DELETE: "delete",
 				UPDATE: "update",
 				RESET_DATA : "reset",
-				SELECTION_CHANGED : "selection_changed",
+				SELECTION_CHANGED : "select",
 			},
 			_subscribers: [],
 

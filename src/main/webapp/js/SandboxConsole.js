@@ -249,7 +249,8 @@ define(function(require) {
 
 				debugLog: function(message) {
 					this.addMessageHistory("debugMessage", {
-						result: message
+						result: message,
+						_class: "string"
 					});
 				},
 

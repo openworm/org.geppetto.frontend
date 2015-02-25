@@ -44,15 +44,6 @@ define(function(require) {
 
 	return Node.Model
 			.extend({
-				relations : [ {
-					type : Backbone.Many,
-					key : 'children',
-					relatedModel : AspectSubTreeNode,
-				}, ],
-
-				defaults : {
-					children : []
-				},
 				modelInterpreterName : "",
 				simulatorName : "",
 				modelURL : "",
@@ -166,8 +157,8 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(true);
 						}
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+						//signal selection has changed in simulation
+						GEPPETTO.trigger(Events.Select);
 					} else {
 						message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
 					}
@@ -221,8 +212,8 @@ define(function(require) {
 							Simulation.showUnselected(false);
 						}
 					
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+						//trigger event that selection has been changed
+						GEPPETTO.trigger(Events.Selection);
 					} else {
 						message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
 					}
@@ -236,10 +227,7 @@ define(function(require) {
 				 * 
 				 */
 				 zoomTo : function(){
-				 
-					 var object = {};
-					 object[this.instancePath] = "";
-					 GEPPETTO.SceneController.zoom(object);
+					 GEPPETTO.SceneController.zoomToMesh(this.instancePath);
 				 
 					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
 			     },
@@ -263,8 +251,10 @@ define(function(require) {
 				 * 
 				 */
 				getChildren : function() {
-					var subtrees = this.get("children");
-
+					var subtrees = new Array();
+					subtrees = subtrees.concat(this.SimulationTree);
+					subtees = subtrees.concat(this.VisualizationTree);
+					subtrees = subtrees.concat(this.ModelTree);
 					return subtrees;
 				},
 
@@ -342,7 +332,9 @@ define(function(require) {
 							+ "      InstancePath : " + this.instancePath
 							+ "\n" + "      SubTree : ModelTree \n"
 							+ "      SubTree : VisualizationTree \n"
-							+ "      SubTree : SimulationTree \n";
+							+this.VisualizationTree+
+							+ "      SubTree : SimulationTree \n"
+							+ this.SimulationTree;
 
 					return formattedNode;
 				},

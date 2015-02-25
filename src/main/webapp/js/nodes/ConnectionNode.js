@@ -43,21 +43,8 @@ define(function(require) {
 	var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 
 	return Node.Model.extend({
-		relations : [ {
-			type : Backbone.Many,
-			key : 'customNodes',
-			relatedModel : Node,
-		}, {
-			type : Backbone.Many,
-			key : 'visualObjectReferenceNodes',
-			relatedModel : VisualObjectReferenceNode
-		}],
-
-		defaults : {
-			customNodes : [],
-			visualObjectReferenceNodes : [],
-		},
-
+		customNodes : null,
+		visualObjectReferenceNodes : null,
 		entityInstancePath : null,
 		type : null,
 		highlighted : null,
@@ -69,6 +56,8 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
+			this.customNodes = new Array();
+			this.visualObjectReferenceNodes = new Array();
 			this.id = options.id;
 			this.entityInstancePath = options.entityInstancePath;
 			this.type = options.type;
@@ -106,7 +95,7 @@ define(function(require) {
 		 * @returns {Array} Array of nodes for custom properties of connection node.
 		 */
 		getCustomNodes : function(){
-			return this.get("customNodes").models;
+			return this.customNodes;
 		},
 		
 		/**
@@ -115,7 +104,7 @@ define(function(require) {
 		 * @returns {Array} Array of nodes for visual object references
 		 */
 		getVisualObjectReferenceNodes : function(){
-			return this.get("visualObjectReferenceNodes").models;
+			return this.visualObjectReferenceNodes;
 		},
 		
 		/**
@@ -173,20 +162,20 @@ define(function(require) {
 		 * 
 		 */
 		getChildren : function() {
-			 var children = new Backbone.Collection();
-			 children.add(this.get("customNodes").models);
-			 children.add(this.get("visualObjectReferenceNodes").models);
+			 var children = new Array();
+			 children = children.concat(this.customNodes);
+			 children  = children.concat(this.visualObjectReferenceNodes);
 			 return children;
 		},
 		
 		/**
 		 * Print out formatted node
-		 * @command EntityNode.print()
+		 * @command ConnectionNode.print()
 		 */
 		print : function() {
 			return "Id : " + this.id + "\n" 
 					+ "    Name : " + this.name + "\n"
-					+ "    EntityInstancePath : " + this.entityInstancePath + "\n"
+					+ "    ConnectionEntityInstancePath : " + this.entityInstancePath + "\n"
 					+ "    Type : " + this.type + "\n";
 		}
 	});

@@ -120,7 +120,7 @@ define(function(require) {
 							var customNodes = connectionItem.getCustomNodes();
 							for (var customNodeIndex in connectionItem.getCustomNodes()){
 								if ('getChildren' in customNodes[customNodeIndex]){
-									var customNodesChildren = customNodes[customNodeIndex].getChildren().models;
+									var customNodesChildren = customNodes[customNodeIndex].getChildren();
 									for (var customNodeChildIndex in customNodesChildren){
 										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
 											linkItem["synapse_type"] = customNodesChildren[customNodeChildIndex].getValue();
@@ -486,9 +486,6 @@ define(function(require) {
 			if(options != null) {
 				$.extend(this.options, options);
 			}
-		},
-		
-				
-
+		},		
 	});
 });

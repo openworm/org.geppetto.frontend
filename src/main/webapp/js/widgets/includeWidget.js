@@ -46,19 +46,19 @@ define(function(require){
 	require("widgets/WidgetUtility");
 	require("widgets/ContextMenu")(GEPPETTO);
 	//Plot Widget
-	require("widgets/plot/config")(GEPPETTO);
+	require("widgets/plot/config");
 	//Popup Widget
-	require("widgets/popup/config")(GEPPETTO);
+	require("widgets/popup/config");
 	//Scatter3d Widget
-	require("widgets/scatter3d/config")(GEPPETTO);	
+	require("widgets/scatter3d/config");	
 	//TreeVisualiser DAT Widget
-	require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
+	require("widgets/treevisualiser/treevisualiserdat/config");
 	//TreeVisualiser D3 Widget
-	require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
+	require("widgets/treevisualiser/treevisualiserd3/config");
 	//VariableVisualiser widget
-	require("widgets/variablevisualiser/config")(GEPPETTO);
+	require("widgets/variablevisualiser/config");
 	//Connectivity Widget
-	require("widgets/connectivity/config")(GEPPETTO);
+	require("widgets/connectivity/config");
 	loadCss("assets/js/widgets/Widget.css");
 	};
 });

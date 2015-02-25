@@ -50,33 +50,3 @@ function loadCss(url) {
 	link.href = url;
 	document.getElementsByTagName("head")[0].appendChild(link);
 }
-
-/**
- * Get an available id for an specific widget
- * 
- * @module WidgetUtility
- * @param {String} prefix
- * @param {Array} widgetsList
- * @returns {String} id - Available id for a widget
- */
-function getAvailableWidgetId(prefix, widgetsList){
-	var index = 0;
-	var id = "";
-	var available;
-
-	do{
-		index++;
-		id = prefix + index;
-		available = true;
-		
-		for(var p in widgetsList){
-			if(widgetsList[p].getId() == id){
-				available = false;
-				break;
-			}
-		}
-	}
-	while (available == false)	
-	
-	return id;
-}

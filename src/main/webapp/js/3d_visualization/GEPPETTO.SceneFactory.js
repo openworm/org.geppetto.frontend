@@ -35,15 +35,10 @@ define(function(require) {
 						for ( var m in meshes) {
 							var mesh = meshes[m];
 							mesh.name = aspect.instancePath;
-							var p = mesh.position.clone();
 							if (position != null) {
 								p = new THREE.Vector3(position.x, position.y,
 										position.z);
-								mesh.geometry.verticesNeedUpdate = true;
-								mesh.geometry.dynamic=true;
-								var world = mesh.localToWorld(p);
-								mesh.position.set(world.x,world.y,world.z);
-								mesh.updateMatrixWorld(true);
+								mesh.position.set(p.x,p.y,p.z);
 							}
 							GEPPETTO.getVARS().scene.add(mesh);
 							//keep track of aspects created by storing them in VARS property object

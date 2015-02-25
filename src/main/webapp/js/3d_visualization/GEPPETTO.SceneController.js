@@ -382,7 +382,7 @@ define(function(require) {
 					var segments = Object.keys(lines).length;
 
 					var mesh = GEPPETTO.getVARS().meshes[path];
-					var origin = mesh.position.clone();
+					var origin = mesh.geometry.boundingBox.center();
 					origin = mesh.localToWorld(origin);
 					
 					for ( var aspectPath in lines ) {
@@ -390,7 +390,7 @@ define(function(require) {
 						var type = lines[aspectPath];
 						var destinationMesh = GEPPETTO.getVARS().meshes[aspectPath];
 						var destination =
-							destinationMesh.position.clone();
+							destinationMesh.geometry.boundingBox.center();
 						destination = destinationMesh.localToWorld(destination);
 						
 						var geometry = new THREE.Geometry();

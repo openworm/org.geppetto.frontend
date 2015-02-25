@@ -32,7 +32,10 @@
  *******************************************************************************/
 package org.geppetto.frontend.server.resource;
 
+import java.util.List;
+
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.frontend.server.DashboardApplication;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,48 +43,28 @@ import org.json.JSONObject;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
-public class SimulationRunsResource extends ServerResource
+import com.google.gson.Gson;
+
+public class GeppettoProjectsResource extends ServerResource
 {
 	@Get("json")
-	public String getSimulationRuns()
+	public String getAllGeppettoProjects()
 	{
 		DashboardApplication application = (DashboardApplication) getApplication();
 		IGeppettoDataManager dataManager = application.getDataManager();
-		// List<SimulationRun> simulationRuns = dbManager.getAllEntities(SimulationRun.class);
+		List<? extends IGeppettoProject> geppettoProjects = dataManager.getAllGeppettoProjects();
 
 		JSONObject result = new JSONObject();
-		JSONArray simulationRunsArray = new JSONArray();
+		JSONArray geppettoProjectsArray = new JSONArray();
 		try
 		{
-			// for(SimulationRun simulationRun : simulationRuns)
-			// {
-			// JSONObject simulationRunObject = new JSONObject();
-			// simulationRunObject.put("id", simulationRun.getId());
-			// simulationRunObject.put("start_date", simulationRun.getStartDate());
-			// simulationRunObject.put("end_date", simulationRun.getEndDate());
-			// simulationRunObject.put("status", simulationRun.getStatus());
-			//
-			// PersistedData persistedData = simulationRun.getResults();
-			// JSONObject persistedDataObject = new JSONObject();
-			// persistedDataObject.put("url", persistedData.getUrl());
-			// persistedDataObject.put("type", persistedData.getType());
-			// simulationRunObject.put("persisted_data", persistedDataObject);
-			//
-			// List<Parameter> parameters = simulationRun.getSimulationParameters();
-			// JSONArray parametersArray = new JSONArray();
-			// for(Parameter parameter : parameters)
-			// {
-			// JSONObject parameterObject = new JSONObject();
-			// parameterObject.put("instance_path", parameter.getInstancePath());
-			// parameterObject.put("type", parameter.getType());
-			// parameterObject.put("value", parameter.getValue());
-			// parametersArray.put(parameterObject);
-			// }
-			// simulationRunObject.put("parameters", parametersArray);
-			//
-			// simulationRunsArray.put(simulationRunObject);
-			// }
-			// result.put("simulations_runs", simulationRunsArray);
+			for(IGeppettoProject project : geppettoProjects)
+			{
+				JSONObject projectObject = new JSONObject(new Gson().toJson(project));
+				geppettoProjectsArray.put(projectObject);
+			}
+			result.put("geppetto_projects", geppettoProjectsArray);
+
 			result.put("dataManager", dataManager.getName());
 		}
 		catch(JSONException e)

@@ -30,46 +30,48 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend.server;
+package org.geppetto.frontend.server.resource;
 
-import org.geppetto.core.common.GeppettoInitializationException;
+import java.util.List;
+
 import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.frontend.server.resource.ExperimentResource;
-import org.geppetto.frontend.server.resource.GeppettoProjectsResource;
-import org.geppetto.frontend.server.resource.ParameterResource;
-import org.geppetto.frontend.server.resource.UserGeppettoProjectsResource;
-import org.restlet.Application;
-import org.restlet.Restlet;
-import org.restlet.routing.Router;
+import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.frontend.server.DashboardApplication;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.resource.Get;
+import org.restlet.resource.ServerResource;
 
-public class DashboardApplication extends Application
+import com.google.gson.Gson;
+
+public class UserGeppettoProjectsResource extends ServerResource
 {
-
-	public IGeppettoDataManager getDataManager()
+	@Get("json")
+	public String getUserGeppettoProjects()
 	{
+		String login = getAttribute("login");
+		DashboardApplication application = (DashboardApplication) getApplication();
+		IGeppettoDataManager dataManager = application.getDataManager();
+		List<? extends IGeppettoProject> geppettoProjects = dataManager.getGeppettoProjectsForUser(login);
+
+		JSONObject result = new JSONObject();
+		JSONArray geppettoProjectsArray = new JSONArray();
 		try
 		{
-			return new DataManagerServiceCreator(IGeppettoDataManager.class.getName()).getService();
+			for(IGeppettoProject project : geppettoProjects)
+			{
+				JSONObject projectObject = new JSONObject(new Gson().toJson(project));
+				geppettoProjectsArray.put(projectObject);
+			}
+			result.put("geppetto_projects", geppettoProjectsArray);
+
+			result.put("dataManager", dataManager.getName());
 		}
-		catch(GeppettoInitializationException e)
+		catch(JSONException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// ignore
 		}
-		return null;
+		return result.toString();
 	}
-
-	@Override
-	public Restlet createInboundRoot()
-	{
-		Router router = new Router(getContext());
-
-		router.attach("/persistence/geppettoprojects", GeppettoProjectsResource.class);
-		router.attach("/persistence/user/{login}/geppettoprojects", UserGeppettoProjectsResource.class);
-		router.attach("/persistence/parameter", ParameterResource.class);
-		router.attach("/persistence/experiment", ExperimentResource.class);
-
-		return router;
-	}
-
 }

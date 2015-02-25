@@ -30,46 +30,31 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend.server;
+package org.geppetto.frontend.server.resource;
 
-import org.geppetto.core.common.GeppettoInitializationException;
+import java.util.Date;
+
 import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.frontend.server.resource.ExperimentResource;
-import org.geppetto.frontend.server.resource.GeppettoProjectsResource;
-import org.geppetto.frontend.server.resource.ParameterResource;
-import org.geppetto.frontend.server.resource.UserGeppettoProjectsResource;
-import org.restlet.Application;
-import org.restlet.Restlet;
-import org.restlet.routing.Router;
+import org.geppetto.frontend.server.DashboardApplication;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.resource.Put;
+import org.restlet.resource.ServerResource;
 
-public class DashboardApplication extends Application
+public class ExperimentResource extends ServerResource
 {
-
-	public IGeppettoDataManager getDataManager()
+	@Put("json")
+	public void addExperiment(JSONObject parameter)
 	{
+		DashboardApplication application = (DashboardApplication) getApplication();
+		IGeppettoDataManager dataManager = application.getDataManager();
 		try
 		{
-			return new DataManagerServiceCreator(IGeppettoDataManager.class.getName()).getService();
+			dataManager.createExperiment(parameter.getString("name"), parameter.getString("description"), new Date(), new Date());
 		}
-		catch(GeppettoInitializationException e)
+		catch(JSONException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// ignore
 		}
-		return null;
 	}
-
-	@Override
-	public Restlet createInboundRoot()
-	{
-		Router router = new Router(getContext());
-
-		router.attach("/persistence/geppettoprojects", GeppettoProjectsResource.class);
-		router.attach("/persistence/user/{login}/geppettoprojects", UserGeppettoProjectsResource.class);
-		router.attach("/persistence/parameter", ParameterResource.class);
-		router.attach("/persistence/experiment", ExperimentResource.class);
-
-		return router;
-	}
-
 }

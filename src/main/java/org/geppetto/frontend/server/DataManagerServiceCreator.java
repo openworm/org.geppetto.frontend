@@ -43,13 +43,11 @@ public class DataManagerServiceCreator
 {
 
 	private BundleContext _bc = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-	private String _discoveryId = null;
 	private String _type = null;
 
-	public DataManagerServiceCreator(String discoveryId, String type)
+	public DataManagerServiceCreator(String type)
 	{
 		super();
-		_discoveryId = discoveryId;
 		_type = type;
 	}
 
@@ -64,12 +62,10 @@ public class DataManagerServiceCreator
 	public IGeppettoDataManager getService() throws GeppettoInitializationException
 	{
 		IGeppettoDataManager service = null;
-
-		String filter = String.format("(discoverableID=%s)", _discoveryId);
 		ServiceReference<?>[] sr;
 		try
 		{
-			sr = _bc.getServiceReferences(_type, filter);
+			sr = _bc.getServiceReferences(_type, null);
 		}
 		catch(InvalidSyntaxException e)
 		{

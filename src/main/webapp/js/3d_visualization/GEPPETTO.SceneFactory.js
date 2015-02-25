@@ -115,26 +115,6 @@ define(function(require) {
 						}
 					}
 				},
-
-
-				generate3DObjects : function(aspect) {
-
-					var materials = {
-							"mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(),
-							"particle": GEPPETTO.SceneFactory.getParticleMaterial()
-					};
-					var aspectObjects = [];
-					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(aspect.VisualizationTree.content, materials);
-
-					if(threeDeeObjList.length > 0){
-						var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
-						//investigate need to obj.dispose for obj in threeDeeObjList
-						mergedObjs.aspectInstancePath = aspect.instancePath;
-						aspectObjects.push(mergedObjs);
-					}
-
-					return aspectObjects;
-				},
 				
 
 				walkVisTreeGen3DObjs: function(visTree, materials) {

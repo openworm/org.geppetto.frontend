@@ -135,7 +135,7 @@ define(function (require) {
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/LEMS/SingleComponentHH/GEPPETTO.xml">LEMS Sample Hodgkin-Huxley Neuron</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/SPH/LiquidSmall/GEPPETTO.xml">PCISPH Small Liquid Scene</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml">PCISPH Small Elastic Scene</option>
-                                            //Matteo: I had to remove the Hindmarsh Rose example as opposite to commenting it out as comments were ignored for some reason and it was still showing
+                                            <option value="https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/LEMS/MuscleModel/GEPPETTO.xml">OpenWorm C.elegans muscle model</option>	
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master//NeuroML/ACnet2/GEPPETTO.xml">Primary Auditory Cortex Network</option>
                                             <option value="https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/C302/GEPPETTO.xml">C302 Experimental network of integrate and fire neurons</option>
                                             <option value="https://raw.github.com/openworm/org.geppetto.samples/master/NeuroML/Purkinje/GEPPETTO.xml">NeuroML Purkinje Cell (No Simulation)</option>

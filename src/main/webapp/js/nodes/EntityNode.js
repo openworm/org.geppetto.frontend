@@ -44,27 +44,9 @@ define(function(require) {
 
 	return Node.Model
 			.extend({
-				relations : [ {
-					type : Backbone.Many,
-					key : 'aspects',
-					relatedModel : AspectNode,
-				}, {
-					type : Backbone.Many,
-					key : 'entities',
-					relatedModel : Backbone.Self
-				},{
-					type : Backbone.Many,
-					key : 'connections',
-					relatedModel : ConnectionNode
-				}  ],
-
-				defaults : {
-					aspects : [],
-					entities : [],
-					connections : [],
-				},
-
-				children : [],
+				aspects : null,
+				entities : null,
+				connections : null,
 				position : null,
 				selected : false,
 				visible : true,
@@ -81,6 +63,9 @@ define(function(require) {
 					this.instancePath = options.instancePath;
 					this._metaType = options._metaType;
 					this.domainType = options.domainType;
+					this.entities = new Array();
+					this.aspects = new Array();
+					this.connections = new Array();
 				},
 
 				/**
@@ -330,8 +315,7 @@ define(function(require) {
 				 * 
 				 */
 				getAspects : function() {
-					var entities = this.get("aspects").models;
-					return entities;
+					return this.aspects;
 				},
 
 				/**
@@ -342,8 +326,7 @@ define(function(require) {
 				 * 
 				 */
 				getEntities : function() {
-					var entities = this.get("entities").models;
-					return entities;
+					return this.entities;
 				},
 				
 				/**
@@ -354,8 +337,7 @@ define(function(require) {
 				 * 
 				 */
 				getConnections : function() {
-					var connections = this.get("connections").models;
-					return connections;
+					return this.connections;
 				},
 
 				/**
@@ -365,10 +347,10 @@ define(function(require) {
 				 * @returns {List<Aspect>} All children e.g. aspects and entities
 				 */
 				getChildren : function() {
-					 var children = new Backbone.Collection();
-					 children.add(this.get("aspects").models);
-					 children.add(this.get("entities").models);
-					 children.add(this.get("connections").models);
+					 var children = new Array();
+					 children = children.concat(this.aspects);
+					 children = children.concat(this.entities);
+					 children = children.concat(this.connections);
 					 return children;
 				},
 				

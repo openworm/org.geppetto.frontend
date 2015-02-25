@@ -87,7 +87,7 @@ define(function(require) {
 			GEPPETTO.WidgetsListener.subscribe(this, id);
 
 			//add commands to console autocomplete and help option
-			GEPPETTO.Console.updateCommands("assets/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
 
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(tvd3.getId(), tvd3);

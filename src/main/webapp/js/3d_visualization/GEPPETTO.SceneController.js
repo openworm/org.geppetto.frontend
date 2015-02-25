@@ -382,13 +382,16 @@ define(function(require) {
 					var segments = Object.keys(lines).length;
 
 					var mesh = GEPPETTO.getVARS().meshes[path];
-					var origin = mesh.geometry.boundingBox.center();
-
+					var origin = mesh.position.clone();
+					origin = mesh.localToWorld(origin);
+					
 					for ( var aspectPath in lines ) {
 						
 						var type = lines[aspectPath];
 						var destinationMesh = GEPPETTO.getVARS().meshes[aspectPath];
-						var destination = destinationMesh.geometry.boundingBox.center();
+						var destination =
+							destinationMesh.position.clone();
+						destination = destinationMesh.localToWorld(destination);
 						
 						var geometry = new THREE.Geometry();
 
@@ -419,7 +422,7 @@ define(function(require) {
 						material.color.setHex(c);
 
 						var line = new THREE.Line(geometry, material);
-						line.updateMatrix();
+						line.updateMatrixWorld(true);
 						
 						GEPPETTO.getVARS().scene.add(line);
 						GEPPETTO.getVARS().connectionLines[aspectPath] = line;
@@ -457,11 +460,13 @@ define(function(require) {
 							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
 							if(m.instancePath in targetObjects){
 								//merged mesh into corresponding geometry			
-								THREE.GeometryUtils.merge(geometryGroups[highlightedMesh],m);
+								var geometry = geometryGroups[highlightedMesh];
+								geometry.merge(m.geomemtry, m.matrix);
 							}
 							else{
 								//merged mesh into corresponding geometry			
-								THREE.GeometryUtils.merge(geometryGroups[a],m);
+								var geometry = geometryGroups[a];
+								geometry.merge(m.geomemtry, m.matrix);
 							}			
 						}				
 
@@ -537,11 +542,11 @@ define(function(require) {
 						//for it, this will used to merge visual objects
 						if(groupMesh == null || groupMesh == undefined){
 							geometry = new THREE.Geometry();
-							geometry.merge = true;
+							geometry.groupMerge = true;
 						}
 						//group mesh already exist, set flag to merge false
 						else{
-							geometry.merge = false;
+							geometry.groupMerge = false;
 						}
 						//store merge flag value, and new geometry if populate flag set to true
 						geometryGroups[groupName] = geometry;
@@ -566,9 +571,9 @@ define(function(require) {
 								//retrieve corresponding geometry for this group
 								var geometry = geometryGroups[groupName];
 								//only merge if flag is set to true
-								if(geometry.merge){
+								if(geometry.groupMerge){
 									//merged mesh into corresponding geometry			
-									THREE.GeometryUtils.merge(geometry,m);
+									geometry.merge(m.geometry,m.matrix);
 									//true means don't add to mesh with non-groups visual objects
 									added = true;
 								}
@@ -577,7 +582,8 @@ define(function(require) {
 						
 						//if visual object didn't belong to group, add it to mesh with remainder of them
 						if(!added){
-							THREE.GeometryUtils.merge(geometryGroups[aspectInstancePath],m);
+							var geometry = geometryGroups[aspectInstancePath];
+							geometry.merge(m.geomemtry, m.matrix);
 						}
 						//reset flag for next visual object
 						added = false;

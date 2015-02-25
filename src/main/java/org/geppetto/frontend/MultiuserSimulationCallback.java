@@ -101,6 +101,10 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 
 				break;
 			}
+			case STOP_SIMULATION:
+				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_STOPPED;
+
+				break;
 			case SIMULATION_OVER:
 				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
 				break;

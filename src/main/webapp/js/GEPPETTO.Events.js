@@ -62,6 +62,8 @@ define(function(require) {
 	        	GEPPETTO.on(Events.Simulation_restarted, function(){
 	        		//delete existing widgets, to allow new ones for new simulation
 	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+	        		//notify factory classes reload is happenning
+	        		GEPPETTO.NodeFactory.reload();
 	        	});
 	        	GEPPETTO.on(Events.Widgets_restarted, function(){
 	        		//notify widgets a restart of data is needed

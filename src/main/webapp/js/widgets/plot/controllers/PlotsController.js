@@ -72,7 +72,7 @@ define(function(require) {
 			GEPPETTO.WidgetsListener.subscribe(this, id);
 
 			//add commands to console autocomplete and help option
-			GEPPETTO.Console.updateCommands("assets/js/widgets/plot/Plot.js", p, id);
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/plot/Plot.js", p, id);
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(p.getId(), p);
 			return p;

@@ -41,14 +41,7 @@ define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		relations : [ {
-			type : Backbone.Many,
-			key : 'children',
-			relatedModel : Node
-		} ],
-		defaults : {
-			children : []
-		},
+		children : null,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -57,6 +50,7 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
+			this.children = new Array();
 			this.id = options.id;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
@@ -73,8 +67,7 @@ define(function(require) {
 		 * 
 		 */
 		getChildren : function() {
-			var children = this.get("children");
-			return children;
+			return this.children;
 		},
 
 		/**

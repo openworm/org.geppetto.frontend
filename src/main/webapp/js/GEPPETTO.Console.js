@@ -49,7 +49,6 @@ define(function(require) {
 		/**suggestions for autocomplete
 		* Stores things in 
 		*/
-		var tags = {};
 		var suggestions = [];
 		var helpObjectsMap = {};
 		var nonCommands;
@@ -214,6 +213,9 @@ define(function(require) {
 		GEPPETTO.Console = {
 			visible : false,
 			
+			tags : [],
+			objectTags : [],
+			
 			/**
 			 * Global help functions with all commands in global objects.
 			 *
@@ -376,10 +378,10 @@ define(function(require) {
 			 * Gets maps of available tags used for autocompletion
 			 */
 			availableTags : function(){
-				if(jQuery.isEmptyObject(tags)) {
+				if(jQuery.isEmptyObject(this.tags)) {
 					this.populateTags();
 				}
-				return tags;
+				return this.tags;
 			},
 			
 			/**
@@ -427,47 +429,52 @@ define(function(require) {
 			updateTags: function(instancePath, object,original) {
 				var proto = object.__proto__;
 				if(original){
-					proto = object;
+					proto = object;	
 				}
-				//	find all functions of object Simulation
+				//find all functions of object Simulation
 				for(var prop in proto) {
-					if(typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
+					if(typeof proto[prop] === "function") {
 						var f = proto[prop].toString();
 						//get the argument for this function
 						var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
 
 						var functionName = instancePath + "." + prop + "(" + parameter + ")";
-						var split = functionName.split(".");
-						var isTag = true;
-						for(var c = 0; c < nonCommands.length; c++) {
-							if(functionName.indexOf(nonCommands[c]) != -1) {
-								isTag = false;
-							}
+						this.createTag(functionName);
+					}
+				}
+			},
+			
+			createTag : function(path){
+				if(path != undefined){
+					var split = path.split(".");
+					var isTag = true;
+					for(var c = 0; c < nonCommands.length; c++) {
+						if(path.indexOf(nonCommands[c]) != -1) {
+							isTag = false;
 						}
+					}
+					if(isTag) {
+						var current=this.tags;
+						for(var i =0; i<split.length; i++){
+							if(this.tags.hasOwnProperty(split[i])){
+								current = this.tags[split[i]];
+							}
+							else{
+								if(current.hasOwnProperty(split[i])){
+									current = current[split[i]];
+								}else{
+									current[split[i]] = {};
+									current = current[split[i]];
+								}
 
-						if(isTag) {
-							var current=tags;
-							for(var i =0; i<split.length; i++){
-								if(tags.hasOwnProperty(split[i])){
-									current = tags[split[i]];
-								}
-								else{
-									if(current.hasOwnProperty(split[i])){
-										current = current[split[i]];
-									}else{
-										current[split[i]] = {};
-										current = current[split[i]];
-									}
-									
-								}
 							}
 						}
 					}
-				}				
+				}
 			},
 			
 			/**
-			 * Update commands for help option. Usually called after widget
+			 * Update output of the help command. Usually called after widget
 			 * is created.
 			 *
 			 * @param scriptLocation - Location of files from where to read the comments
@@ -475,7 +482,7 @@ define(function(require) {
 			 * @param id - Id of object
 			 * @returns {}
 			 */
-			updateCommands: function(scriptLocation, object, id) {
+			updateHelpCommand: function(scriptLocation, object, id) {
 				var descriptions = [];
 
 				//retrieve the script to get the comments for all the methods
@@ -554,7 +561,7 @@ define(function(require) {
 				}
 				
 				if(proto.__proto__ != null){
-					GEPPETTO.Console.updateCommands(scriptLocation, proto, id);
+					GEPPETTO.Console.updateHelpCommand(scriptLocation, proto, id);
 				}
 			},
 
@@ -583,9 +590,9 @@ define(function(require) {
 				}
 				
 				//loop through tags and match the tags for object
-				for(var t in tags) {
+				for(var t in this.tags) {
 					if(t.indexOf(targetObject) != -1) {
-						delete tags[t];
+						delete this.tags[t];
 					}
 				}
 			}

@@ -69,8 +69,8 @@ define(function(require) {
 
 			GEPPETTO.WidgetsListener.subscribe(this, id);
 
-			//add commands to console autocomplete and help option
-			GEPPETTO.Console.updateCommands("assets/js/widgets/scatter3d/Scatter3d.js", p, id);
+			//updates commands for help option
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/scatter3d/Scatter3d.js", p, id);
 
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(p.getId(), p);

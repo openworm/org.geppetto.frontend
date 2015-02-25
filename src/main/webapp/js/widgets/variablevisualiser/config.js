@@ -41,8 +41,4 @@
  */
 
 //Load PlotsController and other classes using GEPPETTO
-define(function(require) {
-	return function(){
-		loadCss("assets/js/widgets/variablevisualiser/VariableVisualiser.css");
-	};
-});
+loadCss("assets/js/widgets/variablevisualiser/VariableVisualiser.css");

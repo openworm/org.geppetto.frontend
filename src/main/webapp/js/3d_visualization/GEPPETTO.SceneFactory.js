@@ -1,6 +1,6 @@
 /**
- * GEPPETTO Visualisation engine built on top of THREE.js. Displays a scene as
- * defined on org.geppetto.core. Factory class for creating and updating THREE Js objects
+ * GEPPETTO Visualisation engine built on top of ThreeJS. Displays a scene as
+ * defined on org.geppetto.core. Factory class for creating and updating ThreeJS objects
  * 
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @author  Jesus R. Martinez (jesus@metacell.us)
@@ -19,7 +19,7 @@ define(function(require) {
 		GEPPETTO.SceneFactory = {
 
 				/**
-				 * Create Three.js objects associated with an entity.
+				 * Create ThreeJS objects associated with an entity.
 				 * 
 				 * @param {EntityNode} entityNode - Entity Node to load 
 				 */
@@ -39,18 +39,10 @@ define(function(require) {
 							if (position != null) {
 								p = new THREE.Vector3(position.x, position.y,
 										position.z);
-								mesh.geometry.verticesNeedUpdate= true;
-								mesh.geometry.dynamic= true;
-								var translation =new THREE.Matrix4().makeTranslation( p.x, p.y, p.z );
-								mesh.applyMatrix(translation);
-								mesh.position.copy(p);
 								mesh.geometry.verticesNeedUpdate = true;
-							}
-							if(mesh.geometry != null || undefined){
-								mesh.geometry.computeBoundingBox();
-								var bb = mesh.geometry.boundingBox;
-								bb.translate(mesh.localToWorld( new THREE.Vector3()));
-								mesh.matrixAutoUpdate = true;
+								mesh.geometry.dynamic=true;
+								var world = mesh.localToWorld(p);
+								mesh.position.set(world.x,world.y,world.z);
 								mesh.updateMatrixWorld(true);
 							}
 							GEPPETTO.getVARS().scene.add(mesh);
@@ -183,12 +175,14 @@ define(function(require) {
 					case "CylinderOrSphere":
 						var merged = new THREE.Geometry();
 						objArray.forEach(function(obj){
-							THREE.GeometryUtils.merge(merged, obj);
+							obj.geometry.dynamic = true;
+							obj.geometry.verticesNeedUpdate = true;
+							obj.updateMatrix();
+							merged.merge(obj.geometry, obj.matrix);
 							mergedMeshesPaths.push(obj.instancePath);
 						});
 						//TODO: do we really want to create a _mesh_ for the merged objs?
 						var meshWithAll = new THREE.Mesh(merged, materials["mesh"]);
-						meshWithAll.geometry.dynamic = false;
 						ret = meshWithAll;
 						break;
 					case "Particle":
@@ -300,11 +294,11 @@ define(function(require) {
 
 
 				/**
-				 * Creates and positions a Three.js cylinder object from a Geppetto Cylinder node
+				 * Creates and positions a ThreeJS cylinder object from a Geppetto Cylinder node
 				 * 
 				 * @param {VisualObjectNode} cylNode - a Geppetto Cylinder Node
-				 * @param {Three.js Material} material - Material to be used for the Mesh
-				 * @returns a Three.js Cylinder correctly positioned w.r.t the global frame of reference
+				 * @param {ThreeJSMaterial} material - Material to be used for the Mesh
+				 * @returns a ThreeJS Cylinder correctly positioned w.r.t the global frame of reference
 				 */
 				create3DCylinderFromNode : function(cylNode, material) {
 
@@ -334,11 +328,11 @@ define(function(require) {
 				},	
 
 				/**
-				 * Creates and positions a Three.js sphere object
+				 * Creates and positions a ThreeJS sphere object
 				 * 
 				 * @param {VisualObjectNode} sphereNode - a Geppetto Sphere Node
-				 * @param {Three.js Material} material - Material to be used for the Mesh
-				 * @returns a Three.js sphere correctly positioned w.r.t the global frame of reference
+				 * @param {ThreeJSMaterial} material - Material to be used for the Mesh
+				 * @returns a ThreeJS sphere correctly positioned w.r.t the global frame of reference
 				 */
 				create3DSphereFromNode : function(sphereNode, material) {
 
@@ -364,7 +358,7 @@ define(function(require) {
 					return material;
 				},
 				getParticleMaterial : function(){
-					var pMaterial = new THREE.ParticleBasicMaterial({
+					var pMaterial = new THREE.PointCloudMaterial({
 						size : 5,
 						map : THREE.ImageUtils
 						.loadTexture("assets/images/particle.png"),

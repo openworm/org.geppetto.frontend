@@ -62,8 +62,8 @@ define(function(require) {
 
 			GEPPETTO.WidgetsListener.subscribe(this, id);
 
-			//add commands to console autocomplete and help option
-			GEPPETTO.Console.updateCommands("assets/js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
+			//updates help command options
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(vv.getId(),vv);
 			return vv;
@@ -82,9 +82,9 @@ define(function(require) {
 
 			//reset widget's datasets
 			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-				for (var i = 0; i < this.widgets.length; i++) {
-					this.widgets[i].clearVariable();
-				}
+//				for (var i = 0; i < this.widgets.length; i++) {
+//					this.widgets[i].clearVariable();
+//				}
 			}
 
 			//update widgets

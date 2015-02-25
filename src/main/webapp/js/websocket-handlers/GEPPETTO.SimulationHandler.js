@@ -38,7 +38,20 @@ define(function(require) {
 
 		var updateTime = function(time) {
 			if(time) {
-				GEPPETTO.Simulation.time = time.value + time.unit;
+				GEPPETTO.Simulation.time.value = time.value;
+				GEPPETTO.Simulation.time.unit = time.unit;
+			}
+		};
+		
+		var createTime = function(time) {
+			if(time) {
+				var node =
+					{id:"time", name : "name", value : time.value , unit: time.unit,
+					 instancePath : "time",
+					 _metaType : GEPPETTO.Resources.VARIABLE_NODE};
+				var timeNode = 
+					GEPPETTO.NodeFactory.createVariableNode(node);
+				GEPPETTO.Simulation.time = timeNode;
 			}
 		};
 
@@ -76,9 +89,12 @@ define(function(require) {
             var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
             var startCreation = new Date();
-            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(jsonRuntimeTree);
+            GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
             var endCreation = new Date() - startCreation;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");
+            GEPPETTO.Console.debugLog(GEPPETTO.NodeFactory.nodes + " total nodes created, from which: "+
+            						  GEPPETTO.NodeFactory.entities + " were entities and "+
+            						  GEPPETTO.NodeFactory.connections + " were connections");
             GEPPETTO.Simulation.setSimulationLoaded();
             
             //Populate scene
@@ -91,7 +107,7 @@ define(function(require) {
             var updatedRunTime = JSON.parse(payload.update).scene;
             updateTime(updatedRunTime.time);
 
-            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
+            GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
 
             //Update if simulation hasn't been stopped
             if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
@@ -129,9 +145,9 @@ define(function(require) {
         //Simulation has been started, enable pause button
         messageHandler[messageTypes.SIMULATION_STARTED] = function(payload) {
         	var updatedRunTime = JSON.parse(payload.update).scene;
-            updateTime(updatedRunTime.time);
+            createTime(updatedRunTime.time);
 
-            GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
+            GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
 
             //Update if simulation hasn't been stopped
             if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
@@ -205,7 +221,7 @@ define(function(require) {
 	        	var modelTree = update[updateIndex].modelTree;
 	        	
 	        	//create client side model tree
-	        	GEPPETTO.RuntimeTreeFactory.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
+	        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
         	}
         };
 

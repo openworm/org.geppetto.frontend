@@ -349,7 +349,7 @@ define(function(require) {
             // the
             // scene (camera direction)
             var vector = new THREE.Vector3(GEPPETTO.getVARS().mouse.x, GEPPETTO.getVARS().mouse.y, 1);
-            GEPPETTO.getVARS().projector.unprojectVector(vector, GEPPETTO.getVARS().camera);
+            vector.unproject(GEPPETTO.getVARS().camera);
 
             var raycaster = new THREE.Raycaster(GEPPETTO.getVARS().camera.position, vector
                 .sub(GEPPETTO.getVARS().camera.position).normalize());
@@ -357,6 +357,9 @@ define(function(require) {
             var visibleChildren = [];
             GEPPETTO.getVARS().scene.traverse(function(child) {
                 if (child.visible) {
+                	if(child.geometry!=null || undefined){
+                		child.geometry.computeBoundingBox();
+                	}
                     visibleChildren.push(child);
                 }
             });
@@ -514,7 +517,8 @@ define(function(require) {
     require('GEPPETTO.Main')(GEPPETTO);
     //require('GEPPETTO.Tutorial')(GEPPETTO);
     require("widgets/includeWidget")(GEPPETTO);
-    require('nodes/RuntimeTreeFactory')(GEPPETTO);
+    require('nodes/NodeFactory')(GEPPETTO);
+    require('nodes/RuntimeTreeController')(GEPPETTO);
 
 
     return GEPPETTO;

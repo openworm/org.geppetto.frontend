@@ -440,7 +440,9 @@ define(function(require) {
 					var origin = this.getAspects()[0].getInstancePath();
 					//show/hide connection lines
 					if(mode){
-						GEPPETTO.SceneController.showConnectionLines(origin,lines);
+						if(!jQuery.isEmptyObject(lines)){
+							GEPPETTO.SceneController.showConnectionLines(origin,lines);
+						}
 					}
 					else{
 						GEPPETTO.SceneController.hideConnectionLines();

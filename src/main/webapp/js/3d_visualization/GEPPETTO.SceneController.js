@@ -141,16 +141,19 @@ define(function(require) {
 					for ( var v in GEPPETTO.getVARS().meshes) {
 						if(v == instancePath){
 							var mesh = GEPPETTO.getVARS().meshes[v];
-							if(!mesh.visible){
-								GEPPETTO.SceneController.merge(instancePath);
+							if(mesh!=null || undefined){
+								mesh.geometry.computeBoundingBox();
+								if(!mesh.visible){
+									GEPPETTO.SceneController.merge(instancePath);
+								}
+								if(mesh.selected == false){
+									mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+									mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+									mesh.selected = true;
+									mesh.ghosted = false;
+									return true;
+								}
 							}
-							if(mesh.selected == false){
-								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
-								mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-								mesh.selected = true;
-								mesh.ghosted = false;
-								return true;
-							}					
 						}
 					}
 					return false;

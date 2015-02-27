@@ -307,9 +307,12 @@ define(function(require) {
 					var midPoint = new THREE.Vector3();
 					midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
 
-					var c = new THREE.CylinderGeometry(cylNode.radiusTop,
-							cylNode.radiusBottom,
-							axis.length(), 6, 1, false);
+					//convert radius values to float from string
+					var bottom = parseFloat(cylNode.radiusBottom);
+					var top = parseFloat(cylNode.radiusTop);
+					
+					var c = new THREE.CylinderGeometry(top,
+												bottom,axis.length(), 6, 1, false);
 					c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
 					var threeObject = new THREE.Mesh(c, material);
 

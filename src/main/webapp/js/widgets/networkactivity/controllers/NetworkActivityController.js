@@ -70,7 +70,7 @@ define(function(require) {
 			/**
 			 * Adds a new NetworkActivity Widget to Geppetto
 			 */
-			addConnectivityWidget : function(){
+			addNetworkActivityWidget : function(){
 				//look for a name and id for the new widget
 				var id = getAvailableWidgetId("NetworkActivity", networkActivities);
 				var name = id;

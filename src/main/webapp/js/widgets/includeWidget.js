@@ -59,6 +59,8 @@ define(function(require){
 	require("widgets/variablevisualiser/config")(GEPPETTO);
 	//Connectivity Widget
 	require("widgets/connectivity/config")(GEPPETTO);
+	//Connectivity Widget
+	require("widgets/networkactivity/config")(GEPPETTO);
 	loadCss("assets/js/widgets/Widget.css");
 	};
 });

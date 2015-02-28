@@ -142,7 +142,6 @@ define(function(require) {
 						if(v == instancePath){
 							var mesh = GEPPETTO.getVARS().meshes[v];
 							if(mesh!=null || undefined){
-								mesh.geometry.computeBoundingBox();
 								if(!mesh.visible){
 									GEPPETTO.SceneController.merge(instancePath);
 								}
@@ -385,6 +384,7 @@ define(function(require) {
 					var segments = Object.keys(lines).length;
 
 					var mesh = GEPPETTO.getVARS().meshes[path];
+					mesh.geometry.computeBoundingBox();
 					var origin = mesh.geometry.boundingBox.center();
 					origin = mesh.localToWorld(origin);
 					
@@ -392,6 +392,7 @@ define(function(require) {
 						
 						var type = lines[aspectPath];
 						var destinationMesh = GEPPETTO.getVARS().meshes[aspectPath];
+						destinationMesh.geometry.computeBoundingBox();
 						var destination =
 							destinationMesh.geometry.boundingBox.center();
 						destination = destinationMesh.localToWorld(destination);

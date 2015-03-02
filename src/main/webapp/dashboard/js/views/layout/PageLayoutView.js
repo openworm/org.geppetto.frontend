@@ -29,7 +29,7 @@ define([
             el : '#header'
         },
         mainContentOptions : {
-            el : '#mian'
+            el : '#main'
         },
 
         footerContentOptions : {

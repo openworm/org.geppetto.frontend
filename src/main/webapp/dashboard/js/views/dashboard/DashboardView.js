@@ -16,7 +16,7 @@ define([
         template: Handlebars.compile(dashboardTemplate),
 
         events:{
-            'click .project-preview':'showProject'
+            'click .project-preview-tn':'showProject'
         },
 
         initialize:function (options) {
@@ -61,6 +61,8 @@ define([
         },
 
         showProject: function(event){
+        	$(".selected").removeClass( "selected" );
+        	$(event.target).addClass("selected");
             var id = $(event.target).attr("project-id");
             if (id === undefined){
                 id = $(event.target).parents(".project-preview").attr("project-id");

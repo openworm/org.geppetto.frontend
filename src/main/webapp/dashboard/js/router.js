@@ -28,7 +28,7 @@ define([
 
         showPage : function (MainView,HeaderView,FooterView) {
             this.removeCurrentView();
-            var pageContainer = $('<div></div>').attr({id : 'page', class: "container"});
+            var pageContainer = $('<div></div>').attr({id : 'page', class: "container-fluid"});
             $('body').append(pageContainer);
             this.showParams.mainContent = MainView;
             this.showParams.headerContent = HeaderView;

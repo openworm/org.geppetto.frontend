@@ -16,7 +16,7 @@ define([
         parse: function(data){
             var that = this;
             _.each(data, function(item){
-                item.displayName = that.getLimitedString(item.name, 15);
+                item.displayName = that.getLimitedString(item.name, 20);
             });
             return data;
         },

@@ -43,6 +43,7 @@ public class AuthServiceCreator
 {
 
 	private BundleContext _bc = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+
 	private String _type = null;
 
 	public AuthServiceCreator(String type)
@@ -52,9 +53,8 @@ public class AuthServiceCreator
 	}
 
 	/**
-	 * A method to get a service of a given type
+	 * A method to get a service of a given type.
 	 * 
-	 * @param discoveryId
 	 * @param type
 	 * @return
 	 * @throws InvalidSyntaxException
@@ -82,7 +82,6 @@ public class AuthServiceCreator
 				}
 			}
 		}
-
 		return service;
 	}
 

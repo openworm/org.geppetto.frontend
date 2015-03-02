@@ -43,6 +43,7 @@ public class DataManagerServiceCreator
 {
 
 	private BundleContext _bc = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+
 	private String _type = null;
 
 	public DataManagerServiceCreator(String type)
@@ -54,7 +55,6 @@ public class DataManagerServiceCreator
 	/**
 	 * A method to get a service of a given type
 	 * 
-	 * @param discoveryId
 	 * @param type
 	 * @return
 	 * @throws InvalidSyntaxException

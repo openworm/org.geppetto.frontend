@@ -258,12 +258,14 @@ public class GeppettoMessageInbound extends MessageInbound
 				String instancePath = gmsg.data;
 				
 				_servletController.getModelTree(requestID,instancePath,this);
+				break;
 			}
 			case GET_SUPPORTED_OUTPUTS:
 			{
 //				String instancePath = gmsg.data;
 //				
 //				_servletController.getModelTree(requestID,instancePath,this);
+				break;
 			}
 			case WRITE_MODEL:
 			{

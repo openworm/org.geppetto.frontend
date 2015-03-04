@@ -286,6 +286,22 @@
 			<artifactId>org.json-osgi</artifactId>
 			<version>20080701</version>
 		</dependency>
+		
+		<dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <version>1.2.1</version>
+        </dependency>
     </dependencies>
 	<build>
 		<plugins>
@@ -325,7 +341,13 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-ClassPath>.,{maven-dependencies},WEB-INF/classes</Bundle-ClassPath>
 						<Web-ContextPath>${contextPath}</Web-ContextPath>
-						<Import-Package>org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*</Import-Package>
+						<Import-Package>
+							org.apache.shiro.web.env,
+							org.apache.shiro.web.servlet,
+							org.apache.shiro.authc,
+							org.apache.shiro.realm,
+							org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*
+						</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
 						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>
 					</instructions>

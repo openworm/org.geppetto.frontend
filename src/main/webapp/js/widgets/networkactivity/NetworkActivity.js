@@ -155,16 +155,10 @@ define(function(require) {
 			if (this.options.networkActivityLayout == 'list'){
 				$("#filters").remove();
 				this.createListLayout();
-				//this.createMatrixLayout();
 			}
 			else if (this.options.networkActivityLayout == 'force') {
 				this.createForceLayout();
 			}
-		},
-		
-		createForceLayout: function(){
-
-
 		},
 		
 		createListLayout: function(){
@@ -192,31 +186,6 @@ define(function(require) {
 			
 			this.svg.data([growth]).call(chart);
 		
-		},
-		
-		createNode: function(nodeId) {
-			if (!(nodeId in this.mapping)){
-				var nodeItem = {};
-				nodeItem["id"] = nodeId;
-				this.dataset["nodes"].push(nodeItem);
-				
-				this.mapping[nodeItem["id"]] = this.mappingSize;
-				this.mappingSize++;
-			}
-		},
-		
-		/**
-		 *
-		 * Set the options for the connectivity widget
-		 *
-		 * @command setOptions(options)
-		 * @param {Object} options - options to modify the plot widget
-		 */
-		setOptions: function(options) {
-			if(options != null) {
-				$.extend(this.options, options);
-			}
-		},
-		
+		},		
 	});
 });

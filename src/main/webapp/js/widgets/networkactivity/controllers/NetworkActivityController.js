@@ -133,55 +133,15 @@ define(function(require) {
 			},
 			
 			/**
-			 * Retrieve commands for a specific variable node
-			 * 
-			 * @param {Node} node - Geppetto Node used for extracting commands
-			 * @returns {Array} Set of commands associated with this node 
+			 *
+			 * Set the options for the plotting widget
+			 *
+			 * @command setOptions(options)
+			 * @param {Object} options - options to modify the plot widget
 			 */
-//			getCommands: function(node) {
-//				var group1 = [{
-//							label:"Open with D3 Widget",
-//				        	action: "GEPPETTO.TreeVisualiserControllerD3.actionMenu",
-//							}];
-//				
-//				
-//				var availableWidgets = GEPPETTO.TreeVisualiserControllerD3.getWidgets();
-//				if (availableWidgets.length > 0){
-//					var group1Add =  [ {
-//						label : "Add to D3 Widget",
-//						position : 0
-//					} ] ;
-//					
-//					var subgroups1Add = [];
-//					for (var availableWidgetIndex in availableWidgets){
-//						var availableWidget = availableWidgets[availableWidgetIndex];
-//						subgroups1Add = subgroups1Add.concat([{
-//																label: "Add to " + availableWidget.name,
-//																action: availableWidget.id + ".setData",
-//																position: availableWidgetIndex
-//																}]);
-//					}
-//					
-//					group1Add[0]["groups"] = [subgroups1Add];
-//					
-//					group1 = group1.concat(group1Add);
-//				}
-//				
-//				var groups = [group1];
-//				
-//				return groups;
-//				
-//			},
-			
-			/**
-			 * Register action menu with the TreeVisualizer3D widget
-			 */
-//			actionMenu: function(node){
-//				cnt = GEPPETTO.ConnectivityController.addConnectivityWidget();
-//				cnt.setData(node);
-//			}
-			
-		};
-		
+			setOptions: function(options) {
+				this.options = options;
+			},
+		};		
 	};
 });

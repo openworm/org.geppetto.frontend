@@ -33,7 +33,7 @@
 
 /**
  * Loads Network Activity scripts
- *
+ * 
  * @author Kenny Ashton (kwashton12@gmail.com)
  * @author David Forcier (forcier.david1@gmail.com)
  */
@@ -44,41 +44,40 @@
  */
 
 require.config({
-	  paths: {
-	    "d3": "widgets/networkactivity/vendor/d3",
-	    "d3.horizon": "widgets/networkactivity/vendor/horizon/horizon.js"
-	  }
-	});
+	/*
+	 * Values in here are for dependencies that more than one module/script requires and/or needs.
+	 * E.G. If depenedency it's used more than once, it goes in here.
+	 */
+	paths: {
+		'd3': "widgets/networkactivity/vendor/d3",
+	},
+	
+	/*
+	 * Notes what dependencies are needed prior to loading each library, values on the right
+	 * of colon are dependencies. If dependency was declared in path above, then add it's dependencies 
+	 * to that object in here.
+	 */
+	shim: {
+		"widgets/networkactivity/vendor/horizon" : ["d3"],
+	}
+});
 
-var reqs = [];
-reqs.push("d3");
-reqs.push("d3.horizon");
+var libraries = [];
+libraries.push("d3");
+libraries.push("widgets/networkactivity/vendor/horizon");
 
-define("d3.global", ["d3"], function(_) {
+define("d3.globale", ["d3"], function(_) {
 	  d3 = _;
 	});
 
-require(reqs, function(d3) {
+require(libraries, function(d3) {
 	window.d3 = d3;
 	loadCss("assets/js/widgets/networkactivity/NetworkActivity.css");
-	
 });
 
-//Load ConnectivityController and other classes using GEPPETTO
+// Load NetworkActivityController and other classes using GEPPETTO
 define(function(require) {
 	return function(GEPPETTO) {
 		require("widgets/networkactivity/controllers/NetworkActivityController")(GEPPETTO);
-		
-		// Register Commands
-//		GEPPETTO.MenuManager.registerNewCommandProvider(["EntityNode",
-//		                                                 "AspectNode",
-//		                                                 "AspectSubTreeNode",
-//		                                                 "CompositeNode",
-//		                                                 "DynamicsSpecificationNode",
-//		                                                 "FunctionNode",
-//		                                                 "ParameterNode",
-//		                                                 "ParameterSpecificationNode",
-//		                                                 "VariableNode"],
-//		                                                 GEPPETTO.TreeVisualiserControllerD3.getCommands);
 	};
 });

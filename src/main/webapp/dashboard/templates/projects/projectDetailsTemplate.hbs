@@ -1,0 +1,72 @@
+<div class="row">
+    <div class="peoject-heading">
+        <h3>{{name}}</h3>
+    </div>
+    <div role="tabpanel">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#details" aria-controls="details" role="tab" data-toggle="tab">Details</a></li>
+            <li role="presentation"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab">Experiments</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content experiments">
+            <div role="tabpanel" class="tab-pane active" id="details">
+                <dl class="dl-horizontal">
+                    <dt class="instance-path">Some data:</dt>
+                    <dd>Statistics</dd>
+                    <dt class="instance-path">Another Data:</dt>
+                    <dd><a href="#">Link</a></dd>
+                    <dt class="instance-path">Created by:</dt>
+                    <dd>Test User</dd>
+                </dl>
+            </div>
+
+
+            <div role="tabpanel" class="tab-pane" id="experiments">
+                <div class="panel-group collapse-striped" id="accordion" role="tablist" aria-multiselectable="true">
+                {{#each experiments}}
+                    <div class="panel panel-default experiment-panel-heading">
+                        <div class="panel-heading" role="tab" id="heading-{{@index}}">
+                            <h4 class="panel-title">
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <div class="circle {{status}}" title="{{status}}"></div>
+                                    </div>
+                                    <div class="col-md-11">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#experiment-{{@index}}" aria-expanded="true" aria-controls="experiment-{{@index}}">
+                                        {{name}}
+                                        </a>
+                                    </div>
+                                </div>
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div id="experiment-{{@index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{@index}}">
+                        <div class="panel-body">
+                            <dl class="dl-horizontal">
+                                {{#each modelParameters}}
+                                    <dt class="instance-path">{{instancePath}}</dt>
+                                    <dd>{{value}}</dd>
+                                {{/each}}
+                                {{#each simulationRuns}}
+                                    {{#each simulationParameters}}
+                                        <dt class="instance-path">{{instancePath}}</dt>
+                                        <dd>{{value}}</dd>
+                                    {{/each}}
+                                {{/each}}
+                            </dl>
+                            <div class="experiment-down"><a href="#"><img src="imgs/down-small.png"></a></div>
+                        </div>
+                    </div>
+                {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <a href="#"><img src="imgs/down.png"></a>
+    <a href="#"><img src="imgs/trash.png"></a>
+</div>

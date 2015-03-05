@@ -51,4 +51,10 @@ public class Application
 		return "dist/geppettotests";
 	}
 
+	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
+	public String dashboard()
+	{
+		return "dist/dashboard";
+	}
+
 }

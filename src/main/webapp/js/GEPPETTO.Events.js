@@ -30,60 +30,46 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Client class use to represent a composite variable node, used for simulation
- * tree state variables.
- * 
- * @module nodes/CompositeNode
- * @author Jesus R. Martinez (jesus@metacell.us)
- */
+		/**
+		 * 
+		 * Events
+		 * 
+		 * Different types of widgets that exist
+		 * 
+		 * @enum
+		 */
+		var Events = {
+			Select : "simulation:selection_changed",
+			Simulation_restarted : "simulation:restarted",
+			Widgets_restarted : "widgts:restarted",
+			Simulation_loaded : 'simulation:modelloaded',
+		};
 define(function(require) {
-	var Node = require('nodes/Node');
-
-	return Node.Model.extend({
-		children : null,
-
+	return function(GEPPETTO) {
 		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
+		 * @class GEPPETTO.Events
 		 */
-		initialize : function(options) {
-			this.children = new Array();
-			this.id = options.id;
-			this.name = options.name;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
-		},
-
-		/**
-		 * Get this entity's aspects
-		 * 
-		 * @command CompositeVariableNode.getChildren()
-		 * 
-		 * @returns {List<Aspect>} - List of aspects
-		 * 
-		 */
-		getChildren : function() {
-			return this.children;
-		},
-
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			var formattedNode = "Name : " + this.name + "\n" + "    Id: "
-					+ this.id + "\n" + "    InstancePath : "
-					+ this.instancePath + "\n" + "    Children : \n";
-			for ( var e = 0; e < this.getChildren().length; e++) {
-				var child = this.getChildren().at(e);
-				formattedNode = formattedNode + "      " + child._metaType
-						+ ": " + child.id + "\n";
-			}
-
-			return formattedNode;
-		}
-	});
+		GEPPETTO.Events = {
+				
+			listen: function() {
+				GEPPETTO.on(Events.Select, function(){
+	        		//notify widgets that selection has changed in scene
+	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+	        	});
+				GEPPETTO.on(Events.Simulation_loaded, function(){
+					G.resetCamera();
+				});
+	        	GEPPETTO.on(Events.Simulation_restarted, function(){
+	        		//delete existing widgets, to allow new ones for new simulation
+	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+	        		//notify factory classes reload is happenning
+	        		GEPPETTO.NodeFactory.reload();
+	        	});
+	        	GEPPETTO.on(Events.Widgets_restarted, function(){
+	        		//notify widgets a restart of data is needed
+	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+	        	});
+			},
+		};
+	}
 });

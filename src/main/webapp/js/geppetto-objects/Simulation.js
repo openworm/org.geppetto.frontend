@@ -99,7 +99,7 @@ define(function(require) {
 
 					if(this.status == this.StatusEnum.STOPPED){
 						//reset data for any open plot widget after simulation was stopped and then started again
-						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+						GEPPETTO.trigger(Events.Widgets_restarted);
 					}
 					
 					this.status = this.StatusEnum.STARTED;
@@ -202,7 +202,8 @@ define(function(require) {
 						GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 						loading = true;
 						GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-						GEPPETTO.FE.SimulationReloaded();
+						//trigger simulation restart event
+						GEPPETTO.trigger(Events.Simulation_restarted);
 					}
 				}
 
@@ -248,7 +249,7 @@ define(function(require) {
 
 					GEPPETTO.MessageSocket.send("init_sim", content);
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_FROM_CONTENT);
-					GEPPETTO.FE.SimulationReloaded();
+					GEPPETTO.trigger(Events.Simulation_restarted);
 				}
 
 				this.loading = true;
@@ -474,7 +475,9 @@ define(function(require) {
 				for(var e in entities){
 					var entity = entities[e];
 					if(entity.selected){
-						selection[selection.length] = entity;
+						if(entity.getEntities().length==0){
+							selection[selection.length] = entity;
+						}
 					}
 					if(entity.getEntities().length >0){
 						selection = selection.concat(this.traverseSelection(entity.getEntities()));

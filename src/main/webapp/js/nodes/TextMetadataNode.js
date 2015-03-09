@@ -55,7 +55,6 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this.text = options.text;
 			this.value = options.value;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
@@ -64,7 +63,7 @@ define(function(require) {
 		/**
 		 * Get value of quantity
 		 * 
-		 * @command ParameterSpecificationNode.getValue()
+		 * @command TextMetadataNode.getText()
 		 * @returns {String} Value of quantity
 		 */
 		getValue : function() {

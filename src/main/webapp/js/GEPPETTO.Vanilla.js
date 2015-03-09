@@ -38,6 +38,7 @@
  * @author giovanni@openworm.org (Giovanni Idili)
  */
 define(function(require) {
+		
 	return function(GEPPETTO){
 		GEPPETTO.Vanilla = {
 			keyboardEnabled : true,
@@ -46,7 +47,7 @@ define(function(require) {
 			 */
 			checkKeyboard: function() {
 				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
-					GEPPETTO.PlotsController.toggle();
+					GEPPETTO.Main.getController(GEPPETTO.Widgets.PLOT).toggle();
 				}
 
 				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
@@ -54,7 +55,7 @@ define(function(require) {
 				}
 				
 				else if(GEPPETTO.isKeyPressed("ctrl+alt+s")) {
-					GEPPETTO.Scatter3dController.toggle();
+					GEPPETTO.Main.getController(GEPPETTO.Widgets.SCATTER3D).toggle();
 				}
 			},
 			

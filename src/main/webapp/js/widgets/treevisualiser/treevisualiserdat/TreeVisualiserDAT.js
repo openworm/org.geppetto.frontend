@@ -234,7 +234,7 @@ define(function(require) {
 							}
 						}
 					}
-					var children = data.getChildren().models;
+					var children = data.getChildren();
 					if (children.length > 0){
 						var parentFolderTmp = parentFolder;
 							for (var childIndex in children){

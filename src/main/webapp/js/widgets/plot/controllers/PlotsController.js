@@ -36,183 +36,123 @@
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function(require) {
-	return function(GEPPETTO) {
 
-		var Plot = require('widgets/plot/Plot');
-		var plots = new Array();
+	var AWidgetController = require('widgets/AWidgetController');
+	var Plot = require('widgets/plot/Plot');
 
-		var plotsON = false;
+	/**
+	 * @exports Widgets/Plot/PlotsController
+	 */
+	return AWidgetController.View.extend ({
+
+		initialize: function() {
+			this.widgets = new Array();
+			
+			GEPPETTO.MenuManager.registerNewCommandProvider(["FunctionNode"],this.getCommands);
+		},
 
 		/**
-		 * @exports Widgets/Plot/PlotsController
+		 * Creates plotting widget
 		 */
-		GEPPETTO.PlotsController = {
+		addPlotWidget: function() {
 
-			/**
-			 * Registers widget events to detect and execute following actions.
-			 * Used when widget is destroyed.
-			 *
-			 * @param {String} plotID - ID of plot to register
-			 */
-			registerHandler: function(plotID) {
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PlotsController, plotID);
-			},
+			//look for a name and id for the new widget
+			var id = this.getAvailableWidgetId("Plot", this.widgets);
+			var name = id;
 
-			/**
-			 * Returns all plotting widgets objects
-			 * 
-			 * @returns {Array} Array containing all plots
-			 */
-			getWidgets: function() {
-				return plots;
-			},
+			//create plotting widget
+			var p = window[name] = new Plot({id:id, name:name,visible:true});
 
-			/**
-			 * Creates plotting widget
-			 */
-			addPlotWidget: function() {
-				
-				//look for a name and id for the new widget
-				var id = getAvailableWidgetId("Plot", plots);
-				var name = id;
+			//create help command for plot
+			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
 
-				//create plotting widget
-				var p = window[name] = new Plot({id:id, name:name,visible:true});
+			//store in local stack
+			this.widgets.push(p);
 
-				//create help command for plot
-				p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+			GEPPETTO.WidgetsListener.subscribe(this, id);
 
-				//store in local stack
-				plots.push(p);
+			//add commands to console autocomplete and help option
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/plot/Plot.js", p, id);
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(p.getId(), p);
+			return p;
+		},
 
-				this.registerHandler(id);
+		/**
+		 * Receives updates from widget listener class to update plotting widget(s)
+		 * 
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+		 */
+		update: function(event) {
+			//delete plot widget(s)
+			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
+			}
 
-				//add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("assets/js/widgets/plot/Plot.js", p, id);
-				//update tags for autocompletion
-				GEPPETTO.Console.updateTags(p.getId(), p);
-				return p;
-			},
+			//reset plot's datasets
+			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+				for(var i = 0; i < this.widgets.length; i++) {
+					var plot = this.widgets[i];
 
-			/**
-			 * Removes existing plotting widgets
-			 */
-			removePlotWidgets: function() {
-				//remove all existing plotting widgets
-				for(var i = 0; i < plots.length; i++) {
-					var plot = plots[i];
-					
-					//remove commands 
-					GEPPETTO.Console.removeCommands(plot.getId());
-
-					plot.destroy();
-					
-					i--;
+					plot.cleanDataSets();
 				}
+			}
 
-				plots = new Array();
-			},
+			//update plotting widgets
+			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+				//loop through all existing widgets
+				for(var i = 0; i < this.widgets.length; i++) {
+					var plot = this.widgets[i];
 
-			/**
-			 * Toggles plotting widget on and off
-			 */
-			toggle: function() {
-				//if there aren't plotting widgets to toggle, create one
-				if(plots.length == 0) {
-					GEPPETTO.Console.executeCommand('G.addWidget(GEPPETTO.Widgets.PLOT)');
+					//update plot with new data set
+					plot.updateDataSet();
 				}
-				//plot widgets exist, toggle them
-				else if(plots.length > 0) {
-					plotsON = !plotsON;
+			}
+		},
 
-					for(var p in plots) {
-						var plot = plots[p];
-						if(plotsON) {
-							plot.hide();
-						}
-						else {
-							plot.show();
-						}
-					}
-				}
-			},
+		/**
+		 * Retrieve commands for a specific variable node
+		 * 
+		 * @param {Node} node - Geppetto Node used for extracting commands
+		 * @returns {Array} Set of commands associated with this node 
+		 */
+		getCommands : function(node) {
+			var groups = [];
 
-			/**
-			 * Receives updates from widget listener class to update plotting widget(s)
-			 * 
-			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-			 */
-			update: function(event) {
-				//delete plot widget(s)
-				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removePlotWidgets();
-				}
-				
-				//reset plot's datasets
-				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-					for(var i = 0; i < plots.length; i++) {
-						var plot = plots[i];
-						
-						plot.cleanDataSets();
-					}
-				}
+			if (node._metaType == "FunctionNode"){
+				if (node.getPlotMetadata() != undefined){
+					var group1 = [{
+						label:"Plot Function",
+						action: ["var p = G.addWidget(Widgets.PLOT)", "p.plotFunctionNode(#node_instancepath#)", "p.setSize(200,450)"],
+					}];
 
-				//update plotting widgets
-				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-					//loop through all existing widgets
-					for(var i = 0; i < plots.length; i++) {
-						var plot = plots[i];
-
-						//update plot with new data set
-						plot.updateDataSet();
-					}
-				}
-			},
-			
-			/**
-			 * Retrieve commands for a specific variable node
-			 * 
-			 * @param {Node} node - Geppetto Node used for extracting commands
-			 * @returns {Array} Set of commands associated with this node 
-			 */
-			getCommands : function(node) {
-				var groups = [];
-				
-				if (node._metaType == "FunctionNode"){
-					if (node.getPlotMetadata() != undefined){
-						var group1 = [{
-							label:"Plot Function",
-							action: ["var p = G.addWidget(Widgets.PLOT)", "p.plotFunctionNode(#node_instancepath#)", "p.setSize(200,450)"],
-						}];
-						
-						var availableWidgets = GEPPETTO.PlotsController.getWidgets();
-						if (availableWidgets.length > 0){
-							var group1Add =  {
+					var availableWidgets = this.getWidgets();
+					if (availableWidgets.length > 0){
+						var group1Add =  {
 								label : "Add to Plot Widget",
 								position : 0
-							} ;
+						} ;
 
-							var subgroups1Add = [];
-							for (var availableWidgetIndex in availableWidgets){
-								var availableWidget = availableWidgets[availableWidgetIndex];
-								subgroups1Add = subgroups1Add.concat([{
-									label: "Add to " + availableWidget.name,
-									action: [availableWidget.id + ".plotFunctionNode(#node_instancepath#)"],
-									position: availableWidgetIndex
-								}]);
-							}
-							group1Add["groups"] = [subgroups1Add];
-
-							group1.push(group1Add);
+						var subgroups1Add = [];
+						for (var availableWidgetIndex in availableWidgets){
+							var availableWidget = availableWidgets[availableWidgetIndex];
+							subgroups1Add = subgroups1Add.concat([{
+								label: "Add to " + availableWidget.name,
+								action: [availableWidget.id + ".plotFunctionNode(#node_instancepath#)"],
+								position: availableWidgetIndex
+							}]);
 						}
-						
-						groups.push(group1);
-						
-					}
-				}
+						group1Add["groups"] = [subgroups1Add];
 
-				return groups;
+						group1.push(group1Add);
+					}
+
+					groups.push(group1);
+
+				}
 			}
-		};
-	};
+
+			return groups;
+		}
+	});
 });

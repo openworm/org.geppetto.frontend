@@ -43,18 +43,10 @@ define(function(require) {
 	var FunctionNode = require('nodes/FunctionNode');
 
 	return Node.Model.extend({
-		relations : [ {
-			type : Backbone.One,
-			key : 'dynamics',
-			relatedModel : FunctionNode,
-		} ],
-		defaults : {
-			dynamics : {}
-		},
+		dynamics : [],
 		unit : "",
 		value : "",
 		scalingFactor : "",
-		dynamics : null,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -110,7 +102,7 @@ define(function(require) {
 		 * @returns {Object} Specifies dynamics for node
 		 */
 		getDynamics : function() {
-			return this.get("dynamics");
+			return this.dynamics;
 		},
 
 		/**

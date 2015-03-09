@@ -36,88 +36,56 @@
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function(require) {
-	return function(GEPPETTO) {
+	var Popup = require('widgets/popup/Popup');
+	var AWidgetController = require('widgets/AWidgetController');		
 
-		var Popup = require('widgets/popup/Popup');
-		var popups = new Array();
+	/**
+	 * @exports Widgets/Popup/PopupsController
+	 */
+	return AWidgetController.View.extend ({
+
+		initialize: function() {
+			this.widgets = Array();
+		},
+	
+		/**
+		 * Creates popup widget
+		 */
+		addPopupWidget : function(){
+			//look for a name and id for the new widget
+			var id = this.getAvailableWidgetId("Popup", this.widgets);
+			var name = id;
+			
+			//create popup widget
+			var p = window[name] = new Popup({id:id, name:name,visible:true});
+
+			//create help command for plot
+			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+
+			//store in local stack
+			this.widgets.push(p);
+
+			GEPPETTO.WidgetsListener.subscribe(this, id);
+
+			//add commands to console autocomplete and help option
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/popup/Popup.js", p, id);
+
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(p.getId(), p);
+
+			return p;
+		},
 
 		/**
-		 * @exports Widgets/Popup/PopupController
+		 * Receives updates from widget listener class to update popup widget(s)
+		 * 
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
-		GEPPETTO.PopupsController = {
-			/**
-			 * Registers widget events to detect and execute following actions.
-			 * Used when widget is destroyed.
-			 *
-			 * @param {String} popupID - ID of popup to register
-			 */
-			registerHandler: function(popupID) {
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.PopupsController, popupID);
-			},
-			
-			/**
-			 * Returns all popup widgets objects
-			 * 
-			 * @returns {Array} Array containing all plots
-			 */
-			getWidgets: function() {
-				return popups;
-			},
-			
-			/**
-			 * Creates popup widget
-			 */
-			addPopupWidget : function(){
-				//look for a name and id for the new widget
-				var id = getAvailableWidgetId("Popup", popups);
-				var name = id;
-
-				//create popup widget
-				var p = window[name] = new Popup({id:id, name:name,visible:true});
-
-				//create help command for plot
-				p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
-
-				//store in local stack
-				popups.push(p);
-				
-				this.registerHandler(id);
-
-				//add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("assets/js/widgets/popup/Popup.js", p, id);
-				
-				//update tags for autocompletion
-				GEPPETTO.Console.updateTags(p.getId(), p);
-
-				return p;
-			},
-		
-			/**
-			 * Removes existing popup widgets
-			 */
-			removePopupWidgets : function(){
-				//remove all existing popup widgets
-				for(var i = 0; i < popups.length; i++) {
-					var popup = popups[i];
-
-					popup.destroy();
-				}
-
-				popups = new Array();
-			},
-			
-			/**
-			 * Receives updates from widget listener class to update popup widget(s)
-			 * 
-			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-			 */
-			update: function(event) {
-				//delete popup widget(s)
-				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removePopupWidgets();
-				}
+		update: function(event) {
+			//delete popup widget(s)
+			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
 			}
-		};
-		
-	};
+		}	
+	});
 });

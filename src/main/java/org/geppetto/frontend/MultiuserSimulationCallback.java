@@ -101,6 +101,10 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 
 				break;
 			}
+			case STOP_SIMULATION:
+				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_STOPPED;
+
+				break;
 			case SIMULATION_OVER:
 				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
 				break;
@@ -132,7 +136,7 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 		GeppettoServletController.getInstance().messageClient(null, _user, OUTBOUND_MESSAGE_TYPES.ERROR, error);
 	}
 
-	@Override
+
 	public void message(String message)
 	{
 		String info = "{ \"content\": \"" + message +"\"}";

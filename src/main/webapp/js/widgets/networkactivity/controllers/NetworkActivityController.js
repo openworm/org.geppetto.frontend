@@ -132,16 +132,7 @@ define(function(require) {
 				}
 			},
 			
-			/**
-			 *
-			 * Set the options for the plotting widget
-			 *
-			 * @command setOptions(options)
-			 * @param {Object} options - options to modify the plot widget
-			 */
-			setOptions: function(options) {
-				this.options = options;
-			},
+			
 		};		
 	};
 });

@@ -58,13 +58,13 @@ require.config({
 	 * to that object in here.
 	 */
 	shim: {
-		"widgets/networkactivity/vendor/horizon" : ["d3"],
+		"widgets/networkactivity/vendor/horizon/horizon" : ["d3"],
 	}
 });
 
 var libraries = [];
 libraries.push("d3");
-libraries.push("widgets/networkactivity/vendor/horizon");
+libraries.push("widgets/networkactivity/vendor/horizon/horizon");
 
 define("d3.globale", ["d3"], function(_) {
 	  d3 = _;

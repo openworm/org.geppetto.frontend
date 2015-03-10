@@ -45,7 +45,7 @@ define(function(require) {
 
 	return Widget.View.extend({
 		
-		dataset: {},
+		datasets: [],
 		
 		defaultNetworkActivityOptions:  {
 			width: 660,
@@ -145,13 +145,13 @@ define(function(require) {
 		createLayout: function(){
 			$("svg").remove();
 			
-			this.options.innerWidth = this.networkActivityContainer.innerWidth() - this.widgetMargin;
-			this.options.innerHeight = this.networkActivityContainer.innerHeight() - this.widgetMargin;
+			this.options.innerWidth = 300;//this.networkActivityContainer.innerWidth() - this.widgetMargin;
+			this.options.innerHeight = 200;//this.networkActivityContainer.innerHeight() - this.widgetMargin;
 			
 			this.svg = d3.select("#"+this.id).append("svg")
             .attr("width", this.options.innerWidth)
             .attr("height", this.options.innerHeight);
-			
+			console.log("Test : " + this.options.innerWidth);
 			if (this.options.networkActivityLayout == 'list'){
 				$("#filters").remove();
 				this.createListLayout();
@@ -172,20 +172,35 @@ define(function(require) {
 			
 			var width = 960,
 		    height = 500;
-
+			console.log("Creating Chart");
 			var chart = d3.horizon()
 			    .width(width)
 			    .height(height)
 			    .bands(1)
-			    .mode("mirror")
+			    .mode("offset")
 			    .interpolate("basis");
 			
 			
 			var GERD=[2.21367, 2.74826, 1.96158, 1.80213, 0.39451, 1.52652, 3.01937, 1.44122, 3.84137, 2.20646, 2.78056, 0.5921, 1.14821, 2.64107, 1.78988, 4.2504, 1.26841, 3.33499, 3.3609, 1.67862, 0.41322, 1.81965, 1.13693, 1.75922, 0.67502, 1.65519, 1.24252, 0.48056, 1.85642, 0.92523, 1.38357, 3.61562, 2.99525, 0.84902, 1.82434, 2.78518];
 			var growth=[2.48590317, 3.10741128, 1.89308521, 3.21494841, 5.19813626, 1.65489834, 1.04974368, 7.63563272, 2.85477157, 1.47996142, 2.99558644, -6.90796403, 1.69192342, -3.99988322, -0.42935239, 4.84602001, 0.43108032, 3.96559062, 6.16184325, 2.67806902, 5.56185685, 1.18517739, 2.33052515, 1.59773989, 4.34962928, -1.60958484, 4.03428262, 3.34920254, -0.17459255, 2.784, -0.06947685, 3.93555895, 2.71404473, 9.00558548, 2.09209263, 3.02171711];
+			// Transpose column values to rows.
+			var data = growth.map(function(data,i) {
+			  return [i,data];
+			});
+			this.svg.data([data]).call(chart);
 			
-			this.svg.data([growth]).call(chart);
+			return "Complete List creation";
 		
-		},		
+		},
+		/**
+		 *
+		 * Set the options for the plotting widget
+		 *
+		 * @command setOptions(options)
+		 * @param {Object} options - options to modify the plot widget
+		 */
+		setOptions: function(options) {
+			this.options = options;
+		},
 	});
 });

@@ -116,18 +116,18 @@ define(function(require) {
 			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 			 */
 			update: function(event) {
-				//delete connectivity widget(s)
+				//delete networkActivity widget(s)
 				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 					this.removeNetworkActivityWidgets();
 				}
-				//update connectivity widgets
+				//update networkActivity widgets
 				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
 					//loop through all existing widgets
 					for(var i = 0; i < networkActivities.length; i++) {
 						var cnt = networkActivities[i];
 
-						//update connectivity with new data set
-						cnt.updateData();
+						//update networkActivities with new data set
+						cnt.updateDataSet();
 					}
 				}
 			},

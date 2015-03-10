@@ -46,6 +46,7 @@ define(function(require) {
 	return Widget.View.extend({
 		
 		datasets: [],
+		datainfos:[],
 		
 		defaultNetworkActivityOptions:  {
 			width: 660,
@@ -57,7 +58,7 @@ define(function(require) {
 			this.options = options;
 			Widget.View.prototype.initialize.call(this,options);
 			this.setOptions(this.defaultNetworkActivityOptions);
-			
+			this.limit = 50;
 			this.render();
 			this.setSize(options.height, options.width);
 			
@@ -77,117 +78,117 @@ define(function(require) {
 		    });
 		},
 		
-		setData : function(root, options){
-			this.setOptions(options);
+		/**
+		 * Takes data series and plots them. To plot array(s) , use it as
+		 * horizonData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
+		 * horizonData(object) Multiples arrays can be specified at once in
+		 * this method, but only one object at a time.
+		 *
+		 * @command plotData(state, options)
+		 * @param {Object} state - series to plot, can be array of data or an geppetto simulation variable
+		 * @param {Object} options - options for the networkActivity widget, if null uses default
+		 */
+		horizonData : function(state, options){
+			//this.setOptions(options);
 
-			this.dataset = {};
-			this.mapping = {};
-			this.mappingSize = 0;
-			this.dataset["root"] = root;
+			if (state!= null) {					
+				if(state instanceof Array){
+					this.datasets.push(state);
+					this.datainfos.push({
+						label:"manual"
+					});
+				}
+				
+				else{
+					var value = state.getValue();
+					var id = state.getInstancePath();
+					this.datainfos.push({
+						label : id,
+						variable : state
+					});
+					this.datasets.push(
+						[ [0,value] ]
+					);						
+				}
+			}
 			this.widgetMargin = 20;
 			
-			this.createDataFromConnections();
 			
 			this.createLayout();
 			
-			return "Metadata or variables added to the network activity widget";
+			return "Dataseries or object added to the network activity widget";
 		},
-		
-		
-		createDataFromConnections: function(){
-			if (this.dataset["root"]._metaType == "EntityNode"){
-				var subEntities = this.dataset["root"].getEntities();
-				
-				this.dataset["nodes"] = [];
-				this.dataset["links"] = [];
-//					this.dataset["graph"] = new Array(1);
-//					this.dataset["multigraph"] = false;
-//					this.dataset["directed"] = true;
-
-				for (var subEntityIndex in subEntities){
-					var connections = subEntities[subEntityIndex].getConnections();
-					for (var connectionIndex in connections){
-						var connectionItem = connections[connectionIndex];
-						if (connectionItem.getType() == "FROM"){
-							var source = connectionItem.getParent().getId();
-							var target = connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1);
-							
-							this.createNode(source);
-							this.createNode(target);
-							
-							var linkItem = {};
-							linkItem["source"] = this.mapping[source];
-							linkItem["target"] = this.mapping[target];
-							
-							var customNodes = connectionItem.getCustomNodes();
-							for (var customNodeIndex in connectionItem.getCustomNodes()){
-								if ('getChildren' in customNodes[customNodeIndex]){
-									var customNodesChildren = customNodes[customNodeIndex].getChildren().models;
-									for (var customNodeChildIndex in customNodesChildren){
-										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
-											linkItem["synapse_type"] = customNodesChildren[customNodeChildIndex].getValue();
-										}
-										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
-											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
-										}
-									}
-								}
-							}
-							
-							this.dataset["links"].push(linkItem);
+		/**
+		 * Updates a data set, use for time series
+		 */
+		updateDataSet: function() {
+			for(var key in this.datasets) {
+				if(this.datainfos[key].label != 'manual'){
+					var newValue = this.datainfos[key].variable.getValue();
+	
+					var oldata = this.datasets[key];
+					var reIndex = false;
+	
+					if(oldata.length > this.limit) {
+						oldata.splice(0, 1);
+						reIndex = true;
+					}
+	
+					oldata.push([ oldata.length, newValue]);
+	
+					if(reIndex) {
+						// re-index data
+						var indexedData = [];
+						for(var index = 0, len = oldata.length; index < len; index++) {
+							var value = oldata[index][1];
+							indexedData.push([ index, value ]);
 						}
-						
+	
+						this.datasets[key] = indexedData;
+					}
+					else {
+						this.datasets[key] = oldata;
 					}
 				}
 			}
+
+			this.createLayout();
 		},
 		
 		createLayout: function(){
-			$("svg").remove();
+			//$("svg").remove();
 			
 			this.options.innerWidth = 300;//this.networkActivityContainer.innerWidth() - this.widgetMargin;
-			this.options.innerHeight = 200;//this.networkActivityContainer.innerHeight() - this.widgetMargin;
+			this.options.innerHeight = 500;//this.networkActivityContainer.innerHeight() - this.widgetMargin;
 			
-			this.svg = d3.select("#"+this.id).append("svg")
-            .attr("width", this.options.innerWidth)
-            .attr("height", this.options.innerHeight);
-			console.log("Test : " + this.options.innerWidth);
-			if (this.options.networkActivityLayout == 'list'){
-				$("#filters").remove();
-				this.createListLayout();
-			}
-			else if (this.options.networkActivityLayout == 'force') {
-				this.createForceLayout();
-			}
+			
+			//console.log("Test : " + this.options.innerWidth);
+
+			this.createListLayout();
+			
 		},
 		
 		createListLayout: function(){
-			var legendRectSize = 18;
-			var legendSpacing = 4;
-			var margin = {top: 50, right: 10, bottom: 10, left: 50};
-			var sizeLegend = {width: 120};
+
+			var width = 300,
+		    height = 10;
+			//console.log("Creating Chart");
 			
-			
-			var listDim = (this.options.innerHeight < (this.options.innerWidth - sizeLegend.width))?(this.options.innerHeight):(this.options.innerWidth - sizeLegend.width);
-			
-			var width = 960,
-		    height = 500;
-			console.log("Creating Chart");
 			var chart = d3.horizon()
 			    .width(width)
 			    .height(height)
-			    .bands(1)
+			    .bands(5)
 			    .mode("offset")
 			    .interpolate("basis");
-			
-			
-			var GERD=[2.21367, 2.74826, 1.96158, 1.80213, 0.39451, 1.52652, 3.01937, 1.44122, 3.84137, 2.20646, 2.78056, 0.5921, 1.14821, 2.64107, 1.78988, 4.2504, 1.26841, 3.33499, 3.3609, 1.67862, 0.41322, 1.81965, 1.13693, 1.75922, 0.67502, 1.65519, 1.24252, 0.48056, 1.85642, 0.92523, 1.38357, 3.61562, 2.99525, 0.84902, 1.82434, 2.78518];
-			var growth=[2.48590317, 3.10741128, 1.89308521, 3.21494841, 5.19813626, 1.65489834, 1.04974368, 7.63563272, 2.85477157, 1.47996142, 2.99558644, -6.90796403, 1.69192342, -3.99988322, -0.42935239, 4.84602001, 0.43108032, 3.96559062, 6.16184325, 2.67806902, 5.56185685, 1.18517739, 2.33052515, 1.59773989, 4.34962928, -1.60958484, 4.03428262, 3.34920254, -0.17459255, 2.784, -0.06947685, 3.93555895, 2.71404473, 9.00558548, 2.09209263, 3.02171711];
-			// Transpose column values to rows.
-			var data = growth.map(function(data,i) {
-			  return [i,data];
-			});
-			this.svg.data([data]).call(chart);
+			d3.select("#"+this.id).selectAll(".horizon").remove();
+			var cur_selection = d3.select("#"+this.id).selectAll(".horizon")
+		    .data(this.datasets)
+		  .enter().append("svg").attr("height",height).attr("class","horizon").call(chart);
+//			var cur_selection = this.svg.selectAll(".horizon")
+//		    .data(this.datasets)
+//		  .enter().append("div")
+//		  .attr("class", "horizon")
+//		  .call(chart);
 			
 			return "Complete List creation";
 		

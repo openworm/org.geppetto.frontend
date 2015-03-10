@@ -1,6 +1,6 @@
 (function() {
   d3.horizon = function() {
-    var bands = 1, // between 1 and 5, typically
+    var bands = 5, // between 1 and 5, typically
         mode = "offset", // or mirror
         area = d3.svg.area(),
         defined,

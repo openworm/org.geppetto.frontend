@@ -32,45 +32,31 @@
  *******************************************************************************/
 package org.geppetto.frontend.server.resource;
 
-import java.util.List;
-
-import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.core.data.model.IGeppettoProject;
-import org.geppetto.frontend.server.DashboardApplication;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
-
-import com.google.gson.Gson;
-
-public class GeppettoProjectsResource extends ServerResource
+public class GeppettoProjectsResource
 {
-	@Get("json")
-	public String getAllGeppettoProjects()
-	{
-		DashboardApplication application = (DashboardApplication) getApplication();
-		IGeppettoDataManager dataManager = application.getDataManager();
-		List<? extends IGeppettoProject> geppettoProjects = dataManager.getAllGeppettoProjects();
-
-		JSONObject result = new JSONObject();
-		JSONArray geppettoProjectsArray = new JSONArray();
-		try
-		{
-			for(IGeppettoProject project : geppettoProjects)
-			{
-				JSONObject projectObject = new JSONObject(new Gson().toJson(project));
-				geppettoProjectsArray.put(projectObject);
-			}
-			result.put("geppetto_projects", geppettoProjectsArray);
-
-			result.put("data_manager", dataManager.getName());
-		}
-		catch(JSONException e)
-		{
-			// ignore
-		}
-		return result.toString();
-	}
+	// @Get("json")
+	// public String getAllGeppettoProjects()
+	// {
+	// IGeppettoDataManager dataManager = application.getDataManager();
+	// List<? extends IGeppettoProject> geppettoProjects = dataManager.getAllGeppettoProjects();
+	//
+	// JSONObject result = new JSONObject();
+	// JSONArray geppettoProjectsArray = new JSONArray();
+	// try
+	// {
+	// for(IGeppettoProject project : geppettoProjects)
+	// {
+	// JSONObject projectObject = new JSONObject(new Gson().toJson(project));
+	// geppettoProjectsArray.put(projectObject);
+	// }
+	// result.put("geppetto_projects", geppettoProjectsArray);
+	//
+	// result.put("data_manager", dataManager.getName());
+	// }
+	// catch(JSONException e)
+	// {
+	// // ignore
+	// }
+	// return result.toString();
+	// }
 }

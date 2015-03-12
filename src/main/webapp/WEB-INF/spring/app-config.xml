@@ -54,24 +54,4 @@
 		<property name="isSimulationLoaded" value="false" />
 	</bean>
 	
-	<!--bean id="restletServer" class="org.geppetto.frontend.server.DashboardServer">
-	</bean-->	
-	
-	<!--bean id="restletComponent" class="org.restlet.ext.spring.SpringComponent">
-    	<property name="defaultTarget" ref="router" />
-	</bean>
-
-	<bean name="router" class="org.restlet.ext.spring.SpringRouter">
-	    <property name="attachments">
-	        <map>
-	            <entry key="/data/dashboard/geppettoprojects">
-	                <bean class="org.restlet.ext.spring.SpringFinder">
-	                    <lookup-method name="create" bean="GeppettoProjectsResource" />
-	                </bean>
-	            </entry>
-	        </map>
-	    </property>
-	</bean>
-	<bean id="GeppettoProjectsResource" class="org.geppetto.frontend.server.resource.GeppettoProjectsResource"></bean-->
-
 </beans>

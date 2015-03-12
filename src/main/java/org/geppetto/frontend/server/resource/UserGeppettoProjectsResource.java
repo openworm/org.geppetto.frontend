@@ -32,50 +32,36 @@
  *******************************************************************************/
 package org.geppetto.frontend.server.resource;
 
-import java.util.List;
-
-import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.core.data.model.IGeppettoProject;
-import org.geppetto.frontend.server.DashboardApplication;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
-
-import com.google.gson.Gson;
-
-public class UserGeppettoProjectsResource extends ServerResource
+public class UserGeppettoProjectsResource
 {
-	@Get("json")
-	public String getUserGeppettoProjects()
-	{
-		String login = getAttribute("login");
-		DashboardApplication application = (DashboardApplication) getApplication();
-		IGeppettoDataManager dataManager = application.getDataManager();
-		List<? extends IGeppettoProject> geppettoProjects = dataManager.getGeppettoProjectsForUser(login);
-
-		JSONObject result = new JSONObject();
-		JSONArray geppettoProjectsArray = new JSONArray();
-		try
-		{
-			for(IGeppettoProject project : geppettoProjects)
-			{
-//				JSONObject projectObject = new JSONObject(new Gson().toJson(project));
-				JSONObject projectObject = new JSONObject();
-				projectObject.put("id", 1);//project.getId());
-				projectObject.put("name", project.getName());
-				geppettoProjectsArray.put(projectObject);
-			}
-			result.put("geppetto_projects", geppettoProjectsArray);
-
-			result.put("data_manager", dataManager.getName());
-		}
-		catch(JSONException e)
-		{
-			// ignore
-		}
-		return geppettoProjectsArray.toString();
-//		return result.toString();
-	}
+	// @Get("json")
+	// public String getUserGeppettoProjects()
+	// {
+	// String login = getAttribute("login");
+	// IGeppettoDataManager dataManager = application.getDataManager();
+	// List<? extends IGeppettoProject> geppettoProjects = dataManager.getGeppettoProjectsForUser(login);
+	//
+	// JSONObject result = new JSONObject();
+	// JSONArray geppettoProjectsArray = new JSONArray();
+	// try
+	// {
+	// for(IGeppettoProject project : geppettoProjects)
+	// {
+	// // JSONObject projectObject = new JSONObject(new Gson().toJson(project));
+	// JSONObject projectObject = new JSONObject();
+	// projectObject.put("id", 1);//project.getId());
+	// projectObject.put("name", project.getName());
+	// geppettoProjectsArray.put(projectObject);
+	// }
+	// result.put("geppetto_projects", geppettoProjectsArray);
+	//
+	// result.put("data_manager", dataManager.getName());
+	// }
+	// catch(JSONException e)
+	// {
+	// // ignore
+	// }
+	// return geppettoProjectsArray.toString();
+	// // return result.toString();
+	// }
 }

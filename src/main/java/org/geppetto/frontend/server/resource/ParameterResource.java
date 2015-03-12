@@ -32,27 +32,19 @@
  *******************************************************************************/
 package org.geppetto.frontend.server.resource;
 
-import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.frontend.server.DashboardApplication;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.restlet.resource.Put;
-import org.restlet.resource.ServerResource;
-
-public class ParameterResource extends ServerResource
+public class ParameterResource
 {
-	@Put("json")
-	public void addParameter(JSONObject parameter)
-	{
-		DashboardApplication application = (DashboardApplication) getApplication();
-		IGeppettoDataManager dataManager = application.getDataManager();
-		try
-		{
-			dataManager.createParameter(parameter.getString("name"), parameter.getString("value"));
-		}
-		catch(JSONException e)
-		{
-			// ignore
-		}
-	}
+	// @Put("json")
+	// public void addParameter(JSONObject parameter)
+	// {
+	// IGeppettoDataManager dataManager = application.getDataManager();
+	// try
+	// {
+	// dataManager.createParameter(parameter.getString("name"), parameter.getString("value"));
+	// }
+	// catch(JSONException e)
+	// {
+	// // ignore
+	// }
+	// }
 }

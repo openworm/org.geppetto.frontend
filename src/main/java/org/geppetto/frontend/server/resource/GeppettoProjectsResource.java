@@ -65,7 +65,7 @@ public class GeppettoProjectsResource extends ServerResource
 			}
 			result.put("geppetto_projects", geppettoProjectsArray);
 
-			result.put("dataManager", dataManager.getName());
+			result.put("data_manager", dataManager.getName());
 		}
 		catch(JSONException e)
 		{

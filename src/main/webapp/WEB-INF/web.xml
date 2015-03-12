@@ -14,6 +14,11 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/spring/*.xml</param-value>
     </context-param>
+    <context-param>
+        <param-name>org.restlet.application</param-name>
+        <param-value>org.geppetto.frontend.server.DashboardApplication</param-value>
+    </context-param>
+    
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
@@ -39,6 +44,38 @@
         <servlet-name>springdispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+    
+	<servlet>
+	    <servlet-name>SpringRestletServlet</servlet-name>
+	    <servlet-class>org.restlet.ext.spring.SpringServerServlet</servlet-class>
+	    <init-param>
+	        <param-name>org.restlet.component</param-name>
+	        <param-value>restletComponent</param-value>
+	    </init-param>
+	    <load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+	    <servlet-name>SpringRestletServlet</servlet-name>
+	    <url-pattern>/data/dashboard/*</url-pattern>
+	</servlet-mapping>
+
+    <!-- servlet>
+        <servlet-name>ServerServlet</servlet-name>
+        <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
+        <init-param>
+            <param-name>org.restlet.clients</param-name>
+            <param-value>CLAP,HTTP</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.restlet.component</param-name>
+            <param-value>org.geppetto.frontend.server.DashboardComponent</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServerServlet</servlet-name>
+        <url-pattern>/data/dashboard/*</url-pattern>
+    </servlet-mapping-->
 
     <welcome-file-list>
         <welcome-file>

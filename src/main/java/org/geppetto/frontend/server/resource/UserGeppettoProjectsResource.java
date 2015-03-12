@@ -61,17 +61,21 @@ public class UserGeppettoProjectsResource extends ServerResource
 		{
 			for(IGeppettoProject project : geppettoProjects)
 			{
-				JSONObject projectObject = new JSONObject(new Gson().toJson(project));
+//				JSONObject projectObject = new JSONObject(new Gson().toJson(project));
+				JSONObject projectObject = new JSONObject();
+				projectObject.put("id", 1);//project.getId());
+				projectObject.put("name", project.getName());
 				geppettoProjectsArray.put(projectObject);
 			}
 			result.put("geppetto_projects", geppettoProjectsArray);
 
-			result.put("dataManager", dataManager.getName());
+			result.put("data_manager", dataManager.getName());
 		}
 		catch(JSONException e)
 		{
 			// ignore
 		}
-		return result.toString();
+		return geppettoProjectsArray.toString();
+//		return result.toString();
 	}
 }

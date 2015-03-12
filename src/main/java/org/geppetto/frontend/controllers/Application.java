@@ -21,6 +21,7 @@ public class Application
 
 	public Application()
 	{
+		System.out.println("app");
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)

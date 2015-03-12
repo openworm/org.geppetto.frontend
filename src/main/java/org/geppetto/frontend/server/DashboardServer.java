@@ -34,6 +34,8 @@
 package org.geppetto.frontend.server;
 
 import org.restlet.Component;
+import org.restlet.Context;
+import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 public class DashboardServer
@@ -50,6 +52,9 @@ public class DashboardServer
 	private void initializeServer()
 	{
 		component = new Component();
+		
+//		Server server = new Server(new Context(), Protocol.HTTP, 8080, component);
+//		component.getServers().add(server);
 		component.getServers().add(Protocol.HTTP, 8081);
 
 		application = new DashboardApplication();

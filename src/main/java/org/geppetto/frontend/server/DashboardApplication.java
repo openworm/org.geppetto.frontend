@@ -44,6 +44,9 @@ import org.restlet.routing.Router;
 
 public class DashboardApplication extends Application
 {
+	public DashboardApplication() {
+		System.out.println("something");
+	}
 
 	public IGeppettoDataManager getDataManager()
 	{
@@ -64,10 +67,10 @@ public class DashboardApplication extends Application
 	{
 		Router router = new Router(getContext());
 
-		router.attach("/persistence/geppettoprojects", GeppettoProjectsResource.class);
-		router.attach("/persistence/user/{login}/geppettoprojects", UserGeppettoProjectsResource.class);
-		router.attach("/persistence/parameter", ParameterResource.class);
-		router.attach("/persistence/experiment", ExperimentResource.class);
+		router.attach("/data/dashboard/geppettoprojects", GeppettoProjectsResource.class);
+		router.attach("/data/dashboard/user/{login}/geppettoprojects", UserGeppettoProjectsResource.class);
+		router.attach("/data/dashboard/parameter", ParameterResource.class);
+		router.attach("/data/dashboard/experiment", ExperimentResource.class);
 
 		return router;
 	}

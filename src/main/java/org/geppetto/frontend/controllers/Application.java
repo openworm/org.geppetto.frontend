@@ -2,7 +2,7 @@ package org.geppetto.frontend.controllers;
 
 import org.geppetto.core.auth.IAuthService;
 import org.geppetto.core.common.GeppettoInitializationException;
-import org.geppetto.frontend.server.AuthServiceCreator;
+import org.geppetto.frontend.dashboard.AuthServiceCreator;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,7 +21,6 @@ public class Application
 
 	public Application()
 	{
-		System.out.println("app");
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)

@@ -7,8 +7,9 @@ define([
 
     var ProjectsCollection = Backbone.Collection.extend({
         model: ProjectModel,
-//        url: "http://localhost:8081/dashboard/user/guest/geppettoprojects",
-        url: "api/project/all.json",
+//        url: "user/guest/geppettoprojects",
+        url: "geppettoprojects",
+//        url: "api/project/all.json",
         
         
 //        sync: function(method, model, options) {

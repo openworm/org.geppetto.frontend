@@ -30,16 +30,17 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend.server.resource;
+package org.geppetto.frontend.dashboard.service;
 
-public class ExperimentResource
+public class ParameterResource
 {
 	// @Put("json")
-	// public void addExperiment(JSONObject parameter)
+	// public void addParameter(JSONObject parameter)
 	// {
+	// IGeppettoDataManager dataManager = application.getDataManager();
 	// try
 	// {
-	// dataManager.createExperiment(parameter.getString("name"), parameter.getString("description"), new Date(), new Date());
+	// dataManager.createParameter(parameter.getString("name"), parameter.getString("value"));
 	// }
 	// catch(JSONException e)
 	// {

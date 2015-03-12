@@ -30,34 +30,38 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+package org.geppetto.frontend.dashboard.service;
 
-package org.geppetto.frontend.controllers;
-
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAccount;
-import org.apache.shiro.realm.AuthenticatingRealm;
-import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.core.data.model.IUser;
-import org.geppetto.frontend.dashboard.service.ControllerHelper;
-
-public class GeppettoRealm extends AuthenticatingRealm
+public class UserGeppettoProjectsResource
 {
-
-	@Override
-	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException
-	{
-		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
-		if(dataManager != null)
-		{
-			IUser user = dataManager.getUserByLogin((String) token.getPrincipal());
-			SimplePrincipalCollection principals = new SimplePrincipalCollection(user, getName());
-			SimpleAccount info = new SimpleAccount(principals, "");
-			return info;
-		}
-		return null;
-	}
-
+	// @Get("json")
+	// public String getUserGeppettoProjects()
+	// {
+	// String login = getAttribute("login");
+	// IGeppettoDataManager dataManager = application.getDataManager();
+	// List<? extends IGeppettoProject> geppettoProjects = dataManager.getGeppettoProjectsForUser(login);
+	//
+	// JSONObject result = new JSONObject();
+	// JSONArray geppettoProjectsArray = new JSONArray();
+	// try
+	// {
+	// for(IGeppettoProject project : geppettoProjects)
+	// {
+	// // JSONObject projectObject = new JSONObject(new Gson().toJson(project));
+	// JSONObject projectObject = new JSONObject();
+	// projectObject.put("id", 1);//project.getId());
+	// projectObject.put("name", project.getName());
+	// geppettoProjectsArray.put(projectObject);
+	// }
+	// result.put("geppetto_projects", geppettoProjectsArray);
+	//
+	// result.put("data_manager", dataManager.getName());
+	// }
+	// catch(JSONException e)
+	// {
+	// // ignore
+	// }
+	// return geppettoProjectsArray.toString();
+	// // return result.toString();
+	// }
 }

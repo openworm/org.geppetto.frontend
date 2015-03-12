@@ -26,7 +26,7 @@ define([
                 return data;
             }
             data.experiments.forEach(function(item){
-                if (item.simulationRuns !== undefined && item.simulationRuns.length > 0){
+                if (item.simulationRuns !== undefined && item.simulationRuns !== null && item.simulationRuns.length > 0){
                     item.status = item.simulationRuns[item.simulationRuns.length - 1].status;
                 }
             });

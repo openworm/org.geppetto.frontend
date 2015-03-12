@@ -30,33 +30,20 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend.server.resource;
+package org.geppetto.frontend.dashboard.service;
 
-public class GeppettoProjectsResource
+public class ExperimentResource
 {
-	// @Get("json")
-	// public String getAllGeppettoProjects()
+	// @Put("json")
+	// public void addExperiment(JSONObject parameter)
 	// {
-	// IGeppettoDataManager dataManager = application.getDataManager();
-	// List<? extends IGeppettoProject> geppettoProjects = dataManager.getAllGeppettoProjects();
-	//
-	// JSONObject result = new JSONObject();
-	// JSONArray geppettoProjectsArray = new JSONArray();
 	// try
 	// {
-	// for(IGeppettoProject project : geppettoProjects)
-	// {
-	// JSONObject projectObject = new JSONObject(new Gson().toJson(project));
-	// geppettoProjectsArray.put(projectObject);
-	// }
-	// result.put("geppetto_projects", geppettoProjectsArray);
-	//
-	// result.put("data_manager", dataManager.getName());
+	// dataManager.createExperiment(parameter.getString("name"), parameter.getString("description"), new Date(), new Date());
 	// }
 	// catch(JSONException e)
 	// {
 	// // ignore
 	// }
-	// return result.toString();
 	// }
 }

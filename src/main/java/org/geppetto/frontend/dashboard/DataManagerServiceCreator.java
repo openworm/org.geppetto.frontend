@@ -30,38 +30,38 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend.server;
+package org.geppetto.frontend.dashboard;
 
-import org.geppetto.core.auth.IAuthService;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.data.IGeppettoDataManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-public class AuthServiceCreator
+public class DataManagerServiceCreator
 {
 
 	private BundleContext _bc = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
 
 	private String _type = null;
 
-	public AuthServiceCreator(String type)
+	public DataManagerServiceCreator(String type)
 	{
 		super();
 		_type = type;
 	}
 
 	/**
-	 * A method to get a service of a given type.
+	 * A method to get a service of a given type
 	 * 
 	 * @param type
 	 * @return
 	 * @throws InvalidSyntaxException
 	 */
-	public IAuthService getService() throws GeppettoInitializationException
+	public IGeppettoDataManager getService() throws GeppettoInitializationException
 	{
-		IAuthService service = null;
+		IGeppettoDataManager service = null;
 		ServiceReference<?>[] sr;
 		try
 		{
@@ -73,15 +73,16 @@ public class AuthServiceCreator
 		}
 		if(sr != null && sr.length > 0)
 		{
-			service = (IAuthService) _bc.getService(sr[0]);
+			service = (IGeppettoDataManager) _bc.getService(sr[0]);
 			for(ServiceReference<?> s : sr)
 			{
-				if(!((IAuthService) _bc.getService(s)).isDefault())
+				if(!((IGeppettoDataManager) _bc.getService(s)).isDefault())
 				{
-					service = (IAuthService) _bc.getService(s);
+					service = (IGeppettoDataManager) _bc.getService(s);
 				}
 			}
 		}
+
 		return service;
 	}
 

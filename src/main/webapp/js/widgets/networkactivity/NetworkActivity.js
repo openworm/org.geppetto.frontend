@@ -113,7 +113,7 @@ define(function(require) {
 			}
 			this.widgetMargin = 20;
 			
-			
+			console.log(datasets);
 			this.createLayout();
 			
 			return "Dataseries or object added to the network activity widget";
@@ -171,7 +171,7 @@ define(function(require) {
 		createListLayout: function(){
 
 			var width = 300,
-		    height = 10;
+		    height = 30;
 			//console.log("Creating Chart");
 			
 			var chart = d3.horizon()

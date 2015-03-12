@@ -6,12 +6,12 @@
         defined,
         x = d3_horizonX,
         y = d3_horizonY,
-        width = 960,
+        width = 1024,
         height = 40;
 
     var color = d3.scale.linear()
-        .domain([-1, 0, 1])
-        .range(["#d62728", "#fff", "#1f77b4"]);
+        .domain([-50, 0, 50])
+        .range(["#d62728", "#99FF00", "#6600FF"]);
 
     // For each small multiple…
     function horizon(g) {

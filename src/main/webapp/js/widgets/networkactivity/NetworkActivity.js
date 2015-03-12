@@ -180,10 +180,13 @@ define(function(require) {
 			    .bands(5)
 			    .mode("offset")
 			    .interpolate("basis");
-			d3.select("#"+this.id).selectAll(".horizon").remove();
-			var cur_selection = d3.select("#"+this.id).selectAll(".horizon")
-		    .data(this.datasets)
-		  .enter().append("svg").attr("height",height).attr("class","horizon").call(chart);
+			//d3.select("#"+this.id).selectAll(".horizon").remove();
+			var dataselection = d3.select("#"+this.id).selectAll(".horizon")
+		    	.data(this.datasets);
+		    dataselection.enter().append("svg")
+		  		.attr("height",height).attr("class","horizon");
+		    dataselection.exit().remove();
+			dataselection.call(chart);
 //			var cur_selection = this.svg.selectAll(".horizon")
 //		    .data(this.datasets)
 //		  .enter().append("div")

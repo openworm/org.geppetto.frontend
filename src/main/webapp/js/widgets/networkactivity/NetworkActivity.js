@@ -106,14 +106,17 @@ define(function(require) {
 						label : id,
 						variable : state
 					});
-					this.datasets.push(
-						[ [0,value] ]
-					);						
+					this.datasets.push({
+						label : id,
+						variable : state,
+						values : [ [0,value] ],
+						selected : 0
+					});						
 				}
 			}
 			this.widgetMargin = 20;
 			
-			console.log(datasets);
+			//console.log(datasets);
 			this.createLayout();
 			
 			return "Dataseries or object added to the network activity widget";
@@ -126,7 +129,7 @@ define(function(require) {
 				if(this.datainfos[key].label != 'manual'){
 					var newValue = this.datainfos[key].variable.getValue();
 	
-					var oldata = this.datasets[key];
+					var oldata = this.datasets[key].values;
 					var reIndex = false;
 	
 					if(oldata.length > this.limit) {
@@ -144,10 +147,10 @@ define(function(require) {
 							indexedData.push([ index, value ]);
 						}
 	
-						this.datasets[key] = indexedData;
+						this.datasets[key].values = indexedData;
 					}
 					else {
-						this.datasets[key] = oldata;
+						this.datasets[key].values = oldata;
 					}
 				}
 			}
@@ -163,28 +166,43 @@ define(function(require) {
 			
 			
 			//console.log("Test : " + this.options.innerWidth);
-
-			this.createListLayout();
-			
+			if(this.datasets != null){
+				this.createListLayout();
+			}
 		},
 		
 		createListLayout: function(){
 
 			var width = 300,
-		    height = 30;
+		    height = 20,bigHeight = 90;
 			//console.log("Creating Chart");
 			
 			var chart = d3.horizon()
 			    .width(width)
-			    .height(height)
-			    .bands(5)
+			    .height(function(d){return d.selected? +bigHeight : +height ;})
+			    .bands(3)
 			    .mode("offset")
-			    .interpolate("basis");
+			    .interpolate("linear")
+			    .dataValues(function(d){return d.values;});
+			
 			//d3.select("#"+this.id).selectAll(".horizon").remove();
 			var dataselection = d3.select("#"+this.id).selectAll(".horizon")
 		    	.data(this.datasets);
 		    dataselection.enter().append("svg")
-		  		.attr("height",height).attr("class","horizon");
+		  		.attr("height",height).attr("class","horizon")
+			    .on("mouseover", function(){
+			    	//this.__data__.selected =1;
+			    	d3.select(this).datum().selected=1;
+			        d3.select(this).transition().style("height",bigHeight).duration(300)
+			        	.call(chart);
+			    })
+			    .on("mouseout", function(){
+						//this.__data__.selected =0;
+			    	d3.select(this).datum().selected=0;
+					d3.select(this).transition().style("height",height).duration(300)
+						.call(chart);
+			    });
+		    
 		    dataselection.exit().remove();
 			dataselection.call(chart);
 //			var cur_selection = this.svg.selectAll(".horizon")

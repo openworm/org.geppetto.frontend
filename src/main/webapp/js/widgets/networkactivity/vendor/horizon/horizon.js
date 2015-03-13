@@ -1,3 +1,8 @@
+/* 
+ * 
+ * THIS PLUGIN HAS BEEN MODIFIED  it is no longuer associated with the plugin on GitHub
+ * 
+ * */
 (function() {
   d3.horizon = function() {
     var bands = 5, // between 1 and 5, typically
@@ -8,17 +13,18 @@
         y = d3_horizonY,
         width = 1024,
         height = 40;
+    var dataValues = function(d){return d;};
 
     var color = d3.scale.linear()
-        .domain([-50, 0, 50])
-        .range(["#d62728", "#99FF00", "#6600FF"]);
+        .domain([-100, 0,.25, .5,.75])
+        .range(["#FF0000", "#00FF00", "#0000FF","#FFFF00","#00FFFF"]);
 
     // For each small multiple…
     function horizon(g) {
       g.each(function(d) {
         var g = d3.select(this),
-            xMin = Infinity,
-            xMax = -Infinity,
+            xMin = -Infinity,
+            xMax = Infinity,
             yMax = -Infinity,
             x0, // old x-scale
             y0, // old y-scale
@@ -26,20 +32,22 @@
             id; // unique id for paths
 
         // Compute x- and y-values along with extents.
-        var data = d.map(function(d, i) {
-          var xv = x.call(this, d, i),
-              yv = y.call(this, d, i);
-          if (xv < xMin) xMin = xv;
-          if (xv > xMax) xMax = xv;
-          if (-yv > yMax) yMax = -yv;
-          if (yv > yMax) yMax = yv;
-          return [xv, yv];
-        });
+        var data = dataValues(d).map(function(d, i) {
+	            var xv = x.call(this, d, i),
+	            yv = y.call(this, d, i);
+	        if (xv < xMin) xMin = xv;
+	        if (xv > xMax) xMax = xv;
+	        if (-yv > yMax) yMax = -yv;
+	        if (yv > yMax) yMax = yv;
+	        return [xv, yv];
+	    });
+        
+        var heightUsed = (height instanceof Function)? height(d):+height;
 
         // Compute the new x- and y-scales, and transform.
         var x1 = d3.scale.linear().domain([xMin, xMax]).range([0, width]),
-            y1 = d3.scale.linear().domain([0, yMax]).range([0, height * bands]),
-            t1 = d3_horizonTransform(bands, height, mode);
+            y1 = d3.scale.linear().domain([0, yMax]).range([0, heightUsed * bands]),
+            t1 = d3_horizonTransform(bands, heightUsed, mode);
 
         // Retrieve the old scales, if this is an update.
         if (this.__chart__) {
@@ -63,11 +71,11 @@
             .attr("id", "d3_horizon_clip" + id)
           .append("rect")
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", heightUsed);
 
         d3.transition(defs.select("rect"))
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", heightUsed);
 
         // We'll use a container to clip all horizon layers at once.
         g.selectAll("g")
@@ -83,13 +91,13 @@
 
         var d0 = area
             .x(function(d) { return x0(d[0]); })
-            .y0(height * bands)
-            .y1(function(d) { return height * bands - y0(d[1]); })
+            .y0(heightUsed * bands)
+            .y1(function(d) { return heightUsed * bands - y0(d[1]); })
             (data);
 
         var d1 = area
             .x(function(d) { return x1(d[0]); })
-            .y1(function(d) { return height * bands - y1(d[1]); })
+            .y1(function(d) { return heightUsed * bands - y1(d[1]); })
             (data);
 
         path.enter().append("path")
@@ -150,8 +158,8 @@
     };
 
     horizon.height = function(_) {
-      if (!arguments.length) return height;
-      height = +_;
+      if (!arguments.length && !(_ instanceof Function )) return height;
+      height = _;
       return horizon;
     };
 
@@ -159,6 +167,12 @@
       if (!arguments.length) return defined;
       defined = _;
       return horizon;
+    };
+    
+    horizon.dataValues = function(_) {
+        if (!arguments.length) return dataValues;
+        dataValues = _;
+        return horizon;
     };
 
     return d3.rebind(horizon, area, "interpolate", "tension");

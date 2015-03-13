@@ -32,36 +32,29 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
+import java.util.List;
+
+import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.frontend.dashboard.ControllerHelper;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
 public class UserGeppettoProjectsResource
 {
-	// @Get("json")
-	// public String getUserGeppettoProjects()
-	// {
-	// String login = getAttribute("login");
-	// IGeppettoDataManager dataManager = application.getDataManager();
-	// List<? extends IGeppettoProject> geppettoProjects = dataManager.getGeppettoProjectsForUser(login);
-	//
-	// JSONObject result = new JSONObject();
-	// JSONArray geppettoProjectsArray = new JSONArray();
-	// try
-	// {
-	// for(IGeppettoProject project : geppettoProjects)
-	// {
-	// // JSONObject projectObject = new JSONObject(new Gson().toJson(project));
-	// JSONObject projectObject = new JSONObject();
-	// projectObject.put("id", 1);//project.getId());
-	// projectObject.put("name", project.getName());
-	// geppettoProjectsArray.put(projectObject);
-	// }
-	// result.put("geppetto_projects", geppettoProjectsArray);
-	//
-	// result.put("data_manager", dataManager.getName());
-	// }
-	// catch(JSONException e)
-	// {
-	// // ignore
-	// }
-	// return geppettoProjectsArray.toString();
-	// // return result.toString();
-	// }
+
+	@RequestMapping("/dashboard/user/{login}/geppettoprojects")
+	public @ResponseBody
+	List<? extends IGeppettoProject> getGeppettoProjects(@PathVariable("login") String login)
+	{
+		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+		if(dataManager != null)
+		{
+			return dataManager.getGeppettoProjectsForUser(login);
+		}
+		return null;
+	}
 }

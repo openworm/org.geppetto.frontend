@@ -7,7 +7,7 @@ define([
 
     var ProjectModel = Backbone.Model.extend({
         id: "",
-        url : 'api/project',
+        url : 'geppettoproject',
 
         methodToURL: {
             'read': "",
@@ -17,12 +17,12 @@ define([
         },
 
         initialize: function (options) {
-            this.methodToURL['read'] = this.url + "/" + this.id + ".json";
+            this.methodToURL['read'] = this.url + "/" + this.id;// + ".json";
             this.methodToURL['delete'] = this.url + "/" + this.id + ".json";
         },
 
         parse: function(data){
-            if (data === undefined || data.experiments === undefined || data.experiments.length === 0){
+            if (data === undefined || data.experiments === undefined || data.experiments === null || data.experiments.length === 0){
                 return data;
             }
             data.experiments.forEach(function(item){

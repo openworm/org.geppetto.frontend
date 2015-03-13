@@ -30,11 +30,10 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend.dashboard.service;
+package org.geppetto.frontend.dashboard;
 
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.frontend.dashboard.DataManagerServiceCreator;
 
 public class ControllerHelper
 {

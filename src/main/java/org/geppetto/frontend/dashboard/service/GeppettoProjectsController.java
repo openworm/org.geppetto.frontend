@@ -36,7 +36,7 @@ import java.util.List;
 
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
-import org.geppetto.core.data.model.IUser;
+import org.geppetto.frontend.dashboard.ControllerHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -52,8 +52,7 @@ public class GeppettoProjectsController
 		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
 		if(dataManager != null)
 		{
-			List<? extends IGeppettoProject> geppettoProjects = dataManager.getAllGeppettoProjects();
-			return geppettoProjects;
+			return dataManager.getAllGeppettoProjects();
 		}
 		return null;
 	}

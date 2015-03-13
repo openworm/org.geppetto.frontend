@@ -41,7 +41,7 @@ import org.apache.shiro.realm.AuthenticatingRealm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IUser;
-import org.geppetto.frontend.dashboard.service.ControllerHelper;
+import org.geppetto.frontend.dashboard.ControllerHelper;
 
 public class GeppettoRealm extends AuthenticatingRealm
 {

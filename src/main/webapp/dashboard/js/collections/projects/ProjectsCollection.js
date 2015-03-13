@@ -7,16 +7,8 @@ define([
 
     var ProjectsCollection = Backbone.Collection.extend({
         model: ProjectModel,
-//        url: "user/guest/geppettoprojects",
-        url: "geppettoprojects",
+        url: "user/guest/geppettoprojects",
 //        url: "api/project/all.json",
-        
-        
-//        sync: function(method, model, options) {
-//        	options.dataType = "jsonp";
-//        	options.jsonp = "jsonpCallback";
-//        	return Backbone.sync(method, model, options);
-//        },
         
         initialize: function (options) {
             _.bindAll(this,'search', 'parse', "getLimitedString");

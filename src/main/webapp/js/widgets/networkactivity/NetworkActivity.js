@@ -98,16 +98,11 @@ define(function(require) {
 							selected : 0
 							});
 				}
-				
-				else{
-					var value = state.getValue();
-					var id = state.getInstancePath();
-					this.datasets.push({
-						label : id,
-						variable : state,
-						values : [ [0,value] ],
-						selected : 0
-					});						
+                else if(state._metaType == "EntityNode"){
+                    this.scanAndInsertVariableNodes(state);
+                }
+				else if(state._metaType == "VariableNode"){
+                    this.insertVariableNode(state);
 				}
 			}
 			this.widgetMargin = 20;
@@ -117,11 +112,39 @@ define(function(require) {
 			
 			return "Dataseries or object added to the network activity widget";
 		},
+        /**
+         *  Read node recursively to get all variableNodes
+         */
+        scanAndInsertVariableNodes: function(node){
+            if(node._metaType == "VariableNode"){
+                this.insertVariableNode(node);
+            }else{
+                var childrens = node.getChildren();
+                for(var child in childrens){
+                    this.scanAndInsertVariableNodes(child);
+                }
+            }
+        },
+        /**
+         * Insert variableNode into datasets
+         */
+        insertVariableNode: function(varnode){
+            var value = varnode.getValue();
+            var id = varnode.getInstancePath();
+            this.datasets.push({
+                label : id,
+                variable : state,
+                values : [ [0,value] ],
+                selected : 0
+            });
+        },
 		/**
 		 * Updates a data set, use for time series
 		 */
 		updateDataSet: function() {
+
 			for(var key in this.datasets) {
+
 				if(this.datasets[key].label != 'manual'){
 					var newValue = this.datasets[key].variable.getValue();
 	
@@ -142,6 +165,7 @@ define(function(require) {
 							var value = oldata[index][1];
 							indexedData.push([ index, value ]);
 						}
+
 	
 						this.datasets[key].values = indexedData;
 					}
@@ -149,6 +173,7 @@ define(function(require) {
 						this.datasets[key].values = oldata;
 					}
 				}
+
 			}
 
 			this.createLayout();

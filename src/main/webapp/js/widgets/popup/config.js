@@ -37,9 +37,4 @@
  * @author Jesus Martinez (jesus@metacell.us)
  */
 //Load PopupsController and other classes using GEPPETTO
-define(function(require) {
-	return function(GEPPETTO) {
-		require("widgets/popup/controllers/PopupController")(GEPPETTO);
-		loadCss("assets/js/widgets/popup/Popup.css");
-	};
-});
+loadCss("assets/js/widgets/popup/Popup.css");

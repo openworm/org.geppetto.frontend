@@ -39,11 +39,10 @@
 define([ 'jquery', 'underscore', 'backbone',
 
 // Add requirement for Backbone-associations module
-'backbone-associations'
 
 ], function(require) {
 	return {
-		Model : Backbone.AssociatedModel.extend({
+		Model : Backbone.Model.extend({
 			name : "",
 			instancePath : "",
 			id : "",

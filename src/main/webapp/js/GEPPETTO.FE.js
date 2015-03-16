@@ -76,13 +76,7 @@ define(function(require) {
                 $("#sim canvas").remove();
                 return $("#sim").get(0);
             },
-            /**
-             * Handles updating the front end after re-loading the simulation
-             */
-            SimulationReloaded: function() {
-                //delete all existing widgets
-                GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-            },
+            
             /**
              * Show error message if webgl failed to start
              */

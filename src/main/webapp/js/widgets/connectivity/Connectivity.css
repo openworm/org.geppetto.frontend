@@ -32,6 +32,7 @@
  *******************************************************************************/
 .legend {
     font-size: 12px;
+    font-weight:100;
   }
 .legendTitle{
     font-size: 14px;
@@ -40,5 +41,17 @@
 	position: absolute;
 }
 .filtersLabel{
+	margin-left:2px;
+	font-size: 12px;
+    font-weight:100;
 	color: #FFFFFF;
+}
+
+.connectionlabel{
+  font-size: 16px;
+  font-weight:100;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  fill:white;
+  stroke: none;
+  text-rendering: optimizeLegibility;
 }

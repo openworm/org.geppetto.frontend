@@ -348,3 +348,13 @@ function rgbToHex(r, g, b)
 function getContrast50(hexcolor){
     return (parseInt(hexcolor, 16) > 0xffffff/2) ? 'black':'white';
 }
+
+/**
+ * Adding method to javascript string class to test 
+ * if beginning of string matches another string being passed.
+ */
+if ( typeof String.prototype.startsWith != 'function' ) {
+	  String.prototype.startsWith = function( str ) {
+	    return this.substring( 0, str.length ) === str;
+	  }
+};

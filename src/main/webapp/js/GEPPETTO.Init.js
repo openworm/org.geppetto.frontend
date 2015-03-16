@@ -173,6 +173,8 @@ define(function(require) {
 				setupLights();
 				setupControls();
 				setupListeners();
+	        	//setup listeners for geppetto events that can be triggered
+	            GEPPETTO.Events.listen();
 				return VARS;
 			}
 		};

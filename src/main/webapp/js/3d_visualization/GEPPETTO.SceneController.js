@@ -28,8 +28,6 @@ define(function(require) {
 						//as second parameter to make it clear this entity has no parent. 
 						GEPPETTO.SceneFactory.loadEntity(runTimeTree[eindex]);
 					}
-					GEPPETTO.calculateSceneCenter(GEPPETTO.getVARS().scene);
-					GEPPETTO.updateCamera();
 				},
 				
 				/**
@@ -143,16 +141,18 @@ define(function(require) {
 					for ( var v in GEPPETTO.getVARS().meshes) {
 						if(v == instancePath){
 							var mesh = GEPPETTO.getVARS().meshes[v];
-							if(!mesh.visible){
-								GEPPETTO.SceneController.merge(instancePath);
+							if(mesh!=null || undefined){
+								if(!mesh.visible){
+									GEPPETTO.SceneController.merge(instancePath);
+								}
+								if(mesh.selected == false){
+									mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+									mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+									mesh.selected = true;
+									mesh.ghosted = false;
+									return true;
+								}
 							}
-							if(mesh.selected == false){
-								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
-								mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-								mesh.selected = true;
-								mesh.ghosted = false;
-								return true;
-							}					
 						}
 					}
 					return false;
@@ -227,64 +227,81 @@ define(function(require) {
 				/**
 				 * Takes few paths, 3D point locations, and computes center of it to focus camera.
 				 */
-				zoom : function(paths) {
+				zoomToMesh : function(path) {
+					GEPPETTO.getVARS().controls.reset();
+					
 					var aabbMin = null;
 					var aabbMax = null;
 
-						GEPPETTO.getVARS().scene.traverse(function(child) {
-							if (child instanceof THREE.Mesh
-									|| child instanceof THREE.ParticleSystem) {
-								if(paths.hasOwnProperty(child.aspectInstancePath)){
-									
+					var mesh = GEPPETTO.getVARS().meshes[path];
+					mesh.geometry.computeBoundingBox();
+					
+					aabbMin = mesh.geometry.boundingBox.min;
+					aabbMax = mesh.geometry.boundingBox.max;
+					
+					var bb = mesh.geometry.boundingBox;
+					bb.translate(mesh.localToWorld( new THREE.Vector3()));
+					
+					// Compute world AABB center
+					GEPPETTO.getVARS().sceneCenter = bb.center();
+
+					GEPPETTO.updateCamera(aabbMax, aabbMin);	            
+				},
+				
+
+				/**
+				 * Takes few paths, 3D point locations, and computes center of it to focus camera.
+				 */
+				zoomToMeshes : function(path) {
+					GEPPETTO.getVARS().controls.reset();
+
+					var aabbMin = null;
+					var aabbMax = null;
+
+					for(var meshInstancePath in GEPPETTO.getVARS().meshes){
+						var child = GEPPETTO.getVARS().meshes[meshInstancePath];
+						if (child instanceof THREE.Mesh
+								|| child instanceof THREE.PointCloud) {
+							if(meshInstancePath.startsWith(path)){
 								child.geometry.computeBoundingBox();
+
+								var bb = child.geometry.boundingBox;
+								bb.translate(child.localToWorld( new THREE.Vector3()));
+
 								// If min and max vectors are null, first values become
 								// default min and max
 								if (aabbMin == null && aabbMax == null) {
-									aabbMin = child.geometry.boundingBox.min;
-									aabbMax = child.geometry.boundingBox.max;
+									aabbMin = bb.min;
+									aabbMax = bb.max;
 								}
 
 								// Compare other meshes, particles BB's to find min and max
 								else {
 									aabbMin.x = Math.min(aabbMin.x,
-											child.geometry.boundingBox.min.x);
+											bb.min.x);
 									aabbMin.y = Math.min(aabbMin.y,
-											child.geometry.boundingBox.min.y);
+											bb.min.y);
 									aabbMin.z = Math.min(aabbMin.z,
-											child.geometry.boundingBox.min.z);
+											bb.min.z);
 									aabbMax.x = Math.max(aabbMax.x,
-											child.geometry.boundingBox.max.x);
+											bb.max.x);
 									aabbMax.y = Math.max(aabbMax.y,
-											child.geometry.boundingBox.max.y);
+											bb.max.y);
 									aabbMax.z = Math.max(aabbMax.z,
-											child.geometry.boundingBox.max.z);
+											bb.max.z);
 								}
 							}
-							}
-						});
+						}
+					}
+
 					// Compute world AABB center
 					GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
 					GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
 					GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
 
-					// Compute world AABB "radius"
-					var diag = new THREE.Vector3();
-					diag = diag.subVectors(aabbMax, aabbMin);
-					var radius = diag.length() * 0.5;
-
-					// Compute offset needed to move the camera back that much needed to
-					// center AABB
-					var offset = radius
-					/ Math.tan(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.25);
-
-					var camDir = new THREE.Vector3(1.0, 0, 0);
-					camDir.multiplyScalar(offset);
-
-					// Store camera position
-					GEPPETTO.getVARS().cameraPosition = new THREE.Vector3();
-					GEPPETTO.getVARS().cameraPosition.addVectors(GEPPETTO.getVARS().sceneCenter, camDir);
-					GEPPETTO.updateCamera();
+					GEPPETTO.updateCamera(aabbMax, aabbMin)
 				},
+
 
 				/**
 				 * Change color for meshes that are connected to other meshes. Color
@@ -366,16 +383,23 @@ define(function(require) {
 				showConnectionLines : function(path,lines){					
 					var segments = Object.keys(lines).length;
 
-					var origin = GEPPETTO.getVARS().meshes[path].position;
-
+					var mesh = GEPPETTO.getVARS().meshes[path];
+					mesh.geometry.computeBoundingBox();
+					var origin = mesh.geometry.boundingBox.center();
+					origin = mesh.localToWorld(origin);
+					
 					for ( var aspectPath in lines ) {
 						
 						var type = lines[aspectPath];
-						var mesh = GEPPETTO.getVARS().meshes[aspectPath];
+						var destinationMesh = GEPPETTO.getVARS().meshes[aspectPath];
+						destinationMesh.geometry.computeBoundingBox();
+						var destination =
+							destinationMesh.geometry.boundingBox.center();
+						destination = destinationMesh.localToWorld(destination);
 						
 						var geometry = new THREE.Geometry();
 
-						geometry.vertices.push(origin.clone(),mesh.position.clone());
+						geometry.vertices.push(origin,destination);
 						geometry.verticesNeedUpdate = true;
 						geometry.dynamic = true;
 						
@@ -402,7 +426,7 @@ define(function(require) {
 						material.color.setHex(c);
 
 						var line = new THREE.Line(geometry, material);
-						line.updateMatrix();
+						line.updateMatrixWorld(true);
 						
 						GEPPETTO.getVARS().scene.add(line);
 						GEPPETTO.getVARS().connectionLines[aspectPath] = line;
@@ -440,11 +464,13 @@ define(function(require) {
 							var m = GEPPETTO.getVARS().visualModelMap[map[v]];
 							if(m.instancePath in targetObjects){
 								//merged mesh into corresponding geometry			
-								THREE.GeometryUtils.merge(geometryGroups[highlightedMesh],m);
+								var geometry = geometryGroups[highlightedMesh];
+								geometry.merge(m.geomemtry, m.matrix);
 							}
 							else{
 								//merged mesh into corresponding geometry			
-								THREE.GeometryUtils.merge(geometryGroups[a],m);
+								var geometry = geometryGroups[a];
+								geometry.merge(m.geomemtry, m.matrix);
 							}			
 						}				
 
@@ -520,11 +546,11 @@ define(function(require) {
 						//for it, this will used to merge visual objects
 						if(groupMesh == null || groupMesh == undefined){
 							geometry = new THREE.Geometry();
-							geometry.merge = true;
+							geometry.groupMerge = true;
 						}
 						//group mesh already exist, set flag to merge false
 						else{
-							geometry.merge = false;
+							geometry.groupMerge = false;
 						}
 						//store merge flag value, and new geometry if populate flag set to true
 						geometryGroups[groupName] = geometry;
@@ -549,9 +575,9 @@ define(function(require) {
 								//retrieve corresponding geometry for this group
 								var geometry = geometryGroups[groupName];
 								//only merge if flag is set to true
-								if(geometry.merge){
+								if(geometry.groupMerge){
 									//merged mesh into corresponding geometry			
-									THREE.GeometryUtils.merge(geometry,m);
+									geometry.merge(m.geometry,m.matrix);
 									//true means don't add to mesh with non-groups visual objects
 									added = true;
 								}
@@ -560,7 +586,8 @@ define(function(require) {
 						
 						//if visual object didn't belong to group, add it to mesh with remainder of them
 						if(!added){
-							THREE.GeometryUtils.merge(geometryGroups[aspectInstancePath],m);
+							var geometry = geometryGroups[aspectInstancePath];
+							geometry.merge(m.geomemtry, m.matrix);
 						}
 						//reset flag for next visual object
 						added = false;

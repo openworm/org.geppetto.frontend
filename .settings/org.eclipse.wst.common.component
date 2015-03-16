@@ -13,3 +13,20 @@
         <property name="context-root"/>
     </wb-module>
 </project-modules>
+=======
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="org.geppetto.frontend">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/js/" source-path="/src/main/webapp/js"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/font/" source-path="/src/main/webapp/font"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
+        <property name="java-output-path" value="/org.geppetto.frontend/bin"/>
+        <property name="component.exclusion.patterns" value="WEB-INF/lib/*.jar"/>
+        <property name="context-root"/>
+    </wb-module>
+</project-modules>
+>>>>>>> bc426b339bc2d8cbb41eb72b47b85c34799f8228

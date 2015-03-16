@@ -46,7 +46,6 @@ define(function(require) {
 	return Widget.View.extend({
 		
 		datasets: [],
-		datainfos:[],
 		
 		defaultNetworkActivityOptions:  {
 			width: 660,
@@ -58,7 +57,7 @@ define(function(require) {
 			this.options = options;
 			Widget.View.prototype.initialize.call(this,options);
 			this.setOptions(this.defaultNetworkActivityOptions);
-			this.limit = 50;
+			this.limit = 100;
 			this.render();
 			this.setSize(options.height, options.width);
 			
@@ -93,19 +92,16 @@ define(function(require) {
 
 			if (state!= null) {					
 				if(state instanceof Array){
-					this.datasets.push(state);
-					this.datainfos.push({
-						label:"manual"
-					});
+					this.datasets.push({
+							label:"manual",
+							values : state,
+							selected : 0
+							});
 				}
 				
 				else{
 					var value = state.getValue();
 					var id = state.getInstancePath();
-					this.datainfos.push({
-						label : id,
-						variable : state
-					});
 					this.datasets.push({
 						label : id,
 						variable : state,
@@ -126,8 +122,8 @@ define(function(require) {
 		 */
 		updateDataSet: function() {
 			for(var key in this.datasets) {
-				if(this.datainfos[key].label != 'manual'){
-					var newValue = this.datainfos[key].variable.getValue();
+				if(this.datasets[key].label != 'manual'){
+					var newValue = this.datasets[key].variable.getValue();
 	
 					var oldata = this.datasets[key].values;
 					var reIndex = false;
@@ -161,7 +157,7 @@ define(function(require) {
 		createLayout: function(){
 			//$("svg").remove();
 			
-			this.options.innerWidth = 300;//this.networkActivityContainer.innerWidth() - this.widgetMargin;
+			this.options.innerWidth = this.networkActivityContainer.innerWidth() - this.widgetMargin;
 			this.options.innerHeight = 500;//this.networkActivityContainer.innerHeight() - this.widgetMargin;
 			
 			
@@ -173,14 +169,14 @@ define(function(require) {
 		
 		createListLayout: function(){
 
-			var width = 300,
-		    height = 20,bigHeight = 90;
+			var width = this.options.innerWidth,
+		    height = 10,bigHeight = 40;
 			//console.log("Creating Chart");
 			
 			var chart = d3.horizon()
 			    .width(width)
 			    .height(function(d){return d.selected? +bigHeight : +height ;})
-			    .bands(3)
+			    .bands(20)
 			    .mode("offset")
 			    .interpolate("linear")
 			    .dataValues(function(d){return d.values;});
@@ -190,18 +186,15 @@ define(function(require) {
 		    	.data(this.datasets);
 		    dataselection.enter().append("svg")
 		  		.attr("height",height).attr("class","horizon")
-			    .on("mouseover", function(){
-			    	//this.__data__.selected =1;
-			    	d3.select(this).datum().selected=1;
-			        d3.select(this).transition().style("height",bigHeight).duration(300)
+		  		.text(function(d){return (d.selected)?d.id:"";})
+		  		.on("click",function(){
+		  			var sel =d3.select(this).datum().selected; 
+		  			sel=(sel)?0:1;
+			        d3.select(this).transition().style("height",(sel)?bigHeight:height).duration(300)
 			        	.call(chart);
-			    })
-			    .on("mouseout", function(){
-						//this.__data__.selected =0;
-			    	d3.select(this).datum().selected=0;
-					d3.select(this).transition().style("height",height).duration(300)
-						.call(chart);
-			    });
+			        d3.select(this).datum().selected = sel;
+		  		});
+
 		    
 		    dataselection.exit().remove();
 			dataselection.call(chart);

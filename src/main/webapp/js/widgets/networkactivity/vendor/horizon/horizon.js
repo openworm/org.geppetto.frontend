@@ -14,23 +14,22 @@
         width = 1024,
         height = 40;
     var dataValues = function(d){return d;};
-
+    var yMax = -Infinity;
     var color = d3.scale.linear()
-        .domain([-100, 0,.25, .5,.75])
-        .range(["#FF0000", "#00FF00", "#0000FF","#FFFF00","#00FFFF"]);
-
+        .domain([-1,0,1])
+        .range(["#FF0000", "#FF0000","#0000FF"]);
+// "#0000FF","#FFFF00",
     // For each small multiple…
     function horizon(g) {
       g.each(function(d) {
         var g = d3.select(this),
-            xMin = -Infinity,
-            xMax = Infinity,
-            yMax = -Infinity,
+            xMin = Infinity,
+            xMax = -Infinity,
             x0, // old x-scale
             y0, // old y-scale
             t0,
             id; // unique id for paths
-
+        yMax = (yMax == null || yMax == undefined)?-Infinity:yMax;
         // Compute x- and y-values along with extents.
         var data = dataValues(d).map(function(d, i) {
 	            var xv = x.call(this, d, i),

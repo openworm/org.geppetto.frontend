@@ -165,7 +165,8 @@ define(function(require) {
 					var ret = null;
 
 					switch (objType){
-					case "CylinderOrSphere":
+					case "CylinderNode":
+					case "SphereNode":
 						var merged = new THREE.Geometry();
 						objArray.forEach(function(obj){
 							obj.geometry.dynamic = true;
@@ -178,7 +179,7 @@ define(function(require) {
 						var meshWithAll = new THREE.Mesh(merged, materials["mesh"]);
 						ret = meshWithAll;
 						break;
-					case "Particle":
+					case "ParticleNode":
 						var particleGeometry = new THREE.Geometry();
 						objArray.forEach(function(obj){
 							particleGeometry.vertices.push(obj);
@@ -190,7 +191,8 @@ define(function(require) {
 						merged.geometry.verticesNeedUpdate = true;
 						ret = merged;
 						break;
-					case "ColladaOrThreeOBJ":
+					case "ColladaNode":
+					case "OBJNode":
 						//TODO: can we have multiple collada / OBJ ? Do we merge them?
 						//var merged = new THREE.Geometry();
 						//objArray.forEach(function(obj){
@@ -210,33 +212,29 @@ define(function(require) {
 				visualizationTreeNodeTo3DObj: function(node, materials) {
 					var threeObject = null;
 					switch (node._metaType) {
-					case "ParticleNode" : 
+					case "ParticleNode": 
 						threeObject = GEPPETTO.SceneFactory.createParticle(node);
-						threeObject.type = "Particle";
 						break;
 
 					case "CylinderNode":
 						threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
-						threeObject.type = "CylinderOrSphere";
 						break;
 
 					case "SphereNode":
 						threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, materials["mesh"]);
-						threeObject.type = "CylinderOrSphere";
 						break;
 
 					case "ColladaNode":
 						threeObject = GEPPETTO.SceneFactory.loadColladaModelFromNode(node);
-						threeObject.type = "ColladaOrThreeOBJ";
 						break;
 
 					case "OBJNode":
 						threeObject = GEPPETTO.SceneFactory.loadThreeOBJModelFromNode(node);
-						threeObject.type = "ColladaOrThreeOBJ";
 						break;
 					}
 					if(threeObject){
 						threeObject.visible = true;
+						threeObject.type = node._metaType;
 						//TODO: this is empty for collada and obj nodes 
 						threeObject.instancePath = node.instancePath;
 						threeObject.highlighted = false;

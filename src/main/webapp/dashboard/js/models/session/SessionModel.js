@@ -1,43 +1,38 @@
-define(
-    [
-        'jquery',
-        'underscore',
-        'backbone'
-    ],
-    function ($, _, Backbone) {
-        var SessionModel = Backbone.Model.extend({
-            defaults: {
-                user: {
-                    name: "Guest",
-                    id: "Guest"
-                }
-            },
+define([ 'jquery', 'underscore', 'backbone' ], function($, _, Backbone) {
+	var SessionModel = Backbone.Model.extend({
+		defaults : {
+			user : {
+				name : "Guest",
+				id : "Guest"
+			}
+		},
+		url : "currentuser",
+		// url: "api/session.json",
 
-            url: "api/session.json",
+		initialize : function() {
+			this.fetch();
+		},
 
-            initialize: function () {
-                this.fetch();
-            },
+		parse : function(data) {
+			if (!data.id) {
+				this.set("user", $.extend({}, this.attributes.user,
+						this.defaults));
+			} else {
+				this.set("user", $.extend({}, this.attributes.user, data));
+			}
+		},
 
-            parse: function (data) {
-                if (!data.id) {
-                    this.set("user", $.extend({}, this.attributes.user, this.defaults));
-                } else {
-                    this.set("user", $.extend({}, this.attributes.user, data));
-                }
-            },
+		isAuthorized : function() {
+			return Boolean(this.get("user").token);
+		}
 
-            isAuthorized: function () {
-                return Boolean(this.get("user").token);
-            }
+	});
 
-        });
+	var _instance = new SessionModel();
 
-        var _instance = new SessionModel();
-
-        return {
-            getInstance: function () {
-                return _instance;
-            }
-        };
-    });
+	return {
+		getInstance : function() {
+			return _instance;
+		}
+	};
+});

@@ -139,20 +139,23 @@ define(function(require) {
 					var threeDeeObj = null;
 					var threeDeeObjList = [];
 
-					$.each(visTree, function(key, node) {
-						if(node._metaType === 'CompositeNode'){
-							var objects  = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(node, materials);
-							for(var i =0; i<objects.length; i++){
-								threeDeeObjList.push(objects[i]);
+					if(visTree)
+					{
+						$.each(visTree, function(key, node) {
+							if(node._metaType === 'CompositeNode'){
+								var objects  = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(node, materials);
+								for(var i =0; i<objects.length; i++){
+									threeDeeObjList.push(objects[i]);
+								}
 							}
-						}
-						else{
-							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(node, materials)
-							if(threeDeeObj){
-								threeDeeObjList.push(threeDeeObj);
+							else{
+								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(node, materials)
+								if(threeDeeObj){
+									threeDeeObjList.push(threeDeeObj);
+								}
 							}
-						}
-					});
+						});
+					}
 					return threeDeeObjList;
 				},
 

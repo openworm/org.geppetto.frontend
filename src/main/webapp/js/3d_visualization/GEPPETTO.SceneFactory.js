@@ -39,6 +39,8 @@ define(function(require) {
 								p = new THREE.Vector3(position.x, position.y,
 										position.z);
 								mesh.position.set(p.x,p.y,p.z);
+								mesh.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(p.x,p.y,p.z));
+								mesh.geometry.verticesNeedUpdate = true;
 							}
 							GEPPETTO.getVARS().scene.add(mesh);
 							//keep track of aspects created by storing them in VARS property object
@@ -125,11 +127,17 @@ define(function(require) {
 					var aspectObjects = [];
 					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(aspect.VisualizationTree.content, materials);
 
-					if(threeDeeObjList.length > 0){
+					//only merge if there are more than one object
+					if(threeDeeObjList.length > 1){
 						var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
 						//investigate need to obj.dispose for obj in threeDeeObjList
 						mergedObjs.aspectInstancePath = aspect.instancePath;
 						aspectObjects.push(mergedObjs);
+					}else if(threeDeeObjList.length == 1){
+						//only one object in list, add it to local array and set 
+						//instance path from aspect
+						aspectObjects.push(threeDeeObjList[0]);
+						aspectObjects[0].aspectInstancePath = aspect.instancePath;
 					}
 
 					return aspectObjects;
@@ -336,6 +344,7 @@ define(function(require) {
 				create3DSphereFromNode : function(sphereNode, material) {
 
 					var sphere = new THREE.SphereGeometry(sphereNode.radius, 20, 20);
+					//sphere.applyMatrix(new THREE.Matrix4().makeScale(-1,1,1));
 					threeObject = new THREE.Mesh(sphere, material);
 					threeObject.position.set(sphereNode.position.x,
 							sphereNode.position.y,

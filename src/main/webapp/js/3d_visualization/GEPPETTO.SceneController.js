@@ -384,17 +384,15 @@ define(function(require) {
 					var segments = Object.keys(lines).length;
 
 					var mesh = GEPPETTO.getVARS().meshes[path];
-					mesh.geometry.computeBoundingBox();
-					var origin = mesh.geometry.boundingBox.center();
+					var origin = mesh.position.clone();
 					origin = mesh.localToWorld(origin);
 					
 					for ( var aspectPath in lines ) {
 						
 						var type = lines[aspectPath];
 						var destinationMesh = GEPPETTO.getVARS().meshes[aspectPath];
-						destinationMesh.geometry.computeBoundingBox();
 						var destination =
-							destinationMesh.geometry.boundingBox.center();
+							destinationMesh.position.clone();
 						destination = destinationMesh.localToWorld(destination);
 						
 						var geometry = new THREE.Geometry();

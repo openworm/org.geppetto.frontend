@@ -46,11 +46,11 @@ define(function(require){
 	require("widgets/WidgetUtility");
 	require("widgets/ContextMenu")(GEPPETTO);
 	//Plot Widget
-	require("widgets/plot/config")
+	require("widgets/plot/config");
 	//Popup Widget
 	require("widgets/popup/config");
 	//Scatter3d Widget
-	require("widgets/scatter3d/config");	
+	require("widgets/scatter3d/config");
 	//TreeVisualiser DAT Widget
 	require("widgets/treevisualiser/treevisualiserdat/config");
 	//TreeVisualiser D3 Widget
@@ -59,8 +59,9 @@ define(function(require){
 	require("widgets/variablevisualiser/config");
 	//Connectivity Widget
 	require("widgets/connectivity/config");
-	//Connectivity Widget
-	require("widgets/networkactivity/config")(GEPPETTO);
+	//Network Activity Widget
+	require("widgets/networkactivity/config");
+	
 	loadCss("assets/js/widgets/Widget.css");
 	};
 });

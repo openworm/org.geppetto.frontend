@@ -17,7 +17,7 @@
     var yMax = -Infinity;
     var color = d3.scale.linear()
         .domain([-1,0,1])
-        .range(["#FF0000", "#FF0000","#0000FF"]);
+        .range(["#FF0000", "#00FF00","#0000FF"]);
 // "#0000FF","#FFFF00",
     // For each small multiple…
     function horizon(g) {

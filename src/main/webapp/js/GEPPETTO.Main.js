@@ -47,6 +47,7 @@ define(function(require) {
 		PlotsController = require('widgets/plot/controllers/PlotsController');
 		Scatter3dController = require('widgets/scatter3d/controllers/Scatter3dController');
 		ConnectivityController = require('widgets/connectivity/controllers/ConnectivityController');
+		NetworkActivityController = require('widgets/networkactivity/controllers/NetworkActivityController');
 		PopupsController = require('widgets/popup/controllers/PopupController');
 		TreeVisualiserControllerD3 = require('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
 		TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
@@ -71,6 +72,7 @@ define(function(require) {
 			plotsController : null,
 			popupsController : null,
 			connectivityController : null,
+			networkActivityController : null,
 			scatter3dController : null,
 			variableVisController : null,
 			treeVisDatController : null,
@@ -198,6 +200,11 @@ define(function(require) {
 						GEPPETTO.Main.connectivityController = new ConnectivityController();
 					}
 					return GEPPETTO.Main.connectivityController;
+				}else if(type == GEPPETTO.Widgets.NETWORKACTIVITY){
+					if(GEPPETTO.Main.networkActivityController == null || undefined){
+						GEPPETTO.Main.networkActivityController = new NetworkActivityController();
+					}
+					return GEPPETTO.Main.networkActivityController;
 				}
 				
 			}

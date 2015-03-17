@@ -58,6 +58,7 @@ define(function(require) {
 			Widget.View.prototype.initialize.call(this,options);
 			this.setOptions(this.defaultNetworkActivityOptions);
 			this.limit = 100;
+			this.widgetMargin = 20;
 			this.render();
 			this.setSize(options.height, options.width);
 			
@@ -89,7 +90,8 @@ define(function(require) {
 		 */
 		horizonData : function(state, options){
 			//this.setOptions(options);
-
+			
+			var strValues ="";
 			if (state!= null) {					
 				if(state instanceof Array){
 					this.datasets.push({
@@ -98,32 +100,50 @@ define(function(require) {
 							selected : 0
 							});
 				}
-                else if(state._metaType == "EntityNode"){
-                    this.scanAndInsertVariableNodes(state);
+                else if(state._metaType == "EntityNode" || "AspectNode"){
+                	strValues += "Ent{ " + this.scanAndInsertVariableNodes(state) + "}";
                 }
 				else if(state._metaType == "VariableNode"){
-                    this.insertVariableNode(state);
+					strValues += "Var{" + this.insertVariableNode(state) + "}";
 				}
 			}
-			this.widgetMargin = 20;
 			
-			//console.log(datasets);
 			this.createLayout();
 			
-			return "Dataseries or object added to the network activity widget";
+			return "Dataseries added :" + strValues;
 		},
         /**
          *  Read node recursively to get all variableNodes
          */
         scanAndInsertVariableNodes: function(node){
-            if(node._metaType == "VariableNode"){
-                this.insertVariableNode(node);
-            }else{
-                var childrens = node.getChildren();
-                for(var child in childrens){
-                    this.scanAndInsertVariableNodes(child);
-                }
-            }
+        	var strVal = "";
+        	if(node._metaType != null){
+	        	
+	        	strVal += "[" + node._metaType +" "+ node.name + ":";
+	            if(node._metaType == "VariableNode"){
+	            	strVal += ",Var2 " + this.insertVariableNode(node);
+	            }else{
+	            	if(node.getChildren != null || undefined){
+	            		
+		                var childrens = node.getChildren();
+		                strVal += "\"" + childrens.length + "\"";
+		                if(childrens.length > 0){
+			                for(var childIndex in childrens){
+			                	strVal += ",child " 
+			                		+ childrens[childIndex]._metaType + ":" 
+			                		+ this.scanAndInsertVariableNodes(childrens[childIndex]);
+			                }
+		                }else{
+		                	strVal += " noChild";
+		                }
+	            	}else{
+	            		strVal += " noChild";
+	            	}
+	            }
+        	}else{
+        		strVal += "null";
+        	}
+        	return strVal + "]";
         },
         /**
          * Insert variableNode into datasets
@@ -133,10 +153,11 @@ define(function(require) {
             var id = varnode.getInstancePath();
             this.datasets.push({
                 label : id,
-                variable : state,
+                variable : varnode,
                 values : [ [0,value] ],
                 selected : 0
             });
+            return id;
         },
 		/**
 		 * Updates a data set, use for time series
@@ -183,7 +204,7 @@ define(function(require) {
 			//$("svg").remove();
 			
 			this.options.innerWidth = this.networkActivityContainer.innerWidth() - this.widgetMargin;
-			this.options.innerHeight = 500;//this.networkActivityContainer.innerHeight() - this.widgetMargin;
+			this.options.innerHeight = this.networkActivityContainer.innerHeight() - this.widgetMargin;
 			
 			
 			//console.log("Test : " + this.options.innerWidth);
@@ -201,7 +222,7 @@ define(function(require) {
 			var chart = d3.horizon()
 			    .width(width)
 			    .height(function(d){return d.selected? +bigHeight : +height ;})
-			    .bands(20)
+			    .bands(10)
 			    .mode("offset")
 			    .interpolate("linear")
 			    .dataValues(function(d){return d.values;});
@@ -211,15 +232,21 @@ define(function(require) {
 		    	.data(this.datasets);
 		    dataselection.enter().append("svg")
 		  		.attr("height",height).attr("class","horizon")
-		  		.text(function(d){return (d.selected)?d.id:"";})
 		  		.on("click",function(){
 		  			var sel =d3.select(this).datum().selected; 
 		  			sel=(sel)?0:1;
 			        d3.select(this).transition().style("height",(sel)?bigHeight:height).duration(300)
 			        	.call(chart);
 			        d3.select(this).datum().selected = sel;
+			        if(sel){
+			        	d3.select(this).append("text")
+					    .attr("class","horizonText")
+					    .attr("x",10).attr("y",20)
+					    .text(function(d){return d.selected? d.label + " " :"";});
+			        }else{
+			        	d3.select(this).select(".horizonText").remove();
+			        }
 		  		});
-
 		    
 		    dataselection.exit().remove();
 			dataselection.call(chart);
@@ -241,6 +268,14 @@ define(function(require) {
 		 */
 		setOptions: function(options) {
 			this.options = options;
+		},
+		
+		reset : function () {
+			this.datasets = [];
+			
+			$(this.dialog).children().remove();
+
+			this.initialize();
 		},
 	});
 });

@@ -97,10 +97,10 @@ define(function(require) {
 					case GEPPETTO.Widgets.CONNECTIVITY:
 						widget = GEPPETTO.Main.getController(GEPPETTO.Widgets.CONNECTIVITY).addConnectivityWidget();
 						break;
-					//create connectivity widget
+					//create network activity widget
 					case GEPPETTO.Widgets.NETWORKACTIVITY:
-						widget = GEPPETTO.NetworkActivityController.addNetworkActivityWidget();
-						break;	
+						widget = GEPPETTO.Main.getController(GEPPETTO.Widgets.NETWORKACTIVITY).addNetworkActivityWidget();
+						break;
 					default:
 						break;
 				}
@@ -118,34 +118,34 @@ define(function(require) {
 				switch(widgetType) {
 					//removes plotting widget from geppetto
 					case GEPPETTO.Widgets.PLOT:
-						GEPPETTO.PlotsController.removePlotWidgets();
+						GEPPETTO.Main.getController(GEPPETTO.Widgets.PLOT).removePlotWidgets();
 						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
 					//removes popup widget from geppetto
 					case GEPPETTO.Widgets.POPUP:
-						GEPPETTO.PlotsController.removePopupWidgets();
+						GEPPETTO.Main.getController(GEPPETTO.Widgets.POPUP).removePopupWidgets();
 						return GEPPETTO.Resources.REMOVE_POPUP_WIDGETS;
 					//removes scatter3d widget from geppetto
 					case GEPPETTO.Widgets.SCATTER3D:
-						GEPPETTO.Scatter3dController.removeScatter3dWidgets();
+						GEPPETTO.Main.getController(GEPPETTO.Widgets.SCATTER3D).removeScatter3dWidgets();
 						return GEPPETTO.Resources.REMOVE_SCATTER3D_WIDGETS;	
 					//removes tree visualiser DAT widget from geppetto						
 					case GEPPETTO.Widgets.TREEVISUALISERDAT:
-						GEPPETTO.TreeVisualiserController.removeTreeVisualiserDATWidgets();
+						GEPPETTO.Main.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).removeTreeVisualiserDATWidgets();
 						return GEPPETTO.Resources.REMOVE_TREEVISUALISERDAT_WIDGETS;
 					//removes tree visualiser D3 widget from geppetto												
 					case GEPPETTO.Widgets.TREEVISUALISERD3:
-						GEPPETTO.TreeVisualiserController.removeTreeVisualiserD3Widgets();
+						GEPPETTO.Main.getController(GEPPETTO.Widgets.TREEVISUALISERD3).removeTreeVisualiserD3Widgets();
 						return GEPPETTO.Resources.REMOVE_TREEVISUALISERD3_WIDGETS;
 					//removes variable visualiser widget from geppetto
 					case GEPPETTO.Widgets.VARIABLEVISUALISER:
-						GEPPETTO.VariableVisualiserController.removeVariableVisualiserWidgets();
+						GEPPETTO.Main.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).removeVariableVisualiserWidgets();
 						return GEPPETTO.Resources.REMOVE_VARIABLEVISUALISER_WIDGETS;
 						//create connectivity widget
 					case GEPPETTO.Widgets.CONNECTIVITY:
-						GEPPETTO.ConnectivityController.removeConnectivityWidget();
+						GEPPETTO.Main.getController(GEPPETTO.Widgets.CONNECTIVITY).removeConnectivityWidget();
 						return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
 					case GEPPETTO.Widgets.NETWORKACTIVITY:
-						GEPPETTO.NetworkActivityController.removeNetworkActivityWidget();
+						GEPPETTO.Main.getController(GEPPETTO.Widgets.NETWORKACTIVITY).removeNetworkActivityWidget();
 						return GEPPETTO.Resources.REMOVE_NETWORKACTIVITY_WIDGETS;
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;

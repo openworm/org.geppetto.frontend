@@ -76,8 +76,8 @@ require(libraries, function(d3) {
 });
 
 // Load NetworkActivityController and other classes using GEPPETTO
-define(function(require) {
-	return function(GEPPETTO) {
-		require("widgets/networkactivity/controllers/NetworkActivityController")(GEPPETTO);
-	};
-});
+//define(function(require) {
+//	return {//function(GEPPETTO) {
+//		//require("widgets/networkactivity/controllers/NetworkActivityController")(GEPPETTO);
+//	};
+//});

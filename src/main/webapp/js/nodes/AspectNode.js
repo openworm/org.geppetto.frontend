@@ -253,7 +253,7 @@ define(function(require) {
 				getChildren : function() {
 					var subtrees = new Array();
 					subtrees = subtrees.concat(this.SimulationTree);
-					subtees = subtrees.concat(this.VisualizationTree);
+					subtrees = subtrees.concat(this.VisualizationTree);
 					subtrees = subtrees.concat(this.ModelTree);
 					return subtrees;
 				},

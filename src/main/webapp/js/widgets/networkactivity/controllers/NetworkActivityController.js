@@ -41,98 +41,70 @@
  * @author David Forcier (forcier.david1@gmail.com)
  */
 define(function(require) {
-	return function(GEPPETTO) {
-
-		var NetworkActivity = require('widgets/networkactivity/NetworkActivity');
-		var networkActivities = new Array();
-
-		GEPPETTO.NetworkActivityController = {
-
-			/**
-			 * Registers widget events to detect and execute following actions.
-			 * Used when widget is destroyed.
-			 *
-			 * @param {String} networkactivityID - ID of widget to register handler
-			 */
-			registerHandler: function(networkactivityID) {
-				GEPPETTO.WidgetsListener.subscribe(GEPPETTO.NetworkActivityController, networkactivityID);
-			},
-
-			/**
-			 * Returns all plotting widgets objects
-			 * 
-			 * @returns {Array} Array of connectivity widgets that exist
-			 */
-			getWidgets: function() {
-				return networkActivities;
-			},
-			
-			/**
-			 * Adds a new NetworkActivity Widget to Geppetto
-			 */
-			addNetworkActivityWidget : function(){
-				//look for a name and id for the new widget
-				var id = getAvailableWidgetId("NetworkActivity", networkActivities);
-				var name = id;
-
-				//create tree visualiser widget
-				var cnt = window[name] = new NetworkActivity({id:id, name:name,visible:false, width: 500, height: 500});
-
-				//create help command for tree visualiser d3
-				cnt.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
-
-				//store in local stack
-				networkActivities.push(cnt);
-				
-				this.registerHandler(id);
-
-				//add commands to console autocomplete and help option
-				GEPPETTO.Console.updateCommands("assets/js/widgets/networkactivity/NetworkActivity.js", cnt, id);
-				
-				//update tags for autocompletion
-				GEPPETTO.Console.updateTags(cnt.getId(), cnt);
-
-				return cnt;
-			},
+	var AWidgetController = require('widgets/AWidgetController');
+	var NetworkActivity = require('widgets/networkactivity/NetworkActivity');
+	
+	/**
+	 * @exports Widgets/Connectivity/ConnectivityController
+	 */
+	return AWidgetController.View.extend ({
 		
-			/**
-			 * Remove the NetworkActivity widget
-			 */
-			removeNetworkActivityWidgets : function(){
-				//remove all existing popup widgets
-				for(var i = 0; i < networkActivities.length; i++) {
-					var cnt = networkActivities[i];
+		
+		initialize: function(){
+			this.widgets = new Array();
+		},
+		
+		/**
+		 * Adds a new NetworkActivity Widget to Geppetto
+		 */
+		addNetworkActivityWidget : function(){
+			//look for a name and id for the new widget
+			var id = this.getAvailableWidgetId("NetworkActivity", this.widgets);
+			var name = id;
 
-					cnt.destroy();
-					i++;
-				}
+			//create tree visualiser widget
+			var cnt = window[name] = new NetworkActivity({id:id, name:name,visible:false, width: 500, height: 500});
 
-				networkActivities = new Array();
-			},
-			
-			/**
-			 * Receives updates from widget listener class to update NetworkActivity widget(s)
-			 * 
-			 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-			 */
-			update: function(event) {
-				//delete networkActivity widget(s)
-				if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-					this.removeNetworkActivityWidgets();
-				}
-				//update networkActivity widgets
-				else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-					//loop through all existing widgets
-					for(var i = 0; i < networkActivities.length; i++) {
-						var cnt = networkActivities[i];
+			//create help command for tree visualiser d3
+			cnt.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
 
-						//update networkActivities with new data set
-						cnt.updateDataSet();
-					}
+			//store in local stack
+			this.widgets.push(cnt);
+
+			GEPPETTO.WidgetsListener.subscribe(this,id);
+
+			//add commands help option
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/networkactivity/NetworkActivity.js", cnt, id);
+
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(cnt.getId(), cnt);
+
+			return cnt;
+		},
+		
+		/**
+		 * Receives updates from widget listener class to update NetworkActivity widget(s)
+		 * 
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+		 */
+		update: function(event) {
+			//delete networkActivity widget(s)
+			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
+			}
+			//update networkActivity widgets
+			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+				//loop through all existing widgets
+				for(var i = 0; i < this.widgets.length; i++) {
+					var cnt = this.widgets[i];
+
+					//update networkActivities with new data set
+					cnt.updateDataSet();
 				}
-			},
+			}
+		},
 			
 			
-		};		
-	};
+			
+	});
 });

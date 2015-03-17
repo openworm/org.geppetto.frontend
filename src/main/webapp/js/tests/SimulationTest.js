@@ -121,7 +121,7 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							var scene = JSON.parse(payload.update).scene;
 
-							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
 
 							var passTimeTest = false;
 							if(time < 10){
@@ -180,7 +180,7 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							var scene = JSON.parse(payload.update).scene;
 
-							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
 
 							var passTimeTest = false;
 							if(time < 4){
@@ -276,7 +276,7 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							var scene = JSON.parse(payload.update).scene;
 
-							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
 
 							var passTimeTest = false;
 							if(time < 10){
@@ -358,7 +358,7 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							var scene = JSON.parse(payload.update).scene;
 
-							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
 							Simulation.setSimulationLoaded();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
@@ -430,7 +430,7 @@ define(function(require) {
 								var payload = JSON.parse(parsedServerMessage.data);
 								var scene = JSON.parse(payload.update).scene;
 								
-					            GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+					            GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
 
 								notEqual(sample,null,"Entities checked");
 								equal(sample.get('aspects').length,1,"Aspects checked");
@@ -503,7 +503,7 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							var scene = JSON.parse(payload.update).scene;
 
-							GEPPETTO.RuntimeTreeFactory.createRuntimeTree(scene);
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
 							
 							Simulation.setOnSelectionOptions({draw_connection_lines:false});
 							ok(true, "Simulation loaded, passed");

@@ -76,7 +76,7 @@ define(function(require) {
 			var name = id;
 
 			// create tree visualiser widget
-			var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : false, width: 260, height: 350});
+			var tvdat = window[name] = new TreeVisualiserDAT({id : id, name : name,	visible : true, width: 260, height: 350});
 			// create help command for plot
 			tvdat.help = function() {
 				return GEPPETTO.Utility.getObjectCommands(id);

@@ -130,8 +130,8 @@ define(function(require) {
 
 							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
 							notEqual(purkinje, null,"Entities checked");
-							equal(purkinje.get('aspects').length, 1, "Aspects checked");
-							equal(purkinje.get('connections').length, 0, "Connections checked");
+							equal(purkinje.getAspects().length, 1, "Aspects checked");
+							equal(purkinje.getConnections().length, 0, "Connections checked");
 							equal(jQuery.isEmptyObject(purkinje.electrical.VisualizationTree),false,"Test Visualization at load");
 							equal(purkinje.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
 							equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree),false,"Test Model tree at load");
@@ -148,7 +148,7 @@ define(function(require) {
 					        	var modelTree = update[updateIndex].modelTree;
 					        	
 					        	//create client side model tree
-					        	GEPPETTO.RuntimeTreeFactory.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
 								equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree),false,"Test Model Tree Command");
 								notEqual(purkinje.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
 							}     	        	
@@ -189,7 +189,7 @@ define(function(require) {
 
 							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
 							notEqual(hhcell, null,"Entities checked");
-							equal(hhcell.get('aspects').length, 1, "Aspects checked");
+							equal(hhcell.getAspects().length, 1, "Aspects checked");
 							equal(jQuery.isEmptyObject(hhcell.electrical.VisualizationTree),false,"Test Visualization at load");
 							equal(jQuery.isEmptyObject(hhcell.electrical.ModelTree),false,"Test Model tree at load");
 							equal(jQuery.isEmptyObject(hhcell.electrical.SimulationTree),true,"Test Simulation tree at load");							
@@ -229,7 +229,7 @@ define(function(require) {
 									var payload = JSON.parse(parsedServerMessage.data);
 									var scene = JSON.parse(payload.update).scene;
 
-									GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
+									GEPPETTO.RuntimeTreeController.updateRuntimeTree(scene);
 									notEqual(hhcell.electrical.SimulationTree.getChildren(), null,"Simulation tree check after udpate");
 									hhcell.electrical.getModelTree();
 								}
@@ -244,7 +244,7 @@ define(function(require) {
 					        	var modelTree = update[updateIndex].modelTree;
 					        	
 					        	//create client side model tree
-					        	GEPPETTO.RuntimeTreeFactory.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
 								equal(jQuery.isEmptyObject(hhcell.electrical.ModelTree),false,"Test Model Tree Command");
 								notEqual(hhcell.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
 							}     	        	
@@ -286,7 +286,7 @@ define(function(require) {
 							equal(passTimeTest,true, "Simulation loaded within time limit: " + time);
 							notEqual(c302,null,"Entities checked");
 							equal(c302.getChildren().length,300, "C302 Children checked");
-							equal(c302.get('aspects').length,1, "Aspects checked");
+							equal(c302.getAspects().length,1, "Aspects checked");
 							equal(jQuery.isEmptyObject(c302.electrical.VisualizationTree),false, "Test Visualization at load");
 							equal(jQuery.isEmptyObject(c302.electrical.ModelTree),false, "Test Model tree at load");
 							equal(jQuery.isEmptyObject(c302.electrical.SimulationTree),true, "Test Simulation tree at load");							
@@ -321,7 +321,7 @@ define(function(require) {
 									var payload = JSON.parse(parsedServerMessage.data);
 									var scene = JSON.parse(payload.update).scene;
 
-									GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
+									GEPPETTO.RuntimeTreeController.updateRuntimeTree(scene);
 									
 									notEqual(c302.ADAL_0.electrical.SimulationTree.getChildren(),null, "ADAL_0 Simulation tree check after udpate");
 									notEqual(c302.ADAR_0.electrical.SimulationTree.getChildren(),null, "ADAR_0 Simulation tree check after udpate");
@@ -379,7 +379,7 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							var updatedRunTime = JSON.parse(payload.update).scene;
 
-							GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
+							GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
 
 							 break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
@@ -399,7 +399,7 @@ define(function(require) {
 									var payload = JSON.parse(parsedServerMessage.data);
 									var scene = JSON.parse(payload.update).scene;
 
-									GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
+									GEPPETTO.RuntimeTreeController.updateRuntimeTree(scene);
 									
 									notEqual(purkinje.electrical.SimulationTree.P.neuron0.ge,null, "Recording variable ge present");
 									notEqual(purkinje.electrical.SimulationTree.P.neuron0.gi,null, "Recroding variable gi present");
@@ -433,7 +433,7 @@ define(function(require) {
 					            GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
 
 								notEqual(sample,null,"Entities checked");
-								equal(sample.get('aspects').length,1,"Aspects checked");
+								equal(sample.getAspects().length,1,"Aspects checked");
 								equal(jQuery.isEmptyObject(sample.fluid.VisualizationTree),false,"Test Visualization at load");
 								equal(jQuery.isEmptyObject(sample.fluid.ModelTree),false,"Test Model tree at load");
 								equal(jQuery.isEmptyObject(sample.fluid.SimulationTree),true, "Test Visualization tree at load");
@@ -463,7 +463,7 @@ define(function(require) {
 								
 								 var updatedRunTime = JSON.parse(payload.update).scene;
 						            
-								 GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(updatedRunTime);
+								 GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
 								 break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
 								if(parsedServerMessage.requestID == this.startRequestID){
@@ -473,7 +473,7 @@ define(function(require) {
 										var payload = JSON.parse(parsedServerMessage.data);
 										var scene = JSON.parse(payload.update).scene;
 
-										GEPPETTO.RuntimeTreeFactory.updateRuntimeTree(scene);
+										GEPPETTO.RuntimeTreeController.updateRuntimeTree(scene);
 
 										notEqual(sample.fluid.SimulationTree.getChildren(),null,"Simulation tree check");
 										start();

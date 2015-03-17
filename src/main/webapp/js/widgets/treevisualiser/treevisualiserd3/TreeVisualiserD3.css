@@ -55,9 +55,12 @@ circle {
 }
 
 text {
-  font: 10px sans-serif;
+  font-size: 10px;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   /*pointer-events: none;*/
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  fill:white;
+  stroke: none;
+  text-rendering: optimizeLegibility;
 }
 
 div[id^='TreeVisualiserD3']

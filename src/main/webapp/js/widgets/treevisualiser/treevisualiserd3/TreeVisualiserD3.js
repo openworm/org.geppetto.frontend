@@ -132,7 +132,7 @@ define(function(require) {
 						link.type = "suit";
 						dataset.links.push(link);
 					}
-					var children = data.getChildren().models;
+					var children = data.getChildren();
 					if (children.length > 0){
 						var parentFolderTmp = nodeName; 
 						for (var childIndex in children){

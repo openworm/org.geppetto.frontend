@@ -41,14 +41,7 @@ define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		relations : [ {
-			type : Backbone.Many,
-			key : 'children',
-			relatedModel : Node
-		} ],
-		defaults : {
-			children : []
-		},
+		children : null,
 		type : "",
 		modified : false,
 
@@ -66,6 +59,7 @@ define(function(require) {
 			this.modified = options.modified;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
+			this.children = new Array();
 		},
 
 		/**
@@ -77,8 +71,7 @@ define(function(require) {
 		 * 
 		 */
 		getChildren : function() {
-			var children = this.get("children");
-			return children;
+			return this.children;
 		},
 
 		/**

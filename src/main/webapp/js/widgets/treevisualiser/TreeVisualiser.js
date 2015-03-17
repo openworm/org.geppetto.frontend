@@ -50,7 +50,7 @@ define(function(require) {
 				Widget.View.prototype.initialize.call(this,options);
 				
 				this.datasets = [];
-				
+				this.visible = options.visible;
 				this.render();
 				this.setSize(options.width,options.height);
 	

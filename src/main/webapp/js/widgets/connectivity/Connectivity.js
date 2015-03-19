@@ -120,7 +120,7 @@ define(function(require) {
 							var customNodes = connectionItem.getCustomNodes();
 							for (var customNodeIndex in connectionItem.getCustomNodes()){
 								if ('getChildren' in customNodes[customNodeIndex]){
-									var customNodesChildren = customNodes[customNodeIndex].getChildren().models;
+									var customNodesChildren = customNodes[customNodeIndex].getChildren();
 									for (var customNodeChildIndex in customNodesChildren){
 										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
 											linkItem["synapse_type"] = customNodesChildren[customNodeChildIndex].getValue();
@@ -164,7 +164,7 @@ define(function(require) {
 //		                                          "Dopamine","FMRFamide","GABA","Generic_GJ",
 //		                                          "Glutamate", "Octopamine", "Serotonin",
 //		                                          "Serotonin_Acetylcholine","Serotonin_Glutamate"]);
-			var legendRectSize = 18;
+			var legendRectSize = 20;
 			var legendSpacing = 4;
 			var sizeLegend = {width: 120};
 			var legendPos = this.options.innerWidth - sizeLegend.width;
@@ -287,7 +287,7 @@ define(function(require) {
 		createMatrixLayout: function(){
 			var legendRectSize = 18;
 			var legendSpacing = 4;
-			var margin = {top: 50, right: 10, bottom: 10, left: 50};
+			var margin = {top: 30, right: 10, bottom: 10, left: 3};
 			var sizeLegend = {width: 120};
 			
 			var matrixDim = (this.options.innerHeight < (this.options.innerWidth - sizeLegend.width))?(this.options.innerHeight):(this.options.innerWidth - sizeLegend.width);
@@ -305,6 +305,7 @@ define(function(require) {
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		    var matrix = [];
 		    var nodes = this.dataset.nodes;
+		    var root=this.dataset.root;
 		    var n = nodes.length;
 
 		    // Compute index per node.
@@ -354,7 +355,7 @@ define(function(require) {
 
 		      row.append("line")
 		          .attr("x2", this.options.innerWidth);
-
+		      /*
 		      row.append("text")
 		          .attr("x", -6)
 		          .attr("y", x.rangeBand() / 2)
@@ -362,7 +363,7 @@ define(function(require) {
 		          .attr("text-anchor", "end")
 		          .text(function(d, i) {
 		        	  return nodes[i].id; 
-		        	  });
+		        	  });*/
 
 		      var column = this.svg.selectAll(".column")
 		          .data(matrix)
@@ -372,15 +373,21 @@ define(function(require) {
 
 		      column.append("line")
 		          .attr("x1", -this.options.innerWidth);
-
+		      /*
 		      column.append("text")
 		          .attr("x", 4)
 		          .attr("y", x.rangeBand() / 2)
 		          .attr("text-anchor", "start")
 		          .text(function(d, i) { 
 		        	  return nodes[i].id; 
-		        	  });
+		        	  });*/
 		      
+		      var tooltip = this.svg
+			  	.append("text")
+			  	.attr("x", 0)
+			  	.attr("y", -10)
+			  	.attr('class', 'connectionlabel')
+			  	.text("Hover the squares to see the connections.");
 		    
 		    //LEGEND  
 		    var legend = this.svg.selectAll('.legend')
@@ -391,7 +398,7 @@ define(function(require) {
 		    	.attr('transform', function(d, i) {
 				    var height = legendRectSize + legendSpacing;
 				    var offset = 0;
-				    var horz = -2 * legendRectSize + matrixDim;
+				    var horz = matrixDim+5;
 				    var vert = i * height - offset;
 				    return 'translate(' + horz + ',' + vert + ')';
 				  });
@@ -405,11 +412,12 @@ define(function(require) {
 		    legend.append('text')
 		    .attr('x', legendRectSize + legendSpacing)
 		    .attr('y', legendRectSize - legendSpacing)
+		    .attr('class', 'legend')
 		    .text(function(d) { return d; });
 		    
 		    //FILTERS AND EVENTS
-		    this.connectivityContainer.append("<div id='filters' style='width:" + sizeLegend.width + "px;left:" + (matrixDim + this.widgetMargin) + "px;top:" + (matrixDim - 40) + "px;'></div>");
-		    $('#filters').append("<span class='filtersLabel'>Order:</span><select id='order'><option value='id'>by Cell Name</option><option value='pre_count'>by # pre</option><option value='post_count'>by # post</option></select>");
+		    this.connectivityContainer.append("<div id='filters' style='width:" + sizeLegend.width + "px;left:" + (matrixDim + this.widgetMargin) + "px;top:" + (matrixDim - 32) + "px;'></div>");
+		    $('#filters').append("<span class='filtersLabel'>Select the ordering</span><select id='order'><option value='id'>by Entity Name</option><option value='pre_count'>by # pre</option><option value='post_count'>by # post</option></select>");
 //		    TODO: Commented it out once Louvain Community detection was implemented
 //		    $('#filters').append("<span class='filtersLabel'>Order:</span><select id='order'><option value='id'>by Cell Name</option><option value='community'>by Louvain Community </option><option value='pre_count'>by # pre</option><option value='post_count'>by # post</option></select>");
 //		    $('#filters').append("<span class='filtersLabel'>Colour:</span><select id='colour'><option value='id'>by Neuromodulator</option><option value='community'>by Louvain Community </option></select>");
@@ -449,10 +457,27 @@ define(function(require) {
 				    .attr("height", x.rangeBand())
 				    .attr("title", function(d) { return d.id;})
 				    .style("fill-opacity", function(d) { return z(d.z); })
-				    .style("fill", function(d) {return c(d.z); });
-				    //.on("mouseover", mouseover)
-				    //.on("mouseout", mouseout);
+				    .style("fill", function(d) {return c(d.z); })
+					.on("click", function(d){
+						Simulation.unSelectAll();
+						//Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.
+						eval(root.name+"."+nodes[d.x].id).select();
+						eval(root.name+"."+nodes[d.x].id).showConnectionLines(false);
+						eval(root.name+"."+nodes[d.y].id).select();
+						eval(root.name+"."+nodes[d.y].id).showConnectionLines(false);
+						})
+				    .on("mouseover", function(d){
+				    	d3.select(this.parentNode.appendChild(this)).transition().duration(100).style({'stroke-opacity':1,'stroke':'white', 'stroke-width':'2'});
+				    	d3.select("body").style('cursor','pointer');
+						return tooltip.transition().duration(100).text(nodes[d.x].id + " is connected to " + nodes[d.y].id);
+						})
+					.on("mouseout", function(){
+						d3.select(this).transition().duration(100).style({'stroke-opacity':0,'stroke':'white'});
+						d3.select("body").style('cursor','default');
+						return tooltip.text("");
+						});
 			}
+			
 			
 			function mouseover(p) {
 				d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
@@ -486,9 +511,6 @@ define(function(require) {
 			if(options != null) {
 				$.extend(this.options, options);
 			}
-		},
-		
-				
-
+		},		
 	});
 });

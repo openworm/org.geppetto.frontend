@@ -64,9 +64,7 @@ require(reqs, function(d3) {
 
 //Load ConnectivityController and other classes using GEPPETTO
 define(function(require) {
-	return function(GEPPETTO) {
-		require("widgets/connectivity/controllers/ConnectivityController")(GEPPETTO);
-		
+	return {		
 		// Register Commands
 //		GEPPETTO.MenuManager.registerNewCommandProvider(["EntityNode",
 //		                                                 "AspectNode",

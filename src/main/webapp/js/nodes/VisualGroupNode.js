@@ -43,16 +43,7 @@ define(function(require) {
 	var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
 
 	return Node.Model.extend({
-		relations : [ {
-			type : Backbone.Many,
-			key : 'visualGroupElements',
-			relatedModel : VisualGroupElementNode,
-		}],
-
-		defaults : {
-			visualGroupElements : [],
-		},
-
+		visualGroupElements : null,
 		type : "",
 		highSpectrumColor : "",
 		lowSpectrumColor : "",
@@ -74,6 +65,7 @@ define(function(require) {
 			this.instancePath = options.instancePath;
 			this.domainType = options.domainType;
 			this._metaType = options._metaType;
+			this.visualGroupElements = new Array();
 		},
 
 		/**
@@ -107,27 +99,17 @@ define(function(require) {
 		},
 
 		/**
-		 * Get this visual group's elements
-		 * 
-		 * @command VisualGroupNode.getVisualGroupElements()
-		 * @returns {Array} Array of Visual Group Elements
-		 * 
-		 */
-		getVisualGroupElements : function() {
-			var connections = this.get("visualGroupElements").models;
-			return connections;
-		},
-
-		/**
 		 * Get this visual group children
 		 * 
-		 * @command VisualGroupNode.getChildren()
+		 * @command VisualGroupNode.getVisualGroupElements()
 		 * @returns {List<Aspect>} All children e.g. Visual Group Element Nodes
 		 */
-		getChildren : function() {
-			 var children = new Backbone.Collection();
-			 children.add(this.get("visualGroupElements").models);
-			 return children;
+		getVisualGroupElements : function() {
+			 return this.visualGroupElements;
+		},
+		
+		getChildren : function(){
+			return this.visualGroupElements;
 		},
 		
 		show : function(mode){		

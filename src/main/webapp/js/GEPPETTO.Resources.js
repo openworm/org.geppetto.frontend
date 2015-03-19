@@ -221,6 +221,8 @@ define(function(require) {
 			
 			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
 			
+			WRITING_MODEL : 'Writing model as ',	
+			
 			/**
 			 * GEPPETTO.Main resources
 			 */

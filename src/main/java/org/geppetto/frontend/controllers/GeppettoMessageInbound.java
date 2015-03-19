@@ -37,6 +37,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
@@ -53,6 +55,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Class used to process Web Socket Connections. Messages sent from the connecting clients, web socket connections, are received in here.
@@ -255,6 +258,21 @@ public class GeppettoMessageInbound extends MessageInbound
 				String instancePath = gmsg.data;
 				
 				_servletController.getModelTree(requestID,instancePath,this);
+				break;
+			}
+			case GET_SUPPORTED_OUTPUTS:
+			{
+//				String instancePath = gmsg.data;
+//				
+//				_servletController.getModelTree(requestID,instancePath,this);
+				break;
+			}
+			case WRITE_MODEL:
+			{
+				
+				Map<String, String> parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				_servletController.writeModel(requestID,parameters.get("instancePath"),parameters.get("format"),this);
+							
 			}
 			default:
 			{

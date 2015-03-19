@@ -322,6 +322,41 @@ define(function(require) {
 				getVisualizationTree : function() {
 					return this.VisualizationTree;
 				},
+				
+				/**
+				 * Write Model for this aspect
+				 * 
+				 * @command AspectNode.writeModel(format)
+				 * * @param {String} name - File format to write
+				 */
+				writeModel : function(format) {
+					//TODO: Change for inbound_messages_types
+					var parameters = {};
+					parameters["instancePath"] = this.instancePath;
+					parameters["format"] = format;
+					GEPPETTO.MessageSocket.send("write_model",
+								parameters);
+
+					return GEPPETTO.Resources.WRITING_MODEL + format;
+				},
+				
+				/**
+				 * Write Model for this aspect
+				 * 
+				 * @command AspectNode.writeModel(format)
+				 * * @param {String} name - File format to write
+				 */
+				getSupportedOutputs : function(format) {
+					//TODO: Change for inbound_messages_types
+//					var parameters = {};
+//					parameters["instancePath"] = this.instancePath;
+//					parameters["format"] = format;
+//					GEPPETTO.MessageSocket.send("write_model",
+//								parameters);
+//
+//					return GEPPETTO.Resources.WRITING_MODEL + format;
+					console.log("Getting supported outputs");
+				},				
 
 				/**
 				 * Print out formatted node

@@ -54,7 +54,9 @@ public enum INBOUND_MESSAGE_TYPES {
 	CLEAR_WATCH("clear_watch"),
 	NOTIFY_USER("notify_user"),
 	IDLE_USER("idle_user"),
-	GET_MODEL_TREE("get_model_tree"),;
+	GET_MODEL_TREE("get_model_tree"),
+	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
+	WRITE_MODEL("write_model");
 
 	private INBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

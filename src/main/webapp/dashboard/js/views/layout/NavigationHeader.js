@@ -53,13 +53,13 @@ define([
         render: function () {
             if (this.authorized()) {
                 this.userMenus = [
+//                    {
+//                        title: "View Profile",
+//                        url: "#/user/profile"
+//                    },
                     {
-                        title: "View Profile",
-                        url: "#/user/profile"
-                    },
-                    {
-                        title: "Exit",
-                        url: '/somLogoutUrl'
+                        title: "Logout",
+                        url: '/someLogoutUrl'
                     }
                 ];
             } else {
@@ -86,5 +86,4 @@ define([
     });
     return NavigationHeader;
 
-})
-;
+});

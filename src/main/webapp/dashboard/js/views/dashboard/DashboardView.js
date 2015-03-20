@@ -6,23 +6,25 @@ define([
     'collections/projects/ProjectsCollection',
     'views/projects/ProjectPreviewView',
     'views/projects/ProjectDetailsView',
+    'models/project/ProjectModel',
     //dirty hack for handlebars loading wait
     'handlebars',
     'libs/ginny/ginny'
-], function ($, _, Backbone, dashboardTemplate, ProjectsCollection, ProjectPreviewView, ProjectDetailsView) {
+], function ($, _, Backbone, dashboardTemplate, ProjectsCollection, ProjectPreviewView, ProjectDetailsView, ProjectModel) {
 
     var SomeBeansPageView = Backbone.View.extend({
 
         template: Handlebars.compile(dashboardTemplate),
 
         events:{
-            'click .project-preview-tn':'showProject'
+            'click .project-preview-tn':'showProject',
+            'dblclick .project-preview-tn':'openSimulation'
         },
 
         initialize:function (options) {
             this.collection = new ProjectsCollection();
              _.bindAll(this, 'render', 'remove', 'renderProjects', 'appendProjects',
-                 'onError', 'filter', 'showProject'); // fixes loss of context for 'this' within methods
+                 'onError', 'filter', 'showProject', 'openSimulation'); // fixes loss of context for 'this' within methods
             this.subviews = [];
 
         },
@@ -72,6 +74,28 @@ define([
                 el: this.$el.find("#project-details")
             });
             projectDetailsView.render();
+        },
+
+        openSimulation: function(event){
+        	$(".selected").removeClass( "selected" );
+        	$(event.target).addClass("selected");
+            var id = $(event.target).attr("project-id");
+            if (id === undefined){
+                id = $(event.target).parents(".project-preview").attr("project-id");
+            }
+            var model = new ProjectModel({
+                id: id
+            });
+            model.fetch({
+            	success : function() {
+                    var simulationUrl = model.toJSON().geppettoModel.url;
+                    var url = window.location.href;
+                    if (url.indexOf('/dashboard') > 0) {
+                    	url = url.substring(0, url.indexOf('/dashboard'));
+                    }
+                    window.open(url + '?sim=' + simulationUrl);
+            	}
+            });
         },
 
         remove:function (attributes) {

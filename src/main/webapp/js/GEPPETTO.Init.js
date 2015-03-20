@@ -66,10 +66,15 @@ define(function(require) {
 		 * Set up the WebGL Renderer
 		 */
 		var setupRenderer = function() {
-			VARS.renderer = new THREE.WebGLRenderer(
-				{
-					antialias: true
-				});
+
+			// Reuse a single WebGL renderer. Recreating the renderer causes camera displacement on Chrome OSX.
+			if (!VARS.canvasCreated) {
+				VARS.renderer = new THREE.WebGLRenderer(
+					{
+						antialias: true
+					});
+			}
+
 			VARS.renderer.setClearColor(0x000000, 1);
 			var width = $(VARS.container).width();
 			var height = $(VARS.container).height();

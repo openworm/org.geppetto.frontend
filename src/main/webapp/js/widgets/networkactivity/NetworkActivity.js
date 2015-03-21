@@ -152,6 +152,7 @@ define(function(require) {
             var value = varnode.getValue();
             var id = varnode.getInstancePath();
             this.datasets.push({
+            	yPosition : this.datasets.length,
                 label : id,
                 variable : varnode,
                 values : [ [0,value] ],
@@ -208,7 +209,17 @@ define(function(require) {
 			
 			
 			//console.log("Test : " + this.options.innerWidth);
-			if(this.datasets != null){
+			if(this.datasets != []){
+				if(this.d3Select == null || undefined){
+					this.networkActivityContainer
+						.append("<button type=\"button\" class=\"btn btn-info horizonButton\">Sort</button>")
+						.on("click",function(){
+							d3.select("#"+this.id).sort(function(a,b){
+									return a.yPosition>b.yPosition?1:a.yPostion<b.yPosition?-1:0;
+								});
+							});
+					this.d3Select = d3.select("#"+this.id);
+				}
 				this.createListLayout();
 			}
 		},
@@ -228,7 +239,7 @@ define(function(require) {
 			    .dataValues(function(d){return d.values;});
 			
 			//d3.select("#"+this.id).selectAll(".horizon").remove();
-			var dataselection = d3.select("#"+this.id).selectAll(".horizon")
+			var dataselection = this.d3Select.selectAll(".horizon")
 		    	.data(this.datasets);
 		    dataselection.enter().append("svg")
 		  		.attr("height",height).attr("class","horizon")

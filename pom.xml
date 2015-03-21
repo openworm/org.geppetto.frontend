@@ -389,7 +389,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<phase>install</phase>
+						<phase>deploy</phase>
 						<goals>
 							<goal>jsdoc3</goal>
 						</goals>

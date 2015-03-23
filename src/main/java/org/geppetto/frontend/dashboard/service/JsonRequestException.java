@@ -32,19 +32,28 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
-public class ParameterResource
+import org.springframework.http.HttpStatus;
+
+public class JsonRequestException
 {
-	// @Put("json")
-	// public void addParameter(JSONObject parameter)
-	// {
-	// IGeppettoDataManager dataManager = application.getDataManager();
-	// try
-	// {
-	// dataManager.createParameter(parameter.getString("name"), parameter.getString("value"));
-	// }
-	// catch(JSONException e)
-	// {
-	// // ignore
-	// }
-	// }
+	private String message;
+
+	private HttpStatus status = HttpStatus.OK;
+
+	public JsonRequestException(String message, HttpStatus status)
+	{
+		this.message = message;
+		this.status = status;
+	}
+
+	public String getMessage()
+	{
+		return message;
+	}
+
+	public HttpStatus getStatus()
+	{
+		return status;
+	}
+
 }

@@ -35,9 +35,11 @@ package org.geppetto.frontend.dashboard.service;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.frontend.dashboard.ControllerHelper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -55,4 +57,24 @@ public class GeppettoProjectController
 		}
 		return null;
 	}
+
+	@RequestMapping(value = "/dashboard/geppettoproject/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody
+	Object deleteGeppettoProject(@PathVariable("id") int id)
+	{
+		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+		if(dataManager != null)
+		{
+			if(dataManager.isDefault())
+			{
+				return new JsonRequestException("Cannot delete project", HttpStatus.BAD_REQUEST);
+			}
+			else
+			{
+				return new JsonRequestException("Not implemented", HttpStatus.NOT_IMPLEMENTED);
+			}
+		}
+		return null;
+	}
+
 }

@@ -37,6 +37,7 @@ define(function(require) {
 			sceneCenter: new THREE.Vector3(),
 			cameraPosition: new THREE.Vector3(),
 			canvasCreated: false,
+			listenersCreated : false,
 			selected : [],
 		};
 
@@ -74,7 +75,6 @@ define(function(require) {
 						antialias: true
 					});
 			}
-
 			VARS.renderer.setClearColor(0x000000, 1);
 			var width = $(VARS.container).width();
 			var height = $(VARS.container).height();
@@ -129,8 +129,9 @@ define(function(require) {
 		 * Set up the listeners use to detect mouse movement and windoe resizing
 		 */
 		var setupListeners = function() {
-			// when the mouse moves, call the given function
-			VARS.renderer.domElement.addEventListener('mousedown', function(event) {
+			if(!VARS.listenersCreated){
+				// when the mouse moves, call the given function
+				VARS.renderer.domElement.addEventListener('mousedown', function(event) {
 					var intersects = GEPPETTO.getIntersectedObjects();
 
 					if ( intersects.length > 0 ) {
@@ -145,26 +146,28 @@ define(function(require) {
 							GEPPETTO.Console.executeCommand(selected + '.select()' );
 						}
 					}
-						
-			}, false);
 
-			VARS.renderer.domElement.addEventListener('mousemove', function(event) {
-				VARS.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-				VARS.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+				}, false);
 
-			}, false);
+				VARS.renderer.domElement.addEventListener('mousemove', function(event) {
+					VARS.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+					VARS.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-			window.addEventListener('resize', function() {
-              var container = $(VARS.container),
-                  width     = container.width(),
-                  height    = container.height();
+				}, false);
 
-				VARS.camera.aspect = (width) / (height);
-				VARS.camera.updateProjectionMatrix();
-				VARS.renderer.setSize(width, height);
-			}, false);
+				window.addEventListener('resize', function() {
+					var container = $(VARS.container),
+					width     = container.width(),
+					height    = container.height();
 
-			document.addEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard, false);
+					VARS.camera.aspect = (width) / (height);
+					VARS.camera.updateProjectionMatrix();
+					VARS.renderer.setSize(width, height);
+				}, false);
+
+				document.addEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard, false);
+				VARS.listenersCreated = true;
+			}
 		};
 //	============================================================================
 //	Application logic.

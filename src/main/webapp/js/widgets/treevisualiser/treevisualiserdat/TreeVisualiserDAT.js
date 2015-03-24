@@ -88,8 +88,10 @@ define(function(require) {
 			if (nodeInstancePath == undefined){
 				nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
 			}
-			//Read node from instancepath data property attached to dom element
-			this.showContextMenu(event, eval(nodeInstancePath));
+			if(nodeInstancePath!=null || undefined){
+				//Read node from instancepath data property attached to dom element
+				this.showContextMenu(event, eval(nodeInstancePath));
+			}
 		},
 		
 		/**

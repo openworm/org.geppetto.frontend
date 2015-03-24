@@ -104,7 +104,7 @@ define(function(require) {
 			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
 			}
-			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED) {
+			else if(event == Events.Select) {
 				//loop through all existing widgets
 				for(var i = 0; i < this.widgets.length; i++) {
 					var treeVisualiser = this.widgets[i];

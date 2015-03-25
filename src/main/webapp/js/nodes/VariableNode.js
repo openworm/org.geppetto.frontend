@@ -42,7 +42,7 @@ define(function(require) {
 
 	return Node.Model.extend({
 		unit : "",
-		value : "",
+		timeSeries : [],
 		scalingFactor : "",
 
 		/**
@@ -55,7 +55,7 @@ define(function(require) {
 			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.unit = options.unit;
-			this.value = options.value;
+			this.timeSeries = new Array();
 			this.scalingFactor = options.scalingFactor;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
@@ -77,8 +77,8 @@ define(function(require) {
 		 * @command ParameterSpecificationNode.getValue()
 		 * @returns {String} Value of quantity
 		 */
-		getValue : function() {
-			return this.value;
+		getTimeSeries : function() {
+			return this.timeSeries;
 		},
 
 		/**

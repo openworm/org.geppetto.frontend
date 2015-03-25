@@ -132,7 +132,7 @@ define(function(require) {
 					}
 					
 					else{
-						var value = state.getValue();
+						var value = state.getTimeSeries()[0].getValue();
 						var id = state.getInstancePath();
 						
 						this.datasets.push({
@@ -234,7 +234,7 @@ define(function(require) {
 			 */
 			updateDataSet: function() {
 				for(var key in this.datasets) {
-					var newValue = this.datasets[key].variable.getValue();
+					var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
 
 					if(!this.labelsUpdated) {
 						var unit = this.datasets[key].variable.getUnit();

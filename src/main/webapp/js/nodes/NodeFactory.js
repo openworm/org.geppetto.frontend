@@ -52,6 +52,7 @@ define(function(require) {
 		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 		var VisualGroupNode = require('nodes/VisualGroupNode');
 		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
+		var PhysicalQuantity = require('nodes/PhysicalQuantity');
 		var simulationTreeCreated=false;
 
 		/**
@@ -401,13 +402,21 @@ define(function(require) {
 					var a = new VariableNode({
 						id : node.id,
 						name : node.name,
-						value : node.value,
-						unit : node.unit,
-						scalingFactor : node.scalingFactor,
 						instancePath : node.instancePath,
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VARIABLE_NODE
 					});
+					
+					var timeSeries = node.timeSeries;
+					for(var key in timeSeries){
+						if(typeof timeSeries[key] == "object"){
+							var obj =timeSeries[key];
+							var element =
+								new PhysicalQuantity(obj.value,obj.unit,obj.scale);
+							a.getTimeSeries().push(element);
+						}
+					}
+					
 					this.nodes++;
 					GEPPETTO.Console.createTag(a.instancePath);
 					return a;

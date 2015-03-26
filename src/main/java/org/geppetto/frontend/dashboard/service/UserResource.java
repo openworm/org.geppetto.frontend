@@ -33,6 +33,7 @@
 package org.geppetto.frontend.dashboard.service;
 
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.JsonRequestException;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.frontend.dashboard.ControllerHelper;
 import org.springframework.http.HttpStatus;

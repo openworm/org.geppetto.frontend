@@ -87,6 +87,7 @@ define(function(require) {
 				setGhostEffect : function(apply){
 					GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().meshes,apply);
 				},
+<<<<<<< HEAD
 				
 				/**
 				 * Apply ghost effect to all meshes that are not selected
@@ -181,6 +182,166 @@ define(function(require) {
 							}
 						}
 					}
+=======
+
+				/**
+				 * Apply ghost effect to all meshes that are not selected
+				 * @param {Array} meshes - Array of meshes to apply ghost effect to . 
+				 * @param {boolean} apply - Ghost effect on or off
+				 */
+				ghostEffect : function(meshes,apply){
+					for ( var v in meshes) {
+						var child = meshes[v];
+						if(child.visible){
+							if(apply && (!child.ghosted) && (!child.selected)){
+								if(child instanceof THREE.Object3D){
+									child.traverse(function(object){
+										if(child instanceof THREE.Mesh){
+											child.ghosted = true;
+											child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+											child.material.transparent = true;
+											child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+										}
+									});
+								}else{
+									child.ghosted = true;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+									child.material.transparent = true;
+									child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								}
+							}
+							else if((!apply) && (child.ghosted)){
+								if(child instanceof THREE.Object3D){
+									child.traverse(function(object){
+										if(child instanceof THREE.Mesh){
+											child.ghosted = false;
+											child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+											child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+										}
+									});
+								}else{
+									child.ghosted = false;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+									child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								}
+							}
+						}
+						child.output = false;
+						child.input = false;
+					}
+
+					//apply ghost effect to those meshes that are split
+					for(var v in GEPPETTO.getVARS().splitMeshes){
+						var splitMesh = GEPPETTO.getVARS().splitMeshes[v];
+
+						if(splitMesh.visible){
+							if(apply && (!splitMesh.ghosted) && (!splitMesh.selected)){
+								if(child instanceof THREE.Object3D){
+									child.traverse(function(object){
+										if(object instanceof THREE.Mesh){
+											object.ghosted = true;
+											object.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+											object.material.transparent = true;
+											object.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+										}
+									});
+								}else{
+									child.ghosted = true;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+									child.material.transparent = true;
+									child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								}
+							}
+							else if((!apply) && (splitMesh.ghosted)){
+								if(child instanceof THREE.Object3D){
+									child.traverse(function(object){
+										if(object instanceof THREE.Mesh){
+											object.ghosted = false;
+											object.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
+											object.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+										}
+									});
+								}else{
+									child.ghosted = false;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
+									child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								}
+							}
+						}
+					}
+				},
+
+				/**
+				 * Selects an aspect given the path of it. Color changes to yellow, and opacity become 100%.
+				 * @param {String} instancePath - Path of aspect of mesh to select
+				 */
+				selectAspect : function(instancePath) {
+					for ( var v in GEPPETTO.getVARS().meshes) {
+						if(v == instancePath){
+							var mesh = GEPPETTO.getVARS().meshes[v];
+							if(mesh!=null || undefined){
+								if(!mesh.visible){
+									GEPPETTO.SceneController.merge(instancePath);
+								}
+								if(mesh.selected == false){
+									if(mesh instanceof THREE.Object3D){
+										mesh.traverse(function(child){
+											if(child instanceof THREE.Mesh){
+												child.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+											}
+										});
+										mesh.selected = true;
+										mesh.ghosted = false;
+									}else{
+										mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+										mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+										mesh.selected = true;
+										mesh.ghosted = false;
+									}
+									return true;
+								}
+							}
+						}
+					}
+					return false;
+				},
+
+				/**
+				 * Unselect aspect, or mesh as far as tree js is concerned.
+				 * @param {String} instancePath - Path of the mesh/aspect to select
+				 */
+				unselectAspect : function(instancePath) {
+					//match instancePath to mesh store in variables properties
+					for ( var key in GEPPETTO.getVARS().meshes) {
+						if(key == instancePath){
+							var mesh = GEPPETTO.getVARS().meshes[key];
+							if(!mesh.visible){
+								GEPPETTO.SceneController.merge(instancePath);
+							}
+							//make sure that path was selected in the first place
+							if(mesh.selected == true){
+								if(mesh instanceof THREE.Object3D){
+									mesh.traverse(function(child){
+										if(child instanceof THREE.Mesh){
+											child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+											child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+										}
+									});
+									mesh.selected = false;
+									mesh.ghosted = false;
+								}
+							}else{
+								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+								mesh.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+								mesh.selected = false;
+								mesh.ghosted = false;
+							}
+							return true;
+						}
+					}
+
+>>>>>>> refs/remotes/origin/development
 					return false;
 				},
 

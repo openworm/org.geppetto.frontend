@@ -68,7 +68,9 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	CLIENT_ID("client_id"), 
 	FIRE_SIM_SCRIPTS("fire_sim_scripts"),
 	SIMULATION_OVER("simulation_over"),
-	GET_MODEL_TREE("get_model_tree");
+	GET_MODEL_TREE("get_model_tree"),
+	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
+	WRITE_MODEL("write_model");
 	
 	private OUTBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

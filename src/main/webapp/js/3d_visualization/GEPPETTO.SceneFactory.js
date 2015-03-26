@@ -176,6 +176,7 @@ define(function(require) {
 					var ret = null;
 
 					switch (objType){
+<<<<<<< HEAD
 					case "CylinderNode":
 					case "SphereNode":
 						var merged = new THREE.Geometry();
@@ -277,6 +278,124 @@ define(function(require) {
 					};
 					var loader = new THREE.OBJLoader(manager);
 					return loader.parse(node.model.data);
+=======
+					case "CylinderNode":
+					case "SphereNode":
+						var merged = new THREE.Geometry();
+						objArray.forEach(function(obj){
+							obj.geometry.dynamic = true;
+							obj.geometry.verticesNeedUpdate = true;
+							obj.updateMatrix();
+							merged.merge(obj.geometry, obj.matrix);
+							mergedMeshesPaths.push(obj.instancePath);
+						});
+						//TODO: do we really want to create a _mesh_ for the merged objs?
+						var meshWithAll = new THREE.Mesh(merged, materials["mesh"]);
+						ret = meshWithAll;
+						break;
+					case "ParticleNode":
+						var particleGeometry = new THREE.Geometry();
+						objArray.forEach(function(obj){
+							particleGeometry.vertices.push(obj);
+							//TODO: do we want to store the path for each one of the nodes into mergedMeshesPaths?
+							//      it doesn't seem to be done correctly in the original code
+						});
+						var merged = new THREE.PointCloud(particleGeometry, materials["particle"]);
+						merged.sortParticles = true;
+						merged.geometry.verticesNeedUpdate = true;
+						ret = merged;
+						break;
+					case "ColladaNode":
+					case "OBJNode":
+						//TODO: can we have multiple collada / OBJ ? Do we merge them?
+						//var merged = new THREE.Geometry();
+						//objArray.forEach(function(obj){
+						//THREE.GeometryUtils.merge(merged, obj);
+						//mergedMeshesPaths.push(obj.instancePath);
+						//});
+						ret = objArray[0];
+						break;
+					}
+					ret.mergedMeshesPaths = mergedMeshesPaths;
+
+					return ret;
+
+				},
+
+
+				visualizationTreeNodeTo3DObj: function(node, materials) {
+					var threeObject = null;
+					switch (node._metaType) {
+					case "ParticleNode" : 
+						threeObject = GEPPETTO.SceneFactory.createParticle(node);
+						break;
+
+					case "CylinderNode":
+						threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
+						break;
+
+					case "SphereNode":
+						threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, materials["mesh"]);
+						break;
+
+					case "ColladaNode":
+						threeObject = GEPPETTO.SceneFactory.loadColladaModelFromNode(node);
+						break;
+
+					case "OBJNode":
+						threeObject = GEPPETTO.SceneFactory.loadThreeOBJModelFromNode(node);
+						break;
+					}
+					if(threeObject){
+						threeObject.visible = true;
+						threeObject.type = node._metaType;
+						//TODO: this is empty for collada and obj nodes 
+						threeObject.instancePath = node.instancePath;
+						threeObject.highlighted = false;
+
+						//TODO: shouldn't that be the vistree? why is it also done at the loadEntity level??
+						GEPPETTO.getVARS().visualModelMap[node.instancePath] = threeObject;
+					}
+					return threeObject;
+				},
+
+
+				loadColladaModelFromNode: function(node){
+					var loader = new THREE.ColladaLoader();
+					loader.options.convertUpAxis = true;
+					var xmlParser = new DOMParser();
+					var responseXML = xmlParser.parseFromString(node.model.data, "application/xml");
+					var scene = null;
+					loader.parse(responseXML, function(collada) {
+						scene = collada.scene;
+						scene.traverse(function(child){
+							if(child instanceof THREE.Mesh){
+								child.material =GEPPETTO.SceneFactory.getMeshPhongMaterial();
+								child.name = node.instancePath.split(".VisualizationTree")[0];
+							}
+						});
+					});
+					return scene;
+				},
+
+
+				loadThreeOBJModelFromNode: function(node){
+					var manager = new THREE.LoadingManager();
+					manager.onProgress = function (item, loaded, total) {
+						console.log(item, loaded, total);
+					};
+					var loader = new THREE.OBJLoader(manager);
+					var scene = loader.parse(node.model.data);
+					
+					scene.traverse(function(child){
+						if(child instanceof THREE.Mesh){
+							child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+							child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+						}
+					});
+
+					return scene;
+>>>>>>> refs/remotes/origin/development
 				},
 
 

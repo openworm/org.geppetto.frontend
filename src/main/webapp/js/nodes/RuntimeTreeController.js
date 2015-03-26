@@ -154,7 +154,7 @@ define(function(require) {
 						var state = GEPPETTO.Simulation.simulationStates[index];
 						var received=eval("jsonRuntimeTree."+state);
 						var clientNode=eval(state);
-						clientNode.value = received.value;
+						clientNode.getTimeSeries()[0].value = received.timeSeries["quantity0"].value;
 					}
 
 					this.updateWidgets();

@@ -44,14 +44,6 @@ define(function(require) {
 		var $ = require('jquery'),
 		React = require('react'),
 		InfoModal = require('jsx!components/popups/InfoModal');
-		PlotsController = require('widgets/plot/controllers/PlotsController');
-		Scatter3dController = require('widgets/scatter3d/controllers/Scatter3dController');
-		ConnectivityController = require('widgets/connectivity/controllers/ConnectivityController');
-		PopupsController = require('widgets/popup/controllers/PopupController');
-		TreeVisualiserControllerD3 = require('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
-		TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
-		VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
-		
 
 		/**
 		 * @class GEPPETTO.Main
@@ -68,13 +60,6 @@ define(function(require) {
 			disconnected: false,
 			status: 0,
 			simulationFileTemplate: "assets/resources/template.xml",
-			plotsController : null,
-			popupsController : null,
-			connectivityController : null,
-			scatter3dController : null,
-			variableVisController : null,
-			treeVisDatController : null,
-			treeVis3DController : null,
 			
 			getVisitorStatus: function() {
 				return this.status;
@@ -156,50 +141,6 @@ define(function(require) {
 
 				//update the UI based on success of webgl
 				GEPPETTO.FE.update(webGLStarted);
-			},
-			
-			getController : function(type){
-				if(type == GEPPETTO.Widgets.PLOT){
-					if(GEPPETTO.Main.plotsController == null || undefined){
-						GEPPETTO.Main.plotsController = new PlotsController();
-					}
-					return GEPPETTO.Main.plotsController;
-				}
-				else if(type == GEPPETTO.Widgets.SCATTER3D){
-					if(GEPPETTO.Main.scatter3dController == null || undefined){
-						GEPPETTO.Main.scatter3dController = new Scatter3dController();
-					}
-					return GEPPETTO.Main.scatter3dController;
-				}
-				else if(type == GEPPETTO.Widgets.POPUP){
-					if(GEPPETTO.Main.popupsController == null || undefined){
-						GEPPETTO.Main.popupsController = new PopupsController();
-					}
-					return GEPPETTO.Main.popupsController;
-				}
-				else if(type == GEPPETTO.Widgets.TREEVISUALISERDAT){
-					if(GEPPETTO.Main.treeVisDatController == null || undefined){
-						GEPPETTO.Main.treeVisDatController = new TreeVisualiserControllerDAT();
-					}
-					return GEPPETTO.Main.treeVisDatController;
-				}else if(type == GEPPETTO.Widgets.TREEVISUALISERD3){
-					if(GEPPETTO.Main.treeVis3DController == null || undefined){
-						GEPPETTO.Main.treeVis3DController = new TreeVisualiserControllerD3();
-					}
-					return GEPPETTO.Main.treeVis3DController;
-				}
-				else if(type == GEPPETTO.Widgets.VARIABLEVISUALISER){
-					if(GEPPETTO.Main.variableVisController == null || undefined){
-						GEPPETTO.Main.variableVisController = new VariableVisualizerController();
-					}
-					return GEPPETTO.Main.variableVisController;
-				}else if(type == GEPPETTO.Widgets.CONNECTIVITY){
-					if(GEPPETTO.Main.connectivityController == null || undefined){
-						GEPPETTO.Main.connectivityController = new ConnectivityController();
-					}
-					return GEPPETTO.Main.connectivityController;
-				}
-				
 			}
 		};
 

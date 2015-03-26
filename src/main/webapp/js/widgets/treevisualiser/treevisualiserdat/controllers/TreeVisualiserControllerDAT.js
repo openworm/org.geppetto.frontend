@@ -144,7 +144,7 @@ define(function(require) {
 			}];
 
 
-			var availableWidgets = GEPPETTO.Main.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets();
+			var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets();
 			if (availableWidgets.length > 0){
 				var group1Add =  {
 						label : "Add to DAT Widget",

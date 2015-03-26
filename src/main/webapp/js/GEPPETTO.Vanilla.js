@@ -47,7 +47,7 @@ define(function(require) {
 			 */
 			checkKeyboard: function() {
 				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
-					GEPPETTO.Main.getController(GEPPETTO.Widgets.PLOT).toggle();
+					GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).toggle();
 				}
 
 				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
@@ -55,7 +55,7 @@ define(function(require) {
 				}
 				
 				else if(GEPPETTO.isKeyPressed("ctrl+alt+s")) {
-					GEPPETTO.Main.getController(GEPPETTO.Widgets.SCATTER3D).toggle();
+					GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.SCATTER3D).toggle();
 				}
 			},
 			

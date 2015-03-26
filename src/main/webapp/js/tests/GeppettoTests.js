@@ -82,9 +82,9 @@ define(function(require) {
 		test("Test Plot Widget", function() {
 			G.addWidget(Widgets.PLOT);
 
-			equal(GEPPETTO.Main.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
+			equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
 
-			var plot = GEPPETTO.Main.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
+			var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
 
 			equal(plot.isVisible(), true, "Test Default Widget Visibility");
 
@@ -104,9 +104,9 @@ define(function(require) {
 		test("Test Popup Widget", function() {
 			G.addWidget(Widgets.POPUP);
 
-			equal(GEPPETTO.Main.getController(Widgets.POPUP).getWidgets().length, 1, "Popup widget.");
+			equal(GEPPETTO.WidgetFactory.getController(Widgets.POPUP).getWidgets().length, 1, "Popup widget.");
 
-			var pop = GEPPETTO.Main.getController(GEPPETTO.Widgets.POPUP).getWidgets()[0];
+			var pop = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.POPUP).getWidgets()[0];
 
 			equal(pop.isVisible(), true, "Test Default Visibility");
 
@@ -126,9 +126,9 @@ define(function(require) {
 		test("Test Scattered-3D Widget", function() {
 			G.addWidget(Widgets.SCATTER3D);
 
-			equal(GEPPETTO.Main.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
+			equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
 
-			var scatter = GEPPETTO.Main.getController(GEPPETTO.Widgets.SCATTER3D).getWidgets()[0];
+			var scatter = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.SCATTER3D).getWidgets()[0];
 
 			equal(scatter.isVisible(), true, "Test Default Visibility");
 
@@ -148,9 +148,9 @@ define(function(require) {
 		test("Test VARIABLEVISUALISER Widget", function() {
 			G.addWidget(Widgets.VARIABLEVISUALISER);
 
-			equal(GEPPETTO.Main.getController(Widgets.VARIABLEVISUALISER).getWidgets().length, 1, "VARIABLEVISUALISER widget created");
+			equal(GEPPETTO.WidgetFactory.getController(Widgets.VARIABLEVISUALISER).getWidgets().length, 1, "VARIABLEVISUALISER widget created");
 
-			var VARIABLEVISUALISER = GEPPETTO.Main.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).getWidgets()[0];
+			var VARIABLEVISUALISER = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).getWidgets()[0];
 
 			equal(VARIABLEVISUALISER.isVisible(), true, "Test Default Visibility");
 
@@ -170,9 +170,9 @@ define(function(require) {
 		test("Test TREEVISUALISERDAT Widget", function() {
 			G.addWidget(Widgets.TREEVISUALISERDAT);
 
-			equal(GEPPETTO.Main.getController(Widgets.TREEVISUALISERDAT).getWidgets().length, 1, "TREEVISUALISERDAT widget created");
+			equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERDAT).getWidgets().length, 1, "TREEVISUALISERDAT widget created");
 
-			var TREEVISUALISERDAT = GEPPETTO.Main.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets()[0];
+			var TREEVISUALISERDAT = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets()[0];
 
 			equal(TREEVISUALISERDAT.isVisible(), true, "Test Default Visibility");
 
@@ -192,9 +192,9 @@ define(function(require) {
 		test("Test TreeVisualizerD3 Widget", function() {
 			G.addWidget(Widgets.TREEVISUALISERD3);
 
-			equal(GEPPETTO.Main.getController(Widgets.TREEVISUALISERD3).getWidgets().length, 1, "TREEVISUALISERD3 widget created");
+			equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERD3).getWidgets().length, 1, "TREEVISUALISERD3 widget created");
 
-			var TREEVISUALISERD3 = GEPPETTO.Main.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets()[0];
+			var TREEVISUALISERD3 = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets()[0];
 
 			equal(TREEVISUALISERD3.isVisible(), true, "Test Default Visibility");
 

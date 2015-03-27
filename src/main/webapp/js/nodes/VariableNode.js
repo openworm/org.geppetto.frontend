@@ -57,6 +57,7 @@ define(function(require) {
 			this.unit = options.unit;
 			this.value = options.value;
 			this.scalingFactor = options.scalingFactor;
+			this.watched = options.watched;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
 		},
@@ -90,6 +91,16 @@ define(function(require) {
 		getScalingFactor : function() {
 			return this.scalingFactor;
 		},
+		
+		/**
+		 * Get watched
+		 * 
+		 * @command ParameterSpecificationNode.getWatched()
+		 * @returns {boolean} true if this variable is being watched
+		 */
+		getWatched : function() {
+			return this.watched;
+		},
 
 		/**
 		 * Print out formatted node
@@ -99,7 +110,8 @@ define(function(require) {
 					+ "    InstancePath : " + this.instancePath + "\n"
 					+ "    Value : " + this.value + "\n" + "    Unit : "
 					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n";
+					+ this.scalingFactor + "\n" +
+					+ "    Watched : " + this.watched + "\n";
 		}
 	});
 });

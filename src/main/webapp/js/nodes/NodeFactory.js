@@ -282,7 +282,7 @@ define(function(require) {
 						name : node.name,
 						instancePath : node.instancePath,
 						properties : node.properties,
-						watched : Boolean.parseBoolean(node.watched),
+						watched : Boolean(node.watched),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.PARAMETER_NODE
 					});
@@ -406,7 +406,7 @@ define(function(require) {
 						unit : node.unit,
 						scalingFactor : node.scalingFactor,
 						instancePath : node.instancePath,
-						watched : Boolean.parseBoolean(node.watched),
+						watched : Boolean(node.watched),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VARIABLE_NODE
 					});

@@ -197,7 +197,7 @@ define(function(require) {
 							//TODO: do we want to store the path for each one of the nodes into mergedMeshesPaths?
 							//      it doesn't seem to be done correctly in the original code
 						});
-						var merged = new THREE.ParticleSystem(particleGeometry, materials["particle"]);
+						var merged = new THREE.PointCloud(particleGeometry, materials["particle"]);
 						merged.sortParticles = true;
 						merged.geometry.verticesNeedUpdate = true;
 						ret = merged;
@@ -265,6 +265,12 @@ define(function(require) {
 					var scene = null;
 					loader.parse(responseXML, function(collada) {
 						scene = collada.scene;
+						scene.traverse(function(child){
+							if(child instanceof THREE.Mesh){
+								child.material =GEPPETTO.SceneFactory.getMeshPhongMaterial();
+								child.name = node.instancePath.split(".VisualizationTree")[0];
+							}
+						});
 					});
 					return scene;
 				},
@@ -276,7 +282,16 @@ define(function(require) {
 						console.log(item, loaded, total);
 					};
 					var loader = new THREE.OBJLoader(manager);
-					return loader.parse(node.model.data);
+					var scene = loader.parse(node.model.data);
+					
+					scene.traverse(function(child){
+						if(child instanceof THREE.Mesh){
+							child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+							child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+						}
+					});
+
+					return scene;
 				},
 
 

@@ -87,7 +87,7 @@ define(function(require) {
 				setGhostEffect : function(apply){
 					GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().meshes,apply);
 				},
-				
+
 				/**
 				 * Apply ghost effect to all meshes that are not selected
 				 * @param {Array} meshes - Array of meshes to apply ghost effect to . 
@@ -98,15 +98,36 @@ define(function(require) {
 						var child = meshes[v];
 						if(child.visible){
 							if(apply && (!child.ghosted) && (!child.selected)){
-								child.ghosted = true;
-								child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
-								child.material.transparent = true;
-								child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								if(child instanceof THREE.Object3D){
+									child.traverse(function(object){
+										if(child instanceof THREE.Mesh){
+											child.ghosted = true;
+											child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+											child.material.transparent = true;
+											child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+										}
+									});
+								}else{
+									child.ghosted = true;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+									child.material.transparent = true;
+									child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								}
 							}
 							else if((!apply) && (child.ghosted)){
-								child.ghosted = false;
-								child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								if(child instanceof THREE.Object3D){
+									child.traverse(function(object){
+										if(child instanceof THREE.Mesh){
+											child.ghosted = false;
+											child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+											child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+										}
+									});
+								}else{
+									child.ghosted = false;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+									child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								}
 							}
 						}
 						child.output = false;
@@ -119,15 +140,36 @@ define(function(require) {
 
 						if(splitMesh.visible){
 							if(apply && (!splitMesh.ghosted) && (!splitMesh.selected)){
-								child.ghosted = true;
-								child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
-								child.material.transparent = true;
-								child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								if(child instanceof THREE.Object3D){
+									child.traverse(function(object){
+										if(object instanceof THREE.Mesh){
+											object.ghosted = true;
+											object.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+											object.material.transparent = true;
+											object.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+										}
+									});
+								}else{
+									child.ghosted = true;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
+									child.material.transparent = true;
+									child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+								}
 							}
 							else if((!apply) && (splitMesh.ghosted)){
-								child.ghosted = false;
-								child.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
-								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								if(child instanceof THREE.Object3D){
+									child.traverse(function(object){
+										if(object instanceof THREE.Mesh){
+											object.ghosted = false;
+											object.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
+											object.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+										}
+									});
+								}else{
+									child.ghosted = false;
+									child.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
+									child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								}
 							}
 						}
 					}
@@ -146,10 +188,21 @@ define(function(require) {
 									GEPPETTO.SceneController.merge(instancePath);
 								}
 								if(mesh.selected == false){
-									mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
-									mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-									mesh.selected = true;
-									mesh.ghosted = false;
+									if(mesh instanceof THREE.Object3D){
+										mesh.traverse(function(child){
+											if(child instanceof THREE.Mesh){
+												child.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+											}
+										});
+										mesh.selected = true;
+										mesh.ghosted = false;
+									}else{
+										mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+										mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+										mesh.selected = true;
+										mesh.ghosted = false;
+									}
 									return true;
 								}
 							}
@@ -172,15 +225,26 @@ define(function(require) {
 							}
 							//make sure that path was selected in the first place
 							if(mesh.selected == true){
+								if(mesh instanceof THREE.Object3D){
+									mesh.traverse(function(child){
+										if(child instanceof THREE.Mesh){
+											child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+											child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+										}
+									});
+									mesh.selected = false;
+									mesh.ghosted = false;
+								}
+							}else{
 								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 								mesh.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 								mesh.selected = false;
 								mesh.ghosted = false;
-					
-								return true;
 							}
+							return true;
 						}
 					}
+
 					return false;
 				},
 

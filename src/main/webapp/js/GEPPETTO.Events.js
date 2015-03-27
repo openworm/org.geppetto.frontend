@@ -54,7 +54,7 @@ define(function(require) {
 			listen: function() {
 				GEPPETTO.on(Events.Select, function(){
 	        		//notify widgets that selection has changed in scene
-	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+	        		GEPPETTO.WidgetsListener.update(Events.Select);
 	        	});
 				GEPPETTO.on(Events.Simulation_loaded, function(){
 					G.resetCamera();

@@ -148,7 +148,8 @@ define(function(require) {
 				
 				createVisualizationTree : function(node,a){
 					var subTree = this.createAspectSubTreeNode(node);
-
+					subTree.name = "Visualization";
+					
 					for(var key in node){
 						if(typeof node[key] == "object"){
 							if(node[key]._metaType==GEPPETTO.Resources.VISUAL_GROUP_NODE){

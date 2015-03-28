@@ -49,22 +49,6 @@ define(function(require) {
 
 		initialize: function() {
 			this.widgets = new Array();
-			
-			// Register Commands
-			GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
-			                                                 "AspectSubTreeNode",
-			                                                 "CompositeNode",
-			                                                 "ConnectionNode",
-			                                                 "DynamicsSpecificationNode",
-			                                                 "EntityNode",
-			                                                 "FunctionNode",
-			                                                 "ParameterNode",
-			                                                 "ParameterSpecificationNode",
-			                                                 "TextMetadataNode",
-			                                                 "VariableNode",
-			                                                 "VisualGroupElementNode",
-			                                                 "VisualGroupNode",
-			                                                 "VisualObjectReferenceNode"],this.getCommands);
 		},
 
 		/**
@@ -90,6 +74,24 @@ define(function(require) {
 			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js",	tvdat, id);
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
+			
+			// Register Commands
+			GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
+			                                                 "AspectSubTreeNode",
+			                                                 "CompositeNode",
+			                                                 "ConnectionNode",
+			                                                 "DynamicsSpecificationNode",
+			                                                 "EntityNode",
+			                                                 "FunctionNode",
+			                                                 "ParameterNode",
+			                                                 "ParameterSpecificationNode",
+			                                                 "TextMetadataNode",
+			                                                 "VariableNode",
+			                                                 "VisualGroupElementNode",
+			                                                 "VisualGroupNode",
+			                                                 "VisualObjectReferenceNode"],
+			                                                 this.getCommands);
+			
 			return tvdat;
 		},
 
@@ -142,7 +144,7 @@ define(function(require) {
 			}];
 
 
-			var availableWidgets = this.getWidgets();
+			var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets();
 			if (availableWidgets.length > 0){
 				var group1Add =  {
 						label : "Add to DAT Widget",

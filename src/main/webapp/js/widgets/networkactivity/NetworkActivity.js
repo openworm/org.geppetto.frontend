@@ -46,6 +46,7 @@ define(function(require) {
 	return Widget.View.extend({
 		
 		datasets: [],
+		datasetsMap: {},
 		
 		defaultNetworkActivityOptions:  {
 			width: 660,
@@ -56,6 +57,7 @@ define(function(require) {
 			percentWidthHorizon:0.6,
 			limit:400,
 		},
+
 		
 		initialize : function(options){
 			this.options = options;
@@ -81,6 +83,7 @@ define(function(require) {
 				}
 				event.stopPropagation();
 		    });
+						
 		},
 		
 		/**
@@ -99,11 +102,15 @@ define(function(require) {
 			var strValues ="";
 			if (state!= null) {					
 				if(state instanceof Array){
+					
 					this.datasets.push({
 							label:"manual",
 							values : state,
 							selected : 0
 							});
+					this.datasetsMap["manual"]={
+							pos : this.datasets.length,
+							};
 				}
                 else if(state._metaType == "EntityNode" || "AspectNode"){
                 	strValues += "Ent{ " + this.scanAndInsertVariableNodes(state) + "}";
@@ -111,6 +118,7 @@ define(function(require) {
 				else if(state._metaType == "VariableNode"){
 					strValues += "Var{" + this.insertVariableNode(state) + "}";
 				}
+				this.createDataFromConnections(state);
 			}
 			
 			this.createLayout();
@@ -120,13 +128,15 @@ define(function(require) {
         /**
          *  Read node recursively to get all variableNodes
          */
-        scanAndInsertVariableNodes: function(node){
+        scanAndInsertVariableNodes: function(node,entityInstancePath){
         	var strVal = "";
         	if(node._metaType != null){
-	        	
+        		if(node._metaType == "EntityNode"){
+        			var entityInstancePath = node.getInstancePath();
+        		}
 	        	strVal += "[" + node._metaType +" "+ node.name + ":";
 	            if(node._metaType == "VariableNode"){
-	            	strVal += ",Var2 " + this.insertVariableNode(node);
+	            	strVal += ",Var2 " + this.insertVariableNode(node,entityInstancePath);
 	            }else{
 	            	if(node.getChildren != null || undefined){
 	            		
@@ -136,7 +146,7 @@ define(function(require) {
 			                for(var childIndex in childrens){
 			                	strVal += ",child " 
 			                		+ childrens[childIndex]._metaType + ":" 
-			                		+ this.scanAndInsertVariableNodes(childrens[childIndex]);
+			                		+ this.scanAndInsertVariableNodes(childrens[childIndex],entityInstancePath); //RECURSIONS
 			                }
 		                }else{
 		                	strVal += " noChild";
@@ -153,18 +163,46 @@ define(function(require) {
         /**
          * Insert variableNode into datasets
          */
-        insertVariableNode: function(varnode){
+        insertVariableNode: function(varnode, entityInstancePath){
             var value = varnode.getValue();
-            var id = varnode.getInstancePath();
-            this.datasets.push({
-            	yPosition : this.datasets.length,
-                label : id,
-                variable : varnode,
-                values : [ [0,value] ],
-                selected : 0
-            });
-            return id;
+            if (!(entityInstancePath in this.datasetsMap)){
+	            this.datasets.push({
+	            	id: entityInstancePath,
+	            	yPosition : this.datasets.length,
+	                label : varnode.getId(), //instancePath?!?
+	                variable : varnode,
+	                values : [ [0,value] ],
+	                selected : 0
+	            });
+	        	this.datasetsMap[entityInstancePath]={
+						pos : this.datasets.length,
+						};
+            }
+            return entityInstancePath;
         },
+        
+        //todo:add links info
+        /**
+         * Insert Links information in dataSet
+         */
+		setNodeLinksInfo: function(node) {
+			var id = node.source;
+			if (!(id in this.datasetsMap)){
+				var sourcePos = this.datasetsMap[id].pos;
+				var targetPos = this.datasetsMap[node.target].pos;
+				if (!node.target in this.datasets[sourcePos].targets)
+					this.datasets[sourcePos].targets[node.target] ={
+						dx: 20,
+						dy: this.datasets[targetPos].yPosition,
+					};
+				this.datasets[sourcePos].weight = node.weight;
+				this.datasets[sourcePos].synapse_type = node.synapse_type;
+				this.datasets[sourcePos].source.dx= 20;
+				this.datasets[sourcePos].source.dy= this.datasets[sourcePos].yPosition;
+				
+			}
+		},
+        
 		/**
 		 * Updates a data set, use for time series
 		 */
@@ -334,5 +372,52 @@ define(function(require) {
 
 			this.initialize();
 		},
+		
+		/**
+		 * 
+		 * Go through all nodes and build our datasource
+		 * 
+		 */
+		createDataFromConnections: function(state){
+			if (state._metaType == "EntityNode"){
+				var subEntities = state.getEntities();
+
+				// go through all entities 
+				for (var subEntityIndex in subEntities){
+					var connections = subEntities[subEntityIndex].getConnections();
+					for (var connectionIndex in connections){
+						var connectionItem = connections[connectionIndex];
+						// only monitor connection starting "from" the current node (would be redudant to keep them all)
+						if (connectionItem.getType() == "FROM"){
+							var source = connectionItem.getParent().getInstancePath();
+							//TODO: validate this (does it on remove the root)
+							var target = connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1);
+							
+							var linkItem = {};
+							linkItem["source"] = source;
+							linkItem["target"] = target;
+							
+							var customNodes = connectionItem.getCustomNodes();
+							for (var customNodeIndex in connectionItem.getCustomNodes()){
+								if ('getChildren' in customNodes[customNodeIndex]){
+									var customNodesChildren = customNodes[customNodeIndex].getChildren();
+									for (var customNodeChildIndex in customNodesChildren){
+										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
+											linkItem["synapse_type"] = customNodesChildren[customNodeChildIndex].getValue();
+										}
+										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
+											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
+										}
+									}
+								}
+							}
+							
+							this.setNodeLinksInfo(linkItem);
+						}
+						
+					}
+				}
+			}
+		},		
 	});
 });

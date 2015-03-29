@@ -169,7 +169,7 @@ define(function(require) {
 	            this.datasets.push({
 	            	id: entityInstancePath,
 	            	yPosition : this.datasets.length,
-	                label : varnode.getId(), //instancePath?!?
+	                label : varnode.getInstancePath(), 
 	                variable : varnode,
 	                values : [ [0,value] ],
 	                selected : 0
@@ -367,6 +367,7 @@ define(function(require) {
 		
 		reset : function () {
 			this.datasets = [];
+			this.datasetsMap = {};
 			
 			$(this.dialog).children().remove();
 

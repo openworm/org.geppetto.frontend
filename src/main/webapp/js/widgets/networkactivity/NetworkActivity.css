@@ -32,7 +32,17 @@
  *******************************************************************************/
 .legend {
     font-size: 12px;
+    position:absolute;
+    top:50px;
+    right:20px;
+    z-index:2;
+    width:40px;
+    border: 1px solid rgba(255,255,255,0.7);
   }
+.legendItem{
+	height:10px;
+	width:100%;
+}
 .legendTitle{
     font-size: 14px;
   }
@@ -42,10 +52,14 @@
 .filtersLabel{
 	color: #FFFFFF;
 }
+.networkActivityParentSVG{
+	width:100%;
+	height:100%;
+}
 .horizon{
 	color: #FFF;
-	width: 100%;
 	border-bottom: 1px solid rgba(255,255,255,0.7);
+	position: absolute;
 }
 .horizon:nth-of-type(1)
 {
@@ -53,10 +67,10 @@
 }
 .horizonText{
 	text-anchor:start;
-	fill:#000;
-	font-size:9px;
-	stroke:#FFF;
-	stroke-width:1;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	fill:#FFF;
+	font-size:8px;
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 .horizonButton{
 	position : absolute;

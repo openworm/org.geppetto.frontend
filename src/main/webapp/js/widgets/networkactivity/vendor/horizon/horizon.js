@@ -1,12 +1,11 @@
 /* 
  * 
- * THIS PLUGIN HAS BEEN MODIFIED  it is no longuer associated with the plugin on GitHub
+ * THIS PLUGIN HAS BEEN MODIFIED  it is no longer associated with the plugin on GitHub
  * 
  * */
 (function() {
   d3.horizon = function() {
-    var bands = 5, // between 1 and 5, typically
-        mode = "offset", // or mirror
+    var mode = "offset", // or mirror
         area = d3.svg.area(),
         defined,
         x = d3_horizonX,
@@ -14,11 +13,8 @@
         width = 1024,
         height = 40;
     var dataValues = function(d){return d;};
-    var yMax = -Infinity;
-    var color = d3.scale.linear()
-        .domain([-1,0,1])
-        .range(["#FF0000", "#00FF00","#0000FF"]);
-// "#0000FF","#FFFF00",
+    var color = ["rgba(0,0,0,0)","#FFF"];
+
     // For each small multiple…
     function horizon(g) {
       g.each(function(d) {
@@ -29,7 +25,8 @@
             y0, // old y-scale
             t0,
             id; // unique id for paths
-        yMax = (yMax == null || yMax == undefined)?-Infinity:yMax;
+        var yMin = (d.yMin == null || undefined)?Infinity:d.yMin;
+        var yMax = (d.yMax == null || undefined)?-Infinity:d.yMax;
         // Compute x- and y-values along with extents.
         var data = dataValues(d).map(function(d, i) {
 	            var xv = x.call(this, d, i),
@@ -38,14 +35,18 @@
 	        if (xv > xMax) xMax = xv;
 	        if (-yv > yMax) yMax = -yv;
 	        if (yv > yMax) yMax = yv;
+	        if (yv < yMin) yMin = yv;
 	        return [xv, yv];
 	    });
+        d.yMin = yMin;
+        d.yMax = yMax;
+        var bands = color.length;
         
         var heightUsed = (height instanceof Function)? height(d):+height;
 
         // Compute the new x- and y-scales, and transform.
         var x1 = d3.scale.linear().domain([xMin, xMax]).range([0, width]),
-            y1 = d3.scale.linear().domain([0, yMax]).range([0, heightUsed * bands]),
+            y1 = d3.scale.linear().domain([yMin, yMax]).range([0, heightUsed*bands]),
             t1 = d3_horizonTransform(bands, heightUsed, mode);
 
         // Retrieve the old scales, if this is an update.
@@ -68,7 +69,7 @@
         // The clip path is a simple rect.
         defs.enter().append("defs").append("clipPath")
             .attr("id", "d3_horizon_clip" + id)
-          .append("rect")
+            .append("rect")
             .attr("width", width)
             .attr("height", heightUsed);
 
@@ -84,7 +85,7 @@
 
         // Instantiate each copy of the path with different transforms.
         var path = g.select("g").selectAll("path")
-            .data(d3.range(-1, -bands - 1, -1).concat(d3.range(1, bands + 1)), Number);
+            .data(d3.range(0,bands,1));
 
         if (defined) area.defined(function(_, i) { return defined.call(this, d[i], i); });
 
@@ -100,12 +101,12 @@
             (data);
 
         path.enter().append("path")
-            .style("fill", color)
+            .style("fill", function(d){return color[d];})
             .attr("transform", t0)
             .attr("d", d0);
 
         d3.transition(path)
-            .style("fill", color)
+            .style("fill", function(d){return color[d];})
             .attr("transform", t1)
             .attr("d", d1);
 
@@ -119,12 +120,7 @@
       });
     }
 
-    horizon.bands = function(_) {
-      if (!arguments.length) return bands;
-      bands = +_;
-      color.domain([-bands, 0, bands]);
-      return horizon;
-    };
+
 
     horizon.mode = function(_) {
       if (!arguments.length) return mode;
@@ -133,8 +129,8 @@
     };
 
     horizon.colors = function(_) {
-      if (!arguments.length) return color.range();
-      color.range(_);
+      if (!arguments.length) return color;
+      color = _;
       return horizon;
     };
 
@@ -184,7 +180,7 @@
 
   function d3_horizonTransform(bands, h, mode) {
     return mode == "offset"
-        ? function(d) { return "translate(0," + (d + (d < 0) - bands) * h + ")"; }
+        ? function(d) { return "translate(0," + (d-bands) * h + ")"; }
         : function(d) { return (d < 0 ? "scale(1,-1)" : "") + "translate(0," + (d - bands) * h + ")"; };
   }
 })();

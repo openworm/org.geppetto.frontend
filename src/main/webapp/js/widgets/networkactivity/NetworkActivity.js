@@ -50,14 +50,19 @@ define(function(require) {
 		defaultNetworkActivityOptions:  {
 			width: 660,
 			height: 500,
-			networkActivityLayout: "list", //[matrix, hive, force]
+			networkActivityLayout: "list",//[matrix, hive, force]
+			smallHorizonHeight:10,
+			bigHorizonHeight:40,
+			percentWidthHorizon:0.6,
+			limit:400,
 		},
 		
 		initialize : function(options){
 			this.options = options;
+			
 			Widget.View.prototype.initialize.call(this,options);
 			this.setOptions(this.defaultNetworkActivityOptions);
-			this.limit = 100;
+			this.options.colors = ["rgba(0,0,0,0)","#F00","#FF0","#0F0","#0FF", "#00F","#FFF"];
 			this.widgetMargin = 20;
 			this.render();
 			this.setSize(options.height, options.width);
@@ -173,7 +178,7 @@ define(function(require) {
 					var oldata = this.datasets[key].values;
 					var reIndex = false;
 	
-					if(oldata.length > this.limit) {
+					if(oldata.length > this.options.limit) {
 						oldata.splice(0, 1);
 						reIndex = true;
 					}
@@ -207,60 +212,99 @@ define(function(require) {
 			this.options.innerWidth = this.networkActivityContainer.innerWidth() - this.widgetMargin;
 			this.options.innerHeight = this.networkActivityContainer.innerHeight() - this.widgetMargin;
 			
-			
+			var networkActivityForSort = this;
 			//console.log("Test : " + this.options.innerWidth);
 			if(this.datasets != []){
 				if(this.d3Select == null || undefined){
+					var sortButton = $('<button type="button" class="btn btn-info horizonButton">Sort</button>');
+					sortButton.on("click",function(){
+						networkActivityForSort.datasets.reverse();
+					});
 					this.networkActivityContainer
-						.append("<button type=\"button\" class=\"btn btn-info horizonButton\">Sort</button>")
-						.on("click",function(){
-							d3.select("#"+this.id).sort(function(a,b){
-									return a.yPosition>b.yPosition?1:a.yPostion<b.yPosition?-1:0;
-								});
-							});
-					this.d3Select = d3.select("#"+this.id);
+						.append(sortButton);
+					this.d3Select = d3.select("#"+this.id).append("svg").attr("class","networkActivityParentSVG");
 				}
+				var legend = d3.select("#"+this.id).select(".legend");
+				if(legend.empty()) {
+					legend = d3.select("#"+this.id).append("div").attr("class","legend");
+				}
+				
+				legend.selectAll(".legendItem").data(this.options.colors)
+					.enter().append("div").attr("class","legendItem").style("background-color",function(d){return d;});
 				this.createListLayout();
 			}
+			
 		},
 		
-		createListLayout: function(){
-
-			var width = this.options.innerWidth,
-		    height = 10,bigHeight = 40;
-			//console.log("Creating Chart");
+		updatePosition: function(){
 			
+			var nextYPosition = 0;
+			for(var sortedKey in this.datasets){
+				this.datasets[sortedKey].yPosition = nextYPosition;
+				nextYPosition += this.datasets[sortedKey].selected ? 
+						this.options.bigHorizonHeight : 
+							this.options.smallHorizonHeight ;
+			}
+			//var dataselection = this.d3Select.selectAll(".horizon");
+			
+			//this.updateHeights(dataselection);
+			
+		},
+		
+		updateHeights: function(selection){
+			this.updatePosition();
+			var width = this.options.innerWidth * this.options.percentWidthHorizon,
+			smallHeight = this.options.smallHorizonHeight,bigHeight = this.options.bigHorizonHeight,
+			horizonXPosition = 60;
+			//console.log("Creating Chart");
+			var heightHorizonFunction = function(d){return d.selected? +bigHeight : +smallHeight ;};
+			selection.style("height",heightHorizonFunction)
+				.style("width",width).attr("x",horizonXPosition)
+	  			.attr("y",function(d){return d.yPosition;});
+			
+			selection.selectAll(".horizonText").remove();
+			selection.each(function(d) {
+		            var header = d3.select(this);
+		            // loop through the keys - this assumes no extra data
+		            if(d.selected){
+		                
+		                header.append("text")
+						    .attr("class","horizonText")
+						    .attr("x",5).attr("y",20)
+						    .text(function(d){return d.selected ? d.label + " " :"";});
+		            }
+		        });
+	        
 			var chart = d3.horizon()
 			    .width(width)
-			    .height(function(d){return d.selected? +bigHeight : +height ;})
-			    .bands(10)
+			    .height(heightHorizonFunction)
 			    .mode("offset")
 			    .interpolate("linear")
-			    .dataValues(function(d){return d.values;});
+			    .dataValues(function(d){return d.values;})
+			    .colors(this.options.colors);
+			
+			selection.call(chart);
+			
+		},
+		
+		
+		createListLayout: function(){
+			// To let some space for diagonals
+			
 			
 			//d3.select("#"+this.id).selectAll(".horizon").remove();
 			var dataselection = this.d3Select.selectAll(".horizon")
 		    	.data(this.datasets);
-		    dataselection.enter().append("svg")
-		  		.attr("height",height).attr("class","horizon")
-		  		.on("click",function(){
-		  			var sel =d3.select(this).datum().selected; 
-		  			sel=(sel)?0:1;
-			        d3.select(this).transition().style("height",(sel)?bigHeight:height).duration(300)
-			        	.call(chart);
-			        d3.select(this).datum().selected = sel;
-			        if(sel){
-			        	d3.select(this).append("text")
-					    .attr("class","horizonText")
-					    .attr("x",10).attr("y",20)
-					    .text(function(d){return d.selected? d.label + " " :"";});
-			        }else{
-			        	d3.select(this).select(".horizonText").remove();
-			        }
+		    var resultingSVG = dataselection.enter().append("svg").attr("class","horizon")
+		  			.on("click",function(){
+			  			var sel =d3.select(this).datum().selected; 
+			  			sel=(sel)?0:1;
+				        d3.select(this).datum().selected = sel;
 		  		});
+		    resultingSVG;
 		    
 		    dataselection.exit().remove();
-			dataselection.call(chart);
+			this.updateHeights(dataselection);
 //			var cur_selection = this.svg.selectAll(".horizon")
 //		    .data(this.datasets)
 //		  .enter().append("div")
@@ -279,6 +323,8 @@ define(function(require) {
 		 */
 		setOptions: function(options) {
 			this.options = options;
+			
+			
 		},
 		
 		reset : function () {

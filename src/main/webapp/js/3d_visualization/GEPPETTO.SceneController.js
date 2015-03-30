@@ -60,7 +60,7 @@ define(function(require) {
 					}
 					var threeObject = GEPPETTO.getVARS().meshes[meshPath];
 					if (threeObject != null) {
-						threeObject.material.emissive = THREE.Color(intensity, intensity, intensity);
+						threeObject.material.emissive = new THREE.Color(intensity, intensity, intensity);
 					}
 				},
 				

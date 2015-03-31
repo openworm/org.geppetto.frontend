@@ -49,9 +49,9 @@ define(function(require) {
 		GEPPETTO.Resources = {
 				
 			COLORS : {
-					DEFAULT : "0X0d1d93",
+					DEFAULT : "0X199e8",
 					GHOST : "0X199e8",
-					SELECTED : "0Xffffff",
+					SELECTED : "0Xffcc00",
 					INPUT_TO_SELECTED : "0Xffdfc6",
 					OUTPUT_TO_SELECTED : "0Xff5a02",
 					HIGHLIGHTED : "0Xff1a02", 

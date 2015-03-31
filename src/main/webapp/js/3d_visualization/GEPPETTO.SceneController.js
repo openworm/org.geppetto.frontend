@@ -11,6 +11,7 @@ define(function(require) {
 		Backbone = require('backbone');
 
 		require('three');
+	    require('d3');
 		require('vendor/ColladaLoader');
 		require('vendor/OBJLoader');
 		require('GEPPETTO.Resources')(GEPPETTO);
@@ -60,7 +61,7 @@ define(function(require) {
 					}
 					var threeObject = GEPPETTO.getVARS().meshes[meshPath];
 					if (threeObject != null) {
-						threeObject.material.emissive = new THREE.Color(intensity, intensity, intensity);
+						threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8","red"])(intensity))
 					}
 				},
 				

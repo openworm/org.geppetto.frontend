@@ -49,6 +49,7 @@ require.config({
 	paths : {
 		jquery :"vendor/jquery-1.9.1.min",
 		three : 'vendor/three.min',
+		d3 : 'vendor/d3.min',
 		codemirror :"vendor/codemirror.min",
 		underscore : 'vendor/underscore.min',
 		backbone : 'vendor/backbone.min',
@@ -92,6 +93,7 @@ var jqueryLib = [
   "jquery",
   "geppetto",
   "three",
+  "d3",
   "vendor/THREEx.KeyboardState",
   "vendor/ColladaLoader",
   "vendor/OBJLoader",

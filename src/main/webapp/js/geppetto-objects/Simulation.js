@@ -526,7 +526,7 @@ define(function(require) {
 			 */
 			getEntities : function(){
 				var formattedOutput="";
-				var indentation = "↪";
+				var indentation = "    ";
 
 				return GEPPETTO.Utility.formatEntitiesTree(this.runTimeTree,formattedOutput, indentation);				
 			},

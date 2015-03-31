@@ -90,11 +90,12 @@ define(function(require) {
 		 */
 		var setupLights = function() {
 			// Lights
+			
+			VARS.scene.add(new THREE.AmbientLight(0x111111));
 
-			VARS.scene.add(new THREE.AmbientLight(0x000000));
-
+			
 			VARS.scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1.1));
-
+			
 			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.09);
 			directionalLight.position.set(0, 1, 0);
 			directionalLight.castShadow = true;

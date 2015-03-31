@@ -56,7 +56,10 @@ define(function(require) {
 			 */
 			defaultPlotOptions:  {
 				series: {
-					shadowSize: 0
+					shadowSize: 0,
+					downsample: {
+					    threshold: 1000 
+					  }
 				},
 				yaxis: {
 					min: -0.1,
@@ -132,7 +135,7 @@ define(function(require) {
 					}
 					
 					else{
-						var value = state.getValue();
+						var value = state.getTimeSeries()[0].getValue();
 						var id = state.getInstancePath();
 						
 						this.datasets.push({
@@ -234,10 +237,10 @@ define(function(require) {
 			 */
 			updateDataSet: function() {
 				for(var key in this.datasets) {
-					var newValue = this.datasets[key].variable.getValue();
+					var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
 
 					if(!this.labelsUpdated) {
-						var unit = this.datasets[key].variable.getUnit();
+						var unit = this.datasets[key].variable.getTimeSeries()[0].getUnit();
 						if(unit != null) {
 							var labelY = unit;
 							//Matteo: commented until this can move as it doesn't make sense for it to be static.

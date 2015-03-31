@@ -392,11 +392,18 @@ define(function(require) {
 				this.updateTags("G", GEPPETTO.G,true);
 			},
 			
-			/**
+			/**;
 			 * Gets available suggestions already narrowed down from list of tags
 			 */
 			availableSuggestions : function(){
 				return suggestions;
+			},
+			
+			/**;
+			 * Gets commands to exclude from autocomplete
+			 */
+			getNonCommands : function(){
+				return nonCommands;
 			},
 
 			/**
@@ -439,17 +446,17 @@ define(function(require) {
 						var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
 
 						var functionName = instancePath + "." + prop + "(" + parameter + ")";
-						this.createTag(functionName);
+						this.createTags(functionName);
 					}
 				}
 			},
 			
-			createTag : function(path){
+			createTags : function(path, objectMethods){
 				if(path != undefined){
 					var split = path.split(".");
 					var isTag = true;
-					for(var c = 0; c < nonCommands.length; c++) {
-						if(path.indexOf(nonCommands[c]) != -1) {
+					for(var c = 0; c < this.getNonCommands().length; c++) {
+						if(path.indexOf(this.getNonCommands()[c]) != -1) {
 							isTag = false;
 						}
 					}
@@ -467,6 +474,11 @@ define(function(require) {
 									current = current[split[i]];
 								}
 
+							}
+						}
+						if(objectMethods){
+							for(var i=0; i<objectMethods.length; i++){
+								current[objectMethods[i]] = {};
 							}
 						}
 					}
@@ -513,8 +525,8 @@ define(function(require) {
 						var functionName = id + "." + prop + "(" + parameter + ")";
 
 						var isCommand = true;
-						for(var c = 0; c < nonCommands.length; c++) {
-							if(functionName.indexOf(nonCommands[c]) != -1) {
+						for(var c = 0; c < this.getNonCommands().length; c++) {
+							if(functionName.indexOf(this.getNonCommands()[c]) != -1) {
 								isCommand = false;
 							}
 						}

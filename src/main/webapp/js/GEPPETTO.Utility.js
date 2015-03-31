@@ -124,6 +124,29 @@ define(function(require) {
 					//returned formatted string with commands and description, remove last two blank lines
 					return commandsFormatted.substring(0, commandsFormatted.length - 2);
 				},
+				
+				extractMethodsFromObject: function(object,original) {
+					var proto = object.__proto__;
+					var methods = new Array();
+					if(original){
+						proto = object;	
+					}
+					//find all functions of object Simulation
+					for(var prop in proto) {
+						if(typeof proto[prop] === "function") {
+							var f = proto[prop].toString();
+							//get the argument for this function
+							var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
+
+							var functionName = prop + "(" + parameter + ")";
+							if(GEPPETTO.Console.getNonCommands().indexOf(functionName)<=-1){
+								methods.push(functionName);
+							}
+						}
+					}
+					
+					return methods;
+				},
 
 				/**
 				 * Utility function for formatting output model tree

@@ -56,7 +56,8 @@ require.config({
 	 */
 	shim: {
 		"widgets/plot/vendor/jquery.flot.resize.min" : ["flot"],
-		"widgets/plot/vendor/jquery.flot.axislabels.min" : ["flot"]
+		"widgets/plot/vendor/jquery.flot.axislabels.min" : ["flot"],
+		"widgets/plot/vendor/jquery.flot.downsample" : ["flot"]
 	}
 });
 
@@ -68,6 +69,7 @@ libraries.push("flot");
 libraries.push("mathjs");
 libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
 libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
+libraries.push("widgets/plot/vendor/jquery.flot.downsample");
 
 define("math.global", ["mathjs"], function(_) {
 	  math = _;

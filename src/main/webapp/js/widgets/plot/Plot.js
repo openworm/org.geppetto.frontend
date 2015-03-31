@@ -240,7 +240,7 @@ define(function(require) {
 					var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
 
 					if(!this.labelsUpdated) {
-						var unit = this.datasets[key].variable.getUnit();
+						var unit = this.datasets[key].variable.getTimeSeries()[0].getUnit();
 						if(unit != null) {
 							var labelY = unit;
 							//Matteo: commented until this can move as it doesn't make sense for it to be static.

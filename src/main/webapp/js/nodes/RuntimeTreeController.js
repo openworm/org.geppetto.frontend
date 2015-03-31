@@ -49,6 +49,7 @@ define(function(require) {
 				 */
 				createRuntimeTree : function(jsonRuntimeTree){
 					this.simulationTreeCreated=false;
+					GEPPETTO.NodeFactory.populateTags();
 					for (var id in jsonRuntimeTree) {
 						var node = jsonRuntimeTree[id];
 						if(node._metaType == GEPPETTO.Resources.ENTITY_NODE){

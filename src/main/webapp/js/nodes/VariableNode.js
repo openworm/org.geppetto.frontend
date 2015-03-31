@@ -41,9 +41,7 @@ define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		unit : "",
 		timeSeries : [],
-		scalingFactor : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -54,21 +52,9 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this.unit = options.unit;
 			this.timeSeries = new Array();
-			this.scalingFactor = options.scalingFactor;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
-		},
-
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command ParameterSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function() {
-			return this.unit;
 		},
 
 		/**
@@ -79,16 +65,6 @@ define(function(require) {
 		 */
 		getTimeSeries : function() {
 			return this.timeSeries;
-		},
-
-		/**
-		 * Get scaling factor
-		 * 
-		 * @command ParameterSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
-		 */
-		getScalingFactor : function() {
-			return this.scalingFactor;
 		},
 
 		/**

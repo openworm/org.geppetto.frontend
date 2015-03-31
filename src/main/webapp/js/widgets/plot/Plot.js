@@ -56,7 +56,10 @@ define(function(require) {
 			 */
 			defaultPlotOptions:  {
 				series: {
-					shadowSize: 0
+					shadowSize: 0,
+					downsample: {
+					    threshold: 1000 
+					  }
 				},
 				yaxis: {
 					min: -0.1,

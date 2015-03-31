@@ -11,6 +11,7 @@ define(function(require) {
 		Backbone = require('backbone');
 
 		require('three');
+	    require('d3');
 		require('vendor/ColladaLoader');
 		require('vendor/OBJLoader');
 		require('GEPPETTO.Resources')(GEPPETTO);
@@ -52,31 +53,15 @@ define(function(require) {
 				 *                            (no illumination) to 1 (full illumination)
 				 */
 				lightUpEntity : function(meshPath, intensity) {
-					if (intensity < 0) {
-						intensity = 0;
+					if (intensity <= 0) {
+						intensity = 1e-6;
 					}
 					if (intensity > 1) {
 						intensity = 1;
 					}
-
-					var getRGB = function(hexString) {
-						return {
-							r : parseInt(hexString.substr(2, 2), 16),
-							g : parseInt(hexString.substr(4, 2), 16),
-							b : parseInt(hexString.substr(6, 2), 16)
-						};
-					};
-					var scaleColor = function(color) {
-						return (Math.floor(color + ((255 - color) * intensity)))
-								.toString(16);
-					};
 					var threeObject = GEPPETTO.getVARS().meshes[meshPath];
 					if (threeObject != null) {
-						var originalColor = getRGB(GEPPETTO.Resources.COLORS.DEFAULT);
-						threeObject.material.color.setHex('0x'
-								+ scaleColor(originalColor.r)
-								+ scaleColor(originalColor.g)
-								+ scaleColor(originalColor.b));
+						threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8","red"])(intensity))
 					}
 				},
 				

@@ -274,6 +274,7 @@ define(function(require) {
 						    .text(function(d){return d.selected ? d.label + " " :"";});
 		            }
 		        });
+	        selection.selectAll(".horizonContour").remove();
 	        
 			var chart = d3.horizon()
 			    .width(width)
@@ -284,6 +285,9 @@ define(function(require) {
 			    .colors(this.options.colors);
 			
 			selection.call(chart);
+			
+			selection.append("rect").attr("class","horizonContour").attr("height",heightHorizonFunction)
+				.attr("width",width);
 			
 		},
 		
@@ -301,7 +305,7 @@ define(function(require) {
 			  			sel=(sel)?0:1;
 				        d3.select(this).datum().selected = sel;
 		  		});
-		    resultingSVG;
+		    
 		    
 		    dataselection.exit().remove();
 			this.updateHeights(dataselection);

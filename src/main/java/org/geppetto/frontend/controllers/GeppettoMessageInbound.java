@@ -52,7 +52,6 @@ import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
-import org.geppetto.frontend.controllers.GeppettoServletController;
 import org.geppetto.frontend.dashboard.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -142,17 +141,14 @@ public class GeppettoMessageInbound extends MessageInbound
 			}
 			case INIT_URL:
 			{
-				String urlString = gmsg.data;
+				String jsonUrlString = gmsg.data;
 				URL url;
 				try
 				{
-					url = new URL(urlString);
+					url = new URL(jsonUrlString);
 					BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 					IGeppettoProject geppettoProject = new Gson().fromJson(reader, IGeppettoProject.class);
-					if (geppettoProject != null) {
-						urlString = geppettoProject.getGeppettoModel().getUrl();
-					}
-					_servletController.load(requestID, urlString, this);
+					_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
 				}
 				catch(IOException e)
 				{
@@ -164,19 +160,12 @@ public class GeppettoMessageInbound extends MessageInbound
 			{
 				String idString = gmsg.data;
 				IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
-				String urlString = null;
-				URL url;
 				try
 				{
-					url = new URL(urlString);
 					IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(idString));
-					if(geppettoProject != null)
-					{
-						urlString = geppettoProject.getGeppettoModel().getUrl();
-					}
-					_servletController.load(requestID, urlString, this);
+					_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
 				}
-				catch(MalformedURLException | NumberFormatException e)
+				catch(NumberFormatException e)
 				{
 					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 				}
@@ -185,7 +174,8 @@ public class GeppettoMessageInbound extends MessageInbound
 			case INIT_SIM:
 			{
 				String simulation = gmsg.data;
-				_servletController.load(requestID, simulation, this);
+				IGeppettoProject geppettoProject = new Gson().fromJson(simulation, IGeppettoProject.class);
+				_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
 				break;
 			}
 			case RUN_SCRIPT:
@@ -313,6 +303,23 @@ public class GeppettoMessageInbound extends MessageInbound
 				// NOTE: no other messages expected for now
 			}
 		}
+	}
+
+	private String getGeppettoModelUrl(IGeppettoProject project)
+	{
+		if(project != null)
+		{
+			// this could be null when loaded from a json that may not include the model part
+			if(project.getGeppettoModel() == null)
+			{
+				project = ControllerHelper.getDataManager().getGeppettoProjectById(project.getId());
+			}
+			if(project.getGeppettoModel() != null)
+			{
+				return project.getGeppettoModel().getUrl();
+			}
+		}
+		return "";
 	}
 
 	public String getConnectionID()

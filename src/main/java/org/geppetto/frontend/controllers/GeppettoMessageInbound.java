@@ -32,7 +32,9 @@
  *******************************************************************************/
 package org.geppetto.frontend.controllers;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -145,9 +147,14 @@ public class GeppettoMessageInbound extends MessageInbound
 				try
 				{
 					url = new URL(urlString);
+					BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+					IGeppettoProject geppettoProject = new Gson().fromJson(reader, IGeppettoProject.class);
+					if (geppettoProject != null) {
+						urlString = geppettoProject.getGeppettoModel().getUrl();
+					}
 					_servletController.load(requestID, urlString, this);
 				}
-				catch(MalformedURLException e)
+				catch(IOException e)
 				{
 					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 				}
@@ -161,12 +168,12 @@ public class GeppettoMessageInbound extends MessageInbound
 				URL url;
 				try
 				{
+					url = new URL(urlString);
 					IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(idString));
 					if(geppettoProject != null)
 					{
 						urlString = geppettoProject.getGeppettoModel().getUrl();
 					}
-					url = new URL(urlString);
 					_servletController.load(requestID, urlString, this);
 				}
 				catch(MalformedURLException | NumberFormatException e)

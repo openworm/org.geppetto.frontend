@@ -44,11 +44,14 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.controllers.GeppettoServletController;
+import org.geppetto.frontend.dashboard.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -145,6 +148,28 @@ public class GeppettoMessageInbound extends MessageInbound
 					_servletController.load(requestID, urlString, this);
 				}
 				catch(MalformedURLException e)
+				{
+					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+				}
+				break;
+			}
+			case INIT_ID:
+			{
+				String idString = gmsg.data;
+				IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+				String urlString = null;
+				URL url;
+				try
+				{
+					IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(idString));
+					if(geppettoProject != null)
+					{
+						urlString = geppettoProject.getGeppettoModel().getUrl();
+					}
+					url = new URL(urlString);
+					_servletController.load(requestID, urlString, this);
+				}
+				catch(MalformedURLException | NumberFormatException e)
 				{
 					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 				}
@@ -256,23 +281,25 @@ public class GeppettoMessageInbound extends MessageInbound
 			case GET_MODEL_TREE:
 			{
 				String instancePath = gmsg.data;
-				
-				_servletController.getModelTree(requestID,instancePath,this);
+
+				_servletController.getModelTree(requestID, instancePath, this);
 				break;
 			}
 			case GET_SUPPORTED_OUTPUTS:
 			{
-//				String instancePath = gmsg.data;
-//				
-//				_servletController.getModelTree(requestID,instancePath,this);
+				// String instancePath = gmsg.data;
+				//
+				// _servletController.getModelTree(requestID,instancePath,this);
 				break;
 			}
 			case WRITE_MODEL:
 			{
-				
-				Map<String, String> parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
-				_servletController.writeModel(requestID,parameters.get("instancePath"),parameters.get("format"),this);
-							
+
+				Map<String, String> parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				_servletController.writeModel(requestID, parameters.get("instancePath"), parameters.get("format"), this);
+
 			}
 			default:
 			{

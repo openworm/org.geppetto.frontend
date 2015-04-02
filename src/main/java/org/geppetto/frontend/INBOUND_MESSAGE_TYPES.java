@@ -41,6 +41,7 @@ public enum INBOUND_MESSAGE_TYPES {
 	STOP("stop"), 
 	OBSERVE("observe"), 
 	INIT_URL("init_url"), 
+	INIT_ID("init_id"), 
 	INIT_SIM("init_sim"),
 	LIST_WATCH_VARS("list_watch_vars"),
 	LIST_FORCE_VARS("list_force_vars"),

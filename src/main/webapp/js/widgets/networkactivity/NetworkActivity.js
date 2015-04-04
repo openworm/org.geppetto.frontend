@@ -187,7 +187,7 @@ define(function(require) {
          */
 		setNodeLinksInfo: function(node) {
 			var id = node.source;
-			if (!(id in this.datasetsMap)){
+			if (id in this.datasetsMap && node.target in this.datasetsMap){
 				var sourcePos = this.datasetsMap[id].pos;
 				var targetPos = this.datasetsMap[node.target].pos;
 				if (!node.target in this.datasets[sourcePos].targets)
@@ -199,7 +199,6 @@ define(function(require) {
 				this.datasets[sourcePos].synapse_type = node.synapse_type;
 				this.datasets[sourcePos].source.dx= 20;
 				this.datasets[sourcePos].source.dy= this.datasets[sourcePos].yPosition;
-				
 			}
 		},
         

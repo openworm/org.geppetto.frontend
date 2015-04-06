@@ -64,7 +64,7 @@ define(function(require) {
 			
 			Widget.View.prototype.initialize.call(this,options);
 			this.setOptions(this.defaultNetworkActivityOptions);
-			this.options.colors = ["rgba(0,0,0,0)","#F00","#FF0","#0F0","#0FF", "#00F","#FFF"];
+			this.options.colors = ["rgba(155,155,155,.5)","#00F","#0FF","#0F0","#FF0", "#F00"];
 			this.widgetMargin = 20;
 			this.render();
 			this.setSize(options.height, options.width);

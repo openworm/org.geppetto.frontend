@@ -17,7 +17,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished t do so, subject to the following conditions:
+ * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -30,83 +30,42 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
- * The parent node from where all other nodes extend
- * 
- * @module nodes/Node
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * @fileoverview Geppetto Vanilla business logic
+ *
+ * @author matteo@openworm.org (Matteo Cantarelli)
+ * @author giovanni@openworm.org (Giovanni Idili)
  */
-define([ 'jquery', 'underscore', 'backbone',
-
-// Add requirement for Backbone-associations module
-
-], function(require) {
-	return {
-		Model : Backbone.Model.extend({
-			name : "",
-			instancePath : "",
-			id : "",
-			domainType : "",
-			_metaType : "",
-			parent : null,
-
+define(function(require) {
+		
+	return function(GEPPETTO){
+		GEPPETTO.Vanilla = {
+			keyboardEnabled : true,
 			/**
-			 * Gets the instance path of the node
-			 * 
-			 * @command Node.getInstancePath()
-			 * @returns {String} Instance path of this node
-			 * 
+			 * Business logic for Geppetto Vanilla
 			 */
-			getInstancePath : function() {
-				return this.instancePath;
-			},
+			checkKeyboard: function() {
+				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
+					GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).toggle();
+				}
 
-			/**
-			 * Gets the name of the node
-			 * 
-			 * @command Node.getName()
-			 * @returns {String} Name of the node
-			 * 
-			 */
-			getName : function() {
-				return this.name;
-			},
-
-			/**
-			 * Sets the name of the node
-			 * 
-			 * @command Node.setName()
-			 * 
-			 */
-			setName : function(newname) {
-				this.name = newname;
-			},
-
-			/**
-			 * Get the id associated with node
-			 * 
-			 * @command Node.getId()
-			 * @returns {String} ID of node
-			 */
-			getId : function() {
-				return this.id;
+				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
+					GEPPETTO.Console.toggleConsole();
+				}
+				
+				else if(GEPPETTO.isKeyPressed("ctrl+alt+s")) {
+					GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.SCATTER3D).toggle();
+				}
 			},
 			
-			getDomainType : function(){
-				return this.domainType;
+			isKeyboardEnabled : function(){
+				this.keyboardEnabled;
 			},
 			
-			setDomainType : function(newDomainType){
-				this.domainType = newDomainType;
-			},
-			
-			setParent : function(parent){
-				this.parent = parent;
-			},
-			
-			getParent : function(){
-				return this.parent;
+			enableKeyboard: function(enable){
+				this.keyboardEnabled = enable;
 			}
-		})
-	};
+		}
+	}
 });

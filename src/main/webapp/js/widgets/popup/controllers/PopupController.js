@@ -17,7 +17,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished t do so, subject to the following conditions:
+ * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -31,82 +31,61 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * The parent node from where all other nodes extend
- * 
- * @module nodes/Node
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * Controller class for popup widget. Use to make calls to widget from inside Geppetto.
+ *
+ * @author Jesus R Martinez (jesus@metacell.us)
  */
-define([ 'jquery', 'underscore', 'backbone',
+define(function(require) {
+	var Popup = require('widgets/popup/Popup');
+	var AWidgetController = require('widgets/AWidgetController');		
 
-// Add requirement for Backbone-associations module
+	/**
+	 * @exports Widgets/Popup/PopupsController
+	 */
+	return AWidgetController.View.extend ({
 
-], function(require) {
-	return {
-		Model : Backbone.Model.extend({
-			name : "",
-			instancePath : "",
-			id : "",
-			domainType : "",
-			_metaType : "",
-			parent : null,
-
-			/**
-			 * Gets the instance path of the node
-			 * 
-			 * @command Node.getInstancePath()
-			 * @returns {String} Instance path of this node
-			 * 
-			 */
-			getInstancePath : function() {
-				return this.instancePath;
-			},
-
-			/**
-			 * Gets the name of the node
-			 * 
-			 * @command Node.getName()
-			 * @returns {String} Name of the node
-			 * 
-			 */
-			getName : function() {
-				return this.name;
-			},
-
-			/**
-			 * Sets the name of the node
-			 * 
-			 * @command Node.setName()
-			 * 
-			 */
-			setName : function(newname) {
-				this.name = newname;
-			},
-
-			/**
-			 * Get the id associated with node
-			 * 
-			 * @command Node.getId()
-			 * @returns {String} ID of node
-			 */
-			getId : function() {
-				return this.id;
-			},
+		initialize: function() {
+			this.widgets = Array();
+		},
+	
+		/**
+		 * Creates popup widget
+		 */
+		addPopupWidget : function(){
+			//look for a name and id for the new widget
+			var id = this.getAvailableWidgetId("Popup", this.widgets);
+			var name = id;
 			
-			getDomainType : function(){
-				return this.domainType;
-			},
-			
-			setDomainType : function(newDomainType){
-				this.domainType = newDomainType;
-			},
-			
-			setParent : function(parent){
-				this.parent = parent;
-			},
-			
-			getParent : function(){
-				return this.parent;
+			//create popup widget
+			var p = window[name] = new Popup({id:id, name:name,visible:true});
+
+			//create help command for plot
+			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+
+			//store in local stack
+			this.widgets.push(p);
+
+			GEPPETTO.WidgetsListener.subscribe(this, id);
+
+			//add commands to console autocomplete and help option
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/popup/Popup.js", p, id);
+
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(p.getId(), p);
+
+			return p;
+		},
+
+		/**
+		 * Receives updates from widget listener class to update popup widget(s)
+		 * 
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+		 */
+		update: function(event) {
+			//delete popup widget(s)
+			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
 			}
-		})
-	};
+		}	
+	});
 });

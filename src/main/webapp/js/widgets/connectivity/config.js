@@ -17,7 +17,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished t do so, subject to the following conditions:
+ * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -30,83 +30,51 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
- * The parent node from where all other nodes extend
- * 
- * @module nodes/Node
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * Loads connectivity scripts
+ *
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ * @author Boris Marin
  */
-define([ 'jquery', 'underscore', 'backbone',
 
-// Add requirement for Backbone-associations module
 
-], function(require) {
-	return {
-		Model : Backbone.Model.extend({
-			name : "",
-			instancePath : "",
-			id : "",
-			domainType : "",
-			_metaType : "",
-			parent : null,
+/*
+ * Libraries used by Connectivity widget
+ */
 
-			/**
-			 * Gets the instance path of the node
-			 * 
-			 * @command Node.getInstancePath()
-			 * @returns {String} Instance path of this node
-			 * 
-			 */
-			getInstancePath : function() {
-				return this.instancePath;
-			},
+require.config({
+	  paths: {
+	    "d3": "widgets/connectivity/vendor/d3.min"
+	  }
+	});
 
-			/**
-			 * Gets the name of the node
-			 * 
-			 * @command Node.getName()
-			 * @returns {String} Name of the node
-			 * 
-			 */
-			getName : function() {
-				return this.name;
-			},
+var reqs = [];
+reqs.push("d3");
 
-			/**
-			 * Sets the name of the node
-			 * 
-			 * @command Node.setName()
-			 * 
-			 */
-			setName : function(newname) {
-				this.name = newname;
-			},
+define("d3.global", ["d3"], function(_) {
+	  d3 = _;
+	});
 
-			/**
-			 * Get the id associated with node
-			 * 
-			 * @command Node.getId()
-			 * @returns {String} ID of node
-			 */
-			getId : function() {
-				return this.id;
-			},
-			
-			getDomainType : function(){
-				return this.domainType;
-			},
-			
-			setDomainType : function(newDomainType){
-				this.domainType = newDomainType;
-			},
-			
-			setParent : function(parent){
-				this.parent = parent;
-			},
-			
-			getParent : function(){
-				return this.parent;
-			}
-		})
+require(reqs, function(d3) {
+	window.d3 = d3;
+	loadCss("assets/js/widgets/connectivity/Connectivity.css");
+	
+});
+
+//Load ConnectivityController and other classes using GEPPETTO
+define(function(require) {
+	return {		
+		// Register Commands
+//		GEPPETTO.MenuManager.registerNewCommandProvider(["EntityNode",
+//		                                                 "AspectNode",
+//		                                                 "AspectSubTreeNode",
+//		                                                 "CompositeNode",
+//		                                                 "DynamicsSpecificationNode",
+//		                                                 "FunctionNode",
+//		                                                 "ParameterNode",
+//		                                                 "ParameterSpecificationNode",
+//		                                                 "VariableNode"],
+//		                                                 GEPPETTO.TreeVisualiserControllerD3.getCommands);
 	};
 });

@@ -17,7 +17,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished t do so, subject to the following conditions:
+ * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -31,82 +31,22 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * The parent node from where all other nodes extend
- * 
- * @module nodes/Node
+ * Widget Utility Class
+ *
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
-define([ 'jquery', 'underscore', 'backbone',
 
-// Add requirement for Backbone-associations module
-
-], function(require) {
-	return {
-		Model : Backbone.Model.extend({
-			name : "",
-			instancePath : "",
-			id : "",
-			domainType : "",
-			_metaType : "",
-			parent : null,
-
-			/**
-			 * Gets the instance path of the node
-			 * 
-			 * @command Node.getInstancePath()
-			 * @returns {String} Instance path of this node
-			 * 
-			 */
-			getInstancePath : function() {
-				return this.instancePath;
-			},
-
-			/**
-			 * Gets the name of the node
-			 * 
-			 * @command Node.getName()
-			 * @returns {String} Name of the node
-			 * 
-			 */
-			getName : function() {
-				return this.name;
-			},
-
-			/**
-			 * Sets the name of the node
-			 * 
-			 * @command Node.setName()
-			 * 
-			 */
-			setName : function(newname) {
-				this.name = newname;
-			},
-
-			/**
-			 * Get the id associated with node
-			 * 
-			 * @command Node.getId()
-			 * @returns {String} ID of node
-			 */
-			getId : function() {
-				return this.id;
-			},
-			
-			getDomainType : function(){
-				return this.domainType;
-			},
-			
-			setDomainType : function(newDomainType){
-				this.domainType = newDomainType;
-			},
-			
-			setParent : function(parent){
-				this.parent = parent;
-			},
-			
-			getParent : function(){
-				return this.parent;
-			}
-		})
-	};
-});
+/**
+ * Load CSS File
+ * 
+ * @module WidgetUtility
+ * @param url
+ */
+function loadCss(url) {
+	var link = document.createElement("link");
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	link.href = url;
+	document.getElementsByTagName("head")[0].appendChild(link);
+}

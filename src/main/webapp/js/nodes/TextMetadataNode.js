@@ -17,7 +17,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished t do so, subject to the following conditions:
+ * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -31,82 +31,52 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * The parent node from where all other nodes extend
+ * Client class use to represent a parameter specification node, used for model
+ * tree properties.
  * 
- * @module nodes/Node
+ * @module nodes/TextMetadataNode
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define([ 'jquery', 'underscore', 'backbone',
+define(function(require) {
 
-// Add requirement for Backbone-associations module
+	var Node = require('nodes/Node');
 
-], function(require) {
-	return {
-		Model : Backbone.Model.extend({
-			name : "",
-			instancePath : "",
-			id : "",
-			domainType : "",
-			_metaType : "",
-			parent : null,
+	return Node.Model.extend({
+		value : "",
 
-			/**
-			 * Gets the instance path of the node
-			 * 
-			 * @command Node.getInstancePath()
-			 * @returns {String} Instance path of this node
-			 * 
-			 */
-			getInstancePath : function() {
-				return this.instancePath;
-			},
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
+		 */
+		initialize : function(options) {
+			this.name = options.name;
+			this.id = options.id;
+			this.instancePath = options.instancePath;
+			this.value = options.value;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
+		},
 
-			/**
-			 * Gets the name of the node
-			 * 
-			 * @command Node.getName()
-			 * @returns {String} Name of the node
-			 * 
-			 */
-			getName : function() {
-				return this.name;
-			},
-
-			/**
-			 * Sets the name of the node
-			 * 
-			 * @command Node.setName()
-			 * 
-			 */
-			setName : function(newname) {
-				this.name = newname;
-			},
-
-			/**
-			 * Get the id associated with node
-			 * 
-			 * @command Node.getId()
-			 * @returns {String} ID of node
-			 */
-			getId : function() {
-				return this.id;
-			},
-			
-			getDomainType : function(){
-				return this.domainType;
-			},
-			
-			setDomainType : function(newDomainType){
-				this.domainType = newDomainType;
-			},
-			
-			setParent : function(parent){
-				this.parent = parent;
-			},
-			
-			getParent : function(){
-				return this.parent;
-			}
-		})
-	};
+		/**
+		 * Get value of quantity
+		 * 
+		 * @command TextMetadataNode.getText()
+		 * @returns {String} Value of quantity
+		 */
+		getValue : function() {
+			return this.value;
+		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function() {
+			return "ID : " + this.name + "\n" 
+					+ "    Name : " + this.name + "\n"
+					+ "    value : " + this.text + "\n";
+		}
+	});
 });

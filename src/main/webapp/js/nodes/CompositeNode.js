@@ -17,7 +17,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished t do so, subject to the following conditions:
+ * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -31,82 +31,59 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * The parent node from where all other nodes extend
+ * Client class use to represent a composite variable node, used for simulation
+ * tree state variables.
  * 
- * @module nodes/Node
+ * @module nodes/CompositeNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define([ 'jquery', 'underscore', 'backbone',
+define(function(require) {
+	var Node = require('nodes/Node');
 
-// Add requirement for Backbone-associations module
+	return Node.Model.extend({
+		children : null,
 
-], function(require) {
-	return {
-		Model : Backbone.Model.extend({
-			name : "",
-			instancePath : "",
-			id : "",
-			domainType : "",
-			_metaType : "",
-			parent : null,
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
+		 */
+		initialize : function(options) {
+			this.children = new Array();
+			this.id = options.id;
+			this.name = options.name;
+			this.instancePath = options.instancePath;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
+		},
 
-			/**
-			 * Gets the instance path of the node
-			 * 
-			 * @command Node.getInstancePath()
-			 * @returns {String} Instance path of this node
-			 * 
-			 */
-			getInstancePath : function() {
-				return this.instancePath;
-			},
+		/**
+		 * Get this entity's aspects
+		 * 
+		 * @command CompositeVariableNode.getChildren()
+		 * 
+		 * @returns {List<Aspect>} - List of aspects
+		 * 
+		 */
+		getChildren : function() {
+			return this.children;
+		},
 
-			/**
-			 * Gets the name of the node
-			 * 
-			 * @command Node.getName()
-			 * @returns {String} Name of the node
-			 * 
-			 */
-			getName : function() {
-				return this.name;
-			},
-
-			/**
-			 * Sets the name of the node
-			 * 
-			 * @command Node.setName()
-			 * 
-			 */
-			setName : function(newname) {
-				this.name = newname;
-			},
-
-			/**
-			 * Get the id associated with node
-			 * 
-			 * @command Node.getId()
-			 * @returns {String} ID of node
-			 */
-			getId : function() {
-				return this.id;
-			},
-			
-			getDomainType : function(){
-				return this.domainType;
-			},
-			
-			setDomainType : function(newDomainType){
-				this.domainType = newDomainType;
-			},
-			
-			setParent : function(parent){
-				this.parent = parent;
-			},
-			
-			getParent : function(){
-				return this.parent;
+		/**
+		 * Print out formatted node
+		 */
+		print : function() {
+			var formattedNode = "Name : " + this.name + "\n" + "    Id: "
+					+ this.id + "\n" + "    InstancePath : "
+					+ this.instancePath + "\n" + "    Children : \n";
+			for ( var e = 0; e < this.getChildren().length; e++) {
+				var child = this.getChildren().at(e);
+				formattedNode = formattedNode + "      " + child._metaType
+						+ ": " + child.id + "\n";
 			}
-		})
-	};
+
+			return formattedNode;
+		}
+	});
 });

@@ -30,42 +30,32 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * @fileoverview Geppetto Vanilla business logic
- *
- * @author matteo@openworm.org (Matteo Cantarelli)
- * @author giovanni@openworm.org (Giovanni Idili)
+ * Client class use to represent a Physical Quantity, which stores a value, unit and
+ * scale. 
+ * 
+ * @module nodes/PhysicalQuantity
+ * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
-		
-	return function(GEPPETTO){
-		GEPPETTO.Vanilla = {
-			keyboardEnabled : true,
-			/**
-			 * Business logic for Geppetto Vanilla
-			 */
-			checkKeyboard: function() {
-				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
-					GEPPETTO.Main.getController(GEPPETTO.Widgets.PLOT).toggle();
-				}
+	var value = "", unit = "", scale = "";
+	
+	var PhysicalQuantity = function (value,unit,scale) {
+		this.value = value;
+		this.unit = unit;
+		this.scale = scale;
+	};
 
-				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
-					GEPPETTO.Console.toggleConsole();
-				}
-				
-				else if(GEPPETTO.isKeyPressed("ctrl+alt+s")) {
-					GEPPETTO.Main.getController(GEPPETTO.Widgets.SCATTER3D).toggle();
-				}
-			},
-			
-			isKeyboardEnabled : function(){
-				this.keyboardEnabled;
-			},
-			
-			enableKeyboard: function(enable){
-				this.keyboardEnabled = enable;
-			}
-		}
-	}
+	PhysicalQuantity.prototype.getValue = function() {
+		return this.value;
+	};
+
+	PhysicalQuantity.prototype.getUnit = function() {
+		return this.unit;
+	};
+
+	PhysicalQuantity.prototype.getScale = function() {
+		return this.scale;
+	};
+	return PhysicalQuantity;
 });

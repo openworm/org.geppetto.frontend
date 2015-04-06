@@ -113,7 +113,7 @@ define(function (require) {
 		 */
 		updateVariable: function () {
 			this.setHeader(this.variable.name);
-			this.setBody(this.variable.state.getValue());
+			this.setBody(this.variable.state.getTimeSeries()[0].getValue());
 		},
 
 		/**
@@ -140,11 +140,6 @@ define(function (require) {
 		 * @private
 		 */
 		setBody: function (content) {
-			//TODO: Round content only if user specifies it in options
-//			if (typeof content == 'number') {
-//				content = content.toFixed(2);
-//			}
-
 			this.getSelector("varvis_body").html(content);
 		},
 

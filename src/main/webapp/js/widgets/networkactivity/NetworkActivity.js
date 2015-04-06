@@ -65,6 +65,7 @@ define(function(require) {
 			Widget.View.prototype.initialize.call(this,options);
 			this.setOptions(this.defaultNetworkActivityOptions);
 			this.options.colors = ["rgba(0,0,0,0)","#F00","#FF0","#0F0","#0FF", "#00F","#FFF"];
+			this.options.horizonXPosition = 60;
 			this.widgetMargin = 20;
 			this.render();
 			this.setSize(options.height, options.width);
@@ -118,6 +119,8 @@ define(function(require) {
 				else if(state._metaType == "VariableNode"){
 					strValues += "Var{" + this.insertVariableNode(state) + "}";
 				}
+				//reorder and update yPosition of all nodes (Crappy PATCH)
+				this.updatePosition();
 				this.createDataFromConnections(state);
 			}
 			
@@ -128,15 +131,15 @@ define(function(require) {
         /**
          *  Read node recursively to get all variableNodes
          */
-        scanAndInsertVariableNodes: function(node,entityInstancePath){
+        scanAndInsertVariableNodes: function(node,entityNode){
         	var strVal = "";
         	if(node._metaType != null){
         		if(node._metaType == "EntityNode"){
-        			var entityInstancePath = node.getInstancePath();
+        			var entityNode = node;
         		}
 	        	strVal += "[" + node._metaType +" "+ node.name + ":";
 	            if(node._metaType == "VariableNode"){
-	            	strVal += ",Var2 " + this.insertVariableNode(node,entityInstancePath);
+	            	strVal += ",Var2 " + this.insertVariableNode(node,entityNode);
 	            }else{
 	            	if(node.getChildren != null || undefined){
 	            		
@@ -146,7 +149,7 @@ define(function(require) {
 			                for(var childIndex in childrens){
 			                	strVal += ",child " 
 			                		+ childrens[childIndex]._metaType + ":" 
-			                		+ this.scanAndInsertVariableNodes(childrens[childIndex],entityInstancePath); //RECURSIONS
+			                		+ this.scanAndInsertVariableNodes(childrens[childIndex],entityNode); //RECURSIONS
 			                }
 		                }else{
 		                	strVal += " noChild";
@@ -163,22 +166,24 @@ define(function(require) {
         /**
          * Insert variableNode into datasets
          */
-        insertVariableNode: function(varnode, entityInstancePath){
+        insertVariableNode: function(varnode, entityNode){
             var value = varnode.getValue();
-            if (!(entityInstancePath in this.datasetsMap)){
+            if (!(entityNode.getInstancePath() in this.datasetsMap)){
 	            this.datasets.push({
-	            	id: entityInstancePath,
+	            	id: entityNode.getInstancePath(),
+	            	entity: entityNode,
 	            	yPosition : this.datasets.length,
 	                label : varnode.getInstancePath(), 
 	                variable : varnode,
 	                values : [ [0,value] ],
-	                selected : 0
+	                selected : 0,
+	                targets: []
 	            });
-	        	this.datasetsMap[entityInstancePath]={
+	        	this.datasetsMap[entityNode.getInstancePath()]={
 						pos : this.datasets.length,
 						};
             }
-            return entityInstancePath;
+            return entityNode.getInstancePath();
         },
         
         //todo:add links info
@@ -187,18 +192,17 @@ define(function(require) {
          */
 		setNodeLinksInfo: function(node) {
 			var id = node.source;
+			// check if the source and the target are in our watch list and dont add twice the same link (target not in targets
 			if (id in this.datasetsMap && node.target in this.datasetsMap){
 				var sourcePos = this.datasetsMap[id].pos;
 				var targetPos = this.datasetsMap[node.target].pos;
-				if (!node.target in this.datasets[sourcePos].targets)
-					this.datasets[sourcePos].targets[node.target] ={
-						dx: 20,
-						dy: this.datasets[targetPos].yPosition,
-					};
+				this.datasets[sourcePos].targets.push(this.datasets[targetPos]);
 				this.datasets[sourcePos].weight = node.weight;
 				this.datasets[sourcePos].synapse_type = node.synapse_type;
-				this.datasets[sourcePos].source.dx= 20;
-				this.datasets[sourcePos].source.dy= this.datasets[sourcePos].yPosition;
+			}
+			else{
+				
+				
 			}
 		},
         
@@ -282,21 +286,19 @@ define(function(require) {
 						this.options.bigHorizonHeight : 
 							this.options.smallHorizonHeight ;
 			}
-			//var dataselection = this.d3Select.selectAll(".horizon");
 			
-			//this.updateHeights(dataselection);
 			
 		},
 		
 		updateHeights: function(selection){
 			this.updatePosition();
 			var width = this.options.innerWidth * this.options.percentWidthHorizon,
-			smallHeight = this.options.smallHorizonHeight,bigHeight = this.options.bigHorizonHeight,
-			horizonXPosition = 60;
+			smallHeight = this.options.smallHorizonHeight,bigHeight = this.options.bigHorizonHeight;
+			
 			//console.log("Creating Chart");
 			var heightHorizonFunction = function(d){return d.selected? +bigHeight : +smallHeight ;};
 			selection.style("height",heightHorizonFunction)
-				.style("width",width).attr("x",horizonXPosition)
+				.style("width",width).attr("x",this.options.horizonXPosition)
 	  			.attr("y",function(d){return d.yPosition;});
 			
 			selection.selectAll(".horizonText").remove();
@@ -328,12 +330,66 @@ define(function(require) {
 			
 		},
 		
+		drawLinksUI: function(){
+//			var arc = d3.svg.arc();
+//			arc.source(function(d){
+//				return {x:d.sourceX, y:d.sourceY};
+//			});
+//			arc.target(function(d){
+//				return {x:d.targetX, y:d.targetY};
+//			});
+//			arc.innerRadius(function(d) { return 20; });
+//			arc.outerRadius(function(d) { return 22; });
+//			arc.startAngle(function(d) {return Math.PI;});
+//			arc.endAngle(function(d) {return 0;});
+//			arc.padAngle(function(d) {return 0;});
+			var horizonX = this.options.horizonXPosition;
+			var bigHeight = this.options.bigHorizonHeight;
+			var smallHeight = this.options.smallHorizonHeight;
+			var path = function(d){ 
+				var sourceYlinkPos, targetYlinkPos;
+				sourceYlinkPos = d.source.selected ? (bigHeight/2)+d.source.yPosition : (smallHeight/2)+d.source.yPosition;
+				targetYlinkPos = d.target.selected ? (bigHeight/2)+d.target.yPosition : (smallHeight/2)+d.target.yPosition;
+				//                                                                distance between the 2
+				return "M " + horizonX + " " + (sourceYlinkPos) + " Q " + 0 + " " + ((d.source.yPosition-d.target.yPosition)/2 + d.target.yPosition) + " " + horizonX + " " + targetYlinkPos;
+			};
+			var daLinks= this.getLinks();
+			  var link = this.d3Select.selectAll(".link")
+				  .data(daLinks);
+
+			  // Enter the links.
+			  link.enter().append("path")
+				  .attr("class", "link");
+				  link.attr("d", path).style("stroke", function(d){
+					  if(d.source.selected){
+						  return "#FC6520";
+					  }
+					  else{
+						  if(d.target.selected){
+							  return "#FEE3CE";
+						  }
+						  
+						  return "rgba(42,168,232,.5)";
+					  }
+				  });
+			link.exit().remove();
+		},
+		getLinks: function(){
+			var links = [];
+			for (var source in this.datasets){
+				for (var target in this.datasets[source].targets){
+					links.push({
+						source:this.datasets[source],
+						target:this.datasets[source].targets[target]
+					});
+				}
+			}
+			return links;
+		},
 		
 		createListLayout: function(){
-			// To let some space for diagonals
-			
-			
-			//d3.select("#"+this.id).selectAll(".horizon").remove();
+
+
 			var dataselection = this.d3Select.selectAll(".horizon")
 		    	.data(this.datasets);
 		    var resultingSVG = dataselection.enter().append("svg").attr("class","horizon")
@@ -342,19 +398,16 @@ define(function(require) {
 			  			sel=(sel)?0:1;
 				        d3.select(this).datum().selected = sel;
 		  		});
-		    
-		    
+		        
 		    dataselection.exit().remove();
 			this.updateHeights(dataselection);
-//			var cur_selection = this.svg.selectAll(".horizon")
-//		    .data(this.datasets)
-//		  .enter().append("div")
-//		  .attr("class", "horizon")
-//		  .call(chart);
+			this.drawLinksUI();
 			
 			return "Complete List creation";
 		
 		},
+
+		
 		/**
 		 *
 		 * Set the options for the plotting widget
@@ -394,8 +447,7 @@ define(function(require) {
 						// only monitor connection starting "from" the current node (would be redudant to keep them all)
 						if (connectionItem.getType() == "FROM"){
 							var source = connectionItem.getParent().getInstancePath();
-							//TODO: validate this (does it on remove the root)
-							var target = connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1);
+							var target = connectionItem.getEntityInstancePath();
 							
 							var linkItem = {};
 							linkItem["source"] = source;

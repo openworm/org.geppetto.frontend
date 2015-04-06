@@ -59,6 +59,7 @@ public enum INBOUND_MESSAGE_TYPES {
 	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
 	WRITE_MODEL("write_model");
 
+	
 	private INBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;
 	}

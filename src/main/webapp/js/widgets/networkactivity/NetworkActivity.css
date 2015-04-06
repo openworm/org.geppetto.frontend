@@ -84,3 +84,9 @@
 	right : 20px;
 	z-index : 3;
 }
+
+.link{
+	stroke: blue;
+	stroke-width: 3;
+	
+}

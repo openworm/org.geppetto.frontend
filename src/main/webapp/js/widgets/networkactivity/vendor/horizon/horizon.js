@@ -33,7 +33,6 @@
 	            yv = y.call(this, d, i);
 	        if (xv < xMin) xMin = xv;
 	        if (xv > xMax) xMax = xv;
-	        if (-yv > yMax) yMax = -yv;
 	        if (yv > yMax) yMax = yv;
 	        if (yv < yMin) yMin = yv;
 	        return [xv, yv];

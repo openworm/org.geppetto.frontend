@@ -60,6 +60,12 @@ define(function(require) {
 
 		
 		initialize : function(options){
+			// Initialisation of a useful function for moving objects around
+			d3.selection.prototype.moveToFront = function() {
+				  return this.each(function(){
+				    this.parentNode.appendChild(this);
+				  });
+				};
 			this.options = options;
 			
 			Widget.View.prototype.initialize.call(this,options);
@@ -76,13 +82,9 @@ define(function(require) {
 			    //TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
 				var width = $(this).innerWidth()-20;
 				var height = $(this).innerHeight()-20;
-				if (window[this.id].options.networkActivityLayout == 'force'){
-					window[this.id].svg.attr("width", width).attr("height", height);
-					window[this.id].force.size([width, height]).resume();
-				}
-				else if (window[this.id].options.networkActivityLayout == 'list') {
-					window[this.id].createLayout();
-				}
+				
+				window[this.id].updateCreateLayout();
+				
 				event.stopPropagation();
 		    });
 						
@@ -125,7 +127,7 @@ define(function(require) {
 				this.createDataFromConnections(state);
 			}
 			
-			this.createLayout();
+			this.updateCreateLayout();
 			
 			return "Dataseries added :" + strValues;
 		},
@@ -245,26 +247,33 @@ define(function(require) {
 
 			}
 
-			this.createLayout();
+			this.updateLiveData();
 		},
 		
-		createLayout: function(){
+		updateCreateLayout: function(){
 			//$("svg").remove();
 			
 			this.options.innerWidth = this.networkActivityContainer.innerWidth() - this.widgetMargin;
 			this.options.innerHeight = this.networkActivityContainer.innerHeight() - this.widgetMargin;
 			
-			var networkActivityForSort = this;
+			var networkActivityForFunctions = this;
 			//console.log("Test : " + this.options.innerWidth);
 			if(this.datasets != []){
-				if(this.d3Select == null || undefined){
+				if(this.d3Select == null || undefined){ // initialisation of first layout
 					var sortButton = $('<button type="button" class="btn btn-info horizonButton">Sort</button>');
 					sortButton.on("click",function(){
-						networkActivityForSort.datasets.reverse();
+						networkActivityForFunctions.datasets.reverse();
+						networkActivityForFunctions.updateHeights();
 					});
 					this.networkActivityContainer
 						.append(sortButton);
 					this.d3Select = d3.select("#"+this.id).append("svg").attr("class","networkActivityParentSVG");
+					
+					this.chart = d3.horizon()
+						.mode("offset")
+					    .interpolate("linear")
+					    .dataValues(function(d){return d.values;})
+					    .colors(this.options.colors);
 				}
 				var legend = d3.select("#"+this.id).select(".legend");
 				if(legend.empty()) {
@@ -273,7 +282,37 @@ define(function(require) {
 				
 				legend.selectAll(".legendItem").data(this.options.colors)
 					.enter().append("div").attr("class","legendItem").style("background-color",function(d){return d;});
-				this.createListLayout();
+				
+				//Update watched data
+				var dataselection = this.d3Select.selectAll(".horizon")
+		    	.data(this.datasets);
+				//Remove svgs that are no longer used
+				dataselection.exit().remove();
+				//For all new data add the elements needed
+			    var resultingSVG = dataselection.enter().append("svg").attr("class","horizon")
+			  			.on("click",function(){
+				  			var sel =d3.select(this).datum().selected; 
+				  			sel=(sel)?0:1;
+					        d3.select(this).datum().selected = sel;
+					        networkActivityForFunctions.updateHeights();
+					        
+			  		});
+			    resultingSVG.each(function(d) {
+			            var svg = d3.select(this);
+			            
+			            var textSelected = svg.append("text")
+								    .attr("class","horizonText")
+								    .attr("x",5).attr("y",20);
+			            
+			            // loop through the keys - this assumes no extra data
+			            textSelected.data(d);
+			            textSelected.text(function(d){return d.selected ? d.label + " " :"";});
+			            svg.append("rect").attr("class","horizonContour");
+			        });
+			    
+			    this.updateHeights();
+				
+				this.updateLiveData();
 			}
 			
 		},
@@ -288,62 +327,43 @@ define(function(require) {
 							this.options.smallHorizonHeight ;
 			}
 			
-			
 		},
 		
-		updateHeights: function(selection){
+		updateHeights: function(){
+			
 			this.updatePosition();
+			var selection = this.d3Select.selectAll(".horizon")
+	    		.data(this.datasets);
 			var width = this.options.innerWidth * this.options.percentWidthHorizon,
 			smallHeight = this.options.smallHorizonHeight,bigHeight = this.options.bigHorizonHeight;
 			
-			//console.log("Creating Chart");
 			var heightHorizonFunction = function(d){return d.selected? +bigHeight : +smallHeight ;};
 			selection.style("height",heightHorizonFunction)
 				.style("width",width).attr("x",this.options.horizonXPosition)
 	  			.attr("y",function(d){return d.yPosition;});
 			
-			selection.selectAll(".horizonText").remove();
+			
+			this.chart = this.chart.width(width).height(heightHorizonFunction);
+
+			selection.call(this.chart);
+			
 			selection.each(function(d) {
-		            var header = d3.select(this);
-		            // loop through the keys - this assumes no extra data
-		            if(d.selected){
-		                
-		                header.append("text")
-						    .attr("class","horizonText")
-						    .attr("x",5).attr("y",20)
-						    .text(function(d){return d.selected ? d.label + " " :"";});
-		            }
+		            var textSelected = d3.select(this).select(".horizonText");
+		            
+		            textSelected.data(d);
+		            textSelected.text(function(d){return d.selected ? d.label + " " :"";});
+		            textSelected.moveToFront();
 		        });
-	        selection.selectAll(".horizonContour").remove();
-	        
-			var chart = d3.horizon()
-			    .width(width)
-			    .height(heightHorizonFunction)
-			    .mode("offset")
-			    .interpolate("linear")
-			    .dataValues(function(d){return d.values;})
-			    .colors(this.options.colors);
 			
-			selection.call(chart);
+			selection.selectAll(".horizonContour").attr("height",heightHorizonFunction)
+				.attr("width",width).moveToFront();
 			
-			selection.append("rect").attr("class","horizonContour").attr("height",heightHorizonFunction)
-				.attr("width",width);
+			this.drawLinksUI();
 			
 		},
 		
 		drawLinksUI: function(){
-//			var arc = d3.svg.arc();
-//			arc.source(function(d){
-//				return {x:d.sourceX, y:d.sourceY};
-//			});
-//			arc.target(function(d){
-//				return {x:d.targetX, y:d.targetY};
-//			});
-//			arc.innerRadius(function(d) { return 20; });
-//			arc.outerRadius(function(d) { return 22; });
-//			arc.startAngle(function(d) {return Math.PI;});
-//			arc.endAngle(function(d) {return 0;});
-//			arc.padAngle(function(d) {return 0;});
+
 			var horizonX = this.options.horizonXPosition;
 			var bigHeight = this.options.bigHorizonHeight;
 			var smallHeight = this.options.smallHorizonHeight;
@@ -361,7 +381,7 @@ define(function(require) {
 			  // Enter the links.
 			  link.enter().append("path")
 				  .attr("class", "link");
-				  link.attr("d", path).style("stroke", function(d){
+			  link.attr("d", path).style("stroke", function(d){
 					  if(d.source.selected){
 						  return "#FC6520";
 					  }
@@ -388,21 +408,13 @@ define(function(require) {
 			return links;
 		},
 		
-		createListLayout: function(){
+		updateLiveData: function(){
 
 
 			var dataselection = this.d3Select.selectAll(".horizon")
 		    	.data(this.datasets);
-		    var resultingSVG = dataselection.enter().append("svg").attr("class","horizon")
-		  			.on("click",function(){
-			  			var sel =d3.select(this).datum().selected; 
-			  			sel=(sel)?0:1;
-				        d3.select(this).datum().selected = sel;
-		  		});
 		        
-		    dataselection.exit().remove();
-			this.updateHeights(dataselection);
-			this.drawLinksUI();
+		    dataselection.call(this.chart);
 			
 			return "Complete List creation";
 		

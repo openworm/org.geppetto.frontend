@@ -35,10 +35,12 @@ package org.geppetto.frontend.controllers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +61,11 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -147,7 +154,7 @@ public class GeppettoMessageInbound extends MessageInbound
 				{
 					url = new URL(jsonUrlString);
 					BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-					IGeppettoProject geppettoProject = new Gson().fromJson(reader, IGeppettoProject.class);
+					IGeppettoProject geppettoProject = ControllerHelper.getDataManager().getProjectFromJson(getGson(), reader);
 					_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
 				}
 				catch(IOException e)
@@ -174,7 +181,7 @@ public class GeppettoMessageInbound extends MessageInbound
 			case INIT_SIM:
 			{
 				String simulation = gmsg.data;
-				IGeppettoProject geppettoProject = new Gson().fromJson(simulation, IGeppettoProject.class);
+				IGeppettoProject geppettoProject = ControllerHelper.getDataManager().getProjectFromJson(getGson(), simulation);
 				_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
 				break;
 			}
@@ -303,6 +310,20 @@ public class GeppettoMessageInbound extends MessageInbound
 				// NOTE: no other messages expected for now
 			}
 		}
+	}
+
+	private Gson getGson()
+	{
+		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>()
+		{
+			@Override
+			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+			{
+				return new Date(json.getAsJsonPrimitive().getAsLong());
+			}
+		});
+		return builder.create();
 	}
 
 	private String getGeppettoModelUrl(IGeppettoProject project)

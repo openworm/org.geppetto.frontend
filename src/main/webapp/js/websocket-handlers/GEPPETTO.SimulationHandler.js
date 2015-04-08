@@ -161,7 +161,7 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.SIMULATION_STOPPED] = function(payload) {
-            GEPPETTO.trigger('simulation:stopped');
+            GEPPETTO.trigger(Events.Simulation_stopped);
         };
 
         messageHandler[messageTypes.SIMULATION_PAUSED] = function(payload) {

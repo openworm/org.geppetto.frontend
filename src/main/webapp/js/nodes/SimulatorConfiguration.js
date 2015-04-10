@@ -31,55 +31,99 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a variable node, used for simulation tree
- * states.
+ * Client class for Simulator Configurator; stores time step, simualtor id
+ * and parameters.
  * 
- * @module nodes/VariableNode
+ * @module nodes/SimulatorConfiguration
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
+
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		timeSeries : [],
+		simulatorID : "",
+		timeStep : null,
+		parameters : null,
 
 		/**
-		 * Initializes this node with passed attributes
+		 * Stores simulator configuration values 
 		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
 		 */
 		initialize : function(options) {
+			//initialize parameters array
+			this.parameters = new Array();
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this.timeSeries = new Array();
 			this._metaType = options._metaType;
-			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get value of quantity
+		 * Get parameters for this Simulator Configuration
 		 * 
-		 * @command ParameterSpecificationNode.getValue()
-		 * @returns {String} Value of quantity
+		 * @command SimulatorConfig.getParameters()
+		 * @returns {Array} Array of ParameterNodes
 		 */
-		getTimeSeries : function() {
-			return this.timeSeries;
+		getParameters : function() {
+			return this.parameters;
 		},
 		
-		watch : function(){
-			
+		/**
+		 * Gets an experiment from this project. 
+		 * 
+		 * @command SimulatorConfig.setParameters(parameters)
+		 */
+		setParameters : function(parameters){
+			return this.parameters = parameters;
 		},
-
+		
+		/**
+		 * Sets the simulator id for this Simulator Configuration
+		 * 
+		 * @command SimulatorConfig.getSimulatorID()
+		 * @returns {String} SimulatorID string
+		 */
+		getSimulatorID : function() {
+			return this.simulatorID;
+		},
+		
+		/**
+		 * Gets the simulatorID from this project. 
+		 * 
+		 * @command SimulatorConfig.setSimulatorID(simulatorID)
+		 */
+		setSimulatorID : function(simulatorID){
+			return this.simulatorID = simulatorID;
+		},
+		
+		/**
+		 * Get time step for this Simulator Configuration
+		 * 
+		 * @command SimulatorConfig.getTimeStep()
+		 * @returns {String} String value of timestep 
+		 */
+		getTimeStep : function() {
+			return this.timeStep;
+		},
+		
+		/**
+		 * Sets the time step for the simulator configuration
+		 * 
+		 * @command SimulatorConfig.setTimeStep(timeStep)
+		 */
+		setTimeStep : function(timeStep){
+			return this.timeStep = timeStep;
+		},
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n";
+					+ "    SimulatorID : " + this.simulatorID + "\n";
 		}
 	});
 });

@@ -31,44 +31,81 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a variable node, used for simulation tree
- * states.
+ * Client class for Project node.
  * 
- * @module nodes/VariableNode
+ * @module nodes/ProjectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
+
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		timeSeries : [],
+		experiments : null,
 
 		/**
-		 * Initializes this node with passed attributes
+		 * Initializes this project with passed attributes
 		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
 		 */
 		initialize : function(options) {
+			this.experiments = new Array();
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this.timeSeries = new Array();
 			this._metaType = options._metaType;
-			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get value of quantity
+		 * Get experiments for this project
 		 * 
-		 * @command ParameterSpecificationNode.getValue()
-		 * @returns {String} Value of quantity
+		 * @command ProjectNode.getExperiments()
+		 * @returns {Array} Array of ExperimentNodes
 		 */
-		getTimeSeries : function() {
-			return this.timeSeries;
+		getExperiments : function() {
+			return this.experiments;
 		},
 		
-		watch : function(){
-			
+		/**
+		 * Gets an experiment from this project. 
+		 * 
+		 * @command ProjectNode.getExperiment(name)
+		 * @returns {ExperimentNode} ExperimentNode for given name
+		 */
+		getExperiment : function(name){
+			return this.experiments[name];
+		},
+		
+		/**
+		 * Gets an experiment from this project. 
+		 * 
+		 * @command ProjectNode.getExperiment(name)
+		 * @returns {ExperimentNode} ExperimentNode for given name
+		 */
+		getExperiment : function(name){
+			return this.experiments[name];
+		},
+		
+		/**
+		 * Gets an experiment from this project. 
+		 * 
+		 * @command ProjectNode.newExperiment()
+		 * @returns {ExperimentNode} Creates a new ExperimentNode
+		 */
+		newExperiment : function(){
+			/*
+			 * When initializing a node when set its name, id and instancepath. 
+			 * We do it here by adding them to an object, and passing this object
+			 * as parameter in node.
+			 */
+			var experimentParameters = {};
+			//assign name base on experiments array length, not avoid same names
+			experimentParameters["name"] = "Experiment"+this.experiments.length;
+			experimentParameters["id"] = "Experiment"+this.experiments.length;
+			//instance path consists of project id and this experimetn id
+			experimentParameters["instancePath"] = this.id+experimentParameters["id"];
+			return new ExperimentNode(experimentParameters);
 		},
 
 		/**
@@ -77,9 +114,7 @@ define(function(require) {
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n";
+					+ "    Properties : " + this.experiments + "\n";
 		}
 	});
 });

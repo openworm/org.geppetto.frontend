@@ -40,7 +40,7 @@
 define(function(require) {
 
 	var Node = require('nodes/Node');
-	var AspectSubTreeNode = require('nodes/AspectSubTreeNode');
+	var SimulatorConfiguration = require('nodes/SimulatorConfiguration');
 
 	return Node.Model
 			.extend({
@@ -52,6 +52,7 @@ define(function(require) {
 				VisualizationTree : {},
 				SimulationTree : {},
 				visible : true,
+				simulatorConfiguration : null,
 				/**
 				 * Initializes this node with passed attributes
 				 * 
@@ -356,8 +357,26 @@ define(function(require) {
 //
 //					return GEPPETTO.Resources.WRITING_MODEL + format;
 					console.log("Getting supported outputs");
-				},				
-
+				},		
+				
+				/**
+				 * Get simulator configuration for this aspect
+				 * 
+				 * @command AspectNode.getSimulatorConfiguration()
+				 */
+				getSimulatorConfiguration : function(){
+					return this.simulatorConfiguration;
+				},
+				
+				/**
+				 * Set simulator configuration for this aspect
+				 * 
+				 * @command AspectNode.setSimulatorConfiguration(simulatorConfiguration)
+				 */
+				setSimulatorConfiguration : function(simulatorConfiguration){
+					this.simulatorConfiguration = simulatorConfiguration;
+				},
+				
 				/**
 				 * Print out formatted node
 				 */

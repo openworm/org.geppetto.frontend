@@ -31,62 +31,139 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a parameter node, used for model tree
- * properties.
+ * Client class for Experiment node.
  * 
- * @module nodes/ParameterNode
+ * @module nodes/ExperimentNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
-
+	var ParameterNode = require('nodes/ParameterNode');
+	/**
+	 * 
+	 * Different status an experiment can be on
+	 * 
+	 * @enum
+	 */
+	var ExperimentStatus = {
+			DESIGN : 0,
+			QUEUED : 1,
+			RUNNING: 2,
+			ERROR : 3,
+			COMPLETED : 4,
+			DELETED : 5,
+	};
+	
 	return Node.Model.extend({
-		properties : {},
+		status : null,
 
 		/**
-		 * Initializes this node with passed attributes
+		 * Initializes this project with passed attributes
 		 * 
 		 * @param {Object} options - Object with options attributes to initialize
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.properties = options.properties;
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this.domainType = options.domainType;
 			this._metaType = options._metaType;
+			this.status = ExperimentStatus.DESIGN;
 		},
 
 		/**
-		 * Get properties for this node
+		 * Get current status of this experiment
 		 * 
-		 * @command ParameterNode.getProperties()
-		 * @returns {String} Unit for quantity
+		 * @command ExperimentNode.getStatus()
+		 * @returns {String} Status of experiment
 		 */
-		getProperties : function() {
-			return this.properties;
+		getStatus : function() {
+			return this.status;
 		},
 		
 		/**
-		 * Sets Value for parameter node.
+		 * Run experiment
+		 * 
+		 * @command ExperimentNode.run()
 		 */
-		setValue : function(value) {
-			this.value = value;
-		},
-
-		watch : function(){
-			
+		run : function(){
+			if(this.status == ExperimentStatus.DESIGN){
+				
+			}
 		},
 		
+		/**
+		 * Sets experiment status to active
+		 * 
+		 * @command ExperimentNode.run()
+		 */
+		setActive : function(){
+			this.status = ExperimentStatus.RUNNING;
+		},
+		
+		/**
+		 * Play experiment
+		 * 
+		 * @command ExperimentNode.play()
+		 */
+		play : function(){
+			if(this.status == ExperimentStatus.COMPLETED){
+				this.setActive()
+				//TODO: Add code to play experiments
+			}
+		},
+		
+		/**
+		 * Start watching of variables for this experiment 
+		 * 
+		 * @command ExperimentNode.watchVariables()
+		 */
+		watchVariables : function(){
+			if(this.status == ExperimentStatus.DESIGN){
+				
+			}
+		},
+
+		/**
+		 * Sets variables for experiment
+		 * 
+		 * @command ExperimentNode.setWatchVariables(variables)
+		 */
+		setVariables : function(variables){
+			if(this.status == ExperimentStatus.DESIGN){
+				
+			}
+		},
+
+		/**
+		 * Gets an experiment from this project. 
+		 * 
+		 * @command ProjectNode.getExperiment(name)
+		 * @returns {ExperimentNode} ExperimentNode for given name
+		 */
+		setParameters : function(parameters){
+			if(this.status == ExperimentStatus.DESIGN){
+			}
+		},
+		
+		/**
+		 * Download results for recording file
+		 * 
+		 * @command ExperimentNode.downloadResults(recording)
+		 */
+		downloadResults : function(recording){
+			if(this.status == ExperimentStatus.COMPLETED){
+				
+			}
+		},
+
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Properties : " + this.properties + "\n";
+					+ "    InstancePath : " + this.instancePath + "\n";
 		}
 	});
 });

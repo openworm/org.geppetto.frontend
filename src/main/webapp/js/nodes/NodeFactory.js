@@ -52,6 +52,7 @@ define(function(require) {
 		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 		var VisualGroupNode = require('nodes/VisualGroupNode');
 		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
+		var PhysicalQuantity = require('nodes/PhysicalQuantity');
 		var simulationTreeCreated=false;
 
 		/**
@@ -63,6 +64,7 @@ define(function(require) {
 				nodes : 0,
 				entities : 0,
 				connections : 0,
+				nodeTags : {},
 				
 				/**
 				 * Reload local values for this and NodeFactory class
@@ -108,7 +110,8 @@ define(function(require) {
 					}
 					this.nodes++;
 					this.entities++;
-					GEPPETTO.Console.createTag(e.instancePath);
+					GEPPETTO.Console.createTags(e.instancePath,
+							this.nodeTags[GEPPETTO.Resources.ENTITY_NODE]);
 					return e;
 				},
 
@@ -141,13 +144,15 @@ define(function(require) {
 						}
 					}
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.ASPECT_NODE]);
 					return a;
 				},
 				
 				createVisualizationTree : function(node,a){
 					var subTree = this.createAspectSubTreeNode(node);
-
+					subTree.name = "Visualization";
+					
 					for(var key in node){
 						if(typeof node[key] == "object"){
 							if(node[key]._metaType==GEPPETTO.Resources.VISUAL_GROUP_NODE){
@@ -198,7 +203,8 @@ define(function(require) {
 					});
 
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.ASPECT_SUBTREE_NODE]);
 					return a;
 				},
 
@@ -213,7 +219,8 @@ define(function(require) {
 					});
 					
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.COMPOSITE_NODE]);
 					return a;
 				},
 
@@ -231,7 +238,8 @@ define(function(require) {
 					});
 
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.FUNCTION_NODE]);
 					return a;
 				},
 				/** Creates and populates client aspect nodes for first time */
@@ -255,7 +263,8 @@ define(function(require) {
 					a.dynamics.push(f);
 
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.DYNAMICS_NODE]);
 					return a;
 				},
 				/** Creates and populates client aspect nodes for first time */
@@ -272,7 +281,8 @@ define(function(require) {
 					});
 
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.PARAMETER_SPEC_NODE]);
 					return a;
 				},
 				/** Creates and populates client parameter nodes for first time */
@@ -288,7 +298,8 @@ define(function(require) {
 					});
 
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.PARAMETER_NODE]);
 					return a;
 				},
 				/** Creates and populates client connection nodes for first time */
@@ -306,7 +317,8 @@ define(function(require) {
 					this.nodes++;
 					this.connections++;
 					this.populateConnectionNode(a,node);
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.CONNECTION_NODE]);
 					return a;
 				},
 				
@@ -379,7 +391,8 @@ define(function(require) {
 					});
 
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.VISUAL_REFERENCE_NODE]);
 					return a;
 				},
 				/** Creates and populates client connection nodes for first time */
@@ -394,7 +407,8 @@ define(function(require) {
 					});
 
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.TEXT_METADATA_NODE]);
 					return a;
 				},
 				/** Creates and populates client aspect nodes for first time */
@@ -402,16 +416,25 @@ define(function(require) {
 					var a = new VariableNode({
 						id : node.id,
 						name : node.name,
-						value : node.value,
-						unit : node.unit,
-						scalingFactor : node.scalingFactor,
 						instancePath : node.instancePath,
 						watched : Boolean(node.watched),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VARIABLE_NODE
 					});
+					
+					var timeSeries = node.timeSeries;
+					for(var key in timeSeries){
+						if(typeof timeSeries[key] == "object"){
+							var obj =timeSeries[key];
+							var element =
+								new PhysicalQuantity(obj.value,obj.unit,obj.scale);
+							a.getTimeSeries().push(element);
+						}
+					}
+					
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.VARIABLE_NODE]);
 					return a;
 				},
 				/** Creates and populates client visual group nodes for first time */
@@ -426,7 +449,8 @@ define(function(require) {
 						_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE
 					});
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE]);
 					return a;
 				},
 				/** Creates and populates client Visual Group nodes for first time */
@@ -454,8 +478,75 @@ define(function(require) {
 					}
 						
 					this.nodes++;
-					GEPPETTO.Console.createTag(a.instancePath);
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.VISUAL_GROUP_NODE]);
 					return a;
+				},
+				
+				/**
+				 * Populates tags for nodes
+				 */
+				populateTags : function(){
+					var e = new EntityNode({});
+					this.nodeTags[GEPPETTO.Resources.ENTITY_NODE] =
+							GEPPETTO.Utility.extractMethodsFromObject(e,true);
+					delete e;
+					var a = new AspectNode({});
+					this.nodeTags[GEPPETTO.Resources.ASPECT_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(a,true);
+					delete a;
+					var c = new ConnectionNode({});
+					this.nodeTags[GEPPETTO.Resources.CONNECTION_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(c,true);
+					delete c;
+					var v = new VariableNode({});
+					this.nodeTags[GEPPETTO.Resources.VARIABLE_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(v,true);
+					delete v;
+					var subtree = new AspectSubTreeNode({});
+					this.nodeTags[GEPPETTO.Resources.ASPECT_SUBTREE_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(subtree,true);
+					delete subtree;
+					var comp = new CompositeNode({});
+					this.nodeTags[GEPPETTO.Resources.COMPOSITE_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(comp,true);
+					delete comp;
+					var f = new FunctionNode({});
+					this.nodeTags[GEPPETTO.Resources.FUNCTION_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(f,true);
+					delete f;
+					var d = new DynamicsSpecificationNode({});
+					this.nodeTags[GEPPETTO.Resources.DYNAMICS_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(d,true);
+					delete d;
+					var p = new ParameterNode({});
+					this.nodeTags[GEPPETTO.Resources.PARAMETER_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(p,true);
+					delete p;
+					var ps = new ParameterSpecificationNode({});
+					this.nodeTags[GEPPETTO.Resources.PARAMETER_SPEC_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(ps,true);
+					delete ps;
+					var t = new TextMetadataNode({});
+					this.nodeTags[GEPPETTO.Resources.TEXT_METADATA_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(t,true);
+					delete t;
+					var a = new AspectNode({});
+					this.nodeTags[GEPPETTO.Resources.ASPECT_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(a,true);
+					delete a;
+					var vg = new VisualGroupNode({});
+					this.nodeTags[GEPPETTO.Resources.VISUAL_GROUP_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(vg,true);
+					delete vg;
+					var vge = new VisualGroupElementNode({});
+					this.nodeTags[GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(vge,true);
+					delete vge;
+					var vor = new VisualObjectReferenceNode({});
+					this.nodeTags[GEPPETTO.Resources.VISUAL_REFERENCE_NODE] = 
+							GEPPETTO.Utility.extractMethodsFromObject(vor,true);
+					delete vor;
 				},
 		};
 	};

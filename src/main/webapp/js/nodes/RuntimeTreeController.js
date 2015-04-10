@@ -49,6 +49,7 @@ define(function(require) {
 				 */
 				createRuntimeTree : function(jsonRuntimeTree){
 					this.simulationTreeCreated=false;
+					GEPPETTO.NodeFactory.populateTags();
 					for (var id in jsonRuntimeTree) {
 						var node = jsonRuntimeTree[id];
 						if(node._metaType == GEPPETTO.Resources.ENTITY_NODE){
@@ -146,15 +147,17 @@ define(function(require) {
 					if(!this.simulationTreeCreated)
 					{
 						this.updateNode(jsonRuntimeTree);
-						this.simulationTreeCreated=true;
 					}
 					this.updateVisualTrees(jsonRuntimeTree);
 					for(var index in GEPPETTO.Simulation.simulationStates)
 					{
-						var state = GEPPETTO.Simulation.simulationStates[index];
-						var received=eval("jsonRuntimeTree."+state);
-						var clientNode=eval(state);
-						clientNode.value = received.value;
+						try {
+							var state = GEPPETTO.Simulation.simulationStates[index];
+							var received=eval("jsonRuntimeTree."+state);
+							var clientNode=eval(state);
+							clientNode.getTimeSeries()[0].value = received.timeSeries["quantity0"].value; 
+						} catch (e) {
+						}
 					}
 
 					this.updateWidgets();
@@ -172,11 +175,12 @@ define(function(require) {
 
 					//create SubTreeNode to store simulation tree
 					var subTree = GEPPETTO.NodeFactory.createAspectSubTreeNode({
-								  name : "SimulationTree",instancePath : path ,
+								  name : "Simulation",instancePath : path ,
 								  type : "SimulationTree",
 								 _metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE});
 					this.createSimulationTree(subTree, simulationTreeUpdate);
 					aspect.SimulationTree = subTree;
+					this.simulationTreeCreated = true;
 				},
 
 				updateWidgets : function(){

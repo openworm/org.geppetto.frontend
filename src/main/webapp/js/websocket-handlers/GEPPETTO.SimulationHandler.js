@@ -38,19 +38,15 @@ define(function(require) {
 
 		var updateTime = function(time) {
 			if(time) {
-				GEPPETTO.Simulation.time.value = time.value;
-				GEPPETTO.Simulation.time.unit = time.unit;
+				GEPPETTO.Simulation.time.getTimeSeries()[0].value = time.timeSeries["quantity0"].value;
+				GEPPETTO.Simulation.time.getTimeSeries()[0].unit = time.timeSeries["quantity0"].unit;
 			}
 		};
 		
 		var createTime = function(time) {
 			if(time) {
-				var node =
-					{id:"time", name : "name", value : time.value , unit: time.unit,
-					 instancePath : "time",
-					 _metaType : GEPPETTO.Resources.VARIABLE_NODE};
 				var timeNode = 
-					GEPPETTO.NodeFactory.createVariableNode(node);
+					GEPPETTO.NodeFactory.createVariableNode(time);
 				GEPPETTO.Simulation.time = timeNode;
 			}
 		};
@@ -165,7 +161,7 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.SIMULATION_STOPPED] = function(payload) {
-            GEPPETTO.trigger('simulation:stopped');
+            GEPPETTO.trigger(Events.Simulation_stopped);
         };
 
         messageHandler[messageTypes.SIMULATION_PAUSED] = function(payload) {

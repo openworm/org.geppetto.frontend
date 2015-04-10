@@ -376,7 +376,7 @@ define(function(require) {
 							var olddata = new Array(3);
 							for ( var dataKey in data) {
 								var newValue = data[dataKey].variable
-										.getValue();
+										.getTimeSeries()[0].getValue();
 								currentLabel = data[dataKey].label;
 								newValues[dataKey] = newValue;
 

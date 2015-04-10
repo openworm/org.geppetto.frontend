@@ -49,6 +49,8 @@ define(function(require) {
 			yaxisLabel: null,
 			labelsUpdated: false,
 			labelsMap : {},
+			yMix : 0,
+			yMax : 0,
 
 			/**
 			 * Default options for plot widget, used if none specified when plot
@@ -56,7 +58,10 @@ define(function(require) {
 			 */
 			defaultPlotOptions:  {
 				series: {
-					shadowSize: 0
+					shadowSize: 0,
+					downsample: {
+					    threshold: 1000 
+					  }
 				},
 				yaxis: {
 					min: -0.1,
@@ -132,13 +137,40 @@ define(function(require) {
 					}
 					
 					else{
-						var value = state.getValue();
+						for(var key=0;key<this.datasets.length;key++) {
+							if(state.getInstancePath() == this.datasets[key].label) {
+								return "Dataset "+ state.getInstancePath() + " is "
+								+ "already being plotted.";
+							}
+						}
+						var timeSeries = state.getTimeSeries();
+						var timeSeriesData = new Array();
 						var id = state.getInstancePath();
+						var i =0;
+						for(var key in timeSeries){
+							var value = timeSeries[key].getValue();
+							timeSeriesData.push([i,value]);
+							i++;
+							if(value<this.yMin){
+								this.yMin = value;
+							}
+							if(value > this.yMax){
+								this.yMax = value;
+							}
+						}
 						
+						if(timeSeries.length > 1){
+							this.limit = timeSeries.length;
+							this.options.yaxis.max = this.yMax;
+							this.options.yaxis.min = this.yMin;
+							this.options.xaxis.max = this.limit;
+							this.options.series.downsample.threshold =1000;
+							this.setSize(550,850);
+						}
 						this.datasets.push({
 							label : id,
 							variable : state,
-							data : [ [0,value] ]
+							data : timeSeriesData
 						});						
 					}
 				}
@@ -234,10 +266,10 @@ define(function(require) {
 			 */
 			updateDataSet: function() {
 				for(var key in this.datasets) {
-					var newValue = this.datasets[key].variable.getValue();
+					var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
 
 					if(!this.labelsUpdated) {
-						var unit = this.datasets[key].variable.getUnit();
+						var unit = this.datasets[key].variable.getTimeSeries()[0].getUnit();
 						if(unit != null) {
 							var labelY = unit;
 							//Matteo: commented until this can move as it doesn't make sense for it to be static.

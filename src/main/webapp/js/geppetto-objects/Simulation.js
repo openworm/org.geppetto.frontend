@@ -526,7 +526,7 @@ define(function(require) {
 			 */
 			getEntities : function(){
 				var formattedOutput="";
-				var indentation = "↪";
+				var indentation = "    ";
 
 				return GEPPETTO.Utility.formatEntitiesTree(this.runTimeTree,formattedOutput, indentation);				
 			},
@@ -546,7 +546,7 @@ define(function(require) {
 			addBrightnessFunction: function(aspect,modulation,normalizationFunction) {
 				this.addOnNodeUpdatedCallback(modulation, function(varnode){
 			    	GEPPETTO.SceneController.lightUpEntity(aspect.getInstancePath(),
-			    			normalizationFunction ? normalizationFunction(varnode.getValue()) : varnode.getValue());
+			    			normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[0].getValue()) : varnode.getTimeSeries()[0].getValue());
 				});
 			},
 
@@ -689,7 +689,7 @@ define(function(require) {
 			addDynamicVisualization: function(visualAspect, visualEntityName, dynVar, transformation, normalization){
 				//TODO: things should be VisualizationTree centric instead of aspect centric...  
 		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
-		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getValue()) : watchedNode.getValue());});
+		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0].getValue()) : watchedNode.getTimeSeries()[0].getValue());});
 			},
 			
 			/**

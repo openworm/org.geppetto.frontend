@@ -75,7 +75,7 @@ define(function(require) {
 
 			OPACITY : {
 					DEFAULT : 1,
-					GHOST : .18,
+					GHOST : .3,
 			},
 			SIMULATION_LOADED: "Simulation Loaded",
 			SIMULATION_STARTED: "Simulation Started",

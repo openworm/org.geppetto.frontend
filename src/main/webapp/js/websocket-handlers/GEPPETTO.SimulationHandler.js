@@ -73,7 +73,8 @@ define(function(require) {
             CLEAR_WATCH: "clear_watch",
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
             SIMULATION_OVER : "simulation_over",
-            GET_MODEL_TREE : "get_model_tree"
+            GET_MODEL_TREE : "get_model_tree",
+            GET_SIMULATION_TREE : "get_simulation_tree"
         };
 
         var messageHandler = {};
@@ -220,6 +221,18 @@ define(function(require) {
 	        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
         	}
         };
+        
+        messageHandler[messageTypes.GET_SIMULATION_TREE] = function(payload) {
+        	var update = JSON.parse(payload.get_simulation_tree);      
+        	for (var updateIndex in update){
+	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+	        	var simulationTree = update[updateIndex].simulationTree;
+	        	
+	        	//create client side simulation tree
+	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
+        	}
+        };
+        
 
 		GEPPETTO.SimulationHandler = {
 			onMessage: function(parsedServerMessage) {

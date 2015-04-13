@@ -809,6 +809,15 @@ public class GeppettoServletController
 		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, modelTree);
 	}
 
+	public void getSimulationTree(String requestID, String aspectInstancePath, GeppettoMessageInbound visitor)
+	{
+		String simulationTree = visitor.getSimulationService().getSimulationTree(aspectInstancePath);
+
+		// message the client with results
+		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_SIMULATION_TREE, simulationTree);
+	}
+
+	
 	public void writeModel(String requestID, String instancePath, String format, GeppettoMessageInbound visitor)
 	{
 		String modelTree = visitor.getSimulationService().writeModel(instancePath, format);

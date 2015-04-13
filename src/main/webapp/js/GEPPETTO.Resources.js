@@ -211,14 +211,14 @@ define(function(require) {
 
 			RETRIEVING_MODEL_TREE : 'Model tree requested',
 			
+			RETRIEVING_SIMULATION_TREE : 'Simulation tree requested',
+			
 			EMPTY_MODEL_TREE : 'Model is empty, nothing to see here.',
 			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
 			
 			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',
 
-			RETRIEVING_SIMULATION_TREE : 'Simulation tree: ',
-			
 			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
 			
 			WRITING_MODEL : 'Writing model as ',	

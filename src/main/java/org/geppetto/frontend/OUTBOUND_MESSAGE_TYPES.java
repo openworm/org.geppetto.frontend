@@ -69,6 +69,7 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	FIRE_SIM_SCRIPTS("fire_sim_scripts"),
 	SIMULATION_OVER("simulation_over"),
 	GET_MODEL_TREE("get_model_tree"),
+	GET_SIMULATION_TREE("get_simulation_tree"),
 	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
 	WRITE_MODEL("write_model");
 	

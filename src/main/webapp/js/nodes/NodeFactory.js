@@ -135,7 +135,9 @@ define(function(require) {
 							if (node.type == "VisualizationTree") {
 								this.createVisualizationTree(node,a);
 							} else if (node.type == "SimulationTree") {
-								a.SimulationTree = {};
+								var subTree = this.createAspectSubTreeNode(node);
+								subTree.setParent(a);
+								a.SimulationTree = subTree;
 							} else if (node.type == "ModelTree") {
 								var subTree = this.createAspectSubTreeNode(node);
 								subTree.setParent(a);

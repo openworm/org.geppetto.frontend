@@ -136,6 +136,9 @@ public class TransportMessageFactory {
 			case GET_MODEL_TREE:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
+			case GET_SIMULATION_TREE:
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_SIMULATION_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
+				break;
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
 				break;

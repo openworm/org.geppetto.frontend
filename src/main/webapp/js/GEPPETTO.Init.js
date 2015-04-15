@@ -18,7 +18,7 @@ define(function(require) {
 			splitMeshes : {},
 			connectionLines : {},
 			renderer : null,
-			rendererType : "default",
+			customRendererClass : null,
 			stats : null,
 			gui : null,
 			projector : null,
@@ -75,12 +75,12 @@ define(function(require) {
 			// Reuse a single WebGL renderer. Recreating the renderer causes
 			// camera displacement on Chrome OSX.
 			if (!VARS.canvasCreated) {
-				if (VARS.renderer == "DEFAULT")
+				if (VARS.customRendererClass == null) {
 					VARS.renderer = new THREE.WebGLRenderer({
 						antialias : true
 					});
-				else
-					VARS.renderer = new THREE.AnimationStreamRenderer();
+				} else
+					VARS.renderer = new VARS.customRendererClass();
 			}
 			VARS.renderer.setClearColor(0x000000, 1);
 			var width = $(VARS.container).width();

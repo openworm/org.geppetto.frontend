@@ -301,7 +301,12 @@ define(function(require) {
 			 * @returns {String} Status after request.
 			 */
 			addWatchLists: function(watchLists) {
-				santasLittleHelper("set_watch", GEPPETTO.Resources.SIMULATION_SET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_SET_WATCH, watchLists);
+				var watchedList = [];
+				for (var index in watchLists){
+					watchedList.push(watchLists[index].instancePath);
+					
+				}
+				santasLittleHelper("set_watch", GEPPETTO.Resources.SIMULATION_SET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_SET_WATCH, watchedList);
 
 				return GEPPETTO.Resources.SIMULATION_SET_WATCH;
 			},

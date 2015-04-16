@@ -36,6 +36,7 @@
  * 
  * @module nodes/VariableNode
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
@@ -61,7 +62,7 @@ define(function(require) {
 		/**
 		 * Get value of quantity
 		 * 
-		 * @command ParameterSpecificationNode.getValue()
+		 * @command VariableNode.getTimeSeries()
 		 * @returns {String} Value of quantity
 		 */
 		getTimeSeries : function() {
@@ -71,11 +72,20 @@ define(function(require) {
 		/**
 		 * Get watched
 		 * 
-		 * @command ParameterSpecificationNode.getWatched()
+		 * @command VariableNode.getWatched()
 		 * @returns {boolean} true if this variable is being watched
 		 */
 		getWatched : function() {
 			return this.watched;
+		},
+		
+		/**
+		 * Set watched to true
+		 * 
+		 * @command VariableNode.watch()
+		 */
+		watch : function() {
+			this.watched = true;
 		},
 
 		/**

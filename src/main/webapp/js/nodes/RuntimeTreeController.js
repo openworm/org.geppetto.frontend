@@ -156,12 +156,10 @@ define(function(require) {
 							var state = GEPPETTO.Simulation.simulationStates[index];
 							var received=eval("jsonRuntimeTree."+state);
 							var clientNode=eval(state);
-							if (clientNode.getTimeSeries().length == 0){
-								var element = new PhysicalQuantity(received.timeSeries["quantity0"].value, null, null);
-								clientNode.getTimeSeries().push(element);
-							}	
-							else{
-								clientNode.getTimeSeries()[0].value = received.timeSeries["quantity0"].value;
+							clientNode.getTimeSeries().unshift()
+							
+							for (var index in received.timeSeries){
+								clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
 							}
 							
 						} catch (e) {
@@ -172,7 +170,7 @@ define(function(require) {
 				},
 				
 				updateWidgets : function(){
-					//send command to widgets that newd data is available
+					//send command to widgets that new data is available
 					GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
 
 					//update scene brightness

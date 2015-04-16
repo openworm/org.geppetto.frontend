@@ -170,14 +170,11 @@ define(function(require) {
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {
             //variables watching
-            var variables = JSON.parse(payload.set_watch_vars)[0].variablePaths;
-
-            var length = GEPPETTO.Simulation.simulationStates.length;
-
-            //create objects for the variables to watch
-            for(var v in variables) {
-                GEPPETTO.Simulation.simulationStates[length] = variables[v];
-                length++;
+            var variables = JSON.parse(payload.set_watch_vars)
+            
+            for (var index in variables){
+            	eval(variables[index]).watch();
+            	GEPPETTO.Simulation.simulationStates.push(variables[index]);
             }
         };
 

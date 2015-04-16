@@ -49,7 +49,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
-import org.geppetto.core.data.model.WatchList;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.MultiuserSimulationCallback;
@@ -473,11 +472,8 @@ public class GeppettoServletController
 	 */
 	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException, GeppettoInitializationException
 	{
-		List<WatchList> lists = null;
-
-		lists = fromJSON(new TypeReference<List<WatchList>>()
-		{
-		}, jsonLists);
+		List<String> lists = fromJSON(new TypeReference<List<String>>()	{}, jsonLists);
+		
 		visitor.getSimulationService().addWatchLists(lists);
 
 		// serialize watch-lists

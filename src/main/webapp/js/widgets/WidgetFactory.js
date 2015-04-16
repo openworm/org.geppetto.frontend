@@ -189,6 +189,7 @@ define(function(require) {
 					if(this.popupsController == null || undefined){
 						this.popupsController = new PopupsController();
 					}
+					return this.popupsController;
 				}
 				else if(type == GEPPETTO.Widgets.TREEVISUALISERDAT){
 					if(this.treeVisDatController == null || undefined){

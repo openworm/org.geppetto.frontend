@@ -214,7 +214,7 @@ define(function(require) {
 			 */
 			setAutoWidth: function() {
 				$("#" + this.id).dialog('option', 'width', 'auto');
-				return this.name + " Widget's width set to 'auto'" 
+				return this.name + " Widget's width set to 'auto'";
 			},
 
 			/**
@@ -222,7 +222,7 @@ define(function(require) {
 			 */
 			setAutoHeight: function() {
 				$("#" + this.id).dialog('option', 'height', 'auto');
-				return this.name + " Widget's height set to 'auto'" 
+				return this.name + " Widget's height set to 'auto'";
 			},
 
 

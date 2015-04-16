@@ -41,150 +41,164 @@ define(function(require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 
-	return Widget.View
-			.extend({
-				root : null,
-				variable : null,
-				options : null,
-				default_width : 270,
-				default_height : 90,
+	return Widget.View.extend({
+		root : null,
+		variable : null,
+		options : null,
 
-				/**
-				 * Initialises viriables visualiser with a set of options
-				 * 
-				 * @param {Object}
-				 *            options - Object with options for the widget
-				 */
-				initialize : function(options) {
-					this.id = options.id;
-					this.name = options.name;
-					this.options = options;
+		default_width : 270,
+		default_height : 90,
 
-					if (!('width' in options)) {
-						options.width = this.default_width;
-					}
-					if (!('height' in options)) {
-						options.height = this.default_height;
-					}
 
-					this.render();
-					this.setSize(options.height, options.width);
-					this.dialog.append("<div class='bubar_body'></div>");
-				},
+		/**
+		 * Initialises viriables visualiser with a set of options
+		 * 
+		 * @param {Object}
+		 *            options - Object with options for the widget
+		 */
+		initialize : function(options) {
+			this.id = options.id;
+			this.name = options.name;
+			this.options = options;
 
-				/**
-				 * Creates a button bar from definitions specified in an
-				 * external json file
-				 * 
-				 * @command fromJSON(url)
-				 * @param {String}
-				 *            url - URL of the json file defining the button bar
-				 */
+			this.render();
 
-				createButtonGroup : function(bgName, bgDef) {
+			this.setResizable(false);
+			this.setMinSize(0,0);
+			this.setSize(0,0);
+			this.setPosition('center',0);
+			this.setAutoWidth();
+			this.setAutoHeight();
 
-					function named(constructor, name, def) {
-						return constructor(def).attr('id', name)
-					};
+			this.dialog.append("<div class='bubar_body'></div>");
+		},
 
-					function createButtonContent(button) {
-						return $('<span>')
-							.addClass(button.icon)
-							.append(' ' + button.label)
-					};
+		/**
+		 * Creates a button bar from definitions specified in an
+		 * external json file
+		 * 
+		 * @command fromJSON(url)
+		 * @param {String}
+		 *            url - URL of the json file defining the button bar
+		 */
 
-					function createButtonCallback(button) {
-						return function() {
-							button.actions.forEach(function(action) {
-								GEPPETTO.Console.executeCommand(action)
-							});
-						}
-					}
+		createButtonGroup : function(bgName, bgDef) {
 
-					function createButton(button) {
-						return $('<button>')
-								.addClass('btn')
-								.append(createButtonContent(button))
-								.on('click', createButtonCallback(button))
-					};
+			function named(constructor, name, def) {
+				return constructor(def).attr('id', name)
+			}
 
-					var bg = $('<div>')
-								.addClass('btn-group')
-								.attr('role', 'group')
-								.attr('id', bgName);
-					$.each(bgDef, function(bName, bData) {
-						bg.append(named(createButton, bName, bData))
+			function createButtonContent(button) {
+				return $('<span>').addClass(button.icon).append(
+						' ' + button.label)
+			}
+
+			function createButtonCallback(button) {
+				return function() {
+					button.actions.forEach(function(action) {
+						GEPPETTO.Console.executeCommand(action)
 					});
-					return bg;
-				},
+				}
+			}
 
-				fromJSON : function(url) {
-					var self = this;
-					if (this.root == null) {
-						this.root = $("#" + this.id)
+			function createButton(button) {
+				return $('<button>')
+						.addClass('btn btn-default btn-lg')
+						.append(createButtonContent(button))
+						.on('click', createButtonCallback(button))
+			}
+
+			var bg = $('<div>')
+					.addClass('btn-group')
+					.attr('role', 'group')
+					.attr('id', bgName);
+			$.each(bgDef, function(bName, bData) {
+				bg.append(named(createButton, bName, bData))
+			});
+			return bg;
+		},
+
+		generateToolbar : function(buttonGroups) {
+			var that = this
+			var tbar = $('<div>')
+						.addClass('toolbar');
+			$.each(buttonGroups, function(groupName, groupDef) {
+				tbar.append(that.createButtonGroup(groupName, groupDef));
+			});
+			return tbar;
+		},
+
+		fromJSON : function(url) {
+			var self = this;
+			if (this.root == null) {
+				this.root = $("#" + this.id)
+			}
+			var groups = {
+				"buttonGroupOne" : {
+					"buttonOne" : {
+						"actions" : [ "console.log('button1.action1')",
+								"console.log('button1.action2')" ],
+						"icon" : "myIcon-osb",
+						"label" : "1",
+						"tooltip" : "Thisisabutton"
+					},
+					"buttonTwo" : {
+						"actions" : [ "console.log('button2.action1')" ],
+						"icon" : "myIcon-tree",
+						"label" : "2",
+						"tooltip" : "Thisisanotherbutton"
 					}
-					//$.getJSON("menu.json", function(groups) {
-					var groups = {
-						    "buttonGroupOne": {
-						        "buttonOne": {
-						            "actions": [
-						                "console.log('button1.action1')",
-						                "console.log('button1.action2')"
-						            ],
-						            "icon": "myIcon-osb",
-						            "label": "Button1",
-						            "tooltip": "Thisisabutton"
-						        },
-						        "buttonTwo": {
-						            "actions": [
-						                "console.log('button2.action1')"
-						            ],
-						            "icon": "myIcon-tree",
-						            "label": "Button2",
-						            "tooltip": "Thisisanotherbutton"
-						        }
-						    },
-						    "buttonGroupTwo": {
-						        "buttonThree": {
-						            "actions": [
-						                "console.log('button3.action1')"
-						            ],
-						            "icon": "myIcon-make-group",
-						            "label": "Button3",
-						            "tooltip": "Thisisabutton"
-						        }
-						    }
-						};
-						var bbar = $('<div>').addClass('toolbar');
-						$.each(groups, function(groupName, groupDef) {
-							bbar.append(self.createButtonGroup(groupName, groupDef));
-						});
-					//});
-
-					// this.setHeader(this.variable.name);
-					this.setBody(bbar);
-					return "Button Bar definition read from " + url;
 				},
-
-				/**
-				 * @private
-				 */
-				setHeader : function(content) {
-					this.getSelector("bubar_variable").html(content);
+				"buttonGroupTwo" : {
+					"buttonThree" : {
+						"actions" : [ "console.log('button3.action1')" ],
+						"icon" : "myIcon-make-group",
+						"label" : "3",
+						"tooltip" : "Thisisabutton"
+					}
+				}
+			};
+			var bbar = null;
+			$.ajax({
+				dataType : "json",
+				url : url,
+				context: self,
+				success : function(data) {
+					bbar = self.generateToolbar(data)
 				},
-
-				/**
-				 * @private
-				 */
-				setBody : function(content) {
-					this.getSelector("bubar_body").html(content);
+				error : function() {
+					bbar = self.generateToolbar(groups)
 				},
-
-				/**
-				 * @private
-				 */
-				getSelector : function(name) {
-					return $(this.root.selector + " ." + name);
+				complete: function(jqXHR, status){
+					self.setBody(bbar);
+					GEPPETTO.Console.log(
+							"Button Bar definition read from " 
+							+ ((status == "success") ? url : 'default'));
 				}
 			});
+
+			// this.setHeader(this.variable.name);
+		},
+
+		/**
+		 * @private
+		 */
+		setHeader : function(content) {
+			this.getSelector("bubar_variable").html(content);
+		},
+
+		/**
+		 * @private
+		 */
+		setBody : function(content) {
+			this.getSelector("bubar_body").html(content);
+		},
+
+		/**
+		 * @private
+		 */
+		getSelector : function(name) {
+			return $(this.root.selector + " ." + name);
+		}
+	});
 });

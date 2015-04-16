@@ -118,20 +118,8 @@ public class TransportMessageFactory {
 			case RUN_SCRIPT:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
-			case LIST_WATCH_VARS:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case LIST_FORCE_VARS:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case GET_WATCH_LISTS:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case START_WATCH:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
 			case SET_WATCH_LISTS:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_MODEL_TREE:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));

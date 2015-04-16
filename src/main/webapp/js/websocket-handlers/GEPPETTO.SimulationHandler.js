@@ -45,8 +45,7 @@ define(function(require) {
 		
 		var createTime = function(time) {
 			if(time) {
-				var timeNode = 
-					GEPPETTO.NodeFactory.createVariableNode(time);
+				var timeNode = GEPPETTO.NodeFactory.createVariableNode(time);
 				GEPPETTO.Simulation.time = timeNode;
 			}
 		};
@@ -63,13 +62,8 @@ define(function(require) {
             SIMULATION_STARTED: "simulation_started",
             SIMULATION_PAUSED: "simulation_paused",
             SIMULATION_STOPPED: "simulation_stopped",
-            LIST_WATCH_VARS: "list_watch_vars",
-            LIST_FORCE_VARS: "list_force_vars",
-            GET_WATCH_LISTS: "get_watch_lists",
             SIMULATOR_FULL: "simulator_full",
             SET_WATCH_VARS: "set_watch_vars",
-            START_WATCH: "start_watch",
-            STOP_WATCH: "stop_watch",
             CLEAR_WATCH: "clear_watch",
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
             SIMULATION_OVER : "simulation_over",
@@ -169,23 +163,6 @@ define(function(require) {
             GEPPETTO.trigger('simulation:paused');
         };
 
-        messageHandler[messageTypes.LIST_WATCH_VARS] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_WATCH_VARS);
-            // TODO: format output
-            formatListVariableOutput(JSON.parse(payload.list_watch_vars).variables, 0);
-        };
-
-        messageHandler[messageTypes.LIST_FORCE_VARS] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_FORCE_VARS);
-            // TODO: format output
-            formatListVariableOutput(JSON.parse(payload.list_force_vars).variables, 0);
-        };
-
-        messageHandler[messageTypes.GET_WATCH_LISTS] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_FORCE_VARS);
-            GEPPETTO.Console.log(payload.get_watch_lists);
-        };
-
         messageHandler[messageTypes.SIMULATOR_FULL] = function(payload) {
             GEPPETTO.FE.disableSimulationControls();
         	GEPPETTO.FE.infoDialog(GEPPETTO.Resources.SIMULATOR_FULL, payload.message);
@@ -193,7 +170,7 @@ define(function(require) {
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {
             //variables watching
-            var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
+            var variables = JSON.parse(payload.set_watch_vars)[0].variablePaths;
 
             var length = GEPPETTO.Simulation.simulationStates.length;
 

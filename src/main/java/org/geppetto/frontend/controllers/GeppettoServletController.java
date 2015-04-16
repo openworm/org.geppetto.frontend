@@ -49,10 +49,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
-import org.geppetto.core.data.model.VariableList;
 import org.geppetto.core.data.model.WatchList;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
-import org.geppetto.frontend.*;
+import org.geppetto.frontend.GeppettoTransportMessage;
+import org.geppetto.frontend.MultiuserSimulationCallback;
+import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+import org.geppetto.frontend.ObservermodeSimulationCallback;
+import org.geppetto.frontend.TransportMessageFactory;
 import org.geppetto.frontend.controllers.GeppettoMessageInbound.VisitorRunMode;
 import org.geppetto.frontend.controllers.SimulationServerConfig.ServerBehaviorModes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -462,24 +465,6 @@ public class GeppettoServletController
 	}
 
 	/**
-	 * Request list of watchable variables for the simulation
-	 * 
-	 * @throws JsonProcessingException
-	 */
-//	public void listWatchableVariables(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException
-//	{
-//		// get watchable variables for the entire simulation
-//		VariableList vars = visitor.getSimulationService().getSimulationTree(aspectID)listWatchableVariables();
-//
-//		// serialize
-//		ObjectMapper mapper = new ObjectMapper();
-//		String serializedVars = mapper.writer().writeValueAsString(vars);
-//
-//		// message the client with results
-//		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, serializedVars);
-//	}
-
-	/**
 	 * Adds watch lists with variables to be watched
 	 * 
 	 * @throws GeppettoExecutionException
@@ -512,36 +497,6 @@ public class GeppettoServletController
 
 	}
 
-	/**
-	 * instructs simulation to start sending watched variables value to the client
-	 * 
-	 * @param requestID
-	 * @throws JsonProcessingException
-	 */
-	public void startWatch(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException
-	{
-		//visitor.getSimulationService().startWatch();
-
-		//List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
-
-		// serialize watch-lists
-		//ObjectMapper mapper = new ObjectMapper();
-		//String serializedLists = mapper.writer().writeValueAsString(watchLists);
-
-		// message the client the watch lists were started
-		//messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.START_WATCH, serializedLists);
-	}
-
-	/**
-	 * instructs simulation to stop sending watched variables value to the client
-	 */
-	public void stopWatch(String requestID, GeppettoMessageInbound visitor)
-	{
-		//visitor.getSimulationService().stopWatch();
-
-		// message the client the watch lists were stopped
-		//messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.STOP_WATCH);
-	}
 
 	/**
 	 * instructs simulation to clear watch lists
@@ -552,23 +507,6 @@ public class GeppettoServletController
 
 		// message the client the watch lists were cleared
 		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.CLEAR_WATCH);
-	}
-
-	/**
-	 * Get simulation watch lists
-	 * 
-	 * @throws JsonProcessingException
-	 */
-	public void getWatchLists(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException
-	{
-//		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
-//
-//		// serialize watch-lists
-//		ObjectMapper mapper = new ObjectMapper();
-//		String serializedLists = mapper.writer().writeValueAsString(watchLists);
-//
-//		// message the client with results
-//		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS, serializedLists);
 	}
 
 	/**

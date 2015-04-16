@@ -112,17 +112,7 @@ define(function(require) {
 
 			MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
 
-			MESSAGE_OUTBOUND_LIST_WATCH: 'Outbund Message Sent: List watchable variables',
-
-			MESSAGE_OUTBOUND_LIST_FORCE: 'Outbund Message Sent: List forceable variables',
-
 			MESSAGE_OUTBOUND_SET_WATCH: 'Outbund Message Sent: add watch lists',
-
-			MESSAGE_OUTBOUND_GET_WATCH: 'Outbund Message Sent: get watch lists',
-
-			MESSAGE_OUTBOUND_START_WATCH: 'Outbund Message Sent: start watch lists',
-
-			MESSAGE_OUTBOUND_STOP_WATCH: 'Outbund Message Sent: stop watch lists',
 
 			MESSAGE_OUTBOUND_CLEAR_WATCH: 'Outbund Message Sent: clear watch lists',
 
@@ -131,12 +121,6 @@ define(function(require) {
 			SIMULATION_VARS_LIST: "Simulation Variables List requested",
 
 			SIMULATION_SET_WATCH: "Simulation add watchlists requested",
-
-			SIMULATION_GET_WATCH: 'Simulation get watchlists requested',
-
-			SIMULATION_START_WATCH: 'Simulation start watch requested',
-
-			SIMULATION_STOP_WATCH: 'Simulation stop watch requested',
 
 			SIMULATION_CLEAR_WATCH: 'Simulation clear watchlists requested',
 

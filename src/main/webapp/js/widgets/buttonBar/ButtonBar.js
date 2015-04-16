@@ -89,8 +89,9 @@ define(function(require) {
 			}
 
 			function createButtonContent(button) {
-				return $('<span>').addClass(button.icon).append(
-						' ' + button.label)
+				return $('<span>')
+						.addClass(button.icon)
+						.append(' ' + button.label)
 			}
 
 			function createButtonCallback(button) {
@@ -152,7 +153,7 @@ define(function(require) {
 					},
 					"buttonGroupTwo" : {
 						"buttonThree" : {
-							"actions" : [ "console.log('button3.action1')" ],
+							"actions" : [ "G.addWidget(1).setMessage('hello from button 3')"],
 							"icon" : "myIcon-make-group",
 							"label" : "3",
 							"tooltip" : "Thisisabutton"

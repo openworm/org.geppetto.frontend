@@ -512,12 +512,12 @@ define(function(require) {
 							if(m.instancePath in targetObjects){
 								//merged mesh into corresponding geometry			
 								var geometry = geometryGroups[highlightedMesh];
-								geometry.merge(m.geomemtry, m.matrix);
+								geometry.merge(m.geometry, m.matrix);
 							}
 							else{
 								//merged mesh into corresponding geometry			
 								var geometry = geometryGroups[a];
-								geometry.merge(m.geomemtry, m.matrix);
+								geometry.merge(m.geometry, m.matrix);
 							}			
 						}				
 
@@ -634,7 +634,7 @@ define(function(require) {
 						//if visual object didn't belong to group, add it to mesh with remainder of them
 						if(!added){
 							var geometry = geometryGroups[aspectInstancePath];
-							geometry.merge(m.geomemtry, m.matrix);
+							geometry.merge(m.geometry, m.matrix);
 						}
 						//reset flag for next visual object
 						added = false;

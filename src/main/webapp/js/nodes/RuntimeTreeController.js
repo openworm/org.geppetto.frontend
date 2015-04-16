@@ -40,6 +40,7 @@
 define(function(require) {
 	return function(GEPPETTO) {
 		var simulationTreeCreated=false;
+		var PhysicalQuantity = require('nodes/PhysicalQuantity');
 
 		/**
 		 * @class GEPPETTO.RuntimeTreeController
@@ -155,7 +156,14 @@ define(function(require) {
 							var state = GEPPETTO.Simulation.simulationStates[index];
 							var received=eval("jsonRuntimeTree."+state);
 							var clientNode=eval(state);
-							clientNode.getTimeSeries()[0].value = received.timeSeries["quantity0"].value; 
+							if (clientNode.getTimeSeries().length == 0){
+								var element = new PhysicalQuantity(received.timeSeries["quantity0"].value, null, null);
+								clientNode.getTimeSeries().push(element);
+							}	
+							else{
+								clientNode.getTimeSeries()[0].value = received.timeSeries["quantity0"].value;
+							}
+							
 						} catch (e) {
 						}
 					}
@@ -286,18 +294,21 @@ define(function(require) {
 				 * @param aspectInstancePath - Path of aspect to update
 				 * @param simulationTree - Server JSON update
 				 */
-				populateAspectSimulationTree : function(aspectInstancePath,simulationTreeUpdate){
-					var aspect= eval(aspectInstancePath);	
-					//the client aspect has no simulation tree, let's create it
-					var path =aspectInstancePath + ".SimulationTree";
+				populateAspectSimulationTree : function(aspectInstancePath, simulationTree){
+					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);
 
-					//create SubTreeNode to store simulation tree
-					var subTree = GEPPETTO.NodeFactory.createAspectSubTreeNode({
-								  name : "Simulation",instancePath : path ,
-								  type : "SimulationTree",
-								 _metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE});
-					this.createAspectSimulationTree(subTree, simulationTreeUpdate);
-					aspect.SimulationTree = subTree;
+					//populate model tree with server nodes
+					this.createAspectSimulationTree(aspect.SimulationTree, simulationTree);
+
+					//notify user received tree was empty
+					if(aspect.SimulationTree.getChildren().length==0){
+						var indent = "    ";
+						GEPPETTO.Console.log(indent + GEPPETTO.Resources.EMPTY_SIMULATION_TREE);
+					}else{
+						GEPPETTO.Console.executeCommand(aspect.SimulationTree.instancePath + ".print()");
+						aspect.SimulationTree.print();
+					}
+					
 					this.simulationTreeCreated = true;
 				},
 

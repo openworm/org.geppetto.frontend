@@ -142,8 +142,6 @@ define(function(require) {
 
 			WATCHED_SIMULATION_STATES: "You are currently watching the following states : \n",
 
-			EMPTY_WATCH_TREE: "There are no simulation states to watch",
-
 			/**
 			 * Object G resources
 			 */
@@ -214,6 +212,8 @@ define(function(require) {
 			RETRIEVING_SIMULATION_TREE : 'Simulation tree requested',
 			
 			EMPTY_MODEL_TREE : 'Model is empty, nothing to see here.',
+			
+			EMPTY_SIMULATION_TREE : 'No variables to simulate.',
 			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
 			

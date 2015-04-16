@@ -199,16 +199,11 @@ public class GeppettoMessageInbound extends MessageInbound
 				_servletController.observeSimulation(requestID, this);
 				break;
 			}
-			case LIST_WATCH_VARS:
-			{
-				_servletController.listWatchableVariables(requestID, this);
-				break;
-			}
-			case LIST_FORCE_VARS:
-			{
-				_servletController.listForceableVariables(requestID, this);
-				break;
-			}
+//			case LIST_WATCH_VARS:
+//			{
+//				_servletController.listWatchableVariables(requestID, this);
+//				break;
+//			}
 			case SET_WATCH:
 			{
 				String watchListsString = gmsg.data;

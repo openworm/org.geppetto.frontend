@@ -466,36 +466,18 @@ public class GeppettoServletController
 	 * 
 	 * @throws JsonProcessingException
 	 */
-	public void listWatchableVariables(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException
-	{
-		// get watchable variables for the entire simulation
-		VariableList vars = visitor.getSimulationService().listWatchableVariables();
-
-		// serialize
-		ObjectMapper mapper = new ObjectMapper();
-		String serializedVars = mapper.writer().writeValueAsString(vars);
-
-		// message the client with results
-		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, serializedVars);
-	}
-
-	/**
-	 * Request list of forceable variables for the simulation
-	 * 
-	 * @throws JsonProcessingException
-	 */
-	public void listForceableVariables(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException
-	{
-		// get forceable variables for the entire simulation
-		VariableList vars = visitor.getSimulationService().listForceableVariables();
-
-		// serialize
-		ObjectMapper mapper = new ObjectMapper();
-		String serializedVars = mapper.writer().writeValueAsString(vars);
-
-		// message the client with results
-		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.LIST_FORCE_VARS, serializedVars);
-	}
+//	public void listWatchableVariables(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException
+//	{
+//		// get watchable variables for the entire simulation
+//		VariableList vars = visitor.getSimulationService().getSimulationTree(aspectID)listWatchableVariables();
+//
+//		// serialize
+//		ObjectMapper mapper = new ObjectMapper();
+//		String serializedVars = mapper.writer().writeValueAsString(vars);
+//
+//		// message the client with results
+//		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.LIST_WATCH_VARS, serializedVars);
+//	}
 
 	/**
 	 * Adds watch lists with variables to be watched
@@ -538,16 +520,16 @@ public class GeppettoServletController
 	 */
 	public void startWatch(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException
 	{
-		visitor.getSimulationService().startWatch();
+		//visitor.getSimulationService().startWatch();
 
-		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
+		//List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
 
 		// serialize watch-lists
-		ObjectMapper mapper = new ObjectMapper();
-		String serializedLists = mapper.writer().writeValueAsString(watchLists);
+		//ObjectMapper mapper = new ObjectMapper();
+		//String serializedLists = mapper.writer().writeValueAsString(watchLists);
 
 		// message the client the watch lists were started
-		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.START_WATCH, serializedLists);
+		//messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.START_WATCH, serializedLists);
 	}
 
 	/**
@@ -555,10 +537,10 @@ public class GeppettoServletController
 	 */
 	public void stopWatch(String requestID, GeppettoMessageInbound visitor)
 	{
-		visitor.getSimulationService().stopWatch();
+		//visitor.getSimulationService().stopWatch();
 
 		// message the client the watch lists were stopped
-		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.STOP_WATCH);
+		//messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.STOP_WATCH);
 	}
 
 	/**
@@ -579,14 +561,14 @@ public class GeppettoServletController
 	 */
 	public void getWatchLists(String requestID, GeppettoMessageInbound visitor) throws JsonProcessingException
 	{
-		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
-
-		// serialize watch-lists
-		ObjectMapper mapper = new ObjectMapper();
-		String serializedLists = mapper.writer().writeValueAsString(watchLists);
-
-		// message the client with results
-		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS, serializedLists);
+//		List<WatchList> watchLists = visitor.getSimulationService().getWatchLists();
+//
+//		// serialize watch-lists
+//		ObjectMapper mapper = new ObjectMapper();
+//		String serializedLists = mapper.writer().writeValueAsString(watchLists);
+//
+//		// message the client with results
+//		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_WATCH_LISTS, serializedLists);
 	}
 
 	/**

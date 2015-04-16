@@ -43,6 +43,7 @@
 			Simulation_restarted : "simulation:restarted",
 			Widgets_restarted : "widgts:restarted",
 			Simulation_loaded : 'simulation:modelloaded',
+			Simulation_stopped : 'simulation:stopped',
 		};
 define(function(require) {
 	return function(GEPPETTO) {

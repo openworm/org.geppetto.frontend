@@ -133,58 +133,57 @@ define(function(require) {
 			if (this.root == null) {
 				this.root = $("#" + this.id)
 			}
-			var groups = {
-				"buttonGroupOne" : {
-					"buttonOne" : {
-						"actions" : [ "console.log('button1.action1')",
-								"console.log('button1.action2')" ],
-						"icon" : "myIcon-osb",
-						"label" : "1",
-						"tooltip" : "Thisisabutton"
+			var sample = {
+				"Sample ButtonBar" : {
+					"buttonGroupOne" : {
+						"buttonOne" : {
+							"actions" : [ "GEPPETTO.Console.log('button1.action1')",
+									"GEPPETTO.Console.log('button1.action2')" ],
+							"icon" : "myIcon-osb",
+							"label" : "1",
+							"tooltip" : "Thisisabutton"
+						},
+						"buttonTwo" : {
+							"actions" : [ "GEPPETTO.Console.log('button2.action1')" ],
+							"icon" : "myIcon-tree",
+							"label" : "2",
+							"tooltip" : "Thisisanotherbutton"
+						}
 					},
-					"buttonTwo" : {
-						"actions" : [ "console.log('button2.action1')" ],
-						"icon" : "myIcon-tree",
-						"label" : "2",
-						"tooltip" : "Thisisanotherbutton"
-					}
-				},
-				"buttonGroupTwo" : {
-					"buttonThree" : {
-						"actions" : [ "console.log('button3.action1')" ],
-						"icon" : "myIcon-make-group",
-						"label" : "3",
-						"tooltip" : "Thisisabutton"
+					"buttonGroupTwo" : {
+						"buttonThree" : {
+							"actions" : [ "console.log('button3.action1')" ],
+							"icon" : "myIcon-make-group",
+							"label" : "3",
+							"tooltip" : "Thisisabutton"
+						}
 					}
 				}
 			};
-			var bbar = null;
+			var barDef = null;
 			$.ajax({
 				dataType : "json",
 				url : url,
 				context: self,
 				success : function(data) {
-					bbar = self.generateToolbar(data)
+					barDef = data 
 				},
 				error : function() {
-					bbar = self.generateToolbar(groups)
+					barDef = sample
 				},
 				complete: function(jqXHR, status){
+					barName = Object.keys(barDef)[0]
+					bbar = self.generateToolbar(barDef[barName])
+					self.setName(barName);
 					self.setBody(bbar);
 					GEPPETTO.Console.log(
 							"Button Bar definition read from " 
 							+ ((status == "success") ? url : 'default'));
 				}
 			});
+			
+			return 'Loading toolbar definition from ' + url + '...';
 
-			// this.setHeader(this.variable.name);
-		},
-
-		/**
-		 * @private
-		 */
-		setHeader : function(content) {
-			this.getSelector("bubar_variable").html(content);
 		},
 
 		/**

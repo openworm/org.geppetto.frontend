@@ -41,164 +41,161 @@ define(function(require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 
-	return Widget.View.extend({
-		root : null,
-		variable : null,
-		options : null,
+	return Widget.View
+			.extend({
+				root : null,
+				variable : null,
+				options : null,
 
-		default_width : 270,
-		default_height : 90,
+				/**
+				 * Initialises viriables visualiser with a set of options
+				 * 
+				 * @param {Object}
+				 *            options - Object with options for the widget
+				 */
+				initialize : function(options) {
+					this.id = options.id;
+					this.name = options.name;
+					this.options = options;
 
+					this.render();
 
-		/**
-		 * Initialises viriables visualiser with a set of options
-		 * 
-		 * @param {Object}
-		 *            options - Object with options for the widget
-		 */
-		initialize : function(options) {
-			this.id = options.id;
-			this.name = options.name;
-			this.options = options;
+					this.setResizable(false);
+					this.setMinSize(0, 0);
+					this.setSize(0, 0);
+					this.setPosition('center', 0);
+					this.setAutoWidth();
+					this.setAutoHeight();
 
-			this.render();
+					this.dialog.append("<div class='bubar_body'></div>");
+				},
 
-			this.setResizable(false);
-			this.setMinSize(0,0);
-			this.setSize(0,0);
-			this.setPosition('center',0);
-			this.setAutoWidth();
-			this.setAutoHeight();
+				BootstrapMenuMaker : {
+					named : function(constructor, name, def) {
+						return constructor.bind(this)(def).attr('id', name)
+					},
 
-			this.dialog.append("<div class='bubar_body'></div>");
-		},
+					createButtonContent : function(button) {
+						return $('<span>').addClass(button.icon).append(
+								' ' + button.label)
+					},
 
-		/**
-		 * Creates a button bar from definitions specified in an
-		 * external json file
-		 * 
-		 * @command fromJSON(url)
-		 * @param {String}
-		 *            url - URL of the json file defining the button bar
-		 */
-
-		createButtonGroup : function(bgName, bgDef) {
-
-			function named(constructor, name, def) {
-				return constructor(def).attr('id', name)
-			}
-
-			function createButtonContent(button) {
-				return $('<span>')
-						.addClass(button.icon)
-						.append(' ' + button.label)
-			}
-
-			function createButtonCallback(button) {
-				return function() {
-					button.actions.forEach(function(action) {
-						GEPPETTO.Console.executeCommand(action)
-					});
-				}
-			}
-
-			function createButton(button) {
-				return $('<button>')
-						.addClass('btn btn-default btn-lg')
-						.append(createButtonContent(button))
-						.on('click', createButtonCallback(button))
-			}
-
-			var bg = $('<div>')
-					.addClass('btn-group')
-					.attr('role', 'group')
-					.attr('id', bgName);
-			$.each(bgDef, function(bName, bData) {
-				bg.append(named(createButton, bName, bData))
-			});
-			return bg;
-		},
-
-		generateToolbar : function(buttonGroups) {
-			var that = this
-			var tbar = $('<div>')
-						.addClass('toolbar');
-			$.each(buttonGroups, function(groupName, groupDef) {
-				tbar.append(that.createButtonGroup(groupName, groupDef));
-			});
-			return tbar;
-		},
-
-		fromJSON : function(url) {
-			var self = this;
-			if (this.root == null) {
-				this.root = $("#" + this.id)
-			}
-			var sample = {
-				"Sample ButtonBar" : {
-					"buttonGroupOne" : {
-						"buttonOne" : {
-							"actions" : [ "GEPPETTO.Console.log('button1.action1')",
-									"GEPPETTO.Console.log('button1.action2')" ],
-							"icon" : "myIcon-osb",
-							"label" : "1",
-							"tooltip" : "Thisisabutton"
-						},
-						"buttonTwo" : {
-							"actions" : [ "GEPPETTO.Console.log('button2.action1')" ],
-							"icon" : "myIcon-tree",
-							"label" : "2",
-							"tooltip" : "Thisisanotherbutton"
+					createButtonCallback : function(button) {
+						return function() {
+							button.actions.forEach(function(action) {
+								GEPPETTO.Console.executeCommand(action)
+							});
 						}
 					},
-					"buttonGroupTwo" : {
-						"buttonThree" : {
-							"actions" : [ "G.addWidget(1).setMessage('hello from button 3')"],
-							"icon" : "myIcon-make-group",
-							"label" : "3",
-							"tooltip" : "Thisisabutton"
-						}
+
+					createButton : function(button) {
+						return $('<button>').addClass('btn btn-default btn-lg')
+								.append(this.createButtonContent(button)).on(
+										'click',
+										this.createButtonCallback(button))
+					},
+
+					createButtonGroup : function(bgName, bgDef) {
+						var that = this;
+						var bg = $('<div>').addClass('btn-group').attr('role',
+								'group').attr('id', bgName);
+						$.each(bgDef, function(bName, bData) {
+							bg.append(that.named(that.createButton, bName,
+									bData))
+						});
+						return bg;
+					},
+
+					generateToolbar : function(buttonGroups) {
+						var that = this
+						var tbar = $('<div>').addClass('toolbar');
+						$.each(buttonGroups, function(groupName, groupDef) {
+							tbar.append(that.createButtonGroup(groupName,
+									groupDef));
+						});
+						return tbar;
 					}
-				}
-			};
-			var barDef = null;
-			$.ajax({
-				dataType : "json",
-				url : url,
-				context: self,
-				success : function(data) {
-					barDef = data 
 				},
-				error : function() {
-					barDef = sample
+
+				/**
+				 * Creates a button bar from definitions specified in an
+				 * external json file
+				 * 
+				 * @command fromJSON(url)
+				 * @param {String}
+				 *            url - URL of the json file defining the button bar
+				 */
+				fromJSON : function(url) {
+					var that = this;
+					if (this.root == null) {
+						this.root = $("#" + this.id)
+					}
+					var sample = {
+						"Sample ButtonBar" : {
+							"buttonGroupOne" : {
+								"buttonOne" : {
+									"actions" : [
+											"GEPPETTO.Console.log('button1.action1')",
+											"GEPPETTO.Console.log('button1.action2')" ],
+									"icon" : "myIcon-osb",
+									"label" : "1",
+									"tooltip" : "Thisisabutton"
+								},
+								"buttonTwo" : {
+									"actions" : [ "GEPPETTO.Console.log('button2.action1')" ],
+									"icon" : "myIcon-tree",
+									"label" : "2",
+									"tooltip" : "Thisisanotherbutton"
+								}
+							},
+							"buttonGroupTwo" : {
+								"buttonThree" : {
+									"actions" : [ "G.addWidget(1).setMessage('hello from button 3')" ],
+									"icon" : "myIcon-make-group",
+									"label" : "3",
+									"tooltip" : "Thisisabutton"
+								}
+							}
+						}
+					};
+					var barDef = null;
+					$.ajax({
+						dataType : "json",
+						url : url,
+						context : that,
+						success : function(data) {
+							barDef = data
+						},
+						error : function() {
+							barDef = sample
+						},
+						complete : function(jqXHR, status) {
+							barName = Object.keys(barDef)[0]
+							bbar = that.BootstrapMenuMaker.generateToolbar(barDef[barName])
+							that.setName(barName);
+							that.setBody(bbar);
+							GEPPETTO.Console
+									.log("Button Bar definition read from "
+											+ ((status == "success") ? url : 'default'));
+						}
+					});
+
+					return 'Loading toolbar definition from ' + url + '...';
+
 				},
-				complete: function(jqXHR, status){
-					barName = Object.keys(barDef)[0]
-					bbar = self.generateToolbar(barDef[barName])
-					self.setName(barName);
-					self.setBody(bbar);
-					GEPPETTO.Console.log(
-							"Button Bar definition read from " 
-							+ ((status == "success") ? url : 'default'));
+
+				/**
+				 * @private
+				 */
+				setBody : function(content) {
+					this.getSelector("bubar_body").html(content);
+				},
+
+				/**
+				 * @private
+				 */
+				getSelector : function(name) {
+					return $(this.root.selector + " ." + name);
 				}
 			});
-			
-			return 'Loading toolbar definition from ' + url + '...';
-
-		},
-
-		/**
-		 * @private
-		 */
-		setBody : function(content) {
-			this.getSelector("bubar_body").html(content);
-		},
-
-		/**
-		 * @private
-		 */
-		getSelector : function(name) {
-			return $(this.root.selector + " ." + name);
-		}
-	});
 });

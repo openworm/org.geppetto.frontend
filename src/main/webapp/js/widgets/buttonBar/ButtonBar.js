@@ -89,33 +89,68 @@ define(function(require) {
 					},
 
 					createButton : function(button) {
-						return $('<button>').addClass('btn btn-default btn-lg')
-								.append(this.createButtonContent(button)).on(
-										'click',
-										this.createButtonCallback(button))
+						return $('<button>')
+								.addClass('btn btn-default btn-lg')
+								.append(this.createButtonContent(button))
+								.on('click', this.createButtonCallback(button))
 					},
 
 					createButtonGroup : function(bgName, bgDef) {
 						var that = this;
-						var bg = $('<div>').addClass('btn-group').attr('role',
-								'group').attr('id', bgName);
+						var bg = $('<div>')
+									.addClass('btn-group')
+									.attr('role', 'group')
+									.attr('id', bgName);
 						$.each(bgDef, function(bName, bData) {
-							bg.append(that.named(that.createButton, bName,
-									bData))
+							bg.append(that.named(that.createButton, bName, bData))
 						});
 						return bg;
 					},
 
 					generateToolbar : function(buttonGroups) {
-						var that = this
+						var that = this;
 						var tbar = $('<div>').addClass('toolbar');
 						$.each(buttonGroups, function(groupName, groupDef) {
-							tbar.append(that.createButtonGroup(groupName,
-									groupDef));
+							tbar.append(that.createButtonGroup(groupName, groupDef));
 						});
 						return tbar;
 					}
 				},
+
+				sample : {
+					"Sample ButtonBar" : {
+						"buttonGroupOne" : {
+							"buttonOne" : {
+								"actions" : [
+										"GEPPETTO.Console.log('button1.action1')",
+										"GEPPETTO.Console.log('button1.action2')" ],
+								"icon" : "myIcon-osb",
+								"label" : "1",
+								"tooltip" : "Thisisabutton"
+							},
+							"buttonTwo" : {
+								"actions" : [ "GEPPETTO.Console.log('button2.action1')" ],
+								"icon" : "myIcon-tree",
+								"label" : "2",
+								"tooltip" : "Thisisanotherbutton"
+							}
+						},
+						"buttonGroupTwo" : {
+							"buttonThree" : {
+								"actions" : [ "G.addWidget(1).setMessage('hello from button 3')" ],
+								"icon" : "myIcon-make-group",
+								"label" : "3",
+								"tooltip" : "Thisisabutton"
+							}
+						}
+					}
+				},
+				
+				renderBar: function(name, barObject){
+					this.setName(name);
+					this.setBody(this.BootstrapMenuMaker.generateToolbar(barObject));
+				},
+				
 
 				/**
 				 * Creates a button bar from definitions specified in an
@@ -130,50 +165,21 @@ define(function(require) {
 					if (this.root == null) {
 						this.root = $("#" + this.id)
 					}
-					var sample = {
-						"Sample ButtonBar" : {
-							"buttonGroupOne" : {
-								"buttonOne" : {
-									"actions" : [
-											"GEPPETTO.Console.log('button1.action1')",
-											"GEPPETTO.Console.log('button1.action2')" ],
-									"icon" : "myIcon-osb",
-									"label" : "1",
-									"tooltip" : "Thisisabutton"
-								},
-								"buttonTwo" : {
-									"actions" : [ "GEPPETTO.Console.log('button2.action1')" ],
-									"icon" : "myIcon-tree",
-									"label" : "2",
-									"tooltip" : "Thisisanotherbutton"
-								}
-							},
-							"buttonGroupTwo" : {
-								"buttonThree" : {
-									"actions" : [ "G.addWidget(1).setMessage('hello from button 3')" ],
-									"icon" : "myIcon-make-group",
-									"label" : "3",
-									"tooltip" : "Thisisabutton"
-								}
-							}
-						}
-					};
+					
 					var barDef = null;
 					$.ajax({
 						dataType : "json",
 						url : url,
 						context : that,
 						success : function(data) {
-							barDef = data
+							barDef = data;
 						},
 						error : function() {
-							barDef = sample
+							barDef = that.sample;
 						},
 						complete : function(jqXHR, status) {
-							barName = Object.keys(barDef)[0]
-							bbar = that.BootstrapMenuMaker.generateToolbar(barDef[barName])
-							that.setName(barName);
-							that.setBody(bbar);
+							barName = Object.keys(barDef)[0];
+							bbar = that.renderBar(barName, barDef[barName]);
 							GEPPETTO.Console
 									.log("Button Bar definition read from "
 											+ ((status == "success") ? url : 'default'));

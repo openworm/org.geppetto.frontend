@@ -44,6 +44,7 @@ define(function(require) {
 		var clientID = null;
 		var nextID = 0;
 		var connectionInterval = 300;
+		var pako = require("pako");
 
 		/**
 		 * Web socket creation and communication
@@ -60,6 +61,7 @@ define(function(require) {
 			connect: function(host) {
 				if('WebSocket' in window) {
 					GEPPETTO.MessageSocket.socket = new WebSocket(host);
+					GEPPETTO.MessageSocket.socket.binaryType = "arraybuffer";
 				}
 				else if('MozWebSocket' in window) {
 					GEPPETTO.MessageSocket.socket = new MozWebSocket(host);
@@ -85,14 +87,23 @@ define(function(require) {
 				};
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
-					if(msg.data=="ping"){
+
+					var messageData = msg.data;
+
+					if(messageData == "ping") {
 						return;
 					}
-					var parsedServerMessage = JSON.parse(msg.data);
+
+					// if it's a binary message then assume it's a compressed json string
+					if (messageData instanceof ArrayBuffer) {
+						messageData = gzipUncompress(messageData);
+					}
+
+					var parsedServerMessage = JSON.parse(messageData);
 
 					//notify all handlers
-					for(var i = 0, len = messageHandlers.length; i < len; i++) {
-						messageHandlers[ i ].onMessage(parsedServerMessage);
+					for (var i = 0, len = messageHandlers.length; i < len; i++) {
+						messageHandlers[i].onMessage(parsedServerMessage);
 					}
 				};
 
@@ -211,7 +222,12 @@ define(function(require) {
 				data: payload
 			};
 			return  JSON.stringify(object);
-		};
+		}
 
+		function gzipUncompress(compressedMessage) {
+			var messageBytes = new Uint8Array(compressedMessage);
+			var message = pako.ungzip(messageBytes, {to:"string"});
+			return message;
+		}
 	}
 });

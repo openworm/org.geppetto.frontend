@@ -57,8 +57,8 @@ public class CompressionUtils {
 
         long elapsedTime = System.currentTimeMillis() - startTime;
 
-        logger.info(String.format("Compressed message from %d to %d bytes in %dms", message.length(),
-								  compressedMessage.length, elapsedTime));
+		logger.debug(String.format("Compressed message from %d to %d bytes in %dms", message.length(),
+								   compressedMessage.length, elapsedTime));
 
         return compressedMessage;
     }
@@ -78,8 +78,8 @@ public class CompressionUtils {
 
         long elapsedTime = System.currentTimeMillis() - startTime;
 
-        logger.info(String.format("Compressed message from %d to %d bytes in %dms", message.length,
-                compressedMessage.length, elapsedTime));
+		logger.debug(String.format("Compressed message from %d to %d bytes in %dms", message.length,
+								   compressedMessage.length, elapsedTime));
 
         return compressedMessage;
     }

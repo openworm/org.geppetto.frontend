@@ -94,7 +94,7 @@ public class DefaultMessageSender implements MessageSender {
 	}
 
 	public void shutdown() {
-		logger.info("shutting down default message sender");
+		logger.info("Shutting down default message sender");
 		preprocessorExecutor.shutdownNow();
 		senderExecutor.shutdownNow();
 	}
@@ -152,7 +152,7 @@ public class DefaultMessageSender implements MessageSender {
 				CharBuffer buffer = CharBuffer.wrap(message);
 				wsOutbound.writeTextMessage(buffer);
 
-				logger.info(String.format("%d ms were spent sending a message of %dKB to the client",
+				logger.info(String.format("%dms were spent sending a message of %dKB to the client",
 										  System.currentTimeMillis() - startTime, message.length() / 1024));
 
 			} catch (IOException e) {
@@ -178,7 +178,7 @@ public class DefaultMessageSender implements MessageSender {
 				ByteBuffer buffer = ByteBuffer.wrap(message);
 				wsOutbound.writeBinaryMessage(buffer);
 
-				logger.info(String.format("%d ms were spent sending a binary message of %dKB to the client",
+				logger.info(String.format("%d ms were spent sending a binary/compressed message of %dKB to the client",
 										  System.currentTimeMillis() - startTime, message.length / 1024));
 
 			} catch (IOException e) {

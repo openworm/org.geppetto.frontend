@@ -44,11 +44,15 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.model.simulation.Simulation;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
-import org.geppetto.frontend.controllers.GeppettoServletController;
+import org.geppetto.frontend.messaging.DefaultMessageSender;
+import org.geppetto.frontend.messaging.DefaultMessageSenderConfig;
+import org.geppetto.frontend.messaging.MessageSenderEvent;
+import org.geppetto.frontend.messaging.MessageSenderListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -61,7 +65,7 @@ import com.google.gson.reflect.TypeToken;
  * Class used to process Web Socket Connections. Messages sent from the connecting clients, web socket connections, are received in here.
  * 
  */
-public class GeppettoMessageInbound extends MessageInbound
+public class GeppettoMessageInbound extends MessageInbound implements MessageSenderListener
 {
 
 	/*
@@ -83,6 +87,11 @@ public class GeppettoMessageInbound extends MessageInbound
 	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
 	private boolean _isSimulationLoaded;
 
+	@Autowired
+	private DefaultMessageSenderConfig _defaultMessageSenderConfig;
+
+	private DefaultMessageSender _messageSender;
+
 	public GeppettoMessageInbound(String client_id)
 	{
 		super();
@@ -94,14 +103,16 @@ public class GeppettoMessageInbound extends MessageInbound
 	@Override
 	protected void onOpen(WsOutbound outbound)
 	{
+		_messageSender = new DefaultMessageSender(getWsOutbound(), _defaultMessageSenderConfig);
+		_messageSender.addListener(this);
 		_servletController.addConnection(this);
-
-		_servletController.messageClient(null, this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID, this._client_id);
+		_messageSender.sendMessage(null, OUTBOUND_MESSAGE_TYPES.CLIENT_ID, this._client_id);
 	}
 
 	@Override
 	protected void onClose(int status)
 	{
+		_messageSender.shutdown();
 		_servletController.removeConnection(this);
 	}
 
@@ -146,7 +157,7 @@ public class GeppettoMessageInbound extends MessageInbound
 				}
 				catch(MalformedURLException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+					messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 				}
 				break;
 			}
@@ -219,11 +230,11 @@ public class GeppettoMessageInbound extends MessageInbound
 				}
 				catch(GeppettoExecutionException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
 				}
 				catch(GeppettoInitializationException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
 				}
 
 				break;
@@ -278,6 +289,42 @@ public class GeppettoMessageInbound extends MessageInbound
 			{
 				// NOTE: no other messages expected for now
 			}
+		}
+	}
+
+	/**
+	 * Requests JSONUtility class for a json object with a message to send to the client
+	 *
+	 * @param requestID
+	 *
+	 * @param type
+	 *            - type of message to be send
+	 */
+	public void messageClient(String requestID, OUTBOUND_MESSAGE_TYPES type)
+	{
+		messageClient(requestID, type, null);
+	}
+
+	/**
+	 * Requests JSONUtility class for a json object with simulation update to be send to the client
+	 *
+	 * @param requestID
+	 *
+	 * @param type
+	 *            - type of message to be send
+	 * @param update
+	 *            - update to be sent
+	 */
+	public void messageClient(String requestID, OUTBOUND_MESSAGE_TYPES type, String update)
+	{
+		_messageSender.sendMessage(requestID, type, update);
+	}
+
+	@Override
+	public void handleMessageSenderEvent(MessageSenderEvent event) {
+		if (event.getType().equals(MessageSenderEvent.Type.MESSAGE_SEND_FAILED)) {
+			_messageSender.shutdown();
+			_servletController.removeConnection(this);
 		}
 	}
 

@@ -165,7 +165,6 @@ define(function(require) {
 							this.options.yaxis.min = this.yMin;
 							this.options.xaxis.max = this.limit;
 							this.options.series.downsample.threshold =1000;
-							this.setSize(550,850);
 						}
 						this.datasets.push({
 							label : id,
@@ -386,7 +385,8 @@ define(function(require) {
 			 * @param {Object} options - options to modify the plot widget
 			 */
 			setOptions: function(options) {
-				this.options = options;
+//				this.options = options;
+				this.options = $.extend({}, this.defaultPlotOptions, options);
 				if(this.options.xaxis != null) {
 					if(this.options.xaxis.max > this.limit) {
 						this.limit = this.options.xaxis.max;

@@ -55,48 +55,46 @@ public class DefaultMessageSender implements MessageSender {
 	private ThreadPoolExecutor preprocessorExecutor;
 	private ArrayBlockingQueue<Runnable> senderQueue;
 	private ThreadPoolExecutor senderExecutor;
-
 	private WsOutbound wsOutbound;
 	private Set<MessageSenderListener> listeners = new HashSet<>();
-
-	private boolean enableCompression = false;
-	private int minMessageLengthForCompression = 20000;
+	private DefaultMessageSenderConfig config = new DefaultMessageSenderConfig();
 
 	private static final Log logger = LogFactory.getLog(DefaultMessageSender.class);
 
 	public DefaultMessageSender(WsOutbound wsOutbound, DefaultMessageSenderConfig config) {
-		this(wsOutbound, config.getMaxQueueSize(), config.getDiscardMessagesIfQueueFull(),
-			 config.getEnableCompression());
-	}
 
-	public DefaultMessageSender(WsOutbound wsOutbound, int maxQueueSize, boolean discardMessagesIfQueueFull,
-								boolean enableCompression) {
-
-		logger.info("creating default message sender - compression = " + enableCompression);
+		this.config = config;
+		logger.info("Creating default message sender - " + config);
 		this.wsOutbound = wsOutbound;
-		this.enableCompression = enableCompression;
 
-		RejectedExecutionHandler rejectedExecutionHandler;
+		if (config.isQueuingEnabled()) {
 
-		if (discardMessagesIfQueueFull) {
-			rejectedExecutionHandler = new ThreadPoolExecutor.DiscardOldestPolicy();
-		} else {
-			rejectedExecutionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
+			RejectedExecutionHandler rejectedExecutionHandler;
+
+			if (config.getDiscardMessagesIfQueueFull()) {
+				rejectedExecutionHandler = new ThreadPoolExecutor.DiscardOldestPolicy();
+			} else {
+				rejectedExecutionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
+			}
+
+			preprocessorQueue = new ArrayBlockingQueue<>(config.getMaxQueueSize());
+
+			preprocessorExecutor = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, preprocessorQueue,
+														  rejectedExecutionHandler);
+
+			senderQueue = new ArrayBlockingQueue<>(config.getMaxQueueSize());
+			senderExecutor = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, senderQueue, rejectedExecutionHandler);
 		}
-
-		preprocessorQueue = new ArrayBlockingQueue<>(maxQueueSize);
-
-		preprocessorExecutor = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, preprocessorQueue,
-													  rejectedExecutionHandler);
-
-		senderQueue = new ArrayBlockingQueue<>(maxQueueSize);
-		senderExecutor = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, senderQueue, rejectedExecutionHandler);
 	}
 
 	public void shutdown() {
 		logger.info("Shutting down default message sender");
-		preprocessorExecutor.shutdownNow();
-		senderExecutor.shutdownNow();
+		if (preprocessorExecutor != null) {
+			preprocessorExecutor.shutdownNow();
+		}
+		if (senderExecutor != null) {
+			senderExecutor.shutdownNow();
+		}
 	}
 
 	@Override
@@ -117,23 +115,54 @@ public class DefaultMessageSender implements MessageSender {
 
 	@Override
 	public void sendMessage(String requestID, OUTBOUND_MESSAGE_TYPES type, String update) {
-		preprocessorExecutor.execute(new Preprocessor(requestID, type, update));
+
+		if (config.isQueuingEnabled()) {
+			preprocessorExecutor.execute(new Preprocessor(requestID, type, update));
+
+		} else {
+
+			try {
+
+				String message = preprocessMessage(requestID, type, update);
+
+				if (!config.isCompressionEnabled() || message.length() < config.getMinMessageLengthForCompression()) {
+					new TextMessageSender(message).run();
+
+				} else {
+					byte[] compressedMessage = CompressionUtils.gzipCompress(message);
+					new BinaryMessageSender(compressedMessage).run();
+				}
+
+			} catch (IOException e) {
+				logger.warn("failed to send binary message", e);
+				notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+			}
+		}
 	}
 
-	public boolean getEnableCompression() {
-		return enableCompression;
+	private String preprocessMessage(String requestId, OUTBOUND_MESSAGE_TYPES type, String update) {
+
+		long startTime = System.currentTimeMillis();
+
+		GeppettoTransportMessage transportMessage =
+				TransportMessageFactory.getTransportMessage(requestId, type, update);
+
+		logger.debug(String.format("created transport message in %dms",
+								   System.currentTimeMillis() - startTime));
+
+		startTime = System.currentTimeMillis();
+		String message = new Gson().toJson(transportMessage);
+		logger.debug(String.format("created json in %dms", System.currentTimeMillis() - startTime));
+
+		return message;
 	}
 
-	public void setEnableCompression(boolean enableCompression) {
-		this.enableCompression = enableCompression;
+	public DefaultMessageSenderConfig getConfig() {
+		return config;
 	}
 
-	public int getMinMessageLengthForCompression() {
-		return minMessageLengthForCompression;
-	}
-
-	public void setMinMessageLengthForCompression(int minMessageLengthForCompression) {
-		this.minMessageLengthForCompression = minMessageLengthForCompression;
+	public void setConfig(DefaultMessageSenderConfig config) {
+		this.config = config;
 	}
 
 	private class TextMessageSender implements Runnable {
@@ -204,19 +233,9 @@ public class DefaultMessageSender implements MessageSender {
 
 			try {
 
-				long startTime = System.currentTimeMillis();
+				String message = preprocessMessage(requestId, type, update);
 
-				GeppettoTransportMessage transportMessage =
-						TransportMessageFactory.getTransportMessage(requestId, type, update);
-
-				logger.debug(String.format("created transport message in %dms",
-										   System.currentTimeMillis() - startTime));
-
-				startTime = System.currentTimeMillis();
-				String message = new Gson().toJson(transportMessage);
-				logger.debug(String.format("created json in %dms", System.currentTimeMillis() - startTime));
-
-				if (!enableCompression || message.length() < minMessageLengthForCompression) {
+				if (!config.isCompressionEnabled() || message.length() < config.getMinMessageLengthForCompression()) {
 					senderExecutor.execute(new TextMessageSender(message));
 
 				} else {

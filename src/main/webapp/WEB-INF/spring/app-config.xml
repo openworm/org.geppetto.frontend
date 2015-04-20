@@ -46,9 +46,11 @@
 	</bean>
 
     <bean id="defaultMessageSenderConfig" class="org.geppetto.frontend.messaging.DefaultMessageSenderConfig">
+        <property name="queuingEnabled" value="true" />
         <property name="maxQueueSize" value="5" />
         <property name="discardMessagesIfQueueFull" value="true" />
-        <property name="enableCompression" value="false" />
+        <property name="compressionEnabled" value="true" />
+        <property name="minMessageLengthForCompression" value="20000" />
     </bean>
 
 </beans>

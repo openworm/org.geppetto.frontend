@@ -2,9 +2,27 @@ package org.geppetto.frontend.messaging;
 
 public class DefaultMessageSenderConfig {
 
+	private boolean queuingEnabled = false;
 	private int maxQueueSize = 5;
 	private boolean discardMessagesIfQueueFull = true;
-	private boolean enableCompression = false;
+	private boolean compressionEnabled = false;
+	private int minMessageLengthForCompression = 20000;
+
+	public boolean isCompressionEnabled() {
+		return compressionEnabled;
+	}
+
+	public void setCompressionEnabled(boolean compressionEnabled) {
+		this.compressionEnabled = compressionEnabled;
+	}
+
+	public boolean isQueuingEnabled() {
+		return queuingEnabled;
+	}
+
+	public void setQueuingEnabled(boolean queuingEnabled) {
+		this.queuingEnabled = queuingEnabled;
+	}
 
 	public int getMaxQueueSize() {
 		return maxQueueSize;
@@ -22,11 +40,15 @@ public class DefaultMessageSenderConfig {
 		this.discardMessagesIfQueueFull = discardMessagesIfQueueFull;
 	}
 
-	public boolean getEnableCompression() {
-		return enableCompression;
+	public int getMinMessageLengthForCompression() {
+		return minMessageLengthForCompression;
 	}
 
-	public void setEnableCompression(boolean enableCompression) {
-		this.enableCompression = enableCompression;
+	public void setMinMessageLengthForCompression(int minMessageLengthForCompression) {
+		this.minMessageLengthForCompression = minMessageLengthForCompression;
+	}
+
+	public String toString() {
+		return String.format("queuing enabled = %b, compression enabled = %b", queuingEnabled, compressionEnabled);
 	}
 }

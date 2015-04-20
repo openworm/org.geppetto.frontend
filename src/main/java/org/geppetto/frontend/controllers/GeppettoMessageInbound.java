@@ -48,13 +48,13 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
-import org.geppetto.frontend.dashboard.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -154,7 +154,7 @@ public class GeppettoMessageInbound extends MessageInbound
 				{
 					url = new URL(jsonUrlString);
 					BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-					IGeppettoProject geppettoProject = ControllerHelper.getDataManager().getProjectFromJson(getGson(), reader);
+					IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
 					_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
 				}
 				catch(IOException e)
@@ -166,7 +166,7 @@ public class GeppettoMessageInbound extends MessageInbound
 			case INIT_ID:
 			{
 				String idString = gmsg.data;
-				IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+				IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 				try
 				{
 					IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(idString));
@@ -181,7 +181,7 @@ public class GeppettoMessageInbound extends MessageInbound
 			case INIT_SIM:
 			{
 				String simulation = gmsg.data;
-				IGeppettoProject geppettoProject = ControllerHelper.getDataManager().getProjectFromJson(getGson(), simulation);
+				IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), simulation);
 				_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
 				break;
 			}
@@ -344,7 +344,7 @@ public class GeppettoMessageInbound extends MessageInbound
 			// this could be null when loaded from a json that may not include the model part
 			if(project.getGeppettoModel() == null)
 			{
-				project = ControllerHelper.getDataManager().getGeppettoProjectById(project.getId());
+				project = DataManagerHelper.getDataManager().getGeppettoProjectById(project.getId());
 			}
 			if(project.getGeppettoModel() != null)
 			{

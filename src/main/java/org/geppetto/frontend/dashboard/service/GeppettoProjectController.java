@@ -32,9 +32,9 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
+import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
-import org.geppetto.frontend.dashboard.ControllerHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +49,7 @@ public class GeppettoProjectController
 	public @ResponseBody
 	IGeppettoProject getAllGeppettoProject(@PathVariable("id") int id)
 	{
-		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
 			return dataManager.getGeppettoProjectById(id);
@@ -61,7 +61,7 @@ public class GeppettoProjectController
 	public @ResponseBody
 	Object deleteGeppettoProject(@PathVariable("id") int id)
 	{
-		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
 			IGeppettoProject project = dataManager.getGeppettoProjectById(id);

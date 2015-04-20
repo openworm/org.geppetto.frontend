@@ -39,9 +39,9 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAccount;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IUser;
-import org.geppetto.frontend.dashboard.ControllerHelper;
 
 public class GeppettoRealm extends AuthenticatingRealm
 {
@@ -49,7 +49,7 @@ public class GeppettoRealm extends AuthenticatingRealm
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException
 	{
-		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
 			IUser user = dataManager.getUserByLogin((String) token.getPrincipal());

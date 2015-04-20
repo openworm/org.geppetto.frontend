@@ -32,10 +32,10 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
+import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.JsonRequestException;
 import org.geppetto.core.data.model.IUser;
-import org.geppetto.frontend.dashboard.ControllerHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +49,7 @@ public class UserResource
 	public @ResponseBody
 	IUser getCurrentUser()
 	{
-		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
 			return dataManager.getCurrentUser();
@@ -61,7 +61,7 @@ public class UserResource
 	public @ResponseBody
 	Object logout()
 	{
-		IGeppettoDataManager dataManager = ControllerHelper.getDataManager();
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
 			if(dataManager.isDefault())

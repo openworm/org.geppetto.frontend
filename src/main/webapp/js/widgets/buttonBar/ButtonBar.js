@@ -48,7 +48,7 @@ define(function(require) {
 				options : null,
 
 				/**
-				 * Initialises viriables visualiser with a set of options
+				 * Initialises button bar 
 				 * 
 				 * @param {Object}
 				 *            options - Object with options for the widget
@@ -76,8 +76,9 @@ define(function(require) {
 					},
 
 					createButtonContent : function(button) {
-						return $('<span>').addClass(button.icon).append(
-								' ' + button.label)
+						return $('<span>')
+							.addClass(button.icon)
+							.append(' ' + button.label)
 					},
 
 					createButtonCallback : function(button) {
@@ -124,22 +125,34 @@ define(function(require) {
 								"actions" : [
 										"GEPPETTO.Console.log('button1.action1')",
 										"GEPPETTO.Console.log('button1.action2')" ],
-								"icon" : "myIcon-osb",
+								"icon" : "gpt-osb",
 								"label" : "1",
 								"tooltip" : "Thisisabutton"
 							},
 							"buttonTwo" : {
 								"actions" : [ "GEPPETTO.Console.log('button2.action1')" ],
-								"icon" : "myIcon-tree",
+								"icon" : "gpt-pyramidal-cell",
 								"label" : "2",
 								"tooltip" : "Thisisanotherbutton"
+							},
+							"buttonThree" : {
+								"actions" : [ "G.addWidget(1).setMessage('hello from button 3')" ],
+								"icon" : "icon-glass",
+								"label" : "3",
+								"tooltip" : "Thisisabutton"
 							}
 						},
 						"buttonGroupTwo" : {
-							"buttonThree" : {
-								"actions" : [ "G.addWidget(1).setMessage('hello from button 3')" ],
-								"icon" : "myIcon-make-group",
-								"label" : "3",
+							"buttonFour" : {
+								"actions" : [ "G.addWidget(1).setMessage('hello from button 4')" ],
+								"icon" : "gpt-make-group",
+								"label" : "four",
+								"tooltip" : "Thisisabutton"
+							},
+							"buttonFive" : {
+								"actions" : [ "G.addWidget(1).setMessage('hello from The Worm')" ],
+								"icon" : "gpt-worm",
+								"label" : "five",
 								"tooltip" : "Thisisabutton"
 							}
 						}

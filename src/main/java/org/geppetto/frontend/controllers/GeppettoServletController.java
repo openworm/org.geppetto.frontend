@@ -470,11 +470,11 @@ public class GeppettoServletController
 	 * @throws JsonProcessingException
 	 * @throws GeppettoInitializationException
 	 */
-	public void addWatchLists(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException, GeppettoInitializationException
+	public void setWatchedVariables(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException, GeppettoInitializationException
 	{
 		List<String> lists = fromJSON(new TypeReference<List<String>>()	{}, jsonLists);
 		
-		visitor.getSimulationService().addWatchLists(lists);
+		visitor.getSimulationService().setWatchedVariables(lists);
 
 		// serialize watch-lists
 		ObjectMapper mapper = new ObjectMapper();
@@ -489,7 +489,7 @@ public class GeppettoServletController
 		}
 
 		// message the client the watch lists were added
-		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS, serializedLists);
+		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCHED_VARIABLES, serializedLists);
 
 	}
 

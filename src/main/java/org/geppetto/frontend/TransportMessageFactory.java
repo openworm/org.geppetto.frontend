@@ -75,8 +75,8 @@ public class TransportMessageFactory {
 			case ERROR_LOADING_SIMULATION:
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString()));
 				break;
-			case ERROR_ADDING_WATCH_LIST:
-				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_ADDING_WATCH_MESSAGE.toString()));
+			case ERROR_SETTING_WATCHED_VARIABLES:
+				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_SETTING_WATCHED_VARIABLES_MESSAGE.toString()));
 				break;
 			case OBSERVER_MODE:
 				params.add(new SimpleEntry<String, String>("alertMessage", Resources.SIMULATION_CONTROLLED.toString()));
@@ -118,8 +118,8 @@ public class TransportMessageFactory {
 			case RUN_SCRIPT:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
-			case SET_WATCH_LISTS:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SET_WATCH_LISTS.toString(), (update!=null) ? update : EMPTY_STRING));
+			case SET_WATCHED_VARIABLES:
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SET_WATCHED_VARIABLES.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_MODEL_TREE:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));

@@ -296,11 +296,11 @@ define(function(require) {
 			/**
 			 * Add watchlists to the simulation.
 			 *
-			 * @command GEPPETTO.Simulation.addWatchLists()
+			 * @command GEPPETTO.Simulation.setWatchedVariables()
 			 * @param {Array} watchLists - Array listing variables to be watched.
 			 * @returns {String} Status after request.
 			 */
-			addWatchLists: function(watchLists) {
+			setWatchedVariables: function(watchLists) {
 				var watchedList = [];
 				for (var index in watchLists){
 					watchedList.push(watchLists[index].instancePath);

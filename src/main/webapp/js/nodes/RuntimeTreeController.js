@@ -357,13 +357,15 @@ define(function(require) {
 							else if (metatype == GEPPETTO.Resources.COMPOSITE_NODE) {
 								var newNode = GEPPETTO.NodeFactory.createCompositeNode(node[i],true);
 								newNode.setParent(parent);
-								this.createAspectSimulationTree(newNode, node[i]);
 								// add to parent if applicable
 								if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE
 										|| parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
 									parent.getChildren().push(newNode);
 								}
 								parent[i] = newNode;
+								
+								//traverse through children of composite node
+								this.createAspectSimulationTree(parent[i], node[i]);
 							} else if (metatype == GEPPETTO.Resources.VARIABLE_NODE) {
 								var newNode = GEPPETTO.NodeFactory.createVariableNode(node[i]);
 								newNode.setParent(parent);

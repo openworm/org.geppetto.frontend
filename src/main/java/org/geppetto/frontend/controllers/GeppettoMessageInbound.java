@@ -205,15 +205,15 @@ public class GeppettoMessageInbound extends MessageInbound
 
 				try
 				{
-					_servletController.addWatchLists(requestID, watchListsString, this);
+					_servletController.setWatchedVariables(requestID, watchListsString, this);
 				}
 				catch(GeppettoExecutionException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
 				}
 				catch(GeppettoInitializationException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
 				}
 
 				break;

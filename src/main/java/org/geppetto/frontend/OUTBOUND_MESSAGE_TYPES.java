@@ -70,7 +70,9 @@ public enum OUTBOUND_MESSAGE_TYPES {
 	SIMULATION_OVER("simulation_over"),
 	GET_MODEL_TREE("get_model_tree"),
 	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
-	WRITE_MODEL("write_model");
+	WRITE_MODEL("write_model"),
+	SET_PARAMETERS("set_parameters"),
+	NO_FEATURE("no_feature");
 	
 	private OUTBOUND_MESSAGE_TYPES(final String text) {
 		this.text = text;

@@ -92,6 +92,17 @@ define(function(require) {
 		getScalingFactor : function() {
 			return this.scalingFactor;
 		},
+		
+		/**
+		 * Sets Value for parameter node.
+		 */
+		setValue : function(value) {
+			var parameters = {};
+			parameters["instancePath"] = this.instancePath;
+			parameters["value"] = value;
+			GEPPETTO.MessageSocket.send("write_model",
+						parameters);
+		},
 
 		/**
 		 * Print out formatted node

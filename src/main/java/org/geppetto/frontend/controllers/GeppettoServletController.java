@@ -41,7 +41,9 @@ import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -869,5 +871,21 @@ public class GeppettoServletController
 	{
 		_connections.remove(visitor.getConnectionID());
 		postClosingConnectionCheck(visitor);
+	}
+
+	public void setParameters(String requestID, String modelPath, Map<String, String> parameters,
+			GeppettoMessageInbound visitor) {
+		
+		boolean parametersSet = visitor.getSimulationService().setParameters(modelPath,parameters);
+		
+		//return successful message if set parameter succeeded
+		if(parametersSet){
+			this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_PARAMETERS);
+		}else{
+			String message = "Model Service for " + modelPath 
+					+ " doesn't support SetParameters feature";
+			//no parameter feature supported by this model service
+			this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.NO_FEATURE,message);
+		}
 	}
 }

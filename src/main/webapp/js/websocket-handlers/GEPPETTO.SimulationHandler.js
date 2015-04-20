@@ -73,7 +73,9 @@ define(function(require) {
             CLEAR_WATCH: "clear_watch",
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
             SIMULATION_OVER : "simulation_over",
-            GET_MODEL_TREE : "get_model_tree"
+            GET_MODEL_TREE : "get_model_tree",
+            SET_PARAMETER : "set_parameter",
+            NO_FEATURE : "no_feature"
         };
 
         var messageHandler = {};
@@ -209,6 +211,17 @@ define(function(require) {
         	GEPPETTO.Console.executeCommand("Simulation.stop()");
         };
 
+      //handles the case where geppetto is done setting parameters
+        messageHandler[messageTypes.SET_PARAMETER] = function() {
+        	 GEPPETTO.trigger(Events.Simulation_stopped);
+        };
+        
+      //handles the case where service doesn't support feature and shows message
+        messageHandler[messageTypes.NO_FEATURE] = function() {
+            //Updates the simulation controls visibility
+        	GEPPETTO.FE.infoDialog(GEPPETTO.Resources.NO_FEATURE, payload.message);
+        };
+        
         //received model tree from server
         messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
         	var update = JSON.parse(payload.get_model_tree);      

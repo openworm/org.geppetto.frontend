@@ -57,7 +57,8 @@ public enum INBOUND_MESSAGE_TYPES {
 	IDLE_USER("idle_user"),
 	GET_MODEL_TREE("get_model_tree"),
 	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
-	WRITE_MODEL("write_model");
+	WRITE_MODEL("write_model"),
+	SET_PARAMETERS("set_parameters");
 
 	
 	private INBOUND_MESSAGE_TYPES(final String text) {

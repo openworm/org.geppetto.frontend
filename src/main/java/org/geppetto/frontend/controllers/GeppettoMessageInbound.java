@@ -305,6 +305,17 @@ public class GeppettoMessageInbound extends MessageInbound
 				_servletController.writeModel(requestID, parameters.get("instancePath"), parameters.get("format"), this);
 
 			}
+			case SET_PARAMETERS:
+			{
+				Map<String, String> parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				
+				String modelPath = parameters.get("model");
+				//remove model path from parameters map that was sent from server
+				parameters.remove(modelPath);
+				_servletController.setParameters(requestID,modelPath, parameters, this);
+			}
 			default:
 			{
 				// NOTE: no other messages expected for now

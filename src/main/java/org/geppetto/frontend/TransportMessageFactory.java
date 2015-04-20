@@ -139,6 +139,12 @@ public class TransportMessageFactory {
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case SET_PARAMETERS:
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SET_PARAMETERS.toString(), (update!=null) ? update : EMPTY_STRING));
+				break;
+			case NO_FEATURE:
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.NO_FEATURE.toString(), (update!=null) ? update : EMPTY_STRING));
+				break;
 			default:
 				break;
 		}

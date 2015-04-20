@@ -69,12 +69,6 @@ define(function(require) {
 			return this.properties;
 		},
 		
-		/**
-		 * Sets Value for parameter node.
-		 */
-		setValue : function(value) {
-			this.value = value;
-		},
 
 		watch : function(){
 			

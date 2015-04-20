@@ -143,6 +143,8 @@ define(function(require) {
 			WATCHED_SIMULATION_STATES: "You are currently watching the following states : \n",
 
 			EMPTY_WATCH_TREE: "There are no simulation states to watch",
+			
+			NO_FEATURE : "Service does not support feature",
 
 			/**
 			 * Object G resources

@@ -163,6 +163,7 @@ define(function(require) {
 							this.limit = timeSeries.length;
 							this.options.yaxis.max = this.yMax;
 							this.options.yaxis.min = this.yMin;
+							this.options.xaxis.show =true;
 							this.options.xaxis.max = this.limit;
 							this.options.series.downsample.threshold =1000;
 						}

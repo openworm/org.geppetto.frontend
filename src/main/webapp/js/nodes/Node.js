@@ -106,6 +106,28 @@ define([ 'jquery', 'underscore', 'backbone',
 			
 			getParent : function(){
 				return this.parent;
+			},
+			
+
+			getNodesByDomainType : function(domainType, node, matches) {
+				if (typeof matches === 'undefined') {
+					var matches = [];
+				}
+				if (typeof node === 'undefined') {
+					var node = this;
+				}
+				var dt = node.domainType;
+				if (dt === domainType) {
+					//console.log(node.name + ':' + dt)
+					matches.push(node)
+				}
+				if ('getChildren' in node) {
+					var children = node.getChildren()
+					for (ci in children) {
+						this.getNodesByDomainType(domainType, children[ci], matches);
+					}
+				}
+				return matches;
 			}
 		})
 	};

@@ -78,6 +78,10 @@ define(function(require) {
 					createButtonContent : function(button) {
 						return $('<span>')
 							.addClass(button.icon)
+							.attr('data-toogle', 'tooltip')
+							.attr('data-placement', 'bottom')
+							.attr('title', button.tooltip)
+							.attr('container', 'body')
 							.append(' ' + button.label)
 					},
 
@@ -137,7 +141,7 @@ define(function(require) {
 							},
 							"buttonThree" : {
 								"actions" : [ "G.addWidget(1).setMessage('hello from button 3')" ],
-								"icon" : "icon-glass",
+								"icon" : "gpt-ion-channel",
 								"label" : "3",
 								"tooltip" : "Thisisabutton"
 							}
@@ -162,6 +166,9 @@ define(function(require) {
 				renderBar: function(name, barObject){
 					this.setName(name);
 					this.setBody(this.BootstrapMenuMaker.generateToolbar(barObject));
+					$(function () {
+						  $('[data-toggle="tooltip"]').tooltip()
+						})
 				},
 				
 

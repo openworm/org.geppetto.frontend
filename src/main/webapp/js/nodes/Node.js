@@ -109,7 +109,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			},
 			
 
-			getNodesByDomainType : function(domainType, node, matches) {
+			getSubNodesByDomainType : function(domainType, node, matches) {
 				if (typeof matches === 'undefined') {
 					var matches = [];
 				}

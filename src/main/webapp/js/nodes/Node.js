@@ -124,7 +124,7 @@ define([ 'jquery', 'underscore', 'backbone',
 				if ('getChildren' in node) {
 					var children = node.getChildren()
 					for (ci in children) {
-						this.getNodesByDomainType(domainType, children[ci], matches);
+						this.getSubNodesByDomainType(domainType, children[ci], matches);
 					}
 				}
 				return matches;

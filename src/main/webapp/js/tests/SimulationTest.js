@@ -139,6 +139,13 @@ define(function(require) {
 							purkinje.electrical.getModelTree();
 							Simulation.setSimulationLoaded();
 							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_PARAMETER:
+							equal(purkinje.electrical.ModelTree.Cell.biophys.MembraneProperties.SpecificCapacitance_25.getValue(),3,"Testing Original Paramater value");
+							start();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.NO_FEATURE:
+							start();
+							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
 							var payload = JSON.parse(parsedServerMessage.data);
 							var update = JSON.parse(payload.get_model_tree);
@@ -151,8 +158,9 @@ define(function(require) {
 					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
 								equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree),false,"Test Model Tree Command");
 								notEqual(purkinje.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
-							}     	        	
-							start();
+							}
+							equal(purkinje.electrical.ModelTree.Cell.biophys.MembraneProperties.SpecificCapacitance_25.getValue(),4.64862,"Testing Original Paramater value");
+							purkinje.electrical.ModelTree.Cell.biophys.MembraneProperties.SpecificCapacitance_25.setValue(3);
 
 							break;
 						}

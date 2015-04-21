@@ -213,7 +213,7 @@ define(function(require) {
 
       //handles the case where geppetto is done setting parameters
         messageHandler[messageTypes.SET_PARAMETER] = function() {
-        	 GEPPETTO.trigger(Events.Simulation_stopped);
+        	 GEPPETTO.Console.log("Sucessfully updated parameters");
         };
         
       //handles the case where service doesn't support feature and shows message

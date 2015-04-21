@@ -97,6 +97,7 @@ define(function(require) {
 		 * Sets Value for parameter node.
 		 */
 		setValue : function(value) {
+			this.value = value;
 			var parameters = {};
 			parameters["instancePath"] = this.instancePath;
 			parameters["value"] = value;

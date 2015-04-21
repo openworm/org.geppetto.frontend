@@ -131,19 +131,19 @@ define(function(require) {
 										"GEPPETTO.Console.log('button1.action2')" ],
 								"icon" : "gpt-osb",
 								"label" : "1",
-								"tooltip" : "Thisisabutton"
+								"tooltip" : "This is a button"
 							},
 							"buttonTwo" : {
 								"actions" : [ "GEPPETTO.Console.log('button2.action1')" ],
 								"icon" : "gpt-pyramidal-cell",
 								"label" : "2",
-								"tooltip" : "Thisisanotherbutton"
+								"tooltip" : "This is another button"
 							},
 							"buttonThree" : {
 								"actions" : [ "G.addWidget(1).setMessage('hello from button 3')" ],
 								"icon" : "gpt-ion-channel",
 								"label" : "3",
-								"tooltip" : "Thisisabutton"
+								"tooltip" : "Yet another"
 							}
 						},
 						"buttonGroupTwo" : {
@@ -151,13 +151,13 @@ define(function(require) {
 								"actions" : [ "G.addWidget(1).setMessage('hello from button 4')" ],
 								"icon" : "gpt-make-group",
 								"label" : "four",
-								"tooltip" : "Thisisabutton"
+								"tooltip" : "And yet another..."
 							},
 							"buttonFive" : {
 								"actions" : [ "G.addWidget(1).setMessage('hello from The Worm')" ],
 								"icon" : "gpt-worm",
 								"label" : "five",
-								"tooltip" : "Thisisabutton"
+								"tooltip" : "OK, I'll stop now!"
 							}
 						}
 					}

@@ -40,7 +40,7 @@ public class DefaultMessageSenderConfig {
 	private boolean queuingEnabled = false;
 
 	/**
-	 * The maximum size of a processing or transmission queue. If the queue us full and
+	 * The maximum size of a processing or transmission queue. If the queue is full and
 	 * <code>discardMessagesIfQueueFull</code> is true then the oldest item is removed from the queue to make space
 	 * for the new item. If <code>discardMessagesIfQueueFull</code> is false then the calling thread runs the task
 	 * itself.
@@ -104,6 +104,7 @@ public class DefaultMessageSenderConfig {
 	}
 
 	public String toString() {
-		return String.format("queuing enabled = %b, compression enabled = %b", queuingEnabled, compressionEnabled);
+		return String.format("queuing enabled = %b, compression enabled = %b, discard messages if queue full = %b",
+							 queuingEnabled, compressionEnabled, discardMessagesIfQueueFull);
 	}
 }

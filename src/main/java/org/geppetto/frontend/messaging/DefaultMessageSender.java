@@ -91,16 +91,19 @@ public class DefaultMessageSender implements MessageSender {
 			if (config.getDiscardMessagesIfQueueFull()) {
 				rejectedExecutionHandler = new ThreadPoolExecutor.DiscardOldestPolicy();
 			} else {
-				rejectedExecutionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
+				rejectedExecutionHandler = new ThreadPoolExecutor.AbortPolicy();
 			}
 
 			preprocessorQueue = new ArrayBlockingQueue<>(config.getMaxQueueSize());
 
-			preprocessorExecutor = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, preprocessorQueue,
+			preprocessorExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, preprocessorQueue,
 														  rejectedExecutionHandler);
 
+			preprocessorExecutor.prestartAllCoreThreads();
+
 			senderQueue = new ArrayBlockingQueue<>(config.getMaxQueueSize());
-			senderExecutor = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, senderQueue, rejectedExecutionHandler);
+			senderExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, senderQueue, rejectedExecutionHandler);
+			senderExecutor.prestartAllCoreThreads();
 		}
 	}
 
@@ -133,12 +136,12 @@ public class DefaultMessageSender implements MessageSender {
 	@Override
 	public void sendMessage(String requestID, OUTBOUND_MESSAGE_TYPES type, String update) {
 
-		if (config.isQueuingEnabled()) {
-			preprocessorExecutor.execute(new Preprocessor(requestID, type, update));
+		try {
 
-		} else {
+			if (config.isQueuingEnabled()) {
+				submitTask(preprocessorExecutor, new Preprocessor(requestID, type, update));
 
-			try {
+			} else {
 
 				String message = preprocessMessage(requestID, type, update);
 
@@ -149,11 +152,11 @@ public class DefaultMessageSender implements MessageSender {
 					byte[] compressedMessage = CompressionUtils.gzipCompress(message);
 					new BinaryMessageSender(compressedMessage).run();
 				}
-
-			} catch (IOException e) {
-				logger.warn("failed to send binary message", e);
-				notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 			}
+
+		} catch (Exception e) {
+			logger.warn("failed to send binary message", e);
+			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 		}
 	}
 
@@ -172,6 +175,15 @@ public class DefaultMessageSender implements MessageSender {
 		logger.debug(String.format("created json in %dms", System.currentTimeMillis() - startTime));
 
 		return message;
+	}
+
+	private void submitTask(ThreadPoolExecutor executor, Runnable task) throws InterruptedException {
+
+		if (config.getDiscardMessagesIfQueueFull()) {
+			executor.execute(task);
+		} else {
+			executor.getQueue().put(task);
+		}
 	}
 
 	public DefaultMessageSenderConfig getConfig() {
@@ -253,14 +265,14 @@ public class DefaultMessageSender implements MessageSender {
 				String message = preprocessMessage(requestId, type, update);
 
 				if (!config.isCompressionEnabled() || message.length() < config.getMinMessageLengthForCompression()) {
-					senderExecutor.execute(new TextMessageSender(message));
+					submitTask(senderExecutor, new TextMessageSender(message));
 
 				} else {
 					byte[] compressedMessage = CompressionUtils.gzipCompress(message);
-					senderExecutor.execute(new BinaryMessageSender(compressedMessage));
+					submitTask(senderExecutor, new BinaryMessageSender(compressedMessage));
 				}
 
-			} catch (IOException e) {
+			} catch (Exception e) {
 				logger.warn("failed to process message before transmission", e);
 				notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 			}

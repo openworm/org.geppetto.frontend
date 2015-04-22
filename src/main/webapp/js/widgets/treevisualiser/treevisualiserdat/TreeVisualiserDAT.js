@@ -127,7 +127,8 @@ define(function(require) {
 				}
 			});
 
-			return "Metadata or variables to display added to tree visualiser";
+			//return "Metadata or variables to display added to tree visualiser";
+			return this;
 		},
 
 		/**

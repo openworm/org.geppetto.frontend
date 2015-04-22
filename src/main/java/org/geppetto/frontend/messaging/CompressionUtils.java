@@ -38,6 +38,9 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Some utilities for compressing strings and byte arrays via Gzip.
+ */
 public class CompressionUtils {
 
     private static Log logger = LogFactory.getLog(CompressionUtils.class);

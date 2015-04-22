@@ -44,7 +44,6 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
-import org.geppetto.core.model.simulation.Simulation;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
@@ -113,6 +112,7 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 	protected void onClose(int status)
 	{
 		_messageSender.shutdown();
+		_messageSender.removeListener(this);
 		_servletController.removeConnection(this);
 	}
 
@@ -320,6 +320,13 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 		_messageSender.sendMessage(requestID, type, update);
 	}
 
+	/**
+	 * Handle events from the message sender.
+	 *
+	 * If there's an error during message transmission then terminate connection.
+	 *
+	 * @param event event from the message sender.
+	 */
 	@Override
 	public void handleMessageSenderEvent(MessageSenderEvent event) {
 		if (event.getType().equals(MessageSenderEvent.Type.MESSAGE_SEND_FAILED)) {

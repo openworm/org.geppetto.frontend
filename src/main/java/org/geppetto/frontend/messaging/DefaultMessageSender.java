@@ -49,6 +49,23 @@ import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.TransportMessageFactory;
 
+/**
+ * <code>DefaultMessageSender</code> handles transmission of messages to a client via WebSockets.
+ *
+ * Messages are first processed and compressed in a separate worker thread. Processed messages are then handed off
+ * to another worker thread that delivers them via the WebSocket.
+ *
+ * Queuing (worker threads) and compression can be disabled. Without queuing DefaultMessageSender does not use
+ * worker threads and instead executes all tasks in the calling thread.
+ *
+ * Compression is done with gzip. The configuration parameter, <code>minMessageLengthForCompression</code> specifies
+ * the minimum message size for compression. Messages smaller than this size are not compressed.
+ *
+ * Configuration is maintained in {@link DefaultMessageSenderConfig}.
+ *
+ * {@link org.geppetto.frontend.controllers.GeppettoMessageInbound} loads the configuration via Spring from
+ * <code>app-config.xml</code>.
+ */
 public class DefaultMessageSender implements MessageSender {
 
 	private ArrayBlockingQueue<Runnable> preprocessorQueue;

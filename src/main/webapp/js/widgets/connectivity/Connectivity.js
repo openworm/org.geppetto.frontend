@@ -89,7 +89,8 @@ define(function(require) {
 			
 			this.createLayout();
 			
-			return "Metadata or variables added to connectivity widget";
+			//return "Metadata or variables added to connectivity widget";
+			return this;
 		},
 		
 		createDataFromConnections: function(){

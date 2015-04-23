@@ -32,6 +32,9 @@
  *******************************************************************************/
 package org.geppetto.frontend.messaging;
 
+import java.util.Set;
+import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+
 public class DefaultMessageSenderConfig {
 
 	/**
@@ -62,6 +65,12 @@ public class DefaultMessageSenderConfig {
 	 * The minimum message size for compression. Messages smaller than this size are not compressed.
 	 */
 	private int minMessageLengthForCompression = 20000;
+
+	/**
+	 * Message types that should be queued - and thus handled across multiple threads. All other message types
+	 * are handled on the calling thread.
+	 */
+	private Set<OUTBOUND_MESSAGE_TYPES> queuedMessageTypes;
 
 	public boolean isCompressionEnabled() {
 		return compressionEnabled;
@@ -101,6 +110,14 @@ public class DefaultMessageSenderConfig {
 
 	public void setMinMessageLengthForCompression(int minMessageLengthForCompression) {
 		this.minMessageLengthForCompression = minMessageLengthForCompression;
+	}
+
+	public Set<OUTBOUND_MESSAGE_TYPES> getQueuedMessageTypes() {
+		return queuedMessageTypes;
+	}
+
+	public void setQueuedMessageTypes(Set<OUTBOUND_MESSAGE_TYPES> queuedMessageTypes) {
+		this.queuedMessageTypes = queuedMessageTypes;
 	}
 
 	public String toString() {

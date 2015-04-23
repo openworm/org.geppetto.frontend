@@ -192,16 +192,18 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 			}
 			case START:
 			{
+				_messageSender.resumeQueuedMessaging();
 				_servletController.startSimulation(requestID, this);
 				break;
 			}
-			case PAUSE:
-			{
+			case PAUSE: {
+				_messageSender.pauseQueuedMessaging();
 				_servletController.pauseSimulation(requestID, this);
 				break;
 			}
 			case STOP:
 			{
+				_messageSender.pauseQueuedMessaging();
 				_servletController.stopSimulation(requestID, this);
 				break;
 			}
@@ -331,6 +333,7 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 	public void handleMessageSenderEvent(MessageSenderEvent event) {
 		if (event.getType().equals(MessageSenderEvent.Type.MESSAGE_SEND_FAILED)) {
 			_messageSender.shutdown();
+			_messageSender.removeListener(this);
 			_servletController.removeConnection(this);
 		}
 	}

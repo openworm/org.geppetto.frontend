@@ -53,15 +53,24 @@ import org.geppetto.frontend.TransportMessageFactory;
  * <code>DefaultMessageSender</code> handles transmission of messages to a client via WebSockets.
  *
  * Messages are first processed and compressed in a separate worker thread. Processed messages are then handed off
- * to another worker thread that delivers them via the WebSocket.
+ * to another (separate) worker thread that delivers the messages via the WebSocket.
  *
- * Queuing (worker threads) and compression can be disabled. Without queuing DefaultMessageSender does not use
+ * Each worker thread is backed by a blocking queue. One queue and thread provide messaging processing. The other queue
+ * and thread provide message transmission via the WebSocket.
+ *
+ * Queuing (and worker threads) and compression can be disabled. Without queuing DefaultMessageSender does not use
  * worker threads and instead executes all tasks in the calling thread.
+ *
+ * Only message types specified in the queuedMessageTypes configuration are placed in the queues. All other
+ * message types are processed and transmitted in the calling thread.
+ *
+ * Queued message processing and transmission can be paused and resumed. When paused, the worker threads simply
+ * remove tasks from the queue and throw them away.
  *
  * Compression is done with gzip. The configuration parameter, <code>minMessageLengthForCompression</code> specifies
  * the minimum message size for compression. Messages smaller than this size are not compressed.
  *
- * Configuration is maintained in {@link DefaultMessageSenderConfig}.
+ * Configuration is maintained in a separate class for convenience: {@link DefaultMessageSenderConfig}.
  *
  * {@link org.geppetto.frontend.controllers.GeppettoMessageInbound} loads the configuration via Spring from
  * <code>app-config.xml</code>.
@@ -75,6 +84,7 @@ public class DefaultMessageSender implements MessageSender {
 	private WsOutbound wsOutbound;
 	private Set<MessageSenderListener> listeners = new HashSet<>();
 	private DefaultMessageSenderConfig config = new DefaultMessageSenderConfig();
+	private boolean paused = false;
 
 	private static final Log logger = LogFactory.getLog(DefaultMessageSender.class);
 
@@ -107,6 +117,7 @@ public class DefaultMessageSender implements MessageSender {
 		}
 	}
 
+	@Override
 	public void shutdown() {
 		logger.info("Shutting down default message sender");
 		if (preprocessorExecutor != null) {
@@ -115,6 +126,26 @@ public class DefaultMessageSender implements MessageSender {
 		if (senderExecutor != null) {
 			senderExecutor.shutdownNow();
 		}
+	}
+
+	/**
+	 * Pause queued message transmission. This is a simple/crude way to maintain the responsiveness of the
+	 * user interface. This method sets a flag that causes the worker threads to simply dequeue tasks and throw
+	 * them away.
+	 *
+	 * Note that message types that don't utilize queueing are processed and transmitted normally regardless of
+	 * whether the message sender is paused or not.
+	 */
+	@Override
+	public void pauseQueuedMessaging() {
+		paused = true;
+		logger.debug("queued message processing and transmission has been paused");
+	}
+
+	@Override
+	public void resumeQueuedMessaging() {
+		paused = false;
+		logger.debug("queued message processing and transmission has been resumed");
 	}
 
 	@Override
@@ -134,29 +165,34 @@ public class DefaultMessageSender implements MessageSender {
 	}
 
 	@Override
-	public void sendMessage(String requestID, OUTBOUND_MESSAGE_TYPES type, String update) {
+	public void sendMessage(String requestID, OUTBOUND_MESSAGE_TYPES messageType, String update) {
 
 		try {
 
-			if (config.isQueuingEnabled()) {
-				submitTask(preprocessorExecutor, new Preprocessor(requestID, type, update));
+			if (config.isQueuingEnabled() && isQueuedMessageType(messageType)) {
+				submitTask(preprocessorExecutor, new Preprocessor(requestID, messageType, update));
 
 			} else {
-
-				String message = preprocessMessage(requestID, type, update);
-
-				if (!config.isCompressionEnabled() || message.length() < config.getMinMessageLengthForCompression()) {
-					new TextMessageSender(message).run();
-
-				} else {
-					byte[] compressedMessage = CompressionUtils.gzipCompress(message);
-					new BinaryMessageSender(compressedMessage).run();
-				}
+				sendMessageOnCallingThread(requestID, messageType, update);
 			}
 
 		} catch (Exception e) {
 			logger.warn("failed to send binary message", e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+		}
+	}
+
+	private void sendMessageOnCallingThread(String requestID, OUTBOUND_MESSAGE_TYPES messageType,
+											String update) throws IOException {
+
+		String message = preprocessMessage(requestID, messageType, update);
+
+		if (!config.isCompressionEnabled() || message.length() < config.getMinMessageLengthForCompression()) {
+			new TextMessageSender(message).run();
+
+		} else {
+			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
+			new BinaryMessageSender(compressedMessage).run();
 		}
 	}
 
@@ -186,6 +222,10 @@ public class DefaultMessageSender implements MessageSender {
 		}
 	}
 
+	private boolean isQueuedMessageType(OUTBOUND_MESSAGE_TYPES messageType) {
+		return config.getQueuedMessageTypes() != null && config.getQueuedMessageTypes().contains(messageType);
+	}
+
 	public DefaultMessageSenderConfig getConfig() {
 		return config;
 	}
@@ -203,6 +243,10 @@ public class DefaultMessageSender implements MessageSender {
 		}
 
 		public void run() {
+
+			if (paused) {
+				return;
+			}
 
 			try {
 
@@ -229,6 +273,10 @@ public class DefaultMessageSender implements MessageSender {
 		}
 
 		public void run() {
+
+			if (paused) {
+				return;
+			}
 
 			try {
 

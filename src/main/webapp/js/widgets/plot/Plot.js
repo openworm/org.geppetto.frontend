@@ -83,7 +83,7 @@ define(function(require) {
 					ShowAll : false
 				},
 				axisLabels : {
-					show : true
+					show : false
 				},
 				xaxes: [{
 		            axisLabel: 'Time',

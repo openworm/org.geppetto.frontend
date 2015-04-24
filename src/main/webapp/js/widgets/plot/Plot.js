@@ -85,9 +85,9 @@ define(function(require) {
 				axisLabels : {
 					show : false
 				},
-				xaxes: [{
-		            axisLabel: 'Time',
-		        }]
+//				xaxes: [{
+//		            axisLabel: 'Time',
+//		        }]
 			},
 
 			/**

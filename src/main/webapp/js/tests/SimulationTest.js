@@ -795,7 +795,7 @@ define(function(require) {
 								equal(sample.getAspects().length,1,"Aspects checked");
 								equal(jQuery.isEmptyObject(sample.fluid.VisualizationTree),false,"Test Visualization at load");
 								equal(jQuery.isEmptyObject(sample.fluid.ModelTree),false,"Test Model tree at load");
-								equal(jQuery.isEmptyObject(sample.fluid.SimulationTree),true, "Test Visualization tree at load");
+								equal(jQuery.isEmptyObject(sample.fluid.SimulationTree),false, "Test Simulation tree at load");
 								Simulation.setSimulationLoaded();
 								break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:

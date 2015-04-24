@@ -50,6 +50,7 @@ define(function(require) {
 		initialize: function() {
 			this.widgets = new Array();
 			
+			GEPPETTO.MenuManager.resetMap();
 			// Register Commands
 			GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
 			                                                 "AspectSubTreeNode",

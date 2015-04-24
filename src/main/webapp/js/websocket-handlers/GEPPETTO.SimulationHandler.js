@@ -197,6 +197,10 @@ define(function(require) {
         };
         
         messageHandler[messageTypes.GET_SIMULATION_TREE] = function(payload) {
+        	var initTime = new Date();
+        	
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
+           
         	var update = JSON.parse(payload.get_simulation_tree);      
         	for (var updateIndex in update){
 	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
@@ -205,6 +209,9 @@ define(function(require) {
 	        	//create client side simulation tree
 	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
         	}
+        	
+        	var endCreation = new Date() - initTime;
+            GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create simulation tree");
         };
         
 

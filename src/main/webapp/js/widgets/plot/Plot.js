@@ -70,7 +70,8 @@ define(function(require) {
 				xaxis: {
 					min: 0,
 					max: 20,
-					show: false
+					show: false,
+					ticks : []
 				},
 				grid: {
 					margin: {
@@ -78,6 +79,15 @@ define(function(require) {
 						bottom: 15
 					}
 				},
+				timeSteps : {
+					ShowAll : false
+				},
+				axisLabels : {
+					show : true
+				},
+				xaxes: [{
+		            axisLabel: 'Time',
+		        }]
 			},
 
 			/**
@@ -160,12 +170,18 @@ define(function(require) {
 						}
 						
 						if(timeSeries.length > 1){
-							this.limit = timeSeries.length;
-							this.options.yaxis.max = this.yMax;
-							this.options.yaxis.min = this.yMin;
-							this.options.xaxis.show =true;
-							this.options.xaxis.max = this.limit;
-							this.options.series.downsample.threshold =1000;
+							if(this.options.yaxis.max < this.yMax){
+								this.options.yaxis.max = this.yMax;
+							}
+							if(this.options.yaxis.min > this.yMin){
+								this.options.yaxis.min = this.yMin;
+							}
+							if(this.options.timeSteps.ShowAll == true){
+								this.limit = timeSeries.length;
+								this.options.xaxis.max = this.limit;
+								this.options.series.downsample.threshold =1000;
+								this.setSize(550,850);
+							}
 						}
 						this.datasets.push({
 							label : id,
@@ -386,7 +402,6 @@ define(function(require) {
 			 * @param {Object} options - options to modify the plot widget
 			 */
 			setOptions: function(options) {
-//				this.options = options;
 				this.options = $.extend({}, this.defaultPlotOptions, options);
 				if(this.options.xaxis != null) {
 					if(this.options.xaxis.max > this.limit) {

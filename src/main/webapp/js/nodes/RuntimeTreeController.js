@@ -156,7 +156,7 @@ define(function(require) {
 							var state = GEPPETTO.Simulation.simulationStates[index];
 							var received=eval("jsonRuntimeTree."+state);
 							var clientNode=eval(state);
-							clientNode.getTimeSeries().unshift()
+							clientNode.getTimeSeries().unshift();
 							
 							for (var index in received.timeSeries){
 								clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
@@ -298,14 +298,14 @@ define(function(require) {
 					//populate model tree with server nodes
 					this.createAspectSimulationTree(aspect.SimulationTree, simulationTree);
 
-					//notify user received tree was empty
-					if(aspect.SimulationTree.getChildren().length==0){
-						var indent = "    ";
-						GEPPETTO.Console.log(indent + GEPPETTO.Resources.EMPTY_SIMULATION_TREE);
-					}else{
-						GEPPETTO.Console.executeCommand(aspect.SimulationTree.instancePath + ".print()");
-						aspect.SimulationTree.print();
-					}
+//					//notify user received tree was empty
+//					if(aspect.SimulationTree.getChildren().length==0){
+//						var indent = "    ";
+//						GEPPETTO.Console.log(indent + GEPPETTO.Resources.EMPTY_SIMULATION_TREE);
+//					}else{
+//						GEPPETTO.Console.executeCommand(aspect.SimulationTree.instancePath + ".print()");
+//						aspect.SimulationTree.print();
+//					}
 					
 					this.simulationTreeCreated = true;
 				},

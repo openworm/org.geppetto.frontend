@@ -45,8 +45,7 @@ define(function(require) {
 		
 		var createTime = function(time) {
 			if(time) {
-				var timeNode = 
-					GEPPETTO.NodeFactory.createVariableNode(time);
+				var timeNode = GEPPETTO.NodeFactory.createVariableNode(time);
 				GEPPETTO.Simulation.time = timeNode;
 			}
 		};
@@ -63,17 +62,13 @@ define(function(require) {
             SIMULATION_STARTED: "simulation_started",
             SIMULATION_PAUSED: "simulation_paused",
             SIMULATION_STOPPED: "simulation_stopped",
-            LIST_WATCH_VARS: "list_watch_vars",
-            LIST_FORCE_VARS: "list_force_vars",
-            GET_WATCH_LISTS: "get_watch_lists",
             SIMULATOR_FULL: "simulator_full",
             SET_WATCH_VARS: "set_watch_vars",
-            START_WATCH: "start_watch",
-            STOP_WATCH: "stop_watch",
             CLEAR_WATCH: "clear_watch",
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
             SIMULATION_OVER : "simulation_over",
-            GET_MODEL_TREE : "get_model_tree"
+            GET_MODEL_TREE : "get_model_tree",
+            GET_SIMULATION_TREE : "get_simulation_tree"
         };
 
         var messageHandler = {};
@@ -168,23 +163,6 @@ define(function(require) {
             GEPPETTO.trigger('simulation:paused');
         };
 
-        messageHandler[messageTypes.LIST_WATCH_VARS] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_WATCH_VARS);
-            // TODO: format output
-            formatListVariableOutput(JSON.parse(payload.list_watch_vars).variables, 0);
-        };
-
-        messageHandler[messageTypes.LIST_FORCE_VARS] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_FORCE_VARS);
-            // TODO: format output
-            formatListVariableOutput(JSON.parse(payload.list_force_vars).variables, 0);
-        };
-
-        messageHandler[messageTypes.GET_WATCH_LISTS] = function(payload) {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LISTING_FORCE_VARS);
-            GEPPETTO.Console.log(payload.get_watch_lists);
-        };
-
         messageHandler[messageTypes.SIMULATOR_FULL] = function(payload) {
             GEPPETTO.FE.disableSimulationControls();
         	GEPPETTO.FE.infoDialog(GEPPETTO.Resources.SIMULATOR_FULL, payload.message);
@@ -192,14 +170,11 @@ define(function(require) {
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {
             //variables watching
-            var variables = JSON.parse(payload.get_watch_lists)[0].variablePaths;
-
-            var length = GEPPETTO.Simulation.simulationStates.length;
-
-            //create objects for the variables to watch
-            for(var v in variables) {
-                GEPPETTO.Simulation.simulationStates[length] = variables[v];
-                length++;
+            var variables = JSON.parse(payload.set_watch_vars)
+            
+            for (var index in variables){
+            	eval(variables[index]).watch();
+            	GEPPETTO.Simulation.simulationStates.push(variables[index]);
             }
         };
 
@@ -220,6 +195,25 @@ define(function(require) {
 	        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
         	}
         };
+        
+        messageHandler[messageTypes.GET_SIMULATION_TREE] = function(payload) {
+        	var initTime = new Date();
+        	
+            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
+           
+        	var update = JSON.parse(payload.get_simulation_tree);      
+        	for (var updateIndex in update){
+	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+	        	var simulationTree = update[updateIndex].simulationTree;
+	        	
+	        	//create client side simulation tree
+	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
+        	}
+        	
+        	var endCreation = new Date() - initTime;
+            GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create simulation tree");
+        };
+        
 
 		GEPPETTO.SimulationHandler = {
 			onMessage: function(parsedServerMessage) {

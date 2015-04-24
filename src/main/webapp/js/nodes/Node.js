@@ -36,7 +36,7 @@
  * @module nodes/Node
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define([ 'jquery', 'underscore', 'backbone',
+define([ 'jquery', 'underscore', 'backbone', 
 
 // Add requirement for Backbone-associations module
 
@@ -100,12 +100,35 @@ define([ 'jquery', 'underscore', 'backbone',
 				this.domainType = newDomainType;
 			},
 			
-			setParent : function(parent){
+			setParent : function(parent){	
 				this.parent = parent;
 			},
 			
 			getParent : function(){
 				return this.parent;
+			},
+			
+			_all: function(predicate, matches){
+				if (typeof matches === 'undefined') {
+					var matches = [];
+				}
+
+				if (predicate(this)) {
+					matches.push(this)
+				}
+
+				if ('getChildren' in this) {
+					var children = this.getChildren()
+					for (ci in children) {
+						this._all.call(children[ci], predicate, matches);
+					}
+				}
+
+				return matches;
+			},
+			
+			getSubNodesOfDomainType : function(dt) {
+				return this._all(function(n){return n.domainType === dt})
 			}
 		})
 	};

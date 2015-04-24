@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,37 +31,16 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-/**
- * Loads widget scripts
- *  
- * @author Jesus Martinez (jesus@metacell.us)
- */
-
-//Widget Classes
-define(function(require){
-	return function(GEPPETTO) {
-
-	require('widgets/WidgetFactory')(GEPPETTO);
-	require('widgets/WidgetsListener')(GEPPETTO);
-	require("widgets/WidgetUtility");
-	require("widgets/ContextMenu")(GEPPETTO);
-	//Plot Widget
-	require("widgets/plot/config");
-	//Popup Widget
-	require("widgets/popup/config");
-	//Scatter3d Widget
-	require("widgets/scatter3d/config");	
-	//TreeVisualiser DAT Widget
-	require("widgets/treevisualiser/treevisualiserdat/config");
-	//TreeVisualiser D3 Widget
-	require("widgets/treevisualiser/treevisualiserd3/config");
-	//VariableVisualiser widget
-	require("widgets/variablevisualiser/config");
-	//Connectivity Widget
-	require("widgets/connectivity/config");
-	//VariableVisualiser widget
-	require("widgets/buttonBar/config");
-
-	loadCss("assets/js/widgets/Widget.css");
-	};
-});
+/* 
+.bubar_body {
+    width: 100%;
+    height: 100%;
+    font-size: 32px;
+    font-weight: bold;
+    color: #287F86;
+    opacity: .6;
+    float: left;
+    text-align: center;
+    vertical-align: middle;
+    resize: both;
+} */

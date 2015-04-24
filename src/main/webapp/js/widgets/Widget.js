@@ -173,6 +173,60 @@ define(function(require) {
 			},
 
 			/**
+			 * @command setMinHeight(h)
+			 * @param {Integer} h - Minimum Height of the widget
+			 */
+			setMinHeight: function(h) {
+				$("#" + this.id).dialog('option', 'minHeight', h);
+				return this.name + " Widget's minimum height set to " +  h;
+			},
+
+			/**
+			 * @command setMinWidth(w)
+			 * @param {Integer} w - Minimum Width of the widget
+			 */
+			setMinWidth: function(w) {
+				$("#" + this.id).dialog('option', 'minWidth', w);
+				return this.name + " Widget's minimum width set to " +  w;
+			},
+
+			/**
+			 * @command setMinSize(h,w)
+			 * @param {Integer} h - Minimum Height of the widget
+			 * @param {Integer} w - Minimum Width of the widget
+			 */
+			setMinSize: function(h, w) {
+				this.setMinHeight(h);
+				this.setMinWidth(w);
+			},
+
+			/**
+			 * @command setResizable(true|false)
+			 * @param {Boolean} true|false - enables / disables resizability 
+			 */
+			setResizable: function(resize) {
+				$("#" + this.id).dialog('option', 'resizable', resize);
+				return this.name + " Widget resizability set to: " + resize;
+			},
+
+			/**
+			 * @command setAutoWidth()
+			 */
+			setAutoWidth: function() {
+				$("#" + this.id).dialog('option', 'width', 'auto');
+				return this.name + " Widget's width set to 'auto'";
+			},
+
+			/**
+			 * @command setAutoHeigth()
+			 */
+			setAutoHeight: function() {
+				$("#" + this.id).dialog('option', 'height', 'auto');
+				return this.name + " Widget's height set to 'auto'";
+			},
+
+
+			/**
 			 * Returns the position of the widget
 			 * @command getPosition()
 			 * @returns {Object} - Position of the widget

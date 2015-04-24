@@ -36,6 +36,7 @@
  * 
  * @module nodes/VariableNode
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
@@ -53,6 +54,7 @@ define(function(require) {
 			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.timeSeries = new Array();
+			this.watched = options.watched;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
 		},
@@ -60,11 +62,30 @@ define(function(require) {
 		/**
 		 * Get value of quantity
 		 * 
-		 * @command ParameterSpecificationNode.getValue()
+		 * @command VariableNode.getTimeSeries()
 		 * @returns {String} Value of quantity
 		 */
 		getTimeSeries : function() {
 			return this.timeSeries;
+		},
+
+		/**
+		 * Get watched
+		 * 
+		 * @command VariableNode.getWatched()
+		 * @returns {boolean} true if this variable is being watched
+		 */
+		getWatched : function() {
+			return this.watched;
+		},
+		
+		/**
+		 * Set watched to true
+		 * 
+		 * @command VariableNode.watch()
+		 */
+		watch : function() {
+			this.watched = true;
 		},
 
 		/**
@@ -75,7 +96,8 @@ define(function(require) {
 					+ "    InstancePath : " + this.instancePath + "\n"
 					+ "    Value : " + this.value + "\n" + "    Unit : "
 					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n";
+					+ this.scalingFactor + "\n" +
+					+ "    Watched : " + this.watched + "\n";
 		}
 	});
 });

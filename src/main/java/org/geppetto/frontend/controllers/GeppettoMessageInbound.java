@@ -199,48 +199,23 @@ public class GeppettoMessageInbound extends MessageInbound
 				_servletController.observeSimulation(requestID, this);
 				break;
 			}
-			case LIST_WATCH_VARS:
-			{
-				_servletController.listWatchableVariables(requestID, this);
-				break;
-			}
-			case LIST_FORCE_VARS:
-			{
-				_servletController.listForceableVariables(requestID, this);
-				break;
-			}
 			case SET_WATCH:
 			{
 				String watchListsString = gmsg.data;
 
 				try
 				{
-					_servletController.addWatchLists(requestID, watchListsString, this);
+					_servletController.setWatchedVariables(requestID, watchListsString, this);
 				}
 				catch(GeppettoExecutionException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
 				}
 				catch(GeppettoInitializationException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_ADDING_WATCH_LIST);
+					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
 				}
 
-				break;
-			}
-			case GET_WATCH:
-			{
-				_servletController.getWatchLists(requestID, this);
-				break;
-			}
-			case START_WATCH:
-			{
-				_servletController.startWatch(requestID, this);
-				break;
-			}
-			case STOP_WATCH:
-			{
-				_servletController.stopWatch(requestID, this);
 				break;
 			}
 			case CLEAR_WATCH:
@@ -258,6 +233,13 @@ public class GeppettoMessageInbound extends MessageInbound
 				String instancePath = gmsg.data;
 				
 				_servletController.getModelTree(requestID,instancePath,this);
+				break;
+			}
+			case GET_SIMULATION_TREE:
+			{
+				String instancePath = gmsg.data;
+				
+				_servletController.getSimulationTree(requestID,instancePath,this);
 				break;
 			}
 			case GET_SUPPORTED_OUTPUTS:

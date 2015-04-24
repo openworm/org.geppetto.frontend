@@ -712,7 +712,7 @@ define(function(require) {
 				}
 				else{
 					if (typeof data.getChildren === "function" && data.getChildren() != null){
-						var children = data.getChildren().models;
+						var children = data.getChildren();
 						if (children.length > 0){
 							for (var childIndex in children){
 								this.searchNodeByMetaType(children[childIndex], metaType, nodes);

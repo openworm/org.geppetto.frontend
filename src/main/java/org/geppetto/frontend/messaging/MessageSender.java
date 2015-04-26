@@ -38,7 +38,5 @@ public interface MessageSender {
 	void addListener(MessageSenderListener listener);
 	void removeListener(MessageSenderListener listener);
 	void sendMessage(String requestID, OUTBOUND_MESSAGE_TYPES type, String update);
-	void pauseQueuedMessaging();
-	void resumeQueuedMessaging();
 	void shutdown();
 }

@@ -49,7 +49,7 @@ import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.messaging.DefaultMessageSender;
-import org.geppetto.frontend.messaging.DefaultMessageSenderConfig;
+import org.geppetto.frontend.messaging.DefaultMessageSenderFactory;
 import org.geppetto.frontend.messaging.MessageSenderEvent;
 import org.geppetto.frontend.messaging.MessageSenderListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +87,7 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 	private boolean _isSimulationLoaded;
 
 	@Autowired
-	private DefaultMessageSenderConfig _defaultMessageSenderConfig;
+	private DefaultMessageSenderFactory _messageSenderFactory;
 
 	private DefaultMessageSender _messageSender;
 
@@ -102,8 +102,7 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 	@Override
 	protected void onOpen(WsOutbound outbound)
 	{
-		_messageSender = new DefaultMessageSender(getWsOutbound(), _defaultMessageSenderConfig);
-		_messageSender.addListener(this);
+		_messageSender = _messageSenderFactory.getMessageSender(getWsOutbound(), this);
 		_servletController.addConnection(this);
 		_messageSender.sendMessage(null, OUTBOUND_MESSAGE_TYPES.CLIENT_ID, this._client_id);
 	}
@@ -112,7 +111,6 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 	protected void onClose(int status)
 	{
 		_messageSender.shutdown();
-		_messageSender.removeListener(this);
 		_servletController.removeConnection(this);
 	}
 
@@ -154,6 +152,8 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 				{
 					url = new URL(urlString);
 					_servletController.load(requestID, urlString, this);
+					_messageSender.reset();
+					_messageSender.resumeQueuedMessaging();
 				}
 				catch(MalformedURLException e)
 				{
@@ -192,19 +192,22 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 			}
 			case START:
 			{
+				_messageSender.reset();
 				_messageSender.resumeQueuedMessaging();
 				_servletController.startSimulation(requestID, this);
 				break;
 			}
 			case PAUSE: {
 				_messageSender.pauseQueuedMessaging();
+				_messageSender.reset();
 				_servletController.pauseSimulation(requestID, this);
 				break;
 			}
 			case STOP:
 			{
-				_messageSender.pauseQueuedMessaging();
 				_servletController.stopSimulation(requestID, this);
+				_messageSender.pauseQueuedMessaging();
+				_messageSender.reset();
 				break;
 			}
 			case OBSERVE:

@@ -33,44 +33,38 @@
 package org.geppetto.frontend.messaging;
 
 import java.util.Set;
+import org.apache.catalina.websocket.WsOutbound;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
 
-public class DefaultMessageSenderConfig {
+public class DefaultMessageSenderFactory {
 
-	/**
-	 * If true then use worker threads for processing and transmission. If false then do everything on calling thread.
-	 */
 	private boolean queuingEnabled = false;
-
-	/**
-	 * The maximum size of a processing or transmission queue. If the queue is full and
-	 * <code>discardMessagesIfQueueFull</code> is true then the oldest item is removed from the queue to make space
-	 * for the new item. If <code>discardMessagesIfQueueFull</code> is false then the calling thread runs the task
-	 * itself.
-	 */
 	private int maxQueueSize = 5;
-
-	/**
-	 * If true and a queue is full then discard the oldest task to make room for the new task. If false then run
-	 * the task in the calling thread.
-	 */
 	private boolean discardMessagesIfQueueFull = true;
-
-	/**
-	 * If true then compress messages.
-	 */
 	private boolean compressionEnabled = false;
-
-	/**
-	 * The minimum message size for compression. Messages smaller than this size are not compressed.
-	 */
 	private int minMessageLengthForCompression = 20000;
-
-	/**
-	 * Message types that should be queued - and thus handled across multiple threads. All other message types
-	 * are handled on the calling thread.
-	 */
 	private Set<OUTBOUND_MESSAGE_TYPES> queuedMessageTypes;
+
+	public DefaultMessageSender getMessageSender(WsOutbound wsOutbound, MessageSenderListener listener) {
+
+		DefaultMessageSender messageSender = new DefaultMessageSender();
+		messageSender.addListener(listener);
+
+		messageSender.setQueuingEnabled(queuingEnabled);
+		messageSender.setMaxQueueSize(maxQueueSize);
+		messageSender.setDiscardMessagesIfQueueFull(discardMessagesIfQueueFull);
+		messageSender.setCompressionEnabled(compressionEnabled);
+		messageSender.setMinMessageLengthForCompression(minMessageLengthForCompression);
+		messageSender.setQueuedMessageTypes(queuedMessageTypes);
+
+		messageSender.initialize(wsOutbound);
+
+		return messageSender;
+	}
+
+	private boolean isQueuedMessageType(OUTBOUND_MESSAGE_TYPES messageType) {
+		return queuedMessageTypes != null && queuedMessageTypes.contains(messageType);
+	}
 
 	public boolean isCompressionEnabled() {
 		return compressionEnabled;
@@ -118,10 +112,5 @@ public class DefaultMessageSenderConfig {
 
 	public void setQueuedMessageTypes(Set<OUTBOUND_MESSAGE_TYPES> queuedMessageTypes) {
 		this.queuedMessageTypes = queuedMessageTypes;
-	}
-
-	public String toString() {
-		return String.format("queuing enabled = %b, compression enabled = %b, discard messages if queue full = %b",
-							 queuingEnabled, compressionEnabled, discardMessagesIfQueueFull);
 	}
 }

@@ -70,49 +70,86 @@ import org.geppetto.frontend.TransportMessageFactory;
  * Compression is done with gzip. The configuration parameter, <code>minMessageLengthForCompression</code> specifies
  * the minimum message size for compression. Messages smaller than this size are not compressed.
  *
- * Configuration is maintained in a separate class for convenience: {@link DefaultMessageSenderConfig}.
- *
  * {@link org.geppetto.frontend.controllers.GeppettoMessageInbound} loads the configuration via Spring from
  * <code>app-config.xml</code>.
  */
 public class DefaultMessageSender implements MessageSender {
 
+	/**
+	 * If true then use worker threads for processing and transmission. If false then do everything on calling thread.
+	 */
+	private boolean queuingEnabled = false;
+
+	/**
+	 * The maximum size of a processing or transmission queue. If the queue is full and
+	 * <code>discardMessagesIfQueueFull</code> is true then the oldest item is removed from the queue to make space
+	 * for the new item. If <code>discardMessagesIfQueueFull</code> is false then the calling thread runs the task
+	 * itself.
+	 */
+	private int maxQueueSize = 5;
+
+	/**
+	 * If true and a queue is full then discard the oldest task to make room for the new task. If false then run
+	 * the task in the calling thread.
+	 */
+	private boolean discardMessagesIfQueueFull = true;
+
+	/**
+	 * If true then compress messages.
+	 */
+	private boolean compressionEnabled = false;
+
+	/**
+	 * The minimum message size for compression. Messages smaller than this size are not compressed.
+	 */
+	private int minMessageLengthForCompression = 20000;
+
+	/**
+	 * Message types that should be queued - and thus handled across multiple threads. All other message types
+	 * are handled on the calling thread.
+	 */
+	private Set<OUTBOUND_MESSAGE_TYPES> queuedMessageTypes;
+
 	private ArrayBlockingQueue<Runnable> preprocessorQueue;
-	private ThreadPoolExecutor preprocessorExecutor;
+	private PausableThreadPoolExecutor preprocessorExecutor;
 	private ArrayBlockingQueue<Runnable> senderQueue;
-	private ThreadPoolExecutor senderExecutor;
+	private PausableThreadPoolExecutor senderExecutor;
 	private WsOutbound wsOutbound;
 	private Set<MessageSenderListener> listeners = new HashSet<>();
-	private DefaultMessageSenderConfig config = new DefaultMessageSenderConfig();
-	private boolean paused = false;
 
 	private static final Log logger = LogFactory.getLog(DefaultMessageSender.class);
 
-	public DefaultMessageSender(WsOutbound wsOutbound, DefaultMessageSenderConfig config) {
+	public DefaultMessageSender() {
+	}
 
-		this.config = config;
-		logger.info("Creating default message sender - " + config);
+	public void initialize(WsOutbound wsOutbound) {
+
+		logger.info(String.format("Initializing default message sender - queuing = %b, compression = %b",
+								  queuingEnabled, compressionEnabled));
+
 		this.wsOutbound = wsOutbound;
 
-		if (config.isQueuingEnabled()) {
+		if (queuingEnabled) {
 
 			RejectedExecutionHandler rejectedExecutionHandler;
 
-			if (config.getDiscardMessagesIfQueueFull()) {
+			if (discardMessagesIfQueueFull) {
 				rejectedExecutionHandler = new ThreadPoolExecutor.DiscardOldestPolicy();
 			} else {
 				rejectedExecutionHandler = new ThreadPoolExecutor.AbortPolicy();
 			}
 
-			preprocessorQueue = new ArrayBlockingQueue<>(config.getMaxQueueSize());
+			preprocessorQueue = new ArrayBlockingQueue<>(maxQueueSize);
 
-			preprocessorExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, preprocessorQueue,
+			preprocessorExecutor = new PausableThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, preprocessorQueue,
 														  rejectedExecutionHandler);
 
 			preprocessorExecutor.prestartAllCoreThreads();
 
-			senderQueue = new ArrayBlockingQueue<>(config.getMaxQueueSize());
-			senderExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, senderQueue, rejectedExecutionHandler);
+			senderQueue = new ArrayBlockingQueue<>(maxQueueSize);
+
+			senderExecutor = new PausableThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, senderQueue,
+															rejectedExecutionHandler);
 			senderExecutor.prestartAllCoreThreads();
 		}
 	}
@@ -120,6 +157,7 @@ public class DefaultMessageSender implements MessageSender {
 	@Override
 	public void shutdown() {
 		logger.info("Shutting down default message sender");
+		listeners = new HashSet<>();
 		if (preprocessorExecutor != null) {
 			preprocessorExecutor.shutdownNow();
 		}
@@ -136,16 +174,28 @@ public class DefaultMessageSender implements MessageSender {
 	 * Note that message types that don't utilize queueing are processed and transmitted normally regardless of
 	 * whether the message sender is paused or not.
 	 */
-	@Override
+//	@Override
 	public void pauseQueuedMessaging() {
-		paused = true;
-		logger.debug("queued message processing and transmission has been paused");
+		if (queuingEnabled) {
+			senderExecutor.setPaused(true);
+			preprocessorExecutor.setPaused(true);
+		}
 	}
 
-	@Override
 	public void resumeQueuedMessaging() {
-		paused = false;
-		logger.debug("queued message processing and transmission has been resumed");
+		if (queuingEnabled) {
+			preprocessorExecutor.setPaused(false);
+			senderExecutor.setPaused(false);
+		}
+	}
+
+	public void reset() {
+
+		if (queuingEnabled) {
+			preprocessorQueue.clear();
+			senderQueue.clear();
+			logger.debug("purged queues");
+		}
 	}
 
 	@Override
@@ -169,11 +219,11 @@ public class DefaultMessageSender implements MessageSender {
 
 		try {
 
-			if (config.isQueuingEnabled() && isQueuedMessageType(messageType)) {
+			if (queuingEnabled && isQueuedMessageType(messageType)) {
 				submitTask(preprocessorExecutor, new Preprocessor(requestID, messageType, update));
 
 			} else {
-				sendMessageOnCallingThread(requestID, messageType, update);
+				preprocessAndSendMessage(requestID, messageType, update);
 			}
 
 		} catch (Exception e) {
@@ -182,17 +232,37 @@ public class DefaultMessageSender implements MessageSender {
 		}
 	}
 
-	private void sendMessageOnCallingThread(String requestID, OUTBOUND_MESSAGE_TYPES messageType,
-											String update) throws IOException {
+	private void preprocessAndSendMessage(String requestID, OUTBOUND_MESSAGE_TYPES messageType,
+										  String update) throws IOException {
 
 		String message = preprocessMessage(requestID, messageType, update);
 
-		if (!config.isCompressionEnabled() || message.length() < config.getMinMessageLengthForCompression()) {
-			new TextMessageSender(message).run();
+		if (!compressionEnabled || message.length() < minMessageLengthForCompression) {
+			sendTextMessage(message);
 
 		} else {
 			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
-			new BinaryMessageSender(compressedMessage).run();
+			sendBinaryMessage(compressedMessage);
+		}
+	}
+
+	private void preprocessMessageAndEnqueue(String requestId, OUTBOUND_MESSAGE_TYPES messageType, String update) {
+
+		try {
+
+			String message = preprocessMessage(requestId, messageType, update);
+
+			if (!compressionEnabled || message.length() < minMessageLengthForCompression) {
+				submitTask(senderExecutor, new TextMessageSender(message));
+
+			} else {
+				byte[] compressedMessage = CompressionUtils.gzipCompress(message);
+				submitTask(senderExecutor, new BinaryMessageSender(compressedMessage));
+			}
+
+		} catch (Exception e) {
+			logger.warn("failed to process message before transmission", e);
+			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 		}
 	}
 
@@ -215,23 +285,108 @@ public class DefaultMessageSender implements MessageSender {
 
 	private void submitTask(ThreadPoolExecutor executor, Runnable task) throws InterruptedException {
 
-		if (config.getDiscardMessagesIfQueueFull()) {
+		if (discardMessagesIfQueueFull) {
 			executor.execute(task);
 		} else {
 			executor.getQueue().put(task);
 		}
 	}
 
+	private void sendTextMessage(String message) {
+
+		try {
+
+			long startTime = System.currentTimeMillis();
+			CharBuffer buffer = CharBuffer.wrap(message);
+			wsOutbound.writeTextMessage(buffer);
+
+			logger.info(String.format("%dms were spent sending a message of %dKB to the client",
+									  System.currentTimeMillis() - startTime, message.length() / 1024));
+
+		} catch (IOException e) {
+			logger.warn("failed to send message", e);
+			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+		}
+	}
+
+	private void sendBinaryMessage(byte[] message) {
+
+		try {
+
+			long startTime = System.currentTimeMillis();
+			ByteBuffer buffer = ByteBuffer.wrap(message);
+			wsOutbound.writeBinaryMessage(buffer);
+
+			logger.info(String.format("%d ms were spent sending a binary/compressed message of %dKB to the client",
+									  System.currentTimeMillis() - startTime, message.length / 1024));
+
+		} catch (IOException e) {
+			logger.warn("failed to send binary message", e);
+			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+		}
+	}
+
 	private boolean isQueuedMessageType(OUTBOUND_MESSAGE_TYPES messageType) {
-		return config.getQueuedMessageTypes() != null && config.getQueuedMessageTypes().contains(messageType);
+		return queuedMessageTypes != null && queuedMessageTypes.contains(messageType);
 	}
 
-	public DefaultMessageSenderConfig getConfig() {
-		return config;
+	public boolean isCompressionEnabled() {
+		return compressionEnabled;
 	}
 
-	public void setConfig(DefaultMessageSenderConfig config) {
-		this.config = config;
+	public void setCompressionEnabled(boolean compressionEnabled) {
+		this.compressionEnabled = compressionEnabled;
+	}
+
+	public boolean isQueuingEnabled() {
+		return queuingEnabled;
+	}
+
+	public void setQueuingEnabled(boolean queuingEnabled) {
+
+		this.queuingEnabled = queuingEnabled;
+
+		if (!queuingEnabled) {
+
+			if (preprocessorQueue != null) {
+				preprocessorQueue.clear();
+			}
+			if (senderQueue != null) {
+				senderQueue.clear();
+			}
+		}
+	}
+
+	public int getMaxQueueSize() {
+		return maxQueueSize;
+	}
+
+	public void setMaxQueueSize(int maxQueueSize) {
+		this.maxQueueSize = maxQueueSize;
+	}
+
+	public boolean getDiscardMessagesIfQueueFull() {
+		return discardMessagesIfQueueFull;
+	}
+
+	public void setDiscardMessagesIfQueueFull(boolean discardMessagesIfQueueFull) {
+		this.discardMessagesIfQueueFull = discardMessagesIfQueueFull;
+	}
+
+	public int getMinMessageLengthForCompression() {
+		return minMessageLengthForCompression;
+	}
+
+	public void setMinMessageLengthForCompression(int minMessageLengthForCompression) {
+		this.minMessageLengthForCompression = minMessageLengthForCompression;
+	}
+
+	public Set<OUTBOUND_MESSAGE_TYPES> getQueuedMessageTypes() {
+		return queuedMessageTypes;
+	}
+
+	public void setQueuedMessageTypes(Set<OUTBOUND_MESSAGE_TYPES> queuedMessageTypes) {
+		this.queuedMessageTypes = queuedMessageTypes;
 	}
 
 	private class TextMessageSender implements Runnable {
@@ -243,24 +398,7 @@ public class DefaultMessageSender implements MessageSender {
 		}
 
 		public void run() {
-
-			if (paused) {
-				return;
-			}
-
-			try {
-
-				long startTime = System.currentTimeMillis();
-				CharBuffer buffer = CharBuffer.wrap(message);
-				wsOutbound.writeTextMessage(buffer);
-
-				logger.info(String.format("%dms were spent sending a message of %dKB to the client",
-										  System.currentTimeMillis() - startTime, message.length() / 1024));
-
-			} catch (IOException e) {
-				logger.warn("failed to send message", e);
-				notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
-			}
+			sendTextMessage(message);
 		}
 	}
 
@@ -273,24 +411,7 @@ public class DefaultMessageSender implements MessageSender {
 		}
 
 		public void run() {
-
-			if (paused) {
-				return;
-			}
-
-			try {
-
-				long startTime = System.currentTimeMillis();
-				ByteBuffer buffer = ByteBuffer.wrap(message);
-				wsOutbound.writeBinaryMessage(buffer);
-
-				logger.info(String.format("%d ms were spent sending a binary/compressed message of %dKB to the client",
-										  System.currentTimeMillis() - startTime, message.length / 1024));
-
-			} catch (IOException e) {
-				logger.warn("failed to send binary message", e);
-				notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
-			}
+			sendBinaryMessage(message);
 		}
 	}
 
@@ -307,23 +428,7 @@ public class DefaultMessageSender implements MessageSender {
 		}
 
 		public void run() {
-
-			try {
-
-				String message = preprocessMessage(requestId, type, update);
-
-				if (!config.isCompressionEnabled() || message.length() < config.getMinMessageLengthForCompression()) {
-					submitTask(senderExecutor, new TextMessageSender(message));
-
-				} else {
-					byte[] compressedMessage = CompressionUtils.gzipCompress(message);
-					submitTask(senderExecutor, new BinaryMessageSender(compressedMessage));
-				}
-
-			} catch (Exception e) {
-				logger.warn("failed to process message before transmission", e);
-				notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
-			}
+			preprocessMessageAndEnqueue(requestId, type, update);
 		}
 	}
 }

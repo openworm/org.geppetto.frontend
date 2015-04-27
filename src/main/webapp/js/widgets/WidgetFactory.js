@@ -43,6 +43,7 @@ define(function(require) {
 	TreeVisualiserControllerD3 = require('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
 	TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
 	VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
+	ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
 	
 	return function(GEPPETTO) {
 		
@@ -61,7 +62,8 @@ define(function(require) {
 			TREEVISUALISERDAT: 3,
 			TREEVISUALISERD3: 4,
 			VARIABLEVISUALISER: 5,
-			CONNECTIVITY: 6
+			CONNECTIVITY: 6,
+			BUTTONBAR: 7 
 		};
 
 		/**
@@ -74,6 +76,7 @@ define(function(require) {
 			connectivityController : null,
 			scatter3dController : null,
 			variableVisController : null,
+			ButtonBarController : null,
 			treeVisDatController : null,
 			treeVis3DController : null,
 			/**
@@ -112,6 +115,10 @@ define(function(require) {
 					//create connectivity widget
 					case GEPPETTO.Widgets.CONNECTIVITY:
 						widget = this.getController(GEPPETTO.Widgets.CONNECTIVITY).addConnectivityWidget();
+						break;						
+					//create button bar
+					case GEPPETTO.Widgets.BUTTONBAR:
+						widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget();
 						break;						
 					default:
 						break;
@@ -152,10 +159,14 @@ define(function(require) {
 					case GEPPETTO.Widgets.VARIABLEVISUALISER:
 						this.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).removeVariableVisualiserWidgets();
 						return GEPPETTO.Resources.REMOVE_VARIABLEVISUALISER_WIDGETS;
-						//create connectivity widget
+					//remove connectivity widget
 					case GEPPETTO.Widgets.CONNECTIVITY:
 						this.getController(GEPPETTO.Widgets.CONNECTIVITY).removeConnectivityWidget();
 						return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
+					//remove button bar widget from geppetto
+					case GEPPETTO.Widgets.BUTTONBAR:
+						this.getController(GEPPETTO.Widgets.BUTTONBAR).removeButtonBarWidget();
+						return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
 				}
@@ -185,7 +196,8 @@ define(function(require) {
 						this.treeVisDatController = new TreeVisualiserControllerDAT();
 					}
 					return this.treeVisDatController;
-				}else if(type == GEPPETTO.Widgets.TREEVISUALISERD3){
+				}
+				else if(type == GEPPETTO.Widgets.TREEVISUALISERD3){
 					if(this.treeVis3DController == null || undefined){
 						this.treeVis3DController = new TreeVisualiserControllerD3();
 					}
@@ -196,11 +208,18 @@ define(function(require) {
 						this.variableVisController = new VariableVisualizerController();
 					}
 					return this.variableVisController;
-				}else if(type == GEPPETTO.Widgets.CONNECTIVITY){
+				}
+				else if(type == GEPPETTO.Widgets.CONNECTIVITY){
 					if(this.connectivityController == null || undefined){
 						this.connectivityController = new ConnectivityController();
 					}
 					return this.connectivityController;
+				}
+				else if(type == GEPPETTO.Widgets.BUTTONBAR){
+					if(this.buttonBarController == null || undefined){
+						this.buttonBarController = new ButtonBarController();
+					}
+					return this.buttonBarController;
 				}
 				
 			}

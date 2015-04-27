@@ -200,7 +200,7 @@ define(function(require) {
 
 					// node is always an array of variables
 					for(var i in node) {
-						if(typeof node[i] === "object" && node[i]!=null && i!= "attributes") {
+						if(typeof node[i] === "object" && node[i]!=null && i!= "attributes" && i!="parent") {
 							var type = node[i]._metaType;
 
 							if(node[i] instanceof Array){
@@ -231,6 +231,7 @@ define(function(require) {
 						}
 					}
 					return formattedNode;
+					
 				},
 				
 				/**

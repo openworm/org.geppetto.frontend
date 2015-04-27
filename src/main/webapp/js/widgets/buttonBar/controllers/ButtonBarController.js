@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -30,42 +30,65 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Controller class for the button bar widget.
+ *
+ * @author borismarin 
+ */
 define(function(require) {
-	return function(GEPPETTO) {
-		
-		var commandsProviders = {};
-		
-		/**
-		 * @class GEPPETTO.MenuManager
-		 */
-		GEPPETTO.MenuManager = {
-				
-		    resetMap : function(){
-		    	commandsProviders = {};
-		    },
-			registerNewCommandProvider: function(nodeTypes, handler) {
-				for (var nodeTypeKey in nodeTypes){
-					nodeType = nodeTypes[nodeTypeKey];
-					commandsItem = [];
-					if (nodeType in commandsProviders){
-						commandsItem = commandsProviders[nodeType];
-					}
-					commandsItem.push(handler);	
-					commandsProviders[nodeType] = commandsItem;
-				}
-			},
-			
-			
-			getCommandsProvidersFor: function(nodeType) {
-				var commandsProvidersForNodeType = [];
-				if (nodeType in commandsProviders){
-					commandsProvidersForNodeType = commandsProviders[nodeType];
-				}
-				return commandsProvidersForNodeType;
-			}
-			
-			
 
-		};
-	}
+	var AWidgetController = require('widgets/AWidgetController');
+	var BuBar = require('widgets/buttonBar/ButtonBar');
+
+	/**
+	 * @exports Widgets/ButtonBar/ButtonBarController
+	 */
+	return AWidgetController.View.extend ({
+
+		initialize: function() {
+			this.widgets = new Array();
+		},
+
+		/**
+		 * Creates new button bar widget
+		 */
+		addButtonBarWidget: function() {
+			//look for a name and id for the new widget
+			var id = this.getAvailableWidgetId("ButtonBar", this.widgets);
+			var name = id;
+			var vv = window[name] = new BuBar({id:id, name:name,visible:true});
+			vv.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+			this.widgets.push(vv);
+
+			GEPPETTO.WidgetsListener.subscribe(this, id);
+
+			//updates help command options
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/buttonBar/ButtonBar.js", vv, id);
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(vv.getId(),vv);
+			return vv;
+		},
+
+		/**
+		 * Receives updates from widget listener class to update Button Bar widget(s)
+		 *
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+		 */
+		update: function(event) {
+			//delete a widget(s)
+			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
+			}
+
+			//reset widget's datasets
+			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+				//pass
+			}
+
+			//update widgets
+			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+				//pass
+			}
+		}
+	});
 });

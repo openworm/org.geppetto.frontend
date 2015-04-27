@@ -51,6 +51,7 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.simulation.IProjectManager;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
@@ -85,6 +86,9 @@ public class GeppettoMessageInbound extends MessageInbound
 
 	@Autowired
 	private ISimulation _simulationService;
+
+	@Autowired
+	private IProjectManager _projectManager;
 
 	private GeppettoServletController _servletController;
 	private final String _client_id;
@@ -155,7 +159,7 @@ public class GeppettoMessageInbound extends MessageInbound
 					url = new URL(jsonUrlString);
 					BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 					IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
-					_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
+					_servletController.load(requestID, _projectManager.getGeppettoModelUrl(geppettoProject), this);
 				}
 				catch(IOException e)
 				{
@@ -170,7 +174,7 @@ public class GeppettoMessageInbound extends MessageInbound
 				try
 				{
 					IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(idString));
-					_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
+					_servletController.load(requestID, _projectManager.getGeppettoModelUrl(geppettoProject), this);
 				}
 				catch(NumberFormatException e)
 				{
@@ -182,7 +186,7 @@ public class GeppettoMessageInbound extends MessageInbound
 			{
 				String simulation = gmsg.data;
 				IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), simulation);
-				_servletController.load(requestID, getGeppettoModelUrl(geppettoProject), this);
+				_servletController.load(requestID, _projectManager.getGeppettoModelUrl(geppettoProject), this);
 				break;
 			}
 			case RUN_SCRIPT:
@@ -267,8 +271,8 @@ public class GeppettoMessageInbound extends MessageInbound
 			case GET_SIMULATION_TREE:
 			{
 				String instancePath = gmsg.data;
-				
-				_servletController.getSimulationTree(requestID,instancePath,this);
+
+				_servletController.getSimulationTree(requestID, instancePath, this);
 				break;
 			}
 			case GET_SUPPORTED_OUTPUTS:
@@ -292,11 +296,11 @@ public class GeppettoMessageInbound extends MessageInbound
 				Map<String, String> parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
-				
+
 				String modelPath = parameters.get("model");
-				//remove model path from parameters map that was sent from server
+				// remove model path from parameters map that was sent from server
 				parameters.remove(modelPath);
-				_servletController.setParameters(requestID,modelPath, parameters, this);
+				_servletController.setParameters(requestID, modelPath, parameters, this);
 			}
 			default:
 			{
@@ -317,23 +321,6 @@ public class GeppettoMessageInbound extends MessageInbound
 			}
 		});
 		return builder.create();
-	}
-
-	private String getGeppettoModelUrl(IGeppettoProject project)
-	{
-		if(project != null)
-		{
-			// this could be null when loaded from a json that may not include the model part
-			if(project.getGeppettoModel() == null)
-			{
-				project = DataManagerHelper.getDataManager().getGeppettoProjectById(project.getId());
-			}
-			if(project.getGeppettoModel() != null)
-			{
-				return project.getGeppettoModel().getUrl();
-			}
-		}
-		return "";
 	}
 
 	public String getConnectionID()

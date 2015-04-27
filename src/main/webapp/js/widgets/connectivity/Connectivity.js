@@ -142,7 +142,7 @@ define(function(require) {
 		},
 		
 		createLayout: function(){
-			$("svg").remove();
+			$('#' + this.id + " svg").remove();
 			
 			this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
 			this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;

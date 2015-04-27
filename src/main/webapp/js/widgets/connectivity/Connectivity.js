@@ -93,6 +93,7 @@ define(function(require) {
 			return this;
 		},
 		
+		
 		createDataFromConnections: function(){
 			if (this.dataset["root"]._metaType == "EntityNode"){
 				var subEntities = this.dataset["root"].getEntities();
@@ -124,7 +125,7 @@ define(function(require) {
 									var customNodesChildren = customNodes[customNodeIndex].getChildren();
 									for (var customNodeChildIndex in customNodesChildren){
 										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
-											linkItem["synapse_type"] = customNodesChildren[customNodeChildIndex].getValue();
+											linkItem["linkType"] = customNodesChildren[customNodeChildIndex].getValue();
 										}
 										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
 											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
@@ -161,17 +162,20 @@ define(function(require) {
 		},
 		
 		createForceLayout: function(){
-//		    var scolor = d3.scale.category20().domain(["Acetylcholine","Acetylcholine_Tyramine",
-//		                                          "Dopamine","FMRFamide","GABA","Generic_GJ",
-//		                                          "Glutamate", "Octopamine", "Serotonin",
-//		                                          "Serotonin_Acetylcholine","Serotonin_Glutamate"]);
+
 			var legendRectSize = 20;
 			var legendSpacing = 4;
 			var sizeLegend = {width: 120};
 			var legendPos = this.options.innerWidth - sizeLegend.width;
 			
-		    var scolor = d3.scale.category20();
-		    var ncolor = d3.scale.category10();
+			//TODO: 20 categories hardcoded in color scales
+		    var linkTypeScale = d3.scale.category20()
+		    				.domain(_.pluck(this.dataset.links, 'linkType'));
+		    var nodeTypeScale = d3.scale.category20()
+		    				.domain(_.pluck(this.dataset.links, 'nodeType'));
+		    var weightScale = d3.scale.linear()
+		    				.domain(d3.extent(_.pluck(this.dataset.links, 'weight').map(parseFloat)))
+		    				.range([0,5]);
 			
 		    this.force = d3.layout.force()
 		        .charge(-250)
@@ -187,8 +191,8 @@ define(function(require) {
 	            .data(this.dataset.links)
 	            .enter().append("line")
 	            .attr("class", "link")
-	            .style("stroke", function(d) {return scolor(d.synapse_type);})
-	            .style("stroke-width", function(d) {return 0.5*d.weight;});
+	            .style("stroke", function(d) {return linkTypeScale(d.linkType)})
+	            .style("stroke-width", function(d) {return weightScale(d.weight)});
 
 	            
 	        var node = this.svg.selectAll(".node")
@@ -197,9 +201,9 @@ define(function(require) {
 	            .attr("class", "node")
 	            .attr("r", 5)  // radius
 	            .style("fill", function(d) {
-//	                return ncolor(d.community);
-	            	console.log(d);
-	                return ncolor(d.id[0]);
+	                return nodeTypeScale(d.nodeType);
+//	            	console.log(d);
+	                return nodeTypeScale(d.id[0]);
 	            })
 	            .call(this.force.drag);
 
@@ -226,7 +230,7 @@ define(function(require) {
 	        
 	        var vertPosLegend = 0;
 		    var legend = this.svg.selectAll('.legend')
-		    	.data(ncolor.domain())
+		    	.data(nodeTypeScale.domain())
 		    	.enter()
 		    	.append('g')
 		    	.attr('class', 'legend')
@@ -239,12 +243,11 @@ define(function(require) {
 				  });
 		    
 		    
-		    
 		    legend.append('rect')
 		    .attr('width', legendRectSize)
 		    .attr('height', legendRectSize)
-		    .style('fill', function(d) {return ncolor(d); })
-		    .style('stroke', function(d) {return ncolor(d); });
+		    .style('fill', function(d) {return nodeTypeScale(d); })
+		    .style('stroke', function(d) {return nodeTypeScale(d); });
 		    
 		    legend.append('text')
 		    .attr('x', legendRectSize + legendSpacing)
@@ -259,7 +262,7 @@ define(function(require) {
 	        	.attr('y', vertPosLegend + 3 * legendRectSize);
 	        
 		    var legend = this.svg.selectAll('.legend2')
-		    	.data(scolor.domain())
+		    	.data(linkTypeScale.domain())
 		    	.enter()
 		    	.append('g')
 		    	.attr('class', 'legend')
@@ -271,13 +274,11 @@ define(function(require) {
 				    return 'translate(' + horz + ',' + vert + ')';
 				  });
 		    
-		    
-		    
 		    legend.append('rect')
 		    .attr('width', legendRectSize)
 		    .attr('height', legendRectSize)
-		    .style('fill', function(d) {return scolor(d); })
-		    .style('stroke', function(d) {return scolor(d); });
+		    .style('fill', function(d) {return linkTypeScale(d); })
+		    .style('stroke', function(d) {return linkTypeScale(d); });
 		    
 		    legend.append('text')
 		    .attr('x', legendRectSize + legendSpacing)
@@ -429,7 +430,7 @@ define(function(require) {
 //				}
 //			}(this.svg));
 			   
-			d3.select("#order").on("change", function(svg) {
+			d3.select('#' + this.id + ' order').on("change", function(svg) {
 				return function() {
 					x.domain(orders[this.value]);
 			

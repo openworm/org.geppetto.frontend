@@ -642,64 +642,64 @@ define(function(require) {
 		
 		
 		
-		module("Test C302 Simulation");
-		asyncTest("Test C302 Pharyngeal", function() {
-			GEPPETTO.MessageSocket.clearHandlers();
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						//Simulation has been loaded and model need to be loaded
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							var scene = JSON.parse(payload.update).scene;
-
-							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
-
-							var passTimeTest = false;
-							if(time < 10){
-								passTimeTest = true;
-							}
-
-							equal(passTimeTest,true, "Simulation loaded within time limit: " + time);
-							notEqual(pharyngeal,null,"Entities checked");
-							equal(pharyngeal.getChildren().length,21, "C302 Children checked");
-							equal(pharyngeal.getAspects().length,1, "Aspects checked");
-							equal(jQuery.isEmptyObject(pharyngeal.electrical.VisualizationTree),false, "Test Visualization at load");
-							equal(jQuery.isEmptyObject(pharyngeal.electrical.ModelTree),false, "Test Model tree at load");
-							equal(jQuery.isEmptyObject(pharyngeal.electrical.SimulationTree),false, "Test Simulation tree at load");							
-							equal(pharyngeal.I1R_0.getConnections().length,16, "ADAL_0 connections check");
-							pharyngeal.electrical.getModelTree();
-							Simulation.setSimulationLoaded();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var update = JSON.parse(payload.get_model_tree);
-
-							for (var updateIndex in update){
-					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
-					        	var modelTree = update[updateIndex].modelTree;
-					        	
-					        	//create client side model tree
-					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
-								equal(jQuery.isEmptyObject(pharyngeal.electrical.ModelTree),false,"Test Model Tree Command");
-								notEqual(pharyngeal.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
-							}     	        	
-							start();
-
-							break;
-						}
-					}
-			};
-
-			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?><tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"><tns:entity><tns:id>pharyngeal</tns:id><tns:aspect><tns:id>electrical</tns:id><tns:simulator><tns:simulatorId>jLemsSimulator</tns:simulatorId></tns:simulator><tns:model><tns:modelInterpreterId>lemsModelInterpreter</tns:modelInterpreterId><tns:modelURL>https://raw.githubusercontent.com/openworm/CElegansNeuroML/master/CElegans/pythonScripts/c302/LEMS_c302_A_Pharyngeal.xml</tns:modelURL></tns:model></tns:aspect></tns:entity></tns:simulation>')
-			initializationTime = new Date();	
-		});
+//		module("Test C302 Simulation");
+//		asyncTest("Test C302 Pharyngeal", function() {
+//			GEPPETTO.MessageSocket.clearHandlers();
+//			var initializationTime;
+//			var handler = {
+//					checkUpdate2 : false,
+//					startRequestID : null,
+//					onMessage: function(parsedServerMessage) {
+//						// Switch based on parsed incoming message type
+//						switch(parsedServerMessage.type) {
+//						//Simulation has been loaded and model need to be loaded
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+//							var time = (new Date() - initializationTime)/1000;
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							var scene = JSON.parse(payload.update).scene;
+//
+//							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
+//
+//							var passTimeTest = false;
+//							if(time < 10){
+//								passTimeTest = true;
+//							}
+//
+//							equal(passTimeTest,true, "Simulation loaded within time limit: " + time);
+//							notEqual(pharyngeal,null,"Entities checked");
+//							equal(pharyngeal.getChildren().length,21, "C302 Children checked");
+//							equal(pharyngeal.getAspects().length,1, "Aspects checked");
+//							equal(jQuery.isEmptyObject(pharyngeal.electrical.VisualizationTree),false, "Test Visualization at load");
+//							equal(jQuery.isEmptyObject(pharyngeal.electrical.ModelTree),false, "Test Model tree at load");
+//							equal(jQuery.isEmptyObject(pharyngeal.electrical.SimulationTree),false, "Test Simulation tree at load");							
+//							equal(pharyngeal.I1R_0.getConnections().length,16, "ADAL_0 connections check");
+//							pharyngeal.electrical.getModelTree();
+//							Simulation.setSimulationLoaded();
+//							break;
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							var update = JSON.parse(payload.get_model_tree);
+//
+//							for (var updateIndex in update){
+//					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+//					        	var modelTree = update[updateIndex].modelTree;
+//					        	
+//					        	//create client side model tree
+//					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+//								equal(jQuery.isEmptyObject(pharyngeal.electrical.ModelTree),false,"Test Model Tree Command");
+//								notEqual(pharyngeal.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
+//							}     	        	
+//							start();
+//
+//							break;
+//						}
+//					}
+//			};
+//
+//			GEPPETTO.MessageSocket.addHandler(handler);
+//			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?><tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"><tns:entity><tns:id>pharyngeal</tns:id><tns:aspect><tns:id>electrical</tns:id><tns:simulator><tns:simulatorId>jLemsSimulator</tns:simulatorId></tns:simulator><tns:model><tns:modelInterpreterId>lemsModelInterpreter</tns:modelInterpreterId><tns:modelURL>https://raw.githubusercontent.com/openworm/CElegansNeuroML/master/CElegans/pythonScripts/c302/LEMS_c302_A_Pharyngeal.xml</tns:modelURL></tns:model></tns:aspect></tns:entity></tns:simulation>')
+//			initializationTime = new Date();	
+//		});
 		
 //		module("Test Recording Simulation");
 //		asyncTest("Test Recordings in Simulation Tree", function() {

@@ -148,9 +148,10 @@ define(function(require) {
 			this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
 			this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
 			
-			this.svg = d3.select("#"+this.id).append("svg")
-            .attr("width", this.options.innerWidth)
-            .attr("height", this.options.innerHeight);
+			this.svg = d3.select("#"+this.id)
+			                .append("svg")
+			                .attr("width", this.options.innerWidth)
+			                .attr("height", this.options.innerHeight);
 			
 			if (this.options.connectivityLayout == 'matrix'){
 				$("#filters").remove();
@@ -267,15 +268,16 @@ define(function(require) {
 		
 		createLegend: function(legend, colorScale, rectSize, spacing){
 		    legend.append('rect')
-		    .attr('width', rectSize)
-		    .attr('height', rectSize)
-		    .style('fill', function(d) {return colorScale(d); })
-		    .style('stroke', function(d) {return colorScale(d); });
+		        .attr('width', rectSize)
+		        .attr('height', rectSize)
+		        .style('fill', function(d) {return colorScale(d); })
+		        .style('stroke', function(d) {return colorScale(d); });
 		    
 		    legend.append('text')
-		    .attr('x', rectSize + spacing)
-		    .attr('y', rectSize - spacing)
-		    .text(function(d) { return d; });
+		        .attr('x', rectSize + spacing)
+		        .attr('y', rectSize -  spacing)
+		        .attr('class', 'legend')
+		        .text(function(d) { return d; });
 			
 		},
 		
@@ -294,10 +296,10 @@ define(function(require) {
 	        c = d3.scale.category10();
 			
 			this.svg
-			.style("padding-left", margin.left + "px")
-			.style("padding-top", margin.top + "px")
-			.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			    .style("padding-left", margin.left + "px")
+			    .style("padding-top", margin.top + "px")
+			    .append("g")
+			    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		    var matrix = [];
 		    var nodes = this.dataset.nodes;
 		    var root=this.dataset.root;
@@ -336,9 +338,9 @@ define(function(require) {
 		    
 
 		    var rect = this.svg.append("rect")
-		          .attr("class", "background")
-		          .attr("width", matrixDim - margin.left)
-		          .attr("height", matrixDim - margin.top);
+		                        .attr("class", "background")
+		                        .attr("width", matrixDim - margin.left)
+		                        .attr("height", matrixDim - margin.top);
 
 		        
 		    var row = this.svg.selectAll(".row")
@@ -386,17 +388,17 @@ define(function(require) {
 		    
 		    //LEGEND  
 		    var legend = this.svg.selectAll('.legend')
-		    	.data(c.domain())
-		    	.enter()
-		    	.append('g')
-		    	.attr('class', 'legend')
-		    	.attr('transform', function(d, i) {
-				    var height = legendRectSize + legendSpacing;
-				    var offset = 0;
-				    var horz = matrixDim+5;
-				    var vert = i * height - offset;
-				    return 'translate(' + horz + ',' + vert + ')';
-				  });
+		    	            .data(c.domain())
+		    	            .enter()
+		    	            .append('g')
+		    	            .attr('class', 'legend')
+		    	            .attr('transform', function(d, i) {
+				                var height = legendRectSize + legendSpacing;
+				                var offset = 0;
+				                var horz = matrixDim+5;
+				                var vert = i * height - offset;
+				                return 'translate(' + horz + ',' + vert + ')';
+				              });
 		    
 		   this.createLegend(legend, c, legendRectSize, legendSpacing);
 		    

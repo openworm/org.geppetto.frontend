@@ -241,18 +241,7 @@ define(function(require) {
 				    vertPosLegend = i * height + offset;
 				    return 'translate(' + horz + ',' + vertPosLegend + ')';
 				  });
-		    
-		    
-		    legend.append('rect')
-		    .attr('width', legendRectSize)
-		    .attr('height', legendRectSize)
-		    .style('fill', function(d) {return nodeTypeScale(d); })
-		    .style('stroke', function(d) {return nodeTypeScale(d); });
-		    
-		    legend.append('text')
-		    .attr('x', legendRectSize + legendSpacing)
-		    .attr('y', legendRectSize - legendSpacing)
-		    .text(function(d) { return d; });
+		   this.createLegend(legend, nodeTypeScale, legendRectSize, legendSpacing);
 		    
 		  //LINKS
 	        this.svg.append('text')
@@ -273,17 +262,21 @@ define(function(require) {
 				    var vert = i * height + offset;
 				    return 'translate(' + horz + ',' + vert + ')';
 				  });
-		    
+		   this.createLegend(legend, linkTypeScale, legendRectSize, legendSpacing);
+		},
+		
+		createLegend: function(legend, colorScale, rectSize, spacing){
 		    legend.append('rect')
-		    .attr('width', legendRectSize)
-		    .attr('height', legendRectSize)
-		    .style('fill', function(d) {return linkTypeScale(d); })
-		    .style('stroke', function(d) {return linkTypeScale(d); });
+		    .attr('width', rectSize)
+		    .attr('height', rectSize)
+		    .style('fill', function(d) {return colorScale(d); })
+		    .style('stroke', function(d) {return colorScale(d); });
 		    
 		    legend.append('text')
-		    .attr('x', legendRectSize + legendSpacing)
-		    .attr('y', legendRectSize - legendSpacing)
+		    .attr('x', rectSize + spacing)
+		    .attr('y', rectSize - spacing)
 		    .text(function(d) { return d; });
+			
 		},
 		
 		createMatrixLayout: function(){
@@ -405,17 +398,7 @@ define(function(require) {
 				    return 'translate(' + horz + ',' + vert + ')';
 				  });
 		    
-		    legend.append('rect')
-		    .attr('width', legendRectSize)
-		    .attr('height', legendRectSize)
-		    .style('fill', function(d) {return c(d); })
-		    .style('stroke', function(d) {return c(d); });
-		    
-		    legend.append('text')
-		    .attr('x', legendRectSize + legendSpacing)
-		    .attr('y', legendRectSize - legendSpacing)
-		    .attr('class', 'legend')
-		    .text(function(d) { return d; });
+		   this.createLegend(legend, c, legendRectSize, legendSpacing);
 		    
 		    //FILTERS AND EVENTS
 		    this.connectivityContainer.append("<div id='filters' style='width:" + sizeLegend.width + "px;left:" + (matrixDim + this.widgetMargin) + "px;top:" + (matrixDim - 32) + "px;'></div>");

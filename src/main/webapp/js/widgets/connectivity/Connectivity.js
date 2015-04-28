@@ -175,11 +175,11 @@ define(function(require) {
 		    				.domain(_.pluck(this.dataset.links, 'nodeType'));
 		    var weightScale = d3.scale.linear()
 		    				.domain(d3.extent(_.pluck(this.dataset.links, 'weight').map(parseFloat)))
-		    				.range([0,5]);
+		    				.range([0,4]);
 			
 		    this.force = d3.layout.force()
 		        .charge(-250)
-		        .linkDistance(100)
+		        .linkDistance(150)
 		        .size([this.options.innerWidth, this.options.innerHeight]);
 
 		        
@@ -319,7 +319,7 @@ define(function(require) {
 		    
 		    // Convert links to matrix; count pre / post conns.
 		    this.dataset.links.forEach(function(link) {
-		    	matrix[link.source][link.target].z = link.weight ? link.synapse_type : 0;
+		    	matrix[link.source][link.target].z = link.weight ? link.linkType : 0;
 		    	nodes[link.source].pre_count += 1;
 		    	nodes[link.target].post_count += 1;
 		    });

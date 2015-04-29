@@ -187,6 +187,10 @@ define(function(require) {
 
         //received model tree from server
         messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
+        	var initTime = new Date();
+        	
+        	GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
+        	
         	var update = JSON.parse(payload.get_model_tree);      
         	for (var updateIndex in update){
 	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
@@ -195,6 +199,8 @@ define(function(require) {
 	        	//create client side model tree
 	        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
         	}
+        	var endCreation = new Date() - initTime;
+            GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create model tree");
         };
         
         messageHandler[messageTypes.GET_SIMULATION_TREE] = function(payload) {

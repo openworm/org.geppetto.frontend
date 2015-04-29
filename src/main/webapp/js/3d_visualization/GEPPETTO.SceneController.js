@@ -597,6 +597,7 @@ define(function(require) {
 						}
 						//group mesh already exist, set flag to merge false
 						else{
+							geometry = groupMesh.geometry;
 							geometry.groupMerge = false;
 						}
 						//store merge flag value, and new geometry if populate flag set to true
@@ -625,9 +626,9 @@ define(function(require) {
 								if(geometry.groupMerge){
 									//merged mesh into corresponding geometry			
 									geometry.merge(m.geometry,m.matrix);
-									//true means don't add to mesh with non-groups visual objects
-									added = true;
 								}
+								//true means don't add to mesh with non-groups visual objects
+								added = true;
 							}
 						}
 						
@@ -706,33 +707,35 @@ define(function(require) {
 						GEPPETTO.getVARS().scene.add(mergedMesh);
 					}					
 				},
-				
+
 				/**
 				 * Shows a visual group
 				 */
 				showVisualGroups : function(visualizationTree,visualGroups, mode){
 					//aspect path of visualization tree parent
 					var aspectPath = visualizationTree.getParent().getInstancePath();
-										
+
 					GEPPETTO.SceneController.merge(aspectPath);
-					GEPPETTO.SceneController.splitGroups(aspectPath, visualizationTree, visualGroups);					
-					for(g in visualGroups){
-						//retrieve visual group object
-						var visualGroup = visualGroups[g];
-						
-						//get full group name to access group mesh
-						var groupName = g;
-						if(groupName.indexOf(aspectPath)<=-1){
-							groupName = aspectPath + "." + g;
-						}
-						
-						//get group mesh
-						var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
-						
-						if(mode){
-							GEPPETTO.SceneController.colorMesh(groupMesh,visualGroup.color);
-						}else{
-							GEPPETTO.SceneController.colorMesh(groupMesh,GEPPETTO.Resources.COLORS.SPLIT);
+					if(mode){
+						GEPPETTO.SceneController.splitGroups(aspectPath, visualizationTree, visualGroups);					
+						for(g in visualGroups){
+							//retrieve visual group object
+							var visualGroup = visualGroups[g];
+
+							//get full group name to access group mesh
+							var groupName = g;
+							if(groupName.indexOf(aspectPath)<=-1){
+								groupName = aspectPath + "." + g;
+							}
+
+							//get group mesh
+							var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
+
+							if(mode){
+								GEPPETTO.SceneController.colorMesh(groupMesh,visualGroup.color);
+							}else{
+								GEPPETTO.SceneController.colorMesh(groupMesh,GEPPETTO.Resources.COLORS.SPLIT);
+							}
 						}
 					}
 				},

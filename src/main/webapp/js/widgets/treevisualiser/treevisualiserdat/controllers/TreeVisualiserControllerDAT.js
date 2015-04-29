@@ -75,6 +75,7 @@ define(function(require) {
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
 			
+			GEPPETTO.MenuManager.resetMap();
 			// Register Commands
 			GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
 			                                                 "AspectSubTreeNode",

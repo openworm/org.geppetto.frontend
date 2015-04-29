@@ -78,10 +78,6 @@ define(function(require) {
 					createButtonContent : function(button) {
 						return $('<span>')
 							.addClass(button.icon)
-							.attr('data-toogle', 'tooltip')
-							.attr('data-placement', 'bottom')
-							.attr('title', button.tooltip)
-							.attr('container', 'body')
 							.append(' ' + button.label)
 					},
 
@@ -97,6 +93,10 @@ define(function(require) {
 						return $('<button>')
 								.addClass('btn btn-default btn-lg')
 								.append(this.createButtonContent(button))
+								.attr('data-toogle', 'tooltip')
+								.attr('data-placement', 'bottom')
+								.attr('title', button.tooltip)
+								.attr('container', 'body')
 								.on('click', this.createButtonCallback(button))
 					},
 

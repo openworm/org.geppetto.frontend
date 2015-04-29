@@ -665,7 +665,7 @@ define(function(require) {
 							groupMesh = new THREE.Mesh(geometryGroup, material);
 							groupMesh.name = aspectInstancePath;
 							groupMesh.geometry.dynamic = false;
-							groupMesh.position= mergedMesh.position;
+							groupMesh.position.copy(mergedMesh.position);
 							groupMesh.visible = false;
 							GEPPETTO.getVARS().splitMeshes[groupName] = groupMesh;
 						}

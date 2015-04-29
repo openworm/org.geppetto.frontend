@@ -1,0 +1,11 @@
+{
+  "name": "wormsimCustomRenderer",
+  "main": "AnimationCustomRenderer",
+  "version": "0.0.0",
+  "homepage": "https://github.com/openworm/org.wormsim.frontend",
+  "authors": [
+    "Mihai Raulea <mihairaulea@gmail.com>"
+  ],
+  "description": "A renderer that enables animations from a stream of matrixes",
+  "license": "MIT"
+}

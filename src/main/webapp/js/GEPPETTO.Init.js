@@ -7,7 +7,7 @@ define(function(require) {
 
 		require('three');
 		require('vendor/THREEx.KeyboardState');
-
+		
 		var VARS = {
 			debug : false,
 			camera : null,
@@ -71,16 +71,28 @@ define(function(require) {
 		 * Set up the WebGL Renderer
 		 */
 		var setupRenderer = function() {
-
 			// Reuse a single WebGL renderer. Recreating the renderer causes
 			// camera displacement on Chrome OSX.
+			console.log(VARS.customRendererClass +" VARS.customRendererClass");
 			if (!VARS.canvasCreated) {
 				if (VARS.customRendererClass == null) {
 					VARS.renderer = new THREE.WebGLRenderer({
 						antialias : true
 					});
-				} else
-					VARS.renderer = new VARS.customRendererClass();
+				} 
+				else {
+					console.log("CREATING NEW RENDERER");
+					var newRenderer = VARS.customRendererClass;
+					VARS.renderer = new newRenderer();
+				}
+				VARS.renderer.setClearColor(0x000000, 1);
+				var width = $(VARS.container).width();
+				var height = $(VARS.container).height();
+				VARS.renderer.setSize(width, height);
+				VARS.renderer.autoClear = true;
+				VARS.container.appendChild(VARS.renderer.domElement);
+
+				VARS.canvasCreated = true;
 			}
 			VARS.renderer.setClearColor(0x000000, 1);
 			var width = $(VARS.container).width();

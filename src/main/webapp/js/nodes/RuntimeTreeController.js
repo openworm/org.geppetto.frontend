@@ -301,9 +301,10 @@ define(function(require) {
 					//notify user received tree was empty
 					if(aspect.SimulationTree.getChildren().length==0){
 						var indent = "    ";
-						GEPPETTO.Console.log(indent + GEPPETTO.Resources.EMPTY_SIMULATION_TREE);
+						GEPPETTO.Console.debugLog(indent + GEPPETTO.Resources.EMPTY_SIMULATION_TREE);
 					}else{
-						GEPPETTO.Console.log(indent + GEPPETTO.Resources.SIMULATION_TREE_POPULATED);
+						GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_POPULATED);
+						GEPPETTO.Console.debugLog(indent + GEPPETTO.Resources.SIMULATION_TREE_POPULATED);
 						//GEPPETTO.Console.executeCommand(aspect.SimulationTree.instancePath + ".print()");
 						//aspect.SimulationTree.print();
 					}

@@ -173,7 +173,8 @@ define(function(require) {
             var variables = JSON.parse(payload.set_watch_vars)
             
             for (var index in variables){
-            	eval(variables[index]).watch();
+            	var variable = eval(variables[index]);
+            	variable.watched = !variable.watched;
             	GEPPETTO.Simulation.simulationStates.push(variables[index]);
             }
         };

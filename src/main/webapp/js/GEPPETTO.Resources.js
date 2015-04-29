@@ -199,6 +199,8 @@ define(function(require) {
 			
 			EMPTY_SIMULATION_TREE : 'No variables to simulate.',
 			
+			SIMULATION_TREE_POPULATED : 'Simulation tree populated.',
+			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
 			
 			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',

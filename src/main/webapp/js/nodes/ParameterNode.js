@@ -57,6 +57,7 @@ define(function(require) {
 			this.instancePath = options.instancePath;
 			this.domainType = options.domainType;
 			this._metaType = options._metaType;
+			this.watched = options.watched;
 		},
 
 		/**
@@ -70,12 +71,33 @@ define(function(require) {
 		},
 
 		/**
+		 * Get watched
+		 * 
+		 * @command ParameterSpecificationNode.getWatched()
+		 * @returns {boolean} true if this variable is being watched
+		 */
+		isWatched : function() {
+			return this.watched;
+		},
+
+		/**
+		 * Set watched
+		 * 
+		 * @command VariableNode.setWatched()
+		 * @param {Boolean} watched - Object with options attributes to initialize node
+		 */
+		setWatched : function(isWatched) {
+			Simulation.setWatchedVariables([this]);
+		},
+		
+		/**
 		 * Print out formatted node
 		 */
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Properties : " + this.properties + "\n";
+					+ "    Properties : " + this.properties + "\n"
+					+ "    Watched : " + this.watched + "\n";
 		}
 	});
 });

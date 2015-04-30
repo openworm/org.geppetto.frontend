@@ -73,53 +73,55 @@ define(function(require) {
 				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.INIT;
 				GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);
 			},
-			
+
 			/**
 			 * Idle check
 			 */
 			idleCheck : function(){
-				var allowedTime = 2, timeOut = 4;
-				if(!GEPPETTO.Main.disconnected) {
-					GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
-					//first time check, asks if user is still there
-					if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
+				if(GEPPETTO.Main.idleTime>-1){
+					var allowedTime = 2, timeOut = 4;
+					if(!GEPPETTO.Main.disconnected) {
+						GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
+						//first time check, asks if user is still there
+						if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
 
-        	            React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
-						$('#infomodal-title').html("Zzz");
-						$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
-						$('#infomodal-btn').html("Yes");
+							React.renderComponent(InfoModal({show:true, keyboard:false}), document.getElementById('modal-region'));
+							$('#infomodal-title').html("Zzz");
+							$('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
+							$('#infomodal-btn').html("Yes");
 
-						$('#infomodal-btn').html("Yes").click(function() {
-							$('#infomodal').modal('hide');
+							$('#infomodal-btn').html("Yes").click(function() {
+								$('#infomodal').modal('hide');
+								GEPPETTO.Main.idleTime = 0;
+
+								//unbind click event so we can reuse same modal for other alerts
+								$('#infomodal-btn').unbind('click');
+
+								if(GEPPETTO.Simulation.isLoading()){
+									GEPPETTO.trigger('simulation:show_spinner');
+								}
+							});                                         
+						}
+
+						//second check, user isn't there or didn't click yes, disconnect
+						if(GEPPETTO.Main.idleTime > timeOut) {
+							React.renderComponent(InfoModal({
+								show: true,
+								keyboard: false,
+								title: "",
+								text: GEPPETTO.Resources.DISCONNECT_MESSAGE,
+							}), document.getElementById('modal-region'));
+
+							$('#infomodal-footer').remove();
+							$('#infomodal-header').remove();
+
 							GEPPETTO.Main.idleTime = 0;
-
-							//unbind click event so we can reuse same modal for other alerts
-							$('#infomodal-btn').unbind('click');
-							
-							if(GEPPETTO.Simulation.isLoading()){
-				                GEPPETTO.trigger('simulation:show_spinner');
-							}
-						});                                         
-					}
-
-					//second check, user isn't there or didn't click yes, disconnect
-					if(GEPPETTO.Main.idleTime > timeOut) {
-						React.renderComponent(InfoModal({
-		                    show: true,
-		                    keyboard: false,
-		                    title: "",
-		                    text: GEPPETTO.Resources.DISCONNECT_MESSAGE,
-		                }), document.getElementById('modal-region'));
-						
-						$('#infomodal-footer').remove();
-						$('#infomodal-header').remove();
-						
-						GEPPETTO.Main.idleTime = 0;
-						GEPPETTO.Main.disconnected = true;
-						GEPPETTO.FE.disableSimulationControls();
-						GEPPETTO.MessageSocket.send("idle_user", null);
-						var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-						GEPPETTO.FE.update(webGLStarted);
+							GEPPETTO.Main.disconnected = true;
+							GEPPETTO.FE.disableSimulationControls();
+							GEPPETTO.MessageSocket.send("idle_user", null);
+							var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+							GEPPETTO.FE.update(webGLStarted);
+						}
 					}
 				}
 			},

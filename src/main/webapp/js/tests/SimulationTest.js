@@ -135,7 +135,7 @@ define(function(require) {
 							equal(jQuery.isEmptyObject(purkinje.electrical.VisualizationTree),false,"Test Visualization at load");
 							equal(purkinje.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
 							equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree),false,"Test Model tree at load");
-							equal(jQuery.isEmptyObject(purkinje.electrical.SimulationTree),true,"Test Simulation tree at load");							
+							equal(jQuery.isEmptyObject(purkinje.electrical.SimulationTree),false,"Test Simulation tree at load");							
 							purkinje.electrical.getModelTree();
 							Simulation.setSimulationLoaded();
 							break;
@@ -161,6 +161,304 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/NeuroML/Purkinje/GEPPETTO.xml');
+			initializationTime = new Date();	
+		});
+		
+		module("Test Primary Auditory Cortex Network (ACNET2)");
+		asyncTest("Tests Primary Auditory Cortex Network [Medium Net] with Model Tree call and Visual Groups", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							var scene = JSON.parse(payload.update).scene;
+
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
+
+							var passTimeTest = false;
+							if(time < 10){
+								passTimeTest = true;
+							}
+
+							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
+							notEqual(acnet2, null,"Entities checked");
+							equal(acnet2.getAspects().length, 1, "Aspects checked");
+							equal(acnet2.baskets_12_9.getConnections().length, 60, "Connections checked");
+							equal(jQuery.isEmptyObject(acnet2.electrical.VisualizationTree),false,"Test Visualization at load");
+							equal(acnet2.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
+							equal(jQuery.isEmptyObject(acnet2.electrical.ModelTree),false,"Test Model tree at load");
+							equal(jQuery.isEmptyObject(acnet2.electrical.SimulationTree),false,"Test Simulation tree at load");							
+							acnet2.electrical.getModelTree();
+							Simulation.setSimulationLoaded();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var update = JSON.parse(payload.get_model_tree);
+
+							for (var updateIndex in update){
+					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+					        	var modelTree = update[updateIndex].modelTree;
+					        	
+					        	//create client side model tree
+					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+								equal(jQuery.isEmptyObject(acnet2.electrical.ModelTree),false,"Test Model Tree Command");
+								notEqual(acnet2.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
+							}     	        	
+							start();
+
+							break;
+						}
+					}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"> <tns:entity> <tns:id>acnet2</tns:id> <tns:aspect> <tns:id>electrical</tns:id> <tns:simulator> <tns:simulatorId>neuroMLSimulator</tns:simulatorId> </tns:simulator> <tns:model> <tns:modelInterpreterId>neuroMLModelInterpreter</tns:modelInterpreterId> <tns:modelURL>https://raw.githubusercontent.com/OpenSourceBrain/ACnet2/master/neuroConstruct/generatedNeuroML2/MediumNet.net.nml</tns:modelURL> </tns:model> </tns:aspect> </tns:entity> </tns:simulation>')
+			
+			initializationTime = new Date();	
+		});
+		
+		module("Test Primary Auditory Cortex Network (Two Cells)");
+		asyncTest("Tests Primary Auditory Cortex Network [Two Cells] with Model Tree call and Visual Groups", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							var scene = JSON.parse(payload.update).scene;
+
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
+
+							var passTimeTest = false;
+							if(time < 10){
+								passTimeTest = true;
+							}
+
+							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
+							notEqual(acnet22Cells, null,"Entities checked");
+							equal(acnet22Cells.getAspects().length, 1, "Aspects checked");
+							equal(acnet22Cells.baskets_0.getConnections().length, 0, "Connections checked");
+							equal(jQuery.isEmptyObject(acnet22Cells.electrical.VisualizationTree),false,"Test Visualization at load");
+							equal(acnet22Cells.electrical.VisualizationTree.getChildren().length, 0, "Test Visual Groups amount")
+							equal(jQuery.isEmptyObject(acnet22Cells.electrical.ModelTree),false,"Test Model tree at load");
+							equal(jQuery.isEmptyObject(acnet22Cells.electrical.SimulationTree),false,"Test Simulation tree at load");							
+							acnet22Cells.electrical.getModelTree();
+							Simulation.setSimulationLoaded();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var update = JSON.parse(payload.get_model_tree);
+
+							for (var updateIndex in update){
+					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+					        	var modelTree = update[updateIndex].modelTree;
+					        	
+					        	//create client side model tree
+					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+								equal(jQuery.isEmptyObject(acnet22Cells.electrical.ModelTree),false,"Test Model Tree Command");
+								notEqual(acnet22Cells.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
+							}     	        	
+							start();
+
+							break;
+						}
+					}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"> <tns:entity> <tns:id>acnet22Cells</tns:id> <tns:aspect> <tns:id>electrical</tns:id> <tns:simulator> <tns:simulatorId>jLemsSimulator</tns:simulatorId> </tns:simulator> <tns:model> <tns:modelInterpreterId>lemsModelInterpreter</tns:modelInterpreterId> <tns:modelURL>https://raw.githubusercontent.com/OpenSourceBrain/ACnet2/master/neuroConstruct/generatedNeuroML2/LEMS_TwoCell.xml</tns:modelURL> </tns:model> </tns:aspect> </tns:entity>  </tns:simulation>')
+			
+			initializationTime = new Date();	
+		});
+		
+		//It works but takes too long
+//		module("Test CElegansNeuroML");
+//		asyncTest("Tests CElegansNeuroML [CElegans Network] with Model Tree call and Visual Groups", function() {
+//			GEPPETTO.MessageSocket.clearHandlers();
+//			var initializationTime;
+//			var handler = {
+//					checkUpdate2 : false,
+//					startRequestID : null,
+//					onMessage: function(parsedServerMessage) {
+//						// Switch based on parsed incoming message type
+//						switch(parsedServerMessage.type) {
+//						//Simulation has been loaded and model need to be loaded
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+//							var time = (new Date() - initializationTime)/1000;
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							var scene = JSON.parse(payload.update).scene;
+//
+//							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
+//
+//							var passTimeTest = false;
+//							if(time < 10){
+//								passTimeTest = true;
+//							}
+//
+//							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
+//							notEqual(acnet2, null,"Entities checked");
+//							equal(acnet2.getAspects().length, 1, "Aspects checked");
+//							equal(acnet2.baskets_12_9.getConnections().length, 60, "Connections checked");
+//							equal(jQuery.isEmptyObject(acnet2.electrical.VisualizationTree),false,"Test Visualization at load");
+//							equal(acnet2.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
+//							equal(jQuery.isEmptyObject(acnet2.electrical.ModelTree),false,"Test Model tree at load");
+//							equal(jQuery.isEmptyObject(acnet2.electrical.SimulationTree),true,"Test Simulation tree at load");							
+//							acnet2.electrical.getModelTree();
+//							Simulation.setSimulationLoaded();
+//							break;
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							var update = JSON.parse(payload.get_model_tree);
+//
+//							for (var updateIndex in update){
+//					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+//					        	var modelTree = update[updateIndex].modelTree;
+//					        	
+//					        	//create client side model tree
+//					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+//								equal(jQuery.isEmptyObject(acnet2.electrical.ModelTree),false,"Test Model Tree Command");
+//								notEqual(acnet2.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
+//							}     	        	
+//							start();
+//
+//							break;
+//						}
+//					}
+//			};
+//
+//			GEPPETTO.MessageSocket.addHandler(handler);
+//			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"> <tns:entity> <tns:id>celegans</tns:id> <tns:aspect> <tns:id>electrical</tns:id> <tns:simulator> <tns:simulatorId>neuroMLSimulator</tns:simulatorId> </tns:simulator> <tns:model> <tns:modelInterpreterId>neuroMLModelInterpreter</tns:modelInterpreterId> <tns:modelURL>https://raw.github.com/openworm/CElegansNeuroML/master/CElegans/generatedNeuroML2/CElegans.net.nml</tns:modelURL> </tns:model> </tns:aspect> </tns:entity> </tns:simulation>')
+//			initializationTime = new Date();	
+//		});
+		
+		module("Test CElegansNeuroML");
+		asyncTest("Tests CElegansNeuroML [Adal Cell] with Model Tree call and Visual Groups", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							var scene = JSON.parse(payload.update).scene;
+
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
+
+							var passTimeTest = false;
+							if(time < 4){
+								passTimeTest = true;
+							}
+
+							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
+							notEqual(adal, null,"Entities checked");
+							equal(adal.getAspects().length, 1, "Aspects checked");
+							equal(adal.getConnections().length, 0, "Connections checked");
+							equal(jQuery.isEmptyObject(adal.electrical.VisualizationTree),false,"Test Visualization at load");
+							equal(adal.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
+							equal(jQuery.isEmptyObject(adal.electrical.ModelTree),false,"Test Model tree at load");
+							equal(jQuery.isEmptyObject(adal.electrical.SimulationTree),false,"Test Simulation tree at load");							
+							adal.electrical.getModelTree();
+							Simulation.setSimulationLoaded();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var update = JSON.parse(payload.get_model_tree);
+
+							for (var updateIndex in update){
+					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+					        	var modelTree = update[updateIndex].modelTree;
+					        	
+					        	//create client side model tree
+					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+								equal(jQuery.isEmptyObject(adal.electrical.ModelTree),false,"Test Model Tree Command");
+								notEqual(adal.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
+							}     	        	
+							start();
+
+							break;
+						}
+					}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"> <tns:entity> <tns:id>adal</tns:id> <tns:aspect> <tns:id>electrical</tns:id> <tns:simulator> <tns:simulatorId>neuroMLSimulator</tns:simulatorId> </tns:simulator> <tns:model> <tns:modelInterpreterId>neuroMLModelInterpreter</tns:modelInterpreterId> <tns:modelURL>https://raw.github.com/openworm/CElegansNeuroML/master/CElegans/generatedNeuroML2/ADAL.cell.nml</tns:modelURL> </tns:model> </tns:aspect> </tns:entity> </tns:simulation>')
+			initializationTime = new Date();	
+		});
+		
+		module("Test L5 Pyramidal cell");
+		asyncTest("Tests L5 Pyramidal cell with Model Tree call and Visual Groups", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							var scene = JSON.parse(payload.update).scene;
+
+							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
+
+							var passTimeTest = false;
+							if(time < 8){
+								passTimeTest = true;
+							}
+
+							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
+							notEqual(pyramidalCell, null,"Entities checked");
+							equal(pyramidalCell.getAspects().length, 1, "Aspects checked");
+							equal(pyramidalCell.getConnections().length, 0, "Connections checked");
+							equal(jQuery.isEmptyObject(pyramidalCell.electrical.VisualizationTree),false,"Test Visualization at load");
+							equal(pyramidalCell.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
+							equal(jQuery.isEmptyObject(pyramidalCell.electrical.ModelTree),false,"Test Model tree at load");
+							equal(jQuery.isEmptyObject(pyramidalCell.electrical.SimulationTree),false,"Test Simulation tree at load");							
+							pyramidalCell.electrical.getModelTree();
+							Simulation.setSimulationLoaded();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var update = JSON.parse(payload.get_model_tree);
+
+							for (var updateIndex in update){
+					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+					        	var modelTree = update[updateIndex].modelTree;
+					        	
+					        	//create client side model tree
+					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+								equal(jQuery.isEmptyObject(pyramidalCell.electrical.ModelTree),false,"Test Model Tree Command");
+								notEqual(pyramidalCell.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
+							}     	        	
+							start();
+
+							break;
+						}
+					}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?> <tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"> <tns:entity> <tns:id>pyramidalCell</tns:id> <tns:aspect> <tns:id>electrical</tns:id> <tns:simulator> <tns:simulatorId>neuroMLSimulator</tns:simulatorId> </tns:simulator> <tns:model> <tns:modelInterpreterId>neuroMLModelInterpreter</tns:modelInterpreterId> <tns:modelURL>https://raw.githubusercontent.com/OpenSourceBrain/L5bPyrCellHayEtAl2011/master/neuroConstruct/generatedNeuroML2/L5PC.cell.nml</tns:modelURL> </tns:model> </tns:aspect> </tns:entity> </tns:simulation>')
 			initializationTime = new Date();	
 		});
 		
@@ -192,7 +490,7 @@ define(function(require) {
 							equal(hhcell.getAspects().length, 1, "Aspects checked");
 							equal(jQuery.isEmptyObject(hhcell.electrical.VisualizationTree),false,"Test Visualization at load");
 							equal(jQuery.isEmptyObject(hhcell.electrical.ModelTree),false,"Test Model tree at load");
-							equal(jQuery.isEmptyObject(hhcell.electrical.SimulationTree),true,"Test Simulation tree at load");							
+							equal(jQuery.isEmptyObject(hhcell.electrical.SimulationTree),false,"Test Simulation tree at load");							
 							Simulation.setSimulationLoaded();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
@@ -215,7 +513,37 @@ define(function(require) {
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 							 this.startRequestID = parsedServerMessage.requestID;
 							 break;
+							 
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_SIMULATION_TREE:
+							var payload = JSON.parse(parsedServerMessage.data);
+
+				        	var update = JSON.parse(payload.get_simulation_tree);      
+				        	for (var updateIndex in update){
+					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+					        	var simulationTree = update[updateIndex].simulationTree;
+					        	
+					        	//create client side simulation tree
+					        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
+				        	}
+				        	
+							notEqual(hhcell.electrical.SimulationTree.getChildren(), null,"Test simulation tree");
+							equal(jQuery.isEmptyObject(hhcell.electrical.SimulationTree.hhpop[0].v),false,"Test Simulation tree has v variable");
+							equal(hhcell.electrical.SimulationTree.hhpop[0].v.isWatched(),false,"Test Simulation tree has v variable with watched set to false");
+							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
+							var payload = JSON.parse(parsedServerMessage.data);
+							//variables watching
+				            var variables = JSON.parse(payload.set_watch_vars)
+				            
+				            for (var index in variables){
+				            	var variable = eval(variables[index]);
+				            	variable.watched = !variable.watched;
+				            	GEPPETTO.Simulation.simulationStates.push(variables[index]);
+				            }
+				            
+							notEqual(hhcell.electrical.SimulationTree.getChildren(), null,"Test simulation tree");
+							equal(jQuery.isEmptyObject(hhcell.electrical.SimulationTree.hhpop[0].v),false,"Test Simulation tree has v variable");
+							equal(hhcell.electrical.SimulationTree.hhpop[0].v.isWatched(),true,"Test Simulation tree has v variable with watched set to true");
 							break;
 						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
 							var payload = JSON.parse(parsedServerMessage.data);
@@ -289,7 +617,7 @@ define(function(require) {
 							equal(c302.getAspects().length,1, "Aspects checked");
 							equal(jQuery.isEmptyObject(c302.electrical.VisualizationTree),false, "Test Visualization at load");
 							equal(jQuery.isEmptyObject(c302.electrical.ModelTree),false, "Test Model tree at load");
-							equal(jQuery.isEmptyObject(c302.electrical.SimulationTree),true, "Test Simulation tree at load");							
+							equal(jQuery.isEmptyObject(c302.electrical.SimulationTree),false, "Test Simulation tree at load");							
 							equal(c302.ADAL_0.getConnections().length,31, "ADAL_0 connections check");
 							Simulation.setSimulationLoaded();
 							break;
@@ -342,8 +670,10 @@ define(function(require) {
 			initializationTime = new Date();	
 		});
 		
-		module("Test Recording Simulation");
-		asyncTest("Test Recordings in Simulation Tree", function() {
+		
+		
+		module("Test C302 Simulation");
+		asyncTest("Test C302 Pharyngeal", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var initializationTime;
 			var handler = {
@@ -359,62 +689,121 @@ define(function(require) {
 							var scene = JSON.parse(payload.update).scene;
 
 							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
+
+							var passTimeTest = false;
+							if(time < 10){
+								passTimeTest = true;
+							}
+
+							equal(passTimeTest,true, "Simulation loaded within time limit: " + time);
+							notEqual(pharyngeal,null,"Entities checked");
+							equal(pharyngeal.getChildren().length,21, "C302 Children checked");
+							equal(pharyngeal.getAspects().length,1, "Aspects checked");
+							equal(jQuery.isEmptyObject(pharyngeal.electrical.VisualizationTree),false, "Test Visualization at load");
+							equal(jQuery.isEmptyObject(pharyngeal.electrical.ModelTree),false, "Test Model tree at load");
+							equal(jQuery.isEmptyObject(pharyngeal.electrical.SimulationTree),false, "Test Simulation tree at load");							
+							equal(pharyngeal.I1R_0.getConnections().length,16, "ADAL_0 connections check");
+							pharyngeal.electrical.getModelTree();
 							Simulation.setSimulationLoaded();
 							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
 							var payload = JSON.parse(parsedServerMessage.data);
+							var update = JSON.parse(payload.get_model_tree);
 
-							//Reads scripts received for the simulation
-							var scripts = JSON.parse(payload.get_scripts).scripts;
+							for (var updateIndex in update){
+					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+					        	var modelTree = update[updateIndex].modelTree;
+					        	
+					        	//create client side model tree
+					        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);				        	
+								equal(jQuery.isEmptyObject(pharyngeal.electrical.ModelTree),false,"Test Model Tree Command");
+								notEqual(pharyngeal.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
+							}     	        	
+							start();
 
-							//make sure object isn't empty
-							if(!jQuery.isEmptyObject(scripts)) {
-								//run the received scripts
-								GEPPETTO.ScriptRunner.fireScripts(scripts);
-							}
-							break;
-							
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
-							this.startRequestID = parsedServerMessage.requestID;
-							var payload = JSON.parse(parsedServerMessage.data);
-							var updatedRunTime = JSON.parse(payload.update).scene;
-
-							GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
-
-							 break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.ScriptRunner.runScript(payload.run_script);
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.SIMULATION_OVER:
-							
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
-							if(parsedServerMessage.requestID == this.startRequestID){
-								if(!this.checkUpdate2){
-									this.checkUpdate2 = true;
-
-									var payload = JSON.parse(parsedServerMessage.data);
-									var scene = JSON.parse(payload.update).scene;
-
-									GEPPETTO.RuntimeTreeController.updateRuntimeTree(scene);
-									
-									notEqual(purkinje.electrical.SimulationTree.P.neuron0.ge,null, "Recording variable ge present");
-									notEqual(purkinje.electrical.SimulationTree.P.neuron0.gi,null, "Recroding variable gi present");
-									start();
-								}
-							}
 							break;
 						}
 					}
 			};
 
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/Recording/GEPPETTO.xml');
+			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?><tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"><tns:entity><tns:id>pharyngeal</tns:id><tns:aspect><tns:id>electrical</tns:id><tns:simulator><tns:simulatorId>jLemsSimulator</tns:simulatorId></tns:simulator><tns:model><tns:modelInterpreterId>lemsModelInterpreter</tns:modelInterpreterId><tns:modelURL>https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/C302Pharyngeal/LEMS_c302_A_Pharyngeal.xml</tns:modelURL></tns:model></tns:aspect></tns:entity></tns:simulation>')
 			initializationTime = new Date();	
 		});
+		
+//		module("Test Recording Simulation");
+//		asyncTest("Test Recordings in Simulation Tree", function() {
+//			GEPPETTO.MessageSocket.clearHandlers();
+//			var initializationTime;
+//			var handler = {
+//					checkUpdate2 : false,
+//					startRequestID : null,
+//					onMessage: function(parsedServerMessage) {
+//						// Switch based on parsed incoming message type
+//						switch(parsedServerMessage.type) {
+//						//Simulation has been loaded and model need to be loaded
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+//							var time = (new Date() - initializationTime)/1000;
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							var scene = JSON.parse(payload.update).scene;
+//
+//							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
+//							Simulation.setSimulationLoaded();
+//							break;
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
+//							var payload = JSON.parse(parsedServerMessage.data);
+//
+//							//Reads scripts received for the simulation
+//							var scripts = JSON.parse(payload.get_scripts).scripts;
+//
+//							//make sure object isn't empty
+//							if(!jQuery.isEmptyObject(scripts)) {
+//								//run the received scripts
+//								GEPPETTO.ScriptRunner.fireScripts(scripts);
+//							}
+//							break;
+//							
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
+//							this.startRequestID = parsedServerMessage.requestID;
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							var updatedRunTime = JSON.parse(payload.update).scene;
+//
+//							GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
+//
+//							 break;
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
+//							break;
+//						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							GEPPETTO.ScriptRunner.runScript(payload.run_script);
+//							break;
+//						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.SIMULATION_OVER:
+//							
+//							break;
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
+//							if(parsedServerMessage.requestID == this.startRequestID){
+//								if(!this.checkUpdate2){
+//									this.checkUpdate2 = true;
+//
+//									var payload = JSON.parse(parsedServerMessage.data);
+//									var scene = JSON.parse(payload.update).scene;
+//
+//									GEPPETTO.RuntimeTreeController.updateRuntimeTree(scene);
+//									
+//									notEqual(purkinje.electrical.SimulationTree.P.neuron0.ge,null, "Recording variable ge present");
+//									notEqual(purkinje.electrical.SimulationTree.P.neuron0.gi,null, "Recroding variable gi present");
+//									start();
+//								}
+//							}
+//							break;
+//						}
+//					}
+//			};
+//
+//			GEPPETTO.MessageSocket.addHandler(handler);
+//			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/Recording/GEPPETTO.xml');
+//			initializationTime = new Date();	
+//		});
 		
 		module("Test SPH Simulation");
 		asyncTest("Test Runtime Tree at Load and SimulationTree with variables for SPH + ModelTree", function() {
@@ -436,7 +825,7 @@ define(function(require) {
 								equal(sample.getAspects().length,1,"Aspects checked");
 								equal(jQuery.isEmptyObject(sample.fluid.VisualizationTree),false,"Test Visualization at load");
 								equal(jQuery.isEmptyObject(sample.fluid.ModelTree),false,"Test Model tree at load");
-								equal(jQuery.isEmptyObject(sample.fluid.SimulationTree),true, "Test Visualization tree at load");
+								equal(jQuery.isEmptyObject(sample.fluid.SimulationTree),false, "Test Simulation tree at load");
 								Simulation.setSimulationLoaded();
 								break;
 							case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
@@ -485,7 +874,7 @@ define(function(require) {
 				};
 
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/referencing_variables/SPH/LiquidSmall/GEPPETTO.xml');
+			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/SPH/LiquidSmall/GEPPETTO.xml');
 		});
 		
 		asyncTest("Test Simulation Selection", function() {
@@ -526,36 +915,6 @@ define(function(require) {
 
 			GEPPETTO.MessageSocket.addHandler(handler);
 			Simulation.load("https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/SPH/ElasticSmall/GEPPETTO.xml");
-		});
-
-		asyncTest("Test list simulation variables no crash - SPH", function() {
-			expect(2);
-
-			GEPPETTO.MessageSocket.clearHandlers();
-
-			var handler = {
-				onMessage: function(parsedServerMessage) {
-
-					// Switch based on parsed incoming message type
-					switch(parsedServerMessage.type) {
-						//Simulation has been loaded successfully
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_LOADED:
-							ok(true, "Simulation loaded, passed");
-							Simulation.setSimulationLoaded();
-							Simulation.start();
-							Simulation.listWatchableVariables();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LIST_WATCH_VARS:
-							ok(true, "Variables received");
-							start();
-							break;
-					}
-
-				}
-			};
-
-			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load("https://raw.github.com/openworm/org.geppetto.testbackend/master/src/main/resources/Test1.xml");
 		});
 
 		module("Watch variables test 1");

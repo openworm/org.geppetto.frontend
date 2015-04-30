@@ -40,6 +40,9 @@ define(function(require) {
 		 */
 		GEPPETTO.MenuManager = {
 				
+		    resetMap : function(){
+		    	commandsProviders = {};
+		    },
 			registerNewCommandProvider: function(nodeTypes, handler) {
 				for (var nodeTypeKey in nodeTypes){
 					nodeType = nodeTypes[nodeTypeKey];

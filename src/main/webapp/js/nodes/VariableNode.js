@@ -36,14 +36,13 @@
  * 
  * @module nodes/VariableNode
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		unit : "",
-		value : "",
-		scalingFactor : "",
+		timeSeries : [],
 
 		/**
 		 * Initializes this node with passed attributes
@@ -54,43 +53,44 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this.unit = options.unit;
-			this.value = options.value;
-			this.scalingFactor = options.scalingFactor;
+			this.timeSeries = new Array();
+			this.watched = options.watched;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command ParameterSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function() {
-			return this.unit;
-		},
-
-		/**
 		 * Get value of quantity
 		 * 
-		 * @command ParameterSpecificationNode.getValue()
+		 * @command VariableNode.getTimeSeries()
 		 * @returns {String} Value of quantity
 		 */
-		getValue : function() {
-			return this.value;
+		getTimeSeries : function() {
+			return this.timeSeries;
 		},
 
 		/**
-		 * Get scaling factor
+		 * Get watched
 		 * 
-		 * @command ParameterSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
+		 * @command VariableNode.getWatched()
+		 * @returns {boolean} true if this variable is being watched
 		 */
-		getScalingFactor : function() {
-			return this.scalingFactor;
+		isWatched : function() {
+			return this.watched;
 		},
-
+		
+		/**
+		 * Set watched
+		 * 
+		 * @command VariableNode.setWatched()
+		 * @param {Boolean} watched - Object with options attributes to initialize node
+		 */
+		setWatched : function(isWatched) {
+			if (isWatched != this.watched){
+				Simulation.setWatchedVariables([this]);
+			}
+		},
+		
 		/**
 		 * Print out formatted node
 		 */
@@ -99,7 +99,8 @@ define(function(require) {
 					+ "    InstancePath : " + this.instancePath + "\n"
 					+ "    Value : " + this.value + "\n" + "    Unit : "
 					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n";
+					+ this.scalingFactor + "\n" +
+					+ "    Watched : " + this.watched + "\n";
 		}
 	});
 });

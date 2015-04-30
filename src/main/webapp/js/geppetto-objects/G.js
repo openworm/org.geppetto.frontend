@@ -178,6 +178,10 @@ define(function(require) {
 			help: function() {
 				return GEPPETTO.Utility.extractCommandsFromFile("assets/js/geppetto-objects/G.js", GEPPETTO.G, "G");
 			},
+			
+			setIdleTimeOut : function(timeOut){
+				GEPPETTO.Main.idleTime = timeOut;
+			},
 
 			/**
 			 * Removes widget from Geppetto

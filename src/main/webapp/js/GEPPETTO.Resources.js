@@ -112,37 +112,17 @@ define(function(require) {
 
 			MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
 
-			MESSAGE_OUTBOUND_LIST_WATCH: 'Outbund Message Sent: List watchable variables',
-
-			MESSAGE_OUTBOUND_LIST_FORCE: 'Outbund Message Sent: List forceable variables',
-
 			MESSAGE_OUTBOUND_SET_WATCH: 'Outbund Message Sent: add watch lists',
-
-			MESSAGE_OUTBOUND_GET_WATCH: 'Outbund Message Sent: get watch lists',
-
-			MESSAGE_OUTBOUND_START_WATCH: 'Outbund Message Sent: start watch lists',
-
-			MESSAGE_OUTBOUND_STOP_WATCH: 'Outbund Message Sent: stop watch lists',
 
 			MESSAGE_OUTBOUND_CLEAR_WATCH: 'Outbund Message Sent: clear watch lists',
 
 			SIMULATION_NOT_LOADED_ERROR: "Unable to perform operation, the simulation hasn't been loaded",
 
-			SIMULATION_VARS_LIST: "Simulation Variables List requested",
-
 			SIMULATION_SET_WATCH: "Simulation add watchlists requested",
-
-			SIMULATION_GET_WATCH: 'Simulation get watchlists requested',
-
-			SIMULATION_START_WATCH: 'Simulation start watch requested',
-
-			SIMULATION_STOP_WATCH: 'Simulation stop watch requested',
 
 			SIMULATION_CLEAR_WATCH: 'Simulation clear watchlists requested',
 
 			WATCHED_SIMULATION_STATES: "You are currently watching the following states : \n",
-
-			EMPTY_WATCH_TREE: "There are no simulation states to watch",
 
 			/**
 			 * Object G resources
@@ -211,15 +191,21 @@ define(function(require) {
 
 			RETRIEVING_MODEL_TREE : 'Model tree requested',
 			
+			RETRIEVING_SIMULATION_TREE : 'Simulation tree requested',
+			
 			EMPTY_MODEL_TREE : 'Model is empty, nothing to see here.',
+			
+			EMPTY_SIMULATION_TREE : 'No variables to simulate.',
+			
+			SIMULATION_TREE_POPULATED : 'Simulation tree populated.',
 			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
 			
 			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',
 
-			RETRIEVING_SIMULATION_TREE : 'Simulation tree: ',
-			
 			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
+			
+			WRITING_MODEL : 'Writing model as ',	
 			
 			/**
 			 * GEPPETTO.Main resources
@@ -260,10 +246,6 @@ define(function(require) {
 			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 
 			GEPPETTO_VERSION_HOLDER: "geppetto v$1 is ready",
-
-			LISTING_WATCH_VARS: "Inbound Message Received: List watch variables",
-
-			LISTING_FORCE_VARS: "Inbound Message Received: List force variables",
 
 			SIMULATOR_UNAVAILABLE: " is Unavailable",
 

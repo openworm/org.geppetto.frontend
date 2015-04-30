@@ -311,7 +311,18 @@ define(function(require) {
 				 * @command AspectNode.getSimulationTree()
 				 */
 				getSimulationTree : function() {
-					return this.SimulationTree;
+					// empty model tree, request server for it
+					if (this.SimulationTree.getChildren().length == 0) {
+						GEPPETTO.MessageSocket.send("get_simulation_tree",
+								this.instancePath);
+
+						return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE;
+					}
+					// model tree isn't empty, was requested previously and
+					// stored
+					else {
+						return this.SimulationTree;
+					}
 				},
 
 				/**

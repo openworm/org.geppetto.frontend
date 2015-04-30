@@ -89,7 +89,8 @@ define(function(require) {
 			
 			this.createLayout();
 			
-			return "Metadata or variables added to connectivity widget";
+			//return "Metadata or variables added to connectivity widget";
+			return this;
 		},
 		
 		createDataFromConnections: function(){
@@ -141,7 +142,7 @@ define(function(require) {
 		},
 		
 		createLayout: function(){
-			$("svg").remove();
+			$('#' + this.id + " svg").remove();
 			
 			this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
 			this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;

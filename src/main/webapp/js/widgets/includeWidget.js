@@ -59,6 +59,9 @@ define(function(require){
 	require("widgets/variablevisualiser/config");
 	//Connectivity Widget
 	require("widgets/connectivity/config");
+	//VariableVisualiser widget
+	require("widgets/buttonBar/config");
+
 	loadCss("assets/js/widgets/Widget.css");
 	};
 });

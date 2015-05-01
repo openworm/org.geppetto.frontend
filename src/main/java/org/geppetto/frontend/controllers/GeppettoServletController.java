@@ -41,7 +41,6 @@ import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -51,6 +50,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.simulation.IProjectManager;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.MultiuserSimulationCallback;
@@ -95,6 +96,9 @@ public class GeppettoServletController
 	private List<GeppettoMessageInbound> _observers = new ArrayList<GeppettoMessageInbound>();
 
 	private boolean _simulationInUse = false;
+
+	@Autowired
+	private IProjectManager _projectManager;
 
 	protected GeppettoServletController()
 	{
@@ -213,22 +217,21 @@ public class GeppettoServletController
 	 * @param visitor
 	 *            - Visitor doing the loading
 	 */
-	public void load(String requestID, String simulation, GeppettoMessageInbound visitor)
+	public void load(String requestID, IGeppettoProject geppettoProject, GeppettoMessageInbound visitor)
 	{
-
 		// Determine current mode of Geppetto
 		switch(_simulationServerConfig.getServerBehaviorMode())
 		{
 		// Handle multi user mode
 			case MULTIUSER:
 				_simulationCallbackListener = new MultiuserSimulationCallback(visitor);
-				loadInMultiUserMode(requestID, simulation, visitor);
+				loadInMultiUserMode(requestID, geppettoProject, visitor);
 				break;
 
 			// Handle observe mode
 			case OBSERVE:
 				_simulationCallbackListener = ObservermodeSimulationCallback.getInstance();
-				loadInObserverMode(requestID, simulation, visitor);
+				loadInObserverMode(requestID, geppettoProject, visitor);
 				break;
 			default:
 				break;
@@ -243,10 +246,10 @@ public class GeppettoServletController
 	 * @param visitor
 	 *            - Visitor doing the loading of simulation
 	 */
-	private void loadInMultiUserMode(String requestID, String simulation, GeppettoMessageInbound visitor)
+	private void loadInMultiUserMode(String requestID, IGeppettoProject geppettoProject, GeppettoMessageInbound visitor)
 	{
 		visitor.setIsSimulationLoaded(false);
-		loadSimulation(requestID, simulation, visitor);
+		loadSimulation(requestID, geppettoProject, visitor);
 	}
 
 	/**
@@ -257,7 +260,7 @@ public class GeppettoServletController
 	 * @param visitor
 	 *            - Visitor doing the loading of simulation
 	 */
-	private void loadInObserverMode(String requestID, String simulation, GeppettoMessageInbound visitor)
+	private void loadInObserverMode(String requestID, IGeppettoProject geppettoProject, GeppettoMessageInbound visitor)
 	{
 		// Simulation already in use
 		if(isSimulationInUse())
@@ -272,7 +275,7 @@ public class GeppettoServletController
 					{
 						messageClient(null, observer, OUTBOUND_MESSAGE_TYPES.RELOAD_CANVAS);
 					}
-					loadSimulation(requestID, simulation, visitor);
+					loadSimulation(requestID, geppettoProject, visitor);
 					break;
 				case WAITING:
 					// Do Nothing
@@ -290,7 +293,7 @@ public class GeppettoServletController
 			_simulationServerConfig.setIsSimulationLoaded(false);
 
 			// load simulation
-			_simulationInUse = loadSimulation(requestID, simulation, visitor);
+			_simulationInUse = loadSimulation(requestID, geppettoProject, visitor);
 
 			// Simulation just got someone to control it, notify everyone else
 			// connected that simulation controls are unavailable.
@@ -314,44 +317,46 @@ public class GeppettoServletController
 	 * 
 	 * @return {boolean} - Success or failure
 	 */
-	private boolean loadSimulation(String requestID, String simulation, GeppettoMessageInbound visitor)
+	private boolean loadSimulation(String requestID, IGeppettoProject geppettoProject, GeppettoMessageInbound visitor)
 	{
 
 		boolean loaded = false;
 
-		URL url = null;
+		// URL url = null;
 
 		// attempt to convert simulation to URL
 		try
 		{
-			url = new URL(simulation);
-			// simulation is URL, initialize simulation services
-			visitor.getSimulationService().init(url, requestID, _simulationCallbackListener);
+			_projectManager.loadProject(geppettoProject, _simulationCallbackListener);
+
+			// url = new URL(simulation);
+			// visitor.getSimulationService().init(url, requestID, _simulationCallbackListener);
 			postLoadSimulation(requestID, visitor);
 			loaded = true;
 		}
 		/*
 		 * Unable to make url from simulation, must be simulation content. URL validity checked in GeppettoMessageInbound prior to call here
 		 */
-		catch(MalformedURLException e)
+		// catch(MalformedURLException e)
+		// {
+		// try
+		// {
+		// visitor.getSimulationService().init(simulation, requestID, _simulationCallbackListener);
+		// postLoadSimulation(requestID, visitor);
+		// loaded = true;
+		// }
+		catch(MalformedURLException | GeppettoInitializationException e)
 		{
-			try
-			{
-				visitor.getSimulationService().init(simulation, requestID, _simulationCallbackListener);
-				postLoadSimulation(requestID, visitor);
-				loaded = true;
-			}
-			catch(GeppettoInitializationException e1)
-			{
-				messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
-				loaded = false;
-			}
-		}
-		catch(GeppettoInitializationException e)
-		{
+			_logger.info("Could not load geppetto model", e);
 			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
 			loaded = false;
 		}
+		// }
+		// catch(GeppettoInitializationException e)
+		// {
+		// messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+		// loaded = false;
+		// }
 
 		// set user as controlling
 		visitor.setVisitorRunMode(VisitorRunMode.CONTROLLING);
@@ -474,8 +479,10 @@ public class GeppettoServletController
 	 */
 	public void setWatchedVariables(String requestID, String jsonLists, GeppettoMessageInbound visitor) throws GeppettoExecutionException, GeppettoInitializationException
 	{
-		List<String> lists = fromJSON(new TypeReference<List<String>>()	{}, jsonLists);
-		
+		List<String> lists = fromJSON(new TypeReference<List<String>>()
+		{
+		}, jsonLists);
+
 		visitor.getSimulationService().setWatchedVariables(lists);
 
 		// serialize watch-lists
@@ -494,7 +501,6 @@ public class GeppettoServletController
 		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCHED_VARIABLES, serializedLists);
 
 	}
-
 
 	/**
 	 * instructs simulation to clear watch lists
@@ -735,7 +741,6 @@ public class GeppettoServletController
 		this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_SIMULATION_TREE, simulationTree);
 	}
 
-	
 	public void writeModel(String requestID, String instancePath, String format, GeppettoMessageInbound visitor)
 	{
 		String modelTree = visitor.getSimulationService().writeModel(instancePath, format);
@@ -798,19 +803,21 @@ public class GeppettoServletController
 		postClosingConnectionCheck(visitor);
 	}
 
-	public void setParameters(String requestID, String modelPath, Map<String, String> parameters,
-			GeppettoMessageInbound visitor) {
-		
-		boolean parametersSet = visitor.getSimulationService().setParameters(modelPath,parameters);
-		
-		//return successful message if set parameter succeeded
-		if(parametersSet){
+	public void setParameters(String requestID, String modelPath, Map<String, String> parameters, GeppettoMessageInbound visitor)
+	{
+
+		boolean parametersSet = visitor.getSimulationService().setParameters(modelPath, parameters);
+
+		// return successful message if set parameter succeeded
+		if(parametersSet)
+		{
 			this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_PARAMETERS);
-		}else{
-			String message = "Model Service for " + modelPath 
-					+ " doesn't support SetParameters feature";
-			//no parameter feature supported by this model service
-			this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.NO_FEATURE,message);
+		}
+		else
+		{
+			String message = "Model Service for " + modelPath + " doesn't support SetParameters feature";
+			// no parameter feature supported by this model service
+			this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.NO_FEATURE, message);
 		}
 	}
 }

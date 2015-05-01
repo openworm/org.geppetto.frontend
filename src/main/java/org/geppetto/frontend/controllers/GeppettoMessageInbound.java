@@ -51,7 +51,6 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
-import org.geppetto.core.simulation.IProjectManager;
 import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
@@ -86,9 +85,6 @@ public class GeppettoMessageInbound extends MessageInbound
 
 	@Autowired
 	private ISimulation _simulationService;
-
-	@Autowired
-	private IProjectManager _projectManager;
 
 	private GeppettoServletController _servletController;
 	private final String _client_id;
@@ -159,7 +155,7 @@ public class GeppettoMessageInbound extends MessageInbound
 					url = new URL(jsonUrlString);
 					BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 					IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
-					_servletController.load(requestID, _projectManager.getGeppettoModelUrl(geppettoProject), this);
+					_servletController.load(requestID, geppettoProject, this);
 				}
 				catch(IOException e)
 				{
@@ -174,7 +170,7 @@ public class GeppettoMessageInbound extends MessageInbound
 				try
 				{
 					IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(idString));
-					_servletController.load(requestID, _projectManager.getGeppettoModelUrl(geppettoProject), this);
+					_servletController.load(requestID, geppettoProject, this);
 				}
 				catch(NumberFormatException e)
 				{
@@ -186,7 +182,7 @@ public class GeppettoMessageInbound extends MessageInbound
 			{
 				String simulation = gmsg.data;
 				IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), simulation);
-				_servletController.load(requestID, _projectManager.getGeppettoModelUrl(geppettoProject), this);
+				_servletController.load(requestID, geppettoProject, this);
 				break;
 			}
 			case RUN_SCRIPT:

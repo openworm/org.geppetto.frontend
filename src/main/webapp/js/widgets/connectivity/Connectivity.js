@@ -61,19 +61,22 @@ define(function(require) {
 			this.setSize(options.height, options.width);
 			
 			this.connectivityContainer = $("#" +this.id);
-			this.connectivityContainer.on("dialogresizestop", function(event, ui) {
-			    //TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
-				var width = $(this).innerWidth()-20;
-				var height = $(this).innerHeight()-20;
-				if (window[this.id].options.connectivityLayout == 'force'){
-					window[this.id].svg.attr("width", width).attr("height", height);
-					window[this.id].force.size([width, height]).resume();
+		},
+		
+		setSize: function(h, w) {
+			Widget.View.prototype.setSize.call(this,h,w);
+			if (this.svg != null){
+				//TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
+				var width = this.size.width - 20;
+				var height = this.size.height - 20;
+				if (this.options.connectivityLayout == 'force'){
+					this.svg.attr("width", width).attr("height", height);
+					this.force.size([width, height]).resume();
 				}
-				else if (window[this.id].options.connectivityLayout == 'matrix') {
-					window[this.id].createLayout();
+				else if (this.options.connectivityLayout == 'matrix') {
+					this.createLayout();
 				}
-				event.stopPropagation();
-		    });
+			}
 		},
 		
 		setData : function(root, options){

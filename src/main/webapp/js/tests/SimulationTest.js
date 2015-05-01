@@ -521,7 +521,37 @@ define(function(require) {
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
 							 this.startRequestID = parsedServerMessage.requestID;
 							 break;
+							 
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_SIMULATION_TREE:
+							var payload = JSON.parse(parsedServerMessage.data);
+
+				        	var update = JSON.parse(payload.get_simulation_tree);      
+				        	for (var updateIndex in update){
+					        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+					        	var simulationTree = update[updateIndex].simulationTree;
+					        	
+					        	//create client side simulation tree
+					        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
+				        	}
+				        	
+							notEqual(hhcell.electrical.SimulationTree.getChildren(), null,"Test simulation tree");
+							equal(jQuery.isEmptyObject(hhcell.electrical.SimulationTree.hhpop[0].v),false,"Test Simulation tree has v variable");
+							equal(hhcell.electrical.SimulationTree.hhpop[0].v.isWatched(),false,"Test Simulation tree has v variable with watched set to false");
+							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_WATCH_VARS:
+							var payload = JSON.parse(parsedServerMessage.data);
+							//variables watching
+				            var variables = JSON.parse(payload.set_watch_vars)
+				            
+				            for (var index in variables){
+				            	var variable = eval(variables[index]);
+				            	variable.watched = !variable.watched;
+				            	GEPPETTO.Simulation.simulationStates.push(variables[index]);
+				            }
+				            
+							notEqual(hhcell.electrical.SimulationTree.getChildren(), null,"Test simulation tree");
+							equal(jQuery.isEmptyObject(hhcell.electrical.SimulationTree.hhpop[0].v),false,"Test Simulation tree has v variable");
+							equal(hhcell.electrical.SimulationTree.hhpop[0].v.isWatched(),true,"Test Simulation tree has v variable with watched set to true");
 							break;
 						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
 							var payload = JSON.parse(parsedServerMessage.data);
@@ -705,7 +735,7 @@ define(function(require) {
 			};
 
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?><tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"><tns:entity><tns:id>pharyngeal</tns:id><tns:aspect><tns:id>electrical</tns:id><tns:simulator><tns:simulatorId>jLemsSimulator</tns:simulatorId></tns:simulator><tns:model><tns:modelInterpreterId>lemsModelInterpreter</tns:modelInterpreterId><tns:modelURL>https://raw.githubusercontent.com/openworm/CElegansNeuroML/master/CElegans/pythonScripts/c302/LEMS_c302_A_Pharyngeal.xml</tns:modelURL></tns:model></tns:aspect></tns:entity></tns:simulation>')
+			Simulation.loadFromContent('<?xml version="1.0" encoding="UTF-8"?><tns:simulation xmlns:tns="http://www.openworm.org/simulationSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="../../main/resources/schema/simulationSchema.xsd"><tns:entity><tns:id>pharyngeal</tns:id><tns:aspect><tns:id>electrical</tns:id><tns:simulator><tns:simulatorId>jLemsSimulator</tns:simulatorId></tns:simulator><tns:model><tns:modelInterpreterId>lemsModelInterpreter</tns:modelInterpreterId><tns:modelURL>https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/C302Pharyngeal/LEMS_c302_A_Pharyngeal.xml</tns:modelURL></tns:model></tns:aspect></tns:entity></tns:simulation>')
 			initializationTime = new Date();	
 		});
 		

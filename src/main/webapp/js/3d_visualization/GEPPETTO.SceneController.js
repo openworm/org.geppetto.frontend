@@ -434,7 +434,6 @@ define(function(require) {
 
 					var mesh = GEPPETTO.getVARS().meshes[path];
 					var origin = mesh.position.clone();
-					origin = mesh.localToWorld(origin);
 					
 					for ( var aspectPath in lines ) {
 						
@@ -442,7 +441,6 @@ define(function(require) {
 						var destinationMesh = GEPPETTO.getVARS().meshes[aspectPath];
 						var destination =
 							destinationMesh.position.clone();
-						destination = destinationMesh.localToWorld(destination);
 						
 						var geometry = new THREE.Geometry();
 

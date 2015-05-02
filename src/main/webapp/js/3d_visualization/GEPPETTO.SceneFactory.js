@@ -39,8 +39,10 @@ define(function(require) {
 								p = new THREE.Vector3(position.x, position.y,
 										position.z);
 								mesh.position.set(p.x,p.y,p.z);
-								mesh.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(p.x,p.y,p.z));
+								mesh.matrixAutoUpdate = false;
+								mesh.applyMatrix(new THREE.Matrix4().makeTranslation(p.x,p.y,p.z));
 								mesh.geometry.verticesNeedUpdate = true;
+								mesh.updateMatrix();
 							}
 							GEPPETTO.getVARS().scene.add(mesh);
 							//keep track of aspects created by storing them in VARS property object

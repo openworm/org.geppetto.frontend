@@ -105,7 +105,7 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 		_messageSender = _messageSenderFactory.getMessageSender(getWsOutbound(), this);
 		_servletController.addConnection(this);
 
-		_servletController.messageClient(null, this, OUTBOUND_MESSAGE_TYPES.CLIENT_ID, this._client_id);
+		messageClient(null, OUTBOUND_MESSAGE_TYPES.CLIENT_ID, this._client_id);
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 				}
 				catch(MalformedURLException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+					messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
 				}
 				break;
 			}
@@ -198,7 +198,8 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 				_servletController.startSimulation(requestID, this);
 				break;
 			}
-			case PAUSE: {
+			case PAUSE:
+			{
 				_messageSender.pauseQueuedMessaging();
 				_messageSender.reset();
 				_servletController.pauseSimulation(requestID, this);
@@ -226,11 +227,11 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 				}
 				catch(GeppettoExecutionException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
+					messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
 				}
 				catch(GeppettoInitializationException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
+					messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
 				}
 
 				break;

@@ -101,6 +101,10 @@ define(function(require) {
 		 * @param {Object} options - Set of options passed to widget to customize it
 		 */
 		setData : function(state, options) {
+			if(state instanceof Array){
+				var that = this;
+				$.each(state, function(d){that.setData(state[d], options)})
+			}
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
 			
 			dataset.valueDict = {};
@@ -123,7 +127,8 @@ define(function(require) {
 				}
 			});
 
-			return "Metadata or variables to display added to tree visualiser";
+			//return "Metadata or variables to display added to tree visualiser";
+			return this;
 		},
 
 		/**
@@ -134,9 +139,13 @@ define(function(require) {
 		 */
 		prepareTree : function(parent, data) {
 			if (data._metaType != null){
-				//TODO: Remove once all getName are implemented in all nodes
-				if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
-				else{label = data.getName();}
+				if('labelName' in this.options){
+					label = data[this.options.labelName];
+				}else{
+					//TODO: Remove once all getName are implemented in all nodes
+					if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
+					else{label = data.getName();}
+				}
 				
 				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
 						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |

@@ -36,6 +36,7 @@
  * 
  * @module nodes/VariableNode
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 	var Node = require('nodes/Node');
@@ -53,6 +54,7 @@ define(function(require) {
 			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.timeSeries = new Array();
+			this.watched = options.watched;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
 		},
@@ -60,13 +62,35 @@ define(function(require) {
 		/**
 		 * Get value of quantity
 		 * 
-		 * @command ParameterSpecificationNode.getValue()
+		 * @command VariableNode.getTimeSeries()
 		 * @returns {String} Value of quantity
 		 */
 		getTimeSeries : function() {
 			return this.timeSeries;
 		},
 
+		/**
+		 * Get watched
+		 * 
+		 * @command VariableNode.getWatched()
+		 * @returns {boolean} true if this variable is being watched
+		 */
+		isWatched : function() {
+			return this.watched;
+		},
+		
+		/**
+		 * Set watched
+		 * 
+		 * @command VariableNode.setWatched()
+		 * @param {Boolean} watched - Object with options attributes to initialize node
+		 */
+		setWatched : function(isWatched) {
+			if (isWatched != this.watched){
+				Simulation.setWatchedVariables([this]);
+			}
+		},
+		
 		/**
 		 * Print out formatted node
 		 */
@@ -75,7 +99,8 @@ define(function(require) {
 					+ "    InstancePath : " + this.instancePath + "\n"
 					+ "    Value : " + this.value + "\n" + "    Unit : "
 					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n";
+					+ this.scalingFactor + "\n" +
+					+ "    Watched : " + this.watched + "\n";
 		}
 	});
 });

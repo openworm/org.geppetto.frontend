@@ -135,7 +135,9 @@ define(function(require) {
 							if (node.type == "VisualizationTree") {
 								this.createVisualizationTree(node,a);
 							} else if (node.type == "SimulationTree") {
-								a.SimulationTree = {};
+								var subTree = this.createAspectSubTreeNode(node);
+								subTree.setParent(a);
+								a.SimulationTree = subTree;
 							} else if (node.type == "ModelTree") {
 								var subTree = this.createAspectSubTreeNode(node);
 								subTree.setParent(a);
@@ -292,6 +294,7 @@ define(function(require) {
 						name : node.name,
 						instancePath : node.instancePath,
 						properties : node.properties,
+						watched : (node.watched === 'true'),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.PARAMETER_NODE
 					});
@@ -416,6 +419,7 @@ define(function(require) {
 						id : node.id,
 						name : node.name,
 						instancePath : node.instancePath,
+						watched : (node.watched === 'true'),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VARIABLE_NODE
 					});

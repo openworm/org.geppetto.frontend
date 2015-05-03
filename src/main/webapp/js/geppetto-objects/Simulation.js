@@ -294,89 +294,20 @@ define(function(require) {
 			},
 
 			/**
-			 * List watchable variables for the simulation.
-			 *
-			 * @command GEPPETTO.Simulation.listWatchableVariables()
-			 */
-			listWatchableVariables: function() {
-				if(this.isLoaded()) {
-					GEPPETTO.MessageSocket.send("list_watch_vars", null);
-
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LIST_WATCH);
-
-					return GEPPETTO.Resources.SIMULATION_VARS_LIST;
-				}
-				else {
-					return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
-				}
-			},
-
-			/**
-			 * List forceable variables for the simulation.
-			 *
-			 * @command GEPPETTO.Simulation.listForceableVariables()
-			 * @returns {String} - Status after requesting list of forceable variables.
-			 */
-			listForceableVariables: function() {
-				if(this.isLoaded()) {
-					GEPPETTO.MessageSocket.send("list_force_vars", null);
-
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LIST_FORCE);
-
-					return GEPPETTO.Resources.SIMULATION_VARS_LIST;
-				}
-				else {
-					return GEPPETTO.Resources.SIMULATION_NOT_LOADED_ERROR;
-				}
-			},
-
-			/**
 			 * Add watchlists to the simulation.
 			 *
-			 * @command GEPPETTO.Simulation.addWatchLists()
+			 * @command GEPPETTO.Simulation.setWatchedVariables(watchLists)
 			 * @param {Array} watchLists - Array listing variables to be watched.
-			 * @returns {String} Status after request.
 			 */
-			addWatchLists: function(watchLists) {
-				santasLittleHelper("set_watch", GEPPETTO.Resources.SIMULATION_SET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_SET_WATCH, watchLists);
+			setWatchedVariables: function(watchLists) {
+				var watchedList = [];
+				for (var index in watchLists){
+					watchedList.push(watchLists[index].instancePath);
+					
+				}
+				santasLittleHelper("set_watch", GEPPETTO.Resources.SIMULATION_SET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_SET_WATCH, watchedList);
 
 				return GEPPETTO.Resources.SIMULATION_SET_WATCH;
-			},
-
-			/**
-			 * Retrieve watchlists available the simulation.
-			 *
-			 * @command GEPPETTO.Simulation.getWatchLists()
-			 * @returns {String} Status after request.
-			 */
-			getWatchLists: function() {
-				santasLittleHelper("get_watch", GEPPETTO.Resources.SIMULATION_GET_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_GET_WATCH, null);
-
-				return GEPPETTO.Resources.SIMULATION_GET_WATCH;
-			},
-
-			/**
-			 * Start watching variables for the simulation.
-			 *
-			 * @command GEPPETTO.Simulation.startWatch()
-			 * @returns {String} Status after request.
-			 */
-			startWatch: function() {
-				santasLittleHelper("start_watch", GEPPETTO.Resources.SIMULATION_START_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_START_WATCH, null);
-
-				return GEPPETTO.Resources.SIMULATION_START_WATCH;
-			},
-
-			/**
-			 * Stop watching variables for the simulation.
-			 *
-			 * @command GEPPETTO.Simulation.stopWatch()
-			 * @returns {String} Status after request.
-			 */
-			stopWatch: function() {
-				santasLittleHelper("stop_watch", GEPPETTO.Resources.SIMULATION_STOP_WATCH, GEPPETTO.Resources.MESSAGE_OUTBOUND_STOP_WATCH, null);
-
-				return GEPPETTO.Resources.SIMULATION_STOP_WATCH;
 			},
 
 			/**
@@ -391,27 +322,6 @@ define(function(require) {
 				GEPPETTO.Simulation.simulationStates = [];
 
 				return GEPPETTO.Resources.SIMULATION_CLEAR_WATCH;
-			},
-
-			/**
-			 * Gets tree for variables being watched if any.
-			 *
-			 * @command GEPPETTO.Simulation.getWatchTree()
-			 * @returns {String} Simulation tree nicely formatted 
-			 */
-			getWatchTree: function() {
-				var watched_variables = GEPPETTO.Resources.WATCHED_SIMULATION_STATES + "";
-
-				for(var key in GEPPETTO.Simulation.simulationStates) {
-					watched_variables += "\n" + "      -- " + GEPPETTO.Simulation.simulationStates[key] + "\n";
-				}
-
-				if(this.watchTree == null) {
-					return GEPPETTO.Resources.EMPTY_WATCH_TREE;
-				}
-				else {
-					return watched_variables;
-				}
 			},
 
 			/**
@@ -712,7 +622,7 @@ define(function(require) {
 				}
 				else{
 					if (typeof data.getChildren === "function" && data.getChildren() != null){
-						var children = data.getChildren().models;
+						var children = data.getChildren();
 						if (children.length > 0){
 							for (var childIndex in children){
 								this.searchNodeByMetaType(children[childIndex], metaType, nodes);

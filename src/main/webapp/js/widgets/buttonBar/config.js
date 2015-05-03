@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,36 +32,12 @@
  *******************************************************************************/
 
 /**
- * Loads widget scripts
- *  
- * @author Jesus Martinez (jesus@metacell.us)
+ * Load button bar widget deps
+ *
+ * @author borismarin
  */
-
-//Widget Classes
-define(function(require){
-	return function(GEPPETTO) {
-
-	require('widgets/WidgetFactory')(GEPPETTO);
-	require('widgets/WidgetsListener')(GEPPETTO);
-	require("widgets/WidgetUtility");
-	require("widgets/ContextMenu")(GEPPETTO);
-	//Plot Widget
-	require("widgets/plot/config");
-	//Popup Widget
-	require("widgets/popup/config");
-	//Scatter3d Widget
-	require("widgets/scatter3d/config");	
-	//TreeVisualiser DAT Widget
-	require("widgets/treevisualiser/treevisualiserdat/config");
-	//TreeVisualiser D3 Widget
-	require("widgets/treevisualiser/treevisualiserd3/config");
-	//VariableVisualiser widget
-	require("widgets/variablevisualiser/config");
-	//Connectivity Widget
-	require("widgets/connectivity/config");
-	//VariableVisualiser widget
-	require("widgets/buttonBar/config");
-
-	loadCss("assets/js/widgets/Widget.css");
-	};
-});
+/*
+ * Configure what dependencies are needed for each library
+ */
+loadCss("assets/js/widgets/buttonBar/ButtonBar.css");
+loadCss("assets/js/widgets/buttonBar/gpt-icons.css");

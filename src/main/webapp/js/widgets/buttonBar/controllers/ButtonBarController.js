@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,73 +31,64 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a parameter node, used for model tree
- * properties.
- * 
- * @module nodes/ParameterNode
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * Controller class for the button bar widget.
+ *
+ * @author borismarin 
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
+	var AWidgetController = require('widgets/AWidgetController');
+	var BuBar = require('widgets/buttonBar/ButtonBar');
 
-	return Node.Model.extend({
-		properties : {},
+	/**
+	 * @exports Widgets/ButtonBar/ButtonBarController
+	 */
+	return AWidgetController.View.extend ({
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			this.properties = options.properties;
-			this.name = options.name;
-			this.id = options.id;
-			this.instancePath = options.instancePath;
-			this.domainType = options.domainType;
-			this._metaType = options._metaType;
-			this.watched = options.watched;
+		initialize: function() {
+			this.widgets = new Array();
 		},
 
 		/**
-		 * Get properties for this node
-		 * 
-		 * @command ParameterNode.getProperties()
-		 * @returns {String} Unit for quantity
+		 * Creates new button bar widget
 		 */
-		getProperties : function() {
-			return this.properties;
+		addButtonBarWidget: function() {
+			//look for a name and id for the new widget
+			var id = this.getAvailableWidgetId("ButtonBar", this.widgets);
+			var name = id;
+			var vv = window[name] = new BuBar({id:id, name:name,visible:true});
+			vv.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+			this.widgets.push(vv);
+
+			GEPPETTO.WidgetsListener.subscribe(this, id);
+
+			//updates help command options
+			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/buttonBar/ButtonBar.js", vv, id);
+			//update tags for autocompletion
+			GEPPETTO.Console.updateTags(vv.getId(),vv);
+			return vv;
 		},
 
 		/**
-		 * Get watched
-		 * 
-		 * @command ParameterSpecificationNode.getWatched()
-		 * @returns {boolean} true if this variable is being watched
+		 * Receives updates from widget listener class to update Button Bar widget(s)
+		 *
+		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
-		isWatched : function() {
-			return this.watched;
-		},
+		update: function(event) {
+			//delete a widget(s)
+			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+				this.removeWidgets();
+			}
 
-		/**
-		 * Set watched
-		 * 
-		 * @command VariableNode.setWatched()
-		 * @param {Boolean} watched - Object with options attributes to initialize node
-		 */
-		setWatched : function(isWatched) {
-			Simulation.setWatchedVariables([this]);
-		},
-		
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Properties : " + this.properties + "\n"
-					+ "    Watched : " + this.watched + "\n";
+			//reset widget's datasets
+			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+				//pass
+			}
+
+			//update widgets
+			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+				//pass
+			}
 		}
 	});
 });

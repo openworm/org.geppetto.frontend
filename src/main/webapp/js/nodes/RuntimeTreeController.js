@@ -40,6 +40,7 @@
 define(function(require) {
 	return function(GEPPETTO) {
 		var simulationTreeCreated=false;
+		var PhysicalQuantity = require('nodes/PhysicalQuantity');
 
 		/**
 		 * @class GEPPETTO.RuntimeTreeController
@@ -98,7 +99,7 @@ define(function(require) {
 							{
 								if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.Simulation==undefined)
 								{
-									this.createAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
+									this.populateAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
 								}
 							}
 						}
@@ -155,7 +156,12 @@ define(function(require) {
 							var state = GEPPETTO.Simulation.simulationStates[index];
 							var received=eval("jsonRuntimeTree."+state);
 							var clientNode=eval(state);
-							clientNode.getTimeSeries()[0].value = received.timeSeries["quantity0"].value; 
+							clientNode.getTimeSeries().unshift();
+							
+							for (var index in received.timeSeries){
+								clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
+							}
+							
 						} catch (e) {
 						}
 					}
@@ -163,28 +169,8 @@ define(function(require) {
 					this.updateWidgets();
 				},
 				
-				/**Update and create simulation Tree for aspect
-				 * 
-				 * @param aspectInstancePath - Path of aspect to update
-				 * @param simulationTree - Server JSON update
-				 */
-				createAspectSimulationTree : function(aspectInstancePath,simulationTreeUpdate){
-					var aspect= eval(aspectInstancePath);	
-					//the client aspect has no simulation tree, let's create it
-					var path =aspectInstancePath + ".SimulationTree";
-
-					//create SubTreeNode to store simulation tree
-					var subTree = GEPPETTO.NodeFactory.createAspectSubTreeNode({
-								  name : "Simulation",instancePath : path ,
-								  type : "SimulationTree",
-								 _metaType : GEPPETTO.Resources.ASPECT_SUBTREE_NODE});
-					this.createSimulationTree(subTree, simulationTreeUpdate);
-					aspect.SimulationTree = subTree;
-					this.simulationTreeCreated = true;
-				},
-
 				updateWidgets : function(){
-					//send command to widgets that newd data is available
+					//send command to widgets that new data is available
 					GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
 
 					//update scene brightness
@@ -281,15 +267,49 @@ define(function(require) {
 							}
 							else if(metatype == GEPPETTO.Resources.TEXT_METADATA_NODE){
 								var textMetadataNode =  GEPPETTO.NodeFactory.createTextMetadataNode(node[i]);
+								textMetadataNode.setParent(parent);
 								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
 									parent.getChildren().push(textMetadataNode);
 								}
 								parent[i] = textMetadataNode;
 							}
+							else if(metatype == GEPPETTO.Resources.VARIABLE_NODE){
+								var variableNode =  GEPPETTO.NodeFactory.createVariableNode(node[i]);
+								variableNode.setParent(parent);
+								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+									parent.getChildren().push(variableNode);
+								}
+								parent[i] = variableNode;
+							}
 						}
 					}
 
 					return parent;
+				},
+				
+				/**Update and create simulation Tree for aspect
+				 * 
+				 * @param aspectInstancePath - Path of aspect to update
+				 * @param simulationTree - Server JSON update
+				 */
+				populateAspectSimulationTree : function(aspectInstancePath, simulationTree){
+					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);
+
+					//populate model tree with server nodes
+					this.createAspectSimulationTree(aspect.SimulationTree, simulationTree);
+
+					//notify user received tree was empty
+					if(aspect.SimulationTree.getChildren().length==0){
+						var indent = "    ";
+						GEPPETTO.Console.debugLog(indent + GEPPETTO.Resources.EMPTY_SIMULATION_TREE);
+					}else{
+						GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_POPULATED);
+						GEPPETTO.Console.debugLog(indent + GEPPETTO.Resources.SIMULATION_TREE_POPULATED);
+						//GEPPETTO.Console.executeCommand(aspect.SimulationTree.instancePath + ".print()");
+						//aspect.SimulationTree.print();
+					}
+					
+					this.simulationTreeCreated = true;
 				},
 
 				/**
@@ -300,7 +320,7 @@ define(function(require) {
 				 * @param node -
 				 *            JSON server update nodes
 				 */
-				createSimulationTree : function(parent, node) {
+				createAspectSimulationTree : function(parent, node) {
 					// traverse throuh node to find objects
 					for ( var i in node) {
 						if (typeof node[i] === "object") {
@@ -323,7 +343,7 @@ define(function(require) {
 								for ( var index = 0; index < array.length; index++) {
 									parent[i][index] = {};
 									// create nodes for each array index node
-									var arrayObject = this.createSimulationTree(
+									var arrayObject = this.createAspectSimulationTree(
 											arrayNode, array[index]);
 									// set instance path of created array node and
 									// set as property
@@ -339,13 +359,15 @@ define(function(require) {
 							else if (metatype == GEPPETTO.Resources.COMPOSITE_NODE) {
 								var newNode = GEPPETTO.NodeFactory.createCompositeNode(node[i],true);
 								newNode.setParent(parent);
-								this.createSimulationTree(newNode, node[i]);
 								// add to parent if applicable
 								if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE
 										|| parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
 									parent.getChildren().push(newNode);
 								}
 								parent[i] = newNode;
+								
+								//traverse through children of composite node
+								this.createAspectSimulationTree(parent[i], node[i]);
 							} else if (metatype == GEPPETTO.Resources.VARIABLE_NODE) {
 								var newNode = GEPPETTO.NodeFactory.createVariableNode(node[i]);
 								newNode.setParent(parent);

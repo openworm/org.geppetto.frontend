@@ -164,13 +164,6 @@ define(function(require) {
 				//Increment the idle time counter every minute.
 				setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
 	            var here = $(this);
-				//Zero the idle timer on mouse movement.
-				here.mousemove(function(e) {
-					GEPPETTO.Main.idleTime = 0;
-				});
-				here.keypress(function(e) {
-					GEPPETTO.Main.idleTime = 0;
-				});
 				
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 

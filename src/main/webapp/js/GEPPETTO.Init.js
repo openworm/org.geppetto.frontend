@@ -73,7 +73,6 @@ define(function(require) {
 		var setupRenderer = function() {
 			// Reuse a single WebGL renderer. Recreating the renderer causes
 			// camera displacement on Chrome OSX.
-			console.log(VARS.customRendererClass +" VARS.customRendererClass");
 			if (!VARS.canvasCreated) {
 				if (VARS.customRendererClass == null) {
 					VARS.renderer = new THREE.WebGLRenderer({

@@ -42,103 +42,99 @@ define(function(require) {
     var Widget = require('widgets/Widget');
     var $ = require('jquery');
 
-    return Widget.View.extend({
-        
-        dataset: {},
-        
-        defaultConnectivityOptions:  {
-            width: 660,
-            height: 500,
-            connectivityLayout: "matrix", //[matrix, hive, force]
-        },
-        
-        initialize : function(options){
-            this.options = options;
-            Widget.View.prototype.initialize.call(this,options);
-            this.setOptions(this.defaultConnectivityOptions);
-            
-            this.render();
-            this.setSize(options.height, options.width);
-            
-            this.connectivityContainer = $("#" +this.id);
-            this.connectivityContainer.on("dialogresizestop", function(event, ui) {
-                //TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
-                var width = $(this).innerWidth()-20;
-                var height = $(this).innerHeight()-20;
-                if (window[this.id].options.connectivityLayout == 'force'){
-                    window[this.id].svg.attr("width", width).attr("height", height);
-                    window[this.id].force.size([width, height]).resume();
-                }
-                else if (window[this.id].options.connectivityLayout == 'matrix') {
-                    window[this.id].createLayout();
-                }
-                event.stopPropagation();
-            });
-        },
-        
-        setData : function(root, options){
-            this.setOptions(options);
-            this.dataset = {};
-            this.mapping = {};
-            this.mappingSize = 0;
-            this.dataset["root"] = root;
-            this.widgetMargin = 20;
-            
-            this.createDataFromConnections();
-            
-            this.createLayout();
-            
-            //return "Metadata or variables added to connectivity widget";
-            return this;
-        },
-        
-        
-        createDataFromConnections: function(){
-            if (this.dataset["root"]._metaType == "EntityNode"){
-                var subEntities = this.dataset["root"].getEntities();
-                
-                this.dataset["nodes"] = [];
-                this.dataset["links"] = [];
-//                  this.dataset["graph"] = new Array(1);
-//                  this.dataset["multigraph"] = false;
-//                  this.dataset["directed"] = true;
+	return Widget.View.extend({
+		
+		dataset: {},
+		
+		defaultConnectivityOptions:  {
+			width: 660,
+			height: 500,
+			connectivityLayout: "matrix", //[matrix, hive, force]
+		},
+		
+		initialize : function(options){
+			this.options = options;
+			Widget.View.prototype.initialize.call(this,options);
+			this.setOptions(this.defaultConnectivityOptions);
+			
+			this.render();
+			this.setSize(options.height, options.width);
+			
+			this.connectivityContainer = $("#" +this.id);
+		},
+		
+		setSize: function(h, w) {
+			Widget.View.prototype.setSize.call(this,h,w);
+			if (this.svg != null){
+				//TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
+				var width = this.size.width - 20;
+				var height = this.size.height - 20;
+				if (this.options.connectivityLayout == 'force'){
+					this.svg.attr("width", width).attr("height", height);
+					this.force.size([width, height]).resume();
+				}
+				else if (this.options.connectivityLayout == 'matrix') {
+					this.createLayout();
+				}
+			}
+		},
+		
+		setData : function(root, options){
+			this.setOptions(options);
+			this.dataset = {};
+			this.mapping = {};
+			this.mappingSize = 0;
+			this.dataset["root"] = root;
+			this.widgetMargin = 20;
+			
+			this.createDataFromConnections();
+			
+			this.createLayout();
+			
+			//return "Metadata or variables added to connectivity widget";
+			return this;
+		},
+		
+		createDataFromConnections: function(){
+			if (this.dataset["root"]._metaType == "EntityNode"){
+				var subEntities = this.dataset["root"].getEntities();
+				this.dataset["nodes"] = [];
+				this.dataset["links"] = [];
 
-                for (var subEntityIndex in subEntities){
-                    var connections = subEntities[subEntityIndex].getConnections();
-                    for (var connectionIndex in connections){
-                        var connectionItem = connections[connectionIndex];
-                        if (connectionItem.getType() == "FROM"){
-                            var source = connectionItem.getParent().getId();
-                            var target = connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1);
+				for (var subEntityIndex in subEntities){
+					var connections = subEntities[subEntityIndex].getConnections();
+					for (var connectionIndex in connections){
+						var connectionItem = connections[connectionIndex];
+						if (connectionItem.getType() == "FROM"){
+							var source = connectionItem.getParent().getId();
+							var target = connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1);
                             
-                            this.createNode(source);
-                            this.createNode(target);
+							this.createNode(source);
+							this.createNode(target);
                             
-                            var linkItem = {};
-                            linkItem["source"] = this.mapping[source];
-                            linkItem["target"] = this.mapping[target];
+							var linkItem = {};
+							linkItem["source"] = this.mapping[source];
+							linkItem["target"] = this.mapping[target];
                             
-                            var customNodes = connectionItem.getCustomNodes();
-                            for (var customNodeIndex in connectionItem.getCustomNodes()){
-                                if ('getChildren' in customNodes[customNodeIndex]){
-                                    var customNodesChildren = customNodes[customNodeIndex].getChildren();
-                                    for (var customNodeChildIndex in customNodesChildren){
-                                        if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
-                                            linkItem["linkType"] = customNodesChildren[customNodeChildIndex].getValue();
-                                        }
-                                        else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
-                                            linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            this.dataset["links"].push(linkItem);
-                        }
-                        
-                    }
-                }
-            }
+							var customNodes = connectionItem.getCustomNodes();
+							for (var customNodeIndex in connectionItem.getCustomNodes()){
+								if ('getChildren' in customNodes[customNodeIndex]){
+									var customNodesChildren = customNodes[customNodeIndex].getChildren();
+									for (var customNodeChildIndex in customNodesChildren){
+										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
+											linkItem["linkType"] = customNodesChildren[customNodeChildIndex].getValue();
+                                    	}
+										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
+											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
+										}
+									}
+								}
+							}
+							this.dataset["links"].push(linkItem);
+						}
+					}
+				}
+			}
         },
         
         createLayout: function(){

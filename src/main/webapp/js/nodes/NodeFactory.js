@@ -294,7 +294,7 @@ define(function(require) {
 						name : node.name,
 						instancePath : node.instancePath,
 						properties : node.properties,
-						watched : Boolean(node.watched),
+						watched : (node.watched === 'true'),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.PARAMETER_NODE
 					});
@@ -419,7 +419,7 @@ define(function(require) {
 						id : node.id,
 						name : node.name,
 						instancePath : node.instancePath,
-						watched : Boolean(node.watched),
+						watched : (node.watched === 'true'),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.VARIABLE_NODE
 					});

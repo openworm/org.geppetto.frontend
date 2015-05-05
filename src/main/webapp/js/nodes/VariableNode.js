@@ -75,19 +75,22 @@ define(function(require) {
 		 * @command VariableNode.getWatched()
 		 * @returns {boolean} true if this variable is being watched
 		 */
-		getWatched : function() {
+		isWatched : function() {
 			return this.watched;
 		},
 		
 		/**
-		 * Set watched to true
+		 * Set watched
 		 * 
-		 * @command VariableNode.watch()
+		 * @command VariableNode.setWatched()
+		 * @param {Boolean} watched - Object with options attributes to initialize node
 		 */
-		watch : function() {
-			this.watched = true;
+		setWatched : function(isWatched) {
+			if (isWatched != this.watched){
+				Simulation.setWatchedVariables([this]);
+			}
 		},
-
+		
 		/**
 		 * Print out formatted node
 		 */

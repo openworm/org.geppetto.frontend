@@ -166,10 +166,14 @@ define(function(require) {
 	            var here = $(this);
 				//Zero the idle timer on mouse movement.
 				here.mousemove(function(e) {
-					GEPPETTO.Main.idleTime = 0;
+					if(GEPPETTO.Main.idleTime > -1){
+						GEPPETTO.Main.idleTime = 0;
+					}
 				});
 				here.keypress(function(e) {
-					GEPPETTO.Main.idleTime = 0;
+					if(GEPPETTO.Main.idleTime > -1){
+						GEPPETTO.Main.idleTime = 0;
+					}
 				});
 				
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());

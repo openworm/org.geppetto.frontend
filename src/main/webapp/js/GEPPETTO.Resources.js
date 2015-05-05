@@ -118,8 +118,6 @@ define(function(require) {
 
 			SIMULATION_NOT_LOADED_ERROR: "Unable to perform operation, the simulation hasn't been loaded",
 
-			SIMULATION_VARS_LIST: "Simulation Variables List requested",
-
 			SIMULATION_SET_WATCH: "Simulation add watchlists requested",
 
 			SIMULATION_CLEAR_WATCH: 'Simulation clear watchlists requested',
@@ -199,6 +197,8 @@ define(function(require) {
 			
 			EMPTY_SIMULATION_TREE : 'No variables to simulate.',
 			
+			SIMULATION_TREE_POPULATED : 'Simulation tree populated.',
+			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
 			
 			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',
@@ -246,10 +246,6 @@ define(function(require) {
 			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 
 			GEPPETTO_VERSION_HOLDER: "geppetto v$1 is ready",
-
-			LISTING_WATCH_VARS: "Inbound Message Received: List watch variables",
-
-			LISTING_FORCE_VARS: "Inbound Message Received: List force variables",
 
 			SIMULATOR_UNAVAILABLE: " is Unavailable",
 

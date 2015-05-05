@@ -149,7 +149,7 @@ define(function(require) {
                             .attr("height", this.options.innerHeight);
             
             if (this.options.connectivityLayout == 'matrix'){
-                $("#filters").remove();
+                $('#' + this.id + '-filters').remove();
                 this.createMatrixLayout();
             }
             else if (this.options.connectivityLayout == 'force') {
@@ -359,10 +359,23 @@ define(function(require) {
            this.createLegend('legend', c, {x: matrixDim, y:0});
             
             //FILTERS AND EVENTS
-		    this.connectivityContainer.append("<div id='filters' style='width:" + legendWidth + "px;left:" + (matrixDim + this.widgetMargin) + "px;top:" + (matrixDim - 32) + "px;'></div>");
-		    $('#filters').append("<span class='filtersLabel'>Select the ordering</span><select id='order'><option value='id'>by Entity Name</option><option value='pre_count'>by # pre</option><option value='post_count'>by # post</option></select>");
+		    //this.connectivityContainer.append("<div id='filters' style='width:" + legendWidth + "px;left:" + (matrixDim + this.widgetMargin) + "px;top:" + (matrixDim - 32) + "px;'></div>");
+		    var orderContainer = $('<div/>', {
+		    	id: this.id + '-ordering',
+		    	style: 'width:' + legendWidth + 'px;left:' + (matrixDim + this.widgetMargin) + 'px;top:' + (matrixDim - 32) + 'px;',
+		    	class: 'connectivity-ordering'
+		    }).appendTo(this.connectivityContainer);
+		    
+		    var orderCombo = $('<select/>');
+		    var sortOptions = {'id': 'By entity name',
+		    				'pre_count': 'By # pre',
+		    				'post_count': 'By # post'};
+		    $.each(sortOptions, function(k, v) {
+		        $('<option/>', {value: k, text: v}).appendTo(orderCombo);
+		    });
+		    orderContainer.append($('<span/>', {class: 'connectivity-ordering-label', text: 'Order by:'}).append(orderCombo))
                
-            d3.select('#order').on("change", function(svg) {
+            orderCombo.on("change", function(svg) {
                 return function() {
                     x.domain(orders[this.value]);
             

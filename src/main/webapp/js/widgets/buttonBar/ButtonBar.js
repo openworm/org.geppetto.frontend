@@ -195,6 +195,7 @@ define(function(require) {
 							barDef = data;
 						},
 						error : function() {
+							GEPPETTO.Console.log('Warning: could not read bar from ' + url + '. Using default.');
 							barDef = that.sample;
 						},
 						complete : function(jqXHR, status) {
@@ -202,7 +203,7 @@ define(function(require) {
 							bbar = that.renderBar(barName, barDef[barName]);
 							GEPPETTO.Console
 									.log("Button Bar definition read from "
-											+ ((status == "success") ? url : 'default'));
+											+ ((status == "success") ? url + ' .' : 'default.'));
 						}
 					});
 

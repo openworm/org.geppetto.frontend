@@ -110,8 +110,8 @@ define(function(require) {
 							var source = connectionItem.getParent().getId();
 							var target = connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1);
                             
-							this.createNode(source);
-							this.createNode(target);
+							this.createNode(source, source.split('_')[0]);
+							this.createNode(target, target.split('_')[0]);
                             
 							var linkItem = {};
 							linkItem["source"] = this.mapping[source];
@@ -123,7 +123,7 @@ define(function(require) {
 									var customNodesChildren = customNodes[customNodeIndex].getChildren();
 									for (var customNodeChildIndex in customNodesChildren){
 										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
-											linkItem["linkType"] = customNodesChildren[customNodeChildIndex].getValue();
+											linkItem["type"] = customNodesChildren[customNodeChildIndex].getValue();
                                     	}
 										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
 											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
@@ -159,14 +159,15 @@ define(function(require) {
         
         createForceLayout: function(){
             
-            //TODO: 20 categories hardcoded in color scales
-            var linkTypeScale = d3.scale.category20()
-                            .domain(_.pluck(this.dataset.links, 'linkType'));
+            //TODO: 10/20 categories hardcoded in color scales
+            var linkTypeScale = d3.scale.category10()
+                            .domain(_.pluck(this.dataset.links, 'type'));
             var nodeTypeScale = d3.scale.category20()
-                            .domain(_.pluck(this.dataset.links, 'nodeType'));
+                            .domain(_.pluck(this.dataset.nodes, 'type'));
             var weightScale = d3.scale.linear()
                             .domain(d3.extent(_.pluck(this.dataset.links, 'weight').map(parseFloat)))
-                            .range([0,4]);
+                            //TODO: think about weight = 0 (do we draw a line?)
+                            .range([0.5,4]);
             
             this.force = d3.layout.force()
                 .charge(-250)
@@ -181,7 +182,7 @@ define(function(require) {
                 .data(this.dataset.links)
                 .enter().append("line")
                 .attr("class", "link")
-                .style("stroke", function(d) {return linkTypeScale(d.linkType)})
+                .style("stroke", function(d) {return linkTypeScale(d.type)})
                 .style("stroke-width", function(d) {return weightScale(d.weight)});
 
             var node = this.svg.selectAll(".node")
@@ -190,8 +191,7 @@ define(function(require) {
                 .attr("class", "node")
                 .attr("r", 5)  // radius
                 .style("fill", function(d) {
-                    return nodeTypeScale(d.nodeType);
-                    return nodeTypeScale(d.id[0]);
+                    return nodeTypeScale(d.type);
                 })
                 .call(this.force.drag);
 
@@ -208,8 +208,7 @@ define(function(require) {
                     .attr("cy", function(d) { return d.y; });
             });
             
-            var legendWidth = 180;
-            var legendPosition = {x:  this.options.innerWidth - legendWidth, y: 0};
+            var legendPosition = {x:  0.7 * this.options.innerWidth, y: 0};
 
 
             //Nodes
@@ -253,7 +252,9 @@ define(function(require) {
             
             // Convert links to matrix; count pre / post conns.
             this.dataset.links.forEach(function(link) {
-                matrix[link.source][link.target].z = link.weight ? link.linkType : 0;
+            	//TODO: think about zero weight lines
+                //matrix[link.source][link.target].z = link.weight ? link.type : 0;
+                matrix[link.source][link.target].z = link.type;
                 nodes[link.source].pre_count += 1;
                 nodes[link.target].post_count += 1;
             });
@@ -350,7 +351,7 @@ define(function(require) {
                     .attr("width", x.rangeBand())
                     .attr("height", x.rangeBand())
                     .attr("title", function(d) { return d.id;})
-                    .style("fill-opacity", function(d) { return z(d.z); })
+                    //.style("fill-opacity", function(d) { return z(d.z); })
                     .style("fill", function(d) {return c(d.z); })
                     .on("click", function(d){
                         Simulation.unSelectAll();
@@ -421,10 +422,11 @@ define(function(require) {
         },
 
         
-        createNode: function(nodeId) {
+        createNode: function(nodeId, nodeType) {
             if (!(nodeId in this.mapping)){
                 var nodeItem = {};
                 nodeItem["id"] = nodeId;
+                nodeItem["type"] = nodeType;
                 this.dataset["nodes"].push(nodeItem);
                 
                 this.mapping[nodeItem["id"]] = this.mappingSize;

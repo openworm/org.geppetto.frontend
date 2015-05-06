@@ -327,7 +327,7 @@ public class GeppettoServletController
 		// attempt to convert simulation to URL
 		try
 		{
-			_projectManager.loadProject(geppettoProject, _simulationCallbackListener);
+			_projectManager.loadProject(requestID, geppettoProject, _simulationCallbackListener);
 
 			// url = new URL(simulation);
 			// visitor.getSimulationService().init(url, requestID, _simulationCallbackListener);
@@ -369,23 +369,25 @@ public class GeppettoServletController
 		return _simulationServerConfig;
 	}
 
+	// SIM TODO: This method is reading the script from a Geppetto model once project is loaded and send it to the client.
+	// Execute this logic once either the project is loaded or an experiment is loaded.
 	/**
 	 * Runs scripts that are specified in the simulation
 	 * 
 	 * @param requestID
 	 *            - requestID received from client
-	 * @param visitor
-	 *            - Visitor loading the simulation
+	 * @param messageInbound
+	 *            - the Geppetto message inbound
 	 */
-	private void postLoadSimulation(String requestID, GeppettoMessageInbound visitor)
+	private void postLoadSimulation(String requestID, GeppettoMessageInbound messageInbound)
 	{
 
-		messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
+		messageClient(requestID, messageInbound, OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED);
 
 		JsonObject scriptsJSON = new JsonObject();
 
 		JsonArray scriptsArray = new JsonArray();
-		for(URL scriptURL : visitor.getSimulationService().getScripts())
+		for(URL scriptURL : messageInbound.getSimulationService().getScripts())
 		{
 			JsonObject script = new JsonObject();
 			script.addProperty("script", scriptURL.toString());
@@ -395,9 +397,9 @@ public class GeppettoServletController
 		scriptsJSON.add("scripts", scriptsArray);
 
 		// notify client if there are scripts
-		if(visitor.getSimulationService().getScripts().size() > 0)
+		if(messageInbound.getSimulationService().getScripts().size() > 0)
 		{
-			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.FIRE_SIM_SCRIPTS, scriptsJSON.toString());
+			messageClient(requestID, messageInbound, OUTBOUND_MESSAGE_TYPES.FIRE_SIM_SCRIPTS, scriptsJSON.toString());
 		}
 	}
 

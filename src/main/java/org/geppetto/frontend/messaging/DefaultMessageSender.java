@@ -124,8 +124,8 @@ public class DefaultMessageSender implements MessageSender {
 
 	public void initialize(WsOutbound wsOutbound) {
 
-		logger.info(String.format("Initializing default message sender - queuing = %b, compression = %b",
-								  queuingEnabled, compressionEnabled));
+		logger.debug(String.format("Initializing message sender - queuing = %b, compression = %b",
+								   queuingEnabled, compressionEnabled));
 
 		this.wsOutbound = wsOutbound;
 
@@ -156,7 +156,7 @@ public class DefaultMessageSender implements MessageSender {
 
 	@Override
 	public void shutdown() {
-		logger.info("Shutting down default message sender");
+		logger.debug("Shutting down message sender");
 		listeners = new HashSet<>();
 		if (preprocessorExecutor != null) {
 			preprocessorExecutor.shutdownNow();

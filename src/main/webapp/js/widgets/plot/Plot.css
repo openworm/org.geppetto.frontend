@@ -84,6 +84,8 @@
 
 .xaxisLabel {
     color : white;
+    bottom : 0%;
+    left : 50%;
 }
 
 .yaxisLabel {

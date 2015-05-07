@@ -332,6 +332,9 @@ define(function(require) {
 			 */
 			render: function() {
 
+				 var $dialogContainer = $('#'+this.id);
+				 var $detachedChildren = $dialogContainer.children().detach();
+				    
 				//create the dialog window for the widget
 				this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
 					{

@@ -217,6 +217,8 @@ define(function(require) {
 	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
         	}
         	
+			GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_RECEIVED);
+        	
         	var endCreation = new Date() - initTime;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create simulation tree");
         };

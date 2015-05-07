@@ -65,7 +65,8 @@ define(function(require) {
 		setMessage : function(msg){
 			$("#"+this.id).html(msg);
 			
-			return "Setting new Message for " + this.id;
+			GEPPETTO.Console.log("Setting new Message for " + this.id;);
+			return this;
 		}
 	});
 });

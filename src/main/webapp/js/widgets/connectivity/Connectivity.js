@@ -97,6 +97,10 @@ define(function(require) {
 		},
 		
 		createDataFromConnections: function(){
+			conn2nodeType = function(conn){return conn.getId().split('_')[0]};
+			conn2linkWeight = function(conn){return conn.getSubNodesOfDomainType('Synapse')[0].GBase.value};
+			conn2linkType = function(conn){return conn.getSubNodesOfDomainType('Synapse')[0].id};
+
 			if (this.dataset["root"]._metaType == "EntityNode"){
 				var subEntities = this.dataset["root"].getEntities();
 				this.dataset["nodes"] = [];
@@ -107,30 +111,36 @@ define(function(require) {
 					for (var connectionIndex in connections){
 						var connectionItem = connections[connectionIndex];
 						if (connectionItem.getType() == "FROM"){
-							var source = connectionItem.getParent().getId();
-							var target = connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1);
-                            
-							this.createNode(source, source.split('_')[0]);
-							this.createNode(target, target.split('_')[0]);
+							//TODO: isn't there an easier way to get source/target objs from a conn???
+							var source = connectionItem.getParent();
+							var target = eval(connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1));
+							var sourceId = source.getId(); 
+							var targetId = target.getId(); 
+                           
+							this.createNode(sourceId, conn2nodeType(source));
+							this.createNode(targetId, conn2nodeType(target));
                             
 							var linkItem = {};
-							linkItem["source"] = this.mapping[source];
-							linkItem["target"] = this.mapping[target];
+							linkItem["source"] = this.mapping[sourceId];
+							linkItem["target"] = this.mapping[targetId];
                             
-							var customNodes = connectionItem.getCustomNodes();
-							for (var customNodeIndex in connectionItem.getCustomNodes()){
-								if ('getChildren' in customNodes[customNodeIndex]){
-									var customNodesChildren = customNodes[customNodeIndex].getChildren();
-									for (var customNodeChildIndex in customNodesChildren){
-										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
-											linkItem["type"] = customNodesChildren[customNodeChildIndex].getValue();
-                                    	}
-										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
-											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
-										}
-									}
-								}
-							}
+                           linkItem["type"] = conn2linkType(connectionItem);
+                           linkItem["weight"] = conn2linkWeight(connectionItem);
+                        	    
+//							var customNodes = connectionItem.getCustomNodes();
+//							for (var customNodeIndex in connectionItem.getCustomNodes()){
+//								if ('getChildren' in customNodes[customNodeIndex]){
+//									var customNodesChildren = customNodes[customNodeIndex].getChildren();
+//									for (var customNodeChildIndex in customNodesChildren){
+//										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
+//											linkItem["type"] = customNodesChildren[customNodeChildIndex].getValue();
+//                                    	}
+//										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
+//											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
+//										}
+//									}
+//								}
+//							}
 							this.dataset["links"].push(linkItem);
 						}
 					}

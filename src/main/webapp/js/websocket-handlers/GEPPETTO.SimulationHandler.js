@@ -199,6 +199,9 @@ define(function(require) {
 	        	//create client side model tree
 	        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
         	}
+        	
+        	GEPPETTO.trigger(Events.ModelTree_populated);
+        	
         	var endCreation = new Date() - initTime;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create model tree");
         };
@@ -216,6 +219,8 @@ define(function(require) {
 	        	//create client side simulation tree
 	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
         	}
+        	
+        	GEPPETTO.trigger(Events.SimulationTree_populated);
         	
         	var endCreation = new Date() - initTime;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create simulation tree");

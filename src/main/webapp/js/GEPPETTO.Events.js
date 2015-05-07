@@ -41,9 +41,11 @@
 		var Events = {
 			Select : "simulation:selection_changed",
 			Simulation_restarted : "simulation:restarted",
-			Widgets_restarted : "widgts:restarted",
-			Simulation_loaded : 'simulation:modelloaded',
-			Simulation_stopped : 'simulation:stopped',
+			Widgets_restarted : "widgets:restarted",
+			Simulation_loaded : "simulation:modelloaded",
+			Simulation_stopped : "simulation:stopped",
+			ModelTree_populated : "simulation:modeltreepopulated",
+			SimulationTree_populated : "simulation:simulationtreepopulated",
 		};
 define(function(require) {
 	return function(GEPPETTO) {
@@ -69,6 +71,14 @@ define(function(require) {
 	        	GEPPETTO.on(Events.Widgets_restarted, function(){
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+	        	});
+	        	GEPPETTO.on(Events.ModelTree_populated, function(){
+	        		//notify widgets a restart of data is needed
+	        		GEPPETTO.WidgetsListener.update(Events.ModelTree_populated);
+	        	});
+	        	GEPPETTO.on(Events.SimulationTree_populated, function(){
+	        		//notify widgets a restart of data is needed
+	        		GEPPETTO.WidgetsListener.update(Events.SimulationTree_populated);
 	        	});
 			},
 		};

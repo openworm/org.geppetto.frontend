@@ -274,7 +274,7 @@ define(function(require) {
 		},
 		
 		/**
-		 * Expand or collapse node folder (and all the parent folder until the root node) in the widgets
+		 * Expands or collapses node folder (and all the parent folder until the root node) in the widgets
 		 * 
 		 * @param {Node} node - Geppetto Node which identifies the folder to be expanded/collapsed.
 		 * @param {Boolean} expandEndNode - If true only final node is expanded/collapsed. Otherwise the whole path is expanded/collapsed
@@ -294,16 +294,35 @@ define(function(require) {
 			}
 		},
 		
+		/**
+		 * Returns li element which corresponds to the instance path
+		 * 
+		 * @param {String} instancePath - Node instance path
+		 */
 		getFolderByInstancePath : function(instancePath){
 			return $(this.dialog).find('li').filterByData('instancepath', instancePath);
 		},
 		
+		/**
+		 * Clear Widget
+		 */
 		reset : function () {
 			this.datasets = [];
-			
 			$(this.dialog).children().remove()
-
 			this.initDATGUI();
+		},
+		
+		/**
+		 * Refresh data in tree visualiser
+		 */
+		refresh : function (){
+			var currentDatasets = this.datasets; 
+			
+			this.reset();
+			
+			for (var currentDatasetIndex in currentDatasets){
+				this.setData(currentDatasets[currentDatasetIndex].data);
+			}			
 		},
 		
 		initDATGUI : function () { 

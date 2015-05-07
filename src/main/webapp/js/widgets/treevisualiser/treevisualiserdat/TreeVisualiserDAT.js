@@ -120,7 +120,7 @@ define(function(require) {
 			$(this.dialog).find('.textmetadatanodetv').find('div > div > input[type="text"]').each(function(){
 				testingSizeElement.text($(this).val());
 				if (testingSizeElement.width() > $(this).width()){
-					$(this).closest('.textmetadatanodetv').height(60);
+					$(this).closest('.textmetadatanodetv').addClass('textarea');
 					var textarea = $(document.createElement('textarea')).attr('readonly', true).attr('rows', 2);
 			        textarea.val($(this).val());
 				    $(this).replaceWith(textarea);

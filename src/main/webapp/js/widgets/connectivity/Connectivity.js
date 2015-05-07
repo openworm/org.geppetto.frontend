@@ -69,14 +69,10 @@ define(function(require) {
 				//TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
 				var width = this.size.width - 20;
 				var height = this.size.height - 20;
-				if (this.options.connectivityLayout == 'force'){
-					this.svg.attr("width", width).attr("height", height);
-					this.force.size([width, height]).resume();
-				}
-				else if (this.options.connectivityLayout == 'matrix') {
+				if (this.options.connectivityLayout == 'matrix') {
 					$('#' + this.id + '-ordering').remove();
-					this.createLayout();
 				}
+                this.createLayout();
 			}
 		},
 		
@@ -97,6 +93,7 @@ define(function(require) {
 		},
 		
 		createDataFromConnections: function(){
+
 			conn2nodeType = function(conn){return conn.getId().split('_')[0]};
 			conn2linkWeight = function(conn){return conn.getSubNodesOfDomainType('Synapse')[0].GBase.value};
 			conn2linkType = function(conn){return conn.getSubNodesOfDomainType('Synapse')[0].id};
@@ -198,14 +195,14 @@ define(function(require) {
                     .attr("cy", function(d) { return d.y; });
             });
             
-            var legendPosition = {x:  0.7 * this.options.innerWidth, y: 0};
+            var legendPosition = {x:  0.75 * this.options.innerWidth, y: 0};
 
             //Nodes
-            var legendBottom = this.createLegend('legend', nodeTypeScale, legendPosition, 'Nodes - Cell Types');
+            var legendBottom = this.createLegend('legend', nodeTypeScale, legendPosition, 'Cell Types');
            
             legendPosition.y = legendBottom.y + 10
             //Links
-            this.createLegend('legend2', linkTypeScale,  legendPosition, 'Links - Synapse Types');
+            this.createLegend('legend2', linkTypeScale,  legendPosition, 'Synapse Types');
         },
 
 
@@ -372,10 +369,9 @@ define(function(require) {
 
         	var horz, vert; 
 
-        	var legend = this.svg.selectAll(id)
+        	var legendItem = this.svg.selectAll(id)
                         .data(colorScale.domain())
                       .enter().append('g')
-                        .attr('class', 'legend')
                         .attr('transform', function(d, i) {
                             var height = colorBox.size + colorBox.labelSpace;
                             horz = colorBox.size + position.x + padding.x;
@@ -384,24 +380,24 @@ define(function(require) {
                         });
         
         	// coloured squares 
-        	legend.append('rect')
+        	legendItem.append('rect')
         		.attr('width', colorBox.size)
         		.attr('height', colorBox.size)
         		.style('fill', function(d) {return colorScale(d); })
         		.style('stroke', function(d) {return colorScale(d); });
         	
         	// labels
-        	legend.append('text')
+        	legendItem.append('text')
         		.attr('x', colorBox.size + colorBox.labelSpace)
         		.attr('y', colorBox.size - colorBox.labelSpace)
-        		.attr('class', 'legend')
+        		.attr('class', 'legend-text')
         		.text(function(d) { return d; });
 
         	// title
         	if(typeof title != 'undefined'){
-                    this.svg.append('text')
+                   this.svg.append('text')
                         .text(title)
-                        .attr('class', 'legendTitle')
+                        .attr('class', 'legend-title')
                         .attr('x', position.x + 2 * padding.x) 
                         .attr('y', position.y +  0.75 * padding.y);
         	}

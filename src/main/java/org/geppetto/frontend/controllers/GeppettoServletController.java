@@ -51,6 +51,7 @@ import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.simulation.IProjectManager;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoTransportMessage;
@@ -327,7 +328,9 @@ public class GeppettoServletController
 		// attempt to convert simulation to URL
 		try
 		{
-			_projectManager.loadProject(requestID, geppettoProject, _simulationCallbackListener);
+			// TODO: get the user from somewhere
+			IUser user = null;
+			_projectManager.loadProject(requestID, user, geppettoProject, _simulationCallbackListener);
 
 			// url = new URL(simulation);
 			// visitor.getSimulationService().init(url, requestID, _simulationCallbackListener);
@@ -345,7 +348,7 @@ public class GeppettoServletController
 		// postLoadSimulation(requestID, visitor);
 		// loaded = true;
 		// }
-		catch(MalformedURLException | GeppettoInitializationException e)
+		catch(MalformedURLException | GeppettoInitializationException | GeppettoExecutionException e)
 		{
 			_logger.info("Could not load geppetto model", e);
 			messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);

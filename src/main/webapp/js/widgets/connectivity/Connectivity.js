@@ -120,28 +120,8 @@ define(function(require) {
 							this.createNode(sourceId, conn2nodeType(source));
 							this.createNode(targetId, conn2nodeType(target));
                             
-							var linkItem = {};
-							linkItem["source"] = this.mapping[sourceId];
-							linkItem["target"] = this.mapping[targetId];
-                            
-                           linkItem["type"] = conn2linkType(connectionItem);
-                           linkItem["weight"] = conn2linkWeight(connectionItem);
+                            this.createLink(sourceId, targetId, conn2linkType(connectionItem), conn2linkWeight(connectionItem));
                         	    
-//							var customNodes = connectionItem.getCustomNodes();
-//							for (var customNodeIndex in connectionItem.getCustomNodes()){
-//								if ('getChildren' in customNodes[customNodeIndex]){
-//									var customNodesChildren = customNodes[customNodeIndex].getChildren();
-//									for (var customNodeChildIndex in customNodesChildren){
-//										if (customNodesChildren[customNodeChildIndex].getId() == "Id"){
-//											linkItem["type"] = customNodesChildren[customNodeChildIndex].getValue();
-//                                    	}
-//										else if (customNodesChildren[customNodeChildIndex].getId() == "GBase"){
-//											linkItem["weight"] = customNodesChildren[customNodeChildIndex].getValue();
-//										}
-//									}
-//								}
-//							}
-							this.dataset["links"].push(linkItem);
 						}
 					}
 				}
@@ -219,7 +199,6 @@ define(function(require) {
             });
             
             var legendPosition = {x:  0.7 * this.options.innerWidth, y: 0};
-
 
             //Nodes
             var legendBottom = this.createLegend('legend', nodeTypeScale, legendPosition, 'Nodes - Cell Types');
@@ -432,16 +411,27 @@ define(function(require) {
         },
 
         
-        createNode: function(nodeId, nodeType) {
-            if (!(nodeId in this.mapping)){
-                var nodeItem = {};
-                nodeItem["id"] = nodeId;
-                nodeItem["type"] = nodeType;
+        createNode: function(id, type) {
+            if (!(id in this.mapping)){
+                var nodeItem = {
+                	id: id,
+                	type: type
+                };
                 this.dataset["nodes"].push(nodeItem);
                 
                 this.mapping[nodeItem["id"]] = this.mappingSize;
                 this.mappingSize++;
             }
+        },
+
+        createLink: function(sourceId, targetId, type, weight) {
+                var linkItem = {
+                	source: this.mapping[sourceId],
+					target: this.mapping[targetId],
+                	type:  type,
+                	weight: weight
+                };
+                this.dataset["links"].push(linkItem);
         },
         
         /**

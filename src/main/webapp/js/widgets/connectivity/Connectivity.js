@@ -49,11 +49,17 @@ define(function(require) {
 		defaultConnectivityOptions:  {
 			width: 660,
 			height: 500,
-			connectivityLayout: "matrix", //[matrix, hive, force]
+			layout: "matrix", //[matrix, force]
+			//TODO: Those are not sane defaults. 
+			//      Once things have types, we should ideally use sthing like  x.getType() 
+			nodeType : function(node){return node.getId().split('_')[0]},
+			linkWeight : function(conn){return 1},
+			linkType : function(conn){return 1}
 		},
 		
 		initialize : function(options){
 			this.options = options;
+
 			Widget.View.prototype.initialize.call(this,options);
 			this.setOptions(this.defaultConnectivityOptions);
 			
@@ -69,7 +75,7 @@ define(function(require) {
 				//TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
 				var width = this.size.width - 20;
 				var height = this.size.height - 20;
-				if (this.options.connectivityLayout == 'matrix') {
+				if (this.options.layout == 'matrix') {
 					$('#' + this.id + '-ordering').remove();
 				}
                 this.createLayout();
@@ -94,10 +100,6 @@ define(function(require) {
 		
 		createDataFromConnections: function(){
 
-			conn2nodeType = function(conn){return conn.getId().split('_')[0]};
-			conn2linkWeight = function(conn){return conn.getSubNodesOfDomainType('Synapse')[0].GBase.value};
-			conn2linkType = function(conn){return conn.getSubNodesOfDomainType('Synapse')[0].id};
-
 			if (this.dataset["root"]._metaType == "EntityNode"){
 				var subEntities = this.dataset["root"].getEntities();
 				this.dataset["nodes"] = [];
@@ -114,10 +116,10 @@ define(function(require) {
 							var sourceId = source.getId(); 
 							var targetId = target.getId(); 
                            
-							this.createNode(sourceId, conn2nodeType(source));
-							this.createNode(targetId, conn2nodeType(target));
+							this.createNode(sourceId, this.options.nodeType(source));
+							this.createNode(targetId, this.options.nodeType(target));
                             
-                            this.createLink(sourceId, targetId, conn2linkType(connectionItem), conn2linkWeight(connectionItem));
+                            this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
                         	    
 						}
 					}
@@ -136,10 +138,10 @@ define(function(require) {
                             .attr("width", this.options.innerWidth)
                             .attr("height", this.options.innerHeight);
             
-            if (this.options.connectivityLayout == 'matrix'){
+            if (this.options.layout == 'matrix'){
                 this.createMatrixLayout();
             }
-            else if (this.options.connectivityLayout == 'force') {
+            else if (this.options.layout == 'force') {
                 this.createForceLayout();
             }
         },
@@ -200,7 +202,7 @@ define(function(require) {
             //Nodes
             var legendBottom = this.createLegend('legend', nodeTypeScale, legendPosition, 'Cell Types');
            
-            legendPosition.y = legendBottom.y + 10
+            legendPosition.y = legendBottom.y + 15
             //Links
             this.createLegend('legend2', linkTypeScale,  legendPosition, 'Synapse Types');
         },
@@ -363,46 +365,50 @@ define(function(require) {
 
         createLegend: function(id, colorScale, position, title){
 
+        	var ret;
         	//TODO: boxes should scale based on number of items 
         	var colorBox = {size : 20, labelSpace : 4};
         	var padding = {x: colorBox.size, y: 2 * colorBox.size}
 
-        	var horz, vert; 
-
-        	var legendItem = this.svg.selectAll(id)
-                        .data(colorScale.domain())
-                      .enter().append('g')
-                        .attr('transform', function(d, i) {
-                            var height = colorBox.size + colorBox.labelSpace;
-                            horz = colorBox.size + position.x + padding.x;
-                            vert = i * height + position.y + padding.y;
-                            return 'translate(' + horz + ',' + vert + ')';
-                        });
-        
-        	// coloured squares 
-        	legendItem.append('rect')
-        		.attr('width', colorBox.size)
-        		.attr('height', colorBox.size)
-        		.style('fill', function(d) {return colorScale(d); })
-        		.style('stroke', function(d) {return colorScale(d); });
+        	//TODO: is it sane not to draw the legend if there is only one category? 
+        	if(colorScale.domain().length > 1){
+        		var horz, vert; 
+        		var legendItem = this.svg.selectAll(id)
+                        	.data(colorScale.domain())
+                      	.enter().append('g')
+                        	.attr('transform', function(d, i) {
+                            	var height = colorBox.size + colorBox.labelSpace;
+                            	horz = colorBox.size + position.x + padding.x;
+                            	vert = i * height + position.y + padding.y;
+                            	return 'translate(' + horz + ',' + vert + ')';
+                        	});
         	
-        	// labels
-        	legendItem.append('text')
-        		.attr('x', colorBox.size + colorBox.labelSpace)
-        		.attr('y', colorBox.size - colorBox.labelSpace)
-        		.attr('class', 'legend-text')
-        		.text(function(d) { return d; });
-
-        	// title
-        	if(typeof title != 'undefined'){
-                   this.svg.append('text')
-                        .text(title)
-                        .attr('class', 'legend-title')
-                        .attr('x', position.x + 2 * padding.x) 
-                        .attr('y', position.y +  0.75 * padding.y);
+        		// coloured squares 
+        		legendItem.append('rect')
+        			.attr('width', colorBox.size)
+        			.attr('height', colorBox.size)
+        			.style('fill', function(d) {return colorScale(d); })
+        			.style('stroke', function(d) {return colorScale(d); });
+        		
+        		// labels
+        		legendItem.append('text')
+        			.attr('x', colorBox.size + colorBox.labelSpace)
+        			.attr('y', colorBox.size - colorBox.labelSpace)
+        			.attr('class', 'legend-text')
+        			.text(function(d) { return d; });
+	
+        		// title
+        		if(typeof title != 'undefined'){
+                   	this.svg.append('text')
+                        	.text(title)
+                        	.attr('class', 'legend-title')
+                        	.attr('x', position.x + 2 * padding.x) 
+                        	.attr('y', position.y +  0.75 * padding.y);
+        		}
+        		ret = {x: horz, y: vert}; 
         	}
-        	
-        	return {x: horz, y: vert};
+
+        	return ret;
         	
         },
 

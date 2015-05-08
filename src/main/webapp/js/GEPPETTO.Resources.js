@@ -199,6 +199,8 @@ define(function(require) {
 			
 			SIMULATION_TREE_POPULATED : 'Simulation tree populated.',
 			
+			SIMULATION_TREE_RECEIVED : 'Requested Simulation tree received.',
+			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
 			
 			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',

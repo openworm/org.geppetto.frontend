@@ -580,7 +580,6 @@ define(function(require) {
 				this.listeners[varnode.getInstancePath()] = null;
 			},
 
-
 			/**
 			 * Dynamically change the visual representation of an aspect,
 			 * modulated by the value of a watched node. The _transformation_
@@ -600,37 +599,6 @@ define(function(require) {
 				//TODO: things should be VisualizationTree centric instead of aspect centric...  
 		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
 		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0].getValue()) : watchedNode.getTimeSeries()[0].getValue());});
-			},
-			
-			/**
-			 * Search inside a node tree for all the nodes of a specific metaType.
-			 * 
-			 *  @param {Node} data - Root node. The function will look inside the tree hanging from this node
-			 *  @param {String} metaType - Type of node we are searching
-			 *  @param {Array} nodes - Array of nodes found
-			 *  
-			 */
-			searchNodeByMetaType: function(data, metaType, nodes){
-				//If data is the root node (first iteration) we create the variable to return
-				if (nodes == undefined){
-					nodes = [];
-				}
-				
-				//Check if the node type is the one we are looking for otherwise iterate through the children
-				if (data._metaType == metaType){
-					nodes.push(data);
-				}
-				else{
-					if (typeof data.getChildren === "function" && data.getChildren() != null){
-						var children = data.getChildren();
-						if (children.length > 0){
-							for (var childIndex in children){
-								this.searchNodeByMetaType(children[childIndex], metaType, nodes);
-							}
-						}
-					}
-				}
-				return nodes;
 			}
 		};
 

@@ -178,6 +178,9 @@ color: #85ea0e;
 .dg .cr.string.textmetadatanodetv textarea {
 	color: #10b7bd;
 }
+.ui-widget-content .dg ul:not(.closed)>li.textarea{
+	height: 100%;
+}
 .dg .cr.string.urlmetadatanodetv {
 	border-left: 3px solid #cc00cc;
 }

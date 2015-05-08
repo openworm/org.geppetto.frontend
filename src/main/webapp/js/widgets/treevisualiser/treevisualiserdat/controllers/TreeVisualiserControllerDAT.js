@@ -130,6 +130,17 @@ define(function(require) {
 					treeVisualiserDAT.updateData();
 				}
 			}
+			// update treevisualiser widgets
+			else if (event == Events.ModelTree_populated || event == Events.SimulationTree_populated) {
+				// loop through all existing widgets
+				for (var i = 0; i < treeVisualisersDAT.length; i++) {
+					var treeVisualiserDAT = treeVisualisersDAT[i];
+
+					// update treevisualiser with new data set
+					treeVisualiserDAT.refresh();
+					
+				}
+			}
 		},
 
 		/**
@@ -191,6 +202,14 @@ define(function(require) {
 				}];
 
 				groups.push(aspect);
+			}
+			if (node._metaType == "AspectSubTreeNode" && node.id == "ModelTree"){
+				var aspectSubTreeNode = [{
+					label:"Extract Model Tree",
+					action: ["#node_instancepath#.getParent().getModelTree();"],
+				}];
+
+				groups.push(aspectSubTreeNode);
 			}
 			if (node._metaType == "VisualGroupNode"){
 				var visualGroup = [{

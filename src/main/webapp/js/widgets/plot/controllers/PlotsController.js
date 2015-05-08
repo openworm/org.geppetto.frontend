@@ -126,7 +126,7 @@ define(function(require) {
 						action: ["var p = G.addWidget(Widgets.PLOT)", "p.plotFunctionNode(#node_instancepath#)", "p.setSize(200,450)"],
 					}];
 
-					var availableWidgets = this.getWidgets();
+					var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
 					if (availableWidgets.length > 0){
 						var group1Add =  {
 								label : "Add to Plot Widget",

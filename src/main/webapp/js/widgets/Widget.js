@@ -368,9 +368,9 @@ define(function(require) {
 			},
 			
 			/**
-			 * Register event with widget
+			 * Unregister event with widget
 			 * 
-			 * @command registerEvent(event)
+			 * @command unregisterEvent(event)
 			 */
 			unregisterEvent: function(event){
 				this.registeredEvents = _.reject(this.registeredEvents, function(el){return el.id === event});

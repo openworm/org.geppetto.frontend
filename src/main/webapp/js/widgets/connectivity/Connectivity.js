@@ -49,7 +49,7 @@ define(function(require) {
 		defaultConnectivityOptions:  {
 			width: 660,
 			height: 500,
-			layout: "matrix", //[matrix, force]
+			layout: "matrix", //[matrix, force, hive]
 			//TODO: Those are not sane defaults. 
 			//      Once things have types, we should ideally use sthing like  x.getType() 
 			nodeType : function(node){return node.getId().split('_')[0]},
@@ -126,7 +126,28 @@ define(function(require) {
 				}
 			}
         },
+
+        //TODO: move to graph utils to package, maybe consider jsnetworkx?
+        // this is very rough, we should think about directionality and weights...
+        calculateNodeDegrees: function(){
+        	var indegrees = _.countBy(this.dataset.links, function(link){return link.source});
+        	var outdegrees = _.countBy(this.dataset.links, function(link){return link.target});
+        	var maxDeg = 1;
+        	this.dataset.nodes.forEach(function(node, idx){
+        		var idg = (typeof indegrees[idx] === 'undefined') ? 0 : indegrees[idx];
+        		var odg = (typeof outdegrees[idx] === 'undefined') ? 0 : outdegrees[idx];
+        		node.degree = idg + odg; 
+        		if(node.degree > maxDeg){
+        			maxDeg = node.degree;
+        		}
+        	});
+        	//normalize
+        	this.dataset.nodes.forEach(function(node){
+        		node.degree /= maxDeg; 
+        	});
+        },
         
+        //TODO: move force, hive, matrix to objects
         createLayout: function(){
             $('#' + this.id + " svg").remove();
             
@@ -138,11 +159,18 @@ define(function(require) {
                             .attr("width", this.options.innerWidth)
                             .attr("height", this.options.innerHeight);
             
-            if (this.options.layout == 'matrix'){
-                this.createMatrixLayout();
-            }
-            else if (this.options.layout == 'force') {
-                this.createForceLayout();
+            switch(this.options.layout){
+            	case 'matrix':
+            		this.createMatrixLayout();
+            		break;
+            	case 'force':
+                	this.createForceLayout();
+                	break;
+            	case 'hive':
+            		//TODO: ugly preprocessing here...
+            		this.calculateNodeDegrees();
+            		this.createHiveLayout();
+            		break;
             }
         },
         
@@ -361,6 +389,64 @@ define(function(require) {
                         });
             }
         },
+        
+        createHiveLayout: function() {
+        	 
+            innerRadius = 20,
+            outerRadius = 180;
+
+            var nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
+             
+            var angle = d3.scale.ordinal().domain(d3.range(nodeTypes.length + 1)).rangePoints([0, 2 * Math.PI]),
+            	quali_angle = d3.scale.ordinal().domain(nodeTypes).rangeBands([0, 2 * Math.PI]);
+                radius = d3.scale.linear().range([innerRadius, outerRadius]),
+                color = d3.scale.category10().domain(d3.range(20));
+            
+            var nodes = this.dataset.nodes,
+                links = [];
+            this.dataset.links.forEach(function(li){
+                if(typeof li.target !== "undefined"){
+                    links.push({source: nodes[li.source], target: nodes[li.target], type: li.type});
+                }
+            });
+            
+            var svg = this.svg.append("g")
+              			.attr("transform", "translate(" + this.options.innerWidth / 2 + "," + this.options.innerHeight / 2 + ")");
+                 
+            svg.selectAll(".axis")
+                .data(d3.range(nodeTypes.length))
+              .enter().append("line")
+                .attr("class", "axis")
+                .attr("transform", function(d) {return "rotate(" + degrees(angle(d)) + ")"; })
+                .attr("x1", radius.range()[0])
+                .attr("x2", radius.range()[1]);
+
+            svg.selectAll(".link")
+                .data(links)
+              .enter().append("path")
+                .attr("class", "link")
+                .attr("d", d3.hive.link()
+                  .angle(function(d) {return quali_angle(d.type);})
+                  //.radius(function(d) {console.log(d); return radius(d.degree);}))
+                  .radius(function(d) {return radius(d.degree);}))
+                  .style("stroke", function(d) { return color(d.type); });
+
+            var node = svg.selectAll(".node")
+                .data(nodes)
+              .enter().append("circle")
+                .attr("class", "node")
+                .attr("transform", function(d) {console.log(quali_angle(d.type)); return "rotate(" + degrees(quali_angle(d.type)) + ")"; })
+                .attr("cx", function(d) {return radius(d.degree); })
+                .attr("r", 5)
+                .style("fill", function(d) { return color(d.type); });
+
+            node.append("title")
+                .text(function(d) { return d.id; });
+       
+            function degrees(radians) {
+            	return radians / Math.PI * 180 - 90;
+            }
+        },
 
 
         createLegend: function(id, colorScale, position, title){
@@ -417,7 +503,7 @@ define(function(require) {
             if (!(id in this.mapping)){
                 var nodeItem = {
                 	id: id,
-                	type: type
+                	type: type,
                 };
                 this.dataset["nodes"].push(nodeItem);
                 

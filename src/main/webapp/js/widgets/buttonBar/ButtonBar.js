@@ -43,7 +43,6 @@ define(function(require) {
 
 	return Widget.View
 			.extend({
-				root : null,
 				variable : null,
 				options : null,
 
@@ -67,7 +66,8 @@ define(function(require) {
 					this.setAutoWidth();
 					this.setAutoHeight();
 
-					this.dialog.append("<div class='bubar_body'></div>");
+					this.innerButtonBarContainer = $('<div/>', {class:'bubar_body'}).appendTo(this.dialog);
+					
 				},
 
 				BootstrapMenuMaker : {
@@ -182,9 +182,6 @@ define(function(require) {
 				 */
 				fromJSON : function(url) {
 					var that = this;
-					if (this.root == null) {
-						this.root = $("#" + this.id)
-					}
 					
 					var barDef = null;
 					$.ajax({
@@ -217,14 +214,8 @@ define(function(require) {
 				 * @private
 				 */
 				setBody : function(content) {
-					this.getSelector("bubar_body").html(content);
-				},
-
-				/**
-				 * @private
-				 */
-				getSelector : function(name) {
-					return $(this.root.selector + " ." + name);
+					this.innerButtonBarContainer.html(content);
 				}
+				
 			});
 });

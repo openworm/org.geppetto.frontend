@@ -353,28 +353,28 @@ public class ConnectionHandler
 		}
 	}
 
-	public void getModelTree(String requestID, String aspectInstancePath, WebsocketConnection visitor)
+	public void getModelTree(String requestID, String aspectInstancePath)
 	{
 		// String modelTree = this._projectManager.
 		//
 		// // message the client with results
-		// this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, modelTree);
+		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE, modelTree);
 	}
 
-	public void getSimulationTree(String requestID, String aspectInstancePath, WebsocketConnection visitor)
+	public void getSimulationTree(String requestID, String aspectInstancePath)
 	{
 		// String simulationTree = visitor.getSimulationService().getSimulationTree(aspectInstancePath);
 		//
 		// // message the client with results
-		// this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.GET_SIMULATION_TREE, simulationTree);
+		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.GET_SIMULATION_TREE, simulationTree);
 	}
 
-	public void writeModel(String requestID, String instancePath, String format, WebsocketConnection visitor)
+	public void writeModel(String requestID, String instancePath, String format)
 	{
 		// String modelTree = visitor.getSimulationService().writeModel(instancePath, format);
 		//
 		// // message the client with results
-		// this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.WRITE_MODEL, modelTree);
+		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.WRITE_MODEL, modelTree);
 	}
 
 	/**
@@ -431,7 +431,7 @@ public class ConnectionHandler
 		// TODO what do we do?
 	}
 
-	public void setParameters(String requestID, String modelPath, Map<String, String> parameters, WebsocketConnection visitor)
+	public void setParameters(String requestID, String modelPath, Map<String, String> parameters)
 	{
 
 		// boolean parametersSet = visitor.getSimulationService().setParameters(modelPath, parameters);
@@ -439,13 +439,13 @@ public class ConnectionHandler
 		// // return successful message if set parameter succeeded
 		// if(parametersSet)
 		// {
-		// this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_PARAMETERS);
+		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.SET_PARAMETERS);
 		// }
 		// else
 		// {
 		// String message = "Model Service for " + modelPath + " doesn't support SetParameters feature";
 		// // no parameter feature supported by this model service
-		// this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.NO_FEATURE, message);
+		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.NO_FEATURE, message);
 		// }
 	}
 

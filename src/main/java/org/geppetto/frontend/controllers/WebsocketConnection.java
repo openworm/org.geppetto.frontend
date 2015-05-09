@@ -234,21 +234,21 @@ public class WebsocketConnection extends MessageInbound
 			{
 				String instancePath = gmsg.data;
 
-				connectionHandler.getModelTree(requestID, instancePath, this);
+				connectionHandler.getModelTree(requestID, instancePath);
 				break;
 			}
 			case GET_SIMULATION_TREE:
 			{
 				String instancePath = gmsg.data;
 
-				connectionHandler.getSimulationTree(requestID, instancePath, this);
+				connectionHandler.getSimulationTree(requestID, instancePath);
 				break;
 			}
 			case GET_SUPPORTED_OUTPUTS:
 			{
 				// String instancePath = gmsg.data;
 				//
-				// _servletController.getModelTree(requestID,instancePath,this);
+				// _servletController.getModelTree(requestID,instancePath);
 				break;
 			}
 			case WRITE_MODEL:
@@ -257,7 +257,7 @@ public class WebsocketConnection extends MessageInbound
 				Map<String, String> parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
-				connectionHandler.writeModel(requestID, parameters.get("instancePath"), parameters.get("format"), this);
+				connectionHandler.writeModel(requestID, parameters.get("instancePath"), parameters.get("format"));
 
 			}
 			case SET_PARAMETERS:
@@ -269,7 +269,7 @@ public class WebsocketConnection extends MessageInbound
 				String modelPath = parameters.get("model");
 				// remove model path from parameters map that was sent from server
 				parameters.remove(modelPath);
-				connectionHandler.setParameters(requestID, modelPath, parameters, this);
+				connectionHandler.setParameters(requestID, modelPath, parameters);
 			}
 			default:
 			{

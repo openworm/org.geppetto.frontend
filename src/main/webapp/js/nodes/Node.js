@@ -117,7 +117,7 @@ define([ 'jquery', 'underscore', 'backbone',
 					matches.push(this)
 				}
 
-				if ('getChildren' in this) {
+				if (typeof this.getChildren === "function") {
 					var children = this.getChildren()
 					for (ci in children) {
 						this._all.call(children[ci], predicate, matches);
@@ -126,9 +126,25 @@ define([ 'jquery', 'underscore', 'backbone',
 
 				return matches;
 			},
+
+			/**
+			 * Search inside a node for all the nodes of a specific domain type.
+			 *  @param {String} domainType - Domain type
+			 *  @returns {Array} List of Nodes
+			 *  
+			 */
+			getSubNodesOfDomainType : function(domainType) {
+				return this._all(function(n){return n.domainType === domainType})
+			},
 			
-			getSubNodesOfDomainType : function(dt) {
-				return this._all(function(n){return n.domainType === dt})
+			/**
+			 * Search inside a node for all the nodes of a specific meta type.
+			 *  @param {String} metaType - Meta Type
+			 *  @returns {Array} List of Nodes
+			 *  
+			 */
+			getSubNodesOfMetaType : function(metaType) {
+				return this._all(function(n){return n._metaType === metaType})
 			}
 		})
 	};

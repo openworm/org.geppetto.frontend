@@ -39,11 +39,11 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoErrorCodes;
-import org.geppetto.core.simulation.ISimulationCallbackListener;
+import org.geppetto.core.simulation.IProjectManagerCallbackListener;
 import org.geppetto.frontend.controllers.GeppettoMessageInbound;
 import org.geppetto.frontend.controllers.GeppettoServletController;
 
-public class ObservermodeSimulationCallback implements ISimulationCallbackListener
+public class ObservermodeSimulationCallback implements IProjectManagerCallbackListener
 {
 
 	private static Log logger = LogFactory.getLog(ObservermodeSimulationCallback.class);
@@ -86,9 +86,9 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 		// switch on message type
 		switch(event)
 		{
-			case LOAD_MODEL:
+			case LOAD_PROJECT:
 			{
-				action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
+				action = OUTBOUND_MESSAGE_TYPES.LOAD_PROJECT;
 
 				controller.getSimulationServerConfig().setIsSimulationLoaded(true);
 
@@ -111,10 +111,6 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 				update = "{ "+sceneUpdate + "}";
 
 				break;
-			}
-			case SIMULATION_OVER:
-			{
-				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
 			}
 			default:
 			{

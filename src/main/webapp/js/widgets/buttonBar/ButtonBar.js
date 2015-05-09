@@ -43,7 +43,6 @@ define(function(require) {
 
 	return Widget.View
 			.extend({
-				root : null,
 				variable : null,
 				options : null,
 
@@ -67,7 +66,8 @@ define(function(require) {
 					this.setAutoWidth();
 					this.setAutoHeight();
 
-					this.dialog.append("<div class='bubar_body'></div>");
+					this.innerButtonBarContainer = $('<div/>', {class:'bubar_body'}).appendTo(this.dialog);
+					
 				},
 
 				BootstrapMenuMaker : {
@@ -182,9 +182,6 @@ define(function(require) {
 				 */
 				fromJSON : function(url) {
 					var that = this;
-					if (this.root == null) {
-						this.root = $("#" + this.id)
-					}
 					
 					var barDef = null;
 					$.ajax({
@@ -194,7 +191,10 @@ define(function(require) {
 						success : function(data) {
 							barDef = data;
 						},
-						error : function() {
+						error: function(xhr, status, error) {
+						  	var err = JSON.parse(xhr.responseText)
+						  	alert(err.Message);
+							GEPPETTO.Console.log('Warning: could not read bar from ' + url + '. Using default.');
 							barDef = that.sample;
 						},
 						complete : function(jqXHR, status) {
@@ -202,7 +202,7 @@ define(function(require) {
 							bbar = that.renderBar(barName, barDef[barName]);
 							GEPPETTO.Console
 									.log("Button Bar definition read from "
-											+ ((status == "success") ? url : 'default'));
+											+ ((status == "success") ? url + ' .' : 'default.'));
 						}
 					});
 
@@ -214,14 +214,8 @@ define(function(require) {
 				 * @private
 				 */
 				setBody : function(content) {
-					this.getSelector("bubar_body").html(content);
-				},
-
-				/**
-				 * @private
-				 */
-				getSelector : function(name) {
-					return $(this.root.selector + " ." + name);
+					this.innerButtonBarContainer.html(content);
 				}
+				
 			});
 });

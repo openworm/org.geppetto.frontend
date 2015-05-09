@@ -72,7 +72,7 @@ public class TransportMessageFactory {
 			case INFO_MESSAGE:
 				params.add(new SimpleEntry<String, String>("message", update));
 				break;
-			case ERROR_LOADING_SIMULATION:
+			case ERROR_LOADING_PROJECT:
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString()));
 				break;
 			case ERROR_SETTING_WATCHED_VARIABLES:
@@ -93,8 +93,8 @@ public class TransportMessageFactory {
 			case SIMULATOR_FULL:
 				params.add(new SimpleEntry<String, String>("message",  (update!=null) ? update : EMPTY_STRING));
 				break;
-			case SIMULATION_LOADED:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SIMULATION_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
+			case PROJECT_LOADED:
+				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_OVER:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
@@ -102,10 +102,10 @@ public class TransportMessageFactory {
 			case FIRE_SIM_SCRIPTS:
 				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_SCRIPTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
-			case SIMULATION_STARTED:
+			case EXPERIMENT_RUNNING:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
-			case LOAD_MODEL:
+			case LOAD_PROJECT:
 			case SCENE_UPDATE:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;

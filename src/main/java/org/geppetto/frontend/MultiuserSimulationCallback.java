@@ -39,11 +39,11 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoErrorCodes;
-import org.geppetto.core.simulation.ISimulationCallbackListener;
+import org.geppetto.core.simulation.IProjectManagerCallbackListener;
 import org.geppetto.frontend.controllers.GeppettoMessageInbound;
 import org.geppetto.frontend.controllers.GeppettoServletController;
 
-public class MultiuserSimulationCallback implements ISimulationCallbackListener
+public class MultiuserSimulationCallback implements IProjectManagerCallbackListener
 {
 
 	private static Log logger = LogFactory.getLog(MultiuserSimulationCallback.class);
@@ -74,9 +74,9 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 		// switch on message type
 		switch(event)
 		{
-			case LOAD_MODEL:
+			case LOAD_PROJECT:
 			{
-				action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
+				action = OUTBOUND_MESSAGE_TYPES.LOAD_PROJECT;
 
 				_user.setIsSimulationLoaded(true);
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
@@ -85,8 +85,8 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 
 				break;
 			}
-			case START_SIMULATION:
-				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_STARTED;
+			case RUN_EXPERIMENT:
+				action = OUTBOUND_MESSAGE_TYPES.EXPERIMENT_RUNNING;
 
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
 				update = "{ "+sceneUpdate + "}";
@@ -101,11 +101,11 @@ public class MultiuserSimulationCallback implements ISimulationCallbackListener
 
 				break;
 			}
-			case STOP_SIMULATION:
-				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_STOPPED;
+			case QUEUE_EXPERIMENT:
+				//action = OUTBOUND_MESSAGE_TYPES.;
 
 				break;
-			case SIMULATION_OVER:
+			case REPLAY_EXPERIMENT:
 				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
 				break;
 			default:

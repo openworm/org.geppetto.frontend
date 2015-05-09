@@ -200,7 +200,7 @@ define(function(require) {
 							equal(acnet2.getAspects().length, 1, "Aspects checked");
 							equal(acnet2.baskets_12_9.getConnections().length, 60, "Connections checked");
 							equal(jQuery.isEmptyObject(acnet2.electrical.VisualizationTree),false,"Test Visualization at load");
-							equal(acnet2.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
+							equal(acnet2.electrical.VisualizationTree.getChildren().length, 1, "Test Visual Groups amount")
 							equal(jQuery.isEmptyObject(acnet2.electrical.ModelTree),false,"Test Model tree at load");
 							equal(jQuery.isEmptyObject(acnet2.electrical.SimulationTree),false,"Test Simulation tree at load");							
 							acnet2.electrical.getModelTree();

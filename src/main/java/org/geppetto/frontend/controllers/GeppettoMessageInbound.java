@@ -82,10 +82,7 @@ public class GeppettoMessageInbound extends MessageInbound
 	{
 		OBSERVING, CONTROLLING, WAITING
 	}
-
-	@Autowired
-	private ISimulation _simulationService;
-
+	
 	private GeppettoServletController _servletController;
 	private final String _client_id;
 
@@ -93,6 +90,7 @@ public class GeppettoMessageInbound extends MessageInbound
 
 	private VisitorRunMode currentMode = VisitorRunMode.OBSERVING;
 	private boolean _isSimulationLoaded;
+	private IGeppettoProject geppettoProject;
 
 	public GeppettoMessageInbound(String client_id)
 	{
@@ -146,7 +144,7 @@ public class GeppettoMessageInbound extends MessageInbound
 				_servletController.getVersionNumber(requestID, this);
 				break;
 			}
-			case INIT_URL:
+			case LOAD_PROJECT:
 			{
 				String jsonUrlString = gmsg.data;
 				URL url;
@@ -159,7 +157,7 @@ public class GeppettoMessageInbound extends MessageInbound
 				}
 				catch(IOException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_PROJECT);
 				}
 				break;
 			}
@@ -174,14 +172,14 @@ public class GeppettoMessageInbound extends MessageInbound
 				}
 				catch(NumberFormatException e)
 				{
-					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_SIMULATION);
+					_servletController.messageClient(requestID, this, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_PROJECT);
 				}
 				break;
 			}
 			case INIT_SIM:
 			{
 				String simulation = gmsg.data;
-				IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), simulation);
+				geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), simulation);
 				_servletController.load(requestID, geppettoProject, this);
 				break;
 			}
@@ -208,19 +206,9 @@ public class GeppettoMessageInbound extends MessageInbound
 				_servletController.getSimulationConfiguration(requestID, url, this);
 				break;
 			}
-			case START:
+			case RUN:
 			{
-				_servletController.startSimulation(requestID, this);
-				break;
-			}
-			case PAUSE:
-			{
-				_servletController.pauseSimulation(requestID, this);
-				break;
-			}
-			case STOP:
-			{
-				_servletController.stopSimulation(requestID, this);
+				_servletController.runExperiment(requestID,01,geppettoProject, this);
 				break;
 			}
 			case OBSERVE:
@@ -332,11 +320,6 @@ public class GeppettoMessageInbound extends MessageInbound
 	public void setVisitorRunMode(VisitorRunMode mode)
 	{
 		currentMode = mode;
-	}
-
-	public ISimulation getSimulationService()
-	{
-		return this._simulationService;
 	}
 
 	public boolean isSimulationLoaded()

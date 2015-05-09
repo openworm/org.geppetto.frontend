@@ -332,6 +332,9 @@ define(function(require) {
 			 */
 			render: function() {
 
+				 var $dialogContainer = $('#'+this.id);
+				 var $detachedChildren = $dialogContainer.children().detach();
+				    
 				//create the dialog window for the widget
 				this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
 					{
@@ -360,8 +363,17 @@ define(function(require) {
 			 * 
 			 * @command registerEvent(event)
 			 */
-			registerEvent : function(event){
-				this.registeredEvents.push(event);
+			registerEvent : function(event, callback){
+				this.registeredEvents.push({id:event,callback:callback});
+			},
+			
+			/**
+			 * Unregister event with widget
+			 * 
+			 * @command unregisterEvent(event)
+			 */
+			unregisterEvent: function(event){
+				this.registeredEvents = _.reject(this.registeredEvents, function(el){return el.id === event});
 			},
 		})
 	};

@@ -30,17 +30,17 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.legend {
+.legend-text {
     font-size: 12px;
     font-weight:100;
   }
-.legendTitle{
+.legend-title{
     font-size: 14px;
   }
-#filters{
+.connectivity-ordering{
 	position: absolute;
 }
-.filtersLabel{
+.connectivity-ordering-label{
 	margin-left:2px;
 	font-size: 12px;
     font-weight:100;

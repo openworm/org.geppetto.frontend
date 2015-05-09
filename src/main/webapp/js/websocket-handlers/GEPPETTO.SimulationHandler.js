@@ -55,7 +55,7 @@ define(function(require) {
             /*
              * Messages handle by SimulatorHandler
              */
-            LOAD_MODEL: "load_model",
+            LOAD_PROJECT: "load_project",
             SCENE_UPDATE: "scene_update",
             SIMULATION_CONFIGURATION: "simulation_configuration",
             SIMULATION_LOADED: "simulation_loaded",
@@ -74,7 +74,7 @@ define(function(require) {
 
         var messageHandler = {};
 
-        messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
+        messageHandler[messageTypes.LOAD_PROJECT] = function(payload) {
         	var initTime = new Date()-GEPPETTO.Simulation.initializationTime;
         	
             GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
@@ -211,6 +211,9 @@ define(function(require) {
 	        	//create client side model tree
 	        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
         	}
+        	
+        	GEPPETTO.trigger(Events.ModelTree_populated);
+        	
         	var endCreation = new Date() - initTime;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create model tree");
         };
@@ -229,6 +232,8 @@ define(function(require) {
 	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
         	}
         	
+			GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_RECEIVED);
+        	GEPPETTO.trigger(Events.SimulationTree_populated);
         	var endCreation = new Date() - initTime;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create simulation tree");
         };

@@ -36,11 +36,11 @@ package org.geppetto.frontend;
  * Stores different types of messages that can be send to the clients
  */
 public enum INBOUND_MESSAGE_TYPES {
-	START("start"), 
+	RUN("start"), 
 	PAUSE("pause"), 
 	STOP("stop"), 
 	OBSERVE("observe"), 
-	INIT_URL("init_url"), 
+	LOAD_PROJECT("load_project"), 
 	INIT_ID("init_id"), 
 	INIT_SIM("init_sim"),
 	SIM("sim"),

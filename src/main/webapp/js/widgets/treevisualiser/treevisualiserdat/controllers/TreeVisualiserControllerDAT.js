@@ -110,13 +110,13 @@ define(function(require) {
 			else if(event == Events.Select) {
 				//loop through all existing widgets
 				for(var i = 0; i < this.widgets.length; i++) {
-					var treeVisualiser = this.widgets[i];
+					var treeVisualiserDAT = this.widgets[i];
 
-					if(treeVisualiser.registeredEvents.indexOf(event)>-1){
+					if(_.find(treeVisualiserDAT.registeredEvents, function(el){return el.id === event})){
 						var selected = GEPPETTO.Simulation.getSelection();
-						treeVisualiser.reset();
+						treeVisualiserDAT.reset();
 						//update treevisualiser with new data set
-						treeVisualiser.setData(selected[0]);
+						treeVisualiserDAT.setData(selected[0]);
 					}
 				}
 			}
@@ -128,6 +128,26 @@ define(function(require) {
 
 					// update treevisualiser with new data set
 					treeVisualiserDAT.updateData();
+				}
+			}
+			// update treevisualiser widgets
+			else if (event == Events.ModelTree_populated || event == Events.SimulationTree_populated) {
+				// loop through all existing widgets
+				for (var i = 0; i < treeVisualisersDAT.length; i++) {
+					var treeVisualiserDAT = treeVisualisersDAT[i];
+
+					var ev = _.find(treeVisualiserDAT.registeredEvents, function(el){return el.id === event});
+					if(typeof ev !== 'undefined'){
+						if (typeof ev.callback === 'undefined'){
+							//TODO: We need the event data here so we can decide if we would like to refresh or not
+							treeVisualiserDAT.refresh();
+						}
+						else{
+							ev.callback();
+						}
+						
+					}
+					
 				}
 			}
 		},
@@ -191,6 +211,14 @@ define(function(require) {
 				}];
 
 				groups.push(aspect);
+			}
+			if (node._metaType == "AspectSubTreeNode" && node.id == "ModelTree"){
+				var aspectSubTreeNode = [{
+					label:"Extract Model Tree",
+					action: ["#node_instancepath#.getParent().getModelTree();"],
+				}];
+
+				groups.push(aspectSubTreeNode);
 			}
 			if (node._metaType == "VisualGroupNode"){
 				var visualGroup = [{

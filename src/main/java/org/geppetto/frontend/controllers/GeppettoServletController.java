@@ -54,7 +54,7 @@ import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.simulation.IProjectManager;
-import org.geppetto.core.simulation.ISimulationCallbackListener;
+import org.geppetto.core.simulation.IProjectManagerCallbackListener;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.MultiuserSimulationCallback;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
@@ -89,7 +89,7 @@ public class GeppettoServletController
 
 	private static GeppettoServletController _instance = null;
 
-	private ISimulationCallbackListener _simulationCallbackListener;
+	private IProjectManagerCallbackListener _simulationCallbackListener;
 
 	private final ConcurrentHashMap<String, GeppettoMessageInbound> _connections = new ConcurrentHashMap<String, GeppettoMessageInbound>();
 

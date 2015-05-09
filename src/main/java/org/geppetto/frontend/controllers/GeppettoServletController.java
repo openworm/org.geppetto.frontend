@@ -52,7 +52,7 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
-import org.geppetto.core.simulation.IProjectManager;
+import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.simulation.ISimulationCallbackListener;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.MultiuserSimulationCallback;
@@ -99,7 +99,7 @@ public class GeppettoServletController
 	private boolean _simulationInUse = false;
 
 	@Autowired
-	private IProjectManager _projectManager;
+	private IGeppettoManager geppettoManager;
 
 	protected GeppettoServletController()
 	{
@@ -330,7 +330,7 @@ public class GeppettoServletController
 		{
 			// TODO: get the user from somewhere
 			IUser user = null;
-			_projectManager.loadProject(requestID, user, geppettoProject, _simulationCallbackListener);
+			geppettoManager.loadProject(requestID, geppettoProject, _simulationCallbackListener);
 
 			// url = new URL(simulation);
 			// visitor.getSimulationService().init(url, requestID, _simulationCallbackListener);

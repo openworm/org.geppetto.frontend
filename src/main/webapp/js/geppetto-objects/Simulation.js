@@ -197,7 +197,7 @@ define(function(require) {
 							//we call it only the first time
 							GEPPETTO.SceneController.animate();
 						}
-						GEPPETTO.MessageSocket.send("init_url", simulationURL);
+						GEPPETTO.MessageSocket.send("load_project", simulationURL);
 						this.initializationTime = new Date();
 						GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 						loading = true;

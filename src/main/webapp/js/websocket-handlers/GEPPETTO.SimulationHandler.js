@@ -55,7 +55,7 @@ define(function(require) {
             /*
              * Messages handle by SimulatorHandler
              */
-            LOAD_MODEL: "load_model",
+            LOAD_PROJECT: "load_project",
             SCENE_UPDATE: "scene_update",
             SIMULATION_CONFIGURATION: "simulation_configuration",
             SIMULATION_LOADED: "simulation_loaded",
@@ -74,7 +74,7 @@ define(function(require) {
 
         var messageHandler = {};
 
-        messageHandler[messageTypes.LOAD_MODEL] = function(payload) {
+        messageHandler[messageTypes.LOAD_PROJECT] = function(payload) {
         	var initTime = new Date()-GEPPETTO.Simulation.initializationTime;
         	
             GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");

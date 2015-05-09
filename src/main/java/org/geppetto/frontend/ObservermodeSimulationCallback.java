@@ -86,9 +86,9 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 		// switch on message type
 		switch(event)
 		{
-			case LOAD_MODEL:
+			case LOAD_PROJECT:
 			{
-				action = OUTBOUND_MESSAGE_TYPES.LOAD_MODEL;
+				action = OUTBOUND_MESSAGE_TYPES.LOAD_PROJECT;
 
 				controller.getSimulationServerConfig().setIsSimulationLoaded(true);
 
@@ -111,10 +111,6 @@ public class ObservermodeSimulationCallback implements ISimulationCallbackListen
 				update = "{ "+sceneUpdate + "}";
 
 				break;
-			}
-			case SIMULATION_OVER:
-			{
-				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
 			}
 			default:
 			{

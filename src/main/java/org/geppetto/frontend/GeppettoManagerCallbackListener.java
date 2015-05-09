@@ -41,17 +41,18 @@ import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.frontend.controllers.ConnectionHandler;
+import org.geppetto.frontend.messages.OutboundMessages;
 
 public class GeppettoManagerCallbackListener implements IGeppettoManagerCallbackListener
 {
 
 	private static Log logger = LogFactory.getLog(GeppettoManagerCallbackListener.class);
 
-	private ConnectionHandler servletController;
+	private ConnectionHandler connectionHandler;
 
-	public GeppettoManagerCallbackListener(ConnectionHandler servletController)
+	public GeppettoManagerCallbackListener(ConnectionHandler connectionHandler)
 	{
-		this.servletController=servletController;
+		this.connectionHandler=connectionHandler;
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class GeppettoManagerCallbackListener implements IGeppettoManagerCallback
 		String dateFormatted = formatter.format(date);
 		logger.info("Simulation Frontend Update Starting: " + dateFormatted);
 
-		OUTBOUND_MESSAGE_TYPES action = null;
+		OutboundMessages action = null;
 		String update = "";
 
 		// switch on message type
@@ -75,7 +76,7 @@ public class GeppettoManagerCallbackListener implements IGeppettoManagerCallback
 		{
 			case LOAD_PROJECT:
 			{
-				action = OUTBOUND_MESSAGE_TYPES.LOAD_PROJECT;
+				action = OutboundMessages.LOAD_PROJECT;
 
 
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
@@ -85,7 +86,7 @@ public class GeppettoManagerCallbackListener implements IGeppettoManagerCallback
 				break;
 			}
 			case RUN_EXPERIMENT:
-				action = OUTBOUND_MESSAGE_TYPES.EXPERIMENT_RUNNING;
+				action = OutboundMessages.EXPERIMENT_RUNNING;
 
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
 				update = "{ "+sceneUpdate + "}";
@@ -93,7 +94,7 @@ public class GeppettoManagerCallbackListener implements IGeppettoManagerCallback
 				break;
 			case SCENE_UPDATE:
 			{	
-				action = OUTBOUND_MESSAGE_TYPES.SCENE_UPDATE;
+				action = OutboundMessages.SCENE_UPDATE;
 
 				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
 				update = "{ "+sceneUpdate + "}";
@@ -105,7 +106,7 @@ public class GeppettoManagerCallbackListener implements IGeppettoManagerCallback
 
 				break;
 			case REPLAY_EXPERIMENT:
-				action = OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER;
+				action = OutboundMessages.SIMULATION_OVER;
 				break;
 			default:
 			{
@@ -114,7 +115,7 @@ public class GeppettoManagerCallbackListener implements IGeppettoManagerCallback
 
 		// Notify all connected clients about update either to load model or
 		// update current one.
-		servletController.messageClient(requestID, action, update);
+		connectionHandler.sendMessage(requestID, action, update);
 
 		logger.info("Simulation Frontend Update Finished: Took:" + (System.currentTimeMillis() - start));
 	}
@@ -132,7 +133,7 @@ public class GeppettoManagerCallbackListener implements IGeppettoManagerCallback
 		String error = "{ \"error_code\": \"" + errorCode.toString() + "\", \"source\": \"" + classSource + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg +"\"}";
 		logger.error(errorMessage,e);
 		// Notify all connected clients about update either to load model or update current one.
-		servletController.messageClient(null, OUTBOUND_MESSAGE_TYPES.ERROR, error);
+		connectionHandler.sendMessage(null, OutboundMessages.ERROR, error);
 	}
 
 
@@ -141,7 +142,7 @@ public class GeppettoManagerCallbackListener implements IGeppettoManagerCallback
 		String info = "{ \"content\": \"" + message +"\"}";
 		logger.info(message);
 		// Notify all connected clients about update either to load model or update current one.
-		servletController.messageClient(null, OUTBOUND_MESSAGE_TYPES.INFO_MESSAGE, info);
+		connectionHandler.sendMessage(null, OutboundMessages.INFO_MESSAGE, info);
 	}
 
 }

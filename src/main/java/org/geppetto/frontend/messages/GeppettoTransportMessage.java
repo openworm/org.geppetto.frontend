@@ -30,53 +30,10 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend;
+package org.geppetto.frontend.messages;
 
-/*
- * Stores different types of messages that can be send to the clients
- */
-public enum OUTBOUND_MESSAGE_TYPES {
-	OBSERVER_MODE("observer_mode_alert"), 
-	LOAD_PROJECT("load_project"), 
-	READ_URL_PARAMETERS("read_url_parameters"), 
-	PROJECT_LOADED("project_loaded"), 
-	ERROR_LOADING_PROJECT("error_loading_project"), 
-	SERVER_UNAVAILABLE("server_unavailable"), 
-	SERVER_AVAILABLE("server_available"),
-	EXPERIMENT_RUNNING("experiment_running"),
-	INFO_MESSAGE("info_message"),
-	SCENE_UPDATE("scene_update"), 
-	RELOAD_CANVAS("reload_canvas"),
-	SIMULATION_CONFIGURATION("simulation_configuration"),
-	ERROR("generic_error"),
-	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config"),
-	ERROR_READING_SCRIPT("error_reading_script"),
-	ERROR_SETTING_WATCHED_VARIABLES("error_setting_watched_variables"),
-	GEPPETTO_VERSION("geppetto_version"),
-	RUN_SCRIPT("run_script"),
-	GET_SCRIPTS("get_scripts"),
-	SET_WATCHED_VARIABLES("set_watch_vars"),
-	SIMULATOR_FULL("simulator_full"),
-	CLEAR_WATCH("clear_watch"),
-	CLIENT_ID("client_id"), 
-	FIRE_SIM_SCRIPTS("fire_sim_scripts"),
-	SIMULATION_OVER("simulation_over"),
-	GET_MODEL_TREE("get_model_tree"),
-	GET_SIMULATION_TREE("get_simulation_tree"),
-	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
-	WRITE_MODEL("write_model"),
-	SET_PARAMETERS("set_parameters"),
-	NO_FEATURE("no_feature");
-	
-	private OUTBOUND_MESSAGE_TYPES(final String text) {
-		this.text = text;
-	}
-
-	private final String text;
-
-	@Override
-	public String toString() {
-		return text;
-	}
-
+public class GeppettoTransportMessage {
+	public String requestID;
+	public String type;
+	public String data;
 }

@@ -30,11 +30,13 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend;
+package org.geppetto.frontend.messages;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.geppetto.frontend.Resources;
 
 import com.google.gson.JsonObject;
 
@@ -57,7 +59,7 @@ public class TransportMessageFactory {
 	 * @param type - Type of message of requested
 	 * @return
 	 */
-	public static GeppettoTransportMessage getTransportMessage(String requestID, OUTBOUND_MESSAGE_TYPES type, String update){
+	public static GeppettoTransportMessage getTransportMessage(String requestID, OutboundMessages type, String update){
 
 		String messageType = type.toString();
 		
@@ -94,13 +96,13 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("message",  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case PROJECT_LOADED:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_OVER:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;	
 			case FIRE_SIM_SCRIPTS:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_SCRIPTS.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SCRIPTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case EXPERIMENT_RUNNING:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
@@ -113,28 +115,28 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("configuration", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GEPPETTO_VERSION:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.GEPPETTO_VERSION.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case RUN_SCRIPT:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.RUN_SCRIPT.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SET_WATCHED_VARIABLES:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SET_WATCHED_VARIABLES.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.SET_WATCHED_VARIABLES.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_MODEL_TREE:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_SIMULATION_TREE:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.GET_SIMULATION_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SIMULATION_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SET_PARAMETERS:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.SET_PARAMETERS.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.SET_PARAMETERS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case NO_FEATURE:
-				params.add(new SimpleEntry<String, String>(OUTBOUND_MESSAGE_TYPES.NO_FEATURE.toString(), (update!=null) ? update : EMPTY_STRING));
+				params.add(new SimpleEntry<String, String>(OutboundMessages.NO_FEATURE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			default:
 				break;

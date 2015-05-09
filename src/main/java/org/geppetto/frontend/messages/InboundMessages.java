@@ -30,10 +30,43 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package org.geppetto.frontend;
+package org.geppetto.frontend.messages;
 
-public class GeppettoTransportMessage {
-	public String requestID;
-	public String type;
-	public String data;
+/*
+ * Stores different types of messages that can be send to the clients
+ */
+public enum InboundMessages {
+	
+	RUN("start"), 
+	PAUSE("pause"), 
+	STOP("stop"), 
+	OBSERVE("observe"), 
+	LOAD_PROJECT_FROM_URL("load_project"), 
+	LOAD_PROJECT_FROM_ID("init_id"), 
+	LOAD_PROJECT_FROM_CONTENT("init_sim"),
+	SIM("sim"),
+	GEPPETTO_VERSION("geppetto_version"),
+	RUN_SCRIPT("run_script"),
+	SET_WATCH("set_watch"),
+	GET_WATCH("get_watch"),
+	CLEAR_WATCH("clear_watch"),
+	NOTIFY_USER("notify_user"),
+	IDLE_USER("idle_user"),
+	GET_MODEL_TREE("get_model_tree"),
+	GET_SIMULATION_TREE("get_simulation_tree"),
+	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
+	WRITE_MODEL("write_model"),
+	SET_PARAMETERS("set_parameters");
+
+	
+	private InboundMessages(final String text) {
+		this.text = text;
+	}
+
+	private final String text;
+
+	@Override
+	public String toString() {
+		return text;
+	}
 }

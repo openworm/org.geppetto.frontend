@@ -38,7 +38,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -54,9 +53,7 @@ import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
-import org.geppetto.frontend.GeppettoTransportMessage;
-import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
-import org.geppetto.frontend.TransportMessageFactory;
+import org.geppetto.frontend.messages.OutboundMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -116,7 +113,7 @@ public class ConnectionHandler
 		}
 		catch(NumberFormatException e)
 		{
-			messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_PROJECT);
+			sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT,"");
 		}
 	}
 
@@ -146,7 +143,7 @@ public class ConnectionHandler
 		}
 		catch(IOException e)
 		{
-			messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_PROJECT);
+			sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT,"");
 		}
 	}
 
@@ -168,11 +165,14 @@ public class ConnectionHandler
 		catch(MalformedURLException | GeppettoInitializationException | GeppettoExecutionException e)
 		{
 			_logger.info("Could not load geppetto project", e);
-			messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_LOADING_PROJECT);
+			sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT,"");
 		}
 
 	}
 
+	/**
+	 * @return
+	 */
 	private Gson getGson()
 	{
 		GsonBuilder builder = new GsonBuilder();
@@ -187,6 +187,9 @@ public class ConnectionHandler
 		return builder.create();
 	}
 
+	/**
+	 * @return
+	 */
 	public SimulationServerConfig getSimulationServerConfig()
 	{
 		return _simulationServerConfig;
@@ -205,16 +208,18 @@ public class ConnectionHandler
 	private void postLoadProject(String requestID)
 	{
 
-		messageClient(requestID, OUTBOUND_MESSAGE_TYPES.PROJECT_LOADED);
+		sendMessage(requestID, OutboundMessages.PROJECT_LOADED, "");
 	}
 
 	/**
 	 * Run the Experiment
 	 */
-	public void runExperiment(String requestID, long experimentID, IGeppettoProject geppettoProject, WebsocketConnection controllingUser)
+	public void runExperiment(String requestID, long experimentID, long projectId)
 	{
 		try
 		{
+			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
 			IExperiment theExperiment = null;
 			// Look for experiment that matches id passed
 			for(IExperiment e : geppettoProject.getExperiments())
@@ -264,26 +269,7 @@ public class ConnectionHandler
 		}
 	}
 
-	/**
-	 * Add visitor to list users Observing simulation
-	 * 
-	 * @param observingVisitor
-	 *            - Geppetto visitor joining list of simulation observers
-	 */
-	public void observeSimulation(String requestID, WebsocketConnection observingVisitor)
-	{
-		// TODO: FIX is observer mode will remain
-		// _observers.add(observingVisitor);
-		//
-		// observingVisitor.setVisitorRunMode(VisitorRunMode.OBSERVING);
-		//
-		// if(!observingVisitor.getSimulationService().isRunning())
-		// {
-		// messageClient(requestID, observingVisitor, OUTBOUND_MESSAGE_TYPES.LOAD_PROJECT, getSimulationServerConfig().getLoadedScene());
-		// }
-		// // Notify visitor they are now in Observe Mode
-		// messageClient(requestID, observingVisitor, OUTBOUND_MESSAGE_TYPES.OBSERVER_MODE);
-	}
+
 
 	/**
 	 * Adds watch lists with variables to be watched
@@ -292,7 +278,7 @@ public class ConnectionHandler
 	 * @throws JsonProcessingException
 	 * @throws GeppettoInitializationException
 	 */
-	public void setWatchedVariables(String requestID, String jsonLists, WebsocketConnection visitor) throws GeppettoExecutionException, GeppettoInitializationException
+	public void setWatchedVariables(String requestID, String jsonLists) throws GeppettoExecutionException, GeppettoInitializationException
 	{
 		// List<String> lists = fromJSON(new TypeReference<List<String>>()
 		// {
@@ -313,96 +299,24 @@ public class ConnectionHandler
 		// }
 		//
 		// // message the client the watch lists were added
-		// messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.SET_WATCHED_VARIABLES, serializedLists);
+		// messageClient(requestID, OUTBOUND_MESSAGE_TYPES.SET_WATCHED_VARIABLES, serializedLists);
 
 	}
 
 	/**
 	 * instructs simulation to clear watch lists
 	 */
-	public void clearWatchLists(String requestID, WebsocketConnection visitor)
+	public void clearWatchLists(String requestID)
 	{
 		// visitor.getSimulationService().clearWatchLists();
 		//
 		// // message the client the watch lists were cleared
-		// messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.CLEAR_WATCH);
+		// messageClient(requestID, OUTBOUND_MESSAGE_TYPES.CLEAR_WATCH);
 	}
 
-	/**
-	 * is notified with an alert message of status of simulation.
-	 * 
-	 * @param id
-	 *            - ID of new Websocket connection.
-	 */
-	public void simulationControlsUnavailable(WebsocketConnection visitor)
-	{
-		messageClient(null, OUTBOUND_MESSAGE_TYPES.SERVER_UNAVAILABLE);
-	}
 
-	/**
-	 * Requests JSONUtility class for a json object with a message to send to the client
-	 * 
-	 * @param requestID
-	 * 
-	 * @param connection
-	 *            - client to receive the message
-	 * @param type
-	 *            - type of message to be send
-	 * @param string
-	 */
-	public void messageClient(String requestID, OUTBOUND_MESSAGE_TYPES type)
-	{
-		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, null);
-		String msg = new Gson().toJson(transportMsg);
 
-		// Send the message to the client
-		sendMessage(websocketConnection, msg);
-	}
 
-	/**
-	 * Requests JSONUtility class for a json object with simulation update to be send to the client
-	 * 
-	 * @param connection
-	 *            - client to receive the simulation update
-	 * @param connection
-	 *            - Type of udpate to be send
-	 * @param reloadCanvas
-	 *            - update to be sent
-	 */
-	public void messageClient(String requestID, OUTBOUND_MESSAGE_TYPES type, String update)
-	{
-		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, update);
-		String msg = new Gson().toJson(transportMsg);
-
-		sendMessage(websocketConnection, msg);
-	}
-
-	/**
-	 * Sends a message to a specific user. The id of the WebSocket connection is used to contact the desired user.
-	 * 
-	 * @param id
-	 *            - ID of WebSocket connection that will be sent a message
-	 * @param msg
-	 *            - The message the user will be receiving
-	 */
-	public void sendMessage(WebsocketConnection websocketConnection, String msg)
-	{
-		try
-		{
-			long startTime = System.currentTimeMillis();
-			CharBuffer buffer = CharBuffer.wrap(msg);
-			websocketConnection.getWsOutbound().writeTextMessage(buffer);
-			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a message of " + msg.length() / 1024 + "KB to the client";
-			_logger.info(debug);
-		}
-		catch(IOException ignore)
-		{
-			_logger.error("Unable to communicate with client " + ignore.getMessage());
-			ConnectionsManager.getInstance().removeConnection(websocketConnection);
-		}
-	}
 
 	public void getSimulationConfiguration(String requestID, String url, WebsocketConnection visitor)
 	{
@@ -431,7 +345,7 @@ public class ConnectionHandler
 		try
 		{
 			prop.load(ConnectionHandler.class.getResourceAsStream("/Geppetto.properties"));
-			messageClient(requestID, OUTBOUND_MESSAGE_TYPES.GEPPETTO_VERSION, prop.getProperty("Geppetto.version"));
+			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_VERSION, prop.getProperty("Geppetto.version"));
 		}
 		catch(IOException e)
 		{
@@ -488,11 +402,11 @@ public class ConnectionHandler
 			}
 			String script = sb.toString();
 
-			messageClient(requestID, OUTBOUND_MESSAGE_TYPES.RUN_SCRIPT, script);
+			sendMessage(requestID, OutboundMessages.RUN_SCRIPT, script);
 		}
 		catch(IOException e)
 		{
-			messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+			sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
 		}
 	}
 
@@ -511,7 +425,7 @@ public class ConnectionHandler
 		return data;
 	}
 
-	public void userBecameIdle(String requestID, WebsocketConnection websocketConnection)
+	public void userBecameIdle(String requestID)
 	{
 		ConnectionsManager.getInstance().removeConnection(websocketConnection);
 		// TODO what do we do?
@@ -533,5 +447,15 @@ public class ConnectionHandler
 		// // no parameter feature supported by this model service
 		// this.messageClient(requestID, visitor, OUTBOUND_MESSAGE_TYPES.NO_FEATURE, message);
 		// }
+	}
+
+	/**
+	 * @param requestID
+	 * @param type
+	 * @param message
+	 */
+	public void sendMessage(String requestID, OutboundMessages type, String message)
+	{
+		websocketConnection.sendMessage(requestID, type, message);
 	}
 }

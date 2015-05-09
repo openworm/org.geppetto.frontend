@@ -42,12 +42,14 @@ import java.util.Map;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
-import org.geppetto.core.data.model.IGeppettoProject;
-import org.geppetto.frontend.GeppettoTransportMessage;
-import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
-import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+import org.geppetto.frontend.messages.GeppettoTransportMessage;
+import org.geppetto.frontend.messages.InboundMessages;
+import org.geppetto.frontend.messages.OutboundMessages;
+import org.geppetto.frontend.messages.TransportMessageFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -62,15 +64,13 @@ import com.google.gson.reflect.TypeToken;
 public class WebsocketConnection extends MessageInbound
 {
 
+	private static Log logger = LogFactory.getLog(WebsocketConnection.class);
+	
 	private ConnectionHandler connectionHandler;
 	
 	private String connectionID;
 
 	protected ApplicationContext applicationContext;
-
-	private boolean _isSimulationLoaded;
-	
-	private IGeppettoProject geppettoProject;
 
 	public WebsocketConnection()
 	{
@@ -83,7 +83,7 @@ public class WebsocketConnection extends MessageInbound
 	protected void onOpen(WsOutbound outbound)
 	{
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
-		connectionHandler.messageClient(null, OUTBOUND_MESSAGE_TYPES.CLIENT_ID, connectionID);
+		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
 	}
 
 	@Override
@@ -98,6 +98,33 @@ public class WebsocketConnection extends MessageInbound
 		throw new UnsupportedOperationException("Binary message not supported.");
 	}
 
+	
+	/**
+	 * @param requestID
+	 * @param type
+	 * @param message
+	 */
+	public void sendMessage(String requestID, OutboundMessages type, String message)
+	{
+		// get transport message to be sent to the client
+		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, message);
+		String msg = new Gson().toJson(transportMsg);
+		
+		try
+		{
+			long startTime = System.currentTimeMillis();
+			CharBuffer buffer = CharBuffer.wrap(msg);
+			getWsOutbound().writeTextMessage(buffer);
+			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a message of " + msg.length() / 1024 + "KB to the client";
+			logger.info(debug);
+		}
+		catch(IOException ignore)
+		{
+			logger.error("Unable to communicate with client " + ignore.getMessage());
+			ConnectionsManager.getInstance().removeConnection(this);
+		}
+	}
+	
 	/**
 	 * Receives message(s) from client.
 	 * 
@@ -115,7 +142,7 @@ public class WebsocketConnection extends MessageInbound
 
 		// switch on message type
 		// NOTE: each message handler knows how to interpret the GeppettoMessage data field
-		switch(INBOUND_MESSAGE_TYPES.valueOf(gmsg.type.toUpperCase()))
+		switch(InboundMessages.valueOf(gmsg.type.toUpperCase()))
 		{
 			case GEPPETTO_VERSION:
 			{
@@ -150,7 +177,7 @@ public class WebsocketConnection extends MessageInbound
 				}
 				catch(MalformedURLException e)
 				{
-					connectionHandler.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_READING_SCRIPT);
+					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
 				}
 				break;
 			}
@@ -162,12 +189,16 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case RUN:
 			{
-				connectionHandler.runExperiment(requestID,01,geppettoProject, this);
+				String data = gmsg.data;
+				//TODO extract experimentId and projectId from data
+				long experimentId=0;
+				long projectId=0;
+				connectionHandler.runExperiment(requestID,experimentId,projectId);
 				break;
 			}
 			case OBSERVE:
 			{
-				connectionHandler.observeSimulation(requestID, this);
+				//TODO Send an error, observer mode not supported anymore
 				break;
 			}
 			case SET_WATCH:
@@ -176,27 +207,27 @@ public class WebsocketConnection extends MessageInbound
 
 				try
 				{
-					connectionHandler.setWatchedVariables(requestID, watchListsString, this);
+					connectionHandler.setWatchedVariables(requestID, watchListsString);
 				}
 				catch(GeppettoExecutionException e)
 				{
-					connectionHandler.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
+					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES,"");
 				}
 				catch(GeppettoInitializationException e)
 				{
-					connectionHandler.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.ERROR_SETTING_WATCHED_VARIABLES);
+					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
 				}
 
 				break;
 			}
 			case CLEAR_WATCH:
 			{
-				connectionHandler.clearWatchLists(requestID, this);
+				connectionHandler.clearWatchLists(requestID);
 				break;
 			}
 			case IDLE_USER:
 			{
-				connectionHandler.userBecameIdle(requestID, this);
+				connectionHandler.userBecameIdle(requestID);
 				break;
 			}
 			case GET_MODEL_TREE:
@@ -247,20 +278,9 @@ public class WebsocketConnection extends MessageInbound
 		}
 	}
 
-
 	public String getConnectionID()
 	{
 		return connectionID;
-	}
-
-	public boolean isSimulationLoaded()
-	{
-		return _isSimulationLoaded;
-	}
-
-	public void setIsSimulationLoaded(boolean loaded)
-	{
-		this._isSimulationLoaded = loaded;
 	}
 
 }

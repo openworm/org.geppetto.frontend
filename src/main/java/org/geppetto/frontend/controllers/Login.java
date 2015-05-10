@@ -33,10 +33,13 @@
 
 package org.geppetto.frontend.controllers;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.geppetto.core.auth.AuthManager;
+import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class Login
 {
+	
+	private static Log logger = LogFactory.getLog(Login.class);
 	
 	@Autowired
 	private IGeppettoManager geppettoManager;
@@ -71,7 +76,14 @@ public class Login
 		//TODO Check: if the data manager deals with what's on the DB (or any other data source) then should the current
 		//user be stored elsewhere, i.e. in the GeppettoManager? Also there should always be only one current user per session
 		//while the DataManager has thread scope, this might lead to problems. The GeppettoManager has session scope
-		geppettoManager.setUser(DataManagerHelper.getDataManager().getUserByLogin((String) currentUser.getPrincipal()));
+		try
+		{
+			geppettoManager.setUser(DataManagerHelper.getDataManager().getUserByLogin((String) currentUser.getPrincipal()));
+		}
+		catch(GeppettoExecutionException e)
+		{
+			logger.error(e);
+		}
 		return "dist/index";
 	}
 

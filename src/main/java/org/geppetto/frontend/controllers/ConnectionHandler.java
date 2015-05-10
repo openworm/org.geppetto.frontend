@@ -90,7 +90,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	@Autowired
 	private SimulationServerConfig simulationServerConfig;
 
-
 	private WebsocketConnection websocketConnection;
 
 	/**
@@ -179,24 +178,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	{
 		try
 		{
-			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
-			IExperiment theExperiment = null;
-			// Look for experiment that matches id passed
-			for(IExperiment e : geppettoProject.getExperiments())
-			{
-				if(e.getId() == experimentID)
-				{
-					// The experiment is found
-					theExperiment = e;
-					break;
-				}
-			}
-
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+			IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 			// run the matched experiment
-			if(theExperiment != null)
+			if(experiment != null)
 			{
-				geppettoManager.runExperiment(requestID, theExperiment, geppettoProject);
+				geppettoManager.runExperiment(requestID, experiment, geppettoProject);
 			}
 			else
 			{
@@ -205,7 +192,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 
 		}
-		catch(GeppettoInitializationException e)
+		catch(GeppettoExecutionException e)
 		{
 			logger.info("Error running experiment", e);
 			throw new RuntimeException(e);
@@ -220,13 +207,16 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @throws GeppettoExecutionException
 	 * @throws GeppettoInitializationException
 	 */
-	public void setWatchedVariables(String requestID, String jsonLists) throws GeppettoExecutionException, GeppettoInitializationException
+	public void setWatchedVariables(String requestID, String jsonLists, long experimentID, long projectId) throws GeppettoExecutionException, GeppettoInitializationException
 	{
 		List<String> lists = fromJSON(new TypeReference<List<String>>()
 		{
 		}, jsonLists);
 
-		geppettoManager.setWatchedVariables(lists);
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+
+		geppettoManager.setWatchedVariables(lists, experiment, geppettoProject);
 
 		// serialize watch-lists
 		ObjectMapper mapper = new ObjectMapper();
@@ -237,6 +227,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(JsonProcessingException e)
 		{
+			logger.error("There was an error serializing the watched lists", e);
 			throw new GeppettoExecutionException(e);
 		}
 
@@ -247,11 +238,14 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	/**
 	 * @param requestID
+	 * @param experimentID
+	 * @param projectId
 	 */
-	public void clearWatchLists(String requestID)
+	public void clearWatchLists(String requestID, long experimentID, long projectId)
 	{
-		geppettoManager.clearWatchLists();
-
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+		geppettoManager.clearWatchLists(experiment, geppettoProject);
 		websocketConnection.sendMessage(requestID, OutboundMessages.CLEAR_WATCH, "");
 	}
 
@@ -269,6 +263,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		catch(IOException e)
 		{
 			logger.error("Unable to read GEPPETTO.properties file");
+			// TODO Send an error to the client!
 		}
 	}
 
@@ -276,47 +271,70 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param aspectInstancePath
 	 */
-	public void getModelTree(String requestID, String aspectInstancePath)
+	public void getModelTree(String requestID, String aspectInstancePath, long experimentID, long projectId)
 	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		// TODO Check how do you know which experiment/project we are talking about? probably to add
-		Map<String, AspectSubTreeNode> modelTree = geppettoManager.getModelTree(aspectInstancePath);
-
-		String modelTreeString = "[";
-		for(Map.Entry<String, AspectSubTreeNode> entry : modelTree.entrySet())
+		Map<String, AspectSubTreeNode> modelTree;
+		try
 		{
-			SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
-			entry.getValue().apply(updateClientVisitor);
-			modelTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + ",\"modelTree\":{" + updateClientVisitor.getSerializedTree() + "} },";
-		}
-		modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
-		modelTreeString += "]";
+			modelTree = geppettoManager.getModelTree(aspectInstancePath, experiment, geppettoProject);
 
-		websocketConnection.sendMessage(requestID, OutboundMessages.GET_MODEL_TREE, modelTreeString);
+			String modelTreeString = "[";
+			for(Map.Entry<String, AspectSubTreeNode> entry : modelTree.entrySet())
+			{
+				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
+				entry.getValue().apply(updateClientVisitor);
+				modelTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + ",\"modelTree\":{" + updateClientVisitor.getSerializedTree() + "} },";
+			}
+			modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
+			modelTreeString += "]";
+			
+			websocketConnection.sendMessage(requestID, OutboundMessages.GET_MODEL_TREE, modelTreeString);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			logger.error("Error performing getModelTree", e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
 	 * @param requestID
 	 * @param aspectInstancePath
 	 */
-	public void getSimulationTree(String requestID, String aspectInstancePath)
+	public void getSimulationTree(String requestID, String aspectInstancePath, long experimentID, long projectId)
 	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		// TODO Check how do you know which experiment/project we are talking about? probably to add
-		Map<String, AspectSubTreeNode> simulationTree = geppettoManager.getSimulationTree(aspectInstancePath);
-
-		String simulationTreeString = "[";
-		for(Map.Entry<String, AspectSubTreeNode> entry : simulationTree.entrySet())
+		Map<String, AspectSubTreeNode> simulationTree;
+		try
 		{
-			SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
-			entry.getValue().apply(updateClientVisitor);
-			simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + ",\"simulationTree\":{" + updateClientVisitor.getSerializedTree() + "} },";
-		}
-		simulationTreeString = simulationTreeString.substring(0, simulationTreeString.length() - 1);
-		simulationTreeString += "]";
+			simulationTree = geppettoManager.getSimulationTree(aspectInstancePath, experiment, geppettoProject);
+			
+			String simulationTreeString = "[";
+			for(Map.Entry<String, AspectSubTreeNode> entry : simulationTree.entrySet())
+			{
+				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
+				entry.getValue().apply(updateClientVisitor);
+				simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + ",\"simulationTree\":{" + updateClientVisitor.getSerializedTree() + "} },";
+			}
+			simulationTreeString = simulationTreeString.substring(0, simulationTreeString.length() - 1);
+			simulationTreeString += "]";
 
-		websocketConnection.sendMessage(requestID, OutboundMessages.GET_SIMULATION_TREE, simulationTreeString);
+			websocketConnection.sendMessage(requestID, OutboundMessages.GET_SIMULATION_TREE, simulationTreeString);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			logger.error("Error performing getModelTree", e);
+			throw new RuntimeException(e);
+		}
+
+		
 	}
 
-	
 	public void writeModel(String requestID, String instancePath, String format)
 	{
 		// String modelTree = visitor.getSimulationService().writeModel(instancePath, format);
@@ -324,7 +342,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// // message the client with results
 		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.WRITE_MODEL, modelTree);
 	}
-
 
 	/**
 	 * @param requestID
@@ -354,21 +371,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
-	public static <T> T fromJSON(final TypeReference<T> type, String jsonPacket) throws GeppettoExecutionException
-	{
-		T data = null;
-
-		try
-		{
-			data = new ObjectMapper().readValue(jsonPacket, type);
-		}
-		catch(Exception e)
-		{
-			throw new GeppettoExecutionException("could not de-serialize json");
-		}
-		return data;
-	}
-
 	public void userBecameIdle(String requestID)
 	{
 		ConnectionsManager.getInstance().removeConnection(websocketConnection);
@@ -391,6 +393,52 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// // no parameter feature supported by this model service
 		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.NO_FEATURE, message);
 		// }
+	}
+
+	/**
+	 * @param experimentID
+	 * @param geppettoProject
+	 * @return
+	 */
+	private IExperiment retrieveExperiment(long experimentID, IGeppettoProject geppettoProject)
+	{
+		IExperiment theExperiment = null;
+		// Look for experiment that matches id passed
+		for(IExperiment e : geppettoProject.getExperiments())
+		{
+			if(e.getId() == experimentID)
+			{
+				// The experiment is found
+				theExperiment = e;
+				break;
+			}
+		}
+		return theExperiment;
+	}
+
+	/**
+	 * @param projectId
+	 * @return
+	 */
+	private IGeppettoProject retrieveGeppettoProject(long projectId)
+	{
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		return dataManager.getGeppettoProjectById(projectId);
+	}
+
+	public static <T> T fromJSON(final TypeReference<T> type, String jsonPacket) throws GeppettoExecutionException
+	{
+		T data = null;
+
+		try
+		{
+			data = new ObjectMapper().readValue(jsonPacket, type);
+		}
+		catch(Exception e)
+		{
+			throw new GeppettoExecutionException("could not de-serialize json");
+		}
+		return data;
 	}
 
 	/**
@@ -425,9 +473,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	@Override
 	public void updateReady(GeppettoEvents event, String requestID, String sceneUpdate)
 	{
-		
-		//TODO Check Is this needed at all? Why the connection handler cannot be the one implementing the CallbackListener -> Changed this
-		//TODO CHeck what is the conceptual difference between GeppettoEvents and OutboundMessages?
+
+		// TODO Check Is this needed at all? Why the connection handler cannot be the one implementing the CallbackListener -> Changed this
+		// TODO CHeck what is the conceptual difference between GeppettoEvents and OutboundMessages?
 		long start = System.currentTimeMillis();
 		Date date = new Date(start);
 		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -444,31 +492,30 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				action = OutboundMessages.LOAD_PROJECT;
 
-
-				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
+				sceneUpdate = sceneUpdate.substring(1, sceneUpdate.length() - 1);
 				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{"+ sceneUpdate + "}";
+				update = "{" + sceneUpdate + "}";
 
 				break;
 			}
 			case RUN_EXPERIMENT:
 				action = OutboundMessages.EXPERIMENT_RUNNING;
 
-				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
-				update = "{ "+sceneUpdate + "}";
+				sceneUpdate = sceneUpdate.substring(1, sceneUpdate.length() - 1);
+				update = "{ " + sceneUpdate + "}";
 
 				break;
 			case SCENE_UPDATE:
-			{	
+			{
 				action = OutboundMessages.SCENE_UPDATE;
 
-				sceneUpdate=sceneUpdate.substring(1, sceneUpdate.length()-1);
-				update = "{ "+sceneUpdate + "}";
+				sceneUpdate = sceneUpdate.substring(1, sceneUpdate.length() - 1);
+				update = "{ " + sceneUpdate + "}";
 
 				break;
 			}
 			case QUEUE_EXPERIMENT:
-				//action = OUTBOUND_MESSAGE_TYPES.;
+				// action = OUTBOUND_MESSAGE_TYPES.;
 
 				break;
 			case REPLAY_EXPERIMENT:
@@ -494,18 +541,17 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	@Override
 	public void error(GeppettoErrorCodes errorCode, String classSource, String errorMessage, Exception e)
 	{
-		String jsonExceptionMsg=e==null?"":e.toString();
-		String jsonErrorMsg=errorMessage==null?"":errorMessage;
-		String error = "{ \"error_code\": \"" + errorCode.toString() + "\", \"source\": \"" + classSource + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg +"\"}";
-		logger.error(errorMessage,e);
+		String jsonExceptionMsg = e == null ? "" : e.toString();
+		String jsonErrorMsg = errorMessage == null ? "" : errorMessage;
+		String error = "{ \"error_code\": \"" + errorCode.toString() + "\", \"source\": \"" + classSource + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg + "\"}";
+		logger.error(errorMessage, e);
 		// Notify all connected clients about update either to load model or update current one.
 		websocketConnection.sendMessage(null, OutboundMessages.ERROR, error);
 	}
 
-
 	public void message(String message)
 	{
-		String info = "{ \"content\": \"" + message +"\"}";
+		String info = "{ \"content\": \"" + message + "\"}";
 		logger.info(message);
 		// Notify all connected clients about update either to load model or update current one.
 		websocketConnection.sendMessage(null, OutboundMessages.INFO_MESSAGE, info);

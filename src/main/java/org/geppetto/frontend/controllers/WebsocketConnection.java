@@ -204,10 +204,12 @@ public class WebsocketConnection extends MessageInbound
 			case SET_WATCHED_VARIABLES:
 			{
 				String watchListsString = gmsg.data;
-
+				// TODO extract experimentId and projectId from data
+				long experimentId = 0;
+				long projectId = 0;
 				try
 				{
-					connectionHandler.setWatchedVariables(requestID, watchListsString);
+					connectionHandler.setWatchedVariables(requestID, watchListsString, experimentId, projectId);
 				}
 				catch(GeppettoExecutionException e)
 				{
@@ -222,7 +224,10 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case CLEAR_WATCHED_VARIABLES:
 			{
-				connectionHandler.clearWatchLists(requestID);
+				// TODO extract experimentId and projectId from data
+				long experimentId = 0;
+				long projectId = 0;
+				connectionHandler.clearWatchLists(requestID, experimentId, projectId);
 				break;
 			}
 			case IDLE_USER:
@@ -233,15 +238,19 @@ public class WebsocketConnection extends MessageInbound
 			case GET_MODEL_TREE:
 			{
 				String instancePath = gmsg.data;
-
-				connectionHandler.getModelTree(requestID, instancePath);
+				// TODO extract experimentId and projectId from data
+				long experimentId = 0;
+				long projectId = 0;
+				connectionHandler.getModelTree(requestID, instancePath, experimentId, projectId);
 				break;
 			}
 			case GET_SIMULATION_TREE:
 			{
 				String instancePath = gmsg.data;
-
-				connectionHandler.getSimulationTree(requestID, instancePath);
+				// TODO extract experimentId and projectId from data
+				long experimentId = 0;
+				long projectId = 0;
+				connectionHandler.getSimulationTree(requestID, instancePath, experimentId, projectId);
 				break;
 			}
 			case GET_SUPPORTED_OUTPUTS:

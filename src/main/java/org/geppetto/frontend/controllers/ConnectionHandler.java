@@ -88,7 +88,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	private IGeppettoManager geppettoManager;
 
 	@Autowired
-	private SimulationServerConfig _simulationServerConfig;
+	private SimulationServerConfig simulationServerConfig;
 
 
 	private WebsocketConnection websocketConnection;
@@ -117,7 +117,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(NumberFormatException e)
 		{
-			sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
+			websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
 		}
 	}
 
@@ -147,7 +147,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(IOException e)
 		{
-			sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
+			websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
 		}
 	}
 
@@ -161,13 +161,13 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			geppettoManager.loadProject(requestID, geppettoProject);
 
-			sendMessage(requestID, OutboundMessages.PROJECT_LOADED, "");
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, "");
 
 		}
 		catch(MalformedURLException | GeppettoInitializationException | GeppettoExecutionException e)
 		{
 			logger.info("Could not load geppetto project", e);
-			sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
+			websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
 		}
 
 	}
@@ -201,7 +201,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			else
 			{
 				logger.info("Error running experiment, the experiment " + experimentID + " was not found in project " + projectId);
-				sendMessage(requestID, OutboundMessages.ERROR, "The experiment " + experimentID + " was not found in project " + projectId);
+				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR, "The experiment " + experimentID + " was not found in project " + projectId);
 			}
 
 		}
@@ -241,7 +241,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 
 		// send to the client the watch lists were added
-		sendMessage(requestID, OutboundMessages.SET_WATCHED_VARIABLES, serializedLists);
+		websocketConnection.sendMessage(requestID, OutboundMessages.SET_WATCHED_VARIABLES, serializedLists);
 
 	}
 
@@ -252,7 +252,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	{
 		geppettoManager.clearWatchLists();
 
-		sendMessage(requestID, OutboundMessages.CLEAR_WATCH, "");
+		websocketConnection.sendMessage(requestID, OutboundMessages.CLEAR_WATCH, "");
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			prop.load(ConnectionHandler.class.getResourceAsStream("/Geppetto.properties"));
-			sendMessage(requestID, OutboundMessages.GEPPETTO_VERSION, prop.getProperty("Geppetto.version"));
+			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_VERSION, prop.getProperty("Geppetto.version"));
 		}
 		catch(IOException e)
 		{
@@ -291,7 +291,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
 		modelTreeString += "]";
 
-		sendMessage(requestID, OutboundMessages.GET_MODEL_TREE, modelTreeString);
+		websocketConnection.sendMessage(requestID, OutboundMessages.GET_MODEL_TREE, modelTreeString);
 	}
 
 	/**
@@ -313,7 +313,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		simulationTreeString = simulationTreeString.substring(0, simulationTreeString.length() - 1);
 		simulationTreeString += "]";
 
-		sendMessage(requestID, OutboundMessages.GET_SIMULATION_TREE, simulationTreeString);
+		websocketConnection.sendMessage(requestID, OutboundMessages.GET_SIMULATION_TREE, simulationTreeString);
 	}
 
 	
@@ -346,11 +346,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			String script = sb.toString();
 
-			sendMessage(requestID, OutboundMessages.RUN_SCRIPT, script);
+			websocketConnection.sendMessage(requestID, OutboundMessages.RUN_SCRIPT, script);
 		}
 		catch(IOException e)
 		{
-			sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
+			websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
 		}
 	}
 
@@ -415,17 +415,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 */
 	public SimulationServerConfig getSimulationServerConfig()
 	{
-		return _simulationServerConfig;
-	}
-
-	/**
-	 * @param requestID
-	 * @param type
-	 * @param message
-	 */
-	public void sendMessage(String requestID, OutboundMessages type, String message)
-	{
-		websocketConnection.sendMessage(requestID, type, message);
+		return simulationServerConfig;
 	}
 
 	/**
@@ -491,7 +481,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 		// Notify all connected clients about update either to load model or
 		// update current one.
-		sendMessage(requestID, action, update);
+		websocketConnection.sendMessage(requestID, action, update);
 
 		logger.info("Simulation Frontend Update Finished: Took:" + (System.currentTimeMillis() - start));
 	}
@@ -509,7 +499,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		String error = "{ \"error_code\": \"" + errorCode.toString() + "\", \"source\": \"" + classSource + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg +"\"}";
 		logger.error(errorMessage,e);
 		// Notify all connected clients about update either to load model or update current one.
-		sendMessage(null, OutboundMessages.ERROR, error);
+		websocketConnection.sendMessage(null, OutboundMessages.ERROR, error);
 	}
 
 
@@ -518,7 +508,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		String info = "{ \"content\": \"" + message +"\"}";
 		logger.info(message);
 		// Notify all connected clients about update either to load model or update current one.
-		sendMessage(null, OutboundMessages.INFO_MESSAGE, info);
+		websocketConnection.sendMessage(null, OutboundMessages.INFO_MESSAGE, info);
 	}
 
 }

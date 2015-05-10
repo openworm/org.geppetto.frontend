@@ -75,6 +75,55 @@ define(function(require) {
 					GEPPETTO.NodeFactory.entities =0;
 				},
 				
+				/** Creates and populates client project nodes */
+				createProjectNode : function(project) {
+					var p = new ProjectNode({
+						name : project.type,
+						type : project.type,
+						id : project.id,
+						name : project.name,
+						instancePath : project.instancePath,
+						_metaType : GEPPETTO.Resources.PROJECT_NODE,
+					});
+
+					// create visualization subtree only at first
+					for ( var key in project) {
+						var experiment = project[key];
+						if (experiment._metaType == GEPPETTO.Resources.EXPERIMENT_NODE) {
+							var e =this.createExperimentNode(experiment);
+							
+							// add experiment to project
+							p[key] = e;
+							e.setParent(p);
+							// add experiment node to project
+							p.getExperiments().push(e);
+						}
+					}
+					
+					this.nodes++;
+					GEPPETTO.Console.createTags(a.instancePath,
+							this.nodeTags[GEPPETTO.Resources.PROJECT_NODE]);
+					return a;
+				},
+				
+				
+				/** Creates and populates client aspect nodes for first time */
+				createExperimentNode : function(node) {
+					var e = new ExperimentNode({
+						name : node.type,
+						type : node.type,
+						id : node.id,
+						name : node.name,
+						instancePath : node.instancePath,
+						_metaType : GEPPETTO.Resources.EXPERIMENT_NODE,
+					});
+
+					this.nodes++;
+					GEPPETTO.Console.createTags(e.instancePath,
+							this.nodeTags[GEPPETTO.Resources.EXPERIMENT_NODE]);
+					return e;
+				},
+				
 				/** Create and populate client entity nodes for the first time */
 				createEntityNode : function(entity) {
 					var e = window[entity.id] = new EntityNode({

@@ -37,13 +37,13 @@ package org.geppetto.frontend.messages;
  */
 public enum InboundMessages {
 	
-	RUN("start"), 
+	RUN_EXPERIMENT("run_experiment"), 
 	PAUSE("pause"), 
 	STOP("stop"), 
 	OBSERVE("observe"), 
-	LOAD_PROJECT_FROM_URL("load_project"), 
-	LOAD_PROJECT_FROM_ID("init_id"), 
-	LOAD_PROJECT_FROM_CONTENT("init_sim"),
+	LOAD_PROJECT_FROM_URL("load_project_from_url"), 
+	LOAD_PROJECT_FROM_ID("load_project_from_id"), 
+	LOAD_PROJECT_FROM_CONTENT("load_project_from_content"),
 	SIM("sim"),
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),

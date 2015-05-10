@@ -336,6 +336,8 @@ define(function(require) {
 			/**
 			 * Node Resources
 			 */
+			PROJECT_NODE : "ProjectNode",
+			EXPERIMENT_NODE : "ExperimentNode",
 			ENTITY_NODE : "EntityNode", 
 			ASPECT_NODE : "AspectNode",
 			ASPECT_SUBTREE_NODE : "AspectSubTreeNode",

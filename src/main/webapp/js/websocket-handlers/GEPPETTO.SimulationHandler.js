@@ -55,7 +55,9 @@ define(function(require) {
             /*
              * Messages handle by SimulatorHandler
              */
-            LOAD_PROJECT: "load_project",
+            LOAD_PROJECT_FROM_URL: "load_project_from_url",
+            LOAD_PROJECT_FROM_ID : "load_project_from_id",
+            LOAD_PROJECT_FROM_SIM : "load_project_from_sim",
             SCENE_UPDATE: "scene_update",
             SIMULATION_CONFIGURATION: "simulation_configuration",
             SIMULATION_LOADED: "simulation_loaded",

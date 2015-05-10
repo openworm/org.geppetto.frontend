@@ -197,7 +197,7 @@ define(function(require) {
 							//we call it only the first time
 							GEPPETTO.SceneController.animate();
 						}
-						GEPPETTO.MessageSocket.send("load_project", simulationURL);
+						GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_PROJECT_FROM_URL, simulationURL);
 						this.initializationTime = new Date();
 						GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 						loading = true;
@@ -247,7 +247,7 @@ define(function(require) {
 						GEPPETTO.SceneController.animate();
 					}
 
-					GEPPETTO.MessageSocket.send("init_sim", content);
+					GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_PROJECT_FROM_CONTENT, content);
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_FROM_CONTENT);
 					GEPPETTO.trigger(Events.Simulation_restarted);
 				}

@@ -1,10 +1,10 @@
 package org.geppetto.frontend.controllers;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.auth.IAuthService;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.frontend.dashboard.AuthServiceCreator;
-import org.osgi.framework.BundleContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,16 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class Application
 {
-
-	@Autowired
-	BundleContext bundleContext;
-
-	// @Autowired(required = false)
+	
+	private static Log logger = LogFactory.getLog(Application.class);
+	
 	IAuthService authService;
-
-	public Application()
-	{
-	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home()
@@ -32,8 +26,7 @@ public class Application
 		}
 		catch(GeppettoInitializationException e)
 		{
-			// TODO: logging
-			e.printStackTrace();
+			logger.error("Error while retrieving an authentication service",e);
 		}
 		if(authService == null || authService.isAuthenticated())
 		{

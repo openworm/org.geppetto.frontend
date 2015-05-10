@@ -59,14 +59,14 @@ define([
 //                    },
                     {
                         title: "Logout",
-                        url: '/someLogoutUrl'
+                        url: '/logout'
                     }
                 ];
             } else {
                 this.userMenus = [
                     {
                         title: "Login",
-                        url: '/someLoginUrl'
+                        url: '/login'
                     }
                 ];
             }

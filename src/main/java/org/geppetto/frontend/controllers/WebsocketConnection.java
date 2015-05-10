@@ -65,9 +65,9 @@ public class WebsocketConnection extends MessageInbound
 {
 
 	private static Log logger = LogFactory.getLog(WebsocketConnection.class);
-	
+
 	private ConnectionHandler connectionHandler;
-	
+
 	private String connectionID;
 
 	protected ApplicationContext applicationContext;
@@ -98,7 +98,6 @@ public class WebsocketConnection extends MessageInbound
 		throw new UnsupportedOperationException("Binary message not supported.");
 	}
 
-	
 	/**
 	 * @param requestID
 	 * @param type
@@ -109,7 +108,7 @@ public class WebsocketConnection extends MessageInbound
 		// get transport message to be sent to the client
 		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, message);
 		String msg = new Gson().toJson(transportMsg);
-		
+
 		try
 		{
 			long startTime = System.currentTimeMillis();
@@ -124,7 +123,7 @@ public class WebsocketConnection extends MessageInbound
 			ConnectionsManager.getInstance().removeConnection(this);
 		}
 	}
-	
+
 	/**
 	 * Receives message(s) from client.
 	 * 
@@ -183,25 +182,26 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case SIM:
 			{
-				String url = gmsg.data;
-				connectionHandler.getSimulationConfiguration(requestID, url, this);
+				// TODO Check will this disappear?
+				// String url = gmsg.data;
+				// connectionHandler.getSimulationConfiguration(requestID, url, this);
 				break;
 			}
 			case RUN:
 			{
 				String data = gmsg.data;
-				//TODO extract experimentId and projectId from data
-				long experimentId=0;
-				long projectId=0;
-				connectionHandler.runExperiment(requestID,experimentId,projectId);
+				// TODO extract experimentId and projectId from data
+				long experimentId = 0;
+				long projectId = 0;
+				connectionHandler.runExperiment(requestID, experimentId, projectId);
 				break;
 			}
 			case OBSERVE:
 			{
-				//TODO Send an error, observer mode not supported anymore
+				// TODO Send an error, observer mode not supported anymore
 				break;
 			}
-			case SET_WATCH:
+			case SET_WATCHED_VARIABLES:
 			{
 				String watchListsString = gmsg.data;
 
@@ -211,7 +211,7 @@ public class WebsocketConnection extends MessageInbound
 				}
 				catch(GeppettoExecutionException e)
 				{
-					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES,"");
+					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
 				}
 				catch(GeppettoInitializationException e)
 				{
@@ -220,7 +220,7 @@ public class WebsocketConnection extends MessageInbound
 
 				break;
 			}
-			case CLEAR_WATCH:
+			case CLEAR_WATCHED_VARIABLES:
 			{
 				connectionHandler.clearWatchLists(requestID);
 				break;

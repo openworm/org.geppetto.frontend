@@ -187,7 +187,7 @@ public class WebsocketConnection extends MessageInbound
 				// connectionHandler.getSimulationConfiguration(requestID, url, this);
 				break;
 			}
-			case RUN:
+			case RUN_EXPERIMENT:
 			{
 				String data = gmsg.data;
 				// TODO extract experimentId and projectId from data

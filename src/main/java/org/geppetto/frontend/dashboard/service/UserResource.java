@@ -32,10 +32,17 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.JsonRequestException;
 import org.geppetto.core.data.model.IUser;
+import org.geppetto.core.manager.IGeppettoManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,17 +51,52 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class UserResource
 {
+	private static Log logger = LogFactory.getLog(UserResource.class);
+
+	@Autowired
+	private IGeppettoManager geppettoManager;
+
+	private volatile static int guestId;
 
 	@RequestMapping("/dashboard/currentuser")
 	public @ResponseBody
 	IUser getCurrentUser()
 	{
-		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-		if(dataManager != null)
+		Subject currentUser = SecurityUtils.getSubject();
+		if(!currentUser.isAuthenticated())
 		{
-			return dataManager.getCurrentUser();
+			IUser guest = getGuestUser();
+			try
+			{
+				geppettoManager.setUser(guest);
+			}
+			catch(GeppettoExecutionException e)
+			{
+				logger.error(e);
+			}
+			return guest;
 		}
-		return null;
+		try
+		{
+			if(!DataManagerHelper.getDataManager().isDefault())
+			{
+				geppettoManager.setUser(DataManagerHelper.getDataManager().getUserByLogin((String) currentUser.getPrincipal()));
+			}
+		}
+		catch(GeppettoExecutionException e)
+		{
+			logger.error(e);
+		}
+		return geppettoManager.getUser();
+	}
+
+	private IUser getGuestUser()
+	{
+		synchronized(this)
+		{
+			guestId++;
+		}
+		return DataManagerHelper.getDataManager().newUser("guest" + guestId);
 	}
 
 	@RequestMapping("/dashboard/logout")

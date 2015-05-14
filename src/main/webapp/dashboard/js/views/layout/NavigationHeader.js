@@ -62,13 +62,13 @@ define([
                         url: '/logout'
                     }
                 ];
-            } else {
-                this.userMenus = [
-                    {
-                        title: "Login",
-                        url: '/login'
-                    }
-                ];
+//            } else {
+//                this.userMenus = [
+//                    {
+//                        title: "Login",
+//                        url: '/login'
+//                    }
+//                ];
             }
             var user = $.extend({}, SessionModel.getInstance().get("user"));
 

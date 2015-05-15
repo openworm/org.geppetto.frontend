@@ -14,14 +14,16 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
 				id : this.id
 			});
 			_.bindAll(this, 'render');
+			
 			this.model.fetch({
 				success : function() {
 		            var simulationUrl = me.model.attributes.geppettoModel.url;
+		            var id =  me.model.attributes.geppettoModel.id;
 		            var url = window.location.href;
 		            if (url.indexOf('/dashboard') > 0) {
 		            	url = url.substring(0, url.indexOf('/dashboard'));
 		            }
-		            me.model.attributes.simUrl = url + '?sim=' + simulationUrl;
+		            me.model.attributes.simUrl = url + '?load_project_from_id=' + id;
 					me.render();
 				}
 			});

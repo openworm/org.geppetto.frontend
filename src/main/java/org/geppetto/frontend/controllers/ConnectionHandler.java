@@ -56,6 +56,7 @@ import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
+import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.frontend.messages.OutboundMessages;
@@ -169,6 +170,48 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
 		}
 
+	}
+
+	/**
+	 * @param requestID
+	 * @param experimentID
+	 * @param projectId
+	 */
+	public void loadExperiment(String requestID, long experimentID, long projectId)
+	{
+		try
+		{
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+			IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+			// run the matched experiment
+			if(experiment != null)
+			{
+				RuntimeTreeRoot runtimeTree = geppettoManager.loadExperiment(requestID, experiment, geppettoProject);
+
+				SerializeTreeVisitor serializeRuntimeTreeVisitor = new SerializeTreeVisitor();
+				runtimeTree.apply(serializeRuntimeTreeVisitor);
+
+				String scene = serializeRuntimeTreeVisitor.getSerializedTree();
+
+				if(scene != null)
+				{
+					websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, scene);
+
+					logger.info("The experiment "+experimentID+" was loaded and the runtime tree was sent to the client");
+				}
+			}
+			else
+			{
+				logger.info("Error loading experiment, the experiment " + experimentID + " was not found in project " + projectId);
+				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR, "The experiment " + experimentID + " was not found in project " + projectId);
+			}
+
+		}
+		catch(GeppettoExecutionException e)
+		{
+			logger.info("Error loading experiment", e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -290,7 +333,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
 			modelTreeString += "]";
-			
+
 			websocketConnection.sendMessage(requestID, OutboundMessages.GET_MODEL_TREE, modelTreeString);
 		}
 		catch(GeppettoExecutionException e)
@@ -313,7 +356,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			simulationTree = geppettoManager.getSimulationTree(aspectInstancePath, experiment, geppettoProject);
-			
+
 			String simulationTreeString = "[";
 			for(Map.Entry<String, AspectSubTreeNode> entry : simulationTree.entrySet())
 			{
@@ -332,7 +375,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			throw new RuntimeException(e);
 		}
 
-		
 	}
 
 	public void writeModel(String requestID, String instancePath, String format)

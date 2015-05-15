@@ -188,12 +188,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				RuntimeTreeRoot runtimeTree = geppettoManager.loadExperiment(requestID, experiment, geppettoProject);
 
-				SerializeTreeVisitor serializeRuntimeTreeVisitor = new SerializeTreeVisitor();
-				runtimeTree.apply(serializeRuntimeTreeVisitor);
+				SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
+				runtimeTree.apply(serializeTreeVisitor);
 
-				String scene = serializeRuntimeTreeVisitor.getSerializedTree();
-
-				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, scene);
+				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, serializeTreeVisitor.getSerializedTree());
 				logger.info("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
 			}
 			else

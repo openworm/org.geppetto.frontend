@@ -48,8 +48,8 @@ import org.geppetto.core.simulation.ISimulation;
 import org.geppetto.frontend.GeppettoTransportMessage;
 import org.geppetto.frontend.INBOUND_MESSAGE_TYPES;
 import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
-import org.geppetto.frontend.messaging.DefaultMessageSender;
 import org.geppetto.frontend.messaging.DefaultMessageSenderFactory;
+import org.geppetto.frontend.messaging.MessageSender;
 import org.geppetto.frontend.messaging.MessageSenderEvent;
 import org.geppetto.frontend.messaging.MessageSenderListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +89,7 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 	@Autowired
 	private DefaultMessageSenderFactory _messageSenderFactory;
 
-	private DefaultMessageSender _messageSender;
+	private MessageSender _messageSender;
 
 	public GeppettoMessageInbound(String client_id)
 	{
@@ -154,7 +154,6 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 					url = new URL(urlString);
 					_servletController.load(requestID, urlString, this);
 					_messageSender.reset();
-					_messageSender.resumeQueuedMessaging();
 				}
 				catch(MalformedURLException e)
 				{
@@ -193,22 +192,19 @@ public class GeppettoMessageInbound extends MessageInbound implements MessageSen
 			}
 			case START:
 			{
-				_messageSender.reset();
-				_messageSender.resumeQueuedMessaging();
+				_messageSender.resume();
 				_servletController.startSimulation(requestID, this);
 				break;
 			}
 			case PAUSE:
 			{
-				_messageSender.pauseQueuedMessaging();
-				_messageSender.reset();
+				_messageSender.pause();
 				_servletController.pauseSimulation(requestID, this);
 				break;
 			}
 			case STOP:
 			{
 				_servletController.stopSimulation(requestID, this);
-				_messageSender.pauseQueuedMessaging();
 				_messageSender.reset();
 				break;
 			}

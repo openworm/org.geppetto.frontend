@@ -124,8 +124,9 @@ public class DefaultMessageSender implements MessageSender {
 
 	public void initialize(WsOutbound wsOutbound) {
 
-		logger.debug(String.format("Initializing message sender - queuing = %b, compression = %b",
-								   queuingEnabled, compressionEnabled));
+		logger.info(String.format("Initializing message sender - queuing: %b, compression: %b, "
+								  + "discard messages if queues full: %b",
+								  queuingEnabled, compressionEnabled, discardMessagesIfQueueFull));
 
 		this.wsOutbound = wsOutbound;
 
@@ -174,27 +175,33 @@ public class DefaultMessageSender implements MessageSender {
 	 * Note that message types that don't utilize queueing are processed and transmitted normally regardless of
 	 * whether the message sender is paused or not.
 	 */
-//	@Override
-	public void pauseQueuedMessaging() {
+	@Override
+	public void pause() {
 		if (queuingEnabled) {
 			senderExecutor.setPaused(true);
 			preprocessorExecutor.setPaused(true);
+
+			preprocessorQueue.clear();
+			senderQueue.clear();
 		}
 	}
 
-	public void resumeQueuedMessaging() {
+	@Override
+	public void resume() {
 		if (queuingEnabled) {
 			preprocessorExecutor.setPaused(false);
 			senderExecutor.setPaused(false);
 		}
 	}
 
+	@Override
 	public void reset() {
-
 		if (queuingEnabled) {
+			pause();
 			preprocessorQueue.clear();
 			senderQueue.clear();
 			logger.debug("purged queues");
+			resume();
 		}
 	}
 
@@ -238,11 +245,11 @@ public class DefaultMessageSender implements MessageSender {
 		String message = preprocessMessage(requestID, messageType, update);
 
 		if (!compressionEnabled || message.length() < minMessageLengthForCompression) {
-			sendTextMessage(message);
+			sendTextMessage(message, messageType);
 
 		} else {
 			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
-			sendBinaryMessage(compressedMessage);
+			sendBinaryMessage(compressedMessage, messageType);
 		}
 	}
 
@@ -253,11 +260,11 @@ public class DefaultMessageSender implements MessageSender {
 			String message = preprocessMessage(requestId, messageType, update);
 
 			if (!compressionEnabled || message.length() < minMessageLengthForCompression) {
-				submitTask(senderExecutor, new TextMessageSender(message));
+				submitTask(senderExecutor, new TextMessageSender(message, messageType));
 
 			} else {
 				byte[] compressedMessage = CompressionUtils.gzipCompress(message);
-				submitTask(senderExecutor, new BinaryMessageSender(compressedMessage));
+				submitTask(senderExecutor, new BinaryMessageSender(compressedMessage, messageType));
 			}
 
 		} catch (Exception e) {
@@ -292,7 +299,7 @@ public class DefaultMessageSender implements MessageSender {
 		}
 	}
 
-	private void sendTextMessage(String message) {
+	private void sendTextMessage(String message, OUTBOUND_MESSAGE_TYPES messageType) {
 
 		try {
 
@@ -300,8 +307,8 @@ public class DefaultMessageSender implements MessageSender {
 			CharBuffer buffer = CharBuffer.wrap(message);
 			wsOutbound.writeTextMessage(buffer);
 
-			logger.info(String.format("%dms were spent sending a message of %dKB to the client",
-									  System.currentTimeMillis() - startTime, message.length() / 1024));
+			logger.info(String.format("sent text message - length: %d bytes, took: %dms, type: %s",
+									  System.currentTimeMillis() - startTime, message.length(), messageType));
 
 		} catch (IOException e) {
 			logger.warn("failed to send message", e);
@@ -309,7 +316,7 @@ public class DefaultMessageSender implements MessageSender {
 		}
 	}
 
-	private void sendBinaryMessage(byte[] message) {
+	private void sendBinaryMessage(byte[] message, OUTBOUND_MESSAGE_TYPES messageType) {
 
 		try {
 
@@ -317,8 +324,8 @@ public class DefaultMessageSender implements MessageSender {
 			ByteBuffer buffer = ByteBuffer.wrap(message);
 			wsOutbound.writeBinaryMessage(buffer);
 
-			logger.info(String.format("%d ms were spent sending a binary/compressed message of %dKB to the client",
-									  System.currentTimeMillis() - startTime, message.length / 1024));
+			logger.info(String.format("sent binary/compressed message - length: %d bytes, duration: %dms, type: %s",
+									  System.currentTimeMillis() - startTime, message.length, messageType));
 
 		} catch (IOException e) {
 			logger.warn("failed to send binary message", e);
@@ -392,26 +399,30 @@ public class DefaultMessageSender implements MessageSender {
 	private class TextMessageSender implements Runnable {
 
 		private String message;
+		private OUTBOUND_MESSAGE_TYPES messageType;
 
-		public TextMessageSender(String message) {
+		public TextMessageSender(String message, OUTBOUND_MESSAGE_TYPES messageType) {
 			this.message = message;
+			this.messageType = messageType;
 		}
 
 		public void run() {
-			sendTextMessage(message);
+			sendTextMessage(message, messageType);
 		}
 	}
 
 	private class BinaryMessageSender implements Runnable {
 
 		private byte[] message;
+		private OUTBOUND_MESSAGE_TYPES messageType;
 
-		public BinaryMessageSender(byte[] message) {
+		public BinaryMessageSender(byte[] message, OUTBOUND_MESSAGE_TYPES messageType) {
 			this.message = message;
+			this.messageType = messageType;
 		}
 
 		public void run() {
-			sendBinaryMessage(message);
+			sendBinaryMessage(message, messageType);
 		}
 	}
 

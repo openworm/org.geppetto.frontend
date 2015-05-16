@@ -24,9 +24,9 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 	}
 
 	@Override
-	protected void beforeExecute(Thread thread, Runnable runnable) {
+	protected void afterExecute(Runnable runnable, Throwable throwable) {
 
-		super.beforeExecute(thread, runnable);
+		super.afterExecute(runnable, throwable);
 
 		if (paused) {
 

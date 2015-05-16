@@ -71,13 +71,13 @@
 
         <property name="queuingEnabled" value="true" />
         <property name="maxQueueSize" value="5" />
-        <property name="discardMessagesIfQueueFull" value="true" />
+        <property name="discardMessagesIfQueueFull" value="false" />
         <property name="compressionEnabled" value="true" />
         <property name="minMessageLengthForCompression" value="20000" />
 
         <property name="queuedMessageTypes">
             <set>
-                <value type="org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES">LOAD_MODEL</value>
+                <!--<value type="org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES">LOAD_MODEL</value>-->
                 <value type="org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES">SCENE_UPDATE</value>
                 <value type="org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES">SIMULATION_STARTED</value>
             </set>

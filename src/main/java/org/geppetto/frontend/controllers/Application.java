@@ -4,7 +4,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.auth.IAuthService;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.frontend.dashboard.AuthServiceCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class Application
 {
+	@Autowired
+	private IGeppettoManager geppettoManager;
 	
 	private static Log logger = LogFactory.getLog(Application.class);
 	

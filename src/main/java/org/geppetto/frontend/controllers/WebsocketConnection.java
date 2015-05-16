@@ -46,10 +46,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.frontend.messages.GeppettoTransportMessage;
 import org.geppetto.frontend.messages.InboundMessages;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.frontend.messages.TransportMessageFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -72,6 +74,9 @@ public class WebsocketConnection extends MessageInbound
 
 	protected ApplicationContext applicationContext;
 
+	@Autowired
+	private IGeppettoManager geppettoManager;
+	
 	public WebsocketConnection()
 	{
 		super();

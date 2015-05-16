@@ -44,6 +44,7 @@ public enum InboundMessages {
 	LOAD_PROJECT_FROM_URL("load_project_from_url"), 
 	LOAD_PROJECT_FROM_ID("load_project_from_id"), 
 	LOAD_PROJECT_FROM_CONTENT("load_project_from_content"),
+	LOAD_EXPERIMENT("load_experiment"),
 	SIM("sim"),
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),

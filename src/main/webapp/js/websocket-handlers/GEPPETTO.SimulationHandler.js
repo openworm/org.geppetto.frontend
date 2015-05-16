@@ -72,11 +72,30 @@ define(function(require) {
 
         var messageHandler = {};
 
-        messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {
-        	var initTime = new Date()-GEPPETTO.Simulation.initializationTime;
-        	
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
-            var jsonRuntimeTree = JSON.parse(payload.project_loaded);
+        messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {        	
+            var project = JSON.parse(payload.project_loaded);
+
+            //get access to root project node
+            var projectNode = window["Project"];
+            projectNode.name = project.name;
+            projectNode.id = project.id;
+            for ( var key in project.experiments) {
+            	var experiment = project.experiments[key];
+            	//create instance path for experiment
+            	experiment.instancePath = project.name + "."+experiment.name;
+            	var e =GEPPETTO.NodeFactory.createExperimentNode(experiment);
+
+            	// add experiment to project
+            	projectNode[e.name] = e;
+            	e.setParent(projectNode);
+            	// add experiment node to project
+            	projectNode.getExperiments().push(e);
+            }            
+            GEPPETTO.trigger(Events.Project_loaded);
+        };
+
+        messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {        	
+            var jsonRuntimeTree = JSON.parse(payload.update).scene;
 
             var startCreation = new Date();
             GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
@@ -85,11 +104,12 @@ define(function(require) {
             GEPPETTO.Console.debugLog(GEPPETTO.NodeFactory.nodes + " total nodes created, from which: "+
             						  GEPPETTO.NodeFactory.entities + " were entities and "+
             						  GEPPETTO.NodeFactory.connections + " were connections");
-            GEPPETTO.Simulation.setSimulationLoaded();
             
-            //GEPPETTO.trigger(Events.Project_loaded);
+            //Populate scene
+            GEPPETTO.SceneController.populateScene(window["Project"].runTimeTree); 
+            
+            GEPPETTO.trigger(Events.Experiment_loaded);
         };
-
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update).scene;
             updateTime(updatedRunTime.time);

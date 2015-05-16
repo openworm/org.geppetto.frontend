@@ -139,6 +139,10 @@ public class WebsocketConnection extends MessageInbound
 	{
 		String msg = message.toString();
 
+		Map<String, String> parameters;
+		long experimentId = 0;
+		long projectId = 0;
+		
 		// de-serialize JSON
 		GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);
 
@@ -168,6 +172,11 @@ public class WebsocketConnection extends MessageInbound
 				connectionHandler.loadProjectFromContent(requestID, gmsg.data);
 				break;
 			}
+			case LOAD_EXPERIMENT:
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.loadExperiment(requestID,experimentId, projectId);
 			case RUN_SCRIPT:
 			{
 				String urlString = gmsg.data;
@@ -194,10 +203,9 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case RUN_EXPERIMENT:
 			{
-				String data = gmsg.data;
-				// TODO extract experimentId and projectId from data
-				long experimentId = 0;
-				long projectId = 0;
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.runExperiment(requestID, experimentId, projectId);
 				break;
 			}
@@ -209,9 +217,9 @@ public class WebsocketConnection extends MessageInbound
 			case SET_WATCHED_VARIABLES:
 			{
 				String watchListsString = gmsg.data;
-				// TODO extract experimentId and projectId from data
-				long experimentId = 0;
-				long projectId = 0;
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
 				try
 				{
 					connectionHandler.setWatchedVariables(requestID, watchListsString, experimentId, projectId);
@@ -229,9 +237,9 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case CLEAR_WATCHED_VARIABLES:
 			{
-				// TODO extract experimentId and projectId from data
-				long experimentId = 0;
-				long projectId = 0;
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.clearWatchLists(requestID, experimentId, projectId);
 				break;
 			}
@@ -243,18 +251,12 @@ public class WebsocketConnection extends MessageInbound
 			case GET_MODEL_TREE:
 			{
 				String instancePath = gmsg.data;
-				// TODO extract experimentId and projectId from data
-				long experimentId = 0;
-				long projectId = 0;
 				connectionHandler.getModelTree(requestID, instancePath, experimentId, projectId);
 				break;
 			}
 			case GET_SIMULATION_TREE:
 			{
 				String instancePath = gmsg.data;
-				// TODO extract experimentId and projectId from data
-				long experimentId = 0;
-				long projectId = 0;
 				connectionHandler.getSimulationTree(requestID, instancePath, experimentId, projectId);
 				break;
 			}
@@ -268,22 +270,22 @@ public class WebsocketConnection extends MessageInbound
 			case WRITE_MODEL:
 			{
 
-				Map<String, String> parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				Map<String, String> parameters2 = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
-				connectionHandler.writeModel(requestID, parameters.get("instancePath"), parameters.get("format"));
+				connectionHandler.writeModel(requestID, parameters2.get("instancePath"), parameters2.get("format"));
 
 			}
 			case SET_PARAMETERS:
 			{
-				Map<String, String> parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				Map<String, String> parameters3 = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
 
-				String modelPath = parameters.get("model");
+				String modelPath = parameters3.get("model");
 				// remove model path from parameters map that was sent from server
-				parameters.remove(modelPath);
-				connectionHandler.setParameters(requestID, modelPath, parameters);
+				parameters3.remove(modelPath);
+				connectionHandler.setParameters(requestID, modelPath, parameters3);
 			}
 			default:
 			{

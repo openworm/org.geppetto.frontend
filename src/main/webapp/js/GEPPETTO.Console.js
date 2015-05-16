@@ -417,7 +417,7 @@ define(function(require) {
 
 			getHelpObjectsMap : function(){
 				if(jQuery.isEmptyObject(helpObjectsMap)){
-					helpObjectsMap = {"G": GEPPETTO.G.help(), "Simulation": GEPPETTO.Simulation.help()};
+					helpObjectsMap = {"G": GEPPETTO.G.help()};
 				}
 				
 				return helpObjectsMap;

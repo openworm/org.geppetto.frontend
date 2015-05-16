@@ -52,6 +52,7 @@ define(function(require) {
 		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 		var VisualGroupNode = require('nodes/VisualGroupNode');
 		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
+		var ExperimentNode = require('nodes/ExperimentNode');
 		var PhysicalQuantity = require('nodes/PhysicalQuantity');
 		var simulationTreeCreated=false;
 
@@ -110,7 +111,7 @@ define(function(require) {
 				/** Creates and populates client aspect nodes for first time */
 				createExperimentNode : function(node) {
 					var e = new ExperimentNode({
-						name : node.type,
+						name : node.name,
 						type : node.type,
 						id : node.id,
 						name : node.name,
@@ -119,7 +120,7 @@ define(function(require) {
 					});
 
 					this.nodes++;
-					GEPPETTO.Console.createTags(e.instancePath,
+					GEPPETTO.Console.createTags(e.name,
 							this.nodeTags[GEPPETTO.Resources.EXPERIMENT_NODE]);
 					return e;
 				},

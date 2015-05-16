@@ -43,6 +43,7 @@
 			Experiment_replay : "experiment:replay",
 			Widgets_restarted : "widgets:restarted",
 			Project_loaded : "project:loaded",
+			Experiment_loaded : "experiment:loaded",
 			Experiment_stopped : "experiment:stopped",
 			ModelTree_populated : "experiment:modeltreepopulated",
 			SimulationTree_populated : "experiment:simulationtreepopulated",
@@ -60,7 +61,7 @@ define(function(require) {
 	        		GEPPETTO.WidgetsListener.update(Events.Select);
 	        	});
 				GEPPETTO.on(Events.Project_loaded, function(){
-					G.resetCamera();
+					//G.resetCamera();
 				});
 	        	GEPPETTO.on(Events.Experiment_replay, function(){
 	        		//delete existing widgets, to allow new ones for new simulation

@@ -155,7 +155,9 @@ define(function(require) {
 			//Create canvas 
 			var webGLStarted = GEPPETTO.webGLAvailable();
 			
-			project = new ProjectNode({name : "Project", id : 1});
+			//start project node which will be used as a Singleton 
+			//to store current project info
+			project = new ProjectNode({name : "Project", id : 0});
 			window["Project"] = project;
 			GEPPETTO.Console.updateTags("Project", project,true);
 

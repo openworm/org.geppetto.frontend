@@ -59,10 +59,10 @@ define(function(require) {
 								GEPPETTO.NodeFactory.createEntityNode(node);
 							
 							// keep track of client entity nodes created
-							GEPPETTO.Simulation.runTimeTree[id] = entityNode;
+							window["Project"].runTimeTree[id] = entityNode;
 
 							this.traverseEntities(node, entityNode,
-									GEPPETTO.Simulation.runTimeTree[id]);							
+									window["Project"].runTimeTree[id]);							
 						}
 					}
 					
@@ -124,7 +124,7 @@ define(function(require) {
 						{
 							var receivedAspect = entity[id];
 							//match received aspect to client one
-							var aspect =  GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, receivedAspect.instancePath);
+							var aspect =  GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, receivedAspect.instancePath);
 							if(receivedAspect.VisualizationTree != undefined)
 							{
 								aspect.VisualizationTree.content = receivedAspect.VisualizationTree;

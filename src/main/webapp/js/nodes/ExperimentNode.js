@@ -89,7 +89,10 @@ define(function(require) {
 		 */
 		run : function(){
 			if(this.status == ExperimentStatus.DESIGN){
-				
+				var parameters = {};
+				parameters["experimentId"] = this.id;
+				parameters["projectId"] = this.getParent().getId();
+				GEPPETTO.MessageSocket.send("load_experiment", parameters);
 			}
 		},
 		
@@ -109,8 +112,11 @@ define(function(require) {
 		 */
 		play : function(){
 			if(this.status == ExperimentStatus.COMPLETED){
-				this.setActive()
-				//TODO: Add code to play experiments
+				this.setActive();
+				var parameters = {};
+				parameters["experimentId"] = this.id;
+				parameters["projectID"] = this.getParent().getId();
+				GEPPETTO.MessageSocket.send("play_experiment", parameters);
 			}
 		},
 		

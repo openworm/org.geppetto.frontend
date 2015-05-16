@@ -11,17 +11,27 @@ define(function(require){
 
     require('./components');
     
-    GEPPETTO.on('simulation:show_spinner',function(){
+    GEPPETTO.on('project:show_spinner',function(){
     	React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
     });
 
-    var simParam = utils.getQueryStringParameter('sim');
+    var command =  "Project.loadFromURL";
+    var simParam = utils.getQueryStringParameter('load_project_from_url');
+    if(simParam==""){
+    	simParam = utils.getQueryStringParameter('load_project_from_id');
+    	command = "Project.loadFromID";
+    }
+    if(simParam==""){
+    	simParam = utils.getQueryStringParameter('load_project_from_content');
+    	command = "Project.loadFromContent";
+    }
+    
 
 	var webGLStarted = GEPPETTO.webGLAvailable();
 
 	if(webGLStarted && simParam) {
 		$(document).ready(function() {
-			GEPPETTO.Console.executeCommand('Simulation.load("' + simParam + '")');
+			GEPPETTO.Console.executeCommand(command+'("' + simParam + '")');
 		});
 	}
 });

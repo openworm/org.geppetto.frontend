@@ -44,6 +44,7 @@ define(function(require) {
 		var $ = require('jquery'),
 		React = require('react'),
 		InfoModal = require('jsx!components/popups/InfoModal');
+		var ProjectNode = require('nodes/ProjectNode');
 
 		/**
 		 * @class GEPPETTO.Main
@@ -153,6 +154,10 @@ define(function(require) {
 		$(document).ready(function() {
 			//Create canvas 
 			var webGLStarted = GEPPETTO.webGLAvailable();
+			
+			project = new ProjectNode({name : "Project", id : 1});
+			window["Project"] = project;
+			GEPPETTO.Console.updateTags("Project", project,true);
 
 			//make sure webgl started correctly
 			if(!webGLStarted) {

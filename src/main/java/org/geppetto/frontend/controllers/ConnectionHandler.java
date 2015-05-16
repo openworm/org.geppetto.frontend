@@ -71,7 +71,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Class that handles the Web Socket connections the servlet is receiving.
@@ -160,8 +162,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			geppettoManager.loadProject(requestID, geppettoProject);
-
-			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, "");
+			//serialize project prior to sending it to client
+			Gson gson = new Gson();
+	        String json = gson.toJson(geppettoProject);
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, json);
 
 		}
 		catch(MalformedURLException | GeppettoInitializationException | GeppettoExecutionException e)

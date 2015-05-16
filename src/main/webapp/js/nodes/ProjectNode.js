@@ -42,6 +42,7 @@ define(function(require) {
 
 	return Node.Model.extend({
 		experiments : null,
+		initializationTime : null,
 
 		/**
 		 * Initializes this project with passed attributes
@@ -106,6 +107,120 @@ define(function(require) {
 			//instance path consists of project id and this experimetn id
 			experimentParameters["instancePath"] = this.id+experimentParameters["id"];
 			return new ExperimentNode(experimentParameters);
+		},
+		
+		/**
+		 * Loads a simulation from a URL.
+		 *
+		 * @command GEPPETTO.Simulation.load(simulationURL)
+		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
+		 *                              Simulation.load("http://url.com")
+		 * @returns {String}  Status of attempt to load simulation using url.
+		 */
+		loadFromID: function(projectID) {
+			//TODO: Add logic for what happens after loading a new project
+			//when one is already loaded
+			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
+
+			if(projectID != null && projectID != "") {
+				//Updates the simulation controls visibility
+				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+				//update ui based on success of webgl
+				GEPPETTO.FE.update(webGLStarted);
+				//Keep going with load of simulation only if webgl container was created
+				if(webGLStarted) {
+					GEPPETTO.MessageSocket.send("load_project_from_id", projectID);
+					this.initializationTime = new Date();
+					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+					//trigger simulation restart event
+					GEPPETTO.trigger(Events.Simulation_restarted);
+				}
+			}
+
+			else {
+				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
+			}
+
+            GEPPETTO.trigger('project:show_spinner');
+
+			return loadStatus;
+		},
+		
+		/**
+		 * Loads a simulation from a URL.
+		 *
+		 * @command GEPPETTO.Simulation.load(simulationURL)
+		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
+		 *                              Simulation.load("http://url.com")
+		 * @returns {String}  Status of attempt to load simulation using url.
+		 */
+		loadFromURL: function(projectURL) {
+			//TODO: Add logic for what happens after loading a new project
+			//when one is already loaded
+			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
+
+			if(projectURL != null && projectURL != "") {
+				//Updates the simulation controls visibility
+				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+				//update ui based on success of webgl
+				GEPPETTO.FE.update(webGLStarted);
+				//Keep going with load of simulation only if webgl container was created
+				if(webGLStarted) {
+					GEPPETTO.MessageSocket.send("load_project_from_url", projectURL);
+					this.initializationTime = new Date();
+					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+					//trigger simulation restart event
+					GEPPETTO.trigger(Events.Simulation_restarted);
+				}
+			}
+
+			else {
+				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
+			}
+
+            GEPPETTO.trigger('project:show_spinner');
+
+			return loadStatus;
+		},
+
+		/**
+		 * Loads a simulation from a URL.
+		 *
+		 * @command GEPPETTO.Simulation.load(simulationURL)
+		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
+		 *                              Simulation.load("http://url.com")
+		 * @returns {String}  Status of attempt to load simulation using url.
+		 */
+		loadFromContent: function(content) {
+			//TODO: Add logic for what happens after loading a new project
+			//when one is already loaded
+			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
+
+			if(content != null && content != "") {
+				//Updates the simulation controls visibility
+				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+				//update ui based on success of webgl
+				GEPPETTO.FE.update(webGLStarted);
+				//Keep going with load of simulation only if webgl container was created
+				if(webGLStarted) {
+					GEPPETTO.MessageSocket.send("load_project_from_content", content);
+					this.initializationTime = new Date();
+					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+					//trigger simulation restart event
+					GEPPETTO.trigger(Events.Simulation_restarted);
+				}
+			}
+
+			else {
+				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
+			}
+
+            GEPPETTO.trigger('project:show_spinner');
+
+			return loadStatus;
 		},
 
 		/**

@@ -55,20 +55,16 @@ define(function(require) {
             /*
              * Messages handle by SimulatorHandler
              */
-            LOAD_PROJECT_FROM_URL: "load_project_from_url",
-            LOAD_PROJECT_FROM_ID : "load_project_from_id",
-            LOAD_PROJECT_FROM_SIM : "load_project_from_sim",
             SCENE_UPDATE: "scene_update",
-            SIMULATION_CONFIGURATION: "simulation_configuration",
-            SIMULATION_LOADED: "simulation_loaded",
-            SIMULATION_STARTED: "simulation_started",
-            SIMULATION_PAUSED: "simulation_paused",
-            SIMULATION_STOPPED: "simulation_stopped",
-            SIMULATOR_FULL: "simulator_full",
+            SIMULATION_CONFIGURATION: "project_configuration",
+            PROJECT_LOADED: "project_loaded",
+            EXPERIMENT_STARTED: "experiment_started",
+            EXPERIMENT_PAUSED: "experiment_paused",
+            EXPERIMENT_STOPPED: "experiment_stopped",
             SET_WATCH_VARS: "set_watch_vars",
             CLEAR_WATCH: "clear_watch",
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
-            SIMULATION_OVER : "simulation_over",
+            experiment_OVER : "experiment_over",
             GET_MODEL_TREE : "get_model_tree",
             SET_PARAMETER : "set_parameter",
             NO_FEATURE : "no_feature"
@@ -76,11 +72,11 @@ define(function(require) {
 
         var messageHandler = {};
 
-        messageHandler[messageTypes.LOAD_PROJECT] = function(payload) {
+        messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {
         	var initTime = new Date()-GEPPETTO.Simulation.initializationTime;
         	
             GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
-            var jsonRuntimeTree = JSON.parse(payload.update).scene;
+            var jsonRuntimeTree = JSON.parse(payload.project_loaded);
 
             var startCreation = new Date();
             GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
@@ -91,10 +87,7 @@ define(function(require) {
             						  GEPPETTO.NodeFactory.connections + " were connections");
             GEPPETTO.Simulation.setSimulationLoaded();
             
-            //Populate scene
-            GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree); 
-            
-            GEPPETTO.trigger('simulation:modelloaded');
+            //GEPPETTO.trigger(Events.Project_loaded);
         };
 
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
@@ -116,13 +109,9 @@ define(function(require) {
             }
         };
 
-        messageHandler[messageTypes.SIMULATION_CONFIGURATION] = function(payload) {            
-            GEPPETTO.trigger('simulation:configloaded', payload.configuration);
+        messageHandler[messageTypes.PROJECT_CONFIGURATION] = function(payload) {            
+            GEPPETTO.trigger('project:configloaded', payload.configuration);
 
-        };
-
-        messageHandler[messageTypes.SIMULATION_LOADED] = function() {
-            GEPPETTO.trigger('simulation:loaded');
         };
 
         messageHandler[messageTypes.FIRE_SIM_SCRIPTS] = function(payload) {
@@ -137,7 +126,7 @@ define(function(require) {
         };
 
         //Simulation has been started, enable pause button
-        messageHandler[messageTypes.SIMULATION_STARTED] = function(payload) {
+        messageHandler[messageTypes.EXPERIMENT_STARTED] = function(payload) {
         	var updatedRunTime = JSON.parse(payload.update).scene;
             createTime(updatedRunTime.time);
 
@@ -155,20 +144,15 @@ define(function(require) {
                 }
             }
                        
-            GEPPETTO.trigger('simulation:started');
+            GEPPETTO.trigger(Events.Experiment_started);
         };
 
-        messageHandler[messageTypes.SIMULATION_STOPPED] = function(payload) {
-            GEPPETTO.trigger(Events.Simulation_stopped);
+        messageHandler[messageTypes.EXPERIMENT_STOPPED] = function(payload) {
+            GEPPETTO.trigger(Events.Experiment_stopped);
         };
 
-        messageHandler[messageTypes.SIMULATION_PAUSED] = function(payload) {
-            GEPPETTO.trigger('simulation:paused');
-        };
-
-        messageHandler[messageTypes.SIMULATOR_FULL] = function(payload) {
-            GEPPETTO.FE.disableSimulationControls();
-        	GEPPETTO.FE.infoDialog(GEPPETTO.Resources.SIMULATOR_FULL, payload.message);
+        messageHandler[messageTypes.EXPERIMENT_PAUSED] = function(payload) {
+            GEPPETTO.trigger(Events.Experiment_paused);
         };
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {

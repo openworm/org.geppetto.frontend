@@ -39,13 +39,13 @@
 		 * @enum
 		 */
 		var Events = {
-			Select : "simulation:selection_changed",
-			Simulation_restarted : "simulation:restarted",
+			Select : "experiment:selection_changed",
+			Experiment_replay : "experiment:replay",
 			Widgets_restarted : "widgets:restarted",
-			Simulation_loaded : "simulation:modelloaded",
-			Simulation_stopped : "simulation:stopped",
-			ModelTree_populated : "simulation:modeltreepopulated",
-			SimulationTree_populated : "simulation:simulationtreepopulated",
+			Project_loaded : "project:loaded",
+			Experiment_stopped : "experiment:stopped",
+			ModelTree_populated : "experiment:modeltreepopulated",
+			SimulationTree_populated : "experiment:simulationtreepopulated",
 		};
 define(function(require) {
 	return function(GEPPETTO) {
@@ -59,10 +59,10 @@ define(function(require) {
 	        		//notify widgets that selection has changed in scene
 	        		GEPPETTO.WidgetsListener.update(Events.Select);
 	        	});
-				GEPPETTO.on(Events.Simulation_loaded, function(){
+				GEPPETTO.on(Events.Project_loaded, function(){
 					G.resetCamera();
 				});
-	        	GEPPETTO.on(Events.Simulation_restarted, function(){
+	        	GEPPETTO.on(Events.Experiment_replay, function(){
 	        		//delete existing widgets, to allow new ones for new simulation
 	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 	        		//notify factory classes reload is happenning

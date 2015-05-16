@@ -77,18 +77,18 @@ define(function(require) {
 					DEFAULT : 1,
 					GHOST : .3,
 			},
-			SIMULATION_LOADED: "Simulation Loaded",
-			SIMULATION_STARTED: "Simulation Started",
+			PROJECT_LOADED: "Project Loaded",
+			EXPERIMENT_STARTED: "Experiment Started",
 
-			UNABLE_TO_START_SIMULATION: "Simulation not loaded, must load simulation first",
+			UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
 
-			SIMULATION_PAUSED: "Simulation Paused",
+			EXPERIMENT_PAUSED: "Experiment Paused",
 
-			UNABLE_TO_PAUSE_SIMULATION: "Simulation not running, must run simulation first",
+			UNABLE_TO_PAUSE_EXPERIMENT: "Simulation not running, must run simulation first",
 
-			SIMULATION_STOP: "Simulation Stopped",
+			EXPERIMENT_STOP: "Simulation Stopped",
 
-			LOADING_SIMULATION: "Loading Simulation",
+			LOADING_PROJECT: "Loading Project",
 
 			LOADING_SIMULATION_SLOW : "Still loading, but things are taking longer than expected, are you on low bandwidth?",
 			

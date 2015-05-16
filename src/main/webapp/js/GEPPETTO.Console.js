@@ -388,7 +388,6 @@ define(function(require) {
 			 * Populates tags map at startup
 			 */
 			populateTags : function(){
-				this.updateTags("Simulation", GEPPETTO.Simulation,true);
 				this.updateTags("G", GEPPETTO.G,true);
 			},
 			

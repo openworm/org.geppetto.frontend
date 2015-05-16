@@ -71,6 +71,7 @@ define(function(require) {
 					min: 0,
 					max: 20,
 					show: false,
+					tickLength: 0,
 					ticks : []
 				},
 				grid: {
@@ -82,12 +83,6 @@ define(function(require) {
 				timeSteps : {
 					ShowAll : false
 				},
-				axisLabels : {
-					show : false
-				},
-//				xaxes: [{
-//		            axisLabel: 'Time',
-//		        }]
 			},
 
 			/**
@@ -125,10 +120,17 @@ define(function(require) {
 
 				// If no options specify by user, use default options
 				if(options != null) {
-					this.options = options;
+					for(var e in options){
+						if(options[e]!= null || options[e]!= undefined){
+							if(this.options.hasOwnProperty(e)){
+								this.options[e] = options[e];
+							}
+						}
+					}
 					if(this.options.xaxis.max > this.limit) {
 						this.limit = this.options.xaxis.max;
 					}
+					
 				}
 
 				var labelsMap = this.labelsMap;
@@ -179,8 +181,15 @@ define(function(require) {
 							if(this.options.timeSteps.ShowAll == true){
 								this.limit = timeSeries.length;
 								this.options.xaxis.max = this.limit;
+								//this.options.axisLabels = true;
 								this.options.series.downsample.threshold =1000;
 								this.setSize(550,850);
+							}
+							if(this.options.xaxis.show){
+								this.options.xaxes=[{
+						            axisLabel: 'Time in '+GEPPETTO.Simulation.time.getTimeSeries()[0].getUnit(),
+						            position : "bottom"
+						        }];
 							}
 						}
 						this.datasets.push({
@@ -293,7 +302,7 @@ define(function(require) {
 							//be different
 							var labelX = "";
 							//Simulation timestep (ms) " + Simulation.timestep;
-							this.setAxisLabel(labelY, labelX);
+							//this.setAxisLabel(labelY, labelX);
 							this.labelsUpdated = true;
 						}
 					}
@@ -402,11 +411,24 @@ define(function(require) {
 			 * @param {Object} options - options to modify the plot widget
 			 */
 			setOptions: function(options) {
-				this.options = $.extend({}, this.defaultPlotOptions, options);
+				for(var e in options){
+					if(options[e]!= null || options[e]!= undefined){
+						if(this.options.hasOwnProperty(e)){
+							this.options[e] = options[e];
+						}
+					}
+				}
 				if(this.options.xaxis != null) {
 					if(this.options.xaxis.max > this.limit) {
 						this.limit = this.options.xaxis.max;
 					}
+				}
+				
+				if(this.options.xaxis.show){
+					this.options.xaxes= [{
+			            axisLabel: 'Time in '+GEPPETTO.Simulation.time.getTimeSeries()[0].getUnit(),
+			            position : "bottom"
+			        }];
 				}
 				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 			},

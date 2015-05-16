@@ -51,10 +51,11 @@ define(function(require) {
 				createRuntimeTree : function(jsonRuntimeTree){
 					this.simulationTreeCreated=false;
 					GEPPETTO.NodeFactory.populateTags();
+					var entityNode = null;
 					for (var id in jsonRuntimeTree) {
 						var node = jsonRuntimeTree[id];
 						if(node._metaType == GEPPETTO.Resources.ENTITY_NODE){
-							var entityNode = 
+							entityNode = 
 								GEPPETTO.NodeFactory.createEntityNode(node);
 							
 							// keep track of client entity nodes created
@@ -63,6 +64,11 @@ define(function(require) {
 							this.traverseEntities(node, entityNode,
 									GEPPETTO.Simulation.runTimeTree[id]);							
 						}
+					}
+					
+					if(entityNode!=null){
+						//add commands to console autocomplete and help option
+						GEPPETTO.Console.updateHelpCommand("assets/js/nodes/EntityNode.js",entityNode, entityNode.getId());
 					}
 				},
 
@@ -299,16 +305,19 @@ define(function(require) {
 					this.createAspectSimulationTree(aspect.SimulationTree, simulationTree);
 
 					//notify user received tree was empty
+					//NOTE: Don't print to console.log in here, this function is recursive,
+					//and for entities with subentities it repeats printing same
+					//statement over and over again
 					if(aspect.SimulationTree.getChildren().length==0){
 						var indent = "    ";
 						GEPPETTO.Console.debugLog(indent + GEPPETTO.Resources.EMPTY_SIMULATION_TREE);
 					}else{
-						GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_POPULATED);
 						GEPPETTO.Console.debugLog(indent + GEPPETTO.Resources.SIMULATION_TREE_POPULATED);
 						//GEPPETTO.Console.executeCommand(aspect.SimulationTree.instancePath + ".print()");
 						//aspect.SimulationTree.print();
 					}
-					
+
+
 					this.simulationTreeCreated = true;
 				},
 

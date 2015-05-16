@@ -143,7 +143,7 @@ define(function(require) {
 			}];
 
 
-			var availableWidgets = this.getWidgets();
+			var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets();
 			if (availableWidgets.length > 0){
 				var group1Add =  [ {
 					label : "Add to D3 Widget",

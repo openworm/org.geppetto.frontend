@@ -45,12 +45,14 @@
 
 require.config({
 	  paths: {
-	    "d3": "widgets/connectivity/vendor/d3.min"
+	    "d3": "widgets/connectivity/vendor/d3",
+	    "d3.hive": "widgets/connectivity/vendor/d3.hive.v0"
 	  }
 	});
 
 var reqs = [];
 reqs.push("d3");
+reqs.push("d3.hive");
 
 define("d3.global", ["d3"], function(_) {
 	  d3 = _;
@@ -58,23 +60,7 @@ define("d3.global", ["d3"], function(_) {
 
 require(reqs, function(d3) {
 	window.d3 = d3;
+	window.d3.hive = d3.hive;
 	loadCss("assets/js/widgets/connectivity/Connectivity.css");
 	
-});
-
-//Load ConnectivityController and other classes using GEPPETTO
-define(function(require) {
-	return {		
-		// Register Commands
-//		GEPPETTO.MenuManager.registerNewCommandProvider(["EntityNode",
-//		                                                 "AspectNode",
-//		                                                 "AspectSubTreeNode",
-//		                                                 "CompositeNode",
-//		                                                 "DynamicsSpecificationNode",
-//		                                                 "FunctionNode",
-//		                                                 "ParameterNode",
-//		                                                 "ParameterSpecificationNode",
-//		                                                 "VariableNode"],
-//		                                                 GEPPETTO.TreeVisualiserControllerD3.getCommands);
-	};
 });

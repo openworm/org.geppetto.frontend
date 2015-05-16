@@ -30,23 +30,25 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.legend {
+.legend-text {
     font-size: 12px;
     font-weight:100;
   }
-.legendTitle{
+.legend-title{
     font-size: 14px;
   }
-#filters{
+.connectivity-ordering{
 	position: absolute;
 }
-.filtersLabel{
+.connectivity-ordering-label{
 	margin-left:2px;
 	font-size: 12px;
     font-weight:100;
 	color: #FFFFFF;
 }
-
+.connectivity-ordering-label select{
+	color: #000000;
+}
 .connectionlabel{
   font-size: 16px;
   font-weight:100;
@@ -54,4 +56,31 @@
   fill:white;
   stroke: none;
   text-rendering: optimizeLegibility;
+}
+
+.axis {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node circle {
+  stroke: #000;
+}
+
+.link {
+  fill: none;
+  stroke: #999;
+  stroke-width: 1.5px;
+  stroke-opacity: .3;
+}
+
+.link.active {
+  stroke: red;
+  stroke-width: 2px;
+  stroke-opacity: 1;
+}
+
+.node circle.active {
+  stroke: red;
+  stroke-width: 3px;
 }

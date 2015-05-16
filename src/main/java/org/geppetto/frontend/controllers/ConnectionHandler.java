@@ -520,7 +520,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// switch on message type
 		switch(event)
 		{
-			case LOAD_PROJECT:
+			case PROJECT_LOADED:
 			{
 				action = OutboundMessages.LOAD_PROJECT;
 
@@ -530,29 +530,28 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 				break;
 			}
-			case RUN_EXPERIMENT:
+			case EXPERIMENT_RUNNING:
 				action = OutboundMessages.EXPERIMENT_RUNNING;
 
 				sceneUpdate = sceneUpdate.substring(1, sceneUpdate.length() - 1);
 				update = "{ " + sceneUpdate + "}";
 
 				break;
-			case SCENE_UPDATE:
+			case EXPERIMENT_UPDATE:
 			{
-				action = OutboundMessages.SCENE_UPDATE;
+				action = OutboundMessages.EXPERIMENT_UPDATE;
 
 				sceneUpdate = sceneUpdate.substring(1, sceneUpdate.length() - 1);
 				update = "{ " + sceneUpdate + "}";
 
 				break;
 			}
-			case QUEUE_EXPERIMENT:
+			case EXPERIMENT_QUEUED:
+			{
 				// action = OUTBOUND_MESSAGE_TYPES.;
 
 				break;
-			case REPLAY_EXPERIMENT:
-				action = OutboundMessages.SIMULATION_OVER;
-				break;
+			}
 			default:
 			{
 			}
@@ -601,6 +600,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		String error = "{ \"error_code\": \"" + GeppettoErrorCodes.GENERIC + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg + "\"}";
 		logger.error(errorMessage, e);
 		websocketConnection.sendMessage(null, OutboundMessages.ERROR, error);
+	}
+
+	@Override
+	public void updateReady(GeppettoEvents event, RuntimeTreeRoot runtimeTree)
+	{
+		SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
+		runtimeTree.apply(serializeTreeVisitor);
+		
+		// Notify all connected clients about update either to load model or
+		// update current one.
+		//TODO Check the null request id, these messages are not 1:1 responses
+		websocketConnection.sendMessage(null, OutboundMessages.EXPERIMENT_UPDATE, serializeTreeVisitor.getSerializedTree());
+		
 	}
 
 }

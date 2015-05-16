@@ -108,7 +108,7 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case LOAD_PROJECT:
-			case SCENE_UPDATE:
+			case EXPERIMENT_UPDATE:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_CONFIGURATION:

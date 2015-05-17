@@ -38,11 +38,11 @@
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
-
-	return Node.Model.extend({
+	return Backbone.Model.extend({
 		experiments : null,
 		initializationTime : null,
+		name : "",
+		id : "",
 
 		/**
 		 * Initializes this project with passed attributes
@@ -54,10 +54,39 @@ define(function(require) {
 			this.experiments = new Array();
 			this.name = options.name;
 			this.id = options.id;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
 		},
 
+		/**
+		 * Gets the name of the node
+		 * 
+		 * @command Node.getName()
+		 * @returns {String} Name of the node
+		 * 
+		 */
+		getName : function() {
+			return this.name;
+		},
+
+		/**
+		 * Sets the name of the node
+		 * 
+		 * @command Node.setName()
+		 * 
+		 */
+		setName : function(newname) {
+			this.name = newname;
+		},
+
+		/**
+		 * Get the id associated with node
+		 * 
+		 * @command Node.getId()
+		 * @returns {String} ID of node
+		 */
+		getId : function() {
+			return this.id;
+		},
+		
 		/**
 		 * Get experiments for this project
 		 * 

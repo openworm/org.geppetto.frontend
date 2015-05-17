@@ -36,13 +36,16 @@
  * @module nodes/ProjectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define([ 'jquery', 'underscore', 'backbone', 
+      // Add requirement for Backbone-associations module
+],function(require) {
 
 	return Backbone.Model.extend({
 		experiments : null,
 		initializationTime : null,
 		name : "",
 		id : "",
+		runTimeTree : {},
 
 		/**
 		 * Initializes this project with passed attributes
@@ -162,8 +165,6 @@ define(function(require) {
 					this.initializationTime = new Date();
 					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-					//trigger simulation restart event
-					GEPPETTO.trigger(Events.Simulation_restarted);
 				}
 			}
 

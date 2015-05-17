@@ -58,6 +58,7 @@ define(function(require) {
             SCENE_UPDATE: "scene_update",
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",
+            EXPERIMENT_LOADED: "experiment_loaded",
             EXPERIMENT_STARTED: "experiment_started",
             EXPERIMENT_PAUSED: "experiment_paused",
             EXPERIMENT_STOPPED: "experiment_stopped",
@@ -92,10 +93,11 @@ define(function(require) {
             	projectNode.getExperiments().push(e);
             }            
             GEPPETTO.trigger(Events.Project_loaded);
+            GEPPETTO.trigger("hide:spinner");
         };
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {        	
-            var jsonRuntimeTree = JSON.parse(payload.update).scene;
+            var jsonRuntimeTree = JSON.parse(payload.experiment_loaded).scene;
 
             var startCreation = new Date();
             GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
@@ -109,6 +111,7 @@ define(function(require) {
             GEPPETTO.SceneController.populateScene(window["Project"].runTimeTree); 
             
             GEPPETTO.trigger(Events.Experiment_loaded);
+            GEPPETTO.trigger("hide:spinner");
         };
         messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update).scene;

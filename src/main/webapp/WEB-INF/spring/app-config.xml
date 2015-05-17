@@ -77,9 +77,7 @@
 
         <property name="queuedMessageTypes">
             <set>
-                <!--<value type="org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES">LOAD_MODEL</value>-->
                 <value type="org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES">SCENE_UPDATE</value>
-                <value type="org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES">SIMULATION_STARTED</value>
             </set>
         </property>
 

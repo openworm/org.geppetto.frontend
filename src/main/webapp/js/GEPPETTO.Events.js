@@ -60,8 +60,8 @@ define(function(require) {
 	        		//notify widgets that selection has changed in scene
 	        		GEPPETTO.WidgetsListener.update(Events.Select);
 	        	});
-				GEPPETTO.on(Events.Project_loaded, function(){
-					//G.resetCamera();
+				GEPPETTO.on(Events.Experiment_loaded, function(){
+					G.resetCamera();
 				});
 	        	GEPPETTO.on(Events.Experiment_replay, function(){
 	        		//delete existing widgets, to allow new ones for new simulation

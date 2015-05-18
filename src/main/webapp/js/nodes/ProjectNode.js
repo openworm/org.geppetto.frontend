@@ -36,13 +36,16 @@
  * @module nodes/ProjectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define([ 'jquery', 'underscore', 'backbone', 
+      // Add requirement for Backbone-associations module
+],function(require) {
 
-	var Node = require('nodes/Node');
-
-	return Node.Model.extend({
+	return Backbone.Model.extend({
 		experiments : null,
 		initializationTime : null,
+		name : "",
+		id : "",
+		runTimeTree : {},
 
 		/**
 		 * Initializes this project with passed attributes
@@ -54,10 +57,39 @@ define(function(require) {
 			this.experiments = new Array();
 			this.name = options.name;
 			this.id = options.id;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
 		},
 
+		/**
+		 * Gets the name of the node
+		 * 
+		 * @command Node.getName()
+		 * @returns {String} Name of the node
+		 * 
+		 */
+		getName : function() {
+			return this.name;
+		},
+
+		/**
+		 * Sets the name of the node
+		 * 
+		 * @command Node.setName()
+		 * 
+		 */
+		setName : function(newname) {
+			this.name = newname;
+		},
+
+		/**
+		 * Get the id associated with node
+		 * 
+		 * @command Node.getId()
+		 * @returns {String} ID of node
+		 */
+		getId : function() {
+			return this.id;
+		},
+		
 		/**
 		 * Get experiments for this project
 		 * 
@@ -110,11 +142,10 @@ define(function(require) {
 		},
 		
 		/**
-		 * Loads a simulation from a URL.
+		 * Loads a project from content.
 		 *
-		 * @command GEPPETTO.Simulation.load(simulationURL)
-		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
-		 *                              Simulation.load("http://url.com")
+		 * @command Project.loadFromContent(projectID)
+		 * @param {URL} projectID - Id of project to load
 		 * @returns {String}  Status of attempt to load simulation using url.
 		 */
 		loadFromID: function(projectID) {
@@ -133,8 +164,6 @@ define(function(require) {
 					this.initializationTime = new Date();
 					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-					//trigger simulation restart event
-					GEPPETTO.trigger(Events.Simulation_restarted);
 				}
 			}
 
@@ -142,18 +171,15 @@ define(function(require) {
 				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
 			}
 
-            GEPPETTO.trigger('project:show_spinner');
-
 			return loadStatus;
 		},
 		
 		/**
-		 * Loads a simulation from a URL.
+		 * Loads a project from url.
 		 *
-		 * @command GEPPETTO.Simulation.load(simulationURL)
-		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
-		 *                              Simulation.load("http://url.com")
-		 * @returns {String}  Status of attempt to load simulation using url.
+		 * @command Project.loadFromContent(projectURL)
+		 * @param {URL} simulationURL - URL of project to be loaded
+		 * @returns {String}  Status of attempt to load project using url.
 		 */
 		loadFromURL: function(projectURL) {
 			//TODO: Add logic for what happens after loading a new project
@@ -180,18 +206,15 @@ define(function(require) {
 				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
 			}
 
-            GEPPETTO.trigger('project:show_spinner');
-
 			return loadStatus;
 		},
 
 		/**
-		 * Loads a simulation from a URL.
+		 * Loads a project from content.
 		 *
-		 * @command GEPPETTO.Simulation.load(simulationURL)
-		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
-		 *                              Simulation.load("http://url.com")
-		 * @returns {String}  Status of attempt to load simulation using url.
+		 * @command Project.loadFromContent(content)
+		 * @param {String} content - Content of project to load
+		 * @returns {String}  Status of attempt to load project
 		 */
 		loadFromContent: function(content) {
 			//TODO: Add logic for what happens after loading a new project
@@ -217,9 +240,6 @@ define(function(require) {
 			else {
 				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
 			}
-
-            GEPPETTO.trigger('project:show_spinner');
-
 			return loadStatus;
 		},
 

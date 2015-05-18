@@ -193,8 +193,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 				SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
 				runtimeTree.apply(serializeTreeVisitor);
-
-				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, serializeTreeVisitor.getSerializedTree());
+				String scene = serializeTreeVisitor.getSerializedTree();
+				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED,scene);
 				logger.info("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
 			}
 			else

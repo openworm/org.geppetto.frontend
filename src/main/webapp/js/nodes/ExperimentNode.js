@@ -38,7 +38,6 @@
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
 	var ParameterNode = require('nodes/ParameterNode');
 	/**
 	 * 
@@ -55,11 +54,15 @@ define(function(require) {
 			DELETED : 5,
 	};
 	
-	return Node.Model.extend({
+	return Backbone.Model.extend({
+		
+		name : "",
+		id : "",
 		status : null,
+		parent : null,
 
 		/**
-		 * Initializes this project with passed attributes
+		 * Initializes this experiment with passed attributes
 		 * 
 		 * @param {Object} options - Object with options attributes to initialize
 		 *                           node
@@ -67,11 +70,48 @@ define(function(require) {
 		initialize : function(options) {
 			this.name = options.name;
 			this.id = options.id;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
 			this.status = ExperimentStatus.DESIGN;
 		},
 
+		/**
+		 * Gets the name of the node
+		 * 
+		 * @command ExperimentNode.getName()
+		 * @returns {String} Name of the node
+		 * 
+		 */
+		getName : function() {
+			return this.name;
+		},
+
+		/**
+		 * Sets the name of the node
+		 * 
+		 * @command ExperimentNode.setName()
+		 * 
+		 */
+		setName : function(newname) {
+			this.name = newname;
+		},
+
+		/**
+		 * Get the id associated with node
+		 * 
+		 * @command ExperimentNode.getId()
+		 * @returns {String} ID of node
+		 */
+		getId : function() {
+			return this.id;
+		},
+		
+		setParent : function(parent){	
+			this.parent = parent;
+		},
+		
+		getParent : function(){
+			return this.parent;
+		},
+		
 		/**
 		 * Get current status of this experiment
 		 * 
@@ -92,7 +132,7 @@ define(function(require) {
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
-				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+				GEPPETTO.MessageSocket.send("run_experiment", parameters);
 			}
 		},
 		
@@ -102,7 +142,21 @@ define(function(require) {
 		 * @command ExperimentNode.run()
 		 */
 		setActive : function(){
-			this.status = ExperimentStatus.RUNNING;
+			//Updates the simulation controls visibility
+			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+			//update ui based on success of webgl
+			GEPPETTO.FE.update(webGLStarted);
+			//Keep going with load of simulation only if webgl container was created
+			if(webGLStarted) {
+				//we call it only the first time
+				GEPPETTO.SceneController.animate();
+
+				var parameters = {};
+				parameters["experimentId"] = this.id;
+				parameters["projectId"] = this.getParent().getId();
+				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+				GEPPETTO.trigger('project:show_spinner');
+			}
 		},
 		
 		/**
@@ -112,7 +166,6 @@ define(function(require) {
 		 */
 		play : function(){
 			if(this.status == ExperimentStatus.COMPLETED){
-				this.setActive();
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectID"] = this.getParent().getId();

@@ -62,7 +62,7 @@ define(function(require) {
 		parent : null,
 
 		/**
-		 * Initializes this project with passed attributes
+		 * Initializes this experiment with passed attributes
 		 * 
 		 * @param {Object} options - Object with options attributes to initialize
 		 *                           node
@@ -76,7 +76,7 @@ define(function(require) {
 		/**
 		 * Gets the name of the node
 		 * 
-		 * @command Node.getName()
+		 * @command ExperimentNode.getName()
 		 * @returns {String} Name of the node
 		 * 
 		 */
@@ -87,7 +87,7 @@ define(function(require) {
 		/**
 		 * Sets the name of the node
 		 * 
-		 * @command Node.setName()
+		 * @command ExperimentNode.setName()
 		 * 
 		 */
 		setName : function(newname) {
@@ -97,7 +97,7 @@ define(function(require) {
 		/**
 		 * Get the id associated with node
 		 * 
-		 * @command Node.getId()
+		 * @command ExperimentNode.getId()
 		 * @returns {String} ID of node
 		 */
 		getId : function() {

@@ -142,11 +142,10 @@ define([ 'jquery', 'underscore', 'backbone',
 		},
 		
 		/**
-		 * Loads a simulation from a URL.
+		 * Loads a project from content.
 		 *
-		 * @command GEPPETTO.Simulation.load(simulationURL)
-		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
-		 *                              Simulation.load("http://url.com")
+		 * @command Project.loadFromContent(projectID)
+		 * @param {URL} projectID - Id of project to load
 		 * @returns {String}  Status of attempt to load simulation using url.
 		 */
 		loadFromID: function(projectID) {
@@ -172,18 +171,15 @@ define([ 'jquery', 'underscore', 'backbone',
 				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
 			}
 
-            GEPPETTO.trigger('project:show_spinner');
-
 			return loadStatus;
 		},
 		
 		/**
-		 * Loads a simulation from a URL.
+		 * Loads a project from url.
 		 *
-		 * @command GEPPETTO.Simulation.load(simulationURL)
-		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
-		 *                              Simulation.load("http://url.com")
-		 * @returns {String}  Status of attempt to load simulation using url.
+		 * @command Project.loadFromContent(projectURL)
+		 * @param {URL} simulationURL - URL of project to be loaded
+		 * @returns {String}  Status of attempt to load project using url.
 		 */
 		loadFromURL: function(projectURL) {
 			//TODO: Add logic for what happens after loading a new project
@@ -210,18 +206,15 @@ define([ 'jquery', 'underscore', 'backbone',
 				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
 			}
 
-            GEPPETTO.trigger('project:show_spinner');
-
 			return loadStatus;
 		},
 
 		/**
-		 * Loads a simulation from a URL.
+		 * Loads a project from content.
 		 *
-		 * @command GEPPETTO.Simulation.load(simulationURL)
-		 * @param {URL} simulationURL - URL of simulation file to be loaded, use string format as in 
-		 *                              Simulation.load("http://url.com")
-		 * @returns {String}  Status of attempt to load simulation using url.
+		 * @command Project.loadFromContent(content)
+		 * @param {String} content - Content of project to load
+		 * @returns {String}  Status of attempt to load project
 		 */
 		loadFromContent: function(content) {
 			//TODO: Add logic for what happens after loading a new project
@@ -247,9 +240,6 @@ define([ 'jquery', 'underscore', 'backbone',
 			else {
 				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
 			}
-
-            GEPPETTO.trigger('project:show_spinner');
-
 			return loadStatus;
 		},
 

@@ -92,8 +92,8 @@ define(function(require) {
             	// add experiment node to project
             	projectNode.getExperiments().push(e);
             }            
-            GEPPETTO.trigger(Events.Project_loaded);
-            GEPPETTO.trigger("hide:spinner");
+            GEPPETTO.trigger(Events.Project_loaded);            
+            GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
         };
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {        	

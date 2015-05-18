@@ -18,7 +18,7 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
 			this.model.fetch({
 				success : function() {
 		            var simulationUrl = me.model.attributes.geppettoModel.url;
-		            var id =  me.model.attributes.geppettoModel.id;
+		            var id =  me.model.attributes.id;
 		            var url = window.location.href;
 		            if (url.indexOf('/dashboard') > 0) {
 		            	url = url.substring(0, url.indexOf('/dashboard'));

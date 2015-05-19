@@ -9,34 +9,35 @@ define(function(require) {
 		require('vendor/THREEx.KeyboardState');
 		
 		var VARS = {
-			debug: false,
-			camera: null,
-			container: null,
-			controls: null,
-			scene: null,
+			debug : false,
+			camera : null,
+			container : null,
+			controls : null,
+			scene : null,
 			meshes : {},
 			splitMeshes : {},
 			connectionLines : {},
-			renderer: null,
-			stats: null,
-			gui: null,
-			projector: null,
-			keyboard: new THREEx.KeyboardState(),
-			needsUpdate: false,
-			metadata: {},
-			customUpdate: null,
-			mouseClickListener: null,
-			rotationMode: false,
-			mouse: {
-				x: 0,
-				y: 0
+			renderer : null,
+			customRendererClass : null,
+			stats : null,
+			gui : null,
+			projector : null,
+			keyboard : new THREEx.KeyboardState(),
+			needsUpdate : false,
+			metadata : {},
+			customUpdate : null,
+			mouseClickListener : null,
+			rotationMode : false,
+			mouse : {
+				x : 0,
+				y : 0
 			},
-			visualModelMap: null,
-			idCounter: 0,
+			visualModelMap : null,
+			idCounter : 0,
 
-			sceneCenter: new THREE.Vector3(),
-			cameraPosition: new THREE.Vector3(),
-			canvasCreated: false,
+			sceneCenter : new THREE.Vector3(),
+			cameraPosition : new THREE.Vector3(),
+			canvasCreated : false,
 			listenersCreated : false,
 			selected : [],
 		};
@@ -54,11 +55,14 @@ define(function(require) {
 		 */
 		var setupCamera = function() {
 			// Camera
-			var SCREEN_WIDTH = $(VARS.container).width(), SCREEN_HEIGHT = $(VARS.container).height();
+			var SCREEN_WIDTH = $(VARS.container).width(), SCREEN_HEIGHT = $(
+					VARS.container).height();
 			var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 500000;
-			VARS.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+			VARS.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR,
+					FAR);
 			VARS.scene.add(VARS.camera);
-			VARS.camera.position.set(VARS.cameraPosition.x, VARS.cameraPosition.y, VARS.cameraPosition.z);
+			VARS.camera.position.set(VARS.cameraPosition.x,
+					VARS.cameraPosition.y, VARS.cameraPosition.z);
 			VARS.camera.lookAt(VARS.sceneCenter);
 			VARS.projector = new THREE.Projector();
 		};
@@ -67,13 +71,27 @@ define(function(require) {
 		 * Set up the WebGL Renderer
 		 */
 		var setupRenderer = function() {
-
-			// Reuse a single WebGL renderer. Recreating the renderer causes camera displacement on Chrome OSX.
+			// Reuse a single WebGL renderer. Recreating the renderer causes
+			// camera displacement on Chrome OSX.
 			if (!VARS.canvasCreated) {
-				VARS.renderer = new THREE.WebGLRenderer(
-					{
-						antialias: true
+				if (VARS.customRendererClass == null) {
+					VARS.renderer = new THREE.WebGLRenderer({
+						antialias : true
 					});
+				} 
+				else {
+					console.log("CREATING NEW RENDERER");
+					var newRenderer = VARS.customRendererClass;
+					VARS.renderer = new newRenderer();
+				}
+				VARS.renderer.setClearColor(0x000000, 1);
+				var width = $(VARS.container).width();
+				var height = $(VARS.container).height();
+				VARS.renderer.setSize(width, height);
+				VARS.renderer.autoClear = true;
+				VARS.container.appendChild(VARS.renderer.domElement);
+
+				VARS.canvasCreated = true;
 			}
 			VARS.renderer.setClearColor(0x000000, 1);
 			var width = $(VARS.container).width();
@@ -90,12 +108,11 @@ define(function(require) {
 		 */
 		var setupLights = function() {
 			// Lights
-			
+
 			VARS.scene.add(new THREE.AmbientLight(0x111111));
 
-			
 			VARS.scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1.1));
-			
+
 			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.09);
 			directionalLight.position.set(0, 1, 0);
 			directionalLight.castShadow = true;
@@ -116,65 +133,78 @@ define(function(require) {
 		};
 
 		/**
-		 * Sets up the controls used by the camera to make it able to zoom and pan.
+		 * Sets up the controls used by the camera to make it able to zoom and
+		 * pan.
 		 */
 		var setupControls = function() {
 			// Controls
-			VARS.controls = new THREE.TrackballControls(VARS.camera, VARS.renderer.domElement);
+			VARS.controls = new THREE.TrackballControls(VARS.camera,
+					VARS.renderer.domElement);
 			VARS.controls.noZoom = false;
 			VARS.controls.noPan = false;
-			VARS.controls.addEventListener('change', GEPPETTO.render);			
+			VARS.controls.addEventListener('change', GEPPETTO.render);
 		};
 
 		/**
 		 * Set up the listeners use to detect mouse movement and windoe resizing
 		 */
 		var setupListeners = function() {
-			if(!VARS.listenersCreated){
+			if (!VARS.listenersCreated) {
 				// when the mouse moves, call the given function
-				VARS.renderer.domElement.addEventListener('mousedown', function(event) {
-					var intersects = GEPPETTO.getIntersectedObjects();
+				VARS.renderer.domElement
+						.addEventListener(
+								'mousedown',
+								function(event) {
+									var intersects = GEPPETTO
+											.getIntersectedObjects();
 
-					if ( intersects.length > 0 ) {
-						var selected = intersects[ 0 ].object.name;
+									if (intersects.length > 0) {
+										var selected = intersects[0].object.name;
 
-						if(selected == ""){
-							selected = intersects[ 0 ].object.parent.name;
-						}
-						if(VARS.meshes.hasOwnProperty(selected) ||
-								VARS.splitMeshes.hasOwnProperty(selected)){
-							GEPPETTO.Simulation.unSelectAll();
-							GEPPETTO.Console.executeCommand(selected + '.select()' );
-						}
-					}
+										if (selected == "") {
+											selected = intersects[0].object.parent.name;
+										}
+										if (VARS.meshes
+												.hasOwnProperty(selected)
+												|| VARS.splitMeshes
+														.hasOwnProperty(selected)) {
+											GEPPETTO.Simulation.unSelectAll();
+											GEPPETTO.Console
+													.executeCommand(selected
+															+ '.select()');
+										}
+									}
 
-				}, false);
+								}, false);
 
-				VARS.renderer.domElement.addEventListener('mousemove', function(event) {
-					VARS.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-					VARS.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+				VARS.renderer.domElement
+						.addEventListener(
+								'mousemove',
+								function(event) {
+									VARS.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+									VARS.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-				}, false);
+								}, false);
 
 				window.addEventListener('resize', function() {
-					var container = $(VARS.container),
-					width     = container.width(),
-					height    = container.height();
+					var container = $(VARS.container), width = container
+							.width(), height = container.height();
 
 					VARS.camera.aspect = (width) / (height);
 					VARS.camera.updateProjectionMatrix();
 					VARS.renderer.setSize(width, height);
 				}, false);
 
-				document.addEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard, false);
+				document.addEventListener("keydown",
+						GEPPETTO.Vanilla.checkKeyboard, false);
 				VARS.listenersCreated = true;
 			}
 		};
-//	============================================================================
-//	Application logic.
-//	============================================================================
+		// ============================================================================
+		// Application logic.
+		// ============================================================================
 		GEPPETTO.Init = {
-			initialize: function(containerp) {
+			initialize : function(containerp) {
 				VARS.container = containerp;
 				setupScene();
 				setupCamera();
@@ -182,8 +212,8 @@ define(function(require) {
 				setupLights();
 				setupControls();
 				setupListeners();
-	        	//setup listeners for geppetto events that can be triggered
-	            GEPPETTO.Events.listen();
+				// setup listeners for geppetto events that can be triggered
+				GEPPETTO.Events.listen();
 				return VARS;
 			}
 		};

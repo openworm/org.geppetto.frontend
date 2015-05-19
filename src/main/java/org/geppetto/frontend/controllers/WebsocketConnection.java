@@ -142,7 +142,7 @@ public class WebsocketConnection extends MessageInbound
 		Map<String, String> parameters;
 		long experimentId = -1;
 		long projectId = -1;
-		String instancePath = "";
+		String instancePath = null;
 		
 		// de-serialize JSON
 		GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);

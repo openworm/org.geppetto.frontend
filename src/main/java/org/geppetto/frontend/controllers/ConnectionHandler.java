@@ -98,7 +98,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager)
 	{
 		this.websocketConnection = websocketConnection;
-		this.geppettoManager = geppettoManager;
+		this.geppettoManager = new GeppettoManager(geppettoManager);
 		this.geppettoManager.setCallback(this);
 	}
 

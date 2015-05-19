@@ -101,6 +101,20 @@ define([ 'jquery', 'underscore', 'backbone',
 		},
 		
 		/**
+		 * Get active experiment for this project
+		 * 
+		 * @command ProjectNode.getActiveExperiment()
+		 * @returns ExperimentNode
+		 */
+		getActiveExperiment : function(){
+			for(var e in this.experiments){
+				if(e.getStatus()== ExperimentStatus.RUNNING){
+					return e;
+				}
+			}
+		},
+		
+		/**
 		 * Gets an experiment from this project. 
 		 * 
 		 * @command ProjectNode.getExperiment(name)

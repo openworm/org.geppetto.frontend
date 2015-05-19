@@ -33,7 +33,7 @@
 /**
  * Client class use to represent an Aspect. It stores that aspect's properties
  * along with its population, visualization and model tree.
- * 
+ *
  * @module nodes/AspectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
@@ -55,7 +55,7 @@ define(function(require) {
 				simulatorConfiguration : null,
 				/**
 				 * Initializes this node with passed attributes
-				 * 
+				 *
 				 * @param {Object} options - Object with options attributes to
 				 *                           initialize node
 				 */
@@ -72,22 +72,22 @@ define(function(require) {
 
 				/**
 				 * Hides the aspect
-				 * 
+				 *
 				 * @command AspectNode.hide()
-				 * 
+				 *
 				 */
 				hide : function() {
 					var message;
 					if (this.visible) {
 						GEPPETTO.SceneController.hideAspect(this.instancePath);
-						
+
 						//update visible flag on parents
 						var parent  = this.getParent();
 						while(parent!=null){
 							parent.visible = false;
 							parent = parent.getParent();
 						}
-						
+
 						message = GEPPETTO.Resources.HIDE_ASPECT
 								+ this.instancePath;
 					} else {
@@ -98,22 +98,22 @@ define(function(require) {
 				},
 				/**
 				 * Shows the aspect
-				 * 
+				 *
 				 * @command AspectNode.show()
-				 * 
+				 *
 				 */
 				show : function() {
 					var message;
 					if (!this.visible) {
 						GEPPETTO.SceneController.showAspect(this.instancePath);
-						
+
 						//update visible flag on parents
 						var parent  = this.getParent();
 						while(parent!=null){
 							parent.visible = true;
 							parent = parent.getParent();
 						}
-						
+
 						message = GEPPETTO.Resources.SHOW_ASPECT
 								+ this.instancePath;
 					} else {
@@ -122,28 +122,28 @@ define(function(require) {
 					this.visible = true;
 					return message;
 				},
-				
+
 				/**
 				 * Selects the aspect
-				 * 
+				 *
 				 * @command AspectNode.unselect()
-				 * 
+				 *
 				 */
 				select : function() {
 					var message;
 					if (!this.selected) {
-						GEPPETTO.SceneController.selectAspect(this.instancePath);				
+						GEPPETTO.SceneController.selectAspect(this.instancePath);
 						message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
 						this.selected = true;
-						
+
 						var parent  = this.getParent();
 						while(parent!=null){
 							parent.selected = true;
 							parent = parent.getParent();
 						}
-						
+
 						GEPPETTO.SceneController.setGhostEffect(true);
-						
+
 						//look on the simulation selection options and perform necessary
 						//operations
 						if(Simulation.getSelectionOptions().show_inputs){
@@ -169,9 +169,9 @@ define(function(require) {
 
 				/**
 				 * Unselects the aspect
-				 * 
+				 *
 				 * @command AspectNode.unselect()
-				 * 
+				 *
 				 */
 				unselect : function() {
 					var message;
@@ -181,13 +181,13 @@ define(function(require) {
 								+ this.instancePath;
 						GEPPETTO.SceneController.unselectAspect(this.instancePath);
 						this.selected = false;
-						
+
 						var parent  = this.getParent();
 						while(parent!=null){
 							parent.selected = false;
 							parent = parent.getParent();
 						}
-						
+
 						//don't apply ghost effect to meshes if nothing is left selected after
 						//unselecting this entity
 						if(Simulation.getSelection().length ==0){
@@ -197,7 +197,7 @@ define(function(require) {
 						else{
 							GEPPETTO.SceneController.setGhostEffect(true);
 						}
-						
+
 						//look on the simulation selection options and perform necessary
 						//operations
 						if(Simulation.getSelectionOptions().show_inputs){
@@ -212,7 +212,7 @@ define(function(require) {
 						if(Simulation.getSelectionOptions().hide_not_selected){
 							Simulation.showUnselected(false);
 						}
-					
+
 						//trigger event that selection has been changed
 						GEPPETTO.trigger(Events.Selection);
 					} else {
@@ -220,22 +220,22 @@ define(function(require) {
 					}
 					return message;
 				},
-				
+
 				/**
 				 * Zooms to aspect
-				 * 
+				 *
 				 * @command AspectNode.zoomTo()
-				 * 
+				 *
 				 */
 				 zoomTo : function(){
 					 GEPPETTO.SceneController.zoomToMesh(this.instancePath);
-				 
-					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath; 
+
+					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath;
 			     },
-				
+
 				/**
 				 * Get the model interpreter associated with aspect
-				 * 
+				 *
 				 * @command AspectNode.getId()
 				 */
 				getId : function() {
@@ -244,12 +244,12 @@ define(function(require) {
 
 				/**
 				 * Get this entity's children entities
-				 * 
+				 *
 				 * @command EntityNode.getChildren()
-				 * 
+				 *
 				 * @returns {List<Aspect>} All children e.g. aspects and
 				 *          entities
-				 * 
+				 *
 				 */
 				getChildren : function() {
 					var subtrees = new Array();
@@ -261,7 +261,7 @@ define(function(require) {
 
 				/**
 				 * Get the model interpreter associated with aspect
-				 * 
+				 *
 				 * @command AspectNode.getModelInterpreterName()
 				 */
 				getModelInterpreterName : function() {
@@ -270,7 +270,7 @@ define(function(require) {
 
 				/**
 				 * Get the simulator interpreter associated with aspect
-				 * 
+				 *
 				 * @command AspectNode.getSimulatorName()
 				 */
 				getSimulatorName : function() {
@@ -279,7 +279,7 @@ define(function(require) {
 
 				/**
 				 * Get model URL associated with the aspect
-				 * 
+				 *
 				 * @command AspectNode.getModelURL()
 				 */
 				getModelURL : function() {
@@ -288,14 +288,19 @@ define(function(require) {
 
 				/**
 				 * Get formatted model tree for this aspect
-				 * 
+				 *
 				 * @command AspectNode.getModelTree()
 				 */
 				getModelTree : function() {
 					// empty model tree, request server for it
+
 					if (this.ModelTree.getChildren().length == 0) {
+						var parameters = {};
+						parameters["experimentId"] = Project.getActiveExperiment().getId();
+						parameters["projectId"] = Project.getId();
+						parameters["instancePath"]=this.instancePath;
 						GEPPETTO.MessageSocket.send("get_model_tree",
-								this.instancePath);
+								parameters);
 
 						return GEPPETTO.Resources.RETRIEVING_MODEL_TREE;
 					}
@@ -308,13 +313,17 @@ define(function(require) {
 
 				/**
 				 * Get formatted simulation watch tree for this aspect.
-				 * 
+				 *
 				 * @command AspectNode.getSimulationTree()
 				 */
 				getSimulationTree : function() {
 					if(jQuery.isEmptyObject(this.SimulationTree)||this.SimulationTree==null){
+						var parameters = {};
+						parameters["experimentId"] = Project.getActiveExperiment().getId();
+						parameters["projectId"] = Project.getId();
+						parameters["instancePath"]=this.instancePath;
 						GEPPETTO.MessageSocket.send("get_simulation_tree",
-								this.instancePath);
+						parameters);
 
 						return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE;
 					}
@@ -334,16 +343,16 @@ define(function(require) {
 
 				/**
 				 * Get formatted visualization watch tree for this aspect.
-				 * 
+				 *
 				 * @command AspectNode.getVisualizationTree()
 				 */
 				getVisualizationTree : function() {
 					return this.VisualizationTree;
 				},
-				
+
 				/**
 				 * Write Model for this aspect
-				 * 
+				 *
 				 * @command AspectNode.writeModel(format)
 				 * * @param {String} name - File format to write
 				 */
@@ -357,10 +366,10 @@ define(function(require) {
 
 					return GEPPETTO.Resources.WRITING_MODEL + format;
 				},
-				
+
 				/**
 				 * Write Model for this aspect
-				 * 
+				 *
 				 * @command AspectNode.writeModel(format)
 				 * * @param {String} name - File format to write
 				 */
@@ -374,26 +383,26 @@ define(function(require) {
 //
 //					return GEPPETTO.Resources.WRITING_MODEL + format;
 					console.log("Getting supported outputs");
-				},		
-				
+				},
+
 				/**
 				 * Get simulator configuration for this aspect
-				 * 
+				 *
 				 * @command AspectNode.getSimulatorConfiguration()
 				 */
 				getSimulatorConfiguration : function(){
 					return this.simulatorConfiguration;
 				},
-				
+
 				/**
 				 * Set simulator configuration for this aspect
-				 * 
+				 *
 				 * @command AspectNode.setSimulatorConfiguration(simulatorConfiguration)
 				 */
 				setSimulatorConfiguration : function(simulatorConfiguration){
 					this.simulatorConfiguration = simulatorConfiguration;
 				},
-				
+
 				/**
 				 * Print out formatted node
 				 */

@@ -140,8 +140,9 @@ public class WebsocketConnection extends MessageInbound
 		String msg = message.toString();
 
 		Map<String, String> parameters;
-		long experimentId = 0;
-		long projectId = 0;
+		long experimentId = -1;
+		long projectId = -1;
+		String instancePath = "";
 		
 		// de-serialize JSON
 		GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);
@@ -250,13 +251,19 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case GET_MODEL_TREE:
 			{
-				String instancePath = gmsg.data;
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				instancePath = parameters.get("instancePath");
 				connectionHandler.getModelTree(requestID, instancePath, experimentId, projectId);
 				break;
 			}
 			case GET_SIMULATION_TREE:
 			{
-				String instancePath = gmsg.data;
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				instancePath = parameters.get("instancePath");
 				connectionHandler.getSimulationTree(requestID, instancePath, experimentId, projectId);
 				break;
 			}

@@ -161,6 +161,8 @@ define(function(require) {
 			window["Project"] = project;
 			GEPPETTO.Console.updateTags("Project", project,true);
 
+			setInterval(function(){ GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENTS_STATUS, project.id);}, 3000);
+			
 			//make sure webgl started correctly
 			if(!webGLStarted) {
 				GEPPETTO.FE.update(false);

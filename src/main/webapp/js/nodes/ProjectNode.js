@@ -108,7 +108,8 @@ define([ 'jquery', 'underscore', 'backbone',
 		 */
 		getActiveExperiment : function(){
 			for(var e in this.experiments){
-				if(e.getStatus()== ExperimentStatus.RUNNING){
+				var experiment = this.getExperiments()[e];
+				if(experiment.getStatus()== "RUNNING"){
 					return e;
 				}
 			}

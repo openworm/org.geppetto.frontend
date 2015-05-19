@@ -625,10 +625,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(projectId));
-			List<? extends IExperiment> experiments = geppettoProject.getExperiments();
-			for(IExperiment e : experiments){
-				if(e.getStatus().equals(ExperimentStatus.COMPLETED)){
-					//TODO Notify client experiment is completed
+			if(geppettoProject!=null){
+				List<? extends IExperiment> experiments = geppettoProject.getExperiments();
+				for(IExperiment e : experiments){
+					if(e.getStatus().equals(ExperimentStatus.COMPLETED)){
+						//TODO Notify client experiment is completed
+					}
 				}
 			}
 		}

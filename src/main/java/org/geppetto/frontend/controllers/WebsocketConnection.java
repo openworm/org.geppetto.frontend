@@ -80,8 +80,8 @@ public class WebsocketConnection extends MessageInbound
 	public WebsocketConnection()
 	{
 		super();
-		this.connectionHandler = new ConnectionHandler(this);
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+		this.connectionHandler = new ConnectionHandler(this, geppettoManager);
 	}
 
 	@Override

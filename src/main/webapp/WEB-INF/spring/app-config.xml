@@ -1,57 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-							http://www.springframework.org/schema/context
+							http://www.springframework.org/schema/osgi
+							http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd
+							http://www.springframework.org/schema/aop 
+       						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+       						http://www.springframework.org/schema/context
 							http://www.springframework.org/schema/context/spring-context-3.1.xsd
 							http://www.springframework.org/schema/mvc
 							http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
+    
+	<mvc:annotation-driven />
+	<!-- Map static resources to /assets/* url -->
+	<mvc:resources mapping="/assets/**" location="/" />
 
-    <mvc:annotation-driven />
-    <!-- Map static resources to /assets/* url -->
-    <mvc:resources mapping="/assets/**"
-                   location="/"
-                  />
+	<mvc:resources mapping="/jsdocs/**" location="/jsdocs/" />
 
-    <mvc:resources mapping="/jsdocs/**"
-                   location="/jsdocs/"
-            />
-            
-    <mvc:resources mapping="/dashboard/**"
-                   location="/dashboard/"
-            />     
+	<mvc:resources mapping="/dashboard/**" location="/dashboard/" />
 
-	<mvc:resources mapping="/api/**"
-                   location="/dashboard/api/"
-            />     
+	<mvc:resources mapping="/api/**" location="/dashboard/api/" />
 
 
-    <context:component-scan base-package="org.geppetto.frontend.controllers"/>
-    <context:component-scan base-package="org.geppetto.frontend.dashboard.service"/>
+	<context:component-scan base-package="org.geppetto.frontend" />
 
-    <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
-        <property name="resourceLoaderPath">
-            <value>/</value>
-        </property>
-    </bean>
+	<bean id="velocityConfig"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath">
+			<value>/</value>
+		</property>
+	</bean>
 
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
-        <property name="prefix"><value>/templates/</value></property>
-        <property name="suffix"><value>.vm</value></property>
-        <property name="exposeSpringMacroHelpers"><value>true</value></property>
-    </bean>
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="prefix">
+			<value>/templates/</value>
+		</property>
+		<property name="suffix">
+			<value>.vm</value>
+		</property>
+		<property name="exposeSpringMacroHelpers">
+			<value>true</value>
+		</property>
+	</bean>
 
 
-	<!-- Add flag for Simulation Run Mode --> 
-	<bean id="config" class="org.geppetto.frontend.controllers.SimulationServerConfig">
+	<!-- Add flag for Simulation Run Mode -->
+	<bean id="config"
+		class="org.geppetto.frontend.controllers.SimulationServerConfig">
 		<property name="serverBehaviorMode" value="MULTIUSER" />
 		<!-- Flags used for observer mode -->
 		<property name="loadedScene" value="#{ null }" />
 		<property name="isSimulationLoaded" value="false" />
 	</bean>
+
+	<bean id="geppettoManager" scope="session"
+		class="org.geppetto.frontend.controllers.GeppettoManager">
+		<aop:scoped-proxy/>
+	</bean>
 	
+	<bean id="experimentRunManager" scope="singleton"
+		class="org.geppetto.frontend.controllers.ExperimentRunManager">
+	</bean>
+
 </beans>

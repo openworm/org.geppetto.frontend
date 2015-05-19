@@ -189,6 +189,11 @@
 			<artifactId>core</artifactId>
 			<version>${version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.geppetto</groupId>
+			<artifactId>simulation</artifactId>
+			<version>${version}</version>
+		</dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -331,6 +336,13 @@
 						<Bundle-ClassPath>.,{maven-dependencies},WEB-INF/classes</Bundle-ClassPath>
 						<Web-ContextPath>${contextPath}</Web-ContextPath>
 						<Import-Package>
+							net.sf.cglib.beans,
+							net.sf.cglib.core,
+							net.sf.cglib.proxy,
+							net.sf.cglib.reflect,
+							net.sf.cglib.transform,
+							net.sf.cglib.util,
+							org.geppetto.simulation,
 							org.apache.shiro.web.env,
 							org.apache.shiro.web.servlet,
 							org.apache.shiro.authc,

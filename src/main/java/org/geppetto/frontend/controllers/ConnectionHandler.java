@@ -61,7 +61,6 @@ import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -71,9 +70,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
 
 /**
  * Class that handles the Web Socket connections the servlet is receiving.
@@ -88,21 +85,21 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	private static Log logger = LogFactory.getLog(ConnectionHandler.class);
 
 	@Autowired
-	private IGeppettoManager geppettoManager;
-
-	@Autowired
 	private SimulationServerConfig simulationServerConfig;
 
 	private WebsocketConnection websocketConnection;
+	
+	private IGeppettoManager geppettoManager;
 
 	/**
 	 * @param websocketConnection
+	 * @param geppettoManager2 
 	 */
-	protected ConnectionHandler(WebsocketConnection websocketConnection)
+	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager)
 	{
 		this.websocketConnection = websocketConnection;
-		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-		geppettoManager.setCallback(this);
+		this.geppettoManager = geppettoManager;
+		this.geppettoManager.setCallback(this);
 	}
 
 	/**

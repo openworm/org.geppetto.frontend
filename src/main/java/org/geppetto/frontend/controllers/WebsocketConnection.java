@@ -274,13 +274,16 @@ public class WebsocketConnection extends MessageInbound
 				// _servletController.getModelTree(requestID,instancePath);
 				break;
 			}
-			case WRITE_MODEL:
+			case DOWNLOAD_MODEL:
 			{
-
-				Map<String, String> parameters2 = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				connectionHandler.writeModel(requestID, parameters2.get("instancePath"), parameters2.get("format"));
+			
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				instancePath = parameters.get("instancePath");
+				String format = parameters.get("format"); 
+				connectionHandler.downloadModel(requestID, instancePath, format, experimentId, projectId);
+				break;
 
 			}
 			case SET_PARAMETERS:

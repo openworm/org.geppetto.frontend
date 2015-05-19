@@ -47,6 +47,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
@@ -363,12 +364,22 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	}
 
-	public void writeModel(String requestID, String instancePath, String format)
+	public void downloadModel(String requestID, String aspectInstancePath, String format, long experimentID, long projectId)
 	{
-		// String modelTree = visitor.getSimulationService().writeModel(instancePath, format);
-		//
-		// // message the client with results
-		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.WRITE_MODEL, modelTree);
+		System.out.println("taka");
+		
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+//		try
+//		{
+			geppettoManager.downloadModel(aspectInstancePath, ModelFormat.COLLADA, experiment, geppettoProject);
+
+			websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
+//		}
+//		catch(GeppettoExecutionException e)
+//		{
+//			error(e, "Error populating the simulation tree for " + aspectInstancePath);
+//		}
 	}
 
 	/**

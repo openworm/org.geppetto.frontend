@@ -154,6 +154,8 @@ define(function(require) {
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
+				this.getParent().setActiveExperiment(this);
+				
 				GEPPETTO.MessageSocket.send("load_experiment", parameters);
 				GEPPETTO.trigger('project:show_spinner');
 			}

@@ -53,6 +53,7 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
@@ -628,6 +629,26 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		//TODO Check the null request id, these messages are not 1:1 responses
 		websocketConnection.sendMessage(null, OutboundMessages.EXPERIMENT_UPDATE, serializeTreeVisitor.getSerializedTree());
 		
+	}
+
+	public void checkExperiments(String requestID, String projectId) {
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		try
+		{
+			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(projectId));
+			if(geppettoProject!=null){
+				List<? extends IExperiment> experiments = geppettoProject.getExperiments();
+				for(IExperiment e : experiments){
+					if(e.getStatus().equals(ExperimentStatus.COMPLETED)){
+						//TODO Notify client experiment is completed
+					}
+				}
+			}
+		}
+		catch(NumberFormatException e)
+		{
+			websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
+		}
 	}
 
 }

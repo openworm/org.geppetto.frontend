@@ -297,6 +297,9 @@ public class WebsocketConnection extends MessageInbound
 				parameters3.remove(modelPath);
 				connectionHandler.setParameters(requestID, modelPath, parameters3);
 			}
+			case EXPERIMENTS_STATUS:
+				connectionHandler.checkExperiments(requestID, gmsg.data);
+				break;
 			default:
 			{
 				// NOTE: no other messages expected for now

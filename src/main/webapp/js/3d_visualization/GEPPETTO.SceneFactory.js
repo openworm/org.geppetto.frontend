@@ -92,11 +92,19 @@ define(function(require) {
 											}
 										}
 									}
-									else{
-										if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
+									else if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
 												metaType == "CylinderNode") {
 											GEPPETTO.SceneFactory.updateGeometry(node);								
-										}
+									}
+									else if (metaType == "SkeletonAnimationNode" && GEPPETTO.getVARS().customRendererClass != null) {
+										// get transformation matrices
+										var matrices = node.transformation.SkeletonAnimationMatrices;
+										
+										// TODO: flatten out matrices
+										var flatMatrices = null;
+										
+										// pass matrices to setCurrentMatrix of renderer
+										GEPPETTO.renderer.setCurrentMatrix(flatMatrices);
 									}
 								}
 							}

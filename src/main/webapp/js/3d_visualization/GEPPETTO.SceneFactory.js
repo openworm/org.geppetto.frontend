@@ -100,8 +100,16 @@ define(function(require) {
 										// get transformation matrices
 										var matrices = node.skeletonTransformations;
 										
-										// TODO: flatten out matrices
-										var flatMatrices = null;
+										// flatten out matrices
+										var flatMatrices = [];
+										// loop through matrices
+										for(var m = 0; m < matrices.lenght; m++){
+											// loop through rows for each matrix
+											for(var r=0; r<matrices[m].length; r++){
+												// append
+												flatMatrices.concat(matrices[m][r]);
+											}
+										}
 										
 										// pass matrices to setCurrentMatrix of renderer
 										GEPPETTO.renderer.setCurrentMatrix(flatMatrices);

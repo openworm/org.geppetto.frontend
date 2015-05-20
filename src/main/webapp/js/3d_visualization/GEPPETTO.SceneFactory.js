@@ -103,11 +103,11 @@ define(function(require) {
 										// flatten out matrices
 										var flatMatrices = [];
 										// loop through matrices
-										for(var m = 0; m < matrices.lenght; m++){
+										for(var m = 0; m < matrices.length; m++){
 											// loop through rows for each matrix
 											for(var r=0; r<matrices[m].length; r++){
 												// append
-												flatMatrices.concat(matrices[m][r]);
+												flatMatrices = flatMatrices.concat(matrices[m][r]);
 											}
 										}
 										

@@ -98,7 +98,7 @@ define(function(require) {
 									}
 									else if (metaType == "SkeletonAnimationNode" && GEPPETTO.getVARS().customRendererClass != null) {
 										// get transformation matrices
-										var matrices = node.transformation.SkeletonAnimationMatrices;
+										var matrices = node.skeletonTransformations;
 										
 										// TODO: flatten out matrices
 										var flatMatrices = null;

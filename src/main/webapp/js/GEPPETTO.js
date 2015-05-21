@@ -335,7 +335,7 @@ define(function(require) {
          * Renders objects in the scene
          */
         render : function() {
-            GEPPETTO.renderer.render(GEPPETTO.getVARS().scene, GEPPETTO.getVARS().camera);
+            GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene, GEPPETTO.getVARS().camera);
         },
 
         /**

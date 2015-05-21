@@ -112,7 +112,7 @@ define(function(require) {
 										}
 										
 										// pass matrices to setCurrentMatrix of renderer
-										GEPPETTO.renderer.setCurrentMatrix(flatMatrices);
+										GEPPETTO.getVARS().renderer.setCurrentMatrix(flatMatrices);
 									}
 								}
 							}

@@ -61,7 +61,7 @@ define(function(require) {
 			disconnected: false,
 			status: 0,
 			simulationFileTemplate: "assets/resources/template.xml",
-			
+
 			getVisitorStatus: function() {
 				return this.status;
 			},
@@ -101,7 +101,7 @@ define(function(require) {
 								if(GEPPETTO.Simulation.isLoading()){
 									GEPPETTO.trigger('simulation:show_spinner');
 								}
-							});                                         
+							});
 						}
 
 						//second check, user isn't there or didn't click yes, disconnect
@@ -152,24 +152,24 @@ define(function(require) {
 // ============================================================================
 
 		$(document).ready(function() {
-			//Create canvas 
+			//Create canvas
 			var webGLStarted = GEPPETTO.webGLAvailable();
-			
-			//start project node which will be used as a Singleton 
+
+			//start project node which will be used as a Singleton
 			//to store current project info
-			project = new ProjectNode({name : "Project", id : 0});
+			project = new ProjectNode({name : "Project", id : -1});
 			window["Project"] = project;
 			GEPPETTO.Console.updateTags("Project", project,true);
 
-			setInterval(function(){ GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENTS_STATUS, project.id);}, 3000);
-			
+			setInterval(function(){if(Project.getId()!=-1){GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENTS_STATUS, project.id);}}, 3000);
+
 			//make sure webgl started correctly
 			if(!webGLStarted) {
 				GEPPETTO.FE.update(false);
 			}
 			else{
 				GEPPETTO.FE.initialEvents();
-				
+
 				//Increment the idle time counter every minute.
 				setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
 	            var here = $(this);
@@ -184,12 +184,12 @@ define(function(require) {
 						GEPPETTO.Main.idleTime = 0;
 					}
 				});
-				
+
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
 				//Initialize websocket functionality
 				GEPPETTO.Main.init();
-			}		
+			}
 		});
 	};
 });

@@ -64,8 +64,6 @@
 		<aop:scoped-proxy/>
 	</bean>
 	
-	<bean id="experimentRunManager" scope="singleton"
-		class="org.geppetto.frontend.controllers.ExperimentRunManager">
-	</bean>
+
 
 </beans>

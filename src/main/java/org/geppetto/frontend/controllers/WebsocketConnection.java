@@ -77,6 +77,8 @@ public class WebsocketConnection extends MessageInbound
 	@Autowired
 	private IGeppettoManager geppettoManager;
 	
+	
+	
 	public WebsocketConnection()
 	{
 		super();

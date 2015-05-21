@@ -47,7 +47,6 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
@@ -60,6 +59,7 @@ import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
+import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +95,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	/**
 	 * @param websocketConnection
-	 * @param geppettoManager2
+	 * @param geppettoManager
 	 */
 	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager)
 	{
@@ -188,7 +188,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			// run the matched experiment
 			if(experiment != null)
 			{
-				RuntimeTreeRoot runtimeTree = geppettoManager.loadExperiment(requestID, experiment, geppettoProject);
+				RuntimeTreeRoot runtimeTree = geppettoManager.loadExperiment(requestID, experiment);
 
 				SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
 				runtimeTree.apply(serializeTreeVisitor);
@@ -220,7 +220,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			// run the matched experiment
 			if(experiment != null)
 			{
-				geppettoManager.runExperiment(requestID, experiment, geppettoProject);
+				geppettoManager.runExperiment(requestID, experiment);
 			}
 			else
 			{

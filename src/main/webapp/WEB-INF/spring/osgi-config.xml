@@ -10,9 +10,7 @@
 							http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd
 							http://www.springframework.org/schema/aop 
        						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
-
-	<bean id="eventListenerBean" class="org.geppetto.frontend.controllers.ApplicationListenerBean" />
-	
+    
 
 	
 </beans>

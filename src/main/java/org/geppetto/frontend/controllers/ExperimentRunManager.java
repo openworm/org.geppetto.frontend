@@ -34,13 +34,13 @@ package org.geppetto.frontend.controllers;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.commons.logging.Log;
@@ -59,7 +59,7 @@ import org.geppetto.simulation.ExperimentRunThread;
 import org.geppetto.simulation.IExperimentListener;
 import org.geppetto.simulation.RuntimeExperiment;
 import org.geppetto.simulation.RuntimeProject;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  * The ExperimentRunManager is a singleton responsible for managing a queue per each user to run the experiments.
@@ -68,30 +68,55 @@ import org.springframework.stereotype.Service;
  * @author matteocantarelli
  *
  */
-@Service
+@Component
 public class ExperimentRunManager implements IExperimentRunManager, IExperimentListener
 {
 	private Map<IUser, List<IExperiment>> queue = new LinkedHashMap<>();
 
 	private List<ExperimentRunThread> experimentRuns = new ArrayList<>();
 
-	private GeppettoManager projectManager = new GeppettoManager();
+	private GeppettoManager geppettoManager = new GeppettoManager();
 
 	private volatile int reqId = 0;
 
 	// TODO How do we send a message to the client if it is connected to say for instance that an experiment was completed?
 	private IGeppettoManagerCallbackListener simulationCallbackListener;
 
-	public ExperimentRunManager()
+	private Timer timer;
+
+	private static ExperimentRunManager instance;
+
+	/**
+	 * @return
+	 */
+	public static ExperimentRunManager getInstance()
 	{
-		try
+		if(instance == null)
 		{
-			loadExperiments();
+			instance = new ExperimentRunManager();
 		}
-		catch(GeppettoInitializationException | GeppettoExecutionException | MalformedURLException e)
+		return instance;
+	}
+
+	/**
+	 * 
+	 */
+	private ExperimentRunManager()
+	{
+		if(instance == null)
 		{
-			// TODO Handle
-			e.printStackTrace();
+			instance = this;
+			try
+			{
+				loadExperiments();
+				timer = new Timer();
+				timer.schedule(new ExperimentCheck(), 0, 1000);
+			}
+			catch(GeppettoInitializationException | GeppettoExecutionException | MalformedURLException e)
+			{
+				// TODO Handle
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -101,17 +126,20 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	 * @see org.geppetto.core.simulation.IExperimentRunManager#queueExperiment(org.geppetto.core.data.model.IUser, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override
-	public void queueExperiment(IUser user, IExperiment experiment, IGeppettoProject project)
+	public void queueExperiment(IUser user, IExperiment experiment)
 	{
 		experiment.setStatus(ExperimentStatus.QUEUED);
-		addExperimentsToQueue(user, Arrays.asList(new IExperiment[] { experiment }), ExperimentStatus.QUEUED);
+
+		addExperimentToQueue(user, experiment, ExperimentStatus.QUEUED);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.geppetto.core.simulation.IExperimentRunManager#checkExperiment(org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public boolean checkExperiment(IExperiment experiment, IGeppettoProject project)
+	public boolean checkExperiment(IExperiment experiment)
 	{
 		// TODO: needs to decide if an experiment should be running or not
 		return true;
@@ -122,11 +150,13 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	 * 
 	 * @see org.geppetto.core.simulation.IExperimentRunManager#runExperiment(org.geppetto.core.data.model.IExperiment)
 	 */
-	public void runExperiment(IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public void runExperiment(IExperiment experiment) throws GeppettoExecutionException
 	{
-		try{
-			projectManager.loadProject(String.valueOf(this.getReqId()), project);
-			RuntimeProject runtimeProject = projectManager.getRuntimeProject(project);
+		try
+		{
+			IGeppettoProject project=experiment.getParentProject();
+			geppettoManager.loadProject(String.valueOf(this.getReqId()), project);
+			RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
 			runtimeProject.openExperiment(String.valueOf(this.getReqId()), experiment);
 			RuntimeExperiment runtimeExperiment = runtimeProject.getRuntimeExperiment(experiment);
 
@@ -146,7 +176,8 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 				experimentRuns.add(experimentRun);
 			}
 		}
-		catch(Exception e){
+		catch(Exception e)
+		{
 			throw new GeppettoExecutionException(e);
 		}
 	}
@@ -166,13 +197,25 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			for(IGeppettoProject project : projects)
 			{
 				// This could be either when the user decides to open a project or when the ExperimentsRunManager queues an Experiment
-				projectManager.loadProject("ERM" + getReqId(), project);
+				geppettoManager.loadProject("ERM" + getReqId(), project);
 				List<? extends IExperiment> experiments = dataManager.getExperimentsForProject(project.getId());
-				//addExperimentsToQueue(user, experiments, ExperimentStatus.RUNNING);
-				//addExperimentsToQueue(user, experiments, ExperimentStatus.QUEUED);
+				for(IExperiment e:experiments)
+				{
+					if(e.getStatus().equals(ExperimentStatus.RUNNING))
+					{
+						addExperimentToQueue(user, e, e.getStatus());
+					}
+				}
+				for(IExperiment e:experiments)
+				{
+					if(e.getStatus().equals(ExperimentStatus.QUEUED))
+					{
+						addExperimentToQueue(user, e, e.getStatus());
+					}
+				}
 			}
 		}
-		
+
 	}
 
 	/**
@@ -194,10 +237,10 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 
 	/**
 	 * @param user
-	 * @param experiments
+	 * @param experiment
 	 * @param status
 	 */
-	private synchronized void addExperimentsToQueue(IUser user, List<? extends IExperiment> experiments, ExperimentStatus status)
+	private synchronized void addExperimentToQueue(IUser user, IExperiment experiment, ExperimentStatus status)
 	{
 		List<IExperiment> userExperiments = queue.get(user);
 		if(userExperiments == null)
@@ -205,13 +248,10 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			userExperiments = new ArrayList<>();
 			queue.put(user, userExperiments);
 		}
-		for(IExperiment experiment : experiments)
+		if(experiment.getStatus() == status)
 		{
-			if(experiment.getStatus() == status)
-			{
-				experiment.setStatus(ExperimentStatus.QUEUED);
-				userExperiments.add(experiment);
-			}
+			experiment.setStatus(ExperimentStatus.QUEUED);
+			userExperiments.add(experiment);
 		}
 	}
 
@@ -230,7 +270,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 		{
 			queue.get(user).remove(experiment);
 
-			RuntimeProject runtimeProject = projectManager.getRuntimeProject(project);
+			RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
 			// When an experiment run is done we close its experiment unless it happens to be also the active one
 			if(runtimeProject != null && !experiment.equals(runtimeProject.getActiveExperiment()))
 			{
@@ -245,7 +285,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			if(closeProject)
 			{
 				// close the project when all the user experiments are completed and none of the experiments is active
-				projectManager.closeProject("ERM" + getReqId(), project);
+				geppettoManager.closeProject("ERM" + getReqId(), project);
 			}
 
 		}
@@ -259,39 +299,40 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 		return ++reqId;
 	}
 
-	public Map<IUser, List<IExperiment>> getQueueExperiments() {
+	public Map<IUser, List<IExperiment>> getQueuedExperiments()
+	{
 		return this.queue;
 	}
+
 }
 
-class ExperimentCheck extends TimerTask {
+class ExperimentCheck extends TimerTask
+{
 	private static Log logger = LogFactory.getLog(ExperimentCheck.class);
-	Map<IUser, List<IExperiment>> _queueExperiments;
-	private ExperimentRunManager _manager;
-	private IGeppettoProject _project;
-	
-	public ExperimentCheck(IGeppettoProject project, ExperimentRunManager manager){
-		_manager = manager;
-		_project = project;
-		_queueExperiments = manager.getQueueExperiments();
-	}
-	
-	public void run() {
-		try {
-			Set<Entry<IUser, List<IExperiment>>> experiments = this._queueExperiments.entrySet();
+	private Map<IUser, List<IExperiment>> queuedExperiments = ExperimentRunManager.getInstance().getQueuedExperiments();
+
+	public void run()
+	{
+		try
+		{
+			Set<Entry<IUser, List<IExperiment>>> experiments = ExperimentRunManager.getInstance().getQueuedExperiments().entrySet();
 			Iterator<Entry<IUser, List<IExperiment>>> s = experiments.iterator();
-			while(s.hasNext()){
-				Entry set = (Entry) s.next();
-				List<IExperiment> qExperiments = (List<IExperiment>) set.getValue();
-				for(IExperiment e : qExperiments){
-					if(_manager.checkExperiment(e,null)){
+			for(IUser user : queuedExperiments.keySet())
+			{
+				for(IExperiment e : queuedExperiments.get(user))
+				{
+					if(ExperimentRunManager.getInstance().checkExperiment(e))
+					{
 						logger.info("Experiment queued found " + e.getName());
-						_manager.runExperiment(e, _project);
+						ExperimentRunManager.getInstance().runExperiment(e);
 					}
+
 				}
 			}
-		} catch (GeppettoExecutionException e1) {
-			//TODO: Handle exception;
+		}
+		catch(GeppettoExecutionException e1)
+		{
+			// TODO: Handle exception;
 		}
 	}
-  }
+}

@@ -356,15 +356,16 @@ define(function(require) {
 				 * @command AspectNode.writeModel(format)
 				 * * @param {String} name - File format to write
 				 */
-				writeModel : function(format) {
+				downloadModel : function(format) {
 					//TODO: Change for inbound_messages_types
 					var parameters = {};
+					parameters["experimentId"] = Project.getActiveExperiment().getId();
+					parameters["projectId"] = Project.getId();
 					parameters["instancePath"] = this.instancePath;
 					parameters["format"] = format;
-					GEPPETTO.MessageSocket.send("write_model",
-								parameters);
+					GEPPETTO.MessageSocket.send("download_model", parameters);
 
-					return GEPPETTO.Resources.WRITING_MODEL + format;
+					return GEPPETTO.Resources.DOWNLOADING_MODEL + format;
 				},
 
 				/**

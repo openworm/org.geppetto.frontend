@@ -56,8 +56,9 @@ public enum InboundMessages {
 	GET_MODEL_TREE("get_model_tree"),
 	GET_SIMULATION_TREE("get_simulation_tree"),
 	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
-	WRITE_MODEL("write_model"),
-	SET_PARAMETERS("set_parameters");
+	DOWNLOAD_MODEL("download_model"),
+	SET_PARAMETERS("set_parameters"),
+	EXPERIMENTS_STATUS("experiments_status");
 
 	
 	private InboundMessages(final String text) {

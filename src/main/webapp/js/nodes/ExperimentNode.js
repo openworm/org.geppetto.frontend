@@ -46,12 +46,12 @@ define(function(require) {
 	 * @enum
 	 */
 	var ExperimentStatus = {
-			DESIGN : 0,
-			QUEUED : 1,
-			RUNNING: 2,
-			ERROR : 3,
-			COMPLETED : 4,
-			DELETED : 5,
+			DESIGN : "DESIGN",
+			QUEUED : "QUEUED",
+			RUNNING: "RUNNING",
+			ERROR : "ERROR",
+			COMPLETED : "COMPLETED",
+			DELETED : "DELETED",
 	};
 	
 	return Backbone.Model.extend({
@@ -70,7 +70,7 @@ define(function(require) {
 		initialize : function(options) {
 			this.name = options.name;
 			this.id = options.id;
-			this.status = ExperimentStatus.DESIGN;
+			this.status = options.status;
 		},
 
 		/**
@@ -154,6 +154,8 @@ define(function(require) {
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
+				this.getParent().setActiveExperiment(this);
+				
 				GEPPETTO.MessageSocket.send("load_experiment", parameters);
 				GEPPETTO.trigger('project:show_spinner');
 			}

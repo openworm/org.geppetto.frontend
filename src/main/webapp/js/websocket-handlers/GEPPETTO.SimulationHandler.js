@@ -68,7 +68,8 @@ define(function(require) {
             experiment_OVER : "experiment_over",
             GET_MODEL_TREE : "get_model_tree",
             SET_PARAMETER : "set_parameter",
-            NO_FEATURE : "no_feature"
+            NO_FEATURE : "no_feature",
+            EXPERIMENTS_STATUS : "experiments_status"
         };
 
         var messageHandler = {};

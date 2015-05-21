@@ -42,6 +42,7 @@ define([ 'jquery', 'underscore', 'backbone',
 
 	return Backbone.Model.extend({
 		experiments : null,
+		activeExperiment : null,
 		initializationTime : null,
 		name : "",
 		id : "",
@@ -98,6 +99,26 @@ define([ 'jquery', 'underscore', 'backbone',
 		 */
 		getExperiments : function() {
 			return this.experiments;
+		},
+		
+		/**
+		 * Set active experiment for this project
+		 * 
+		 * @command ProjectNode.setActiveExperiment()
+		 * @param {ExperimentNode} experiment - Active Experiment
+		 */
+		setActiveExperiment : function(experiment){
+			this.activeExperiment = experiment;
+		},
+		
+		/**
+		 * Get active experiment for this project
+		 * 
+		 * @command ProjectNode.getActiveExperiment()
+		 * @returns ExperimentNode
+		 */
+		getActiveExperiment : function(){
+			return this.activeExperiment;
 		},
 		
 		/**

@@ -115,6 +115,7 @@ define(function(require) {
 						type : node.type,
 						id : node.id,
 						name : node.name,
+						status : node.status,
 						instancePath : node.instancePath,
 						_metaType : GEPPETTO.Resources.EXPERIMENT_NODE,
 					});

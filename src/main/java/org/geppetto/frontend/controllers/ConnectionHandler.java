@@ -47,11 +47,13 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
@@ -360,12 +362,22 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	}
 
-	public void writeModel(String requestID, String instancePath, String format)
+	public void downloadModel(String requestID, String aspectInstancePath, String format, long experimentID, long projectId)
 	{
-		// String modelTree = visitor.getSimulationService().writeModel(instancePath, format);
-		//
-		// // message the client with results
-		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.WRITE_MODEL, modelTree);
+		System.out.println("taka");
+		
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+//		try
+//		{
+			geppettoManager.downloadModel(aspectInstancePath, ModelFormat.COLLADA, experiment, geppettoProject);
+
+			websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
+//		}
+//		catch(GeppettoExecutionException e)
+//		{
+//			error(e, "Error populating the simulation tree for " + aspectInstancePath);
+//		}
 	}
 
 	/**
@@ -614,6 +626,26 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		//TODO Check the null request id, these messages are not 1:1 responses
 		websocketConnection.sendMessage(null, OutboundMessages.EXPERIMENT_UPDATE, serializeTreeVisitor.getSerializedTree());
 		
+	}
+
+	public void checkExperiments(String requestID, String projectId) {
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		try
+		{
+			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(projectId));
+			if(geppettoProject!=null){
+				List<? extends IExperiment> experiments = geppettoProject.getExperiments();
+				for(IExperiment e : experiments){
+					if(e.getStatus().equals(ExperimentStatus.COMPLETED)){
+						//TODO Notify client experiment is completed
+					}
+				}
+			}
+		}
+		catch(NumberFormatException e)
+		{
+			websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
+		}
 	}
 
 }

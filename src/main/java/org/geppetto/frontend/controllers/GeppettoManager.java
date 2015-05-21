@@ -34,9 +34,10 @@ package org.geppetto.frontend.controllers;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Timer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,7 +57,7 @@ import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.simulation.ResultsFormat;
 import org.geppetto.simulation.RuntimeProject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
 /**
  * GeppettoManager is the implementation of IGeppettoManager which represents the Java API entry point for Geppetto. This class is instantiated with a session scope, which means there is one
@@ -67,14 +68,14 @@ import org.springframework.stereotype.Controller;
  * @author matteocantarelli
  * 
  */
-@Controller
+@Component
 public class GeppettoManager implements IGeppettoManager
 {
 
 	private static Log logger = LogFactory.getLog(GeppettoManager.class);
 
 	// these are the runtime projects for a
-	private Map<IGeppettoProject, RuntimeProject> projects = new ConcurrentHashMap<IGeppettoProject, RuntimeProject>();
+	private Map<IGeppettoProject, RuntimeProject> projects = new LinkedHashMap<>();
 
 	private IGeppettoManagerCallbackListener geppettoManagerCallbackListener;
 
@@ -173,7 +174,6 @@ public class GeppettoManager implements IGeppettoManager
 			{
 				throw new GeppettoExecutionException("A project without a runtime project cannot be closed");
 			}
-			experimentRunManager.queueExperiment(user, experiment, project);
 			getRuntimeProject(project).openExperiment(requestId, experiment);
 		}
 		catch(MalformedURLException | GeppettoInitializationException e)
@@ -196,6 +196,9 @@ public class GeppettoManager implements IGeppettoManager
 		if(experiment.getStatus().equals(ExperimentStatus.DESIGN))
 		{
 			experimentRunManager.queueExperiment(user, experiment, project);
+
+			Timer timer = new Timer();
+			timer.schedule(new ExperimentCheck(project, (ExperimentRunManager) experimentRunManager), 1000);
 		}
 		else
 		{

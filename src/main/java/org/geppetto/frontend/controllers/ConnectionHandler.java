@@ -90,12 +90,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	private SimulationServerConfig simulationServerConfig;
 
 	private WebsocketConnection websocketConnection;
-	
+
 	private IGeppettoManager geppettoManager;
 
 	/**
 	 * @param websocketConnection
-	 * @param geppettoManager2 
+	 * @param geppettoManager2
 	 */
 	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager)
 	{
@@ -161,9 +161,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			geppettoManager.loadProject(requestID, geppettoProject);
-			//serialize project prior to sending it to client
+			// serialize project prior to sending it to client
 			Gson gson = new Gson();
-	        String json = gson.toJson(geppettoProject);
+			String json = gson.toJson(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, json);
 
 		}
@@ -193,7 +193,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
 				runtimeTree.apply(serializeTreeVisitor);
 				String scene = serializeTreeVisitor.getSerializedTree();
-				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED,scene);
+				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, scene);
 				logger.info("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
 			}
 			else
@@ -365,19 +365,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void downloadModel(String requestID, String aspectInstancePath, String format, long experimentID, long projectId)
 	{
 		System.out.println("taka");
-		
+
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-//		try
-//		{
-			geppettoManager.downloadModel(aspectInstancePath, ModelFormat.COLLADA, experiment, geppettoProject);
+		// try
+		// {
+		geppettoManager.downloadModel(aspectInstancePath, ModelFormat.COLLADA, experiment, geppettoProject);
 
-			websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
-//		}
-//		catch(GeppettoExecutionException e)
-//		{
-//			error(e, "Error populating the simulation tree for " + aspectInstancePath);
-//		}
+		websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
+		// }
+		// catch(GeppettoExecutionException e)
+		// {
+		// error(e, "Error populating the simulation tree for " + aspectInstancePath);
+		// }
 	}
 
 	/**
@@ -620,31 +620,54 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	{
 		SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
 		runtimeTree.apply(serializeTreeVisitor);
-		
+
 		// Notify all connected clients about update either to load model or
 		// update current one.
-		//TODO Check the null request id, these messages are not 1:1 responses
+		// TODO Check the null request id, these messages are not 1:1 responses
 		websocketConnection.sendMessage(null, OutboundMessages.EXPERIMENT_UPDATE, serializeTreeVisitor.getSerializedTree());
-		
+
 	}
 
-	public void checkExperiments(String requestID, String projectId) {
+	/**
+	 * @param requestID
+	 * @param projectId
+	 */
+	public void checkExperiments(String requestID, String projectId)
+	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		try
 		{
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(projectId));
-			if(geppettoProject!=null){
+			if(geppettoProject != null)
+			{
 				List<? extends IExperiment> experiments = geppettoProject.getExperiments();
-				for(IExperiment e : experiments){
-					if(e.getStatus().equals(ExperimentStatus.COMPLETED)){
-						//TODO Notify client experiment is completed
+				for(IExperiment e : experiments)
+				{
+					if(e.getStatus() != null)
+					{
+						if(e.getStatus().equals(ExperimentStatus.COMPLETED))
+						{
+							// TODO Notify client experiment is completed
+							// TODO We should notify for either every status or status changes there's nothing special
+							// about COMPLETE
+						}
+					}
+					else
+					{
+						String msg = "Check Experiment: Status for projct " + projectId + " is null";
+						error(new GeppettoExecutionException(msg), msg);
 					}
 				}
+			}
+			else
+			{
+				String msg = "Check Experiment: Cannot find project " + projectId;
+				error(new GeppettoExecutionException(msg), msg);
 			}
 		}
 		catch(NumberFormatException e)
 		{
-			websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "");
+			error(e, "Check Experiment: Errror parsing project id");
 		}
 	}
 

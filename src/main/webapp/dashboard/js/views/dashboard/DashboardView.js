@@ -33,7 +33,7 @@ define([
             this.$el.html(this.template({title: this.titleFilter}));
             $('#filter').keyup(this.filter);
             this.collection.fetch({success: this.renderProjects, error: this.onError});
-            return this
+            return this;
         },
 
         renderProjects: function(collection){

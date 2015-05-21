@@ -10,7 +10,9 @@ define([ 'jquery', 'underscore', 'backbone' ], function($, _, Backbone) {
 		// url: "api/session.json",
 
 		initialize : function() {
-			this.fetch();
+			this.fetch({
+				async: false
+			});
 		},
 
 		parse : function(data) {

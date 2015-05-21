@@ -63,7 +63,7 @@ public class UserResource
 	IUser getCurrentUser()
 	{
 		Subject currentUser = SecurityUtils.getSubject();
-		if(!currentUser.isAuthenticated())
+		if(!currentUser.isAuthenticated() && geppettoManager.getUser() == null)
 		{
 			IUser guest = getGuestUser();
 			try

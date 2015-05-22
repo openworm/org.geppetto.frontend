@@ -58,7 +58,8 @@ public enum InboundMessages {
 	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
 	DOWNLOAD_MODEL("download_model"),
 	SET_PARAMETERS("set_parameters"),
-	EXPERIMENTS_STATUS("experiments_status");
+	EXPERIMENTS_STATUS("experiments_status"), 
+	PLAY_EXPERIMENT("play_experiment");
 
 	
 	private InboundMessages(final String text) {

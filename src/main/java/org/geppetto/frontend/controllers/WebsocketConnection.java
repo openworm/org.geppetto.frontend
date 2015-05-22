@@ -204,6 +204,14 @@ public class WebsocketConnection extends MessageInbound
 				// connectionHandler.getSimulationConfiguration(requestID, url, this);
 				break;
 			}
+			case PLAY_EXPERIMENT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.playExperiment(requestID, experimentId, projectId);
+				break;	
+			}
 			case RUN_EXPERIMENT:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());

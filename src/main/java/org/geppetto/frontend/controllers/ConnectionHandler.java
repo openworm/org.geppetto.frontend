@@ -671,4 +671,32 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
+	/**
+	 * @param requestID
+	 * @param experimentId
+	 * @param projectId
+	 */
+	public void playExperiment(String requestID, long experimentId, long projectId)
+	{
+		try
+		{
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+			IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+			// play the matched experiment
+			if(experiment != null)
+			{
+				geppettoManager.playExperiment(requestID, experiment);
+			}
+			else
+			{
+				error(null, "Error playing experiment, the experiment " + experimentId + " was not found in project " + projectId);
+			}
+
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error playing experiment");
+		}
+	}
+
 }

@@ -32,7 +32,7 @@
  *******************************************************************************/
 /**
  * Client class for Experiment node.
- * 
+ *
  * @module nodes/ExperimentNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
@@ -40,22 +40,23 @@ define(function(require) {
 
 	var ParameterNode = require('nodes/ParameterNode');
 	/**
-	 * 
+	 *
 	 * Different status an experiment can be on
-	 * 
+	 *
 	 * @enum
 	 */
 	var ExperimentStatus = {
 			DESIGN : "DESIGN",
+			CANCELED : "CANCELED",
 			QUEUED : "QUEUED",
 			RUNNING: "RUNNING",
 			ERROR : "ERROR",
 			COMPLETED : "COMPLETED",
 			DELETED : "DELETED",
 	};
-	
+
 	return Backbone.Model.extend({
-		
+
 		name : "",
 		id : "",
 		status : null,
@@ -63,7 +64,7 @@ define(function(require) {
 
 		/**
 		 * Initializes this experiment with passed attributes
-		 * 
+		 *
 		 * @param {Object} options - Object with options attributes to initialize
 		 *                           node
 		 */
@@ -75,10 +76,10 @@ define(function(require) {
 
 		/**
 		 * Gets the name of the node
-		 * 
+		 *
 		 * @command ExperimentNode.getName()
 		 * @returns {String} Name of the node
-		 * 
+		 *
 		 */
 		getName : function() {
 			return this.name;
@@ -86,9 +87,9 @@ define(function(require) {
 
 		/**
 		 * Sets the name of the node
-		 * 
+		 *
 		 * @command ExperimentNode.setName()
-		 * 
+		 *
 		 */
 		setName : function(newname) {
 			this.name = newname;
@@ -96,35 +97,35 @@ define(function(require) {
 
 		/**
 		 * Get the id associated with node
-		 * 
+		 *
 		 * @command ExperimentNode.getId()
 		 * @returns {String} ID of node
 		 */
 		getId : function() {
 			return this.id;
 		},
-		
-		setParent : function(parent){	
+
+		setParent : function(parent){
 			this.parent = parent;
 		},
-		
+
 		getParent : function(){
 			return this.parent;
 		},
-		
+
 		/**
 		 * Get current status of this experiment
-		 * 
+		 *
 		 * @command ExperimentNode.getStatus()
 		 * @returns {String} Status of experiment
 		 */
 		getStatus : function() {
 			return this.status;
 		},
-		
+
 		/**
 		 * Run experiment
-		 * 
+		 *
 		 * @command ExperimentNode.run()
 		 */
 		run : function(){
@@ -135,10 +136,10 @@ define(function(require) {
 				GEPPETTO.MessageSocket.send("run_experiment", parameters);
 			}
 		},
-		
+
 		/**
 		 * Sets experiment status to active
-		 * 
+		 *
 		 * @command ExperimentNode.run()
 		 */
 		setActive : function(){
@@ -155,51 +156,51 @@ define(function(require) {
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
 				this.getParent().setActiveExperiment(this);
-				
+
 				GEPPETTO.MessageSocket.send("load_experiment", parameters);
 				GEPPETTO.trigger('project:show_spinner');
 			}
 		},
-		
+
 		/**
 		 * Play experiment
-		 * 
+		 *
 		 * @command ExperimentNode.play()
 		 */
 		play : function(){
 			if(this.status == ExperimentStatus.COMPLETED){
 				var parameters = {};
 				parameters["experimentId"] = this.id;
-				parameters["projectID"] = this.getParent().getId();
+				parameters["projectId"] = this.getParent().getId();
 				GEPPETTO.MessageSocket.send("play_experiment", parameters);
 			}
 		},
-		
+
 		/**
-		 * Start watching of variables for this experiment 
-		 * 
+		 * Start watching of variables for this experiment
+		 *
 		 * @command ExperimentNode.watchVariables()
 		 */
 		watchVariables : function(){
 			if(this.status == ExperimentStatus.DESIGN){
-				
+
 			}
 		},
 
 		/**
 		 * Sets variables for experiment
-		 * 
+		 *
 		 * @command ExperimentNode.setWatchVariables(variables)
 		 */
 		setVariables : function(variables){
 			if(this.status == ExperimentStatus.DESIGN){
-				
+
 			}
 		},
 
 		/**
-		 * Gets an experiment from this project. 
-		 * 
+		 * Gets an experiment from this project.
+		 *
 		 * @command ProjectNode.getExperiment(name)
 		 * @returns {ExperimentNode} ExperimentNode for given name
 		 */
@@ -207,15 +208,15 @@ define(function(require) {
 			if(this.status == ExperimentStatus.DESIGN){
 			}
 		},
-		
+
 		/**
 		 * Download results for recording file
-		 * 
+		 *
 		 * @command ExperimentNode.downloadResults(recording)
 		 */
 		downloadResults : function(recording){
 			if(this.status == ExperimentStatus.COMPLETED){
-				
+
 			}
 		},
 
@@ -223,8 +224,7 @@ define(function(require) {
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n";
+			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n";
 		}
 	});
 });

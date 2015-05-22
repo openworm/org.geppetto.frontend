@@ -96,7 +96,7 @@ define(function(require) {
 												metaType == "CylinderNode") {
 											GEPPETTO.SceneFactory.updateGeometry(node);								
 									}
-									else if (metaType == "SkeletonAnimationNode" && GEPPETTO.getVARS().customRendererClass != null) {
+									else if (metaType == "SkeletonAnimationNode") {
 										// get transformation matrices
 										var matrices = node.skeletonTransformations;
 										
@@ -285,8 +285,12 @@ define(function(require) {
 						scene = collada.scene;
 						scene.traverse(function(child){
 							if(child instanceof THREE.Mesh){
-								child.material =GEPPETTO.SceneFactory.getMeshPhongMaterial();
+								child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
 								child.name = node.instancePath.split(".VisualizationTree")[0];
+							}
+							if ( child instanceof THREE.SkinnedMesh ) {
+								var animation = new THREE.Animation( child, child.geometry.animation );
+								animation.play();
 							}
 						});
 					});

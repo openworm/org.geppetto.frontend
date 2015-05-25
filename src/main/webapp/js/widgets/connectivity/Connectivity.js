@@ -442,7 +442,8 @@ define(function(require) {
             var angle = d3.scale.ordinal().domain(d3.range(this.dataset.nodeTypes.length + 1)).rangePoints([0, 2 * Math.PI]),
             	quali_angle = d3.scale.ordinal().domain(this.dataset.nodeTypes).rangeBands([0, 2 * Math.PI]);
                 radius = d3.scale.linear().range([innerRadius, outerRadius]),
-                color = d3.scale.category10().domain(d3.range(20));
+                linkTypeScale = d3.scale.category10().domain(this.dataset.linkTypes);
+                nodeTypeScale = d3.scale.category20().domain(this.dataset.nodeTypes)
             
             var nodes = this.dataset.nodes,
                 links = [];
@@ -470,7 +471,7 @@ define(function(require) {
                 .attr("d", d3.hive.link()
                   .angle(function(d) {return quali_angle(d.type);})
                   .radius(function(d) {return radius(d.degree);}))
-                  .style("stroke", function(d) { return color(d.type); });
+                  .style("stroke", function(d) { return linkTypeScale(d.type); });
 
             var node = svg.selectAll(".node")
                 .data(nodes)
@@ -479,7 +480,7 @@ define(function(require) {
                 .attr("transform", function(d) {return "rotate(" + degrees(quali_angle(d.type)) + ")"; })
                 .attr("cx", function(d) {return radius(d.degree); })
                 .attr("r", 5)
-                .style("fill", function(d) { return color(d.type); });
+                .style("fill", function(d) { return nodeTypeScale(d.type); });
 
             node.append("title")
                 .text(function(d) { return d.id; });

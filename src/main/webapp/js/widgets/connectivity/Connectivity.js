@@ -424,7 +424,7 @@ define(function(require) {
                     .on("mouseover", function(d){
                         d3.select(this.parentNode.appendChild(this)).transition().duration(100).style({'stroke-opacity':1,'stroke':'white', 'stroke-width':'2'});
                         d3.select("body").style('cursor','pointer');
-                        return tooltip.transition().duration(100).text(nodes[d.x].id + " is connected to " + nodes[d.y].id);
+                        return tooltip.transition().duration(100).text(nodes[d.y].id + " is connected to " + nodes[d.x].id);
                         })
                     .on("mouseout", function(){
                         d3.select(this).transition().duration(100).style({'stroke-opacity':0,'stroke':'white'});

@@ -288,7 +288,8 @@ define(function(require) {
 								child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
 								child.name = node.instancePath.split(".VisualizationTree")[0];
 							}
-							if ( child instanceof THREE.SkinnedMesh ) {
+							if (child instanceof THREE.SkinnedMesh) {
+								child.material.skinning = true;
 								var animation = new THREE.Animation( child, child.geometry.animation );
 								animation.play();
 							}

@@ -31,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Tree Visualiser Widget
+ * Connectivity Widget
  *
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  * @author borismarin
@@ -494,9 +494,8 @@ define(function(require) {
             var innerRadius = Math.min(this.options.innerWidth, this.options.innerHeight) * .41,
                 outerRadius = innerRadius * 1.05;
 
-            var fill = d3.scale.ordinal()
+            var fill = d3.scale.category20b()
                 .domain(d3.range(this.dataset.nodeTypes.length))
-                .range(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']);
 
             var svg = this.svg.append("g")
               			.attr("transform", "translate(" + this.options.innerWidth / 2 + "," + this.options.innerHeight / 2 + ")");
@@ -549,8 +548,8 @@ define(function(require) {
 
             svg.append("g")
                 .attr("class", "chord")
-              .selectAll("path")
-                .data(function() {return chord.chords().filter(function(el) {return el.target.value > 0})})
+                .selectAll("path")
+                .data(function() {return chord.chords().filter(function(el) {return chord.groups()[el.target.index].value > 0})})
               .enter().append("path")
                 .attr("d", d3.svg.chord().radius(innerRadius))
                 .style("fill", function(d) { return fill(d.target.index); })

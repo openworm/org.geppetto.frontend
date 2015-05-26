@@ -47,6 +47,7 @@
 			Experiment_stopped : "experiment:stopped",
 			ModelTree_populated : "experiment:modeltreepopulated",
 			SimulationTree_populated : "experiment:simulationtreepopulated",
+			Play_Experiment : "play_experiment"
 		};
 define(function(require) {
 	return function(GEPPETTO) {
@@ -80,6 +81,10 @@ define(function(require) {
 	        	GEPPETTO.on(Events.SimulationTree_populated, function(){
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(Events.SimulationTree_populated);
+	        	});
+	        	GEPPETTO.on(Events.Play_Experiment, function(){
+	        		//notify widgets a restart of data is needed
+	        		GEPPETTO.WidgetsListener.update(Events.Play_Experiment);
 	        	});
 			},
 		};

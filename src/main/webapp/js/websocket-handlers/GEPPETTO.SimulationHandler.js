@@ -120,6 +120,8 @@ define(function(require) {
 
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
             GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
+            
+            GEPPETTO.trigger(Events.Play_Experiment);
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function(payload) {            

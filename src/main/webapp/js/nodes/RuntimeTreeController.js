@@ -98,20 +98,13 @@ define(function(require) {
 					for(var c in node)
 					{
 						var child=node[c];
-						if(child._metaType==GEPPETTO.Resources.ASPECT_NODE)
+						var aspectNode=eval(child.aspectInstancePath);
+						if(child.SimulationTree != undefined)
 						{
-							var aspectNode=eval(child.instancePath);
-							if(child.SimulationTree != undefined)
+							if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.Simulation==undefined)
 							{
-								if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.Simulation==undefined)
-								{
-									this.populateAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
-								}
+								this.populateAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
 							}
-						}
-						else if(child._metaType==GEPPETTO.Resources.ENTITY_NODE)
-						{
-							this.updateNode(child);
 						}
 					}
 				},
@@ -299,7 +292,7 @@ define(function(require) {
 				 * @param simulationTree - Server JSON update
 				 */
 				populateAspectSimulationTree : function(aspectInstancePath, simulationTree){
-					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);
+					var aspect= GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, aspectInstancePath);
 
 					//populate model tree with server nodes
 					this.createAspectSimulationTree(aspect.SimulationTree, simulationTree);

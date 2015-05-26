@@ -119,18 +119,7 @@ define(function(require) {
             updateTime(updatedRunTime.time);
 
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
-
-            //Update if simulation hasn't been stopped
-            if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
-                if(!GEPPETTO.isScenePopulated()) {
-                    // the first time we need to create the objects
-                    GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree);
-                }
-                else {
-                    // any other time we just update them
-                    GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
-                }
-            }
+            GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function(payload) {            

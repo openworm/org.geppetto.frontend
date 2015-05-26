@@ -67,6 +67,7 @@ define(function(require) {
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
             experiment_OVER : "experiment_over",
             GET_MODEL_TREE : "get_model_tree",
+            GET_SIMULATION_TREE : "get_simulation_tree",
             SET_PARAMETER : "set_parameter",
             NO_FEATURE : "no_feature",
             EXPERIMENTS_STATUS : "experiments_status",

@@ -365,7 +365,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
 				entry.getValue().apply(updateClientVisitor);
-				modelTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + ",\"modelTree\":{" + updateClientVisitor.getSerializedTree() + "} },";
+				String simTree = updateClientVisitor.getSerializedTree();
+				//remove first and last bracket of sim tree before adding to string
+				//that'll be send to client
+				String formattedTree = simTree.substring(1, simTree.length() - 1);
+				modelTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
 			}
 			modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
 			modelTreeString += "]";
@@ -396,7 +400,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
 				entry.getValue().apply(updateClientVisitor);
-				simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + ",\"simulationTree\":{" + updateClientVisitor.getSerializedTree() + "} },";
+				String simTree = updateClientVisitor.getSerializedTree();
+				//remove first and last bracket of sim tree before adding to string
+				//that'll be send to client
+				String formattedTree = simTree.substring(1, simTree.length() - 1);
+				simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
 			}
 			simulationTreeString = simulationTreeString.substring(0, simulationTreeString.length() - 1);
 			simulationTreeString += "]";

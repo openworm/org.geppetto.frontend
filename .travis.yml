@@ -8,3 +8,7 @@ install:
     - cd org.geppetto.core
     - mvn install
     - cd .. 
+    - git clone https://github.com/openworm/org.geppetto.simulation.git -b $TRAVIS_BRANCH
+    - cd org.geppetto.simulation
+    - mvn install
+    - cd .. 

@@ -304,6 +304,46 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	/**
 	 * @param requestID
+	 * @param experimentId
+	 * @param projectId
+	 */
+	public void playExperiment(String requestID, long experimentId, long projectId)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+
+		if(experiment != null)
+		{
+			Map<String, AspectSubTreeNode> simulationTree;
+			try
+			{
+				simulationTree = geppettoManager.playExperiment(requestID, experiment);
+
+				String simulationTreeString = "[";
+				for(Map.Entry<String, AspectSubTreeNode> entry : simulationTree.entrySet())
+				{
+					SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
+					entry.getValue().apply(updateClientVisitor);
+					simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + ",\"simulationTree\":{" + updateClientVisitor.getSerializedTree() + "} },";
+				}
+				simulationTreeString = simulationTreeString.substring(0, simulationTreeString.length() - 1);
+				simulationTreeString += "]";
+
+				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_UPDATE, simulationTreeString);
+			}
+			catch(GeppettoExecutionException e)
+			{
+				error(e, "Error playing the experiment " + experimentId);
+			}
+		}
+		else
+		{
+			error(null, "Error playing experiment, the experiment " + experimentId + " was not found in project " + projectId);
+		}
+	}
+	
+	/**
+	 * @param requestID
 	 * @param aspectInstancePath
 	 */
 	public void getModelTree(String requestID, String aspectInstancePath, long experimentID, long projectId)
@@ -673,5 +713,4 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			error(e, "Check Experiment: Errror parsing project id");
 		}
 	}
-
 }

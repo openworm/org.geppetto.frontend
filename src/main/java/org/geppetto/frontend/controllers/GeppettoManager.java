@@ -191,6 +191,22 @@ public class GeppettoManager implements IGeppettoManager
 			throw new GeppettoExecutionException("Cannot run an experiment whose status is not design");
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.geppetto.core.manager.IExperimentManager#playExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment)
+	 */
+	@Override
+	public Map<String, AspectSubTreeNode> playExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	{
+		if(experiment.getStatus().equals(ExperimentStatus.COMPLETED))
+		{
+			return getRuntimeProject(experiment.getParentProject()).getRuntimeExperiment(experiment).updateSimulationTreeWithResults();
+		}
+		else
+		{
+			throw new GeppettoExecutionException("Cannot play an experiment whose status is not completed");
+		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -408,6 +424,8 @@ public class GeppettoManager implements IGeppettoManager
 		// TODO Auto-generated method stub
 		
 	}
+
+
 
 
 }

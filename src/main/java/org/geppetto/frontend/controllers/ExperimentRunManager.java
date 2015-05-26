@@ -34,12 +34,9 @@ package org.geppetto.frontend.controllers;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -110,7 +107,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			{
 				loadExperiments();
 				timer = new Timer();
-				timer.schedule(new ExperimentCheck(), 0, 1000);
+				timer.schedule(new ExperimentRunChecker(), 0, 1000);
 			}
 			catch(GeppettoInitializationException | GeppettoExecutionException | MalformedURLException e)
 			{
@@ -141,8 +138,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	@Override
 	public boolean checkExperiment(IExperiment experiment)
 	{
-		// TODO: needs to decide if an experiment should be running or not
-		return true;
+		return experiment.getStatus().equals(ExperimentStatus.QUEUED);
 	}
 
 	/*
@@ -154,7 +150,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	{
 		try
 		{
-			IGeppettoProject project=experiment.getParentProject();
+			IGeppettoProject project = experiment.getParentProject();
 			geppettoManager.loadProject(String.valueOf(this.getReqId()), project);
 			RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
 			runtimeProject.openExperiment(String.valueOf(this.getReqId()), experiment);
@@ -199,14 +195,14 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 				// This could be either when the user decides to open a project or when the ExperimentsRunManager queues an Experiment
 				geppettoManager.loadProject("ERM" + getReqId(), project);
 				List<? extends IExperiment> experiments = dataManager.getExperimentsForProject(project.getId());
-				for(IExperiment e:experiments)
+				for(IExperiment e : experiments)
 				{
 					if(e.getStatus().equals(ExperimentStatus.RUNNING))
 					{
 						addExperimentToQueue(user, e, e.getStatus());
 					}
 				}
-				for(IExperiment e:experiments)
+				for(IExperiment e : experiments)
 				{
 					if(e.getStatus().equals(ExperimentStatus.QUEUED))
 					{
@@ -265,30 +261,20 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	{
 		experimentRun.removeExperimentListener(this);
 
-		IUser user = getUserForExperiment(experiment);
-		if(user != null)
+		RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
+		runtimeProject.closeExperiment(experiment);
+		List<? extends IExperiment> experiments = project.getExperiments();
+		boolean closeProject = runtimeProject.getActiveExperiment() == null;
+		for(int i = 0; i < experiments.size() && closeProject; i++)
 		{
-			queue.get(user).remove(experiment);
-
-			RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
-			// When an experiment run is done we close its experiment unless it happens to be also the active one
-			if(runtimeProject != null && !experiment.equals(runtimeProject.getActiveExperiment()))
-			{
-				runtimeProject.closeExperiment(experiment);
-			}
-			List<? extends IExperiment> experiments = project.getExperiments();
-			boolean closeProject = runtimeProject.getActiveExperiment() == null;
-			for(int i = 0; i < experiments.size() && closeProject; i++)
-			{
-				closeProject = experiments.get(i).getStatus() == ExperimentStatus.COMPLETED;
-			}
-			if(closeProject)
-			{
-				// close the project when all the user experiments are completed and none of the experiments is active
-				geppettoManager.closeProject("ERM" + getReqId(), project);
-			}
-
+			closeProject = experiments.get(i).getStatus() == ExperimentStatus.COMPLETED;
 		}
+		if(closeProject)
+		{
+			// close the project when all the user experiments are completed and none of the experiments is active
+			geppettoManager.closeProject("ERM" + getReqId(), project);
+		}
+
 	}
 
 	/**
@@ -306,17 +292,15 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 
 }
 
-class ExperimentCheck extends TimerTask
+class ExperimentRunChecker extends TimerTask
 {
-	private static Log logger = LogFactory.getLog(ExperimentCheck.class);
+	private static Log logger = LogFactory.getLog(ExperimentRunChecker.class);
 	private Map<IUser, List<IExperiment>> queuedExperiments = ExperimentRunManager.getInstance().getQueuedExperiments();
 
 	public void run()
 	{
 		try
 		{
-			Set<Entry<IUser, List<IExperiment>>> experiments = ExperimentRunManager.getInstance().getQueuedExperiments().entrySet();
-			Iterator<Entry<IUser, List<IExperiment>>> s = experiments.iterator();
 			for(IUser user : queuedExperiments.keySet())
 			{
 				for(IExperiment e : queuedExperiments.get(user))
@@ -330,9 +314,9 @@ class ExperimentCheck extends TimerTask
 				}
 			}
 		}
-		catch(GeppettoExecutionException e1)
+		catch(GeppettoExecutionException e)
 		{
-			// TODO: Handle exception;
+			throw new RuntimeException(e);
 		}
 	}
 }

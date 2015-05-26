@@ -92,8 +92,7 @@ define(function(require) {
 											}
 										}
 									}
-									else if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
-												metaType == "CylinderNode") {
+									else if (metaType == "ParticleNode"|| metaType == "SphereNode" || metaType == "CylinderNode") {
 											GEPPETTO.SceneFactory.updateGeometry(node);								
 									}
 									else if (metaType == "SkeletonAnimationNode") {
@@ -289,9 +288,14 @@ define(function(require) {
 								child.name = node.instancePath.split(".VisualizationTree")[0];
 							}
 							if (child instanceof THREE.SkinnedMesh) {
+								// NOTE: without this line the animation doesn't work as the renderer
+								// NOTE: does not execute the animation logic
 								child.material.skinning = true;
-								var animation = new THREE.Animation( child, child.geometry.animation );
-								animation.play();
+								
+								// NOTE: these two lines below seem to make no difference in Geppetto
+								// NOTE: while in the original prototype nothing moves if they are removed
+								// var animation = new THREE.Animation( child, child.geometry.animation );
+								// animation.play();
 							}
 						});
 					});

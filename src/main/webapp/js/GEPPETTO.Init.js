@@ -19,6 +19,7 @@ define(function(require) {
 			connectionLines : {},
 			renderer : null,
 			customRendererClass : null,
+			clock: new THREE.Clock(),
 			stats : null,
 			gui : null,
 			projector : null,
@@ -80,9 +81,9 @@ define(function(require) {
 					});
 				} 
 				else {
-					console.log("CREATING NEW RENDERER");
-					var newRenderer = VARS.customRendererClass;
-					VARS.renderer = new newRenderer();
+					console.log("CUSTOM RENDERER");
+					var customRenderer = VARS.customRendererClass;
+					VARS.renderer = new customRenderer();
 				}
 				VARS.renderer.setClearColor(0x000000, 1);
 				var width = $(VARS.container).width();

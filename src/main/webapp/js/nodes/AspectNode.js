@@ -317,28 +317,14 @@ define(function(require) {
 				 * @command AspectNode.getSimulationTree()
 				 */
 				getSimulationTree : function() {
-					if(jQuery.isEmptyObject(this.SimulationTree)||this.SimulationTree==null){
-						var parameters = {};
-						parameters["experimentId"] = Project.getActiveExperiment().getId();
-						parameters["projectId"] = Project.getId();
-						parameters["instancePath"]=this.instancePath;
-						GEPPETTO.MessageSocket.send("get_simulation_tree",
-						parameters);
+					var parameters = {};
+					parameters["experimentId"] = Project.getActiveExperiment().getId();
+					parameters["projectId"] = Project.getId();
+					parameters["instancePath"]=this.instancePath;
+					GEPPETTO.MessageSocket.send("get_simulation_tree",
+					parameters);
 
-						return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE;
-					}
-					// empty model tree, request server for it
-					else if (this.SimulationTree.getChildren().length == 0) {
-						GEPPETTO.MessageSocket.send("get_simulation_tree",
-								this.instancePath);
-
-						return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE;
-					}
-					// model tree isn't empty, was requested previously and
-					// stored
-					else {
-						return this.SimulationTree;
-					}
+					return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE;
 				},
 
 				/**

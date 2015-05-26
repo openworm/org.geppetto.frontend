@@ -118,7 +118,6 @@ require(jqueryLib, function($, geppetto){
 	$(function(){
 		window.GEPPETTO = require('geppetto');
 		//Alias G, Simulation, and help() to global vars for easy access
-		window.Simulation = GEPPETTO.Simulation;
 		window.G = GEPPETTO.G;
 		window.Widgets = GEPPETTO.Widgets;
 		window.help = GEPPETTO.Utility.help;

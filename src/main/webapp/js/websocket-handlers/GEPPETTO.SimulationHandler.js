@@ -67,6 +67,7 @@ define(function(require) {
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
             experiment_OVER : "experiment_over",
             GET_MODEL_TREE : "get_model_tree",
+            GET_SIMULATION_TREE : "get_simulation_tree",
             SET_PARAMETER : "set_parameter",
             NO_FEATURE : "no_feature",
             EXPERIMENTS_STATUS : "experiments_status",
@@ -121,6 +122,8 @@ define(function(require) {
 
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
             GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
+            
+            GEPPETTO.trigger(Events.Play_Experiment);
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function(payload) {            
@@ -232,10 +235,10 @@ define(function(require) {
         	var update = JSON.parse(payload.get_simulation_tree);      
         	for (var updateIndex in update){
 	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
-	        	var simulationTree = update[updateIndex].simulationTree;
+	        	var simulationTree = update[updateIndex].SimulationTree;
 	        	
 	        	//create client side simulation tree
-	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
+	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree);
         	}
         	
 			GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_RECEIVED);

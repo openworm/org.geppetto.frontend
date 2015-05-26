@@ -55,7 +55,7 @@ define(function(require) {
             /*
              * Messages handle by SimulatorHandler
              */
-            SCENE_UPDATE: "scene_update",
+            EXPERIMENT_UPDATE: "experiment_update",
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",
             EXPERIMENT_LOADED: "experiment_loaded",
@@ -114,8 +114,8 @@ define(function(require) {
             GEPPETTO.trigger(Events.Experiment_loaded);
             GEPPETTO.trigger("hide:spinner");
         };
-        messageHandler[messageTypes.SCENE_UPDATE] = function(payload) {
-            var updatedRunTime = JSON.parse(payload.update).scene;
+        messageHandler[messageTypes.EXPERIMENT_UPDATE] = function(payload) {
+            var updatedRunTime = JSON.parse(payload.update);
             updateTime(updatedRunTime.time);
 
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);

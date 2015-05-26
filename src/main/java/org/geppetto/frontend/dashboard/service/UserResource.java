@@ -78,7 +78,7 @@ public class UserResource
 		}
 		try
 		{
-			if(!DataManagerHelper.getDataManager().isDefault())
+			if(!DataManagerHelper.getDataManager().isDefault() && currentUser.getPrincipal() != null)
 			{
 				geppettoManager.setUser(DataManagerHelper.getDataManager().getUserByLogin((String) currentUser.getPrincipal()));
 			}

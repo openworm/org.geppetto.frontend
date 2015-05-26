@@ -44,7 +44,7 @@ define(function(require) {
 		var clientID = null;
 		var nextID = 0;
 		var connectionInterval = 300;
-
+		
 		/**
 		 * Web socket creation and communication
 		 */
@@ -85,15 +85,20 @@ define(function(require) {
 				};
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
-					if(msg.data=="ping"){
-						return;
+					if (msg.data instanceof Blob){
+						saveData(msg.data, "taka");
 					}
-					var parsedServerMessage = JSON.parse(msg.data);
-
-					//notify all handlers
-					for(var i = 0, len = messageHandlers.length; i < len; i++) {
-						messageHandlers[ i ].onMessage(parsedServerMessage);
-					}
+					else{
+						if(msg.data=="ping"){
+							return;
+						}
+						var parsedServerMessage = JSON.parse(msg.data);
+	
+						//notify all handlers
+						for(var i = 0, len = messageHandlers.length; i < len; i++) {
+							messageHandlers[ i ].onMessage(parsedServerMessage);
+						}
+					}	
 				};
 
                 //Detects problems when connecting to Geppetto server

@@ -351,10 +351,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadModel(java.lang.String, org.geppetto.core.services.IModelFormat)
 	 */
 	@Override
-	public File downloadModel(String aspectID, IModelFormat format, IExperiment experiment, IGeppettoProject project)
+	public File downloadModel(String aspectInstancePath, IModelFormat format, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadModel(aspectInstancePath, format);
 	}
 
 	/*

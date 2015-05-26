@@ -32,11 +32,15 @@
  *******************************************************************************/
 package org.geppetto.frontend.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +48,7 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.manager.IGeppettoManager;
@@ -132,6 +137,32 @@ public class WebsocketConnection extends MessageInbound
 	}
 
 	/**
+	 * @param requestID
+	 * @param type
+	 * @param message
+	 */
+	public void sendBinaryMessage(String requestID, Path path)
+	{
+		// get transport message to be sent to the client
+		try
+		{
+			long startTime = System.currentTimeMillis();
+
+			byte[] data = Files.readAllBytes(path);
+			ByteBuffer buffer = ByteBuffer.wrap(data);
+
+			getWsOutbound().writeBinaryMessage(buffer);
+			// String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a file of " + buffer.length() / 1024 + "KB to the client";
+			// logger.info(debug);
+		}
+		catch(IOException ignore)
+		{
+			logger.error("Unable to communicate with client " + ignore.getMessage());
+			ConnectionsManager.getInstance().removeConnection(this);
+		}
+	}
+
+	/**
 	 * Receives message(s) from client.
 	 * 
 	 * @throws JsonProcessingException
@@ -145,7 +176,7 @@ public class WebsocketConnection extends MessageInbound
 		long experimentId = -1;
 		long projectId = -1;
 		String instancePath = null;
-		
+
 		// de-serialize JSON
 		GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);
 

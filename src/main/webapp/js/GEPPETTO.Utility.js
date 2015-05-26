@@ -373,6 +373,19 @@ function getContrast50(hexcolor){
     return (parseInt(hexcolor, 16) > 0xffffff/2) ? 'black':'white';
 }
 
+var saveData = (function () {
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    return function (blob, fileName) {
+        var url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+}());
+
 /**
  * Adding method to javascript string class to test 
  * if beginning of string matches another string being passed.

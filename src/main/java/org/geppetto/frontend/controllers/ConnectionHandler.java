@@ -33,11 +33,13 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -61,6 +63,7 @@ import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
+import org.geppetto.core.utilities.ZipDirectory;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -364,20 +367,20 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	public void downloadModel(String requestID, String aspectInstancePath, String format, long experimentID, long projectId)
 	{
-		System.out.println("taka");
-
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		// try
-		// {
-		geppettoManager.downloadModel(aspectInstancePath, ModelFormat.COLLADA, experiment, geppettoProject);
+		try
+		{
+			File file = geppettoManager.downloadModel(aspectInstancePath, ModelFormat.COLLADA, experiment, geppettoProject);
 
-		websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
-		// }
-		// catch(GeppettoExecutionException e)
-		// {
-		// error(e, "Error populating the simulation tree for " + aspectInstancePath);
-		// }
+			Path path = ZipDirectory.getZipFromDirectory(file);
+			
+			websocketConnection.sendBinaryMessage(requestID, path);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error downloading model for " + aspectInstancePath + " in format " + format);
+		}
 	}
 
 	/**

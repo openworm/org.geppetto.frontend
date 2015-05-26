@@ -203,7 +203,7 @@ define(function(require) {
 			
 			SIMULATION_TREE_POPULATED : 'Simulation tree populated.',
 			
-			SIMULATION_TREE_RECEIVED : 'Requested Simulation tree received.',
+			SIMULATION_TREE_RECEIVED : 'Requested simulation tree received.',
 			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
 			
@@ -212,6 +212,8 @@ define(function(require) {
 			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
 			
 			DOWNLOADING_MODEL : 'Downloading model as ',	
+			
+			RETRIEVING_SUPPORTED_OUTPUTS : 'Supported outputs requested',
 			
 			/**
 			 * GEPPETTO.Main resources

@@ -375,6 +375,17 @@ public class GeppettoManager implements IGeppettoManager
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.geppetto.core.manager.IDownloadManager#supportedOuputs(java.lang.String)
+	 */
+	@Override
+	public List<IModelFormat> getSupportedOuputs(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	{
+		return getRuntimeProject(project).getRuntimeExperiment(experiment).supportedOuputs(aspectInstancePath);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadResults(org.geppetto.core.simulation.ResultsFormat)
 	 */
 	@Override
@@ -424,8 +435,5 @@ public class GeppettoManager implements IGeppettoManager
 		// TODO Auto-generated method stub
 		
 	}
-
-
-
 
 }

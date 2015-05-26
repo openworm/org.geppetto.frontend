@@ -310,14 +310,15 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case GET_SUPPORTED_OUTPUTS:
 			{
-				// String instancePath = gmsg.data;
-				//
-				// _servletController.getModelTree(requestID,instancePath);
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				instancePath = parameters.get("instancePath");
+				connectionHandler.getSupportedOuputs(requestID, instancePath, experimentId, projectId);
 				break;
 			}
 			case DOWNLOAD_MODEL:
 			{
-			
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
@@ -325,7 +326,6 @@ public class WebsocketConnection extends MessageInbound
 				String format = parameters.get("format"); 
 				connectionHandler.downloadModel(requestID, instancePath, format, experimentId, projectId);
 				break;
-
 			}
 			case SET_PARAMETERS:
 			{

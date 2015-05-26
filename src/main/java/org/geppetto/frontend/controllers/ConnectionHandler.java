@@ -61,6 +61,7 @@ import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
+import org.geppetto.core.services.IModelFormat;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.utilities.ZipDirectory;
@@ -409,6 +410,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	}
 
+	/**
+	 * @param requestID
+	 * @param aspectInstancePath
+	 * @param format
+	 * 
+	 */
 	public void downloadModel(String requestID, String aspectInstancePath, String format, long experimentID, long projectId)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
@@ -424,6 +431,34 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		catch(GeppettoExecutionException e)
 		{
 			error(e, "Error downloading model for " + aspectInstancePath + " in format " + format);
+		}
+	}
+	
+	/**
+	 * @param requestID
+	 * @param aspectInstancePath
+	 * 
+	 */
+	public void getSupportedOuputs(String requestID, String aspectInstancePath, long experimentID, long projectId)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+		try
+		{
+			List<IModelFormat> supportedOutputs = geppettoManager.getSupportedOuputs(aspectInstancePath, experiment, geppettoProject);
+			
+			String supportedOutputsString = "[";
+			for (IModelFormat supportedOutput : supportedOutputs){
+				supportedOutputsString += "\"" + supportedOutput.toString() + "\",";
+			}
+			supportedOutputsString = supportedOutputsString.substring(0, supportedOutputsString.length()-1);
+			supportedOutputsString += "]";
+			
+			websocketConnection.sendMessage(requestID, OutboundMessages.GET_SUPPORTED_OUTPUTS, supportedOutputsString);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error getting supported outputs for " + aspectInstancePath);
 		}
 	}
 

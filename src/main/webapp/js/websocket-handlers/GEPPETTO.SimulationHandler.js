@@ -235,10 +235,10 @@ define(function(require) {
         	var update = JSON.parse(payload.get_simulation_tree);      
         	for (var updateIndex in update){
 	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
-	        	var simulationTree = update[updateIndex].simulationTree;
+	        	var simulationTree = update[updateIndex].SimulationTree;
 	        	
 	        	//create client side simulation tree
-	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree.SimulationTree);
+	        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree);
         	}
         	
 			GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_RECEIVED);

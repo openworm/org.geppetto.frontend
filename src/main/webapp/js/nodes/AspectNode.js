@@ -357,7 +357,6 @@ define(function(require) {
 				 * * @param {String} name - File format to write
 				 */
 				downloadModel : function(format) {
-					//TODO: Change for inbound_messages_types
 					var parameters = {};
 					parameters["experimentId"] = Project.getActiveExperiment().getId();
 					parameters["projectId"] = Project.getId();
@@ -369,21 +368,18 @@ define(function(require) {
 				},
 
 				/**
-				 * Write Model for this aspect
+				 * Get Supported Outputs for this aspect
 				 *
 				 * @command AspectNode.writeModel(format)
-				 * * @param {String} name - File format to write
 				 */
-				getSupportedOutputs : function(format) {
-					//TODO: Change for inbound_messages_types
-//					var parameters = {};
-//					parameters["instancePath"] = this.instancePath;
-//					parameters["format"] = format;
-//					GEPPETTO.MessageSocket.send("write_model",
-//								parameters);
-//
-//					return GEPPETTO.Resources.WRITING_MODEL + format;
-					console.log("Getting supported outputs");
+				getSupportedOutputs : function() {
+					var parameters = {};
+					parameters["experimentId"] = Project.getActiveExperiment().getId();
+					parameters["projectId"] = Project.getId();
+					parameters["instancePath"] = this.instancePath;
+					GEPPETTO.MessageSocket.send("get_supported_outputs", parameters);
+
+					return GEPPETTO.Resources.RETRIEVING_SUPPORTED_OUTPUTS;
 				},
 
 				/**

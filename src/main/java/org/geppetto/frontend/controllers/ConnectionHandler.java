@@ -201,7 +201,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				for(IAspectConfiguration a : experiment.getAspectConfigurations()){
 					List<? extends IInstancePath> variables = a.getWatchedVariables();
 					for(IInstancePath i : variables){
-						String var =i.getLocalInstancePath();
+						String var =i.getInstancePath();
 						lists.add(var);
 					}
 				}
@@ -408,6 +408,16 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			simulationTree = geppettoManager.getSimulationTree(aspectInstancePath, experiment, geppettoProject);
+
+			List<String> lists = new ArrayList<String>();
+			for(IAspectConfiguration a : experiment.getAspectConfigurations()){
+				List<? extends IInstancePath> variables = a.getWatchedVariables();
+				for(IInstancePath i : variables){
+					String var =i.getInstancePath();
+					lists.add(var);
+				}
+			}
+			geppettoManager.setWatchedVariables(lists, experiment, geppettoProject);
 
 			String simulationTreeString = "[";
 			for(Map.Entry<String, AspectSubTreeNode> entry : simulationTree.entrySet())

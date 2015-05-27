@@ -115,6 +115,16 @@ define(function(require) {
 						_metaType : GEPPETTO.Resources.EXPERIMENT_NODE,
 					});
 
+					// create visualization subtree only at first
+					for ( var key in node.aspectConfigurations) {
+						var aC = node.aspectConfigurations[key];
+						
+						var variables = aC.watchedVariables;
+						for(var key in variables){
+							e.getVariables().push(variables[key]);
+						}
+					}
+					
 					this.nodes++;
 					GEPPETTO.Console.createTags(e.name,
 							this.nodeTags[GEPPETTO.Resources.EXPERIMENT_NODE]);

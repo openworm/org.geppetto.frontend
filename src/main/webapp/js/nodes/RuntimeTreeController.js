@@ -101,7 +101,7 @@ define(function(require) {
 						var aspectNode=eval(child.aspectInstancePath);
 						if(child.SimulationTree != undefined)
 						{
-							if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.Simulation==undefined)
+							if(jQuery.isEmptyObject(aspectNode.SimulationTree) || aspectNode.SimulationTree==undefined)
 							{
 								this.populateAspectSimulationTree(aspectNode.instancePath,child.SimulationTree);	
 							}
@@ -146,22 +146,6 @@ define(function(require) {
 				updateRuntimeTree : function(jsonRuntimeTree){
 					this.updateNode(jsonRuntimeTree);
 					this.updateVisualTrees(jsonRuntimeTree);
-//					for(var index in GEPPETTO.Simulation.simulationStates)
-//					{
-//						try {
-//							var state = GEPPETTO.Simulation.simulationStates[index];
-//							var received=eval("jsonRuntimeTree."+state);
-//							var clientNode=eval(state);
-//							clientNode.getTimeSeries().unshift();
-//							
-//							for (var index in received.timeSeries){
-//								clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
-//							}
-//							
-//						} catch (e) {
-//						}
-//					}
-
 					this.updateWidgets();
 				},
 				

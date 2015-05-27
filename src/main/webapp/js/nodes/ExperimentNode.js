@@ -196,6 +196,10 @@ define(function(require) {
 				this.variables.push(variables[i]);
 			}
 		},
+		
+		getVariables : function(){
+			return this.variables;
+		},
 
 		/**
 		 * Gets an experiment from this project.

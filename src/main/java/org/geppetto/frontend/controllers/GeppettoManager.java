@@ -50,7 +50,7 @@ import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
-import org.geppetto.core.services.IModelFormat;
+import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.simulation.ResultsFormat;
 import org.geppetto.simulation.RuntimeProject;
@@ -272,7 +272,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDropBoxManager#uploadModelToDropBox(java.lang.String, org.geppetto.core.services.IModelFormat)
 	 */
 	@Override
-	public void uploadModelToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, IModelFormat format)
+	public void uploadModelToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ModelFormat format)
 	{
 		// TODO Auto-generated method stub
 
@@ -365,7 +365,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadModel(java.lang.String, org.geppetto.core.services.IModelFormat)
 	 */
 	@Override
-	public File downloadModel(String aspectInstancePath, IModelFormat format, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public File downloadModel(String aspectInstancePath, ModelFormat format, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadModel(aspectInstancePath, format);
 	}
@@ -376,7 +376,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#supportedOuputs(java.lang.String)
 	 */
 	@Override
-	public List<IModelFormat> getSupportedOuputs(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public List<ModelFormat> getSupportedOuputs(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).supportedOuputs(aspectInstancePath);
 	}

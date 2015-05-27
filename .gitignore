@@ -27,3 +27,4 @@ src/main/webapp/css/main.css
 /.externalToolBuilders/
 /.settings/
 .classpath
+/target/

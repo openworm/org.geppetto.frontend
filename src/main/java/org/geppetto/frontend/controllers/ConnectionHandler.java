@@ -64,8 +64,8 @@ import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
-import org.geppetto.core.services.IModelFormat;
 import org.geppetto.core.services.ModelFormat;
+import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.utilities.ZipDirectory;
 import org.geppetto.frontend.messages.OutboundMessages;
@@ -434,7 +434,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		try
 		{
-			File file = geppettoManager.downloadModel(aspectInstancePath, ModelFormat.COLLADA, experiment, geppettoProject);
+			File file = geppettoManager.downloadModel(aspectInstancePath, ServicesRegistry.getModelFormat(format), experiment, geppettoProject);
 
 			Path path = ZipDirectory.getZipFromDirectory(file);
 			
@@ -457,11 +457,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		try
 		{
-			List<IModelFormat> supportedOutputs = geppettoManager.getSupportedOuputs(aspectInstancePath, experiment, geppettoProject);
+			List<ModelFormat> supportedOutputs = geppettoManager.getSupportedOuputs(aspectInstancePath, experiment, geppettoProject);
 			
 			String supportedOutputsString = "[";
-			for (IModelFormat supportedOutput : supportedOutputs){
-				supportedOutputsString += "\"" + supportedOutput.toString() + "\",";
+			for (ModelFormat supportedOutput : supportedOutputs){
+				supportedOutputsString += "\"" + supportedOutput.getModelFormat() + "\",";
 			}
 			supportedOutputsString = supportedOutputsString.substring(0, supportedOutputsString.length()-1);
 			supportedOutputsString += "]";

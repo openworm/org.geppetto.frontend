@@ -121,12 +121,12 @@ define(function(require) {
 						
 						var variables = aC.watchedVariables;
 						if(variables!=null || variables != undefined){
-							var variableName = variables[key].entityInstancePath + "." +
-							variables[key].aspect + "." +
-							variables[key].localInstancePath;
-							for(var key in variables){
-								e.getVariables().push(variableName);
-							}
+						var variableName = variables[key].entityInstancePath + "." +
+								variables[key].aspect + "." +
+								variables[key].localInstancePath;
+						for(var key in variables){
+							e.getVariables().push(variableName);
+						}
 						}
 					}
 					

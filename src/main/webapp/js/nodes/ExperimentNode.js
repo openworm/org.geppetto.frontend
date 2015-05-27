@@ -61,6 +61,7 @@ define(function(require) {
 		id : "",
 		status : null,
 		parent : null,
+		variables : null,
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -72,6 +73,7 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.status = options.status;
+			this.variables = new Array();
 		},
 
 		/**
@@ -181,9 +183,17 @@ define(function(require) {
 		 *
 		 * @command ExperimentNode.watchVariables()
 		 */
-		watchVariables : function(){
+		watchVariables : function(variables){
 			if(this.status == ExperimentStatus.DESIGN){
-
+				var parameters = {};
+				parameters["experimentId"] = this.id;
+				parameters["projectId"] = this.getParent().getId();
+				parameters["variables"] = variables;
+				GEPPETTO.MessageSocket.send("set_watch", parameters);
+			}
+			
+			for(var i in variables){
+				this.variables.push(variables[i]);
 			}
 		},
 

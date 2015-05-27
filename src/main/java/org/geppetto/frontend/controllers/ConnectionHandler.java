@@ -197,16 +197,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				RuntimeTreeRoot runtimeTree = geppettoManager.loadExperiment(requestID, experiment);
 
-				List<String> lists = new ArrayList<String>();
-				for(IAspectConfiguration a : experiment.getAspectConfigurations()){
-					List<? extends IInstancePath> variables = a.getWatchedVariables();
-					for(IInstancePath i : variables){
-						String var =i.getInstancePath();
-						lists.add(var);
-					}
-				}
-				geppettoManager.setWatchedVariables(lists, experiment, geppettoProject);
-
 				SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
 				runtimeTree.apply(serializeTreeVisitor);
 				String scene = serializeTreeVisitor.getSerializedTree();
@@ -408,16 +398,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			simulationTree = geppettoManager.getSimulationTree(aspectInstancePath, experiment, geppettoProject);
-
-			List<String> lists = new ArrayList<String>();
-			for(IAspectConfiguration a : experiment.getAspectConfigurations()){
-				List<? extends IInstancePath> variables = a.getWatchedVariables();
-				for(IInstancePath i : variables){
-					String var =i.getInstancePath();
-					lists.add(var);
-				}
-			}
-			geppettoManager.setWatchedVariables(lists, experiment, geppettoProject);
 
 			String simulationTreeString = "[";
 			for(Map.Entry<String, AspectSubTreeNode> entry : simulationTree.entrySet())

@@ -292,7 +292,7 @@ define(function(require) {
 					var aspect= GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, aspectInstancePath);
 
 					//populate model tree with server nodes
-					this.createAspectSimulationTree(aspect.SimulationTree, simulationTree);
+					GEPPETTO.NodeFactory.createAspectSimulationTree(aspect.SimulationTree, simulationTree);
 
 					//notify user received tree was empty
 					//NOTE: Don't print to console.log in here, this function is recursive,
@@ -309,87 +309,6 @@ define(function(require) {
 
 
 					this.simulationTreeCreated = true;
-				},
-
-				/**
-				 * Create Simulation Tree
-				 * 
-				 * @param parent -
-				 *            Used to store the created client nodes
-				 * @param node -
-				 *            JSON server update nodes
-				 */
-				createAspectSimulationTree : function(parent, node) {
-					// traverse throuh node to find objects
-					for ( var i in node) {
-						if (typeof node[i] === "object") {
-							var metatype = node[i]._metaType;
-
-							// if object is array, do recursion to find more objects
-							if (node[i] instanceof Array) {
-								var array = node[i];
-								parent[i] = [];
-								// create parent composite node for array nodes
-								var arrayNode = GEPPETTO.NodeFactory.createCompositeNode({
-												id : i,
-												name : i,
-												instancePath : node.instancePath + "." + i,
-												_metaType : GEPPETTO.Resources.COMPOSITE_NODE
-												},true);
-								parent.getChildren().push(arrayNode);
-
-								// create nodes for each array index
-								for ( var index = 0; index < array.length; index++) {
-									parent[i][index] = {};
-									// create nodes for each array index node
-									var arrayObject = this.createAspectSimulationTree(
-											arrayNode, array[index]);
-									// set instance path of created array node and
-									// set as property
-									if (arrayObject.getChildren().length > 0) {
-										arrayObject.instancePath = arrayNode.instancePath
-										+ "[" + index + "]";
-										parent[i][index] = arrayObject;
-									}
-								}
-							}
-							// if object is CompositeNode, do recursion to find
-							// children
-							else if (metatype == GEPPETTO.Resources.COMPOSITE_NODE) {
-								var newNode = GEPPETTO.NodeFactory.createCompositeNode(node[i],true);
-								newNode.setParent(parent);
-								// add to parent if applicable
-								if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE
-										|| parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
-									parent.getChildren().push(newNode);
-								}
-								parent[i] = newNode;
-								
-								//traverse through children of composite node
-								this.createAspectSimulationTree(parent[i], node[i]);
-							} else if (metatype == GEPPETTO.Resources.VARIABLE_NODE) {
-								var newNode = GEPPETTO.NodeFactory.createVariableNode(node[i]);
-								newNode.setParent(parent);
-								// add to parent if applicable
-								if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE
-										|| parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
-									parent.getChildren().push(newNode);
-								}
-								parent[i] = newNode;
-							} else if (metatype == GEPPETTO.Resources.PARAMETER_NODE) {
-								var newNode = GEPPETTO.NodeFactory.createParameterNode(node[i]);
-								newNode.setParent(parent);
-								// add to parent if applicable
-								if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE
-										|| parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
-									parent.getChildren().push(newNode);
-								}
-								parent[i] = newNode;
-							}
-						}
-					}
-
-					return parent;
 				},
 		};
 	};

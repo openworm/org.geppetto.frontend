@@ -114,10 +114,18 @@ var jqueryLib = [
 require(jqueryLib, function($, geppetto){
 	
 	require(['components/app'],function(){});
-	
+	var ProjectNode = require('nodes/ProjectNode');
+
 	$(function(){
 		window.GEPPETTO = require('geppetto');
 		//Alias G, Simulation, and help() to global vars for easy access
+		
+		//start project node which will be used as a Singleton
+		//to store current project info
+		var project = new ProjectNode({name : "Project", id : -1});
+		window.Project = project;
+		GEPPETTO.Console.updateTags("Project", project,true);
+		
 		window.G = GEPPETTO.G;
 		window.Widgets = GEPPETTO.Widgets;
 		window.help = GEPPETTO.Utility.help;

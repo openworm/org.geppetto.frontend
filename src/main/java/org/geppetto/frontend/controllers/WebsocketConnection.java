@@ -258,10 +258,10 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case SET_WATCHED_VARIABLES:
 			{
-				String watchListsString = gmsg.data;
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
+				String watchListsString = parameters.get("variables");
 				try
 				{
 					connectionHandler.setWatchedVariables(requestID, watchListsString, experimentId, projectId);

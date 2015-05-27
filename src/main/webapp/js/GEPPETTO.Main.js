@@ -155,13 +155,7 @@ define(function(require) {
 			//Create canvas
 			var webGLStarted = GEPPETTO.webGLAvailable();
 
-			//start project node which will be used as a Singleton
-			//to store current project info
-			project = new ProjectNode({name : "Project", id : -1});
-			window["Project"] = project;
-			GEPPETTO.Console.updateTags("Project", project,true);
-
-			setInterval(function(){if(Project.getId()!=-1){GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENTS_STATUS, project.id);}}, 3000);
+			//setInterval(function(){if(Project.getId()!=-1){GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENTS_STATUS, project.id);}}, 3000);
 
 			//make sure webgl started correctly
 			if(!webGLStarted) {

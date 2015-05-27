@@ -79,22 +79,7 @@ define(function(require) {
         messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {        	
             var project = JSON.parse(payload.project_loaded);
 
-            //get access to root project node
-            var projectNode = window["Project"];
-            projectNode.name = project.name;
-            projectNode.id = project.id;
-            for ( var key in project.experiments) {
-            	var experiment = project.experiments[key];
-            	//create instance path for experiment
-            	experiment.instancePath = project.name + "."+experiment.name;
-            	var e =GEPPETTO.NodeFactory.createExperimentNode(experiment);
-
-            	// add experiment to project
-            	projectNode[e.name] = e;
-            	e.setParent(projectNode);
-            	// add experiment node to project
-            	projectNode.getExperiments().push(e);
-            }            
+            window.Project = GEPPETTO.NodeFactory.createProjectNode(project);          
             GEPPETTO.trigger(Events.Project_loaded);            
             GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
         };

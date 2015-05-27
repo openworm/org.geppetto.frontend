@@ -52,6 +52,7 @@ define(function(require) {
 		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 		var VisualGroupNode = require('nodes/VisualGroupNode');
 		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
+		var ProjectNode = require('nodes/ProjectNode');
 		var ExperimentNode = require('nodes/ExperimentNode');
 		var PhysicalQuantity = require('nodes/PhysicalQuantity');
 		var simulationTreeCreated=false;
@@ -79,32 +80,28 @@ define(function(require) {
 				/** Creates and populates client project nodes */
 				createProjectNode : function(project) {
 					var p = new ProjectNode({
-						name : project.type,
+						name : project.name,
 						type : project.type,
 						id : project.id,
-						name : project.name,
-						instancePath : project.instancePath,
 						_metaType : GEPPETTO.Resources.PROJECT_NODE,
 					});
 
 					// create visualization subtree only at first
-					for ( var key in project) {
-						var experiment = project[key];
-						if (experiment._metaType == GEPPETTO.Resources.EXPERIMENT_NODE) {
-							var e =this.createExperimentNode(experiment);
-							
-							// add experiment to project
-							p[key] = e;
-							e.setParent(p);
-							// add experiment node to project
-							p.getExperiments().push(e);
-						}
+					for ( var key in project.experiments) {
+						var experiment = project.experiments[key];
+						var e =this.createExperimentNode(experiment);
+
+						// add experiment to project
+						p[key] = e;
+						e.setParent(p);
+						// add experiment node to project
+						p.getExperiments().push(e);
+
 					}
 					
 					this.nodes++;
-					GEPPETTO.Console.createTags(a.instancePath,
-							this.nodeTags[GEPPETTO.Resources.PROJECT_NODE]);
-					return a;
+					GEPPETTO.Console.updateTags("Project",p,true);
+					return p;
 				},
 				
 				
@@ -114,9 +111,7 @@ define(function(require) {
 						name : node.name,
 						type : node.type,
 						id : node.id,
-						name : node.name,
 						status : node.status,
-						instancePath : node.instancePath,
 						_metaType : GEPPETTO.Resources.EXPERIMENT_NODE,
 					});
 
@@ -189,6 +184,7 @@ define(function(require) {
 								var subTree = this.createAspectSubTreeNode(node);
 								subTree.setParent(a);
 								a.SimulationTree = subTree;
+								this.createAspectSimulationTree(a.SimulationTree, node);
 							} else if (node.type == "ModelTree") {
 								var subTree = this.createAspectSubTreeNode(node);
 								subTree.setParent(a);
@@ -241,6 +237,87 @@ define(function(require) {
 					a.VisualizationTree = subTree;
 					subTree.setParent(a);
 					a.VisualizationTree["content"] = node;
+				},
+				
+				/**
+				 * Create Simulation Tree
+				 * 
+				 * @param parent -
+				 *            Used to store the created client nodes
+				 * @param node -
+				 *            JSON server update nodes
+				 */
+				createAspectSimulationTree : function(parent, node) {
+					// traverse throuh node to find objects
+					for ( var i in node) {
+						if (typeof node[i] === "object") {
+							var metatype = node[i]._metaType;
+
+							// if object is array, do recursion to find more objects
+							if (node[i] instanceof Array) {
+								var array = node[i];
+								parent[i] = [];
+								// create parent composite node for array nodes
+								var arrayNode = GEPPETTO.NodeFactory.createCompositeNode({
+												id : i,
+												name : i,
+												instancePath : node.instancePath + "." + i,
+												_metaType : GEPPETTO.Resources.COMPOSITE_NODE
+												},true);
+								parent.getChildren().push(arrayNode);
+
+								// create nodes for each array index
+								for ( var index = 0; index < array.length; index++) {
+									parent[i][index] = {};
+									// create nodes for each array index node
+									var arrayObject = this.createAspectSimulationTree(
+											arrayNode, array[index]);
+									// set instance path of created array node and
+									// set as property
+									if (arrayObject.getChildren().length > 0) {
+										arrayObject.instancePath = arrayNode.instancePath
+										+ "[" + index + "]";
+										parent[i][index] = arrayObject;
+									}
+								}
+							}
+							// if object is CompositeNode, do recursion to find
+							// children
+							else if (metatype == GEPPETTO.Resources.COMPOSITE_NODE) {
+								var newNode = GEPPETTO.NodeFactory.createCompositeNode(node[i],true);
+								newNode.setParent(parent);
+								// add to parent if applicable
+								if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE
+										|| parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
+									parent.getChildren().push(newNode);
+								}
+								parent[i] = newNode;
+								
+								//traverse through children of composite node
+								this.createAspectSimulationTree(parent[i], node[i]);
+							} else if (metatype == GEPPETTO.Resources.VARIABLE_NODE) {
+								var newNode = GEPPETTO.NodeFactory.createVariableNode(node[i]);
+								newNode.setParent(parent);
+								// add to parent if applicable
+								if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE
+										|| parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
+									parent.getChildren().push(newNode);
+								}
+								parent[i] = newNode;
+							} else if (metatype == GEPPETTO.Resources.PARAMETER_NODE) {
+								var newNode = GEPPETTO.NodeFactory.createParameterNode(node[i]);
+								newNode.setParent(parent);
+								// add to parent if applicable
+								if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE
+										|| parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
+									parent.getChildren().push(newNode);
+								}
+								parent[i] = newNode;
+							}
+						}
+					}
+
+					return parent;
 				},
 
 				/** Creates and populates client aspect nodes for first time */

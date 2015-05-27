@@ -42,6 +42,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,8 +56,10 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.ExperimentStatus;
+import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.data.model.IInstancePath;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
@@ -194,6 +197,16 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				RuntimeTreeRoot runtimeTree = geppettoManager.loadExperiment(requestID, experiment);
 
+				List<String> lists = new ArrayList<String>();
+				for(IAspectConfiguration a : experiment.getAspectConfigurations()){
+					List<? extends IInstancePath> variables = a.getWatchedVariables();
+					for(IInstancePath i : variables){
+						String var =i.getLocalInstancePath();
+						lists.add(var);
+					}
+				}
+				geppettoManager.setWatchedVariables(lists, experiment, geppettoProject);
+
 				SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
 				runtimeTree.apply(serializeTreeVisitor);
 				String scene = serializeTreeVisitor.getSerializedTree();
@@ -277,8 +290,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param experimentID
 	 * @param projectId
+	 * @throws GeppettoExecutionException 
 	 */
-	public void clearWatchLists(String requestID, long experimentID, long projectId)
+	public void clearWatchLists(String requestID, long experimentID, long projectId) throws GeppettoExecutionException
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);

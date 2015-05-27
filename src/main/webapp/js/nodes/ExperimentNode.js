@@ -188,17 +188,6 @@ define(function(require) {
 		},
 
 		/**
-		 * Sets variables for experiment
-		 *
-		 * @command ExperimentNode.setWatchVariables(variables)
-		 */
-		setVariables : function(variables){
-			if(this.status == ExperimentStatus.DESIGN){
-
-			}
-		},
-
-		/**
 		 * Gets an experiment from this project.
 		 *
 		 * @command ProjectNode.getExperiment(name)

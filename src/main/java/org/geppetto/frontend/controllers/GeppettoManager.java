@@ -345,8 +345,7 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void setWatchedVariables(List<String> watchedVariables, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		// TODO Auto-generated method stub
-
+		getRuntimeProject(project).getRuntimeExperiment(experiment).setWatchedVariables(watchedVariables);
 	}
 
 	/*
@@ -355,10 +354,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#clearWatchLists(org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void clearWatchLists(IExperiment experiment, IGeppettoProject project)
+	public void clearWatchLists(IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		// TODO Auto-generated method stub
-
+		getRuntimeProject(project).getRuntimeExperiment(experiment).clearWatchLists();
 	}
 
 	/*

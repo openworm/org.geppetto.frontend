@@ -144,26 +144,23 @@ define(function(require) {
 
 				/**Update entities of scene with new server updates*/
 				updateRuntimeTree : function(jsonRuntimeTree){
-					if(!this.simulationTreeCreated)
-					{
-						this.updateNode(jsonRuntimeTree);
-					}
+					this.updateNode(jsonRuntimeTree);
 					this.updateVisualTrees(jsonRuntimeTree);
-					for(var index in GEPPETTO.Simulation.simulationStates)
-					{
-						try {
-							var state = GEPPETTO.Simulation.simulationStates[index];
-							var received=eval("jsonRuntimeTree."+state);
-							var clientNode=eval(state);
-							clientNode.getTimeSeries().unshift();
-							
-							for (var index in received.timeSeries){
-								clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
-							}
-							
-						} catch (e) {
-						}
-					}
+//					for(var index in GEPPETTO.Simulation.simulationStates)
+//					{
+//						try {
+//							var state = GEPPETTO.Simulation.simulationStates[index];
+//							var received=eval("jsonRuntimeTree."+state);
+//							var clientNode=eval(state);
+//							clientNode.getTimeSeries().unshift();
+//							
+//							for (var index in received.timeSeries){
+//								clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
+//							}
+//							
+//						} catch (e) {
+//						}
+//					}
 
 					this.updateWidgets();
 				},

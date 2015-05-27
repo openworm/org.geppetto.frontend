@@ -279,10 +279,14 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case CLEAR_WATCHED_VARIABLES:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.clearWatchLists(requestID, experimentId, projectId);
+				try {
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+					projectId = Long.parseLong(parameters.get("projectId"));
+					connectionHandler.clearWatchLists(requestID, experimentId, projectId);
+				} catch (GeppettoExecutionException e) {
+					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
+				}
 				break;
 			}
 			case IDLE_USER:

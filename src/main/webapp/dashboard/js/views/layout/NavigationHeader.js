@@ -24,10 +24,10 @@ define([
                 //    title: "Dashboard",
                 //    url: "#/"
                 //},
-                {
-                    title: "Profile",
-                    url: "#/user/profile"
-                }
+//                {
+//                    title: "Profile",
+//                    url: "#/user/profile"
+//                }
             ];
 
             //initialize active menu based on options passed from router

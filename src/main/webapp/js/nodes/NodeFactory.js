@@ -120,8 +120,13 @@ define(function(require) {
 						var aC = node.aspectConfigurations[key];
 						
 						var variables = aC.watchedVariables;
-						for(var key in variables){
-							e.getVariables().push(variables[key]);
+						if(variables!=null || variables != undefined){
+							var variableName = variables[key].entityInstancePath + "." +
+							variables[key].aspect + "." +
+							variables[key].localInstancePath;
+							for(var key in variables){
+								e.getVariables().push(variableName);
+							}
 						}
 					}
 					

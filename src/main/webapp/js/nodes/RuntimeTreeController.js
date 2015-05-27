@@ -147,6 +147,25 @@ define(function(require) {
 					this.updateNode(jsonRuntimeTree);
 					this.updateVisualTrees(jsonRuntimeTree);
 					this.updateWidgets();
+					
+					var experiments = window.Project.getExperiments();
+					for(var e in experiments){
+						var variables = experiments[e].getVariables();
+						for(var v in variables){
+							try {
+								var state = variables[v];
+								var received=eval("jsonRuntimeTree."+state);
+								var clientNode=eval(state);
+								clientNode.getTimeSeries().unshift();
+								
+								for (var index in received.timeSeries){
+									clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
+								}
+								
+							} catch (e) {
+							}
+						}
+					}
 				},
 				
 				updateWidgets : function(){

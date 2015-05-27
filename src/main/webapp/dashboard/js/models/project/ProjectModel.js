@@ -25,10 +25,15 @@ define([
             if (data === undefined || data.experiments === undefined || data.experiments === null || data.experiments.length === 0){
                 return data;
             }
+			var url = window.location.href;
+			if (url.indexOf('/dashboard') > 0) {
+				url = url.substring(0, url.indexOf('/dashboard'));
+			}
             data.experiments.forEach(function(item){
                 if (item.simulationRuns !== undefined && item.simulationRuns !== null && item.simulationRuns.length > 0){
                     item.status = item.simulationRuns[item.simulationRuns.length - 1].status;
                 }
+                item.url = url + '?load_project_from_id=' + data.id + '&experiment_id=' + item.id;
             });
             return data;
         },

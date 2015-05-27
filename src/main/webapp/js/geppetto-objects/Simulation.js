@@ -580,26 +580,7 @@ define(function(require) {
 				this.listeners[varnode.getInstancePath()] = null;
 			},
 
-			/**
-			 * Dynamically change the visual representation of an aspect,
-			 * modulated by the value of a watched node. The _transformation_
-			 * to be applied to the aspect visual representation should be a
-			 * function receiving the aspect and the watched node's value,
-			 * which can be normalized via the _normalization_ function. The
-			 * latter is a function which receives the watched node's value
-			 * an returns a float between 0 and 1.
-			 * 
-			 * @param {AspectNode} visualAspect - Aspect which contains the VisualizationTree with the entity to be dynamically changed
-			 * @param {String} visualEntityName - Name of visual entity in the visualAspect VisualizationTree
-			 * @param {VariableNode} dynVar - Dynamical variable which will modulate the transformation
-			 * @param {Function} transformation - Transformation to act upon the visualEntity, given the modulation value
-			 * @param {Function} normalization - Function to be applied to the dynamical variable, normalizing it to a suitable range according to _transformation_
-			 */	
-			addDynamicVisualization: function(visualAspect, visualEntityName, dynVar, transformation, normalization){
-				//TODO: things should be VisualizationTree centric instead of aspect centric...  
-		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
-		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0].getValue()) : watchedNode.getTimeSeries()[0].getValue());});
-			}
+
 		};
 
 		function santasLittleHelper(msg, return_msg, outbound_msg_log, payload) {

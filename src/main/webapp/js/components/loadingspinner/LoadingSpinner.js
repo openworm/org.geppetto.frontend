@@ -15,7 +15,7 @@ define(function(require) {
 		componentDidMount: function(){
 			GEPPETTO.once('hide:spinner', this.hide);
 			setTimeout((function(){
-				if(GEPPETTO.Simulation.loading && this.isMounted()){
+				if(this.isMounted()){
 					this.setProps({text: 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited'});
 				}
 			}).bind(this), 20000);

@@ -107,7 +107,7 @@ define(function(require) {
             updateTime(updatedRunTime.time);
 
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
-            GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
+            GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
             
             GEPPETTO.trigger(Events.Play_Experiment);
         };

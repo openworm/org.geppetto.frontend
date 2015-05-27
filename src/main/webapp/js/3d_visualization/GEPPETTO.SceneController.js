@@ -747,10 +747,9 @@ define(function(require) {
 					GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate; // so that we log only the
 					// cycles when we are
 					// updating the scene
-					if (GEPPETTO.Simulation.getSimulationStatus() == 2
-							&& GEPPETTO.getVARS().debugUpdate) {
-						GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_STARTING);
-					}
+
+					GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_STARTING);
+					
 					GEPPETTO.getVARS().controls.update();
 					requestAnimationFrame(GEPPETTO.SceneController.animate);
 					if (GEPPETTO.getVARS().rotationMode) {
@@ -762,8 +761,7 @@ define(function(require) {
 					if (GEPPETTO.getVARS().stats) {
 						GEPPETTO.getVARS().stats.update();
 					}
-					if (GEPPETTO.Simulation.getSimulationStatus() == 2
-							&& GEPPETTO.getVARS().debugUpdate) {
+					if (GEPPETTO.getVARS().debugUpdate) {
 						GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
 					}
 				},

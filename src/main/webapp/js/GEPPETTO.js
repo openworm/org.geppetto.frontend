@@ -512,7 +512,6 @@ define(function(require) {
     require('websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
     require('websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
     require('websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
-    require('geppetto-objects/Simulation')(GEPPETTO);
     require('geppetto-objects/G')(GEPPETTO);
     require('GEPPETTO.Main')(GEPPETTO);
     //require('GEPPETTO.Tutorial')(GEPPETTO);

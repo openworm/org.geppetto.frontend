@@ -50,6 +50,7 @@ define(function(require) {
 		 * @exports geppetto-objects/G
 		 */
 		GEPPETTO.G = {
+			listeners:[],
 			addWidget: function(type) {
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
 				return newWidget;
@@ -428,7 +429,49 @@ define(function(require) {
 				GEPPETTO.incrementCameraZoom(z);
 				
 				return GEPPETTO.Resources.CAMERA_ZOOM_INCREMENT;
-			}
+			},
+			
+			/**
+			 * Callback to be called whenever a watched node changes
+			 *
+			 * @param {VariableNode} varnode - VariableNode to couple callback to
+			 * @param {Function} callback - Callback function to be called whenever _variable_ changes
+			 */
+			addOnNodeUpdatedCallback: function(varnode, callback) {
+				this.listeners[varnode.getInstancePath()] = callback;
+			},
+			
+			/**
+			 * Clears callbacks coupled to changes in a node 
+			 * 
+			 * @param {VariableNode} varnode - VariableNode to which callbacks are coupled
+			 */
+			clearOnNodeUpdateCallback: function(varnode) {
+				this.listeners[varnode.getInstancePath()] = null;
+			},
+			
+			/**
+			 * Modulates the brightness of an aspect visualization, given a watched node
+			 * and a normalization function. The normalization function should receive
+			 * the value of the watched node and output a number between 0 and 1,
+			 * corresponding to min and max brightness. If no normalization function is
+			 * specified, then brightness = value
+			 * 
+			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
+			 * @param {String} objectReference - objectReference
+			 * @param {VariableNode} modulation - Variable which modulates the brightness
+			 * @param {Function} normalizationFunction
+			 */
+			addBrightnessFunction: function(aspect,modulation,normalizationFunction) {
+				this.addOnNodeUpdatedCallback(modulation, function(varnode){
+			    	GEPPETTO.SceneController.lightUpEntity(aspect.getInstancePath(),
+			    			normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[0].getValue()) : varnode.getTimeSeries()[0].getValue());
+				});
+			},
+
+			clearBrightnessFunctions: function(varnode) {
+				this.clearOnNodeUpdateCallback(varnode);
+			},
 
 		};
 	};

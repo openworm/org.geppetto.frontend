@@ -95,7 +95,7 @@ define(function(require) {
 				/**Traverse the tree, when an aspect is found */
 				updateNode :function(node)
 				{
-					var experiments = window.Project.getExperiments();
+					var experiment = window.Project.getActiveExperiment();
 					for(var c in node)
 					{
 						var child=node[c];
@@ -108,27 +108,25 @@ define(function(require) {
 							}else{
 								//update existing simulation tree
 								var simulationTree = child.SimulationTree;
-								for(var e in experiments){
-									var variables = experiments[e].getVariables();
-									//find variable node in experiment
-									for(var v in variables){
-										try {
-											var state = variables[v];
-											//format state in a way to match what server is sending
-											var splitState = state.split("SimulationTree.");
-											var formattedState = splitState[1];
-											var received=eval("simulationTree."+formattedState);
-											var clientNode=eval(state);
-											clientNode.getTimeSeries().unshift();
-											
-											for (var index in received.timeSeries){
-												clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
-											}
-											
-										} catch (e) {
+								var variables = experiment.getVariables();
+								//find variable node in experiment
+								for(var v in variables){
+									try {
+										var state = variables[v];
+										//format state in a way to match what server is sending
+										var splitState = state.split("SimulationTree.");
+										var formattedState = splitState[1];
+										var received=eval("simulationTree."+formattedState);
+										var clientNode=eval(state);
+										clientNode.getTimeSeries().unshift();
+
+										for (var index in received.timeSeries){
+											clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
 										}
+
+									} catch (e) {
 									}
-								}
+								}				
 							}
 						}
 					}
@@ -179,12 +177,12 @@ define(function(require) {
 					GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
 
 					//update scene brightness
-					for(var key in GEPPETTO.Simulation.listeners) {
+					for(var key in GEPPETTO.G.listeners) {
 						//retrieve the simulate state from watch tree
-						var simState = GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, key);
+						var simState = GEPPETTO.Utility.deepFind(windows.Project.runTimeTree, key);
 
 						//update simulation state
-						GEPPETTO.Simulation.listeners[key](simState);
+						GEPPETTO.G.listeners[key](simState);
 					}
 				},
 

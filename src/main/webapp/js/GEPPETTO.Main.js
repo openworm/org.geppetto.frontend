@@ -71,7 +71,6 @@ define(function(require) {
 			 */
 			init: function() {
 				GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
-				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.INIT;
 				GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);
 			},
 

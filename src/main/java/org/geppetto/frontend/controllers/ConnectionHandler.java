@@ -764,4 +764,20 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			error(e, "Check Experiment: Errror parsing project id");
 		}
 	}
+
+	public void deleteExperiment(String requestID, long experimentId,
+			long projectId) {
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+
+		if(experiment != null)
+		{
+			geppettoManager.deleteExperiment(requestID, experiment);
+			websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, null);
+		}
+		else
+		{
+			error(null, "Error deleting experiment, the experiment " + experimentId + " was not found in project " + projectId);
+		}
+	}
 }

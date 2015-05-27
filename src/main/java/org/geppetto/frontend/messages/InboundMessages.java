@@ -59,7 +59,8 @@ public enum InboundMessages {
 	DOWNLOAD_MODEL("download_model"),
 	SET_PARAMETERS("set_parameters"),
 	EXPERIMENTS_STATUS("experiments_status"), 
-	PLAY_EXPERIMENT("play_experiment");
+	PLAY_EXPERIMENT("play_experiment"),
+	DELETE_EXPERIMENT("delete_experiment");
 
 	
 	private InboundMessages(final String text) {

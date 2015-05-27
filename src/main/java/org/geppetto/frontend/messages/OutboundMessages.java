@@ -69,7 +69,8 @@ public enum OutboundMessages {
 	SET_PARAMETERS("set_parameters"),
 	NO_FEATURE("no_feature"), 
 	EXPERIMENT_LOADED("experiment_loaded"),
-	EXPERIMENTS_STATUS("experiments_status");
+	EXPERIMENTS_STATUS("experiments_status"),
+	DELETE_EXPERIMENT("experiment_deleted");
 	
 	private OutboundMessages(final String text) {
 		this.text = text;

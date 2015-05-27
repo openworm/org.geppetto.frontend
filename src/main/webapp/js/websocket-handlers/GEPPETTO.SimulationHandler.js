@@ -71,7 +71,8 @@ define(function(require) {
             SET_PARAMETER : "set_parameter",
             NO_FEATURE : "no_feature",
             EXPERIMENTS_STATUS : "experiments_status",
-            GET_SUPPORTED_OUTPUTS : "get_supported_outputs"
+            GET_SUPPORTED_OUTPUTS : "get_supported_outputs",
+            DELETE_EXPERIMENT : "experiment_deleted"
         };
 
         var messageHandler = {};
@@ -151,6 +152,10 @@ define(function(require) {
 
         messageHandler[messageTypes.EXPERIMENT_STOPPED] = function(payload) {
             GEPPETTO.trigger(Events.Experiment_stopped);
+        };
+        
+        messageHandler[messageTypes.EXPERIMENT_DELETED] = function(payload) {
+            GEPPETTO.trigger(Events.Experiment_deleted);
         };
 
         messageHandler[messageTypes.EXPERIMENT_PAUSED] = function(payload) {

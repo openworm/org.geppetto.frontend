@@ -47,7 +47,8 @@
 			Experiment_stopped : "experiment:stopped",
 			ModelTree_populated : "experiment:modeltreepopulated",
 			SimulationTree_populated : "experiment:simulationtreepopulated",
-			Play_Experiment : "play_experiment"
+			Play_Experiment : "play_experiment",
+			Experiment_deleted : "experiment_deleted"
 		};
 define(function(require) {
 	return function(GEPPETTO) {
@@ -63,6 +64,10 @@ define(function(require) {
 	        	});
 				GEPPETTO.on(Events.Experiment_loaded, function(){
 					G.resetCamera();
+				});
+				GEPPETTO.on(Events.Experiment_deleted, function(){
+		            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, 
+		            		"Experiment was deleted successfully");
 				});
 	        	GEPPETTO.on(Events.Experiment_replay, function(){
 	        		//delete existing widgets, to allow new ones for new simulation

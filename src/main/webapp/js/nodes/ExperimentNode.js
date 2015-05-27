@@ -222,6 +222,13 @@ define(function(require) {
 
 			}
 		},
+		
+		deleteExperiment : function(){
+			var parameters = {};
+			parameters["experimentId"] = this.id;
+			parameters["projectId"] = this.getParent().getId();
+			GEPPETTO.MessageSocket.send("delete_experiment", parameters);
+		},
 
 		/**
 		 * Print out formatted node

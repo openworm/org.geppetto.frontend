@@ -79,7 +79,7 @@ define(function(require) {
 			},
 			PROJECT_LOADED: "Project Loaded",
 			EXPERIMENT_STARTED: "Experiment Started",
-
+			EXPERIMENT_DELETED: "Experiment Deleted",
 			UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
 
 			EXPERIMENT_PAUSED: "Experiment Paused",

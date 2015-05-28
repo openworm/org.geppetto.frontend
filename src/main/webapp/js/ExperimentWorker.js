@@ -31,21 +31,16 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class for Project node.
+ * Web worker for generating events
  * 
- * @module nodes/ProjectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
-	return function(GEPPETTO) {
+importScripts('vendor/require.js');
 
-		onmessage = function(e) {
-			  console.log('Message received from main script');
-			  var udpatedRunTime = e.data[0];
-			  GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
-			  GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
-			  console.log('Posting message back to main script');
-			  postMessage(workerResult);
-		}
-	};
-});
+var window = self;
+
+onmessage = function(e) {
+	var timer = e.data[0];
+	setInterval(function(){postMessage(timer); }, timer);
+	window.GEPPETTO.Console.log('Posting message back to main script');
+}

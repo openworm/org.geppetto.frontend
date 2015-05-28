@@ -519,7 +519,6 @@ define(function(require) {
     require('nodes/NodeFactory')(GEPPETTO);
     require('nodes/RuntimeTreeController')(GEPPETTO);
 
-
     return GEPPETTO;
 
 });

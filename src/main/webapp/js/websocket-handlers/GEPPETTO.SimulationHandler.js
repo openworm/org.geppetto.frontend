@@ -104,12 +104,16 @@ define(function(require) {
             var updatedRunTime = JSON.parse(payload.update);
             updateTime(updatedRunTime.time);
                         
+            GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
+        	GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
+        	
             var worker = new Worker("assets/js/ExperimentWorker.js");
-            worker.postMessage(updatedRunTime);
+            worker.postMessage(1000);
             worker.onmessage = function (event) {
                 GEPPETTO.Console.log("Playing experiment" );
-              };
-            //GEPPETTO.trigger(Events.Play_Experiment);
+                GEPPETTO.trigger(Events.Play_Experiment);
+                worker.terminate();
+             };
         };
         messageHandler[messageTypes.EXPERIMENT_UPDATE] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update);

@@ -439,10 +439,13 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
 			}
 			else{
+				//Convert model
 				File file = geppettoManager.downloadModel(aspectInstancePath, modelFormat, experiment, geppettoProject);
 	
+				//Zip folder
 				Path path = ZipDirectory.getZipFromDirectory(file);
 				
+				//Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);
 			}
 		}

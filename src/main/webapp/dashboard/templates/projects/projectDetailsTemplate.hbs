@@ -39,7 +39,7 @@
                                         </a>
                                         &nbsp;&nbsp;&nbsp;&nbsp;
                                         <a href="{{url}}" target="_blank">
-                                        <img src="imgs/geppettosymbol.png" width="20"/>
+                                        <img src="imgs/geppettosymbol.png" width="20" title="Click to open" />
                                         </a>
                                     </div>
                                 </div>
@@ -50,14 +50,14 @@
                     <div id="experiment-{{@index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{@index}}">
                         <div class="panel-body">
                             <dl class="dl-horizontal">
-                                {{#each modelParameters}}
-                                    <dt class="instance-path">{{instancePath}}</dt>
-                                    <dd>{{value}}</dd>
-                                {{/each}}
-                                {{#each simulationRuns}}
-                                    {{#each simulationParameters}}
-                                        <dt class="instance-path">{{instancePath}}</dt>
-                                        <dd>{{value}}</dd>
+                                {{#each aspectConfigurations}}
+	                                {{#each modelParameter}}
+   		                                <dt class="instance-path" title={{variable.localInstancePath}}>{{variable.localInstancePath}}</dt>
+       	        	                    <dd>{{value}}</dd>
+                    	            {{/each}}
+                                    {{#each watchedVariables}}
+                                        <dt class="instance-path" title={{instancePath}}>{{instancePath}}</dt>
+                                        <dd></dd>
                                     {{/each}}
                                 {{/each}}
                             </dl>

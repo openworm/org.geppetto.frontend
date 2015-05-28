@@ -338,7 +338,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				simulationTreeString = simulationTreeString.substring(0, simulationTreeString.length() - 1);
 				simulationTreeString += "]";
 
-				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_UPDATE, simulationTreeString);
+				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, simulationTreeString);
 			}
 			catch(GeppettoExecutionException e)
 			{

@@ -33,7 +33,7 @@
 /**
  * Handles incoming messages associated with Simulation
  */
-define(function(require) {
+define(function(require) {	
 	return function(GEPPETTO) {
 
 		var updateTime = function(time) {
@@ -59,9 +59,7 @@ define(function(require) {
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",
             EXPERIMENT_LOADED: "experiment_loaded",
-            EXPERIMENT_STARTED: "experiment_started",
-            EXPERIMENT_PAUSED: "experiment_paused",
-            EXPERIMENT_STOPPED: "experiment_stopped",
+            PLAY_EXPERIMENT : "play_experiment",
             SET_WATCH_VARS: "set_watch_vars",
             CLEAR_WATCH: "clear_watch",
             FIRE_SIM_SCRIPTS: "fire_sim_scripts",
@@ -102,6 +100,17 @@ define(function(require) {
             GEPPETTO.trigger(Events.Experiment_loaded);
             GEPPETTO.trigger("hide:spinner");
         };
+        messageHandler[messageTypes.PLAY_EXPERIMENT] = function(payload) {
+            var updatedRunTime = JSON.parse(payload.update);
+            updateTime(updatedRunTime.time);
+                        
+            var worker = new Worker("assets/js/ExperimentWorker.js");
+            worker.postMessage(updatedRunTime);
+            worker.onmessage = function (event) {
+                GEPPETTO.Console.log("Playing experiment" );
+              };
+            //GEPPETTO.trigger(Events.Play_Experiment);
+        };
         messageHandler[messageTypes.EXPERIMENT_UPDATE] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update);
             updateTime(updatedRunTime.time);
@@ -127,39 +136,9 @@ define(function(require) {
                 GEPPETTO.ScriptRunner.fireScripts(scripts);
             }
         };
-
-        //Simulation has been started, enable pause button
-        messageHandler[messageTypes.EXPERIMENT_STARTED] = function(payload) {
-        	var updatedRunTime = JSON.parse(payload.update).scene;
-            createTime(updatedRunTime.time);
-
-            GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
-
-            //Update if simulation hasn't been stopped
-            if(GEPPETTO.Simulation.status != GEPPETTO.Simulation.StatusEnum.STOPPED && GEPPETTO.isCanvasCreated()) {
-                if(!GEPPETTO.isScenePopulated()) {
-                    // the first time we need to create the objects
-                    GEPPETTO.SceneController.populateScene(GEPPETTO.Simulation.runTimeTree);
-                }
-                else {
-                    // any other time we just update them
-                    GEPPETTO.SceneController.updateScene(GEPPETTO.Simulation.runTimeTree);
-                }
-            }
-                       
-            GEPPETTO.trigger(Events.Experiment_started);
-        };
-
-        messageHandler[messageTypes.EXPERIMENT_STOPPED] = function(payload) {
-            GEPPETTO.trigger(Events.Experiment_stopped);
-        };
         
         messageHandler[messageTypes.EXPERIMENT_DELETED] = function(payload) {
             GEPPETTO.trigger(Events.Experiment_deleted);
-        };
-
-        messageHandler[messageTypes.EXPERIMENT_PAUSED] = function(payload) {
-            GEPPETTO.trigger(Events.Experiment_paused);
         };
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {
@@ -172,13 +151,7 @@ define(function(require) {
             	GEPPETTO.Simulation.simulationStates.push(variables[index]);
             }
         };
-
-        //handles the case where simulation is done executing all steps
-        messageHandler[messageTypes.SIMULATION_OVER] = function() {
-            //Updates the simulation controls visibility
-        	GEPPETTO.Console.executeCommand("Simulation.stop()");
-        };
-
+        
       //handles the case where geppetto is done setting parameters
         messageHandler[messageTypes.SET_PARAMETER] = function() {
         	 GEPPETTO.Console.log("Sucessfully updated parameters");

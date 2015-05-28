@@ -86,7 +86,7 @@ define(function(require) {
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
 					if (msg.data instanceof Blob){
-						saveData(msg.data, "taka");
+						saveData(msg.data, "file");
 					}
 					else{
 						if(msg.data=="ping"){

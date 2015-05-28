@@ -53,6 +53,7 @@ public enum OutboundMessages {
 	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config"),
 	ERROR_READING_SCRIPT("error_reading_script"),
 	ERROR_SETTING_WATCHED_VARIABLES("error_setting_watched_variables"),
+	ERROR_DOWNLOADING_MODEL("error_downloading_model"),
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),
 	GET_SCRIPTS("get_scripts"),

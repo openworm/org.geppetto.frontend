@@ -237,7 +237,6 @@ define(function(require) {
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create simulation tree");
         };
         
-
 		GEPPETTO.SimulationHandler = {
 			onMessage: function(parsedServerMessage) {
 				// parsed message has a type and data fields - data contains the payload of the message

@@ -432,13 +432,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+		ModelFormat modelFormat = ServicesRegistry.getModelFormat(format);
 		try
 		{
-			File file = geppettoManager.downloadModel(aspectInstancePath, ServicesRegistry.getModelFormat(format), experiment, geppettoProject);
-
-			Path path = ZipDirectory.getZipFromDirectory(file);
-			
-			websocketConnection.sendBinaryMessage(requestID, path);
+			if (modelFormat == null){
+				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
+			}
+			else{
+				File file = geppettoManager.downloadModel(aspectInstancePath, modelFormat, experiment, geppettoProject);
+	
+				Path path = ZipDirectory.getZipFromDirectory(file);
+				
+				websocketConnection.sendBinaryMessage(requestID, path);
+			}
 		}
 		catch(GeppettoExecutionException e)
 		{

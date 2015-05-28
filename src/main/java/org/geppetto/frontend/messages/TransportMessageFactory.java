@@ -80,6 +80,9 @@ public class TransportMessageFactory {
 			case ERROR_SETTING_WATCHED_VARIABLES:
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_SETTING_WATCHED_VARIABLES_MESSAGE.toString()));
 				break;
+			case ERROR_DOWNLOADING_MODEL:	
+				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_DOWNLOADING_MODEL.toString()));
+				break;
 			case OBSERVER_MODE:
 				params.add(new SimpleEntry<String, String>("alertMessage", Resources.SIMULATION_CONTROLLED.toString()));
 				params.add(new SimpleEntry<String, String>("popoverMessage", Resources.GEPPETO_SIM_INFO.toString()));

@@ -16,7 +16,8 @@ public enum Resources {
 						"instance of Geppetto does not support shared mode access" +
 						" - you can join the ongoing simulation as an observer "),
 	SERVER_AVAILABLE("The current operator left the control of Geppetto." +
-						" Refresh your browser to attempt to assume control (first come, first served).");
+						" Refresh your browser to attempt to assume control (first come, first served)."),
+	ERROR_DOWNLOADING_MODEL("Format not supported");
 	
 	private Resources(final String text) {
 		this.text = text;

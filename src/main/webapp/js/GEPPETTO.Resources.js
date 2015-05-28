@@ -213,6 +213,8 @@ define(function(require) {
 			
 			DOWNLOADING_MODEL : 'Downloading model as ',	
 			
+			ERROR_DOWNLOADING_MODEL : "Error downloading model",
+			
 			RETRIEVING_SUPPORTED_OUTPUTS : 'Supported outputs requested',
 			
 			/**

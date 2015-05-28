@@ -148,7 +148,15 @@ public class WebsocketConnection extends MessageInbound
 		{
 			long startTime = System.currentTimeMillis();
 
+//			String fileName = path.getFileName().toString();
+//			byte[] name = fileName.getBytes();
 			byte[] data = Files.readAllBytes(path);
+
+//			ByteBuffer buffer = ByteBuffer.allocate(name.length + 1 + data.length);
+//			buffer.put(name);
+//			buffer.put((byte)0x00);
+//			buffer.put(data);
+			
 			ByteBuffer buffer = ByteBuffer.wrap(data);
 
 			getWsOutbound().writeBinaryMessage(buffer);

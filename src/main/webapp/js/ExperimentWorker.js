@@ -35,12 +35,7 @@
  * 
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-importScripts('vendor/require.js');
-
-var window = self;
-
 onmessage = function(e) {
 	var timer = e.data[0];
 	setInterval(function(){postMessage(timer); }, timer);
-	window.GEPPETTO.Console.log('Posting message back to main script');
 }

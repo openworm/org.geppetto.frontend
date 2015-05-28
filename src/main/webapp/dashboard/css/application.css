@@ -138,9 +138,15 @@ code {
 
 .instance-path {
 	text-align: left !important;
+	width: 80%;
 }
 
-dt,dd {
+dt {
+	margin-bottom: 7px;
+	width: 80%;
+}
+
+dd {
 	margin-bottom: 7px;
 }
 

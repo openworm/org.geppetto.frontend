@@ -34,6 +34,7 @@ package org.geppetto.frontend.controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -46,6 +47,7 @@ import java.util.Map;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -81,9 +83,7 @@ public class WebsocketConnection extends MessageInbound
 
 	@Autowired
 	private IGeppettoManager geppettoManager;
-	
-	
-	
+
 	public WebsocketConnection()
 	{
 		super();
@@ -143,25 +143,27 @@ public class WebsocketConnection extends MessageInbound
 	 */
 	public void sendBinaryMessage(String requestID, Path path)
 	{
-		// get transport message to be sent to the client
+		//TODO: We are sending file name and data but it can be improved to send a type and message
 		try
 		{
 			long startTime = System.currentTimeMillis();
 
-//			String fileName = path.getFileName().toString();
-//			byte[] name = fileName.getBytes();
+			// get filename and file content
+			byte[] name = path.getFileName().toString().getBytes("UTF-8");
 			byte[] data = Files.readAllBytes(path);
 
-//			ByteBuffer buffer = ByteBuffer.allocate(name.length + 1 + data.length);
-//			buffer.put(name);
-//			buffer.put((byte)0x00);
-//			buffer.put(data);
-			
-			ByteBuffer buffer = ByteBuffer.wrap(data);
+			// add to the buffer filename length, filename and file content (filename size is needed client side)
+			int bufferSize = 1 + name.length + data.length;
+			ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+			buffer.put(BigInteger.valueOf(name.length).toByteArray());
+			buffer.put(name);
+			buffer.put(data);
 
+			//write binary message in the socket
 			getWsOutbound().writeBinaryMessage(buffer);
-			// String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a file of " + buffer.length() / 1024 + "KB to the client";
-			// logger.info(debug);
+			
+			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a file of " + bufferSize / 1024 + "KB to the client";
+			logger.info(debug);
 		}
 		catch(IOException ignore)
 		{
@@ -215,10 +217,12 @@ public class WebsocketConnection extends MessageInbound
 				break;
 			}
 			case LOAD_EXPERIMENT:
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.loadExperiment(requestID,experimentId, projectId);
+				connectionHandler.loadExperiment(requestID, experimentId, projectId);
 			case RUN_SCRIPT:
 			{
 				String urlString = gmsg.data;
@@ -245,23 +249,29 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case PLAY_EXPERIMENT:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.playExperiment(requestID, experimentId, projectId);
-				break;	
+				break;
 			}
 			case DELETE_EXPERIMENT:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.deleteExperiment(requestID, experimentId, projectId);
-				break;	
+				break;
 			}
 			case RUN_EXPERIMENT:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.runExperiment(requestID, experimentId, projectId);
@@ -274,7 +284,9 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case SET_WATCHED_VARIABLES:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				String watchListsString = parameters.get("variables");
@@ -295,12 +307,17 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case CLEAR_WATCHED_VARIABLES:
 			{
-				try {
-					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				try
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
 					experimentId = Long.parseLong(parameters.get("experimentId"));
 					projectId = Long.parseLong(parameters.get("projectId"));
 					connectionHandler.clearWatchLists(requestID, experimentId, projectId);
-				} catch (GeppettoExecutionException e) {
+				}
+				catch(GeppettoExecutionException e)
+				{
 					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
 				}
 				break;
@@ -312,7 +329,9 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case GET_MODEL_TREE:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				instancePath = parameters.get("instancePath");
@@ -321,7 +340,9 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case GET_SIMULATION_TREE:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				instancePath = parameters.get("instancePath");
@@ -330,7 +351,9 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case GET_SUPPORTED_OUTPUTS:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				instancePath = parameters.get("instancePath");
@@ -339,11 +362,13 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case DOWNLOAD_MODEL:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>() {}.getType());
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				instancePath = parameters.get("instancePath");
-				String format = parameters.get("format"); 
+				String format = parameters.get("format");
 				connectionHandler.downloadModel(requestID, instancePath, format, experimentId, projectId);
 				break;
 			}

@@ -86,7 +86,24 @@ define(function(require) {
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
 					if (msg.data instanceof Blob){
-						saveData(msg.data, "file");
+						var fileNameLengthReader = new FileReader();
+						//handler executed once reading file name length from blob is finished.
+						fileNameLengthReader.addEventListener("loadend", function(e){
+						    //Converting file name length to integer
+						    var fileNameLength = new Uint8Array(e.srcElement.result)[0];
+						    
+						    var fileNameReader = new FileReader();
+							//handler executed once reading file name from blob is finished.
+						    fileNameReader.addEventListener("loadend", function(e){
+						    	
+						    	//saving file to disk
+								saveData(msg.data.slice(1+fileNameLength), e.srcElement.result);
+							});
+						    //Reading file name
+						    fileNameReader.readAsText(msg.data.slice(1,1+fileNameLength));
+						});
+						//Reading file name length
+						fileNameLengthReader.readAsArrayBuffer(msg.data.slice(0,1));
 					}
 					else{
 						if(msg.data=="ping"){

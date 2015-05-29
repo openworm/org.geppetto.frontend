@@ -743,24 +743,16 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(projectId));
 			if(geppettoProject != null)
 			{
+				String status = "[";
 				List<? extends IExperiment> experiments = geppettoProject.getExperiments();
 				for(IExperiment e : experiments)
 				{
-					if(e.getStatus() != null)
-					{
-						if(e.getStatus().equals(ExperimentStatus.COMPLETED))
-						{
-							// TODO Notify client experiment is completed
-							// TODO We should notify for either every status or status changes there's nothing special
-							// about COMPLETE
-						}
-					}
-					else
-					{
-						String msg = "Check Experiment: Status for projct " + projectId + " is null";
-						error(new GeppettoExecutionException(msg), msg);
-					}
+					status += "{\"projectID\":" + '"' +projectId + '"' + ",\"status\":" + '"'+ e.getStatus().toString() + '"'+ "},";
+
 				}
+				status = status.substring(0, status.length() - 1);
+				status += "]";
+				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_STATUS, status);
 			}
 			else
 			{

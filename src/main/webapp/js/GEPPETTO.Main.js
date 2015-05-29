@@ -61,11 +61,30 @@ define(function(require) {
 			disconnected: false,
 			status: 0,
 			simulationFileTemplate: "assets/resources/template.xml",
+			statusWorker : null,
 
 			getVisitorStatus: function() {
 				return this.status;
 			},
+			
+			getStatusWorker : function(){
+				return this.statusWorker;
+			},
 
+			startStatusWorker : function(){
+				//create web worker for checking status
+	            this.statusWorker = new Worker("assets/js/PullStatusWorker.js");
+	            
+	            this.statusWorker.postMessage(5000);
+	            
+				//receives message from web worker
+	            this.statusWorker.onmessage = function (event) {
+	            	if(window.Project.getId()!=-1){
+	        			GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_STATUS, window.Project.id);
+	        		}
+	             };
+			},
+			
 			/**
 			 * Initialize web socket communication
 			 */
@@ -154,8 +173,8 @@ define(function(require) {
 			//Create canvas
 			var webGLStarted = GEPPETTO.webGLAvailable();
 
-			//setInterval(function(){if(Project.getId()!=-1){GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENTS_STATUS, project.id);}}, 3000);
-
+			GEPPETTO.Main.startStatusWorker();
+             
 			//make sure webgl started correctly
 			if(!webGLStarted) {
 				GEPPETTO.FE.update(false);

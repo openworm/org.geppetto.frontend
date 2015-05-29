@@ -110,6 +110,9 @@ public class TransportMessageFactory {
 			case EXPERIMENT_RUNNING:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case EXPERIMENT_STATUS:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
 			case EXPERIMENT_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.EXPERIMENT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;

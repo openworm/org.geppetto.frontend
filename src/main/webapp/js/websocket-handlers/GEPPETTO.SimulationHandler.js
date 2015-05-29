@@ -68,9 +68,9 @@ define(function(require) {
             GET_SIMULATION_TREE : "get_simulation_tree",
             SET_PARAMETER : "set_parameter",
             NO_FEATURE : "no_feature",
-            EXPERIMENTS_STATUS : "experiments_status",
+            EXPERIMENT_STATUS : "experiment_status",
             GET_SUPPORTED_OUTPUTS : "get_supported_outputs",
-            DELETE_EXPERIMENT : "experiment_deleted"
+            EXPERIMENT_DELETED : "experiment_deleted"
         };
 
         var messageHandler = {};
@@ -142,6 +142,20 @@ define(function(require) {
 
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
             GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);            
+        };
+        
+        messageHandler[messageTypes.EXPERIMENT_STATUS] = function(payload) {
+            var experimentStatus = JSON.parse(payload.update);
+
+            for(var key in experimentStatus){
+            	var projectID = experimentStatus[key].projectID;
+            	var status = experimentStatus[key].status;
+
+            	GEPPETTO.Console.debugLog("Project with id "+ projectID + 
+            			" has status " + status);
+            }
+            
+            GEPPETTO.Main.getStatusWorker().terminate();
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function(payload) {            

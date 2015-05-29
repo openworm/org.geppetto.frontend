@@ -382,8 +382,9 @@ public class WebsocketConnection extends MessageInbound
 				// remove model path from parameters map that was sent from server
 				parameters3.remove(modelPath);
 				connectionHandler.setParameters(requestID, modelPath, parameters3);
+				break;
 			}
-			case EXPERIMENTS_STATUS:
+			case EXPERIMENT_STATUS:
 				connectionHandler.checkExperiments(requestID, gmsg.data);
 				break;
 			default:

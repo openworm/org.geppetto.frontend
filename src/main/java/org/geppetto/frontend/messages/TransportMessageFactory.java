@@ -122,6 +122,9 @@ public class TransportMessageFactory {
 			case PLAY_EXPERIMENT:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case DELETE_EXPERIMENT:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
 			case SIMULATION_CONFIGURATION:
 				params.add(new SimpleEntry<String, String>("configuration", (update!=null) ? update : EMPTY_STRING));
 				break;

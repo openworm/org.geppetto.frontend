@@ -115,10 +115,6 @@ define(function(require) {
 
 								//unbind click event so we can reuse same modal for other alerts
 								$('#infomodal-btn').unbind('click');
-
-								if(GEPPETTO.Simulation.isLoading()){
-									GEPPETTO.trigger('simulation:show_spinner');
-								}
 							});
 						}
 

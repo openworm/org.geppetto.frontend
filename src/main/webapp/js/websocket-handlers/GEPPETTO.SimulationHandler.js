@@ -38,8 +38,9 @@ define(function(require) {
 
 		var updateTime = function(time) {
 			if(time) {
-				GEPPETTO.Simulation.time.getTimeSeries()[0].value = time.timeSeries["quantity0"].value;
-				GEPPETTO.Simulation.time.getTimeSeries()[0].unit = time.timeSeries["quantity0"].unit;
+				//TODO: Where does time come from? where does it go?
+//				GEPPETTO.Simulation.time.getTimeSeries()[0].value = time.timeSeries["quantity0"].value;
+//				GEPPETTO.Simulation.time.getTimeSeries()[0].unit = time.timeSeries["quantity0"].unit;
 			}
 		};
 		
@@ -175,7 +176,18 @@ define(function(require) {
         };
         
         messageHandler[messageTypes.EXPERIMENT_DELETED] = function(payload) {
-            GEPPETTO.trigger(Events.Experiment_deleted);
+            var data = JSON.parse(payload.update);
+
+            var experiments = window.Project.getExperiments();
+            for(var e in experiments){
+            	var experiment = experiments[e];
+            	if(experiment.getId() == data.id){
+            		var index = window.Project.getExperiments().indexOf(experiment);
+            		window.Project.getExperiments().splice(index,1);
+            	}
+            }
+        	var parameters = {name : data.name, id : data.id};
+            GEPPETTO.trigger(Events.Experiment_deleted, parameters);
         };
 
         messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {

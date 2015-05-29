@@ -774,7 +774,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		if(experiment != null)
 		{
 			geppettoManager.deleteExperiment(requestID, experiment);
-			websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, null);
+			String update = "{\"id\":" + '"' +experiment.getId() + '"' + ",\"name\":" + '"'+ experiment.getName() + '"'+ "}";
+			websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, update);
 		}
 		else
 		{

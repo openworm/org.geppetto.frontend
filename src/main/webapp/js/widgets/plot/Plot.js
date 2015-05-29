@@ -154,7 +154,13 @@ define(function(require) {
 							}
 						}
 						
-						this.plotAll(state);
+						var timeSeriesData = this.getTimeSeriesData(state);
+						
+						this.datasets.push({
+							label : state.getInstancePath(),
+							variable : state,
+							data : timeSeriesData
+						});
 					}
 				}
 
@@ -170,7 +176,7 @@ define(function(require) {
 				return "Line plot added to widget";
 			},
 			
-			plotAll : function(state){
+			getTimeSeriesData : function(state){
 				var timeSeries = state.getTimeSeries();
 				var timeSeriesData = new Array();
 				var id = state.getInstancePath();
@@ -188,12 +194,9 @@ define(function(require) {
 				}
 				
 				if(timeSeries.length > 1){
-					if(this.options.yaxis.max < this.yMax){
-						this.options.yaxis.max = this.yMax;
-					}
-					if(this.options.yaxis.min > this.yMin){
-						this.options.yaxis.min = this.yMin;
-					}
+					this.options.yaxis.max = this.yMax;
+					this.options.yaxis.min = this.yMin;
+					
 					if(this.options.showAll == true){
 						this.limit = timeSeries.length;
 						this.options.xaxis.max = this.limit;
@@ -208,11 +211,8 @@ define(function(require) {
 				        }];
 					}
 				}
-				this.datasets.push({
-					label : id,
-					variable : state,
-					data : timeSeriesData
-				});						
+				
+				return timeSeriesData;
 			},
 			/**
 			 * Takes two time series and plots one against the other. To plot
@@ -294,7 +294,12 @@ define(function(require) {
 			updateDataSet: function(options) {
 				for(var key in this.datasets) {
 					if(this.options.showAll){
-						this.plotAll( this.datasets[key].variable);
+						var timeSeriesData = 
+							this.getTimeSeriesData( this.datasets[key].variable);
+						
+						this.datasets[key].data = timeSeriesData;
+						
+						this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 					}else{
 						var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
 
@@ -335,12 +340,12 @@ define(function(require) {
 						else {
 							this.datasets[key].data = oldata;
 						}
+						
+						if(this.plot != null){
+							this.plot.setData(this.datasets);
+							this.plot.draw();
+						}
 					}
-				}
-
-				if(this.plot != null){
-					this.plot.setData(this.datasets);
-					this.plot.draw();
 				}
 			},
 

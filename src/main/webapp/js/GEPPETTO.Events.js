@@ -66,9 +66,12 @@ define(function(require) {
 				GEPPETTO.on(Events.Experiment_loaded, function(){
 					G.resetCamera();
 				});
-				GEPPETTO.on(Events.Experiment_deleted, function(){
+				GEPPETTO.on(Events.Experiment_deleted, function(e){
+					var name = e.name;
+					var id = e.id;
 		            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, 
-		            		"Experiment was deleted successfully");
+		            		"Experiment " + name + " with id " +
+		            		id + " was deleted successfully");
 				});
 	        	GEPPETTO.on(Events.Experiment_replay, function(){
 	        		//delete existing widgets, to allow new ones for new simulation

@@ -48,6 +48,7 @@
 			ModelTree_populated : "experiment:modeltreepopulated",
 			SimulationTree_populated : "experiment:simulationtreepopulated",
 			Play_Experiment : "play_experiment",
+			Update_Experiment : "update_experiment",
 			Experiment_deleted : "experiment_deleted"
 		};
 define(function(require) {
@@ -90,6 +91,10 @@ define(function(require) {
 	        	GEPPETTO.on(Events.Play_Experiment, function(){
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(Events.Play_Experiment);
+	        	});
+	        	GEPPETTO.on(Events.Update_Experiment, function(){
+	        		//notify widgets a restart of data is needed
+	        		GEPPETTO.WidgetsListener.update(Events.Update_Experiment);
 	        	});
 			},
 		};

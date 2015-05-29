@@ -31,11 +31,17 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Web worker for generating events
+ * Web worker for counting steps
  * 
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
+var lastExecutedStep = 0;
+
 onmessage = function(e) {
 	var timer = e.data[0];
-	setInterval(function(){postMessage(timer); }, timer);
+	var step = e.data[1];
+	setInterval(function(){
+		lastExecutedStep = lastExecutedStep + step;
+		postMessage(lastExecutedStep);
+	}, timer);
 }

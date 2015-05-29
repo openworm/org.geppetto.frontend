@@ -62,6 +62,7 @@ define(function(require) {
 		status : null,
 		parent : null,
 		variables : null,
+		playOptions : {},
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -165,11 +166,19 @@ define(function(require) {
 		},
 
 		/**
-		 * Play experiment
+		 * Play experiment.
+		 * Takes a JS object as parameter where two options can be set,
+		 * but not together: steps or playAll.
+		 * If experiment is to be play all at once:
+		 * {playAll : true} 
+		 * If experiment is to be play by timeSteps:
+		 * {steps : 1} where the value can be something else than 1.
 		 *
 		 * @command ExperimentNode.play()
 		 */
-		play : function(){
+		play : function(options){
+			//set options
+			this.playOptions = options;
 			if(this.status == ExperimentStatus.COMPLETED){
 				var parameters = {};
 				parameters["experimentId"] = this.id;
@@ -199,6 +208,10 @@ define(function(require) {
 		
 		getVariables : function(){
 			return this.variables;
+		},
+		
+		getPlayOptions : function(){
+			return this.playOptions;
 		},
 
 		/**

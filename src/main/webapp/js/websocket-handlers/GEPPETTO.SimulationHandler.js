@@ -106,13 +106,34 @@ define(function(require) {
                         
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
         	GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
-        	
+
+        	//get active experiment
+			var experiment = window.Project.getActiveExperiment();
+			//retrieve options for experiment
+			var playOptions = experiment.getPlayOptions();
+			var lastExecutedStep = 0;
+			var steps = playOptions.steps;
+			var playAll = playOptions.playAll;
+			
+			//create web worker
             var worker = new Worker("assets/js/ExperimentWorker.js");
-            worker.postMessage(1000);
+
+            //only use web worker if user doesn't want to play all at once
+			if(playAll === null || playAll == undefined){
+				GEPPETTO.Console.log("update experiment");
+	            //tells worker to update each half a second
+	            worker.postMessage([500,steps]);
+			}else{
+				//no need for web worker when all is playing at once
+	            GEPPETTO.Console.log("Playing experiment" );
+	            GEPPETTO.trigger(Events.Play_Experiment);
+			}
+			
+			//receives message from web worker
             worker.onmessage = function (event) {
-                GEPPETTO.Console.log("Playing experiment" );
-                GEPPETTO.trigger(Events.Play_Experiment);
-                worker.terminate();
+            	//get current timeSteps to execute from web worker
+            	var step = event.data;
+	            GEPPETTO.trigger(Events.Update_Experiment);
              };
         };
         messageHandler[messageTypes.EXPERIMENT_UPDATE] = function(payload) {
@@ -120,9 +141,7 @@ define(function(require) {
             updateTime(updatedRunTime.time);
 
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
-            GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
-            
-            GEPPETTO.trigger(Events.Play_Experiment);
+            GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);            
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function(payload) {            

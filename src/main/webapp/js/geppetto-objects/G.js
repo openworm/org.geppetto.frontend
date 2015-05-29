@@ -155,22 +155,6 @@ define(function(require) {
 			},
 
 			/**
-			 * Gets the object for the current Simulation, if any.
-			 *
-			 * @command G.getCurrentSimulation()
-			 * @returns {Simulation} Returns current Simulation object if it exists
-			 */
-			getCurrentSimulation: function() {
-				//return simulation object if one has been loaded
-				if(GEPPETTO.Simulation.isLoaded()) {
-					return JSON.stringify(GEPPETTO.Simulation);
-				}
-				else {
-					return GEPPETTO.Resources.NO_SIMULATION_TO_GET;
-				}
-			},
-
-			/**
 			 * Get all commands and descriptions available for object G.
 			 *
 			 * @command G.help()
@@ -304,11 +288,10 @@ define(function(require) {
 			 */
 			shareOnTwitter : function(){
 				var shareURL = 'http://geppetto.org';
-				
-				if(GEPPETTO.Simulation.isLoaded()){
-					shareURL = "http://live.geppeto.org//?sim=" + GEPPETTO.Simulation.simulationURL;
-				}
-				
+
+				//TODO: How to share experiment on twitter? Used to be Sim URL
+				//shareURL = "http://live.geppeto.org//?sim=" + GEPPETTO.Simulation.simulationURL;
+
 				GEPPETTO.Share.twitter(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!');
 			
 				return GEPPETTO.Resources.SHARE_ON_TWITTER;
@@ -322,9 +305,8 @@ define(function(require) {
 			shareOnFacebook : function(){
 				var shareURL = 'http://geppetto.org';
 				
-				if(GEPPETTO.Simulation.isLoaded()){
-					shareURL = "http://live.geppeto.org/?sim=" + GEPPETTO.Simulation.simulationURL;
-				}
+				//TODO: How to share experiment url in FB, used to be simulation URL
+				//shareURL = "http://live.geppeto.org/?sim=" + GEPPETTO.Simulation.simulationURL;
 				
 				GEPPETTO.Share.facebook(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','');			
 				

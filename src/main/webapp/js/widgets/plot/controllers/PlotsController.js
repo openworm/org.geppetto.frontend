@@ -115,6 +115,18 @@ define(function(require) {
 				for(var i = 0; i < this.widgets.length; i++) {
 					var plot = this.widgets[i];
 
+					plot.options.showAll = true;
+					//update plot with new data set
+					plot.updateDataSet();
+				}
+			}
+			
+			//update plotting widgets
+			else if(event == Events.Update_Experiment) {
+				//loop through all existing widgets
+				for(var i = 0; i < this.widgets.length; i++) {
+					var plot = this.widgets[i];
+
 					//update plot with new data set
 					plot.updateDataSet();
 				}

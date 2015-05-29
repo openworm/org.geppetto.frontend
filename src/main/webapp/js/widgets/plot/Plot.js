@@ -80,9 +80,7 @@ define(function(require) {
 						bottom: 15
 					}
 				},
-				timeSteps : {
-					ShowAll : false
-				},
+				showAll : false
 			},
 
 			/**
@@ -141,7 +139,7 @@ define(function(require) {
 	        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
 	        	});
 		        
-				if (state!= null) {					
+				if (state!= null) {	
 					if(state instanceof Array){
 						this.datasets.push({
 							data : state
@@ -155,48 +153,8 @@ define(function(require) {
 								+ "already being plotted.";
 							}
 						}
-						var timeSeries = state.getTimeSeries();
-						var timeSeriesData = new Array();
-						var id = state.getInstancePath();
-						var i =0;
-						for(var key in timeSeries){
-							var value = timeSeries[key].getValue();
-							timeSeriesData.push([i,value]);
-							i++;
-							if(value<this.yMin){
-								this.yMin = value;
-							}
-							if(value > this.yMax){
-								this.yMax = value;
-							}
-						}
 						
-						if(timeSeries.length > 1){
-							if(this.options.yaxis.max < this.yMax){
-								this.options.yaxis.max = this.yMax;
-							}
-							if(this.options.yaxis.min > this.yMin){
-								this.options.yaxis.min = this.yMin;
-							}
-							if(this.options.timeSteps.ShowAll == true){
-								this.limit = timeSeries.length;
-								this.options.xaxis.max = this.limit;
-								//this.options.axisLabels = true;
-								this.options.series.downsample.threshold =1000;
-								this.setSize(550,850);
-							}
-							if(this.options.xaxis.show){
-								this.options.xaxes=[{
-						            axisLabel: 'Time in '+GEPPETTO.Simulation.time.getTimeSeries()[0].getUnit(),
-						            position : "bottom"
-						        }];
-							}
-						}
-						this.datasets.push({
-							label : id,
-							variable : state,
-							data : timeSeriesData
-						});						
+						this.plotAll(state);
 					}
 				}
 
@@ -212,6 +170,50 @@ define(function(require) {
 				return "Line plot added to widget";
 			},
 			
+			plotAll : function(state){
+				var timeSeries = state.getTimeSeries();
+				var timeSeriesData = new Array();
+				var id = state.getInstancePath();
+				var i =0;
+				for(var key in timeSeries){
+					var value = timeSeries[key].getValue();
+					timeSeriesData.push([i,value]);
+					i++;
+					if(value<this.yMin){
+						this.yMin = value;
+					}
+					if(value > this.yMax){
+						this.yMax = value;
+					}
+				}
+				
+				if(timeSeries.length > 1){
+					if(this.options.yaxis.max < this.yMax){
+						this.options.yaxis.max = this.yMax;
+					}
+					if(this.options.yaxis.min > this.yMin){
+						this.options.yaxis.min = this.yMin;
+					}
+					if(this.options.showAll == true){
+						this.limit = timeSeries.length;
+						this.options.xaxis.max = this.limit;
+						//this.options.axisLabels = true;
+						this.options.series.downsample.threshold =1000;
+						this.setSize(550,850);
+					}
+					if(this.options.xaxis.show){
+						this.options.xaxes=[{
+				            axisLabel: 'Time in '+GEPPETTO.Simulation.time.getTimeSeries()[0].getUnit(),
+				            position : "bottom"
+				        }];
+					}
+				}
+				this.datasets.push({
+					label : id,
+					variable : state,
+					data : timeSeriesData
+				});						
+			},
 			/**
 			 * Takes two time series and plots one against the other. To plot
 			 * array(s) , use it as plotData([[1,2],[2,3]]) To plot an object ,
@@ -289,48 +291,51 @@ define(function(require) {
 			/**
 			 * Updates a data set, use for time series
 			 */
-			updateDataSet: function() {
+			updateDataSet: function(options) {
 				for(var key in this.datasets) {
-					var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
+					if(this.options.showAll){
+						this.plotAll( this.datasets[key].variable);
+					}else{
+						var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
 
-					if(!this.labelsUpdated) {
-						var unit = this.datasets[key].variable.getTimeSeries()[0].getUnit();
-						if(unit != null) {
-							var labelY = unit;
-							//Matteo: commented until this can move as it doesn't make sense for it to be static.
-							//also ms should not be harcoded but should come from the simulator as the timescale could
-							//be different
-							var labelX = "";
-							//Simulation timestep (ms) " + Simulation.timestep;
-							//this.setAxisLabel(labelY, labelX);
-							this.labelsUpdated = true;
-						}
-					}
-
-					var oldata = this.datasets[key].data;;
-					var reIndex = false;
-
-					if(oldata.length > this.limit) {
-						oldata.splice(0, 1);
-						reIndex = true;
-					}
-
-					oldata.push([ oldata.length, newValue]);
-
-					if(reIndex) {
-						// re-index data
-						var indexedData = [];
-						for(var index = 0, len = oldata.length; index < len; index++) {
-							var value = oldata[index][1];
-							indexedData.push([ index, value ]);
+						if(!this.labelsUpdated) {
+							var unit = this.datasets[key].variable.getTimeSeries()[0].getUnit();
+							if(unit != null) {
+								var labelY = unit;
+								//Matteo: commented until this can move as it doesn't make sense for it to be static.
+								//also ms should not be harcoded but should come from the simulator as the timescale could
+								//be different
+								var labelX = "";
+								//Simulation timestep (ms) " + Simulation.timestep;
+								//this.setAxisLabel(labelY, labelX);
+								this.labelsUpdated = true;
+							}
 						}
 
-						this.datasets[key].data = indexedData;
-					}
-					else {
-						this.datasets[key].data = oldata;
-					}
+						var oldata = this.datasets[key].data;;
+						var reIndex = false;
 
+						if(oldata.length > this.limit) {
+							oldata.splice(0, 1);
+							reIndex = true;
+						}
+
+						oldata.push([ oldata.length, newValue]);
+
+						if(reIndex) {
+							// re-index data
+							var indexedData = [];
+							for(var index = 0, len = oldata.length; index < len; index++) {
+								var value = oldata[index][1];
+								indexedData.push([ index, value ]);
+							}
+
+							this.datasets[key].data = indexedData;
+						}
+						else {
+							this.datasets[key].data = oldata;
+						}
+					}
 				}
 
 				if(this.plot != null){

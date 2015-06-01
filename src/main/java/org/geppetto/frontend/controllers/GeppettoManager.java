@@ -247,11 +247,13 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#deleteExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void deleteExperiment(String requestId, IExperiment experiment)
+	public void deleteExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
 		IGeppettoProject project=experiment.getParentProject();
+		getRuntimeProject(project).closeExperiment(experiment);
 		project.getExperiments().remove(experiment);
 		DataManagerHelper.getDataManager().deleteExperiment(experiment);
+		//TODO Need to make sure everything is getting cleared, results, aspect configurations, etc.
 	}
 
 	/*
@@ -266,6 +268,16 @@ public class GeppettoManager implements IGeppettoManager
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.geppetto.core.manager.IDropBoxManager#unlinkDropBoxAccount()
+	 */
+	@Override
+	public void unlinkDropBoxAccount()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -433,5 +445,17 @@ public class GeppettoManager implements IGeppettoManager
 		// TODO Auto-generated method stub
 		
 	}
+
+	/* (non-Javadoc)
+	 * @see org.geppetto.core.manager.IProjectManager#checkExperimentsStatus(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
+	 */
+	@Override
+	public List<? extends IExperiment> checkExperimentsStatus(String requestId, IGeppettoProject project)
+	{
+		//TODO This could be more sophisticated and return only the projects which have changed their status because of a run
+		return project.getExperiments();
+	}
+
+
 
 }

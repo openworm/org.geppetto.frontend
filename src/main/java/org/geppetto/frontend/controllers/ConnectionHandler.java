@@ -42,7 +42,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +54,8 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.core.data.model.ExperimentStatus;
-import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
-import org.geppetto.core.data.model.IInstancePath;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
@@ -280,7 +276,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param experimentID
 	 * @param projectId
-	 * @throws GeppettoExecutionException 
+	 * @throws GeppettoExecutionException
 	 */
 	public void clearWatchLists(String requestID, long experimentID, long projectId) throws GeppettoExecutionException
 	{
@@ -330,8 +326,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 					SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
 					entry.getValue().apply(updateClientVisitor);
 					String simTree = updateClientVisitor.getSerializedTree();
-					//remove first and last bracket of sim tree before adding to string
-					//that'll be send to client
+					// remove first and last bracket of sim tree before adding to string
+					// that'll be send to client
 					String formattedTree = simTree.substring(1, simTree.length() - 1);
 					simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
 				}
@@ -350,7 +346,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			error(null, "Error playing experiment, the experiment " + experimentId + " was not found in project " + projectId);
 		}
 	}
-	
+
 	/**
 	 * @param requestID
 	 * @param aspectInstancePath
@@ -370,8 +366,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
 				entry.getValue().apply(updateClientVisitor);
 				String simTree = updateClientVisitor.getSerializedTree();
-				//remove first and last bracket of sim tree before adding to string
-				//that'll be send to client
+				// remove first and last bracket of sim tree before adding to string
+				// that'll be send to client
 				String formattedTree = simTree.substring(1, simTree.length() - 1);
 				modelTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
 			}
@@ -405,8 +401,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
 				entry.getValue().apply(updateClientVisitor);
 				String simTree = updateClientVisitor.getSerializedTree();
-				//remove first and last bracket of sim tree before adding to string
-				//that'll be send to client
+				// remove first and last bracket of sim tree before adding to string
+				// that'll be send to client
 				String formattedTree = simTree.substring(1, simTree.length() - 1);
 				simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
 			}
@@ -435,17 +431,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		ModelFormat modelFormat = ServicesRegistry.getModelFormat(format);
 		try
 		{
-			if (modelFormat == null){
+			if(modelFormat == null)
+			{
 				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
 			}
-			else{
-				//Convert model
+			else
+			{
+				// Convert model
 				File file = geppettoManager.downloadModel(aspectInstancePath, modelFormat, experiment, geppettoProject);
-	
-				//Zip folder
+
+				// Zip folder
 				Path path = ZipDirectory.getZipFromDirectory(file);
-				
-				//Send zip file to the client
+
+				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);
 			}
 		}
@@ -454,7 +452,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			error(e, "Error downloading model for " + aspectInstancePath + " in format " + format);
 		}
 	}
-	
+
 	/**
 	 * @param requestID
 	 * @param aspectInstancePath
@@ -467,14 +465,15 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			List<ModelFormat> supportedOutputs = geppettoManager.getSupportedOuputs(aspectInstancePath, experiment, geppettoProject);
-			
+
 			String supportedOutputsString = "[";
-			for (ModelFormat supportedOutput : supportedOutputs){
+			for(ModelFormat supportedOutput : supportedOutputs)
+			{
 				supportedOutputsString += "\"" + supportedOutput.getModelFormat() + "\",";
 			}
-			supportedOutputsString = supportedOutputsString.substring(0, supportedOutputsString.length()-1);
+			supportedOutputsString = supportedOutputsString.substring(0, supportedOutputsString.length() - 1);
 			supportedOutputsString += "]";
-			
+
 			websocketConnection.sendMessage(requestID, OutboundMessages.GET_SUPPORTED_OUTPUTS, supportedOutputsString);
 		}
 		catch(GeppettoExecutionException e)
@@ -735,7 +734,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param projectId
 	 */
-	public void checkExperiments(String requestID, String projectId)
+	public void checkExperimentStatus(String requestID, String projectId)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		try
@@ -743,11 +742,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(projectId));
 			if(geppettoProject != null)
 			{
+				List<? extends IExperiment> experiments = geppettoManager.checkExperimentsStatus(requestID, geppettoProject);
 				String status = "[";
-				List<? extends IExperiment> experiments = geppettoProject.getExperiments();
 				for(IExperiment e : experiments)
 				{
-					status += "{\"projectID\":" + '"' +projectId + '"' + ",\"status\":" + '"'+ e.getStatus().toString() + '"'+ "},";
+					status += "{\"projectID\":" + '"' + projectId + '"' + ",\"experimentID\":" + '"' + e.getId() + '"' + ",\"status\":" + '"' + e.getStatus().toString() + '"' + "},";
 
 				}
 				status = status.substring(0, status.length() - 1);
@@ -766,15 +765,27 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
-	public void deleteExperiment(String requestID, long experimentId,
-			long projectId) {
+	/**
+	 * @param requestID
+	 * @param experimentId
+	 * @param projectId
+	 */
+	public void deleteExperiment(String requestID, long experimentId, long projectId)
+	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 
 		if(experiment != null)
 		{
-			geppettoManager.deleteExperiment(requestID, experiment);
-			String update = "{\"id\":" + '"' +experiment.getId() + '"' + ",\"name\":" + '"'+ experiment.getName() + '"'+ "}";
+			try
+			{
+				geppettoManager.deleteExperiment(requestID, experiment);
+			}
+			catch(GeppettoExecutionException e)
+			{
+				error(e, "Error while deleting the experiment");
+			}
+			String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"name\":" + '"' + experiment.getName() + '"' + "}";
 			websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, update);
 		}
 		else

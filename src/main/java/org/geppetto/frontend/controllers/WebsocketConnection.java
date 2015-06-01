@@ -32,7 +32,6 @@
  *******************************************************************************/
 package org.geppetto.frontend.controllers;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -41,16 +40,13 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.manager.IGeppettoManager;
@@ -374,18 +370,18 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case SET_PARAMETERS:
 			{
-				Map<String, String> parameters3 = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
 
-				String modelPath = parameters3.get("model");
+				String modelPath = parameters.get("model");
 				// remove model path from parameters map that was sent from server
-				parameters3.remove(modelPath);
-				connectionHandler.setParameters(requestID, modelPath, parameters3);
+				parameters.remove(modelPath);
+				connectionHandler.setParameters(requestID, modelPath, parameters);
 				break;
 			}
 			case EXPERIMENT_STATUS:
-				connectionHandler.checkExperiments(requestID, gmsg.data);
+				connectionHandler.checkExperimentStatus(requestID, gmsg.data);
 				break;
 			default:
 			{

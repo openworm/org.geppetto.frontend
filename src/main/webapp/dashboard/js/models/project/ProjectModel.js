@@ -33,7 +33,7 @@ define([
                 if (item.simulationRuns !== undefined && item.simulationRuns !== null && item.simulationRuns.length > 0){
                     item.status = item.simulationRuns[item.simulationRuns.length - 1].status;
                 }
-                item.url = url + '?load_project_from_id=' + data.id + '&experiment_id=' + item.id;
+                item.url = url + '?load_project_from_id=' + data.id + '&experimentId=' + item.id;
             });
             return data;
         },

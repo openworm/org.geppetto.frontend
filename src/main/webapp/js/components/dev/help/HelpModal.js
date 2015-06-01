@@ -20,8 +20,8 @@ define(function (require) {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <Button type="button" className="btn btn-info pull-left" icon="icon-play" onClick={this.startTutorial}>Start Tutorial </Button>
-                            <a className="btn btn-info pull-right" icon="icon-file-text" href="http://docs.geppetto.org" target="_blank">Docs </a>
+                            <Button type="button" className="btn btn-info pull-left" icon="fa-play" onClick={this.startTutorial}>Start Tutorial </Button>
+                            <a className="btn btn-info pull-right" icon="fa-file-text" href="http://docs.geppetto.org" target="_blank">Docs </a>
                             <h4 className="modal-title pagination-centered">Quick Help</h4>
                         </div>
                         <div className="modal-body">

@@ -111,13 +111,17 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param projectId
 	 */
-	public void loadProjectFromId(String requestID, String projectId)
+	public void loadProjectFromId(String requestID, long projectId, long experimentId)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		try
 		{
-			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(Long.parseLong(projectId));
+			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
 			loadGeppettoProject(requestID, geppettoProject);
+			if(experimentId!=-1)
+			{
+				loadExperiment(requestID, experimentId, projectId);
+			}
 		}
 		catch(NumberFormatException e)
 		{

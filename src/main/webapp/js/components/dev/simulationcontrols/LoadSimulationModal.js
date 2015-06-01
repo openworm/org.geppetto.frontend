@@ -113,7 +113,7 @@ define(function (require) {
                                             <button ref="selectUrlBtn" type="button" className={this.state.loadFromURL ? "btn btn-default active" : "btn btn-default"} onClick={this.onClickUrl}>URL</button>
                                             <button ref="selectCustomBtn" type="button" className={this.state.loadFromURL ? "btn btn-default" : "btn btn-default active"}onClick={this.onClickCustom}>Custom</button>
                                         </div>
-                                        <a className="icon-question-sign" href="http://docs.geppetto.org/en/latest/simtutorial.html" target="_blank"></a>
+                                        <a className="fa-question-sign" href="http://docs.geppetto.org/en/latest/simtutorial.html" target="_blank"></a>
                                     </div>
                                 </div>
                             {this.state.loadFromURL ?

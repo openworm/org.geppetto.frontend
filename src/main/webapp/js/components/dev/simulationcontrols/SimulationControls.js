@@ -2,7 +2,6 @@ define(function(require) {
 
     var React = require('react');
 
-    var LoadButton = require('./buttons/LoadButton');
     var StartButton = require('./buttons/StartButton');
     var PauseButton = require('./buttons/PauseButton');
     var StopButton = require('./buttons/StopButton');
@@ -51,8 +50,7 @@ define(function(require) {
                 HelpButton({disabled:false}),
                 StopButton({disabled:this.state.disableStop}),
                 PauseButton({disabled:this.state.disablePause}),
-                StartButton({disabled:this.state.disableStart}),
-                LoadButton({disabled:this.state.disableLoad})
+                StartButton({disabled:this.state.disableStart})
             );
         }
 

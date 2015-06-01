@@ -26,7 +26,7 @@ define(function(require) {
             	<div className="modal fade" id="loading-spinner">
             		<div className="spinner-backdrop">
 	            		<div className="spinner-container">
-	            			<div className="asterisk icon-spin"></div>
+	            			<div className="asterisk fa fa-spin"></div>
 	            			<p id="loadingmodaltext" className="orange">{this.props.text}</p>
 	            		</div>
             		</div>

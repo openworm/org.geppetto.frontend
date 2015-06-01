@@ -63,7 +63,7 @@
             <div id="geppettologo"></div>
             <div id="consoleButtonContainer">
                 <button class="btn" data-clipboard-target="clipboard_text" id="consoleButton">
-                    <icon class="icon-terminal"></icon>
+                    <icon class="fa fa-terminal"></icon>
                     Console
                 </button>
             </div>

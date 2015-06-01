@@ -139,7 +139,7 @@ public class WebsocketConnection extends MessageInbound
 	 */
 	public void sendBinaryMessage(String requestID, Path path)
 	{
-		//TODO: We are sending file name and data but it can be improved to send a type and message
+		// TODO: We are sending file name and data but it can be improved to send a type and message
 		try
 		{
 			long startTime = System.currentTimeMillis();
@@ -155,9 +155,9 @@ public class WebsocketConnection extends MessageInbound
 			buffer.put(name);
 			buffer.put(data);
 
-			//write binary message in the socket
+			// write binary message in the socket
 			getWsOutbound().writeBinaryMessage(buffer);
-			
+
 			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a file of " + bufferSize / 1024 + "KB to the client";
 			logger.info(debug);
 		}
@@ -204,7 +204,15 @@ public class WebsocketConnection extends MessageInbound
 			}
 			case LOAD_PROJECT_FROM_ID:
 			{
-				connectionHandler.loadProjectFromId(requestID, gmsg.data);
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				if(parameters.containsKey("experimentId"))
+				{
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+				}
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.loadProjectFromId(requestID, projectId,experimentId);
 				break;
 			}
 			case LOAD_PROJECT_FROM_CONTENT:

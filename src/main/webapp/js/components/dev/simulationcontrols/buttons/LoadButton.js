@@ -25,7 +25,7 @@ define(function (require) {
             return {
                 label: 'Load Simulation',
                 className: 'pull-right',
-                icon:'icon-folder-open-alt',
+                icon:'fa fa-folder-open',
                 onClick: this.onClick
             }
         }

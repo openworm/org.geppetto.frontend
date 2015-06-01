@@ -20,7 +20,7 @@ define(function (require) {
             return {
                 label: 'Pause',
                 className: 'pull-right',
-                icon: 'icon-pause',
+                icon: 'fa fa-pause',
                 onClick: this.onClick
             }
         }

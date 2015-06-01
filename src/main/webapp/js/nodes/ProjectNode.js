@@ -169,7 +169,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		 * @param {URL} projectID - Id of project to load
 		 * @returns {String}  Status of attempt to load simulation using url.
 		 */
-		loadFromID: function(projectID) {
+		loadFromID: function(projectID,experimentID) {
 			//TODO: Add logic for what happens after loading a new project
 			//when one is already loaded
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
@@ -181,7 +181,10 @@ define([ 'jquery', 'underscore', 'backbone',
 				GEPPETTO.FE.update(webGLStarted);
 				//Keep going with load of simulation only if webgl container was created
 				if(webGLStarted) {
-					GEPPETTO.MessageSocket.send("load_project_from_id", projectID);
+					var parameters = {};
+					parameters["experimentId"] = experimentID;
+					parameters["projectId"] = projectID;
+					GEPPETTO.MessageSocket.send("load_project_from_id", parameters);
 					this.initializationTime = new Date();
 					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);

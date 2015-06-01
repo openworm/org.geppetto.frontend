@@ -31,7 +31,7 @@ define(function (require) {
             return {
                 label: 'Help',
                 className: 'pull-right btn-info help-button',
-                icon:'icon-info-sign',
+                icon:'fa fa-info-circle',
                 onClick: this.onClick
             }
         }

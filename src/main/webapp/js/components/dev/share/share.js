@@ -10,18 +10,18 @@ define(function (require) {
                 <div>
                     <div id="shareTab">
                         <button className="btn" id="share">
-                            <i className="icon-share icon-xlarge"></i>
+                            <i className="fa fa-share icon-xlarge"></i>
                         </button>
                     </div>
                     <div id="geppetto-share" className="col-md-1 share-panel">
                         <p>
                             <a className="btn btn-warning" onClick={GEPPETTO.G.shareOnFacebook}>
-                                <i className="icon-xlarge icon-facebook"></i>
+                                <i className="icon-xlarge fa fa-facebook"></i>
                             </a>
                         </p>
                         <p>
                             <a className="btn btn-warning" onClick={GEPPETTO.G.shareOnTwitter}>
-                                <i className="icon-xlarge icon-twitter"></i>
+                                <i className="icon-xlarge fa fa-twitter"></i>
                             </a>
                         </p>
                     </div>

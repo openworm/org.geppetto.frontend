@@ -28,7 +28,7 @@ define(function (require) {
             return {
                 label: 'Start',
                 className: 'pull-right',
-                icon: 'icon-play',
+                icon: 'fa fa-play',
                 onClick: this.onClick
             };
         }

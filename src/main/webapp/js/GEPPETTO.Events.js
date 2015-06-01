@@ -40,15 +40,13 @@
 		 */
 		var Events = {
 			Select : "experiment:selection_changed",
-			Experiment_replay : "experiment:replay",
-			Widgets_restarted : "widgets:restarted",
+			Experiment_over : "experiment:over",
 			Project_loaded : "project:loaded",
 			Experiment_loaded : "experiment:loaded",
-			Experiment_stopped : "experiment:stopped",
 			ModelTree_populated : "experiment:modeltreepopulated",
 			SimulationTree_populated : "experiment:simulationtreepopulated",
-			Play_Experiment : "play_experiment",
-			Update_Experiment : "update_experiment",
+			Experiment_play : "experiment:play",
+			Experiment_update : "experiment:update",
 			Experiment_deleted : "experiment_deleted"
 		};
 define(function(require) {
@@ -73,15 +71,9 @@ define(function(require) {
 		            		"Experiment " + name + " with id " +
 		            		id + " was deleted successfully");
 				});
-	        	GEPPETTO.on(Events.Experiment_replay, function(){
-	        		//delete existing widgets, to allow new ones for new simulation
-	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-	        		//notify factory classes reload is happenning
-	        		GEPPETTO.NodeFactory.reload();
-	        	});
-	        	GEPPETTO.on(Events.Widgets_restarted, function(){
+	        	GEPPETTO.on(Events.Experiment_over, function(){
 	        		//notify widgets a restart of data is needed
-	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+	        		GEPPETTO.WidgetsListener.update(Events.Experiment_over);
 	        	});
 	        	GEPPETTO.on(Events.ModelTree_populated, function(){
 	        		//notify widgets a restart of data is needed
@@ -91,13 +83,13 @@ define(function(require) {
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(Events.SimulationTree_populated);
 	        	});
-	        	GEPPETTO.on(Events.Play_Experiment, function(){
+	        	GEPPETTO.on(Events.Experiment_update, function(parameters){
 	        		//notify widgets a restart of data is needed
-	        		GEPPETTO.WidgetsListener.update(Events.Play_Experiment);
+	        		GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);
 	        	});
-	        	GEPPETTO.on(Events.Update_Experiment, function(){
+	        	GEPPETTO.on(Events.Experiment_play, function(parameters){
 	        		//notify widgets a restart of data is needed
-	        		GEPPETTO.WidgetsListener.update(Events.Update_Experiment);
+	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
 	        	});
 			},
 		};

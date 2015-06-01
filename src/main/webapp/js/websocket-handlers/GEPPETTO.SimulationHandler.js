@@ -108,34 +108,11 @@ define(function(require) {
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
         	GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
 
-        	//get active experiment
-			var experiment = window.Project.getActiveExperiment();
-			//retrieve options for experiment
-			var playOptions = experiment.getPlayOptions();
-			var lastExecutedStep = 0;
-			var steps = playOptions.steps;
-			var playAll = playOptions.playAll;
-			
-			//create web worker
-            var worker = new Worker("assets/js/ExperimentWorker.js");
-
-            //only use web worker if user doesn't want to play all at once
-			if(playAll === null || playAll == undefined){
-				GEPPETTO.Console.log("update experiment");
-	            //tells worker to update each half a second
-	            worker.postMessage([500,steps]);
-			}else{
-				//no need for web worker when all is playing at once
-	            GEPPETTO.Console.log("Playing experiment" );
-	            GEPPETTO.trigger(Events.Play_Experiment);
-			}
-			
-			//receives message from web worker
-            worker.onmessage = function (event) {
-            	//get current timeSteps to execute from web worker
-            	var step = event.data;
-	            GEPPETTO.trigger(Events.Update_Experiment);
-             };
+        	var experiment = window.Project.getActiveExperiment();
+        	if(!experiment.played){
+        		experiment.experimentUpdateWorker();
+        	}
+        	experiment.played = true;
         };
         messageHandler[messageTypes.EXPERIMENT_UPDATE] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update);
@@ -154,7 +131,11 @@ define(function(require) {
 
             	GEPPETTO.Console.debugLog("Project with id "+ projectID + 
             			" has status " + status);
+            	
+            	//set status on exp node if diff
             }
+            
+            //loop through
             
             GEPPETTO.Main.getStatusWorker().terminate();
         };

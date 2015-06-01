@@ -75,7 +75,7 @@ define(function(require) {
 				//create web worker for checking status
 	            this.statusWorker = new Worker("assets/js/PullStatusWorker.js");
 	            
-	            this.statusWorker.postMessage(5000);
+	            this.statusWorker.postMessage(1000);
 	            
 				//receives message from web worker
 	            this.statusWorker.onmessage = function (event) {

@@ -146,9 +146,9 @@ define(function(require) {
 			 *
 			 * @param {Object} arguments - Set arguments with information to update the widgets
 			 */
-			update: function(arguments) {
+			update: function(event, parameters) {
 				for(var i = 0, len = this._subscribers.length; i < len; i++) {
-					this._subscribers[ i ].update(arguments);
+					this._subscribers[ i ].update(event, parameters);
 				}
 			}
 		};

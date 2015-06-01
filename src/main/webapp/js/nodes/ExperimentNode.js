@@ -63,6 +63,8 @@ define(function(require) {
 		parent : null,
 		variables : null,
 		playOptions : {},
+		played : false,
+		worker : null,
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -75,6 +77,7 @@ define(function(require) {
 			this.id = options.id;
 			this.status = options.status;
 			this.variables = new Array();
+			this.played = false;
 		},
 
 		/**
@@ -124,6 +127,10 @@ define(function(require) {
 		 */
 		getStatus : function() {
 			return this.status;
+		},
+		
+		setStatus : function(status){
+			this.status = status;
 		},
 
 		/**
@@ -180,11 +187,47 @@ define(function(require) {
 			//set options
 			this.playOptions = options;
 			if(this.status == ExperimentStatus.COMPLETED){
-				var parameters = {};
-				parameters["experimentId"] = this.id;
-				parameters["projectId"] = this.getParent().getId();
-				GEPPETTO.MessageSocket.send("play_experiment", parameters);
+	            GEPPETTO.trigger(Events.Experiment_play);
+				if(!this.played){
+					var parameters = {};
+					parameters["experimentId"] = this.id;
+					parameters["projectId"] = this.getParent().getId();
+					GEPPETTO.MessageSocket.send("play_experiment", parameters);
+				}else{
+					this.experimentUpdateWorker();
+				}
+			}else{
+				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, 
+	            		"Experiment " + name + " with id " +
+	            		id + " isn't completed, and can't be played.");
 			}
+		},
+		
+		experimentUpdateWorker : function(){
+			var lastExecutedStep = 0;
+			var steps = this.playOptions.step;
+			var playAll = this.playOptions.playAll;
+			
+			//create web worker
+			this.worker = new Worker("assets/js/ExperimentWorker.js");
+
+			//only use web worker if user doesn't want to play all at once
+			GEPPETTO.Console.debugLog("update experiment");
+			//tells worker to update each half a second
+			this.worker.postMessage([20,steps, playAll]);
+
+			//receives message from web worker
+            this.worker.onmessage = function (event) {
+            	//get current timeSteps to execute from web worker
+            	var step = event.data[0];
+            	var playAllFlag = event.data[1];
+            	var parameters = {steps : step, playAll : playAllFlag};
+	            GEPPETTO.trigger(Events.Experiment_update, parameters);
+	            if(playAllFlag){
+	            	this.terminate();
+	            	this =undefined;
+	            }
+             };
 		},
 
 		/**

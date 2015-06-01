@@ -83,7 +83,7 @@ define(function(require) {
 		 * 
 		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
-		update: function(event) {
+		update: function(event, parameters) {
 			//delete plot widget(s)
 			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
@@ -97,38 +97,28 @@ define(function(require) {
 					plot.cleanDataSets();
 				}
 			}
-
+			
 			//update plotting widgets
-			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-				//loop through all existing widgets
-				for(var i = 0; i < this.widgets.length; i++) {
-					var plot = this.widgets[i];
-
-					//update plot with new data set
-					plot.updateDataSet();
-				}
+			else if(event == Events.Experiment_play) {
 			}
 			
 			//update plotting widgets
-			else if(event == Events.Play_Experiment) {
-				//loop through all existing widgets
-				for(var i = 0; i < this.widgets.length; i++) {
-					var plot = this.widgets[i];
-
-					plot.options.showAll = true;
-					//update plot with new data set
-					plot.updateDataSet();
-				}
+			else if(event == Events.Experiment_over) {
 			}
 			
 			//update plotting widgets
-			else if(event == Events.Update_Experiment) {
+			else if(event == Events.Experiment_update) {
+				var playAll = parameters.playAll;
+				var step = parameters.steps;
 				//loop through all existing widgets
 				for(var i = 0; i < this.widgets.length; i++) {
 					var plot = this.widgets[i];
 
+					if(playAll){
+						plot.options.playAll = true;
+					}
 					//update plot with new data set
-					plot.updateDataSet();
+					plot.updateDataSet(step);
 				}
 			}
 		},

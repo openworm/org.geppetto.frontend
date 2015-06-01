@@ -40,8 +40,9 @@ var lastExecutedStep = 0;
 onmessage = function(e) {
 	var timer = e.data[0];
 	var step = e.data[1];
+	var playAll = e.data[2];
 	setInterval(function(){
 		lastExecutedStep = lastExecutedStep + step;
-		postMessage(lastExecutedStep);
+		postMessage([lastExecutedStep,playAll]);
 	}, timer);
 }

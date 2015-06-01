@@ -80,7 +80,7 @@ define(function(require) {
 						bottom: 15
 					}
 				},
-				showAll : false
+				playAll : false
 			},
 
 			/**
@@ -197,7 +197,7 @@ define(function(require) {
 					this.options.yaxis.max = this.yMax;
 					this.options.yaxis.min = this.yMin;
 					
-					if(this.options.showAll == true){
+					if(this.options.playAll == true){
 						this.limit = timeSeries.length;
 						this.options.xaxis.max = this.limit;
 						//this.options.axisLabels = true;
@@ -291,9 +291,9 @@ define(function(require) {
 			/**
 			 * Updates a data set, use for time series
 			 */
-			updateDataSet: function(options) {
+			updateDataSet: function(step) {
 				for(var key in this.datasets) {
-					if(this.options.showAll){
+					if(this.options.playAll){
 						var timeSeriesData = 
 							this.getTimeSeriesData( this.datasets[key].variable);
 						
@@ -301,10 +301,10 @@ define(function(require) {
 						
 						this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 					}else{
-						var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
+						var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
 
 						if(!this.labelsUpdated) {
-							var unit = this.datasets[key].variable.getTimeSeries()[0].getUnit();
+							var unit = this.datasets[key].variable.getTimeSeries()[step].getUnit();
 							if(unit != null) {
 								var labelY = unit;
 								//Matteo: commented until this can move as it doesn't make sense for it to be static.

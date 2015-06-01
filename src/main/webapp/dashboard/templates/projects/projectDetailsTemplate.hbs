@@ -1,6 +1,8 @@
 <div class="row">
     <div class="peoject-heading">
-        <h3>{{name}}</h3>
+        <div class="col-md-10">{{name}}</div>
+        <a href="#"><i class="fa fa-folder-open fa-2 icon"></i></a>
+    	<a href="#"><i class="fa fa-trash-o fa-2 icon"></i></a>
     </div>
     <div role="tabpanel">
         <!-- Nav tabs -->
@@ -13,12 +15,7 @@
         <div class="tab-content experiments">
             <div role="tabpanel" class="tab-pane active" id="details">
                 <dl class="dl-horizontal">
-                    <!--dt class="instance-path">Some data:</dt>
-                    <dd>Statistics</dd-->
-                    <dt class="instance-path">Simulation URL:</dt>
-                    <dd><a href="{{simUrl}}" target="_blank">Click to open</a></dd>
-                    <!--dt class="instance-path">Created by:</dt>
-                    <dd>Test User</dd-->
+
                 </dl>
             </div>
 
@@ -38,9 +35,8 @@
                                         {{name}}
                                         </a>
                                         &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <a href="{{url}}" target="_blank">
-                                        <img src="imgs/geppettosymbol.png" width="20" title="Click to open" />
-                                        </a>
+                                        <a href="{{url}}" target="_blank"><i class="fa fa-folder-open fa-1 icon"></i></a>
+                                        <a href="#"><i class="fa fa-cloud-download fa-1 icon"></i></a>
                                     </div>
                                 </div>
                             </h4>
@@ -51,17 +47,18 @@
                         <div class="panel-body">
                             <dl class="dl-horizontal">
                                 {{#each aspectConfigurations}}
+	                                <div class="menuHeader" title="These are the parameters that have been changed for this experiment">Model parameters</div>
 	                                {{#each modelParameter}}
    		                                <dt class="instance-path" title={{variable.localInstancePath}}>{{variable.localInstancePath}}</dt>
        	        	                    <dd>{{value}}</dd>
                     	            {{/each}}
+                    	            <div class="menuHeader" title="These are the variables that the experiment is watching">Watched Variables</div>
                                     {{#each watchedVariables}}
                                         <dt class="instance-path" title={{instancePath}}>{{instancePath}}</dt>
                                         <dd></dd>
                                     {{/each}}
                                 {{/each}}
                             </dl>
-                            <div class="experiment-down"><a href="#"><img src="imgs/down-small.png"></a></div>
                         </div>
                     </div>
                 {{/each}}
@@ -69,8 +66,4 @@
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <a href="#"><img src="imgs/down.png"></a>
-    <a href="#"><img src="imgs/trash.png"></a>
 </div>

@@ -39,7 +39,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			}));
 			$('#filter').keyup(this.filter);
 			this.collection.fetch({
-				async: false,
+				async : false,
 				success : this.renderProjects,
 				error : this.onError
 			});
@@ -74,7 +74,19 @@ define([ 'jquery', 'underscore', 'backbone',
 
 		showProject : function(event) {
 			$(".selected").removeClass("selected");
-			$(event.target).addClass("selected");
+			$(".geppettoSymbolSel").attr('class','geppettoSymbol');
+			var target = $(event.target);
+			if (target.attr('class') == "geppettoSymbol") {
+				//they clicked on the logo
+				target.attr('class','geppettoSymbolSel');
+				target = target.parent();
+			}
+			else
+			{
+				//they clicked on the outer square
+				target.children().attr('class','geppettoSymbolSel');
+			}
+			target.addClass("selected");
 			var id = $(event.target).attr("project-id");
 			if (id === undefined) {
 				id = $(event.target).parents(".project-preview").attr(

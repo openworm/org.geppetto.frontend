@@ -10,7 +10,6 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-
 .footer {
 	background-color: #f5f5f5;
 	bottom: 0;
@@ -128,8 +127,10 @@ code {
 }
 
 .peoject-heading {
+	margin-top: 10px;
 	margin-bottom: 15px;
-	margin-top: -15px;
+	font-size:25px;
+	font-weight:400;
 }
 
 .experiments {
@@ -138,19 +139,27 @@ code {
 
 .instance-path {
 	text-align: left !important;
-	width: 80%;
+	width: 100%;
+	font-weight:200;
 }
 
+.menuHeader
+{
+	margin-bottom: 7px;
+	font-weight:400;
+	color:#004252;
+}
 dt {
 	margin-bottom: 7px;
-	width: 80%;
+	width: 500px!important;
 }
 
 dd {
 	margin-bottom: 7px;
+	font-weight:400;
 }
 
-.collapse-striped>div:nth-child(4n + 1)>div,.collapse-striped>div:nth-child(4n + 2)>div
+.collapse-striped>div:nth-child(4n + 1)>div, .collapse-striped>div:nth-child(4n + 2)>div
 	{
 	background-color: #fefefe;
 }
@@ -168,7 +177,7 @@ dd {
 	margin-top: 2px;
 }
 
-.nav-tabs>li.active>a,.nav-tabs>li.active>a:focus,.nav-tabs>li.active>a:hover
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover
 	{
 	border: 0;
 	border-bottom: 3px solid #ff6d00;
@@ -177,11 +186,11 @@ dd {
 }
 
 .QUEUED {
-	background: lightblue;
+	background: #00ccff;
 }
 
 .RUNNING {
-	background: blue;
+	background: #ffd800;
 }
 
 .ERROR {
@@ -189,14 +198,14 @@ dd {
 }
 
 .COMPLETED {
-	background: green;
+	background: #7fcf00;
 }
 
 .DELETED {
 	background: grey;
 }
 
-#SCROLLBARS /* Gmail style scrollbar */  
+#SCROLLBARS /* Gmail style scrollbar */       
 ::-webkit-scrollbar {
 	width: 12px
 }
@@ -333,4 +342,62 @@ body::-webkit-scrollbar-corner {
 	border: solid #fff;
 	border-width: 3px 0 0 3px;
 	box-shadow: inset 1px 1px 0 rgba(31, 32, 34, .14);
+}
+
+.fa-1 {
+	font-size: 18px !important;
+}
+
+.fa-2 {
+	font-size: 25px !important;
+}
+
+.fa-3 {
+	font-size: 4em !important;
+}
+
+.fa-4 {
+	font-size: 7em !important;
+}
+
+.geppettoSymbol {
+	background-image: url("../imgs/geppettosymbol.png");
+	background-size: 80px 80px;
+	height: 80px;
+	width: 80px;
+	margin: 0 auto;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.geppettoSymbol:focus {
+	outline: none;
+}
+
+.geppettoSymbolSel {
+	background-image: url("../imgs/geppettosymbolsel.png");
+	background-size: 80px 80px;
+	height: 80px;
+	width: 80px;
+	margin: 0 auto;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.icon {
+	color: #009dc4;
+}
+
+.icon:hover {
+	color: #0183a3;
+}
+
+a {
+	color: #009dc4;
+}
+
+a:hover {
+	color: #0183a3;
 }

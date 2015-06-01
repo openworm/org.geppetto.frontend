@@ -6,7 +6,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="assets/css/custom-theme/jquery-ui-1.10.0.custom.css" />
-    <link rel="stylesheet" href="assets/css/font-awesome.css" />
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
     <link rel="stylesheet" href="assets/css/codemirror.css" />
     <link rel="stylesheet" href="assets/css/lesser-dark.css" />
     <link rel="stylesheet" href="assets/css/jsConsole.css" />

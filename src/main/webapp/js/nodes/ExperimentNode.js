@@ -194,6 +194,8 @@ define(function(require) {
 					parameters["projectId"] = this.getParent().getId();
 					GEPPETTO.MessageSocket.send("play_experiment", parameters);
 				}else{
+					this.worker.terminate();
+					this.worker = undefined;
 					this.experimentUpdateWorker();
 				}
 			}else{
@@ -225,7 +227,6 @@ define(function(require) {
 	            GEPPETTO.trigger(Events.Experiment_update, parameters);
 	            if(playAllFlag){
 	            	this.terminate();
-	            	this =undefined;
 	            }
              };
 		},

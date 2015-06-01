@@ -7,16 +7,15 @@ define([ 'jquery', 'underscore', 'backbone' ], function($, _, Backbone) {
 			}
 		},
 		url : "currentuser",
-		// url: "api/session.json",
 
 		initialize : function() {
 			this.fetch({
-				async: false
+				async : false
 			});
 		},
 
 		parse : function(data) {
-			if (!data.id) {
+			if (!data.name) {
 				this.set("user", $.extend({}, this.attributes.user,
 						this.defaults));
 			} else {

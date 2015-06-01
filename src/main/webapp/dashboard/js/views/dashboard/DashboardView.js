@@ -39,6 +39,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			}));
 			$('#filter').keyup(this.filter);
 			this.collection.fetch({
+				async: false,
 				success : this.renderProjects,
 				error : this.onError
 			});

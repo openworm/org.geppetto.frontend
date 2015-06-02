@@ -169,21 +169,6 @@ define(function(require) {
 				updateRuntimeTree : function(jsonRuntimeTree){
 					this.updateNode(jsonRuntimeTree);
 					this.updateVisualTrees(jsonRuntimeTree);
-					this.updateWidgets();
-				},
-				
-				updateWidgets : function(){
-					//send command to widgets that new data is available
-					GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE);
-
-					//update scene brightness
-					for(var key in GEPPETTO.G.listeners) {
-						//retrieve the simulate state from watch tree
-						var simState = GEPPETTO.Utility.deepFind(windows.Project.runTimeTree, key);
-
-						//update simulation state
-						GEPPETTO.G.listeners[key](simState);
-					}
 				},
 
 				/**Create Model Tree for aspect

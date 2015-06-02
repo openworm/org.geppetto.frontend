@@ -162,12 +162,9 @@ define(function(require) {
 
 				var plotHolder = $("#" + this.id);
 				if(this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
 					plotHolder.resize();
 				}
-				else {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
-				}
+				this.plot = $.plot(plotHolder, this.datasets, this.options);
 				
 				return "Line plot added to widget";
 			},
@@ -288,17 +285,17 @@ define(function(require) {
 			 * Updates a data set, use for time series
 			 */
 			updateDataSet: function(step) {
-            	console.log("step update : "+ step);
 
-				for(var key in this.datasets) {
-					if(this.options.playAll){
-						var timeSeriesData = 
-							this.getTimeSeriesData( this.datasets[key].variable);
-						
-						this.datasets[key].data = timeSeriesData;
-						
-						this.plot = $.plot($("#" + this.id), this.datasets, this.options);
-					}else{
+				if(this.options.playAll){
+					var timeSeriesData = 
+						this.getTimeSeriesData( this.datasets[key].variable);
+					
+					this.datasets[key].data = timeSeriesData;
+					
+					this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+				}
+				else{
+					for(var key in this.datasets) {
 						var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
 
 						if(!this.labelsUpdated) {
@@ -339,11 +336,10 @@ define(function(require) {
 							this.datasets[key].data = oldata;
 						}
 					}
-				}
-				
-				if(this.plot != null){
-					this.plot.setData(this.datasets);
-					this.plot.draw();
+					if(this.plot != null){
+						this.plot.setData(this.datasets);
+						this.plot.draw();
+					}
 				}
 			},
 

@@ -88,6 +88,16 @@ define(function(require) {
 	        		GEPPETTO.WidgetsListener.update(Events.SimulationTree_populated);
 	        	});
 	        	GEPPETTO.on(Events.Experiment_update, function(parameters){
+	        		if(parameters.steps != null || undefined){
+	        			//update scene brightness
+	        			for(var key in GEPPETTO.G.listeners) {
+	        				//retrieve the simulate state from watch tree
+	        				var simState = GEPPETTO.Utility.deepFind(window.Project.runTimeTree, key);
+
+	        				//update simulation state
+	        				GEPPETTO.G.listeners[key](simState,parameters.steps);
+	        			}
+	        		}
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);
 	        	});

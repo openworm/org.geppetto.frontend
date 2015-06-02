@@ -445,9 +445,9 @@ define(function(require) {
 			 * @param {Function} normalizationFunction
 			 */
 			addBrightnessFunction: function(aspect,modulation,normalizationFunction) {
-				this.addOnNodeUpdatedCallback(modulation, function(varnode){
+				this.addOnNodeUpdatedCallback(modulation, function(varnode,step){
 			    	GEPPETTO.SceneController.lightUpEntity(aspect.getInstancePath(),
-			    			normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[0].getValue()) : varnode.getTimeSeries()[0].getValue());
+			    			normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[step].getValue()) : varnode.getTimeSeries()[0].getValue());
 				});
 			},
 

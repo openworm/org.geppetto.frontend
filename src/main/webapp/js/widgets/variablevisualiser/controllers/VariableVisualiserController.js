@@ -74,7 +74,7 @@ define(function(require) {
 		 *
 		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
-		update: function(event) {
+		update: function(event,parameters) {
 			//delete a widget(s)
 			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
 				this.removeWidgets();
@@ -82,15 +82,16 @@ define(function(require) {
 
 			//reset widget's datasets
 			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-//				for (var i = 0; i < this.widgets.length; i++) {
-//					this.widgets[i].clearVariable();
-//				}
+				for (var i = 0; i < this.widgets.length; i++) {
+					this.widgets[i].clearVariable();
+				}
 			}
 
 			//update widgets
-			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+			else if (event == Events.Experiment_update) {
+				var step = parameters.steps;
 				for (var i = 0; i < this.widgets.length; i++) {
-					this.widgets[i].updateVariable();
+					this.widgets[i].updateVariable(step);
 				}
 			}
 		}

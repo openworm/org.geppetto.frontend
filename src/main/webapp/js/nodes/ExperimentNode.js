@@ -213,8 +213,6 @@ define(function(require) {
 			//create web worker
 			this.worker = new Worker("assets/js/ExperimentWorker.js");
 
-			//only use web worker if user doesn't want to play all at once
-			GEPPETTO.Console.debugLog("update experiment");
 			//tells worker to update each half a second
 			this.worker.postMessage([10,steps, playAll]);
 

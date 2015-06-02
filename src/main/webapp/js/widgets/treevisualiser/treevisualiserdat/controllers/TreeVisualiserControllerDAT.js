@@ -121,7 +121,7 @@ define(function(require) {
 				}
 			}
 			// update treevisualiser widgets
-			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+			else if (event == Events.Experiment_update) {
 				// loop through all existing widgets
 				for (var i = 0; i < treeVisualisersDAT.length; i++) {
 					var treeVisualiserDAT = treeVisualisersDAT[i];

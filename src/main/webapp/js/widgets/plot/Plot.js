@@ -69,7 +69,7 @@ define(function(require) {
 				},
 				xaxis: {
 					min: 0,
-					max: 20,
+					max: 400,
 					show: false,
 					tickLength: 0,
 					ticks : []
@@ -125,10 +125,6 @@ define(function(require) {
 							}
 						}
 					}
-					if(this.options.xaxis.max > this.limit) {
-						this.limit = this.options.xaxis.max;
-					}
-					
 				}
 
 				var labelsMap = this.labelsMap;
@@ -292,6 +288,8 @@ define(function(require) {
 			 * Updates a data set, use for time series
 			 */
 			updateDataSet: function(step) {
+            	console.log("step update : "+ step);
+
 				for(var key in this.datasets) {
 					if(this.options.playAll){
 						var timeSeriesData = 

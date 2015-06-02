@@ -71,7 +71,11 @@ define(function(require) {
 		            		"Experiment " + name + " with id " +
 		            		id + " was deleted successfully");
 				});
-	        	GEPPETTO.on(Events.Experiment_over, function(){
+	        	GEPPETTO.on(Events.Experiment_over, function(e){
+	        		var name = e.name;
+					var id = e.id;
+	        		GEPPETTO.Console.log("Experiment " + name + " with "+
+	        				id + " is over ");
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(Events.Experiment_over);
 	        	});

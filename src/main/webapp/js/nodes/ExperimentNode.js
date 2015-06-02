@@ -65,6 +65,7 @@ define(function(require) {
 		playOptions : {},
 		played : false,
 		worker : null,
+		maxSteps : null,
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -216,18 +217,26 @@ define(function(require) {
 			//only use web worker if user doesn't want to play all at once
 			GEPPETTO.Console.debugLog("update experiment");
 			//tells worker to update each half a second
-			this.worker.postMessage([20,steps, playAll]);
+			this.worker.postMessage([10,steps, playAll]);
 
 			//receives message from web worker
             this.worker.onmessage = function (event) {
             	//get current timeSteps to execute from web worker
             	var step = event.data[0];
-            	var playAllFlag = event.data[1];
-            	var parameters = {steps : step, playAll : playAllFlag};
-	            GEPPETTO.trigger(Events.Experiment_update, parameters);
-	            if(playAllFlag){
-	            	this.terminate();
-	            }
+            	var maxSteps = window.Project.getActiveExperiment().maxSteps;
+            	if(step >= maxSteps){
+            		var parameters = {name : window.Project.getActiveExperiment().getName(),
+            						  id : window.Project.getActiveExperiment().getId()};
+            		GEPPETTO.trigger(Events.Experiment_over, parameters);
+            		this.terminate;
+            	}else{
+            		var playAllFlag = event.data[1];
+            		var parameters = {steps : step, playAll : playAllFlag};
+            		GEPPETTO.trigger(Events.Experiment_update, parameters);
+            		if(playAllFlag){
+            			this.terminate();
+            		}
+            	}
              };
 		},
 

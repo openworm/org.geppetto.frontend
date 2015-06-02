@@ -118,15 +118,15 @@ define(function(require) {
 					// create visualization subtree only at first
 					for ( var key in node.aspectConfigurations) {
 						var aC = node.aspectConfigurations[key];
-						
+
 						var variables = aC.watchedVariables;
 						if(variables!=null || variables != undefined){
-						var variableName = variables[key].entityInstancePath + "." +
+							for(var key in variables){
+								var variableName = variables[key].entityInstancePath + "." +
 								variables[key].aspect + "." +
 								variables[key].localInstancePath;
-						for(var key in variables){
-							e.getVariables().push(variableName);
-						}
+								e.getVariables().push(variableName);
+							}
 						}
 					}
 					

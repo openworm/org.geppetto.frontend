@@ -109,6 +109,21 @@ define(function(require) {
         	GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
 
         	var experiment = window.Project.getActiveExperiment();
+        	//we loop through variables of experiment to find node with 
+        	//max number of time series values, this will be used for knowing
+        	//when to stop updating experiment
+        	var variables = experiment.getVariables();
+        	var maxSteps = 0;
+        	for(var key in variables){
+        		var node = eval(variables[key]);
+        		if(node!=null || node != undefined){
+        			if(node.getTimeSeries().length>maxSteps){
+        				maxSteps = node.getTimeSeries().length;
+        			}
+        		}
+        	}
+        	experiment.maxSteps = maxSteps;
+        	
         	if(!experiment.played){
         		experiment.experimentUpdateWorker();
         	}
@@ -130,12 +145,8 @@ define(function(require) {
             	var status = experimentStatus[key].status;
 
             	GEPPETTO.Console.debugLog("Project with id "+ projectID + 
-            			" has status " + status);
-            	
-            	//set status on exp node if diff
+            			" has status " + status);            	
             }
-            
-            //loop through
             
             GEPPETTO.Main.getStatusWorker().terminate();
         };

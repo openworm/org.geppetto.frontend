@@ -108,7 +108,7 @@ define(function(require) {
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
 			
 			dataset.valueDict = {};
-			this.prepareTree(this.gui, dataset.data);
+			this.prepareTree(this.gui, dataset.data,0);
 			this.datasets.push(dataset);
 			
 			dataset.isDisplayed = true;
@@ -137,7 +137,7 @@ define(function(require) {
 		 * @param {Object} parent - Parent tree to paint
 		 * @param {Array} data - Data to paint
 		 */
-		prepareTree : function(parent, data) {
+		prepareTree : function(parent, data,step) {
 			if (data._metaType != null){
 				if('labelName' in this.options){
 					label = data[this.options.labelName];
@@ -153,7 +153,7 @@ define(function(require) {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = new function(){};
 						
-						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
 						
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
 						//Add class to dom element depending on node metatype
@@ -181,7 +181,7 @@ define(function(require) {
 					else{
 						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
 						if(!set.__ul.closed){
-							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
 						}
 					}
 				}
@@ -250,7 +250,7 @@ define(function(require) {
 						var parentFolderTmp = parentFolder;
 							for (var childIndex in children){
 								if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
-									this.prepareTree(parentFolderTmp, children[childIndex]);
+									this.prepareTree(parentFolderTmp, children[childIndex],step);
 								}
 							}
 						if (this.options.expandNodes){
@@ -264,11 +264,11 @@ define(function(require) {
 		/**
 		 * Updates the data that the TreeVisualiserDAT is rendering
 		 */
-		updateData : function() {
+		updateData : function(step) {
 			for ( var key in this.datasets) {
 				dataset = this.datasets[key];
 				if (dataset.variableToDisplay != null) {
-					this.prepareTree(this.gui, dataset.data);
+					this.prepareTree(this.gui, dataset.data,step);
 				}
 			}
 		},

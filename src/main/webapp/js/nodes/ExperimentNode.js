@@ -195,8 +195,7 @@ define(function(require) {
 					parameters["projectId"] = this.getParent().getId();
 					GEPPETTO.MessageSocket.send("play_experiment", parameters);
 				}else{
-					this.worker.terminate();
-					this.worker = undefined;
+					this.terminateWorker();
 					this.experimentUpdateWorker();
 				}
 			}else{
@@ -228,16 +227,23 @@ define(function(require) {
             		var parameters = {name : window.Project.getActiveExperiment().getName(),
             						  id : window.Project.getActiveExperiment().getId()};
             		GEPPETTO.trigger(Events.Experiment_over, parameters);
-            		this.terminate;
+            		window.Project.getActiveExperiment().terminateWorker();
             	}else{
             		var playAllFlag = event.data[1];
             		var parameters = {steps : step, playAll : playAllFlag};
             		GEPPETTO.trigger(Events.Experiment_update, parameters);
             		if(playAllFlag){
-            			this.terminate();
+            			window.Project.getActiveExperiment().terminateWorker();
             		}
             	}
              };
+		},
+		
+		terminateWorker : function(){
+			if(this.worker!=undefined){
+			this.worker.terminate();
+			this.worker= undefined;
+			}
 		},
 
 		/**

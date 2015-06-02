@@ -43,7 +43,7 @@ define(function(require) {
 	return Widget.View.extend({
 			plot: null,
 			datasets: [],
-			limit: 20,
+			limit: 400,
 			options: null,
 			xaxisLabel: null,
 			yaxisLabel: null,
@@ -338,12 +338,12 @@ define(function(require) {
 						else {
 							this.datasets[key].data = oldata;
 						}
-						
-						if(this.plot != null){
-							this.plot.setData(this.datasets);
-							this.plot.draw();
-						}
 					}
+				}
+				
+				if(this.plot != null){
+					this.plot.setData(this.datasets);
+					this.plot.draw();
 				}
 			},
 

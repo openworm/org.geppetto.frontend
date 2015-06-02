@@ -64,7 +64,6 @@ define(function(require) {
 					  }
 				},
 				yaxis: {
-					min: -0.1,
 					max: 1
 				},
 				xaxis: {
@@ -161,10 +160,8 @@ define(function(require) {
 				}
 
 				var plotHolder = $("#" + this.id);
-				if(this.plot == null) {
-					plotHolder.resize();
-				}
 				this.plot = $.plot(plotHolder, this.datasets, this.options);
+				//plotHolder.resize();
 				
 				return "Line plot added to widget";
 			},
@@ -194,7 +191,6 @@ define(function(require) {
 						this.limit = timeSeries.length;
 						this.options.xaxis.max = this.limit;
 						//this.options.axisLabels = true;
-						this.options.series.downsample.threshold =1000;
 						this.setSize(550,850);
 					}
 					if(this.options.xaxis.show){
@@ -287,10 +283,12 @@ define(function(require) {
 			updateDataSet: function(step) {
 
 				if(this.options.playAll){
-					var timeSeriesData = 
-						this.getTimeSeriesData( this.datasets[key].variable);
-					
-					this.datasets[key].data = timeSeriesData;
+					for(var key in this.datasets){
+						var timeSeriesData = 
+							this.getTimeSeriesData( this.datasets[key].variable);
+
+						this.datasets[key].data = timeSeriesData;
+					}
 					
 					this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 				}

@@ -210,6 +210,10 @@ define(function(require) {
 			var steps = this.playOptions.step;
 			var playAll = this.playOptions.playAll;
 			
+			if(steps == null || undefined){
+				steps = 0;
+			}
+			
 			//create web worker
 			this.worker = new Worker("assets/js/ExperimentWorker.js");
 

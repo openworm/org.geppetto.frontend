@@ -43,7 +43,6 @@ onmessage = function(e) {
 	var playAll = e.data[2];
 	setInterval(function(){
 		lastExecutedStep = lastExecutedStep + step;
-		console.log("sending message " + step);
 		postMessage([lastExecutedStep,playAll]);
 	}, timer);
 }

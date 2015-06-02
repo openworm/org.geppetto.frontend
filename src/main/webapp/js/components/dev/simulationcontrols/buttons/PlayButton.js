@@ -6,7 +6,7 @@ define(function (require) {
     return React.createClass({
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
 
-        popoverTitle: 'Start Simulation',
+        popoverTitle: 'Play Experiment',
 
         popoverContent: "Once you have loaded a simulation, it's time to see it in action by pressing Start. Click it now to see the simulation in action",
 
@@ -26,7 +26,7 @@ define(function (require) {
 
         getDefaultProps: function() {
             return {
-                label: 'Start',
+                label: 'Play',
                 className: 'pull-right',
                 icon: 'fa fa-play',
                 onClick: this.onClick

@@ -88,7 +88,7 @@ define(function(require) {
 	        		GEPPETTO.WidgetsListener.update(Events.SimulationTree_populated);
 	        	});
 	        	GEPPETTO.on(Events.Experiment_update, function(parameters){
-	        		if(parameters.steps != null || undefined){
+	        		if(parameters.playAll != null ||parameters.steps != undefined){
 	        			//update scene brightness
 	        			for(var key in GEPPETTO.G.listeners) {
 	        				//retrieve the simulate state from watch tree

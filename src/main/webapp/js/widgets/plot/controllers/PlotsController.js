@@ -112,7 +112,6 @@ define(function(require) {
 				var step = parameters.steps;
 				//loop through all existing widgets
 				for(var i = 0; i < this.widgets.length; i++) {
-					console.log("request upate " + i);
 					var plot = this.widgets[i];
 
 					if(playAll){

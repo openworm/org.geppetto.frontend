@@ -2,7 +2,7 @@ define(function(require) {
 
     var React = require('react');
 
-    var StartButton = require('./buttons/StartButton');
+    var StartButton = require('./buttons/PlayButton');
     var PauseButton = require('./buttons/PauseButton');
     var StopButton = require('./buttons/StopButton');
     var HelpButton = require('./buttons/HelpButton');

@@ -139,7 +139,7 @@ code {
 
 .instance-path {
 	text-align: left !important;
-	width: 100%;
+	width: 90%;
 	font-weight:200;
 }
 
@@ -151,12 +151,14 @@ code {
 }
 dt {
 	margin-bottom: 7px;
-	width: 500px!important;
+	margin-right: 10px;
+	width: 450px!important;
 }
 
 dd {
 	margin-bottom: 7px;
 	font-weight:400;
+	text-align: right;
 }
 
 .collapse-striped>div:nth-child(4n + 1)>div, .collapse-striped>div:nth-child(4n + 2)>div

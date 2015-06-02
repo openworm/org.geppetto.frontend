@@ -4,6 +4,7 @@
         <a href="#"><i class="fa fa-folder-open fa-2 icon"></i></a>
     	<a href="#"><i class="fa fa-trash-o fa-2 icon"></i></a>
     </div>
+	<br>
     <div role="tabpanel">
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
@@ -15,6 +16,7 @@
         <div class="tab-content experiments">
             <div role="tabpanel" class="tab-pane active" id="details">
                 <dl class="dl-horizontal">
+                
 
                 </dl>
             </div>
@@ -49,7 +51,7 @@
                                 {{#each aspectConfigurations}}
 	                                <div class="menuHeader" title="These are the parameters that have been changed for this experiment">Model parameters</div>
 	                                {{#each modelParameter}}
-   		                                <dt class="instance-path" title={{variable.localInstancePath}}>{{variable.localInstancePath}}</dt>
+   		                                <dt class="instance-path" title={{variable.instancePath}}>{{variable.instancePath}}</dt>
        	        	                    <dd>{{value}}</dd>
                     	            {{/each}}
                     	            <div class="menuHeader" title="These are the variables that the experiment is watching">Watched Variables</div>

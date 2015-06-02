@@ -72,7 +72,8 @@ public enum OutboundMessages {
 	EXPERIMENT_LOADED("experiment_loaded"),
 	EXPERIMENT_STATUS("experiment_status"),
 	DELETE_EXPERIMENT("experiment_deleted"), 
-	PLAY_EXPERIMENT("play_experiment");
+	PLAY_EXPERIMENT("play_experiment"), 
+	PROJECT_SAVED("project_saved");
 	
 	private OutboundMessages(final String text) {
 		this.text = text;

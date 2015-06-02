@@ -220,6 +220,15 @@ public class WebsocketConnection extends MessageInbound
 				connectionHandler.loadProjectFromContent(requestID, gmsg.data);
 				break;
 			}
+			case SAVE_PROJECT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.saveProject(requestID,projectId);
+				break;
+			}
 			case LOAD_EXPERIMENT:
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{

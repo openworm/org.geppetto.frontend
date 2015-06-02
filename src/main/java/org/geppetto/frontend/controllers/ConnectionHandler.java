@@ -797,4 +797,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			error(null, "Error deleting experiment, the experiment " + experimentId + " was not found in project " + projectId);
 		}
 	}
+
+	public void saveProject(String requestID, long projectId) {
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+
+		if(geppettoProject != null)
+		{
+			geppettoManager.persistProject(requestID, geppettoProject);
+			String update = "{\"id\":" + '"' + projectId + '"' + "}";
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_SAVED, update);
+		}
+		else
+		{
+			error(null, "Error saving project with id " + projectId + ".");
+		}
+	}
 }

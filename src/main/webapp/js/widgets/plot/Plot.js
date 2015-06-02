@@ -161,7 +161,7 @@ define(function(require) {
 
 				var plotHolder = $("#" + this.id);
 				this.plot = $.plot(plotHolder, this.datasets, this.options);
-				//plotHolder.resize();
+				plotHolder.resize();
 				
 				return "Line plot added to widget";
 			},

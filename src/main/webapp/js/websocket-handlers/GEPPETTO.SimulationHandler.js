@@ -71,7 +71,8 @@ define(function(require) {
             NO_FEATURE : "no_feature",
             EXPERIMENT_STATUS : "experiment_status",
             GET_SUPPORTED_OUTPUTS : "get_supported_outputs",
-            EXPERIMENT_DELETED : "experiment_deleted"
+            EXPERIMENT_DELETED : "experiment_deleted",
+            PROJECT_SAVED : "project_saved",
         };
 
         var messageHandler = {};

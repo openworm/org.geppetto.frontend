@@ -266,6 +266,12 @@ define([ 'jquery', 'underscore', 'backbone',
 			}
 			return loadStatus;
 		},
+		
+		save : function(){
+			var parameters = {};
+			parameters["projectId"] = projectID;
+			GEPPETTO.MessageSocket.send("save_project", parameters);
+		},
 
 		/**
 		 * Print out formatted node

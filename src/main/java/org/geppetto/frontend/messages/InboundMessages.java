@@ -60,7 +60,8 @@ public enum InboundMessages {
 	SET_PARAMETERS("set_parameters"),
 	EXPERIMENT_STATUS("experiment_status"), 
 	PLAY_EXPERIMENT("play_experiment"),
-	DELETE_EXPERIMENT("delete_experiment");
+	DELETE_EXPERIMENT("delete_experiment"),
+	SAVE_PROJECT("save_project");
 
 	
 	private InboundMessages(final String text) {

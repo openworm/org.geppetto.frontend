@@ -269,7 +269,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		
 		save : function(){
 			var parameters = {};
-			parameters["projectId"] = projectID;
+			parameters["projectId"] = this.id;
 			GEPPETTO.MessageSocket.send("save_project", parameters);
 		},
 

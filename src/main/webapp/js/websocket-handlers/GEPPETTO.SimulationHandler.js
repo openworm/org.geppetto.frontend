@@ -151,6 +151,16 @@ define(function(require) {
             
             GEPPETTO.Main.getStatusWorker().terminate();
         };
+        
+        messageHandler[messageTypes.PROJECT_SAVED] = function(payload) {
+            var experimentStatus = JSON.parse(payload.update);
+
+            var projectID = experimentStatus.projectID;
+
+            GEPPETTO.Console.log("Project with id "+ projectID + 
+            		" has been saved.");            	
+
+        };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function(payload) {            
             GEPPETTO.trigger('project:configloaded', payload.configuration);

@@ -804,7 +804,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		if(geppettoProject != null)
 		{
 			geppettoManager.persistProject(requestID, geppettoProject);
-			String update = "{\"id\":" + '"' + projectId + '"' + "}";
+			String update = "{\"projectID\":" + '"' + projectId + '"' + "}";
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_SAVED, update);
 		}
 		else

@@ -40,16 +40,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class GeppettoProjectController
 {
-	
+
 	@Autowired
 	private IGeppettoManager geppettoManager;
-	
+
 	@RequestMapping("/dashboard/geppettoproject/{id}")
 	public @ResponseBody
 	IGeppettoProject getGeppettoProject(@PathVariable("id") int id)
@@ -62,15 +61,14 @@ public class GeppettoProjectController
 		return null;
 	}
 
-	@RequestMapping(value = "/dashboard/geppettoproject/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/dashboard/geppettoproject/delete/{id}")
 	public @ResponseBody
 	Object deleteGeppettoProject(@PathVariable("id") int id)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
-			IGeppettoProject project = dataManager.getGeppettoProjectById(id);
-			dataManager.deleteGeppettoProject(project);
+			dataManager.deleteGeppettoProject(id, geppettoManager.getUser());
 		}
 		return null;
 	}

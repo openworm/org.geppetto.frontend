@@ -156,7 +156,7 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public RuntimeTreeRoot loadExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
-		IGeppettoProject project=experiment.getParentProject();
+		IGeppettoProject project = experiment.getParentProject();
 		try
 		{
 			if(!projects.containsKey(project) && projects.get(project) == null)
@@ -191,8 +191,10 @@ public class GeppettoManager implements IGeppettoManager
 			throw new GeppettoExecutionException("Cannot run an experiment whose status is not design");
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.geppetto.core.manager.IExperimentManager#playExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override
@@ -216,7 +218,7 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void deleteProject(String requestId, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		DataManagerHelper.getDataManager().deleteGeppettoProject(project);
+		DataManagerHelper.getDataManager().deleteGeppettoProject(project.getId(), user);
 	}
 
 	/*
@@ -249,11 +251,11 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void deleteExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
-		IGeppettoProject project=experiment.getParentProject();
+		IGeppettoProject project = experiment.getParentProject();
 		getRuntimeProject(project).closeExperiment(experiment);
 		project.getExperiments().remove(experiment);
 		DataManagerHelper.getDataManager().deleteExperiment(experiment);
-		//TODO Need to make sure everything is getting cleared, results, aspect configurations, etc.
+		// TODO Need to make sure everything is getting cleared, results, aspect configurations, etc.
 	}
 
 	/*
@@ -268,16 +270,18 @@ public class GeppettoManager implements IGeppettoManager
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.geppetto.core.manager.IDropBoxManager#unlinkDropBoxAccount()
 	 */
 	@Override
 	public void unlinkDropBoxAccount()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -443,19 +447,19 @@ public class GeppettoManager implements IGeppettoManager
 	public void cancelExperimentRun(String requestId, IExperiment experiment)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.geppetto.core.manager.IProjectManager#checkExperimentsStatus(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
 	public List<? extends IExperiment> checkExperimentsStatus(String requestId, IGeppettoProject project)
 	{
-		//TODO This could be more sophisticated and return only the projects which have changed their status because of a run
+		// TODO This could be more sophisticated and return only the projects which have changed their status because of a run
 		return project.getExperiments();
 	}
-
-
 
 }

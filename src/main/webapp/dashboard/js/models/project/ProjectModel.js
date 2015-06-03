@@ -34,6 +34,7 @@ define([
                     item.status = item.simulationRuns[item.simulationRuns.length - 1].status;
                 }
                 item.url = url + '?load_project_from_id=' + data.id + '&experimentId=' + item.id;
+                data.deleteUrl = url + '/dashboard/geppettoproject/delete/' + data.id;
             });
             return data;
         },

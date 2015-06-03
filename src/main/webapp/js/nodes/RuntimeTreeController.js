@@ -121,7 +121,7 @@ define(function(require) {
 										clientNode.getTimeSeries().unshift();
 
 										for (var index in received.timeSeries){
-											clientNode.getTimeSeries().unshift(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
+											clientNode.getTimeSeries().push(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
 										}
 
 									} catch (e) {

@@ -38,7 +38,7 @@ define(function(require) {
 
 		var updateTime = function(time) {
 			if(time) {
-				window.Project.time = time;
+				window.Project.getActiveExperiment().time = time;
 			}
 		};
 		

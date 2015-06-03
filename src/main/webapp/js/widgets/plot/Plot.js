@@ -195,7 +195,7 @@ define(function(require) {
 						this.limit = timeSeries.length;
 						this.options.xaxis.max = this.limit;
 						this.options.xaxis.show = true;
-						var timeSeries = window.Project.time.getTimeSeries();
+						var timeSeries = window.Project.time.getActiveExperiment().getTimeSeries();
 						var divideLength = Math.ceil(timeSeries.length/20);
 						var ticks = [];
 						ticks[0] = [0,timeSeries[0].getValue()];

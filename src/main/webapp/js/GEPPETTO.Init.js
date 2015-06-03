@@ -183,7 +183,10 @@ define(function(require) {
 				setupControls();
 				setupListeners();
 	        	//setup listeners for geppetto events that can be triggered
-	            GEPPETTO.Events.listen();
+				if(!GEPPETTO.Events.listening){
+					GEPPETTO.Events.listen();
+					GEPPETTO.Events.listening = true;
+				}
 				return VARS;
 			}
 		};

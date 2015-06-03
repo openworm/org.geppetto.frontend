@@ -46,6 +46,10 @@
 			ModelTree_populated : "experiment:modeltreepopulated",
 			SimulationTree_populated : "experiment:simulationtreepopulated",
 			Experiment_play : "experiment:play",
+			Experiment_replay : "experiment:replay",
+			Experiment_pause : "experiment:pause",
+			Experiment_resume : "experiment:resume",
+			Experiment_stop : "experiment:stop",
 			Experiment_update : "experiment:update",
 			Experiment_deleted : "experiment_deleted"
 		};
@@ -56,12 +60,15 @@ define(function(require) {
 		 */
 		GEPPETTO.Events = {
 				
+			listening : false,
+			
 			listen: function() {
 				GEPPETTO.on(Events.Select, function(){
 	        		//notify widgets that selection has changed in scene
 	        		GEPPETTO.WidgetsListener.update(Events.Select);
 	        	});
 				GEPPETTO.on(Events.Experiment_loaded, function(){
+		            GEPPETTO.trigger("hide:spinner");
 					G.resetCamera();
 				});
 				GEPPETTO.on(Events.Experiment_deleted, function(e){
@@ -101,7 +108,7 @@ define(function(require) {
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);
 	        	});
-	        	GEPPETTO.on(Events.Experiment_play, function(parameters){
+	        	GEPPETTO.on(Events.Experiment_replay, function(parameters){
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
 	        	});

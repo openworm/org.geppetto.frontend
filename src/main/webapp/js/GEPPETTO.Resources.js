@@ -72,6 +72,23 @@ define(function(require) {
 					VISUAL_OBJECT_REFERENCE_NODE: "0x606060",
 					VISUAL_GROUP_ELEMENT_NODE:"0xffffff",
 			},
+			
+			/**
+			 *
+			 * Different status an experiment can be on
+			 *
+			 * @enum
+			 */
+			ExperimentStatus : {
+					DESIGN : "DESIGN",
+					CANCELED : "CANCELED",
+					QUEUED : "QUEUED",
+					RUNNING: "RUNNING",
+					ERROR : "ERROR",
+					COMPLETED : "COMPLETED",
+					DELETED : "DELETED",
+			},
+
 
 			OPACITY : {
 					DEFAULT : 1,

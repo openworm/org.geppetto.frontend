@@ -38,9 +38,7 @@ define(function(require) {
 
 		var updateTime = function(time) {
 			if(time) {
-				//TODO: Where does time come from? where does it go?
-//				GEPPETTO.Simulation.time.getTimeSeries()[0].value = time.timeSeries["quantity0"].value;
-//				GEPPETTO.Simulation.time.getTimeSeries()[0].unit = time.timeSeries["quantity0"].unit;
+				window.Project.time = time;
 			}
 		};
 		
@@ -100,11 +98,9 @@ define(function(require) {
             GEPPETTO.SceneController.populateScene(window["Project"].runTimeTree); 
             
             GEPPETTO.trigger(Events.Experiment_loaded);
-            GEPPETTO.trigger("hide:spinner");
         };
         messageHandler[messageTypes.PLAY_EXPERIMENT] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update);
-            updateTime(updatedRunTime.time);
                         
             GEPPETTO.RuntimeTreeController.updateRuntimeTree(updatedRunTime);
         	GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
@@ -121,6 +117,14 @@ define(function(require) {
         			if(node.getTimeSeries().length>maxSteps){
         				maxSteps = node.getTimeSeries().length;
         			}
+        		}
+        		//assign time to project time node
+        		//TODO: Remove once code from developmetn is merged, code there
+        		//exists to traverse through .dat file and extract all variables,
+        		//current datamanager readrecording requires us feeding it the variables
+        		//we wish to extraact
+        		if(variables[key].indexOf("SimulationTree.time")>-1){
+        			updateTime(node);
         		}
         	}
         	experiment.maxSteps = maxSteps;
@@ -141,12 +145,23 @@ define(function(require) {
         messageHandler[messageTypes.EXPERIMENT_STATUS] = function(payload) {
             var experimentStatus = JSON.parse(payload.update);
 
+            var experiments = window.Project.getExperiments();
             for(var key in experimentStatus){
             	var projectID = experimentStatus[key].projectID;
             	var status = experimentStatus[key].status;
+            	var experimentID = experimentStatus[key].experimentID;
 
-            	GEPPETTO.Console.debugLog("Project with id "+ projectID + 
-            			" has status " + status);            	
+            	GEPPETTO.Console.debugLog("Experiment with id "+ experimentID + 
+            			" has status " + status);
+            	
+            	//changing status in matched experiment
+            	for(var e in experiments){
+            		if(experiments[e].getId()==experimentID){
+            			if(experiments[e].getStatus()!=status){
+            				experiments[e].setStatus(status);
+            			}
+            		}
+            	}
             }
             
             GEPPETTO.Main.getStatusWorker().terminate();

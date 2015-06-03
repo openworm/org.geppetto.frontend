@@ -57,12 +57,12 @@ define(function(require) {
 			 * is created
 			 */
 			defaultPlotOptions:  {
-				series: {
-					shadowSize: 0,
-					downsample: {
-					    threshold: 1000 
-					  }
-				},
+//				series: {
+//					shadowSize: 0,
+//					downsample: {
+//					    threshold: 1000 
+//					  }
+//				},
 				yaxis: {
 					max: 1
 				},
@@ -160,8 +160,13 @@ define(function(require) {
 				}
 
 				var plotHolder = $("#" + this.id);
-				this.plot = $.plot(plotHolder, this.datasets, this.options);
-				plotHolder.resize();
+				if(this.plot == null) {
+					this.plot = $.plot(plotHolder, this.datasets, this.options);
+					plotHolder.resize();
+				}
+				else {
+					this.plot = $.plot(plotHolder, this.datasets, this.options);
+				}
 				
 				return "Line plot added to widget";
 			},
@@ -184,20 +189,26 @@ define(function(require) {
 				}
 				
 				if(timeSeries.length > 1){
-					this.options.yaxis.max = this.yMax;
-					this.options.yaxis.min = this.yMin;
-					
 					if(this.options.playAll == true){
+						this.options.yaxis.max = this.yMax;
+						this.options.yaxis.min = this.yMin;
 						this.limit = timeSeries.length;
 						this.options.xaxis.max = this.limit;
-						//this.options.axisLabels = true;
+						this.options.xaxis.show = true;
+						var timeSeries = window.Project.time.getTimeSeries();
+						var divideLength = Math.ceil(timeSeries.length/20);
+						var ticks = [];
+						ticks[0] = timeSeries[0].getValue();
+						var index = divideLength;
+						var i = 1;
+						while(index < timeSeries.length){
+							ticks[i] = timeSeries[index].getValue();
+							index= Math.ceil(index+divideLength);
+							i++;
+						}
+						this.options.xaxis.tickLength = ticks.length;
+						this.options.xaxis.ticks =ticks;
 						this.setSize(550,850);
-					}
-					if(this.options.xaxis.show){
-						this.options.xaxes=[{
-				            axisLabel: 'Time in '+GEPPETTO.Simulation.time.getTimeSeries()[0].getUnit(),
-				            position : "bottom"
-				        }];
 					}
 				}
 				

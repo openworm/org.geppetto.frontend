@@ -2,7 +2,7 @@ define(function(require) {
 
     var React = require('react');
 
-    var StartButton = require('./buttons/PlayButton');
+    var PlayButton = require('./buttons/PlayButton');
     var PauseButton = require('./buttons/PauseButton');
     var StopButton = require('./buttons/StopButton');
     var HelpButton = require('./buttons/HelpButton');
@@ -13,8 +13,7 @@ define(function(require) {
 
         getInitialState: function() {
             return {
-                disableLoad:false,
-                disableStart:true,
+                disablePlay:true,
                 disablePause:true,
                 disableStop:true
             }
@@ -24,24 +23,27 @@ define(function(require) {
 
             var self = this;
 
-            GEPPETTO.on('simulation:modelloaded', function(){
-                self.setState({disableStart:false, disablePause:true, disableStop:true});
+            GEPPETTO.on(Events.Experiment_loaded, function(){
+            	var experiment = window.Project.getActiveExperiment();
+            	if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+            		self.setState({disablePlay:false, disablePause:true, disableStop:true});
+            	}
             });
             
-            GEPPETTO.on('simulation:started', function(){
-                self.setState({disableStart:true, disablePause:false, disableStop:false});
+            GEPPETTO.on(Events.Experiment_play, function(){
+                self.setState({disablePlay:true, disablePause:false, disableStop:false});
             });
 
-            GEPPETTO.on('simulation:paused', function(){
-                self.setState({disableStart:false, disablePause:true, disableStop:false});
+            GEPPETTO.on(Events.Experiment_pause, function(){
+                self.setState({disablePlay:false, disablePause:true, disableStop:false});
             });
 
-            GEPPETTO.on('simulation:stopped', function(){
-                self.setState({disableStart:false, disablePause:true, disableStop:true});
+            GEPPETTO.on(Events.Experiment_stop, function(){
+                self.setState({disablePlay:false, disablePause:true, disableStop:true});
             });
             
-            GEPPETTO.on('simulation:disable_all', function(){
-                self.setState({disableLoad : true, disableStart:true, disablePause:true, disableStop:true});
+            GEPPETTO.on('disable_all', function(){
+                self.setState({disablePlay:true, disablePause:true, disableStop:true});
             });
         },
 
@@ -50,7 +52,7 @@ define(function(require) {
                 HelpButton({disabled:false}),
                 StopButton({disabled:this.state.disableStop}),
                 PauseButton({disabled:this.state.disablePause}),
-                StartButton({disabled:this.state.disableStart})
+                PlayButton({disabled:this.state.disablePlay})
             );
         }
 

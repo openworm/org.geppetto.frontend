@@ -39,22 +39,6 @@
 define(function(require) {
 
 	var ParameterNode = require('nodes/ParameterNode');
-	/**
-	 *
-	 * Different status an experiment can be on
-	 *
-	 * @enum
-	 */
-	var ExperimentStatus = {
-			DESIGN : "DESIGN",
-			CANCELED : "CANCELED",
-			QUEUED : "QUEUED",
-			RUNNING: "RUNNING",
-			ERROR : "ERROR",
-			COMPLETED : "COMPLETED",
-			DELETED : "DELETED",
-	};
-
 	return Backbone.Model.extend({
 
 		name : "",
@@ -66,6 +50,7 @@ define(function(require) {
 		played : false,
 		worker : null,
 		maxSteps : null,
+		paused : false,
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -140,7 +125,7 @@ define(function(require) {
 		 * @command ExperimentNode.run()
 		 */
 		run : function(){
-			if(this.status == ExperimentStatus.DESIGN){
+			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
@@ -187,22 +172,41 @@ define(function(require) {
 		play : function(options){
 			//set options
 			this.playOptions = options;
-			if(this.status == ExperimentStatus.COMPLETED){
-	            GEPPETTO.trigger(Events.Experiment_play);
-				if(!this.played){
-					var parameters = {};
-					parameters["experimentId"] = this.id;
-					parameters["projectId"] = this.getParent().getId();
-					GEPPETTO.MessageSocket.send("play_experiment", parameters);
+			if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+				if(this.paused){
+					GEPPETTO.trigger(Events.Experiment_play);
+					this.getWorker().postMessage([Events.Experiment_resume]);
+					this.paused = false;
 				}else{
-					this.terminateWorker();
-					this.experimentUpdateWorker();
+					if(!this.played){
+						GEPPETTO.trigger(Events.Experiment_play);
+						var parameters = {};
+						parameters["experimentId"] = this.id;
+						parameters["projectId"] = this.getParent().getId();
+						GEPPETTO.MessageSocket.send("play_experiment", parameters);
+					}else{
+						GEPPETTO.trigger(Events.Experiment_replay);
+						this.terminateWorker();
+						this.experimentUpdateWorker();
+					}
 				}
 			}else{
 				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, 
 	            		"Experiment " + name + " with id " +
 	            		id + " isn't completed, and can't be played.");
 			}
+		},
+		
+		pause : function(){
+			this.paused = true;
+			this.getWorker().postMessage([Events.Experiment_pause]);
+			GEPPETTO.trigger(Events.Experiment_pause);
+		},
+		
+		stop : function(){
+			this.terminateWorker();
+			this.paused = false;
+			GEPPETTO.trigger(Events.Experiment_stop);
 		},
 		
 		experimentUpdateWorker : function(){
@@ -216,9 +220,9 @@ define(function(require) {
 			
 			//create web worker
 			this.worker = new Worker("assets/js/ExperimentWorker.js");
-
+			
 			//tells worker to update each half a second
-			this.worker.postMessage([10,steps, playAll]);
+			this.worker.postMessage([Events.Experiment_play,10,steps, playAll]);
 
 			//receives message from web worker
             this.worker.onmessage = function (event) {
@@ -235,6 +239,7 @@ define(function(require) {
             		var parameters = {steps : step, playAll : playAllFlag};
             		GEPPETTO.trigger(Events.Experiment_update, parameters);
             		if(playAllFlag){
+            			//end worker, since we are playing all 
             			window.Project.getActiveExperiment().terminateWorker();
             		}
             	}
@@ -243,9 +248,13 @@ define(function(require) {
 		
 		terminateWorker : function(){
 			if(this.worker!=undefined){
-			this.worker.terminate();
-			this.worker= undefined;
+				this.worker.terminate();
+				this.worker= undefined;
 			}
+		},
+		
+		getWorker : function(){
+			return this.worker;
 		},
 
 		/**
@@ -254,7 +263,7 @@ define(function(require) {
 		 * @command ExperimentNode.watchVariables()
 		 */
 		watchVariables : function(variables){
-			if(this.status == ExperimentStatus.DESIGN){
+			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
@@ -282,7 +291,7 @@ define(function(require) {
 		 * @returns {ExperimentNode} ExperimentNode for given name
 		 */
 		setParameters : function(parameters){
-			if(this.status == ExperimentStatus.DESIGN){
+			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
 			}
 		},
 
@@ -292,7 +301,7 @@ define(function(require) {
 		 * @command ExperimentNode.downloadResults(recording)
 		 */
 		downloadResults : function(recording){
-			if(this.status == ExperimentStatus.COMPLETED){
+			if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
 
 			}
 		},

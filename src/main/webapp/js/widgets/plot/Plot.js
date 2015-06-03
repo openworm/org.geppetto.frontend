@@ -198,14 +198,16 @@ define(function(require) {
 						var timeSeries = window.Project.time.getTimeSeries();
 						var divideLength = Math.ceil(timeSeries.length/20);
 						var ticks = [];
-						ticks[0] = timeSeries[0].getValue();
+						ticks[0] = [0,timeSeries[0].getValue()];
 						var index = divideLength;
 						var i = 1;
 						while(index < timeSeries.length){
-							ticks[i] = timeSeries[index].getValue();
+							var newTick = [];
+							ticks[i] = [i,timeSeries[index].getValue()];
 							index= Math.ceil(index+divideLength);
 							i++;
 						}
+						GEPPETTO.Console.log(ticks);
 						this.options.xaxis.tickLength = ticks.length;
 						this.options.xaxis.ticks =ticks;
 						this.setSize(550,850);

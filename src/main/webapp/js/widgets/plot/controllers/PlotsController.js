@@ -118,6 +118,7 @@ define(function(require) {
 						plot.options.playAll = true;
 					}else{
 						plot.options.playAll = false;
+						plot.options.xaxis.show =false;
 					}
 					//update plot with new data set
 					plot.updateDataSet(step);

@@ -2,12 +2,16 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'models/project/ProjectModel'
-], function ($, _, Backbone, ProjectModel) {
-
+    'models/project/ProjectModel',
+    'models/session/SessionModel'
+], function ($, _, Backbone, ProjectModel, SessionModel) {
+	var login = 'guest';
+	if (SessionModel.getInstance().get('user')) {
+		login = SessionModel.getInstance().get('user').login;
+	}
     var ProjectsCollection = Backbone.Collection.extend({
         model: ProjectModel,
-        url: "user/guest1/geppettoprojects",
+        url: "user/" + login + "/geppettoprojects",
         
         initialize: function (options) {
             _.bindAll(this,'search', 'parse', "getLimitedString");

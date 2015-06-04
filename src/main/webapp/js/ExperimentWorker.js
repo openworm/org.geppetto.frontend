@@ -40,12 +40,10 @@ var isPaused = false;
 
 onmessage = function(e) {
 	if(e.data[0] == "experiment:pause"){
-		console.log("pausing experiment");
 		isPaused = true;
 	}else if(e.data[0] == "experiment:resume"){
 		isPaused = false;
 	}else if(e.data[0]== "experiment:play"){
-		console.log("experiment play");
 		var timer = e.data[1];
 		var step = e.data[2];
 		var playAll = e.data[3];

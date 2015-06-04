@@ -64,14 +64,22 @@ define(function(require) {
 //					  }
 //				},
 				yaxis: {
-					max: 1
+					max: 1,
+					min : -.1
 				},
 				xaxis: {
 					min: 0,
 					max: 400,
 					show: false,
 					tickLength: 0,
-					ticks : []
+					ticks : [],
+					font: {
+						size: 11
+					},
+					labelWidth : 30,
+					axisLabelPadding: 5,
+					color : "#FFFFFF",
+					alignTicksWithAxis : true,
 				},
 				grid: {
 					margin: {
@@ -92,7 +100,7 @@ define(function(require) {
 				this.name = options.name;
 				this.visible = options.visible;
 				this.datasets = [];
-				this.options = this.defaultPlotOptions;
+				this.options = jQuery.extend({},this.defaultPlotOptions);
 				this.render();
 				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");		
 				
@@ -195,20 +203,33 @@ define(function(require) {
 						this.limit = timeSeries.length;
 						this.options.xaxis.max = this.limit;
 						this.options.xaxis.show = true;
-						var timeSeries = window.Project.time.getActiveExperiment().getTimeSeries();
-						var divideLength = Math.ceil(timeSeries.length/20);
+						var timeSeries = window.Project.getActiveExperiment().time.getTimeSeries();
+						var divideLength = Math.ceil(timeSeries.length/10);
 						var ticks = [];
-						ticks[0] = [0,timeSeries[0].getValue()];
+						var unit = timeSeries[0].getUnit();
+						if(unit!=null){
+							ticks[0] = [0,timeSeries[0].getValue().toFixed(4)+ " " +unit];
+						}else{
+							ticks[0] = [0,timeSeries[0].getValue().toFixed(4)];
+						}
 						var index = divideLength;
 						var i = 1;
 						while(index < timeSeries.length){
 							var newTick = [];
-							ticks[i] = [i,timeSeries[index].getValue()];
+							if(unit!=null){
+								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+" " +unit];
+							}else{
+								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
+							}
 							index= Math.ceil(index+divideLength);
 							i++;
 						}
-						GEPPETTO.Console.log(ticks);
-						this.options.xaxis.tickLength = ticks.length;
+						index= timeSeries.length-1;
+						if(unit!=null){
+							ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+ " " +unit];
+						}else{
+							ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
+						}
 						this.options.xaxis.ticks =ticks;
 						this.setSize(550,850);
 					}
@@ -412,7 +433,7 @@ define(function(require) {
 			resetPlot: function() {
 				if(this.plot != null) {
 					this.datasets = [];
-					this.options = this.defaultPlotOptions;
+					this.options = jQuery.extend({}, this.defaultPlotOptions);
 					var plotHolder = $("#" + this.id);
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
@@ -433,18 +454,7 @@ define(function(require) {
 						}
 					}
 				}
-				if(this.options.xaxis != null) {
-					if(this.options.xaxis.max > this.limit) {
-						this.limit = this.options.xaxis.max;
-					}
-				}
-				
-				if(this.options.xaxis.show){
-					this.options.xaxes= [{
-			            axisLabel: 'Time in '+GEPPETTO.Simulation.time.getTimeSeries()[0].getUnit(),
-			            position : "bottom"
-			        }];
-				}
+				this.limit = this.options.xaxis.max;
 				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 			},
 			

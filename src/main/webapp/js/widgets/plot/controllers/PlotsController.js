@@ -117,8 +117,11 @@ define(function(require) {
 					if(playAll){
 						plot.options.playAll = true;
 					}else{
+						if(plot.options.playAll){
+							var options = {xaxis : {min : 0, max : 400, show : false}};
+							plot.setOptions(options);
+						}
 						plot.options.playAll = false;
-						plot.options.xaxis.show =false;
 					}
 					//update plot with new data set
 					plot.updateDataSet(step);

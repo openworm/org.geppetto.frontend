@@ -334,10 +334,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#setModelParameters(java.lang.String, java.util.Map, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public Map<String, String> setModelParameters(String aspectInstancePath, Map<String, String> parameters, IExperiment experiment, IGeppettoProject project)
+	public boolean setModelParameters(String aspectInstancePath, Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(aspectInstancePath,parameters);
 	}
 
 	/*

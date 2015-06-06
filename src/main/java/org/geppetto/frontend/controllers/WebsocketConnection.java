@@ -390,11 +390,13 @@ public class WebsocketConnection extends MessageInbound
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
-
-				String modelPath = parameters.get("model");
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				String modelAspectPath = parameters.get("modelAspectPath");
 				// remove model path from parameters map that was sent from server
-				parameters.remove(modelPath);
-				connectionHandler.setParameters(requestID, modelPath, parameters);
+				parameters.remove(modelAspectPath);
+				connectionHandler.setParameters(requestID, modelAspectPath, parameters,
+						projectId, experimentId);
 				break;
 			}
 			case EXPERIMENT_STATUS:

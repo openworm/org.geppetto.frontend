@@ -65,7 +65,7 @@ define(function(require) {
             experiment_OVER : "experiment_over",
             GET_MODEL_TREE : "get_model_tree",
             GET_SIMULATION_TREE : "get_simulation_tree",
-            SET_PARAMETER : "set_parameter",
+            SET_PARAMETER : "set_parameters",
             NO_FEATURE : "no_feature",
             EXPERIMENT_STATUS : "experiment_status",
             GET_SUPPORTED_OUTPUTS : "get_supported_outputs",
@@ -220,7 +220,7 @@ define(function(require) {
         };
         
       //handles the case where geppetto is done setting parameters
-        messageHandler[messageTypes.SET_PARAMETER] = function() {
+        messageHandler[messageTypes.SET_PARAMETERS] = function() {
         	 GEPPETTO.Console.log("Sucessfully updated parameters");
         };
         

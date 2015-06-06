@@ -520,22 +520,25 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// TODO what do we do?
 	}
 
-	public void setParameters(String requestID, String modelPath, Map<String, String> parameters)
+	public void setParameters(String requestID, String modelPath, Map<String, 
+			String> parameters, long projectId, long experimentID)
 	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 
-		// boolean parametersSet = visitor.getSimulationService().setParameters(modelPath, parameters);
-		//
-		// // return successful message if set parameter succeeded
-		// if(parametersSet)
-		// {
-		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.SET_PARAMETERS);
-		// }
-		// else
-		// {
-		// String message = "Model Service for " + modelPath + " doesn't support SetParameters feature";
-		// // no parameter feature supported by this model service
-		// this.messageClient(requestID, OUTBOUND_MESSAGE_TYPES.NO_FEATURE, message);
-		// }
+		try
+		{
+			boolean success = geppettoManager.setModelParameters(modelPath, parameters, experiment, geppettoProject);
+			// send to the client the watch lists were added
+			if(success){
+				websocketConnection.sendMessage(requestID, OutboundMessages.SET_PARAMETERS, null);
+			}else{
+				error(null,"There was an error setting parameters");
+			}
+		}
+		catch (GeppettoExecutionException e) {
+			error(e, "There was an error setting parameters");
+		}
 	}
 
 	/**

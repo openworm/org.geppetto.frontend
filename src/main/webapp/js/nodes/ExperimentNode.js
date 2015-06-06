@@ -287,11 +287,16 @@ define(function(require) {
 		/**
 		 * Gets an experiment from this project.
 		 *
-		 * @command ProjectNode.getExperiment(name)
+		 * @command ProjectNode.setParameters(parameters)
 		 * @returns {ExperimentNode} ExperimentNode for given name
 		 */
-		setParameters : function(parameters){
+		setParameters : function(aspectPath, parameters){
 			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
+				var parameters = {};
+				parameters["experimentId"] = this.id;
+				parameters["projectId"] = this.getParent().getId();
+				parameters["modelAspectPath"] = aspectPath;
+				GEPPETTO.MessageSocket.send("set_parameters", parameters);
 			}
 		},
 

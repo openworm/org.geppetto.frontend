@@ -177,7 +177,7 @@ define(function(require) {
 				 * @param modelTree - Server JSON update
 				 */
 				populateAspectModelTree : function(aspectInstancePath, modelTree){
-					var aspect= GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, aspectInstancePath);
+					var aspect= GEPPETTO.Utility.deepFind(window.Project.runTimeTree, aspectInstancePath);
 
 					//populate model tree with server nodes
 					this.createAspectModelTree(aspect.ModelTree, modelTree);

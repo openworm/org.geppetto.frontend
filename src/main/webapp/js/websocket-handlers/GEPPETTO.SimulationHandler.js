@@ -239,10 +239,10 @@ define(function(require) {
         	var update = JSON.parse(payload.get_model_tree);      
         	for (var updateIndex in update){
 	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
-	        	var modelTree = update[updateIndex].modelTree;
+	        	var modelTree = update[updateIndex].ModelTree;
 	        	
 	        	//create client side model tree
-	        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree.ModelTree);
+	        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree);
         	}
         	
         	GEPPETTO.trigger(Events.ModelTree_populated);

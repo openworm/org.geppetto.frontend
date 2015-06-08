@@ -239,6 +239,7 @@ define(function(require) {
             		var parameters = {steps : step, playAll : playAllFlag};
             		GEPPETTO.trigger(Events.Experiment_update, parameters);
             		if(playAllFlag){
+            			GEPPETTO.trigger(Events.Experiment_stop);
             			//end worker, since we are playing all 
             			window.Project.getActiveExperiment().terminateWorker();
             		}
@@ -290,12 +291,13 @@ define(function(require) {
 		 * @command ProjectNode.setParameters(parameters)
 		 * @returns {ExperimentNode} ExperimentNode for given name
 		 */
-		setParameters : function(aspectPath, parameters){
+		setParameters : function(aspectPath, newParameters){
 			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
 				parameters["modelAspectPath"] = aspectPath;
+				parameters["parameters"] = newParameters;
 				GEPPETTO.MessageSocket.send("set_parameters", parameters);
 			}
 		},

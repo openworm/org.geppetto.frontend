@@ -45,6 +45,9 @@ define(function(require) {
             GEPPETTO.on('disable_all', function(){
                 self.setState({disablePlay:true, disablePause:true, disableStop:true});
             });
+            GEPPETTO.on(Events.Experiment_replay, function(){
+                self.setState({disablePlay:true, disablePause:false, disableStop:false});
+            });
         },
 
         render: function () {

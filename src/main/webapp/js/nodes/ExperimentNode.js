@@ -174,17 +174,20 @@ define(function(require) {
 			this.playOptions = options;
 			if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
 				if(this.paused){
+					GEPPETTO.Console.log("pause");
 					GEPPETTO.trigger(Events.Experiment_play);
 					this.getWorker().postMessage([Events.Experiment_resume]);
 					this.paused = false;
 				}else{
 					if(!this.played){
+						GEPPETTO.Console.log("play ");
 						GEPPETTO.trigger(Events.Experiment_play);
 						var parameters = {};
 						parameters["experimentId"] = this.id;
 						parameters["projectId"] = this.getParent().getId();
 						GEPPETTO.MessageSocket.send("play_experiment", parameters);
 					}else{
+						GEPPETTO.Console.log("replay ");
 						GEPPETTO.trigger(Events.Experiment_replay);
 						this.terminateWorker();
 						this.experimentUpdateWorker();
@@ -318,6 +321,16 @@ define(function(require) {
 			parameters["experimentId"] = this.id;
 			parameters["projectId"] = this.getParent().getId();
 			GEPPETTO.MessageSocket.send("delete_experiment", parameters);
+		},
+		
+		uploadResults : function(type){
+			if(type!=null || type!=undefined){
+				var parameters = {};
+				parameters["type"] = type;
+				GEPPETTO.MessageSocket.send("upload_results", parameters);
+			}else{
+				GEPPETTO.MessageSocket.send("upload_results", parameters);
+			}
 		},
 
 		/**

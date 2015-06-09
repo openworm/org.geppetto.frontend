@@ -61,7 +61,10 @@ public enum InboundMessages {
 	EXPERIMENT_STATUS("experiment_status"), 
 	PLAY_EXPERIMENT("play_experiment"),
 	DELETE_EXPERIMENT("delete_experiment"),
-	SAVE_PROJECT("save_project");
+	SAVE_PROJECT("save_project"),
+	LINK_DROPBOX("link_dropbox"),
+	UNLINK_DROPBOX("unlink_drobpox"),
+	UPLOAD_RESULTS("upload_results");
 
 	
 	private InboundMessages(final String text) {

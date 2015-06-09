@@ -71,6 +71,9 @@ define(function(require) {
             GET_SUPPORTED_OUTPUTS : "get_supported_outputs",
             EXPERIMENT_DELETED : "experiment_deleted",
             PROJECT_SAVED : "project_saved",
+            DROPBOX_LINKED : "dropbox_linked",
+            DROPBOX_UNLINKED : "dropbox_unlinked",
+            RESULTS_UPLOADED : "results_uploaded",
         };
 
         var messageHandler = {};
@@ -275,6 +278,18 @@ define(function(require) {
         	GEPPETTO.trigger(Events.SimulationTree_populated);
         	var endCreation = new Date() - initTime;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create simulation tree");
+        };
+        
+        messageHandler[messageTypes.DROPBOX_LINKED] = function(payload) {
+        	
+        };
+        
+        messageHandler[messageTypes.DROPBOX_UNLINKED] = function(payload) {
+        	
+        };
+        
+        messageHandler[messageTypes.RESULTS_UPLOADED] = function(payload) {
+        	
         };
         
 		GEPPETTO.SimulationHandler = {

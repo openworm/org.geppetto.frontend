@@ -354,6 +354,17 @@ define(function(require) {
 				return GEPPETTO.Resources.WAITING;
 			},
 
+			linkDropBox : function(key) {
+				var parameters = {};
+				parameters["key"] = key;
+
+				GEPPETTO.MessageSocket.send("link_dropbox", parameters);
+			},
+			
+			unLinkDropBox : function() {
+				
+			},
+			
 			/**
 			 * State of debug statements, whether they are turned on or off.
 			 *

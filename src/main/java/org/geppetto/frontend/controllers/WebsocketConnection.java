@@ -399,6 +399,35 @@ public class WebsocketConnection extends MessageInbound
 						projectId, experimentId);
 				break;
 			}
+			case LINK_DROPBOX:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				String key = parameters.get("key");
+				connectionHandler.linkDropBox(requestID, key);
+				break;
+			}
+			case UNLINK_DROPBOX:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+						{
+						}.getType());
+				String key = parameters.get("key");
+				connectionHandler.unLinkDropBox(requestID, key);
+				break;
+			}
+			case UPLOAD_RESULTS:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+						{
+						}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				String type = parameters.get("type");
+				connectionHandler.uploadResults(requestID, projectId, experimentId,type);
+				break;
+			}
 			case EXPERIMENT_STATUS:
 				connectionHandler.checkExperimentStatus(requestID, gmsg.data);
 				break;

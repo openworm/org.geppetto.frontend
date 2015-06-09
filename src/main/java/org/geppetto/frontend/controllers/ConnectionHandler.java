@@ -60,6 +60,7 @@ import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
+import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
@@ -814,5 +815,30 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			error(null, "Error saving project with id " + projectId + ".");
 		}
+	}
+
+	public void linkDropBox(String requestID, String key) {
+		try {
+			DropboxUploadService dropboxService = new DropboxUploadService();
+	        dropboxService.link(key);
+			websocketConnection.sendMessage(null, OutboundMessages.DROPBOX_LINKED, null);
+		} catch (Exception e) {
+			error(e, "Unable to link dropbox account.");
+		}
+	}
+
+	public void unLinkDropBox(String requestID, String key) {
+		try {
+			DropboxUploadService dropboxService = new DropboxUploadService();
+	        dropboxService.unlink(key);
+			websocketConnection.sendMessage(null, OutboundMessages.DROPBOX_UNLINKED, null);
+		} catch (Exception e) {
+			error(e, "Unable to unlink dropbox account.");
+		}
+	}
+
+	public void uploadResults(String requestID, long projectId,
+			long experimentId, String type) {
+		
 	}
 }

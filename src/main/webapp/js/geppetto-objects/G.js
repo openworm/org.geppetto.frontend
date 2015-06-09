@@ -355,10 +355,18 @@ define(function(require) {
 			},
 
 			linkDropBox : function(key) {
-				var parameters = {};
-				parameters["key"] = key;
+				if(key!=null || key!=undefined){
+					var parameters = {};
+					parameters["key"] = key;
 
-				GEPPETTO.MessageSocket.send("link_dropbox", parameters);
+					GEPPETTO.MessageSocket.send("link_dropbox", parameters);
+				}
+				else{
+					var dropboxURL = 
+						"https://www.dropbox.com/1/oauth2/authorize?locale=en_US&client_id=kbved8e6wnglk4h&response_type=code";
+					var win=window.open(dropboxURL, '_blank');
+					win.focus();
+				}
 			},
 			
 			unLinkDropBox : function() {

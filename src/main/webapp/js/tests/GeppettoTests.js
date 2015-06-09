@@ -56,11 +56,6 @@ define(function(require) {
 			equal(modalVisible, false, "Help Window Hidden");
 		});
 
-		module("G Object Test");
-		test("Test Get Current Simulation", function() {
-			equal(G.getCurrentSimulation(), GEPPETTO.Resources.NO_SIMULATION_TO_GET, "Testing no simulation scenario.");
-		});
-
 		test("Test Debug Mode", function() {
 			G.debug(true);
 

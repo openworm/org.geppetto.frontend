@@ -281,11 +281,11 @@ define(function(require) {
         };
         
         messageHandler[messageTypes.DROPBOX_LINKED] = function(payload) {
-        	
+        	GEPPETTO.Console.log("Dropbox linked successfully");
         };
         
         messageHandler[messageTypes.DROPBOX_UNLINKED] = function(payload) {
-        	
+        	GEPPETTO.Console.log("Dropbox unlinked succesfully");
         };
         
         messageHandler[messageTypes.RESULTS_UPLOADED] = function(payload) {

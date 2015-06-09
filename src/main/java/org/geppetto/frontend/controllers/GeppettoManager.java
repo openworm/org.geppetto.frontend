@@ -461,4 +461,7 @@ public class GeppettoManager implements IGeppettoManager
 		return project.getExperiments();
 	}
 
+	@Override
+	public void uploadResults(IGeppettoProject project,IExperiment experiment, String type) {
+	}
 }

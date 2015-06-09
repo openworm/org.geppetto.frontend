@@ -839,6 +839,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	public void uploadResults(String requestID, long projectId,
 			long experimentId, String type) {
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		
+		geppettoManager.uploadResults(geppettoProject, experiment,type);
 	}
 }

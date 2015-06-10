@@ -38,8 +38,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-import org.geppetto.core.auth.AuthManager;
 import org.geppetto.core.common.GeppettoExecutionException;
+import org.geppetto.core.data.DataManagerHelper;
+import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,24 +65,28 @@ public class Login
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String login(@RequestParam String username, @RequestParam String password)
 	{
-		Subject currentUser = SecurityUtils.getSubject();
-		if(!currentUser.isAuthenticated())
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		if(!dataManager.isDefault())
 		{
-			UsernamePasswordToken token = new UsernamePasswordToken(username, password);
-			currentUser.login(token);
-		}
-		// TODO Check: how can the current user be stored in a static variable? multiple connections will have different "current user"
-		// AuthManager.setCurrentUser((String) currentUser.getPrincipal());
-		// TODO Check: if the data manager deals with what's on the DB (or any other data source) then should the current
-		// user be stored elsewhere, i.e. in the GeppettoManager? Also there should always be only one current user per session
-		// while the DataManager has thread scope, this might lead to problems. The GeppettoManager has session scope
-		try
-		{
-			geppettoManager.setUser((IUser) currentUser.getPrincipal());
-		}
-		catch(GeppettoExecutionException e)
-		{
-			logger.error(e);
+			Subject currentUser = SecurityUtils.getSubject();
+			if(!currentUser.isAuthenticated())
+			{
+				UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+				currentUser.login(token);
+			}
+			// TODO Check: how can the current user be stored in a static variable? multiple connections will have different "current user"
+			// AuthManager.setCurrentUser((String) currentUser.getPrincipal());
+			// TODO Check: if the data manager deals with what's on the DB (or any other data source) then should the current
+			// user be stored elsewhere, i.e. in the GeppettoManager? Also there should always be only one current user per session
+			// while the DataManager has thread scope, this might lead to problems. The GeppettoManager has session scope
+			try
+			{
+				geppettoManager.setUser((IUser) currentUser.getPrincipal());
+			}
+			catch(GeppettoExecutionException e)
+			{
+				logger.error(e);
+			}
 		}
 		return "redirect:/";
 	}
@@ -89,9 +94,23 @@ public class Login
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public String logout()
 	{
-		Subject currentUser = SecurityUtils.getSubject();
-		currentUser.logout();
-		AuthManager.setCurrentUser(null);
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		if(!dataManager.isDefault())
+		{
+			Subject currentUser = SecurityUtils.getSubject();
+			if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
+			{
+				currentUser.logout();
+				try
+				{
+					geppettoManager.setUser(null);
+				}
+				catch(GeppettoExecutionException e)
+				{
+					logger.error(e);
+				}
+			}
+		}
 		return "redirect:/";
 	}
 

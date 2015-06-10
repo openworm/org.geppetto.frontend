@@ -854,7 +854,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			long projectId,long experimentId, String format) {
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
-		ResultsFormat resultsFormat = null;
+		ResultsFormat resultsFormat = ServicesRegistry.getResultsFormat(format);
 		try {
 			geppettoManager.uploadResultsToDropBox(aspectPath,experiment, geppettoProject,  resultsFormat);
 			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);

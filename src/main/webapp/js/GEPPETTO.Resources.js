@@ -234,6 +234,8 @@ define(function(require) {
 			
 			RETRIEVING_SUPPORTED_OUTPUTS : 'Supported outputs requested',
 			
+			UNACTIVE_EXPERIMENT_UPLOAD : "Unable to upload results for experiment that isn't active",
+			
 			/**
 			 * GEPPETTO.Main resources
 			 */

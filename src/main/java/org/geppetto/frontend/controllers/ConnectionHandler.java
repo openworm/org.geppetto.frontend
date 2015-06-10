@@ -64,10 +64,12 @@ import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
+import org.geppetto.core.simulation.ResultsFormat;
 import org.geppetto.core.utilities.ZipDirectory;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dropbox.core.DbxException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -718,7 +720,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 */
 	private void error(Exception e, String errorMessage)
 	{
-		String jsonExceptionMsg = e == null ? "" : e.toString();
+		String jsonExceptionMsg = e.getCause() == null ? "" : e.getMessage();
 		String jsonErrorMsg = errorMessage == null ? "" : errorMessage;
 		String error = "{ \"error_code\": \"" + GeppettoErrorCodes.GENERIC + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg + "\"}";
 		logger.error(errorMessage, e);
@@ -817,31 +819,47 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
-	public void linkDropBox(String requestID, String key) {
+	public void linkDropBox(String requestID,String key){
 		try {
-			DropboxUploadService dropboxService = new DropboxUploadService();
-	        dropboxService.link(key);
-			websocketConnection.sendMessage(null, OutboundMessages.DROPBOX_LINKED, null);
-		} catch (Exception e) {
+			geppettoManager.linkDropBoxAccount(key);
+			websocketConnection.sendMessage(requestID, OutboundMessages.DROPBOX_LINKED, null);
+		}catch (DbxException e) {
 			error(e, "Unable to link dropbox account.");
 		}
 	}
 
-	public void unLinkDropBox(String requestID, String key) {
+	public void unLinkDropBox(String requestID,String key) {
 		try {
-			DropboxUploadService dropboxService = new DropboxUploadService();
-	        dropboxService.unlink(key);
+			geppettoManager.unlinkDropBoxAccount(key);
 			websocketConnection.sendMessage(null, OutboundMessages.DROPBOX_UNLINKED, null);
 		} catch (Exception e) {
 			error(e, "Unable to unlink dropbox account.");
 		}
 	}
 
-	public void uploadResults(String requestID, long projectId,
-			long experimentId, String type) {
+	public void uploadModel(String aspectPath, 
+			long projectId,long experimentId, String format) {
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
-		
-		geppettoManager.uploadResults(geppettoProject, experiment,type);
+		ModelFormat modelFormat = ServicesRegistry.getModelFormat(format);
+		try {
+			geppettoManager.uploadModelToDropBox(aspectPath,experiment, geppettoProject,  modelFormat);
+			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
+		}catch (Exception e) {
+			error(e, "Unable to upload results for aspect : "+ aspectPath);
+		}
+	}
+	
+	public void uploadResults(String aspectPath, 
+			long projectId,long experimentId, String format) {
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+		ResultsFormat resultsFormat = null;
+		try {
+			geppettoManager.uploadResultsToDropBox(aspectPath,experiment, geppettoProject,  resultsFormat);
+			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
+		} catch (GeppettoExecutionException e) {
+			error(e, "Unable to upload results for aspect : "+ aspectPath);
+		}
 	}
 }

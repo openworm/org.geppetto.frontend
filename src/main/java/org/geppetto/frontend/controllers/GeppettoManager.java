@@ -50,12 +50,15 @@ import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
+import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.simulation.ResultsFormat;
 import org.geppetto.simulation.RuntimeProject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import com.dropbox.core.DbxException;
 
 /**
  * GeppettoManager is the implementation of IGeppettoManager which represents the Java API entry point for Geppetto. This class is instantiated with a session scope, which means there is one
@@ -76,6 +79,8 @@ public class GeppettoManager implements IGeppettoManager
 	private Map<IGeppettoProject, RuntimeProject> projects = new LinkedHashMap<>();
 
 	private IGeppettoManagerCallbackListener geppettoManagerCallbackListener;
+
+	private DropboxUploadService dropboxService = new DropboxUploadService();
 
 	private IUser user;
 
@@ -264,10 +269,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDropBoxManager#linkDropBoxAccount()
 	 */
 	@Override
-	public void linkDropBoxAccount()
+	public void linkDropBoxAccount(String key) throws DbxException
 	{
-		// TODO Auto-generated method stub
-
+		dropboxService.link(key);
 	}
 
 	/*
@@ -276,10 +280,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDropBoxManager#unlinkDropBoxAccount()
 	 */
 	@Override
-	public void unlinkDropBoxAccount()
+	public void unlinkDropBoxAccount(String key) throws DbxException
 	{
-		// TODO Auto-generated method stub
-
+		dropboxService.unlink(key);
 	}
 
 	/*
@@ -288,10 +291,14 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDropBoxManager#uploadModelToDropBox(java.lang.String, org.geppetto.core.services.IModelFormat)
 	 */
 	@Override
-	public void uploadModelToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ModelFormat format)
+	public void uploadModelToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ModelFormat format) throws Exception
 	{
-		// TODO Auto-generated method stub
-
+		if(format!=null)
+		{
+			// ConSvert model
+			File file = this.downloadModel(aspectID, format, experiment, project);
+			dropboxService.upload(file);
+		}
 	}
 
 	/*
@@ -300,10 +307,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDropBoxManager#uploadResultsToDropBox(java.lang.String, org.geppetto.core.simulation.ResultsFormat)
 	 */
 	@Override
-	public void uploadResultsToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ResultsFormat format)
+	public void uploadResultsToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ResultsFormat format) throws GeppettoExecutionException
 	{
-		// TODO Auto-generated method stub
-
+		getRuntimeProject(project).getRuntimeExperiment(experiment).uploadResults(aspectID, format, dropboxService);
 	}
 
 	/*
@@ -459,9 +465,5 @@ public class GeppettoManager implements IGeppettoManager
 	{
 		// TODO This could be more sophisticated and return only the projects which have changed their status because of a run
 		return project.getExperiments();
-	}
-
-	@Override
-	public void uploadResults(IGeppettoProject project,IExperiment experiment, String type) {
 	}
 }

@@ -121,9 +121,6 @@ define(function(require) {
                 //Detects problems when connecting to Geppetto server
                 GEPPETTO.MessageSocket.socket.onerror = function(evt) {
                     var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
-                    if(GEPPETTO.Simulation.isLoading()) {
-                        GEPPETTO.Simulation.stop();
-                    }
                     var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
                     //Attempt to connect using ws first time wss fails,
                     //if ws fails too then don't try again and display info error window

@@ -76,7 +76,8 @@ public enum OutboundMessages {
 	PROJECT_SAVED("project_saved"),
 	DROPBOX_LINKED("dropbox_linked"),
 	DROPBOX_UNLINKED("dropbox_unlinked"),
-	RESULTS_UPLOADED("results_uploaded");
+	RESULTS_UPLOADED("results_uploaded"),
+	MODEL_UPLOADED("model_uploaded");
 	
 	private OutboundMessages(final String text) {
 		this.text = text;

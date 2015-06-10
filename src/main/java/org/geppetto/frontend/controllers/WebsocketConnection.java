@@ -405,7 +405,7 @@ public class WebsocketConnection extends MessageInbound
 				{
 				}.getType());
 				String key = parameters.get("key");
-				connectionHandler.linkDropBox(requestID, key);
+				connectionHandler.linkDropBox(requestID,key);
 				break;
 			}
 			case UNLINK_DROPBOX:
@@ -414,7 +414,19 @@ public class WebsocketConnection extends MessageInbound
 						{
 						}.getType());
 				String key = parameters.get("key");
-				connectionHandler.unLinkDropBox(requestID, key);
+				connectionHandler.unLinkDropBox(requestID,key);
+				break;
+			}
+			case UPLOAD_MODEL:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+						{
+						}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				String format = parameters.get("format");
+				String aspectPath = parameters.get("aspectPath");
+				connectionHandler.uploadModel(aspectPath, projectId, experimentId,format);
 				break;
 			}
 			case UPLOAD_RESULTS:
@@ -424,8 +436,9 @@ public class WebsocketConnection extends MessageInbound
 						}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
-				String type = parameters.get("type");
-				connectionHandler.uploadResults(requestID, projectId, experimentId,type);
+				String format = parameters.get("format");
+				String aspectPath = parameters.get("aspectPath");
+				connectionHandler.uploadResults(aspectPath, projectId, experimentId,format);
 				break;
 			}
 			case EXPERIMENT_STATUS:

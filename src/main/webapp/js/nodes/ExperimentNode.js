@@ -323,13 +323,25 @@ define(function(require) {
 			GEPPETTO.MessageSocket.send("delete_experiment", parameters);
 		},
 		
-		uploadResults : function(type){
-			if(type!=null || type!=undefined){
+		uploadModel : function(aspectPath,format){
+			var parameters = {};
+			parameters["format"] = format;
+			parameters["aspectPath"] = aspectPath;
+			parameters["experimentId"] = this.id;
+			parameters["projectId"] = this.getParent().getId();
+			GEPPETTO.MessageSocket.send("upload_model", parameters);
+		},
+		
+		uploadResults : function(aspectPath, format){
+			if(this == window.Project.getActiveExperiment()){
 				var parameters = {};
-				parameters["type"] = type;
+				parameters["format"] = format;
+				parameters["aspectPath"] = aspectPath;
+				parameters["experimentId"] = this.id;
+				parameters["projectId"] = this.getParent().getId();
 				GEPPETTO.MessageSocket.send("upload_results", parameters);
 			}else{
-				GEPPETTO.MessageSocket.send("upload_results", parameters);
+				return GEPPETTO.Resources.UNACTIVE_EXPERIMENT_UPLOAD;
 			}
 		},
 

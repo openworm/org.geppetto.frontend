@@ -74,6 +74,7 @@ define(function(require) {
             DROPBOX_LINKED : "dropbox_linked",
             DROPBOX_UNLINKED : "dropbox_unlinked",
             RESULTS_UPLOADED : "results_uploaded",
+            MODEL_UPLOADED : "model_uploaded",
         };
 
         var messageHandler = {};
@@ -289,9 +290,11 @@ define(function(require) {
         };
         
         messageHandler[messageTypes.RESULTS_UPLOADED] = function(payload) {
-        	
+        	GEPPETTO.Console.log("Results uploaded succesfully");
         };
-        
+        messageHandler[messageTypes.MODEL_UPLOADED] = function(payload) {
+        	GEPPETTO.Console.log("Model uploaded succesfully");
+        };
 		GEPPETTO.SimulationHandler = {
 			onMessage: function(parsedServerMessage) {
 				// parsed message has a type and data fields - data contains the payload of the message

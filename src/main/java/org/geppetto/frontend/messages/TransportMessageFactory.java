@@ -167,6 +167,9 @@ public class TransportMessageFactory {
 			case RESULTS_UPLOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.RESULTS_UPLOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
+			case MODEL_UPLOADED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.MODEL_UPLOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
 			default:
 				break;
 		}

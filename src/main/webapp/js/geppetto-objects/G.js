@@ -358,7 +358,6 @@ define(function(require) {
 				if(key!=null || key!=undefined){
 					var parameters = {};
 					parameters["key"] = key;
-
 					GEPPETTO.MessageSocket.send("link_dropbox", parameters);
 				}
 				else{

@@ -64,6 +64,7 @@ public enum InboundMessages {
 	SAVE_PROJECT("save_project"),
 	LINK_DROPBOX("link_dropbox"),
 	UNLINK_DROPBOX("unlink_drobpox"),
+	UPLOAD_MODEL("upload_model"),
 	UPLOAD_RESULTS("upload_results");
 
 	

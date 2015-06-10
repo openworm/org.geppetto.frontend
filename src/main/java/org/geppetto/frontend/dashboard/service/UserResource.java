@@ -59,33 +59,31 @@ public class UserResource
 	private volatile static int guestId;
 
 	@RequestMapping("/dashboard/currentuser")
-	public @ResponseBody
-	IUser getCurrentUser()
+	public @ResponseBody IUser getCurrentUser()
 	{
 		Subject currentUser = SecurityUtils.getSubject();
-		if(!currentUser.isAuthenticated() && geppettoManager.getUser() == null)
+		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			IUser guest = getGuestUser();
-			try
-			{
-				geppettoManager.setUser(guest);
-			}
-			catch(GeppettoExecutionException e)
-			{
-				logger.error(e);
-			}
-			return guest;
+			return geppettoManager.getUser();
 		}
-		try
+		//There is no current user, if we don't have the persistence bundle we create a guest one
+		//and return it
+		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			if(!DataManagerHelper.getDataManager().isDefault() && currentUser.getPrincipal() != null)
+			// If we have no persistence bundle we use a guest user
+			if(!currentUser.isAuthenticated() && geppettoManager.getUser() == null)
 			{
-				geppettoManager.setUser(DataManagerHelper.getDataManager().getUserByLogin((String) currentUser.getPrincipal()));
+				IUser guest = getGuestUser();
+				try
+				{
+					geppettoManager.setUser(guest);
+				}
+				catch(GeppettoExecutionException e)
+				{
+					logger.error(e);
+				}
+				return guest;
 			}
-		}
-		catch(GeppettoExecutionException e)
-		{
-			logger.error(e);
 		}
 		return geppettoManager.getUser();
 	}
@@ -96,26 +94,8 @@ public class UserResource
 		{
 			guestId++;
 		}
-		return DataManagerHelper.getDataManager().newUser("guest" + guestId);
+		return DataManagerHelper.getDataManager().newUser("Guest " + guestId);
 	}
 
-	@RequestMapping("/dashboard/logout")
-	public @ResponseBody
-	Object logout()
-	{
-		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-		if(dataManager != null)
-		{
-			if(dataManager.isDefault())
-			{
-				return new JsonRequestException("Could not logout user", HttpStatus.BAD_REQUEST);
-			}
-			else
-			{
-				return new JsonRequestException("Not implemented", HttpStatus.NOT_IMPLEMENTED);
-			}
-		}
-		return null;
-	}
 
 }

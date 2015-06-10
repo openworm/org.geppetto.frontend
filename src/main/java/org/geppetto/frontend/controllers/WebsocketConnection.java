@@ -441,6 +441,18 @@ public class WebsocketConnection extends MessageInbound
 				connectionHandler.uploadResults(aspectPath, projectId, experimentId,format);
 				break;
 			}
+			case DOWNLOAD_RESULTS:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+						{
+						}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				String format = parameters.get("format");
+				String aspectPath = parameters.get("aspectPath");
+				connectionHandler.downloadResults(requestID,aspectPath, projectId, experimentId,format);
+				break;
+			}
 			case EXPERIMENT_STATUS:
 				connectionHandler.checkExperimentStatus(requestID, gmsg.data);
 				break;

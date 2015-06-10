@@ -312,7 +312,7 @@ define(function(require) {
 		 *
 		 * @command ExperimentNode.downloadResults(recording)
 		 */
-		downloadResults : function(aspectPath,recording){
+		downloadResults : function(aspectPath,format){
 			if(this == window.Project.getActiveExperiment()){
 				if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
 					var parameters = {};

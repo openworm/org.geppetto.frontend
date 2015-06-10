@@ -54,6 +54,7 @@ public enum OutboundMessages {
 	ERROR_READING_SCRIPT("error_reading_script"),
 	ERROR_SETTING_WATCHED_VARIABLES("error_setting_watched_variables"),
 	ERROR_DOWNLOADING_MODEL("error_downloading_model"),
+	ERROR_DOWNLOADING_RESULTS("error_downloading_results"),
 	GEPPETTO_VERSION("geppetto_version"),
 	RUN_SCRIPT("run_script"),
 	GET_SCRIPTS("get_scripts"),
@@ -77,7 +78,8 @@ public enum OutboundMessages {
 	DROPBOX_LINKED("dropbox_linked"),
 	DROPBOX_UNLINKED("dropbox_unlinked"),
 	RESULTS_UPLOADED("results_uploaded"),
-	MODEL_UPLOADED("model_uploaded");
+	MODEL_UPLOADED("model_uploaded"),
+	DOWNLOAD_RESULTS("download_results");
 	
 	private OutboundMessages(final String text) {
 		this.text = text;

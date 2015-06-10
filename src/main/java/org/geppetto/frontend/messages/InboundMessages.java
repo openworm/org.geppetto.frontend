@@ -65,7 +65,8 @@ public enum InboundMessages {
 	LINK_DROPBOX("link_dropbox"),
 	UNLINK_DROPBOX("unlink_drobpox"),
 	UPLOAD_MODEL("upload_model"),
-	UPLOAD_RESULTS("upload_results");
+	UPLOAD_RESULTS("upload_results"),
+	DOWNLOAD_RESULTS("download_results");
 
 	
 	private InboundMessages(final String text) {

@@ -54,7 +54,7 @@ public class GeppettoRealm extends AuthenticatingRealm
 		{
 			IUser user = dataManager.getUserByLogin((String) token.getPrincipal());
 			SimplePrincipalCollection principals = new SimplePrincipalCollection(user, getName());
-			SimpleAccount info = new SimpleAccount(principals, "");
+			SimpleAccount info = new SimpleAccount(principals, user.getPassword());
 			return info;
 		}
 		return null;

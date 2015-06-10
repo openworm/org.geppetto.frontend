@@ -40,7 +40,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.geppetto.core.auth.AuthManager;
 import org.geppetto.core.common.GeppettoExecutionException;
-import org.geppetto.core.data.DataManagerHelper;
+import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,9 +51,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class Login
 {
-	
+
 	private static Log logger = LogFactory.getLog(Login.class);
-	
+
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
@@ -69,22 +69,21 @@ public class Login
 		{
 			UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 			currentUser.login(token);
-			return "redirect:";
 		}
-		//TODO Check: how can the current user be stored in a static variable? multiple connections will have different "current user"
-		AuthManager.setCurrentUser((String) currentUser.getPrincipal());
-		//TODO Check: if the data manager deals with what's on the DB (or any other data source) then should the current
-		//user be stored elsewhere, i.e. in the GeppettoManager? Also there should always be only one current user per session
-		//while the DataManager has thread scope, this might lead to problems. The GeppettoManager has session scope
+		// TODO Check: how can the current user be stored in a static variable? multiple connections will have different "current user"
+		// AuthManager.setCurrentUser((String) currentUser.getPrincipal());
+		// TODO Check: if the data manager deals with what's on the DB (or any other data source) then should the current
+		// user be stored elsewhere, i.e. in the GeppettoManager? Also there should always be only one current user per session
+		// while the DataManager has thread scope, this might lead to problems. The GeppettoManager has session scope
 		try
 		{
-			geppettoManager.setUser(DataManagerHelper.getDataManager().getUserByLogin((String) currentUser.getPrincipal()));
+			geppettoManager.setUser((IUser) currentUser.getPrincipal());
 		}
 		catch(GeppettoExecutionException e)
 		{
 			logger.error(e);
 		}
-		return "dist/index";
+		return "redirect:/";
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)

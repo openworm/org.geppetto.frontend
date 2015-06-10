@@ -334,12 +334,16 @@ define(function(require) {
 		
 		uploadResults : function(aspectPath, format){
 			if(this == window.Project.getActiveExperiment()){
-				var parameters = {};
-				parameters["format"] = format;
-				parameters["aspectPath"] = aspectPath;
-				parameters["experimentId"] = this.id;
-				parameters["projectId"] = this.getParent().getId();
-				GEPPETTO.MessageSocket.send("upload_results", parameters);
+				if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+					var parameters = {};
+					parameters["format"] = format;
+					parameters["aspectPath"] = aspectPath;
+					parameters["experimentId"] = this.id;
+					parameters["projectId"] = this.getParent().getId();
+					GEPPETTO.MessageSocket.send("upload_results", parameters);
+				}else{
+					return GEPPETTO.Resources.EXPERIMENT_NOT_COMPLETED_UPLOAD;
+				}
 			}else{
 				return GEPPETTO.Resources.UNACTIVE_EXPERIMENT_UPLOAD;
 			}

@@ -234,6 +234,8 @@ define(function(require) {
 			
 			RETRIEVING_SUPPORTED_OUTPUTS : 'Supported outputs requested',
 			
+			EXPERIMENT_NOT_COMPLETED_UPLOAD : "Can't upload results for an experiment that isn't completed",
+			
 			UNACTIVE_EXPERIMENT_UPLOAD : "Unable to upload results for experiment that isn't active",
 			
 			/**

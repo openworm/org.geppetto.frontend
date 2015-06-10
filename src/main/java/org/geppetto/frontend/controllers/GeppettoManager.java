@@ -405,10 +405,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadResults(org.geppetto.core.simulation.ResultsFormat)
 	 */
 	@Override
-	public File downloadResults(ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project)
+	public File downloadResults(String aspectPath, ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadResults(aspectPath, resultsFormat, dropboxService);
 	}
 
 	public IUser getUser()

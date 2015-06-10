@@ -860,4 +860,33 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			error(e, "Unable to upload results for aspect : "+ aspectPath);
 		}
 	}
+
+	public void downloadResults(String requestID, String aspectPath, long projectId,
+			long experimentId, String format) {
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+		ResultsFormat resultsFormat = ServicesRegistry.getResultsFormat(format);
+		try
+		{
+			if(resultsFormat == null)
+			{
+				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
+			}
+			else
+			{
+				// Convert model
+				File file = geppettoManager.downloadResults(aspectPath, resultsFormat, experiment, geppettoProject);
+
+				// Zip folder
+				Path path = ZipDirectory.getZipFromDirectory(file);
+
+				// Send zip file to the client
+				websocketConnection.sendBinaryMessage(requestID, path);
+			}
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error downloading model for " + aspectPath + " in format " + format);
+		}
+	}
 }

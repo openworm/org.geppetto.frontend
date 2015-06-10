@@ -302,6 +302,8 @@ define(function(require) {
 				parameters["modelAspectPath"] = aspectPath;
 				parameters["parameters"] = newParameters;
 				GEPPETTO.MessageSocket.send("set_parameters", parameters);
+				
+				return "Sending request to set parameters";
 			}
 		},
 
@@ -310,9 +312,22 @@ define(function(require) {
 		 *
 		 * @command ExperimentNode.downloadResults(recording)
 		 */
-		downloadResults : function(recording){
-			if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-
+		downloadResults : function(aspectPath,recording){
+			if(this == window.Project.getActiveExperiment()){
+				if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+					var parameters = {};
+					parameters["format"] = format;
+					parameters["aspectPath"] = aspectPath;
+					parameters["experimentId"] = this.id;
+					parameters["projectId"] = this.getParent().getId();
+					GEPPETTO.MessageSocket.send("download_results", parameters);
+					
+					return "Sending request to download results.";
+				}else{
+					return "Experiment must be completed before attempting to download results";
+				}
+			}else{
+				return "Experiment must be set to active before requesting results";
 			}
 		},
 		
@@ -321,15 +336,27 @@ define(function(require) {
 			parameters["experimentId"] = this.id;
 			parameters["projectId"] = this.getParent().getId();
 			GEPPETTO.MessageSocket.send("delete_experiment", parameters);
+			
+			return "Request to delete experiment sent";
 		},
 		
 		uploadModel : function(aspectPath,format){
-			var parameters = {};
-			parameters["format"] = format;
-			parameters["aspectPath"] = aspectPath;
-			parameters["experimentId"] = this.id;
-			parameters["projectId"] = this.getParent().getId();
-			GEPPETTO.MessageSocket.send("upload_model", parameters);
+			if(this == window.Project.getActiveExperiment()){
+				if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+					var parameters = {};
+					parameters["format"] = format;
+					parameters["aspectPath"] = aspectPath;
+					parameters["experimentId"] = this.id;
+					parameters["projectId"] = this.getParent().getId();
+					GEPPETTO.MessageSocket.send("upload_model", parameters);
+					
+					return "Sending request to upload results.";
+				}else{
+					return "Unable to upload model for an experimet that hasn't been completed";
+				}
+			}else{
+				return "Experiment isn't active, make it active before continuing upload";
+			}
 		},
 		
 		uploadResults : function(aspectPath, format){
@@ -341,6 +368,8 @@ define(function(require) {
 					parameters["experimentId"] = this.id;
 					parameters["projectId"] = this.getParent().getId();
 					GEPPETTO.MessageSocket.send("upload_results", parameters);
+					
+					return "Sending request to upload results.";
 				}else{
 					return GEPPETTO.Resources.EXPERIMENT_NOT_COMPLETED_UPLOAD;
 				}

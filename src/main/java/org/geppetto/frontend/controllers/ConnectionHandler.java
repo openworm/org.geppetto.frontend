@@ -60,7 +60,6 @@ import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
-import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
@@ -69,7 +68,6 @@ import org.geppetto.core.utilities.ZipDirectory;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dropbox.core.DbxException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -720,7 +718,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 */
 	private void error(Exception e, String errorMessage)
 	{
-		String jsonExceptionMsg = e.getCause() == null ? "" : e.getMessage();
+		String jsonExceptionMsg = e.getCause() == null ? "" : e.toString();
 		String jsonErrorMsg = errorMessage == null ? "" : errorMessage;
 		String error = "{ \"error_code\": \"" + GeppettoErrorCodes.GENERIC + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg + "\"}";
 		logger.error(errorMessage, e);
@@ -823,7 +821,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try {
 			geppettoManager.linkDropBoxAccount(key);
 			websocketConnection.sendMessage(requestID, OutboundMessages.DROPBOX_LINKED, null);
-		}catch (DbxException e) {
+		}catch (Exception e) {
 			error(e, "Unable to link dropbox account.");
 		}
 	}

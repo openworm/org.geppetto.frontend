@@ -57,9 +57,6 @@ import org.geppetto.core.simulation.ResultsFormat;
 import org.geppetto.simulation.RuntimeProject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
-import com.dropbox.core.DbxException;
-
 /**
  * GeppettoManager is the implementation of IGeppettoManager which represents the Java API entry point for Geppetto. This class is instantiated with a session scope, which means there is one
  * GeppettoManager per each session/connection therefore only one user is associated with a GeppettoManager. A GeppettoManager is also instantiated by the ExperimentRunManager to handle the queued
@@ -269,7 +266,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDropBoxManager#linkDropBoxAccount()
 	 */
 	@Override
-	public void linkDropBoxAccount(String key) throws DbxException
+	public void linkDropBoxAccount(String key) throws Exception
 	{
 		dropboxService.link(key);
 	}
@@ -280,7 +277,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDropBoxManager#unlinkDropBoxAccount()
 	 */
 	@Override
-	public void unlinkDropBoxAccount(String key) throws DbxException
+	public void unlinkDropBoxAccount(String key) throws Exception
 	{
 		dropboxService.unlink(key);
 	}

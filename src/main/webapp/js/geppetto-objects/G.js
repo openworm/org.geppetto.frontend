@@ -359,6 +359,8 @@ define(function(require) {
 					var parameters = {};
 					parameters["key"] = key;
 					GEPPETTO.MessageSocket.send("link_dropbox", parameters);
+					
+					return  "Sending request to link dropbox to Geppetto";
 				}
 				else{
 					var dropboxURL = 

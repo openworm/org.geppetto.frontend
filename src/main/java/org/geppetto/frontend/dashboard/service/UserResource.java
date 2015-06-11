@@ -39,13 +39,13 @@ import org.apache.shiro.subject.Subject;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.core.data.JsonRequestException;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -59,15 +59,16 @@ public class UserResource
 	private volatile static int guestId;
 
 	@RequestMapping("/dashboard/currentuser")
-	public @ResponseBody IUser getCurrentUser()
+	public @ResponseBody
+	IUser getCurrentUser()
 	{
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
 			return geppettoManager.getUser();
 		}
-		//There is no current user, if we don't have the persistence bundle we create a guest one
-		//and return it
+		// There is no current user, if we don't have the persistence bundle we create a guest one
+		// and return it
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
 			// If we have no persistence bundle we use a guest user
@@ -88,14 +89,25 @@ public class UserResource
 		return geppettoManager.getUser();
 	}
 
+	@RequestMapping(value = "/user", method = RequestMethod.GET)
+	public @ResponseBody
+	IUser addNewUser(@RequestParam String username, @RequestParam String password)
+	{
+		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
+		IUser user = manager.newUser(username, password, true);
+		if (!manager.isDefault()) {
+			return manager.getUserByLogin(username);
+		}
+		return user;
+	}
+
 	private IUser getGuestUser()
 	{
 		synchronized(this)
 		{
 			guestId++;
 		}
-		return DataManagerHelper.getDataManager().newUser("Guest " + guestId);
+		return DataManagerHelper.getDataManager().newUser("Guest " + guestId, "", false);
 	}
-
 
 }

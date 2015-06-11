@@ -108,6 +108,11 @@ define(function(require) {
 							}else{
 								//update existing simulation tree
 								var simulationTree = child.SimulationTree;
+								//extract time from simulation tree
+								if(simulationTree.time!=null || undefined){
+									var timeNode = GEPPETTO.NodeFactory.createVariableNode(simulationTree.time);
+									window.Project.getActiveExperiment().time = timeNode;
+								}
 								var variables = experiment.getVariables();
 								//find variable node in experiment
 								for(var v in variables){

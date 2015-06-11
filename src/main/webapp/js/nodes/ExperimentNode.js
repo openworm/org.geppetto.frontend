@@ -174,23 +174,24 @@ define(function(require) {
 			this.playOptions = options;
 			if(this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
 				if(this.paused){
-					GEPPETTO.Console.log("pause");
 					GEPPETTO.trigger(Events.Experiment_play);
 					this.getWorker().postMessage([Events.Experiment_resume]);
 					this.paused = false;
+					return "Pause Experiment";
 				}else{
 					if(!this.played){
-						GEPPETTO.Console.log("play ");
 						GEPPETTO.trigger(Events.Experiment_play);
 						var parameters = {};
 						parameters["experimentId"] = this.id;
 						parameters["projectId"] = this.getParent().getId();
 						GEPPETTO.MessageSocket.send("play_experiment", parameters);
+						return "Play Experiment";
 					}else{
 						GEPPETTO.Console.log("replay ");
 						GEPPETTO.trigger(Events.Experiment_replay);
 						this.terminateWorker();
 						this.experimentUpdateWorker();
+						return "Play Experiment";
 					}
 				}
 			}else{
@@ -204,12 +205,14 @@ define(function(require) {
 			this.paused = true;
 			this.getWorker().postMessage([Events.Experiment_pause]);
 			GEPPETTO.trigger(Events.Experiment_pause);
+			return "Pause Experiment";
 		},
 		
 		stop : function(){
 			this.terminateWorker();
 			this.paused = false;
 			GEPPETTO.trigger(Events.Experiment_stop);
+			return "Stop Experiment";
 		},
 		
 		experimentUpdateWorker : function(){

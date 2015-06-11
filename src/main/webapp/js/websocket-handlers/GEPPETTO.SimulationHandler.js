@@ -36,20 +36,6 @@
 define(function(require) {	
 	return function(GEPPETTO) {
 
-		var updateTime = function(time) {
-			if(time) {
-				window.Project.getActiveExperiment().time = time;
-			}
-		};
-		
-		var createTime = function(time) {
-			if(time) {
-				var timeNode = GEPPETTO.NodeFactory.createVariableNode(time);
-				GEPPETTO.Simulation.time = timeNode;
-			}
-		};
-
-
         var messageTypes = {
             /*
              * Messages handle by SimulatorHandler
@@ -121,14 +107,6 @@ define(function(require) {
         			if(node.getTimeSeries().length>maxSteps){
         				maxSteps = node.getTimeSeries().length;
         			}
-        		}
-        		//assign time to project time node
-        		//TODO: Remove once code from developmetn is merged, code there
-        		//exists to traverse through .dat file and extract all variables,
-        		//current datamanager readrecording requires us feeding it the variables
-        		//we wish to extraact
-        		if(variables[key].indexOf("SimulationTree.time")>-1){
-        			updateTime(node);
         		}
         	}
         	experiment.maxSteps = maxSteps;

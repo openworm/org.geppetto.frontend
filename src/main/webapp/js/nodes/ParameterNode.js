@@ -42,6 +42,8 @@ define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
+		timeSeries : [],
+		unit: "",
 		properties : {},
 
 		/**
@@ -54,12 +56,34 @@ define(function(require) {
 			this.properties = options.properties;
 			this.name = options.name;
 			this.id = options.id;
+			this.unit = options.unit;
+			this.timeSeries = new Array();
 			this.instancePath = options.instancePath;
 			this.domainType = options.domainType;
 			this._metaType = options._metaType;
 			this.watched = options.watched;
 		},
 
+		/**
+		 * Get value of quantity
+		 * 
+		 * @command VariableNode.getTimeSeries()
+		 * @returns {String} Value of quantity
+		 */
+		getTimeSeries : function() {
+			return this.timeSeries;
+		},
+		
+		/**
+		 * Get the type of tree this is
+		 * 
+		 * @command ParameterSpecificationNode.getUnit()
+		 * @returns {String} Unit for quantity
+		 */
+		getUnit : function() {
+			return this.unit;
+		},
+		
 		/**
 		 * Get properties for this node
 		 * 

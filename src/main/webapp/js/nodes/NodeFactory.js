@@ -435,12 +435,23 @@ define(function(require) {
 					var a = new ParameterNode({
 						id : node.id,
 						name : node.name,
+						unit : node.unit,
 						instancePath : node.instancePath,
 						properties : node.properties,
 						watched : (node.watched === 'true'),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.PARAMETER_NODE
 					});
+					
+					var timeSeries = node.timeSeries;
+					for(var key in timeSeries){
+						if(typeof timeSeries[key] == "object"){
+							var obj =timeSeries[key];
+							var element =
+								new PhysicalQuantity(obj.value,obj.unit,obj.scale);
+							a.getTimeSeries().push(element);
+						}
+					}
 
 					this.nodes++;
 					GEPPETTO.Console.createTags(a.instancePath,
@@ -561,6 +572,7 @@ define(function(require) {
 					var a = new VariableNode({
 						id : node.id,
 						name : node.name,
+						unit : node.unit,
 						instancePath : node.instancePath,
 						watched : (node.watched === 'true'),
 						domainType : node.domainType,
@@ -587,6 +599,7 @@ define(function(require) {
 					var a = new VisualGroupElementNode({
 						id : node.id,
 						name : node.name,
+						unit : node.unit,
 						color : node.color,
 						parameter : node.parameter,
 						instancePath : node.instancePath,

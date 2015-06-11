@@ -8,7 +8,7 @@ define(function(require) {
 
 		getDefaultProps: function() {
 			return {
-				text :'Loading Simulation'
+				text :'Loading Experiment'
 			};
 		},
 		

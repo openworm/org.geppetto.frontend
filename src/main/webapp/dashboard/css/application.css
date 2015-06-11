@@ -13,7 +13,7 @@ body {
 .footer {
 	background-color: #f5f5f5;
 	bottom: 0;
-	height: 14%;
+	height: 20vh;
 	min-height: 20px;
 	position: absolute;
 	width: 100%;
@@ -62,7 +62,7 @@ code {
 
 .projects {
 	overflow: auto;
-	height: 79vh;
+	height: 80vh;
 }
 
 #page {

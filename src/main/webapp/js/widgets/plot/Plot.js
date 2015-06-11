@@ -203,34 +203,36 @@ define(function(require) {
 						this.limit = timeSeries.length;
 						this.options.xaxis.max = this.limit;
 						this.options.xaxis.show = true;
-						var timeSeries = window.Project.getActiveExperiment().time.getTimeSeries();
-						var divideLength = Math.ceil(timeSeries.length/10);
-						var ticks = [];
-						var unit = timeSeries[0].getUnit();
-						if(unit!=null){
-							ticks[0] = [0,timeSeries[0].getValue().toFixed(4)+ " " +unit];
-						}else{
-							ticks[0] = [0,timeSeries[0].getValue().toFixed(4)];
-						}
-						var index = divideLength;
-						var i = 1;
-						while(index < timeSeries.length){
-							var newTick = [];
+						if(window.Project.getActiveExperiment().time!=null || undefined){
+							var timeSeries = window.Project.getActiveExperiment().time.getTimeSeries();
+							var divideLength = Math.ceil(timeSeries.length/10);
+							var ticks = [];
+							var unit = timeSeries[0].getUnit();
 							if(unit!=null){
-								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+" " +unit];
+								ticks[0] = [0,timeSeries[0].getValue().toFixed(4)+ " " +unit];
+							}else{
+								ticks[0] = [0,timeSeries[0].getValue().toFixed(4)];
+							}
+							var index = divideLength;
+							var i = 1;
+							while(index < timeSeries.length){
+								var newTick = [];
+								if(unit!=null){
+									ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+" " +unit];
+								}else{
+									ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
+								}
+								index= Math.ceil(index+divideLength);
+								i++;
+							}
+							index= timeSeries.length-1;
+							if(unit!=null){
+								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+ " " +unit];
 							}else{
 								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
 							}
-							index= Math.ceil(index+divideLength);
-							i++;
+							this.options.xaxis.ticks =ticks;
 						}
-						index= timeSeries.length-1;
-						if(unit!=null){
-							ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+ " " +unit];
-						}else{
-							ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
-						}
-						this.options.xaxis.ticks =ticks;
 						this.setSize(550,850);
 					}
 				}

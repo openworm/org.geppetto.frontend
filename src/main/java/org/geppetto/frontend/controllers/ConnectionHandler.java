@@ -878,7 +878,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				File file = geppettoManager.downloadResults(aspectPath, resultsFormat, experiment, geppettoProject);
 
 				// Zip folder
-				Path path = ZipDirectory.getZipFromDirectory(file);
+				Path path = ZipDirectory.getZipFromFile(file);
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);

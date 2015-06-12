@@ -351,6 +351,9 @@ define(function(require) {
 						}
 					});
 
+				//remove the jQuery UI icon
+				$(".ui-dialog-titlebar-close > span").remove();
+
 				this.$el = $("#"+this.id);
 				
 				//Take focus away from close button

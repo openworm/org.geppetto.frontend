@@ -74,11 +74,7 @@ public class Login
 				UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 				currentUser.login(token);
 			}
-			// TODO Check: how can the current user be stored in a static variable? multiple connections will have different "current user"
-			// AuthManager.setCurrentUser((String) currentUser.getPrincipal());
-			// TODO Check: if the data manager deals with what's on the DB (or any other data source) then should the current
-			// user be stored elsewhere, i.e. in the GeppettoManager? Also there should always be only one current user per session
-			// while the DataManager has thread scope, this might lead to problems. The GeppettoManager has session scope
+
 			try
 			{
 				geppettoManager.setUser((IUser) currentUser.getPrincipal());
@@ -88,7 +84,7 @@ public class Login
 				logger.error(e);
 			}
 		}
-		return "redirect:/";
+		return "redirect:/dashboard";
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
@@ -111,7 +107,7 @@ public class Login
 				}
 			}
 		}
-		return "redirect:/";
+		return "redirect:/dashboard";
 	}
 
 }

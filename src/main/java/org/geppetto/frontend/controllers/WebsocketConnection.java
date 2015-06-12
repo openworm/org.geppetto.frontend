@@ -40,9 +40,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.catalina.websocket.MessageInbound;
@@ -61,10 +59,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -217,7 +212,7 @@ public class WebsocketConnection extends MessageInbound
 					experimentId = Long.parseLong(parameters.get("experimentId"));
 				}
 				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.loadProjectFromId(requestID, projectId,experimentId);
+				connectionHandler.loadProjectFromId(requestID, projectId, experimentId);
 				break;
 			}
 			case LOAD_PROJECT_FROM_CONTENT:
@@ -231,7 +226,7 @@ public class WebsocketConnection extends MessageInbound
 				{
 				}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.saveProject(requestID,projectId);
+				connectionHandler.saveProject(requestID, projectId);
 				break;
 			}
 			case LOAD_EXPERIMENT:
@@ -399,12 +394,7 @@ public class WebsocketConnection extends MessageInbound
 				experimentId = Long.valueOf(String.valueOf(parameters.get("experimentId")));
 				projectId = Long.valueOf(String.valueOf(parameters.get("projectId")));
 				String modelParameters = parameters.get("modelParameters");
-				try {
-					connectionHandler.setParameters(requestID, modelAspectPath,modelParameters,
-							projectId, experimentId);
-				} catch (GeppettoExecutionException e) {
-					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
-				}
+				connectionHandler.setParameters(requestID, modelAspectPath, modelParameters, projectId, experimentId);
 				break;
 			}
 			case LINK_DROPBOX:
@@ -413,52 +403,52 @@ public class WebsocketConnection extends MessageInbound
 				{
 				}.getType());
 				String key = parameters.get("key");
-				connectionHandler.linkDropBox(requestID,key);
+				connectionHandler.linkDropBox(requestID, key);
 				break;
 			}
 			case UNLINK_DROPBOX:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-						{
-						}.getType());
+				{
+				}.getType());
 				String key = parameters.get("key");
-				connectionHandler.unLinkDropBox(requestID,key);
+				connectionHandler.unLinkDropBox(requestID, key);
 				break;
 			}
 			case UPLOAD_MODEL:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-						{
-						}.getType());
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				String format = parameters.get("format");
 				String aspectPath = parameters.get("aspectPath");
-				connectionHandler.uploadModel(aspectPath, projectId, experimentId,format);
+				connectionHandler.uploadModel(aspectPath, projectId, experimentId, format);
 				break;
 			}
 			case UPLOAD_RESULTS:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-						{
-						}.getType());
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				String format = parameters.get("format");
 				String aspectPath = parameters.get("aspectPath");
-				connectionHandler.uploadResults(aspectPath, projectId, experimentId,format);
+				connectionHandler.uploadResults(aspectPath, projectId, experimentId, format);
 				break;
 			}
 			case DOWNLOAD_RESULTS:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-						{
-						}.getType());
+				{
+				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				String format = parameters.get("format");
 				String aspectPath = parameters.get("aspectPath");
-				connectionHandler.downloadResults(requestID,aspectPath, projectId, experimentId,format);
+				connectionHandler.downloadResults(requestID, aspectPath, projectId, experimentId, format);
 				break;
 			}
 			case EXPERIMENT_STATUS:

@@ -120,7 +120,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
 			loadGeppettoProject(requestID, geppettoProject);
-			if(experimentId!=-1)
+			if(experimentId != -1)
 			{
 				loadExperiment(requestID, experimentId, projectId);
 			}
@@ -522,26 +522,37 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// TODO what do we do?
 	}
 
-	public void setParameters(String requestID, String modelPath, String modelParameters, long projectId, long experimentID) throws GeppettoExecutionException
-	{		
+	/**
+	 * @param requestID
+	 * @param modelPath
+	 * @param modelParameters
+	 * @param projectId
+	 * @param experimentID
+	 */
+	public void setParameters(String requestID, String modelPath, String modelParameters, long projectId, long experimentID) 
+	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 
-		HashMap<String, String> parametersMap = fromJSON(new TypeReference<HashMap<String,String>>()
-		{
-		}, modelParameters);
-
 		try
 		{
+			HashMap<String, String> parametersMap = fromJSON(new TypeReference<HashMap<String, String>>()
+					{
+					}, modelParameters);
+			
 			boolean success = geppettoManager.setModelParameters(modelPath, parametersMap, experiment, geppettoProject);
 			// send to the client the watch lists were added
-			if(success){
+			if(success)
+			{
 				websocketConnection.sendMessage(requestID, OutboundMessages.SET_PARAMETERS, null);
-			}else{
-				error(null,"There was an error setting parameters");
+			}
+			else
+			{
+				error(null, "There was an error setting parameters");
 			}
 		}
-		catch (GeppettoExecutionException e) {
+		catch(GeppettoExecutionException e)
+		{
 			error(e, "There was an error setting parameters");
 		}
 	}
@@ -806,7 +817,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
-	public void saveProject(String requestID, long projectId) {
+	public void saveProject(String requestID, long projectId)
+	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 
 		if(geppettoProject != null)
@@ -821,52 +833,66 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
-	public void linkDropBox(String requestID,String key){
-		try {
+	public void linkDropBox(String requestID, String key)
+	{
+		try
+		{
 			geppettoManager.linkDropBoxAccount(key);
 			websocketConnection.sendMessage(requestID, OutboundMessages.DROPBOX_LINKED, null);
-		}catch (Exception e) {
+		}
+		catch(Exception e)
+		{
 			error(e, "Unable to link dropbox account.");
 		}
 	}
 
-	public void unLinkDropBox(String requestID,String key) {
-		try {
+	public void unLinkDropBox(String requestID, String key)
+	{
+		try
+		{
 			geppettoManager.unlinkDropBoxAccount(key);
 			websocketConnection.sendMessage(null, OutboundMessages.DROPBOX_UNLINKED, null);
-		} catch (Exception e) {
+		}
+		catch(Exception e)
+		{
 			error(e, "Unable to unlink dropbox account.");
 		}
 	}
 
-	public void uploadModel(String aspectPath, 
-			long projectId,long experimentId, String format) {
+	public void uploadModel(String aspectPath, long projectId, long experimentId, String format)
+	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		ModelFormat modelFormat = ServicesRegistry.getModelFormat(format);
-		try {
-			geppettoManager.uploadModelToDropBox(aspectPath,experiment, geppettoProject,  modelFormat);
+		try
+		{
+			geppettoManager.uploadModelToDropBox(aspectPath, experiment, geppettoProject, modelFormat);
 			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
-		}catch (Exception e) {
-			error(e, "Unable to upload results for aspect : "+ aspectPath);
 		}
-	}
-	
-	public void uploadResults(String aspectPath, 
-			long projectId,long experimentId, String format) {
-		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
-		ResultsFormat resultsFormat = ServicesRegistry.getResultsFormat(format);
-		try {
-			geppettoManager.uploadResultsToDropBox(aspectPath,experiment, geppettoProject,  resultsFormat);
-			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
-		} catch (GeppettoExecutionException e) {
-			error(e, "Unable to upload results for aspect : "+ aspectPath);
+		catch(Exception e)
+		{
+			error(e, "Unable to upload results for aspect : " + aspectPath);
 		}
 	}
 
-	public void downloadResults(String requestID, String aspectPath, long projectId,
-			long experimentId, String format) {
+	public void uploadResults(String aspectPath, long projectId, long experimentId, String format)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+		ResultsFormat resultsFormat = ServicesRegistry.getResultsFormat(format);
+		try
+		{
+			geppettoManager.uploadResultsToDropBox(aspectPath, experiment, geppettoProject, resultsFormat);
+			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Unable to upload results for aspect : " + aspectPath);
+		}
+	}
+
+	public void downloadResults(String requestID, String aspectPath, long projectId, long experimentId, String format)
+	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		ResultsFormat resultsFormat = ServicesRegistry.getResultsFormat(format);

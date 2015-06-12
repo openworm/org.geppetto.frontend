@@ -169,7 +169,7 @@ public class GeppettoManager implements IGeppettoManager
 		}
 		catch(MalformedURLException | GeppettoInitializationException e)
 		{
-			e.printStackTrace();
+			throw new GeppettoExecutionException(e);
 		}
 
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).getRuntimeTree();

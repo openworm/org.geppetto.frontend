@@ -376,6 +376,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				// that'll be send to client
 				String formattedTree = simTree.substring(1, simTree.length() - 1);
 				modelTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
+				
+				//reset flags
+				ModelTreeExitVisitor exitVisitor = new ModelTreeExitVisitor();
+				entry.getValue().apply(exitVisitor);
 			}
 			modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
 			modelTreeString += "]";
@@ -539,17 +543,24 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			HashMap<String, String> parametersMap = fromJSON(new TypeReference<HashMap<String, String>>()
 					{
 					}, modelParameters);
+
+			AspectSubTreeNode modelTreeNode = geppettoManager.setModelParameters(modelPath, parametersMap, experiment, geppettoProject);
+			String modelTreeString = "[";
+			SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
+			modelTreeNode.apply(updateClientVisitor);
+			String simTree = updateClientVisitor.getSerializedTree();
+			String formattedTree = simTree.substring(1, simTree.length() - 1);
+
+			modelTreeString += "{\"aspectInstancePath\":" + '"' + modelPath + '"' + "," + formattedTree + "}";
+
+			modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
+			modelTreeString += "]";
+
+			//reset flags
+			ModelTreeExitVisitor exitVisitor = new ModelTreeExitVisitor();
+			modelTreeNode.apply(exitVisitor);
 			
-			boolean success = geppettoManager.setModelParameters(modelPath, parametersMap, experiment, geppettoProject);
-			// send to the client the watch lists were added
-			if(success)
-			{
-				websocketConnection.sendMessage(requestID, OutboundMessages.SET_PARAMETERS, null);
-			}
-			else
-			{
-				error(null, "There was an error setting parameters");
-			}
+			websocketConnection.sendMessage(requestID, OutboundMessages.UPDATE_MODEL_TREE, modelTreeString);
 		}
 		catch(GeppettoExecutionException e)
 		{

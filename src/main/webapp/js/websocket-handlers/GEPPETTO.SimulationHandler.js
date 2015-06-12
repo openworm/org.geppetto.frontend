@@ -51,7 +51,7 @@ define(function(require) {
             experiment_OVER : "experiment_over",
             GET_MODEL_TREE : "get_model_tree",
             GET_SIMULATION_TREE : "get_simulation_tree",
-            SET_PARAMETER : "set_parameters",
+            SET_PARAMETERS : "set_parameters",
             NO_FEATURE : "no_feature",
             EXPERIMENT_STATUS : "experiment_status",
             GET_SUPPORTED_OUTPUTS : "get_supported_outputs",
@@ -61,6 +61,7 @@ define(function(require) {
             DROPBOX_UNLINKED : "dropbox_unlinked",
             RESULTS_UPLOADED : "results_uploaded",
             MODEL_UPLOADED : "model_uploaded",
+            UPDATE_MODEL_TREE : "update_model_tree"
         };
 
         var messageHandler = {};
@@ -231,6 +232,11 @@ define(function(require) {
         	
         	var endCreation = new Date() - initTime;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create model tree");
+        };
+        
+      //received model tree from server
+        messageHandler[messageTypes.UPDATE_MODEL_TREE] = function(payload) {        	
+        	GEPPETTO.Console.log("Uploading model tree");
         };
         
         //received supported outputs from server

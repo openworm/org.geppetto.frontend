@@ -140,6 +140,9 @@ public class TransportMessageFactory {
 			case GET_MODEL_TREE:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
+			case UPDATE_MODEL_TREE:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.UPDATE_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
+				break;
 			case GET_SUPPORTED_OUTPUTS:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SUPPORTED_OUTPUTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;				

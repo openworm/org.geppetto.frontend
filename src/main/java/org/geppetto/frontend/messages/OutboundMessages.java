@@ -79,7 +79,8 @@ public enum OutboundMessages {
 	DROPBOX_UNLINKED("dropbox_unlinked"),
 	RESULTS_UPLOADED("results_uploaded"),
 	MODEL_UPLOADED("model_uploaded"),
-	DOWNLOAD_RESULTS("download_results");
+	DOWNLOAD_RESULTS("download_results"),
+	UPDATE_MODEL_TREE("update_model_tree");
 	
 	private OutboundMessages(final String text) {
 		this.text = text;

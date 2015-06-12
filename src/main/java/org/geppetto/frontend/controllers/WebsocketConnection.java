@@ -40,7 +40,9 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.catalina.websocket.MessageInbound;
@@ -59,7 +61,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -390,13 +395,16 @@ public class WebsocketConnection extends MessageInbound
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
 				String modelAspectPath = parameters.get("modelAspectPath");
-				// remove model path from parameters map that was sent from server
-				parameters.remove(modelAspectPath);
-				connectionHandler.setParameters(requestID, modelAspectPath, parameters,
-						projectId, experimentId);
+				experimentId = Long.valueOf(String.valueOf(parameters.get("experimentId")));
+				projectId = Long.valueOf(String.valueOf(parameters.get("projectId")));
+				String modelParameters = parameters.get("modelParameters");
+				try {
+					connectionHandler.setParameters(requestID, modelAspectPath,modelParameters,
+							projectId, experimentId);
+				} catch (GeppettoExecutionException e) {
+					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
+				}
 				break;
 			}
 			case LINK_DROPBOX:

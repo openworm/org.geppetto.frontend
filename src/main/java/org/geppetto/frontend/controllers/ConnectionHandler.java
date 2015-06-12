@@ -43,6 +43,7 @@ import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -521,15 +522,18 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// TODO what do we do?
 	}
 
-	public void setParameters(String requestID, String modelPath, Map<String, 
-			String> parameters, long projectId, long experimentID)
-	{
+	public void setParameters(String requestID, String modelPath, String modelParameters, long projectId, long experimentID) throws GeppettoExecutionException
+	{		
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 
+		HashMap<String, String> parametersMap = fromJSON(new TypeReference<HashMap<String,String>>()
+		{
+		}, modelParameters);
+
 		try
 		{
-			boolean success = geppettoManager.setModelParameters(modelPath, parameters, experiment, geppettoProject);
+			boolean success = geppettoManager.setModelParameters(modelPath, parametersMap, experiment, geppettoProject);
 			// send to the client the watch lists were added
 			if(success){
 				websocketConnection.sendMessage(requestID, OutboundMessages.SET_PARAMETERS, null);

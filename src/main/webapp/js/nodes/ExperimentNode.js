@@ -303,7 +303,7 @@ define(function(require) {
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
 				parameters["modelAspectPath"] = aspectPath;
-				parameters["parameters"] = newParameters;
+				parameters["modelParameters"] = JSON.stringify(newParameters);
 				GEPPETTO.MessageSocket.send("set_parameters", parameters);
 				
 				return "Sending request to set parameters";

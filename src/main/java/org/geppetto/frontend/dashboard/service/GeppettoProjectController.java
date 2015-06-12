@@ -32,8 +32,11 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
+import java.util.List;
+
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +60,28 @@ public class GeppettoProjectController
 		if(dataManager != null)
 		{
 			return dataManager.getGeppettoProjectById(id);
+		}
+		return null;
+	}
+	
+	@RequestMapping("/dashboard/geppettoproject/{projectId}/experiments/{experimentId}/downloadResults")
+	public @ResponseBody
+	Object downloadExperimentResults(@PathVariable("projectId") int projectId,@PathVariable("experimentId") int experimentId)
+	{
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		if(dataManager != null)
+		{
+			IGeppettoProject project = dataManager.getGeppettoProjectById(projectId);
+			List<? extends IExperiment> experiments = dataManager.getExperimentsForProject(projectId);
+			IExperiment theExperiment;
+			for(IExperiment e : experiments){
+				if(e.getId() == experimentId)
+				{
+					// The experiment is found
+					theExperiment = e;
+					break;
+				}
+			}
 		}
 		return null;
 	}

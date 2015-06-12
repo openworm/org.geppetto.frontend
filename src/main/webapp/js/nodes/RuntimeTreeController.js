@@ -40,7 +40,7 @@
 define(function(require) {
 	return function(GEPPETTO) {
 		var simulationTreeCreated=false;
-		var PhysicalQuantity = require('nodes/PhysicalQuantity');
+		var Quantity = require('nodes/Quantity');
 
 		/**
 		 * @class GEPPETTO.RuntimeTreeController
@@ -126,7 +126,7 @@ define(function(require) {
 										clientNode.getTimeSeries().unshift();
 
 										for (var index in received.timeSeries){
-											clientNode.getTimeSeries().push(new PhysicalQuantity(received.timeSeries[index].value, received.timeSeries[index].unit, received.timeSeries[index].scale));
+											clientNode.getTimeSeries().push(new Quantity(received.timeSeries[index].value, received.timeSeries[index].scale));
 										}
 
 									} catch (e) {

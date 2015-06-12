@@ -55,6 +55,7 @@ define(function(require) {
 		var ProjectNode = require('nodes/ProjectNode');
 		var ExperimentNode = require('nodes/ExperimentNode');
 		var PhysicalQuantity = require('nodes/PhysicalQuantity');
+		var Quantity = require('nodes/Quantity');
 		var simulationTreeCreated=false;
 
 		/**
@@ -437,7 +438,6 @@ define(function(require) {
 						name : node.name,
 						unit : node.unit,
 						instancePath : node.instancePath,
-						properties : node.properties,
 						watched : (node.watched === 'true'),
 						domainType : node.domainType,
 						_metaType : GEPPETTO.Resources.PARAMETER_NODE
@@ -447,8 +447,7 @@ define(function(require) {
 					for(var key in timeSeries){
 						if(typeof timeSeries[key] == "object"){
 							var obj =timeSeries[key];
-							var element =
-								new PhysicalQuantity(obj.value,obj.unit,obj.scale);
+							var element = new Quantity(obj.value,obj.scale);
 							a.getTimeSeries().push(element);
 						}
 					}
@@ -583,8 +582,7 @@ define(function(require) {
 					for(var key in timeSeries){
 						if(typeof timeSeries[key] == "object"){
 							var obj =timeSeries[key];
-							var element =
-								new PhysicalQuantity(obj.value,obj.unit,obj.scale);
+							var element = new Quantity(obj.value,obj.scale);
 							a.getTimeSeries().push(element);
 						}
 					}

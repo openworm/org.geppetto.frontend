@@ -93,7 +93,7 @@ define(function(require) {
 				else if (data._metaType == "VariableNode") {
 					//we get the first value from the time series, could be more in time series array
 					if(data.getTimeSeries() != null && data.getTimeSeries().length>0){
-						labelValue = data.getTimeSeries()[step].getValue() + " " + ((data.getTimeSeries()[step].getUnit()!=null && data.getTimeSeries()[step].getUnit()!="null")?(" " + data.getTimeSeries()[step].getUnit()):"");
+						labelValue = data.getTimeSeries()[step].getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
 					}else{
 						labelValue = "";
 					}

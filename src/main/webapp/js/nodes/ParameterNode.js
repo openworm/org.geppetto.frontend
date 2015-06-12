@@ -36,6 +36,7 @@
  * 
  * @module nodes/ParameterNode
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 
@@ -44,7 +45,6 @@ define(function(require) {
 	return Node.Model.extend({
 		timeSeries : [],
 		unit: "",
-		properties : {},
 
 		/**
 		 * Initializes this node with passed attributes
@@ -53,7 +53,6 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.properties = options.properties;
 			this.name = options.name;
 			this.id = options.id;
 			this.unit = options.unit;
@@ -85,21 +84,6 @@ define(function(require) {
 		},
 		
 		/**
-		 * Get properties for this node
-		 * 
-		 * @command ParameterNode.getProperties()
-		 * @returns {String} Unit for quantity
-		 */
-		getProperties : function() {
-			return this.properties;
-		},
-		
-
-		watch : function(){
-			
-		},
-		
-		/**
 		 * Get watched
 		 * 
 		 * @command ParameterSpecificationNode.getWatched()
@@ -125,7 +109,9 @@ define(function(require) {
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Properties : " + this.properties + "\n"
+					+ "    Value : " + this.value + "\n" + "    Unit : "
+					+ this.unit + "\n" + "    ScalingFactor : "
+					+ this.scalingFactor + "\n" +
 					+ "    Watched : " + this.watched + "\n";
 		}
 	});

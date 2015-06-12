@@ -34,6 +34,7 @@
  * Plot Widget class
  * @module Widgets/Plot
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 
@@ -183,6 +184,7 @@ define(function(require) {
 				var timeSeries = state.getTimeSeries();
 				var timeSeriesData = new Array();
 				var id = state.getInstancePath();
+				var unit = state.getUnit();
 				var i =0;
 				for(var key in timeSeries){
 					var value = timeSeries[key].getValue();
@@ -207,7 +209,7 @@ define(function(require) {
 							var timeSeries = window.Project.getActiveExperiment().time.getTimeSeries();
 							var divideLength = Math.ceil(timeSeries.length/10);
 							var ticks = [];
-							var unit = timeSeries[0].getUnit();
+							
 							if(unit!=null){
 								ticks[0] = [0,timeSeries[0].getValue().toFixed(4)+ " " +unit];
 							}else{
@@ -333,7 +335,7 @@ define(function(require) {
 						var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
 
 						if(!this.labelsUpdated) {
-							var unit = this.datasets[key].variable.getTimeSeries()[step].getUnit();
+							var unit = this.datasets[key].variable.getUnit();
 							if(unit != null) {
 								var labelY = unit;
 								//Matteo: commented until this can move as it doesn't make sense for it to be static.

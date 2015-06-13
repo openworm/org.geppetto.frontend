@@ -236,7 +236,27 @@ define(function(require) {
         
       //received model tree from server
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function(payload) {        	
-        	GEPPETTO.Console.log("Uploading model tree");
+        	GEPPETTO.Console.log("Uploading model tree"+payload);
+        	
+        	var update = JSON.parse(payload.update_model_tree);      
+        	for (var updateIndex in update){
+        		//retrieve aspect path and modeltree
+	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
+	        	var modelTree = update[updateIndex].ModelTree;
+	        	//get parameters sent for active experiment
+	        	var parameters = Project.getActiveExperiment().parameters;
+	        	for(var key in parameters){;
+	        		//find client node for parameter
+	        		var node = eval(parameters[key]);
+	        		//get name of node
+	        		var name = node.getId();
+	        		//get new server node from model tree
+	        		var newNode = eval("modelTree."+name);
+	        		//apply to client node new value
+	        		node.setValue(newNode.value);
+	        	}
+        	}
+        	
         };
         
         //received supported outputs from server

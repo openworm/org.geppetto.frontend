@@ -51,6 +51,7 @@ define(function(require) {
 		worker : null,
 		maxSteps : null,
 		paused : false,
+		parameters  :null,
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -64,6 +65,7 @@ define(function(require) {
 			this.status = options.status;
 			this.variables = new Array();
 			this.played = false;
+			this.parameters = new Array();
 		},
 
 		/**
@@ -299,11 +301,19 @@ define(function(require) {
 		 */
 		setParameters : function(aspectPath, newParameters){
 			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
+				this.parameters = new Array();
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
 				parameters["modelAspectPath"] = aspectPath;
 				parameters["modelParameters"] = JSON.stringify(newParameters);
+				
+				for (var key in newParameters) {
+					this.parameters.push(key);
+				}
+				
+				GEPPETTO.Console.log(this.parameters);
+				
 				GEPPETTO.MessageSocket.send("set_parameters", parameters);
 				
 				return "Sending request to set parameters";

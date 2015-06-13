@@ -549,7 +549,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
 			modelTreeNode.apply(updateClientVisitor);
 			String simTree = updateClientVisitor.getSerializedTree();
-			String formattedTree = simTree.substring(1, simTree.length() - 1);
+			String formattedTree = simTree.substring(1, simTree.length());
 
 			modelTreeString += "{\"aspectInstancePath\":" + '"' + modelPath + '"' + "," + formattedTree + "}";
 

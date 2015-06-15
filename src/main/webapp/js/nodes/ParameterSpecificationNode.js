@@ -98,11 +98,6 @@ define(function(require) {
 		 */
 		setValue : function(value) {
 			this.value = value;
-			var parameters = {};
-			parameters["instancePath"] = this.instancePath;
-			parameters["value"] = value;
-			GEPPETTO.MessageSocket.send("write_model",
-						parameters);
 		},
 
 		/**

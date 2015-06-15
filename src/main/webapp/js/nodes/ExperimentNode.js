@@ -311,9 +311,7 @@ define(function(require) {
 				for (var key in newParameters) {
 					this.parameters.push(key);
 				}
-				
-				GEPPETTO.Console.log(this.parameters);
-				
+								
 				GEPPETTO.MessageSocket.send("set_parameters", parameters);
 				
 				return "Sending request to set parameters";

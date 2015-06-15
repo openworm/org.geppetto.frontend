@@ -236,7 +236,7 @@ define(function(require) {
         
       //received model tree from server
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function(payload) {        	
-        	GEPPETTO.Console.log("Uploading model tree"+payload);
+        	GEPPETTO.Console.log("Paramters succesfully set");
         	
         	var update = JSON.parse(payload.update_model_tree);      
         	for (var updateIndex in update){

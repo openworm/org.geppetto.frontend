@@ -508,8 +508,8 @@ public class GeppettoServletController
 	/**
 	 * is notified with an alert message of status of simulation.
 	 * 
-	 * @param id
-	 *            - ID of new Websocket connection.
+	 * @param visitor
+	 *            - Websocket connection.
 	 */
 	public void simulationControlsUnavailable(GeppettoMessageInbound visitor)
 	{
@@ -519,8 +519,8 @@ public class GeppettoServletController
 	/**
 	 * On closing a client connection (WebSocket Connection), perform check to see if user leaving was the one in control of simulation if it was running.
 	 * 
-	 * @param id
-	 *            - WebSocket ID of user closing connection
+	 * @param exitingVisitor
+	 *            - WebSocket connection
 	 */
 	public void postClosingConnectionCheck(GeppettoMessageInbound exitingVisitor)
 	{
@@ -609,72 +609,40 @@ public class GeppettoServletController
 
 	/**
 	 * Requests JSONUtility class for a json object with a message to send to the client
-	 * 
+	 *
 	 * @param requestID
-	 * 
+	 *
 	 * @param connection
 	 *            - client to receive the message
 	 * @param type
 	 *            - type of message to be send
-	 * @param string
 	 */
 	public void messageClient(String requestID, GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type)
 	{
-		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, null);
-		String msg = new Gson().toJson(transportMsg);
-
-		// Send the message to the client
-		sendMessage(connection, msg);
+		messageClient(requestID, connection, type, null);
 	}
 
 	/**
 	 * Requests JSONUtility class for a json object with simulation update to be send to the client
-	 * 
+	 *
+	 * @param requestID
+	 *
 	 * @param connection
-	 *            - client to receive the simulation update
-	 * @param connection
-	 *            - Type of udpate to be send
-	 * @param reloadCanvas
+	 *            - client to receive the message
+	 * @param type
+	 *            - type of message to be send
+	 * @param update
 	 *            - update to be sent
 	 */
-	public void messageClient(String requestID, GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type, String update)
+	public void messageClient(String requestID, GeppettoMessageInbound connection, OUTBOUND_MESSAGE_TYPES type,
+							  String update)
 	{
-		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, update);
-		String msg = new Gson().toJson(transportMsg);
-
-		sendMessage(connection, msg);
-	}
-
-	/**
-	 * Sends a message to a specific user. The id of the WebSocket connection is used to contact the desired user.
-	 * 
-	 * @param id
-	 *            - ID of WebSocket connection that will be sent a message
-	 * @param msg
-	 *            - The message the user will be receiving
-	 */
-	public void sendMessage(GeppettoMessageInbound visitor, String msg)
-	{
-		try
-		{
-			long startTime = System.currentTimeMillis();
-			CharBuffer buffer = CharBuffer.wrap(msg);
-			visitor.getWsOutbound().writeTextMessage(buffer);
-			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a message of " + msg.length() / 1024 + "KB to the client";
-			_logger.info(debug);
-		}
-		catch(IOException ignore)
-		{
-			_logger.error("Unable to communicate with client " + ignore.getMessage());
-			this.removeConnection(visitor);
-		}
+        connection.messageClient(requestID, type, update);
 	}
 
 	/**
 	 * Returns status of server simulation used
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isSimulationInUse()

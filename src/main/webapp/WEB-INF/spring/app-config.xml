@@ -64,6 +64,42 @@
 		<aop:scoped-proxy/>
 	</bean>
 	
+ <!--
+        Configuration for the default message sender.
 
+	    queuingEnabled: If true then use worker threads for processing and transmission. If false then do
+	        everything on calling thread.
+
+	    maxQueueSize: The maximum size of a processing or transmission queue. If the queue is full and
+	        discardMessagesIfQueueFull is true then the oldest item is removed from the queue to make space
+	        for the new item. If discardMessagesIfQueueFull is false then the calling thread runs the task
+	        itself.
+
+        discardMessagesIfQueueFull: If true and a queue is full then discard the oldest task to make room for the
+            new task. If false then run the task in the calling thread.
+
+        compressionEnabled: If true then compress messages.
+
+        minMessageLengthForCompression: The minimum message size for compression. Messages smaller than this size
+            are not compressed.
+
+        queuedMessageTypes: Message types that should be queued - and thus handled across multiple threads.
+            All other message types are handled on the calling thread.
+    -->
+    <bean id="defaultMessageSenderConfig" class="org.geppetto.frontend.messaging.DefaultMessageSenderFactory">
+
+        <property name="queuingEnabled" value="true" />
+        <property name="maxQueueSize" value="5" />
+        <property name="discardMessagesIfQueueFull" value="false" />
+        <property name="compressionEnabled" value="true" />
+        <property name="minMessageLengthForCompression" value="20000" />
+
+        <property name="queuedMessageTypes">
+            <set>
+                <value type="org.geppetto.frontend.messages.OutboundMessages">EXPERIMENT_UPDATE</value>
+            </set>
+        </property>
+
+    </bean>
 
 </beans>

@@ -44,6 +44,7 @@ define(function(require) {
 		var clientID = null;
 		var nextID = 0;
 		var connectionInterval = 300;
+		var pako = require("pako");
 		
 		/**
 		 * Web socket creation and communication
@@ -60,6 +61,7 @@ define(function(require) {
 			connect: function(host) {
 				if('WebSocket' in window) {
 					GEPPETTO.MessageSocket.socket = new WebSocket(host);
+					GEPPETTO.MessageSocket.socket.binaryType = "arraybuffer";
 				}
 				else if('MozWebSocket' in window) {
 					GEPPETTO.MessageSocket.socket = new MozWebSocket(host);
@@ -106,11 +108,20 @@ define(function(require) {
 						fileNameLengthReader.readAsArrayBuffer(msg.data.slice(0,1));
 					}
 					else{
-						if(msg.data=="ping"){
+
+					var messageData = msg.data;
+
+					if(messageData == "ping") {
 							return;
 						}
-						var parsedServerMessage = JSON.parse(msg.data);
 	
+					// if it's a binary message then assume it's a compressed json string
+					if (messageData instanceof ArrayBuffer) {
+						messageData = gzipUncompress(messageData);
+					}
+
+					var parsedServerMessage = JSON.parse(messageData);
+
 						//notify all handlers
 						for(var i = 0, len = messageHandlers.length; i < len; i++) {
 							messageHandlers[ i ].onMessage(parsedServerMessage);
@@ -120,7 +131,6 @@ define(function(require) {
 
                 //Detects problems when connecting to Geppetto server
                 GEPPETTO.MessageSocket.socket.onerror = function(evt) {
-                    var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
                     var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
                     //Attempt to connect using ws first time wss fails,
                     //if ws fails too then don't try again and display info error window
@@ -230,7 +240,12 @@ define(function(require) {
 				data: payload
 			};
 			return  JSON.stringify(object);
-		};
+		}
 
+		function gzipUncompress(compressedMessage) {
+			var messageBytes = new Uint8Array(compressedMessage);
+			var message = pako.ungzip(messageBytes, {to:"string"});
+			return message;
+		}
 	}
 });

@@ -53,7 +53,10 @@ import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.frontend.messages.GeppettoTransportMessage;
 import org.geppetto.frontend.messages.InboundMessages;
 import org.geppetto.frontend.messages.OutboundMessages;
-import org.geppetto.frontend.messages.TransportMessageFactory;
+import org.geppetto.frontend.messaging.DefaultMessageSenderFactory;
+import org.geppetto.frontend.messaging.MessageSender;
+import org.geppetto.frontend.messaging.MessageSenderEvent;
+import org.geppetto.frontend.messaging.MessageSenderListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -66,7 +69,7 @@ import com.google.gson.reflect.TypeToken;
  * Class used to process Web Socket Connections. Messages sent from the connecting clients, web socket connections, are received in here.
  * 
  */
-public class WebsocketConnection extends MessageInbound
+public class WebsocketConnection extends MessageInbound implements MessageSenderListener
 {
 
 	private static Log logger = LogFactory.getLog(WebsocketConnection.class);
@@ -76,6 +79,11 @@ public class WebsocketConnection extends MessageInbound
 	private String connectionID;
 
 	protected ApplicationContext applicationContext;
+
+	@Autowired
+	private DefaultMessageSenderFactory messageSenderFactory;
+
+	private MessageSender messageSender;
 
 	@Autowired
 	private IGeppettoManager geppettoManager;
@@ -90,6 +98,7 @@ public class WebsocketConnection extends MessageInbound
 	@Override
 	protected void onOpen(WsOutbound outbound)
 	{
+		messageSender = messageSenderFactory.getMessageSender(getWsOutbound(), this);
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
 	}
@@ -97,6 +106,7 @@ public class WebsocketConnection extends MessageInbound
 	@Override
 	protected void onClose(int status)
 	{
+		messageSender.shutdown();
 		ConnectionsManager.getInstance().removeConnection(this);
 	}
 
@@ -113,23 +123,7 @@ public class WebsocketConnection extends MessageInbound
 	 */
 	public void sendMessage(String requestID, OutboundMessages type, String message)
 	{
-		// get transport message to be sent to the client
-		GeppettoTransportMessage transportMsg = TransportMessageFactory.getTransportMessage(requestID, type, message);
-		String msg = new Gson().toJson(transportMsg);
-
-		try
-		{
-			long startTime = System.currentTimeMillis();
-			CharBuffer buffer = CharBuffer.wrap(msg);
-			getWsOutbound().writeTextMessage(buffer);
-			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a message of " + msg.length() / 1024 + "KB to the client";
-			logger.info(debug);
-		}
-		catch(IOException ignore)
-		{
-			logger.error("Unable to communicate with client " + ignore.getMessage());
-			ConnectionsManager.getInstance().removeConnection(this);
-		}
+		messageSender.sendMessage(requestID, type, message);
 	}
 
 	/**
@@ -200,6 +194,7 @@ public class WebsocketConnection extends MessageInbound
 			case LOAD_PROJECT_FROM_URL:
 			{
 				connectionHandler.loadProjectFromURL(requestID, gmsg.data);
+				messageSender.reset();
 				break;
 			}
 			case LOAD_PROJECT_FROM_ID:
@@ -213,11 +208,13 @@ public class WebsocketConnection extends MessageInbound
 				}
 				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.loadProjectFromId(requestID, projectId, experimentId);
+				messageSender.reset();
 				break;
 			}
 			case LOAD_PROJECT_FROM_CONTENT:
 			{
 				connectionHandler.loadProjectFromContent(requestID, gmsg.data);
+				messageSender.reset();
 				break;
 			}
 			case SAVE_PROJECT:
@@ -461,9 +458,31 @@ public class WebsocketConnection extends MessageInbound
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	public String getConnectionID()
 	{
 		return connectionID;
+	}
+
+	/**
+	 * Handle events from the message sender.
+	 *
+	 * If there's an error during message transmission then terminate connection.
+	 *
+	 * @param event
+	 *            event from the message sender.
+	 */
+	@Override
+	public void handleMessageSenderEvent(MessageSenderEvent event)
+	{
+		if(event.getType().equals(MessageSenderEvent.Type.MESSAGE_SEND_FAILED))
+		{
+			messageSender.shutdown();
+			messageSender.removeListener(this);
+			ConnectionsManager.getInstance().removeConnection(this);
+		}
 	}
 
 }

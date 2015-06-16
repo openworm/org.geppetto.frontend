@@ -5,4 +5,4 @@ require('jsx!./dev/cameracontrols/CameraControls');
 require('jsx!./dev/logo/logo');
 require('jsx!./dev/share/share');
 require('jsx!./dev/contact/contact');
-});
+}); 

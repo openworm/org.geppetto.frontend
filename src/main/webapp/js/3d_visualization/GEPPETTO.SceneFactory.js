@@ -92,11 +92,26 @@ define(function(require) {
 											}
 										}
 									}
-									else{
-										if (metaType == "ParticleNode"|| metaType == "SphereNode" || 
-												metaType == "CylinderNode") {
+									else if (metaType == "ParticleNode"|| metaType == "SphereNode" || metaType == "CylinderNode") {
 											GEPPETTO.SceneFactory.updateGeometry(node);								
+									}
+									else if (metaType == "SkeletonAnimationNode") {
+										// get transformation matrices
+										var matrices = node.skeletonTransformations;
+										
+										// flatten out matrices
+										var flatMatrices = [];
+										// loop through matrices
+										for(var m = 0; m < matrices.length; m++){
+											// loop through rows for each matrix
+											for(var r=0; r<matrices[m].length; r++){
+												// append
+												flatMatrices = flatMatrices.concat(matrices[m][r]);
+											}
 										}
+										
+										// pass matrices to setCurrentMatrix of renderer
+										GEPPETTO.getVARS().renderer.setCurrentMatrix(flatMatrices);
 									}
 								}
 							}
@@ -269,8 +284,18 @@ define(function(require) {
 						scene = collada.scene;
 						scene.traverse(function(child){
 							if(child instanceof THREE.Mesh){
-								child.material =GEPPETTO.SceneFactory.getMeshPhongMaterial();
+								child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
 								child.name = node.instancePath.split(".VisualizationTree")[0];
+							}
+							if (child instanceof THREE.SkinnedMesh) {
+								// NOTE: without this line the animation doesn't work as the renderer
+								// NOTE: does not execute the animation logic
+								child.material.skinning = true;
+								
+								// NOTE: these two lines below seem to make no difference in Geppetto
+								// NOTE: while in the original prototype nothing moves if they are removed
+								// var animation = new THREE.Animation( child, child.geometry.animation );
+								// animation.play();
 							}
 						});
 					});

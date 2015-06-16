@@ -335,6 +335,10 @@ define(function(require) {
          * Renders objects in the scene
          */
         render : function() {
+        	// NOTE: this line below was used in the original prototype to slow down the animation
+        	// NOTE: doesn't seem to make much of a difference in Geppetto
+        	// THREE.AnimationHandler.update( GEPPETTO.getVARS().clock.getDelta());
+        	
             GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene, GEPPETTO.getVARS().camera);
         },
 

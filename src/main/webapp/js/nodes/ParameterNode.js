@@ -66,7 +66,7 @@ define(function(require) {
 		/**
 		 * Get value of quantity
 		 * 
-		 * @command VariableNode.getTimeSeries()
+		 * @command ParameterNode.getTimeSeries()
 		 * @returns {String} Value of quantity
 		 */
 		getTimeSeries : function() {
@@ -76,7 +76,7 @@ define(function(require) {
 		/**
 		 * Get the type of tree this is
 		 * 
-		 * @command ParameterSpecificationNode.getUnit()
+		 * @command ParameterNode.getUnit()
 		 * @returns {String} Unit for quantity
 		 */
 		getUnit : function() {
@@ -86,7 +86,7 @@ define(function(require) {
 		/**
 		 * Get watched
 		 * 
-		 * @command ParameterSpecificationNode.getWatched()
+		 * @command ParameterNode.isWatched()
 		 * @returns {boolean} true if this variable is being watched
 		 */
 		isWatched : function() {
@@ -96,7 +96,7 @@ define(function(require) {
 		/**
 		 * Set watched
 		 * 
-		 * @command VariableNode.setWatched()
+		 * @command ParameterNode.setWatched()
 		 * @param {Boolean} watched - Object with options attributes to initialize node
 		 */
 		setWatched : function(isWatched) {

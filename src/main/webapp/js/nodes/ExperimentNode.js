@@ -64,6 +64,7 @@ define(function(require) {
 			this.id = options.id;
 			this.status = options.status;
 			this.variables = new Array();
+			this.simulatorConfigurations = {};
 			this.played = false;
 			this.parameters = new Array();
 		},
@@ -394,6 +395,12 @@ define(function(require) {
 		 */
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n";
+		},
+		
+		addSimulatorConfiguration : function(aspect, simulatorConfiguration){
+			this.simulatorConfigurations[aspect]=simulatorConfiguration;
 		}
+		
+		
 	});
 });

@@ -356,13 +356,14 @@ define(function(require) {
 			/**
 			 * Socket Messages
 			 */
-			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto servlet. \nReload page if problems persits",
+			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto. \nReload page if problems persits",
 			
 			/**
 			 * Node Resources
 			 */
 			PROJECT_NODE : "ProjectNode",
 			EXPERIMENT_NODE : "ExperimentNode",
+			SIMULATOR_CONFIGURATION_NODE : "SimulatorConfigurationNode",
 			ENTITY_NODE : "EntityNode", 
 			ASPECT_NODE : "AspectNode",
 			ASPECT_SUBTREE_NODE : "AspectSubTreeNode",

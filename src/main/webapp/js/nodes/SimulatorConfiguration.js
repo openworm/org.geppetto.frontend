@@ -42,8 +42,10 @@ define(function(require) {
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		simulatorID : "",
+		simulatorId : "",
+		conversionId : "",
 		timeStep : null,
+		length : null,
 		parameters : null,
 
 		/**
@@ -54,10 +56,12 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			//initialize parameters array
-			this.parameters = new Array();
-			this.name = options.name;
+			this.parameters = options.parameters;
 			this.id = options.id;
-			this.instancePath = options.instancePath;
+			this.simulatorId=options.simulatorId;
+			this.conversionId=options.conversionId;
+			this.timeStep=options.timeStep;
+			this.length=options.length;
 			this._metaType = options._metaType;
 		},
 
@@ -72,6 +76,16 @@ define(function(require) {
 		},
 		
 		/**
+		 * Get parameter for this Simulator Configuration
+		 * 
+		 * @command SimulatorConfig.getSimulatorParameter()
+		 * @returns {Array} Array of ParameterNodes
+		 */
+		getSimulatorParameter : function(parameter) {
+			return this.parameters[parameter];
+		},
+		
+		/**
 		 * Gets an experiment from this project. 
 		 * 
 		 * @command SimulatorConfig.setParameters(parameters)
@@ -81,22 +95,36 @@ define(function(require) {
 		},
 		
 		/**
-		 * Sets the simulator id for this Simulator Configuration
+		 * Gets the simulator id for this Simulator Configuration
 		 * 
-		 * @command SimulatorConfig.getSimulatorID()
-		 * @returns {String} SimulatorID string
+		 * @command SimulatorConfig.getsimulatorId()
+		 * @returns {String} simulatorId string
 		 */
-		getSimulatorID : function() {
-			return this.simulatorID;
+		getSimulator : function() {
+			return this.simulatorId;
 		},
 		
 		/**
-		 * Gets the simulatorID from this project. 
+		 * Gets the conversion service for this Simulator Configuration
 		 * 
-		 * @command SimulatorConfig.setSimulatorID(simulatorID)
+		 * @command SimulatorConfig.getsimulatorId()
+		 * @returns {String} simulatorId string
 		 */
-		setSimulatorID : function(simulatorID){
-			return this.simulatorID = simulatorID;
+		getConversionService : function() {
+			return this.conversionId;
+		},
+		
+		/**
+		 * Sets the simulatorId for this Simulator Configuration 
+		 * 
+		 * @command SimulatorConfig.setsimulatorId(simulatorId)
+		 */
+		setSimulator : function(simulatorId){
+			var parameters = {};
+			parameters["simulatorId"] = simulatorId;
+			GEPPETTO.Main.saveExperimentFields();
+			GEPPETTO.MessageSocket.send("get_supported_outputs", parameters);
+			return this.simulatorId = simulatorId;
 		},
 		
 		/**
@@ -117,13 +145,33 @@ define(function(require) {
 		setTimeStep : function(timeStep){
 			return this.timeStep = timeStep;
 		},
+		
+		/**
+		 * Get simulation length for this Simulator Configuration
+		 * 
+		 * @command SimulatorConfig.getLength()
+		 * @returns {String} String value of simulation length 
+		 */
+		getLength : function() {
+			return this.length;
+		},
+		
+		/**
+		 * Sets the length for the simulator configuration
+		 * 
+		 * @command SimulatorConfig.setLength(length)
+		 */
+		setLength : function(length){
+			return this.length = length;
+		},
+		
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    SimulatorID : " + this.simulatorID + "\n";
+					+ "    simulatorId : " + this.simulatorId + "\n";
 		}
 	});
 });

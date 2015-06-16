@@ -374,18 +374,50 @@ define(function(require) {
 				 * @command AspectNode.getSimulatorConfiguration()
 				 */
 				getSimulatorConfiguration : function(){
-					return this.simulatorConfiguration;
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath];
+				},
+				
+
+				getTimeStep : function(){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].getTimeStep();
+				},
+				
+				getSimulator : function(){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].getSimulator();
+				},
+				
+				getSimulatorParameter : function(parameter){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].getSimulatorParameter(parameter);
+				},
+				
+				getLength : function(){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].getLength();
+				},
+				
+				getConversionService : function(){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].getConversionService();
 				},
 
-				/**
-				 * Set simulator configuration for this aspect
-				 *
-				 * @command AspectNode.setSimulatorConfiguration(simulatorConfiguration)
-				 */
-				setSimulatorConfiguration : function(simulatorConfiguration){
-					this.simulatorConfiguration = simulatorConfiguration;
+				setTimeStep : function(timeStep){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].setTimeStep(timeStep);
 				},
-
+				
+				setSimulator : function(simulatorId){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].setSimulator(simulatorId);
+				},
+				
+				setSimulatorParameter : function(parameter, value){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].setSimulatorParameter(parameter,value);
+				},
+				
+				setLength : function(length){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].setLength(length);
+				},
+				
+				setConversionService : function(conversionServiceId){
+					return Project.getActiveExperiment().simulatorConfigurations[this.instancePath].setConversionService(conversionServiceId);
+				},
+				
 				/**
 				 * Print out formatted node
 				 */

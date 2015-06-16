@@ -54,6 +54,7 @@ define(function(require) {
 		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
 		var ProjectNode = require('nodes/ProjectNode');
 		var ExperimentNode = require('nodes/ExperimentNode');
+		var SimulatorConfiguration = require('nodes/SimulatorConfiguration');
 		var PhysicalQuantity = require('nodes/PhysicalQuantity');
 		var Quantity = require('nodes/Quantity');
 		var simulationTreeCreated=false;
@@ -129,12 +130,37 @@ define(function(require) {
 								e.getVariables().push(variableName);
 							}
 						}
+						
+						if(aC.simulatorConfiguration!=null)
+						{
+							var sC = this.createSimulatorConfigurationNode(aC.simulatorConfiguration);
+							var aspect=aC.aspect.entityInstancePath+ "." + aC.aspect.aspect;
+							sC.setParent(e);
+							// add simulator configuration node to experiment
+							e.addSimulatorConfiguration(aspect,sC);
+						}
 					}
 					
 					this.nodes++;
 					GEPPETTO.Console.createTags(e.name,
 							this.nodeTags[GEPPETTO.Resources.EXPERIMENT_NODE]);
 					return e;
+				},
+				
+				/** Creates and populates client aspect nodes for first time */
+				createSimulatorConfigurationNode : function(node) {
+					var sC = new SimulatorConfiguration({
+						parameters : node.parameters,
+						simulatorId : node.simulatorId,
+						conversionId : node.conversionServiceId,
+						timeStep :node.timestep,
+						length : node.length,
+						_metaType : GEPPETTO.Resources.SIMULATOR_CONFIGURATION_NODE
+					});
+
+				
+					this.nodes++;
+					return sC;
 				},
 				
 				/** Create and populate client entity nodes for the first time */

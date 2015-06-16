@@ -232,6 +232,7 @@ public class GeppettoManager implements IGeppettoManager
 	public void persistProject(String requestId, IGeppettoProject project)
 	{
 		DataManagerHelper.getDataManager().addGeppettoProject(project);
+		//TODO Persist
 	}
 
 	/*

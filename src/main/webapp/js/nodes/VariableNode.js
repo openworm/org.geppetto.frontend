@@ -74,11 +74,21 @@ define(function(require) {
 		/**
 		 * Get the type of tree this is
 		 * 
-		 * @command ParameterSpecificationNode.getUnit()
+		 * @command VariableNode.getUnit()
 		 * @returns {String} Unit for quantity
 		 */
 		getUnit : function() {
 			return this.unit;
+		},
+		
+		/**
+		 * Set unit
+		 * 
+		 * @command VariableNode.setUnit()
+		 * @param {String} unit - unit for variable node
+		 */
+		setUnit : function(unit) {
+			this.unit = unit;
 		},
 
 		/**

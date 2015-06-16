@@ -124,6 +124,7 @@ define(function(require) {
 										var received=eval("simulationTree."+formattedState);
 										var clientNode=eval(state);
 										clientNode.getTimeSeries().unshift();
+										clientNode.setUnit(received.unit);
 
 										for (var index in received.timeSeries){
 											clientNode.getTimeSeries().push(new Quantity(received.timeSeries[index].value, received.timeSeries[index].scale));

@@ -47,15 +47,19 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.ExperimentStatus;
+import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
+import org.geppetto.core.model.runtime.AspectNode;
+import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
 import org.geppetto.core.simulation.IExperimentRunManager;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.simulation.ExperimentRunThread;
 import org.geppetto.simulation.IExperimentListener;
 import org.geppetto.simulation.RuntimeExperiment;
 import org.geppetto.simulation.RuntimeProject;
+import org.geppetto.simulation.visitor.FindAspectNodeVisitor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -155,6 +159,22 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
 			runtimeProject.openExperiment(String.valueOf(this.getReqId()), experiment);
 			RuntimeExperiment runtimeExperiment = runtimeProject.getRuntimeExperiment(experiment);
+
+			// Populate Simulation Tree
+			List<? extends IAspectConfiguration> aspectConfigs = experiment.getAspectConfigurations();
+			for(IAspectConfiguration aspectConfig : aspectConfigs)
+			{
+				String aspect = aspectConfig.getAspect().getInstancePath();
+
+				// Clear Simulation Tree
+				FindAspectNodeVisitor findAspectNodeVisitor = new FindAspectNodeVisitor(aspect);
+				runtimeExperiment.getRuntimeTree().apply(findAspectNodeVisitor);
+				AspectNode node = findAspectNodeVisitor.getAspectNode();
+				node.flushSubTree(AspectTreeType.SIMULATION_TREE);
+
+				// Populate Simulation Tree per aspect
+				runtimeExperiment.populateSimulationTree(aspect);
+			}
 
 			ExperimentRunThread experimentRun = new ExperimentRunThread(experiment, runtimeExperiment, project, simulationCallbackListener);
 			experimentRun.addExperimentListener(this);

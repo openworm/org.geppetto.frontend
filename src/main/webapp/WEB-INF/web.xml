@@ -45,9 +45,7 @@
     </servlet-mapping>
     
     <welcome-file-list>
-        <welcome-file>
-            templates/index.htm
-        </welcome-file>
+        <welcome-file>templates/index.htm</welcome-file>
     </welcome-file-list>
     
     <mime-mapping>

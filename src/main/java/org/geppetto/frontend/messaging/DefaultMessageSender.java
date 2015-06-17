@@ -33,6 +33,7 @@
 package org.geppetto.frontend.messaging;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.HashSet;
@@ -356,16 +357,22 @@ public class DefaultMessageSender implements MessageSender
 
 	private void sendBinaryMessage(byte[] message, OutboundMessages messageType, int uncompressedMessageSize, boolean fromQueue)
 	{
-
 		try
 		{
-
 			long startTime = System.currentTimeMillis();
-			ByteBuffer buffer = ByteBuffer.wrap(message);
+
+			// add to the buffer:
+			// - type of message
+			// - message
+			int bufferSize = 1 + message.length;
+			ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+			buffer.put(BigInteger.valueOf(0).toByteArray());
+			buffer.put(message);
+
+			// ByteBuffer buffer = ByteBuffer.wrap(message);
 			wsOutbound.writeBinaryMessage(buffer);
 
 			String logMessage = "sent binary/compressed message - %s, length: %d (%d) bytes, duration: %d ms";
-
 			if(fromQueue)
 			{
 				logMessage = "sent binary/compressed message from queue - %s, length: %d (%d) bytes, duration: %d ms";

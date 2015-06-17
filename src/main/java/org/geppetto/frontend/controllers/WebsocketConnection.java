@@ -142,9 +142,14 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			byte[] name = path.getFileName().toString().getBytes("UTF-8");
 			byte[] data = Files.readAllBytes(path);
 
-			// add to the buffer filename length, filename and file content (filename size is needed client side)
-			int bufferSize = 1 + name.length + data.length;
+			// add to the buffer:
+			// - type of message
+			// - filename length (filename length is needed client side to parse the message)
+			// - filename
+			// - file content
+			int bufferSize = 1 + 1 + name.length + data.length;
 			ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+			buffer.put(BigInteger.valueOf(1).toByteArray());
 			buffer.put(BigInteger.valueOf(name.length).toByteArray());
 			buffer.put(name);
 			buffer.put(data);

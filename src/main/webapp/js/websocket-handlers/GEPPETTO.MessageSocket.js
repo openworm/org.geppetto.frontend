@@ -87,28 +87,6 @@ define(function(require) {
 				};
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
-					if (msg.data instanceof Blob){
-						var fileNameLengthReader = new FileReader();
-						//handler executed once reading file name length from blob is finished.
-						fileNameLengthReader.addEventListener("loadend", function(e){
-						    //Converting file name length to integer
-						    var fileNameLength = new Uint8Array(e.srcElement.result)[0];
-						    
-						    var fileNameReader = new FileReader();
-							//handler executed once reading file name from blob is finished.
-						    fileNameReader.addEventListener("loadend", function(e){
-						    	
-						    	//saving file to disk
-								saveData(msg.data.slice(1+fileNameLength), e.srcElement.result);
-							});
-						    //Reading file name
-						    fileNameReader.readAsText(msg.data.slice(1,1+fileNameLength));
-						});
-						//Reading file name length
-						fileNameLengthReader.readAsArrayBuffer(msg.data.slice(0,1));
-					}
-					else{
-
 					var messageData = msg.data;
 
 					if(messageData == "ping") {
@@ -117,16 +95,28 @@ define(function(require) {
 	
 					// if it's a binary message then assume it's a compressed json string
 					if (messageData instanceof ArrayBuffer) {
-						messageData = gzipUncompress(messageData);
+						
+						var messageBytes = new Uint8Array(messageData);
+						
+						// if it's a binary message and first byte it's zero then assume it's a compressed json string
+						//otherwise is a file and a 'save as' dialog is opened
+						if (messageBytes[0] == 0){
+							var message = pako.ungzip(messageBytes.subarray(1), {to:"string"});
+							parseAndNotify(message);
+						}
+						else{
+							 var fileNameLength = messageBytes[1];
+							 var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2,2+fileNameLength));
+							 var blob = new Blob([messageData]);
+							 saveData(blob.slice(2+fileNameLength), fileName);
+						}
+						
+					}
+					else{
+						// a non compresed message
+						parseAndNotify(messageData);
 					}
 
-					var parsedServerMessage = JSON.parse(messageData);
-
-						//notify all handlers
-						for(var i = 0, len = messageHandlers.length; i < len; i++) {
-							messageHandlers[ i ].onMessage(parsedServerMessage);
-						}
-					}	
 				};
 
                 //Detects problems when connecting to Geppetto server
@@ -246,6 +236,15 @@ define(function(require) {
 			var messageBytes = new Uint8Array(compressedMessage);
 			var message = pako.ungzip(messageBytes, {to:"string"});
 			return message;
+		}
+		
+		function parseAndNotify(messageData){
+			var parsedServerMessage = JSON.parse(messageData);
+
+			//notify all handlers
+			for(var i = 0, len = messageHandlers.length; i < len; i++) {
+				messageHandlers[ i ].onMessage(parsedServerMessage);
+			}
 		}
 	}
 });

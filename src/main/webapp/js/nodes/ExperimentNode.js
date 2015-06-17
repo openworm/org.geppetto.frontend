@@ -42,7 +42,9 @@ define(function(require) {
 	return Backbone.Model.extend({
 
 		name : "",
+		description: "",
 		id : "",
+		lastModified : "",
 		status : null,
 		parent : null,
 		variables : null,
@@ -63,6 +65,8 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.status = options.status;
+			this.description=options.description;
+			this.lastModified=options.lastModified;
 			this.variables = new Array();
 			this.simulatorConfigurations = {};
 			this.played = false;
@@ -86,7 +90,41 @@ define(function(require) {
 		 * @command ExperimentNode.setName()
 		 *
 		 */
+		setDescription : function(newdescription) {
+			this.saveExperimentProperties({"description":newdescription});
+			this.description = newdescription;
+		},
+		
+		/**
+		 * Gets the name of the node
+		 *
+		 * @command ExperimentNode.getName()
+		 * @returns {String} Name of the node
+		 *
+		 */
+		getDescription : function() {
+			return this.description;
+		},
+		
+		/**
+		 * Gets the name of the node
+		 *
+		 * @command ExperimentNode.getLastModified()
+		 * @returns {String} The time and date of when the experiment was modified last
+		 *
+		 */
+		getLastModified : function() {
+			return this.lastModified;
+		},
+		
+		/**
+		 * Sets the name of the node
+		 *
+		 * @command ExperimentNode.setName()
+		 *
+		 */
 		setName : function(newname) {
+			this.saveExperimentProperties({"name":newname});
 			this.name = newname;
 		},
 
@@ -255,6 +293,15 @@ define(function(require) {
             	}
              };
 		},
+		
+		saveExperimentProperties : function(properties) {
+			var parameters = {};
+			parameters["experimentId"] = this.id;
+			parameters["projectId"] = this.getParent().getId();
+			parameters["properties"] = properties;
+			GEPPETTO.MessageSocket.send("save_experiment_properties", parameters);
+		},
+	
 		
 		terminateWorker : function(){
 			if(this.worker!=undefined){

@@ -113,6 +113,8 @@ define(function(require) {
 						name : node.name,
 						type : node.type,
 						id : node.id,
+						description : node.description,
+						lastModified : node.lastModified,
 						status : node.status,
 						_metaType : GEPPETTO.Resources.EXPERIMENT_NODE,
 					});

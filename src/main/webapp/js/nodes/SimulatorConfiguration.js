@@ -120,10 +120,9 @@ define(function(require) {
 		 * @command SimulatorConfig.setsimulatorId(simulatorId)
 		 */
 		setSimulator : function(simulatorId){
-			var parameters = {};
-			parameters["simulatorId"] = simulatorId;
-			GEPPETTO.Main.saveExperimentFields();
-			GEPPETTO.MessageSocket.send("get_supported_outputs", parameters);
+			var properties = {};
+			properties["simulatorId"] = simulatorId;
+			getParent().saveExperimentFields(properties);
 			return this.simulatorId = simulatorId;
 		},
 		
@@ -143,6 +142,7 @@ define(function(require) {
 		 * @command SimulatorConfig.setTimeStep(timeStep)
 		 */
 		setTimeStep : function(timeStep){
+			
 			return this.timeStep = timeStep;
 		},
 		

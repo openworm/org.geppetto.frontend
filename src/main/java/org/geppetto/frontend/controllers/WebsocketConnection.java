@@ -217,22 +217,37 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				messageSender.reset();
 				break;
 			}
-			case SAVE_PROJECT:
+			case PERSIST_PROJECT:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.saveProject(requestID, projectId);
+				connectionHandler.persistProject(requestID, projectId);
+				break;
+			}
+			case SAVE_PROJECT_PROPERTIES:
+			{
+				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+				connectionHandler.saveProjectProperties(requestID, receivedObject.projectId, receivedObject.properties);
+				break;
+			}
+			case SAVE_EXPERIMENT_PROPERTIES:
+			{
+				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+				connectionHandler.saveExperimentProperties(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.properties);
 				break;
 			}
 			case LOAD_EXPERIMENT:
+			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 				{
 				}.getType());
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.loadExperiment(requestID, experimentId, projectId);
+				break;
+			}
 			case RUN_SCRIPT:
 			{
 				String urlString = gmsg.data;
@@ -248,13 +263,6 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				{
 					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
 				}
-				break;
-			}
-			case SIM:
-			{
-				// TODO Check will this disappear?
-				// String url = gmsg.data;
-				// connectionHandler.getSimulationConfiguration(requestID, url, this);
 				break;
 			}
 			case PLAY_EXPERIMENT:
@@ -285,11 +293,6 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				experimentId = Long.parseLong(parameters.get("experimentId"));
 				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.runExperiment(requestID, experimentId, projectId);
-				break;
-			}
-			case OBSERVE:
-			{
-				// TODO Send an error, observer mode not supported anymore
 				break;
 			}
 			case SET_WATCHED_VARIABLES:
@@ -483,6 +486,13 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			messageSender.removeListener(this);
 			ConnectionsManager.getInstance().removeConnection(this);
 		}
+	}
+
+	class ReceivedObject
+	{
+		Long projectId;
+		Long experimentId;
+		Map<String, String> properties;
 	}
 
 }

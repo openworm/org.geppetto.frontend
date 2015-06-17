@@ -55,6 +55,7 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
@@ -829,7 +830,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
-	public void saveProject(String requestID, long projectId)
+	public void persistProject(String requestID, long projectId)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 
@@ -930,5 +931,94 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			error(e, "Error downloading model for " + aspectPath + " in format " + format);
 		}
+	}
+
+	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param properties
+	 */
+	public void saveProjectProperties(String requestID, long projectId, Map<String, String> properties)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		for(String p:properties.keySet())
+		{
+			switch(p)
+			{
+				case "name":
+				{
+					geppettoProject.setName(properties.get(p));
+					break;
+				}
+			}
+		}
+		dataManager.saveProject(geppettoProject);
+	}
+
+	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param experimentId
+	 * @param properties
+	 */
+	public void saveExperimentProperties(String requestID, long projectId, long experimentId, Map<String, String> properties)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);		
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		for(String p:properties.keySet())
+		{
+			switch(p)
+			{
+				case "name":
+				{
+					experiment.setName(properties.get(p));
+					break;
+				}
+				case "description":
+				{
+					experiment.setDescription(properties.get(p));
+					break;
+				}
+				case "timeStep":
+				{
+					String aspectPath=properties.get("aspectInstancePath");
+					for(IAspectConfiguration aspectConfiguration:experiment.getAspectConfigurations())
+					{
+						if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+						{
+							aspectConfiguration.getSimulatorConfiguration().setTimestep(Float.parseFloat(properties.get(p)));
+						}
+					}
+					break;
+				}
+				case "length":
+				{
+					String aspectPath=properties.get("aspectInstancePath");
+					for(IAspectConfiguration aspectConfiguration:experiment.getAspectConfigurations())
+					{
+						if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+						{
+							aspectConfiguration.getSimulatorConfiguration().setLength(Float.parseFloat(properties.get(p)));
+						}
+					}
+					break;
+				}
+				case "simulatorParameters":
+				{
+					String aspectPath=properties.get("aspectInstancePath");
+					for(IAspectConfiguration aspectConfiguration:experiment.getAspectConfigurations())
+					{
+						if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+						{
+							aspectConfiguration.getSimulatorConfiguration().setTimestep(Float.parseFloat(properties.get(p)));
+						}
+					}
+					break;
+				}
+			}
+		}
+		dataManager.saveExperiment(experiment);
 	}
 }

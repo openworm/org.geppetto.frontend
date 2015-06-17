@@ -267,10 +267,17 @@ define([ 'jquery', 'underscore', 'backbone',
 			return loadStatus;
 		},
 		
-		save : function(){
+		saveProjectProperties : function(properties) {
+			var parameters = {};
+			parameters["projectId"] = this.getParent().getId();
+			parameters["properties"] = properties;
+			GEPPETTO.MessageSocket.send("save_project_properties", parameters);
+		},
+		
+		persist : function(){
 			var parameters = {};
 			parameters["projectId"] = this.id;
-			GEPPETTO.MessageSocket.send("save_project", parameters);
+			GEPPETTO.MessageSocket.send("persist_project", parameters);
 		},
 
 		/**

@@ -3,7 +3,7 @@
     z-index: 99999;
 }
 
-#consoleButton {
+#tabButton {
     margin: 0 auto;
     margin-bottom:26px;
     position: relative;
@@ -17,13 +17,81 @@
     border-radius:0px;
     border-top-left-radius:3px;
     border-top-right-radius:3px;
-    width: 120px;
-    height: 35px;
+    height: 45px;
     z-index : 3;
+    padding : 0px;
 }
 
+#experimentsButton {
+    margin: 0 auto;
+    margin-bottom:26px;
+    position: relative;
+    background: rgba(66,59,59,0.80);
+    color: @orange;
+    border-color: #2e2828;
+    border-width: 0;
+    box-shadow:none;
+    text-shadow: none;
+    width: 120px;
+    height: 45px;
+    z-index : 3;
+    bottom : 1px;
+}
+
+#consoleButton {
+    margin: 0 auto;
+    margin-bottom:26px;
+    position: relative;
+    background: rgba(66,59,59,0.80);
+    color: @orange;
+    border-color: #2e2828;
+    border-width: 0;
+    box-shadow:none;
+    text-shadow: none;
+    width: 120px;
+    height: 45px;
+    z-index : 3;
+    bottom : 1px;
+    border-right: 1px solid white;
+}
+
+.experimentsResults {
+	background:transparent;
+	color: #ccc;
+	height: 250px;
+	width: 100%;
+	max-height: 100%;
+	border-top : 0px;
+	border-bottom : 0px;
+	border-color : orange;
+}
+
+#experiments {
+	background:rgba(66,59,59,0.80);
+	color: #ccc;
+	height: 250px;
+	width: 100%;
+	max-height: 100%;
+	top : 0px;
+	padding: 0px;
+  	border-color: orange;
+	bottom: -2px;
+	top : 0px;
+	z-index : 1;
+	margin-bottom : 0px;
+}
+
+.experimentsTable{
+}
+
+.experimentsTableColumn{
+	color : orange;
+}
+
+#experimentsButton .glyphicon {
+	font-size : 50px;
+}
 #consoleButtonContainer{
-    width:120px;
     margin: 0 auto;
 }
 
@@ -79,4 +147,67 @@
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
+}
+
+.nav-tabs > li > a{
+	color: orange;
+	height : 100%;
+}
+
+.nav-tabs > li.active > a{
+	color: orange;
+  	border: 0px;
+  	background-color: grey;
+}
+
+.nav-tabs > li.active > a:hover{
+	color: orange;
+  	border: 0px;
+  	background-color: grey;
+}
+
+.nav-tabs > li.active > a:focus {
+	color: orange;
+  	border: 0px;
+  	background-color: grey;
+}
+
+.activeExpLabel {
+	color : orange;
+	text-align : center;
+	text-transform: capitalize;
+	padding-top : 40px;
+}
+
+.activeExperiment {
+	background : grey;
+}
+
+.circle {
+	position: relative;
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 50%;
+	background: #ff6d00;
+	margin-top: 2px;
+}
+
+.QUEUED {
+	background: #00ccff;
+}
+
+.RUNNING {
+	background: #ffd800;
+}
+
+.ERROR {
+	background: red;
+}
+
+.COMPLETED {
+	background: #7fcf00;
+}
+
+.DELETED {
+	background: grey;
 }

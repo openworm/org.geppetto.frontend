@@ -67,9 +67,13 @@ define(function(require) {
 	        		//notify widgets that selection has changed in scene
 	        		GEPPETTO.WidgetsListener.update(Events.Select);
 	        	});
+				GEPPETTO.on(Events.Project_loaded, function(){
+					GEPPETTO.FE.populateExperimentsTable();
+				});
 				GEPPETTO.on(Events.Experiment_loaded, function(){
 		            GEPPETTO.trigger("hide:spinner");
 					G.resetCamera();
+					GEPPETTO.FE.setActiveExperimentLabel();
 				});
 				GEPPETTO.on(Events.Experiment_deleted, function(e){
 					var name = e.name;

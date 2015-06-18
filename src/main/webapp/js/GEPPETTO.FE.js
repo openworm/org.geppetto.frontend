@@ -77,6 +77,66 @@ define(function(require) {
                 return $("#sim").get(0);
             },
             
+            setActiveExperimentLabel : function(){
+            	var experiment = window.Project.getActiveExperiment();
+            	if( $('#activeLabel').length )
+            	{
+            		$('#activeLabel').text(experiment.getName());
+            	}else{
+            		var activeExperimentLabel =$("<h4 class='activeExpLabel' id='activeLabel'>"+
+            				experiment.getName()+"</h4>");
+            		activeExperimentLabel.appendTo($("#sim-toolbar"));
+            	}
+            	
+            	$('#experimentsTable tbody tr').each(function(){
+            	  if (this.id == ("#"+experiment.getId())) {
+            	    $(this).addClass("activeExperiment");
+            	  }else{
+            		  $(this).removeClass("activeExperiment");
+            	  }
+            	});
+            },
+            
+            populateExperimentsTable : function(){            	
+            	var experiments = window.Project.getExperiments();
+            	
+            	for(var key in experiments){
+            		var experiment = experiments[key];
+            		var experimentsTable = document.getElementById("experimentsTable");
+            		
+            		var tr = 
+            			$('<tr data-toggle="collapse" class="accordion-toggle">');
+            		tr.appendTo(experimentsTable); 
+            		tr.attr("data-target", "#"+experiment.getId());
+            		tr.attr("id", "#"+experiment.getId());
+            		
+            		var tdStatus;
+            		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+            			tdStatus = $('<td><div class="circle COMPLETED center-block" title="COMPLETED"></div></td>');
+            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DELETED){
+            			tdStatus = $('<td><div class="circle DELETED center-block" title="DELETED"></div></td>');
+            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.RUNNING){
+            			tdStatus = $('<td><div class="c  ircle RUNNING center-block" title="RUNNING"></div></td>');
+            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
+            			tdStatus = $('<td><div class="circle DESIGN center-block" title="DESIGN"></div></td>');
+            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.QUEUED){
+            			tdStatus = $('<td><div class="circle QUEUED center-block" title="QUEUED"></div></td>');
+            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.CANCELED){
+            			tdStatus = $('<td><div class="circle CANCELED center-block" title="CANCELED"></div></td>');
+            		}
+            		            		
+            		var tdName = $('<td>'+experiment.getName()+'</td>');            		
+            		var tdLastModified = $('<td>'+experiment.getLastModified()+'</td>');
+            		var tdIcons = $('<td></td>');
+            		
+            		tdStatus.appendTo(tr);
+            		tdName.appendTo(tr);
+            		tdLastModified.appendTo(tr);
+            		tdIcons.appendTo(tr);
+            		$("tr").addClass("experimentsTableColumn");
+            	}
+            },
+            
             /**
              * Show error message if webgl failed to start
              */

@@ -2,6 +2,7 @@ define(function(require) {
 
     var React = require('react');
 
+    var RunButton = require('./buttons/RunButton');
     var PlayButton = require('./buttons/PlayButton');
     var PauseButton = require('./buttons/PauseButton');
     var StopButton = require('./buttons/StopButton');
@@ -13,6 +14,7 @@ define(function(require) {
 
         getInitialState: function() {
             return {
+            	disableRun : true,
                 disablePlay:true,
                 disablePause:true,
                 disableStop:true
@@ -30,6 +32,10 @@ define(function(require) {
             	}
             });
             
+            GEPPETTO.on(Events.Experiment_run, function(){
+                self.setState({disablePlay:false, disablePause:false, disableStop:false});
+            });
+
             GEPPETTO.on(Events.Experiment_play, function(){
                 self.setState({disablePlay:true, disablePause:false, disableStop:false});
             });
@@ -43,7 +49,7 @@ define(function(require) {
             });
             
             GEPPETTO.on('disable_all', function(){
-                self.setState({disablePlay:true, disablePause:true, disableStop:true});
+                self.setState({disableRun: true,disablePlay:true, disablePause:true, disableStop:true});
             });
             GEPPETTO.on(Events.Experiment_replay, function(){
                 self.setState({disablePlay:true, disablePause:false, disableStop:false});
@@ -55,7 +61,8 @@ define(function(require) {
                 HelpButton({disabled:false}),
                 StopButton({disabled:this.state.disableStop}),
                 PauseButton({disabled:this.state.disablePause}),
-                PlayButton({disabled:this.state.disablePlay})
+                PlayButton({disabled:this.state.disablePlay}),
+                RunButton({disabled:this.state.disableRun})
             );
         }
 

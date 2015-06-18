@@ -199,6 +199,29 @@ define(function(require) {
 
 				//Initialize websocket functionality
 				GEPPETTO.Main.init();
+				
+				var visibleExperiments = false;
+				$('#experimentsButton').click(function (e) {
+					if(!visibleExperiments){
+						$('#console').hide(); 
+						$('#experiments').show();
+						$(this).tab('show');
+						visibleExperiments = true;
+					}else{
+						$('#experiments').hide();
+						visibleExperiments= false;
+					}
+				});
+
+				$('#consoleButton').click(function (e) {
+					$('#console').show() 
+					$('#experiments').hide()
+					$(this).tab('show')
+					visibleExperiments = false;
+				});
+				
+				$('.nav-tabs li.active').removeClass('active');
+
 			}
 		});
 	};

@@ -56,19 +56,42 @@
 </div>
 
 <div id="mainContainer">
+     <div id="geppettologo"></div>
     <div id="sim"></div>
 
     <div id="footer">
         <div id="footerHeader">
-            <div id="geppettologo"></div>
             <div id="consoleButtonContainer">
-                <button class="btn" data-clipboard-target="clipboard_text" id="consoleButton">
-                    <icon class="fa fa-terminal"></icon>
-                    Console
-                </button>
+	            <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
+    				<li role="presentation" class="active" id="consoleButton"><a href="#console" aria-controls="console" role="tab" data-toggle="tab">Console</a></li>
+    				<li role="presentation" id="experimentsButton"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab">Experiments</a></li>
+				</ul>
+
+				 <div class="tab-content">
+    					<div role="tabpanel" class="tab-pane active" id="console">Console Loading...</div>
+    					<div role="tabpanel" id="experiments" class="tab-pane panel panel-default">
+  							<div class="col-lg-6 experimentsResults">
+        						<div class="panel panel-default experimentsResults">
+            					<div class="panel-body experimentsResults">
+									<table id="experimentsTable" class="table table-condensed experimentsTable" style="border-collapse:collapse;">
+										<thead class="experimentsTableColumn">
+        									<tr><th style="width:10%;text-align:center">Status</th>
+            								<th style="width:30%;">Name</th>
+            								<th style="width:15%;">Date</th>
+            								<th style="width:25%;"></th>
+        									</tr>
+    									</thead>
+
+    								<tbody>
+    								</tbody>
+									</table>
+								</div>
+								</div>
+								</div>
+						</div>
+ 				 </div>
             </div>
 
-            <div id="console">Console Loading...</div>
         </div>
     </div>
 </div>

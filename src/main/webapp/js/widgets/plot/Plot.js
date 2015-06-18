@@ -184,7 +184,6 @@ define(function(require) {
 				var timeSeries = state.getTimeSeries();
 				var timeSeriesData = new Array();
 				var id = state.getInstancePath();
-				var unit = state.getUnit();
 				var i =0;
 				for(var key in timeSeries){
 					var value = timeSeries[key].getValue();
@@ -207,6 +206,7 @@ define(function(require) {
 						this.options.xaxis.show = true;
 						if(window.Project.getActiveExperiment().time!=null || undefined){
 							var timeSeries = window.Project.getActiveExperiment().time.getTimeSeries();
+							var unit = window.Project.getActiveExperiment().time.getUnit();
 							var divideLength = Math.ceil(timeSeries.length/10);
 							var ticks = [];
 							

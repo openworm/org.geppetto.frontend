@@ -113,7 +113,9 @@ define(function (require) {
 		 */
 		updateVariable: function (step) {
 			this.setHeader(this.variable.name);
-			this.setBody(this.variable.state.getTimeSeries()[step].getValue());
+			if (typeof step != 'undefined'){
+				this.setBody(this.variable.state.getTimeSeries()[step].getValue().toFixed(4) + " " + this.variable.state.getUnit());
+			}
 		},
 
 		/**

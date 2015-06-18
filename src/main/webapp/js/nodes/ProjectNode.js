@@ -78,6 +78,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		 * 
 		 */
 		setName : function(newname) {
+			this.saveProjectProperties({"name":newname});
 			this.name = newname;
 		},
 
@@ -269,7 +270,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		
 		saveProjectProperties : function(properties) {
 			var parameters = {};
-			parameters["projectId"] = this.getParent().getId();
+			parameters["projectId"] = this.getId();
 			parameters["properties"] = properties;
 			GEPPETTO.MessageSocket.send("save_project_properties", parameters);
 		},

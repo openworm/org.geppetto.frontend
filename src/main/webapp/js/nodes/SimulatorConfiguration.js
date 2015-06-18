@@ -44,6 +44,7 @@ define(function(require) {
 	return Node.Model.extend({
 		simulatorId : "",
 		conversionId : "",
+		aspectInstancePath : "",
 		timeStep : null,
 		length : null,
 		parameters : null,
@@ -59,6 +60,7 @@ define(function(require) {
 			this.parameters = options.parameters;
 			this.id = options.id;
 			this.simulatorId=options.simulatorId;
+			this.aspectInstancePath=options.aspectInstancePath;
 			this.conversionId=options.conversionId;
 			this.timeStep=options.timeStep;
 			this.length=options.length;
@@ -83,6 +85,19 @@ define(function(require) {
 		 */
 		getSimulatorParameter : function(parameter) {
 			return this.parameters[parameter];
+		},
+		
+		/**
+		 * Sets the simulatorId for this Simulator Configuration 
+		 * 
+		 * @command SimulatorConfig.setsimulatorId(simulatorId)
+		 */
+		setSimulatorParameter : function(parameter,value){
+			var properties = {};
+			properties["aspectInstancePath"] = this.aspectInstancePath;
+			properties["SP$"+parameter] = value;
+			this.getParent().saveExperimentProperties(properties);
+			return this.parameters[parameter] = value;
 		},
 		
 		/**
@@ -119,10 +134,24 @@ define(function(require) {
 		 * 
 		 * @command SimulatorConfig.setsimulatorId(simulatorId)
 		 */
+		setConversionService : function(conversionServiceId){
+			var properties = {};
+			properties["conversionServiceId"] = conversionServiceId;
+			properties["aspectInstancePath"] = this.aspectInstancePath;
+			this.getParent().saveExperimentProperties(properties);
+			return this.conversionId = conversionServiceId;
+		},
+		
+		/**
+		 * Sets the simulatorId for this Simulator Configuration 
+		 * 
+		 * @command SimulatorConfig.setsimulatorId(simulatorId)
+		 */
 		setSimulator : function(simulatorId){
 			var properties = {};
 			properties["simulatorId"] = simulatorId;
-			getParent().saveExperimentFields(properties);
+			properties["aspectInstancePath"] = this.aspectInstancePath;
+			this.getParent().saveExperimentProperties(properties);
 			return this.simulatorId = simulatorId;
 		},
 		
@@ -142,7 +171,10 @@ define(function(require) {
 		 * @command SimulatorConfig.setTimeStep(timeStep)
 		 */
 		setTimeStep : function(timeStep){
-			
+			var properties = {};
+			properties["timeStep"] = timeStep;
+			properties["aspectInstancePath"] = this.aspectInstancePath;
+			this.getParent().saveExperimentProperties(properties);
 			return this.timeStep = timeStep;
 		},
 		
@@ -162,6 +194,10 @@ define(function(require) {
 		 * @command SimulatorConfig.setLength(length)
 		 */
 		setLength : function(length){
+			var properties = {};
+			properties["length"] = length;
+			properties["aspectInstancePath"] = this.aspectInstancePath;
+			this.getParent().saveExperimentProperties(properties);
 			return this.length = length;
 		},
 		

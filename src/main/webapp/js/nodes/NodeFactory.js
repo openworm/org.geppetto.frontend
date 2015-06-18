@@ -135,8 +135,8 @@ define(function(require) {
 						
 						if(aC.simulatorConfiguration!=null)
 						{
-							var sC = this.createSimulatorConfigurationNode(aC.simulatorConfiguration);
 							var aspect=aC.aspect.entityInstancePath+ "." + aC.aspect.aspect;
+							var sC = this.createSimulatorConfigurationNode(aC.simulatorConfiguration, aspect);
 							sC.setParent(e);
 							// add simulator configuration node to experiment
 							e.addSimulatorConfiguration(aspect,sC);
@@ -150,11 +150,12 @@ define(function(require) {
 				},
 				
 				/** Creates and populates client aspect nodes for first time */
-				createSimulatorConfigurationNode : function(node) {
+				createSimulatorConfigurationNode : function(node,aspectInstancePath) {
 					var sC = new SimulatorConfiguration({
 						parameters : node.parameters,
 						simulatorId : node.simulatorId,
 						conversionId : node.conversionServiceId,
+						aspectInstancePath : aspectInstancePath,
 						timeStep :node.timestep,
 						length : node.length,
 						_metaType : GEPPETTO.Resources.SIMULATOR_CONFIGURATION_NODE

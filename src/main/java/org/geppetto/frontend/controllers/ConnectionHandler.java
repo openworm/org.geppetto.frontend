@@ -377,8 +377,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				// that'll be send to client
 				String formattedTree = simTree.substring(1, simTree.length() - 1);
 				modelTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
-				
-				//reset flags
+
+				// reset flags
 				ModelTreeExitVisitor exitVisitor = new ModelTreeExitVisitor();
 				entry.getValue().apply(exitVisitor);
 			}
@@ -534,7 +534,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param projectId
 	 * @param experimentID
 	 */
-	public void setParameters(String requestID, String modelPath, String modelParameters, long projectId, long experimentID) 
+	public void setParameters(String requestID, String modelPath, String modelParameters, long projectId, long experimentID)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
@@ -542,8 +542,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			HashMap<String, String> parametersMap = fromJSON(new TypeReference<HashMap<String, String>>()
-					{
-					}, modelParameters);
+			{
+			}, modelParameters);
 
 			AspectSubTreeNode modelTreeNode = geppettoManager.setModelParameters(modelPath, parametersMap, experiment, geppettoProject);
 			String modelTreeString = "[";
@@ -557,10 +557,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
 			modelTreeString += "]";
 
-			//reset flags
+			// reset flags
 			ModelTreeExitVisitor exitVisitor = new ModelTreeExitVisitor();
 			modelTreeNode.apply(exitVisitor);
-			
+
 			websocketConnection.sendMessage(requestID, OutboundMessages.UPDATE_MODEL_TREE, modelTreeString);
 		}
 		catch(GeppettoExecutionException e)
@@ -942,7 +942,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-		for(String p:properties.keySet())
+		for(String p : properties.keySet())
 		{
 			switch(p)
 			{
@@ -953,7 +953,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				}
 			}
 		}
-		dataManager.saveProject(geppettoProject);
+		dataManager.saveEntity(geppettoProject);
 	}
 
 	/**
@@ -965,9 +965,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void saveExperimentProperties(String requestID, long projectId, long experimentId, Map<String, String> properties)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);		
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-		for(String p:properties.keySet())
+		for(String p : properties.keySet())
 		{
 			switch(p)
 			{
@@ -983,42 +983,95 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				}
 				case "timeStep":
 				{
-					String aspectPath=properties.get("aspectInstancePath");
-					for(IAspectConfiguration aspectConfiguration:experiment.getAspectConfigurations())
+					String aspectPath = properties.get("aspectInstancePath");
+					for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 					{
 						if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
 						{
 							aspectConfiguration.getSimulatorConfiguration().setTimestep(Float.parseFloat(properties.get(p)));
+							dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
+							break;
 						}
 					}
 					break;
 				}
 				case "length":
 				{
-					String aspectPath=properties.get("aspectInstancePath");
-					for(IAspectConfiguration aspectConfiguration:experiment.getAspectConfigurations())
+					String aspectPath = properties.get("aspectInstancePath");
+					for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 					{
 						if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
 						{
 							aspectConfiguration.getSimulatorConfiguration().setLength(Float.parseFloat(properties.get(p)));
+							dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
+							break;
 						}
 					}
 					break;
 				}
-				case "simulatorParameters":
+				case "simulatorId":
 				{
-					String aspectPath=properties.get("aspectInstancePath");
-					for(IAspectConfiguration aspectConfiguration:experiment.getAspectConfigurations())
+					String aspectPath = properties.get("aspectInstancePath");
+					for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 					{
 						if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
 						{
-							aspectConfiguration.getSimulatorConfiguration().setTimestep(Float.parseFloat(properties.get(p)));
+							aspectConfiguration.getSimulatorConfiguration().setSimulatorId(properties.get(p));
+							dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
+							break;
 						}
 					}
 					break;
 				}
+				case "conversionServiceId":
+				{
+					String aspectPath = properties.get("aspectInstancePath");
+					for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
+					{
+						if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+						{
+							aspectConfiguration.getSimulatorConfiguration().setConversionServiceId(properties.get(p));
+							dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
+							break;
+						}
+					}
+					break;
+				}
+				case "aspectInstancePath":
+				{
+					break;
+				}
+				default:
+				{
+					if(p.startsWith("SP$"))
+					{
+						//This is a simulator parameter
+						String aspectPath = properties.get("aspectInstancePath");
+						for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
+						{
+							if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+							{
+								
+								Map<String,String> parameters=aspectConfiguration.getSimulatorConfiguration().getParameters();
+								if(parameters==null)
+								{
+									parameters=new HashMap<String, String>();
+									aspectConfiguration.getSimulatorConfiguration().setParameters(parameters);
+								}
+								parameters.put(p.substring(p.indexOf("$")+1), properties.get(p));
+								dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
+								break;
+							}
+						}
+						break;
+					}
+					else
+					{
+						String msg="Cannot find parameter " + p + " in the experiment";
+						error(new GeppettoExecutionException(msg), msg);
+					}
+				}
 			}
 		}
-		dataManager.saveExperiment(experiment);
 	}
 }

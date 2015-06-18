@@ -42,15 +42,9 @@ import org.osgi.framework.ServiceReference;
 public class AuthServiceCreator
 {
 
-	private BundleContext _bc = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+	private static BundleContext bc = FrameworkUtil.getBundle(AuthServiceCreator.class).getBundleContext();
 
-	private String _type = null;
-
-	public AuthServiceCreator(String type)
-	{
-		super();
-		_type = type;
-	}
+	private static IAuthService instance = null;
 
 	/**
 	 * A method to get a service of a given type.
@@ -59,30 +53,32 @@ public class AuthServiceCreator
 	 * @return
 	 * @throws InvalidSyntaxException
 	 */
-	public IAuthService getService() throws GeppettoInitializationException
+	public static IAuthService getService() throws GeppettoInitializationException
 	{
-		IAuthService service = null;
-		ServiceReference<?>[] sr;
-		try
+		if(instance == null)
 		{
-			sr = _bc.getServiceReferences(_type, null);
-		}
-		catch(InvalidSyntaxException e)
-		{
-			throw new GeppettoInitializationException(e);
-		}
-		if(sr != null && sr.length > 0)
-		{
-			service = (IAuthService) _bc.getService(sr[0]);
-			for(ServiceReference<?> s : sr)
+			ServiceReference<?>[] sr;
+			try
 			{
-				if(!((IAuthService) _bc.getService(s)).isDefault())
+				sr = bc.getServiceReferences(IAuthService.class.getName(), null);
+			}
+			catch(InvalidSyntaxException e)
+			{
+				throw new GeppettoInitializationException(e);
+			}
+			if(sr != null && sr.length > 0)
+			{
+				instance = (IAuthService) bc.getService(sr[0]);
+				for(ServiceReference<?> s : sr)
 				{
-					service = (IAuthService) _bc.getService(s);
+					if(!((IAuthService) bc.getService(s)).isDefault())
+					{
+						instance = (IAuthService) bc.getService(s);
+					}
 				}
 			}
 		}
-		return service;
+		return instance;
 	}
 
 }

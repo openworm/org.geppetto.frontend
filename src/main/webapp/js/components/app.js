@@ -16,9 +16,9 @@ define(function(require) {
 
 	var command = "Project.loadFromURL";
 	var simParam = utils.getQueryStringParameter('load_project_from_url');
+	var expParam = utils.getQueryStringParameter('experimentId');
 	if (simParam == "") {
 		simParam = utils.getQueryStringParameter('load_project_from_id');
-		expParam = utils.getQueryStringParameter('experimentId');
 		command = "Project.loadFromID";
 	}
 	if (simParam == "") {

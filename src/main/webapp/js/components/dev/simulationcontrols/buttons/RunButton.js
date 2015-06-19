@@ -19,7 +19,7 @@ define(function (require) {
             return {
                 label: 'Run',
                 className: 'pull-right',
-                icon: 'fa fa-play',
+                icon: 'fa fa-cogs',
                 onClick: this.onClick
             };
         }

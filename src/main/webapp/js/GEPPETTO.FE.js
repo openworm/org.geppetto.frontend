@@ -83,8 +83,8 @@ define(function(require) {
             	{
             		$('#activeLabel').text(experiment.getName());
             	}else{
-            		var activeExperimentLabel =$("<h4 class='activeExpLabel' id='activeLabel'>"+
-            				experiment.getName()+"</h4>");
+            		var activeExperimentLabel =$("<div class='activeExpLabel' id='activeLabel'>"+
+            				experiment.getName()+"</div>");
             		activeExperimentLabel.appendTo($("#sim-toolbar"));
             	}
             	

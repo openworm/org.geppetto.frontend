@@ -91,8 +91,10 @@ define(function(require) {
             	$('#experimentsTable tbody tr').each(function(){
             	  if (this.id == ("#"+experiment.getId())) {
             	    $(this).addClass("activeExperiment");
+            	    var iconsDiv = $(this).find(".iconsDiv").show();
             	  }else{
             		  $(this).removeClass("activeExperiment");
+            		  var iconsDiv = $(this).find(".iconsDiv").hide();
             	  }
             	});
             },
@@ -105,10 +107,10 @@ define(function(require) {
             		var experimentsTable = document.getElementById("experimentsTable");
             		
             		var tr = 
-            			$('<tr data-toggle="collapse" class="accordion-toggle">');
+            			$('<tr data-toggle="collapse" class="experimentsTableColumn accordion-toggle">');
             		tr.appendTo(experimentsTable); 
             		tr.attr("data-target", "#"+experiment.getId());
-            		tr.attr("id", "#"+experiment.getId());
+            		tr.attr("id","#"+experiment.getId());
             		
             		var tdStatus;
             		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
@@ -127,14 +129,54 @@ define(function(require) {
             		            		
             		var tdName = $('<td>'+experiment.getName()+'</td>');            		
             		var tdLastModified = $('<td>'+experiment.getLastModified()+'</td>');
-            		var tdIcons = $('<td></td>');
+            		var tdIcons = $("<td><div class='iconsDiv'><i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'>" +
+            				"</i><i class='fa fa-remove fa-lg'></i><i class='fa fa-download fa-lg'></i>"+
+            				"<i class='fa fa-cloud-download fa-lg'></i></div></td>");
             		
             		tdStatus.appendTo(tr);
             		tdName.appendTo(tr);
             		tdLastModified.appendTo(tr);
             		tdIcons.appendTo(tr);
-            		$("tr").addClass("experimentsTableColumn");
+            		
+            		var expandableTR = $("<tr></tr>")
+            		expandableTR.attr("id","#"+experiment.getId());
+            		var expandableTD = $("<td colspan='12' class='hiddenRow'></td>")
+            		var expandableDIV = $("<div class='accordian-body collapse'></div>");
+            		var expandableTable = $("<table class='table-condensed expandableTable'></table>");
+            		expandableDIV.attr("id",experiment.getId());
+            		expandableTR.appendTo(experimentsTable);
+            		expandableTD.appendTo(expandableTR);
+            		expandableTable.appendTo(expandableDIV);
+            		expandableDIV.appendTo(expandableTD);
+            		
+            		var head = $("<thead class='experimentsTableColumn'>"+
+					"<tr><th style='width:15%;'></th>"+
+					"<th>Aspect</th><th>Simulator</th>"+
+					"<th>TimeStep</th><th>Length</th>"+
+					"<th>ConversionService</th></tr></thead>");
+            		head.appendTo(expandableTable);
+            		
+            		var simulatorConfigurations = experiment.simulatorConfigurations;
+            		for(var config in simulatorConfigurations){
+            			var simulatorConfig = simulatorConfigurations[config];
+            			var configuration = $("<tr><td></td><td>"+
+            					simulatorConfig["aspectInstancePath"]+"</td><td>"+
+            					simulatorConfig["simulatorId"]+"</td><td>"+
+            					simulatorConfig["timeStep"]+"</td><td>"+
+            					simulatorConfig["length"]+"</td><td>"+
+            					simulatorConfig["conversionId"]+"</td></tr>");
+            			configuration.appendTo(expandableTable)
+            		}
             	}
+            	
+            	$('#experimentsTable tbody tr').hover(function() {               
+            		$(this).find(".iconsDiv").show();
+            	   }, function() {
+            		   $(this).find(".iconsDiv").hide();
+            		   if($(this).hasClass("activeExperiment")){
+            			   $(this).find(".iconsDiv").show();
+            		   }
+            	  });  
             },
             
             /**

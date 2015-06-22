@@ -64,6 +64,18 @@
 	padding-top:2px!important;
 }
 
+.experimentsResultsOutput {
+	background:transparent;
+	color: #ccc;
+	height: 250px;
+	width: 100%;
+	max-height: 100%;
+	border:0;
+	padding:0!important;
+	padding-top:2px!important;
+	overflow-y: auto;
+}
+
 #experiments {
 	background:rgba(66,59,59,0.80);
 	color: #ccc;
@@ -82,15 +94,28 @@
 	font-weight:100;
 }
 
+.expandableTable {
+	width : 100%;
+}
+
+.expandableTable td{
+	border:0;
+}
+.expandableTable th{
+	border:0;
+	font-weight:200!important;
+}
+
 #experimentsTable td{
 	border:0;
+	padding-top: 0px;
 }
 #experimentsTable th{
 	border:0;
 	font-weight:200!important;
 }
 
-#experimentsTable tbody tr:nth-child(odd) {
+table tbody tr:nth-child(4n+1) {
 	background:rgba(71,58,51,0.80);
 }
 
@@ -197,13 +222,13 @@
     text-align: right;
     text-transform: capitalize;
     position: absolute;
-    left: -360px;
+    right: 460px;
     top: 3px;
     width: 350px;
 }
 
 .activeExperiment {
-	background : #186D6D;
+	background : #186D6D !important;
 }
 
 .circle {
@@ -234,4 +259,42 @@
 
 .DELETED {
 	background: grey;
+}
+
+.iconsDiv {
+	display : none;
+	float : right;
+	padding-right : 200px;
+}
+
+.iconsDiv > i {
+	padding-right : 10px;
+	padding-top : 10px;
+}
+
+::-webkit-scrollbar,
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece,
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-corner,
+::-webkit-resizer {
+	background: transparent;
+}
+::-webkit-scrollbar {
+	width:  14px;
+	-webkit-border-radius: 14px;
+	        border-radius: 14px;
+}
+::-webkit-scrollbar-track-piece {
+	-webkit-border-radius: 5px;
+	        border-radius: 5px;
+}
+::-webkit-scrollbar-thumb {
+	background: #4f4f4f;
+	        border-radius: 5px;
+}
+#console div.output::-webkit-scrollbar-button {
+	width:0;
+	height:0;
 }

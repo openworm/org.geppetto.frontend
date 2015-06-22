@@ -43,6 +43,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.geppetto.core.data.IGeppettoS3Manager;
 import org.geppetto.core.data.model.IGeppettoProject;
@@ -53,7 +54,6 @@ import org.geppetto.core.model.simulation.visitor.TraversingVisitor;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.simulation.RuntimeExperiment;
 import org.geppetto.simulation.visitor.DepthFirstTraverserEntitiesFirst;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author matteocantarelli
@@ -62,7 +62,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PersistModelVisitor extends TraversingVisitor
 {
 
-	@Autowired
 	private IGeppettoS3Manager s3Manager;
 
 	private RuntimeExperiment runtimeExperiment;
@@ -73,15 +72,20 @@ public class PersistModelVisitor extends TraversingVisitor
 
 	private Exception exception = null;
 
+	private Path localGeppettoModelFile;
+
 	/**
+	 * @param localGeppettoModelFile 
 	 * @param runtimeExperiment
 	 * @param project
 	 */
-	public PersistModelVisitor(RuntimeExperiment runtimeExperiment, IGeppettoProject project)
+	public PersistModelVisitor(IGeppettoS3Manager s3Manager, Path localGeppettoModelFile, RuntimeExperiment runtimeExperiment, IGeppettoProject project)
 	{
 		super(new DepthFirstTraverserEntitiesFirst(), new BaseVisitor());
+		this.s3Manager=s3Manager;
 		this.runtimeExperiment = runtimeExperiment;
 		this.project = project;
+		this.localGeppettoModelFile=localGeppettoModelFile;
 	}
 
 	/*
@@ -99,17 +103,17 @@ public class PersistModelVisitor extends TraversingVisitor
 			for(URL url : dependentModels)
 			{
 				// let's create a map for the new file paths
-				String fileName = url.getPath().substring(0, url.getPath().lastIndexOf("/"));
-				String newPath = Long.toString(project.getId()) + "/" + fileName;
-				replaceMap.put(url.getPath(), newPath);
+				String fileName = url.getPath().substring(url.getPath().lastIndexOf("/")+1);
+				String newPath = "projects/"+Long.toString(project.getId()) + "/" + fileName;
+				replaceMap.put(url.toString(), newPath);
 			}
 			for(URL url : dependentModels)
 			{
-				Path localFile = Paths.get(URLReader.createLocalCopy(s3Manager.getURL(replaceMap.get(url.getPath()))).toURI());
+				Path localFile = Paths.get(URLReader.createLocalCopy(url).toURI());
 				// let's replace every occurrence of the original URLs inside the file with their copy
 				replaceURLs(localFile, replaceMap);
 				//noew let's save the file in S3
-				s3Manager.saveFileToS3(localFile.toFile(), replaceMap.get(url.getPath()));
+				s3Manager.saveFileToS3(localFile.toFile(), replaceMap.get(url.toString()));
 			}
 		}
 		catch(URISyntaxException | IOException e)
@@ -132,10 +136,11 @@ public class PersistModelVisitor extends TraversingVisitor
 		String content = new String(Files.readAllBytes(localFile), charset);
 		for(String old : replaceMap.keySet())
 		{
-			content = content.replaceAll(old, replaceMap.get(old));
+			content = content.replaceAll(Pattern.quote(old), s3Manager.getURL(replaceMap.get(old)).toString());
 		}
 		Files.write(localFile, content.getBytes(charset));
 	}
+
 
 	/**
 	 * @return
@@ -143,5 +148,10 @@ public class PersistModelVisitor extends TraversingVisitor
 	public Exception getException()
 	{
 		return exception;
+	}
+
+	public void processLocalGeppettoFile() throws IOException
+	{
+		replaceURLs(localGeppettoModelFile,replaceMap);
 	}
 }

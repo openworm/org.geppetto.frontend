@@ -33,7 +33,13 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +49,7 @@ import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
+import org.geppetto.core.data.IGeppettoS3Manager;
 import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
@@ -54,9 +61,12 @@ import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.simulation.ResultsFormat;
+import org.geppetto.core.utilities.URLReader;
 import org.geppetto.simulation.RuntimeProject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 /**
  * GeppettoManager is the implementation of IGeppettoManager which represents the Java API entry point for Geppetto. This class is instantiated with a session scope, which means there is one
  * GeppettoManager per each session/connection therefore only one user is associated with a GeppettoManager. A GeppettoManager is also instantiated by the ExperimentRunManager to handle the queued
@@ -72,6 +82,9 @@ public class GeppettoManager implements IGeppettoManager
 
 	private static Log logger = LogFactory.getLog(GeppettoManager.class);
 
+	@Autowired
+	private IGeppettoS3Manager s3Manager;
+	
 	// these are the runtime projects for a
 	private Map<IGeppettoProject, RuntimeProject> projects = new LinkedHashMap<>();
 
@@ -94,8 +107,9 @@ public class GeppettoManager implements IGeppettoManager
 		{
 			GeppettoManager other = (GeppettoManager) manager;
 			this.projects.putAll(other.projects);
+			this.s3Manager=other.getS3Manager();
 			this.geppettoManagerCallbackListener = other.geppettoManagerCallbackListener;
-			this.user = other.user;
+			this.user = other.getUser();
 		}
 	}
 
@@ -229,10 +243,47 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IProjectManager#persistProject(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void persistProject(String requestId, IGeppettoProject project)
+	public void persistProject(String requestId, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		DataManagerHelper.getDataManager().addGeppettoProject(project);
-		//TODO Persist
+		try
+		{
+			if(project.isVolatile())
+			{
+				List<URL> resources = new ArrayList<URL>();
+				// save Geppetto Model
+				URL url=new URL(project.getGeppettoModel().getUrl());
+				Path localFile = Paths.get(URLReader.createLocalCopy(url).toURI());
+				String fileName = url.getPath().substring(0, url.getPath().lastIndexOf("/"));
+				String newPath = Long.toString(project.getId()) + "/" + fileName;
+				s3Manager.saveFileToS3(localFile.toFile(), newPath);
+				// save Geppetto Scripts
+				// save each model inside GeppettoModel and save every file referenced inside every model
+				resources.add(new URL(project.getGeppettoModel().getUrl()));
+				PersistModelVisitor persistModelVisitor=new PersistModelVisitor(getRuntimeProject(project).getRuntimeExperiment(getRuntimeProject(project).getActiveExperiment()),project);
+				getRuntimeProject(project).getGeppettoModel().accept(persistModelVisitor);
+				if(persistModelVisitor.getException()!=null)
+				{
+					throw new GeppettoExecutionException(persistModelVisitor.getException());
+				}
+				DataManagerHelper.getDataManager().addGeppettoProject(project);
+			}
+			else
+			{
+				throw new GeppettoExecutionException("Persist failed: Project '" + project.getName() + "' is already persisted");
+			}
+		}
+		catch(MalformedURLException e)
+		{
+			throw new GeppettoExecutionException(e);
+		}
+		catch(IOException e)
+		{
+			throw new GeppettoExecutionException(e);
+		}
+		catch(URISyntaxException e)
+		{
+			throw new GeppettoExecutionException(e);
+		}
 	}
 
 	/*
@@ -291,7 +342,7 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void uploadModelToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ModelFormat format) throws Exception
 	{
-		if(format!=null)
+		if(format != null)
 		{
 			// ConSvert model
 			File file = this.downloadModel(aspectID, format, experiment, project);
@@ -340,7 +391,7 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public AspectSubTreeNode setModelParameters(String aspectInstancePath, Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		return getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(aspectInstancePath,parameters);
+		return getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(aspectInstancePath, parameters);
 	}
 
 	/*
@@ -414,6 +465,11 @@ public class GeppettoManager implements IGeppettoManager
 	public IUser getUser()
 	{
 		return user;
+	}
+	
+	public IGeppettoS3Manager getS3Manager()
+	{
+		return s3Manager;
 	}
 
 	/*

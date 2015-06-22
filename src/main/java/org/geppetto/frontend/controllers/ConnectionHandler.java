@@ -830,22 +830,39 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
+	/**
+	 * @param requestID
+	 * @param projectId
+	 */
 	public void persistProject(String requestID, long projectId)
 	{
-		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		try
+		{
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 
-		if(geppettoProject != null)
-		{
-			geppettoManager.persistProject(requestID, geppettoProject);
-			String update = "{\"projectID\":" + '"' + projectId + '"' + "}";
-			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_SAVED, update);
+			if(geppettoProject != null)
+			{
+
+				geppettoManager.persistProject(requestID, geppettoProject);
+
+				String update = "{\"projectID\":" + '"' + projectId + '"' + "}";
+				websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTED, update);
+			}
+			else
+			{
+				error(null, "Error persisting project  " + projectId + ".");
+			}
 		}
-		else
+		catch(GeppettoExecutionException e)
 		{
-			error(null, "Error saving project with id " + projectId + ".");
+			error(e, "Error persisting project");
 		}
 	}
 
+	/**
+	 * @param requestID
+	 * @param key
+	 */
 	public void linkDropBox(String requestID, String key)
 	{
 		try
@@ -859,6 +876,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
+	/**
+	 * @param requestID
+	 * @param key
+	 */
 	public void unLinkDropBox(String requestID, String key)
 	{
 		try
@@ -872,6 +893,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
+	/**
+	 * @param aspectPath
+	 * @param projectId
+	 * @param experimentId
+	 * @param format
+	 */
 	public void uploadModel(String aspectPath, long projectId, long experimentId, String format)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
@@ -888,6 +915,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
+	/**
+	 * @param aspectPath
+	 * @param projectId
+	 * @param experimentId
+	 * @param format
+	 */
 	public void uploadResults(String aspectPath, long projectId, long experimentId, String format)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
@@ -904,6 +937,13 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 	}
 
+	/**
+	 * @param requestID
+	 * @param aspectPath
+	 * @param projectId
+	 * @param experimentId
+	 * @param format
+	 */
 	public void downloadResults(String requestID, String aspectPath, long projectId, long experimentId, String format)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
@@ -1045,20 +1085,20 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				{
 					if(p.startsWith("SP$"))
 					{
-						//This is a simulator parameter
+						// This is a simulator parameter
 						String aspectPath = properties.get("aspectInstancePath");
 						for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 						{
 							if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
 							{
-								
-								Map<String,String> parameters=aspectConfiguration.getSimulatorConfiguration().getParameters();
-								if(parameters==null)
+
+								Map<String, String> parameters = aspectConfiguration.getSimulatorConfiguration().getParameters();
+								if(parameters == null)
 								{
-									parameters=new HashMap<String, String>();
+									parameters = new HashMap<String, String>();
 									aspectConfiguration.getSimulatorConfiguration().setParameters(parameters);
 								}
-								parameters.put(p.substring(p.indexOf("$")+1), properties.get(p));
+								parameters.put(p.substring(p.indexOf("$") + 1), properties.get(p));
 								dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
 								break;
 							}
@@ -1067,7 +1107,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 					}
 					else
 					{
-						String msg="Cannot find parameter " + p + " in the experiment";
+						String msg = "Cannot find parameter " + p + " in the experiment";
 						error(new GeppettoExecutionException(msg), msg);
 					}
 				}

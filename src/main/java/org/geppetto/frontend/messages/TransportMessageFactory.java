@@ -158,7 +158,7 @@ public class TransportMessageFactory {
 			case NO_FEATURE:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.NO_FEATURE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
-			case PROJECT_SAVED:
+			case PROJECT_PERSISTED:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case DROPBOX_LINKED:

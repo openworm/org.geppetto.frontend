@@ -74,7 +74,7 @@ public enum OutboundMessages {
 	EXPERIMENT_STATUS("experiment_status"),
 	DELETE_EXPERIMENT("experiment_deleted"), 
 	PLAY_EXPERIMENT("play_experiment"), 
-	PROJECT_SAVED("project_saved"),
+	PROJECT_PERSISTED("project_persisted"),
 	DROPBOX_LINKED("dropbox_linked"),
 	DROPBOX_UNLINKED("dropbox_unlinked"),
 	RESULTS_UPLOADED("results_uploaded"),

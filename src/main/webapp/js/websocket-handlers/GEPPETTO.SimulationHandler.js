@@ -56,7 +56,7 @@ define(function(require) {
             EXPERIMENT_STATUS : "experiment_status",
             GET_SUPPORTED_OUTPUTS : "get_supported_outputs",
             EXPERIMENT_DELETED : "experiment_deleted",
-            PROJECT_SAVED : "project_saved",
+            PROJECT_PERSISTED : "project_persisted",
             DROPBOX_LINKED : "dropbox_linked",
             DROPBOX_UNLINKED : "dropbox_unlinked",
             RESULTS_UPLOADED : "results_uploaded",
@@ -150,7 +150,7 @@ define(function(require) {
             GEPPETTO.Main.getStatusWorker().terminate();
         };
         
-        messageHandler[messageTypes.PROJECT_SAVED] = function(payload) {
+        messageHandler[messageTypes.PROJECT_PERSISTED] = function(payload) {
             var experimentStatus = JSON.parse(payload.update);
 
             var projectID = experimentStatus.projectID;

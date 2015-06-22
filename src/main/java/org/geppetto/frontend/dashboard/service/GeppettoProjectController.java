@@ -71,7 +71,6 @@ public class GeppettoProjectController
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
-			IGeppettoProject project = dataManager.getGeppettoProjectById(projectId);
 			List<? extends IExperiment> experiments = dataManager.getExperimentsForProject(projectId);
 			IExperiment theExperiment;
 			for(IExperiment e : experiments){

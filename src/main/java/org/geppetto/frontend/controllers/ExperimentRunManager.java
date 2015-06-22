@@ -34,6 +34,7 @@ package org.geppetto.frontend.controllers;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -209,7 +210,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 		List<? extends IUser> users = dataManager.getAllUsers();
 		for(IUser user : users)
 		{
-			List<? extends IGeppettoProject> projects = dataManager.getGeppettoProjectsForUser(user.getLogin());
+			Collection<? extends IGeppettoProject> projects = dataManager.getGeppettoProjectsForUser(user.getLogin());
 			for(IGeppettoProject project : projects)
 			{
 				// This could be either when the user decides to open a project or when the ExperimentsRunManager queues an Experiment

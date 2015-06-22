@@ -32,7 +32,7 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
@@ -52,7 +52,7 @@ public class GeppettoProjectsController
 	
 	@RequestMapping("/dashboard/geppettoprojects")
 	public @ResponseBody
-	List<? extends IGeppettoProject> getAllGeppettoProjects()
+	Collection<? extends IGeppettoProject> getAllGeppettoProjects()
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)

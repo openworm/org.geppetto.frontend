@@ -7,7 +7,8 @@ define(function (require) {
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
 
         onClick: function() {
-        	window.location = "http://127.0.0.1:8080/org.geppetto.frontend/dashboard/";
+        	var win = window.open("http://127.0.0.1:8080/org.geppetto.frontend/dashboard/", '_blank');
+        	win.focus();
         },
 
         componentDidMount: function() {

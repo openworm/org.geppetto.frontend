@@ -80,7 +80,7 @@
         									<tr><th style="width:10%;text-align:center">Status</th>
             								<th style="width:30%;">Name</th>
             								<th style="width:15%;">Date</th>
-            								<th style="width:25%;"></th>
+            								<th style="width:25%;"><a class="new_experiment" id="new_experiment"><i class='fa fa-plus fa-lg'></i>New Experiment</a></th>
         									</tr>
     									</thead>
 

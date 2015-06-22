@@ -77,42 +77,84 @@ define(function(require) {
                 return $("#sim").get(0);
             },
             
+            /**
+             * Handles updates for experiments table once user has set the active
+             * experiment
+             */
             setActiveExperimentLabel : function(){
             	var experiment = window.Project.getActiveExperiment();
+
+            	/*Add active label on top of screen*/
+            	//Active label already exists, replace with new name of new active experiment
             	if( $('#activeLabel').length )
             	{
+            		//active
             		$('#activeLabel').text(experiment.getName());
             	}else{
+            		//Add label to top of screen as it doesn't exist
             		var activeExperimentLabel =$("<div class='activeExpLabel' id='activeLabel'>"+
             				experiment.getName()+"</div>");
             		activeExperimentLabel.appendTo($("#sim-toolbar"));
             	}
-            	
+
+            	//loop through each row of experiments table
             	$('#experimentsTable tbody tr').each(function(){
-            	  if (this.id == ("#"+experiment.getId())) {
-            	    $(this).addClass("activeExperiment");
-            	    var iconsDiv = $(this).find(".iconsDiv").show();
-            	  }else{
-            		  $(this).removeClass("activeExperiment");
-            		  var iconsDiv = $(this).find(".iconsDiv").hide();
-            	  }
+            		//id of row matches that of active experiment
+            		if (this.id == ("#"+experiment.getId())) {
+            			//add class to make it clear it's active
+            			$(this).addClass("activeExperiment");
+            			//show icons on right side of row
+            			var iconsDiv = $(this).find(".iconsDiv").show();
+            			//add icon to show this is active now
+            			var activeIcon = 
+            				$("<a id='activeIcon'>"+
+            				"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'></i></a>");
+            			activeIcon.prependTo(iconsDiv);
+            			//listenern for active icon button
+            			$("#activeIcon").click(function(){
+            				GEPPETTO.Console.executeCommand("Project.active();");
+            				window.event.stopPropagation();
+            			});
+            		}else{
+            			//remove class from active experiment
+            			$(this).removeClass("activeExperiment");
+            			//hide icons row
+            			var iconsDiv = $(this).find(".iconsDiv").hide();
+            		}
             	});
             },
-            
+
+            /**
+             * Populates the experiments table
+             */
             populateExperimentsTable : function(){            	
             	var experiments = window.Project.getExperiments();
-            	
+
+            	//variable to keep track of experiments rendered, used for giving alternate routes
+            	//different css backgrounds
+            	var nth = 1;
             	for(var key in experiments){
             		var experiment = experiments[key];
+            		//retrieve experiments table html component
             		var experimentsTable = document.getElementById("experimentsTable");
-            		
+
+            		//create one row to add experiment information (status, name, last modified)
             		var tr = 
             			$('<tr data-toggle="collapse" class="experimentsTableColumn accordion-toggle">');
-            		tr.appendTo(experimentsTable); 
+            		tr.appendTo(experimentsTable);
+            		//attributes needed to expanding extra row with more info
             		tr.attr("data-target", "#"+experiment.getId());
             		tr.attr("id","#"+experiment.getId());
             		
+            		//adds class with different background every now and then
+            		if(nth%2==1){
+            			tr.addClass("nthTr");
+            		}
+            		
+            		//create element in row for showing status
             		var tdStatus;
+            		//keep track if status is in design
+            		var design = false;
             		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
             			tdStatus = $('<td><div class="circle COMPLETED center-block" title="COMPLETED"></div></td>');
             		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DELETED){
@@ -121,25 +163,56 @@ define(function(require) {
             			tdStatus = $('<td><div class="c  ircle RUNNING center-block" title="RUNNING"></div></td>');
             		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
             			tdStatus = $('<td><div class="circle DESIGN center-block" title="DESIGN"></div></td>');
+            			design = true;
             		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.QUEUED){
             			tdStatus = $('<td><div class="circle QUEUED center-block" title="QUEUED"></div></td>');
             		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.CANCELED){
             			tdStatus = $('<td><div class="circle CANCELED center-block" title="CANCELED"></div></td>');
             		}
-            		            		
-            		var tdName = $('<td>'+experiment.getName()+'</td>');            		
+
+            		//add experiment name to row and lastmodified
+            		var tdName = $('<td>'+experiment.getName()+'</td>');      
             		var tdLastModified = $('<td>'+experiment.getLastModified()+'</td>');
-            		var tdIcons = $("<td><div class='iconsDiv'><i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'>" +
-            				"</i><i class='fa fa-remove fa-lg'></i><i class='fa fa-download fa-lg'></i>"+
-            				"<i class='fa fa-cloud-download fa-lg'></i></div></td>");
-            		
+            		//create element for showing icons
+            		var tdIcons = $("<td></td>");
+            		var divIcons = $("<div class='iconsDiv'></div>");
+
+            		//if experiment in design status, make name and last modified elements editable
+            		if(design){
+            			tdName.attr("contentEditable","true");
+            			tdLastModified.attr("contentEditable","true")
+            		}
+
+            		//append elements to row
             		tdStatus.appendTo(tr);
             		tdName.appendTo(tr);
             		tdLastModified.appendTo(tr);
+            		divIcons.appendTo(tdIcons);
             		tdIcons.appendTo(tr);
+
+            		//create delete icon and append to div element inside row
+            		var deleteIcon = $("<a id='deleteIcon'><i class='fa fa-remove fa-lg'></i></a>");
+            		deleteIcon.appendTo(divIcons);
+            		deleteIcon.attr("experimentId",experiment.getId());
             		
+            		//create download results and append to div element inside row
+            		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+            			var downloadResultsIcon = 
+            				$("<a id='downloadResultsIcon'><i class='fa fa-download fa-lg'></i></a>");
+            			downloadResultsIcon.appendTo(divIcons);
+            		}
+            		
+            		//create download models icon and append to div element inside row
+            		var downloadModelsIcon = $("<a id='downloadModelsIcon'><i class='fa fa-cloud-download fa-lg'></i></a>");
+            		downloadModelsIcon.appendTo(divIcons);
+
+            		//add row to show more information
             		var expandableTR = $("<tr></tr>")
             		expandableTR.attr("id","#"+experiment.getId());
+            		if(nth%2==1){
+            			expandableTR.addClass("nthTr");
+            		}
+            		//created other properties for expandable row
             		var expandableTD = $("<td colspan='12' class='hiddenRow'></td>")
             		var expandableDIV = $("<div class='accordian-body collapse'></div>");
             		var expandableTable = $("<table class='table-condensed expandableTable'></table>");
@@ -148,14 +221,17 @@ define(function(require) {
             		expandableTD.appendTo(expandableTR);
             		expandableTable.appendTo(expandableDIV);
             		expandableDIV.appendTo(expandableTD);
-            		
+
+            		//create head row with titles of info displayed in new table used for 
+            		//showing expandable row
             		var head = $("<thead class='experimentsTableColumn'>"+
-					"<tr><th style='width:15%;'></th>"+
-					"<th>Aspect</th><th>Simulator</th>"+
-					"<th>TimeStep</th><th>Length</th>"+
-					"<th>ConversionService</th></tr></thead>");
+            				"<tr><th style='width:15%;'></th>"+
+            				"<th>Aspect</th><th>Simulator</th>"+
+            				"<th>TimeStep</th><th>Length</th>"+
+            		"<th>ConversionService</th></tr></thead>");
             		head.appendTo(expandableTable);
-            		
+
+            		//populate expandable table with rows for each simulator configuration
             		var simulatorConfigurations = experiment.simulatorConfigurations;
             		for(var config in simulatorConfigurations){
             			var simulatorConfig = simulatorConfigurations[config];
@@ -167,49 +243,70 @@ define(function(require) {
             					simulatorConfig["conversionId"]+"</td></tr>");
             			configuration.appendTo(expandableTable)
             		}
+            		nth++;
             	}
+
+            	//method handles most of events for clickable elements in this table
+            	GEPPETTO.FE.handleExperimentsTableControls();
+            },
+
+            /**
+             * Handles experimets table events
+             */
+            handleExperimentsTableControls : function(){            	
+            	$('#console').bind('resize', function(){
+            		var consoleHeight = $(this).height();
+            		var experiments = $("#experiments").height(consoleHeight+40);
+            	});
             	
+            	//handle hovering over each row
             	$('#experimentsTable tbody tr').hover(function() {               
             		$(this).find(".iconsDiv").show();
-            	   }, function() {
-            		   $(this).find(".iconsDiv").hide();
-            		   if($(this).hasClass("activeExperiment")){
-            			   $(this).find(".iconsDiv").show();
-            		   }
-            	  });  
+            	}, function() {
+            		$(this).find(".iconsDiv").hide();
+            		if($(this).hasClass("activeExperiment")){
+            			$(this).find(".iconsDiv").show();
+            		}
+            	}); 
+
+            	//Handles new experiment button click
+            	$("#new_experiment").click(function(){
+            		var newRow = $("<tr class='experimentsTableColumn' contentEditable='true'>"+
+            				"<td></td><td>type_name_here</td><td>type_last_modified_date</td><td></td></tr>");
+            		newRow.prependTo("#experimentsTable");
+            		newRow.addClass("newExperimentFocus");
+            	});
+
+            	//Handles delete icon button click
+            	$("#deleteIcon").click(function(){
+            		var experimentId = $(this).attr("experimentId");
+            		GEPPETTO.Console.executeCommand("Project.getActiveExperiment()."+
+            				"deleteExperiment("+experimentId+");");
+            		window.event.stopPropagation();
+            	});
+
+            	//Handles download models button click
+            	$("#downloadModelsIcon").click(function(){
+            		GEPPETTO.Console.executeCommand("Project.downloadModels();");
+            		window.event.stopPropagation();
+            	});
+
+            	//Handles download results icon
+            	$("#downloadResultsIcon").click(function(){
+            		GEPPETTO.Console.executeCommand("Project.downloadResults();");
+            		window.event.stopPropagation();
+            	});
             },
             
             /**
              * Show error message if webgl failed to start
              */
             update: function(webGLStarted) {
-                //
                 if (!webGLStarted) {
                     GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
                     GEPPETTO.FE.disableSimulationControls();
                     GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBGL_FAILED, GEPPETTO.Resources.WEBGL_MESSAGE);
                 }
-            },
-            /**
-             * Show dialog informing users of server being used and
-             * gives them the option to Observer ongoing simulation.
-             *
-             * @param msg
-             */
-            observersDialog: function(title, msg) {
-                React.renderComponent(
-                        InfoModal({
-                            show: true,
-                            keyboard: false,
-                            title: title,
-                            txt: msg,
-                            onClick: GEPPETTO.Main.observe,
-                            buttonLabel: '<i class="icon-eye-open "></i> Observe'
-                        }),
-                        document.getElementById('modal-region'));
-
-                //black out welcome message
-                $('#welcomeMessageModal').css('opacity', '0.0');
             },
             /**
              * Basic Dialog box with message to display.

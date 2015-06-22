@@ -286,6 +286,7 @@ define(function(require) {
 							$("#console").height($("#footerHeader").height()*.75);
 							event.preventDefault();
 						}
+						$('#console').resize();
 						consoleElement.get(0).style.top = "0px";
 					}.bind(this)
 				});

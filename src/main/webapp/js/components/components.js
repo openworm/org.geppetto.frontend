@@ -1,4 +1,6 @@
 define(function(require) {
+require('jsx!./dev/save/SaveControl');
+require('jsx!./dev/home/HomeControl');
 require('jsx!./dev/simulationcontrols/ExperimentControls');
 require('jsx!./dev/cameracontrols/CameraControls');
 //require('jsx!./dev/tutorial/IntroModal');

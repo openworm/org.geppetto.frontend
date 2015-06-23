@@ -190,12 +190,14 @@ define(function(require) {
             			var downloadResultsIcon = 
             				$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'></i></a>");
             			downloadResultsIcon.appendTo(divIcons);
+            			downloadResultsIcon.attr("experimentId",experiment.getId());
             		}
             		
             		//create download models icon and append to div element inside row
             		var downloadModelsIcon = $("<a class='downloadModelsIcon'><i class='fa fa-cloud-download fa-lg'></i></a>");
             		downloadModelsIcon.appendTo(divIcons);
-
+            		downloadModelsIcon.attr("experimentId",experiment.getId());
+            		
             		//add row to show more information
             		var expandableTR = $("<tr></tr>")
             		expandableTR.attr("id","#"+experiment.getId());
@@ -319,9 +321,15 @@ define(function(require) {
         					experiment = experiments[e];
         				}
         			}
-        			var index = experiments.indexOf(experiment);
-        			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
-        					index+"].downloadResults("+aspect+","+"'RECORDING');");
+        			var simulatorConfigurations = experiment.simulatorConfigurations;
+            		for(var config in simulatorConfigurations){
+            			var simulatorConfig = simulatorConfigurations[config];
+            			var index = experiments.indexOf(experiment);
+            			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
+            					index+"].downloadResults('"+
+            					simulatorConfig["aspectInstancePath"]+"',"+"'RECORDING');");
+            		}
+        			
         			window.event.stopPropagation();
             	});
             },

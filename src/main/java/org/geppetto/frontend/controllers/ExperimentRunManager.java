@@ -61,7 +61,6 @@ import org.geppetto.simulation.IExperimentListener;
 import org.geppetto.simulation.RuntimeExperiment;
 import org.geppetto.simulation.RuntimeProject;
 import org.geppetto.simulation.visitor.FindAspectNodeVisitor;
-import org.springframework.stereotype.Component;
 
 /**
  * The ExperimentRunManager is a singleton responsible for managing a queue per each user to run the experiments.
@@ -70,14 +69,14 @@ import org.springframework.stereotype.Component;
  * @author matteocantarelli
  *
  */
-@Component
 public class ExperimentRunManager implements IExperimentRunManager, IExperimentListener
 {
-	private Map<IUser, List<IExperiment>> queue = new LinkedHashMap<>();
 
-	private List<ExperimentRunThread> experimentRuns = new ArrayList<>();
+	private Map<IUser, List<IExperiment>> queue;
 
-	private GeppettoManager geppettoManager = new GeppettoManager();
+	private List<ExperimentRunThread> experimentRuns;
+
+	private GeppettoManager geppettoManager;
 
 	private volatile int reqId = 0;
 
@@ -108,6 +107,9 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 		if(instance == null)
 		{
 			instance = this;
+			queue = new LinkedHashMap<>();
+			experimentRuns = new ArrayList<>();
+			geppettoManager = new GeppettoManager();
 			try
 			{
 				loadExperiments();
@@ -116,11 +118,12 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			}
 			catch(GeppettoInitializationException | GeppettoExecutionException | MalformedURLException e)
 			{
-				// TODO Handle
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 	}
+
+
 
 	/*
 	 * (non-Javadoc)

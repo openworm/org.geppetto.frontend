@@ -45,12 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.geppetto.core.data.IGeppettoS3Manager;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.model.IModelInterpreter;
 import org.geppetto.core.model.simulation.Model;
 import org.geppetto.core.model.simulation.visitor.BaseVisitor;
 import org.geppetto.core.model.simulation.visitor.TraversingVisitor;
+import org.geppetto.core.s3.S3Manager;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.simulation.RuntimeExperiment;
 import org.geppetto.simulation.visitor.DepthFirstTraverserEntitiesFirst;
@@ -61,8 +61,6 @@ import org.geppetto.simulation.visitor.DepthFirstTraverserEntitiesFirst;
  */
 public class PersistModelVisitor extends TraversingVisitor
 {
-
-	private IGeppettoS3Manager s3Manager;
 
 	private RuntimeExperiment runtimeExperiment;
 
@@ -79,10 +77,9 @@ public class PersistModelVisitor extends TraversingVisitor
 	 * @param runtimeExperiment
 	 * @param project
 	 */
-	public PersistModelVisitor(IGeppettoS3Manager s3Manager, Path localGeppettoModelFile, RuntimeExperiment runtimeExperiment, IGeppettoProject project)
+	public PersistModelVisitor(Path localGeppettoModelFile, RuntimeExperiment runtimeExperiment, IGeppettoProject project)
 	{
 		super(new DepthFirstTraverserEntitiesFirst(), new BaseVisitor());
-		this.s3Manager=s3Manager;
 		this.runtimeExperiment = runtimeExperiment;
 		this.project = project;
 		this.localGeppettoModelFile=localGeppettoModelFile;
@@ -113,7 +110,7 @@ public class PersistModelVisitor extends TraversingVisitor
 				// let's replace every occurrence of the original URLs inside the file with their copy
 				replaceURLs(localFile, replaceMap);
 				//noew let's save the file in S3
-				s3Manager.saveFileToS3(localFile.toFile(), replaceMap.get(url.toString()));
+				S3Manager.getInstance().saveFileToS3(localFile.toFile(), replaceMap.get(url.toString()));
 			}
 		}
 		catch(URISyntaxException | IOException e)
@@ -136,7 +133,7 @@ public class PersistModelVisitor extends TraversingVisitor
 		String content = new String(Files.readAllBytes(localFile), charset);
 		for(String old : replaceMap.keySet())
 		{
-			content = content.replaceAll(Pattern.quote(old), s3Manager.getURL(replaceMap.get(old)).toString());
+			content = content.replaceAll(Pattern.quote(old), S3Manager.getInstance().getURL(replaceMap.get(old)).toString());
 		}
 		Files.write(localFile, content.getBytes(charset));
 	}

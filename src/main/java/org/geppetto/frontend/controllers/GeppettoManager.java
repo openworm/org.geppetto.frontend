@@ -48,7 +48,6 @@ import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
-import org.geppetto.core.data.IGeppettoS3Manager;
 import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
@@ -56,13 +55,13 @@ import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
+import org.geppetto.core.s3.S3Manager;
 import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.simulation.ResultsFormat;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.simulation.RuntimeProject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -80,10 +79,7 @@ public class GeppettoManager implements IGeppettoManager
 {
 
 	private static Log logger = LogFactory.getLog(GeppettoManager.class);
-
-	@Autowired
-	private IGeppettoS3Manager s3Manager;
-
+	
 	// these are the runtime projects for a
 	private Map<IGeppettoProject, RuntimeProject> projects = new LinkedHashMap<>();
 
@@ -106,7 +102,6 @@ public class GeppettoManager implements IGeppettoManager
 		{
 			GeppettoManager other = (GeppettoManager) manager;
 			this.projects.putAll(other.projects);
-			this.s3Manager = other.getS3Manager();
 			this.geppettoManagerCallbackListener = other.geppettoManagerCallbackListener;
 			this.user = other.getUser();
 		}
@@ -254,7 +249,7 @@ public class GeppettoManager implements IGeppettoManager
 				
 				// save Geppetto Scripts
 				// save each model inside GeppettoModel and save every file referenced inside every model
-				PersistModelVisitor persistModelVisitor = new PersistModelVisitor(s3Manager, localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(getRuntimeProject(project).getActiveExperiment()), project);
+				PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(getRuntimeProject(project).getActiveExperiment()), project);
 				getRuntimeProject(project).getGeppettoModel().accept(persistModelVisitor);
 				if(persistModelVisitor.getException() != null)
 				{
@@ -263,7 +258,7 @@ public class GeppettoManager implements IGeppettoManager
 				persistModelVisitor.processLocalGeppettoFile();
 				String fileName = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
 				String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
-				s3Manager.saveFileToS3(localGeppettoModelFile.toFile(), newPath);
+				S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
 				DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
 			}
 			else
@@ -464,11 +459,6 @@ public class GeppettoManager implements IGeppettoManager
 	public IUser getUser()
 	{
 		return user;
-	}
-
-	public IGeppettoS3Manager getS3Manager()
-	{
-		return s3Manager;
 	}
 
 	/*

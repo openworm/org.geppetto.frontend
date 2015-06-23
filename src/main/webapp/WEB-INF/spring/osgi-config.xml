@@ -11,6 +11,4 @@
 							http://www.springframework.org/schema/aop 
        						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
     
-	<osgi:reference bean-name="s3ManagerService" id="S3Manager" interface="org.geppetto.core.data.IGeppettoS3Manager"/>
-	
 </beans>

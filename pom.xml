@@ -342,6 +342,7 @@
 							net.sf.cglib.transform,
 							net.sf.cglib.util,
 							org.geppetto.simulation,
+							org.geppetto.core.s3,
 							org.apache.shiro.web.env,
 							org.apache.shiro.web.servlet,
 							org.apache.shiro.authc,

@@ -100,13 +100,9 @@ define(function(require) {
             		if (this.id == ("#"+experiment.getId())) {
             			//add class to make it clear it's active
             			$(this).addClass("activeExperiment");
-            			//show icons on right side of row
-            			var iconsDiv = $(this).find(".iconsDiv").show();
             		}else{
             			//remove class from active experiment
             			$(this).removeClass("activeExperiment");
-            			//hide icons row
-            			var iconsDiv = $(this).find(".iconsDiv").hide();
             		}
             	});
             },
@@ -179,41 +175,25 @@ define(function(require) {
 
             		//add icon to show this is active now
             		var activeIcon = 
-            			$("<a id='activeIcon'>"+
+            			$("<a class='activeIcon'>"+
             			"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'></i></a>");
             		activeIcon.appendTo(divIcons);
             		activeIcon.attr("experimentId",experiment.getId());
 
-            		//listenern for active icon button
-            		$("#activeIcon").click(function(){
-            			var experimentId = $(this).attr("experimentId");
-            			var experiment;
-            			var experiments = window.Project.getExperiments();
-            			for(var e in experiments){
-            				if(experiments[e].getId() == experimentId){
-            					experiment = experiments[e];
-            				}
-            			}
-            			var index = experiments.indexOf(experiment);
-            			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
-            					index+"].setActive();");
-            			window.event.stopPropagation();
-            		});
-
             		//create delete icon and append to div element inside row
-            		var deleteIcon = $("<a id='deleteIcon'><i class='fa fa-remove fa-lg'></i></a>");
+            		var deleteIcon = $("<a class='deleteIcon'><i class='fa fa-remove fa-lg'></i></a>");
             		deleteIcon.appendTo(divIcons);
             		deleteIcon.attr("experimentId",experiment.getId());
             		
             		//create download results and append to div element inside row
             		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
             			var downloadResultsIcon = 
-            				$("<a id='downloadResultsIcon'><i class='fa fa-download fa-lg'></i></a>");
+            				$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'></i></a>");
             			downloadResultsIcon.appendTo(divIcons);
             		}
             		
             		//create download models icon and append to div element inside row
-            		var downloadModelsIcon = $("<a id='downloadModelsIcon'><i class='fa fa-cloud-download fa-lg'></i></a>");
+            		var downloadModelsIcon = $("<a class='downloadModelsIcon'><i class='fa fa-cloud-download fa-lg'></i></a>");
             		downloadModelsIcon.appendTo(divIcons);
 
             		//add row to show more information
@@ -267,12 +247,7 @@ define(function(require) {
             	$('#console').bind('resize', function(){
             		var consoleHeight = $(this).height();
             		var experiments = $("#experiments").height(consoleHeight+40);
-            	});
-            	
-//            	$('#experimentsTable').bind('resize', function(){
-//            		var consoleHeight = $(this).height();
-//            		var experiments = $("#experiments").height(consoleHeight+40);
-//            	});
+            	});            	
             	
             	//handle hovering over each row
             	$('#experimentsTable tbody tr').hover(function() {               
@@ -299,8 +274,24 @@ define(function(require) {
                 	});
             	});
 
+        		//listenern for active icon button
+        		$(".activeIcon").click(function(){
+        			var experimentId = $(this).attr("experimentId");
+        			var experiment;
+        			var experiments = window.Project.getExperiments();
+        			for(var e in experiments){
+        				if(experiments[e].getId() == experimentId){
+        					experiment = experiments[e];
+        				}
+        			}
+        			var index = experiments.indexOf(experiment);
+        			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
+        					index+"].setActive();");
+        			window.event.stopPropagation();
+        		});
+        		
             	//Handles delete icon button click
-            	$("#deleteIcon").click(function(){
+            	$(".deleteIcon").click(function(){
             		var experimentId = $(this).attr("experimentId");
         			var experiment;
         			var experiments = window.Project.getExperiments();
@@ -316,15 +307,25 @@ define(function(require) {
             	});
 
             	//Handles download models button click
-            	$("#downloadModelsIcon").click(function(){
+            	$(".downloadModelsIcon").click(function(){
             		GEPPETTO.Console.executeCommand("Project.downloadModels();");
             		window.event.stopPropagation();
             	});
 
             	//Handles download results icon
-            	$("#downloadResultsIcon").click(function(){
-            		GEPPETTO.Console.executeCommand("Project.downloadResults();");
-            		window.event.stopPropagation();
+            	$(".downloadResultsIcon").click(function(){
+            		var experimentId = $(this).attr("experimentId");
+        			var experiment;
+        			var experiments = window.Project.getExperiments();
+        			for(var e in experiments){
+        				if(experiments[e].getId() == experimentId){
+        					experiment = experiments[e];
+        				}
+        			}
+        			var index = experiments.indexOf(experiment);
+        			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
+        					index+"].deleteExperiment("+experimentId+");");
+        			window.event.stopPropagation();
             	});
             },
             

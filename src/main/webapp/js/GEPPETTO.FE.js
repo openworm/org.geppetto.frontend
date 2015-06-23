@@ -62,9 +62,6 @@ define(function(require) {
                  */
                 $.fn.modal.Constructor.prototype.enforceFocus = function() {
                 };
-
-
-
             },
             /**
              * Enables controls after connection is established
@@ -105,16 +102,6 @@ define(function(require) {
             			$(this).addClass("activeExperiment");
             			//show icons on right side of row
             			var iconsDiv = $(this).find(".iconsDiv").show();
-            			//add icon to show this is active now
-            			var activeIcon = 
-            				$("<a id='activeIcon'>"+
-            				"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'></i></a>");
-            			activeIcon.prependTo(iconsDiv);
-            			//listenern for active icon button
-            			$("#activeIcon").click(function(){
-            				GEPPETTO.Console.executeCommand("Project.active();");
-            				window.event.stopPropagation();
-            			});
             		}else{
             			//remove class from active experiment
             			$(this).removeClass("activeExperiment");
@@ -190,6 +177,29 @@ define(function(require) {
             		divIcons.appendTo(tdIcons);
             		tdIcons.appendTo(tr);
 
+            		//add icon to show this is active now
+            		var activeIcon = 
+            			$("<a id='activeIcon'>"+
+            			"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'></i></a>");
+            		activeIcon.appendTo(divIcons);
+            		activeIcon.attr("experimentId",experiment.getId());
+
+            		//listenern for active icon button
+            		$("#activeIcon").click(function(){
+            			var experimentId = $(this).attr("experimentId");
+            			var experiment;
+            			var experiments = window.Project.getExperiments();
+            			for(var e in experiments){
+            				if(experiments[e].getId() == experimentId){
+            					experiment = experiments[e];
+            				}
+            			}
+            			var index = experiments.indexOf(experiment);
+            			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
+            					index+"].setActive();");
+            			window.event.stopPropagation();
+            		});
+
             		//create delete icon and append to div element inside row
             		var deleteIcon = $("<a id='deleteIcon'><i class='fa fa-remove fa-lg'></i></a>");
             		deleteIcon.appendTo(divIcons);
@@ -259,6 +269,11 @@ define(function(require) {
             		var experiments = $("#experiments").height(consoleHeight+40);
             	});
             	
+//            	$('#experimentsTable').bind('resize', function(){
+//            		var consoleHeight = $(this).height();
+//            		var experiments = $("#experiments").height(consoleHeight+40);
+//            	});
+            	
             	//handle hovering over each row
             	$('#experimentsTable tbody tr').hover(function() {               
             		$(this).find(".iconsDiv").show();
@@ -272,17 +287,32 @@ define(function(require) {
             	//Handles new experiment button click
             	$("#new_experiment").click(function(){
             		var newRow = $("<tr class='experimentsTableColumn' contentEditable='true'>"+
-            				"<td></td><td>type_name_here</td><td>type_last_modified_date</td><td></td></tr>");
+            				"<td></td><td>type_name_here</td><td>type_last_modified_date</td>"+
+            				"<td><a id='deleteRow'><i class='fa fa-remove fa-lg'></i></a></td></tr>");
             		newRow.prependTo("#experimentsTable");
             		newRow.addClass("newExperimentFocus");
+            		
+            		//Handles delete icon button click
+                	$("#deleteRow").click(function(){
+                		$(this).closest('tr').remove();
+                		window.event.stopPropagation();
+                	});
             	});
 
             	//Handles delete icon button click
             	$("#deleteIcon").click(function(){
             		var experimentId = $(this).attr("experimentId");
-            		GEPPETTO.Console.executeCommand("Project.getActiveExperiment()."+
-            				"deleteExperiment("+experimentId+");");
-            		window.event.stopPropagation();
+        			var experiment;
+        			var experiments = window.Project.getExperiments();
+        			for(var e in experiments){
+        				if(experiments[e].getId() == experimentId){
+        					experiment = experiments[e];
+        				}
+        			}
+        			var index = experiments.indexOf(experiment);
+        			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
+        					index+"].deleteExperiment("+experimentId+");");
+        			window.event.stopPropagation();
             	});
 
             	//Handles download models button click
@@ -295,6 +325,16 @@ define(function(require) {
             	$("#downloadResultsIcon").click(function(){
             		GEPPETTO.Console.executeCommand("Project.downloadResults();");
             		window.event.stopPropagation();
+            	});
+            },
+            
+            deleteExperimentFromTable : function(experimentID){
+            	//loop through each row of experiments table
+            	$('#experimentsTable tbody tr').each(function(){
+            		//id of row matches that of active experiment
+            		if (this.id == ("#"+experimentID)) {
+            			$(this).remove();
+            		}
             	});
             },
             

@@ -78,6 +78,9 @@ define(function(require) {
 				GEPPETTO.on(Events.Experiment_deleted, function(e){
 					var name = e.name;
 					var id = e.id;
+					
+					GEPPETTO.FE.deleteExperimentFromTable(id);
+					
 		            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, 
 		            		"Experiment " + name + " with id " +
 		            		id + " was deleted successfully");

@@ -286,6 +286,7 @@ define(function(require) {
         			var index = experiments.indexOf(experiment);
         			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
         					index+"].setActive();");
+        			$(this).remove();
         			window.event.stopPropagation();
         		});
         		

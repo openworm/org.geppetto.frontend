@@ -9,7 +9,7 @@ define(function(require) {
     var Controls = React.createClass({
 
     	 onClick: function() {
-             GEPPETTO.Console.executeCommand("Project.save();");
+             GEPPETTO.Console.executeCommand("Project.persist();");
          },
          
     	getInitialState: function() {

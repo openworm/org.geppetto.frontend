@@ -7,7 +7,7 @@ define(function (require) {
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
 
         onClick: function() {
-            GEPPETTO.Console.executeCommand("Project.save();");
+            GEPPETTO.Console.executeCommand("Project.persist();");
         },
 
         componentDidMount: function() {

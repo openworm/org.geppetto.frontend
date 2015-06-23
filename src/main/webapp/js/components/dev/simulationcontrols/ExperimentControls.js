@@ -30,6 +30,9 @@ define(function(require) {
             	if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
             		self.setState({disablePlay:false, disablePause:true, disableStop:true});
             	}
+            	else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
+            		self.setState({disableRun : false, disablePlay:true, disablePause:true, disableStop:true});
+            	}
             });
             
             GEPPETTO.on(Events.Experiment_run, function(){

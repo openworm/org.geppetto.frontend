@@ -254,9 +254,6 @@ define(function(require) {
             		$(this).find(".iconsDiv").show();
             	}, function() {
             		$(this).find(".iconsDiv").hide();
-            		if($(this).hasClass("activeExperiment")){
-            			$(this).find(".iconsDiv").show();
-            		}
             	}); 
 
             	//Handles new experiment button click

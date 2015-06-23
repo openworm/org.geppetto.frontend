@@ -176,25 +176,30 @@ define(function(require) {
             		//add icon to show this is active now
             		var activeIcon = 
             			$("<a class='activeIcon'>"+
-            			"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'></i></a>");
+            			"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
+            			"rel='tooltip' title='Active Icon'></i></a>");
             		activeIcon.appendTo(divIcons);
             		activeIcon.attr("experimentId",experiment.getId());
 
             		//create delete icon and append to div element inside row
-            		var deleteIcon = $("<a class='deleteIcon'><i class='fa fa-remove fa-lg'></i></a>");
+            		var deleteIcon = $("<a class='deleteIcon'><i class='fa fa-remove fa-lg'"+
+            				"rel='tooltip' title='Delete Experiment'></i></a>");
             		deleteIcon.appendTo(divIcons);
             		deleteIcon.attr("experimentId",experiment.getId());
             		
             		//create download results and append to div element inside row
             		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
             			var downloadResultsIcon = 
-            				$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'></i></a>");
+            				$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'"+
+            						"rel='tooltip' title='Download Results'></i></a>");
             			downloadResultsIcon.appendTo(divIcons);
             			downloadResultsIcon.attr("experimentId",experiment.getId());
             		}
             		
             		//create download models icon and append to div element inside row
-            		var downloadModelsIcon = $("<a class='downloadModelsIcon'><i class='fa fa-cloud-download fa-lg'></i></a>");
+            		var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
+            				"<i class='fa fa-cloud-download fa-lg' " +
+            				"rel='tooltip' title='Download Models'></i></a>");
             		downloadModelsIcon.appendTo(divIcons);
             		downloadModelsIcon.attr("experimentId",experiment.getId());
             		
@@ -308,8 +313,23 @@ define(function(require) {
 
             	//Handles download models button click
             	$(".downloadModelsIcon").click(function(){
-            		GEPPETTO.Console.executeCommand("Project.downloadModels();");
-            		window.event.stopPropagation();
+            		var experimentId = $(this).attr("experimentId");
+        			var experiment;
+        			var experiments = window.Project.getExperiments();
+        			for(var e in experiments){
+        				if(experiments[e].getId() == experimentId){
+        					experiment = experiments[e];
+        				}
+        			}
+        			var simulatorConfigurations = experiment.simulatorConfigurations;
+            		for(var config in simulatorConfigurations){
+            			var simulatorConfig = simulatorConfigurations[config];
+            			var index = experiments.indexOf(experiment);
+            			GEPPETTO.Console.executeCommand(simulatorConfig["aspectInstancePath"]+
+            					'.downloadModel("NEURON");');
+            		}
+        			
+        			window.event.stopPropagation();
             	});
 
             	//Handles download results icon

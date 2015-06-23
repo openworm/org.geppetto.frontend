@@ -299,7 +299,7 @@ define(function(require) {
         			}
         			var index = experiments.indexOf(experiment);
         			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
-        					index+"].deleteExperiment("+experimentId+");");
+        					index+"].deleteExperiment();");
         			window.event.stopPropagation();
             	});
 
@@ -321,7 +321,7 @@ define(function(require) {
         			}
         			var index = experiments.indexOf(experiment);
         			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
-        					index+"].deleteExperiment("+experimentId+");");
+        					index+"].downloadResults("+aspect+","+"'RECORDING');");
         			window.event.stopPropagation();
             	});
             },

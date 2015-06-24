@@ -36,7 +36,7 @@
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 onmessage = function(e) {
-	var timer = e.data[0];
+	var timer = e.data;
 	setInterval(function(){
 		postMessage(timer);
 	}, timer);

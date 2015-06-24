@@ -123,7 +123,7 @@ define(function(require) {
 
             		//create one row to add experiment information (status, name, last modified)
             		var tr = 
-            			$('<tr data-toggle="collapse" class="experimentsTableColumn accordion-toggle">');
+            			$('<tr rowType="main" data-toggle="collapse" class="experimentsTableColumn accordion-toggle">');
             		tr.appendTo(experimentsTable);
             		//attributes needed to expanding extra row with more info
             		tr.attr("data-target", "#"+experiment.getId());
@@ -143,7 +143,7 @@ define(function(require) {
             		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DELETED){
             			tdStatus = $('<td><div class="circle DELETED center-block" title="DELETED"></div></td>');
             		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.RUNNING){
-            			tdStatus = $('<td><div class="c  ircle RUNNING center-block" title="RUNNING"></div></td>');
+            			tdStatus = $('<td><div class="circle RUNNING center-block" title="RUNNING"></div></td>');
             		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
             			tdStatus = $('<td><div class="circle DESIGN center-block" title="DESIGN"></div></td>');
             			design = true;
@@ -152,7 +152,7 @@ define(function(require) {
             		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.CANCELED){
             			tdStatus = $('<td><div class="circle CANCELED center-block" title="CANCELED"></div></td>');
             		}
-
+            		tdStatus.attr("id","statusIcon");
             		//add experiment name to row and lastmodified
             		var tdName = $('<td>'+experiment.getName()+'</td>');      
             		var tdLastModified = $('<td>'+experiment.getLastModified()+'</td>');
@@ -175,7 +175,7 @@ define(function(require) {
 
             		//add icon to show this is active now
             		var activeIcon = 
-            			$("<a class='activeIcon'>"+
+            			$("<a class='activeIcon' id='activeIcon'>"+
             			"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
             			"rel='tooltip' title='Active Icon'></i></a>");
             		activeIcon.appendTo(divIcons);
@@ -245,6 +245,7 @@ define(function(require) {
 
             	//method handles most of events for clickable elements in this table
             	GEPPETTO.FE.handleExperimentsTableControls();
+    			GEPPETTO.Main.startStatusWorker();
             },
 
             /**
@@ -292,6 +293,26 @@ define(function(require) {
         			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
         					index+"].setActive();");
         			$(this).remove();
+        			
+        			//loop through each row of experiments table
+                	$('#experimentsTable tbody tr').each(function(){
+                		//id of row matches that of active experiment
+                		if (this.id != ("#"+experimentId)) {
+                			//Add active icons to rows where it has been removed after set active
+                			if($(this).attr("rowType")=="main"){
+                				var activeIcon = 
+                					$("<a class='activeIcon' id='activeIcon'>"+
+                							"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
+                					"rel='tooltip' title='Active Icon'></i></a>");
+                				var divIcons = $(this).find(".iconsDiv");
+                				var getActiveIcon = divIcons.find("#activeIcon");
+                				if(getActiveIcon.length==0){
+                					activeIcon.prependTo(divIcons);
+                				}
+                			}
+                		}
+                	});
+                	
         			window.event.stopPropagation();
         		});
         		
@@ -365,6 +386,16 @@ define(function(require) {
             	});
             },
             
+            updateExperimentsTableStatus : function(experimentID,status){
+            	//loop through each row of experiments table
+            	$('#experimentsTable tbody tr').each(function(){
+            		//id of row matches that of active experiment
+            		if (this.id == ("#"+experimentID)) {
+            			$(this).find("#statusIcon");
+            		}
+            	});
+            },
+            
             /**
              * Show error message if webgl failed to start
              */
@@ -414,23 +445,6 @@ define(function(require) {
                 }), document.getElementById('modal-region'));
             },
             /**
-             * Create bootstrap alert to notify users they are in observer mode
-             *
-             * @param title
-             * @param alertMsg
-             * @param popoverMsg
-             */
-            observersAlert: function(title, alertMsg, popoverMsg) {
-                //if welcome message is open, return normal opacity after user clicked observed
-                if (($('#welcomeMessageModal').hasClass('in'))) {
-                    $('#welcomeMessageModal').css('opacity', '1.0');
-                }
-                $('#alertbox-text').html(alertMsg);
-                $('#alertbox').show();
-                $("#infopopover").popover({title: title,
-                    content: popoverMsg});
-            },
-            /**
              * If simulation is being controlled by another user, hide the
              * control and load buttons. Show "Observe" button only.
              */
@@ -444,17 +458,6 @@ define(function(require) {
                 //disable keyboard
                 document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
             },
-            /**
-             * Show Notification letting user now of full simulator
-             */
-            fullSimulatorNotification: function(simulatorName, queuePosition) {
-
-                $('#capacityNotificationTitle').html(simulatorName + GEPPETTO.Resources.SIMULATOR_UNAVAILABLE);
-
-                $('#queuePosition').html(queuePosition);
-
-                $('#multiUserNotification').modal();
-            }
         };
 
     };

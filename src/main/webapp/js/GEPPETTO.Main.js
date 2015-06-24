@@ -75,7 +75,7 @@ define(function(require) {
 				//create web worker for checking status
 	            this.statusWorker = new Worker("assets/js/PullStatusWorker.js");
 	            
-	            this.statusWorker.postMessage(1000);
+	            this.statusWorker.postMessage(100);
 	            
 				//receives message from web worker
 	            this.statusWorker.onmessage = function (event) {
@@ -170,8 +170,6 @@ define(function(require) {
 		$(document).ready(function() {
 			//Create canvas
 			var webGLStarted = GEPPETTO.webGLAvailable();
-
-			GEPPETTO.Main.startStatusWorker();
              
 			//make sure webgl started correctly
 			if(!webGLStarted) {

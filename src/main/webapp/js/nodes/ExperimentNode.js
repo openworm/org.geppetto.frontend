@@ -167,6 +167,7 @@ define(function(require) {
 		 */
 		run : function(){
 			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
+				GEPPETTO.trigger(Events.Experiment_running);
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();

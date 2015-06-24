@@ -134,7 +134,7 @@ define(function(require) {
             	var status = experimentStatus[key].status;
             	var experimentID = experimentStatus[key].experimentID;
 
-            	GEPPETTO.Console.log("Experiment with id "+ experimentID + 
+            	GEPPETTO.Console.debugLog("Experiment with id "+ experimentID + 
             			" has status " + status);
             	
             	//changing status in matched experiment

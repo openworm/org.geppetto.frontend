@@ -70,6 +70,7 @@ public enum OutboundMessages {
 	DOWNLOAD_MODEL("download_model"),
 	SET_PARAMETERS("set_parameters"),
 	NO_FEATURE("no_feature"), 
+	EXPERIMENT_LOADING("experiment_loading"),
 	EXPERIMENT_LOADED("experiment_loaded"),
 	EXPERIMENT_STATUS("experiment_status"),
 	DELETE_EXPERIMENT("experiment_deleted"), 
@@ -80,7 +81,8 @@ public enum OutboundMessages {
 	RESULTS_UPLOADED("results_uploaded"),
 	MODEL_UPLOADED("model_uploaded"),
 	DOWNLOAD_RESULTS("download_results"),
-	UPDATE_MODEL_TREE("update_model_tree");
+	UPDATE_MODEL_TREE("update_model_tree"), 
+	EXPERIMENT_CREATED("experiment_created");
 	
 	private OutboundMessages(final String text) {
 		this.text = text;

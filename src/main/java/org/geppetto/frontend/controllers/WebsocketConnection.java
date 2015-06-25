@@ -196,6 +196,15 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.getVersionNumber(requestID);
 				break;
 			}
+			case NEW_EXPERIMENT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.newExperiment(requestID, projectId);
+				break;
+			}
 			case LOAD_PROJECT_FROM_URL:
 			{
 				connectionHandler.loadProjectFromURL(requestID, gmsg.data);

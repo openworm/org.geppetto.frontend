@@ -180,23 +180,11 @@ define(function(require) {
 		 * @command ExperimentNode.run()
 		 */
 		setActive : function(){
-			//Updates the simulation controls visibility
-			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-			//update ui based on success of webgl
-			GEPPETTO.FE.update(webGLStarted);
-			//Keep going with load of simulation only if webgl container was created
-			if(webGLStarted) {
-				//we call it only the first time
-				GEPPETTO.SceneController.animate();
-
-				var parameters = {};
-				parameters["experimentId"] = this.id;
-				parameters["projectId"] = this.getParent().getId();
-				this.getParent().setActiveExperiment(this);
-
-				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-				GEPPETTO.trigger('project:show_spinner');
-			}
+			var parameters = {};
+			parameters["experimentId"] = this.id;
+			parameters["projectId"] = this.getParent().getId();
+			GEPPETTO.MessageSocket.send("load_experiment", parameters);
+			GEPPETTO.trigger('project:show_spinner');
 		},
 
 		/**

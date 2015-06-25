@@ -43,6 +43,8 @@ define(function(require) {
             EXPERIMENT_UPDATE: "experiment_update",
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",
+            EXPERIMENT_CREATED: "experiment_created",
+            EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
             PLAY_EXPERIMENT : "play_experiment",
             SET_WATCH_VARS: "set_watch_vars",
@@ -73,9 +75,49 @@ define(function(require) {
             GEPPETTO.trigger(Events.Project_loaded);            
             GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
         };
+        
+        messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {        	
+            var experiment = JSON.parse(payload.experiment_created);
+
+            window.Project.getExperiments().push(GEPPETTO.NodeFactory.createExperimentNode(experiment));                   
+            GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
+        };
+        
+        messageHandler[messageTypes.EXPERIMENT_LOADING] = function(payload) { 
+        	//Updates the simulation controls visibility
+			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+			//update ui based on success of webgl
+			GEPPETTO.FE.update(webGLStarted);
+			//Keep going with load of simulation only if webgl container was created
+
+			//we call it only the first time
+			GEPPETTO.SceneController.animate();
+        	GEPPETTO.trigger('project:show_spinner');
+        }
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {        	
-            var jsonRuntimeTree = JSON.parse(payload.experiment_loaded).scene;
+        	var message=JSON.parse(payload.experiment_loaded);
+        	var jsonRuntimeTree = message.scene;
+        	var experimentId=message.experimentId;
+        	//Updates the simulation controls visibility
+			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+			//update ui based on success of webgl
+			GEPPETTO.FE.update(webGLStarted);
+			//Keep going with load of simulation only if webgl container was created
+			if(webGLStarted) {
+				//we call it only the first time
+				GEPPETTO.SceneController.animate();
+				for(var experiment in window.Project.getExperiments())
+				{
+					if(window.Project.getExperiments()[experiment].getId()==experimentId)
+					{
+						window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
+						break;
+					}
+				}
+				
+			}
+            
 
             var startCreation = new Date();
             GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);

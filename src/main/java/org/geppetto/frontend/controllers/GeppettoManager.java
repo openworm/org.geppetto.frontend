@@ -117,12 +117,6 @@ public class GeppettoManager implements IGeppettoManager
 		// RuntimeProject is created and populated when loadProject is called
 		RuntimeProject runtimeProject = new RuntimeProject(project, geppettoManagerCallbackListener);
 		projects.put(project, runtimeProject);
-		// load the active experiment if there is one
-		// TODO active experiment needs to be added to IGeppettoProject?
-		if(project.getExperiments().size() > 0)
-		{
-			// loadExperiment(requestId, user, project.getExperiments().get(0));
-		}
 	}
 
 	/*
@@ -180,6 +174,7 @@ public class GeppettoManager implements IGeppettoManager
 			throw new GeppettoExecutionException(e);
 		}
 
+		getRuntimeProject(project).setActiveExperiment(experiment);
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).getRuntimeTree();
 
 	}
@@ -286,9 +281,11 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#newExperiment(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public IExperiment newExperiment(String requestId, IGeppettoProject project)
+	public IExperiment newExperiment(String requestId, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		return DataManagerHelper.getDataManager().newExperiment("experiment " + (project.getExperiments().size() + 1), "", project);
+		IExperiment experiment = DataManagerHelper.getDataManager().newExperiment("New Experiment "+ (project.getExperiments().size() + 1), "", project);
+		getRuntimeProject(project).populateNewExperiment(experiment);
+		return experiment;
 	}
 
 	/*

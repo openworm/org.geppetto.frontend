@@ -149,18 +149,9 @@ define([ 'jquery', 'underscore', 'backbone',
 		 * @returns {ExperimentNode} Creates a new ExperimentNode
 		 */
 		newExperiment : function(){
-			/*
-			 * When initializing a node when set its name, id and instancepath. 
-			 * We do it here by adding them to an object, and passing this object
-			 * as parameter in node.
-			 */
-			var experimentParameters = {};
-			//assign name base on experiments array length, not avoid same names
-			experimentParameters["name"] = "Experiment"+this.experiments.length;
-			experimentParameters["id"] = "Experiment"+this.experiments.length;
-			//instance path consists of project id and this experimetn id
-			experimentParameters["instancePath"] = this.id+experimentParameters["id"];
-			return new ExperimentNode(experimentParameters);
+			var parameters = {};
+			parameters["projectId"] = this.id;
+			GEPPETTO.MessageSocket.send("new_experiment", parameters);
 		},
 		
 		/**

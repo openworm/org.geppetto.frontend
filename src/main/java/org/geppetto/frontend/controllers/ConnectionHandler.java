@@ -120,11 +120,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
-			loadGeppettoProject(requestID, geppettoProject);
-			if(experimentId != -1)
-			{
-				loadExperiment(requestID, experimentId, projectId);
-			}
+			loadGeppettoProject(requestID, geppettoProject, experimentId);
 		}
 		catch(NumberFormatException e)
 		{
@@ -139,7 +135,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void loadProjectFromContent(String requestID, String projectContent)
 	{
 		IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), projectContent);
-		loadGeppettoProject(requestID, geppettoProject);
+		loadGeppettoProject(requestID, geppettoProject, -1l);
 	}
 
 	/**
@@ -154,7 +150,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			url = new URL(urlString);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
-			loadGeppettoProject(requestID, geppettoProject);
+			loadGeppettoProject(requestID, geppettoProject, -1l);
 		}
 		catch(IOException e)
 		{
@@ -166,7 +162,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param geppettoProject
 	 */
-	public void loadGeppettoProject(String requestID, IGeppettoProject geppettoProject)
+	public void loadGeppettoProject(String requestID, IGeppettoProject geppettoProject, long experimentId)
 	{
 		try
 		{
@@ -175,6 +171,15 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			Gson gson = new Gson();
 			String json = gson.toJson(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, json);
+
+			if(experimentId != -1)
+			{
+				loadExperiment(requestID, experimentId, geppettoProject.getId());
+			}
+			else if(geppettoProject.getActiveExperiment() != null)
+			{
+				loadExperiment(requestID, geppettoProject.getActiveExperiment().getId(), geppettoProject.getId());
+			}
 
 		}
 		catch(MalformedURLException | GeppettoInitializationException | GeppettoExecutionException e)
@@ -185,12 +190,34 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	}
 
 	/**
+	 * @param projectId
+	 */
+	public void newExperiment(String requestID, long projectId)
+	{
+		IGeppettoProject project = retrieveGeppettoProject(projectId);
+
+		try
+		{
+			IExperiment experiment = geppettoManager.newExperiment(requestID, project);
+			Gson gson = new Gson();
+			String json = gson.toJson(experiment);
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CREATED, json);
+
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error creating a new experiment");
+		}
+	}
+
+	/**
 	 * @param requestID
 	 * @param experimentID
 	 * @param projectId
 	 */
 	public void loadExperiment(String requestID, long experimentID, long projectId)
 	{
+		websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADING, "");
 		try
 		{
 			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
@@ -203,7 +230,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
 				runtimeTree.apply(serializeTreeVisitor);
 				String scene = serializeTreeVisitor.getSerializedTree();
-				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, scene);
+				// TODO This is ugly, the tree visitor should not have "scene" inside, also it should be called runtimetree
+				String message = "{\"experimentId\":" + experimentID + "," + scene.substring(1);
+				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, message);
 				logger.info("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
 			}
 			else
@@ -961,7 +990,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				File file = geppettoManager.downloadResults(aspectPath, resultsFormat, experiment, geppettoProject);
 
 				// Zip folder
-				Path path = ZipDirectory.getZipFromFile(aspectPath,file);
+				Path path = ZipDirectory.getZipFromFile(aspectPath, file);
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);
@@ -1114,4 +1143,5 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 		}
 	}
+
 }

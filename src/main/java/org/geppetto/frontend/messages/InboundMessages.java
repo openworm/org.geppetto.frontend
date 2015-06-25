@@ -41,6 +41,7 @@ public enum InboundMessages {
 	PAUSE("pause"), 
 	STOP("stop"), 
 	OBSERVE("observe"), 
+	NEW_EXPERIMENT("new_experiment"),
 	LOAD_PROJECT_FROM_URL("load_project_from_url"), 
 	LOAD_PROJECT_FROM_ID("load_project_from_id"), 
 	LOAD_PROJECT_FROM_CONTENT("load_project_from_content"),

@@ -254,7 +254,7 @@ define(function(require) {
             handleExperimentsTableControls : function(){            	
             	$('#console').bind('resize', function(){
             		var consoleHeight = $(this).height();
-            		var experiments = $("#experiments").height(consoleHeight+40);
+            		//var experiments = $("#experiments").height(consoleHeight+40);
             	});            	
             	
             	//handle hovering over each row

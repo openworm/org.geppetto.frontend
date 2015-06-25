@@ -46,8 +46,8 @@
 								<paramater>baseUrl=${project.basedir}/src/main/webapp/js</paramater>
 								<paramater>out=${project.basedir}/src/main/webapp/js/main-built.js</paramater>
 							</optimizerParameters>
-							<!-- Whether or not to process configFile with maven filters. If you 
-								use this option, some options in your configFile must resolve to absolute 
+							<!-- Whether or not to process configFile with maven filters. If you
+								use this option, some options in your configFile must resolve to absolute
 								paths (see below) -->
 							<filterConfig>
 								true
@@ -61,7 +61,7 @@
 					<plugin>
 						<groupId>com.github.eirslett</groupId>
 						<artifactId>frontend-maven-plugin</artifactId>
-						<version>0.0.16</version>
+						<version>0.0.23</version>
 						<executions>
 							<execution>
 								<id>install node and npm</id>

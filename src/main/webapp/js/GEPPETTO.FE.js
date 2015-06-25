@@ -47,6 +47,10 @@ define(function(require) {
          * @class GEPPETTO.FE
          */
         GEPPETTO.FE = {
+        		
+        	//variable to keep track of experiments rendered, used for giving alternate routes
+            //different css backgrounds
+            nth : 1,
             /*
              * Handles events that are executed as soon as page is finished loading
              */
@@ -113,134 +117,18 @@ define(function(require) {
             populateExperimentsTable : function(){            	
             	var experiments = window.Project.getExperiments();
 
-            	//variable to keep track of experiments rendered, used for giving alternate routes
-            	//different css backgrounds
-            	var nth = 1;
             	for(var key in experiments){
             		var experiment = experiments[key];
             		//retrieve experiments table html component
             		var experimentsTable = document.getElementById("experimentsTable");
-
-            		//create one row to add experiment information (status, name, last modified)
-            		var tr = 
-            			$('<tr rowType="main" data-toggle="collapse" class="experimentsTableColumn accordion-toggle">');
+            		
+            		var tr = GEPPETTO.FE.createExperimentRow(experiment);
+            		
             		tr.appendTo(experimentsTable);
-            		//attributes needed to expanding extra row with more info
-            		tr.attr("data-target", "#"+experiment.getId());
-            		tr.attr("id","#"+experiment.getId());
             		
-            		//adds class with different background every now and then
-            		if(nth%2==1){
-            			tr.addClass("nthTr");
-            		}
-            		
-            		//create element in row for showing status
-            		var tdStatus;
-            		//keep track if status is in design
-            		var design = false;
-            		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-            			tdStatus = $('<td><div class="circle COMPLETED center-block" title="COMPLETED"></div></td>');
-            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DELETED){
-            			tdStatus = $('<td><div class="circle DELETED center-block" title="DELETED"></div></td>');
-            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.RUNNING){
-            			tdStatus = $('<td><div class="circle RUNNING center-block" title="RUNNING"></div></td>');
-            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
-            			tdStatus = $('<td><div class="circle DESIGN center-block" title="DESIGN"></div></td>');
-            			design = true;
-            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.QUEUED){
-            			tdStatus = $('<td><div class="circle QUEUED center-block" title="QUEUED"></div></td>');
-            		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.CANCELED){
-            			tdStatus = $('<td><div class="circle CANCELED center-block" title="CANCELED"></div></td>');
-            		}
-            		tdStatus.attr("id","statusIcon");
-            		//add experiment name to row and lastmodified
-            		var tdName = $('<td>'+experiment.getName()+'</td>');      
-            		var tdLastModified = $('<td>'+experiment.getLastModified()+'</td>');
-            		//create element for showing icons
-            		var tdIcons = $("<td></td>");
-            		var divIcons = $("<div class='iconsDiv'></div>");
-
-            		//if experiment in design status, make name and last modified elements editable
-            		if(design){
-            			tdName.attr("contentEditable","true");
-            			tdLastModified.attr("contentEditable","true")
-            		}
-
-            		//append elements to row
-            		tdStatus.appendTo(tr);
-            		tdName.appendTo(tr);
-            		tdLastModified.appendTo(tr);
-            		divIcons.appendTo(tdIcons);
-            		tdIcons.appendTo(tr);
-
-            		//add icon to show this is active now
-            		var activeIcon = 
-            			$("<a class='activeIcon' id='activeIcon'>"+
-            			"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
-            			"rel='tooltip' title='Active Icon'></i></a>");
-            		activeIcon.appendTo(divIcons);
-            		activeIcon.attr("experimentId",experiment.getId());
-
-            		//create delete icon and append to div element inside row
-            		var deleteIcon = $("<a class='deleteIcon'><i class='fa fa-remove fa-lg'"+
-            				"rel='tooltip' title='Delete Experiment'></i></a>");
-            		deleteIcon.appendTo(divIcons);
-            		deleteIcon.attr("experimentId",experiment.getId());
-            		
-            		//create download results and append to div element inside row
-            		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-            			var downloadResultsIcon = 
-            				$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'"+
-            						"rel='tooltip' title='Download Results'></i></a>");
-            			downloadResultsIcon.appendTo(divIcons);
-            			downloadResultsIcon.attr("experimentId",experiment.getId());
-            		}
-            		
-            		//create download models icon and append to div element inside row
-            		var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
-            				"<i class='fa fa-cloud-download fa-lg' " +
-            				"rel='tooltip' title='Download Models'></i></a>");
-            		downloadModelsIcon.appendTo(divIcons);
-            		downloadModelsIcon.attr("experimentId",experiment.getId());
-            		
-            		//add row to show more information
-            		var expandableTR = $("<tr></tr>")
-            		expandableTR.attr("id","#"+experiment.getId());
-            		if(nth%2==1){
-            			expandableTR.addClass("nthTr");
-            		}
-            		//created other properties for expandable row
-            		var expandableTD = $("<td colspan='12' class='hiddenRow'></td>")
-            		var expandableDIV = $("<div class='accordian-body collapse'></div>");
-            		var expandableTable = $("<table class='table-condensed expandableTable'></table>");
-            		expandableDIV.attr("id",experiment.getId());
-            		expandableTR.appendTo(experimentsTable);
-            		expandableTD.appendTo(expandableTR);
-            		expandableTable.appendTo(expandableDIV);
-            		expandableDIV.appendTo(expandableTD);
-
-            		//create head row with titles of info displayed in new table used for 
-            		//showing expandable row
-            		var head = $("<thead class='experimentsTableColumn'>"+
-            				"<tr><th style='width:15%;'></th>"+
-            				"<th>Aspect</th><th>Simulator</th>"+
-            				"<th>TimeStep</th><th>Length</th>"+
-            		"<th>ConversionService</th></tr></thead>");
-            		head.appendTo(expandableTable);
-
-            		//populate expandable table with rows for each simulator configuration
-            		var simulatorConfigurations = experiment.simulatorConfigurations;
-            		for(var config in simulatorConfigurations){
-            			var simulatorConfig = simulatorConfigurations[config];
-            			var configuration = $("<tr><td></td><td>"+
-            					simulatorConfig["aspectInstancePath"]+"</td><td>"+
-            					simulatorConfig["simulatorId"]+"</td><td>"+
-            					simulatorConfig["timeStep"]+"</td><td>"+
-            					simulatorConfig["length"]+"</td><td>"+
-            					simulatorConfig["conversionId"]+"</td></tr>");
-            			configuration.appendTo(expandableTable)
-            		}
-            		nth++;
+            		var expandableRow = GEPPETTO.FE.createExpandableRow(experiment);
+            		expandableRow.appendTo(experimentsTable);
+            		this.nth++;
             	}
 
             	//method handles most of events for clickable elements in this table
@@ -266,17 +154,7 @@ define(function(require) {
 
             	//Handles new experiment button click
             	$("#new_experiment").click(function(){
-            		var newRow = $("<tr class='experimentsTableColumn' contentEditable='true'>"+
-            				"<td></td><td>type_name_here</td><td>type_last_modified_date</td>"+
-            				"<td><a id='deleteRow'><i class='fa fa-remove fa-lg'></i></a></td></tr>");
-            		newRow.prependTo("#experimentsTable");
-            		newRow.addClass("newExperimentFocus");
-            		
-            		//Handles delete icon button click
-                	$("#deleteRow").click(function(){
-                		$(this).closest('tr').remove();
-                		window.event.stopPropagation();
-                	});
+            		GEPPETTO.Console.executeCommand("Project.newExperiment();");
             	});
 
         		//listenern for active icon button
@@ -386,6 +264,131 @@ define(function(require) {
             	});
             },
             
+            createExperimentRow : function(experiment){
+            	//create one row to add experiment information (status, name, last modified)
+        		var tr = 
+        			$('<tr rowType="main" data-toggle="collapse" class="experimentsTableColumn accordion-toggle">');
+        		//attributes needed to expanding extra row with more info
+        		tr.attr("data-target", "#"+experiment.getId());
+        		tr.attr("id","#"+experiment.getId());
+        		
+        		//adds class with different background every now and then
+        		if(this.nth%2==1){
+        			tr.addClass("nthTr");
+        		}
+        		
+        		//create element in row for showing status
+        		var tdStatus;
+        		//keep track if status is in design
+        		var design = false;
+        		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+        			tdStatus = $('<td><div class="circle COMPLETED center-block" title="COMPLETED"></div></td>');
+        		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DELETED){
+        			tdStatus = $('<td><div class="circle DELETED center-block" title="DELETED"></div></td>');
+        		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.RUNNING){
+        			tdStatus = $('<td><div class="circle RUNNING center-block" title="RUNNING"></div></td>');
+        		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
+        			tdStatus = $('<td><div class="circle DESIGN center-block" title="DESIGN"></div></td>');
+        			design = true;
+        		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.QUEUED){
+        			tdStatus = $('<td><div class="circle QUEUED center-block" title="QUEUED"></div></td>');
+        		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.CANCELED){
+        			tdStatus = $('<td><div class="circle CANCELED center-block" title="CANCELED"></div></td>');
+        		}
+        		tdStatus.attr("id","statusIcon");
+        		//add experiment name to row and lastmodified
+        		var tdName = $('<td>'+experiment.getName()+'</td>');      
+        		var tdLastModified = $('<td>'+experiment.getLastModified()+'</td>');
+        		//create element for showing icons
+        		var tdIcons = $("<td></td>");
+        		var divIcons = $("<div class='iconsDiv'></div>");
+
+        		//if experiment in design status, make name and last modified elements editable
+        		if(design){
+        			tdName.attr("contentEditable","true");
+        			tdLastModified.attr("contentEditable","true")
+        		}
+
+        		//append elements to row
+        		tdStatus.appendTo(tr);
+        		tdName.appendTo(tr);
+        		tdLastModified.appendTo(tr);
+        		divIcons.appendTo(tdIcons);
+        		tdIcons.appendTo(tr);
+
+        		//add icon to show this is active now
+        		var activeIcon = 
+        			$("<a class='activeIcon' id='activeIcon'>"+
+        			"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
+        			"rel='tooltip' title='Active Icon'></i></a>");
+        		activeIcon.appendTo(divIcons);
+        		activeIcon.attr("experimentId",experiment.getId());
+
+        		//create delete icon and append to div element inside row
+        		var deleteIcon = $("<a class='deleteIcon'><i class='fa fa-remove fa-lg'"+
+        				"rel='tooltip' title='Delete Experiment'></i></a>");
+        		deleteIcon.appendTo(divIcons);
+        		deleteIcon.attr("experimentId",experiment.getId());
+        		
+        		//create download results and append to div element inside row
+        		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+        			var downloadResultsIcon = 
+        				$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'"+
+        						"rel='tooltip' title='Download Results'></i></a>");
+        			downloadResultsIcon.appendTo(divIcons);
+        			downloadResultsIcon.attr("experimentId",experiment.getId());
+        		}
+        		
+        		//create download models icon and append to div element inside row
+        		var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
+        				"<i class='fa fa-cloud-download fa-lg' " +
+        				"rel='tooltip' title='Download Models'></i></a>");
+        		downloadModelsIcon.appendTo(divIcons);
+        		downloadModelsIcon.attr("experimentId",experiment.getId());
+        		
+        		return tr;
+            },
+            
+            createExpandableRow : function(experiment){
+            	var expandableTR = $("<tr></tr>")
+        		expandableTR.attr("id","#"+experiment.getId());
+        		if(this.nth%2==1){
+        			expandableTR.addClass("nthTr");
+        		}
+        		//created other properties for expandable row
+        		var expandableTD = $("<td colspan='12' class='hiddenRow'></td>")
+        		var expandableDIV = $("<div class='accordian-body collapse'></div>");
+        		var expandableTable = $("<table class='table-condensed expandableTable'></table>");
+        		expandableDIV.attr("id",experiment.getId());
+        		expandableTD.appendTo(expandableTR);
+        		expandableTable.appendTo(expandableDIV);
+        		expandableDIV.appendTo(expandableTD);
+
+        		//create head row with titles of info displayed in new table used for 
+        		//showing expandable row
+        		var head = $("<thead class='experimentsTableColumn'>"+
+        				"<tr><th style='width:15%;'></th>"+
+        				"<th>Aspect</th><th>Simulator</th>"+
+        				"<th>TimeStep</th><th>Length</th>"+
+        		"<th>ConversionService</th></tr></thead>");
+        		head.appendTo(expandableTable);
+
+        		//populate expandable table with rows for each simulator configuration
+        		var simulatorConfigurations = experiment.simulatorConfigurations;
+        		for(var config in simulatorConfigurations){
+        			var simulatorConfig = simulatorConfigurations[config];
+        			var configuration = $("<tr><td></td><td>"+
+        					simulatorConfig["aspectInstancePath"]+"</td><td>"+
+        					simulatorConfig["simulatorId"]+"</td><td>"+
+        					simulatorConfig["timeStep"]+"</td><td>"+
+        					simulatorConfig["length"]+"</td><td>"+
+        					simulatorConfig["conversionId"]+"</td></tr>");
+        			configuration.appendTo(expandableTable)
+        		}
+        		
+        		return expandableTR;
+            },
+            
             updateExperimentsTableStatus : function(experimentID,status){
             	//loop through each row of experiments table
             	$('#experimentsTable tbody tr').each(function(){
@@ -394,6 +397,18 @@ define(function(require) {
             			$(this).find("#statusIcon");
             		}
             	});
+            },
+            
+            newExperiment : function(experiment){
+        		var experimentsTable = document.getElementById("experimentsTable");
+        		
+        		var expandableRow = GEPPETTO.FE.createExpandableRow(experiment);
+        		expandableRow.prependTo(experimentsTable);
+        		
+        		var tr = GEPPETTO.FE.createExperimentRow(experiment);
+        		tr.prependTo(experimentsTable);
+        		
+        		this.nth++;
             },
             
             /**

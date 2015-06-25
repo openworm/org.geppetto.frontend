@@ -40,22 +40,22 @@ define(function(require) {
             });
 
             GEPPETTO.on(Events.Experiment_play, function(){
-                self.setState({disablePlay:true, disablePause:false, disableStop:false});
+                self.setState({disableRun: true,disablePlay:true, disablePause:false, disableStop:false});
             });
 
             GEPPETTO.on(Events.Experiment_pause, function(){
-                self.setState({disablePlay:false, disablePause:true, disableStop:false});
+                self.setState({disableRun: true,disablePlay:false, disablePause:true, disableStop:false});
             });
 
             GEPPETTO.on(Events.Experiment_stop, function(){
-                self.setState({disablePlay:false, disablePause:true, disableStop:true});
+                self.setState({disableRun:true, truedisablePlay:false, disablePause:true, disableStop:true});
             });
             
             GEPPETTO.on('disable_all', function(){
                 self.setState({disableRun: true,disablePlay:true, disablePause:true, disableStop:true});
             });
             GEPPETTO.on(Events.Experiment_replay, function(){
-                self.setState({disablePlay:true, disablePause:false, disableStop:false});
+                self.setState({disableRun: true,disablePlay:true, disablePause:false, disableStop:false});
             });
         },
 

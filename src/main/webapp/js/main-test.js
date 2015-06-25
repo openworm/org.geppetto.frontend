@@ -137,7 +137,7 @@ require(jqueryLib, function($) {
 				// run the tests.
 				setTimeout(function(){
 					geppettoTests.run();
-					//simulationTest.run();
+					simulationTest.run();
 				},500);
 
 				// start QUnit.

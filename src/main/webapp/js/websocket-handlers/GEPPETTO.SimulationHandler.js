@@ -79,8 +79,11 @@ define(function(require) {
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {        	
             var experiment = JSON.parse(payload.experiment_created);
 
-            window.Project.getExperiments().push(GEPPETTO.NodeFactory.createExperimentNode(experiment));                   
+            var newExperiment = GEPPETTO.NodeFactory.createExperimentNode(experiment);
+            window.Project.getExperiments().push(newExperiment);                   
             GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
+            
+            GEPPETTO.FE.newExperiment(newExperiment);
         };
         
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function(payload) { 

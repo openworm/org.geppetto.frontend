@@ -249,7 +249,7 @@ define(function(require) {
 					//check if console isn't already showing, we do this by checking
 					//it's css value of display
 					if(!this.visible) {
-						$('#console').slideToggle(200);
+						//$('#console').slideToggle(200);
 						$('#commandInputArea').focus();
 					}
 				}

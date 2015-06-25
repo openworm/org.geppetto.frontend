@@ -468,10 +468,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		ModelFormat modelFormat = ServicesRegistry.getModelFormat(format);
+		
+		ModelFormat	modelFormat = ServicesRegistry.getModelFormat(format);
 		try
 		{
-			if(modelFormat == null)
+			
+			if(modelFormat == null && format != null)
 			{
 				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
 			}

@@ -350,7 +350,7 @@ define(function(require) {
 					parameters["format"] = format;
 					GEPPETTO.MessageSocket.send("download_model", parameters);
 
-					return GEPPETTO.Resources.DOWNLOADING_MODEL + format;
+					return GEPPETTO.Resources.DOWNLOADING_MODEL + (format=="")?"default format":format;
 				},
 
 				/**

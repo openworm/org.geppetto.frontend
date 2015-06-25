@@ -46,9 +46,11 @@
 			ModelTree_populated : "experiment:modeltreepopulated",
 			SimulationTree_populated : "experiment:simulationtreepopulated",
 			Experiment_play : "experiment:play",
+			Experiment_completed : "experiment:completed",
 			Experiment_replay : "experiment:replay",
 			Experiment_pause : "experiment:pause",
 			Experiment_resume : "experiment:resume",
+			Experiment_running : "experiment:running",
 			Experiment_stop : "experiment:stop",
 			Experiment_update : "experiment:update",
 			Experiment_deleted : "experiment_deleted"
@@ -69,6 +71,10 @@ define(function(require) {
 	        	});
 				GEPPETTO.on(Events.Project_loaded, function(){
 					GEPPETTO.FE.populateExperimentsTable();
+				});
+				GEPPETTO.on(Events.Experiment_completed, function(){
+					var id = e.id;
+					GEPPETTO.FE.updateExperimentsTableStatus(id);
 				});
 				GEPPETTO.on(Events.Experiment_loaded, function(){
 		            GEPPETTO.trigger("hide:spinner");

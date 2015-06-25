@@ -207,7 +207,7 @@ public class GeppettoManager implements IGeppettoManager
 	{
 		if(experiment.getStatus().equals(ExperimentStatus.COMPLETED))
 		{
-			return getRuntimeProject(experiment.getParentProject()).getRuntimeExperiment(experiment).updateSimulationTreeWithResults();
+			return getRuntimeProject(experiment.getParentProject()).getRuntimeExperiment(experiment).updateRuntimeTreesWithResults();
 		}
 		else
 		{

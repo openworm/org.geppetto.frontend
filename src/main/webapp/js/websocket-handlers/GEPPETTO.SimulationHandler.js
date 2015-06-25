@@ -190,9 +190,8 @@ define(function(require) {
             			}
             		}
             	}
-            }
-            
-            GEPPETTO.Main.getStatusWorker().terminate();
+            }            
+            GEPPETTO.trigger(Events.Experiment_status_check);
         };
         
         messageHandler[messageTypes.PROJECT_PERSISTED] = function(payload) {

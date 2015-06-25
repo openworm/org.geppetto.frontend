@@ -104,6 +104,10 @@ define(function(require) {
             		if (this.id == ("#"+experiment.getId())) {
             			//add class to make it clear it's active
             			$(this).addClass("activeExperiment");
+            			if($(this).attr("rowType")=="main"){
+            				var activeIcon = $("#activeIcon-"+experiment.getId());
+            				activeIcon.remove();
+            			}
             		}else{
             			//remove class from active experiment
             			$(this).removeClass("activeExperiment");
@@ -170,7 +174,6 @@ define(function(require) {
         			var index = experiments.indexOf(experiment);
         			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
         					index+"].setActive();");
-        			$(this).remove();
         			
         			//loop through each row of experiments table
                 	$('#experimentsTable tbody tr').each(function(){
@@ -179,11 +182,12 @@ define(function(require) {
                 			//Add active icons to rows where it has been removed after set active
                 			if($(this).attr("rowType")=="main"){
                 				var activeIcon = 
-                					$("<a class='activeIcon' id='activeIcon'>"+
+                					$("<a class='activeIcon'>"+
                 							"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
                 					"rel='tooltip' title='Active Icon'></i></a>");
+                				activeIcon.attr("id","activeIcon-"+experimentId);
                 				var divIcons = $(this).find(".iconsDiv");
-                				var getActiveIcon = divIcons.find("#activeIcon");
+                				var getActiveIcon = divIcons.find("#activeIcon-"+experimentId);
                 				if(getActiveIcon.length==0){
                 					activeIcon.prependTo(divIcons);
                 				}
@@ -318,11 +322,12 @@ define(function(require) {
 
         		//add icon to show this is active now
         		var activeIcon = 
-        			$("<a class='activeIcon' id='activeIcon'>"+
+        			$("<a class='activeIcon'>"+
         			"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
         			"rel='tooltip' title='Active Icon'></i></a>");
         		activeIcon.appendTo(divIcons);
         		activeIcon.attr("experimentId",experiment.getId());
+        		activeIcon.attr("id","activeIcon-"+experiment.getId());
 
         		//create delete icon and append to div element inside row
         		var deleteIcon = $("<a class='deleteIcon'><i class='fa fa-remove fa-lg'"+
@@ -389,13 +394,13 @@ define(function(require) {
         		return expandableTR;
             },
             
-            updateExperimentsTableStatus : function(experimentID,status){
+            updateExperimentsTableStatus : function(){
             	//loop through each row of experiments table
             	$('#experimentsTable tbody tr').each(function(){
             		//id of row matches that of active experiment
-            		if (this.id == ("#"+experimentID)) {
-            			$(this).find("#statusIcon");
-            		}
+//            		if (this.id == ("#"+experimentID)) {
+//            			$(this).find("#statusIcon");
+//            		}
             	});
             },
             
@@ -407,6 +412,7 @@ define(function(require) {
         		
         		var tr = GEPPETTO.FE.createExperimentRow(experiment);
         		tr.prependTo(experimentsTable);
+        		tr.addClass("newExperimentFocus");
         		
         		this.nth++;
             },

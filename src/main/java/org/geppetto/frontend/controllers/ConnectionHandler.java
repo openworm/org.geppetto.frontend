@@ -66,7 +66,7 @@ import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.simulation.ResultsFormat;
-import org.geppetto.core.utilities.ZipDirectory;
+import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -483,13 +483,14 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				File file = geppettoManager.downloadModel(aspectInstancePath, modelFormat, experiment, geppettoProject);
 
 				// Zip folder
-				Path path = ZipDirectory.getZipFromDirectory(file);
+				Zipper zipper=new Zipper();
+				Path path = zipper.getZipFromDirectory(file);
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);
 			}
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | IOException e)
 		{
 			error(e, "Error downloading model for " + aspectInstancePath + " in format " + format);
 		}
@@ -989,18 +990,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			else
 			{
 				// Convert model
-				File file = geppettoManager.downloadResults(aspectPath, resultsFormat, experiment, geppettoProject);
+				URL url = geppettoManager.downloadResults(aspectPath, resultsFormat, experiment, geppettoProject);
 
 				// Zip folder
-				Path path = ZipDirectory.getZipFromFile(aspectPath, file);
+				Zipper zipper=new Zipper();
+				Path path = zipper.getZipFromFile(aspectPath, url);
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);
 			}
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | IOException e)
 		{
-			error(e, "Error downloading model for " + aspectPath + " in format " + format);
+			error(e, "Error downloading results for " + aspectPath + " in format " + format);
 		}
 	}
 

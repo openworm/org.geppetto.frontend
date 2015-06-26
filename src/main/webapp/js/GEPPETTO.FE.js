@@ -372,7 +372,7 @@ define(function(require) {
         		//create head row with titles of info displayed in new table used for 
         		//showing expandable row
         		var head = $("<thead class='experimentsTableColumn'>"+
-        				"<tr><th style='width:15%;'></th>"+
+        				"<tr><th style='width:215px;'></th>"+
         				"<th>Aspect</th><th>Simulator</th>"+
         				"<th>TimeStep</th><th>Length</th>"+
         		"<th>ConversionService</th></tr></thead>");

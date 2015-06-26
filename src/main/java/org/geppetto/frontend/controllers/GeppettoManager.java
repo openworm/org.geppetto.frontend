@@ -251,7 +251,7 @@ public class GeppettoManager implements IGeppettoManager
 					throw new GeppettoExecutionException(persistModelVisitor.getException());
 				}
 				persistModelVisitor.processLocalGeppettoFile();
-				String fileName = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
+				String fileName = URLReader.getFileName(url);
 				String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
 				S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
 				DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
@@ -448,7 +448,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadResults(org.geppetto.core.simulation.ResultsFormat)
 	 */
 	@Override
-	public File downloadResults(String aspectPath, ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public URL downloadResults(String aspectPath, ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadResults(aspectPath, resultsFormat, dropboxService);
 	}

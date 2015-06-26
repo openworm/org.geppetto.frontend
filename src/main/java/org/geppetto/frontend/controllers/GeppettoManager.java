@@ -79,7 +79,7 @@ public class GeppettoManager implements IGeppettoManager
 {
 
 	private static Log logger = LogFactory.getLog(GeppettoManager.class);
-	
+
 	// these are the runtime projects for a
 	private Map<IGeppettoProject, RuntimeProject> projects = new LinkedHashMap<>();
 
@@ -238,23 +238,31 @@ public class GeppettoManager implements IGeppettoManager
 		{
 			if(project.isVolatile())
 			{
-				// save Geppetto Model
-				URL url = new URL(project.getGeppettoModel().getUrl());
-				Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(url).toURI());
-				
-				// save Geppetto Scripts
-				// save each model inside GeppettoModel and save every file referenced inside every model
-				PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(getRuntimeProject(project).getActiveExperiment()), project);
-				getRuntimeProject(project).getGeppettoModel().accept(persistModelVisitor);
-				if(persistModelVisitor.getException() != null)
+				if(getRuntimeProject(project).getActiveExperiment() != null)
 				{
-					throw new GeppettoExecutionException(persistModelVisitor.getException());
+					// save Geppetto Model
+					URL url = new URL(project.getGeppettoModel().getUrl());
+					Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(url).toURI());
+
+					// save Geppetto Scripts
+					// save each model inside GeppettoModel and save every file referenced inside every model
+					PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(
+							getRuntimeProject(project).getActiveExperiment()), project);
+					getRuntimeProject(project).getGeppettoModel().accept(persistModelVisitor);
+					if(persistModelVisitor.getException() != null)
+					{
+						throw new GeppettoExecutionException(persistModelVisitor.getException());
+					}
+					persistModelVisitor.processLocalGeppettoFile();
+					String fileName = URLReader.getFileName(url);
+					String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
+					S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
+					DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
 				}
-				persistModelVisitor.processLocalGeppettoFile();
-				String fileName = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
-				String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
-				S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
-				DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
+				else
+				{
+					throw new GeppettoExecutionException("Cannot persist a project without an active experiment");
+				}
 			}
 			else
 			{
@@ -283,7 +291,7 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public IExperiment newExperiment(String requestId, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		IExperiment experiment = DataManagerHelper.getDataManager().newExperiment("New Experiment "+ (project.getExperiments().size() + 1), "", project);
+		IExperiment experiment = DataManagerHelper.getDataManager().newExperiment("New Experiment " + (project.getExperiments().size() + 1), "", project);
 		getRuntimeProject(project).populateNewExperiment(experiment);
 		return experiment;
 	}
@@ -297,10 +305,15 @@ public class GeppettoManager implements IGeppettoManager
 	public void deleteExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
 		IGeppettoProject project = experiment.getParentProject();
-		getRuntimeProject(project).closeExperiment(experiment);
-		project.getExperiments().remove(experiment);
+		if(getRuntimeProject(project).getRuntimeExperiment(experiment) != null)
+		{
+			getRuntimeProject(project).closeExperiment(experiment);
+		}
+
 		DataManagerHelper.getDataManager().deleteExperiment(experiment);
-		// TODO Need to make sure everything is getting cleared, results, aspect configurations, etc.
+
+		project.getExperiments().remove(experiment);
+		DataManagerHelper.getDataManager().saveEntity(project);
 	}
 
 	/*
@@ -448,7 +461,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadResults(org.geppetto.core.simulation.ResultsFormat)
 	 */
 	@Override
-	public File downloadResults(String aspectPath, ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public URL downloadResults(String aspectPath, ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadResults(aspectPath, resultsFormat, dropboxService);
 	}

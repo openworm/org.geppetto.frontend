@@ -178,9 +178,6 @@ define(function(require) {
             	var projectID = experimentStatus[key].projectID;
             	var status = experimentStatus[key].status;
             	var experimentID = experimentStatus[key].experimentID;
-
-            	GEPPETTO.Console.debugLog("Experiment with id "+ experimentID + 
-            			" has status " + status);
             	
             	//changing status in matched experiment
             	for(var e in experiments){

@@ -181,13 +181,13 @@ define(function(require) {
                 		if (this.id != ("#"+experimentId)) {
                 			//Add active icons to rows where it has been removed after set active
                 			if($(this).attr("rowType")=="main"){
+                				var getActiveIcon = divIcons.find("#activeIcon-"+experimentId);
                 				var activeIcon = 
                 					$("<a class='activeIcon'>"+
                 							"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
                 					"rel='tooltip' title='Active Icon'></i></a>");
                 				activeIcon.attr("id","activeIcon-"+experimentId);
                 				var divIcons = $(this).find(".iconsDiv");
-                				var getActiveIcon = divIcons.find("#activeIcon-"+experimentId);
                 				if(getActiveIcon.length==0){
                 					activeIcon.prependTo(divIcons);
                 				}
@@ -310,7 +310,6 @@ define(function(require) {
         		//if experiment in design status, make name and last modified elements editable
         		if(design){
         			tdName.attr("contentEditable","true");
-        			tdLastModified.attr("contentEditable","true")
         		}
 
         		//append elements to row
@@ -339,17 +338,19 @@ define(function(require) {
         		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
         			var downloadResultsIcon = 
         				$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'"+
-        						"rel='tooltip' title='Download Results'></i></a>");
+        				"rel='tooltip' title='Download Results'></i></a>");
         			downloadResultsIcon.appendTo(divIcons);
         			downloadResultsIcon.attr("experimentId",experiment.getId());
         		}
         		
-        		//create download models icon and append to div element inside row
-        		var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
-        				"<i class='fa fa-cloud-download fa-lg' " +
-        				"rel='tooltip' title='Download Models'></i></a>");
-        		downloadModelsIcon.appendTo(divIcons);
-        		downloadModelsIcon.attr("experimentId",experiment.getId());
+        		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+        			//create download models icon and append to div element inside row
+        			var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
+        					"<i class='fa fa-cloud-download fa-lg' " +
+        			"rel='tooltip' title='Download Models'></i></a>");
+        			downloadModelsIcon.appendTo(divIcons);
+        			downloadModelsIcon.attr("experimentId",experiment.getId());
+        		}
         		
         		return tr;
             },
@@ -397,10 +398,40 @@ define(function(require) {
             updateExperimentsTableStatus : function(){
             	//loop through each row of experiments table
             	$('#experimentsTable tbody tr').each(function(){
-            		//id of row matches that of active experiment
-//            		if (this.id == ("#"+experimentID)) {
-//            			$(this).find("#statusIcon");
-//            		}
+            		var experiments = window.Project.getExperiments();
+            		for(var e in experiments){
+            			var experiment = experiments[e];
+            			if (this.id == ("#"+experiment.getId())) {
+            				var tdStatus = $(this).find(".circle");
+            				var tdStatusTitle = tdStatus.attr("title");
+            				//keep track if status is in design
+            				if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+            					tdStatus.removeClass(tdStatusTitle);
+            					tdStatus.addClass("COMPLETED");
+            					tdStatus.attr("title","COMPLETED");
+            				}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DELETED){
+            					tdStatus.removeClass(tdStatusTitle);
+            					tdStatus.addClass("DELETED");
+            					tdStatus.attr("title","DELETED");
+            				}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.RUNNING){
+            					tdStatus.removeClass(tdStatusTitle);
+            					tdStatus.addClass("RUNNING");
+            					tdStatus.attr("title","RUNNING");
+            				}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
+            					tdStatus.removeClass(tdStatusTitle);
+            					tdStatus.addClass("DESIGN");
+            					tdStatus.attr("title","DESIGN");
+            				}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.QUEUED){
+            					tdStatus.removeClass(tdStatusTitle);
+            					tdStatus.addClass("QUEUED");
+            					tdStatus.attr("title","QUEUED");
+            				}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.CANCELED){
+            					tdStatus.removeClass(tdStatusTitle);
+            					tdStatus.addClass("CANCELED");
+            					tdStatus.attr("title","CANCELED");
+            				}
+            			}
+            		}
             	});
             },
             
@@ -412,7 +443,12 @@ define(function(require) {
         		
         		var tr = GEPPETTO.FE.createExperimentRow(experiment);
         		tr.prependTo(experimentsTable);
-        		tr.addClass("newExperimentFocus");
+        		tr.addClass("activeExperiment");
+        		
+        		$('#experimentsTable tbody tr').each(function(){
+        			//remove class from active experiment
+        			$(this).removeClass("activeExperiment");
+        		});
         		
         		this.nth++;
             },

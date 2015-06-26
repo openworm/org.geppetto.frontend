@@ -57,6 +57,9 @@ define(function(require) {
             GEPPETTO.on(Events.Experiment_replay, function(){
                 self.setState({disableRun: true,disablePlay:true, disablePause:false, disableStop:false});
             });
+            GEPPETTO.on(Events.Experiment_over, function(){
+                self.setState({disableRun: true,disablePlay:false, disablePause:true, disableStop:true});
+            });
         },
 
         render: function () {

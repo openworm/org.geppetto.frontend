@@ -181,13 +181,13 @@ define(function(require) {
                 		if (this.id != ("#"+experimentId)) {
                 			//Add active icons to rows where it has been removed after set active
                 			if($(this).attr("rowType")=="main"){
+                				var getActiveIcon = divIcons.find("#activeIcon-"+experimentId);
                 				var activeIcon = 
                 					$("<a class='activeIcon'>"+
                 							"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
                 					"rel='tooltip' title='Active Icon'></i></a>");
                 				activeIcon.attr("id","activeIcon-"+experimentId);
                 				var divIcons = $(this).find(".iconsDiv");
-                				var getActiveIcon = divIcons.find("#activeIcon-"+experimentId);
                 				if(getActiveIcon.length==0){
                 					activeIcon.prependTo(divIcons);
                 				}

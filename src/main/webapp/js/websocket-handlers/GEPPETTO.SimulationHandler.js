@@ -195,13 +195,12 @@ define(function(require) {
         };
         
         messageHandler[messageTypes.PROJECT_PERSISTED] = function(payload) {
-            var experimentStatus = JSON.parse(payload.update);
-
-            var projectID = experimentStatus.projectID;
-
-            GEPPETTO.Console.log("Project with id "+ projectID + 
-            		" has been saved.");            	
-
+            var message = JSON.parse(payload.update);
+            var projectID = message.projectID;
+            
+            window.Project.id=parseInt(projectID);
+           
+            GEPPETTO.Console.log("The project has been persisted  [id="+ projectID + "].");        
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function(payload) {            

@@ -93,6 +93,13 @@ public class GeppettoManager implements IGeppettoManager
 	{
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 		logger.info("New Geppetto Manager class");
+		if(user!=null)
+		{
+			if(user.getDropboxToken()!=null)
+			{
+				dropboxService.init(user.getDropboxToken());
+			}
+		}
 	}
 
 	public GeppettoManager(IGeppettoManager manager)
@@ -163,7 +170,7 @@ public class GeppettoManager implements IGeppettoManager
 		IGeppettoProject project = experiment.getParentProject();
 		try
 		{
-			if(!projects.containsKey(project) && projects.get(project) == null)
+			if(!projects.containsKey(project) || projects.get(project) == null)
 			{
 				throw new GeppettoExecutionException("Cannot load an experiment for a project that was not loaded");
 			}

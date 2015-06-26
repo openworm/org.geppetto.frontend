@@ -176,9 +176,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				loadExperiment(requestID, experimentId, geppettoProject.getId());
 			}
-			else if(geppettoProject.getActiveExperiment() != null)
+			else if(geppettoProject.getActiveExperimentId() != -1)
 			{
-				loadExperiment(requestID, geppettoProject.getActiveExperiment().getId(), geppettoProject.getId());
+				loadExperiment(requestID, geppettoProject.getActiveExperimentId(), geppettoProject.getId());
 			}
 
 		}
@@ -877,7 +877,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 				geppettoManager.persistProject(requestID, geppettoProject);
 
-				String update = "{\"projectID\":" + '"' + projectId + '"' + "}";
+				String update = "{\"projectID\":" + '"' + geppettoProject.getId() + '"' + "}";
 				websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTED, update);
 			}
 			else

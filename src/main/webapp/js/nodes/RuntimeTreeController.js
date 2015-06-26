@@ -121,7 +121,12 @@ define(function(require) {
 										//format state in a way to match what server is sending
 										var splitState = state.split("SimulationTree.");
 										var formattedState = splitState[1];
-										var received=eval("simulationTree."+formattedState);
+										var received = eval("simulationTree." + formattedState);
+										
+										if(received === undefined){
+											received = eval("simulationTree." + state);
+										}
+										
 										var clientNode=eval(state);
 										clientNode.getTimeSeries().unshift();
 										clientNode.setUnit(received.unit);

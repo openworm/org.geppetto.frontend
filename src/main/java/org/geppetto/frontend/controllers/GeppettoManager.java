@@ -238,24 +238,31 @@ public class GeppettoManager implements IGeppettoManager
 		{
 			if(project.isVolatile())
 			{
-				// save Geppetto Model
-				URL url = new URL(project.getGeppettoModel().getUrl());
-				Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(url).toURI());
-
-				// save Geppetto Scripts
-				// save each model inside GeppettoModel and save every file referenced inside every model
-				PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(
-						getRuntimeProject(project).getActiveExperiment()), project);
-				getRuntimeProject(project).getGeppettoModel().accept(persistModelVisitor);
-				if(persistModelVisitor.getException() != null)
+				if(getRuntimeProject(project).getActiveExperiment() != null)
 				{
-					throw new GeppettoExecutionException(persistModelVisitor.getException());
+					// save Geppetto Model
+					URL url = new URL(project.getGeppettoModel().getUrl());
+					Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(url).toURI());
+
+					// save Geppetto Scripts
+					// save each model inside GeppettoModel and save every file referenced inside every model
+					PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(
+							getRuntimeProject(project).getActiveExperiment()), project);
+					getRuntimeProject(project).getGeppettoModel().accept(persistModelVisitor);
+					if(persistModelVisitor.getException() != null)
+					{
+						throw new GeppettoExecutionException(persistModelVisitor.getException());
+					}
+					persistModelVisitor.processLocalGeppettoFile();
+					String fileName = URLReader.getFileName(url);
+					String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
+					S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
+					DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
 				}
-				persistModelVisitor.processLocalGeppettoFile();
-				String fileName = URLReader.getFileName(url);
-				String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
-				S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
-				DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
+				else
+				{
+					throw new GeppettoExecutionException("Cannot persist a project without an active experiment");
+				}
 			}
 			else
 			{
@@ -304,7 +311,7 @@ public class GeppettoManager implements IGeppettoManager
 		}
 
 		DataManagerHelper.getDataManager().deleteExperiment(experiment);
-		
+
 		project.getExperiments().remove(experiment);
 		DataManagerHelper.getDataManager().saveEntity(project);
 	}

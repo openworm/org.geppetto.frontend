@@ -79,7 +79,7 @@ public class GeppettoManager implements IGeppettoManager
 {
 
 	private static Log logger = LogFactory.getLog(GeppettoManager.class);
-	
+
 	// these are the runtime projects for a
 	private Map<IGeppettoProject, RuntimeProject> projects = new LinkedHashMap<>();
 
@@ -241,10 +241,11 @@ public class GeppettoManager implements IGeppettoManager
 				// save Geppetto Model
 				URL url = new URL(project.getGeppettoModel().getUrl());
 				Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(url).toURI());
-				
+
 				// save Geppetto Scripts
 				// save each model inside GeppettoModel and save every file referenced inside every model
-				PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(getRuntimeProject(project).getActiveExperiment()), project);
+				PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(
+						getRuntimeProject(project).getActiveExperiment()), project);
 				getRuntimeProject(project).getGeppettoModel().accept(persistModelVisitor);
 				if(persistModelVisitor.getException() != null)
 				{
@@ -283,7 +284,7 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public IExperiment newExperiment(String requestId, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		IExperiment experiment = DataManagerHelper.getDataManager().newExperiment("New Experiment "+ (project.getExperiments().size() + 1), "", project);
+		IExperiment experiment = DataManagerHelper.getDataManager().newExperiment("New Experiment " + (project.getExperiments().size() + 1), "", project);
 		getRuntimeProject(project).populateNewExperiment(experiment);
 		return experiment;
 	}
@@ -297,10 +298,15 @@ public class GeppettoManager implements IGeppettoManager
 	public void deleteExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
 		IGeppettoProject project = experiment.getParentProject();
-		getRuntimeProject(project).closeExperiment(experiment);
-		project.getExperiments().remove(experiment);
+		if(getRuntimeProject(project).getRuntimeExperiment(experiment) != null)
+		{
+			getRuntimeProject(project).closeExperiment(experiment);
+		}
+
 		DataManagerHelper.getDataManager().deleteExperiment(experiment);
-		// TODO Need to make sure everything is getting cleared, results, aspect configurations, etc.
+		
+		project.getExperiments().remove(experiment);
+		DataManagerHelper.getDataManager().saveEntity(project);
 	}
 
 	/*

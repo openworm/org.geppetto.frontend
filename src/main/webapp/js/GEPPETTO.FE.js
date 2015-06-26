@@ -229,7 +229,7 @@ define(function(require) {
             			var simulatorConfig = simulatorConfigurations[config];
             			var index = experiments.indexOf(experiment);
             			GEPPETTO.Console.executeCommand(simulatorConfig["aspectInstancePath"]+
-            					'.downloadModel("NEURON");');
+            					'.downloadModel();');
             		}
         			
         			window.event.stopPropagation();

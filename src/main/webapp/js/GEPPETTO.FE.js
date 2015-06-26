@@ -105,8 +105,7 @@ define(function(require) {
             			//add class to make it clear it's active
             			$(this).addClass("activeExperiment");
             			if($(this).attr("rowType")=="main"){
-            				var activeIcon = $("#activeIcon-"+experiment.getId());
-            				activeIcon.remove();
+            				$("#activeIcon-"+experiment.getId()).hide();
             			}
             		}else{
             			//remove class from active experiment
@@ -179,19 +178,8 @@ define(function(require) {
                 	$('#experimentsTable tbody tr').each(function(){
                 		//id of row matches that of active experiment
                 		if (this.id != ("#"+experimentId)) {
-                			//Add active icons to rows where it has been removed after set active
-                			if($(this).attr("rowType")=="main"){
-                				var getActiveIcon = divIcons.find("#activeIcon-"+experimentId);
-                				var activeIcon = 
-                					$("<a class='activeIcon'>"+
-                							"<i class='fa fa-check-circle fa-lg' style='padding-right: 10px;'" +
-                					"rel='tooltip' title='Active Icon'></i></a>");
-                				activeIcon.attr("id","activeIcon-"+experimentId);
-                				var divIcons = $(this).find(".iconsDiv");
-                				if(getActiveIcon.length==0){
-                					activeIcon.prependTo(divIcons);
-                				}
-                			}
+                			var id = this.id.replace("#","");
+                			$("#activeIcon-"+id).show();
                 		}
                 	});
                 	

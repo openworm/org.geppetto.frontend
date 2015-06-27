@@ -225,10 +225,10 @@ define(function(require) {
 					maxHeight: 400,
 					resize: function(event, ui) {
 						if(ui.size.height > ($("#footerHeader").height()*.75)){
-							$("#experimentsOutput").height($("#footerHeader").height()*.75);
+							$("#experiments").height($("#footerHeader").height()*.75);
 							event.preventDefault();
 						}
-						$('#experimentsOutput').resize();
+						$('#experiments').resize();
 					}.bind(this)
 				});
 				

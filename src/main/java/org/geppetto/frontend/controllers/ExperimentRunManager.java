@@ -35,11 +35,11 @@ package org.geppetto.frontend.controllers;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,8 +74,6 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 
 	private Map<IUser, List<IExperiment>> queue;
 
-	private List<ExperimentRunThread> experimentRuns;
-
 	private GeppettoManager geppettoManager;
 
 	private volatile int reqId = 0;
@@ -107,8 +105,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 		if(instance == null)
 		{
 			instance = this;
-			queue = new LinkedHashMap<>();
-			experimentRuns = new ArrayList<>();
+			queue = new ConcurrentHashMap<>();
 			geppettoManager = new GeppettoManager();
 			try
 			{
@@ -190,10 +187,6 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			synchronized(this)
 			{
 				queue.get(user).remove(experiment);
-			}
-			synchronized(experimentRuns)
-			{
-				experimentRuns.add(experimentRun);
 			}
 		}
 		catch(Exception e)

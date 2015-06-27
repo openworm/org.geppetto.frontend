@@ -49,7 +49,7 @@ define(function(require) {
             GEPPETTO_VERSION: "geppetto_version",
             OBSERVER_MODE: "observer_mode_alert",
             READ_URL_PARAMS: "read_url_parameters",
-            RUN_SCRIPT: "run_script",
+            SCRIPT_FETCHED: "script_fetched",
             SERVER_AVAILABLE: "server_available",
             SERVER_UNAVAILABLE: "server_unavailable",
         };
@@ -103,8 +103,8 @@ define(function(require) {
             GEPPETTO.FE.observersAlert(GEPPETTO.Resources.OBSERVING_MODE, payload.alertMessage, payload.popoverMessage);
         };
 
-        messageHandler[messageTypes.RUN_SCRIPT] = function(payload){
-            GEPPETTO.ScriptRunner.runScript(payload.run_script);
+        messageHandler[messageTypes.SCRIPT_FETCHED] = function(payload){
+            GEPPETTO.ScriptRunner.runScript(payload.script_fetched);
         };
 
         //Simulation server became available

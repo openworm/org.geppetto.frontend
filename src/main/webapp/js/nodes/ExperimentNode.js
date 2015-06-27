@@ -54,6 +54,7 @@ define(function(require) {
 		maxSteps : null,
 		paused : false,
 		parameters  :null,
+		script : "",
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -71,6 +72,7 @@ define(function(require) {
 			this.simulatorConfigurations = {};
 			this.played = false;
 			this.parameters = new Array();
+			this.script=options.script;
 		},
 
 		/**
@@ -115,6 +117,30 @@ define(function(require) {
 		 */
 		getLastModified : function() {
 			return this.lastModified;
+		},
+		
+		/**
+		 * Gets the script associated with this expeirment
+		 *
+		 * @command ExperimentNode.getScript()
+		 * @returns {String} The script associated with this experiment
+		 *
+		 */
+		getScript : function() {
+			return this.script;
+		},
+		
+		
+		
+		/**
+		 * Sets the script of the node
+		 *
+		 * @command ExperimentNode.setScript()
+		 *
+		 */
+		setName : function(script) {
+			this.saveExperimentProperties({"script":script});
+			this.script = script;
 		},
 		
 		/**

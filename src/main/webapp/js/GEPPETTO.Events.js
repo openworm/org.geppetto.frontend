@@ -53,7 +53,9 @@
 			Experiment_running : "experiment:running",
 			Experiment_stop : "experiment:stop",
 			Experiment_update : "experiment:update",
-			Experiment_deleted : "experiment_deleted"
+			Experiment_deleted : "experiment_deleted",
+			Volatile_project_loaded:"project:volatile",
+			Project_persisted:"project:persisted"
 		};
 define(function(require) {
 	return function(GEPPETTO) {

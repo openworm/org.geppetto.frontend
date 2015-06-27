@@ -116,6 +116,7 @@ define(function(require) {
 						description : node.description,
 						lastModified : node.lastModified,
 						status : node.status,
+						script : node.script,
 						_metaType : GEPPETTO.Resources.EXPERIMENT_NODE,
 					});
 

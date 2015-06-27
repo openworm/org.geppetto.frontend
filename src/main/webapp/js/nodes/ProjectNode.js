@@ -46,6 +46,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		initializationTime : null,
 		name : "",
 		id : "",
+		persisted:true,
 		runTimeTree : {},
 
 		/**
@@ -210,6 +211,8 @@ define([ 'jquery', 'underscore', 'backbone',
 				//Keep going with load of simulation only if webgl container was created
 				if(webGLStarted) {
 					GEPPETTO.MessageSocket.send("load_project_from_url", projectURL);
+					GEPPETTO.trigger(Events.Volatile_project_loaded);
+					this.persisted=false;
 					this.initializationTime = new Date();
 					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
 					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);

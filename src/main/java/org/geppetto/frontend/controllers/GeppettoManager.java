@@ -247,11 +247,18 @@ public class GeppettoManager implements IGeppettoManager
 			{
 				if(getRuntimeProject(project).getActiveExperiment() != null)
 				{
+//					RuntimeProject rp=getRuntimeProject(project);
+//					projects.remove(project);
+					//the project will have a new id after saving it therefore we update the hashmap as the hashcode will be different
+					//since it's id based
+					DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
+//					projects.put(project, rp);
+//					for(rp.))
+					
 					// save Geppetto Model
 					URL url = new URL(project.getGeppettoModel().getUrl());
 					Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(url).toURI());
 
-					// save Geppetto Scripts
 					// save each model inside GeppettoModel and save every file referenced inside every model
 					PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(
 							getRuntimeProject(project).getActiveExperiment()), project);
@@ -264,7 +271,23 @@ public class GeppettoManager implements IGeppettoManager
 					String fileName = URLReader.getFileName(url);
 					String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
 					S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
-					DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
+
+					
+					// save Geppetto Scripts
+					for(IExperiment experiment:project.getExperiments())
+					{
+						if(experiment.getScript()!=null)
+						{
+							URL scriptURL = new URL(experiment.getScript());
+							Path localScript = Paths.get(URLReader.createLocalCopy(scriptURL).toURI());
+							String newScriptPath = "projects/" + Long.toString(project.getId()) + "/" + experiment.getId() + "/script.js";
+							S3Manager.getInstance().saveFileToS3(localScript.toFile(), newScriptPath);
+							experiment.setScript(S3Manager.getInstance().getURL(newScriptPath).toString());
+						}
+					}
+					DataManagerHelper.getDataManager().saveEntity(project);
+					
+					
 				}
 				else
 				{

@@ -48,7 +48,7 @@ public enum InboundMessages {
 	LOAD_EXPERIMENT("load_experiment"),
 	SIM("sim"),
 	GEPPETTO_VERSION("geppetto_version"),
-	RUN_SCRIPT("run_script"),
+	GET_SCRIPT("get_script"),
 	SET_WATCHED_VARIABLES("set_watch"),
 	GET_WATCH("get_watch"),
 	CLEAR_WATCHED_VARIABLES("clear_watch"),

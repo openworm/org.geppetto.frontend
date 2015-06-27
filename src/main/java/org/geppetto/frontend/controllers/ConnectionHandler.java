@@ -234,6 +234,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				String message = "{\"experimentId\":" + experimentID + "," + scene.substring(1);
 				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, message);
 				logger.info("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
+				
 			}
 			else
 			{
@@ -545,7 +546,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			String script = sb.toString();
 
-			websocketConnection.sendMessage(requestID, OutboundMessages.RUN_SCRIPT, script);
+			websocketConnection.sendMessage(requestID, OutboundMessages.SCRIPT_FETCHED, script);
 		}
 		catch(IOException e)
 		{
@@ -1052,6 +1053,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				case "description":
 				{
 					experiment.setDescription(properties.get(p));
+					break;
+				}
+				case "script":
+				{
+					experiment.setScript(properties.get(p));
 					break;
 				}
 				case "timeStep":

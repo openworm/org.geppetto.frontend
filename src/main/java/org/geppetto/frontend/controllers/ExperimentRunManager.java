@@ -34,7 +34,6 @@ package org.geppetto.frontend.controllers;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -109,9 +108,12 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			geppettoManager = new GeppettoManager();
 			try
 			{
-				loadExperiments();
-				timer = new Timer();
-				timer.schedule(new ExperimentRunChecker(), 0, 1000);
+				if(!DataManagerHelper.getDataManager().isDefault())
+				{
+					loadExperiments();
+					timer = new Timer("ExperimentRunChecker");
+					timer.schedule(new ExperimentRunChecker(), 0, 1000);
+				}
 			}
 			catch(GeppettoInitializationException | GeppettoExecutionException | MalformedURLException e)
 			{
@@ -119,8 +121,6 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			}
 		}
 	}
-
-
 
 	/*
 	 * (non-Javadoc)
@@ -203,23 +203,20 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	private void loadExperiments() throws GeppettoInitializationException, MalformedURLException, GeppettoExecutionException
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+
 		List<? extends IUser> users = dataManager.getAllUsers();
 		for(IUser user : users)
 		{
-			Collection<? extends IGeppettoProject> projects = dataManager.getGeppettoProjectsForUser(user.getLogin());
-			for(IGeppettoProject project : projects)
+			for(IGeppettoProject project : user.getGeppettoProjects())
 			{
-				// This could be either when the user decides to open a project or when the ExperimentsRunManager queues an Experiment
-				geppettoManager.loadProject("ERM" + getReqId(), project);
-				List<? extends IExperiment> experiments = dataManager.getExperimentsForProject(project.getId());
-				for(IExperiment e : experiments)
+				for(IExperiment e : project.getExperiments())
 				{
 					if(e.getStatus().equals(ExperimentStatus.RUNNING))
 					{
 						addExperimentToQueue(user, e, e.getStatus());
 					}
 				}
-				for(IExperiment e : experiments)
+				for(IExperiment e : project.getExperiments())
 				{
 					if(e.getStatus().equals(ExperimentStatus.QUEUED))
 					{
@@ -227,8 +224,8 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 					}
 				}
 			}
+			dataManager.saveEntity(user);
 		}
-
 	}
 
 	/**

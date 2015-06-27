@@ -187,7 +187,7 @@ define(function(require) {
 			 */
 			runScript: function(scriptURL) {
 
-				GEPPETTO.MessageSocket.send("run_script", scriptURL);
+				GEPPETTO.MessageSocket.send("get_script", scriptURL);
 
 				return GEPPETTO.Resources.RUNNING_SCRIPT;
 			},

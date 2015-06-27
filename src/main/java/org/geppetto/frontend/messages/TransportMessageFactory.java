@@ -134,8 +134,8 @@ public class TransportMessageFactory {
 			case GEPPETTO_VERSION:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GEPPETTO_VERSION.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
-			case RUN_SCRIPT:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.RUN_SCRIPT.toString(), (update!=null) ? update : EMPTY_STRING));
+			case SCRIPT_FETCHED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.SCRIPT_FETCHED.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SET_WATCHED_VARIABLES:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.SET_WATCHED_VARIABLES.toString(), (update!=null) ? update : EMPTY_STRING));

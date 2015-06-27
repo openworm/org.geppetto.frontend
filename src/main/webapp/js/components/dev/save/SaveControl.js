@@ -22,8 +22,12 @@ define(function(require) {
 
             var self = this;
 
-            GEPPETTO.on(Events.Project_loaded, function(){
-            	 self.setState({disableSave:false});
+            GEPPETTO.on(Events.Project_persisted, function(){
+                self.setState({disableSave:true});
+            });
+            
+            GEPPETTO.on(Events.Volatile_project_loaded, function(){
+                self.setState({disableSave:false});
             });
         },
 

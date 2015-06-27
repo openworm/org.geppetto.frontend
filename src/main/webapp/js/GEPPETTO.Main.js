@@ -80,7 +80,7 @@ define(function(require) {
 				//receives message from web worker
 	            this.statusWorker.onmessage = function (event) {
 	            	if(window.Project!=null || undefined){
-	            		if(window.Project.getId()!=-1){
+	            		if(window.Project.persisted && window.Project.getId()!=-1){
 	            			GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_STATUS, window.Project.id);
 	            		}
 	            	}

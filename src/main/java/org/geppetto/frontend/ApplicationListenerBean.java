@@ -32,19 +32,14 @@
  *******************************************************************************/
 package org.geppetto.frontend;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.geppetto.frontend.controllers.ExperimentRunManager;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 public class ApplicationListenerBean implements ApplicationListener<ContextRefreshedEvent>
 {
-	private static Log _logger = LogFactory.getLog(ApplicationListenerBean.class);
-
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event)
 	{
-		ExperimentRunManager.getInstance();
+		// DONT'DO ANYTHING THAT HAS TO DO WITH THE DATABASE HERE OR DATANUCLEUS BREAKS
 	}
 }

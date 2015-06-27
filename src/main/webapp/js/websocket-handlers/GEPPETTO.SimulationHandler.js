@@ -49,8 +49,7 @@ define(function(require) {
             PLAY_EXPERIMENT : "play_experiment",
             SET_WATCH_VARS: "set_watch_vars",
             CLEAR_WATCH: "clear_watch",
-            FIRE_SIM_SCRIPTS: "fire_sim_scripts",
-            experiment_OVER : "experiment_over",
+            EXPERIMENT_OVER : "experiment_over",
             GET_MODEL_TREE : "get_model_tree",
             GET_SIMULATION_TREE : "get_simulation_tree",
             SET_PARAMETERS : "set_parameters",
@@ -134,6 +133,11 @@ define(function(require) {
             GEPPETTO.SceneController.populateScene(window["Project"].runTimeTree); 
             
             GEPPETTO.trigger(Events.Experiment_loaded);
+            
+            if(window.Project.getActiveExperiment().getScript()!=undefined)
+        	{
+        		G.runScript(window.Project.getActiveExperiment().getScript());
+        	}
         };
         messageHandler[messageTypes.PLAY_EXPERIMENT] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update);
@@ -196,7 +200,8 @@ define(function(require) {
             var projectID = message.projectID;
             
             window.Project.id=parseInt(projectID);
-           
+            window.Project.persisted=true;
+            GEPPETTO.trigger(Events.Project_persisted);
             GEPPETTO.Console.log("The project has been persisted  [id="+ projectID + "].");        
         };
 
@@ -205,17 +210,7 @@ define(function(require) {
 
         };
 
-        messageHandler[messageTypes.FIRE_SIM_SCRIPTS] = function(payload) {
-            //Reads scripts received for the simulation
-            var scripts = JSON.parse(payload.get_scripts).scripts;
-
-            //make sure object isn't empty
-            if(!jQuery.isEmptyObject(scripts)) {
-                //run the received scripts
-                GEPPETTO.ScriptRunner.fireScripts(scripts);
-            }
-        };
-        
+       
         messageHandler[messageTypes.EXPERIMENT_DELETED] = function(payload) {
             var data = JSON.parse(payload.update);
 

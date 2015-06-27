@@ -5,12 +5,15 @@ define(function (require) {
 
     return React.createClass({
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
+        
+        popoverTitle: 'Persist project',
 
         onClick: function() {
             GEPPETTO.Console.executeCommand("Project.persist();");
         },
 
         componentDidMount: function() {
+
         },
 
         getDefaultProps: function() {

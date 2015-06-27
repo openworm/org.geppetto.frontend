@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class Application
 {
 
+	public Application()
+	{
+		super();
+	}
+
+	
 	@Autowired
 	private IGeppettoManager geppettoManager;
 

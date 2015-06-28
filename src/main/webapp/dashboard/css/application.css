@@ -80,6 +80,12 @@ code {
 	margin-right: 0;
 }
 
+.user {
+	color: #FF6700;
+	margin-top: 10px;
+	font-size: 18px;
+}
+
 .project-preview-tn {
 	width: 130px;
 	height: 130px;
@@ -211,7 +217,8 @@ dd {
 
 .circle {
 	position: relative;
-	width: 15px; height : 15px;
+	width: 15px;
+	height: 15px;
 	border-radius: 50%;
 	background: #ff6d00;
 	margin-top: 2px;
@@ -246,7 +253,7 @@ dd {
 	background: grey;
 }
 
-#SCROLLBARS /* Gmail style scrollbar */        
+#SCROLLBARS /* Gmail style scrollbar */         
 ::-webkit-scrollbar {
 	width: 12px
 }
@@ -425,6 +432,9 @@ body::-webkit-scrollbar-corner {
 	position: relative;
 	top: 50%;
 	transform: translateY(-50%);
+}
+.geppettoSymbolSel.selected{
+	border:0!important;
 }
 
 .icon {

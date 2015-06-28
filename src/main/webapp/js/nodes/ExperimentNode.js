@@ -138,7 +138,7 @@ define(function(require) {
 		 * @command ExperimentNode.setScript()
 		 *
 		 */
-		setName : function(script) {
+		setScript : function(script) {
 			this.saveExperimentProperties({"script":script});
 			this.script = script;
 		},

@@ -177,17 +177,10 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 				runtimeExperiment.populateSimulationTree(aspect);
 			}
 
-			ExperimentRunThread experimentRun = new ExperimentRunThread(experiment, runtimeExperiment, project, simulationCallbackListener);
-			experimentRun.addExperimentListener(this);
+			ExperimentRunThread experimentRun = new ExperimentRunThread(experiment, runtimeExperiment, project, simulationCallbackListener, this);
 			experimentRun.start();
 			experiment.setStatus(ExperimentStatus.RUNNING);
 
-			IUser user = getUserForExperiment(experiment);
-
-			synchronized(this)
-			{
-				queue.get(user).remove(experiment);
-			}
 		}
 		catch(Exception e)
 		{
@@ -211,6 +204,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			{
 				for(IExperiment e : project.getExperiments())
 				{
+					e.setParentProject(project);
 					if(e.getStatus().equals(ExperimentStatus.RUNNING))
 					{
 						addExperimentToQueue(user, e, e.getStatus());
@@ -273,7 +267,6 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	@Override
 	public void experimentRunDone(ExperimentRunThread experimentRun, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		experimentRun.removeExperimentListener(this);
 
 		RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
 		runtimeProject.closeExperiment(experiment);
@@ -317,14 +310,20 @@ class ExperimentRunChecker extends TimerTask
 		{
 			for(IUser user : queuedExperiments.keySet())
 			{
+				List<IExperiment> ran = new ArrayList<IExperiment>();
 				for(IExperiment e : queuedExperiments.get(user))
 				{
 					if(ExperimentRunManager.getInstance().checkExperiment(e))
 					{
 						logger.info("Experiment queued found " + e.getName());
 						ExperimentRunManager.getInstance().runExperiment(e);
+						ran.add(e);
 					}
 
+				}
+				for(IExperiment ranExperiment : ran)
+				{
+					queuedExperiments.get(user).remove(ranExperiment);
 				}
 			}
 		}

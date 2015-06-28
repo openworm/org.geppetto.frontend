@@ -86,15 +86,14 @@ public class GeppettoProjectController
 	}
 
 	@RequestMapping(value = "/dashboard/geppettoproject/delete/{id}")
-	public @ResponseBody
-	Object deleteGeppettoProject(@PathVariable("id") int id)
+	public String deleteGeppettoProject(@PathVariable("id") int id)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
 			dataManager.deleteGeppettoProject(id, geppettoManager.getUser());
 		}
-		return null;
+		return "redirect:/dashboard";
 	}
 
 }

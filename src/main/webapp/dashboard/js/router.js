@@ -80,6 +80,20 @@ define([
 
     var initialize = function () {
 
+        Handlebars.registerHelper('shorten', function (text) {
+    	    var ret = text;
+    	    var maxLength=70;
+    	    if (ret.length > maxLength) {
+    	        ret = ret.substr(0,maxLength-3) + "...";
+    	    }
+    	    return ret;
+        });
+
+    	
+        Handlebars.registerHelper('printTime', function (datems) {
+            return new Date(datems).toString();
+        });
+    	
         Handlebars.registerHelper('ifEquals', function (v1, v2, options) {
             if (v1 == v2) {
                 return options.fn(this);

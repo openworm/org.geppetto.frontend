@@ -13,7 +13,7 @@ body {
 .footer {
 	background-color: #f5f5f5;
 	bottom: 0;
-	height: 20vh;
+	height: 10vh;
 	min-height: 20px;
 	position: absolute;
 	width: 100%;
@@ -62,7 +62,7 @@ code {
 
 .projects {
 	overflow: auto;
-	height: 80vh;
+	height: 85vh;
 }
 
 #page {
@@ -131,8 +131,8 @@ code {
 .peoject-heading {
 	margin-top: 10px;
 	margin-bottom: 15px;
-	font-size:25px;
-	font-weight:400;
+	font-size: 25px;
+	font-weight: 400;
 }
 
 .experiments {
@@ -141,25 +141,62 @@ code {
 
 .instance-path {
 	text-align: left !important;
-	width: 90%;
-	font-weight:200;
+	font-weight: 200;
 }
 
-.menuHeader
-{
-	margin-bottom: 7px;
-	font-weight:400;
-	color:#004252;
+.firsticon {
+	position: absolute;
+	right: 0px;
 }
+
+.secondicon {
+	position: absolute;
+	right: 30px;
+}
+
+.firsticontop {
+	position: absolute;
+	right: 10px;
+}
+
+.secondicontop {
+	position: absolute;
+	right: 50px;
+}
+
+.menuHeader {
+	margin-top: 3px;
+	margin-bottom: 3px;
+	font-weight: 400;
+	color: #004252;
+}
+
+.paramvalue {
+	font-weight: 400;
+	color: #ff6d00;
+	text-align: right;
+}
+
+.projectnametop {
+	color: #ff6d00;
+}
+
+.menuOrange {
+	margin-top: 3px;
+	margin-bottom: 3px;
+	font-weight: 400;
+	color: #ff6d00;
+}
+
 dt {
 	margin-bottom: 7px;
 	margin-right: 10px;
-	width: 450px!important;
+	width: 450px !important;
 }
 
 dd {
 	margin-bottom: 7px;
-	font-weight:400;
+	font-weight: 400;
 	text-align: right;
 }
 
@@ -174,11 +211,11 @@ dd {
 
 .circle {
 	position: relative;
-	width: 0.7em;
-	height: 0.7em;
+	width: 15px; height : 15px;
 	border-radius: 50%;
 	background: #ff6d00;
 	margin-top: 2px;
+	height: 15px;
 }
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover
@@ -209,7 +246,7 @@ dd {
 	background: grey;
 }
 
-#SCROLLBARS /* Gmail style scrollbar */       
+#SCROLLBARS /* Gmail style scrollbar */        
 ::-webkit-scrollbar {
 	width: 12px
 }
@@ -407,14 +444,13 @@ a:hover {
 }
 
 *.unselectable {
-   -moz-user-select: -moz-none;
-   -khtml-user-select: none;
-   -webkit-user-select: none;
-
-   /*
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	/*
      Introduced in IE 10.
      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
    */
-   -ms-user-select: none;
-   user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }

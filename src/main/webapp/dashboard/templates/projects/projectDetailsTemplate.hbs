@@ -2,19 +2,19 @@
     <div class="peoject-heading">
         <div class="col-md-10 projectnametop">{{name}}</div>
         <a href="{{projectUrl}}" target="_blank"><i class="fa fa-folder-open fa-2 icon firsticontop"></i></a>
-    	<a href="{{deleteUrl}}"><i class="fa fa-trash-o fa-2 icon secondicontop"></i></a>
+    	<a href="{{deleteUrl}}" onclick="return confirm('Are you sure you want to delete the project?')"><i class="fa fa-trash-o fa-2 icon secondicontop"></i></a>
     </div>
 	<br><br>
     <div role="tabpanel">
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#details" aria-controls="details" role="tab" data-toggle="tab">Details</a></li>
-            <li role="presentation"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab">Experiments</a></li>
+            <!--<li role="presentation" ><a href="#details" aria-controls="details" role="tab" data-toggle="tab">Details</a></li>-->
+            <li role="presentation" class="active"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-flask"/> Experiments</a></li>
         </ul>
 
         <!-- Tab panes -->
         <div class="tab-content experiments">
-            <div role="tabpanel" class="tab-pane active" id="details">
+            <div role="tabpanel" class="tab-pane" id="details">
                 <dl class="dl-horizontal">
                 
 
@@ -22,7 +22,7 @@
             </div>
 
 
-            <div role="tabpanel" class="tab-pane" id="experiments">
+            <div role="tabpanel" class="tab-pane active" id="experiments">
                 <div class="panel-group collapse-striped" id="accordion" role="tablist" aria-multiselectable="true">
                 {{#each experiments}}
                     <div class="panel panel-default experiment-panel-heading">
@@ -70,7 +70,7 @@
                     	            {{/each}}
                     	            <div class="row menuHeader col-md-12" title="These are the variables that the experiment is watching">Watched Variables</div>
                                     {{#each watchedVariables}}
-                                        <div class="row instance-path col-md-12" title={{instancePath}}>{{instancePath}}</div>
+                                        <div class="row instance-path col-md-12" title={{instancePath}}>{{shorten instancePath}}</div>
                                     {{/each}}
                     	            <div class="row menuHeader col-md-12" title="These are the simulations of the experiment">Aspects</div>
                     	            

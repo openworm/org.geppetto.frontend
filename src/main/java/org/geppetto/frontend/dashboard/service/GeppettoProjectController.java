@@ -107,7 +107,7 @@ public class GeppettoProjectController
 						{
 							URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.GEPPETTO_RECORDING, e, e.getParentProject()));
 							Zipper zipper = new Zipper();
-							zipper.getZipFromFile(result, path + ac.getAspect().getInstancePath() + ".zip");
+							zipper.getZipFromFile(path + ac.getAspect().getInstancePath() + ".zip", result);
 						}
 						Zipper zipper = new Zipper();
 						// the whole folder with all the zipped results

@@ -66,6 +66,7 @@ import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.simulation.ResultsFormat;
+import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -995,7 +996,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 				// Zip folder
 				Zipper zipper=new Zipper();
-				Path path = zipper.getZipFromFile(aspectPath, url);
+				Path path = zipper.getZipFromFile(aspectPath + "-" + URLReader.getFileName(url) , url);
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);

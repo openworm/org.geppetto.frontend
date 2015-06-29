@@ -51,6 +51,7 @@ import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.data.model.ISimulationResult;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
@@ -493,7 +494,25 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public URL downloadResults(String aspectPath, ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadResults(aspectPath, resultsFormat, dropboxService);
+		logger.info("Downloading results for " + aspectPath + " in format " + resultsFormat.toString());
+		for(ISimulationResult result : experiment.getSimulationResults())
+		{
+			if(result.getAspect().getInstancePath().equals(aspectPath))
+			{
+				if(result.getResult().getType().toString().equals(resultsFormat.toString()))
+				{
+					try
+					{
+						return URLReader.getURL(result.getResult().getUrl());
+					}
+					catch(Exception e)
+					{
+						throw new GeppettoExecutionException(e);
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public IUser getUser()

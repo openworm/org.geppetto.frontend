@@ -79,6 +79,8 @@ define([
     });
 
     var initialize = function () {
+    	
+    	
 
         Handlebars.registerHelper('shorten', function (text) {
     	    var ret = text;

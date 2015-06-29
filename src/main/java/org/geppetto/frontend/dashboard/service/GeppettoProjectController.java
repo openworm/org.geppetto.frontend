@@ -32,14 +32,23 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 
+import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
+import org.geppetto.core.simulation.ResultsFormat;
+import org.geppetto.core.utilities.Zipper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,8 +62,7 @@ public class GeppettoProjectController
 	private IGeppettoManager geppettoManager;
 
 	@RequestMapping("/dashboard/geppettoproject/{id}")
-	public @ResponseBody
-	IGeppettoProject getGeppettoProject(@PathVariable("id") int id)
+	public @ResponseBody IGeppettoProject getGeppettoProject(@PathVariable("id") int id)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
@@ -63,22 +71,37 @@ public class GeppettoProjectController
 		}
 		return null;
 	}
-	
-	@RequestMapping("/dashboard/geppettoproject/{projectId}/experiments/{experimentId}/downloadResults")
-	public @ResponseBody
-	Object downloadExperimentResults(@PathVariable("projectId") int projectId,@PathVariable("experimentId") int experimentId)
+
+	@RequestMapping(value = "/dashboard/geppettoproject/{projectId}/experiments/{experimentId}/downloadResults", produces = "application/zip")
+	@ResponseBody
+	public FileSystemResource downloadExperimentResults(@PathVariable("projectId") int projectId, @PathVariable("experimentId") int experimentId) throws GeppettoExecutionException, IOException
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
 			List<? extends IExperiment> experiments = dataManager.getExperimentsForProject(projectId);
-			IExperiment theExperiment;
-			for(IExperiment e : experiments){
+			for(IExperiment e : experiments)
+			{
 				if(e.getId() == experimentId)
 				{
-					// The experiment is found
-					theExperiment = e;
-					break;
+					String directory = System.getProperty("user.dir");
+					String tmp = File.separator + "geppettoTmp" + File.separator;
+					String path = "results" + File.separator + "p" + File.separator + projectId + File.separator + "e" + File.separator
+							+ experimentId + File.separator;
+					File outputFolder = new File(directory + tmp + path);
+					outputFolder.mkdirs();
+					for(IAspectConfiguration ac : e.getAspectConfigurations())
+					{
+						URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.GEPPETTO_RECORDING, e, e.getParentProject()));
+						Zipper zipper = new Zipper();
+						zipper.getZipFromFile(result, path + ac.getAspect().getInstancePath() + ".zip");
+
+					}
+					Zipper zipper = new Zipper();
+					// the whole folder with all the zipped results
+					Path finalZip = zipper.getZipFromDirectory(outputFolder);
+					return new FileSystemResource(finalZip.toFile());
+
 				}
 			}
 		}

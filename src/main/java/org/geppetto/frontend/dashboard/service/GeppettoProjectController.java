@@ -76,34 +76,50 @@ public class GeppettoProjectController
 	@ResponseBody
 	public FileSystemResource downloadExperimentResults(@PathVariable("projectId") int projectId, @PathVariable("experimentId") int experimentId) throws GeppettoExecutionException, IOException
 	{
-		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-		if(dataManager != null)
+		if(geppettoManager.getUser() != null)
 		{
-			List<? extends IExperiment> experiments = dataManager.getExperimentsForProject(projectId);
-			for(IExperiment e : experiments)
+			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+			if(dataManager != null)
 			{
-				if(e.getId() == experimentId)
+				boolean authorized = dataManager.isDefault();
+				for(IGeppettoProject userProjects : geppettoManager.getUser().getGeppettoProjects())
 				{
-					String directory = System.getProperty("user.dir");
-					String tmp = File.separator + "geppettoTmp" + File.separator;
-					String path = "results" + File.separator + "p" + File.separator + projectId + File.separator + "e" + File.separator
-							+ experimentId + File.separator;
-					File outputFolder = new File(directory + tmp + path);
-					outputFolder.mkdirs();
-					for(IAspectConfiguration ac : e.getAspectConfigurations())
+					if(userProjects.getId() == projectId)
 					{
-						URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.GEPPETTO_RECORDING, e, e.getParentProject()));
-						Zipper zipper = new Zipper();
-						zipper.getZipFromFile(result, path + ac.getAspect().getInstancePath() + ".zip");
-
+						authorized = true;
 					}
-					Zipper zipper = new Zipper();
-					// the whole folder with all the zipped results
-					Path finalZip = zipper.getZipFromDirectory(outputFolder);
-					return new FileSystemResource(finalZip.toFile());
-
+				}
+				if(!authorized)
+				{
+					throw new GeppettoExecutionException("Logged in user is not authorized to download results for project " + projectId);
+				}
+				List<? extends IExperiment> experiments = dataManager.getExperimentsForProject(projectId);
+				for(IExperiment e : experiments)
+				{
+					if(e.getId() == experimentId)
+					{
+						String directory = System.getProperty("user.dir");
+						String tmp = File.separator + "geppettoTmp" + File.separator;
+						String path = "results" + File.separator + "p" + File.separator + projectId + File.separator + "e" + File.separator + experimentId + File.separator;
+						File outputFolder = new File(directory + tmp + path);
+						outputFolder.mkdirs();
+						for(IAspectConfiguration ac : e.getAspectConfigurations())
+						{
+							URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.GEPPETTO_RECORDING, e, e.getParentProject()));
+							Zipper zipper = new Zipper();
+							zipper.getZipFromFile(result, path + ac.getAspect().getInstancePath() + ".zip");
+						}
+						Zipper zipper = new Zipper();
+						// the whole folder with all the zipped results
+						Path finalZip = zipper.getZipFromDirectory(outputFolder);
+						return new FileSystemResource(finalZip.toFile());
+					}
 				}
 			}
+		}
+		else
+		{
+			throw new GeppettoExecutionException("A user must be logged in");
 		}
 		return null;
 	}

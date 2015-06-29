@@ -578,7 +578,7 @@ define(function(require) {
 			 * @returns  {Array} Returns list of all entities selected
 			 */
 			getSelection : function() {
-				var selection = this.traverseSelection(this.runTimeTree);
+				var selection = this.traverseSelection(window.Project.runTimeTree);
 				
 				return selection;
 			},

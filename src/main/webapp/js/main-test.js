@@ -124,7 +124,10 @@ jqueryLib.push("pako");
 
 require(jqueryLib, function($) {
 
+	var ProjectNode = require('nodes/ProjectNode');
 	$(function() {
+		var project = new ProjectNode({name : "Project", id : -1});
+		window.Project = project;
 		window.GEPPETTO = require('geppetto');
 		//Alias G, Simulation, and help() to global vars for easy access
 		window.G = GEPPETTO.G;

@@ -170,7 +170,7 @@ define(function(require) {
 												.hasOwnProperty(selected)
 												|| VARS.splitMeshes
 														.hasOwnProperty(selected)) {
-							GEPPETTO.Simulation.unSelectAll();
+							GEPPETTO.G.unSelectAll();
 											GEPPETTO.Console
 													.executeCommand(selected
 															+ '.select()');

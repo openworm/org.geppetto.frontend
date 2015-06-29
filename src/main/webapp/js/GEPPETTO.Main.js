@@ -218,7 +218,7 @@ define(function(require) {
 					visibleExperiments = false;
 				});
 				
-				$("#experimentsOutput").resizable({
+				$("#experiments").resizable({
 					handles: 'n',
 					minHeight: 100,
 					autoHide: true,
@@ -229,6 +229,7 @@ define(function(require) {
 							event.preventDefault();
 						}
 						$('#experiments').resize();
+						$("#experiments").get(0).style.top = "0px";
 					}.bind(this)
 				});
 				

@@ -50,6 +50,7 @@ import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.manager.IGeppettoManager;
+import org.geppetto.core.utilities.URLReader;
 import org.geppetto.frontend.messages.GeppettoTransportMessage;
 import org.geppetto.frontend.messages.InboundMessages;
 import org.geppetto.frontend.messages.OutboundMessages;
@@ -187,11 +188,10 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 
 	/**
 	 * Receives message(s) from client.
-	 * 
-	 * @throws JsonProcessingException
+	 * @throws IOException 
 	 */
 	@Override
-	protected void onTextMessage(CharBuffer message) throws JsonProcessingException
+	protected void onTextMessage(CharBuffer message) throws IOException
 	{
 		String msg = message.toString();
 
@@ -286,7 +286,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				URL url = null;
 				try
 				{
-					url = new URL(urlString);
+					url = URLReader.getURL(urlString);
 
 					connectionHandler.sendScriptData(requestID, url, this);
 

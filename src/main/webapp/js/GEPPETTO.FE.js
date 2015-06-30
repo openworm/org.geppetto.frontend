@@ -445,7 +445,6 @@ define(function(require) {
         		
         		var tr = GEPPETTO.FE.createExperimentRow(experiment);
         		tr.prependTo(experimentsTable);
-        		tr.addClass("activeExperiment");
         			
         		$('#experimentsTable tbody tr').each(function(){
         			if (this.id == ("#"+experiment.getId())) {
@@ -454,6 +453,9 @@ define(function(require) {
         			//remove class from active experiment
         			$(this).removeClass("activeExperiment");
         		});
+        		
+        		tr.addClass("activeExperiment");
+        		GEPPETTO.FE.handleExperimentsTableControls();
         		
         		this.nth++;
             },

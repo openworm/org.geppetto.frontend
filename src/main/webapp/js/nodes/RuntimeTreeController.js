@@ -293,6 +293,9 @@ define(function(require) {
 				 */
 				populateAspectSimulationTree : function(aspectInstancePath, simulationTree){
 					var aspect= GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, aspectInstancePath);
+					
+					//Clear Simulation Tree
+					aspect.SimulationTree.children = new Array();
 
 					//populate model tree with server nodes
 					GEPPETTO.NodeFactory.createAspectSimulationTree(aspect.SimulationTree, simulationTree);

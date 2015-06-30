@@ -774,7 +774,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	private void error(Exception e, String errorMessage)
 	{
 		String jsonExceptionMsg = "";
-		jsonExceptionMsg = e.getCause() == null ? e.getMessage() : e.toString();
+		if(e!=null){
+			jsonExceptionMsg = e.getCause() == null ? e.getMessage() : e.toString();
+		}
 		String jsonErrorMsg = errorMessage == null ? "" : errorMessage;
 		String error = "{ \"error_code\": \"" + GeppettoErrorCodes.GENERIC + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg + "\"}";
 		logger.error(errorMessage, e);

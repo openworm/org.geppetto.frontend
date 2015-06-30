@@ -140,17 +140,17 @@ define(function(require) {
 						
 						//look on the simulation selection options and perform necessary
 						//operations
-						if(Simulation.getSelectionOptions().show_inputs){
+						if(G.getSelectionOptions().show_inputs){
 							this.showInputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().show_outputs){
+						if(G.getSelectionOptions().show_outputs){
 							this.showOutputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().draw_connection_lines){
+						if(G.getSelectionOptions().draw_connection_lines){
 							this.showConnectionLines(true);
 						}
-						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(false);
+						if(G.getSelectionOptions().hide_not_selected){
+							G.showUnselected(false);
 						}
 						// Notify any widgets listening that there has been a
 						// changed to selection
@@ -172,7 +172,7 @@ define(function(require) {
 				unselect : function() {
 					var message;
 					
-					Simulation.showUnselected(false);
+					G.showUnselected(false);
 
 					if (this.selected) {
 						message = GEPPETTO.Resources.UNSELECTING_ENTITY
@@ -189,7 +189,7 @@ define(function(require) {
 						
 						//don't apply ghost effect to meshes if nothing is left selected after
 						//unselecting this entity
-						if(Simulation.getSelection().length ==0){
+						if(G.getSelection().length ==0){
 							GEPPETTO.SceneController.setGhostEffect(false);
 						}
 						//update ghost effect after unselection of this entity
@@ -199,17 +199,17 @@ define(function(require) {
 				
 						//look on the simulation selection options and perform necessary
 						//operations
-						if(Simulation.getSelectionOptions().show_inputs){
+						if(G.getSelectionOptions().show_inputs){
 							this.showInputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().show_outputs){
+						if(G.getSelectionOptions().show_outputs){
 							this.showOutputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().draw_connection_lines){
+						if(G.getSelectionOptions().draw_connection_lines){
 							this.showConnectionLines(false);
 						}
-						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(false);
+						if(G.getSelectionOptions().hide_not_selected){
+							G.showUnselected(false);
 						}
 					} else {
 						message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
@@ -374,7 +374,7 @@ define(function(require) {
 						
 						if(connection.getType() == GEPPETTO.Resources.INPUT_CONNECTION){
 							var entity = 
-								GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, connection.getEntityInstancePath());
+								GEPPETTO.Utility.deepFind(window.Project.runTimeTree, connection.getEntityInstancePath());
 							
 							paths = paths.concat(this.getAspectPaths(entity));
 						}
@@ -428,7 +428,7 @@ define(function(require) {
 						var connection = this.getConnections()[c];
 						
 						var entity = 
-							GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, connection.getEntityInstancePath());
+							GEPPETTO.Utility.deepFind(window.Project.runTimeTree, connection.getEntityInstancePath());
 						
 						var paths = this.getAspectPaths(entity);
 						
@@ -471,7 +471,7 @@ define(function(require) {
 						
 						if(connection.getType() == GEPPETTO.Resources.OUTPUT_CONNECTION){
 							var entity = 
-								GEPPETTO.Utility.deepFind(GEPPETTO.Simulation.runTimeTree, connection.getEntityInstancePath());
+								GEPPETTO.Utility.deepFind(window.Project.runTimeTree, connection.getEntityInstancePath());
 							
 							paths = paths.concat(this.getAspectPaths(entity));
 						}

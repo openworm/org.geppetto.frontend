@@ -80,7 +80,8 @@ define(function(require) {
             var experiment = JSON.parse(payload.experiment_created);
 
             var newExperiment = GEPPETTO.NodeFactory.createExperimentNode(experiment);
-            window.Project.getExperiments().push(newExperiment);                   
+            window.Project.getExperiments().push(newExperiment);
+            newExperiment.setParent(window.Project);
             GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
             
             GEPPETTO.FE.newExperiment(newExperiment);

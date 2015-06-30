@@ -146,17 +146,17 @@ define(function(require) {
 
 						//look on the simulation selection options and perform necessary
 						//operations
-						if(Simulation.getSelectionOptions().show_inputs){
+						if(G.getSelectionOptions().show_inputs){
 							this.getParent().showInputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().show_outputs){
+						if(G.getSelectionOptions().show_outputs){
 							this.getParent().showOutputConnections(true);
 						}
-						if(Simulation.getSelectionOptions().draw_connection_lines){
+						if(G.getSelectionOptions().draw_connection_lines){
 							this.getParent().showConnectionLines(true);
 						}
-						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(true);
+						if(G.getSelectionOptions().hide_not_selected){
+							G.showUnselected(true);
 						}
 						//signal selection has changed in simulation
 						GEPPETTO.trigger(Events.Select);
@@ -175,7 +175,7 @@ define(function(require) {
 				 */
 				unselect : function() {
 					var message;
-					Simulation.showUnselected(false);
+					G.showUnselected(false);
 					if (this.selected) {
 						message = GEPPETTO.Resources.UNSELECTING_ASPECT
 								+ this.instancePath;
@@ -190,7 +190,7 @@ define(function(require) {
 
 						//don't apply ghost effect to meshes if nothing is left selected after
 						//unselecting this entity
-						if(Simulation.getSelection().length ==0){
+						if(G.getSelection().length ==0){
 							GEPPETTO.SceneController.setGhostEffect(false);
 						}
 						//update ghost effect after unselection of this entity
@@ -200,17 +200,17 @@ define(function(require) {
 
 						//look on the simulation selection options and perform necessary
 						//operations
-						if(Simulation.getSelectionOptions().show_inputs){
+						if(G.getSelectionOptions().show_inputs){
 							this.getParent().showInputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().show_outputs){
+						if(G.getSelectionOptions().show_outputs){
 							this.getParent().showOutputConnections(false);
 						}
-						if(Simulation.getSelectionOptions().draw_connection_lines){
+						if(G.getSelectionOptions().draw_connection_lines){
 							this.getParent().showConnectionLines(false);
 						}
-						if(Simulation.getSelectionOptions().hide_not_selected){
-							Simulation.showUnselected(false);
+						if(G.getSelectionOptions().hide_not_selected){
+							G.showUnselected(false);
 						}
 
 						//trigger event that selection has been changed

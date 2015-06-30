@@ -51,6 +51,13 @@ define(function(require) {
 		 */
 		GEPPETTO.G = {
 			listeners:[],
+			selectionOptions : {
+				show_inputs : true,
+				show_outputs : true,
+				draw_connection_lines : true,
+				hide_not_selected : false
+			},
+			highlightedConnections : [],
 			addWidget: function(type) {
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
 				return newWidget;
@@ -494,8 +501,121 @@ define(function(require) {
 				//TODO: things should be VisualizationTree centric instead of aspect centric...  
 		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
 		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0].getValue()) : watchedNode.getTimeSeries()[0].getValue());});
-			}
+			},
 
+			/**
+			 * Sets options that happened during selection of an entity. For instance, 
+			 * user can set things that happened during selection as if connections inputs and outputs are shown,
+			 * if connection lines are drawn and if other entities that were not selected are still visible.
+			 * 
+			 * @param {Object} options - New set of options for selection process
+			 */
+			setOnSelectionOptions : function(options){
+				if(options.show_inputs != null){
+					this.selectionOptions.show_inputs = options.show_inputs;
+				}
+				if(options.show_outputs != null){
+					this.selectionOptions.show_outputs = options.show_outputs;
+				}
+				if(options.draw_connection_lines != null){
+					this.selectionOptions.draw_connection_lines = options.draw_connection_lines;
+				}
+				if(options.hide_not_selected != null){
+					this.selectionOptions.hide_not_selected = options.hide_not_selected;
+				}
+			},
+			
+			/**
+			 * Options set for the selection event, turning on/off connections and lines.
+			 * 
+			 * @returns {Object} Options for selection.
+			 */
+			getSelectionOptions : function(){
+				return this.selectionOptions;
+			},
+			
+			/**
+			 * Unselects all selected entities
+			 * 
+			 * @command Simulation.unSelectAll()
+			 */
+			unSelectAll : function(){
+				var selection = this.getSelection();
+				if(selection.length > 0){
+					for(var key in selection){
+						var entity = selection[key];
+						entity.unselect();
+					}
+				}
+				
+				return GEPPETTO.Resources.UNSELECT_ALL;
+			},
+			
+			/**
+			 * Show unselected entities, leaving selected one(s) visible.
+			 * 
+			 * @param {boolean} mode - Toggle flag for showing unselected entities.
+			 */
+			showUnselected : function(mode){
+				var selection = this.getSelection();
+				var visible = {};
+				for(var e in selection){
+					var entity = selection[e];
+					var connections = entity.getConnections();
+					for(var c in connections){
+						var con = connections[c];
+						visible[con.getEntityInstancePath()] = "";
+					}
+				}
+				this.toggleUnSelected(this.runTimeTree, mode,visible);
+			},
+			
+			/**
+			 *
+			 * Outputs list of commands with descriptions associated with the Simulation object.
+			 *
+			 * @command GEPPETTO.Simulation.getSelection()
+			 * @returns  {Array} Returns list of all entities selected
+			 */
+			getSelection : function() {
+				var selection = this.traverseSelection(window.Project.runTimeTree);
+				
+				return selection;
+			},
+
+			/**
+			 * Unhighlight all highlighted connections
+			 * 
+			 * @command Simulation.unHighlightAll()
+			 */
+			unHighlightAll : function(){
+				for(var hc in this.highlightedConnections){
+					this.highlightedConnections[hc].highlight(false);
+				}
+				
+				return GEPPETTO.Resources.HIGHLIGHT_ALL;
+			},
+			
+			/**
+			 * Helper method that traverses through run time tree looking for selected 
+			 * entities.
+			 */
+			traverseSelection : function(entities){
+				var selection = new Array();
+				for(var e in entities){
+					var entity = entities[e];
+					if(entity.selected){
+						if(entity.getEntities().length==0){
+							selection[selection.length] = entity;
+						}
+					}
+					if(entity.getEntities().length >0){
+						selection = selection.concat(this.traverseSelection(entity.getEntities()));
+					}
+				}
+
+				return selection;
+			},
 		};
 	};
 });

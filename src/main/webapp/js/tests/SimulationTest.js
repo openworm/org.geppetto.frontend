@@ -34,8 +34,8 @@ define(function(require) {
 
 	var run = function() {		
 		
-		module("Test C302 Simulation");
-		asyncTest("Test C302 Network", function() {
+		module("Test Project 1 - SingleCompononetHH");
+		test("Test Project 1 - SingleComponentHH", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var initializationTime;
 			var handler = {
@@ -45,66 +45,91 @@ define(function(require) {
 						// Switch based on parsed incoming message type
 						switch(parsedServerMessage.type) {
 						//Simulation has been loaded and model need to be loaded
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.LOAD_MODEL:
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
 							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
-							var scene = JSON.parse(payload.update).scene;
-
-							GEPPETTO.RuntimeTreeController.createRuntimeTree(scene);
-
-							var passTimeTest = false;
-							if(time < 10){
-								passTimeTest = true;
-							}
-
-							equal(passTimeTest,true, "Simulation loaded within time limit: " + time);
-							notEqual(c302,null,"Entities checked");
-							equal(c302.getChildren().length,300, "C302 Children checked");
-							equal(c302.getAspects().length,1, "Aspects checked");
-							equal(jQuery.isEmptyObject(c302.electrical.VisualizationTree),false, "Test Visualization at load");
-							equal(jQuery.isEmptyObject(c302.electrical.ModelTree),false, "Test Model tree at load");
-							equal(jQuery.isEmptyObject(c302.electrical.SimulationTree),false, "Test Simulation tree at load");							
-							equal(c302.ADAL_0.getConnections().length,31, "ADAL_0 connections check");
-							Simulation.setSimulationLoaded();
+							 var project = JSON.parse(payload.project_loaded);
+							window.Project = GEPPETTO.NodeFactory.createProjectNode(project);          
+					        GEPPETTO.trigger(Events.Project_loaded);
+							equal(window.Project.getId(),1, "Project ID checked");
 							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.FIRE_SIM_SCRIPTS:
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
-
-							//Reads scripts received for the simulation
-							var scripts = JSON.parse(payload.get_scripts).scripts;
-
-							//make sure object isn't empty
-							if(!jQuery.isEmptyObject(scripts)) {
-								//run the received scripts
-								GEPPETTO.ScriptRunner.fireScripts(scripts);
-							}
-							break;
-							
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SIMULATION_STARTED:
-							 this.startRequestID = parsedServerMessage.requestID;
-							 break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.RUN_SCRIPT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.ScriptRunner.runScript(payload.run_script);
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SCENE_UPDATE:
-							if(parsedServerMessage.requestID == this.startRequestID){
-								if(!this.checkUpdate2){
-									this.checkUpdate2 = true;
-
-									var payload = JSON.parse(parsedServerMessage.data);
-									var scene = JSON.parse(payload.update).scene;
-
-									GEPPETTO.RuntimeTreeController.updateRuntimeTree(scene);
-									
-									notEqual(c302.ADAL_0.electrical.SimulationTree.getChildren(),null, "ADAL_0 Simulation tree check after udpate");
-									notEqual(c302.ADAR_0.electrical.SimulationTree.getChildren(),null, "ADAR_0 Simulation tree check after udpate");
-									notEqual(c302.BDUR_0.electrical.SimulationTree.getChildren(),null, "BDUR_0 Simulation tree check after udpate");
-									notEqual(c302.I1R_0.electrical.SimulationTree.getChildren(),null, "I1R_0 Simulation tree check after udpate");
-									notEqual(c302.I2L_0.electrical.SimulationTree.getChildren(),null, "I2L_0 Simulation tree check after udpate");
-									notEqual(c302.PVDR_0.electrical.SimulationTree.getChildren(),null, "PVDR_0 Simulation tree check after udpate");
-									start();
+							var message=JSON.parse(payload.experiment_loaded);
+				        	var jsonRuntimeTree = message.scene;
+				        	var experimentId=message.experimentId;
+				        	for(var experiment in window.Project.getExperiments())
+							{
+								if(window.Project.getExperiments()[experiment].getId()==experimentId)
+								{
+									window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
+									break;
 								}
+							}
+				        	GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+				        	equal(window.Project.getActiveExperiment().getId(),1,
+				        		"Experiment id of loaded project chekced");
+							start();
+				        	break;
+					}
+					}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			window.Project.loadFromID("1");
+			initializationTime = new Date();	
+		});
+
+		module("New experiment");
+		test("New experiment", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							var project = JSON.parse(payload.project_loaded);
+							window.Project = GEPPETTO.NodeFactory.createProjectNode(project);          
+							GEPPETTO.trigger(Events.Project_loaded);
+							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
+							equal(window.Project.getId(),1, "Project loaded ID checked");
+							window.Project.newExperiment();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_CREATED:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var experiment = JSON.parse(payload.experiment_created);
+							var newExperiment = GEPPETTO.NodeFactory.createExperimentNode(experiment);
+							window.Project.getExperiments().push(newExperiment); 
+							newExperiment.setParent(window.Project);
+							equal(window.Project.getExperiments()[1].getId(),2, "New experiment ID checked");
+							window.Project.getExperiments()[1].setActive();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+							if(window.Project.getExperiments().length > 1){
+								var time = (new Date() - initializationTime)/1000;
+								var payload = JSON.parse(parsedServerMessage.data);
+								var message=JSON.parse(payload.experiment_loaded);
+								var jsonRuntimeTree = message.scene;
+								var experimentId=message.experimentId;
+								for(var experiment in window.Project.getExperiments())
+								{
+									if(window.Project.getExperiments()[experiment].getId()==experimentId)
+									{
+										window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
+										break;
+									}
+								}
+								GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+								equal(window.Project.getActiveExperiment().getId(),2,
+								"Experiment id of loaded project chekced");
+								start();
 							}
 							break;
 						}
@@ -112,8 +137,84 @@ define(function(require) {
 			};
 
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Simulation.load('https://raw.githubusercontent.com/openworm/org.geppetto.samples/master/LEMS/C302/GEPPETTO.xml');
+			window.Project.loadFromID("1");
 			initializationTime = new Date();	
 		});
+		
+		module("Set parameters");
+		test("Set Parameters", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+							window.Project.getExperiments()[1].setActive();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_CREATED:
+							hhcell.electrical.getModelTree();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+							if(window.Project.getExperiments().length > 1){
+								var time = (new Date() - initializationTime)/1000;
+								var payload = JSON.parse(parsedServerMessage.data);
+								var message=JSON.parse(payload.experiment_loaded);
+								var jsonRuntimeTree = message.scene;
+								var experimentId=message.experimentId;
+								for(var experiment in window.Project.getExperiments())
+								{
+									if(window.Project.getExperiments()[experiment].getId()==experimentId)
+									{
+										window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
+										break;
+									}
+								}
+								GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+								equal(window.Project.getActiveExperiment().getId(),2,
+								"Experiment id of loaded project chekced");
+								start();
+							}
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var update = JSON.parse(payload.get_model_tree);      
+							for (var updateIndex in update){
+								var aspectInstancePath = update[updateIndex].aspectInstancePath;
+								var modelTree = update[updateIndex].ModelTree;
+
+								//create client side model tree
+								GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree);
+							}
+
+							equal(window.Project.getActiveExperiment().getId(),2,
+							"Experiment id of loaded project chekced");
+							Project.getExperiments()[0].setActive();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.SET_PARAMETERS:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var update = JSON.parse(payload.get_model_tree);      
+							for (var updateIndex in update){
+								var aspectInstancePath = update[updateIndex].aspectInstancePath;
+								var modelTree = update[updateIndex].ModelTree;
+
+								//create client side model tree
+								GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree);
+							}
+							start();
+							break;
+						}
+					}
+			};
+
+			GEPPETTO.MessageSocket.addHandler(handler);
+			window.Project.loadFromID("1");
+			initializationTime = new Date();	
+		});
+
+	};
 	return {run: run};
 });

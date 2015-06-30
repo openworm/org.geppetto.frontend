@@ -20,7 +20,6 @@ define(function (require) {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <Button type="button" className="btn btn-info pull-left" icon="fa-play" onClick={this.startTutorial}>Start Tutorial </Button>
                             <a className="btn btn-info pull-right" icon="fa-file-text" href="http://docs.geppetto.org" target="_blank">Docs </a>
                             <h4 className="modal-title pagination-centered">Quick Help</h4>
                         </div>
@@ -46,7 +45,7 @@ define(function (require) {
                             to bring up a plotting widget</p>
                             <h4>Geppetto Console</h4>
                             <p>The console provides a way to interact with Geppetto without having to use the UI controls.
-                            Through the console, the user can control the org.geppetto.simulation and use the other features available.
+                            Through the console, the user can control the Geppetto project and experiments and use the other features available.
                             </p>
                             <h5>Commands</h5>
                             <p>Open the console and type help() in it to view list of available commands, a description on
@@ -56,28 +55,20 @@ define(function (require) {
                             <p>Console autcompletes a command once you start typing. Pressing double
                                 <a className="btn btn-default">Tab</a>
                             provides list of available commands that match the entered input.</p>
-                            <h4>Loading a Simulation</h4>
+                            <h4>Loading a Project</h4>
                             <h5>Using Controls</h5>
-                            <p>Use the
-                                <a className="btn btn-default">Load Simulation</a>
-                            button in the top right corner to
-                            load a org.geppetto.simulation. A drop down menu with org.geppetto.simulation samples that are ready to load is
-                            available.
-                            The contents of the org.geppetto.simulation file can be seen by selecting the Custom option after selecting or
-                            entering
-                            a org.geppetto.simulation. Using this feature, the contents of the org.geppetto.simulation file can be modified
-                            prior to loading.
+                            <p>Use the home button button in the top right corner to go back to the dashboard
+                            load a Geppetto project by double-clicking on it.
                             </p>
                             <h5>Using console</h5>
-                            <p>Simulations can be loaded via console using commands
-                                <a className="label label-default">Simulation.load(simulationURL)</a>
-                            and
-                                <a className="label label-default">Simulation.loadFromContent(simulationContent)</a>
+                            <p>Projects can be loaded via console using commands
+                                <a className="label label-default">Project.loadFromURL(projectURL)</a>
                             </p>
                             <h5>Passing a parameter via URL</h5>
-                            <p>A org.geppetto.simulation can be specified as a paramater in the Geppetto URL. This will automatically load the
-                            org.geppetto.simulation when Geppetto is launched. To use this feature add the query string paramater "sim=simulationURL", where
-                            simulationURL corresponds to the location of the org.geppetto.simulation you want to load.
+                            <p>A project can be loaded by specifying its ID as a paramater in the Geppetto URL, for easy bookmarking. 
+                            This will automatically load the project when the Geppetto simulation environment is opened. 
+                            To use this feature add the query string paramater "load_project_from_id=PROJECT_ID", where
+                            PROJECT_ID corresponds to the ID of the project you want to load.
                             </p>
                         </div>
                         <div className="modal-footer">

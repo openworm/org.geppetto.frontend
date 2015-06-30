@@ -189,6 +189,14 @@ define(function(require) {
             	for(var e in experiments){
             		if(experiments[e].getId()==experimentID){
             			if(experiments[e].getStatus()!=status){
+            				if(window.Project.getActiveExperiment()!=null || undefined){
+            					if(window.Project.getActiveExperiment().getId()==experimentID){
+            						if(experiments[e].getStatus()==GEPPETTO.Resources.ExperimentStatus.RUNNING&&
+            								status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+            							GEPPETTO.trigger(Events.Experiment_completed);
+            						}
+            					}
+            				}
             				experiments[e].setStatus(status);
             			}
             		}

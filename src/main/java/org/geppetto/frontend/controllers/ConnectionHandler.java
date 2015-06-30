@@ -42,8 +42,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +50,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.beans.Settings;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
@@ -60,6 +59,7 @@ import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.data.model.ResultsFormat;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
@@ -67,7 +67,6 @@ import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
-import org.geppetto.core.simulation.ResultsFormat;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.messages.OutboundMessages;
@@ -237,7 +236,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				String message = "{\"experimentId\":" + experimentID + "," + scene.substring(1);
 				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, message);
 				logger.info("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
-				
+
 			}
 			else
 			{
@@ -468,11 +467,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		
-		ModelFormat	modelFormat = ServicesRegistry.getModelFormat(format);
+
+		ModelFormat modelFormat = ServicesRegistry.getModelFormat(format);
 		try
 		{
-			
+
 			if(modelFormat == null && format != null)
 			{
 				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
@@ -483,7 +482,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				File file = geppettoManager.downloadModel(aspectInstancePath, modelFormat, experiment, geppettoProject);
 
 				// Zip folder
-				Zipper zipper=new Zipper();
+				Zipper zipper = new Zipper(Settings.getPathInTempFolder(file.getName() + ".zip"));
 				Path path = zipper.getZipFromDirectory(file);
 
 				// Send zip file to the client
@@ -989,8 +988,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				URL url = geppettoManager.downloadResults(aspectPath, resultsFormat, experiment, geppettoProject);
 
 				// Zip folder
-				Zipper zipper=new Zipper();
-				Path path = zipper.getZipFromFile(aspectPath + "-" + URLReader.getFileName(url) , url);
+				Zipper zipper = new Zipper(Settings.getPathInTempFolder(aspectPath + "-" + URLReader.getFileName(url)));
+				Path path = zipper.getZipFromFile(url);
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);

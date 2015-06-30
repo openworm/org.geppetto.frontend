@@ -38,14 +38,15 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.geppetto.core.beans.Settings;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.data.model.ResultsFormat;
 import org.geppetto.core.manager.IGeppettoManager;
-import org.geppetto.core.simulation.ResultsFormat;
 import org.geppetto.core.utilities.Zipper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -98,20 +99,18 @@ public class GeppettoProjectController
 				{
 					if(e.getId() == experimentId)
 					{
-						String directory = System.getProperty("user.dir");
-						String tmp = File.separator + "geppettoTmp" + File.separator;
 						String path = "results" + File.separator + "p" + File.separator + projectId + File.separator + "e" + File.separator + experimentId + File.separator;
-						File outputFolder = new File(directory + tmp + path);
+						File outputFolder = new File(Settings.getPathInTempFolder(path));
 						outputFolder.mkdirs();
+						Zipper zipper = new Zipper(path + "results.zip");
 						for(IAspectConfiguration ac : e.getAspectConfigurations())
 						{
 							URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.GEPPETTO_RECORDING, e, e.getParentProject()));
-							Zipper zipper = new Zipper();
-							zipper.getZipFromFile(path + ac.getAspect().getInstancePath() + ".zip", result);
+							zipper.addToZip(result);
 						}
-						Zipper zipper = new Zipper();
+
 						// the whole folder with all the zipped results
-						Path finalZip = zipper.getZipFromDirectory(outputFolder);
+						Path finalZip = zipper.processAddedFilesAndZip();
 						return new FileSystemResource(finalZip.toFile());
 					}
 				}

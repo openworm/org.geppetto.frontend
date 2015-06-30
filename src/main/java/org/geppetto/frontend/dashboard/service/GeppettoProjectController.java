@@ -102,10 +102,10 @@ public class GeppettoProjectController
 						String path = "results" + File.separator + "p" + File.separator + projectId + File.separator + "e" + File.separator + experimentId + File.separator;
 						File outputFolder = new File(Settings.getPathInTempFolder(path));
 						outputFolder.mkdirs();
-						Zipper zipper = new Zipper(path + "results.zip");
+						Zipper zipper = new Zipper(Settings.getPathInTempFolder(path) + "results.zip");
 						for(IAspectConfiguration ac : e.getAspectConfigurations())
 						{
-							URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.GEPPETTO_RECORDING, e, e.getParentProject()));
+							URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.RAW, e, e.getParentProject()));
 							zipper.addToZip(result);
 						}
 

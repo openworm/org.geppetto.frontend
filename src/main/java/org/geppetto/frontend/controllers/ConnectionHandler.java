@@ -1044,16 +1044,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				case "name":
 				{
 					experiment.setName(properties.get(p));
+					dataManager.saveEntity(experiment);
 					break;
 				}
 				case "description":
 				{
 					experiment.setDescription(properties.get(p));
+					dataManager.saveEntity(experiment);
 					break;
 				}
 				case "script":
 				{
 					experiment.setScript(properties.get(p));
+					dataManager.saveEntity(experiment);
 					break;
 				}
 				case "timeStep":

@@ -487,7 +487,7 @@ public class GeppettoManager implements IGeppettoManager
 		{
 			if(result.getAspect().getInstancePath().equals(aspectPath))
 			{
-				if(result.getResult().getType().toString().equals(resultsFormat.toString()))
+				if(result.getFormat().equals(resultsFormat))
 				{
 					try
 					{

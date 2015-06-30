@@ -244,7 +244,7 @@ define(function(require) {
             			var index = experiments.indexOf(experiment);
             			GEPPETTO.Console.executeCommand("Project.getExperiments()["+
             					index+"].downloadResults('"+
-            					simulatorConfig["aspectInstancePath"]+"',"+"'RECORDING');");
+            					simulatorConfig["aspectInstancePath"]+"',"+"'RAW');");
             		}
         			
         			window.event.stopPropagation();

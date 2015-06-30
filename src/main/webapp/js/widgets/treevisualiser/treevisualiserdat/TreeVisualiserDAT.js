@@ -114,6 +114,7 @@ define(function(require) {
 			dataset.isDisplayed = true;
 			//Disable input elements
 			$(this.dialog).find("input").prop('disabled', true);
+			$(this.dialog).find(".parameterspecificationnodetv input").prop('disabled', false);
 			
 			//Change input text to textarea
 			var testingSizeElement = $('<div></div>').css({'position': 'absolute', 'float': 'left', 'white-space': 'nowrap', 'visibility': 'hidden'}).appendTo($('body'));
@@ -146,7 +147,7 @@ define(function(require) {
 					if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
 					else{label = data.getName();}
 				}
-				
+
 				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
 						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
 						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
@@ -155,7 +156,16 @@ define(function(require) {
 						
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
 						
+
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
+						
+						if(data._metaType=="ParameterSpecificationNode")
+						{
+							dataset.valueDict[data.instancePath]["controller"].onFinishChange(function(newValue) {
+								   eval(data.instancePath).setValue(newValue.split(" ")[0]);
+								});
+						}
+						
 						//Add class to dom element depending on node metatype
 						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
 						//$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);

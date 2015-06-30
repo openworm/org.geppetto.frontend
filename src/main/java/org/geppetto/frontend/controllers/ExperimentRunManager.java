@@ -223,23 +223,6 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	}
 
 	/**
-	 * @param experiment
-	 * @return
-	 * @throws GeppettoInitializationException
-	 */
-	private synchronized IUser getUserForExperiment(IExperiment experiment)
-	{
-		for(Map.Entry<IUser, List<IExperiment>> experimentEntry : queue.entrySet())
-		{
-			if(experimentEntry.getValue().contains(experiment))
-			{
-				return experimentEntry.getKey();
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * @param user
 	 * @param experiment
 	 * @param status

@@ -162,7 +162,7 @@ define(function(require) {
 						if(data._metaType=="ParameterSpecificationNode")
 						{
 							dataset.valueDict[data.instancePath]["controller"].onFinishChange(function(newValue) {
-								   eval(data.instancePath).setValue(newValue.split(" ")[0]);
+								   GEPPETTO.Console.executeCommand(data.instancePath+".setValue("+newValue.split(" ")[0]+")");
 								});
 						}
 						

@@ -99,6 +99,7 @@ define(function(require) {
 		setValue : function(value) {
 			this.value = value;
 			Project.getActiveExperiment().setParameters(this.getAspectPath(this),[this]);
+			return this;
 		},
 		
 		getAspectPath : function(parent)

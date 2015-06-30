@@ -89,6 +89,7 @@ define(function(require) {
 		 */
 		setUnit : function(unit) {
 			this.unit = unit;
+			return this;
 		},
 
 		/**
@@ -111,6 +112,7 @@ define(function(require) {
 			if (isWatched != this.watched){
 				Project.getActiveExperiment().watchVariables([this]);
 			}
+			return this;
 		},
 		
 		/**

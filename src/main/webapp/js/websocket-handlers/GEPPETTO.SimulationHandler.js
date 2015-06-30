@@ -47,7 +47,8 @@ define(function(require) {
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
             PLAY_EXPERIMENT : "play_experiment",
-            SET_WATCH_VARS: "set_watch_vars",
+            SET_WATCHED_VARIABLES: "set_watched_variables",
+            WATCHED_VARIABLES_SET:"watched_variables_set",
             CLEAR_WATCH: "clear_watch",
             EXPERIMENT_OVER : "experiment_over",
             GET_MODEL_TREE : "get_model_tree",
@@ -226,21 +227,10 @@ define(function(require) {
             GEPPETTO.trigger(Events.Experiment_deleted, parameters);
         };
 
-        messageHandler[messageTypes.SET_WATCH_VARS] = function(payload) {
-            //variables watching
-            var variables = JSON.parse(payload.set_watch_vars)
-            
-            for (var index in variables){
-            	var variable = eval(variables[index]);
-            	variable.watched = !variable.watched;
-            	GEPPETTO.Simulation.simulationStates.push(variables[index]);
-            }
+        messageHandler[messageTypes.WATCHED_VARIABLES_SET] = function(payload) {
+            GEPPETTO.Console.log("The list of variables to watch was successfully updated.");
         };
         
-      //handles the case where geppetto is done setting parameters
-        messageHandler[messageTypes.SET_PARAMETERS] = function() {
-        	 GEPPETTO.Console.log("Sucessfully updated parameters");
-        };
         
       //handles the case where service doesn't support feature and shows message
         messageHandler[messageTypes.NO_FEATURE] = function() {
@@ -252,7 +242,7 @@ define(function(require) {
         messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
         	var initTime = new Date();
         	
-        	GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
+        	GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + "ms.");
         	
         	var update = JSON.parse(payload.get_model_tree);      
         	for (var updateIndex in update){
@@ -266,14 +256,16 @@ define(function(require) {
         	GEPPETTO.trigger(Events.ModelTree_populated);
         	
         	var endCreation = new Date() - initTime;
-            GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create model tree");
+            GEPPETTO.Console.debugLog("It took " + endCreation + "ms to create model tree");
         };
         
       //received model tree from server
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function(payload) {        	
-        	GEPPETTO.Console.log("Paramters succesfully set");
+       	 	GEPPETTO.Console.log("The model parameters were successfully updated.");
         	
-        	var update = JSON.parse(payload.update_model_tree);      
+        	/*Matteo: This is not needed, the value in the nodes is changed right when calling setValue on them.
+        	 * This would be needed in case setParameter was used directly
+        	 * var update = JSON.parse(payload.update_model_tree);      
         	for (var updateIndex in update){
         		//retrieve aspect path and modeltree
 	        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
@@ -290,7 +282,7 @@ define(function(require) {
 	        		//apply to client node new value
 	        		node.setValue(newNode.value);
 	        	}
-        	}
+        	}*/
         	
         };
         
@@ -317,7 +309,7 @@ define(function(require) {
 			GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_RECEIVED);
         	GEPPETTO.trigger(Events.SimulationTree_populated);
         	var endCreation = new Date() - initTime;
-            GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create simulation tree");
+            GEPPETTO.Console.debugLog("It took " + endCreation + "ms to create simulation tree");
         };
         
         messageHandler[messageTypes.DROPBOX_LINKED] = function(payload) {

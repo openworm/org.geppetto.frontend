@@ -283,26 +283,22 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @throws GeppettoExecutionException
 	 * @throws GeppettoInitializationException
 	 */
-	public void setWatchedVariables(String requestID, String jsonLists, long experimentID, long projectId) throws GeppettoExecutionException, GeppettoInitializationException
+	public void setWatchedVariables(String requestID, List<String> variables, long experimentID, long projectId) throws GeppettoExecutionException, GeppettoInitializationException
 	{
-		List<String> lists = fromJSON(new TypeReference<List<String>>()
-		{
-		}, jsonLists);
-
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 
-		geppettoManager.setWatchedVariables(lists, experiment, geppettoProject);
+		geppettoManager.setWatchedVariables(variables, experiment, geppettoProject);
 
 		// serialize watch-lists
 		ObjectMapper mapper = new ObjectMapper();
 		String serializedLists;
 		try
 		{
-			serializedLists = mapper.writer().writeValueAsString(lists);
+			serializedLists = mapper.writer().writeValueAsString(variables);
 
 			// send to the client the watch lists were added
-			websocketConnection.sendMessage(requestID, OutboundMessages.SET_WATCHED_VARIABLES, serializedLists);
+			websocketConnection.sendMessage(requestID, OutboundMessages.WATCHED_VARIABLES_SET, serializedLists);
 		}
 		catch(JsonProcessingException e)
 		{
@@ -568,18 +564,14 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param projectId
 	 * @param experimentID
 	 */
-	public void setParameters(String requestID, String modelPath, String modelParameters, long projectId, long experimentID)
+	public void setParameters(String requestID, String modelPath, Map<String, String> modelParameters, long projectId, long experimentID)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 
 		try
 		{
-			HashMap<String, String> parametersMap = fromJSON(new TypeReference<HashMap<String, String>>()
-			{
-			}, modelParameters);
-
-			AspectSubTreeNode modelTreeNode = geppettoManager.setModelParameters(modelPath, parametersMap, experiment, geppettoProject);
+			AspectSubTreeNode modelTreeNode = geppettoManager.setModelParameters(modelPath, modelParameters, experiment, geppettoProject);
 			String modelTreeString = "[";
 			SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
 			modelTreeNode.apply(updateClientVisitor);

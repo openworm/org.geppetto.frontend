@@ -137,8 +137,8 @@ public class TransportMessageFactory {
 			case SCRIPT_FETCHED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.SCRIPT_FETCHED.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
-			case SET_WATCHED_VARIABLES:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.SET_WATCHED_VARIABLES.toString(), (update!=null) ? update : EMPTY_STRING));
+			case WATCHED_VARIABLES_SET:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.WATCHED_VARIABLES_SET.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_MODEL_TREE:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));

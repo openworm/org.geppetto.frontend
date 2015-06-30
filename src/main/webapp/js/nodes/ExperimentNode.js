@@ -335,12 +335,16 @@ define(function(require) {
 		 * @command ExperimentNode.watchVariables()
 		 */
 		watchVariables : function(variables){
+			var watchedVariables = [];
+			for (var index in variables){
+				watchedVariables.push(variables[index].getInstancePath());
+			}
 			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
-				parameters["variables"] = variables;
-				GEPPETTO.MessageSocket.send("set_watch", parameters);
+				parameters["variables"] = watchedVariables;
+				GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
 			}
 			
 			for(var i in variables){
@@ -364,12 +368,16 @@ define(function(require) {
 		 */
 		setParameters : function(aspectPath, newParameters){
 			if(this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN){
+				var modelParameters = {};
+				for (var index in newParameters){
+					modelParameters[newParameters[index].getInstancePath()]=newParameters[index].getValue();
+				}
 				this.parameters = new Array();
 				var parameters = {};
 				parameters["experimentId"] = this.id;
 				parameters["projectId"] = this.getParent().getId();
 				parameters["modelAspectPath"] = aspectPath;
-				parameters["modelParameters"] = JSON.stringify(newParameters);
+				parameters["modelParameters"] = modelParameters;
 				
 				for (var key in newParameters) {
 					this.parameters.push(key);

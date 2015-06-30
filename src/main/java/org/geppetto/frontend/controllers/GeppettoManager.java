@@ -94,9 +94,9 @@ public class GeppettoManager implements IGeppettoManager
 	{
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 		logger.info("New Geppetto Manager class");
-		if(user!=null)
+		if(user != null)
 		{
-			if(user.getDropboxToken()!=null)
+			if(user.getDropboxToken() != null)
 			{
 				dropboxService.init(user.getDropboxToken());
 			}
@@ -248,14 +248,14 @@ public class GeppettoManager implements IGeppettoManager
 			{
 				if(getRuntimeProject(project).getActiveExperiment() != null)
 				{
-//					RuntimeProject rp=getRuntimeProject(project);
-//					projects.remove(project);
-					//the project will have a new id after saving it therefore we update the hashmap as the hashcode will be different
-					//since it's id based
+					// RuntimeProject rp=getRuntimeProject(project);
+					// projects.remove(project);
+					// the project will have a new id after saving it therefore we update the hashmap as the hashcode will be different
+					// since it's id based
 					DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
-//					projects.put(project, rp);
-//					for(rp.))
-					
+					// projects.put(project, rp);
+					// for(rp.))
+
 					// save Geppetto Model
 					URL url = new URL(project.getGeppettoModel().getUrl());
 					Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(url).toURI());
@@ -273,11 +273,10 @@ public class GeppettoManager implements IGeppettoManager
 					String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
 					S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
 
-					
 					// save Geppetto Scripts
-					for(IExperiment experiment:project.getExperiments())
+					for(IExperiment experiment : project.getExperiments())
 					{
-						if(experiment.getScript()!=null)
+						if(experiment.getScript() != null)
 						{
 							URL scriptURL = new URL(experiment.getScript());
 							Path localScript = Paths.get(URLReader.createLocalCopy(scriptURL).toURI());
@@ -287,8 +286,7 @@ public class GeppettoManager implements IGeppettoManager
 						}
 					}
 					DataManagerHelper.getDataManager().saveEntity(project);
-					
-					
+
 				}
 				else
 				{
@@ -426,20 +424,9 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public AspectSubTreeNode setModelParameters(String aspectInstancePath, Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		return getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(aspectInstancePath, parameters);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.manager.IRuntimeTreeManager#setSimulatorConfiguration(java.lang.String, java.util.Map, org.geppetto.core.data.model.IExperiment,
-	 * org.geppetto.core.data.model.IGeppettoProject)
-	 */
-	@Override
-	public Map<String, String> setSimulatorConfiguration(String aspectInstancePath, Map<String, String> parameters, IExperiment experiment, IGeppettoProject project)
-	{
-		// TODO Auto-generated method stub
-		return null;
+		AspectSubTreeNode setParameters = getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(aspectInstancePath, parameters);
+		DataManagerHelper.getDataManager().saveEntity(project);
+		return setParameters;
 	}
 
 	/*
@@ -451,6 +438,7 @@ public class GeppettoManager implements IGeppettoManager
 	public void setWatchedVariables(List<String> watchedVariables, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
 		getRuntimeProject(project).getRuntimeExperiment(experiment).setWatchedVariables(watchedVariables);
+		DataManagerHelper.getDataManager().saveEntity(project);
 	}
 
 	/*

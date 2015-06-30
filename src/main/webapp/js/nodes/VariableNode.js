@@ -109,7 +109,7 @@ define(function(require) {
 		 */
 		setWatched : function(isWatched) {
 			if (isWatched != this.watched){
-				Simulation.setWatchedVariables([this]);
+				Project.getActiveExperiment().watchVariables([this]);
 			}
 		},
 		

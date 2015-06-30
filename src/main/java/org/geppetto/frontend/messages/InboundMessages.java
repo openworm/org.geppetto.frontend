@@ -49,7 +49,7 @@ public enum InboundMessages {
 	SIM("sim"),
 	GEPPETTO_VERSION("geppetto_version"),
 	GET_SCRIPT("get_script"),
-	SET_WATCHED_VARIABLES("set_watch"),
+	SET_WATCHED_VARIABLES("set_watched_variables"),
 	GET_WATCH("get_watch"),
 	CLEAR_WATCHED_VARIABLES("clear_watch"),
 	NOTIFY_USER("notify_user"),

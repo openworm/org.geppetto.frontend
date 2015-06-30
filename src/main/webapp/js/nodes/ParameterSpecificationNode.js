@@ -98,6 +98,16 @@ define(function(require) {
 		 */
 		setValue : function(value) {
 			this.value = value;
+			Project.getActiveExperiment().setParameters(this.getAspectPath(this),[this]);
+		},
+		
+		getAspectPath : function(parent)
+		{
+			while(parent._metaType!=GEPPETTO.Resources.ASPECT_NODE)
+			{
+				parent=parent.getParent();
+			}
+			return parent.getInstancePath();
 		},
 
 		/**

@@ -41,6 +41,7 @@ import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.catalina.websocket.MessageInbound;
@@ -329,15 +330,10 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			}
 			case SET_WATCHED_VARIABLES:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				String watchListsString = parameters.get("variables");
+				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
 				try
 				{
-					connectionHandler.setWatchedVariables(requestID, watchListsString, experimentId, projectId);
+					connectionHandler.setWatchedVariables(requestID, receivedObject.variables, receivedObject.experimentId, receivedObject.projectId);
 				}
 				catch(GeppettoExecutionException e)
 				{
@@ -354,12 +350,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			{
 				try
 				{
-					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-					{
-					}.getType());
-					experimentId = Long.parseLong(parameters.get("experimentId"));
-					projectId = Long.parseLong(parameters.get("projectId"));
-					connectionHandler.clearWatchLists(requestID, experimentId, projectId);
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					connectionHandler.clearWatchLists(requestID, receivedObject.experimentId, receivedObject.projectId);
 				}
 				catch(GeppettoExecutionException e)
 				{
@@ -419,14 +411,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			}
 			case SET_PARAMETERS:
 			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				String modelAspectPath = parameters.get("modelAspectPath");
-				experimentId = Long.valueOf(String.valueOf(parameters.get("experimentId")));
-				projectId = Long.valueOf(String.valueOf(parameters.get("projectId")));
-				String modelParameters = parameters.get("modelParameters");
-				connectionHandler.setParameters(requestID, modelAspectPath, modelParameters, projectId, experimentId);
+				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+				connectionHandler.setParameters(requestID, receivedObject.modelAspectPath, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
 				break;
 			}
 			case LINK_DROPBOX:
@@ -524,6 +510,9 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	{
 		Long projectId;
 		Long experimentId;
+		List<String> variables;
+		String modelAspectPath;
+		Map<String, String> modelParameters;
 		Map<String, String> properties;
 	}
 

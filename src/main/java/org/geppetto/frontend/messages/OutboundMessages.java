@@ -58,7 +58,7 @@ public enum OutboundMessages {
 	GEPPETTO_VERSION("geppetto_version"),
 	SCRIPT_FETCHED("script_fetched"),
 	GET_SCRIPTS("get_scripts"),
-	SET_WATCHED_VARIABLES("set_watch_vars"),
+	WATCHED_VARIABLES_SET("watched_variables_set"),
 	SIMULATOR_FULL("simulator_full"),
 	CLEAR_WATCH("clear_watch"),
 	CLIENT_ID("client_id"), 

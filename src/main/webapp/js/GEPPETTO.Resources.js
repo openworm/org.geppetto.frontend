@@ -94,9 +94,13 @@ define(function(require) {
 					DEFAULT : 1,
 					GHOST : .3,
 			},
+			
 			PROJECT_LOADED: "Project Loaded",
+			
 			EXPERIMENT_CREATED: "New experiment created",
+			
 			EXPERIMENT_DELETED: "Experiment Deleted",
+			
 			UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
 
 			EXPERIMENT_PAUSED: "Experiment Paused",
@@ -129,21 +133,17 @@ define(function(require) {
 
 			MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
 
-			MESSAGE_OUTBOUND_SET_WATCH: 'Outbund Message Sent: add watch lists',
+			MESSAGE_OUTBOUND_SET_WATCHED_VARIABLES: 'Outbund Message Sent: add variables to watch',
 
 			MESSAGE_OUTBOUND_CLEAR_WATCH: 'Outbund Message Sent: clear watch lists',
 
 			SIMULATION_NOT_LOADED_ERROR: "Unable to perform operation, the simulation hasn't been loaded",
 
-			SIMULATION_SET_WATCH: "Simulation add watchlists requested",
+			SIMULATION_SET_WATCHED_VARIABLES: "Watch variables requested",
 
-			SIMULATION_CLEAR_WATCH: 'Simulation clear watchlists requested',
+			SIMULATION_CLEAR_WATCH: 'Clear watched variables requested',
 
-			WATCHED_SIMULATION_STATES: "You are currently watching the following states : \n",
-
-			EMPTY_WATCH_TREE: "There are no simulation states to watch",
-			
-			NO_FEATURE : "Service does not support feature",
+			NO_FEATURE : "The feature is not avaialble for the current service",
 
 			/**
 			 * Object G resources

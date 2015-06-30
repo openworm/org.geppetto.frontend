@@ -54,6 +54,7 @@
 			Experiment_stop : "experiment:stop",
 			Experiment_update : "experiment:update",
 			Experiment_deleted : "experiment_deleted",
+			Experiment_active : "experiment_active",
 			Volatile_project_loaded:"project:volatile",
 			Project_persisted:"project:persisted"
 		};
@@ -76,6 +77,9 @@ define(function(require) {
 				});
 				GEPPETTO.on(Events.Experiment_status_check, function(){
 					GEPPETTO.FE.updateExperimentsTableStatus();
+				});
+				GEPPETTO.on(Events.Experiment_active, function(){
+	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 				});
 				GEPPETTO.on(Events.Experiment_loaded, function(){
 		            GEPPETTO.trigger("hide:spinner");

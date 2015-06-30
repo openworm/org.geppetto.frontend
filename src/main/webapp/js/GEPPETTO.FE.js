@@ -324,20 +324,28 @@ define(function(require) {
         		
         		//create download results and append to div element inside row
         		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-        			var downloadResultsIcon = 
-        				$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'"+
-        				"rel='tooltip' title='Download Results'></i></a>");
-        			downloadResultsIcon.appendTo(divIcons);
-        			downloadResultsIcon.attr("experimentId",experiment.getId());
+        			if(window.Project.getActiveExperiment()!=null || undefined){
+        				if(window.Project.getActiveExperiment().getId()==experiment.getId()){
+        					var downloadResultsIcon = 
+        						$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'"+
+        						"rel='tooltip' title='Download Results'></i></a>");
+        					downloadResultsIcon.appendTo(divIcons);
+        					downloadResultsIcon.attr("experimentId",experiment.getId());
+        				}
+        			}
         		}
         		
         		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-        			//create download models icon and append to div element inside row
-        			var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
-        					"<i class='fa fa-cloud-download fa-lg' " +
-        			"rel='tooltip' title='Download Models'></i></a>");
-        			downloadModelsIcon.appendTo(divIcons);
-        			downloadModelsIcon.attr("experimentId",experiment.getId());
+        			if(window.Project.getActiveExperiment()!=null || undefined){
+        				if(window.Project.getActiveExperiment().getId()==experiment.getId()){
+        					//create download models icon and append to div element inside row
+        					var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
+        							"<i class='fa fa-cloud-download fa-lg' " +
+        					"rel='tooltip' title='Download Models'></i></a>");
+        					downloadModelsIcon.appendTo(divIcons);
+        					downloadModelsIcon.attr("experimentId",experiment.getId());
+        				}
+        			}
         		}
         		
         		return tr;
@@ -432,8 +440,11 @@ define(function(require) {
         		var tr = GEPPETTO.FE.createExperimentRow(experiment);
         		tr.prependTo(experimentsTable);
         		tr.addClass("activeExperiment");
-        		
+        			
         		$('#experimentsTable tbody tr').each(function(){
+        			if (this.id == ("#"+experiment.getId())) {
+        				$(this).find(".iconsDiv").show();
+            		}
         			//remove class from active experiment
         			$(this).removeClass("activeExperiment");
         		});

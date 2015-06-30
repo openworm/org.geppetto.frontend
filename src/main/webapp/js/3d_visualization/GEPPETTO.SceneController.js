@@ -406,7 +406,7 @@ define(function(require) {
 						if(!mesh.selected){
 							//if there are nodes still selected, give it a ghost effect. If not nodes are
 							//selected, give the meshes old default color
-							if(Simulation.getSelection().length>0){
+							if(G.getSelection().length>0){
 								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
 								mesh.material.transparent = true;
 								mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;

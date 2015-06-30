@@ -100,7 +100,9 @@ define(function(require) {
 		 * @param {Boolean} watched - Object with options attributes to initialize node
 		 */
 		setWatched : function(isWatched) {
-			Simulation.setWatchedVariables([this]);
+			if (isWatched != this.watched){
+				Project.getActiveExperiment().watchVariables([this]);
+			}
 		},
 		
 		/**

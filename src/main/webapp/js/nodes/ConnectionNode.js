@@ -138,7 +138,7 @@ define(function(require) {
 			}
 			
 			this.highlighted = mode;
-			Simulation.highlightedConnections[this.getInstancePath()] = this;
+			G.highlightedConnections[this.getInstancePath()] = this;
 						
 			return message;
 		},

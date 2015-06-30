@@ -414,7 +414,7 @@ define(function(require) {
                     //.style("fill-opacity", function(d) { return z(d.z); })
                     .style("fill", function(d) {return c(d.z); })
                     .on("click", function(d){
-                        Simulation.unSelectAll();
+                        G.unSelectAll();
                         //Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.
                         eval(root.name+"."+nodes[d.x].id).select();
                         eval(root.name+"."+nodes[d.x].id).showConnectionLines(false);

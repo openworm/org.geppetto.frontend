@@ -537,7 +537,7 @@ define(function(require) {
 			/**
 			 * Unselects all selected entities
 			 * 
-			 * @command Simulation.unSelectAll()
+			 * @command G.unSelectAll()
 			 */
 			unSelectAll : function(){
 				var selection = this.getSelection();
@@ -567,14 +567,34 @@ define(function(require) {
 						visible[con.getEntityInstancePath()] = "";
 					}
 				}
-				this.toggleUnSelected(this.runTimeTree, mode,visible);
+				this.toggleUnSelected(window.Project.runTimeTree, mode,visible);
 			},
+			
+			/**
+			 * Toggles unselected entities.
+			 */
+			toggleUnSelected : function(entities, mode, visibleEntities){
+                for(var e in entities){
+                    var entity = entities[e];
+                    if((!(entity.getInstancePath() in visibleEntities)) && entity.selected == false){
+                        if(mode){
+                            entity.hide();
+                        }
+                        else{
+                            entity.show();
+                        }
+                    }
+                    if(entity.getEntities()!=null){
+                        this.toggleUnSelected(entity.getEntities(), mode, visibleEntities);
+                    }
+                }
+            },
 			
 			/**
 			 *
 			 * Outputs list of commands with descriptions associated with the Simulation object.
 			 *
-			 * @command GEPPETTO.Simulation.getSelection()
+			 * @command G.getSelection()
 			 * @returns  {Array} Returns list of all entities selected
 			 */
 			getSelection : function() {
@@ -586,7 +606,7 @@ define(function(require) {
 			/**
 			 * Unhighlight all highlighted connections
 			 * 
-			 * @command Simulation.unHighlightAll()
+			 * @command G.unHighlightAll()
 			 */
 			unHighlightAll : function(){
 				for(var hc in this.highlightedConnections){

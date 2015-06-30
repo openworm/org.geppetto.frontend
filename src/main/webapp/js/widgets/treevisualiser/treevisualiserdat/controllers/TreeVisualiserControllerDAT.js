@@ -113,7 +113,7 @@ define(function(require) {
 					var treeVisualiserDAT = this.widgets[i];
 
 					if(_.find(treeVisualiserDAT.registeredEvents, function(el){return el.id === event})){
-						var selected = GEPPETTO.Simulation.getSelection();
+						var selected = G.getSelection();
 						treeVisualiserDAT.reset();
 						//update treevisualiser with new data set
 						treeVisualiserDAT.setData(selected[0]);
@@ -192,7 +192,7 @@ define(function(require) {
 			if (node._metaType == "ConnectionNode"){
 				var connectionGroup = [{
 					label:"Highlight Connection",
-					action: ["Simulation.unHighlightAll();","#node_instancepath#.highlight(true)"],
+					action: ["G.unHighlightAll();","#node_instancepath#.highlight(true)"],
 				}];
 
 				groups.push(connectionGroup);
@@ -200,7 +200,7 @@ define(function(require) {
 			if (node._metaType == "EntityNode"){
 				var entity = [{
 					label:"Select Entity",
-					action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+					action: ["G.unSelectAll();","#node_instancepath#.select()"],
 				}];
 
 				groups.push(entity);
@@ -208,7 +208,7 @@ define(function(require) {
 			if (node._metaType == "AspectNode"){
 				var aspect = [{
 					label:"Select Aspect",
-					action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+					action: ["G.unSelectAll();","#node_instancepath#.select()"],
 				}];
 
 				groups.push(aspect);
@@ -224,7 +224,7 @@ define(function(require) {
 			if (node._metaType == "VisualGroupNode"){
 				var visualGroup = [{
 					label:"Show Visual Group",
-					action: ["Simulation.unSelectAll();","#node_instancepath#.show(true)"],
+					action: ["G.unSelectAll();","#node_instancepath#.show(true)"],
 				}];
 
 				groups.push(visualGroup);

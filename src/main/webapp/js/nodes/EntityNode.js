@@ -120,7 +120,7 @@ define(function(require) {
 				 */
 				select : function() {
 					//unselect all other selected entities prior to selecting this one
-					//GEPPETTO.Simulation.unSelectAll();
+					G.unSelectAll();
 										
 					var message;
 					if (!this.selected) {

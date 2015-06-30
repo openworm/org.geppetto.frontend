@@ -9,32 +9,37 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
 		template : Handlebars.compile(projectDetailsTemplate),
 
 		initialize : function(options) {
-			var me = this;
+
 			this.model = new ProjectModel({
 				id : this.id
 			});
-			_.bindAll(this, 'render');
+			_.bindAll(this, 'render', 'fetchSuccess', 'refreshModel');
 			
-			this.model.fetch({
-				success : function() {
-		            var simulationUrl = me.model.attributes.geppettoModel.url;
-		            var id =  me.model.attributes.id;
-		            var url = window.location.href;
-		            if (url.indexOf('/dashboard') > 0) {
-		            	url = url.substring(0, url.indexOf('/dashboard'));
-		            }
-		            me.model.attributes.simUrl = url + '?load_project_from_id=' + id;
-					me.render();
-				}
-			});
+			this.model.fetch({ success : this.fetchSuccess });
 		},
 
 		render : function() {
 			this.$el.empty();
 			this.$el.append(this.template(this.model.toJSON()));
 			return this;
+		},
+		
+		refreshModel : function() {
+			this.model.fetch({ success : this.fetchSuccess });
+		},
+		
+		fetchSuccess : function() {
+            var simulationUrl = this.model.attributes.geppettoModel.url;
+            var id =  this.model.attributes.id;
+            var url = window.location.href;
+            if (url.indexOf('/dashboard') > 0) {
+            	url = url.substring(0, url.indexOf('/dashboard'));
+            }
+            this.model.attributes.simUrl = url + '?load_project_from_id=' + id;
+            this.render();
+            
+            // TODO: check if and which experiment was expanded and restore
 		}
-
 	});
 
 	return ProjectDetailsView;

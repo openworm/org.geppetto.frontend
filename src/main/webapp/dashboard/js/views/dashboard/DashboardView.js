@@ -89,14 +89,22 @@ define([ 'jquery', 'underscore', 'backbone',
 			target.addClass("selected");
 			var id = $(event.target).attr("project-id");
 			if (id === undefined) {
-				id = $(event.target).parents(".project-preview").attr(
-						"project-id");
+				id = $(event.target).parents(".project-preview").attr("project-id");
 			}
+			
+			// clear interval from showing previous project
+			if(this.projectRefreshInterval != undefined){
+				clearInterval(this.projectRefreshInterval);
+			}
+			
 			var projectDetailsView = new ProjectDetailsView({
 				id : id,
 				el : this.$el.find("#project-details")
 			});
 			projectDetailsView.render();
+			
+			// update project every 5 secs and store a reference to timer
+			this.projectRefreshInterval = setInterval(projectDetailsView.refreshModel, 5000);
 		},
 
 		openProject : function(event) {

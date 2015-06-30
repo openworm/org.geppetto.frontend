@@ -52,6 +52,7 @@
 			Experiment_resume : "experiment:resume",
 			Experiment_running : "experiment:running",
 			Experiment_stop : "experiment:stop",
+			Experiment_completed : "experiment:completed",
 			Experiment_update : "experiment:update",
 			Experiment_deleted : "experiment_deleted",
 			Experiment_active : "experiment_active",

@@ -106,6 +106,8 @@ define(function(require) {
             			$(this).addClass("activeExperiment");
             			if($(this).attr("rowType")=="main"){
             				$("#activeIcon-"+experiment.getId()).hide();
+            				$("#downloadModelsIcon-"+experiment.getId()).show();
+                			$("#downloadResultsIcon-"+experiment.getId()).show();
             			}
             		}else{
             			//remove class from active experiment
@@ -180,6 +182,9 @@ define(function(require) {
                 		if (this.id != ("#"+experimentId)) {
                 			var id = this.id.replace("#","");
                 			$("#activeIcon-"+id).show();
+                			//hide download icons for non active experiments
+                			$("#downloadModelsIcon-"+id).hide();
+                			$("#downloadResultsIcon-"+id).hide();
                 		}
                 	});
                 	
@@ -322,28 +327,29 @@ define(function(require) {
         		deleteIcon.appendTo(divIcons);
         		deleteIcon.attr("experimentId",experiment.getId());
         		
-        		//create download results and append to div element inside row
-        		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-        			if(window.Project.getActiveExperiment()!=null || undefined){
-        				if(window.Project.getActiveExperiment().getId()==experiment.getId()){
-        					var downloadResultsIcon = 
-        						$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'"+
-        						"rel='tooltip' title='Download Results'></i></a>");
-        					downloadResultsIcon.appendTo(divIcons);
-        					downloadResultsIcon.attr("experimentId",experiment.getId());
-        				}
-        			}
-        		}
+        		var downloadResultsIcon = 
+					$("<a class='downloadResultsIcon'><i class='fa fa-download fa-lg'"+
+					"rel='tooltip' title='Download Results'></i></a>");
+				downloadResultsIcon.appendTo(divIcons);
+				downloadResultsIcon.attr("experimentId",experiment.getId());
+				downloadResultsIcon.attr("id","downloadResultsIcon-"+experiment.getId());
+				
+				var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
+						"<i class='fa fa-cloud-download fa-lg' " +
+				"rel='tooltip' title='Download Models'></i></a>");
+				downloadModelsIcon.appendTo(divIcons);
+				downloadModelsIcon.attr("experimentId",experiment.getId());
+				downloadModelsIcon.attr("id","downloadModelsIcon-"+experiment.getId());
+				
         		
+				downloadModelsIcon.hide();
+				downloadResultsIcon.hide();
+        		//show download icons only for completed active experiment
         		if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.COMPLETED){
         			if(window.Project.getActiveExperiment()!=null || undefined){
         				if(window.Project.getActiveExperiment().getId()==experiment.getId()){
-        					//create download models icon and append to div element inside row
-        					var downloadModelsIcon = $("<a class='downloadModelsIcon'>" +
-        							"<i class='fa fa-cloud-download fa-lg' " +
-        					"rel='tooltip' title='Download Models'></i></a>");
-        					downloadModelsIcon.appendTo(divIcons);
-        					downloadModelsIcon.attr("experimentId",experiment.getId());
+        					downloadModelsIcon.show();
+        					downloadResultsIcon.show();
         				}
         			}
         		}

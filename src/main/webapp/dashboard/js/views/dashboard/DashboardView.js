@@ -19,18 +19,12 @@ define([ 'jquery', 'underscore', 'backbone',
 
 		initialize : function(options) {
 			this.collection = new ProjectsCollection();
+			this.on('render', this.afterRender);
+			// fixes loss of context for 'this' within methods
 			_.bindAll(this, 'render', 'remove', 'renderProjects',
 					'appendProjects', 'onError', 'filter', 'showProject',
-					'openProject'); // fixes
-			// loss
-			// of
-			// context
-			// for
-			// 'this'
-			// within
-			// methods
+					'openProject'); 
 			this.subviews = [];
-
 		},
 
 		render : function() {
@@ -43,7 +37,36 @@ define([ 'jquery', 'underscore', 'backbone',
 				success : this.renderProjects,
 				error : this.onError
 			});
+			
+			// notifies we have rendered to trigger after-render
+			this.trigger('render');
+			
 			return this;
+		},
+		
+		afterRender: function () {
+			// add click handlers for keeping track of expanded experiments
+			$( "#project-details" ).on("click", "a[data-parent='#accordion']", function() {
+				var expID = $(this).attr( "aria-controls" );
+				var expanded = $("#" + expID).attr( "aria-expanded" );
+				
+				// add to global list if not expanded (means the click is meant to expand)
+				// also add if attribute is undefined or bool false (first time it's not there yet)
+				// NOTE: if the attr is not there it can be undefined or bool false depending on browser
+				if(expanded === "false" || typeof expanded === typeof undefined || expanded === false){
+					window.openExperiments.push(expID);
+				}
+				else {
+					// remove from list
+					var index = window.openExperiments.indexOf(expID);
+					if (index !== -1) {
+						window.openExperiments.splice(index, 1);
+					}
+				}
+				
+				// return true to cascade to next default bootstrap handler
+				return true;
+			});
 		},
 
 		renderProjects : function(collection) {
@@ -91,6 +114,9 @@ define([ 'jquery', 'underscore', 'backbone',
 			if (id === undefined) {
 				id = $(event.target).parents(".project-preview").attr("project-id");
 			}
+			
+			// clear global variable with list of open experiments
+			window.openExperiments = [];
 			
 			// clear interval from showing previous project
 			if(this.projectRefreshInterval != undefined){

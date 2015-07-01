@@ -38,7 +38,14 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
             this.model.attributes.simUrl = url + '?load_project_from_id=' + id;
             this.render();
             
-            // TODO: check if and which experiment was expanded and restore
+            // check if and which experiment was expanded and restore
+            var openExps = window.openExperiments;
+            for(var i=0; i<openExps.length; i++){
+            	// add class in
+            	$("#" + openExps[i]).addClass("in");
+            	// set aria-expanded attr to true
+            	$("#" + openExps[i]).attr("aria-expanded", "true");
+            }
 		}
 	});
 

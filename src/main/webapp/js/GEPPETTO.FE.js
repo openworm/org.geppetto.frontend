@@ -264,9 +264,41 @@ define(function(require) {
             	
             	$("td[contenteditable='true']").blur(function (e){
             		// get experiment ID for the edited field
-            		var expID = $(this).parent().attr("data-target").replace('#', '');
             		var val = $(this).html();
-            		GEPPETTO.Console.executeCommand("Project.getExperimentById("+expID+").setName('"+val+"')");
+            		var field = $(this).attr("field");
+            		
+            		var setterStr = "";
+            		
+            		switch(field) {
+            	    case "name":
+            	    	setterStr = "setName"
+            	        break;
+            	    case "simulatorId":
+            	    	setterStr = "setSimulator"
+            	        break;
+            	    case "timeStep":
+            	    	setterStr = "setTimeStep"
+            	        break;
+            	    case "length":
+            	    	setterStr = "setLength"
+            	        break;
+            	    case "conversionId":
+            	    	setterStr = "setConversionService"
+            	        break;
+            		}
+            		
+            		if(setterStr != ""){
+            			if(field == "name") {
+            				var expID = $(this).parent().attr("data-target").replace('#', '');
+            				GEPPETTO.Console.executeCommand("Project.getExperimentById("+expID+")."+setterStr+"('"+val+"')");
+            			}
+            			else {
+            				var expID = $(this).parents().closest("tr.nested-experiment-info").attr("id").replace('#', '');
+            				// get aspect instance path
+            				var aspect = $(this).parent().find("td[field='aspect']").html();
+            				GEPPETTO.Console.executeCommand("Project.getExperimentById("+expID+").simulatorConfigurations['"+aspect+"']."+setterStr+"('"+val+"')");
+            			}
+            		}
             	})
             },
             
@@ -313,7 +345,7 @@ define(function(require) {
         		}
         		tdStatus.attr("id","statusIcon");
         		//add experiment name to row and lastmodified
-        		var tdName = $('<td>'+experiment.getName()+'</td>');      
+        		var tdName = $('<td field="name">'+experiment.getName()+'</td>');      
         		var tdLastModified = $('<td>'+experiment.getLastModified()+'</td>');
         		//create element for showing icons
         		var tdIcons = $("<td></td>");
@@ -377,7 +409,7 @@ define(function(require) {
             },
             
             createExpandableRow : function(experiment){
-            	var expandableTR = $("<tr></tr>")
+            	var expandableTR = $("<tr class='nested-experiment-info'></tr>")
         		expandableTR.attr("id","#"+experiment.getId());
         		if(this.nth%2==1){
         			expandableTR.addClass("nthTr");
@@ -404,13 +436,21 @@ define(function(require) {
         		var simulatorConfigurations = experiment.simulatorConfigurations;
         		for(var config in simulatorConfigurations){
         			var simulatorConfig = simulatorConfigurations[config];
-        			var configuration = $("<tr><td></td><td>"+
-        					simulatorConfig["aspectInstancePath"]+"</td><td>"+
-        					simulatorConfig["simulatorId"]+"</td><td>"+
-        					simulatorConfig["timeStep"]+"</td><td>"+
-        					simulatorConfig["length"]+"</td><td>"+
+        			var configuration = $("<tr><td></td><td field='aspect'>"+
+        					simulatorConfig["aspectInstancePath"]+"</td><td field='simulatorId'>"+
+        					simulatorConfig["simulatorId"]+"</td><td field='timeStep'>"+
+        					simulatorConfig["timeStep"]+"</td><td field='length'>"+
+        					simulatorConfig["length"]+"</td><td field='conversionId'>"+
         					simulatorConfig["conversionId"]+"</td></tr>");
-        			configuration.appendTo(expandableTable)
+        			
+        			if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
+        				configuration.find('td[field="simulatorId"]').attr("contentEditable","true");
+        				configuration.find('td[field="timeStep"]').attr("contentEditable","true");
+        				configuration.find('td[field="length"]').attr("contentEditable","true");
+        				configuration.find('td[field="conversionId"]').attr("contentEditable","true");
+        			}
+        			
+        			configuration.appendTo(expandableTable);
         		}
         		
         		return expandableTR;

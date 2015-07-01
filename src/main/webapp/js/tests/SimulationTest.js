@@ -120,7 +120,7 @@ define(function(require) {
 			initializationTime = new Date();	
 		});
 
-		module("Set parameters");
+		/*module("Set parameters");
 		asyncTest("Set Parameters", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var initializationTime;
@@ -469,7 +469,7 @@ define(function(require) {
 			GEPPETTO.MessageSocket.addHandler(handler);
 			window.Project.loadFromID("4");
 			initializationTime = new Date();	
-		});
+		});*/
 };
 	return {run: run};
 });

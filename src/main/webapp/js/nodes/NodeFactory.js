@@ -303,17 +303,18 @@ define(function(require) {
 							if (node[i] instanceof Array) {
 								var array = node[i];
 								parent[i] = [];
-								// create parent composite node for array nodes
-								var arrayNode = GEPPETTO.NodeFactory.createCompositeNode({
-												id : i,
-												name : i,
-												instancePath : node.instancePath + "." + i,
-												_metaType : GEPPETTO.Resources.COMPOSITE_NODE
-												},true);
-								parent.getChildren().push(arrayNode);
 
 								// create nodes for each array index
 								for ( var index = 0; index < array.length; index++) {
+									// create parent composite node for array nodes
+									var arrayNode = GEPPETTO.NodeFactory.createCompositeNode({
+													id : i + "[" + index + "]",
+													name : i + "[" + index + "]",
+													instancePath : node.instancePath + "." + i + "[" + index + "]",
+													_metaType : GEPPETTO.Resources.COMPOSITE_NODE
+													},true);
+									parent.getChildren().push(arrayNode);
+									
 									parent[i][index] = {};
 									// create nodes for each array index node
 									var arrayObject = this.createAspectSimulationTree(
@@ -321,8 +322,6 @@ define(function(require) {
 									// set instance path of created array node and
 									// set as property
 									if (arrayObject.getChildren().length > 0) {
-										arrayObject.instancePath = arrayNode.instancePath
-										+ "[" + index + "]";
 										parent[i][index] = arrayObject;
 									}
 								}

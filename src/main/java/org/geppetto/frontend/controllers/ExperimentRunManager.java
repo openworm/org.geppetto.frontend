@@ -179,10 +179,19 @@ public class ExperimentRunManager implements IExperimentListener
 		}
 		catch(Exception e)
 		{
+			simulationError(experiment);
 			throw new GeppettoExecutionException(e);
 		}
 	}
 
+	/**
+	 * 
+	 */
+	private void simulationError(IExperiment experiment)
+	{
+		experiment.setStatus(ExperimentStatus.ERROR);
+		DataManagerHelper.getDataManager().saveEntity(experiment);
+	}
 	/**
 	 * @throws GeppettoInitializationException
 	 * @throws MalformedURLException

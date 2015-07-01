@@ -342,6 +342,8 @@ define(function(require) {
         			tdStatus = $('<td><div class="circle QUEUED center-block" title="QUEUED"></div></td>');
         		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.CANCELED){
         			tdStatus = $('<td><div class="circle CANCELED center-block" title="CANCELED"></div></td>');
+        		}else if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.ERROR){
+        			tdStatus = $('<td><div class="circle ERROR center-block" title="ERROR"></div></td>');
         		}
         		tdStatus.attr("id","statusIcon");
         		//add experiment name to row and lastmodified

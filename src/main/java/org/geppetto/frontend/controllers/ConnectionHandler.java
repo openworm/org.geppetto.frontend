@@ -81,7 +81,8 @@ import com.google.gson.JsonParseException;
 
 /**
  * Class that handles the Web Socket connections the servlet is receiving.
- * 
+ * FIXME: REMOVE ALL THE MANUAL CONSTRUCTION OF JSON STRINGS, USE GSON INSTEAD
+ *
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author matteocantarelli
  * 
@@ -676,15 +677,23 @@ public class ConnectionHandler
 	 */
 	private void error(Exception e, String errorMessage)
 	{
-		String jsonExceptionMsg = "";
-		if(e != null)
-		{
-			jsonExceptionMsg = e.getCause() == null ? e.getMessage() : e.toString();
-		}
-		String jsonErrorMsg = errorMessage == null ? "" : errorMessage;
-		String error = "{ \"error_code\": \"" + GeppettoErrorCodes.GENERIC + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg + "\"}";
+		Error error = new Error(GeppettoErrorCodes.GENERIC, errorMessage, e.getCause() == null ? e.getMessage() : e.toString());
 		logger.error(errorMessage, e);
-		websocketConnection.sendMessage(null, OutboundMessages.ERROR, error);
+		websocketConnection.sendMessage(null, OutboundMessages.ERROR, getGson().toJson(error));
+	}
+
+	private class Error
+	{
+		public Error(GeppettoErrorCodes errorCode, String errorMessage, String jsonExceptionMsg)
+		{
+			this.error_code = errorCode.toString();
+			message = errorMessage;
+			exception = jsonExceptionMsg;
+		}
+
+		String error_code;
+		String message;
+		String exception;
 	}
 
 	/**
@@ -703,6 +712,7 @@ public class ConnectionHandler
 				String status = "[";
 				for(IExperiment e : experiments)
 				{
+					//FIXME
 					status += "{\"projectID\":" + '"' + projectId + '"' + ",\"experimentID\":" + '"' + e.getId() + '"' + ",\"status\":" + '"' + e.getStatus().toString() + '"' + "},";
 
 				}

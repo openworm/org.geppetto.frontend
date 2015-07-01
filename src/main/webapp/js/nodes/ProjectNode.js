@@ -104,6 +104,25 @@ define([ 'jquery', 'underscore', 'backbone',
 		},
 		
 		/**
+		 * Get experiment by id
+		 * 
+		 * @command ProjectNode.getExperimentById(id)
+		 * @returns {Array} Array of ExperimentNodes
+		 */
+		getExperimentById : function(id) {
+			var experiment = null;
+			
+			for(var i=0; i<this.experiments.length; i++){
+				if(this.experiments[i].getId() == id){
+					experiment = this.experiments[i];
+					break;
+				}
+			}
+			
+			return experiment;
+		},
+		
+		/**
 		 * Set active experiment for this project
 		 * 
 		 * @command ProjectNode.setActiveExperiment()

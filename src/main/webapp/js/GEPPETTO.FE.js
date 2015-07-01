@@ -51,6 +51,7 @@ define(function(require) {
         	//variable to keep track of experiments rendered, used for giving alternate routes
             //different css backgrounds
             nth : 1,
+            
             /*
              * Handles events that are executed as soon as page is finished loading
              */
@@ -249,6 +250,24 @@ define(function(require) {
         			
         			window.event.stopPropagation();
             	});
+            	
+            	// Handle edits to editable fields
+            	$("td[contenteditable='true']").keydown(function (e){ 
+            		if(e.keyCode == 13){ 
+            			e.preventDefault();
+            			$(this).blur();
+            			
+            			// without this somehow the carriage return makes it into the field
+            			window.getSelection().removeAllRanges();
+            		}
+            	});
+            	
+            	$("td[contenteditable='true']").blur(function (e){
+            		// get experiment ID for the edited field
+            		var expID = $(this).parent().attr("data-target").replace('#', '');
+            		var val = $(this).html();
+            		GEPPETTO.Console.executeCommand("Project.getExperimentById("+expID+").setName('"+val+"')");
+            	})
             },
             
             deleteExperimentFromTable : function(experimentID){

@@ -58,6 +58,7 @@
 }	
 
 .ui-dialog .ui-dialog-titlebar {
+	margin-left:5px;
 	padding:0!important;
 	border-top:0!important;
 	border-left:0!important;
@@ -100,7 +101,7 @@
 }
 
 .ui-dialog {
-	border-radius: 3px;
+	border-radius: 0px;
 	background:rgba(66,59,59,0.90)!important;
 	color:white;
 	z-index: 3;

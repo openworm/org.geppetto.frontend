@@ -108,12 +108,12 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 			geppettoManager = new GeppettoManager();
 			try
 			{
-//				if(!DataManagerHelper.getDataManager().isDefault())
-//				{
+				if(!DataManagerHelper.getDataManager().isDefault())
+				{
 					loadExperiments();
 					timer = new Timer("ExperimentRunChecker");
 					timer.schedule(new ExperimentRunChecker(), 0, 1000);
-//				}
+				}
 			}
 			catch(GeppettoInitializationException | GeppettoExecutionException | MalformedURLException e)
 			{

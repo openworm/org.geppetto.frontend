@@ -60,7 +60,6 @@ import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.s3.S3Manager;
 import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
-import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.simulation.RuntimeProject;
 import org.springframework.stereotype.Component;
@@ -83,8 +82,6 @@ public class GeppettoManager implements IGeppettoManager
 
 	// these are the runtime projects for a
 	private Map<IGeppettoProject, RuntimeProject> projects = new LinkedHashMap<>();
-
-	private IGeppettoManagerCallbackListener geppettoManagerCallbackListener;
 
 	private DropboxUploadService dropboxService = new DropboxUploadService();
 
@@ -110,7 +107,6 @@ public class GeppettoManager implements IGeppettoManager
 		{
 			GeppettoManager other = (GeppettoManager) manager;
 			this.projects.putAll(other.projects);
-			this.geppettoManagerCallbackListener = other.geppettoManagerCallbackListener;
 			this.user = other.getUser();
 		}
 	}
@@ -123,7 +119,7 @@ public class GeppettoManager implements IGeppettoManager
 	public void loadProject(String requestId, IGeppettoProject project) throws MalformedURLException, GeppettoInitializationException, GeppettoExecutionException
 	{
 		// RuntimeProject is created and populated when loadProject is called
-		RuntimeProject runtimeProject = new RuntimeProject(project, geppettoManagerCallbackListener);
+		RuntimeProject runtimeProject = new RuntimeProject(project);
 		projects.put(project, runtimeProject);
 	}
 
@@ -525,18 +521,10 @@ public class GeppettoManager implements IGeppettoManager
 		this.user = user;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.manager.IGeppettoManager#setCallback(org.geppetto.core.simulation.IGeppettoManagerCallbackListener)
+
+	/* (non-Javadoc)
+	 * @see org.geppetto.core.manager.IExperimentManager#cancelExperimentRun(java.lang.String, org.geppetto.core.data.model.IExperiment)
 	 */
-	@Override
-	public void setCallback(IGeppettoManagerCallbackListener geppettoManagerCallbackListener)
-	{
-		this.geppettoManagerCallbackListener = geppettoManagerCallbackListener;
-
-	}
-
 	@Override
 	public void cancelExperimentRun(String requestId, IExperiment experiment)
 	{

@@ -40,8 +40,6 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +64,6 @@ import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
-import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.messages.OutboundMessages;
@@ -89,7 +86,7 @@ import com.google.gson.JsonParseException;
  * @author matteocantarelli
  * 
  */
-public class ConnectionHandler implements IGeppettoManagerCallbackListener
+public class ConnectionHandler
 {
 
 	private static Log logger = LogFactory.getLog(ConnectionHandler.class);
@@ -109,7 +106,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	{
 		this.websocketConnection = websocketConnection;
 		this.geppettoManager = new GeppettoManager(geppettoManager);
-		this.geppettoManager.setCallback(this);
 	}
 
 	/**
@@ -675,124 +671,20 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	}
 
 	/**
-	 * Receives update from simulation when there are new ones. From here the updates are send to the connected clients
-	 * 
-	 */
-	@Deprecated
-	@Override
-	public void updateReady(GeppettoEvents event, String requestID, String sceneUpdate)
-	{
-
-		// TODO Check Is this needed at all? Why the connection handler cannot be the one implementing the CallbackListener -> Changed this
-		// TODO CHeck what is the conceptual difference between GeppettoEvents and OutboundMessages?
-		long start = System.currentTimeMillis();
-		Date date = new Date(start);
-		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
-		String dateFormatted = formatter.format(date);
-		logger.info("Simulation Frontend Update Starting: " + dateFormatted);
-
-		OutboundMessages action = null;
-		String update = "";
-
-		// switch on message type
-		switch(event)
-		{
-			case PROJECT_LOADED:
-			{
-				action = OutboundMessages.LOAD_PROJECT;
-
-				sceneUpdate = sceneUpdate.substring(1, sceneUpdate.length() - 1);
-				// pack sceneUpdate and variableWatchTree in the same JSON string
-				update = "{" + sceneUpdate + "}";
-
-				break;
-			}
-			case EXPERIMENT_RUNNING:
-				action = OutboundMessages.EXPERIMENT_RUNNING;
-
-				sceneUpdate = sceneUpdate.substring(1, sceneUpdate.length() - 1);
-				update = "{ " + sceneUpdate + "}";
-
-				break;
-			case EXPERIMENT_UPDATE:
-			{
-				action = OutboundMessages.EXPERIMENT_UPDATE;
-
-				sceneUpdate = sceneUpdate.substring(1, sceneUpdate.length() - 1);
-				update = "{ " + sceneUpdate + "}";
-
-				break;
-			}
-			case EXPERIMENT_QUEUED:
-			{
-				// action = OUTBOUND_MESSAGE_TYPES.;
-
-				break;
-			}
-			default:
-			{
-			}
-		}
-
-		// Notify all connected clients about update either to load model or
-		// update current one.
-		websocketConnection.sendMessage(requestID, action, update);
-
-		logger.info("Simulation Frontend Update Finished: Took:" + (System.currentTimeMillis() - start));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.simulation.ISimulationCallbackListener#error(org.geppetto.core.common.GeppettoErrorCodes, java.lang.String, java.lang.String)
-	 */
-	@Override
-	@Deprecated
-	public void error(GeppettoErrorCodes errorCode, String classSource, String errorMessage, Exception e)
-	{
-		String jsonExceptionMsg = e == null ? "" : e.toString();
-		String jsonErrorMsg = errorMessage == null ? "" : errorMessage;
-		String error = "{ \"error_code\": \"" + errorCode.toString() + "\", \"source\": \"" + classSource + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg + "\"}";
-		logger.error(errorMessage, e);
-		websocketConnection.sendMessage(null, OutboundMessages.ERROR, error);
-	}
-
-	@Deprecated
-	public void message(String message)
-	{
-		String info = "{ \"content\": \"" + message + "\"}";
-		logger.info(message);
-		// Notify all connected clients about update either to load model or update current one.
-		websocketConnection.sendMessage(null, OutboundMessages.INFO_MESSAGE, info);
-	}
-
-	/**
 	 * @param e
 	 * @param errorMessage
 	 */
 	private void error(Exception e, String errorMessage)
 	{
 		String jsonExceptionMsg = "";
-		if(e!=null){
+		if(e != null)
+		{
 			jsonExceptionMsg = e.getCause() == null ? e.getMessage() : e.toString();
 		}
 		String jsonErrorMsg = errorMessage == null ? "" : errorMessage;
 		String error = "{ \"error_code\": \"" + GeppettoErrorCodes.GENERIC + "\", \"message\": \"" + jsonErrorMsg + "\", \"exception\": \"" + jsonExceptionMsg + "\"}";
 		logger.error(errorMessage, e);
 		websocketConnection.sendMessage(null, OutboundMessages.ERROR, error);
-	}
-
-	@Override
-	public void updateReady(GeppettoEvents event, RuntimeTreeRoot runtimeTree)
-	{
-		SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
-		runtimeTree.apply(serializeTreeVisitor);
-
-		// Notify all connected clients about update either to load model or
-		// update current one.
-		// TODO Check the null request id, these messages are not 1:1 responses
-		websocketConnection.sendMessage(null, OutboundMessages.EXPERIMENT_UPDATE, serializeTreeVisitor.getSerializedTree());
-
 	}
 
 	/**

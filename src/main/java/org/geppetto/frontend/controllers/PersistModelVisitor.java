@@ -50,10 +50,10 @@ import org.geppetto.core.model.IModelInterpreter;
 import org.geppetto.core.model.simulation.Model;
 import org.geppetto.core.model.simulation.visitor.BaseVisitor;
 import org.geppetto.core.model.simulation.visitor.TraversingVisitor;
+import org.geppetto.core.model.state.visitors.DepthFirstTraverserEntitiesFirst;
 import org.geppetto.core.s3.S3Manager;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.simulation.RuntimeExperiment;
-import org.geppetto.simulation.visitor.DepthFirstTraverserEntitiesFirst;
 
 /**
  * @author matteocantarelli

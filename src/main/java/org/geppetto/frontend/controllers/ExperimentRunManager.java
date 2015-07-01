@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -53,8 +55,6 @@ import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.model.runtime.AspectNode;
 import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
-import org.geppetto.core.simulation.IExperimentRunManager;
-import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.simulation.ExperimentRunThread;
 import org.geppetto.simulation.IExperimentListener;
 import org.geppetto.simulation.RuntimeExperiment;
@@ -68,17 +68,14 @@ import org.geppetto.simulation.visitor.FindAspectNodeVisitor;
  * @author matteocantarelli
  *
  */
-public class ExperimentRunManager implements IExperimentRunManager, IExperimentListener
+public class ExperimentRunManager implements IExperimentListener
 {
 
-	private Map<IUser, List<IExperiment>> queue;
+	private Map<IUser, BlockingQueue<IExperiment>> queue;
 
 	private GeppettoManager geppettoManager;
 
 	private volatile int reqId = 0;
-
-	// TODO How do we send a message to the client if it is connected to say for instance that an experiment was completed?
-	private IGeppettoManagerCallbackListener simulationCallbackListener;
 
 	private Timer timer;
 
@@ -122,25 +119,23 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.simulation.IExperimentRunManager#queueExperiment(org.geppetto.core.data.model.IUser, org.geppetto.core.data.model.IExperiment)
+
+	/**
+	 * @param user
+	 * @param experiment
 	 */
-	@Override
-	public void queueExperiment(IUser user, IExperiment experiment)
+	public synchronized void queueExperiment(IUser user, IExperiment experiment)
 	{
 		experiment.setStatus(ExperimentStatus.QUEUED);
 
 		addExperimentToQueue(user, experiment, ExperimentStatus.QUEUED);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.simulation.IExperimentRunManager#checkExperiment(org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
+
+	/**
+	 * @param experiment
+	 * @return
 	 */
-	@Override
 	public boolean checkExperiment(IExperiment experiment)
 	{
 		return experiment.getStatus().equals(ExperimentStatus.QUEUED);
@@ -151,7 +146,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	 * 
 	 * @see org.geppetto.core.simulation.IExperimentRunManager#runExperiment(org.geppetto.core.data.model.IExperiment)
 	 */
-	public void runExperiment(IExperiment experiment) throws GeppettoExecutionException
+	void runExperiment(IExperiment experiment) throws GeppettoExecutionException
 	{
 		try
 		{
@@ -177,7 +172,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 				runtimeExperiment.populateSimulationTree(aspect);
 			}
 
-			ExperimentRunThread experimentRun = new ExperimentRunThread(experiment, runtimeExperiment, project, simulationCallbackListener, this);
+			ExperimentRunThread experimentRun = new ExperimentRunThread(experiment, runtimeExperiment, project, this);
 			experimentRun.start();
 			experiment.setStatus(ExperimentStatus.RUNNING);
 
@@ -229,10 +224,10 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 	 */
 	private synchronized void addExperimentToQueue(IUser user, IExperiment experiment, ExperimentStatus status)
 	{
-		List<IExperiment> userExperiments = queue.get(user);
+		BlockingQueue<IExperiment> userExperiments = queue.get(user);
 		if(userExperiments == null)
 		{
-			userExperiments = new ArrayList<>();
+			userExperiments = new ArrayBlockingQueue<IExperiment>(100);
 			queue.put(user, userExperiments);
 		}
 		if(experiment.getStatus() == status)
@@ -275,7 +270,7 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 		return ++reqId;
 	}
 
-	public Map<IUser, List<IExperiment>> getQueuedExperiments()
+	public Map<IUser, BlockingQueue<IExperiment>> getQueuedExperiments()
 	{
 		return this.queue;
 	}
@@ -285,9 +280,9 @@ public class ExperimentRunManager implements IExperimentRunManager, IExperimentL
 class ExperimentRunChecker extends TimerTask
 {
 	private static Log logger = LogFactory.getLog(ExperimentRunChecker.class);
-	private Map<IUser, List<IExperiment>> queuedExperiments = ExperimentRunManager.getInstance().getQueuedExperiments();
+	private Map<IUser, BlockingQueue<IExperiment>> queuedExperiments = ExperimentRunManager.getInstance().getQueuedExperiments();
 
-	public void run()
+	public synchronized void run()
 	{
 		try
 		{

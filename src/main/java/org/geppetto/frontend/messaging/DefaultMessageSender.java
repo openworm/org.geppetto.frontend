@@ -344,8 +344,10 @@ public class DefaultMessageSender implements MessageSender
 			long startTime = System.currentTimeMillis();
 			CharBuffer buffer = CharBuffer.wrap(message);
 			wsOutbound.writeTextMessage(buffer);
-
-			logger.info(String.format("sent text message - %s, length: %d bytes, took: %d ms", messageType, message.length(), System.currentTimeMillis() - startTime));
+			if(messageType.equals("experiment_status"))
+			{
+				logger.info(String.format("sent text message - %s, length: %d bytes, took: %d ms", messageType, message.length(), System.currentTimeMillis() - startTime));
+			}
 
 		}
 		catch(IOException e)

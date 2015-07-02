@@ -21,6 +21,7 @@ define(function(require) {
 		simParam = utils.getQueryStringParameter('load_project_from_id');
 		command = "Project.loadFromID";
 	}
+
 	if (simParam == "") {
 		simParam = utils.getQueryStringParameter('load_project_from_content');
 		command = "Project.loadFromContent";

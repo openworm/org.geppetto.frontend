@@ -46,15 +46,19 @@ body {
 {
 border-radius:0!important;
 }
-
+.btn:disabled:not(.SaveButton)
+{
+background:#8E8383;
+}
 .btn:not(ul):not(.btn-warning):not([disabled])
 {
-background-color:#E6E6E6;
+background:rgba(66, 59, 59, 0.8);
+color:#fc6320;
 }
 .btn:hover:not(ul):not(.btn-warning):not([disabled])
 {
-background-color:white;
-color:#fc6320;
+background:#fc6320;
+color:white;
 }
 .nav-tabs > li > a
 {

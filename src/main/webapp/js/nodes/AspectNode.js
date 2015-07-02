@@ -368,6 +368,25 @@ define(function(require) {
 
 					return GEPPETTO.Resources.RETRIEVING_SUPPORTED_OUTPUTS;
 				},
+				
+				/**
+				 * Get simulator configuration for this aspect
+				 *
+				 * @command AspectNode.getSimulatorConfiguration()
+				 */
+				uploadResults : function(format){
+					return Project.getActiveExperiment().uploadResults(this.instancePath,format);
+				},
+				
+				/**
+				 * Get simulator configuration for this aspect
+				 *
+				 * @command AspectNode.getSimulatorConfiguration()
+				 */
+				uploadModel : function(format){
+					return Project.getActiveExperiment().uploadModel(this.instancePath,format);
+				},
+				
 
 				/**
 				 * Get simulator configuration for this aspect

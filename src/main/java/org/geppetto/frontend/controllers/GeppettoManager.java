@@ -45,6 +45,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.beans.Settings;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
@@ -61,6 +62,7 @@ import org.geppetto.core.s3.S3Manager;
 import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.utilities.URLReader;
+import org.geppetto.core.utilities.Zipper;
 import org.geppetto.simulation.RuntimeProject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -91,13 +93,6 @@ public class GeppettoManager implements IGeppettoManager
 	{
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 		logger.info("New Geppetto Manager class");
-		if(user != null)
-		{
-			if(user.getDropboxToken() != null)
-			{
-				dropboxService.init(user.getDropboxToken());
-			}
-		}
 	}
 
 	public GeppettoManager(IGeppettoManager manager)
@@ -349,7 +344,9 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void linkDropBoxAccount(String key) throws Exception
 	{
-		dropboxService.link(key);
+		String authToken = dropboxService.link(key);
+		getUser().setDropboxToken(authToken);
+		DataManagerHelper.getDataManager().saveEntity(getUser());
 	}
 
 	/*
@@ -371,12 +368,19 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void uploadModelToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ModelFormat format) throws Exception
 	{
-		if(format != null)
+		if(getUser() != null)
 		{
+			if(getUser().getDropboxToken() != null)
+			{
+				dropboxService.init(user.getDropboxToken());
+			}
 			// ConSvert model
 			File file = this.downloadModel(aspectID, format, experiment, project);
-			dropboxService.upload(file);
+			Zipper zipper = new Zipper(Settings.getPathInTempFolder(file.getName() + ".zip"));
+			Path path = zipper.getZipFromDirectory(file);
+			dropboxService.upload(path.toFile());
 		}
+
 	}
 
 	/*
@@ -387,6 +391,13 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void uploadResultsToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ResultsFormat format) throws GeppettoExecutionException
 	{
+		if(getUser() != null)
+		{
+			if(getUser().getDropboxToken() != null)
+			{
+				dropboxService.init(user.getDropboxToken());
+			}
+		}
 		getRuntimeProject(project).getRuntimeExperiment(experiment).uploadResults(aspectID, format, dropboxService);
 	}
 
@@ -521,8 +532,9 @@ public class GeppettoManager implements IGeppettoManager
 		this.user = user;
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.geppetto.core.manager.IExperimentManager#cancelExperimentRun(java.lang.String, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override

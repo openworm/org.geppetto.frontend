@@ -71,7 +71,11 @@ define(function(require) {
         messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {        	
             var project = JSON.parse(payload.project_loaded);
 
-            window.Project = GEPPETTO.NodeFactory.createProjectNode(project);          
+            window.Project = GEPPETTO.NodeFactory.createProjectNode(project);         
+            if(window.location.search.includes("load_project_from_url"))
+            {	
+            	window.Project.persisted=false;
+            }
             GEPPETTO.trigger(Events.Project_loaded);            
             GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
         };

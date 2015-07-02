@@ -239,13 +239,9 @@ public class GeppettoManager implements IGeppettoManager
 			{
 				if(getRuntimeProject(project).getActiveExperiment() != null)
 				{
-					// RuntimeProject rp=getRuntimeProject(project);
-					// projects.remove(project);
 					// the project will have a new id after saving it therefore we update the hashmap as the hashcode will be different
 					// since it's id based
 					DataManagerHelper.getDataManager().addGeppettoProject(project, getUser());
-					// projects.put(project, rp);
-					// for(rp.))
 
 					// save Geppetto Model
 					URL url = new URL(project.getGeppettoModel().getUrl());
@@ -263,7 +259,7 @@ public class GeppettoManager implements IGeppettoManager
 					String fileName = URLReader.getFileName(url);
 					String newPath = "projects/" + Long.toString(project.getId()) + "/" + fileName;
 					S3Manager.getInstance().saveFileToS3(localGeppettoModelFile.toFile(), newPath);
-
+					project.getGeppettoModel().setURL(S3Manager.getInstance().getURL(newPath).toString());
 					// save Geppetto Scripts
 					for(IExperiment experiment : project.getExperiments())
 					{

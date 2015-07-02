@@ -57,8 +57,8 @@ define(function(require) {
 							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
 							var message=JSON.parse(payload.experiment_loaded);
-							var jsonRuntimeTree = message.scene;
-							var experimentId=message.experimentId;
+				        	var jsonRuntimeTree = message.scene;
+				        	var experimentId=message.experimentId;
 							for(var experiment in window.Project.getExperiments())
 							{
 								if(window.Project.getExperiments()[experiment].getId()==experimentId)
@@ -67,9 +67,9 @@ define(function(require) {
 									break;
 								}
 							}
+								
 							GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
-							equal(window.Project.getActiveExperiment().getId(),2,
-									"Experiment id of loaded project chekced");
+							equal(window.Project.getActiveExperiment().getId(),1,"Active experiment id of loaded project checked");
 							start();
 							break;
 						}
@@ -77,7 +77,7 @@ define(function(require) {
 			};
 			GEPPETTO.MessageSocket.clearHandlers();
 			GEPPETTO.MessageSocket.addHandler(handler);
-			window.Project.loadFromID("1");
+			window.Project.loadFromID("1", "1");
 			initializationTime = new Date();	
 		});
 
@@ -102,45 +102,25 @@ define(function(require) {
 							window.Project.newExperiment();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_CREATED:
+							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
 							var experiment = JSON.parse(payload.experiment_created);
 							var newExperiment = GEPPETTO.NodeFactory.createExperimentNode(experiment);
 							window.Project.getExperiments().push(newExperiment); 
 							newExperiment.setParent(window.Project);
-							equal(window.Project.getExperiments()[1].getId(),2, "New experiment ID checked");
-							window.Project.getExperiments()[1].setActive();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							if(window.Project.getExperiments().length > 1){
-								var time = (new Date() - initializationTime)/1000;
-								var payload = JSON.parse(parsedServerMessage.data);
-								var message=JSON.parse(payload.experiment_loaded);
-								var jsonRuntimeTree = message.scene;
-								var experimentId=message.experimentId;
-								for(var experiment in window.Project.getExperiments())
-								{
-									if(window.Project.getExperiments()[experiment].getId()==experimentId)
-									{
-										window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
-										break;
-									}
-								}
-								GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
-								equal(window.Project.getActiveExperiment().getId(),2,
-								"Experiment id of loaded project chekced");
-								start();
-							}
+							equal(window.Project.getExperiments()[2].getId(), 0, "New experiment ID checked");
+							start();
 							break;
 						}
 					}
 			};
 			GEPPETTO.MessageSocket.clearHandlers();
 			GEPPETTO.MessageSocket.addHandler(handler);
-			window.Project.loadFromID("1");
+			window.Project.loadFromID("1", "1");
 			initializationTime = new Date();	
 		});
 
-		module("Set parameters");
+		/*module("Set parameters");
 		asyncTest("Set Parameters", function() {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var initializationTime;
@@ -349,7 +329,7 @@ define(function(require) {
 			};
 			GEPPETTO.MessageSocket.clearHandlers();
 			GEPPETTO.MessageSocket.addHandler(handler);
-			window.Project.loadFromID("6");
+			window.Project.loadFromID("6", "1");
 			initializationTime = new Date();	
 		});
 
@@ -489,7 +469,7 @@ define(function(require) {
 			GEPPETTO.MessageSocket.addHandler(handler);
 			window.Project.loadFromID("4");
 			initializationTime = new Date();	
-		});
+		});*/
 };
 	return {run: run};
 });

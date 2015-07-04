@@ -148,7 +148,7 @@ define(function (require) {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn" onClick={this.hide}>Cancel</button>
-                            <button type="button" className="btn btn-warning load-sim-button" disabled={this.state.disableLoad} onClick={this.loadSimulation}>Load</button>
+                            <button type="button" className="btn load-sim-button" disabled={this.state.disableLoad} onClick={this.loadSimulation}>Load</button>
                         </div>
                     </div>
                 </div>

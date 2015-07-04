@@ -69,7 +69,7 @@ define(function (require) {
 	        				</div>
 	        			</div>
         				<div className="modal-footer" id="infomodal-footer">
-        			 		<button  id="jsEditor-btn" className="btn btn-warning" data-dismiss="modal" aria-hidden="true"  dangerouslySetInnerHTML={{__html: this.props.buttonLabel}}>
+        			 		<button  id="jsEditor-btn" className="btn" data-dismiss="modal" aria-hidden="true"  dangerouslySetInnerHTML={{__html: this.props.buttonLabel}}>
                                                 </button>
         			 	</div>
         			 </div>

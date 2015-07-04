@@ -30,32 +30,22 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.ui-dialog-titlebar-close:before {
-	font-family: FontAwesome;
-	font-weight: normal;
-	font-style: normal;
-	font-size: 13px;
-	text-decoration: inherit;
-	-webkit-font-smoothing: antialiased;
-	/* sprites.less reset */
-	display: inline;
-	width: auto;
-	height: auto;
-	line-height: normal;
-	vertical-align: baseline;
-	background-image: none;
-	background-position: 0% 0%;
-	background-repeat: repeat;
-	content: "x";
-	color:#fd6808;
-}
 
+.ui-dialog {
+	border:0px;
+}
 .ui-dialog .ui-dialog-titlebar-close {
 	margin-top: -10px!important;
+	color:#fc6320;
 	text-shadow: none;
-	opacity:0.60;
 	right:0;
+	font-size:15px;
+	opacity:1!important;
 }	
+
+.ui-dialog .ui-dialog-titlebar-close:hover {
+	color:white;
+}
 
 .ui-dialog .ui-dialog-titlebar {
 	margin-left:5px;

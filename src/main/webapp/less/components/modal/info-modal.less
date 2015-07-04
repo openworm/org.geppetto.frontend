@@ -3,13 +3,16 @@
 	z-index : 100000;
 	.modal-content {
 		background: #333333;
+		border-radius:0px!important;
 	}
 	.modal-header{
+		color:white;
 		padding : 10px;
 	}
 	.modal-header .close{
-		color : orange;
+		color : @orange;
 		opacity : .6;
+		text-shadow:none;
 	}
     .modal-body{
         max-height: 50%;  
@@ -20,10 +23,10 @@
 }	
 
 #infomodal-title {
-	color : orange;
+	color : @orange;
 }
 
 #infomodal-text {
-	color : orange;
+	color : @orange;
 	text-align : center;
 }

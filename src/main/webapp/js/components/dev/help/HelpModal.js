@@ -72,7 +72,7 @@ define(function (require) {
                             </p>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-warning" data-dismiss="modal" >Close</button>
+                            <button type="button" className="btn" data-dismiss="modal" >Close</button>
                         </div>
                     </div>
                 </div>

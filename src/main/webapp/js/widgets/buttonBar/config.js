@@ -40,4 +40,4 @@
  * Configure what dependencies are needed for each library
  */
 loadCss("assets/js/widgets/buttonBar/ButtonBar.css");
-loadCss("assets/js/widgets/buttonBar/gpt-icons.css");
+

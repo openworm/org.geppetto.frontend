@@ -34,6 +34,10 @@ body {
     height: 100%
 }
 
+.btn
+{
+    padding: 4px 12px;
+}
 .btn:focus {
     outline : none;
 }
@@ -42,7 +46,7 @@ body {
     font-size: 4em;
 }
 
-.btn
+.btn, .btn-warning 
 {
 border-radius:0!important;
 }
@@ -53,11 +57,16 @@ background:#8E8383;
 .btn:not(ul):not(.btn-warning):not([disabled])
 {
 background:rgba(66, 59, 59, 0.8);
-color:#fc6320;
+color:@orange;
 }
 .btn:hover:not(ul):not(.btn-warning):not([disabled])
 {
-background:#fc6320;
+background:@orange!important;
+color:white!important;
+}
+.btn-warning:hover:not(ul):not(.btn-warning):not([disabled])
+{
+background:@orange;
 color:white;
 }
 .nav-tabs > li > a
@@ -66,7 +75,14 @@ border-radius:0!important;
 }
 
 
-
+#habla_topbar_div
+{
+background: rgba(66, 59, 59, 0.8);
+border-radius:0!important;
+}
+.hbl_pal_title_bg {
+    background-color: rgba(66, 59, 59, 0.8)!important;
+}
 .btn-info {
 		background-color : #0e6c6f;
 		border-color: #0e6c6f;

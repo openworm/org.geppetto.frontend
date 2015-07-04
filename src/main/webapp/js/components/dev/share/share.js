@@ -15,12 +15,12 @@ define(function (require) {
                     </div>
                     <div id="geppetto-share" className="col-md-1 share-panel">
                         <p>
-                            <a className="btn btn-warning" onClick={GEPPETTO.G.shareOnFacebook}>
+                            <a className="btn" onClick={GEPPETTO.G.shareOnFacebook}>
                                 <i className="icon-xlarge fa fa-facebook"></i>
                             </a>
                         </p>
                         <p>
-                            <a className="btn btn-warning" onClick={GEPPETTO.G.shareOnTwitter}>
+                            <a className="btn" onClick={GEPPETTO.G.shareOnTwitter}>
                                 <i className="icon-xlarge fa fa-twitter"></i>
                             </a>
                         </p>

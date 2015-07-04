@@ -86,10 +86,10 @@ define(function (require) {
                            </div>
                          </div>
                          <div className="modal-footer" id="errormodal-footer">
-                          <button  className="btn btn-warning" onClick={this.shareTwitter} aria-hidden="true">
+                          <button  className="btn" onClick={this.shareTwitter} aria-hidden="true">
                            <i className="fa fa-twitter"></i> Shame on you
                          </button>
-                         <a className="btn btn-warning" href="https://github.com/openworm/org.geppetto/issues/new" target="_blank" aria-hidden="true">
+                         <a className="btn" href="https://github.com/openworm/org.geppetto/issues/new" target="_blank" aria-hidden="true">
                            <i className="fa fa-bug"></i> Open issue
                          </a>
                          <button id="errormodal-btn" className="btn btn-info" data-dismiss="modal" aria-hidden="true">

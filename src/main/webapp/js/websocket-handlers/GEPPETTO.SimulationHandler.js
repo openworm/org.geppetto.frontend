@@ -72,7 +72,7 @@ define(function(require) {
             var project = JSON.parse(payload.project_loaded);
 
             window.Project = GEPPETTO.NodeFactory.createProjectNode(project);         
-            if(window.location.search.includes("load_project_from_url"))
+            if(window.location.search.indexOf("load_project_from_url")!=-1)
             {	
             	window.Project.persisted=false;
             }

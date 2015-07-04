@@ -18,7 +18,7 @@ define(function(require) {
                     'data-toggle': this.props['data-toggle'],
                     onClick: this.props.onClick,
                     disabled: this.props.disabled
-                }, React.DOM.i({className: this.props.icon}, " " + this.props.label))
+                }, React.DOM.i({className: this.props.icon}), " " + this.props.label)
                 );
         }
     };

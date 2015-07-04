@@ -235,7 +235,6 @@ define(function(require) {
 							}
 							this.options.xaxis.ticks =ticks;
 						}
-						this.setSize(550,850);
 					}
 				}
 				

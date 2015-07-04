@@ -146,7 +146,7 @@ public class ConnectionHandler
 		URL url;
 		try
 		{
-			url = new URL(urlString);
+			url = URLReader.getURL(urlString);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
 			loadGeppettoProject(requestID, geppettoProject, -1l);

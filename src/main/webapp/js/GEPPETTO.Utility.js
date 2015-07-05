@@ -160,19 +160,21 @@ define(function(require) {
 					var formattedNode = previousNode;
 
 					// node is always an array of variables
-					for(var i in node) {
-						if(typeof node[i] === "object" && node[i]!=null && i!= "attributes" && i!="parent") {
-							var type = node[i]._metaType;
+					var children=node.getChildren();
+					for(var i in children) {
+						if(typeof children[i] === "object" && children[i]!=null && i!= "attributes" && i!="parent") {
+							var type = children[i]._metaType;
+							var name = children[i].getName();
 
 							if(type == "CompositeNode"){
 								var indentation = "   ↪";
 								for(var j = 0; j < indent; j++) {
 									indentation = " " +indentation;
 								}
-								formattedNode = formattedNode + indentation + i + "- [" +type + "]\n";
+								formattedNode = formattedNode + indentation + " " +name + "\n";
 
 								// we know it's a complex type - recurse! recurse!
-								formattedNode = GEPPETTO.Utility.formatmodeltree(node[i], indent + 1, formattedNode);
+								formattedNode = GEPPETTO.Utility.formatmodeltree(children[i], indent + 1, formattedNode);
 							}
 							else if(type == "FunctionNode" || type  == "ParameterNode" || type == "ParameterSpecificationNode"
 								|| type == "DynamicsSpecificationNode" || type  == "TextMetadataNode"){
@@ -180,7 +182,7 @@ define(function(require) {
 								for(var j = 0; j < indent; j++) {
 									indentation = " " + indentation;
 								}
-								formattedNode = formattedNode + indentation + i + "- [" +type + "]\n";
+								formattedNode = formattedNode + indentation + " " +name + "\n";
 							}
 						}
 					}

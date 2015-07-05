@@ -56,6 +56,7 @@ define(function(require) {
 			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.arguments = options.arguments;
+			this.aspectNode = options.aspectNode;
 			this.expression = options.expression;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;

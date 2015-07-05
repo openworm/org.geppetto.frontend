@@ -430,8 +430,7 @@ define(function(require) {
         		var head = $("<thead class='experimentsTableColumn'>"+
         				"<tr><th style='width:215px;'></th>"+
         				"<th>Aspect</th><th>Simulator</th>"+
-        				"<th>TimeStep</th><th>Length</th>"+
-        		"<th>ConversionService</th></tr></thead>");
+        				"<th>TimeStep (s)</th><th>Length (s)</th></thead>");
         		head.appendTo(expandableTable);
 
         		//populate expandable table with rows for each simulator configuration
@@ -442,14 +441,12 @@ define(function(require) {
         					simulatorConfig["aspectInstancePath"]+"</td><td field='simulatorId'>"+
         					simulatorConfig["simulatorId"]+"</td><td field='timeStep'>"+
         					simulatorConfig["timeStep"]+"</td><td field='length'>"+
-        					simulatorConfig["length"]+"</td><td field='conversionId'>"+
-        					simulatorConfig["conversionId"]+"</td></tr>");
+        					simulatorConfig["length"]+"</td></tr>");
         			
         			if(experiment.getStatus()==GEPPETTO.Resources.ExperimentStatus.DESIGN){
         				configuration.find('td[field="simulatorId"]').attr("contentEditable","true");
         				configuration.find('td[field="timeStep"]').attr("contentEditable","true");
         				configuration.find('td[field="length"]').attr("contentEditable","true");
-        				configuration.find('td[field="conversionId"]').attr("contentEditable","true");
         			}
         			
         			configuration.appendTo(expandableTable);

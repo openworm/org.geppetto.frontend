@@ -57,6 +57,7 @@ define(function(require) {
 			this.id = options.id;
 			this.unit = options.unit;
 			this.timeSeries = new Array();
+			this.aspectNode = options.aspectNode;
 			this.instancePath = options.instancePath;
 			this.domainType = options.domainType;
 			this._metaType = options._metaType;

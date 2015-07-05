@@ -101,6 +101,7 @@ define(function(require) {
 		 * @param {Object} options - Set of options passed to widget to customize it
 		 */
 		setData : function(state, options) {
+
 			if(state instanceof Array){
 				var that = this;
 				$.each(state, function(d){that.setData(state[d], options)})

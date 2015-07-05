@@ -231,7 +231,7 @@ define(function(require) {
 
 							/*Match type of node and created*/
 							if(metatype == GEPPETTO.Resources.COMPOSITE_NODE){
-								var compositeNode =GEPPETTO.NodeFactory.createCompositeNode(node[i],true);
+								var compositeNode =GEPPETTO.NodeFactory.createCompositeNode(node[i],parent.getParent());
 								compositeNode.setParent(parent);
 								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
 									parent.getChildren().push(compositeNode);
@@ -241,7 +241,7 @@ define(function(require) {
 								this.createAspectModelTree(parent[i], node[i]);
 							}
 							else if(metatype == GEPPETTO.Resources.FUNCTION_NODE){
-								var functionNode =  GEPPETTO.NodeFactory.createFunctionNode(node[i]);
+								var functionNode =  GEPPETTO.NodeFactory.createFunctionNode(node[i],parent.getParent());
 								functionNode.setParent(parent);
 								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
 									parent.getChildren().push(functionNode);
@@ -249,7 +249,7 @@ define(function(require) {
 								parent[i] = functionNode;
 							}
 							else if(metatype == GEPPETTO.Resources.DYNAMICS_NODE){
-								var dynamicsSpecificationNode =  GEPPETTO.NodeFactory.createDynamicsSpecificationNode(node[i]);
+								var dynamicsSpecificationNode =  GEPPETTO.NodeFactory.createDynamicsSpecificationNode(node[i],parent.getParent());
 								dynamicsSpecificationNode.setParent(parent);
 								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
 									parent.getChildren().push(dynamicsSpecificationNode);
@@ -257,7 +257,7 @@ define(function(require) {
 								parent[i] = dynamicsSpecificationNode;
 							}
 							else if(metatype == GEPPETTO.Resources.PARAMETER_SPEC_NODE){
-								var parameterSpecificationNode =  GEPPETTO.NodeFactory.createParameterSpecificationNode(node[i]);
+								var parameterSpecificationNode =  GEPPETTO.NodeFactory.createParameterSpecificationNode(node[i],parent.getParent());
 								parameterSpecificationNode.setParent(parent);
 								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
 									parent.getChildren().push(parameterSpecificationNode);
@@ -265,7 +265,7 @@ define(function(require) {
 								parent[i] = parameterSpecificationNode;
 							}
 							else if(metatype == GEPPETTO.Resources.TEXT_METADATA_NODE){
-								var textMetadataNode =  GEPPETTO.NodeFactory.createTextMetadataNode(node[i]);
+								var textMetadataNode =  GEPPETTO.NodeFactory.createTextMetadataNode(node[i],parent.getParent());
 								textMetadataNode.setParent(parent);
 								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
 									parent.getChildren().push(textMetadataNode);
@@ -273,7 +273,7 @@ define(function(require) {
 								parent[i] = textMetadataNode;
 							}
 							else if(metatype == GEPPETTO.Resources.VARIABLE_NODE){
-								var variableNode =  GEPPETTO.NodeFactory.createVariableNode(node[i]);
+								var variableNode =  GEPPETTO.NodeFactory.createVariableNode(node[i],parent.getParent());
 								variableNode.setParent(parent);
 								if(parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
 									parent.getChildren().push(variableNode);

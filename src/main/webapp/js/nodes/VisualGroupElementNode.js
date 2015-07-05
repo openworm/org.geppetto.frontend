@@ -55,6 +55,7 @@ define(function(require) {
 			this.parameter = options.parameter;
 			this.color = options.color;
 			this.name = options.name;
+			this.aspectNode = options.aspectNode;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
 			this.domainType = options.domainType;

@@ -5,6 +5,7 @@ src/main/webapp/js/jsdocs
 node_modules/
 node/
 src/main/webapp/js/components/dist/
+src/main/webapp/dashboard/api/session.json
 
 # Build js, css
 bin/

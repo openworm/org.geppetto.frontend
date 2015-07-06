@@ -124,6 +124,8 @@ define(function(require) {
 										var received = eval("simulationTree." + formattedState);
 										
 										if(received === undefined){
+											// TODO: refactor this...
+											// NOTE: for nested entities it will not find the entity with formattedState
 											received = eval("simulationTree." + state);
 										}
 										
@@ -143,35 +145,20 @@ define(function(require) {
 					}
 				},
 
-				/**Update all visual trees for a given entity*/
-				updateEntityVisualTrees : function(entity, jsonRuntimeTree){
-					for (var id in entity) 
-					{
-						if(entity[id]._metaType ==GEPPETTO.Resources.ASPECT_NODE )
-						{
-							var receivedAspect = entity[id];
-							//match received aspect to client one
-							var aspect =  GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, receivedAspect.instancePath);
-							if(receivedAspect.VisualizationTree != undefined)
-							{
-								aspect.VisualizationTree.content = receivedAspect.VisualizationTree;
-							}
-						}
-						//traverse inside entity looking for more updates in visualization tree
-						else if(entity[id]._metaType ==GEPPETTO.Resources.ENTITY_NODE){
-							this.updateEntityVisualTrees(entity[id],jsonRuntimeTree);
-						}
-					}
-				},
-
 				/**Update entities of scene with new server updates*/
 				updateVisualTrees : function(jsonRuntimeTree){
 					for(var c in jsonRuntimeTree)
 					{
 						var node = jsonRuntimeTree[c];
-						if(node._metaType==GEPPETTO.Resources.ENTITY_NODE)
-						{
-							this.updateEntityVisualTrees(node,jsonRuntimeTree);
+						// check if it's a visualization tree
+						if(node.VisualizationTree !== undefined){
+							if(node.VisualizationTree._metaType==GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
+							{
+								// get the right node
+								var vizTree =  GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, node.VisualizationTree.instancePath);
+								// set viz tree contents
+								vizTree.content = node.VisualizationTree;
+							}
 						}
 					}
 				},

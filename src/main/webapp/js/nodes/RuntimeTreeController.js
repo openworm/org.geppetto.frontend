@@ -156,6 +156,20 @@ define(function(require) {
 							{
 								// get the right node
 								var vizTree =  GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, node.VisualizationTree.instancePath);
+								
+								// NOTE: loop and add SKELETON_ANIMATION_NODE at the right level of nesting (only geometries go inside "content" property)
+								for (var key in node.VisualizationTree) {
+								   if (node.VisualizationTree.hasOwnProperty(key)) {
+								       var obj = node.VisualizationTree[key];
+								       
+								       if(obj._metaType==GEPPETTO.Resources.SKELETON_ANIMATION_NODE){
+								    	   // add to viz tree 
+								    	   vizTree.transformation = obj;
+								    	   delete node.VisualizationTree[key];
+								       }
+								    }
+								}
+								
 								// set viz tree contents
 								vizTree.content = node.VisualizationTree;
 							}

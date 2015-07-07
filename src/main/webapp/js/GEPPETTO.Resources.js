@@ -255,7 +255,9 @@ define(function(require) {
 
 			INVALID_SIMULATION_FILE: "Invalid Simulation File",
 			
-			ERROR: "Rats! Something went wrong.",
+			INCOMING_MESSAGE: "Incoming message...",
+			
+			ERROR: "Houston, we have a problem",
 
 			INVALID_WATCH_LIST: "Invalid Watch List",
 
@@ -379,6 +381,7 @@ define(function(require) {
 			TEXT_METADATA_NODE : "TextMetadataNode",
 			VISUAL_GROUP_NODE : "VisualGroupNode",
 			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
+			SKELETON_ANIMATION_NODE: "SkeletonAnimationNode",
 			INPUT_CONNECTION : "FROM",
 			OUTPUT_CONNECTION : "TO"
 		}

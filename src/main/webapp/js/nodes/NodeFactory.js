@@ -281,7 +281,8 @@ define(function(require)
 							vg.setParent(subTree);
 							subTree.getChildren().push(vg);
 							subTree[key] = vg;
-						} else if (node[key]._metaType == GEPPETTO.Resources.COMPOSITE_NODE)
+						} 
+						else if (node[key]._metaType == GEPPETTO.Resources.COMPOSITE_NODE)
 						{
 							var c = node[key];
 							var element = this.createCompositeNode(c, a);
@@ -308,6 +309,10 @@ define(function(require)
 								subTree.getChildren().push(element);
 								subTree[key] = element;
 							}
+						}
+						else if (node[key]._metaType == GEPPETTO.Resources.SKELETON_ANIMATION_NODE){
+							subTree[key] = node[key];
+							delete node[key];
 						}
 					}
 				}

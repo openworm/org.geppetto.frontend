@@ -447,7 +447,7 @@ define(function(require) {
 			 * @param {Function} callback - Callback function to be called whenever _variable_ changes
 			 */
 			addOnNodeUpdatedCallback: function(varnode, callback) {
-				this.listeners[varnode.getInstancePath()] = callback;
+				this.listeners[varnode.instancePath] = callback;
 			},
 			
 			/**
@@ -456,7 +456,19 @@ define(function(require) {
 			 * @param {VariableNode} varnode - VariableNode to which callbacks are coupled
 			 */
 			clearOnNodeUpdateCallback: function(varnode) {
-				this.listeners[varnode.getInstancePath()] = null;
+				this.listeners[varnode.instancePath] = null;
+			},
+			
+			/**
+			 * Applies visual transformations to a given entity given instance path of the transformations.
+			 * 
+			 * @param {AspectNode} visualAspect - Aspect for the entity the visual transformation is to be applied to
+			 * @param {SkeletonAnimationNode} visualTransformInstancePath - node that stores the visual transformations
+			 */
+			addVisualTransformListener: function(visualAspect, visualTransformInstancePath) {
+				this.addOnNodeUpdatedCallback(visualTransformInstancePath, function(varnode,step){
+			    	GEPPETTO.SceneController.applyVisualTransformation(visualAspect, varnode.skeletonTransformations[step]);
+				});
 			},
 			
 			/**
@@ -467,13 +479,12 @@ define(function(require) {
 			 * specified, then brightness = value
 			 * 
 			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
-			 * @param {String} objectReference - objectReference
 			 * @param {VariableNode} modulation - Variable which modulates the brightness
 			 * @param {Function} normalizationFunction
 			 */
 			addBrightnessFunction: function(aspect,modulation,normalizationFunction) {
 				this.addOnNodeUpdatedCallback(modulation, function(varnode,step){
-			    	GEPPETTO.SceneController.lightUpEntity(aspect.getInstancePath(),
+			    	GEPPETTO.SceneController.lightUpEntity(aspect.instancePath,
 			    			normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[step].getValue()) : varnode.getTimeSeries()[0].getValue());
 				});
 			},
@@ -576,7 +587,7 @@ define(function(require) {
 			toggleUnSelected : function(entities, mode, visibleEntities){
                 for(var e in entities){
                     var entity = entities[e];
-                    if((!(entity.getInstancePath() in visibleEntities)) && entity.selected == false){
+                    if((!(entity.instancePath in visibleEntities)) && entity.selected == false){
                         if(mode){
                             entity.hide();
                         }

@@ -159,7 +159,7 @@ define(function(require) {
         	var maxSteps = 0;
         	for(var key in variables){
         		var node = eval(variables[key]);
-        		if(node!=null || node != undefined){
+        		if(node!=null && node != undefined && node._metaType==GEPPETTO.Resources.VARIABLE_NODE){
         			if(node.getTimeSeries().length>maxSteps){
         				maxSteps = node.getTimeSeries().length;
         			}

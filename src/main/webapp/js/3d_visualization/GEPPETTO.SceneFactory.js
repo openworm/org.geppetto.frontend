@@ -95,13 +95,6 @@ define(function(require) {
 									else if (metaType == "ParticleNode"|| metaType == "SphereNode" || metaType == "CylinderNode") {
 										GEPPETTO.SceneFactory.updateGeometry(node);								
 									}
-									else if (metaType == "SkeletonAnimationNode") {
-										// get transformation matrices series
-										var matrices = node.skeletonTransformations;
-										
-										// pass matrices to setCurrentMatrix of renderer
-										// GEPPETTO.getVARS().renderer.setCurrentMatrix(flatMatrices);
-									}
 								}
 							}
 						}

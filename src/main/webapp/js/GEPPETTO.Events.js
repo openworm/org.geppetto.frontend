@@ -34,7 +34,7 @@
 		 * 
 		 * Events
 		 * 
-		 * Different types of widgets that exist
+		 * Different types of events that exist
 		 * 
 		 * @enum
 		 */
@@ -85,7 +85,7 @@ define(function(require) {
 				GEPPETTO.on(Events.Experiment_loaded, function(){
 		            GEPPETTO.trigger("hide:spinner");
 					G.resetCamera();
-					GEPPETTO.FE.setActiveExperimentLabel();
+					GEPPETTO.FE.setActiveExperimentStatus();
 				});
 				GEPPETTO.on(Events.Experiment_deleted, function(e){
 					var name = e.name;
@@ -114,10 +114,10 @@ define(function(require) {
 	        		GEPPETTO.WidgetsListener.update(Events.SimulationTree_populated);
 	        	});
 	        	GEPPETTO.on(Events.Experiment_update, function(parameters){
-	        		if(parameters.playAll != null ||parameters.steps != undefined){
+	        		if(parameters.playAll != null || parameters.steps != undefined){
 	        			//update scene brightness
 	        			for(var key in GEPPETTO.G.listeners) {
-	        				//retrieve the simulate state from watch tree
+	        				//retrieve the variable/node state from tree
 	        				var simState = GEPPETTO.Utility.deepFind(window.Project.runTimeTree, key);
 
 	        				//update simulation state

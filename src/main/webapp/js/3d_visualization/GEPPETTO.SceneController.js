@@ -45,6 +45,17 @@ define(function(require) {
 				},
 				
 				/**
+				 * Applies visual transformation to the scene
+				 * 
+				 * @param {String} visualAspect - the aspect path of the entity to be visually transformed
+				 * @param {Array of doubles} transformation - the transformations
+				 */
+				applyVisualTransformation : function(visualAspect, transformation) {
+					// NOTE: visualAspect currently disregarded as the transformation applies to the entire scene
+					GEPPETTO.getVARS().renderer.setCurrentMatrix(transformation);
+				},
+				
+				/**
 				 * Light up the entity 
 				 * 
 				 * @param {String} aspectPath - the aspect path of the entity to be lit

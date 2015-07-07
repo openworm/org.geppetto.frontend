@@ -20,7 +20,7 @@ define(function (require) {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <a className="btn btn-info pull-right" icon="fa-file-text" href="http://docs.geppetto.org" target="_blank">Docs </a>
+                            <a className="btn pull-right" icon="fa-file-text" href="http://docs.geppetto.org" target="_blank">Docs </a>
                             <h4 className="modal-title pagination-centered">Quick Help</h4>
                         </div>
                         <div className="modal-body">
@@ -32,17 +32,6 @@ define(function (require) {
                             <h5>Zoom</h5>
                             <p>Wheel click and move your mouse up and down to zoom in and out. In addition, you can use the buttons in the upper
                             left corner. The Home button resets the view.</p>
-                            <h4>Shortcuts List</h4>
-                            <p>Press
-                                <a className="btn btn-default">Ctrl</a>
-                                <a className="btn btn-default">Alt</a>
-                                <a className="btn btn-default">J</a>
-                            to toggle the Javascript Console</p>
-                            <p>Press
-                                <a className="btn btn-default">Ctrl</a>
-                                <a className="btn btn-default">Alt</a>
-                                <a className="btn btn-default">P</a>
-                            to bring up a plotting widget</p>
                             <h4>Geppetto Console</h4>
                             <p>The console provides a way to interact with Geppetto without having to use the UI controls.
                             Through the console, the user can control the Geppetto project and experiments and use the other features available.
@@ -67,8 +56,8 @@ define(function (require) {
                             <h5>Passing a parameter via URL</h5>
                             <p>A project can be loaded by specifying its ID as a paramater in the Geppetto URL, for easy bookmarking. 
                             This will automatically load the project when the Geppetto simulation environment is opened. 
-                            To use this feature add the query string paramater "load_project_from_id=PROJECT_ID", where
-                            PROJECT_ID corresponds to the ID of the project you want to load.
+                            To use this feature add the query string paramater <a className="label label-default">load_project_from_id=PROJECT_ID</a>, where
+                            <a className="label label-default">PROJECT_ID</a> corresponds to the ID of the project you want to load.
                             </p>
                         </div>
                         <div className="modal-footer">

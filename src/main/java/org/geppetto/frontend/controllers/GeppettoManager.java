@@ -327,7 +327,10 @@ public class GeppettoManager implements IGeppettoManager
 		}
 
 		DataManagerHelper.getDataManager().deleteExperiment(experiment);
-
+		if(project.getActiveExperimentId()==experiment.getId())
+		{
+			project.setActiveExperimentId(-1);
+		}
 		project.getExperiments().remove(experiment);
 		DataManagerHelper.getDataManager().saveEntity(project);
 	}

@@ -58,7 +58,6 @@ define(function (require) {
         			<div className="modal-dialog">
         			<div className="modal-content">
         				<div className="modal-header" id="infomodal-header">
-        					<button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
         					<h3 id="infomodal-title" className="text-center">{this.props.title}</h3>
         				</div>
         				<div className="modal-body">

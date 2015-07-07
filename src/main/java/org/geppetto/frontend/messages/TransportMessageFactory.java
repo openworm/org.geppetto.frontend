@@ -75,25 +75,12 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("message", update));
 				break;
 			case ERROR_LOADING_PROJECT:
-				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_SIMULATION_MESSAGE.toString()));
-				break;
-			case ERROR_SETTING_WATCHED_VARIABLES:
-				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_SETTING_WATCHED_VARIABLES_MESSAGE.toString()));
+				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_LOADING_PROJECT_MESSAGE.toString()));
 				break;
 			case ERROR_DOWNLOADING_MODEL:	
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_DOWNLOADING_MODEL.toString()));
 				break;
-			case OBSERVER_MODE:
-				params.add(new SimpleEntry<String, String>("alertMessage", Resources.SIMULATION_CONTROLLED.toString()));
-				params.add(new SimpleEntry<String, String>("popoverMessage", Resources.GEPPETO_SIM_INFO.toString()));
-				break;
 			case READ_URL_PARAMETERS:
-				break;
-			case SERVER_UNAVAILABLE:
-				params.add(new SimpleEntry<String, String>("message", Resources.SERVER_UNAVAILABLE.toString()));
-				break;
-			case SERVER_AVAILABLE:
-				params.add(new SimpleEntry<String, String>("message", Resources.SERVER_AVAILABLE.toString()));
 				break;
 			case SIMULATOR_FULL:
 				params.add(new SimpleEntry<String, String>("message",  (update!=null) ? update : EMPTY_STRING));

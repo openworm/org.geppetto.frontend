@@ -162,14 +162,13 @@ define(function(require) {
 						
 						if(data._metaType=="ParameterSpecificationNode")
 						{
-							dataset.valueDict[data.instancePath]["controller"].onFinishChange(function(newValue) {
-								   GEPPETTO.Console.executeCommand(data.instancePath+".setValue("+newValue.split(" ")[0]+")");
-								});
+							$(dataset.valueDict[data.instancePath]["controller"].__li).find('div > div > input[type="text"]').change(function(){
+								GEPPETTO.Console.executeCommand(data.instancePath+".setValue(" + $(this).val().split(" ")[0] + ")");
+							});
 						}
 						
 						//Add class to dom element depending on node metatype
 						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
-						//$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
 						//Add instancepath as data attribute. This attribute will be used in the event framework
 						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
 						

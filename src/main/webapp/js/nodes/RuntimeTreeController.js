@@ -119,22 +119,18 @@ define(function(require) {
 									try {
 										var state = variables[v];
 										//format state in a way to match what server is sending
-										var splitState = state.split("SimulationTree.");
-										var formattedState = splitState[1];
-										var received = eval("simulationTree." + formattedState);
-										
-										if(received === undefined){
-											// TODO: refactor this...
-											// NOTE: for nested entities it will not find the entity with formattedState
-											received = eval("simulationTree." + state);
-										}
-										
-										var clientNode=eval(state);
-										clientNode.getTimeSeries().unshift();
-										clientNode.setUnit(received.unit);
-
-										for (var index in received.timeSeries){
-											clientNode.getTimeSeries().push(new Quantity(received.timeSeries[index].value, received.timeSeries[index].scale));
+										var splitState = state.split(".SimulationTree.");
+										if (splitState[0] == child.aspectInstancePath){
+											var formattedState = splitState[1];
+											var received = eval("simulationTree." + formattedState);
+											
+											var clientNode=eval(state);
+											clientNode.getTimeSeries().unshift();
+											clientNode.setUnit(received.unit);
+	
+											for (var index in received.timeSeries){
+												clientNode.getTimeSeries().push(new Quantity(received.timeSeries[index].value, received.timeSeries[index].scale));
+											}
 										}
 
 									} catch (e) {

@@ -85,7 +85,7 @@ define(function(require) {
 				GEPPETTO.on(Events.Experiment_loaded, function(){
 		            GEPPETTO.trigger("hide:spinner");
 					G.resetCamera();
-					GEPPETTO.FE.setActiveExperimentLabel();
+					GEPPETTO.FE.setActiveExperimentStatus();
 				});
 				GEPPETTO.on(Events.Experiment_deleted, function(e){
 					var name = e.name;

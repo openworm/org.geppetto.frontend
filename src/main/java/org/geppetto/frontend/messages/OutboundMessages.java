@@ -83,7 +83,7 @@ public enum OutboundMessages {
 	DOWNLOAD_RESULTS("download_results"),
 	UPDATE_MODEL_TREE("update_model_tree"), 
 	EXPERIMENT_CREATED("experiment_created");
-	
+
 	private OutboundMessages(final String text) {
 		this.text = text;
 	}

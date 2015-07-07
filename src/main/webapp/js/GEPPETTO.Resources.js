@@ -255,7 +255,9 @@ define(function(require) {
 
 			INVALID_SIMULATION_FILE: "Invalid Simulation File",
 			
-			ERROR: "Rats! Something went wrong.",
+			INCOMING_MESSAGE: "Incoming message...",
+			
+			ERROR: "Houston, we have a problem",
 
 			INVALID_WATCH_LIST: "Invalid Watch List",
 

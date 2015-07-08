@@ -52,7 +52,7 @@ define(function(require) {
             });
 
             GEPPETTO.on(Events.Experiment_stop, function(){
-                self.setState({disableRun:true, truedisablePlay:false, disablePause:true, disableStop:true});
+                self.setState({disableRun:true, disablePlay:false, disablePause:true, disableStop:true});
             });
             
             GEPPETTO.on('disable_all', function(){

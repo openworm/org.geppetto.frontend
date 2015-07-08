@@ -285,7 +285,7 @@ define(function(require) {
 			this.worker = new Worker("assets/js/ExperimentWorker.js");
 			
 			//tells worker to update each half a second
-			this.worker.postMessage([Events.Experiment_play,10,steps, playAll]);
+			this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, steps, playAll]);
 
 			//receives message from web worker
             this.worker.onmessage = function (event) {

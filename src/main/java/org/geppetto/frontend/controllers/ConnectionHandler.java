@@ -263,12 +263,17 @@ public class ConnectionHandler
 		{
 			info(Resources.UNSUPPORTED_OPERATION.toString());
 		}
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+		if(geppettoProject.isVolatile())
+		{
+			info(Resources.VOLATILE_PROJECT.toString());
+			return;
+		}
 		else
 		{
 			try
 			{
-				IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-				IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 				// run the matched experiment
 				if(experiment != null)
 				{

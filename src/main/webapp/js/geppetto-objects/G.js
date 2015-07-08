@@ -628,6 +628,15 @@ define(function(require) {
 			},
 			
 			/**
+			 * Sets the timer for updates during play/replay.
+			 * 
+			 * @command G.setPlayTimerStep(interval)
+			 */
+			setPlayTimerStep : function(interval){
+				GEPPETTO.getVARS().playTimerStep = interval;
+			},
+			
+			/**
 			 * Helper method that traverses through run time tree looking for selected 
 			 * entities.
 			 */

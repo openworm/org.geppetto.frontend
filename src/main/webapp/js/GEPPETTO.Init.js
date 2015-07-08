@@ -41,6 +41,8 @@ define(function(require) {
 			canvasCreated: false,
 			listenersCreated : false,
 			selected : [],
+			// timer step in milliseconds
+			playTimerStep: 10, 
 		};
 
 		var setupScene = function() {
@@ -72,14 +74,14 @@ define(function(require) {
 		 * Set up the WebGL Renderer
 		 */
 		var setupRenderer = function() {
-			// Reuse a single WebGL renderer. Recreating the renderer causes
-			// camera displacement on Chrome OSX.
+			// Reuse a single WebGL renderer. 
+			// NOTE: Recreating the renderer causes camera displacement on Chrome OSX.
 			if (!VARS.canvasCreated) {
 				if (VARS.customRendererClass == null) {
 					VARS.renderer = new THREE.WebGLRenderer({
 						antialias: true
 					});
-			}
+				}
 				else {
 					console.log("CUSTOM RENDERER");
 					var customRenderer = VARS.customRendererClass;
@@ -153,12 +155,8 @@ define(function(require) {
 		var setupListeners = function() {
 			if(!VARS.listenersCreated){
 				// when the mouse moves, call the given function
-				VARS.renderer.domElement
-						.addEventListener(
-								'mousedown',
-								function(event) {
-									var intersects = GEPPETTO
-											.getIntersectedObjects();
+				VARS.renderer.domElement.addEventListener('mousedown', function(event) {
+					var intersects = GEPPETTO.getIntersectedObjects();
 
 					if ( intersects.length > 0 ) {
 						var selected = intersects[ 0 ].object.name;
@@ -166,45 +164,36 @@ define(function(require) {
 						if(selected == ""){
 							selected = intersects[ 0 ].object.parent.name;
 						}
-										if (VARS.meshes
-												.hasOwnProperty(selected)
-												|| VARS.splitMeshes
-														.hasOwnProperty(selected)) {
+						if (VARS.meshes.hasOwnProperty(selected) || VARS.splitMeshes.hasOwnProperty(selected)) {
 							GEPPETTO.G.unSelectAll();
-											GEPPETTO.Console
-													.executeCommand(selected
-															+ '.select()');
+							GEPPETTO.Console.executeCommand(selected + '.select()');
 						}
 					}
-
 				}, false);
 
-				VARS.renderer.domElement
-						.addEventListener(
-								'mousemove',
-								function(event) {
+				VARS.renderer.domElement.addEventListener('mousemove', function(event) {
 					VARS.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 					VARS.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
 				}, false);
 
 				window.addEventListener('resize', function() {
-					var container = $(VARS.container), width = container
-							.width(), height = container.height();
+					var container = $(VARS.container), 
+					width = container.width(), 
+					height = container.height();
 
 					VARS.camera.aspect = (width) / (height);
 					VARS.camera.updateProjectionMatrix();
 					VARS.renderer.setSize(width, height);
 				}, false);
 
-				document.addEventListener("keydown",
-						GEPPETTO.Vanilla.checkKeyboard, false);
+				document.addEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard, false);
 				VARS.listenersCreated = true;
 			}
 		};
-//	============================================================================
-//	Application logic.
-//	============================================================================
+		
+		//	============================================================================
+		//	Application logic.
+		//	============================================================================
 		GEPPETTO.Init = {
 			initialize: function(containerp) {
 				VARS.container = containerp;

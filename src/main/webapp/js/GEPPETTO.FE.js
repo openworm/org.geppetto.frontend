@@ -525,6 +525,17 @@ define(function(require)
 				})
 
 			},
+			
+			/**
+			 * Update the ID in the experiment UI of a preexisting row
+			 */
+			updateExperimentId:function(oldExperimentId,newExperimentId)
+			{
+	            //update the id of the active experiment in the experiment table
+	            $("tr[data-target='#"+oldExperimentId+"']").attr("data-target","#"+newExperimentId);
+	            $("tr[id='#"+oldExperimentId+"']").attr("id","#"+newExperimentId);
+	            $(".accordian-body[id='"+oldExperimentId+"']").attr("id",newExperimentId);
+			},
 
 			/**
 			 * Show error message if webgl failed to start

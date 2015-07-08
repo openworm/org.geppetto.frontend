@@ -212,9 +212,15 @@ define(function(require) {
         messageHandler[messageTypes.PROJECT_PERSISTED] = function(payload) {
             var message = JSON.parse(payload.update);
             var projectID = message.projectID;
+            var activeExperimentID = message.activeExperimentID;
             
             window.Project.id=parseInt(projectID);
+            var oldActiveExperiment=window.Project.getActiveExperiment().id;
+            window.Project.getActiveExperiment().id=parseInt(activeExperimentID);
             window.Project.persisted=true;
+            
+            GEPPETTO.FE.updateExperimentId(oldActiveExperiment,window.Project.getActiveExperiment().id);
+            
             GEPPETTO.trigger(Events.Project_persisted);
             GEPPETTO.Console.log("The project has been persisted  [id="+ projectID + "].");        
         };

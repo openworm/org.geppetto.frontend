@@ -58,14 +58,11 @@ define(function(require) {
 		 */
 		var setupCamera = function() {
 			// Camera
-			var SCREEN_WIDTH = $(VARS.container).width(), SCREEN_HEIGHT = $(
-					VARS.container).height();
+			var SCREEN_WIDTH = $(VARS.container).width(), SCREEN_HEIGHT = $(VARS.container).height();
 			var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 500000;
-			VARS.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR,
-					FAR);
+			VARS.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR,FAR);
 			VARS.scene.add(VARS.camera);
-			VARS.camera.position.set(VARS.cameraPosition.x,
-					VARS.cameraPosition.y, VARS.cameraPosition.z);
+			VARS.camera.position.set(VARS.cameraPosition.x,VARS.cameraPosition.y, VARS.cameraPosition.z);
 			VARS.camera.lookAt(VARS.sceneCenter);
 			VARS.projector = new THREE.Projector();
 		};
@@ -83,9 +80,9 @@ define(function(require) {
 					});
 				}
 				else {
-					console.log("CUSTOM RENDERER");
 					var customRenderer = VARS.customRendererClass;
 					VARS.renderer = new customRenderer();
+					console.log("Custom Renderer initialized");
 				}
 				VARS.renderer.setClearColor(0x000000, 1);
 				var width = $(VARS.container).width();

@@ -101,11 +101,10 @@ define(function(require) {
 					var message;
 
 					if (this.visible) {
-						message = GEPPETTO.Resources.HIDE_ENTITY
-								+ this.instancePath;
+						message = GEPPETTO.Resources.HIDE_ENTITY + this.instancePath;
 						this.showChildren(this, false);
 					} else {
-						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDING;
+						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDEN;
 					}
 					this.visible = false;
 

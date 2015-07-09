@@ -153,11 +153,12 @@ define(function(require)
 					var tr = GEPPETTO.FE.createExperimentRow(experiment);
 
 					tr.appendTo(experimentsTable);
-
-					GEPPETTO.FE.addListenersToRow(tr, experiment);
-
 					var expandableRow = GEPPETTO.FE.createExpandableRow(experiment);
 					expandableRow.appendTo(experimentsTable);
+					
+					GEPPETTO.FE.addListenersToRow(tr, experiment);
+
+
 					this.nth++;
 				}
 
@@ -467,7 +468,7 @@ define(function(require)
 				});
 
 				// Handle edits to editable fields
-				$(row).find("td[contenteditable='true']").keydown(function(e)
+				$(row).parent().find("td[contenteditable='true']").keydown(function(e)
 				{
 					if (e.keyCode == 13)
 					{
@@ -480,7 +481,7 @@ define(function(require)
 					}
 				});
 
-				$(row).find("td[contenteditable='true']").blur(function(e)
+				$(row).parent().find("td[contenteditable='true']").blur(function(e)
 				{
 					// get experiment ID for the edited field
 					var val = $(this).html();
@@ -523,6 +524,17 @@ define(function(require)
 					}
 				})
 
+			},
+			
+			/**
+			 * Update the ID in the experiment UI of a preexisting row
+			 */
+			updateExperimentId:function(oldExperimentId,newExperimentId)
+			{
+	            //update the id of the active experiment in the experiment table
+	            $("tr[data-target='#"+oldExperimentId+"']").attr("data-target","#"+newExperimentId);
+	            $("tr[id='#"+oldExperimentId+"']").attr("id","#"+newExperimentId);
+	            $(".accordian-body[id='"+oldExperimentId+"']").attr("id",newExperimentId);
 			},
 
 			/**

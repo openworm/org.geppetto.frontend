@@ -127,6 +127,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	protected void onClose(int status)
 	{
 		messageSender.shutdown();
+		//TODO Release GeppettoManager
 		ConnectionsManager.getInstance().removeConnection(this);
 	}
 

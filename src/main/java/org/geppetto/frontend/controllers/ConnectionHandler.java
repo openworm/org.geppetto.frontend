@@ -846,9 +846,8 @@ public class ConnectionHandler
 				{
 
 					geppettoManager.persistProject(requestID, geppettoProject);
-
-					String update = "{\"projectID\":" + '"' + geppettoProject.getId() + '"' + "}";
-					websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTED, update);
+					PersistedProject persistedProject =  new PersistedProject( geppettoProject.getId(),  geppettoProject.getActiveExperimentId());
+					websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTED, getGson().toJson(persistedProject));
 				}
 				else
 				{
@@ -860,6 +859,21 @@ public class ConnectionHandler
 				error(e, "Error persisting project");
 			}
 		}
+	}
+	
+	class PersistedProject
+	{
+		long projectID;
+		long activeExperimentID;
+		
+		public PersistedProject(long projectID, long activeExperimentID)
+		{
+			super();
+			this.projectID = projectID;
+			this.activeExperimentID = activeExperimentID;
+		}
+		
+		
 	}
 
 	/**

@@ -112,6 +112,7 @@ define(function(require) {
 		setWatched : function(isWatched) {
 			if (isWatched != this.watched){
 				Project.getActiveExperiment().watchVariables([this]);
+				this.watched=isWatched;
 			}
 			return this;
 		},

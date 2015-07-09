@@ -139,8 +139,7 @@ define(function(require) {
 		 */
 		var setupControls = function() {
 			// Controls
-			VARS.controls = new THREE.TrackballControls(VARS.camera,
-					VARS.renderer.domElement);
+			VARS.controls = new THREE.TrackballControls(VARS.camera, VARS.renderer.domElement);
 			VARS.controls.noZoom = false;
 			VARS.controls.noPan = false;
 			VARS.controls.addEventListener('change', GEPPETTO.render);			

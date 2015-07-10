@@ -84,25 +84,23 @@ define(function(require) {
 					VARS.renderer = new customRenderer();
 					console.log("Custom Renderer initialized");
 				}
-				VARS.renderer.setClearColor(0x000000, 1);
-				var width = $(VARS.container).width();
-				var height = $(VARS.container).height();
-				VARS.renderer.setSize(width, height);
-				VARS.renderer.autoClear = true;
-				VARS.container.appendChild(VARS.renderer.domElement);
-
-				VARS.canvasCreated = true;
 			}
-			VARS.renderer.setClearColor(0x000000, 1);
+			
+			configureRenderer();
+
+			VARS.canvasCreated = true;
+		};
+		
+		var configureRenderer = function(){
+			var color = new THREE.Color( 0x000000 );
+			VARS.renderer.setClearColor( color, 1 );
 			var width = $(VARS.container).width();
 			var height = $(VARS.container).height();
 			VARS.renderer.setSize(width, height);
 			VARS.renderer.autoClear = true;
 			VARS.container.appendChild(VARS.renderer.domElement);
-
-			VARS.canvasCreated = true;
-		};
-
+		}
+		
 		/**
 		 * Light up the scene
 		 */

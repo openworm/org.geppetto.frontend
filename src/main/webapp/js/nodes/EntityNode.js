@@ -78,8 +78,7 @@ define(function(require) {
 					var message;
 
 					if (!this.visible) {
-						message = GEPPETTO.Resources.SHOW_ENTITY
-								+ this.instancePath;
+						message = GEPPETTO.Resources.SHOW_ENTITY + this.instancePath;
 						this.visible = true;
 						
 						this.showChildren(this, true);

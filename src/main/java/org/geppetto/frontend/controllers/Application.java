@@ -31,7 +31,7 @@ public class Application
 	{
 		boolean auth = false;
 
-		if(authService == null || authService.isDefault())
+		if(authService == null)
 		{
 			// Default no persistence, no users
 			auth = true;

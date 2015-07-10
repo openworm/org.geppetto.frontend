@@ -298,7 +298,7 @@ define(function(require) {
 			SHOW_ENTITY : "Showing entity ",
 			ENTITY_ALREADY_VISIBLE : "Entity already visible.",
 			HIDE_ENTITY : "Hiding entity ",
-			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
+			ENTITY_ALREADY_HIDDEN : "Entity already invisible.",
 			ZOOM_TO_ENTITY : "Zooming to entity ",
 			HIGHLIGHTING : "Highlighting object ",
 			NO_REFERENCES_TO_HIGHLIGHT : "Connection has no Visual References to highlight.",

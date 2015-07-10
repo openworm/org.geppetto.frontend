@@ -172,6 +172,7 @@ define(function(require) {
         	}
         	experiment.played = true;
         };
+        
         messageHandler[messageTypes.EXPERIMENT_UPDATE] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update);
             updateTime(updatedRunTime.time);

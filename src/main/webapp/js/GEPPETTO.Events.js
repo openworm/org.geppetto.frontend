@@ -100,10 +100,14 @@ define(function(require) {
 	        	GEPPETTO.on(Events.Experiment_over, function(e){
 	        		var name = e.name;
 					var id = e.id;
-	        		GEPPETTO.Console.log("Experiment " + name + " with "+
-	        				id + " is over ");
+	        		GEPPETTO.Console.log("Experiment " + name + " with "+ id + " is over ");
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(Events.Experiment_over);
+	        		
+	        		// check if we are in looping mode
+	                if(GEPPETTO.getVARS().playLoop === true){
+	                	GEPPETTO.Console.executeCommand("Project.getActiveExperiment().play({step:1});");
+	                } 
 	        	});
 	        	GEPPETTO.on(Events.ModelTree_populated, function(){
 	        		//notify widgets a restart of data is needed
@@ -127,7 +131,7 @@ define(function(require) {
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);
 	        	});
-	        	GEPPETTO.on(Events.Experiment_replay, function(parameters){
+	        	GEPPETTO.on(Events.Experiment_stop, function(parameters){
 	        		//notify widgets a restart of data is needed
 	        		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
 	        	});

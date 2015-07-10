@@ -637,6 +637,15 @@ define(function(require) {
 			},
 			
 			/**
+			 * Set play in loop true/false.
+			 * 
+			 * @command G.setPlayLoop(loop)
+			 */
+			setPlayLoop : function(loop){
+				GEPPETTO.getVARS().playLoop = loop;
+			},
+			
+			/**
 			 * Helper method that traverses through run time tree looking for selected 
 			 * entities.
 			 */

@@ -43,6 +43,7 @@ define(function(require) {
 			selected : [],
 			// timer step in milliseconds
 			playTimerStep: 10, 
+			playLoop: false,
 		};
 
 		var setupScene = function() {

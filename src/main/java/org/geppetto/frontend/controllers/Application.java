@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class Application
 {
 
-	@Autowired
-	IAuthService authService;
+	@Autowired(required=false)
+	IAuthService authService=null;
 
 	@Autowired
 	private IGeppettoManager geppettoManager;
@@ -31,10 +31,10 @@ public class Application
 	{
 		boolean auth = false;
 
-		if(authService == null)
+		if(authService.isDefault())
 		{
 			// Default no persistence, no users
-			auth = true;
+			auth=true;
 		}
 		else if(geppettoManager.getUser() != null)
 		{

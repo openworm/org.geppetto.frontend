@@ -295,16 +295,16 @@ define(function(require) {
             	if(step >= maxSteps){
             		var parameters = {name : window.Project.getActiveExperiment().getName(),
             						  id : window.Project.getActiveExperiment().getId()};
-            		GEPPETTO.trigger(Events.Experiment_over, parameters);
             		window.Project.getActiveExperiment().terminateWorker();
+            		GEPPETTO.trigger(Events.Experiment_over, parameters);
             	}else{
             		var playAllFlag = event.data[1];
             		var parameters = {steps : step, playAll : playAllFlag};
             		GEPPETTO.trigger(Events.Experiment_update, parameters);
             		if(playAllFlag){
-            			GEPPETTO.trigger(Events.Experiment_stop);
             			//end worker, since we are playing all 
             			window.Project.getActiveExperiment().terminateWorker();
+            			GEPPETTO.trigger(Events.Experiment_stop);
             		}
             	}
              };

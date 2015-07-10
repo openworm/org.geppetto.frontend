@@ -637,8 +637,28 @@ define(function(require) {
 			},
 			
 			/**
-			 * Helper method that traverses through run time tree looking for selected 
-			 * entities.
+			 * Set play in loop true/false.
+			 * 
+			 * @command G.setPlayLoop(loop)
+			 */
+			setPlayLoop : function(loop){
+				GEPPETTO.getVARS().playLoop = loop;
+			},
+			
+			/**
+			 * Set canvas color.
+			 * 
+			 * @command G.setBackgroundColour(color)
+			 * 
+			 * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
+			 */
+			setBackgroundColour : function(color){
+				var threecolor = new THREE.Color( color );
+				GEPPETTO.getVARS().renderer.setClearColor( threecolor, 1 );
+			},
+			
+			/**
+			 * Helper method that traverses through run time tree looking for selected entities.
 			 */
 			traverseSelection : function(entities){
 				var selection = new Array();

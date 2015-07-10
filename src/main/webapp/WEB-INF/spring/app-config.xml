@@ -56,7 +56,9 @@
 		<property name="loadedScene" value="#{ null }" />
 		<property name="isSimulationLoaded" value="false" />
 	</bean>
+	
 
+	
 	<bean id="geppettoManager" scope="session"
 		class="org.geppetto.frontend.controllers.GeppettoManager">
 		<aop:scoped-proxy />

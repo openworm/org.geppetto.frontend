@@ -13,4 +13,5 @@
     
     <bean id="eventListenerBean" class="org.geppetto.frontend.ApplicationListenerBean" />
 
+	<osgi:reference bean-name="authService" id="AuthService" interface="org.geppetto.core.auth.IAuthService"/>
 </beans>

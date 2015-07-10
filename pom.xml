@@ -46,8 +46,8 @@
 								<paramater>baseUrl=${project.basedir}/src/main/webapp/js</paramater>
 								<paramater>out=${project.basedir}/src/main/webapp/js/main-built.js</paramater>
 							</optimizerParameters>
-							<!-- Whether or not to process configFile with maven filters. If you
-								use this option, some options in your configFile must resolve to absolute
+							<!-- Whether or not to process configFile with maven filters. If you 
+								use this option, some options in your configFile must resolve to absolute 
 								paths (see below) -->
 							<filterConfig>
 								true
@@ -335,6 +335,7 @@
 						<Bundle-ClassPath>.,{maven-dependencies},WEB-INF/classes</Bundle-ClassPath>
 						<Web-ContextPath>${contextPath}</Web-ContextPath>
 						<Import-Package>
+							javax.servlet.*,
 							net.sf.cglib.beans,
 							net.sf.cglib.core,
 							net.sf.cglib.proxy,

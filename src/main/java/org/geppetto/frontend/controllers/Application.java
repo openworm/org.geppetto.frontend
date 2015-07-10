@@ -1,13 +1,14 @@
 package org.geppetto.frontend.controllers;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.geppetto.core.auth.IAuthService;
-import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.manager.IGeppettoManager;
-import org.geppetto.frontend.dashboard.AuthServiceCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,59 +18,53 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class Application
 {
 
-	public Application()
-	{
-		super();
-	}
+	@Autowired
+	IAuthService authService;
 
-	
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
 	private static Log logger = LogFactory.getLog(Application.class);
 
-	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home()
+	public String home(HttpServletRequest req)
 	{
-		try
+		boolean auth = false;
+
+		if(authService == null || authService.isDefault())
 		{
-			IAuthService authService = AuthServiceCreator.getService();
-
-			boolean auth = false;
-			
-			if(authService == null || authService.isDefault())
+			// Default no persistence, no users
+			auth = true;
+		}
+		else if(geppettoManager.getUser() != null)
+		{
+			// This is with Geppetto DB, for the user to not be null inside the GeppettoManager somebody must have used
+			// the Login servlet
+			Subject currentUser = SecurityUtils.getSubject();
+			auth = currentUser.isAuthenticated();
+		}
+		else if(geppettoManager.getUser() == null)
+		{
+			// This is with any other authentication system from another web application.
+			// since sharing the scope session across the different web application bundles
+			// is more complex than expected (if possible at all) we are using cookies
+			for(Cookie c : req.getCookies())
 			{
-				// Default no persistence, no users
-				auth = true;
-			}
-			else if(geppettoManager.getUser() != null)
-			{
-				// This is with Geppetto DB, for the user to not be null inside the GeppettoManager somebody must have used
-				// the Login servlet
-				Subject currentUser = SecurityUtils.getSubject();
-				auth = currentUser.isAuthenticated();
-			}
-			else if(geppettoManager.getUser() == null)
-			{
-				// This is with any other DB
-				auth = authService.isAuthenticated();
-			}
-			if(auth)
-			{
-				return "dist/index";
-			}
-			else
-			{
-
-				return "redirect:" + authService.authFailureRedirect();
+				if(c.getName().equals(authService.getSessionId()))
+				{
+					auth = authService.isAuthenticated(c.getValue());
+					break;
+				}
 			}
 		}
-		catch(GeppettoInitializationException e)
+		if(auth)
 		{
-			logger.error("Error while retrieving an authentication service", e);
+			return "dist/index";
 		}
-		return "redirect:http://geppetto.org";
+		else
+		{
+			return "redirect:" + authService.authFailureRedirect();
+		}
 	}
 
 	@RequestMapping(value = "/GeppettoTests.html", method = RequestMethod.GET)
@@ -83,5 +78,6 @@ public class Application
 	{
 		return "dist/dashboard";
 	}
+
 
 }

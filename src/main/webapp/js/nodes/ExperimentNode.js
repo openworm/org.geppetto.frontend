@@ -349,7 +349,7 @@ define(function(require) {
 			}
 			
 			for(var i in variables){
-				this.variables.push(variables[i]);
+				this.variables.push(variables[i].getInstancePath());
 			}
 		},
 		

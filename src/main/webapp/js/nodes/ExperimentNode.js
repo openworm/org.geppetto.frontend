@@ -244,7 +244,6 @@ define(function(require) {
 						GEPPETTO.MessageSocket.send("play_experiment", parameters);
 						return "Play Experiment";
 					}else{
-						GEPPETTO.Console.log("replay ");
 						GEPPETTO.trigger(Events.Experiment_replay);
 						this.terminateWorker();
 						this.experimentUpdateWorker();
@@ -252,9 +251,7 @@ define(function(require) {
 					}
 				}
 			}else{
-				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, 
-	            		"Experiment " + name + " with id " +
-	            		id + " isn't completed, and can't be played.");
+				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + name + " with id " + id + " isn't completed, and can't be played.");
 			}
 		},
 		

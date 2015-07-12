@@ -33,8 +33,9 @@
 package org.geppetto.frontend.messaging;
 
 import java.util.Set;
+
 import org.apache.catalina.websocket.WsOutbound;
-import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+import org.geppetto.frontend.messages.OutboundMessages;
 
 public class DefaultMessageSenderFactory {
 
@@ -43,7 +44,7 @@ public class DefaultMessageSenderFactory {
 	private boolean discardMessagesIfQueueFull = true;
 	private boolean compressionEnabled = false;
 	private int minMessageLengthForCompression = 20000;
-	private Set<OUTBOUND_MESSAGE_TYPES> queuedMessageTypes;
+	private Set<OutboundMessages> queuedMessageTypes;
 
 	public DefaultMessageSender getMessageSender(WsOutbound wsOutbound, MessageSenderListener listener) {
 
@@ -62,7 +63,7 @@ public class DefaultMessageSenderFactory {
 		return messageSender;
 	}
 
-	private boolean isQueuedMessageType(OUTBOUND_MESSAGE_TYPES messageType) {
+	private boolean isQueuedMessageType(OutboundMessages messageType) {
 		return queuedMessageTypes != null && queuedMessageTypes.contains(messageType);
 	}
 
@@ -106,11 +107,11 @@ public class DefaultMessageSenderFactory {
 		this.minMessageLengthForCompression = minMessageLengthForCompression;
 	}
 
-	public Set<OUTBOUND_MESSAGE_TYPES> getQueuedMessageTypes() {
+	public Set<OutboundMessages> getQueuedMessageTypes() {
 		return queuedMessageTypes;
 	}
 
-	public void setQueuedMessageTypes(Set<OUTBOUND_MESSAGE_TYPES> queuedMessageTypes) {
+	public void setQueuedMessageTypes(Set<OutboundMessages> queuedMessageTypes) {
 		this.queuedMessageTypes = queuedMessageTypes;
 	}
 }

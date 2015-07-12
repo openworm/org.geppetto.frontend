@@ -111,9 +111,11 @@ define(function (require) {
 		/**
 		 * Updates variable values
 		 */
-		updateVariable: function () {
+		updateVariable: function (step) {
 			this.setHeader(this.variable.name);
-			this.setBody(this.variable.state.getTimeSeries()[0].getValue());
+			if (typeof step != 'undefined'){
+				this.setBody(this.variable.state.getTimeSeries()[step].getValue().toFixed(4) + " " + this.variable.state.getUnit());
+			}
 		},
 
 		/**

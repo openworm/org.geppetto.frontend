@@ -79,7 +79,7 @@ define(function(require) {
 				return {variableToDisplay:'', data:{}, isDisplayed:false};
 			},
 			
-			getValueFromData : function(data){
+			getValueFromData : function(data,step){
 				var labelValue = "";
 				if (data._metaType == "TextMetadataNode"){
 					labelValue = data.getValue();
@@ -93,7 +93,7 @@ define(function(require) {
 				else if (data._metaType == "VariableNode") {
 					//we get the first value from the time series, could be more in time series array
 					if(data.getTimeSeries() != null && data.getTimeSeries().length>0){
-						labelValue = data.getTimeSeries()[0].getValue() + " " + ((data.getTimeSeries()[0].getUnit()!=null && data.getTimeSeries()[0].getUnit()!="null")?(" " + data.getTimeSeries()[0].getUnit()):"");
+						labelValue = data.getTimeSeries()[step].getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
 					}else{
 						labelValue = "";
 					}

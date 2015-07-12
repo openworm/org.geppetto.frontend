@@ -6,10 +6,11 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="assets/css/custom-theme/jquery-ui-1.10.0.custom.css" />
-    <link rel="stylesheet" href="assets/css/font-awesome.css" />
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
     <link rel="stylesheet" href="assets/css/codemirror.css" />
     <link rel="stylesheet" href="assets/css/lesser-dark.css" />
     <link rel="stylesheet" href="assets/css/jsConsole.css" />
+    <link rel="stylesheet" href="assets/css/gpt-icons.css" />
 
     <script>
     var path = "org.geppetto.frontend";
@@ -38,12 +39,10 @@
 
 <div id="modal-region"></div>
 
-<div>
-    <img src="assets/images/welcomebckg.png" width="1" height="1" alt="" style="display:none;" />
-    <img src="assets/images/welcomebckg@2x.png" width="1" height="1" alt="" style="display:none;"/>
-</div>
 <div id="controls">
 
+	<div id="SaveButton" class="row"></div>
+	<div id="HomeButton" class="row"></div>
     <div id="sim-toolbar" class="row"></div>
 
     <div id="camera-controls"></div>
@@ -51,24 +50,44 @@
     <!-- Used for popovers, otherwise they would be too small to display -->
 
     <div id="github">
-        <a href="https://github.com/openworm/org.geppetto" target="_blank"><icon class="icon-github icon-2x" id="git"></icon></a>
+        <a href="https://github.com/openworm/org.geppetto" target="_blank"><icon class="fa fa-github" id="git"></icon></a>
     </div>
 </div>
 
 <div id="mainContainer">
+     <div id="geppettologo" ></div>
     <div id="sim"></div>
 
     <div id="footer">
         <div id="footerHeader">
-            <div id="geppettologo"></div>
             <div id="consoleButtonContainer">
-                <button class="btn" data-clipboard-target="clipboard_text" id="consoleButton">
-                    <icon class="icon-terminal"></icon>
-                    Console
-                </button>
+	            <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
+    				<li role="presentation" class="active" id="consoleButton"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i>  Console</a></li>
+    				<li role="presentation" id="experimentsButton"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>  Experiments</a></li>
+				</ul>
+
+				 <div class="tab-content">
+    					<div role="tabpanel" class="tab-pane active" id="console">Console Loading...</div>
+    					<div role="tabpanel" id="experiments" class="tab-pane panel panel-default">
+            					<div class="col-lg-6 experimentsResults panel-body experimentsResultsOutput" id="experimentsOutput">
+									<table id="experimentsTable" class="table table-condensed experimentsTable" style="border-collapse:collapse;">
+										<thead class="experimentsTableColumn">
+        									<tr><th style="width:10%;text-align:center">Status</th>
+            								<th style="width:30%;">Name</th>
+            								<th style="width:15%;">Date</th>
+            								<th style="width:25%;"><div class="new_experiment" id="new_experiment" tile="New experiment"><i class='new_experiment_icon fa fa-plus fa-lg'></i></div></th>
+        									</tr>
+    									</thead>
+
+    								<tbody>
+    								</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+ 				 </div>
             </div>
 
-            <div id="console">Console Loading...</div>
         </div>
     </div>
 </div>

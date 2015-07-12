@@ -48,6 +48,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			id : "",
 			domainType : "",
 			_metaType : "",
+			aspectNode : null,
 			parent : null,
 
 			/**
@@ -70,6 +71,11 @@ define([ 'jquery', 'underscore', 'backbone',
 			 */
 			getName : function() {
 				return this.name;
+			},
+			
+			getAspectNode : function()
+			{
+				return this.aspectNode;
 			},
 
 			/**
@@ -129,9 +135,11 @@ define([ 'jquery', 'underscore', 'backbone',
 
 			/**
 			 * Search inside a node for all the nodes of a specific domain type.
-			 *  @param {String} domainType - Domain type
-			 *  @returns {Array} List of Nodes
-			 *  
+			 * 
+			 * @param {String}
+			 *            domainType - Domain type
+			 * @returns {Array} List of Nodes
+			 * 
 			 */
 			getSubNodesOfDomainType : function(domainType) {
 				return this._all(function(n){return n.domainType === domainType})
@@ -139,9 +147,11 @@ define([ 'jquery', 'underscore', 'backbone',
 			
 			/**
 			 * Search inside a node for all the nodes of a specific meta type.
-			 *  @param {String} metaType - Meta Type
-			 *  @returns {Array} List of Nodes
-			 *  
+			 * 
+			 * @param {String}
+			 *            metaType - Meta Type
+			 * @returns {Array} List of Nodes
+			 * 
 			 */
 			getSubNodesOfMetaType : function(metaType) {
 				return this._all(function(n){return n._metaType === metaType})

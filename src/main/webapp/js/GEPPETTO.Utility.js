@@ -160,19 +160,21 @@ define(function(require) {
 					var formattedNode = previousNode;
 
 					// node is always an array of variables
-					for(var i in node) {
-						if(typeof node[i] === "object" && node[i]!=null && i!= "attributes" && i!="parent") {
-							var type = node[i]._metaType;
+					var children=node.getChildren();
+					for(var i in children) {
+						if(typeof children[i] === "object" && children[i]!=null && i!= "attributes" && i!="parent") {
+							var type = children[i]._metaType;
+							var name = children[i].getName();
 
 							if(type == "CompositeNode"){
 								var indentation = "   ↪";
 								for(var j = 0; j < indent; j++) {
 									indentation = " " +indentation;
 								}
-								formattedNode = formattedNode + indentation + i + "- [" +type + "]\n";
+								formattedNode = formattedNode + indentation + " " +name + "\n";
 
 								// we know it's a complex type - recurse! recurse!
-								formattedNode = GEPPETTO.Utility.formatmodeltree(node[i], indent + 1, formattedNode);
+								formattedNode = GEPPETTO.Utility.formatmodeltree(children[i], indent + 1, formattedNode);
 							}
 							else if(type == "FunctionNode" || type  == "ParameterNode" || type == "ParameterSpecificationNode"
 								|| type == "DynamicsSpecificationNode" || type  == "TextMetadataNode"){
@@ -180,7 +182,7 @@ define(function(require) {
 								for(var j = 0; j < indent; j++) {
 									indentation = " " + indentation;
 								}
-								formattedNode = formattedNode + indentation + i + "- [" +type + "]\n";
+								formattedNode = formattedNode + indentation + " " +name + "\n";
 							}
 						}
 					}
@@ -323,35 +325,7 @@ define(function(require) {
 				 * containing {value : val, unit : unit, scale : scale}.
 				 */
 				deepFind: function(tree, state){
-					var paths = state.split('.')
-					, current = tree
-					, i;
-
-					for (i = 0; i < paths.length; ++i) {
-						//get index from node if it's array
-						var index = paths[i].match(/[^[\]]+(?=])/g);
-
-						if(index == null){
-							if (current[paths[i]] == undefined) {
-								return undefined;
-							} else {
-								current = current[paths[i]];
-							}
-						}
-						else{
-							var iNumber =index[0].replace(/[\[\]']+/g,"");
-
-							//take index and brackets out of the equation for now
-							var node = paths[i].replace(/ *\[[^]]*\] */g, "");
-
-							if (current[node][parseInt(iNumber)] == undefined) {
-								return undefined;
-							} else {
-								current = current[node][parseInt(iNumber)];
-							}
-						}
-					}
-					return current;
+					return eval(state);
 				}
 		};
 	};
@@ -372,6 +346,19 @@ function rgbToHex(r, g, b)
 function getContrast50(hexcolor){
     return (parseInt(hexcolor, 16) > 0xffffff/2) ? 'black':'white';
 }
+
+var saveData = (function () {
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    return function (blob, fileName) {
+        var url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+}());
 
 /**
  * Adding method to javascript string class to test 

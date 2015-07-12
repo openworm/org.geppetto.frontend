@@ -72,23 +72,44 @@ define(function(require) {
 					VISUAL_OBJECT_REFERENCE_NODE: "0x606060",
 					VISUAL_GROUP_ELEMENT_NODE:"0xffffff",
 			},
+			
+			/**
+			 *
+			 * Different status an experiment can be on
+			 *
+			 * @enum
+			 */
+			ExperimentStatus : {
+					DESIGN : "DESIGN",
+					CANCELED : "CANCELED",
+					QUEUED : "QUEUED",
+					RUNNING: "RUNNING",
+					ERROR : "ERROR",
+					COMPLETED : "COMPLETED",
+					DELETED : "DELETED",
+			},
+
 
 			OPACITY : {
 					DEFAULT : 1,
 					GHOST : .3,
 			},
-			SIMULATION_LOADED: "Simulation Loaded",
-			SIMULATION_STARTED: "Simulation Started",
+			
+			PROJECT_LOADED: "Project Loaded",
+			
+			EXPERIMENT_CREATED: "New experiment created",
+			
+			EXPERIMENT_DELETED: "Experiment Deleted",
+			
+			UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
 
-			UNABLE_TO_START_SIMULATION: "Simulation not loaded, must load simulation first",
+			EXPERIMENT_PAUSED: "Experiment Paused",
 
-			SIMULATION_PAUSED: "Simulation Paused",
+			UNABLE_TO_PAUSE_EXPERIMENT: "Simulation not running, must run simulation first",
 
-			UNABLE_TO_PAUSE_SIMULATION: "Simulation not running, must run simulation first",
+			EXPERIMENT_STOP: "Simulation Stopped",
 
-			SIMULATION_STOP: "Simulation Stopped",
-
-			LOADING_SIMULATION: "Loading Simulation",
+			LOADING_PROJECT: "Loading Project",
 
 			LOADING_SIMULATION_SLOW : "Still loading, but things are taking longer than expected, are you on low bandwidth?",
 			
@@ -112,17 +133,17 @@ define(function(require) {
 
 			MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
 
-			MESSAGE_OUTBOUND_SET_WATCH: 'Outbund Message Sent: add watch lists',
+			MESSAGE_OUTBOUND_SET_WATCHED_VARIABLES: 'Outbund Message Sent: add variables to watch',
 
 			MESSAGE_OUTBOUND_CLEAR_WATCH: 'Outbund Message Sent: clear watch lists',
 
 			SIMULATION_NOT_LOADED_ERROR: "Unable to perform operation, the simulation hasn't been loaded",
 
-			SIMULATION_SET_WATCH: "Simulation add watchlists requested",
+			SIMULATION_SET_WATCHED_VARIABLES: "Watch variables requested",
 
-			SIMULATION_CLEAR_WATCH: 'Simulation clear watchlists requested',
+			SIMULATION_CLEAR_WATCH: 'Clear watched variables requested',
 
-			WATCHED_SIMULATION_STATES: "You are currently watching the following states : \n",
+			NO_FEATURE : "The feature is not avaialble for the current service",
 
 			/**
 			 * Object G resources
@@ -199,7 +220,7 @@ define(function(require) {
 			
 			SIMULATION_TREE_POPULATED : 'Simulation tree populated.',
 			
-			SIMULATION_TREE_RECEIVED : 'Requested Simulation tree received.',
+			SIMULATION_TREE_RECEIVED : 'Requested simulation tree received.',
 			
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
 			
@@ -207,7 +228,15 @@ define(function(require) {
 
 			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
 			
-			WRITING_MODEL : 'Writing model as ',	
+			DOWNLOADING_MODEL : 'Downloading model as ',	
+			
+			ERROR_DOWNLOADING_MODEL : "Error downloading model",
+			
+			RETRIEVING_SUPPORTED_OUTPUTS : 'Supported outputs requested',
+			
+			EXPERIMENT_NOT_COMPLETED_UPLOAD : "Can't upload results for an experiment that isn't completed",
+			
+			UNACTIVE_EXPERIMENT_UPLOAD : "Unable to upload results for experiment that isn't active",
 			
 			/**
 			 * GEPPETTO.Main resources
@@ -226,7 +255,9 @@ define(function(require) {
 
 			INVALID_SIMULATION_FILE: "Invalid Simulation File",
 			
-			ERROR: "Rats! Something went wrong.",
+			INCOMING_MESSAGE: "Incoming message...",
+			
+			ERROR: "Houston, we have a problem",
 
 			INVALID_WATCH_LIST: "Invalid Watch List",
 
@@ -267,7 +298,7 @@ define(function(require) {
 			SHOW_ENTITY : "Showing entity ",
 			ENTITY_ALREADY_VISIBLE : "Entity already visible.",
 			HIDE_ENTITY : "Hiding entity ",
-			ENTITY_ALREADY_HIDDING : "Entity already invisible.",
+			ENTITY_ALREADY_HIDDEN : "Entity already invisible.",
 			ZOOM_TO_ENTITY : "Zooming to entity ",
 			HIGHLIGHTING : "Highlighting object ",
 			NO_REFERENCES_TO_HIGHLIGHT : "Connection has no Visual References to highlight.",
@@ -327,11 +358,14 @@ define(function(require) {
 			/**
 			 * Socket Messages
 			 */
-			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto servlet. \nReload page if problems persits",
+			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto. \nReload page if problems persits",
 			
 			/**
 			 * Node Resources
 			 */
+			PROJECT_NODE : "ProjectNode",
+			EXPERIMENT_NODE : "ExperimentNode",
+			SIMULATOR_CONFIGURATION_NODE : "SimulatorConfigurationNode",
 			ENTITY_NODE : "EntityNode", 
 			ASPECT_NODE : "AspectNode",
 			ASPECT_SUBTREE_NODE : "AspectSubTreeNode",
@@ -347,6 +381,7 @@ define(function(require) {
 			TEXT_METADATA_NODE : "TextMetadataNode",
 			VISUAL_GROUP_NODE : "VisualGroupNode",
 			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
+			SKELETON_ANIMATION_NODE: "SkeletonAnimationNode",
 			INPUT_CONNECTION : "FROM",
 			OUTPUT_CONNECTION : "TO"
 		}

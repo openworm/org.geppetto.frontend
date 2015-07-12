@@ -55,6 +55,7 @@ define(function(require) {
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
+			this.aspectNode = options.aspectNode;
 			this.value = options.value;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;

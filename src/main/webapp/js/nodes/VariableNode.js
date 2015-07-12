@@ -43,6 +43,7 @@ define(function(require) {
 
 	return Node.Model.extend({
 		timeSeries : [],
+		unit: "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -52,8 +53,10 @@ define(function(require) {
 		initialize : function(options) {
 			this.name = options.name;
 			this.id = options.id;
-			this.instancePath = options.instancePath;
+			this.unit = options.unit;
 			this.timeSeries = new Array();
+			this.aspectNode = options.aspectNode;
+			this.instancePath = options.instancePath;
 			this.watched = options.watched;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
@@ -67,6 +70,27 @@ define(function(require) {
 		 */
 		getTimeSeries : function() {
 			return this.timeSeries;
+		},
+		
+		/**
+		 * Get the type of tree this is
+		 * 
+		 * @command VariableNode.getUnit()
+		 * @returns {String} Unit for quantity
+		 */
+		getUnit : function() {
+			return this.unit;
+		},
+		
+		/**
+		 * Set unit
+		 * 
+		 * @command VariableNode.setUnit()
+		 * @param {String} unit - unit for variable node
+		 */
+		setUnit : function(unit) {
+			this.unit = unit;
+			return this;
 		},
 
 		/**
@@ -87,8 +111,10 @@ define(function(require) {
 		 */
 		setWatched : function(isWatched) {
 			if (isWatched != this.watched){
-				Simulation.setWatchedVariables([this]);
+				Project.getActiveExperiment().watchVariables([this]);
+				this.watched=isWatched;
 			}
+			return this;
 		},
 		
 		/**

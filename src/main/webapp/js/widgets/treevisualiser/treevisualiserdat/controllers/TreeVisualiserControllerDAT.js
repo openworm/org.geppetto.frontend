@@ -101,7 +101,7 @@ define(function(require) {
 		 * 
 		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
 		 */
-		update : function(event) {
+		update : function(event,parameters) {
 			var treeVisualisersDAT = this.getWidgets();
 			// delete treevisualiser widget(s)
 			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
@@ -113,7 +113,7 @@ define(function(require) {
 					var treeVisualiserDAT = this.widgets[i];
 
 					if(_.find(treeVisualiserDAT.registeredEvents, function(el){return el.id === event})){
-						var selected = GEPPETTO.Simulation.getSelection();
+						var selected = G.getSelection();
 						treeVisualiserDAT.reset();
 						//update treevisualiser with new data set
 						treeVisualiserDAT.setData(selected[0]);
@@ -121,13 +121,14 @@ define(function(require) {
 				}
 			}
 			// update treevisualiser widgets
-			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+			else if (event == Events.Experiment_update) {
+				var step = parameters.steps;
 				// loop through all existing widgets
 				for (var i = 0; i < treeVisualisersDAT.length; i++) {
 					var treeVisualiserDAT = treeVisualisersDAT[i];
 
 					// update treevisualiser with new data set
-					treeVisualiserDAT.updateData();
+					treeVisualiserDAT.updateData(step);
 				}
 			}
 			// update treevisualiser widgets
@@ -191,7 +192,7 @@ define(function(require) {
 			if (node._metaType == "ConnectionNode"){
 				var connectionGroup = [{
 					label:"Highlight Connection",
-					action: ["Simulation.unHighlightAll();","#node_instancepath#.highlight(true)"],
+					action: ["G.unHighlightAll();","#node_instancepath#.highlight(true)"],
 				}];
 
 				groups.push(connectionGroup);
@@ -199,7 +200,7 @@ define(function(require) {
 			if (node._metaType == "EntityNode"){
 				var entity = [{
 					label:"Select Entity",
-					action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+					action: ["G.unSelectAll();","#node_instancepath#.select()"],
 				}];
 
 				groups.push(entity);
@@ -207,7 +208,7 @@ define(function(require) {
 			if (node._metaType == "AspectNode"){
 				var aspect = [{
 					label:"Select Aspect",
-					action: ["Simulation.unSelectAll();","#node_instancepath#.select()"],
+					action: ["G.unSelectAll();","#node_instancepath#.select()"],
 				}];
 
 				groups.push(aspect);
@@ -223,7 +224,7 @@ define(function(require) {
 			if (node._metaType == "VisualGroupNode"){
 				var visualGroup = [{
 					label:"Show Visual Group",
-					action: ["Simulation.unSelectAll();","#node_instancepath#.show(true)"],
+					action: ["G.unSelectAll();","#node_instancepath#.show(true)"],
 				}];
 
 				groups.push(visualGroup);

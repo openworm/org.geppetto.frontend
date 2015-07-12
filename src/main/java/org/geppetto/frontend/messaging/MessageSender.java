@@ -32,14 +32,21 @@
  *******************************************************************************/
 package org.geppetto.frontend.messaging;
 
-import org.geppetto.frontend.OUTBOUND_MESSAGE_TYPES;
+import org.geppetto.frontend.messages.OutboundMessages;
 
-public interface MessageSender {
+public interface MessageSender
+{
 	void addListener(MessageSenderListener listener);
+
 	void removeListener(MessageSenderListener listener);
-	void sendMessage(String requestID, OUTBOUND_MESSAGE_TYPES type, String update);
+
+	void sendMessage(String requestID, OutboundMessages type, String update);
+
 	void pause();
+
 	void resume();
+
 	void reset();
+
 	void shutdown();
 }

@@ -44,6 +44,7 @@ define(function(require) {
 		var $ = require('jquery'),
 		React = require('react'),
 		InfoModal = require('jsx!components/popups/InfoModal');
+		var ProjectNode = require('nodes/ProjectNode');
 
 		/**
 		 * @class GEPPETTO.Main
@@ -60,17 +61,37 @@ define(function(require) {
 			disconnected: false,
 			status: 0,
 			simulationFileTemplate: "assets/resources/template.xml",
-			
+			statusWorker : null,
+
 			getVisitorStatus: function() {
 				return this.status;
 			},
+			
+			getStatusWorker : function(){
+				return this.statusWorker;
+			},
 
+			startStatusWorker : function(){
+				//create web worker for checking status
+	            this.statusWorker = new Worker("assets/js/PullStatusWorker.js");
+	            
+	            this.statusWorker.postMessage(1000);
+	            
+				//receives message from web worker
+	            this.statusWorker.onmessage = function (event) {
+	            	if(window.Project!=null || undefined){
+	            		if(window.Project.persisted && window.Project.getId()!=-1){
+	            			GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_STATUS, window.Project.id);
+	            		}
+	            	}
+	             };
+			},
+			
 			/**
 			 * Initialize web socket communication
 			 */
 			init: function() {
 				GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
-				GEPPETTO.Simulation.status = GEPPETTO.Simulation.StatusEnum.INIT;
 				GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);
 			},
 
@@ -96,11 +117,7 @@ define(function(require) {
 
 								//unbind click event so we can reuse same modal for other alerts
 								$('#infomodal-btn').unbind('click');
-
-								if(GEPPETTO.Simulation.isLoading()){
-									GEPPETTO.trigger('simulation:show_spinner');
-								}
-							});                                         
+							});
 						}
 
 						//second check, user isn't there or didn't click yes, disconnect
@@ -151,16 +168,16 @@ define(function(require) {
 // ============================================================================
 
 		$(document).ready(function() {
-			//Create canvas 
+			//Create canvas
 			var webGLStarted = GEPPETTO.webGLAvailable();
-
+             
 			//make sure webgl started correctly
 			if(!webGLStarted) {
 				GEPPETTO.FE.update(false);
 			}
 			else{
 				GEPPETTO.FE.initialEvents();
-				
+
 				//Increment the idle time counter every minute.
 				setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
 	            var here = $(this);
@@ -175,12 +192,50 @@ define(function(require) {
 						GEPPETTO.Main.idleTime = 0;
 					}
 				});
-				
+
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
 				//Initialize websocket functionality
 				GEPPETTO.Main.init();
-			}		
+				
+				var visibleExperiments = false;
+				$('#experimentsButton').click(function (e) {
+					if(!visibleExperiments){
+						$('#console').hide(); 
+						$('#experiments').show();
+						$(this).tab('show');
+						visibleExperiments = true;
+					}else{
+						$('#experiments').hide();
+						visibleExperiments= false;
+					}
+				});
+
+				$('#consoleButton').click(function (e) {
+					$('#console').show() 
+					$('#experiments').hide()
+					$(this).tab('show')
+					visibleExperiments = false;
+				});
+				
+				$("#experiments").resizable({
+					handles: 'n',
+					minHeight: 100,
+					autoHide: true,
+					maxHeight: 400,
+					resize: function(event, ui) {
+						if(ui.size.height > ($("#footerHeader").height()*.75)){
+							$("#experiments").height($("#footerHeader").height()*.75);
+							event.preventDefault();
+						}
+						$('#experiments').resize();
+						$("#experiments").get(0).style.top = "0px";
+					}.bind(this)
+				});
+				
+				$('.nav-tabs li.active').removeClass('active');
+
+			}
 		});
 	};
 });

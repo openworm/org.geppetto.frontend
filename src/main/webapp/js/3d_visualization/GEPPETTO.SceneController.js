@@ -45,6 +45,14 @@ define(function(require) {
 				},
 				
 				/**
+				* Applies visual transformation to given aspect. 
+				*/
+				applyVisualTransformation : function(visualAspect, transformation) {
+					// NOTE: visualAspect currently disregarded as the transformation applies to the entire scene
+					GEPPETTO.getVARS().renderer.setCurrentMatrix(transformation);
+				},
+				
+				/**
 				 * Light up the entity 
 				 * 
 				 * @param {String} aspectPath - the aspect path of the entity to be lit
@@ -406,7 +414,7 @@ define(function(require) {
 						if(!mesh.selected){
 							//if there are nodes still selected, give it a ghost effect. If not nodes are
 							//selected, give the meshes old default color
-							if(Simulation.getSelection().length>0){
+							if(G.getSelection().length>0){
 								mesh.material.color.setHex(GEPPETTO.Resources.COLORS.GHOST);
 								mesh.material.transparent = true;
 								mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
@@ -747,10 +755,9 @@ define(function(require) {
 					GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate; // so that we log only the
 					// cycles when we are
 					// updating the scene
-					if (GEPPETTO.Simulation.getSimulationStatus() == 2
-							&& GEPPETTO.getVARS().debugUpdate) {
-						GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_STARTING);
-					}
+
+					GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_STARTING);
+					
 					GEPPETTO.getVARS().controls.update();
 					requestAnimationFrame(GEPPETTO.SceneController.animate);
 					if (GEPPETTO.getVARS().rotationMode) {
@@ -762,8 +769,7 @@ define(function(require) {
 					if (GEPPETTO.getVARS().stats) {
 						GEPPETTO.getVARS().stats.update();
 					}
-					if (GEPPETTO.Simulation.getSimulationStatus() == 2
-							&& GEPPETTO.getVARS().debugUpdate) {
+					if (GEPPETTO.getVARS().debugUpdate) {
 						GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
 					}
 				},

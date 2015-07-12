@@ -40,8 +40,8 @@ define(function (require) {
                                 In fact, we reckon this only represents about 20% of what you can expect in the end. We hope you'll enjoy it.
                                 </div>
 
-                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="icon-comment" onClick={this.startTutorial}>Start Tutorial</Button>
-                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="icon-step-forward" onClick={this.skipTutorial}>Skip Tutorial</Button>
+                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="fa fa-comment" onClick={this.startTutorial}>Start Tutorial</Button>
+                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="fa fa-step-forward" onClick={this.skipTutorial}>Skip Tutorial</Button>
 
                                 <div className="row disable-welcome">
                                     <span><input id="welcomeMsgCookie" type="checkbox" onChange={this.dontShowNextTime}/> Don't show next time I visit Geppetto</span>

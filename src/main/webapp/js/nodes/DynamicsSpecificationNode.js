@@ -59,6 +59,7 @@ define(function(require) {
 			this.value = options.value;
 			this.scalingFactor = options.scalingFactor;
 			this.dynamics = options.dynamics;
+			this.aspectNode = options.aspectNode;
 			this.name = options.name;
 			this.id = options.id;
 			this.instancePath = options.instancePath;

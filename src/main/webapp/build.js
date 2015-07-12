@@ -13,7 +13,8 @@
 		react: 'vendor/react',
 		jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
-        text: 'vendor/text'
+        text: 'vendor/text',
+        pako:'vendor/pako.min'
     },
     name : "main",
     waitSeconds : 200,

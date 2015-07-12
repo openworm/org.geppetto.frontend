@@ -30,8 +30,8 @@ define(function (require) {
         getDefaultProps: function() {
             return {
                 label: 'Help',
-                className: 'pull-right btn-info help-button',
-                icon:'icon-info-sign',
+                className: 'pull-right help-button',
+                icon:'fa fa-info-circle',
                 onClick: this.onClick
             }
         }

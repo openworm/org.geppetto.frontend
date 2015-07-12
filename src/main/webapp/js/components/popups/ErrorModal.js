@@ -56,7 +56,7 @@ define(function (require) {
         },
         
         shareTwitter: function() {
-            GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @openworm help!');
+            GEPPETTO.Share.twitter('http://geppetto.org','Whoops, I broke Geppetto! @geppettoengine help!');
         },
         
         render: function (){
@@ -65,16 +65,16 @@ define(function (require) {
                         <div className="modal-dialog">
                           <div className="modal-content">
                             <div className="modal-header" id="errormodal-header">
-                              <button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
                               <h3 id="errormodal-title" className="text-center">{this.props.title}</h3>
                             </div>
                             <div className="modal-body">
                               <p id="errormodal-text">
+                              	{this.props.message}
                               </p>
                               <div className="panel panel-default">
                                 <div className="panel-heading">
                                   <h4 className="panel-title">
-                                   <a id="error_code" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">{'> Error Code: '+this.props.code}</a>
+                                   <a id="error_code" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">{'Details '+this.props.code}</a>
                                  </h4>
                                </div>
                                <div id="collapseOne" className="panel-collapse collapse">
@@ -86,13 +86,13 @@ define(function (require) {
                            </div>
                          </div>
                          <div className="modal-footer" id="errormodal-footer">
-                          <button  className="btn btn-warning" onClick={this.shareTwitter} aria-hidden="true">
-                           <i className="icon-twitter"></i> Shame on you
+                          <button  className="btn" onClick={this.shareTwitter} aria-hidden="true">
+                           <i className="fa fa-twitter"></i> Shame on you
                          </button>
-                         <a className="btn btn-warning" href="https://github.com/openworm/org.geppetto/issues/new" target="_blank" aria-hidden="true">
-                           <i className="icon-bug"></i> Open issue
+                         <a className="btn" href="https://github.com/openworm/org.geppetto/issues/new" target="_blank" aria-hidden="true">
+                           <i className="fa fa-bug"></i> Open issue
                          </a>
-                         <button id="errormodal-btn" className="btn btn-info" data-dismiss="modal" aria-hidden="true">
+                         <button id="errormodal-btn" className="btn" data-dismiss="modal" aria-hidden="true">
                            Close
                          </button>
                        </div>

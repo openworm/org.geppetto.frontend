@@ -50,6 +50,14 @@ define(function(require) {
 		 * @exports geppetto-objects/G
 		 */
 		GEPPETTO.G = {
+			listeners:[],
+			selectionOptions : {
+				show_inputs : true,
+				show_outputs : true,
+				draw_connection_lines : true,
+				hide_not_selected : false
+			},
+			highlightedConnections : [],
 			addWidget: function(type) {
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
 				return newWidget;
@@ -154,22 +162,6 @@ define(function(require) {
 			},
 
 			/**
-			 * Gets the object for the current Simulation, if any.
-			 *
-			 * @command G.getCurrentSimulation()
-			 * @returns {Simulation} Returns current Simulation object if it exists
-			 */
-			getCurrentSimulation: function() {
-				//return simulation object if one has been loaded
-				if(GEPPETTO.Simulation.isLoaded()) {
-					return JSON.stringify(GEPPETTO.Simulation);
-				}
-				else {
-					return GEPPETTO.Resources.NO_SIMULATION_TO_GET;
-				}
-			},
-
-			/**
 			 * Get all commands and descriptions available for object G.
 			 *
 			 * @command G.help()
@@ -202,7 +194,7 @@ define(function(require) {
 			 */
 			runScript: function(scriptURL) {
 
-				GEPPETTO.MessageSocket.send("run_script", scriptURL);
+				GEPPETTO.MessageSocket.send("get_script", scriptURL);
 
 				return GEPPETTO.Resources.RUNNING_SCRIPT;
 			},
@@ -303,11 +295,10 @@ define(function(require) {
 			 */
 			shareOnTwitter : function(){
 				var shareURL = 'http://geppetto.org';
-				
-				if(GEPPETTO.Simulation.isLoaded()){
-					shareURL = "http://live.geppeto.org//?sim=" + GEPPETTO.Simulation.simulationURL;
-				}
-				
+
+				//TODO: How to share experiment on twitter? Used to be Sim URL
+				//shareURL = "http://live.geppeto.org//?sim=" + GEPPETTO.Simulation.simulationURL;
+
 				GEPPETTO.Share.twitter(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!');
 			
 				return GEPPETTO.Resources.SHARE_ON_TWITTER;
@@ -321,9 +312,8 @@ define(function(require) {
 			shareOnFacebook : function(){
 				var shareURL = 'http://geppetto.org';
 				
-				if(GEPPETTO.Simulation.isLoaded()){
-					shareURL = "http://live.geppeto.org/?sim=" + GEPPETTO.Simulation.simulationURL;
-				}
+				//TODO: How to share experiment url in FB, used to be simulation URL
+				//shareURL = "http://live.geppeto.org/?sim=" + GEPPETTO.Simulation.simulationURL;
 				
 				GEPPETTO.Share.facebook(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','');			
 				
@@ -371,6 +361,26 @@ define(function(require) {
 				return GEPPETTO.Resources.WAITING;
 			},
 
+			linkDropBox : function(key) {
+				if(key!=null || key!=undefined){
+					var parameters = {};
+					parameters["key"] = key;
+					GEPPETTO.MessageSocket.send("link_dropbox", parameters);
+					
+					return  "Sending request to link dropbox to Geppetto";
+				}
+				else{
+					var dropboxURL = 
+						"https://www.dropbox.com/1/oauth2/authorize?locale=en_US&client_id=kbved8e6wnglk4h&response_type=code";
+					var win=window.open(dropboxURL, '_blank');
+					win.focus();
+				}
+			},
+			
+			unLinkDropBox : function() {
+				
+			},
+			
 			/**
 			 * State of debug statements, whether they are turned on or off.
 			 *
@@ -428,8 +438,244 @@ define(function(require) {
 				GEPPETTO.incrementCameraZoom(z);
 				
 				return GEPPETTO.Resources.CAMERA_ZOOM_INCREMENT;
-			}
+			},
+			
+			/**
+			 * Callback to be called whenever a watched node changes
+			 *
+			 * @param {VariableNode} varnode - VariableNode to couple callback to
+			 * @param {Function} callback - Callback function to be called whenever _variable_ changes
+			 */
+			addOnNodeUpdatedCallback: function(varnode, callback) {
+				this.listeners[varnode.instancePath] = callback;
+			},
+			
+			/**
+			 * Clears callbacks coupled to changes in a node 
+			 * 
+			 * @param {VariableNode} varnode - VariableNode to which callbacks are coupled
+			 */
+			clearOnNodeUpdateCallback: function(varnode) {
+				this.listeners[varnode.instancePath] = null;
+			},
+			
+			/**
+			 * Applies visual transformations to a given entity given instance path of the transformations.
+			 * 
+			 * @param {AspectNode} visualAspect - Aspect for the entity the visual transformation is to be applied to
+			 * @param {SkeletonAnimationNode} visualTransformInstancePath - node that stores the visual transformations
+			 */
+			addVisualTransformListener: function(visualAspect, visualTransformInstancePath) {
+				this.addOnNodeUpdatedCallback(visualTransformInstancePath, function(varnode,step){
+			    	GEPPETTO.SceneController.applyVisualTransformation(visualAspect, varnode.skeletonTransformations[step]);
+				});
+			},
+			
+			/**
+			 * Modulates the brightness of an aspect visualization, given a watched node
+			 * and a normalization function. The normalization function should receive
+			 * the value of the watched node and output a number between 0 and 1,
+			 * corresponding to min and max brightness. If no normalization function is
+			 * specified, then brightness = value
+			 * 
+			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
+			 * @param {VariableNode} modulation - Variable which modulates the brightness
+			 * @param {Function} normalizationFunction
+			 */
+			addBrightnessFunction: function(aspect,modulation,normalizationFunction) {
+				this.addOnNodeUpdatedCallback(modulation, function(varnode,step){
+			    	GEPPETTO.SceneController.lightUpEntity(aspect.instancePath,
+			    			normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[step].getValue()) : varnode.getTimeSeries()[0].getValue());
+				});
+			},
 
+			clearBrightnessFunctions: function(varnode) {
+				this.clearOnNodeUpdateCallback(varnode);
+			},
+			
+			/**
+			 * Dynamically change the visual representation of an aspect,
+			 * modulated by the value of a watched node. The _transformation_
+			 * to be applied to the aspect visual representation should be a
+			 * function receiving the aspect and the watched node's value,
+			 * which can be normalized via the _normalization_ function. The
+			 * latter is a function which receives the watched node's value
+			 * an returns a float between 0 and 1.
+			 * 
+			 * @param {AspectNode} visualAspect - Aspect which contains the VisualizationTree with the entity to be dynamically changed
+			 * @param {String} visualEntityName - Name of visual entity in the visualAspect VisualizationTree
+			 * @param {VariableNode} dynVar - Dynamical variable which will modulate the transformation
+			 * @param {Function} transformation - Transformation to act upon the visualEntity, given the modulation value
+			 * @param {Function} normalization - Function to be applied to the dynamical variable, normalizing it to a suitable range according to _transformation_
+			 */	
+			addDynamicVisualization: function(visualAspect, visualEntityName, dynVar, transformation, normalization){
+				//TODO: things should be VisualizationTree centric instead of aspect centric...  
+		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
+		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0].getValue()) : watchedNode.getTimeSeries()[0].getValue());});
+			},
+
+			/**
+			 * Sets options that happened during selection of an entity. For instance, 
+			 * user can set things that happened during selection as if connections inputs and outputs are shown,
+			 * if connection lines are drawn and if other entities that were not selected are still visible.
+			 * 
+			 * @param {Object} options - New set of options for selection process
+			 */
+			setOnSelectionOptions : function(options){
+				if(options.show_inputs != null){
+					this.selectionOptions.show_inputs = options.show_inputs;
+				}
+				if(options.show_outputs != null){
+					this.selectionOptions.show_outputs = options.show_outputs;
+				}
+				if(options.draw_connection_lines != null){
+					this.selectionOptions.draw_connection_lines = options.draw_connection_lines;
+				}
+				if(options.hide_not_selected != null){
+					this.selectionOptions.hide_not_selected = options.hide_not_selected;
+				}
+			},
+			
+			/**
+			 * Options set for the selection event, turning on/off connections and lines.
+			 * 
+			 * @returns {Object} Options for selection.
+			 */
+			getSelectionOptions : function(){
+				return this.selectionOptions;
+			},
+			
+			/**
+			 * Unselects all selected entities
+			 * 
+			 * @command G.unSelectAll()
+			 */
+			unSelectAll : function(){
+				var selection = this.getSelection();
+				if(selection.length > 0){
+					for(var key in selection){
+						var entity = selection[key];
+						entity.unselect();
+					}
+				}
+				
+				return GEPPETTO.Resources.UNSELECT_ALL;
+			},
+			
+			/**
+			 * Show unselected entities, leaving selected one(s) visible.
+			 * 
+			 * @param {boolean} mode - Toggle flag for showing unselected entities.
+			 */
+			showUnselected : function(mode){
+				var selection = this.getSelection();
+				var visible = {};
+				for(var e in selection){
+					var entity = selection[e];
+					var connections = entity.getConnections();
+					for(var c in connections){
+						var con = connections[c];
+						visible[con.getEntityInstancePath()] = "";
+					}
+				}
+				this.toggleUnSelected(window.Project.runTimeTree, mode,visible);
+			},
+			
+			/**
+			 * Toggles unselected entities.
+			 */
+			toggleUnSelected : function(entities, mode, visibleEntities){
+                for(var e in entities){
+                    var entity = entities[e];
+                    if((!(entity.instancePath in visibleEntities)) && entity.selected == false){
+                        if(mode){
+                            entity.hide();
+                        }
+                        else{
+                            entity.show();
+                        }
+                    }
+                    if(entity.getEntities()!=null){
+                        this.toggleUnSelected(entity.getEntities(), mode, visibleEntities);
+                    }
+                }
+            },
+			
+			/**
+			 *
+			 * Outputs list of commands with descriptions associated with the Simulation object.
+			 *
+			 * @command G.getSelection()
+			 * @returns  {Array} Returns list of all entities selected
+			 */
+			getSelection : function() {
+				var selection = this.traverseSelection(window.Project.runTimeTree);
+				
+				return selection;
+			},
+
+			/**
+			 * Unhighlight all highlighted connections
+			 * 
+			 * @command G.unHighlightAll()
+			 */
+			unHighlightAll : function(){
+				for(var hc in this.highlightedConnections){
+					this.highlightedConnections[hc].highlight(false);
+				}
+				
+				return GEPPETTO.Resources.HIGHLIGHT_ALL;
+			},
+			
+			/**
+			 * Sets the timer for updates during play/replay.
+			 * 
+			 * @command G.setPlayTimerStep(interval)
+			 */
+			setPlayTimerStep : function(interval){
+				GEPPETTO.getVARS().playTimerStep = interval;
+			},
+			
+			/**
+			 * Set play in loop true/false.
+			 * 
+			 * @command G.setPlayLoop(loop)
+			 */
+			setPlayLoop : function(loop){
+				GEPPETTO.getVARS().playLoop = loop;
+			},
+			
+			/**
+			 * Set canvas color.
+			 * 
+			 * @command G.setBackgroundColour(color)
+			 * 
+			 * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
+			 */
+			setBackgroundColour : function(color){
+				var threecolor = new THREE.Color( color );
+				GEPPETTO.getVARS().renderer.setClearColor( threecolor, 1 );
+			},
+			
+			/**
+			 * Helper method that traverses through run time tree looking for selected entities.
+			 */
+			traverseSelection : function(entities){
+				var selection = new Array();
+				for(var e in entities){
+					var entity = entities[e];
+					if(entity.selected){
+						if(entity.getEntities().length==0){
+							selection[selection.length] = entity;
+						}
+					}
+					if(entity.getEntities().length >0){
+						selection = selection.concat(this.traverseSelection(entity.getEntities()));
+					}
+				}
+
+				return selection;
+			},
 		};
 	};
 });

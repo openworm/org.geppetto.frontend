@@ -6,7 +6,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="assets/css/custom-theme/jquery-ui-1.10.0.custom.css" />
-    <link rel="stylesheet" href="assets/css/font-awesome.css" />
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
     <link rel="stylesheet" href="assets/css/codemirror.css" />
     <link rel="stylesheet" href="assets/css/lesser-dark.css" />
     <link rel="stylesheet" href="assets/css/jsConsole.css" />
@@ -61,14 +61,14 @@
 </div>
 
 <div id="mainContainer">
+	<div id="geppettologo"></div>
     <div id="sim"></div>
 
     <div id="footer">
         <div id="footerHeader">
-            <div id="geppettologo"></div>
             <div id="consoleButtonContainer">
                 <button class="btn" data-clipboard-target="clipboard_text" id="consoleButton">
-                    <icon class="icon-terminal"></icon>
+                    <icon class="fa fa-terminal"></icon>
                     Console
                 </button>
             </div>

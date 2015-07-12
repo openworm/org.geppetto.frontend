@@ -45,7 +45,7 @@ define(function(require) {
 			var help = GEPPETTO.Console.help();
 			var commandCount = help.match(/--/g);  
 			notEqual(help, null, "Global help() command test.");
-			equal(53, commandCount.length, "Global help() - Looking for 53 commands in help() command.");
+			equal(36, commandCount.length, "Global help() - Looking for 36 commands in help() command.");
 			
 			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
 
@@ -54,11 +54,6 @@ define(function(require) {
 			var modalVisible = $('#help-modal').hasClass('in');
 			
 			equal(modalVisible, false, "Help Window Hidden");
-		});
-
-		module("G Object Test");
-		test("Test Get Current Simulation", function() {
-			equal(G.getCurrentSimulation(), GEPPETTO.Resources.NO_SIMULATION_TO_GET, "Testing no simulation scenario.");
 		});
 
 		test("Test Debug Mode", function() {
@@ -241,7 +236,6 @@ define(function(require) {
 			//add some commands to history
 			GEPPETTO.Console.executeCommand("G.help();");
 			GEPPETTO.Console.executeCommand("help();");
-			GEPPETTO.Console.executeCommand("Simulation.start()");
 
 			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "Commands copied, test passed");		
 		});

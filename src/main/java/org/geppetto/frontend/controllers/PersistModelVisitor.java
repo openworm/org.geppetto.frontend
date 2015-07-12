@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.IModelInterpreter;
 import org.geppetto.core.model.simulation.Model;
 import org.geppetto.core.model.simulation.visitor.BaseVisitor;
@@ -106,7 +107,7 @@ public class PersistModelVisitor extends TraversingVisitor
 			}
 			for(URL url : dependentModels)
 			{
-				Path localFile = Paths.get(URLReader.createLocalCopy(url).toURI());
+				Path localFile = Paths.get(URLReader.createLocalCopy(Scope.CONNECTION,project.getId(),url).toURI());
 				// let's replace every occurrence of the original URLs inside the file with their copy
 				replaceURLs(localFile, replaceMap);
 				//noew let's save the file in S3

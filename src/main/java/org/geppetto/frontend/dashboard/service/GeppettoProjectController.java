@@ -32,13 +32,12 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.geppetto.core.beans.Settings;
+import org.geppetto.core.beans.PathConfiguration;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
@@ -47,6 +46,7 @@ import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.ResultsFormat;
 import org.geppetto.core.manager.IGeppettoManager;
+import org.geppetto.core.manager.Scope;
 import org.geppetto.core.utilities.Zipper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -99,10 +99,7 @@ public class GeppettoProjectController
 				{
 					if(e.getId() == experimentId)
 					{
-						String path = "results" + File.separator + "p" + File.separator + projectId + File.separator + "e" + File.separator + experimentId + File.separator;
-						File outputFolder = new File(Settings.getPathInTempFolder(path));
-						outputFolder.mkdirs();
-						Zipper zipper = new Zipper(Settings.getPathInTempFolder(path) + "results.zip");
+						Zipper zipper = new Zipper(PathConfiguration.createExperimentTmpPath(Scope.CONNECTION, projectId, experimentId, null, "results.zip"));
 						for(IAspectConfiguration ac : e.getAspectConfigurations())
 						{
 							URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.RAW, e, e.getParentProject()));

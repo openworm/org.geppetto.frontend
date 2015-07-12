@@ -48,7 +48,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geppetto.core.beans.Settings;
+import org.geppetto.core.beans.PathConfiguration;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
@@ -59,6 +59,7 @@ import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.ResultsFormat;
 import org.geppetto.core.manager.IGeppettoManager;
+import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.model.state.visitors.SerializeTreeVisitor;
@@ -99,6 +100,9 @@ public class ConnectionHandler
 
 	private IGeppettoManager geppettoManager;
 
+	// the geppetto project active for this connection
+	private IGeppettoProject geppettoProject;
+
 	/**
 	 * @param websocketConnection
 	 * @param geppettoManager
@@ -106,7 +110,10 @@ public class ConnectionHandler
 	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager)
 	{
 		this.websocketConnection = websocketConnection;
+		// FIXME This is extremely ugly, a session based geppetto manager is autowired in the websocketconnection
+		// but a session bean cannot travel outside a conenction thread so a new one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
+
 	}
 
 	/**
@@ -169,6 +176,7 @@ public class ConnectionHandler
 			// serialize project prior to sending it to client
 			Gson gson = new Gson();
 			String json = gson.toJson(geppettoProject);
+			setConnectionProject(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, json);
 
 			if(experimentId != -1)
@@ -507,7 +515,7 @@ public class ConnectionHandler
 				File file = geppettoManager.downloadModel(aspectInstancePath, modelFormat, experiment, geppettoProject);
 
 				// Zip folder
-				Zipper zipper = new Zipper(Settings.getPathInTempFolder(file.getName() + ".zip"));
+				Zipper zipper = new Zipper(PathConfiguration.createExperimentTmpPath(Scope.CONNECTION, projectId, experimentID, aspectInstancePath, file.getName() + ".zip"));
 				Path path = zipper.getZipFromDirectory(file);
 
 				// Send zip file to the client
@@ -579,8 +587,7 @@ public class ConnectionHandler
 
 	public void userBecameIdle(String requestID)
 	{
-		ConnectionsManager.getInstance().removeConnection(websocketConnection);
-		// TODO what do we do?
+		closeProject();
 	}
 
 	/**
@@ -846,7 +853,7 @@ public class ConnectionHandler
 				{
 
 					geppettoManager.persistProject(requestID, geppettoProject);
-					PersistedProject persistedProject =  new PersistedProject( geppettoProject.getId(),  geppettoProject.getActiveExperimentId());
+					PersistedProject persistedProject = new PersistedProject(geppettoProject.getId(), geppettoProject.getActiveExperimentId());
 					websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTED, getGson().toJson(persistedProject));
 				}
 				else
@@ -860,20 +867,19 @@ public class ConnectionHandler
 			}
 		}
 	}
-	
+
 	class PersistedProject
 	{
 		long projectID;
 		long activeExperimentID;
-		
+
 		public PersistedProject(long projectID, long activeExperimentID)
 		{
 			super();
 			this.projectID = projectID;
 			this.activeExperimentID = activeExperimentID;
 		}
-		
-		
+
 	}
 
 	/**
@@ -980,7 +986,7 @@ public class ConnectionHandler
 				if(url != null)
 				{
 					// Zip folder
-					Zipper zipper = new Zipper(Settings.getPathInTempFolder(aspectPath + "-" + URLReader.getFileName(url)));
+					Zipper zipper = new Zipper(PathConfiguration.createExperimentTmpPath(Scope.CONNECTION, projectId, experimentId, aspectPath, URLReader.getFileName(url)));
 					Path path = zipper.getZipFromFile(url);
 
 					// Send zip file to the client
@@ -988,8 +994,7 @@ public class ConnectionHandler
 				}
 				else
 				{
-					error(new GeppettoExecutionException("Results of type "+format+" not found in the current experiment"), 
-							"Error downloading results for " + aspectPath + " in format " + format);
+					error(new GeppettoExecutionException("Results of type " + format + " not found in the current experiment"), "Error downloading results for " + aspectPath + " in format " + format);
 				}
 			}
 		}
@@ -1171,6 +1176,37 @@ public class ConnectionHandler
 				}
 			}
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public void closeProject()
+	{
+		try
+		{
+			geppettoManager.closeProject(null, geppettoProject);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			logger.error("Error while closing the project", e);
+		}
+
+		ConnectionsManager.getInstance().removeConnection(websocketConnection);
+
+	}
+
+	/**
+	 * @param geppettoProject
+	 * @throws GeppettoExecutionException
+	 */
+	public void setConnectionProject(IGeppettoProject geppettoProject) throws GeppettoExecutionException
+	{
+		if(this.geppettoProject != null)
+		{
+			geppettoManager.closeProject(null, geppettoProject);
+		}
+		this.geppettoProject = geppettoProject;
 	}
 
 }

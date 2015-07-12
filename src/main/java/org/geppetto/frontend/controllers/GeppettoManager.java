@@ -45,7 +45,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geppetto.core.beans.Settings;
+import org.geppetto.core.beans.PathConfiguration;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
@@ -56,6 +56,7 @@ import org.geppetto.core.data.model.ISimulationResult;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.data.model.ResultsFormat;
 import org.geppetto.core.manager.IGeppettoManager;
+import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.s3.S3Manager;
@@ -89,6 +90,9 @@ public class GeppettoManager implements IGeppettoManager
 
 	private IUser user;
 
+	// By default
+	private Scope scope = Scope.CONNECTION;
+
 	public GeppettoManager()
 	{
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -106,6 +110,12 @@ public class GeppettoManager implements IGeppettoManager
 		}
 	}
 
+	public GeppettoManager(Scope scope)
+	{
+		super();
+		this.scope = scope;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -114,8 +124,15 @@ public class GeppettoManager implements IGeppettoManager
 	public void loadProject(String requestId, IGeppettoProject project) throws MalformedURLException, GeppettoInitializationException, GeppettoExecutionException
 	{
 		// RuntimeProject is created and populated when loadProject is called
-		RuntimeProject runtimeProject = new RuntimeProject(project);
-		projects.put(project, runtimeProject);
+		if(!projects.containsKey(project))
+		{
+			RuntimeProject runtimeProject = new RuntimeProject(project, this);
+			projects.put(project, runtimeProject);
+		}
+		else
+		{
+			throw new GeppettoExecutionException("Cannot load two instances of the same project");
+		}
 	}
 
 	/*
@@ -129,11 +146,15 @@ public class GeppettoManager implements IGeppettoManager
 		{
 			throw new GeppettoExecutionException("A project without a runtime project cannot be closed");
 		}
-		if(projects.get(project).getActiveExperiment() != null)
+		try
 		{
-			throw new GeppettoExecutionException("A project with an active experiment cannot be closed");
+			PathConfiguration.deleteProjectTmpFolder(getScope(), project.getId());
 		}
-
+		catch(IOException e)
+		{
+			throw new GeppettoExecutionException(e);
+		}
+		projects.get(project).release();
 		projects.remove(project);
 	}
 
@@ -245,7 +266,7 @@ public class GeppettoManager implements IGeppettoManager
 
 					// save Geppetto Model
 					URL url = new URL(project.getGeppettoModel().getUrl());
-					Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(url).toURI());
+					Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(scope, project.getId(), url).toURI());
 
 					// save each model inside GeppettoModel and save every file referenced inside every model
 					PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(
@@ -266,7 +287,7 @@ public class GeppettoManager implements IGeppettoManager
 						if(experiment.getScript() != null)
 						{
 							URL scriptURL = new URL(experiment.getScript());
-							Path localScript = Paths.get(URLReader.createLocalCopy(scriptURL).toURI());
+							Path localScript = Paths.get(URLReader.createLocalCopy(scope, project.getId(), scriptURL).toURI());
 							String newScriptPath = "projects/" + Long.toString(project.getId()) + "/" + experiment.getId() + "/script.js";
 							S3Manager.getInstance().saveFileToS3(localScript.toFile(), newScriptPath);
 							experiment.setScript(S3Manager.getInstance().getURL(newScriptPath).toString());
@@ -327,7 +348,7 @@ public class GeppettoManager implements IGeppettoManager
 		}
 
 		DataManagerHelper.getDataManager().deleteExperiment(experiment);
-		if(project.getActiveExperimentId()==experiment.getId())
+		if(project.getActiveExperimentId() == experiment.getId())
 		{
 			project.setActiveExperimentId(-1);
 		}
@@ -375,7 +396,7 @@ public class GeppettoManager implements IGeppettoManager
 			}
 			// ConSvert model
 			File file = this.downloadModel(aspectID, format, experiment, project);
-			Zipper zipper = new Zipper(Settings.getPathInTempFolder(file.getName() + ".zip"));
+			Zipper zipper = new Zipper(PathConfiguration.createExperimentTmpPath(Scope.CONNECTION, project.getId(), experiment.getId(), aspectID, file.getName() + ".zip"));
 			Path path = zipper.getZipFromDirectory(file);
 			dropboxService.upload(path.toFile());
 		}
@@ -553,5 +574,17 @@ public class GeppettoManager implements IGeppettoManager
 	{
 		// TODO This could be more sophisticated and return only the projects which have changed their status because of a run
 		return project.getExperiments();
+	}
+
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.geppetto.core.manager.IGeppettoManager#getScope()
+	 */
+	@Override
+	public Scope getScope()
+	{
+		return scope;
 	}
 }

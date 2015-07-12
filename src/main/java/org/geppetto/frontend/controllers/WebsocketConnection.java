@@ -63,7 +63,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -90,28 +89,29 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
+
 	public WebsocketConnection()
 	{
 		super();
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-		//FIXME Matteo: The following line is in the wrong place but any proper place seems to break DataNucleus.
-		//By calling getInstance on the ExperimentRunManager we are initializing it since the first time getInstance
-		//is called we check the database to see if there are any experiments queued that should be executed.
-		//Calling getInstance on ExperimentRunManager triggers this process. Ideally the ExperimentRunManager
-		//should be a spring bean with scope singleton but when the different parts of the application were trying to use 
-		//it autowired the application was hanging without exceptions or error...so this class became a traditional
-		//singleton. Ideally the singleton should be initialized as soon as the geppetto server starts, for this reason an
-		//ApplicationListenerBean was added. Unfortunately if the ExperimentRunManager is initialized before the bundle is 
-		//started DataNucleus starts giving problems. In the initializaton of ExperimentRunManager there is a method called
-		//loadExperiment which queries the database to fetch the projects. After hours of investigation turns out that if
-		//a query is performed before the bundle is started then DataNucleus will subsequently have problems when performing
-		//perist opeartions, complaining that classes are not resolved and throwing ClassNotResolvedException. The issue
-		//was manifesting itself as soon as something was getting persisted, e.g. calling setActiveExperiment on a project.
-		//The downside of this line being here, beside being obviously the wrong place is that the ExperimentRunManager
-		//will get initialized only AFTER someone connects, so there has to be at least one connection before geppetto
-		//starts running experiments, this is as likely to happen as ugly.
+		// FIXME Matteo: The following line is in the wrong place but any proper place seems to break DataNucleus.
+		// By calling getInstance on the ExperimentRunManager we are initializing it since the first time getInstance
+		// is called we check the database to see if there are any experiments queued that should be executed.
+		// Calling getInstance on ExperimentRunManager triggers this process. Ideally the ExperimentRunManager
+		// should be a spring bean with scope singleton but when the different parts of the application were trying to use
+		// it autowired the application was hanging without exceptions or error...so this class became a traditional
+		// singleton. Ideally the singleton should be initialized as soon as the geppetto server starts, for this reason an
+		// ApplicationListenerBean was added. Unfortunately if the ExperimentRunManager is initialized before the bundle is
+		// started DataNucleus starts giving problems. In the initializaton of ExperimentRunManager there is a method called
+		// loadExperiment which queries the database to fetch the projects. After hours of investigation turns out that if
+		// a query is performed before the bundle is started then DataNucleus will subsequently have problems when performing
+		// perist opeartions, complaining that classes are not resolved and throwing ClassNotResolvedException. The issue
+		// was manifesting itself as soon as something was getting persisted, e.g. calling setActiveExperiment on a project.
+		// The downside of this line being here, beside being obviously the wrong place is that the ExperimentRunManager
+		// will get initialized only AFTER someone connects, so there has to be at least one connection before geppetto
+		// starts running experiments, this is as likely to happen as ugly.
 		ExperimentRunManager.getInstance();
-		//End of the rant, I hope the above will sound silly and wrong in the future. Matteo
+		// End of the rant, I hope the above will sound silly and wrong in the future. Matteo
 		this.connectionHandler = new ConnectionHandler(this, geppettoManager);
 	}
 
@@ -127,8 +127,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	protected void onClose(int status)
 	{
 		messageSender.shutdown();
-		//TODO Release GeppettoManager
-		ConnectionsManager.getInstance().removeConnection(this);
+		connectionHandler.closeProject();
 	}
 
 	@Override
@@ -190,7 +189,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 
 	/**
 	 * Receives message(s) from client.
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	@Override
 	protected void onTextMessage(CharBuffer message) throws IOException
@@ -516,5 +516,6 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Map<String, String> modelParameters;
 		Map<String, String> properties;
 	}
+
 
 }

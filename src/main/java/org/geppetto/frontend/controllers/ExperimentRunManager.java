@@ -53,6 +53,7 @@ import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
+import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.runtime.AspectNode;
 import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
 import org.geppetto.simulation.ExperimentRunThread;
@@ -81,15 +82,16 @@ public class ExperimentRunManager implements IExperimentListener
 
 	private static ExperimentRunManager instance;
 
+	static
+	{
+		instance = new ExperimentRunManager();
+	}
+
 	/**
 	 * @return
 	 */
 	public static ExperimentRunManager getInstance()
 	{
-		if(instance == null)
-		{
-			instance = new ExperimentRunManager();
-		}
 		return instance;
 	}
 
@@ -102,7 +104,7 @@ public class ExperimentRunManager implements IExperimentListener
 		{
 			instance = this;
 			queue = new ConcurrentHashMap<>();
-			geppettoManager = new GeppettoManager();
+			geppettoManager = new GeppettoManager(Scope.RUN);
 			try
 			{
 				if(!DataManagerHelper.getDataManager().isDefault())
@@ -175,6 +177,7 @@ public class ExperimentRunManager implements IExperimentListener
 			ExperimentRunThread experimentRun = new ExperimentRunThread(experiment, runtimeExperiment, project, this);
 			experimentRun.start();
 			experiment.setStatus(ExperimentStatus.RUNNING);
+			DataManagerHelper.getDataManager().saveEntity(experiment);
 
 		}
 		catch(Exception e)
@@ -254,21 +257,8 @@ public class ExperimentRunManager implements IExperimentListener
 	@Override
 	public void experimentRunDone(ExperimentRunThread experimentRun, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-
-		RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
-		runtimeProject.closeExperiment(experiment);
-		List<? extends IExperiment> experiments = project.getExperiments();
-		boolean closeProject = runtimeProject.getActiveExperiment() == null;
-		for(int i = 0; i < experiments.size() && closeProject; i++)
-		{
-			closeProject = experiments.get(i).getStatus() == ExperimentStatus.COMPLETED;
-		}
-		if(closeProject)
-		{
-			// close the project when all the user experiments are completed and none of the experiments is active
-			geppettoManager.closeProject("ERM" + getReqId(), project);
-		}
-
+		experimentRun.release();
+		geppettoManager.closeProject("ERM" + getReqId(), project);
 	}
 
 	/**

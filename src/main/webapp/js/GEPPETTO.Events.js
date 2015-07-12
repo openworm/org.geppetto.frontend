@@ -93,21 +93,22 @@ define(function(require) {
 					
 					GEPPETTO.FE.deleteExperimentFromTable(id);
 					
-		            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, 
-		            		"Experiment " + name + " with id " +
-		            		id + " was deleted successfully");
+		            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + name + " with id " + id + " was deleted successfully");
 				});
 	        	GEPPETTO.on(Events.Experiment_over, function(e){
 	        		var name = e.name;
 					var id = e.id;
-	        		GEPPETTO.Console.log("Experiment " + name + " with "+ id + " is over ");
-	        		//notify widgets a restart of data is needed
+	        		
+	        		//notify listeners experiment has finished playing
 	        		GEPPETTO.WidgetsListener.update(Events.Experiment_over);
 	        		
 	        		// check if we are in looping mode
 	                if(GEPPETTO.getVARS().playLoop === true){
-	                	GEPPETTO.Console.executeCommand("Project.getActiveExperiment().play({step:1});");
-	                } 
+	                	Project.getActiveExperiment().play({step:1});
+	                }
+	                else{
+	                	GEPPETTO.Console.log("Experiment " + name + " with "+ id + " is over ");
+	                }
 	        	});
 	        	GEPPETTO.on(Events.ModelTree_populated, function(){
 	        		//notify widgets a restart of data is needed

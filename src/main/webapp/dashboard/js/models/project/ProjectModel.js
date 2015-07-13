@@ -33,10 +33,10 @@ define([
                 if (item.simulationRuns !== undefined && item.simulationRuns !== null && item.simulationRuns.length > 0){
                     item.status = item.simulationRuns[item.simulationRuns.length - 1].status;
                 }
-                item.url = url + '?load_project_from_id=' + data.id + '&experimentId=' + item.id;
-                data.projectUrl = url + '?load_project_from_id=' + data.id;
-                data.deleteUrl = url + '/dashboard/geppettoproject/delete/' + data.id;
-                item.deleteExperimentUrl = url +'/dashboard/geppettoproject/' + data.id + '/experiments/' + item.id+'/downloadResults';
+                item.url = url + 'geppetto?load_project_from_id=' + data.id + '&experimentId=' + item.id;
+                data.projectUrl = url + 'geppetto?load_project_from_id=' + data.id;
+                data.deleteUrl = url + '/geppettoproject/delete/' + data.id;
+                item.deleteExperimentUrl = url +'/geppettoproject/' + data.id + '/experiments/' + item.id+'/downloadResults';
             });
             return data;
         },

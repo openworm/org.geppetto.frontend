@@ -57,6 +57,6 @@ define("d3.global", ["d3"], function(_) {
 
 require(reqs, function(d3) {
 	window.d3 = d3;
-	loadCss("assets/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.css");
+	loadCss("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.css");
 	
 });

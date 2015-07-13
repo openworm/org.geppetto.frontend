@@ -58,7 +58,7 @@ public class UserResource
 
 	private volatile static int guestId;
 
-	@RequestMapping("/dashboard/currentuser")
+	@RequestMapping("/currentuser")
 	public @ResponseBody
 	IUser getCurrentUser()
 	{

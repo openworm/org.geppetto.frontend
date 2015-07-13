@@ -50,7 +50,7 @@ public class UserGeppettoProjectsResource
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
-	@RequestMapping("/dashboard/user/{login}/geppettoprojects")
+	@RequestMapping("/user/{login}/geppettoprojects")
 	public @ResponseBody
 	Collection<? extends IGeppettoProject> getGeppettoProjects(@PathVariable("login") String login)
 	{

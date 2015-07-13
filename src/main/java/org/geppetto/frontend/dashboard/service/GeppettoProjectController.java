@@ -62,7 +62,7 @@ public class GeppettoProjectController
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
-	@RequestMapping("/dashboard/geppettoproject/{id}")
+	@RequestMapping("/geppettoproject/{id}")
 	public @ResponseBody IGeppettoProject getGeppettoProject(@PathVariable("id") int id)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
@@ -73,7 +73,7 @@ public class GeppettoProjectController
 		return null;
 	}
 
-	@RequestMapping(value = "/dashboard/geppettoproject/{projectId}/experiments/{experimentId}/downloadResults", produces = "application/zip")
+	@RequestMapping(value = "/geppettoproject/{projectId}/experiments/{experimentId}/downloadResults", produces = "application/zip")
 	@ResponseBody
 	public FileSystemResource downloadExperimentResults(@PathVariable("projectId") int projectId, @PathVariable("experimentId") int experimentId) throws GeppettoExecutionException, IOException
 	{
@@ -120,7 +120,7 @@ public class GeppettoProjectController
 		return null;
 	}
 
-	@RequestMapping(value = "/dashboard/geppettoproject/delete/{id}")
+	@RequestMapping(value = "/geppettoproject/delete/{id}")
 	public String deleteGeppettoProject(@PathVariable("id") int id)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
@@ -128,7 +128,7 @@ public class GeppettoProjectController
 		{
 			dataManager.deleteGeppettoProject(id, geppettoManager.getUser());
 		}
-		return "redirect:/dashboard";
+		return "redirect:/";
 	}
 
 }

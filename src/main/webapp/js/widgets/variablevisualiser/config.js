@@ -41,4 +41,4 @@
  */
 
 //Load PlotsController and other classes using GEPPETTO
-loadCss("assets/js/widgets/variablevisualiser/VariableVisualiser.css");
+loadCss("geppetto/js/widgets/variablevisualiser/VariableVisualiser.css");

@@ -319,12 +319,9 @@ define(function(require) {
 				
 				
 				/**
-				 * Search obj for the value of node within using path.
-				 * E.g. If obj = {"tree":{"v":1}} and path is "tree.v", it will
-				 * search within the obj to find the value of "tree.v", returning object 
-				 * containing {value : val, unit : unit, scale : scale}.
+				 * Retrieves a javascript object. Current implementation simply uses eval.
 				 */
-				deepFind: function(tree, state){
+				deepFind: function(state){
 					return eval(state);
 				}
 		};

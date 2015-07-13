@@ -430,8 +430,23 @@ define(function(require) {
          */
         get3DObjectInVisualizationTree : function(visualizationTree, objectPath){
             var objectPathFormat = objectPath.replace(visualizationTree.getInstancePath()+".","");
-            var object = GEPPETTO.Utility.deepFind(visualizationTree.content, objectPathFormat);
-
+            var varName=objectPathFormat.substring(0,objectPathFormat.lastIndexOf("."));
+            var index=objectPathFormat.substring(objectPathFormat.lastIndexOf(".")+1);
+            if(!isNaN(parseInt(index)))
+            {
+            	//the last token is a number
+            	objectPathFormat=varName;
+            }
+            else
+            {
+            	//the last token is not a number
+            	index=-1;
+            }
+            var object = GEPPETTO.Utility.deepFind(visualizationTree.getInstancePath()+".content."+objectPathFormat);
+            if(index>-1)
+            {
+            	object=object[index];
+            }
             return object;
         },
 

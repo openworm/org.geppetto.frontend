@@ -370,7 +370,7 @@ define(function(require) {
 						
 						if(connection.getType() == GEPPETTO.Resources.INPUT_CONNECTION){
 							var entity = 
-								GEPPETTO.Utility.deepFind(window.Project.runTimeTree, connection.getEntityInstancePath());
+								GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
 							
 							paths = paths.concat(this.getAspectPaths(entity));
 						}
@@ -424,7 +424,7 @@ define(function(require) {
 						var connection = this.getConnections()[c];
 						
 						var entity = 
-							GEPPETTO.Utility.deepFind(window.Project.runTimeTree, connection.getEntityInstancePath());
+							GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
 						
 						var paths = this.getAspectPaths(entity);
 						
@@ -467,7 +467,7 @@ define(function(require) {
 						
 						if(connection.getType() == GEPPETTO.Resources.OUTPUT_CONNECTION){
 							var entity = 
-								GEPPETTO.Utility.deepFind(window.Project.runTimeTree, connection.getEntityInstancePath());
+								GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
 							
 							paths = paths.concat(this.getAspectPaths(entity));
 						}

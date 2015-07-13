@@ -160,7 +160,7 @@ define(function(require)
 						if (node.VisualizationTree._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
 						{
 							// get the right node
-							var vizTree = GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, node.VisualizationTree.instancePath);
+							var vizTree = GEPPETTO.Utility.deepFind(node.VisualizationTree.instancePath);
 
 							// NOTE: loop and add SKELETON_ANIMATION_NODE at the
 							// right level of nesting (only geometries go inside
@@ -204,7 +204,7 @@ define(function(require)
 			 */
 			populateAspectModelTree : function(aspectInstancePath, modelTree)
 			{
-				var aspect = GEPPETTO.Utility.deepFind(window.Project.runTimeTree, aspectInstancePath);
+				var aspect = GEPPETTO.Utility.deepFind(aspectInstancePath);
 
 				// populate model tree with server nodes
 				this.createAspectModelTree(aspect.ModelTree, modelTree, aspect);
@@ -334,7 +334,7 @@ define(function(require)
 			 */
 			populateAspectSimulationTree : function(aspectInstancePath, simulationTree)
 			{
-				var aspect = GEPPETTO.Utility.deepFind(window["Project"].runTimeTree, aspectInstancePath);
+				var aspect = GEPPETTO.Utility.deepFind(aspectInstancePath);
 
 				// Clear Simulation Tree
 				aspect.SimulationTree.children = new Array();

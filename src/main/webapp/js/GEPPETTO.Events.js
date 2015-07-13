@@ -123,7 +123,7 @@ define(function(require) {
 	        			//update scene brightness
 	        			for(var key in GEPPETTO.G.listeners) {
 	        				//retrieve the variable/node state from tree
-	        				var simState = GEPPETTO.Utility.deepFind(window.Project.runTimeTree, key);
+	        				var simState = GEPPETTO.Utility.deepFind(key);
 
 	        				//update simulation state
 	        				GEPPETTO.G.listeners[key](simState,parameters.steps);

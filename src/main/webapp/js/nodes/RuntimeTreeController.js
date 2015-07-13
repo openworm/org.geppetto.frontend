@@ -207,7 +207,7 @@ define(function(require)
 				var aspect = GEPPETTO.Utility.deepFind(window.Project.runTimeTree, aspectInstancePath);
 
 				// populate model tree with server nodes
-				this.createAspectModelTree(aspect.ModelTree, modelTree);
+				this.createAspectModelTree(aspect.ModelTree, modelTree, aspect);
 
 				// notify user received tree was empty
 				if (aspect.ModelTree.getChildren().length == 0)
@@ -229,7 +229,7 @@ define(function(require)
 			 * @param node -
 			 *            JSON server update nodes
 			 */
-			createAspectModelTree : function(parent, node)
+			createAspectModelTree : function(parent, node, aspect)
 			{
 				// traverse through nodes to create model tree
 				for ( var i in node)
@@ -263,7 +263,7 @@ define(function(require)
 						/* Match type of node and created */
 						if (metatype == GEPPETTO.Resources.COMPOSITE_NODE)
 						{
-							var compositeNode = GEPPETTO.NodeFactory.createCompositeNode(node[i], parent.getParent());
+							var compositeNode = GEPPETTO.NodeFactory.createCompositeNode(node[i], aspect);
 							compositeNode.setParent(parent);
 							if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
 							{
@@ -271,10 +271,10 @@ define(function(require)
 							}
 							parent[i] = compositeNode;
 							// traverse through children of composite node
-							this.createAspectModelTree(parent[i], node[i]);
+							this.createAspectModelTree(parent[i], node[i], aspect);
 						} else if (metatype == GEPPETTO.Resources.FUNCTION_NODE)
 						{
-							var functionNode = GEPPETTO.NodeFactory.createFunctionNode(node[i], parent.getParent());
+							var functionNode = GEPPETTO.NodeFactory.createFunctionNode(node[i], aspect);
 							functionNode.setParent(parent);
 							if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
 							{
@@ -283,7 +283,7 @@ define(function(require)
 							parent[i] = functionNode;
 						} else if (metatype == GEPPETTO.Resources.DYNAMICS_NODE)
 						{
-							var dynamicsSpecificationNode = GEPPETTO.NodeFactory.createDynamicsSpecificationNode(node[i], parent.getParent());
+							var dynamicsSpecificationNode = GEPPETTO.NodeFactory.createDynamicsSpecificationNode(node[i], aspect);
 							dynamicsSpecificationNode.setParent(parent);
 							if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
 							{
@@ -292,7 +292,7 @@ define(function(require)
 							parent[i] = dynamicsSpecificationNode;
 						} else if (metatype == GEPPETTO.Resources.PARAMETER_SPEC_NODE)
 						{
-							var parameterSpecificationNode = GEPPETTO.NodeFactory.createParameterSpecificationNode(node[i], parent.getParent());
+							var parameterSpecificationNode = GEPPETTO.NodeFactory.createParameterSpecificationNode(node[i], aspect);
 							parameterSpecificationNode.setParent(parent);
 							if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
 							{
@@ -301,7 +301,7 @@ define(function(require)
 							parent[i] = parameterSpecificationNode;
 						} else if (metatype == GEPPETTO.Resources.TEXT_METADATA_NODE)
 						{
-							var textMetadataNode = GEPPETTO.NodeFactory.createTextMetadataNode(node[i], parent.getParent());
+							var textMetadataNode = GEPPETTO.NodeFactory.createTextMetadataNode(node[i], aspect);
 							textMetadataNode.setParent(parent);
 							if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
 							{
@@ -310,7 +310,7 @@ define(function(require)
 							parent[i] = textMetadataNode;
 						} else if (metatype == GEPPETTO.Resources.VARIABLE_NODE)
 						{
-							var variableNode = GEPPETTO.NodeFactory.createVariableNode(node[i], parent.getParent());
+							var variableNode = GEPPETTO.NodeFactory.createVariableNode(node[i], aspect);
 							variableNode.setParent(parent);
 							if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
 							{

@@ -62,6 +62,6 @@ define(function(require){
 	//VariableVisualiser widget
 	require("widgets/buttonBar/config");
 
-	loadCss("assets/js/widgets/Widget.css");
+	loadCss("geppetto/js/widgets/Widget.css");
 	};
 });

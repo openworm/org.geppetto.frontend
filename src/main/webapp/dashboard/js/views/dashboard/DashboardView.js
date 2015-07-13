@@ -149,7 +149,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			if (url.indexOf('/dashboard') > 0) {
 				url = url.substring(0, url.indexOf('/dashboard'));
 			}
-			window.open(url + '?load_project_from_id=' + id);
+			window.open(url + 'geppetto?load_project_from_id=' + id);
 		},
 
 		remove : function(attributes) {

@@ -39,5 +39,5 @@
 /*
  * Configure what dependencies are needed for each library
  */
-loadCss("assets/js/widgets/buttonBar/ButtonBar.css");
+loadCss("geppetto/js/widgets/buttonBar/ButtonBar.css");
 

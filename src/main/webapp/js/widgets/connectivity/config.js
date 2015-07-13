@@ -61,6 +61,6 @@ define("d3.global", ["d3"], function(_) {
 require(reqs, function(d3) {
 	window.d3 = d3;
 	window.d3.hive = d3.hive;
-	loadCss("assets/js/widgets/connectivity/Connectivity.css");
+	loadCss("geppetto/js/widgets/connectivity/Connectivity.css");
 	
 });

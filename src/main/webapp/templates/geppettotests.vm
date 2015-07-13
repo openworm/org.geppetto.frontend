@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>GEPPETTO Client Unit Test</title>
-    <link rel="stylesheet" href="assets/css/qunit.css">
-    <link rel="stylesheet" href="assets/css/custom-theme/jquery-ui-1.10.0.custom.css" />
+    <link rel="stylesheet" href="geppetto/css/qunit.css">
+    <link rel="stylesheet" href="geppetto/css/custom-theme/jquery-ui-1.10.0.custom.css" />
 
     <!-- build:template
         <script>
@@ -43,7 +43,7 @@
     <% } %></script>
 
     <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-    <script data-main="assets/js/main-test.js" src="assets/js/vendor/require.js"></script>
+    <script data-main="geppetto/js/main-test.js" src="geppetto/js/vendor/require.js"></script>
 
 </head>
 <body>

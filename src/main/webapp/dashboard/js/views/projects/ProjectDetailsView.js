@@ -34,7 +34,7 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
             if (url.indexOf('/dashboard') > 0) {
             	url = url.substring(0, url.indexOf('/dashboard'));
             }
-            this.model.attributes.simUrl = url + '?load_project_from_id=' + id;
+            this.model.attributes.simUrl = url + 'geppetto?load_project_from_id=' + id;
             this.render();
             if(window.firstTime==true)
             {

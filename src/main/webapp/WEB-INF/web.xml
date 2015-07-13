@@ -44,10 +44,6 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     
-    <welcome-file-list>
-        <welcome-file>templates/index.htm</welcome-file>
-    </welcome-file-list>
-    
     <mime-mapping>
    		<extension>json</extension>
     	<mime-type>application/json</mime-type>

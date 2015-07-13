@@ -81,5 +81,5 @@ define("math.global", ["mathjs"], function(_) {
 require(libraries,function(flot, math){
 //	console.log(math.parser());
 	window.math = math;
-	loadCss("assets/js/widgets/plot/Plot.css");
+	loadCss("geppetto/js/widgets/plot/Plot.css");
 });	

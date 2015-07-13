@@ -72,7 +72,7 @@ define(function(require)
 				if (entityNode != null)
 				{
 					// add commands to console autocomplete and help option
-					GEPPETTO.Console.updateHelpCommand("assets/js/nodes/EntityNode.js", entityNode, entityNode.getId());
+					GEPPETTO.Console.updateHelpCommand("geppetto/js/nodes/EntityNode.js", entityNode, entityNode.getId());
 				}
 			},
 

@@ -60,7 +60,7 @@ public class GeppettoProjectsController
 	@Autowired
 	private IGeppettoManager geppettoManager;
 	
-	@RequestMapping("/dashboard/geppettoprojects")
+	@RequestMapping("/geppettoprojects")
 	public @ResponseBody
 	Collection<? extends IGeppettoProject> getAllGeppettoProjects()
 	{

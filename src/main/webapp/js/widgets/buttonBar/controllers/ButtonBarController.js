@@ -63,7 +63,7 @@ define(function(require) {
 			GEPPETTO.WidgetsListener.subscribe(this, id);
 
 			//updates help command options
-			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/buttonBar/ButtonBar.js", vv, id);
+			GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/buttonBar/ButtonBar.js", vv, id);
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(vv.getId(),vv);
 			return vv;

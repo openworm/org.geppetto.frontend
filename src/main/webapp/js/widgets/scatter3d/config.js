@@ -51,5 +51,5 @@ reqs.push("widgets/scatter3d/vendor/OrbitControls");
 reqs.push("widgets/scatter3d/vendor/helvetiker_regular.typeface");
 
 require(reqs, function($) {
-	loadCss("assets/js/widgets/scatter3d/Scatter3d.css");
+	loadCss("geppetto/js/widgets/scatter3d/Scatter3d.css");
 });

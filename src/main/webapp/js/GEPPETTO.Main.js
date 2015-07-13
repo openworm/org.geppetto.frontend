@@ -60,7 +60,7 @@ define(function(require) {
 			idleTime: 0,
 			disconnected: false,
 			status: 0,
-			simulationFileTemplate: "assets/resources/template.xml",
+			simulationFileTemplate: "geppetto/resources/template.xml",
 			statusWorker : null,
 
 			getVisitorStatus: function() {
@@ -73,7 +73,7 @@ define(function(require) {
 
 			startStatusWorker : function(){
 				//create web worker for checking status
-	            this.statusWorker = new Worker("assets/js/PullStatusWorker.js");
+	            this.statusWorker = new Worker("geppetto/js/PullStatusWorker.js");
 	            
 	            this.statusWorker.postMessage(1000);
 	            

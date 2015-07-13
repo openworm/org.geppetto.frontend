@@ -24,8 +24,8 @@ public class Application
 
 	private static Log logger = LogFactory.getLog(Application.class);
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(HttpServletRequest req)
+	@RequestMapping(value = "/geppetto", method = RequestMethod.GET)
+	public String geppetto(HttpServletRequest req)
 	{
 		try
 		{
@@ -60,7 +60,7 @@ public class Application
 			}
 			if(auth)
 			{
-				return "dist/index";
+				return "dist/geppetto";
 			}
 			else
 			{
@@ -80,7 +80,8 @@ public class Application
 		return "dist/geppettotests";
 	}
 
-	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
+	
+	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String dashboard()
 	{
 		return "dist/dashboard";

@@ -73,7 +73,7 @@ define(function(require) {
 			GEPPETTO.WidgetsListener.subscribe(this, id);
 
 			//add commands help option
-			GEPPETTO.Console.updateHelpCommand("assets/js/widgets/connectivity/Connectivity.js", cnt, id);
+			GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/connectivity/Connectivity.js", cnt, id);
 
 			//update tags for autocompletion
 			GEPPETTO.Console.updateTags(cnt.getId(), cnt);

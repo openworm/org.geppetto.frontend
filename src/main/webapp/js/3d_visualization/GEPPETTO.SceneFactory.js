@@ -391,7 +391,7 @@ define(function(require) {
 					var pMaterial = new THREE.PointCloudMaterial({
 						size : 5,
 						map : THREE.ImageUtils
-						.loadTexture("assets/images/particle.png"),
+						.loadTexture("geppetto/images/particle.png"),
 						blending : THREE.AdditiveBlending,
 						depthTest : false,
 						transparent : true

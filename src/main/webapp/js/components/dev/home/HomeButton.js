@@ -7,7 +7,7 @@ define(function (require) {
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
 
         onClick: function() {
-        	var win = window.open("/org.geppetto.frontend/dashboard/", '_blank');
+        	var win = window.open("./", '_blank');
         	win.focus();
         },
 

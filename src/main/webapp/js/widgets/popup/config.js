@@ -37,4 +37,4 @@
  * @author Jesus Martinez (jesus@metacell.us)
  */
 //Load PopupsController and other classes using GEPPETTO
-loadCss("assets/js/widgets/popup/Popup.css");
+loadCss("geppetto/js/widgets/popup/Popup.css");

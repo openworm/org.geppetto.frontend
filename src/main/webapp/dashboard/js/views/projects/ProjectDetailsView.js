@@ -14,7 +14,6 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
 				id : this.id
 			});
 			_.bindAll(this, 'render', 'fetchSuccess', 'refreshModel');
-			
 			this.model.fetch({ success : this.fetchSuccess });
 		},
 
@@ -37,7 +36,14 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
             }
             this.model.attributes.simUrl = url + '?load_project_from_id=' + id;
             this.render();
-            
+            if(window.firstTime==true)
+            {
+				$(".panel-collapse").first().addClass("in");
+				$(".panel-collapse").first().attr("aria-expanded", "true");
+				window.openExperiments.push($(".panel-collapse").attr( "id" ));
+				window.firstTime=false;
+            }
+			
             // check if and which experiment was expanded and restore
             var openExps = window.openExperiments;
             for(var i=0; i<openExps.length; i++){

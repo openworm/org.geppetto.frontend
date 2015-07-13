@@ -130,8 +130,20 @@ code {
 	padding: 20px;
 }
 
+.orange{
+	color:#ff6d00!important;
+}
+
 .project-preview-caption {
-	color: #1f2022;
+	margin-left: -6px!important;
+	color: #818181;
+    font-weight: 400;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 55px;
+    width: 140px;
+    text-align: center;
 }
 
 .peoject-heading {

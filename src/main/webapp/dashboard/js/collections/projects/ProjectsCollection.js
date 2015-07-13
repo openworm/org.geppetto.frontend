@@ -20,7 +20,7 @@ define([
         parse: function(data){
             var that = this;
             _.each(data, function(item){
-                item.displayName = that.getLimitedString(item.name, 20);
+                item.displayName = item.name;
             });
             return data;
         },

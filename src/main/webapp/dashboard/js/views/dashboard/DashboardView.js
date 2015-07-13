@@ -96,7 +96,9 @@ define([ 'jquery', 'underscore', 'backbone',
 		},
 
 		showProject : function(event) {
+			window.firstTime=true;
 			$(".selected").removeClass("selected");
+			$(".orange").removeClass("orange");
 			$(".geppettoSymbolSel").attr('class','geppettoSymbol');
 			var target = $(event.target);
 			if (target.attr('class') == "geppettoSymbol") {
@@ -110,6 +112,8 @@ define([ 'jquery', 'underscore', 'backbone',
 				target.children().attr('class','geppettoSymbolSel');
 			}
 			target.addClass("selected");
+			$(target.parent().parent().children()[1]).addClass("orange");
+			$(target)
 			var id = $(event.target).attr("project-id");
 			if (id === undefined) {
 				id = $(event.target).parents(".project-preview").attr("project-id");

@@ -25,7 +25,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'src/main/webapp/templates/dist/gepetto.vm': ['src/main/webapp/templates/geppetto.vm'],
+                    'src/main/webapp/templates/dist/geppetto.vm': ['src/main/webapp/templates/geppetto.vm'],
                     'src/main/webapp/templates/dist/geppettotests.vm': ['src/main/webapp/templates/geppettotests.vm'],
                     'src/main/webapp/templates/dist/dashboard.vm': ['src/main/webapp/templates/dashboard.vm'],
                     'src/main/webapp/WEB-INF/web.xml': ['src/main/webapp/WEB-INF/web.xml']

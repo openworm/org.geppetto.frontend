@@ -72,7 +72,7 @@ define(function(require) {
 					VISUAL_OBJECT_REFERENCE_NODE: "0x606060",
 					VISUAL_GROUP_ELEMENT_NODE:"0xffffff",
 			},
-			
+
 			/**
 			 *
 			 * Different status an experiment can be on
@@ -94,7 +94,7 @@ define(function(require) {
 					DEFAULT : 1,
 					GHOST : .3,
 			},
-			
+
 			PROJECT_LOADED: "Project Loaded",
 			
 			EXPERIMENT_CREATED: "New experiment created",

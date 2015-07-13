@@ -30,12 +30,12 @@
     <!-- build:template:dev
         <link rel="stylesheet/less" type="text/css" href="geppetto/less/main.less" />
         <script src="geppetto/js/vendor/less-1.7.5.min.js" type="text/javascript"></script>
-        <script data-main="assets/js/main.js" src="geppetto/js/vendor/require.js"></script>
+        <script data-main="geppetto/js/main.js" src="geppetto/js/vendor/require.js"></script>
     /build -->
 
     <!-- build:template:dist
         <link rel="stylesheet" type="text/css" href="geppetto/css/main.css" />
-        <script data-main="assets/js/main-built.js" src="geppetto/js/vendor/require.js"></script>
+        <script data-main="geppetto/js/main-built.js" src="geppetto/js/vendor/require.js"></script>
     /build -->
 
 

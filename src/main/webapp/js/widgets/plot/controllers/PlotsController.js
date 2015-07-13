@@ -121,6 +121,7 @@ define(function(require) {
 							var options = {xaxis : {min : 0, max : 400, show : false}};
 							plot.setOptions(options);
 						}
+						plot.plot.getPlaceholder().resize();
 						plot.options.playAll = false;
 					}
 					//update plot with new data set

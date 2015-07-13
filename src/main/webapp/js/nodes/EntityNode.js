@@ -117,8 +117,6 @@ define(function(require) {
 				 * 
 				 */
 				select : function() {
-					//unselect all other selected entities prior to selecting this one
-					G.unSelectAll();
 										
 					var message;
 					if (!this.selected) {

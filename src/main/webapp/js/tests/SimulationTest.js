@@ -80,6 +80,8 @@ define(function(require) {
 			window.Project.loadFromID("1", "1");
 			initializationTime = new Date();	
 		});
+		
+		/*
 
 		module("New experiment");
 		asyncTest("New experiment", function() {

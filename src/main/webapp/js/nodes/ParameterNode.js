@@ -36,13 +36,15 @@
  * 
  * @module nodes/ParameterNode
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 
 	var Node = require('nodes/Node');
 
 	return Node.Model.extend({
-		properties : {},
+		timeSeries : [],
+		unit: "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -51,9 +53,11 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.properties = options.properties;
 			this.name = options.name;
 			this.id = options.id;
+			this.unit = options.unit;
+			this.timeSeries = new Array();
+			this.aspectNode = options.aspectNode;
 			this.instancePath = options.instancePath;
 			this.domainType = options.domainType;
 			this._metaType = options._metaType;
@@ -61,19 +65,29 @@ define(function(require) {
 		},
 
 		/**
-		 * Get properties for this node
+		 * Get value of quantity
 		 * 
-		 * @command ParameterNode.getProperties()
+		 * @command ParameterNode.getTimeSeries()
+		 * @returns {String} Value of quantity
+		 */
+		getTimeSeries : function() {
+			return this.timeSeries;
+		},
+		
+		/**
+		 * Get the type of tree this is
+		 * 
+		 * @command ParameterNode.getUnit()
 		 * @returns {String} Unit for quantity
 		 */
-		getProperties : function() {
-			return this.properties;
+		getUnit : function() {
+			return this.unit;
 		},
-
+		
 		/**
 		 * Get watched
 		 * 
-		 * @command ParameterSpecificationNode.getWatched()
+		 * @command ParameterNode.isWatched()
 		 * @returns {boolean} true if this variable is being watched
 		 */
 		isWatched : function() {
@@ -83,11 +97,13 @@ define(function(require) {
 		/**
 		 * Set watched
 		 * 
-		 * @command VariableNode.setWatched()
+		 * @command ParameterNode.setWatched()
 		 * @param {Boolean} watched - Object with options attributes to initialize node
 		 */
 		setWatched : function(isWatched) {
-			Simulation.setWatchedVariables([this]);
+			if (isWatched != this.watched){
+				Project.getActiveExperiment().watchVariables([this]);
+			}
 		},
 		
 		/**
@@ -96,7 +112,9 @@ define(function(require) {
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Properties : " + this.properties + "\n"
+					+ "    Value : " + this.value + "\n" + "    Unit : "
+					+ this.unit + "\n" + "    ScalingFactor : "
+					+ this.scalingFactor + "\n" +
 					+ "    Watched : " + this.watched + "\n";
 		}
 	});

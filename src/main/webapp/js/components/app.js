@@ -1,27 +1,44 @@
- /**
+/**
  * @class components/app
  */
-define(function(require){
+define(function(require) {
 
-	var $ = require('jquery'),
-		GEPPETTO = require('geppetto'),
-		React = require('react'),
-		LoadingSpinner = require('jsx!./loadingspinner/LoadingSpinner'),
-		utils = require('./utils');
+	var $ = require('jquery'), GEPPETTO = require('geppetto'), React = require('react'), LoadingSpinner = require('jsx!./loadingspinner/LoadingSpinner'), utils = require('./utils');
 
-    require('./components');
-    
-    GEPPETTO.on('simulation:show_spinner',function(){
-    	React.renderComponent(LoadingSpinner({show:true, keyboard:false}), $('#modal-region').get(0));
-    });
+	require('./components');
 
-    var simParam = utils.getQueryStringParameter('sim');
+	GEPPETTO.on('project:show_spinner', function() {
+		React.renderComponent(LoadingSpinner({
+			show : true,
+			keyboard : false
+		}), $('#modal-region').get(0));
+	});
+
+	var command = "Project.loadFromURL";
+	var simParam = utils.getQueryStringParameter('load_project_from_url');
+	var expParam = utils.getQueryStringParameter('experimentId');
+	if (simParam == "") {
+		simParam = utils.getQueryStringParameter('load_project_from_id');
+		command = "Project.loadFromID";
+	}
+
+	if (simParam == "") {
+		simParam = utils.getQueryStringParameter('load_project_from_content');
+		command = "Project.loadFromContent";
+	}
 
 	var webGLStarted = GEPPETTO.webGLAvailable();
 
-	if(webGLStarted && simParam) {
-		$(document).ready(function() {
-			GEPPETTO.Console.executeCommand('Simulation.load("' + simParam + '")');
-		});
+	if (webGLStarted && simParam) {
+		$(document).ready(
+				function() {
+					if (expParam) {
+						GEPPETTO.Console.executeCommand(command + '("'
+								+ simParam + '", "'+expParam+'")');
+					} else {
+						GEPPETTO.Console.executeCommand(command + '("'
+								+ simParam + '")');
+					}
+				});
 	}
 });

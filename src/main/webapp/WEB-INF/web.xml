@@ -14,10 +14,17 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/spring/*.xml</param-value>
     </context-param>
+    
+    <listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-
+    <listener>
+        <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+    </listener>
+    
     <servlet>
         <servlet-name>springdispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -36,12 +43,15 @@
         <servlet-name>springdispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-
+    
     <welcome-file-list>
-        <welcome-file>
-            templates/index.htm
-        </welcome-file>
+        <welcome-file>templates/index.htm</welcome-file>
     </welcome-file-list>
+    
+    <mime-mapping>
+   		<extension>json</extension>
+    	<mime-type>application/json</mime-type>
+	</mime-mapping>
 
     <servlet>
         <servlet-name>GeppettoServlet</servlet-name>
@@ -61,6 +71,20 @@
         <servlet-name>TestServlet</servlet-name>
         <url-pattern>/TestServlet</url-pattern>
     </servlet-mapping>
+    
+    <filter>
+        <filter-name>ShiroFilter</filter-name>
+        <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>ShiroFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
 
     <!-- Enable SSL -->
     <!-- build:template:dist

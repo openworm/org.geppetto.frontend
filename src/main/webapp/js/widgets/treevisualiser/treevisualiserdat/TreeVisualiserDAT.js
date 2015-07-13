@@ -101,6 +101,7 @@ define(function(require) {
 		 * @param {Object} options - Set of options passed to widget to customize it
 		 */
 		setData : function(state, options) {
+
 			if(state instanceof Array){
 				var that = this;
 				$.each(state, function(d){that.setData(state[d], options)})
@@ -108,12 +109,13 @@ define(function(require) {
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
 			
 			dataset.valueDict = {};
-			this.prepareTree(this.gui, dataset.data);
+			this.prepareTree(this.gui, dataset.data,0);
 			this.datasets.push(dataset);
 			
 			dataset.isDisplayed = true;
 			//Disable input elements
 			$(this.dialog).find("input").prop('disabled', true);
+			$(this.dialog).find(".parameterspecificationnodetv input").prop('disabled', false);
 			
 			//Change input text to textarea
 			var testingSizeElement = $('<div></div>').css({'position': 'absolute', 'float': 'left', 'white-space': 'nowrap', 'visibility': 'hidden'}).appendTo($('body'));
@@ -137,7 +139,7 @@ define(function(require) {
 		 * @param {Object} parent - Parent tree to paint
 		 * @param {Array} data - Data to paint
 		 */
-		prepareTree : function(parent, data) {
+		prepareTree : function(parent, data,step) {
 			if (data._metaType != null){
 				if('labelName' in this.options){
 					label = data[this.options.labelName];
@@ -146,19 +148,27 @@ define(function(require) {
 					if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
 					else{label = data.getName();}
 				}
-				
+
 				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
 						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
 						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = new function(){};
 						
-						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
 						
+
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
+						
+						if(data._metaType=="ParameterSpecificationNode")
+						{
+							$(dataset.valueDict[data.instancePath]["controller"].__li).find('div > div > input[type="text"]').change(function(){
+								GEPPETTO.Console.executeCommand(data.instancePath+".setValue(" + $(this).val().split(" ")[0] + ")");
+							});
+						}
+						
 						//Add class to dom element depending on node metatype
 						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
-						//$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
 						//Add instancepath as data attribute. This attribute will be used in the event framework
 						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
 						
@@ -181,7 +191,7 @@ define(function(require) {
 					else{
 						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
 						if(!set.__ul.closed){
-							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data);
+							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
 						}
 					}
 				}
@@ -250,7 +260,7 @@ define(function(require) {
 						var parentFolderTmp = parentFolder;
 							for (var childIndex in children){
 								if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
-									this.prepareTree(parentFolderTmp, children[childIndex]);
+									this.prepareTree(parentFolderTmp, children[childIndex],step);
 								}
 							}
 						if (this.options.expandNodes){
@@ -264,11 +274,11 @@ define(function(require) {
 		/**
 		 * Updates the data that the TreeVisualiserDAT is rendering
 		 */
-		updateData : function() {
+		updateData : function(step) {
 			for ( var key in this.datasets) {
 				dataset = this.datasets[key];
 				if (dataset.variableToDisplay != null) {
-					this.prepareTree(this.gui, dataset.data);
+					this.prepareTree(this.gui, dataset.data,step);
 				}
 			}
 		},

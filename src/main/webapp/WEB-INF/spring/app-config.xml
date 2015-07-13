@@ -1,48 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-							http://www.springframework.org/schema/context
+							http://www.springframework.org/schema/osgi
+							http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd
+							http://www.springframework.org/schema/aop 
+       						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+       						http://www.springframework.org/schema/context
 							http://www.springframework.org/schema/context/spring-context-3.1.xsd
 							http://www.springframework.org/schema/mvc
 							http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
 
-    <mvc:annotation-driven />
-    <!-- Map static resources to /assets/* url -->
-    <mvc:resources mapping="/assets/**"
-                   location="/"
-                  />
+	<mvc:annotation-driven />
+	<!-- Map static resources to /assets/* url -->
+	<mvc:resources mapping="/assets/**" location="/" />
 
-    <mvc:resources mapping="/jsdocs/**"
-                   location="/jsdocs/"
-            />
+	<mvc:resources mapping="/jsdocs/**" location="/jsdocs/" />
 
+	<mvc:resources mapping="/dashboard/**" location="/dashboard/" />
 
-    <context:component-scan base-package="org.geppetto.frontend.controllers"/>
-
-    <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
-        <property name="resourceLoaderPath">
-            <value>/</value>
-        </property>
-    </bean>
-
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
-        <property name="prefix"><value>/templates/</value></property>
-        <property name="suffix"><value>.vm</value></property>
-        <property name="exposeSpringMacroHelpers"><value>true</value></property>
-    </bean>
+	<mvc:resources mapping="/api/**" location="/dashboard/api/" />
 
 
-	<!-- Add flag for Simulation Run Mode --> 
-	<bean id="config" class="org.geppetto.frontend.controllers.SimulationServerConfig">
+	<context:component-scan base-package="org.geppetto.frontend" />
+
+	<bean id="velocityConfig"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath">
+			<value>/</value>
+		</property>
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="prefix">
+			<value>/templates/</value>
+		</property>
+		<property name="suffix">
+			<value>.vm</value>
+		</property>
+		<property name="exposeSpringMacroHelpers">
+			<value>true</value>
+		</property>
+	</bean>
+
+
+	<!-- Add flag for Simulation Run Mode -->
+	<bean id="config"
+		class="org.geppetto.frontend.controllers.SimulationServerConfig">
 		<property name="serverBehaviorMode" value="MULTIUSER" />
 		<!-- Flags used for observer mode -->
 		<property name="loadedScene" value="#{ null }" />
 		<property name="isSimulationLoaded" value="false" />
+	</bean>
+	
+
+	
+	<bean id="geppettoManager" scope="session"
+		class="org.geppetto.frontend.controllers.GeppettoManager">
+		<aop:scoped-proxy />
+	</bean>
+	
+	<!--
+	 Configuration for the default message sender. queuingEnabled: If true 
+		then use worker threads for processing and transmission. If false then do 
+		everything on calling thread. maxQueueSize: The maximum size of a processing 
+		or transmission queue. If the queue is full and discardMessagesIfQueueFull 
+		is true then the oldest item is removed from the queue to make space for 
+		the new item. If discardMessagesIfQueueFull is false then the calling thread 
+		runs the task itself. discardMessagesIfQueueFull: If true and a queue is 
+		full then discard the oldest task to make room for the new task. If false 
+		then run the task in the calling thread. compressionEnabled: If true then 
+		compress messages. minMessageLengthForCompression: The minimum message size 
+		for compression. Messages smaller than this size are not compressed. queuedMessageTypes: 
+		Message types that should be queued - and thus handled across multiple threads. 
+		All other message types are handled on the calling thread. -->
+	<bean id="defaultMessageSenderConfig"
+		class="org.geppetto.frontend.messaging.DefaultMessageSenderFactory">
+
+		<property name="queuingEnabled" value="true" />
+		<property name="maxQueueSize" value="5" />
+		<property name="discardMessagesIfQueueFull" value="false" />
+		<property name="compressionEnabled" value="true" />
+		<property name="minMessageLengthForCompression" value="20000" />
+
+		<property name="queuedMessageTypes">
+			<set>
+				<value type="org.geppetto.frontend.messages.OutboundMessages">EXPERIMENT_UPDATE</value>
+			</set>
+		</property>
+
 	</bean>
 
 </beans>

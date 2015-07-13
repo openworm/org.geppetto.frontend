@@ -18,6 +18,8 @@ define(function(require) {
 			splitMeshes : {},
 			connectionLines : {},
 			renderer: null,
+			customRendererClass : null,
+			clock: new THREE.Clock(),
 			stats: null,
 			gui: null,
 			projector: null,
@@ -39,6 +41,9 @@ define(function(require) {
 			canvasCreated: false,
 			listenersCreated : false,
 			selected : [],
+			// timer step in milliseconds
+			playTimerStep: 10, 
+			playLoop: false,
 		};
 
 		var setupScene = function() {
@@ -56,9 +61,9 @@ define(function(require) {
 			// Camera
 			var SCREEN_WIDTH = $(VARS.container).width(), SCREEN_HEIGHT = $(VARS.container).height();
 			var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 500000;
-			VARS.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+			VARS.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR,FAR);
 			VARS.scene.add(VARS.camera);
-			VARS.camera.position.set(VARS.cameraPosition.x, VARS.cameraPosition.y, VARS.cameraPosition.z);
+			VARS.camera.position.set(VARS.cameraPosition.x,VARS.cameraPosition.y, VARS.cameraPosition.z);
 			VARS.camera.lookAt(VARS.sceneCenter);
 			VARS.projector = new THREE.Projector();
 		};
@@ -67,24 +72,36 @@ define(function(require) {
 		 * Set up the WebGL Renderer
 		 */
 		var setupRenderer = function() {
-
-			// Reuse a single WebGL renderer. Recreating the renderer causes camera displacement on Chrome OSX.
+			// Reuse a single WebGL renderer. 
+			// NOTE: Recreating the renderer causes camera displacement on Chrome OSX.
 			if (!VARS.canvasCreated) {
-				VARS.renderer = new THREE.WebGLRenderer(
-					{
+				if (VARS.customRendererClass == null) {
+					VARS.renderer = new THREE.WebGLRenderer({
 						antialias: true
 					});
+				}
+				else {
+					var customRenderer = VARS.customRendererClass;
+					VARS.renderer = new customRenderer();
+					console.log("Custom Renderer initialized");
+				}
 			}
-			VARS.renderer.setClearColor(0x000000, 1);
+			
+			configureRenderer();
+
+			VARS.canvasCreated = true;
+		};
+		
+		var configureRenderer = function(){
+			var color = new THREE.Color( 0x000000 );
+			VARS.renderer.setClearColor( color, 1 );
 			var width = $(VARS.container).width();
 			var height = $(VARS.container).height();
 			VARS.renderer.setSize(width, height);
 			VARS.renderer.autoClear = true;
 			VARS.container.appendChild(VARS.renderer.domElement);
-
-			VARS.canvasCreated = true;
-		};
-
+		}
+		
 		/**
 		 * Light up the scene
 		 */
@@ -116,7 +133,8 @@ define(function(require) {
 		};
 
 		/**
-		 * Sets up the controls used by the camera to make it able to zoom and pan.
+		 * Sets up the controls used by the camera to make it able to zoom and
+		 * pan.
 		 */
 		var setupControls = function() {
 			// Controls
@@ -141,25 +159,22 @@ define(function(require) {
 						if(selected == ""){
 							selected = intersects[ 0 ].object.parent.name;
 						}
-						if(VARS.meshes.hasOwnProperty(selected) ||
-								VARS.splitMeshes.hasOwnProperty(selected)){
-							GEPPETTO.Simulation.unSelectAll();
-							GEPPETTO.Console.executeCommand(selected + '.select()' );
+						if (VARS.meshes.hasOwnProperty(selected) || VARS.splitMeshes.hasOwnProperty(selected)) {
+							GEPPETTO.G.unSelectAll();
+							GEPPETTO.Console.executeCommand(selected + '.select()');
 						}
 					}
-
 				}, false);
 
 				VARS.renderer.domElement.addEventListener('mousemove', function(event) {
 					VARS.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 					VARS.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
 				}, false);
 
 				window.addEventListener('resize', function() {
-					var container = $(VARS.container),
-					width     = container.width(),
-					height    = container.height();
+					var container = $(VARS.container), 
+					width = container.width(), 
+					height = container.height();
 
 					VARS.camera.aspect = (width) / (height);
 					VARS.camera.updateProjectionMatrix();
@@ -170,9 +185,10 @@ define(function(require) {
 				VARS.listenersCreated = true;
 			}
 		};
-//	============================================================================
-//	Application logic.
-//	============================================================================
+		
+		//	============================================================================
+		//	Application logic.
+		//	============================================================================
 		GEPPETTO.Init = {
 			initialize: function(containerp) {
 				VARS.container = containerp;
@@ -183,7 +199,10 @@ define(function(require) {
 				setupControls();
 				setupListeners();
 	        	//setup listeners for geppetto events that can be triggered
-	            GEPPETTO.Events.listen();
+				if(!GEPPETTO.Events.listening){
+					GEPPETTO.Events.listen();
+					GEPPETTO.Events.listening = true;
+				}
 				return VARS;
 			}
 		};

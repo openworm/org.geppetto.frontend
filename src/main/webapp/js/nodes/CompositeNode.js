@@ -53,6 +53,7 @@ define(function(require) {
 			this.children = new Array();
 			this.id = options.id;
 			this.name = options.name;
+			this.aspectNode = options.aspectNode;
 			this.instancePath = options.instancePath;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;

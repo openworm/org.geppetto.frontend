@@ -37,11 +37,13 @@
  * @module nodes/ParameterSpecificationNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define(function(require)
+{
 
 	var Node = require('nodes/Node');
 
-	return Node.Model.extend({
+	return Node.Model.extend(
+	{
 		unit : "",
 		value : "",
 		scalingFactor : "",
@@ -49,14 +51,17 @@ define(function(require) {
 		/**
 		 * Initializes this node with passed attributes
 		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
+		 * @param {Object}
+		 *            options - Object with options attributes to initialize
+		 *            node
 		 */
-		initialize : function(options) {
+		initialize : function(options)
+		{
 			this.name = options.name;
 			this.id = options.id;
 			this.unit = options.unit;
 			this.instancePath = options.instancePath;
+			this.aspectNode = options.aspectNode;
 			this.value = options.value;
 			this.scalingFactor = options.scalingFactor;
 			this._metaType = options._metaType;
@@ -69,7 +74,8 @@ define(function(require) {
 		 * @command ParameterSpecificationNode.getUnit()
 		 * @returns {String} Unit for quantity
 		 */
-		getUnit : function() {
+		getUnit : function()
+		{
 			return this.unit;
 		},
 
@@ -79,7 +85,8 @@ define(function(require) {
 		 * @command ParameterSpecificationNode.getValue()
 		 * @returns {String} Value of quantity
 		 */
-		getValue : function() {
+		getValue : function()
+		{
 			return this.value;
 		},
 
@@ -89,19 +96,28 @@ define(function(require) {
 		 * @command ParameterSpecificationNode.getScalingFactor()
 		 * @returns {String} Scaling Factor for value and unit
 		 */
-		getScalingFactor : function() {
+		getScalingFactor : function()
+		{
 			return this.scalingFactor;
+		},
+
+		/**
+		 * Sets Value for parameter node.
+		 */
+		setValue : function(value)
+		{
+			this.value = value;
+			Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);
+			return this;
 		},
 
 		/**
 		 * Print out formatted node
 		 */
-		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n";
+		print : function()
+		{
+			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n" + "    InstancePath : " + this.instancePath + "\n" + "    Value : " + this.value + "\n" + "    Unit : " + this.unit
+					+ "\n" + "    ScalingFactor : " + this.scalingFactor + "\n";
 		}
 	});
 });

@@ -33,8 +33,6 @@
 
 package org.geppetto.frontend.controllers;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,14 +49,11 @@ public class GeppettoServlet extends WebSocketServlet
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private final AtomicInteger _connectionIds = new AtomicInteger(0);		
-		
 	
 	@Override
 	protected StreamInbound createWebSocketInbound(String subProtocol, HttpServletRequest request)
 	{
-		String connectionID = "Visitor"+_connectionIds.incrementAndGet();
-		return new GeppettoMessageInbound(connectionID);
+		return new WebsocketConnection();
 	}
 
 	@Override

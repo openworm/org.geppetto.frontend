@@ -31,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Tree Visualiser Widget
+ * Connectivity Widget
  *
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  * @author borismarin
@@ -49,7 +49,7 @@ define(function(require) {
 		defaultConnectivityOptions:  {
 			width: 660,
 			height: 500,
-			layout: "matrix", //[matrix, force, hive]
+			layout: "matrix", //[matrix, force, hive, chord]
 			//TODO: Those are not sane defaults. 
 			//      Once things have types, we should ideally use sthing like  x.getType() 
 			nodeType : function(node){return node.getId().split('_')[0]},
@@ -106,7 +106,9 @@ define(function(require) {
 				this.dataset["links"] = [];
 
 				for (var subEntityIndex in subEntities){
-					var connections = subEntities[subEntityIndex].getConnections();
+					var subEntity = subEntities[subEntityIndex];
+					this.createNode(subEntity.getId(), this.options.nodeType(subEntity));
+					var connections = subEntity.getConnections();
 					for (var connectionIndex in connections){
 						var connectionItem = connections[connectionIndex];
 						if (connectionItem.getType() == "FROM"){
@@ -115,21 +117,21 @@ define(function(require) {
 							var target = eval(connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1));
 							var sourceId = source.getId(); 
 							var targetId = target.getId(); 
-                           
-							this.createNode(sourceId, this.options.nodeType(source));
-							this.createNode(targetId, this.options.nodeType(target));
                             
+							this.createNode(targetId, this.options.nodeType(target));
                             this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
                         	    
 						}
 					}
 				}
 			}
+            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
+            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
         },
 
         //TODO: move to graph utils to package, maybe consider jsnetworkx?
         // this is very rough, we should think about directionality and weights...
-        calculateNodeDegrees: function(){
+        calculateNodeDegrees: function(normalize){
         	var indegrees = _.countBy(this.dataset.links, function(link){return link.source});
         	var outdegrees = _.countBy(this.dataset.links, function(link){return link.target});
         	var maxDeg = 1;
@@ -141,10 +143,47 @@ define(function(require) {
         			maxDeg = node.degree;
         		}
         	});
-        	//normalize
-        	this.dataset.nodes.forEach(function(node){
-        		node.degree /= maxDeg; 
+        	if(normalize){
+        		this.dataset.nodes.forEach(function(node){
+        			node.degree /= maxDeg; 
+        		});
+    		}
+        },
+
+        generateChordMatrix: function(){
+        	var that = this;
+        	var matrix = [];
+
+        	var type2type = {};
+
+        	// {type_i: {postType_j: counts, ...}, ...}
+           	var typesZeros = _.map(this.dataset.nodeTypes, function(type) {return [type, 0]});
+            this.dataset.nodeTypes.forEach(function(type) {
+            	var initCounts = _.object(typesZeros);
+            	var linksFromType = _.filter(that.dataset.links, function(link) {return that.dataset.nodes[link.source].type === type});
+            	type2type[type] = _.extend(initCounts, _.countBy(linksFromType, function(link){return that.dataset.nodes[link.target].type}));
+            	});
+            
+            var numNodesOfType = _.countBy(this.dataset.nodes, function(node){return node.type});
+            //unconnected nodes of all types
+            var discNodes = _.filter(this.dataset.nodes, function(node){return node.degree == 0});
+            var numDiscByType = _.countBy(discNodes, function(node) {return node.type});
+
+        	this.dataset.nodeTypes.forEach(function(type, idx, nodeTypes){
+        		var numConn = [];
+        		nodeTypes.forEach(function(innerType){
+        			//normalization should be optional
+        			//numConn.push[type2type.innerType] / numNodesOfType[type];
+        			numConn.push(type2type[type][innerType]);
+        		});
+        		numConn.push(numDiscByType[type] ? numDiscByType[type] : 0);
+        		matrix.push(numConn);
         	});
+        	// row of zeros for unconnected nodes
+        	var zeroes = [];
+        	for (var i = 0; i <= this.dataset.nodeTypes.length;  i++) {zeroes.push(0)};
+        	matrix.push(zeroes);
+        	return matrix;
         },
         
         //TODO: move force, hive, matrix to objects
@@ -168,8 +207,13 @@ define(function(require) {
                 	break;
             	case 'hive':
             		//TODO: ugly preprocessing here...
-            		this.calculateNodeDegrees();
+            		this.calculateNodeDegrees(true);
             		this.createHiveLayout();
+            		break;
+            	case 'chord':
+            		//TODO: ugly preprocessing here...
+            		this.calculateNodeDegrees(false);
+            		this.createChordLayout(this.generateChordMatrix());
             		break;
             }
         },
@@ -178,9 +222,9 @@ define(function(require) {
             
             //TODO: 10/20 categories hardcoded in color scales
             var linkTypeScale = d3.scale.category10()
-                            .domain(_.pluck(this.dataset.links, 'type'));
+                            .domain(this.dataset.linkTypes);
             var nodeTypeScale = d3.scale.category20()
-                            .domain(_.pluck(this.dataset.nodes, 'type'));
+                            .domain(this.dataset.nodeTypes);
             var weightScale = d3.scale.linear()
                             .domain(d3.extent(_.pluck(this.dataset.links, 'weight').map(parseFloat)))
                             //TODO: think about weight = 0 (do we draw a line?)
@@ -370,7 +414,7 @@ define(function(require) {
                     //.style("fill-opacity", function(d) { return z(d.z); })
                     .style("fill", function(d) {return c(d.z); })
                     .on("click", function(d){
-                        Simulation.unSelectAll();
+                        G.unSelectAll();
                         //Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.
                         eval(root.name+"."+nodes[d.x].id).select();
                         eval(root.name+"."+nodes[d.x].id).showConnectionLines(false);
@@ -380,7 +424,7 @@ define(function(require) {
                     .on("mouseover", function(d){
                         d3.select(this.parentNode.appendChild(this)).transition().duration(100).style({'stroke-opacity':1,'stroke':'white', 'stroke-width':'2'});
                         d3.select("body").style('cursor','pointer');
-                        return tooltip.transition().duration(100).text(nodes[d.x].id + " is connected to " + nodes[d.y].id);
+                        return tooltip.transition().duration(100).text(nodes[d.y].id + " is connected to " + nodes[d.x].id);
                         })
                     .on("mouseout", function(){
                         d3.select(this).transition().duration(100).style({'stroke-opacity':0,'stroke':'white'});
@@ -395,12 +439,11 @@ define(function(require) {
             innerRadius = 20,
             outerRadius = 180;
 
-            var nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
-             
-            var angle = d3.scale.ordinal().domain(d3.range(nodeTypes.length + 1)).rangePoints([0, 2 * Math.PI]),
-            	quali_angle = d3.scale.ordinal().domain(nodeTypes).rangeBands([0, 2 * Math.PI]);
+            var angle = d3.scale.ordinal().domain(d3.range(this.dataset.nodeTypes.length + 1)).rangePoints([0, 2 * Math.PI]),
+            	quali_angle = d3.scale.ordinal().domain(this.dataset.nodeTypes).rangeBands([0, 2 * Math.PI]);
                 radius = d3.scale.linear().range([innerRadius, outerRadius]),
-                color = d3.scale.category10().domain(d3.range(20));
+                linkTypeScale = d3.scale.category10().domain(this.dataset.linkTypes);
+                nodeTypeScale = d3.scale.category20().domain(this.dataset.nodeTypes)
             
             var nodes = this.dataset.nodes,
                 links = [];
@@ -414,7 +457,7 @@ define(function(require) {
               			.attr("transform", "translate(" + this.options.innerWidth / 2 + "," + this.options.innerHeight / 2 + ")");
                  
             svg.selectAll(".axis")
-                .data(d3.range(nodeTypes.length))
+                .data(d3.range(this.dataset.nodeTypes.length))
               .enter().append("line")
                 .attr("class", "axis")
                 .attr("transform", function(d) {return "rotate(" + degrees(angle(d)) + ")"; })
@@ -427,18 +470,17 @@ define(function(require) {
                 .attr("class", "link")
                 .attr("d", d3.hive.link()
                   .angle(function(d) {return quali_angle(d.type);})
-                  //.radius(function(d) {console.log(d); return radius(d.degree);}))
                   .radius(function(d) {return radius(d.degree);}))
-                  .style("stroke", function(d) { return color(d.type); });
+                  .style("stroke", function(d) { return linkTypeScale(d.type); });
 
             var node = svg.selectAll(".node")
                 .data(nodes)
               .enter().append("circle")
                 .attr("class", "node")
-                .attr("transform", function(d) {console.log(quali_angle(d.type)); return "rotate(" + degrees(quali_angle(d.type)) + ")"; })
+                .attr("transform", function(d) {return "rotate(" + degrees(quali_angle(d.type)) + ")"; })
                 .attr("cx", function(d) {return radius(d.degree); })
                 .attr("r", 5)
-                .style("fill", function(d) { return color(d.type); });
+                .style("fill", function(d) { return nodeTypeScale(d.type); });
 
             node.append("title")
                 .text(function(d) { return d.id; });
@@ -446,6 +488,94 @@ define(function(require) {
             function degrees(radians) {
             	return radians / Math.PI * 180 - 90;
             }
+        },
+
+        createChordLayout: function(matrix) {
+
+            var innerRadius = Math.min(this.options.innerWidth, this.options.innerHeight) * .41,
+                outerRadius = innerRadius * 1.05;
+
+            var fill = d3.scale.category20b()
+                .domain(d3.range(this.dataset.nodeTypes.length))
+
+            var svg = this.svg.append("g")
+              			.attr("transform", "translate(" + this.options.innerWidth / 2 + "," + this.options.innerHeight / 2 + ")");
+
+            var chord = d3.layout.chord()
+                .padding(.05)
+                .sortSubgroups(d3.descending)
+                .matrix(matrix);
+            
+            var filtered_groups = function(){
+            	return chord.groups().filter(function(el) {return el.value > 0})
+            };
+
+            svg.append("g").selectAll("path")
+                .data(filtered_groups)
+              .enter().append("path")
+                .style("fill", function(d) { return fill(d.index); })
+                .style("stroke", function(d) { return fill(d.index); })
+                .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
+                .on("mouseover", fade(.1))
+                .on("mouseout", fade(1));
+
+
+            var ticks = svg.append("g").selectAll("g")
+                .data(filtered_groups)
+              .enter().append("g").selectAll("g")
+                .data(groupTicks)
+              .enter().append("g")
+                .attr("transform", function(d) {
+                  return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+                      + "translate(" + outerRadius + ",0)";
+                });
+
+            ticks.append("line")
+                .attr("x1", 1)
+                .attr("y1", 0)
+                .attr("x2", 5)
+                .attr("y2", 0)
+                .attr("class", "chord-tick");
+                //.style("stroke", "#000");
+
+            ticks.append("text")
+                .attr("class", "chord-tick-scale")
+                .attr("x", 8)
+                .attr("dy", ".35em")
+                .attr("transform", function(d) { return d.angle > Math.PI ? "rotate(180)translate(-16)" : null; })
+                .style("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+                .text(function(d) { return d.label; });
+
+
+            svg.append("g")
+                .attr("class", "chord")
+                .selectAll("path")
+                .data(function() {return chord.chords().filter(function(el) {return chord.groups()[el.target.index].value > 0})})
+              .enter().append("path")
+                .attr("d", d3.svg.chord().radius(innerRadius))
+                .style("fill", function(d) { return fill(d.target.index); })
+                .style("opacity", 1);
+
+
+            function groupTicks(d) {
+              var k = (d.endAngle - d.startAngle) / d.value;
+              return d3.range(0, d.value, 10).map(function(v, i) {
+                return {
+                  angle: v * k + d.startAngle,
+                  label: i % 5 ? null : v
+                };
+              });
+            }
+
+            function fade(opacity) {
+              return function(g, i) {
+                svg.selectAll(".chord path")
+                    .filter(function(d) { return d.source.index != i && d.target.index != i; })
+                  .transition()
+                    .style("opacity", opacity);
+              };
+            }
+
         },
 
 

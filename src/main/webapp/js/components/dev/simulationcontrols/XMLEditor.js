@@ -86,7 +86,7 @@ define(function (require) {
                     <div className="col-sm-10">
                         <textarea id="xmlCodeEditor" className="form-control" placeholder="" />
                     </div>
-                    <i className="icon-fullscreen expand-editor pull-right" onClick={this.showFullscreen}></i>
+                    <i className="fa-fullscreen expand-editor pull-right" onClick={this.showFullscreen}></i>
                 </div>
                 );
         }

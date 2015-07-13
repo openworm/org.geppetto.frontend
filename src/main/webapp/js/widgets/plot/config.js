@@ -69,7 +69,7 @@ libraries.push("flot");
 libraries.push("mathjs");
 libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
 libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
-libraries.push("widgets/plot/vendor/jquery.flot.downsample");
+//libraries.push("widgets/plot/vendor/jquery.flot.downsample");
 
 define("math.global", ["mathjs"], function(_) {
 	  math = _;

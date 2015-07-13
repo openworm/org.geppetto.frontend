@@ -60,6 +60,7 @@ define(function(require) {
 			this.visualObjectReferenceNodes = new Array();
 			this.id = options.id;
 			this.entityInstancePath = options.entityInstancePath;
+			this.aspectNode = options.aspectNode;
 			this.type = options.type;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
@@ -138,7 +139,7 @@ define(function(require) {
 			}
 			
 			this.highlighted = mode;
-			Simulation.highlightedConnections[this.getInstancePath()] = this;
+			G.highlightedConnections[this.getInstancePath()] = this;
 						
 			return message;
 		},

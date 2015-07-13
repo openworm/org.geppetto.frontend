@@ -34,6 +34,7 @@
  * Plot Widget class
  * @module Widgets/Plot
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 
@@ -43,7 +44,7 @@ define(function(require) {
 	return Widget.View.extend({
 			plot: null,
 			datasets: [],
-			limit: 20,
+			limit: 400,
 			options: null,
 			xaxisLabel: null,
 			yaxisLabel: null,
@@ -57,22 +58,29 @@ define(function(require) {
 			 * is created
 			 */
 			defaultPlotOptions:  {
-				series: {
-					shadowSize: 0,
-					downsample: {
-					    threshold: 1000 
-					  }
-				},
+//				series: {
+//					shadowSize: 0,
+//					downsample: {
+//					    threshold: 1000 
+//					  }
+//				},
 				yaxis: {
-					min: -0.1,
-					max: 1
+					max: 1,
+					min : -.1
 				},
 				xaxis: {
 					min: 0,
-					max: 20,
+					max: 400,
 					show: false,
 					tickLength: 0,
-					ticks : []
+					ticks : [],
+					font: {
+						size: 11
+					},
+					labelWidth : 30,
+					axisLabelPadding: 5,
+					color : "#FFFFFF",
+					alignTicksWithAxis : true,
 				},
 				grid: {
 					margin: {
@@ -80,9 +88,7 @@ define(function(require) {
 						bottom: 15
 					}
 				},
-				timeSteps : {
-					ShowAll : false
-				},
+				playAll : false
 			},
 
 			/**
@@ -95,7 +101,7 @@ define(function(require) {
 				this.name = options.name;
 				this.visible = options.visible;
 				this.datasets = [];
-				this.options = this.defaultPlotOptions;
+				this.options = jQuery.extend({},this.defaultPlotOptions);
 				this.render();
 				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");		
 				
@@ -127,10 +133,6 @@ define(function(require) {
 							}
 						}
 					}
-					if(this.options.xaxis.max > this.limit) {
-						this.limit = this.options.xaxis.max;
-					}
-					
 				}
 
 				var labelsMap = this.labelsMap;
@@ -141,7 +143,7 @@ define(function(require) {
 	        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
 	        	});
 		        
-				if (state!= null) {					
+				if (state!= null) {	
 					if(state instanceof Array){
 						this.datasets.push({
 							data : state
@@ -155,48 +157,14 @@ define(function(require) {
 								+ "already being plotted.";
 							}
 						}
-						var timeSeries = state.getTimeSeries();
-						var timeSeriesData = new Array();
-						var id = state.getInstancePath();
-						var i =0;
-						for(var key in timeSeries){
-							var value = timeSeries[key].getValue();
-							timeSeriesData.push([i,value]);
-							i++;
-							if(value<this.yMin){
-								this.yMin = value;
-							}
-							if(value > this.yMax){
-								this.yMax = value;
-							}
-						}
 						
-						if(timeSeries.length > 1){
-							if(this.options.yaxis.max < this.yMax){
-								this.options.yaxis.max = this.yMax;
-							}
-							if(this.options.yaxis.min > this.yMin){
-								this.options.yaxis.min = this.yMin;
-							}
-							if(this.options.timeSteps.ShowAll == true){
-								this.limit = timeSeries.length;
-								this.options.xaxis.max = this.limit;
-								//this.options.axisLabels = true;
-								this.options.series.downsample.threshold =1000;
-								this.setSize(550,850);
-							}
-							if(this.options.xaxis.show){
-								this.options.xaxes=[{
-						            axisLabel: 'Time in '+GEPPETTO.Simulation.time.getTimeSeries()[0].getUnit(),
-						            position : "bottom"
-						        }];
-							}
-						}
+						var timeSeriesData = this.getTimeSeriesData(state);
+						
 						this.datasets.push({
-							label : id,
+							label : state.getInstancePath(),
 							variable : state,
 							data : timeSeriesData
-						});						
+						});
 					}
 				}
 
@@ -212,6 +180,66 @@ define(function(require) {
 				return "Line plot added to widget";
 			},
 			
+			getTimeSeriesData : function(state){
+				var timeSeries = state.getTimeSeries();
+				var timeSeriesData = new Array();
+				var id = state.getInstancePath();
+				var i =0;
+				for(var key in timeSeries){
+					var value = timeSeries[key].getValue();
+					timeSeriesData.push([i,value]);
+					i++;
+					if(value<this.yMin){
+						this.yMin = value;
+					}
+					if(value > this.yMax){
+						this.yMax = value;
+					}
+				}
+				
+				if(timeSeries.length > 1){
+					if(this.options.playAll == true){
+						this.options.yaxis.max = this.yMax;
+						this.options.yaxis.min = this.yMin;
+						this.limit = timeSeries.length;
+						this.options.xaxis.max = this.limit;
+						this.options.xaxis.show = true;
+						if(window.Project.getActiveExperiment().time!=null || undefined){
+							var timeSeries = window.Project.getActiveExperiment().time.getTimeSeries();
+							var unit = window.Project.getActiveExperiment().time.getUnit();
+							var divideLength = Math.ceil(timeSeries.length/10);
+							var ticks = [];
+							
+							if(unit!=null){
+								ticks[0] = [0,timeSeries[0].getValue().toFixed(4)+ " " +unit];
+							}else{
+								ticks[0] = [0,timeSeries[0].getValue().toFixed(4)];
+							}
+							var index = divideLength;
+							var i = 1;
+							while(index < timeSeries.length){
+								var newTick = [];
+								if(unit!=null){
+									ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+" " +unit];
+								}else{
+									ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
+								}
+								index= Math.ceil(index+divideLength);
+								i++;
+							}
+							index= timeSeries.length-1;
+							if(unit!=null){
+								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+ " " +unit];
+							}else{
+								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
+							}
+							this.options.xaxis.ticks =ticks;
+						}
+					}
+				}
+				
+				return timeSeriesData;
+			},
 			/**
 			 * Takes two time series and plots one against the other. To plot
 			 * array(s) , use it as plotData([[1,2],[2,3]]) To plot an object ,
@@ -289,53 +317,64 @@ define(function(require) {
 			/**
 			 * Updates a data set, use for time series
 			 */
-			updateDataSet: function() {
-				for(var key in this.datasets) {
-					var newValue = this.datasets[key].variable.getTimeSeries()[0].getValue();
+			updateDataSet: function(step) {
 
-					if(!this.labelsUpdated) {
-						var unit = this.datasets[key].variable.getTimeSeries()[0].getUnit();
-						if(unit != null) {
-							var labelY = unit;
-							//Matteo: commented until this can move as it doesn't make sense for it to be static.
-							//also ms should not be harcoded but should come from the simulator as the timescale could
-							//be different
-							var labelX = "";
-							//Simulation timestep (ms) " + Simulation.timestep;
-							//this.setAxisLabel(labelY, labelX);
-							this.labelsUpdated = true;
-						}
+				if(this.options.playAll){
+					for(var key in this.datasets){
+						var timeSeriesData = 
+							this.getTimeSeriesData( this.datasets[key].variable);
+
+						this.datasets[key].data = timeSeriesData;
 					}
-
-					var oldata = this.datasets[key].data;;
-					var reIndex = false;
-
-					if(oldata.length > this.limit) {
-						oldata.splice(0, 1);
-						reIndex = true;
-					}
-
-					oldata.push([ oldata.length, newValue]);
-
-					if(reIndex) {
-						// re-index data
-						var indexedData = [];
-						for(var index = 0, len = oldata.length; index < len; index++) {
-							var value = oldata[index][1];
-							indexedData.push([ index, value ]);
-						}
-
-						this.datasets[key].data = indexedData;
-					}
-					else {
-						this.datasets[key].data = oldata;
-					}
-
+					
+					this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 				}
+				else{
+					for(var key in this.datasets) {
+						var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
 
-				if(this.plot != null){
-					this.plot.setData(this.datasets);
-					this.plot.draw();
+						if(!this.labelsUpdated) {
+							var unit = this.datasets[key].variable.getUnit();
+							if(unit != null) {
+								var labelY = unit;
+								//Matteo: commented until this can move as it doesn't make sense for it to be static.
+								//also ms should not be harcoded but should come from the simulator as the timescale could
+								//be different
+								var labelX = "";
+								//Simulation timestep (ms) " + Simulation.timestep;
+								//this.setAxisLabel(labelY, labelX);
+								this.labelsUpdated = true;
+							}
+						}
+
+						var oldata = this.datasets[key].data;;
+						var reIndex = false;
+
+						if(oldata.length > this.limit) {
+							oldata.splice(0, 1);
+							reIndex = true;
+						}
+
+						oldata.push([ oldata.length, newValue]);
+
+						if(reIndex) {
+							// re-index data
+							var indexedData = [];
+							for(var index = 0, len = oldata.length; index < len; index++) {
+								var value = oldata[index][1];
+								indexedData.push([ index, value ]);
+							}
+
+							this.datasets[key].data = indexedData;
+						}
+						else {
+							this.datasets[key].data = oldata;
+						}
+					}
+					if(this.plot != null){
+						this.plot.setData(this.datasets);
+						this.plot.draw();
+					}
 				}
 			},
 
@@ -397,7 +436,7 @@ define(function(require) {
 			resetPlot: function() {
 				if(this.plot != null) {
 					this.datasets = [];
-					this.options = this.defaultPlotOptions;
+					this.options = jQuery.extend({}, this.defaultPlotOptions);
 					var plotHolder = $("#" + this.id);
 					this.plot = $.plot(plotHolder, this.datasets, this.options);
 				}
@@ -418,18 +457,7 @@ define(function(require) {
 						}
 					}
 				}
-				if(this.options.xaxis != null) {
-					if(this.options.xaxis.max > this.limit) {
-						this.limit = this.options.xaxis.max;
-					}
-				}
-				
-				if(this.options.xaxis.show){
-					this.options.xaxes= [{
-			            axisLabel: 'Time in '+GEPPETTO.Simulation.time.getTimeSeries()[0].getUnit(),
-			            position : "bottom"
-			        }];
-				}
+				this.limit = this.options.xaxis.max;
 				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 			},
 			

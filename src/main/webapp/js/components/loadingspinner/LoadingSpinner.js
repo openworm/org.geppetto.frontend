@@ -8,15 +8,15 @@ define(function(require) {
 
 		getDefaultProps: function() {
 			return {
-				text :'Loading Simulation'
+				text :'Loading Experiment'
 			};
 		},
 		
 		componentDidMount: function(){
-			GEPPETTO.once('simulation:loaded', this.hide);
+			GEPPETTO.once('hide:spinner', this.hide);
 			setTimeout((function(){
-				if(GEPPETTO.Simulation.loading && this.isMounted()){
-					this.setProps({text: 'Loading is taking longer than usual, either a big simulation is being loaded or bandwidth is limited'});
+				if(this.isMounted()){
+					this.setProps({text: 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited'});
 				}
 			}).bind(this), 20000);
 		},
@@ -26,7 +26,7 @@ define(function(require) {
             	<div className="modal fade" id="loading-spinner">
             		<div className="spinner-backdrop">
 	            		<div className="spinner-container">
-	            			<div className="asterisk icon-spin"></div>
+	            			<div className="gpt-gpt_logo fa-spin"></div>
 	            			<p id="loadingmodaltext" className="orange">{this.props.text}</p>
 	            		</div>
             		</div>

@@ -84,3 +84,23 @@
   stroke: red;
   stroke-width: 3px;
 }
+
+.chord path {
+  fill-opacity: .67;
+  stroke: #000;
+  stroke-width: .5px;
+}
+
+.chord-tick {
+  stroke: white;
+  stroke-width: .5px;
+}
+
+.chord-tick-scale {
+  font-size: 12px;
+  font-weight:100;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  fill:white;
+  stroke: none;
+  text-rendering: optimizeLegibility;
+}

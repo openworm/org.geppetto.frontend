@@ -44,7 +44,8 @@ define(function(require) {
 		var clientID = null;
 		var nextID = 0;
 		var connectionInterval = 300;
-
+		var pako = require("pako");
+		
 		/**
 		 * Web socket creation and communication
 		 */
@@ -60,6 +61,7 @@ define(function(require) {
 			connect: function(host) {
 				if('WebSocket' in window) {
 					GEPPETTO.MessageSocket.socket = new WebSocket(host);
+					GEPPETTO.MessageSocket.socket.binaryType = "arraybuffer";
 				}
 				else if('MozWebSocket' in window) {
 					GEPPETTO.MessageSocket.socket = new MozWebSocket(host);
@@ -85,23 +87,40 @@ define(function(require) {
 				};
 
 				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
-					if(msg.data=="ping"){
-						return;
-					}
-					var parsedServerMessage = JSON.parse(msg.data);
+					var messageData = msg.data;
 
-					//notify all handlers
-					for(var i = 0, len = messageHandlers.length; i < len; i++) {
-						messageHandlers[ i ].onMessage(parsedServerMessage);
+					if(messageData == "ping") {
+							return;
+						}
+	
+					// if it's a binary message then assume it's a compressed json string
+					if (messageData instanceof ArrayBuffer) {
+						
+						var messageBytes = new Uint8Array(messageData);
+						
+						// if it's a binary message and first byte it's zero then assume it's a compressed json string
+						//otherwise is a file and a 'save as' dialog is opened
+						if (messageBytes[0] == 0){
+							var message = pako.ungzip(messageBytes.subarray(1), {to:"string"});
+							parseAndNotify(message);
+						}
+						else{
+							 var fileNameLength = messageBytes[1];
+							 var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2,2+fileNameLength));
+							 var blob = new Blob([messageData]);
+							 saveData(blob.slice(2+fileNameLength), fileName);
+						}
+						
 					}
+					else{
+						// a non compresed message
+						parseAndNotify(messageData);
+					}
+
 				};
 
                 //Detects problems when connecting to Geppetto server
                 GEPPETTO.MessageSocket.socket.onerror = function(evt) {
-                    var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
-                    if(GEPPETTO.Simulation.isLoading()) {
-                        GEPPETTO.Simulation.stop();
-                    }
                     var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
                     //Attempt to connect using ws first time wss fails,
                     //if ws fails too then don't try again and display info error window
@@ -211,7 +230,21 @@ define(function(require) {
 				data: payload
 			};
 			return  JSON.stringify(object);
-		};
+		}
 
+		function gzipUncompress(compressedMessage) {
+			var messageBytes = new Uint8Array(compressedMessage);
+			var message = pako.ungzip(messageBytes, {to:"string"});
+			return message;
+		}
+		
+		function parseAndNotify(messageData){
+			var parsedServerMessage = JSON.parse(messageData);
+
+			//notify all handlers
+			for(var i = 0, len = messageHandlers.length; i < len; i++) {
+				messageHandlers[ i ].onMessage(parsedServerMessage);
+			}
+		}
 	}
 });

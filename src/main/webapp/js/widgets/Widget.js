@@ -351,10 +351,13 @@ define(function(require) {
 						}
 					});
 
+				//remove the jQuery UI icon
+				$("div[aria-describedby=" + this.id +"] .ui-dialog-titlebar-close > span").remove();
+				$("div[aria-describedby=" + this.id +"] button").append("<i class='fa fa-close'></i>");
 				this.$el = $("#"+this.id);
 				
 				//Take focus away from close button
-				$(".ui-dialog-titlebar-close").blur();
+				$("div[aria-describedby=" + this.id +"] .ui-dialog-titlebar-close").blur();
 
 			},
 			

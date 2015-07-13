@@ -62,6 +62,7 @@ define(function(require) {
 			this.lowSpectrumColor = options.lowSpectrumColor;
 			this.name = options.name;
 			this.id = options.id;
+			this.aspectNode = options.aspectNode;
 			this.instancePath = options.instancePath;
 			this.domainType = options.domainType;
 			this._metaType = options._metaType;

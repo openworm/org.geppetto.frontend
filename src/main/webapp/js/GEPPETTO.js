@@ -335,6 +335,10 @@ define(function(require) {
          * Renders objects in the scene
          */
         render : function() {
+        	// NOTE: this line below was used in the original prototype to slow down the animation
+        	// NOTE: doesn't seem to make much of a difference in Geppetto
+        	// THREE.AnimationHandler.update( GEPPETTO.getVARS().clock.getDelta());
+        	
             GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene, GEPPETTO.getVARS().camera);
         },
 
@@ -426,8 +430,23 @@ define(function(require) {
          */
         get3DObjectInVisualizationTree : function(visualizationTree, objectPath){
             var objectPathFormat = objectPath.replace(visualizationTree.getInstancePath()+".","");
-            var object = GEPPETTO.Utility.deepFind(visualizationTree.content, objectPathFormat);
-
+            var varName=objectPathFormat.substring(0,objectPathFormat.lastIndexOf("."));
+            var index=objectPathFormat.substring(objectPathFormat.lastIndexOf(".")+1);
+            if(!isNaN(parseInt(index)))
+            {
+            	//the last token is a number
+            	objectPathFormat=varName;
+            }
+            else
+            {
+            	//the last token is not a number
+            	index=-1;
+            }
+            var object = GEPPETTO.Utility.deepFind(visualizationTree.getInstancePath()+".content."+objectPathFormat);
+            if(index>-1)
+            {
+            	object=object[index];
+            }
             return object;
         },
 
@@ -512,14 +531,12 @@ define(function(require) {
     require('websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
     require('websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
     require('websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
-    require('geppetto-objects/Simulation')(GEPPETTO);
     require('geppetto-objects/G')(GEPPETTO);
     require('GEPPETTO.Main')(GEPPETTO);
     //require('GEPPETTO.Tutorial')(GEPPETTO);
     require("widgets/includeWidget")(GEPPETTO);
     require('nodes/NodeFactory')(GEPPETTO);
     require('nodes/RuntimeTreeController')(GEPPETTO);
-
 
     return GEPPETTO;
 

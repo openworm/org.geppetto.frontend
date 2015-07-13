@@ -249,7 +249,7 @@ define(function(require) {
 					//check if console isn't already showing, we do this by checking
 					//it's css value of display
 					if(!this.visible) {
-						$('#console').slideToggle(200);
+						//$('#console').slideToggle(200);
 						$('#commandInputArea').focus();
 					}
 				}
@@ -286,6 +286,7 @@ define(function(require) {
 							$("#console").height($("#footerHeader").height()*.75);
 							event.preventDefault();
 						}
+						$('#console').resize();
 						consoleElement.get(0).style.top = "0px";
 					}.bind(this)
 				});
@@ -388,7 +389,6 @@ define(function(require) {
 			 * Populates tags map at startup
 			 */
 			populateTags : function(){
-				this.updateTags("Simulation", GEPPETTO.Simulation,true);
 				this.updateTags("G", GEPPETTO.G,true);
 			},
 			
@@ -418,7 +418,7 @@ define(function(require) {
 
 			getHelpObjectsMap : function(){
 				if(jQuery.isEmptyObject(helpObjectsMap)){
-					helpObjectsMap = {"G": GEPPETTO.G.help(), "Simulation": GEPPETTO.Simulation.help()};
+					helpObjectsMap = {"G": GEPPETTO.G.help()};
 				}
 				
 				return helpObjectsMap;

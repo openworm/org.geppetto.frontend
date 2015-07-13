@@ -128,7 +128,7 @@ public class GeppettoProjectController
 		{
 			dataManager.deleteGeppettoProject(id, geppettoManager.getUser());
 		}
-		return "redirect:/dashboard";
+		return "redirect:/";
 	}
 
 }

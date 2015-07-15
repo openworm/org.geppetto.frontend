@@ -71,42 +71,52 @@ define(function(require) {
 				/**
 				 * Shows the entity
 				 * 
-				 * @command EntityNode.show()
+				 * @command EntityNode.show(showNested)
 				 * 
 				 */
-				show : function() {
-					var message;
-
-					if (!this.visible) {
-						message = GEPPETTO.Resources.SHOW_ENTITY + this.instancePath;
-						this.visible = true;
-						
-						this.showChildren(this, true);
-					} else {
-						message = GEPPETTO.Resources.ENTITY_ALREADY_VISIBLE;
+				show : function(showNested) {
+					if(showNested === undefined){
+						showNested = true;
 					}
+					
+					this.visible = true;
+					
+					// show aspects for given entity
+					var aspects = this.getAspects();
+					for(var a in aspects){
+						var aspect = aspects[a];
+						aspect.show();
+					}
+					
+					this.showChildren(showNested);
 
+					var message = GEPPETTO.Resources.SHOW_ENTITY + this.instancePath;
 					return message;
-
 				},
 				
 				/**
 				 * Hides the entity
 				 * 
-				 * @command EntityNode.hide()
+				 * @command EntityNode.hide(hideNested)
 				 * 
 				 */
-				hide : function() {
-					var message;
-
-					if (this.visible) {
-						message = GEPPETTO.Resources.HIDE_ENTITY + this.instancePath;
-						this.showChildren(this, false);
-					} else {
-						message = GEPPETTO.Resources.ENTITY_ALREADY_HIDDEN;
+				hide : function(hideNested) {
+					if(hideNested === undefined){
+						hideNested = true;
 					}
+					
 					this.visible = false;
-
+					
+					// hide aspects for given entity
+					var aspects = this.getAspects();
+					for(var a in aspects){
+						var aspect = aspects[a];
+						aspect.hide();
+					}
+					
+					this.showChildren(!hideNested);
+					
+					var message = GEPPETTO.Resources.HIDE_ENTITY + this.instancePath;
 					return message;
 				},
 
@@ -248,22 +258,25 @@ define(function(require) {
 				 * @param {EntityNode} entity - Entity to traverse and alter visibility
 				 * @param {boolean} apply - Visible or invisible
 				 */
-				showChildren : function(entity, mode){
-					var aspects = entity.getAspects();
-					var entities = entity.getEntities();
+				showChildren : function(mode){
+					var entities = this.getEntities();
 					
 					for(var e in entities){
-						this.showChildren(entities[e],mode);
-					}
-					
-					for(var a in aspects){
-						var aspect = aspects[a];
-						if(mode){
-							aspect.show();
+						var aspects = entities[e].getAspects();
+						
+						// hide/show aspects for given entity
+						for(var a in aspects){
+							var aspect = aspects[a];
+							if(mode){
+								aspect.show();
+							}
+							else{
+								aspect.hide();
+							}
 						}
-						else{
-							aspect.hide();
-						}
+						
+						// recurse
+						entities[e].showChildren(mode);
 					}
 				},
 				

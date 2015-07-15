@@ -77,23 +77,17 @@ define(function(require) {
 				 *
 				 */
 				hide : function() {
-					var message;
-					if (this.visible) {
-						GEPPETTO.SceneController.hideAspect(this.instancePath);
-
-						//update visible flag on parents
-						var parent  = this.getParent();
-						while(parent!=null){
-							parent.visible = false;
-							parent = parent.getParent();
-						}
-
-						message = GEPPETTO.Resources.HIDE_ASPECT
-								+ this.instancePath;
-					} else {
-						message = GEPPETTO.Resources.ASPECT_ALREADY_HIDDING;
-					}
+					GEPPETTO.SceneController.hideAspect(this.instancePath);
+					
 					this.visible = false;
+					//update visible flag on parents
+					var parent  = this.getParent();
+					while(parent!=null){
+						parent.visible = false;
+						parent = parent.getParent();
+					}
+
+					var message = GEPPETTO.Resources.HIDE_ASPECT + this.instancePath;
 					return message;
 				},
 				/**
@@ -103,23 +97,17 @@ define(function(require) {
 				 *
 				 */
 				show : function() {
-					var message;
-					if (!this.visible) {
-						GEPPETTO.SceneController.showAspect(this.instancePath);
+					GEPPETTO.SceneController.showAspect(this.instancePath);
 
-						//update visible flag on parents
-						var parent  = this.getParent();
-						while(parent!=null){
-							parent.visible = true;
-							parent = parent.getParent();
-						}
-
-						message = GEPPETTO.Resources.SHOW_ASPECT
-								+ this.instancePath;
-					} else {
-						message = GEPPETTO.Resources.ASPECT_ALREADY_VISIBLE;
-					}
 					this.visible = true;
+					//update visible flag on parents
+					var parent  = this.getParent();
+					while(parent!=null){
+						parent.visible = true;
+						parent = parent.getParent();
+					}
+
+					var message = GEPPETTO.Resources.SHOW_ASPECT + this.instancePath;
 					return message;
 				},
 

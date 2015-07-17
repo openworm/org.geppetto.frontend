@@ -63,7 +63,7 @@ public class Login
 	}
 
 	@RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
-	public String login(@RequestParam String username, @RequestParam String password, @RequestParam(defaultValue="dashboard",required=false) String url)
+	public String login(@RequestParam String username, @RequestParam String password, @RequestParam(defaultValue="",required=false) String url)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(!dataManager.isDefault())
@@ -107,7 +107,7 @@ public class Login
 				}
 			}
 		}
-		return "redirect:/dashboard";
+		return "redirect:/";
 	}
 
 }

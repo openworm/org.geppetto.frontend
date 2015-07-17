@@ -154,12 +154,14 @@ define(function(require) {
         		}
         	});
 
-        	// Compute world AABB center
-        	GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
-        	GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
-        	GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
-
-        	GEPPETTO.updateCamera(aabbMax, aabbMin);
+        	if (aabbMin != null && aabbMax != null){
+	        	// Compute world AABB center
+	        	GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
+	        	GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
+	        	GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
+	
+	        	GEPPETTO.updateCamera(aabbMax, aabbMin);
+        	}
         },
 
         /**

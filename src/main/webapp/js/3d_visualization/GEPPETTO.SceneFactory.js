@@ -11,7 +11,6 @@ define(function(require) {
 		_ = require('underscore'), 
 		Backbone = require('backbone');
 
-		require('three');
 		require('vendor/ColladaLoader');
 		require('vendor/OBJLoader');
 		require('GEPPETTO.Resources')(GEPPETTO);
@@ -203,12 +202,6 @@ define(function(require) {
 						break;
 					case "ColladaNode":
 					case "OBJNode":
-						//TODO: can we have multiple collada / OBJ ? Do we merge them?
-						//var merged = new THREE.Geometry();
-						//objArray.forEach(function(obj){
-						//THREE.GeometryUtils.merge(merged, obj);
-						//mergedMeshesPaths.push(obj.instancePath);
-						//});
 						ret = objArray[0];
 						break;
 					}
@@ -266,18 +259,12 @@ define(function(require) {
 						scene = collada.scene;
 						scene.traverse(function(child){
 							if(child instanceof THREE.Mesh){
-								child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
+								child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial(40);
 								child.name = node.instancePath.split(".VisualizationTree")[0];
 							}
 							if (child instanceof THREE.SkinnedMesh) {
-								// NOTE: without this line the animation doesn't work as the renderer
-								// NOTE: does not execute the animation logic
 								child.material.skinning = true;
-								
-								// NOTE: these two lines below seem to make no difference in Geppetto
-								// NOTE: while in the original prototype nothing moves if they are removed
-								// var animation = new THREE.Animation( child, child.geometry.animation );
-								// animation.play();
+
 							}
 						});
 					});
@@ -376,11 +363,15 @@ define(function(require) {
 					return threeObject;
 				},	
 
-				getMeshPhongMaterial : function() {
+				getMeshPhongMaterial : function(shine) {
+					if(shine==undefined)
+					{
+						shine=10;
+					}
 					var material = new THREE.MeshPhongMaterial({
 						opacity : 1,
 						ambient : 0x777777,
-						shininess : 2,
+						shininess : shine,
 						shading : THREE.SmoothShading
 					});
 

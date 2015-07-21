@@ -187,20 +187,13 @@ define([ 'jquery', 'underscore', 'backbone',
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
 			if(projectID != null && projectID != "") {
-				//Updates the simulation controls visibility
-				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-				//update ui based on success of webgl
-				GEPPETTO.FE.update(webGLStarted);
-				//Keep going with load of simulation only if webgl container was created
-				if(webGLStarted) {
-					var parameters = {};
-					parameters["experimentId"] = experimentID;
-					parameters["projectId"] = projectID;
-					GEPPETTO.MessageSocket.send("load_project_from_id", parameters);
-					this.initializationTime = new Date();
-					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-				}
+				var parameters = {};
+				parameters["experimentId"] = experimentID;
+				parameters["projectId"] = projectID;
+				GEPPETTO.MessageSocket.send("load_project_from_id", parameters);
+				this.initializationTime = new Date();
+				GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+				GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
 			}
 
 			else {
@@ -223,21 +216,14 @@ define([ 'jquery', 'underscore', 'backbone',
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
 			if(projectURL != null && projectURL != "") {
-				//Updates the simulation controls visibility
-				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-				//update ui based on success of webgl
-				GEPPETTO.FE.update(webGLStarted);
-				//Keep going with load of simulation only if webgl container was created
-				if(webGLStarted) {
-					GEPPETTO.MessageSocket.send("load_project_from_url", projectURL);
-					GEPPETTO.trigger(Events.Volatile_project_loaded);
-					this.persisted=false;
-					this.initializationTime = new Date();
-					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-					//trigger simulation restart event
-					GEPPETTO.trigger(Events.Simulation_restarted);
-				}
+				GEPPETTO.MessageSocket.send("load_project_from_url", projectURL);
+				GEPPETTO.trigger(Events.Volatile_project_loaded);
+				this.persisted=false;
+				this.initializationTime = new Date();
+				GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+				GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+				//trigger simulation restart event
+				GEPPETTO.trigger(Events.Simulation_restarted);
 			}
 
 			else {
@@ -261,18 +247,13 @@ define([ 'jquery', 'underscore', 'backbone',
 
 			if(content != null && content != "") {
 				//Updates the simulation controls visibility
-				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-				//update ui based on success of webgl
-				GEPPETTO.FE.update(webGLStarted);
-				//Keep going with load of simulation only if webgl container was created
-				if(webGLStarted) {
-					GEPPETTO.MessageSocket.send("load_project_from_content", content);
-					this.initializationTime = new Date();
-					GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-					//trigger simulation restart event
-					GEPPETTO.trigger(Events.Simulation_restarted);
-				}
+
+				GEPPETTO.MessageSocket.send("load_project_from_content", content);
+				this.initializationTime = new Date();
+				GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+				GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+				//trigger simulation restart event
+
 			}
 
 			else {

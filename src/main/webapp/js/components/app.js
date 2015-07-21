@@ -27,9 +27,7 @@ define(function(require) {
 		command = "Project.loadFromContent";
 	}
 
-	var webGLStarted = GEPPETTO.webGLAvailable();
-
-	if (webGLStarted && simParam) {
+	if (simParam) {
 		$(document).ready(
 				function() {
 					if (expParam) {

@@ -90,6 +90,7 @@ define(function(require) {
 					var message = GEPPETTO.Resources.HIDE_ASPECT + this.instancePath;
 					return message;
 				},
+				
 				/**
 				 * Shows the aspect
 				 *
@@ -110,6 +111,18 @@ define(function(require) {
 					var message = GEPPETTO.Resources.SHOW_ASPECT + this.instancePath;
 					return message;
 				},
+				
+				/**
+				 * Change the opacity of the aspect
+				 *
+				 * @command AspectNode.changeOpacity(opacity)
+				 *
+				 */
+				changeOpacity:function(opacity) {
+					GEPPETTO.SceneController.changeOpacity(this.instancePath,opacity);
+				},
+				
+				
 
 				/**
 				 * Selects the aspect

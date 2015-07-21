@@ -153,24 +153,6 @@ define(function(require) {
 				}
 			},
 
-			/**
-			 * Add user as an observer to an ongoing simulation. Create
-			 * webGL container and notify servlet about new member that is becoming an observer.
-			 */
-			observe: function() {
-				//Create canvas for observing visitor
-				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-
-				//Allow user to observe only if wegbl container was created
-				if(webGLStarted) {
-					GEPPETTO.animate();
-					GEPPETTO.MessageSocket.send("observe", null);
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.SIMULATION_OBSERVED);
-				}
-
-				//update the UI based on success of webgl
-				GEPPETTO.FE.update(webGLStarted);
-			}
 		};
 
 // ============================================================================
@@ -202,8 +184,6 @@ define(function(require) {
 						GEPPETTO.Main.idleTime = 0;
 					}
 				});
-
-				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
 				//Initialize websocket functionality
 				GEPPETTO.Main.init();

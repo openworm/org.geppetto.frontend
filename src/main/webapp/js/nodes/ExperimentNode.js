@@ -58,6 +58,7 @@ define(function(require)
 		paused : false,
 		parameters : null,
 		script : "",
+		hasRendered :false,
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -295,6 +296,23 @@ define(function(require)
 				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + name + " with id " + id + " isn't completed, and can't be played.");
 			}
 		},
+		
+		rendered : function(renderedP)
+		{
+			if(renderedP)
+			{
+				this.hasRendered=true;
+				if(this.getWorker()!=undefined)
+				{
+					this.getWorker().postMessage([ "experiment:rendered" ]);
+				}
+			}
+			else if(!renderedP)
+			{
+				this.hasRendered=false;
+			}
+			else return this.hasRendered;
+		},
 
 		playAll : function()
 		{
@@ -336,22 +354,18 @@ define(function(require)
 
 			// tells worker to update each half a second
 			this.worker.postMessage([ Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, steps, playAll ]);
+			this.rendered(true);
 
 			// receives message from web worker
 			this.worker.onmessage = function(event)
 			{
 				// get current timeSteps to execute from web worker
 				var step = event.data[0];
+				console.log(step);
 				var maxSteps = window.Project.getActiveExperiment().maxSteps;
 				if (step >= maxSteps)
 				{
-					var parameters =
-					{
-						name : window.Project.getActiveExperiment().getName(),
-						id : window.Project.getActiveExperiment().getId()
-					};
-					window.Project.getActiveExperiment().terminateWorker();
-					GEPPETTO.trigger(Events.Experiment_over, parameters);
+					this.postMessage([ "experiment:loop" ]);
 				} else
 				{
 					var playAllFlag = event.data[1];
@@ -368,6 +382,7 @@ define(function(require)
 						GEPPETTO.trigger(Events.Experiment_stop);
 					}
 				}
+				Project.getActiveExperiment().rendered(false);
 			};
 		},
 

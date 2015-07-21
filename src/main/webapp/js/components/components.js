@@ -1,10 +1,6 @@
 define(function(require) {
-require('jsx!./dev/save/SaveControl');
-require('jsx!./dev/home/HomeControl');
-require('jsx!./dev/simulationcontrols/ExperimentControls');
+require('jsx!./dev/customrenderer/AnimationCustomRenderer');
+require('jsx!./dev/wormsimlogo/wormsimLogo');
+require('jsx!./dev/wormsimsimulationcontrols/ExperimentControls');
 require('jsx!./dev/cameracontrols/CameraControls');
-//require('jsx!./dev/tutorial/IntroModal');
-require('jsx!./dev/logo/logo');
-require('jsx!./dev/share/share');
-require('jsx!./dev/contact/contact');
-}); 
+});

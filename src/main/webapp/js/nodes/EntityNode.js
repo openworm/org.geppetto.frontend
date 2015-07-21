@@ -100,6 +100,38 @@ define(function(require) {
 				 * @command EntityNode.hide(hideNested)
 				 * 
 				 */
+				changeOpacity : function(opacity,recursive) {
+					if(recursive === undefined){
+						recursive = true;
+					}
+					
+					this.visible = false;
+					
+					// hide aspects for given entity
+					var aspects = this.getAspects();
+					for(var a in aspects){
+						var aspect = aspects[a];
+						aspect.changeOpacity(opacity);
+					}
+					
+					var entities = this.getEntities();
+					if(recursive)
+					{
+						for(var e in entities){
+							entities[e].changeOpacity(opacity,recursive);
+						}
+					}
+					
+					var message = "Opacity changed" + this.instancePath;
+					return message;
+				},
+				
+				/**
+				 * Hides the entity
+				 * 
+				 * @command EntityNode.hide(hideNested)
+				 * 
+				 */
 				hide : function(hideNested) {
 					if(hideNested === undefined){
 						hideNested = true;

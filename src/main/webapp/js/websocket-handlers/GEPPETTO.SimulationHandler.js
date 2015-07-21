@@ -92,14 +92,7 @@ define(function(require) {
         };
         
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function(payload) { 
-        	//Updates the simulation controls visibility
-			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-			//update ui based on success of webgl
-			GEPPETTO.FE.update(webGLStarted);
-			//Keep going with load of simulation only if webgl container was created
-
-			//we call it only the first time
-			GEPPETTO.SceneController.animate();
+			
         	GEPPETTO.trigger('project:show_spinner');
         }
 
@@ -112,18 +105,17 @@ define(function(require) {
 			//update ui based on success of webgl
 			GEPPETTO.FE.update(webGLStarted);
 			//Keep going with load of simulation only if webgl container was created
+			for(var experiment in window.Project.getExperiments())
+			{
+				if(window.Project.getExperiments()[experiment].getId()==experimentId)
+				{
+					window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
+					break;
+				}
+			}
 			if(webGLStarted) {
 				//we call it only the first time
 				GEPPETTO.SceneController.animate();
-				for(var experiment in window.Project.getExperiments())
-				{
-					if(window.Project.getExperiments()[experiment].getId()==experimentId)
-					{
-						window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
-						break;
-					}
-				}
-				
 			}
             
 
@@ -167,9 +159,9 @@ define(function(require) {
         	}
         	experiment.maxSteps = maxSteps;
         	
-        	if(!experiment.played){
-        		experiment.experimentUpdateWorker();
-        	}
+//        	if(!experiment.played){
+//        		experiment.experimentUpdateWorker();
+//        	}
         	experiment.played = true;
         };
         

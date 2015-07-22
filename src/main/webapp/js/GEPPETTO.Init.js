@@ -35,15 +35,14 @@ define(function(require) {
 			},
 			visualModelMap: null,
 			idCounter: 0,
-
 			sceneCenter: new THREE.Vector3(),
 			cameraPosition: new THREE.Vector3(),
 			canvasCreated: false,
 			listenersCreated : false,
 			selected : [],
-			// timer step in milliseconds
-			playTimerStep: 10, 
-			playLoop: false,
+			playTimerStep: 10, // timer step in milliseconds
+			playLoop: false, // loop flag for replaying
+			pickingEnabled: true, // flag to enable disable 3d picking 
 		};
 
 		var setupScene = function() {
@@ -151,17 +150,19 @@ define(function(require) {
 			if(!VARS.listenersCreated){
 				// when the mouse moves, call the given function
 				VARS.renderer.domElement.addEventListener('mousedown', function(event) {
-					var intersects = GEPPETTO.getIntersectedObjects();
-
-					if ( intersects.length > 0 ) {
-						var selected = intersects[ 0 ].object.name;
-
-						if(selected == ""){
-							selected = intersects[ 0 ].object.parent.name;
-						}
-						if (VARS.meshes.hasOwnProperty(selected) || VARS.splitMeshes.hasOwnProperty(selected)) {
-							GEPPETTO.G.unSelectAll();
-							GEPPETTO.Console.executeCommand(selected + '.select()');
+					if(VARS.pickingEnabled){
+						var intersects = GEPPETTO.getIntersectedObjects();
+		
+						if ( intersects.length > 0 ) {
+							var selected = intersects[ 0 ].object.name;
+		
+							if(selected == ""){
+								selected = intersects[ 0 ].object.parent.name;
+							}
+							if (VARS.meshes.hasOwnProperty(selected) || VARS.splitMeshes.hasOwnProperty(selected)) {
+								GEPPETTO.G.unSelectAll();
+								GEPPETTO.Console.executeCommand(selected + '.select()');
+							}
 						}
 					}
 				}, false);

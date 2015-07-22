@@ -80,12 +80,6 @@ define(function(require) {
 					GEPPETTO.SceneController.hideAspect(this.instancePath);
 					
 					this.visible = false;
-					//update visible flag on parents
-					var parent  = this.getParent();
-					while(parent!=null){
-						parent.visible = false;
-						parent = parent.getParent();
-					}
 
 					var message = GEPPETTO.Resources.HIDE_ASPECT + this.instancePath;
 					return message;
@@ -100,12 +94,6 @@ define(function(require) {
 					GEPPETTO.SceneController.showAspect(this.instancePath);
 
 					this.visible = true;
-					//update visible flag on parents
-					var parent  = this.getParent();
-					while(parent!=null){
-						parent.visible = true;
-						parent = parent.getParent();
-					}
 
 					var message = GEPPETTO.Resources.SHOW_ASPECT + this.instancePath;
 					return message;

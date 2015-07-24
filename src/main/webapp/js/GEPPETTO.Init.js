@@ -42,7 +42,8 @@ define(function(require) {
 			selected : [],
 			playTimerStep: 10, // timer step in milliseconds
 			playLoop: false, // loop flag for replaying
-			pickingEnabled: true, // flag to enable disable 3d picking 
+			pickingEnabled: true, // flag to enable disable 3d picking
+			backgroundColor: '0x000000',
 		};
 
 		var setupScene = function() {
@@ -92,7 +93,7 @@ define(function(require) {
 		};
 		
 		var configureRenderer = function(){
-			var color = new THREE.Color( 0x000000 );
+			var color = new THREE.Color( VARS.backgroundColor );
 			VARS.renderer.setClearColor( color, 1 );
 			var width = $(VARS.container).width();
 			var height = $(VARS.container).height();

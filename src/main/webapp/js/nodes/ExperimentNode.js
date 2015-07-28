@@ -58,7 +58,6 @@ define(function(require)
 		paused : false,
 		parameters : null,
 		script : "",
-		hasRendered :false,
 
 		/**
 		 * Initializes this experiment with passed attributes
@@ -296,23 +295,6 @@ define(function(require)
 				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + name + " with id " + id + " isn't completed, and can't be played.");
 			}
 		},
-		
-		rendered : function(renderedP)
-		{
-			if(renderedP)
-			{
-				this.hasRendered=true;
-				if(this.getWorker()!=undefined)
-				{
-					this.getWorker().postMessage([ "experiment:rendered" ]);
-				}
-			}
-			else if(!renderedP)
-			{
-				this.hasRendered=false;
-			}
-			else return this.hasRendered;
-		},
 
 		playAll : function()
 		{
@@ -354,7 +336,6 @@ define(function(require)
 
 			// tells worker to update each half a second
 			this.worker.postMessage([ Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, steps, playAll ]);
-			this.rendered(true);
 
 			// receives message from web worker
 			this.worker.onmessage = function(event)
@@ -382,7 +363,6 @@ define(function(require)
 						GEPPETTO.trigger(Events.Experiment_stop);
 					}
 				}
-				Project.getActiveExperiment().rendered(false);
 			};
 		},
 

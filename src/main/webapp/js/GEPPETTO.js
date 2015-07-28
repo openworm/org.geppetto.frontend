@@ -374,28 +374,7 @@ define(function(require) {
 		 * Renders objects in the scene
 		 */
 		render : function() {
-			if(!Project.getActiveExperiment().rendered())
-			{
-				GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene,GEPPETTO.getVARS().camera);
-				Project.getActiveExperiment().rendered(true);
-			}
-//			if ((typeof wormsim !== 'undefined')) {
-//
-//				//console.log(step);
-//				if (step > 631) {
-//					step = 0;
-//				}
-//				;
-//
-//				if (wormsim.mechanical.VisualizationTree.transformation.skeletonTransformations.length > 0) {
-//
-//					GEPPETTO.getVARS().renderer
-//							.setCurrentMatrix(wormsim.mechanical.VisualizationTree.transformation.skeletonTransformations[step]);
-//					step=step+30;
-//					
-//				}
-//			}
-
+			GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene,GEPPETTO.getVARS().camera);
 		},
 
 		/**

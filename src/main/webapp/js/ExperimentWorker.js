@@ -48,15 +48,17 @@ onmessage = function(e) {
 	}else if(e.data[0] == "experiment:loop"){
 		lastExecutedStep = 0;
 		postMessage([lastExecutedStep,playAll,step]);
-	}else if(e.data[0] == "experiment:rendered"){
-		if(!isPaused){
-			lastExecutedStep = lastExecutedStep + step;
-			postMessage([lastExecutedStep,playAll,step]);
-		}
 	}else if(e.data[0]== "experiment:play"){
 		play=true;
 		var timer = e.data[1];
 		step = e.data[2];
 		var playAll = e.data[3];
+		
+		setInterval(function(){
+			if(!isPaused){
+				lastExecutedStep = lastExecutedStep + step;
+				postMessage([lastExecutedStep,playAll]);
+			}
+		}, timer);
 	}
 }

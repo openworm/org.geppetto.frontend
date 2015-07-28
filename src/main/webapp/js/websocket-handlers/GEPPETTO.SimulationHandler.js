@@ -76,6 +76,9 @@ define(function(require) {
             {	
             	window.Project.persisted=false;
             }
+            
+            GEPPETTO.Init.initEventListeners();
+            
             GEPPETTO.trigger(Events.Project_loaded);            
             GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
         };

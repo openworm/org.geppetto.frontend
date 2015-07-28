@@ -168,6 +168,13 @@ define(function(require) {
 		// Application logic.
 		// ============================================================================
 		GEPPETTO.Init = {
+			initEventListeners : function(){
+				// setup listeners for geppetto events that can be triggered
+				if (!GEPPETTO.Events.listening) {
+					GEPPETTO.Events.listen();
+					GEPPETTO.Events.listening = true;
+				}
+			},
 			initialize : function(containerp) {
 				GEPPETTO.getVARS().container = containerp;
 				setupScene();
@@ -176,11 +183,6 @@ define(function(require) {
 				setupLights();
 				setupControls();
 				setupListeners();
-				// setup listeners for geppetto events that can be triggered
-				if (!GEPPETTO.Events.listening) {
-					GEPPETTO.Events.listen();
-					GEPPETTO.Events.listening = true;
-				}
 				return GEPPETTO.getVARS();
 			}
 		};

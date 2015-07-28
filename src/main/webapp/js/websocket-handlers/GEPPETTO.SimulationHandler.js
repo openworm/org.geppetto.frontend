@@ -159,9 +159,9 @@ define(function(require) {
         	}
         	experiment.maxSteps = maxSteps;
         	
-//        	if(!experiment.played){
-//        		experiment.experimentUpdateWorker();
-//        	}
+        	if(!experiment.played){
+        		experiment.experimentUpdateWorker();
+        	}
         	experiment.played = true;
         };
         

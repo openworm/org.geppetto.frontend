@@ -276,8 +276,7 @@ define(function(require)
 					if (!this.played)
 					{
 						GEPPETTO.trigger(Events.Experiment_play);
-						var parameters =
-						{};
+						var parameters = {};
 						parameters["experimentId"] = this.id;
 						parameters["projectId"] = this.getParent().getId();
 						GEPPETTO.MessageSocket.send("play_experiment", parameters);

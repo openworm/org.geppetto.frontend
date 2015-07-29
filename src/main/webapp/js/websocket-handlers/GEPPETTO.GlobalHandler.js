@@ -73,7 +73,11 @@ define(function(require)
 		{
 			GEPPETTO.Console.debugLog(GEPPETTO.Resources.CLEAR_CANVAS);
 			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-			GEPPETTO.FE.update(webGLStarted);
+			var webWorkersSupported = (typeof(Worker) !== "undefined") ? true : false;
+			
+			if(!webGLStarted || !webWorkersSupported){
+				GEPPETTO.FE.notifyInitErrors(webGLStarted, webWorkersSupported);
+			}
 		};
 
 		// Error loading simulation, invalid url or simulation file

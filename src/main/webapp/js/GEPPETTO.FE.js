@@ -540,7 +540,7 @@ define(function(require)
 			/**
 			 * Show error message if webgl failed to start
 			 */
-			update : function(webGLStarted)
+			notifyInitErrors : function(webGLStarted, workersSupported)
 			{
 				if (!webGLStarted)
 				{
@@ -548,7 +548,18 @@ define(function(require)
 					GEPPETTO.FE.disableSimulationControls();
 					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBGL_FAILED, GEPPETTO.Resources.WEBGL_MESSAGE);
 				}
+				
+				if (!workersSupported)
+				{
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED);
+					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED, GEPPETTO.Resources.WORKERS_NOT_SUPPORTED_MESSAGE);
+				}
+				
+				if(!webGLStarted || !workersSupported){
+					GEPPETTO.FE.disableSimulationControls();
+				}
 			},
+			
 			/**
 			 * Basic Dialog box with message to display.
 			 * 

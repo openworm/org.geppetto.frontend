@@ -146,8 +146,13 @@ define(function(require) {
 							GEPPETTO.Main.disconnected = true;
 							GEPPETTO.FE.disableSimulationControls();
 							GEPPETTO.MessageSocket.send("idle_user", null);
+							
 							var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-							GEPPETTO.FE.update(webGLStarted);
+							var webWorkersSupported = (typeof(Worker) !== "undefined") ? true : false;
+							
+							if(!webGLStarted || !webWorkersSupported){
+								GEPPETTO.FE.notifyInitErrors(webGLStarted, webWorkersSupported);
+							}
 						}
 					}
 				}
@@ -162,10 +167,11 @@ define(function(require) {
 		$(document).ready(function() {
 			//Create canvas
 			var webGLStarted = GEPPETTO.webGLAvailable();
+			var webWorkersSupported = (typeof(Worker) !== "undefined") ? true : false;
              
 			//make sure webgl started correctly
-			if(!webGLStarted) {
-				GEPPETTO.FE.update(false);
+			if(!webGLStarted || !webWorkersSupported) {
+				GEPPETTO.FE.notifyInitErrors(webGLStarted, webWorkersSupported);
 			}
 			else{
 				GEPPETTO.FE.initialEvents();

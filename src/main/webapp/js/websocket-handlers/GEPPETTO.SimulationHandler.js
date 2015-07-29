@@ -103,10 +103,10 @@ define(function(require) {
         	var message=JSON.parse(payload.experiment_loaded);
         	var jsonRuntimeTree = message.scene;
         	var experimentId=message.experimentId;
+        	
         	//Updates the simulation controls visibility
 			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-			//update ui based on success of webgl
-			GEPPETTO.FE.update(webGLStarted);
+
 			//Keep going with load of simulation only if webgl container was created
 			for(var experiment in window.Project.getExperiments())
 			{

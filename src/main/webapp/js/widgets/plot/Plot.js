@@ -330,6 +330,7 @@ define(function(require) {
 					this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 				}
 				else{
+					//console.log("Plotting step "+step);
 					for(var key in this.datasets) {
 						var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
 
@@ -450,13 +451,7 @@ define(function(require) {
 			 * @param {Object} options - options to modify the plot widget
 			 */
 			setOptions: function(options) {
-				for(var e in options){
-					if(options[e]!= null || options[e]!= undefined){
-						if(this.options.hasOwnProperty(e)){
-							this.options[e] = options[e];
-						}
-					}
-				}
+				this.options=options;
 				this.limit = this.options.xaxis.max;
 				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 				return this;

@@ -341,10 +341,11 @@ define(function(require)
 			{
 				// get current timeSteps to execute from web worker
 				var step = event.data[0];
-				console.log(step);
+				//console.log(step);
 				var maxSteps = window.Project.getActiveExperiment().maxSteps;
 				if (step >= maxSteps)
 				{
+					//console.log("triggering loop, step="+step+" maxSteps="+maxSteps);
 					this.postMessage([ "experiment:loop" ]);
 				} else
 				{
@@ -362,6 +363,8 @@ define(function(require)
 						GEPPETTO.trigger(Events.Experiment_stop);
 					}
 				}
+				
+				this.postMessage([ "experiment:processed" ]);
 			};
 		},
 

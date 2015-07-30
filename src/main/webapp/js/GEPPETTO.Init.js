@@ -51,7 +51,7 @@ define(function(require) {
 		};
 
 		var configureRenderer = function() {
-			var color = new THREE.Color( VARS.backgroundColor );
+			var color = new THREE.Color(GEPPETTO.getVARS().backgroundColor );
 			GEPPETTO.getVARS().renderer.setClearColor(color, 1);
 			var width = $(GEPPETTO.getVARS().container).width();
 			var height = $(GEPPETTO.getVARS().container).height();

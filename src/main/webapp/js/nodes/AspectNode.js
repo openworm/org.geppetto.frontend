@@ -122,6 +122,16 @@ define(function(require) {
 					GEPPETTO.SceneController.changeOpacity(this.instancePath,opacity);
 				},
 				
+				/**
+				 * Change the opacity of the aspect
+				 *
+				 * @command AspectNode.changeOpacity(opacity)
+				 *
+				 */
+				setColor:function(color) {
+					GEPPETTO.SceneController.setColor(this.instancePath,color);
+				},
+				
 				
 
 				/**

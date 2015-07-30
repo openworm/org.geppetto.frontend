@@ -133,7 +133,7 @@ define(function(require) {
 											if (child instanceof THREE.Mesh) {
 												child.ghosted = false;
 												child.material.color
-														.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+														.set(child.material.defaultColor);
 												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 											}
 										});
@@ -259,7 +259,7 @@ define(function(require) {
 										.traverse(function(child) {
 											if (child instanceof THREE.Mesh) {
 												child.material.color
-														.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+														.set(child.material.defaultColor);
 												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 											}
 										});
@@ -268,7 +268,7 @@ define(function(require) {
 							}
 						} else {
 							mesh.material.color
-									.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+									.set(mesh.material.defaultColor);
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 							mesh.selected = false;
 							mesh.ghosted = false;
@@ -304,6 +304,30 @@ define(function(require) {
 				return false;
 			},
 
+			/**
+			 * Change the color of a given aspect
+			 * 
+			 * @param {String}
+			 *            instancePath - Instance path of aspect to change
+			 *            color
+			 */
+			setColor : function(instancePath, color) {
+				for ( var v in GEPPETTO.getVARS().meshes) {
+					if (v == instancePath) {
+						var child = GEPPETTO.getVARS().meshes[v];
+						child.traverse(function(object) {
+							if (object instanceof THREE.Mesh) {
+								object.material.color.set(color);
+								object.material.defaultColor=color;
+							}
+						});
+						return true;
+					}
+				}
+				return false;
+			},
+
+			
 			/**
 			 * Change opacity of a given aspect
 			 * 
@@ -510,7 +534,7 @@ define(function(require) {
 							mesh.ghosted = true;
 						} else {
 							mesh.material.color
-									.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+									.setHex(mesh.material.defaultColor);
 							mesh.material.transparent = true;
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
@@ -658,7 +682,7 @@ define(function(require) {
 							groupMesh.highlighted = true;
 						} else {
 							GEPPETTO.SceneController.colorMesh(groupMesh,
-									GEPPETTO.Resources.COLORS.DEFAULT);
+									groupMesh.material.defaultColor);
 							groupMesh.highlighted = false;
 						}
 					} else {

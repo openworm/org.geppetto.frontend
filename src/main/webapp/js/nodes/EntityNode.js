@@ -126,6 +126,37 @@ define(function(require) {
 					return message;
 				},
 				
+				
+				/**
+				 * Change the color for this entity
+				 * 
+				 * @command EntityNode.setColor(hideNested)
+				 * 
+				 */
+				setColor : function(color,recursive) {
+					if(recursive === undefined){
+						recursive = true;
+					}
+										
+					// hide aspects for given entity
+					var aspects = this.getAspects();
+					for(var a in aspects){
+						var aspect = aspects[a];
+						aspect.setColor(color);
+					}
+					
+					var entities = this.getEntities();
+					if(recursive)
+					{
+						for(var e in entities){
+							entities[e].setColor(color,recursive);
+						}
+					}
+					
+					var message = "Color changed" + this.instancePath;
+					return message;
+				},
+				
 				/**
 				 * Hides the entity
 				 * 

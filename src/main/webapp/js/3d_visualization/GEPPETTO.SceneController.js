@@ -113,16 +113,12 @@ define(function(require) {
 										.traverse(function(object) {
 											if (child instanceof THREE.Mesh) {
 												child.ghosted = true;
-												child.material.color
-														.setHex(GEPPETTO.Resources.COLORS.GHOST);
 												child.material.transparent = true;
 												child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
 											}
 										});
 							} else {
 								child.ghosted = true;
-								child.material.color
-										.setHex(GEPPETTO.Resources.COLORS.GHOST);
 								child.material.transparent = true;
 								child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
 							}
@@ -139,8 +135,7 @@ define(function(require) {
 										});
 							} else {
 								child.ghosted = false;
-								child.material.color
-										.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+								child.material.color.set(child.material.defaultColor);
 								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 							}
 						}
@@ -161,16 +156,12 @@ define(function(require) {
 										.traverse(function(object) {
 											if (object instanceof THREE.Mesh) {
 												object.ghosted = true;
-												object.material.color
-														.setHex(GEPPETTO.Resources.COLORS.GHOST);
 												object.material.transparent = true;
 												object.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
 											}
 										});
 							} else {
 								child.ghosted = true;
-								child.material.color
-										.setHex(GEPPETTO.Resources.COLORS.GHOST);
 								child.material.transparent = true;
 								child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
 							}
@@ -527,22 +518,18 @@ define(function(require) {
 						// effect. If not nodes are
 						// selected, give the meshes old default color
 						if (G.getSelection().length > 0) {
-							mesh.material.color
-									.setHex(GEPPETTO.Resources.COLORS.GHOST);
 							mesh.material.transparent = true;
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
 							mesh.ghosted = true;
 						} else {
-							mesh.material.color
-									.setHex(mesh.material.defaultColor);
+							mesh.material.color.set(mesh.material.defaultColor);
 							mesh.material.transparent = true;
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
 					}
 					// if mesh is selected, make it look like so
 					else {
-						mesh.material.color
-								.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+						mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
 						mesh.material.transparent = true;
 						mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 					}

@@ -107,32 +107,45 @@ define(function(require) {
 		 * Set up the listeners use to detect mouse movement and windoe resizing
 		 */
 		var setupListeners = function() {
-			if (!GEPPETTO.getVARS().listenersCreated) {
+			if(!GEPPETTO.getVARS().listenersCreated){
 				// when the mouse moves, call the given function
-				GEPPETTO.getVARS().renderer.domElement
-						.addEventListener(
-								'mousedown',
-								function(event) {
-									var intersects = GEPPETTO
-											.getIntersectedObjects();
+				GEPPETTO.getVARS().renderer.domElement.addEventListener('mousedown', function(event) {
+					var intersects = GEPPETTO.getIntersectedObjects();
 
-									if (intersects.length > 0) {
-										var selected = intersects[0].object.name;
+					if ( intersects.length > 0 ) {
+						var selected = "";
+						
+						// sort intersects
+						var compare = function(a,b) {
+						  if (a.distance < b.distance)
+						    return -1;
+						  if (a.distance > b.distance)
+						    return 1;
+						  return 0;
+						}
+						
+						intersects.sort(compare);
+						
+						// Iterate and get the first visible item (they are now ordered by proximity)
+						for(var i = 0; i<intersects.length; i++){
+							// figure out if the entity is visible
+							var instancePath = intersects[ i ].object.name;
+							var visible = eval(instancePath + '.visible');
+							if(visible){
+								selected = instancePath;
+								break;
+							}
+						}
 
-										if (selected == "") {
-											selected = intersects[0].object.parent.name;
-										}
-										if (GEPPETTO.getVARS().meshes
-												.hasOwnProperty(selected)
-												|| GEPPETTO.getVARS().splitMeshes
-														.hasOwnProperty(selected)) {
-											GEPPETTO.G.unSelectAll();
-											GEPPETTO.Console
-													.executeCommand(selected
-															+ '.select()');
-										}
-									}
-								}, false);
+						if(selected == ""){
+							selected = intersects[ 0 ].object.parent.name;
+						}
+						if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected)) {
+							GEPPETTO.G.unSelectAll();
+							GEPPETTO.Console.executeCommand(selected + '.select()');
+						}
+					}
+				}, false);
 
 				GEPPETTO.getVARS().renderer.domElement
 						.addEventListener(

@@ -667,6 +667,8 @@ define(function(require) {
 			 * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
 			 */
 			setBackgroundColour : function(color){
+				// set the VAR so that when the canvas refresh on timeout it keeps the color
+				GEPPETTO.getVARS().backgroundColor = color;
 				var threecolor = new THREE.Color( color );
 				GEPPETTO.getVARS().renderer.setClearColor( threecolor, 1 );
 			},

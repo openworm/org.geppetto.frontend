@@ -41,7 +41,7 @@ define(function(require) {
 
 	var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone');
 
-	require('vendor/Detector');
+	require('vendor/Detector'); 
 	require('vendor/THREEx.KeyboardState');
 
 	var step = 0;
@@ -72,13 +72,13 @@ define(function(require) {
 			},
 			visualModelMap: null,
 			idCounter: 0,
-
 			sceneCenter: new THREE.Vector3(),
 			cameraPosition: new THREE.Vector3(),
 			canvasCreated: false,
 			listenersCreated : false,
 			selected : [],
 			// timer step in milliseconds
+			pickingEnabled: true, // flag to enable disable 3d picking
 			playTimerStep: 10, 
 			playLoop: false,
 	};

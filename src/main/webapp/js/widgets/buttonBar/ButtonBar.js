@@ -177,8 +177,7 @@ define(function(require) {
 				 * external json file
 				 * 
 				 * @command fromJSON(url)
-				 * @param {String}
-				 *            url - URL of the json file defining the button bar
+				 * @param {String} url - URL of the json file defining the button bar
 				 */
 				fromJSON : function(url) {
 					var that = this;
@@ -200,9 +199,7 @@ define(function(require) {
 						complete : function(jqXHR, status) {
 							barName = Object.keys(barDef)[0];
 							bbar = that.renderBar(barName, barDef[barName]);
-							GEPPETTO.Console
-									.log("Button Bar definition read from "
-											+ ((status == "success") ? url + ' .' : 'default.'));
+							GEPPETTO.Console.log("Button Bar definition read from " + ((status == "success") ? url + ' .' : 'default.'));
 						}
 					});
 

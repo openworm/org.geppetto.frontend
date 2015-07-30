@@ -51,7 +51,7 @@ define(function(require) {
 		};
 
 		var configureRenderer = function() {
-			var color = new THREE.Color(0x000000);
+			var color = new THREE.Color( VARS.backgroundColor );
 			GEPPETTO.getVARS().renderer.setClearColor(color, 1);
 			var width = $(GEPPETTO.getVARS().container).width();
 			var height = $(GEPPETTO.getVARS().container).height();
@@ -110,6 +110,7 @@ define(function(require) {
 			if(!GEPPETTO.getVARS().listenersCreated){
 				// when the mouse moves, call the given function
 				GEPPETTO.getVARS().renderer.domElement.addEventListener('mousedown', function(event) {
+					if(GEPPETTO.getVARS().pickingEnabled){
 					var intersects = GEPPETTO.getIntersectedObjects();
 
 					if ( intersects.length > 0 ) {
@@ -144,6 +145,7 @@ define(function(require) {
 							GEPPETTO.G.unSelectAll();
 							GEPPETTO.Console.executeCommand(selected + '.select()');
 						}
+					}
 					}
 				}, false);
 

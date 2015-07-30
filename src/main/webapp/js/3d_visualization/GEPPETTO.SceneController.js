@@ -135,7 +135,7 @@ define(function(require) {
 										});
 							} else {
 								child.ghosted = false;
-								child.material.color.set(child.material.defaultColor);
+								GEPPETTO.SceneController.setThreeColor(child.material.color,child.material.defaultColor);
 								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 							}
 						}
@@ -308,7 +308,7 @@ define(function(require) {
 						var child = GEPPETTO.getVARS().meshes[v];
 						child.traverse(function(object) {
 							if (object instanceof THREE.Mesh) {
-								object.material.color.set(color);
+								GEPPETTO.SceneController.setThreeColor(object.material.color,color);
 								object.material.defaultColor=color;
 							}
 						});
@@ -316,6 +316,18 @@ define(function(require) {
 					}
 				}
 				return false;
+			},
+			
+			setThreeColor:function(threeColor,color){
+				if(color.indexOf("rgb")==-1)
+				{
+					threeColor.setHex(color);
+
+				}
+				else
+				{
+					threeColor.set(color);
+				}
 			},
 
 			
@@ -522,7 +534,7 @@ define(function(require) {
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
 							mesh.ghosted = true;
 						} else {
-							mesh.material.color.set(mesh.material.defaultColor);
+							GEPPETTO.SceneController.setThreeColor(mesh.material.color,mesh.material.defaultColor);
 							mesh.material.transparent = true;
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 						}

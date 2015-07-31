@@ -77,10 +77,10 @@ define(function(require) {
 			canvasCreated: false,
 			listenersCreated : false,
 			selected : [],
-			// timer step in milliseconds
 			pickingEnabled: true, // flag to enable disable 3d picking
-			playTimerStep: 10, 
+			playTimerStep: 10, // timer step in milliseconds
 			playLoop: false,
+			backgroundColor: '0x000000',
 	};
 
 	/**

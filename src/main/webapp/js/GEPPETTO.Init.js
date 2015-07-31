@@ -51,14 +51,13 @@ define(function(require) {
 		};
 
 		var configureRenderer = function() {
-			var color = new THREE.Color(GEPPETTO.getVARS().backgroundColor );
+			var color = new THREE.Color(GEPPETTO.getVARS().backgroundColor);
 			GEPPETTO.getVARS().renderer.setClearColor(color, 1);
 			var width = $(GEPPETTO.getVARS().container).width();
 			var height = $(GEPPETTO.getVARS().container).height();
 			GEPPETTO.getVARS().renderer.setSize(width, height);
 			GEPPETTO.getVARS().renderer.autoClear = true;
-			GEPPETTO.getVARS().container
-					.appendChild(GEPPETTO.getVARS().renderer.domElement);
+			GEPPETTO.getVARS().container.appendChild(GEPPETTO.getVARS().renderer.domElement);
 		}
 
 		/**
@@ -69,8 +68,7 @@ define(function(require) {
 
 			GEPPETTO.getVARS().scene.add(new THREE.AmbientLight(0x111111));
 
-			GEPPETTO.getVARS().scene.add(new THREE.HemisphereLight(0xffffff,
-					0x000000, 1.1));
+			GEPPETTO.getVARS().scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1.1));
 
 			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.09);
 			directionalLight.position.set(0, 1, 0);

@@ -330,7 +330,7 @@ define(function(require) {
 			/**
 			 * hides / shows the exit button
 			 */
-			showExitButton: function (show){
+			showCloseButton: function (show){
 				if(show){
 					$("#" + this.id).parent().find(".ui-dialog-titlebar-close").show();
 				} else {

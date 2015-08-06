@@ -24,8 +24,6 @@
             }
 
             window.USE_SSL = <%= useSsl %>;
-            window.EMBEDDED = <%= embedded %>;
-            
         </script>
     /build -->
     
@@ -35,7 +33,7 @@
         <script data-main="geppetto/js/main.js" src="geppetto/js/vendor/require.js"></script>
     /build -->
 
-    <!-- build:template:dist
+    <!-- build:template:dist,embedded
         <link rel="stylesheet" type="text/css" href="geppetto/css/main.css" />
         <script data-main="geppetto/js/main-built.js" src="geppetto/js/vendor/require.js"></script>
     /build -->

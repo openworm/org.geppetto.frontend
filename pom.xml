@@ -224,7 +224,7 @@
 									<goal>grunt</goal>
 								</goals>
 								<configuration>
-									<arguments>dist --contextPath ${contextPath} --useSsl false --embedded true</arguments>
+									<arguments>embedded --contextPath ${contextPath} --useSsl false --embedded true</arguments>
 								</configuration>
 								<phase>generate-resources</phase>
 							</execution>

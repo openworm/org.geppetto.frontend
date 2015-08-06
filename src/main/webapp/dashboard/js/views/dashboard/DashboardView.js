@@ -113,7 +113,6 @@ define([ 'jquery', 'underscore', 'backbone',
 			}
 			target.addClass("selected");
 			$(target.parent().parent().children()[1]).addClass("orange");
-			$(target)
 			var id = $(event.target).attr("project-id");
 			if (id === undefined) {
 				id = $(event.target).parents(".project-preview").attr("project-id");

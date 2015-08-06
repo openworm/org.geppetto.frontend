@@ -13,15 +13,19 @@
     <link rel="stylesheet" href="css/styles.css">
 	<link rel="stylesheet" href="./geppetto/css/font-awesome.min.css" />
 
-    <script>
-    var isEmbedded = true;
-    if(typeof isEmbedded == 'undefined') {
-    window.EMBEDDED = false;
-    }
-    else{
-    window.EMBEDDED = isEmbedded;
-    }
-    </script>
+    <!-- build:template
+        <script>
+            
+            var isEmbedded = <%= embedded %>;
+            if(typeof isEmbedded == 'undefined') {
+            	window.EMBEDDED = false;
+            }
+            else{
+            	window.EMBEDDED = isEmbedded;
+            }
+            
+        </script>
+    /build -->
 
     <script data-main="js/main" src="js/libs/require/require.js"></script>
 </head>

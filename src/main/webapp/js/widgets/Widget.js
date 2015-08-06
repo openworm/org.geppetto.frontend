@@ -315,7 +315,7 @@ define(function(require) {
 				        top: event.pageY,
 				        left: event.pageX + 1,
 				        groups: groups,
-	//			        registeredItems: registeredItems,
+				        //registeredItems: registeredItems,
 				        data: data
 				    });
 				}
@@ -325,6 +325,38 @@ define(function(require) {
 				}
 			    
 			    return false;
+			},
+			
+			/**
+			 * hides / shows the exit button
+			 */
+			showCloseButton: function (show){
+				if(show){
+					$("#" + this.id).parent().find(".ui-dialog-titlebar-close").show();
+				} else {
+					$("#" + this.id).parent().find(".ui-dialog-titlebar-close").hide();
+				}
+			},
+			
+			/**
+			 * makes the widget draggable or not
+			 */
+			setDraggable: function (draggable){
+				if(draggable){
+					$("#" + this.id).parent().draggable({disabled: false});
+					// NOTE: this will wipe any class applied to the widget...
+					this.setClass('');
+				} else {
+					$("#" + this.id).parent().draggable({disabled: true});
+					this.setClass('noStyleDisableDrag');
+				}
+			},
+			
+			/**
+			 * Inject CSS for custom behaviour
+			 */
+			setClass: function (className){
+				$("#" + this.id).dialog({dialogClass: className});
 			},
 			
 			/**

@@ -90,29 +90,15 @@ define(function(require) {
 					var messageData = msg.data;
 
 					if(messageData == "ping") {
-							return;
-						}
-	
-					// if it's a binary message then assume it's a compressed json string
-					if (messageData instanceof ArrayBuffer) {
-						
-						var messageBytes = new Uint8Array(messageData);
-						
-						// if it's a binary message and first byte it's zero then assume it's a compressed json string
-						//otherwise is a file and a 'save as' dialog is opened
-						if (messageBytes[0] == 0){
-							var message = pako.ungzip(messageBytes.subarray(1), {to:"string"});
-							parseAndNotify(message);
-						}
-						else{
-							 var fileNameLength = messageBytes[1];
-							 var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2,2+fileNameLength));
-							 var blob = new Blob([messageData]);
-							 saveData(blob.slice(2+fileNameLength), fileName);
-						}
-						
+						return;
 					}
-					else{
+	
+					// if it's a binary (possibly compressed) then determine its type and process it
+					if (messageData instanceof ArrayBuffer) {
+						processBinaryMessage(messageData);
+						
+					// otherwise, for a text message, parse it and notify listeners
+					} else{
 						// a non compresed message
 						parseAndNotify(messageData);
 					}
@@ -244,6 +230,24 @@ define(function(require) {
 			//notify all handlers
 			for(var i = 0, len = messageHandlers.length; i < len; i++) {
 				messageHandlers[ i ].onMessage(parsedServerMessage);
+			}
+		}
+
+		function processBinaryMessage(message) {
+			
+			var messageBytes = new Uint8Array(message);
+
+			// if it's a binary message and first byte it's zero then assume it's a compressed json string
+			//otherwise is a file and a 'save as' dialog is opened
+			if (messageBytes[0] == 0){
+				var message = pako.ungzip(messageBytes.subarray(1), {to:"string"});
+				parseAndNotify(message);
+			}
+			else{
+				var fileNameLength = messageBytes[1];
+				var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2,2+fileNameLength));
+				var blob = new Blob([messageData]);
+				saveData(blob.slice(2+fileNameLength), fileName);
 			}
 		}
 	}

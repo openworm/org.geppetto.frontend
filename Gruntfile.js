@@ -20,8 +20,7 @@ module.exports = function(grunt) {
             options: {
                 data: {
                     contextPath: grunt.option('contextPath'),
-                    useSsl: grunt.option('useSsl'),
-                    embedded: grunt.option('embedded')
+                    useSsl: grunt.option('useSsl')
                 }
             },
             dist: {
@@ -29,8 +28,7 @@ module.exports = function(grunt) {
                     'src/main/webapp/templates/dist/geppetto.vm': ['src/main/webapp/templates/geppetto.vm'],
                     'src/main/webapp/templates/dist/geppettotests.vm': ['src/main/webapp/templates/geppettotests.vm'],
                     'src/main/webapp/templates/dist/dashboard.vm': ['src/main/webapp/templates/dashboard.vm'],
-                    'src/main/webapp/WEB-INF/web.xml': ['src/main/webapp/WEB-INF/web.xml'],
-                    'src/main/webapp/dashboard/templates/projects/projectDetailsTemplate.hbs': ['src/main/webapp/dashboard/templates/projects/projectDetailsTemplate.hbs']
+                    'src/main/webapp/WEB-INF/web.xml': ['src/main/webapp/WEB-INF/web.xml']
                 }
             },
             dev: {

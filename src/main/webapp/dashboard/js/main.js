@@ -86,15 +86,3 @@ String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
-respondToSizingMessage = function(e) {
-  if(e.origin == 'http://127.0.0.1:3000') {
-	  $('#footer').hide();
-    // e.data is the string sent by the origin with postMessage.
-//    if(e.data == 'sizing?') {
-//      e.source.postMessage('sizing:'+document.body.scrollHeight+','+document.body.scrollWidth, e.origin);
-//    }
-  }
-}
-// we have to listen for 'message'
-window.addEventListener('message', respondToSizingMessage, false);
-

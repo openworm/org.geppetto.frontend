@@ -23,15 +23,17 @@
     }
     window.USE_SSL = false;
     </script>
-
+    
     <link rel="stylesheet/less" type="text/css" href="geppetto/less/main.less" />
     <script src="geppetto/js/vendor/less-1.7.5.min.js" type="text/javascript"></script>
     <script data-main="geppetto/js/main.js" src="geppetto/js/vendor/require.js"></script>
 
-    <!-- build:template:dist
+    <!-- build:template:dist,embedded
         <link rel="stylesheet" type="text/css" href="geppetto/css/main.css" />
         <script data-main="geppetto/js/main-built.js" src="geppetto/js/vendor/require.js"></script>
     /build -->
+
+
 
     <link rel="icon" type="image/png" href="geppetto/images/favicon.png"/>
 </head>

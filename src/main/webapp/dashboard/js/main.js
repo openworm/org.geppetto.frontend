@@ -87,7 +87,7 @@ String.prototype.endsWith = function(suffix) {
 };
 
 // Change link from blank to self for embedded environments
-if(window.EMBEDDED && window.EMBEDDEDURL !== "") {
+if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
 	respondToSizingMessage = function(e) {
 	  if(e.origin == window.EMBEDDEDURL) {
 		  $('#footer').hide();

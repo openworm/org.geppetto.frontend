@@ -14,13 +14,8 @@
 	<link rel="stylesheet" href="./geppetto/css/font-awesome.min.css" />
 
     <script>
-    var isEmbedded = true;
-    if(typeof isEmbedded == 'undefined') {
     window.EMBEDDED = false;
-    }
-    else{
-    window.EMBEDDED = isEmbedded;
-    }
+    window.EMBEDDEDURL = "/";
     </script>
 
     <script data-main="js/main" src="js/libs/require/require.js"></script>

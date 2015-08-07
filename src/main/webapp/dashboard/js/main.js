@@ -88,17 +88,14 @@ String.prototype.endsWith = function(suffix) {
 
 // Change link from blank to self for embedded environments
 if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
-	respondToSizingMessage = function(e) {
+	handleRequest = function(e) {
 	  if(e.origin == window.EMBEDDEDURL) {
-		  $('#footer').hide();
-	    // e.data is the string sent by the origin with postMessage.
-//		    if(e.data == 'sizing?') {
-//		      e.source.postMessage('sizing:'+document.body.scrollHeight+','+document.body.scrollWidth, e.origin);
-//		    }
+		  // This is where we have to create the API
+		  //$('#footer').hide();
 	  };
 	};
 	// we have to listen for 'message'
-	window.addEventListener('message', respondToSizingMessage, false);
+	window.addEventListener('message', handleRequest, false);
 }
 
 

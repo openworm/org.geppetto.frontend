@@ -330,6 +330,17 @@ define(function(require) {
 			/**
 			 * hides / shows the exit button
 			 */
+			showTitleBar: function (show){
+				if(show){
+					$("#" + this.id).parent().find(".ui-dialog-titlebar").show();
+				} else {
+					$("#" + this.id).parent().find(".ui-dialog-titlebar").hide();
+				}
+			},
+			
+			/**
+			 * hides / shows the exit button
+			 */
 			showCloseButton: function (show){
 				if(show){
 					$("#" + this.id).parent().find(".ui-dialog-titlebar-close").show();

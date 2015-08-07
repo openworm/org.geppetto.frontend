@@ -21,7 +21,8 @@ module.exports = function(grunt) {
                 data: {
                     contextPath: grunt.option('contextPath'),
                     useSsl: grunt.option('useSsl'),
-                    embedded: grunt.option('embedded')
+                    embedded: grunt.option('embedded'),
+                    embedderURL: grunt.option('embedderURL')
                 }
             },
             dist: {

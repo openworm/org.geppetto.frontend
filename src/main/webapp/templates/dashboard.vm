@@ -14,16 +14,10 @@
 	<link rel="stylesheet" href="./geppetto/css/font-awesome.min.css" />
 
     <!-- build:template
-        <script>
-            var isEmbedded = <%= embedded %>;
-            if(typeof isEmbedded == 'undefined') {
-            	window.EMBEDDED = false;
-            }
-            else{
-            	window.EMBEDDED = isEmbedded;
-            	
-            }
-        </script>
+    <script>
+    	window.EMBEDDED = <%= embedded %>;
+    	window.EMBEDDEDURL = "<%= embedderURL %>";
+    </script>
     /build -->
 
     <script data-main="js/main" src="js/libs/require/require.js"></script>

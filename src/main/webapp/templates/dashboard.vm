@@ -15,15 +15,14 @@
 
     <!-- build:template
         <script>
-            
             var isEmbedded = <%= embedded %>;
             if(typeof isEmbedded == 'undefined') {
             	window.EMBEDDED = false;
             }
             else{
             	window.EMBEDDED = isEmbedded;
+            	
             }
-            
         </script>
     /build -->
 

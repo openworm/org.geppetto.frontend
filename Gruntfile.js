@@ -38,13 +38,6 @@ module.exports = function(grunt) {
                     'src/main/webapp/templates/dist/dashboard.vm': ['src/main/webapp/templates/dashboard.vm'],
                     'src/main/webapp/templates/dist/geppettotests.vm': ['src/main/webapp/templates/geppettotests.vm']
                 }
-            },
-            embedded: {
-                files: {
-                    'src/main/webapp/templates/dist/geppetto.vm': ['src/main/webapp/templates/geppetto.vm'],
-                    'src/main/webapp/templates/dist/dashboard.vm': ['src/main/webapp/templates/dashboard.vm'],
-                    'src/main/webapp/templates/dist/geppettotests.vm': ['src/main/webapp/templates/geppettotests.vm']
-                }
             }
         }
     });
@@ -55,6 +48,5 @@ module.exports = function(grunt) {
     // Default task(s).
     grunt.registerTask('default', ['less', 'processhtml:dev']);
     grunt.registerTask('dist', ['less', 'processhtml:dist']);
-    grunt.registerTask('embedded', ['less', 'processhtml:embedded']);
 
 };

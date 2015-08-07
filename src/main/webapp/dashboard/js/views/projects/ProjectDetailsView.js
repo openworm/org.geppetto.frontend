@@ -52,6 +52,11 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
             	// set aria-expanded attr to true
             	$("#" + openExps[i]).attr("aria-expanded", "true");
             }
+            
+            // Change link from blank to self for embedded environments
+            if(window.EMBEDDED) {
+				$(".embeddedLinks").attr('target','_self');
+			}
 		}
 	});
 

@@ -86,7 +86,6 @@ String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
-<<<<<<< HEAD
 // Change link from blank to self for embedded environments
 if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
 	handleRequest = function(e) {
@@ -98,7 +97,3 @@ if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
 	// we have to listen for 'message'
 	window.addEventListener('message', handleRequest, false);
 }
-
-
-=======
->>>>>>> development

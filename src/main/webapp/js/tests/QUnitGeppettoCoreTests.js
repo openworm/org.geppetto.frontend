@@ -45,7 +45,7 @@ define(function(require) {
 			var help = GEPPETTO.Console.help();
 			var commandCount = help.match(/--/g);  
 			notEqual(help, null, "Global help() command test.");
-			equal(commandCount.length, 40, "Global help() - Looking for 40 commands in help() command.");
+			equal(commandCount.length, 41, "Global help() - Looking for 41 commands in help() command.");
 			
 			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
 
@@ -230,8 +230,6 @@ define(function(require) {
 		
 		
 		test("Test Copy History To Clipboard", function() {
-
-			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY, "No commands to copy, test passed");
 
 			//add some commands to history
 			GEPPETTO.Console.executeCommand("G.help();");

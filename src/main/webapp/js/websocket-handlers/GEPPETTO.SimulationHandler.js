@@ -69,18 +69,7 @@ define(function(require) {
         var messageHandler = {};
 
         messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {        	
-            var project = JSON.parse(payload.project_loaded);
-
-            window.Project = GEPPETTO.NodeFactory.createProjectNode(project);         
-            if(window.location.search.indexOf("load_project_from_url")!=-1)
-            {	
-            	window.Project.persisted=false;
-            }
-            
-            GEPPETTO.Init.initEventListeners();
-            
-            GEPPETTO.trigger(Events.Project_loaded);            
-            GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
+            GEPPETTO.SimulationHandler.loadProject(payload);            
         };
         
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {        	
@@ -100,36 +89,16 @@ define(function(require) {
         }
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {        	
-        	var message=JSON.parse(payload.experiment_loaded);
-        	var jsonRuntimeTree = message.scene;
-        	var experimentId=message.experimentId;
-        	
-        	//Updates the simulation controls visibility
+        	GEPPETTO.SimulationHandler.loadExperiment(payload);
+            
+			//Updates the simulation controls visibility
 			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-
-			//Keep going with load of simulation only if webgl container was created
-			for(var experiment in window.Project.getExperiments())
-			{
-				if(window.Project.getExperiments()[experiment].getId()==experimentId)
-				{
-					window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
-					break;
-				}
-			}
+			
 			if(webGLStarted) {
 				//we call it only the first time
 				GEPPETTO.SceneController.animate();
 			}
-            
-
-            var startCreation = new Date();
-            GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
-            var endCreation = new Date() - startCreation;
-            GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");
-            GEPPETTO.Console.debugLog(GEPPETTO.NodeFactory.nodes + " total nodes created, from which: "+
-            						  GEPPETTO.NodeFactory.entities + " were entities and "+
-            						  GEPPETTO.NodeFactory.connections + " were connections");
-            
+			
             //Populate scene
             GEPPETTO.SceneController.populateScene(window["Project"].runTimeTree); 
             
@@ -348,7 +317,43 @@ define(function(require) {
                 if(messageHandler.hasOwnProperty(parsedServerMessage.type)) {
                     messageHandler[parsedServerMessage.type](JSON.parse(parsedServerMessage.data));
                 }
-			}
+			},
+			
+			loadProject : function(payload){
+				var project = JSON.parse(payload.project_loaded);
+				window.Project = GEPPETTO.NodeFactory.createProjectNode(project);         
+				if(window.location.search.indexOf("load_project_from_url")!=-1)
+				{	
+					window.Project.persisted=false;
+				}
+				GEPPETTO.Init.initEventListeners();
+				GEPPETTO.trigger(Events.Project_loaded);
+	            GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
+			},
+
+			loadExperiment : function(payload){
+				var message=JSON.parse(payload.experiment_loaded);
+				var jsonRuntimeTree = message.scene;
+				var experimentId=message.experimentId;
+
+				//Keep going with load of simulation only if webgl container was created
+				for(var experiment in window.Project.getExperiments())
+				{
+					if(window.Project.getExperiments()[experiment].getId()==experimentId)
+					{
+						window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
+						break;
+					}
+				}
+
+				var startCreation = new Date();
+				GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+				var endCreation = new Date() - startCreation;
+				GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");
+				GEPPETTO.Console.debugLog(GEPPETTO.NodeFactory.nodes + " total nodes created, from which: "+
+						GEPPETTO.NodeFactory.entities + " were entities and "+
+						GEPPETTO.NodeFactory.connections + " were connections");
+			},
 		};
 
 		GEPPETTO.SimulationHandler.MESSAGE_TYPE = messageTypes;

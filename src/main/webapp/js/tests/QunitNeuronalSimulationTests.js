@@ -53,21 +53,8 @@ define(function(require) {
 							equal(window.Project.getId(),1, "Project ID checked");
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
-							var message=JSON.parse(payload.experiment_loaded);
-				        	var jsonRuntimeTree = message.scene;
-				        	var experimentId=message.experimentId;
-							for(var experiment in window.Project.getExperiments())
-							{
-								if(window.Project.getExperiments()[experiment].getId()==experimentId)
-								{
-									window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
-									break;
-								}
-							}
-								
-							GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+							GEPPETTO.SimulationHandler.loadExperiment(payload);
 							equal(window.Project.getActiveExperiment().getId(),1,"Active experiment id of loaded project checked");
 							start();
 							break;

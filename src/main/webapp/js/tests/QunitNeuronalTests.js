@@ -68,6 +68,106 @@ define(function(require) {
 			initializationTime = new Date();	
 		});
 
+		module("Test Muscle cell NEURON simulation", {setup: function() {
+			GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
+		}});
+		asyncTest("Tests PMuscle cell NEURON simulation", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+							var time = (new Date() - initializationTime)/1000;
+							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
+							equal(window.Project.getId(),4, "Project loaded ID checked");
+							window.Project.getExperiments()[0].setActive();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+							var payload = JSON.parse(parsedServerMessage.data);
+							GEPPETTO.SimulationHandler.loadExperiment(payload);
+							equal(window.Project.getActiveExperiment().getId(),1,
+							"Experiment id of loaded project chekced");
+
+
+							var passTimeTest = false;
+							if(time < 10){
+								passTimeTest = true;
+							}
+
+							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
+							notEqual(net1, null,"Entities checked");
+							equal(net1.getAspects().length, 1, "Aspects checked");
+							equal(net1.getConnections().length, 0, "Connections checked");
+							equal(jQuery.isEmptyObject(net1.neuron_0.electrical.VisualizationTree),true,"Test Visualization at load");
+							equal(net1.neuron_0.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
+							equal(jQuery.isEmptyObject(net1.neuron_0.electrical.ModelTree),false,"Test Model tree at load");
+							equal(jQuery.isEmptyObject(net1.neuron_0.electrical.SimulationTree),false,"Test Simulation tree at load");							
+							start();
+							break;
+						}
+					}
+			};
+			GEPPETTO.MessageSocket.clearHandlers();
+			GEPPETTO.MessageSocket.addHandler(handler);
+			window.Project.loadFromID("4","1");
+			initializationTime = new Date();	
+		});
+		
+		module("Test C.elegans PVDR Neuron morphology", {setup: function() {
+			GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
+		}});
+		asyncTest("Tests C.elegans PVDR Neuron morphology", function() {
+			GEPPETTO.MessageSocket.clearHandlers();
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+							var time = (new Date() - initializationTime)/1000;
+							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
+							equal(window.Project.getId(),8, "Project loaded ID checked");
+							window.Project.getExperiments()[0].setActive();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+							var payload = JSON.parse(parsedServerMessage.data);
+							GEPPETTO.SimulationHandler.loadExperiment(payload);
+							equal(window.Project.getActiveExperiment().getId(),1,
+							"Experiment id of loaded project chekced");
+
+
+							var passTimeTest = false;
+							if(time < 10){
+								passTimeTest = true;
+							}
+
+							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
+							notEqual(pvdr, null,"Entities checked");
+							equal(pvdr.getAspects().length, 1, "Aspects checked");
+							equal(pvdr.getConnections().length, 0, "Connections checked");
+							equal(jQuery.isEmptyObject(pvdr.electrical.VisualizationTree),true,"Test Visualization at load");
+							equal(pvdr.electrical.VisualizationTree.getChildren().length, 1, "Test Visual Groups amount")
+							equal(jQuery.isEmptyObject(pvdr.electrical.ModelTree),false,"Test Model tree at load");
+							equal(jQuery.isEmptyObject(pvdr.electrical.SimulationTree),false,"Test Simulation tree at load");							
+							start();
+							break;
+						}
+					}
+			};
+			GEPPETTO.MessageSocket.clearHandlers();
+			GEPPETTO.MessageSocket.addHandler(handler);
+			window.Project.loadFromID("8","1");
+			initializationTime = new Date();	
+		});
+		
 		module("Test Purkinje Cell", {setup: function() {
 			GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
 		}});
@@ -88,7 +188,6 @@ define(function(require) {
 							window.Project.getExperiments()[0].setActive();
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
 							GEPPETTO.SimulationHandler.loadExperiment(payload);
 							equal(window.Project.getActiveExperiment().getId(),1,
@@ -112,14 +211,7 @@ define(function(require) {
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
 							var payload = JSON.parse(parsedServerMessage.data);
-							var update = JSON.parse(payload.get_model_tree);      
-							for (var updateIndex in update){
-								var aspectInstancePath = update[updateIndex].aspectInstancePath;
-								var modelTree = update[updateIndex].ModelTree;
-
-								//create client side model tree
-								GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree);
-							}
+							GEPPETTO.SimulationHandler.getModelTree(payload);
 
 							equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree),false,"Test Model Tree Command");
 							notEqual(purkinje.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
@@ -186,7 +278,7 @@ define(function(require) {
 			initializationTime = new Date();	
 		});
 
-		/*module("Test Primary Auditory Cortex Network (ACNET2)", {setup: function() {
+		module("Test Primary Auditory Cortex Network (ACNET2)", {setup: function() {
 			GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
 		}});
 		asyncTest("Tests Primary Auditory Cortex Network [Medium Net] with Model Tree call and Visual Groups", function() {
@@ -248,7 +340,7 @@ define(function(require) {
 			GEPPETTO.MessageSocket.addHandler(handler);
 			window.Project.loadFromID("5","1");		
 			initializationTime = new Date();	
-		});*/
+		});
 		
 //		module("Test CElegansNeuroML");
 //		asyncTest("Tests CElegansNeuroML [Adal Cell] with Model Tree call and Visual Groups", function() {

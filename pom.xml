@@ -15,6 +15,9 @@
 			<id>master</id>
 			<properties>
 				<contextPath>/</contextPath>
+				<useSsl>true</useSsl>
+				<embedded>false</embedded>
+				<embedderURL>/</embedderURL>
 			</properties>
 			<build>
 				<plugins>
@@ -89,7 +92,7 @@
 									<goal>grunt</goal>
 								</goals>
 								<configuration>
-									<arguments>dist --contextPath ${contextPath} --useSsl true</arguments>
+									<arguments>dist --contextPath ${contextPath} --useSsl ${useSsl} --embedded ${embedded} --embedderURL ${embedderURL}</arguments>
 								</configuration>
 								<phase>generate-resources</phase>
 							</execution>
@@ -103,13 +106,16 @@
 			<id>development</id>
 			<properties>
 				<contextPath>org.geppetto.frontend</contextPath>
+				<useSsl>false</useSsl>
+				<embedded>false</embedded>
+				<embedderURL>/</embedderURL>
 			</properties>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>com.github.eirslett</groupId>
 						<artifactId>frontend-maven-plugin</artifactId>
-						<version>0.0.16</version>
+						<version>0.0.23</version>
 						<executions>
 							<execution>
 								<id>install node and npm</id>
@@ -137,7 +143,7 @@
 									<goal>grunt</goal>
 								</goals>
 								<configuration>
-									<arguments>--contextPath ${contextPath} --useSsl false</arguments>
+									<arguments>--contextPath ${contextPath}  --useSsl ${useSsl} --embedded ${embedded} --embedderURL ${embedderURL}</arguments>
 								</configuration>
 								<phase>generate-resources</phase>
 							</execution>

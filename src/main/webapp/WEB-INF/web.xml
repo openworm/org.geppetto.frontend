@@ -82,8 +82,10 @@
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
 
+    
     <!-- Enable SSL -->
-    <!-- build:template:dist
+    <!-- build:template
+    <% if (useSsl === true) { %>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>securedapp</web-resource-name>
@@ -93,6 +95,7 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+    <% } %>
     /build -->
 
 </web-app>

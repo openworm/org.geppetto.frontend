@@ -275,7 +275,6 @@ define(function(require) {
 			};
 			GEPPETTO.MessageSocket.addHandler(handler);
 			initializationTime = new Date();	
-			console.log("loading 6");
 			window.Project.loadFromID("6", "1");
 		});
 
@@ -324,7 +323,6 @@ define(function(require) {
 			};
 			GEPPETTO.MessageSocket.addHandler(handler);
 			window.Project.loadFromID("5","1");		
-			console.log("loading 5");
 			initializationTime = new Date();	
 		});
 		

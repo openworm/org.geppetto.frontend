@@ -34,11 +34,8 @@ define(function(require) {
 
 	var run = function() {		
 
-		module("Test Project 1 - SingleCompononetHH", {setup: function() {
-			GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
-		}});
+		module("Test Project 1 - SingleCompononetHH");
 		asyncTest("Test Project 1 - SingleComponentHH", function() {
-			GEPPETTO.MessageSocket.clearHandlers();
 			var initializationTime;
 			var handler = {
 					checkUpdate2 : false,
@@ -49,30 +46,18 @@ define(function(require) {
 						//Simulation has been loaded and model need to be loaded
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
 							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							var project = JSON.parse(payload.project_loaded);
-							window.Project = GEPPETTO.NodeFactory.createProjectNode(project);          
-							GEPPETTO.trigger(Events.Project_loaded);
+							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
 							equal(window.Project.getId(),1, "Project ID checked");
 							break;
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
 							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
-							var message=JSON.parse(payload.experiment_loaded);
-							var jsonRuntimeTree = message.scene;
-							var experimentId=message.experimentId;
-							for(var experiment in window.Project.getExperiments())
-							{
-								if(window.Project.getExperiments()[experiment].getId()==experimentId)
-								{
-									window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
-									break;
-								}
-							}
-
-							GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+							GEPPETTO.SimulationHandler.loadExperiment(payload);
 							equal(window.Project.getActiveExperiment().getId(),1,"Active experiment id of loaded project checked");
 							start();
+							GEPPETTO.MessageSocket.close();
+							GEPPETTO.MessageSocket.clearHandlers();
+							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
 							break;
 						}
 					}
@@ -83,11 +68,8 @@ define(function(require) {
 			initializationTime = new Date();	
 		});
 
-		module("New experiment",{setup: function() {
-			GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
-		  }});
+		module("New experiment");
 		asyncTest("New experiment", function() {
-			GEPPETTO.MessageSocket.clearHandlers();
 			var initializationTime;
 			var handler = {
 					checkUpdate2 : false,
@@ -98,10 +80,7 @@ define(function(require) {
 						//Simulation has been loaded and model need to be loaded
 						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
 							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							var project = JSON.parse(payload.project_loaded);
-							window.Project = GEPPETTO.NodeFactory.createProjectNode(project);          
-							GEPPETTO.trigger(Events.Project_loaded);
+							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
 							equal(window.Project.getId(),1, "Project loaded ID checked");
 							window.Project.newExperiment();
 							break;
@@ -110,10 +89,15 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							var experiment = JSON.parse(payload.experiment_created);
 							var newExperiment = GEPPETTO.NodeFactory.createExperimentNode(experiment);
+							var newLength = window.Project.getExperiments().length;
 							window.Project.getExperiments().push(newExperiment); 
 							newExperiment.setParent(window.Project);
-							equal(window.Project.getExperiments()[2].getId(), 0, "New experiment ID checked");
+							newLength = newLength+1;
+							equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
 							start();
+							GEPPETTO.MessageSocket.close();
+							GEPPETTO.MessageSocket.clearHandlers();
+							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
 							break;
 						}
 					}
@@ -122,7 +106,6 @@ define(function(require) {
 			GEPPETTO.MessageSocket.addHandler(handler);
 			window.Project.loadFromID("1");
 			initializationTime = new Date();	
-		});
-};
+		});};
 	return {run: run};
 });

@@ -149,7 +149,7 @@ define([ 'jquery', 'underscore', 'backbone',
 				url = url.substring(0, url.indexOf('/dashboard'));
 			}
 
-			var targetWindow = 'blank';
+			var targetWindow = '_blank';
             if(window.EMBEDDED) {
             	targetWindow = '_self';
             }

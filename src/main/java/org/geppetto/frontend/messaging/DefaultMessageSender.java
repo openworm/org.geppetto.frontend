@@ -32,25 +32,25 @@
  *******************************************************************************/
 package org.geppetto.frontend.messaging;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.frontend.messages.GeppettoTransportMessage;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.frontend.messages.TransportMessageFactory;
-
-import com.google.gson.Gson;
 
 /**
  * <code>DefaultMessageSender</code> handles transmission of messages to a client via WebSockets.
@@ -68,7 +68,7 @@ import com.google.gson.Gson;
  * Compression is done with gzip. The configuration parameter, <code>minMessageLengthForCompression</code> specifies the minimum message size for compression. Messages smaller than this size are not
  * compressed.
  *
- * {@link org.geppetto.frontend.controllers.GeppettoMessageInbound} loads the configuration via Spring from <code>app-config.xml</code>.
+ * {@link org.geppetto.frontend.controllers.WebsocketConnection} loads the configuration via Spring from <code>app-config.xml</code>.
  */
 public class DefaultMessageSender implements MessageSender
 {
@@ -204,7 +204,7 @@ public class DefaultMessageSender implements MessageSender
 			pause();
 			preprocessorQueue.clear();
 			senderQueue.clear();
-			logger.debug("purged queues");
+			logger.debug("Purged queues");
 			resume();
 		}
 	}
@@ -249,7 +249,44 @@ public class DefaultMessageSender implements MessageSender
 		}
 		catch(Exception e)
 		{
-			logger.warn("failed to send binary message", e);
+			logger.warn("Failed to send binary message", e);
+			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+		}
+	}
+
+	@Override
+	public void sendFile(Path path)
+	{
+		// TODO: We are sending file name and data but it can be improved to send a type and message
+		try
+		{
+			long startTime = System.currentTimeMillis();
+
+			// get filename and file content
+			byte[] name = path.getFileName().toString().getBytes("UTF-8");
+			byte[] data = Files.readAllBytes(path);
+
+			// add to the buffer:
+			// - type of message
+			// - filename length (filename length is needed client side to parse the message)
+			// - filename
+			// - file content
+			int bufferSize = 1 + 1 + name.length + data.length;
+			ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+			buffer.put(BigInteger.valueOf(1).toByteArray());
+			buffer.put(BigInteger.valueOf(name.length).toByteArray());
+			buffer.put(name);
+			buffer.put(data);
+
+			// write binary message in the socket
+			wsOutbound.writeBinaryMessage(buffer);
+
+			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a file of " + bufferSize / 1024 + "KB to the client";
+			logger.info(debug);
+		}
+		catch(IOException e)
+		{
+			logger.warn("Failed to send file, " + path, e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 		}
 	}
@@ -301,7 +338,7 @@ public class DefaultMessageSender implements MessageSender
 		}
 		catch(Exception e)
 		{
-			logger.warn("failed to process message before transmission", e);
+			logger.warn("Failed to process message before transmission", e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 		}
 	}
@@ -313,11 +350,11 @@ public class DefaultMessageSender implements MessageSender
 
 		GeppettoTransportMessage transportMessage = TransportMessageFactory.getTransportMessage(requestId, type, update);
 
-		logger.debug(String.format("created transport message in %dms", System.currentTimeMillis() - startTime));
+		logger.debug(String.format("Created transport message in %dms", System.currentTimeMillis() - startTime));
 
 		startTime = System.currentTimeMillis();
 		String message = new Gson().toJson(transportMessage);
-		logger.debug(String.format("created json in %dms", System.currentTimeMillis() - startTime));
+		logger.debug(String.format("Created json in %dms", System.currentTimeMillis() - startTime));
 
 		return message;
 	}
@@ -346,13 +383,13 @@ public class DefaultMessageSender implements MessageSender
 			wsOutbound.writeTextMessage(buffer);
 			if(messageType.equals("experiment_status"))
 			{
-				logger.info(String.format("sent text message - %s, length: %d bytes, took: %d ms", messageType, message.length(), System.currentTimeMillis() - startTime));
+				logger.info(String.format("Sent text message - %s, length: %d bytes, took: %d ms", messageType, message.length(), System.currentTimeMillis() - startTime));
 			}
 
 		}
 		catch(IOException e)
 		{
-			logger.warn("failed to send message", e);
+			logger.warn("Failed to send message", e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 		}
 	}
@@ -374,10 +411,10 @@ public class DefaultMessageSender implements MessageSender
 			// ByteBuffer buffer = ByteBuffer.wrap(message);
 			wsOutbound.writeBinaryMessage(buffer);
 
-			String logMessage = "sent binary/compressed message - %s, length: %d (%d) bytes, duration: %d ms";
+			String logMessage = "Sent binary/compressed message - %s, length: %d (%d) bytes, duration: %d ms";
 			if(fromQueue)
 			{
-				logMessage = "sent binary/compressed message from queue - %s, length: %d (%d) bytes, duration: %d ms";
+				logMessage = "Sent binary/compressed message from queue - %s, length: %d (%d) bytes, duration: %d ms";
 			}
 
 			logger.info(String.format(logMessage, messageType, message.length, uncompressedMessageSize, System.currentTimeMillis() - startTime));
@@ -385,7 +422,7 @@ public class DefaultMessageSender implements MessageSender
 		}
 		catch(IOException e)
 		{
-			logger.warn("failed to send binary message", e);
+			logger.warn("Failed to send binary message", e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 		}
 	}

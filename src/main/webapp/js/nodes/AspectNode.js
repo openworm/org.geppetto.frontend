@@ -338,7 +338,7 @@ define(function(require) {
 				/**
 				 * Write Model for this aspect
 				 *
-				 * @command AspectNode.writeModel(format)
+				 * @command AspectNode.downloadModel(format)
 				 * * @param {String} name - File format to write
 				 */
 				downloadModel : function(format) {
@@ -351,6 +351,36 @@ define(function(require) {
 
 					var formatMessage = (format=="")?"default format":format
 					return GEPPETTO.Resources.DOWNLOADING_MODEL + formatMessage;
+				},
+				
+				/**
+				 * Download results for recording file
+				 * 
+				 * @command AspectNode.downloadResults(format)
+				 */
+				downloadResults : function(format)
+				{
+					if (this == window.Project.getActiveExperiment())
+					{
+						if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED)
+						{
+							var parameters =
+							{};
+							parameters["format"] = format;
+							parameters["aspectPath"] = this.instancePath;
+							parameters["experimentId"] = Project.getActiveExperiment().getId();
+							parameters["projectId"] = Project.getId();
+							GEPPETTO.MessageSocket.send("download_results", parameters);
+
+							return "Sending request to download results.";
+						} else
+						{
+							return "Experiment must be completed before attempting to download results";
+						}
+					} else
+					{
+						return "Experiment must be set to active before requesting results";
+					}
 				},
 
 				/**

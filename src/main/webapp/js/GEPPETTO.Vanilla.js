@@ -47,16 +47,15 @@ define(function(require) {
 			 */
 			checkKeyboard: function() {
 				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
-					GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).toggle();
+					GEPPETTO.Console.executeCommand("G.addWidget(0)");
 				}
-
+				else if(GEPPETTO.isKeyPressed("ctrl+alt+t")) {
+					GEPPETTO.Console.executeCommand("G.addWidget(3)");
+				}
 				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
 					GEPPETTO.Console.toggleConsole();
 				}
-				
-				else if(GEPPETTO.isKeyPressed("ctrl+alt+s")) {
-					GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.SCATTER3D).toggle();
-				}
+
 			},
 			
 			isKeyboardEnabled : function(){

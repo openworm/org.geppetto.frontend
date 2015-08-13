@@ -50,7 +50,6 @@ define(function(require) {
 				
 			COLORS : {
 					DEFAULT : "0X199e8",
-					GHOST : "0X199e8",
 					SELECTED : "0Xffcc00",
 					INPUT_TO_SELECTED : "0Xffdfc6",
 					OUTPUT_TO_SELECTED : "0Xff5a02",
@@ -271,10 +270,14 @@ define(function(require) {
 			
 			SIMULATOR_FULL : "Simulation Full",
 
-			WEBGL_FAILED: "Initializing Error: Unable to initialize WebGL",
+			WEBGL_FAILED: "Initialization Error: Unable to initialize WebGL",
 			
 			WEBGL_MESSAGE : "Unable to detect WebGl in your browser. \n" +
 						"Try updating your browser and video card drivers to resolve issue",
+						
+			WORKERS_NOT_SUPPORTED: "Initialization Error: WebWorkers not suported",
+			
+			WORKERS_NOT_SUPPORTED_MESSAGE : "Unable to detect WebWorkers support in your browser. Try any browser that is not from the stone age.",
 
 			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 

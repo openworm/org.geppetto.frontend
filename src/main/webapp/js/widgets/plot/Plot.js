@@ -146,7 +146,7 @@ define(function(require) {
 				if (state!= null) {	
 					if(state instanceof Array){
 						this.datasets.push({
-							data : state
+							data : state 
 						});
 					}
 					
@@ -185,20 +185,20 @@ define(function(require) {
 				var timeSeriesData = new Array();
 				var id = state.getInstancePath();
 				var i =0;
-				for(var key in timeSeries){
-					var value = timeSeries[key].getValue();
-					timeSeriesData.push([i,value]);
-					i++;
-					if(value<this.yMin){
-						this.yMin = value;
-					}
-					if(value > this.yMax){
-						this.yMax = value;
-					}
-				}
-				
+
 				if(timeSeries.length > 1){
 					if(this.options.playAll == true){
+						for(var key in timeSeries){
+							var value = timeSeries[key].getValue();
+							timeSeriesData.push([i,value]);
+							i++;
+							if(value<this.yMin){
+								this.yMin = value;
+							}
+							if(value > this.yMax){
+								this.yMax = value;
+							}
+						}
 						this.options.yaxis.max = this.yMax;
 						this.options.yaxis.min = this.yMin;
 						this.limit = timeSeries.length;
@@ -330,6 +330,7 @@ define(function(require) {
 					this.plot = $.plot($("#" + this.id), this.datasets, this.options);
 				}
 				else{
+					//console.log("Plotting step "+step);
 					for(var key in this.datasets) {
 						var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
 
@@ -450,15 +451,10 @@ define(function(require) {
 			 * @param {Object} options - options to modify the plot widget
 			 */
 			setOptions: function(options) {
-				for(var e in options){
-					if(options[e]!= null || options[e]!= undefined){
-						if(this.options.hasOwnProperty(e)){
-							this.options[e] = options[e];
-						}
-					}
-				}
+				this.options=options;
 				this.limit = this.options.xaxis.max;
 				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+				return this;
 			},
 			
 			/**

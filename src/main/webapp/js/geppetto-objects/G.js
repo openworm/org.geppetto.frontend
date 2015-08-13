@@ -162,6 +162,20 @@ define(function(require) {
 			},
 
 			/**
+			 * Retrieve a cookie
+			 */
+			getCookie:function(cname) {
+			    var name = cname + "=";
+			    var ca = document.cookie.split(';');
+			    for(var i=0; i<ca.length; i++) {
+			        var c = ca[i];
+			        while (c.charAt(0)==' ') c = c.substring(1);
+			        if (c.indexOf(name) == 0) return c.substring(name.length,c.length).replace(/"/g, '');;
+			    }
+			    return "";
+			},
+			
+			/**
 			 * Get all commands and descriptions available for object G.
 			 *
 			 * @command G.help()
@@ -653,6 +667,8 @@ define(function(require) {
 			 * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
 			 */
 			setBackgroundColour : function(color){
+				// set the VAR so that when the canvas refresh on timeout it keeps the color
+				GEPPETTO.getVARS().backgroundColor = color;
 				var threecolor = new THREE.Color( color );
 				GEPPETTO.getVARS().renderer.setClearColor( threecolor, 1 );
 			},

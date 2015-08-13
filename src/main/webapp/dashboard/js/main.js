@@ -86,3 +86,14 @@ String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
+// Change link from blank to self for embedded environments
+if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
+	handleRequest = function(e) {
+	  if(e.origin == window.EMBEDDEDURL) {
+		  // This is where we have to create the API
+		  //$('#footer').hide();
+	  };
+	};
+	// we have to listen for 'message'
+	window.addEventListener('message', handleRequest, false);
+}

@@ -37,21 +37,32 @@
  */
 var lastExecutedStep = 0;
 var isPaused = false;
+var play=false;
+var processed=true;
+var step=1;
 
 onmessage = function(e) {
 	if(e.data[0] == "experiment:pause"){
 		isPaused = true;
 	}else if(e.data[0] == "experiment:resume"){
 		isPaused = false;
+	}else if(e.data[0] == "experiment:processed"){
+		processed = true;
+	}else if(e.data[0] == "experiment:loop"){
+		lastExecutedStep = 0;
+		postMessage([lastExecutedStep,playAll,step]);
 	}else if(e.data[0]== "experiment:play"){
+		play=true;
 		var timer = e.data[1];
-		var step = e.data[2];
+		step = e.data[2];
 		var playAll = e.data[3];
-
+		
 		setInterval(function(){
-			if(!isPaused){
+			if(!isPaused && processed){
 				lastExecutedStep = lastExecutedStep + step;
+				//console.log("New step "+lastExecutedStep+" now triggering the event");
 				postMessage([lastExecutedStep,playAll]);
+				processed=false;
 			}
 		}, timer);
 	}

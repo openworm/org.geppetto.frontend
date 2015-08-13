@@ -276,8 +276,7 @@ define(function(require)
 					if (!this.played)
 					{
 						GEPPETTO.trigger(Events.Experiment_play);
-						var parameters =
-						{};
+						var parameters = {};
 						parameters["experimentId"] = this.id;
 						parameters["projectId"] = this.getParent().getId();
 						GEPPETTO.MessageSocket.send("play_experiment", parameters);
@@ -342,16 +341,12 @@ define(function(require)
 			{
 				// get current timeSteps to execute from web worker
 				var step = event.data[0];
+				//console.log(step);
 				var maxSteps = window.Project.getActiveExperiment().maxSteps;
 				if (step >= maxSteps)
 				{
-					var parameters =
-					{
-						name : window.Project.getActiveExperiment().getName(),
-						id : window.Project.getActiveExperiment().getId()
-					};
-					window.Project.getActiveExperiment().terminateWorker();
-					GEPPETTO.trigger(Events.Experiment_over, parameters);
+					//console.log("triggering loop, step="+step+" maxSteps="+maxSteps);
+					this.postMessage([ "experiment:loop" ]);
 				} else
 				{
 					var playAllFlag = event.data[1];
@@ -368,6 +363,8 @@ define(function(require)
 						GEPPETTO.trigger(Events.Experiment_stop);
 					}
 				}
+				
+				this.postMessage([ "experiment:processed" ]);
 			};
 		},
 

@@ -81,9 +81,29 @@
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
+    
+    <!-- Enable CORS -->
+    <!-- build:template
+    <% if (embedded === true && embedderURL !== "/") { %>
+    <filter>
+	  <filter-name>CorsFilter</filter-name>
+	  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+	  <init-param>
+		<param-name>cors.allowed.origins</param-name>
+		<param-value><%= embedderURL %></param-value>
+	  </init-param>
+	</filter>
+	<filter-mapping>
+	  <filter-name>CorsFilter</filter-name>
+	  <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<% } %>
+	/build -->
 
+    
     <!-- Enable SSL -->
-    <!-- build:template:dist
+    <!-- build:template
+    <% if (useSsl === true) { %>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>securedapp</web-resource-name>
@@ -93,6 +113,7 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+    <% } %>
     /build -->
 
 </web-app>

@@ -243,7 +243,10 @@ define(function(require) {
 
 			//notify all handlers
 			for(var i = 0, len = messageHandlers.length; i < len; i++) {
-				messageHandlers[ i ].onMessage(parsedServerMessage);
+				var handler = messageHandlers[i];
+				if(handler != null || handler != undefined){
+					handler.onMessage(parsedServerMessage);
+				}
 			}
 		}
 	}

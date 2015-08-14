@@ -68,6 +68,52 @@ define(function(require) {
 			window.Project.loadFromID("1", "1");
 			initializationTime = new Date();	
 		});
+		
+		module("Test Play Experiment");
+		asyncTest("Load Project 1 - SingleComponentHH", function() {
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+							//delete hhcell;
+							var time = (new Date() - initializationTime)/1000;
+							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+							equal(window.Project.getId(),1, "Project ID checked");
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							GEPPETTO.SimulationHandler.loadExperiment(payload);
+							Project.getActiveExperiment().play({step:1});
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PLAY_EXPERIMENT:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var timeSeries = 
+								hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
+							equal(timeSeries.length,0, "Checking updated time series in variable");
+							GEPPETTO.SimulationHandler.playExperiment(payload);
+							timeSeries = 
+								hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
+							equal(timeSeries.length,6001, "Checking updated time series in variable");
+							start();
+							GEPPETTO.MessageSocket.close();
+							GEPPETTO.MessageSocket.clearHandlers();
+							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');	
+							break;
+						}
+					}
+			};
+			GEPPETTO.MessageSocket.clearHandlers();
+			GEPPETTO.MessageSocket.addHandler(handler);
+			window.Project.loadFromID("1", "1");
+			initializationTime = new Date();	
+		});
+
 
 		module("Test Muscle cell NEURON simulation");
 		asyncTest("Tests PMuscle cell NEURON simulation", function() {

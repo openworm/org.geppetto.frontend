@@ -341,30 +341,31 @@ define(function(require)
 			{
 				// get current timeSteps to execute from web worker
 				var step = event.data[0];
-				//console.log(step);
-				var maxSteps = window.Project.getActiveExperiment().maxSteps;
-				if (step >= maxSteps)
-				{
-					//console.log("triggering loop, step="+step+" maxSteps="+maxSteps);
-					this.postMessage([ "experiment:loop" ]);
-				} else
-				{
-					var playAllFlag = event.data[1];
-					var parameters =
+				if(window.Project.getActiveExperiment()!=null){
+					//console.log(step);
+					var maxSteps = window.Project.getActiveExperiment().maxSteps;
+					if (step >= maxSteps)
 					{
-						steps : step,
-						playAll : playAllFlag
-					};
-					GEPPETTO.trigger(Events.Experiment_update, parameters);
-					if (playAllFlag)
+						//console.log("triggering loop, step="+step+" maxSteps="+maxSteps);
+						this.postMessage([ "experiment:loop" ]);
+					} else
 					{
-						// end worker, since we are playing all
-						window.Project.getActiveExperiment().terminateWorker();
-						GEPPETTO.trigger(Events.Experiment_stop);
+						var playAllFlag = event.data[1];
+						var parameters =
+						{
+								steps : step,
+								playAll : playAllFlag
+						};
+						GEPPETTO.trigger(Events.Experiment_update, parameters);
+						if (playAllFlag)
+						{
+							// end worker, since we are playing all
+							window.Project.getActiveExperiment().terminateWorker();
+							GEPPETTO.trigger(Events.Experiment_stop);
+						}
 					}
-				}
-				
-				this.postMessage([ "experiment:processed" ]);
+					this.postMessage([ "experiment:processed" ]);
+				}				
 			};
 		},
 

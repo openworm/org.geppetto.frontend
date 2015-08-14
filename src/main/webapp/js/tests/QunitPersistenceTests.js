@@ -94,15 +94,11 @@ define(function(require) {
 							var time = (new Date() - initializationTime)/1000;
 							var payload = JSON.parse(parsedServerMessage.data);
 							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							equal(window.Project.getActiveExperiment().getId(),1,"Active experiment id of loaded project checked");
-							Project.getExperiments()[0].downloadResults('hhcell.electrical','RAW');
-							hhcell.electrical.downloadModel();
+							equal(window.Project.getActiveExperiment().getId(),2,"Active experiment id of loaded project checked");
+							hhcell.electrical.uploadResults("GEPPETTO_RECORDING");
 							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.DOWNLOAD_RESULTS:
-							ok("Results Downloaded", "Results Downloaded okay");
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.DOWNLOAD_MODEL:
-							ok("Model Downloaded", "Model Donwloaded Okay!");
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.RESULTS_UPLOADED:
+							ok("Results Uploaded", "Results Uploaded Okay!");
 							start();
 							GEPPETTO.MessageSocket.close();
 							GEPPETTO.MessageSocket.clearHandlers();
@@ -113,7 +109,45 @@ define(function(require) {
 			};
 			GEPPETTO.MessageSocket.clearHandlers();
 			GEPPETTO.MessageSocket.addHandler(handler);
-			window.Project.loadFromID("1", "1");
+			window.Project.loadFromID("1", "2");
+			initializationTime = new Date();	
+		});
+		
+		asyncTest("Test uploading simulation model", function() {
+			var initializationTime;
+			var handler = {
+					checkUpdate2 : false,
+					startRequestID : null,
+					switchExperiment : false,
+					onMessage: function(parsedServerMessage) {
+						// Switch based on parsed incoming message type
+						switch(parsedServerMessage.type) {
+						//Simulation has been loaded and model need to be loaded
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+							var time = (new Date() - initializationTime)/1000;
+							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+							equal(window.Project.getId(),1, "Project ID checked");
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+							var time = (new Date() - initializationTime)/1000;
+							var payload = JSON.parse(parsedServerMessage.data);
+							GEPPETTO.SimulationHandler.loadExperiment(payload);
+							equal(window.Project.getActiveExperiment().getId(),2,"Active experiment id of loaded project checked");
+							hhcell.electrical.uploadModel();
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_UPLOADED:
+							ok("Model Uploaded", "Model Uploaded Okay!");
+							start();
+							GEPPETTO.MessageSocket.close();
+							GEPPETTO.MessageSocket.clearHandlers();
+							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
+							break;
+						}
+					}
+			};
+			GEPPETTO.MessageSocket.clearHandlers();
+			GEPPETTO.MessageSocket.addHandler(handler);
+			window.Project.loadFromID("1", "2");
 			initializationTime = new Date();	
 		});
 		

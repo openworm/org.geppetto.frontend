@@ -931,7 +931,7 @@ public class ConnectionHandler
 		try
 		{
 			geppettoManager.uploadModelToDropBox(aspectPath, experiment, geppettoProject, modelFormat);
-			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
+			websocketConnection.sendMessage(null, OutboundMessages.MODEL_UPLOADED, null);
 		}
 		catch(Exception e)
 		{

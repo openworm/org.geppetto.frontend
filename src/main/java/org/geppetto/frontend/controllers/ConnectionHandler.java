@@ -520,6 +520,7 @@ public class ConnectionHandler
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);
+				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
 			}
 		}
 		catch(GeppettoExecutionException | IOException e)
@@ -976,7 +977,7 @@ public class ConnectionHandler
 		{
 			if(resultsFormat == null)
 			{
-				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
+				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_RESULTS, "");
 			}
 			else
 			{
@@ -991,6 +992,7 @@ public class ConnectionHandler
 
 					// Send zip file to the client
 					websocketConnection.sendBinaryMessage(requestID, path);
+					websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_RESULTS, "");
 				}
 				else
 				{

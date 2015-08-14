@@ -80,6 +80,9 @@ public class TransportMessageFactory {
 			case ERROR_DOWNLOADING_MODEL:	
 				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_DOWNLOADING_MODEL.toString()));
 				break;
+			case ERROR_DOWNLOADING_RESULTS:	
+				params.add(new SimpleEntry<String, String>("message", Resources.ERROR_DOWNLOADING_MODEL.toString()));
+				break;	
 			case READ_URL_PARAMETERS:
 				break;
 			case SIMULATOR_FULL:
@@ -107,6 +110,9 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>(OutboundMessages.EXPERIMENT_CREATED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case EXPERIMENT_UPDATE:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case DOWNLOAD_MODEL:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case PLAY_EXPERIMENT:

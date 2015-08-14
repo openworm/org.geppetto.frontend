@@ -63,7 +63,9 @@ define(function(require) {
             DROPBOX_UNLINKED : "dropbox_unlinked",
             RESULTS_UPLOADED : "results_uploaded",
             MODEL_UPLOADED : "model_uploaded",
-            UPDATE_MODEL_TREE : "update_model_tree"
+            UPDATE_MODEL_TREE : "update_model_tree",
+            DOWNLOAD_MODEL : "download_model",
+            DOWNLOAD_RESULTS : "download_results"
         };
 
         var messageHandler = {};
@@ -221,6 +223,12 @@ define(function(require) {
         	GEPPETTO.Console.log("Dropbox unlinked succesfully");
         };
         
+        messageHandler[messageTypes.DOWNLOAD_RESULTS] = function(payload) {
+        	GEPPETTO.Console.log("Results downloaded succesfully");
+        };
+        messageHandler[messageTypes.DOWNLOAD_MODEL] = function(payload) {
+        	GEPPETTO.Console.log("Model downloaded succesfully");
+        };
         messageHandler[messageTypes.RESULTS_UPLOADED] = function(payload) {
         	GEPPETTO.Console.log("Results uploaded succesfully");
         };

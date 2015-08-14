@@ -56,7 +56,11 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							GEPPETTO.SimulationHandler.loadExperiment(payload);
 							equal(window.Project.getActiveExperiment().getId(),1,"Active experiment id of loaded project checked");
+							Project.getActiveExperiment().run();
 							start();
+							GEPPETTO.MessageSocket.close();
+							GEPPETTO.MessageSocket.clearHandlers();
+							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');		
 							break;
 						}
 					}

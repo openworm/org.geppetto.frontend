@@ -57,8 +57,7 @@ define(function(require) {
 							start();
 							GEPPETTO.MessageSocket.close();
 							GEPPETTO.MessageSocket.clearHandlers();
-							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
-							
+							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');							
 							break;
 						}
 					}

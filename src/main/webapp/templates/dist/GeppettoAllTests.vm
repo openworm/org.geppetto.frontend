@@ -6,20 +6,9 @@
     <link rel="stylesheet" href="geppetto/css/qunit.css">
     <link rel="stylesheet" href="geppetto/css/custom-theme/jquery-ui-1.10.0.custom.css" />
 
-    <!-- build:template
-        <script>
-            var path = "<%= contextPath %>";
-            if(path === "") {
-                window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
-            } else if(path === "/") {
-                window.BUNDLE_CONTEXT_PATH = "";
-            } else {
-                window.BUNDLE_CONTEXT_PATH = path;
-            }
-
-            window.USE_SSL = <%= useSsl %>;
-        </script>
-    /build -->
+    <script>
+         window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
+    </script>
 
     <script type="text/template" id="tplSandbox">
         <pre class="output"></pre>
@@ -43,7 +32,7 @@
     <% } %></script>
 
     <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-    <script data-main="geppetto/js/GeppettoPersistenceTests.js" src="geppetto/js/vendor/require.js"></script>
+    <script data-main="geppetto/js/QUnitAllTests.js" src="geppetto/js/vendor/require.js"></script>
 
 </head>
 <body>

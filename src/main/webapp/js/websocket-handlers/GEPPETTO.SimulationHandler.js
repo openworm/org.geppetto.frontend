@@ -75,7 +75,7 @@ define(function(require) {
         };
         
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {        	
-            GEPPETTO.SimulationHandler.createExperiment(payload);
+            var newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
             GEPPETTO.FE.newExperiment(newExperiment);
         };
         
@@ -302,7 +302,9 @@ define(function(require) {
 	            var newExperiment = GEPPETTO.NodeFactory.createExperimentNode(experiment);
 	            window.Project.getExperiments().push(newExperiment);
 	            newExperiment.setParent(window.Project);
-	            GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);  
+	            GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
+	            
+	            return newExperiment;
 			},
 			
 			playExperiment : function(payload){

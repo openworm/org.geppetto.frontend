@@ -241,6 +241,50 @@ define(function(require) {
 			initializationTime = new Date();	
 		});
 		
+//		asyncTest("Test Persist Project", function() {
+//			var initializationTime;
+//			var handler = {
+//					checkUpdate2 : false,
+//					startRequestID : null,
+//					onMessage: function(parsedServerMessage) {
+//						// Switch based on parsed incoming message type
+//						switch(parsedServerMessage.type) {
+//						//Simulation has been loaded and model need to be loaded
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+//							var time = (new Date() - initializationTime)/1000;
+//							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+//							equal(window.Project.getId(),1, "Project loaded ID checked");
+//							window.Project.newExperiment();
+//							break;
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_CREATED:
+//							var time = (new Date() - initializationTime)/1000;
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							var newLength = window.Project.getExperiments().length;
+//				            GEPPETTO.SimulationHandler.createExperiment(payload);
+//				            newLength++;
+//				            equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
+//				            window.Project.persist();
+//				            break;
+//						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PERSISTED:
+//							var time = (new Date() - initializationTime)/1000;
+//							var payload = JSON.parse(parsedServerMessage.data);
+//							var newLength = window.Project.getExperiments().length;
+//							GEPPETTO.SimulationHandler.persistProject(payload);
+//				            newLength++;
+//				            equal(window.Project.getExperiments().length, newLength, "Project persisted");
+//							start();
+//							GEPPETTO.MessageSocket.close();
+//							GEPPETTO.MessageSocket.clearHandlers();
+//							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
+//							break;
+//						}
+//					}
+//			};
+//			GEPPETTO.MessageSocket.addHandler(handler);
+//			window.Project.loadFromID("1");
+//			initializationTime = new Date();	
+//		});
+		
 		asyncTest("Test Delete experiment", function() {
 			var initializationTime;
 			var handler = {

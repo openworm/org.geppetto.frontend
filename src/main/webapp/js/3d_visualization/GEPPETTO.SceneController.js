@@ -110,8 +110,7 @@ define(function(require) {
 					if (child.visible) {
 						if (apply && (!child.ghosted) && (!child.selected)) {
 							if (child instanceof THREE.Object3D) {
-								child
-										.traverse(function(object) {
+								child.traverse(function(object) {
 											if (child instanceof THREE.Mesh) {
 												child.ghosted = true;
 												child.material.transparent = true;
@@ -125,12 +124,10 @@ define(function(require) {
 							}
 						} else if ((!apply) && (child.ghosted)) {
 							if (child instanceof THREE.Object3D) {
-								child
-										.traverse(function(object) {
+								child.traverse(function(object) {
 											if (child instanceof THREE.Mesh) {
 												child.ghosted = false;
-												child.material.color
-														.set(child.material.defaultColor);
+												GEPPETTO.SceneController.setThreeColor(child.material.color,child.material.defaultColor);
 												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 											}
 										});
@@ -153,8 +150,7 @@ define(function(require) {
 						if (apply && (!splitMesh.ghosted)
 								&& (!splitMesh.selected)) {
 							if (child instanceof THREE.Object3D) {
-								child
-										.traverse(function(object) {
+								child.traverse(function(object) {
 											if (object instanceof THREE.Mesh) {
 												object.ghosted = true;
 												object.material.transparent = true;
@@ -168,8 +164,7 @@ define(function(require) {
 							}
 						} else if ((!apply) && (splitMesh.ghosted)) {
 							if (child instanceof THREE.Object3D) {
-								child
-										.traverse(function(object) {
+								child.traverse(function(object) {
 											if (object instanceof THREE.Mesh) {
 												object.ghosted = false;
 												object.material.color
@@ -179,8 +174,7 @@ define(function(require) {
 										});
 							} else {
 								child.ghosted = false;
-								child.material.color
-										.setHex(GEPPETTO.Resources.COLORS.SPLIT);
+								child.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
 								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 							}
 						}
@@ -250,8 +244,7 @@ define(function(require) {
 								mesh
 										.traverse(function(child) {
 											if (child instanceof THREE.Mesh) {
-												child.material.color
-														.set(child.material.defaultColor);
+												GEPPETTO.SceneController.setThreeColor(child.material.color,child.material.defaultColor);
 												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 											}
 										});

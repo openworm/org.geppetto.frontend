@@ -33,7 +33,7 @@ define(function(require) {
 						var meshes = GEPPETTO.SceneFactory.generate3DObjects(aspect);
 						for ( var m in meshes) {
 							var mesh = meshes[m];
-							mesh.name = aspect.instancePath;
+							mesh.instancePath = aspect.instancePath;
 							if (position != null) {
 								p = new THREE.Vector3(position.x, position.y,
 										position.z);

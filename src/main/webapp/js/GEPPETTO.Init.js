@@ -108,42 +108,54 @@ define(function(require) {
 			if(!GEPPETTO.getVARS().listenersCreated){
 				// when the mouse moves, call the given function
 				GEPPETTO.getVARS().renderer.domElement.addEventListener('mousedown', function(event) {
-					if(GEPPETTO.getVARS().pickingEnabled){
-					var intersects = GEPPETTO.getIntersectedObjects();
-
-					if ( intersects.length > 0 ) {
-						var selected = "";
-						
-						// sort intersects
-						var compare = function(a,b) {
-						  if (a.distance < b.distance)
-						    return -1;
-						  if (a.distance > b.distance)
-						    return 1;
-						  return 0;
-						}
-						
-						intersects.sort(compare);
-						
-						// Iterate and get the first visible item (they are now ordered by proximity)
-						for(var i = 0; i<intersects.length; i++){
-							// figure out if the entity is visible
-							var instancePath = intersects[ i ].object.name;
-							var visible = eval(instancePath + '.visible');
-							if(visible){
-								selected = instancePath;
-								break;
+					if(GEPPETTO.getVARS().pickingEnabled)
+					{
+						var intersects = GEPPETTO.getIntersectedObjects();
+	
+						if ( intersects.length > 0 ) {
+							var selected = "";
+							
+							// sort intersects
+							var compare = function(a,b) {
+							  if (a.distance < b.distance)
+							    return -1;
+							  if (a.distance > b.distance)
+							    return 1;
+							  return 0;
+							}
+							
+							intersects.sort(compare);
+							
+							// Iterate and get the first visible item (they are now ordered by proximity)
+							for(var i = 0; i<intersects.length; i++){
+								// figure out if the entity is visible
+								var instancePath = "";
+								if(intersects[ i ].object.hasOwnProperty("instancePath"))
+								{
+									instancePath = intersects[ i ].object.instancePath;	
+								}
+								else
+								{
+									//weak assumption: if the object doesn't have an instancePath its parent will
+									instancePath = intersects[ i ].object.parent.instancePath;	
+								}
+								
+								var visible = eval(instancePath + '.visible');
+								if(visible){
+									selected = instancePath;
+									break;
+								}
+							}
+	
+							if(selected == ""){
+								selected = intersects[ 0 ].object.parent.instancePath;
+							}
+							
+							if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected)) {
+								GEPPETTO.G.unSelectAll();
+								GEPPETTO.Console.executeCommand(selected + '.select()');
 							}
 						}
-
-						if(selected == ""){
-							selected = intersects[ 0 ].object.parent.name;
-						}
-						if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected)) {
-							GEPPETTO.G.unSelectAll();
-							GEPPETTO.Console.executeCommand(selected + '.select()');
-						}
-					}
 					}
 				}, false);
 

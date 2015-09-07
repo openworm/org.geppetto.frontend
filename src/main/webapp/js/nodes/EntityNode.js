@@ -255,16 +255,6 @@ define(function(require) {
 							parent.selected = false;
 							parent = parent.getParent();
 						}
-						
-						//don't apply ghost effect to meshes if nothing is left selected after
-						//unselecting this entity
-						if(G.getSelection().length ==0){
-							GEPPETTO.SceneController.setGhostEffect(false);
-						}
-						//update ghost effect after unselection of this entity
-						else{
-							GEPPETTO.SceneController.setGhostEffect(true);
-						}
 				
 						//look on the simulation selection options and perform necessary
 						//operations

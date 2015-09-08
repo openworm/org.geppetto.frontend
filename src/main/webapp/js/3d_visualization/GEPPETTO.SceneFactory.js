@@ -120,6 +120,7 @@ define(function(require) {
 
 					var materials = {
 							"mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(),
+							"line": GEPPETTO.SceneFactory.getLineMaterial(),
 							"particle": GEPPETTO.SceneFactory.getParticleMaterial()
 					};
 					var aspectObjects = [];
@@ -129,8 +130,19 @@ define(function(require) {
 					if(threeDeeObjList.length > 1){
 						var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
 						//investigate need to obj.dispose for obj in threeDeeObjList
-						mergedObjs.aspectInstancePath = aspect.instancePath;
-						aspectObjects.push(mergedObjs);
+						if(mergedObjs!=null)
+						{
+							mergedObjs.aspectInstancePath = aspect.instancePath;
+							aspectObjects.push(mergedObjs);	
+						}
+						else
+						{
+							for(var obj in threeDeeObjList)
+							{
+								threeDeeObjList[obj].aspectInstancePath = aspect.instancePath;
+								aspectObjects.push(threeDeeObjList[obj]);
+							}
+						}
 					}else if(threeDeeObjList.length == 1){
 						//only one object in list, add it to local array and set 
 						//instance path from aspect
@@ -172,21 +184,48 @@ define(function(require) {
 					objType = objArray[0].type;
 					var mergedMeshesPaths = [];
 					var ret = null;
+					var lines=true;
 
 					switch (objType){
 					case "CylinderNode":
 					case "SphereNode":
 						var merged = new THREE.Geometry();
+						var lines=false;
+						if(objArray[0] instanceof THREE.Line)
+						{
+							lines=true;
+							material=materials["line"];
+						}
+						else
+						{
+							material=materials["mesh"];
+						}
 						objArray.forEach(function(obj){
-							obj.geometry.dynamic = true;
-							obj.geometry.verticesNeedUpdate = true;
-							obj.updateMatrix();
-							merged.merge(obj.geometry, obj.matrix);
-							mergedMeshesPaths.push(obj.instancePath);
+							if(lines)
+							{
+								merged.vertices.push(obj.geometry.vertices[0]);
+								merged.vertices.push(obj.geometry.vertices[1]);
+							}
+							else
+							{
+								obj.geometry.dynamic = true;
+								obj.geometry.verticesNeedUpdate = true;
+								obj.updateMatrix();
+								merged.merge(obj.geometry, obj.matrix);
+								mergedMeshesPaths.push(obj.instancePath);	
+							}
+							
 						});
 						//TODO: do we really want to create a _mesh_ for the merged objs?
-						var meshWithAll = new THREE.Mesh(merged, materials["mesh"]);
-						ret = meshWithAll;
+						
+						if(lines)
+						{
+							ret = new THREE.Line(merged, material, THREE.LinePieces);
+						}
+						else
+						{
+							ret = new THREE.Mesh(merged, material);
+						}
 						break;
 					case "ParticleNode":
 						var particleGeometry = new THREE.Geometry();
@@ -205,7 +244,11 @@ define(function(require) {
 						ret = objArray[0];
 						break;
 					}
-					ret.mergedMeshesPaths = mergedMeshesPaths;
+					if(ret!=null)
+					{
+						ret.mergedMeshesPaths = mergedMeshesPaths;	
+					}
+					
 
 					return ret;
 
@@ -214,17 +257,30 @@ define(function(require) {
 
 				visualizationTreeNodeTo3DObj: function(node, materials) {
 					var threeObject = null;
+					var lines=true;
 					switch (node._metaType) {
 					case "ParticleNode" : 
 						threeObject = GEPPETTO.SceneFactory.createParticle(node);
 						break;
 
 					case "CylinderNode":
-						threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
+						if(lines){
+							threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
+						}
+						else
+						{
+							threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
+						}
 						break;
 
 					case "SphereNode":
-						threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, materials["mesh"]);
+						if(lines){
+							threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
+						}
+						else
+						{
+							threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, materials["mesh"]);
+						}
 						break;
 
 					case "ColladaNode":
@@ -308,6 +364,41 @@ define(function(require) {
 
 
 				/**
+				 * Creates and positions a ThreeJS line object from a Geppetto Cylinder node
+				 * 
+				 * @param {VisualObjectNode} cylNode - a Geppetto Cylinder Node
+				 * @param {ThreeJSMaterial} material - Material to be used for the Mesh
+				 * @returns a ThreeJS Cylinder correctly positioned w.r.t the global frame of reference
+				 */
+				create3DLineFromNode : function(cylNode, material) {
+
+					bottomBasePos = new THREE.Vector3(cylNode.position.x,
+							cylNode.position.y,
+							cylNode.position.z);
+					topBasePos = new THREE.Vector3(cylNode.distal.x,
+							cylNode.distal.y,
+							cylNode.distal.z);
+					
+					var axis = new THREE.Vector3();
+					axis.subVectors(topBasePos, bottomBasePos);
+					var midPoint = new THREE.Vector3();
+					midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
+
+
+					var geometry = new THREE.Geometry();
+				    geometry.vertices.push(bottomBasePos);
+				    geometry.vertices.push(topBasePos);
+				    
+					var threeObject = new THREE.Line(geometry, material);
+					threeObject.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+					threeObject.lookAt(axis);
+					threeObject.position.fromArray(midPoint.toArray());
+
+					threeObject.geometry.verticesNeedUpdate = true;
+					return threeObject;
+				},	
+				
+				/**
 				 * Creates and positions a ThreeJS cylinder object from a Geppetto Cylinder node
 				 * 
 				 * @param {VisualObjectNode} cylNode - a Geppetto Cylinder Node
@@ -363,6 +454,13 @@ define(function(require) {
 					threeObject.geometry.verticesNeedUpdate = true;
 					return threeObject;
 				},	
+				
+				getLineMaterial : function() {
+					var material = new THREE.LineBasicMaterial({linewidth: 2});
+					material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+					material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+					return material;
+				},
 
 				getMeshPhongMaterial : function(shine) {
 					if(shine==undefined)
@@ -380,6 +478,7 @@ define(function(require) {
 					material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
 					return material;
 				},
+				
 				getParticleMaterial : function(){
 					var pMaterial = new THREE.PointCloudMaterial({
 						size : 5,

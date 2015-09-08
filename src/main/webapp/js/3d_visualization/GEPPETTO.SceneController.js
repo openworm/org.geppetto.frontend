@@ -111,7 +111,7 @@ define(function(require) {
 						if (apply && (!child.ghosted) && (!child.selected)) {
 							if (child instanceof THREE.Object3D) {
 								child.traverse(function(object) {
-											if (child instanceof THREE.Mesh) {
+										if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
 												child.ghosted = true;
 												child.material.transparent = true;
 												child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
@@ -125,7 +125,7 @@ define(function(require) {
 						} else if ((!apply) && (child.ghosted)) {
 							if (child instanceof THREE.Object3D) {
 								child.traverse(function(object) {
-											if (child instanceof THREE.Mesh) {
+										if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 												child.ghosted = false;
 												GEPPETTO.SceneController.setThreeColor(child.material.color,child.material.defaultColor);
 												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -151,7 +151,7 @@ define(function(require) {
 								&& (!splitMesh.selected)) {
 							if (child instanceof THREE.Object3D) {
 								child.traverse(function(object) {
-											if (object instanceof THREE.Mesh) {
+											if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 												object.ghosted = true;
 												object.material.transparent = true;
 												object.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
@@ -165,7 +165,7 @@ define(function(require) {
 						} else if ((!apply) && (splitMesh.ghosted)) {
 							if (child instanceof THREE.Object3D) {
 								child.traverse(function(object) {
-											if (object instanceof THREE.Mesh) {
+										if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 												object.ghosted = false;
 												object.material.color
 														.setHex(GEPPETTO.Resources.COLORS.SPLIT);
@@ -199,9 +199,8 @@ define(function(require) {
 							}
 							if (mesh.selected == false) {
 								if (mesh instanceof THREE.Object3D) {
-									mesh
-											.traverse(function(child) {
-												if (child instanceof THREE.Mesh) {
+									mesh.traverse(function(child) {
+												if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
 													child.material.color
 															.setHex(GEPPETTO.Resources.COLORS.SELECTED);
 													child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -243,7 +242,7 @@ define(function(require) {
 							if (mesh instanceof THREE.Object3D) {
 								mesh
 										.traverse(function(child) {
-											if (child instanceof THREE.Mesh) {
+											if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
 												GEPPETTO.SceneController.setThreeColor(child.material.color,child.material.defaultColor);
 												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 											}
@@ -301,7 +300,7 @@ define(function(require) {
 					if (v == instancePath) {
 						var child = GEPPETTO.getVARS().meshes[v];
 						child.traverse(function(object) {
-							if (object instanceof THREE.Mesh) {
+							if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 								GEPPETTO.SceneController.setThreeColor(object.material.color,color);
 								object.material.defaultColor=color;
 							}
@@ -339,7 +338,7 @@ define(function(require) {
 						if (opacity == 1) {
 
 							child.traverse(function(object) {
-								if (object instanceof THREE.Mesh) {
+								if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 									object.material.transparent = false;
 									object.material.opacity = 1;
 								}
@@ -348,7 +347,7 @@ define(function(require) {
 						} else {
 
 							child.traverse(function(object) {
-								if (object instanceof THREE.Mesh) {
+								if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 									object.material.transparent = true;
 									object.material.opacity = opacity;
 								}
@@ -419,8 +418,7 @@ define(function(require) {
 
 				for ( var meshInstancePath in GEPPETTO.getVARS().meshes) {
 					var child = GEPPETTO.getVARS().meshes[meshInstancePath];
-					if (child instanceof THREE.Mesh
-							|| child instanceof THREE.PointCloud) {
+					if (child instanceof THREE.Mesh || child instanceof THREE.Line || child instanceof THREE.PointCloud) {
 						if (meshInstancePath.startsWith(path)) {
 							child.geometry.computeBoundingBox();
 

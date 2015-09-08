@@ -65,27 +65,7 @@ define(function(require) {
 		 */
 		var setupLights = function() {
 			// Lights
-
-			GEPPETTO.getVARS().scene.add(new THREE.AmbientLight(0x111111));
-
-			GEPPETTO.getVARS().scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1.1));
-
-			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.09);
-			directionalLight.position.set(0, 1, 0);
-			directionalLight.castShadow = true;
-			GEPPETTO.getVARS().scene.add(directionalLight);
-
-			var spotLight1 = new THREE.SpotLight(0xffffff, 0.1);
-			spotLight1.position.set(100, 1000, 100);
-			spotLight1.castShadow = true;
-			spotLight1.shadowDarkness = 0.2;
-			GEPPETTO.getVARS().scene.add(spotLight1);
-
-			var spotLight2 = new THREE.SpotLight(0xffffff, 0.22);
-			spotLight2.position.set(100, 1000, 100);
-			spotLight2.castShadow = true;
-			spotLight2.shadowDarkness = 0.2;
-			GEPPETTO.getVARS().scene.add(spotLight2);
+			GEPPETTO.getVARS().camera.add(new THREE.PointLight(0xffffff));
 
 		};
 

@@ -10,6 +10,7 @@ define(function(require) {
 		var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone');
 
 		require('d3');
+		require('three');
 		require('vendor/ColladaLoader');
 		require('vendor/OBJLoader');
 		require('GEPPETTO.Resources')(GEPPETTO);

@@ -32,6 +32,7 @@
  *******************************************************************************/
 package org.geppetto.frontend.messaging;
 
+import java.nio.file.Path;
 import org.geppetto.frontend.messages.OutboundMessages;
 
 public interface MessageSender
@@ -41,6 +42,8 @@ public interface MessageSender
 	void removeListener(MessageSenderListener listener);
 
 	void sendMessage(String requestID, OutboundMessages type, String update);
+
+	void sendFile(Path path);
 
 	void pause();
 

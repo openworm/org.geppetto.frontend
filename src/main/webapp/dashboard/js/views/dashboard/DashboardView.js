@@ -113,7 +113,6 @@ define([ 'jquery', 'underscore', 'backbone',
 			}
 			target.addClass("selected");
 			$(target.parent().parent().children()[1]).addClass("orange");
-			$(target)
 			var id = $(event.target).attr("project-id");
 			if (id === undefined) {
 				id = $(event.target).parents(".project-preview").attr("project-id");
@@ -149,7 +148,12 @@ define([ 'jquery', 'underscore', 'backbone',
 			if (url.indexOf('/dashboard') > 0) {
 				url = url.substring(0, url.indexOf('/dashboard'));
 			}
-			window.open(url + 'geppetto?load_project_from_id=' + id);
+
+			var targetWindow = '_blank';
+            if(window.EMBEDDED) {
+            	targetWindow = '_self';
+            }
+            window.open(url + 'geppetto?load_project_from_id=' + id, targetWindow);
 		},
 
 		remove : function(attributes) {

@@ -221,4 +221,13 @@
 .ui-widget-content::-webkit-scrollbar-button {
 	width:0;
 	height:0;
-}	
+}
+
+.noStyleDisableDrag {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+.noStyleDisableDrag .ui-dialog-titlebar {
+	cursor: default;
+}

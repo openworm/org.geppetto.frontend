@@ -13,10 +13,12 @@
     <link rel="stylesheet" href="css/styles.css">
 	<link rel="stylesheet" href="./geppetto/css/font-awesome.min.css" />
 
+    <!-- build:template
     <script>
-    window.EMBEDDED = false;
-    window.EMBEDDEDURL = "/";
+    	window.EMBEDDED = <%= embedded %>;
+    	window.EMBEDDEDURL = "<%= embedderURL %>";
     </script>
+    /build -->
 
     <script data-main="js/main" src="js/libs/require/require.js"></script>
 </head>

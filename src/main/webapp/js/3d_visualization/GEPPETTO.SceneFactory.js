@@ -257,7 +257,7 @@ define(function(require) {
 
 				visualizationTreeNodeTo3DObj: function(node, materials) {
 					var threeObject = null;
-					var lines=true;
+					var lines=false;
 					switch (node._metaType) {
 					case "ParticleNode" : 
 						threeObject = GEPPETTO.SceneFactory.createParticle(node);

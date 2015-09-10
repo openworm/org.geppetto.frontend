@@ -203,7 +203,7 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		else
 		{
@@ -269,13 +269,13 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(Resources.VOLATILE_PROJECT.toString());
+			info(requestID,Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
@@ -312,7 +312,7 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		else
 		{
@@ -602,14 +602,14 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 			return;
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(Resources.VOLATILE_PROJECT.toString());
+			info(requestID,Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
@@ -738,13 +738,14 @@ public class ConnectionHandler
 	}
 
 	/**
+	 * @param requestID 
 	 * @param exception
 	 * @param errorMessage
 	 */
-	private void info(String message)
+	private void info(String requestID, String message)
 	{
 		logger.info(message);
-		websocketConnection.sendMessage(null, OutboundMessages.INFO_MESSAGE, getGson().toJson(message));
+		websocketConnection.sendMessage(requestID, OutboundMessages.INFO_MESSAGE, getGson().toJson(message));
 
 	}
 
@@ -807,7 +808,7 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		else
 		{
@@ -842,7 +843,7 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		else
 		{
@@ -1015,12 +1016,12 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		if(geppettoProject.isVolatile())
 		{
-			info(Resources.VOLATILE_PROJECT.toString());
+			info(requestID,Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
@@ -1051,13 +1052,13 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(Resources.VOLATILE_PROJECT.toString());
+			info(requestID,Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else

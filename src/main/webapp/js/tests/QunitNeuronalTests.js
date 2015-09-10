@@ -113,7 +113,6 @@ define(function(require) {
 			initializationTime = new Date();	
 		});
 
-
 		module("Test Muscle cell NEURON simulation");
 		asyncTest("Tests PMuscle cell NEURON simulation", function() {
 			var initializationTime;

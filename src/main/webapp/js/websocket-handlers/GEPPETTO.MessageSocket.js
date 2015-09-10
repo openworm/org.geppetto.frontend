@@ -249,7 +249,7 @@ define(function(require) {
 			else{
 				var fileNameLength = messageBytes[1];
 				var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2,2+fileNameLength));
-				var blob = new Blob([messageData]);
+				var blob = new Blob([message]);
 				saveData(blob.slice(2+fileNameLength), fileName);
 			}
 		}

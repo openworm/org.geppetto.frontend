@@ -33,7 +33,7 @@
 /**
  * GEPPETTO Visualisation engine built on top of THREE.js. Displays a scene as
  * defined on org.geppetto.core
- * 
+ *
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @authot Jesus R Martinez (jesus@metacell.us)
  */
@@ -41,11 +41,11 @@ define(function(require) {
 
 	var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone');
 
-	require('vendor/Detector'); 
+	require('vendor/Detector');
 	require('vendor/THREEx.KeyboardState');
 
 	var step = 0;
-	
+
 	var VARS = {
 			debug: false,
 			camera: null,
@@ -85,15 +85,15 @@ define(function(require) {
 
 	/**
 	 * Initialize the engine
-	 * 
+	 *
 	 * @class GEPPETTO
 	 */
 	var GEPPETTO = {
 
-			
+
 		/**
 		 * Initialize Geppetto
-		 * 
+		 *
 		 * @param {HTML}
 		 *            containerp - HTML element to draw the 3D Scene
 		 * @returns {Boolean}
@@ -109,7 +109,7 @@ define(function(require) {
 		},
 
 		/**
-		 * 
+		 *
 		 * @returns {Boolean} True or false, whether webgl is detected or not
 		 */
 		webGLAvailable : function() {
@@ -124,7 +124,7 @@ define(function(require) {
 		/**
 		 * Returns variables object used to store meshes, and other properties
 		 * of the 3D scene
-		 * 
+		 *
 		 * @returns {Object} Object with important properties for the 3D Scene.
 		 */
 		getVARS : function() {
@@ -133,7 +133,7 @@ define(function(require) {
 
 		/**
 		 * Set object local rotation, with respect to z (Euler angle)
-		 * 
+		 *
 		 * @param {AspectNode}
 		 *            aspect - the aspect containing the entity to rotate
 		 * @param {String}
@@ -192,7 +192,7 @@ define(function(require) {
 				GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
 				GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
 				GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
-	
+
 				GEPPETTO.updateCamera(aabbMax, aabbMin);
         	}
 		},
@@ -268,7 +268,7 @@ define(function(require) {
 
 		/**
 		 * Status of scene, populated or not
-		 * 
+		 *
 		 * @returns {Boolean} True or false depending whether scene is populated
 		 *          or not
 		 */
@@ -278,7 +278,7 @@ define(function(require) {
 
 		/**
 		 * Has canvas been created?
-		 * 
+		 *
 		 * @returns {Boolean] True or false if canvas has been created or not
 		 */
 		isCanvasCreated : function() {
@@ -341,7 +341,7 @@ define(function(require) {
 
 		/**
 		 * Adds GUI controls to GEPPETTO
-		 * 
+		 *
 		 * @param gui
 		 * @param metadatap
 		 */
@@ -379,7 +379,7 @@ define(function(require) {
 
 		/**
 		 * Returns intersected objects from mouse click
-		 * 
+		 *
 		 * @returns {Array} a list of objects intersected by the current mouse
 		 *          coordinates
 		 */
@@ -420,7 +420,7 @@ define(function(require) {
 
 		/**
 		 * Generate new id
-		 * 
+		 *
 		 * @returns {Number} A new id
 		 */
 		getNewId : function() {
@@ -429,7 +429,7 @@ define(function(require) {
 
 		/**
 		 * Show metadata
-		 * 
+		 *
 		 * @param {String}
 		 *            entityIndex - the id of the entity for which we want to
 		 *            display metadata
@@ -517,6 +517,24 @@ define(function(require) {
 		 */
 		incrementCameraZoom : function(z) {
 			GEPPETTO.getVARS().controls.incrementZoomEnd(z);
+		},
+
+		/**
+		 * @param x
+		 * @param y
+		 * @param z
+		 */
+		setCameraPosition : function(x, y, z) {
+			GEPPETTO.getVARS().camera.position.set(x, y, z);
+		},
+
+		/**
+		 * @param rx
+		 * @param ry
+		 * @param rz
+		 */
+		setCameraRotation : function(rx, ry, rz) {
+			GEPPETTO.getVARS().camera.rotation.set(rx, ry, rz, 'XYZ');
 		},
 
 		/**

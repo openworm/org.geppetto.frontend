@@ -130,6 +130,28 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	};
 
+	this.setCameraByConsole = function () {
+		if (_this.lastPosition) {
+			var x = _this.lastPosition[0];
+			var y = _this.lastPosition[1];
+			var z = _this.lastPosition[2];
+			if (x !== 0 ||
+					y !== 0 ||
+					z !== 0)
+				GEPPETTO.Console.executeCommand('G.setCameraPosition('+x+','+y+','+z+')');
+		}
+
+		if (_this.lastRotation) {
+			var rx = _this.lastRotation[0];
+			var ry = _this.lastRotation[1];
+			var rz = _this.lastRotation[2];
+			if (rx !== 0 ||
+					ry !== 0 ||
+					rz !== 0)
+				GEPPETTO.Console.executeCommand('G.setCameraRotation('+rx+','+ry+','+rz+')');
+		}
+	}
+
 	this.rotateCamera = function () {
 
 		var angle = Math.acos( _rotateStart.dot( _rotateEnd ) / _rotateStart.length() / _rotateEnd.length() );
@@ -279,6 +301,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		}
 
+		_this.lastRotation = _this.object.rotation.toArray();
+		_this.lastPosition = _this.object.position.toArray();
 	};
 
 	this.reset = function () {
@@ -407,6 +431,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 		document.removeEventListener( 'mousemove', mousemove );
 		document.removeEventListener( 'mouseup', mouseup );
 
+		_this.setCameraByConsole();
 	}
 
 	function mousewheel( event ) {
@@ -430,6 +455,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		_zoomStart.y += delta * 0.01;
 
+		_this.setCameraByConsole();
 	}
 
 	function touchstart( event ) {
@@ -514,6 +540,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		_state = STATE.NONE;
 
+		_this.setCameraByConsole();
 	}
 
 	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
@@ -569,6 +596,3 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 
 THREE.TrackballControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-
-
-	

@@ -291,7 +291,7 @@ define(function(require)
 				}
 			} else
 			{
-				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + name + " with id " + id + " isn't completed, and can't be played.");
+				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + this.name + " with id " + this.id + " isn't completed, and can't be played.");
 			}
 		},
 

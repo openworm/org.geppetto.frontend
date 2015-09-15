@@ -32,6 +32,21 @@
  *******************************************************************************/
 define(function(require) {
 
+	/**
+	 * Calls "start()" from QUnit to start qunit tests, closes socket and clears
+	 * handlers. Method is called from each test.
+	 */
+	function launch(){
+		//start qunit tests
+		start();
+		//close socket
+		GEPPETTO.MessageSocket.close();
+		//clear message handlers, all tests within module should have performed by time method it's called
+		GEPPETTO.MessageSocket.clearHandlers();
+		//connect to socket again for next test
+		GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
+	}
+	
 	var run = function() {		
 
 		module("Test Project 1 - Neuronal External", {setup: function() {
@@ -41,7 +56,8 @@ define(function(require) {
 			GEPPETTO.MessageSocket.clearHandlers();
 			var initializationTime;
 			var handler = {
-					checkUpdate2 : false,
+					//flag use to keep track of when to check status
+					checkStatus : true,
 					startRequestID : null,
 					onMessage: function(parsedServerMessage) {
 						// Switch based on parsed incoming message type
@@ -56,11 +72,51 @@ define(function(require) {
 							var payload = JSON.parse(parsedServerMessage.data);
 							GEPPETTO.SimulationHandler.loadExperiment(payload);
 							equal(window.Project.getActiveExperiment().getId(),1,"Active experiment id of loaded project checked");
-							Project.getActiveExperiment().run();
-							start();
-							GEPPETTO.MessageSocket.close();
-							GEPPETTO.MessageSocket.clearHandlers();
-							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');		
+							if(Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+								ok(false,"Experiment already completed, can't test run");
+								launch();
+							}
+							else if(Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN){
+								Project.getActiveExperiment().run();
+								this.checkStatus = false;
+							}
+							else{
+								ok(false,
+								"Can't run Experiment and test it due to status being: " + Project.getActiveExperiment().getStatus());
+								launch();
+							}
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_STATUS:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var experimentStatus = JSON.parse(payload.update);
+
+							var experiments = window.Project.getExperiments();
+							for(var key in experimentStatus){
+								var projectID = experimentStatus[key].projectID;
+								var status = experimentStatus[key].status;
+								var experimentID = experimentStatus[key].experimentID;
+
+								if(!this.checkStatus){
+									if(status == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+										if(experimentID==1){
+											equal(experimentID,1,"Running active experiment completed succesfully.");
+											window.Project.getActiveExperiment().setStatus(status);
+											this.checkStatus = true;
+											Project.getActiveExperiment().play({step:1});
+										}
+									}
+								}
+							}
+							break;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PLAY_EXPERIMENT:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var timeSeries = 
+								hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
+							GEPPETTO.SimulationHandler.playExperiment(payload);
+							timeSeries = 
+								hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
+							equal(timeSeries.length,6001, "Checking time series after running and playing of experiment");
+							launch();
 							break;
 						}
 					}

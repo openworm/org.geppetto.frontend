@@ -35,6 +35,20 @@
  */
 define(function(require) {
 
+	/**
+	 * Calls "start()" from QUnit to start qunit tests, closes socket and clears
+	 * handlers. Method is called from each test.
+	 */
+	function launch(){
+		//start qunit tests
+		start();
+		//close socket
+		GEPPETTO.MessageSocket.close();
+		//clear message handlers, all tests within module should have performed by time method it's called
+		GEPPETTO.MessageSocket.clearHandlers();
+		//connect to socket again for next test
+		GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
+	}
 	var run = function() {		
 
 		module("Test SPH Simulation");
@@ -69,10 +83,25 @@ define(function(require) {
 							equal(jQuery.isEmptyObject(sample.fluid.VisualizationTree),false,"Test Visualization at load");
 							equal(jQuery.isEmptyObject(sample.fluid.ModelTree),false,"Test Model tree at load");
 							equal(jQuery.isEmptyObject(sample.fluid.SimulationTree),false, "Test Simulation tree at load");
-							start();
-							GEPPETTO.MessageSocket.close();
-							GEPPETTO.MessageSocket.clearHandlers();
-							GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
+							launch();
+							break;
+						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var message = JSON.parse(payload.message);
+				            ok(false,message);
+							launch();
+							break;
+						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var message = JSON.parse(payload.message).message;
+							ok(false,message);
+							launch();
+							break;
+						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+							var payload = JSON.parse(parsedServerMessage.data);
+							var message = payload.message;
+							ok(false,message);
+							launch();
 							break;
 						}
 					}

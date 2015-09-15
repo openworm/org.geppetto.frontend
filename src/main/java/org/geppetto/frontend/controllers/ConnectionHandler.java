@@ -126,7 +126,11 @@ public class ConnectionHandler
 		try
 		{
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
-			loadGeppettoProject(requestID, geppettoProject, experimentId);
+			if(geppettoProject == null){
+				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "Project not found");
+			}else{
+				loadGeppettoProject(requestID, geppettoProject, experimentId);
+			}
 		}
 		catch(NumberFormatException e)
 		{

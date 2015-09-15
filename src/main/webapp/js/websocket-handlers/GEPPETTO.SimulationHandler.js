@@ -74,7 +74,7 @@ define(function(require) {
             GEPPETTO.SimulationHandler.loadProject(payload);            
         };
         
-        messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {        	
+        messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {     
             var newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
             GEPPETTO.FE.newExperiment(newExperiment);
         };

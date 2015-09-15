@@ -1031,18 +1031,21 @@ public class ConnectionHandler
 		else
 		{
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-			for(String p : properties.keySet())
-			{
-				switch(p)
+			if(properties!=null){
+				for(String p : properties.keySet())
 				{
+					switch(p)
+					{
 					case "name":
 					{
 						geppettoProject.setName(properties.get(p));
 						break;
 					}
+					}
 				}
 			}
 			dataManager.saveEntity(geppettoProject);
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PROPS_SAVED, "");
 		}
 	}
 

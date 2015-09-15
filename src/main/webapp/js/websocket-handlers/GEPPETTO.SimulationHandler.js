@@ -43,6 +43,7 @@ define(function(require) {
             EXPERIMENT_UPDATE: "experiment_update",
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",
+            PROJECT_PROPS_SAVED: "project_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
@@ -213,6 +214,10 @@ define(function(require) {
         
         messageHandler[messageTypes.GET_SIMULATION_TREE] = function(payload) {
         	GEPPETTO.SimulationHandler.getSimulationTree(payload);
+        };
+        
+        messageHandler[messageTypes.PROJECT_PROPS_SAVED] = function(payload) {
+        	GEPPETTO.Console.log("Project saved succesfully");
         };
         
         messageHandler[messageTypes.DROPBOX_LINKED] = function(payload) {

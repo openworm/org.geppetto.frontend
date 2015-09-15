@@ -157,6 +157,9 @@ public class TransportMessageFactory {
 			case PROJECT_PERSISTED:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case PROJECT_PROPS_SAVED:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
 			case DROPBOX_LINKED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.DROPBOX_LINKED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;

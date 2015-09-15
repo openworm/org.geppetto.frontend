@@ -364,15 +364,11 @@ define(function(require) {
 							var time = (new Date() - initializationTime)/1000;
 							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
 							equal(window.Project.getId(),1, "Project loaded ID checked");
-				            window.Project.persist();
+				            window.Project.saveProjectProperties();
 							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PERSISTED:
-							var time = (new Date() - initializationTime)/1000;
+						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PROPS_SAVED:
 							var payload = JSON.parse(parsedServerMessage.data);
-							var newLength = window.Project.getExperiments().length;
-							GEPPETTO.SimulationHandler.persistProject(payload);
-				            newLength++;
-				            equal(window.Project.getExperiments().length, newLength, "Project persisted");
+				            ok(true, "Project saved");
 							launch();
 							break;
 						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:

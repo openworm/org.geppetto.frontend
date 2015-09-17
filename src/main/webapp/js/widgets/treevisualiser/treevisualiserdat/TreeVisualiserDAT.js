@@ -154,10 +154,7 @@ define(function(require) {
 						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = new function(){};
-						
 						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
-						
-
 						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
 						
 						if(data._metaType=="ParameterSpecificationNode")
@@ -181,11 +178,8 @@ define(function(require) {
 							$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
 
 							//apply color to label by getting unique class and using jquery
-							var color = data.getColor();
-							color = color.replace("0X","#");
-							$("."+label + " .c").css("background-color",color);
-							$("."+label + " .c").css("width","60%");
-							$("."+label + " .c").css("height","95%");
+							var color = data.getColor().replace("0X","#");
+							$(this.dialog).find("."+label + " .c").css({"background-color": color, "width": "60%", "height": "95%"});
 						}	
 					}
 					else{
@@ -208,48 +202,32 @@ define(function(require) {
 							
 							$(parentFolder.domElement).find("li").addClass(label);
 							
-							$("."+label).append($('<a>').attr('class',label+"-mean"));
-							$("."+label+"-mean").css("float", "right");
-							$("."+label).css("width", "100%");
-							$("."+label+"-mean").css("width", "60%");
-							$("."+label+"-mean").css("height", "90%");
-							$("."+label+"-mean").css("color", "black");
+							$(this.dialog).find("."+label).append($('<a>').attr('class',label+"-mean"));
+							$(this.dialog).find("."+label).css("width", "100%");
+							$(this.dialog).find("."+label+"-mean").css({"float": "right", "width": "60%", "height": "90%", "color": "black"});
 
 							if (data.getMinDensity() != null){
 
 								if(data.getMinDensity() != data.getMaxDensity()){
-									$("."+label+"-mean").append($('<span>').attr('class', label+"-low").append(data.getMinDensity()));
-									$("."+label+"-mean").append($('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
-	
-									$("."+label+"-low").css("width", "50%");
-									$("."+label+"-high").css("width", "50%");
-									$("."+label+"-low").css("height", "90%");
-									$("."+label+"-high").css("height", "90%");
-									$("."+label+"-low").css("text-align", "center");
-									$("."+label+"-high").css("text-align", "center");
-									$("."+label+"-low").css("float", "left");
-									$("."+label+"-high").css("float", "right");
 	
 									var lowHexColor = rgbToHex(255, Math.floor(255), 0);
 									var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
-									
 									var lowcolor = lowHexColor.replace("0X","#");
 									var highcolor = highHexColor.replace("0X","#");
+
+									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-low").append(data.getMinDensity()));
+									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
+
+									$(this.dialog).find("."+label+"-low").css({"width": "50%", "height": "90%", "text-align": "center", "float": "left", "background-color": lowcolor});
+									$(this.dialog).find("."+label+"-high").css({"width": "50%", "height": "90%", "text-align": "center", "float": "right", "background-color": highcolor});
 									
-									$("."+label+"-low").css("background-color", lowcolor);
-									$("."+label+"-high").css("background-color", highcolor);
 								} else {
-									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-text").append(data.getMinDensity()));
-	
-									$(this.dialog).find("."+label+"-text").css("width", "60%");
-	
 									var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
-									
 									var color = hex.replace("0X","#");
 	
-									$(this.dialog).find("."+label+"-mean").css("text-align", "center");
-									$(this.dialog).find("."+label+"-mean").css("background-color", color);
-									$(this.dialog).find("."+label+"-text").css("background-color", color);
+									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-text").append(data.getMinDensity()));
+									$(this.dialog).find("."+label+"-mean").css({"text-align": "center", "background-color": color});
+									$(this.dialog).find("."+label+"-text").css({"width": "60%", "background-color": color});
 								}
 							}	
 						}
@@ -298,7 +276,7 @@ define(function(require) {
 				var parentComponent = "";
 				for (var nodePathElementsIndex in nodePathElements){
 					this.getFolderByInstancePath(parentComponent + nodePathElements[nodePathElementsIndex]).trigger('click');
-					parentComponent += nodePathElements[nodePathElementsIndex] + "."
+					parentComponent += nodePathElements[nodePathElementsIndex] + ".";
 				}	
 			}
 		},
@@ -317,7 +295,7 @@ define(function(require) {
 		 */
 		reset : function () {
 			this.datasets = [];
-			$(this.dialog).children().remove()
+			$(this.dialog).children().remove();
 			this.initDATGUI();
 		},
 		

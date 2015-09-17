@@ -208,51 +208,50 @@ define(function(require) {
 							
 							$(parentFolder.domElement).find("li").addClass(label);
 							
-							$("."+label).append( $('<a>').attr('class',label+"-mean"));
+							$("."+label).append($('<a>').attr('class',label+"-mean"));
 							$("."+label+"-mean").css("float", "right");
 							$("."+label).css("width", "100%");
 							$("."+label+"-mean").css("width", "60%");
 							$("."+label+"-mean").css("height", "90%");
 							$("."+label+"-mean").css("color", "black");
 
-							if(data.getMinDensity() != data.getMaxDensity()){
-								$("."+label+"-mean").append(
-										$('<span>').attr('class', label+"-low").append(data.getMinDensity()));
-								$("."+label+"-mean").append(
-										$('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
+							if (data.getMinDensity() != null){
 
-								$("."+label+"-low").css("width", "50%");
-								$("."+label+"-high").css("width", "50%");
-								$("."+label+"-low").css("height", "90%");
-								$("."+label+"-high").css("height", "90%");
-								$("."+label+"-low").css("text-align", "center");
-								$("."+label+"-high").css("text-align", "center");
-								$("."+label+"-low").css("float", "left");
-								$("."+label+"-high").css("float", "right");
-
-
-								var lowHexColor = rgbToHex(255, Math.floor(255), 0);
-								var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
-								
-								var lowcolor = lowHexColor.replace("0X","#");
-								var highcolor = highHexColor.replace("0X","#");
-								
-								$("."+label+"-low").css("background-color", lowcolor);
-								$("."+label+"-high").css("background-color", highcolor);
-							}else{
-								$(this.dialog).find("."+label+"-mean").append(
-										$('<span>').attr('class', label+"-text").append(data.getMinDensity()));
-
-								$(this.dialog).find("."+label+"-text").css("width", "60%");
-
-								var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
-								
-								var color = hex.replace("0X","#");
-
-								$(this.dialog).find("."+label+"-mean").css("text-align", "center");
-								$(this.dialog).find("."+label+"-mean").css("background-color", color);
-								$(this.dialog).find("."+label+"-text").css("background-color", color);
-							}
+								if(data.getMinDensity() != data.getMaxDensity()){
+									$("."+label+"-mean").append($('<span>').attr('class', label+"-low").append(data.getMinDensity()));
+									$("."+label+"-mean").append($('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
+	
+									$("."+label+"-low").css("width", "50%");
+									$("."+label+"-high").css("width", "50%");
+									$("."+label+"-low").css("height", "90%");
+									$("."+label+"-high").css("height", "90%");
+									$("."+label+"-low").css("text-align", "center");
+									$("."+label+"-high").css("text-align", "center");
+									$("."+label+"-low").css("float", "left");
+									$("."+label+"-high").css("float", "right");
+	
+									var lowHexColor = rgbToHex(255, Math.floor(255), 0);
+									var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
+									
+									var lowcolor = lowHexColor.replace("0X","#");
+									var highcolor = highHexColor.replace("0X","#");
+									
+									$("."+label+"-low").css("background-color", lowcolor);
+									$("."+label+"-high").css("background-color", highcolor);
+								} else {
+									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-text").append(data.getMinDensity()));
+	
+									$(this.dialog).find("."+label+"-text").css("width", "60%");
+	
+									var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
+									
+									var color = hex.replace("0X","#");
+	
+									$(this.dialog).find("."+label+"-mean").css("text-align", "center");
+									$(this.dialog).find("."+label+"-mean").css("background-color", color);
+									$(this.dialog).find("."+label+"-text").css("background-color", color);
+								}
+							}	
 						}
 					}
 					var children = data.getChildren();

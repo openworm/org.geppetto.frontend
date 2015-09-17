@@ -200,7 +200,7 @@ define(function(require) {
 				}
 			}
 			
-			return  Math.min.apply(null, allElements);
+			return (allElements.length == 0)?null:Math.min.apply(null, allElements);
 		},
 		
 		getMaxDensity : function(){
@@ -215,7 +215,7 @@ define(function(require) {
 				}
 			}
 			
-			return  Math.max.apply(null, allElements);
+			return (allElements.length == 0)?null:Math.max.apply(null, allElements);
 		},
 		
 		/**

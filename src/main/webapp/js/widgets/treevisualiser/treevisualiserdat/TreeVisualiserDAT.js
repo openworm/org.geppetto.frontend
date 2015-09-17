@@ -240,18 +240,18 @@ define(function(require) {
 								$("."+label+"-low").css("background-color", lowcolor);
 								$("."+label+"-high").css("background-color", highcolor);
 							}else{
-								$("."+label+"-mean").append(
+								$(this.dialog).find("."+label+"-mean").append(
 										$('<span>').attr('class', label+"-text").append(data.getMinDensity()));
 
-								$("."+label+"-text").css("width", "60%");
+								$(this.dialog).find("."+label+"-text").css("width", "60%");
 
 								var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
 								
 								var color = hex.replace("0X","#");
 
-								$("."+label+"-mean").css("text-align", "center");
-								$("."+label+"-mean").css("background-color", color);
-								$("."+label+"-text").css("background-color", color);
+								$(this.dialog).find("."+label+"-mean").css("text-align", "center");
+								$(this.dialog).find("."+label+"-mean").css("background-color", color);
+								$(this.dialog).find("."+label+"-text").css("background-color", color);
 							}
 						}
 					}

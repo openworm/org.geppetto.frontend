@@ -342,7 +342,7 @@ define(function(require) {
 					}
 			};
 			GEPPETTO.MessageSocket.addHandler(handler);
-			Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/datamanager/LEMS/SingleComponentHH/GEPPETTO.json");
+			Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/LEMS/SingleComponentHH/GEPPETTO.json");
 			initializationTime = new Date();	
 		});
 		

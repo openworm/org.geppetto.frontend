@@ -482,5 +482,20 @@ define(function(require) {
 
 					return formattedNode;
 				},
+				
+				/**
+				 * Set the type of geometry to be used for this aspect
+				 */
+				setGeometryType : function(type, thickness)
+				{
+					if(GEPPETTO.SceneController.setGeometryType(this,type,thickness))
+					{
+						return "Geometry type successfully changed for "+this.instancePath; 
+					}
+					else
+					{
+						return "Error changing the geometry type for "+this.instancePath;
+					}
+				},
 			});
 });

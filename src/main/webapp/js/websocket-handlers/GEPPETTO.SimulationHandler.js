@@ -116,14 +116,17 @@ define(function(require) {
 					break;
 				}
 			}
+			
 			if(webGLStarted) {
 				//we call it only the first time
 				GEPPETTO.SceneController.animate();
 			}
-            
 
             var startCreation = new Date();
+            GEPPETTO.SceneController.complexity=0;
+			GEPPETTO.SceneController.computeComplexity(jsonRuntimeTree);
             GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+            
             var endCreation = new Date() - startCreation;
             GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");
             GEPPETTO.Console.debugLog(GEPPETTO.NodeFactory.nodes + " total nodes created, from which: "+
@@ -140,6 +143,7 @@ define(function(require) {
         		G.runScript(window.Project.getActiveExperiment().getScript());
         	}
         };
+        
         messageHandler[messageTypes.PLAY_EXPERIMENT] = function(payload) {
             var updatedRunTime = JSON.parse(payload.update);
                         

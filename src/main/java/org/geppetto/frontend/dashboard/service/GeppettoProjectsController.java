@@ -42,7 +42,7 @@ import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
-import org.geppetto.core.model.simulation.GeppettoModel;
+import org.geppetto.core.model.geppettomodel.GeppettoModel;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.simulation.GeppettoModelReader;
 import org.geppetto.simulation.visitor.PopulateModelReferencesVisitor;

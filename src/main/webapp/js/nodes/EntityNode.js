@@ -95,6 +95,39 @@ define(function(require) {
 				},
 				
 				/**
+				 * Change the type of geometry to be used to visualize this entity
+				 * 
+				 * @command EntityNode.setGeometryType(type, thickness, recursive)
+				 * 
+				 */
+				setGeometryType : function(type, thickness, recursive)
+				{
+					if(recursive === undefined){
+						recursive = true;
+					}
+					
+					this.visible = false;
+					
+					// hide aspects for given entity
+					var aspects = this.getAspects();
+					for(var a in aspects){
+						var aspect = aspects[a];
+						aspect.setGeometryType(type,thickness);
+					}
+					
+					var entities = this.getEntities();
+					if(recursive)
+					{
+						for(var e in entities){
+							entities[e].setGeometryType(type, thickness,recursive);
+						}
+					}
+					
+					var message = "Geometry type successfully changed for entity " + this.instancePath;
+					return message;
+				},
+				
+				/**
 				 * Hides the entity
 				 * 
 				 * @command EntityNode.hide(hideNested)

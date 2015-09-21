@@ -16,21 +16,55 @@ define(function(require) {
 		require('GEPPETTO.Resources')(GEPPETTO);
 
 		GEPPETTO.SceneController = {
-
+				
 			/**
 			 * Populate the scene with given runtimetree object.
 			 * 
 			 * @param runTimeTree -
 			 *            Object with scene to populate
 			 */
-			populateScene : function(runTimeTree) {
-				for ( var eindex in runTimeTree) {
-					// we load each entity attached as sibling in runtime tree,
-					// we send null
-					// as second parameter to make it clear this entity has no
-					// parent.
+			populateScene : function(runTimeTree) 
+			{
+				for ( var eindex in runTimeTree) 
+				{
 					GEPPETTO.SceneFactory.loadEntity(runTimeTree[eindex]);
 				}
+				
+				GEPPETTO.getVARS().scene.updateMatrixWorld(true);
+			},
+			
+			/**
+			 * This method calculates the complexity of the scene based on the number of cylinders 
+			 * Note that this method doesn't currently take into account complexity coming from particles or Collada/OBJ meshes 
+			 * 
+			 * @param runTimeTree -
+			 *            Object with scene to populate
+			 */
+			computeComplexity(node)
+			{
+				$.each(node, function(key, child) {
+				
+					if(child.hasOwnProperty("_metaType") && child._metaType === 'AspectNode')
+					{
+						GEPPETTO.SceneController.computeComplexity(child);
+					}
+					else if(child.hasOwnProperty("_metaType") && child._metaType === 'AspectSubTreeNode' && child.id==="VisualizationTree")
+					{
+						GEPPETTO.SceneController.computeComplexity(child);
+					}
+					else if(child.hasOwnProperty("_metaType") && child._metaType === 'CylinderNode')
+					{
+						GEPPETTO.SceneController.complexity++;
+					}
+					else if(child.hasOwnProperty("_metaType") && child._metaType === 'SphereNode')
+					{
+						GEPPETTO.SceneController.complexity++;
+					}
+					else if(child.hasOwnProperty("_metaType") && child._metaType === 'EntityNode')
+					{
+						GEPPETTO.SceneController.computeComplexity(child);
+					}
+				});
 			},
 
 			/**
@@ -78,9 +112,14 @@ define(function(require) {
 				}
 				var threeObject = GEPPETTO.getVARS().meshes[meshPath];
 				if (threeObject != null) {
-					threeObject.material.emissive = new THREE.Color(d3.scale
-							.linear().domain([ 0, 1 ]).range(
-									[ "#199e8", "red" ])(intensity))
+					if (threeObject instanceof THREE.Line)
+					{
+						threeObject.material.color = new THREE.Color(d3.scale.linear().domain([ 0, 1 ]).range([ "#199e8", "red" ])(intensity))
+					}
+					else
+					{
+						threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([ 0, 1 ]).range([ "#199e8", "red" ])(intensity))
+					}
 				}
 			},
 
@@ -358,6 +397,42 @@ define(function(require) {
 					}
 				}
 				return false;
+			},
+			
+			/**
+			 * Change opacity of a given aspect
+			 * 
+			 * @param {String}
+			 *            instancePath - Instance path of aspect to change
+			 *            opacity for
+			 * @param {String}
+			 *            type - Instance path of aspect to change
+			 *            opacity for
+			 * @param {String}
+			 *            thickness - Instance path of aspect to change
+			 *            opacity for
+			 */
+			setGeometryType : function(aspect, type, thickness) {
+				var lines=false;
+				if(type==="lines")
+				{
+					lines=true;
+				}
+				else if(type==="tubes")
+				{
+					lines=false
+				}
+				else if(type==="cylinders")
+				{
+					lines=false
+				}
+				else
+				{
+					return false;
+				}
+				GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(aspect, lines, thickness),aspect.getInstancePath());
+
+				return true;
 			},
 
 			/**
@@ -805,8 +880,7 @@ define(function(require) {
 
 					if (groupMesh == null || groupMesh == undefined) {
 						var geometryGroup = geometryGroups[groupName];
-						var material = GEPPETTO.SceneFactory
-								.getMeshPhongMaterial();
+						var material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
 
 						groupMesh = new THREE.Mesh(geometryGroup, material);
 						groupMesh.name = aspectInstancePath;

@@ -37,10 +37,10 @@ define(function(require) {
 			 * This method calculates the complexity of the scene based on the number of cylinders 
 			 * Note that this method doesn't currently take into account complexity coming from particles or Collada/OBJ meshes 
 			 * 
-			 * @param runTimeTree -
-			 *            Object with scene to populate
+			 * @param node -
+			 *            runtime tree node to compute complexity for
 			 */
-			computeComplexity(node)
+			computeComplexity : function(node)
 			{
 				$.each(node, function(key, child) {
 				

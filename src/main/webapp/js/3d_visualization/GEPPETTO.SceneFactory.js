@@ -45,7 +45,7 @@ define(function(require) {
 				 * Initializes a group of meshes that were created and adds them to the 3D scene
 				 * @param {Object} meshes - The meshes that need to be initialized
 				 */
-				init3DObject(meshes, instancePath, position)
+				init3DObject : function(meshes, instancePath, position)
 				{
 					for ( var m in meshes) {
 						var mesh = meshes[m];
@@ -78,7 +78,8 @@ define(function(require) {
 				 * Updates the scene
 				 * @param {Object} newRuntimeTree - New update received to update the 3D scene
 				 */
-				updateScene : function(newRuntimeTree) {
+				updateScene : function(newRuntimeTree) 
+				{
 					var entities = newRuntimeTree;
 					//traverse entities in updated tree
 					for ( var eindex in entities) {
@@ -113,7 +114,8 @@ define(function(require) {
 				},
 
 
-				updateGeometry : function(g) {
+				updateGeometry : function(g) 
+				{
 					var threeObject = GEPPETTO.getVARS().visualModelMap[g.instancePath];
 					if (threeObject) {
 						if (threeObject instanceof THREE.Vector3) {
@@ -122,8 +124,7 @@ define(function(require) {
 							threeObject.z = g.position.z;
 						} else {
 							// update the position
-							threeObject.position.set(g.position.x, g.position.y,
-									g.position.z);
+							threeObject.position.set(g.position.x, g.position.y, g.position.z);
 						}
 					}
 				},

@@ -52,6 +52,7 @@ import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
+import org.geppetto.core.data.model.IPersistedData;
 import org.geppetto.core.data.model.ISimulationResult;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.data.model.ResultsFormat;
@@ -518,7 +519,9 @@ public class GeppettoManager implements IGeppettoManager
 				{
 					try
 					{
-						return URLReader.getURL(result.getResult().getUrl());
+						IPersistedData resultObject = result.getResult();
+						String url = resultObject.getUrl();
+						return URLReader.getURL(url);
 					}
 					catch(Exception e)
 					{

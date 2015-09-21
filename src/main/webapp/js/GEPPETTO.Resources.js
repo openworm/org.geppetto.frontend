@@ -231,6 +231,8 @@ define(function(require) {
 			
 			ERROR_DOWNLOADING_MODEL : "Error downloading model",
 			
+			ERROR_LOADING_PROJECT : "Error loading project",
+			
 			RETRIEVING_SUPPORTED_OUTPUTS : 'Supported outputs requested',
 			
 			EXPERIMENT_NOT_COMPLETED_UPLOAD : "Can't upload results for an experiment that isn't completed",

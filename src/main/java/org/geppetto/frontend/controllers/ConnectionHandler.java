@@ -126,7 +126,11 @@ public class ConnectionHandler
 		try
 		{
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
-			loadGeppettoProject(requestID, geppettoProject, experimentId);
+			if(geppettoProject == null){
+				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "Project not found");
+			}else{
+				loadGeppettoProject(requestID, geppettoProject, experimentId);
+			}
 		}
 		catch(NumberFormatException e)
 		{
@@ -203,7 +207,7 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		else
 		{
@@ -269,13 +273,13 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(Resources.VOLATILE_PROJECT.toString());
+			info(requestID,Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
@@ -312,7 +316,7 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		else
 		{
@@ -520,6 +524,7 @@ public class ConnectionHandler
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);
+				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
 			}
 		}
 		catch(GeppettoExecutionException | IOException e)
@@ -601,14 +606,14 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 			return;
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(Resources.VOLATILE_PROJECT.toString());
+			info(requestID,Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
@@ -737,13 +742,14 @@ public class ConnectionHandler
 	}
 
 	/**
+	 * @param requestID 
 	 * @param exception
 	 * @param errorMessage
 	 */
-	private void info(String message)
+	private void info(String requestID, String message)
 	{
 		logger.info(message);
-		websocketConnection.sendMessage(null, OutboundMessages.INFO_MESSAGE, getGson().toJson(message));
+		websocketConnection.sendMessage(requestID, OutboundMessages.INFO_MESSAGE, getGson().toJson(message));
 
 	}
 
@@ -806,7 +812,7 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		else
 		{
@@ -841,7 +847,7 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		else
 		{
@@ -930,7 +936,7 @@ public class ConnectionHandler
 		try
 		{
 			geppettoManager.uploadModelToDropBox(aspectPath, experiment, geppettoProject, modelFormat);
-			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
+			websocketConnection.sendMessage(null, OutboundMessages.MODEL_UPLOADED, null);
 		}
 		catch(Exception e)
 		{
@@ -976,7 +982,7 @@ public class ConnectionHandler
 		{
 			if(resultsFormat == null)
 			{
-				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
+				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_RESULTS, "");
 			}
 			else
 			{
@@ -991,6 +997,7 @@ public class ConnectionHandler
 
 					// Send zip file to the client
 					websocketConnection.sendBinaryMessage(requestID, path);
+					websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_RESULTS, "");
 				}
 				else
 				{
@@ -1013,29 +1020,32 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		if(geppettoProject.isVolatile())
 		{
-			info(Resources.VOLATILE_PROJECT.toString());
+			info(requestID,Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
 		{
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-			for(String p : properties.keySet())
-			{
-				switch(p)
+			if(properties!=null){
+				for(String p : properties.keySet())
 				{
+					switch(p)
+					{
 					case "name":
 					{
 						geppettoProject.setName(properties.get(p));
 						break;
 					}
+					}
 				}
 			}
 			dataManager.saveEntity(geppettoProject);
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PROPS_SAVED, "");
 		}
 	}
 
@@ -1049,13 +1059,13 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(Resources.VOLATILE_PROJECT.toString());
+			info(requestID,Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else

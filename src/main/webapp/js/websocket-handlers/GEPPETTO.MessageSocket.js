@@ -229,7 +229,10 @@ define(function(require) {
 
 			//notify all handlers
 			for(var i = 0, len = messageHandlers.length; i < len; i++) {
-				messageHandlers[ i ].onMessage(parsedServerMessage);
+				var handler = messageHandlers[i];
+				if(handler != null || handler != undefined){
+					handler.onMessage(parsedServerMessage);
+				}
 			}
 		}
 
@@ -246,7 +249,7 @@ define(function(require) {
 			else{
 				var fileNameLength = messageBytes[1];
 				var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2,2+fileNameLength));
-				var blob = new Blob([messageData]);
+				var blob = new Blob([message]);
 				saveData(blob.slice(2+fileNameLength), fileName);
 			}
 		}

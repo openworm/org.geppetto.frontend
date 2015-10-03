@@ -131,8 +131,7 @@ define(function(require) {
 			 *            apply - Turn on or off the ghost effect
 			 */
 			setGhostEffect : function(apply) {
-				GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().meshes,
-						apply);
+				GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().meshes, apply);
 			},
 
 			/**
@@ -206,14 +205,13 @@ define(function(require) {
 								child.traverse(function(object) {
 										if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 												object.ghosted = false;
-												object.material.color
-														.setHex(GEPPETTO.Resources.COLORS.SPLIT);
-												object.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+												GEPPETTO.SceneController.setThreeColor(object.material.color,GEPPETTO.Resources.COLORS.SPLIT);
+												object.material.opacity = object.material.defaultOopacity;
 											}
 										});
 							} else {
 								child.ghosted = false;
-								child.material.color.setHex(GEPPETTO.Resources.COLORS.SPLIT);
+								GEPPETTO.SceneController.setThreeColor(child.material.color,GEPPETTO.Resources.COLORS.SPLIT);
 								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 							}
 						}
@@ -240,17 +238,15 @@ define(function(require) {
 								if (mesh instanceof THREE.Object3D) {
 									mesh.traverse(function(child) {
 												if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
-													child.material.color
-															.setHex(GEPPETTO.Resources.COLORS.SELECTED);
-													child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+													GEPPETTO.SceneController.setThreeColor(child.material.color,GEPPETTO.Resources.COLORS.SELECTED);
+													child.material.opacity = Math.max(0.5,child.material.defaultOpacity);
 												}
 											});
 									mesh.selected = true;
 									mesh.ghosted = false;
 								} else {
-									mesh.material.color
-											.setHex(GEPPETTO.Resources.COLORS.SELECTED);
-									mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+									GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.SELECTED);
+									mesh.material.opacity = Math.max(0.5,mesh.material.defaultOpacity);
 									mesh.selected = true;
 									mesh.ghosted = false;
 								}
@@ -283,7 +279,7 @@ define(function(require) {
 										.traverse(function(child) {
 											if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
 												GEPPETTO.SceneController.setThreeColor(child.material.color,child.material.defaultColor);
-												child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+												child.material.opacity = child.material.defaultOpacity;
 											}
 										});
 								mesh.selected = false;
@@ -292,7 +288,7 @@ define(function(require) {
 						} else {
 							mesh.material.color
 									.set(mesh.material.defaultColor);
-							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+							mesh.material.opacity = mesh.material.defaultOpacity;
 							mesh.selected = false;
 							mesh.ghosted = false;
 						}
@@ -350,6 +346,7 @@ define(function(require) {
 				return false;
 			},
 			
+		
 			setThreeColor:function(threeColor,color){
 				if(color.indexOf("rgb")==-1)
 				{
@@ -364,13 +361,13 @@ define(function(require) {
 
 			
 			/**
-			 * Change opacity of a given aspect
+			 * Change the default opacity of a given aspect. The opacity set with this command API will be persisted across different workflows, e.g. selection.
 			 * 
 			 * @param {String}
 			 *            instancePath - Instance path of aspect to change
 			 *            opacity for
 			 */
-			changeOpacity : function(instancePath, opacity) {
+			setOpacity : function(instancePath, opacity) {
 				for ( var v in GEPPETTO.getVARS().meshes) {
 					if (v == instancePath) {
 						var child = GEPPETTO.getVARS().meshes[v];
@@ -380,6 +377,7 @@ define(function(require) {
 								if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 									object.material.transparent = false;
 									object.material.opacity = 1;
+									object.material.defaultOpacity=1;
 								}
 							});
 
@@ -389,6 +387,7 @@ define(function(require) {
 								if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
 									object.material.transparent = true;
 									object.material.opacity = opacity;
+									object.material.defaultOpacity=opacity;
 								}
 							});
 
@@ -545,37 +544,28 @@ define(function(require) {
 			showConnections : function(paths, type) {
 				for ( var e in paths) {
 					var mesh = GEPPETTO.getVARS().meshes[paths[e]];
-
+				
 					// determine whether connection is input or output
 					if (type == GEPPETTO.Resources.INPUT_CONNECTION) {
 						// figure out if connection is both, input and output
 						if (mesh.output) {
-							mesh.material.color
-									.setHex(GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
+							GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
 						} else {
-							mesh.material.color
-									.setHex(GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
+							GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
 						}
 						mesh.input = true;
 					} else if (type == GEPPETTO.Resources.OUTPUT_CONNECTION) {
 						// figure out if connection is both, input and output
 						if (mesh.input) {
-							mesh.material.color
-									.setHex(GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
+							GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
 						} else {
-							mesh.material.color
-									.setHex(GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED);
+							GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED);
 						}
 						mesh.output = true;
-					}
+					}				
 
-					// if mesh is not selected, give it a ghost effect
-					if (!mesh.selected) {
-						mesh.material.transparent = true;
-						mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
-						mesh.ghosted = true;
-					}
 				}
+		
 			},
 
 			/**
@@ -608,7 +598,7 @@ define(function(require) {
 					}
 					// if mesh is selected, make it look like so
 					else {
-						mesh.material.color.setHex(GEPPETTO.Resources.COLORS.SELECTED);
+						GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.SELECTED);
 						mesh.material.transparent = true;
 						mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
 					}
@@ -742,25 +732,22 @@ define(function(require) {
 					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
 
 					if (!(groupName in aspects)) {
-						if (mode) {
-							GEPPETTO.SceneController.colorMesh(groupMesh,
-									GEPPETTO.Resources.COLORS.HIGHLIGHTED);
+						if (mode) 
+						{
+							GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, GEPPETTO.Resources.COLORS.HIGHLIGHTED);
 							groupMesh.highlighted = true;
-						} else {
-							GEPPETTO.SceneController.colorMesh(groupMesh,
-									groupMesh.material.defaultColor);
+						} 
+						else 
+						{
+							GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, groupMesh.material.defaultColor);
 							groupMesh.highlighted = false;
 						}
-					} else {
-						groupMesh.material.color
-								.setHex(splitHighlightedGroups[groupName].color
-										.getHex());
+					} 
+					else 
+					{
+						GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, splitHighlightedGroups[groupName].color.getHex());
 					}
 				}
-			},
-
-			colorMesh : function(mesh, colorHex) {
-				mesh.material.color.setHex(colorHex);
 			},
 
 			/**
@@ -775,8 +762,7 @@ define(function(require) {
 			 * @param {object}
 			 *            groups - The groups that we need to split mesh into
 			 */
-			splitGroups : function(aspectInstancePath, visualizationTree,
-					groups) {
+			splitGroups : function(aspectInstancePath, visualizationTree, groups) {
 				// retrieve the merged mesh
 				var mergedMesh = GEPPETTO.getVARS().meshes[aspectInstancePath];
 				// create object to hold geometries used for merging objects in
@@ -785,7 +771,7 @@ define(function(require) {
 
 				/*
 				 * reset the aspect instance path group mesh, this is used to
-				 * group /*visual objects that don't belong to any of the groups
+				 * group visual objects that don't belong to any of the groups
 				 * passed as parameter
 				 */
 				GEPPETTO.getVARS().splitMeshes[aspectInstancePath] = null;
@@ -825,15 +811,15 @@ define(function(require) {
 					var m = GEPPETTO.getVARS().visualModelMap[map[v]];
 					// get object from visualizationtree by using the object's
 					// instance path as search key
-					var object = GEPPETTO.get3DObjectInVisualizationTree(
-							visualizationTree, map[v]);
+					var object = GEPPETTO.get3DObjectInVisualizationTree(visualizationTree, map[v]);
 					// get group elements list for object
 					var objectsGroups = object.groups;
-					for (g in objectsGroups) {
-						if (objectsGroups[g] in groups) {
+					for (g in objectsGroups) 
+					{
+						if (objectsGroups[g] in groups) 
+						{
 							// name of group, mix of aspect path and group name
-							var groupName = aspectInstancePath + "."
-									+ objectsGroups[g];
+							var groupName = aspectInstancePath + "." + objectsGroups[g];
 							// retrieve corresponding geometry for this group
 							var geometry = geometryGroups[groupName];
 							// only merge if flag is set to true
@@ -859,8 +845,7 @@ define(function(require) {
 
 				groups[aspectInstancePath] = {};
 				groups[aspectInstancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
-				GEPPETTO.SceneController.createGroupMeshes(aspectInstancePath,
-						geometryGroups, groups);
+				GEPPETTO.SceneController.createGroupMeshes(aspectInstancePath, geometryGroups, groups);
 			},
 
 			/**
@@ -939,7 +924,8 @@ define(function(require) {
 						.getInstancePath();
 
 				GEPPETTO.SceneController.merge(aspectPath);
-				if (mode) {
+				if (mode) 
+				{
 					GEPPETTO.SceneController.splitGroups(aspectPath,
 							visualizationTree, visualGroups);
 					for (g in visualGroups) {
@@ -955,12 +941,12 @@ define(function(require) {
 						// get group mesh
 						var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
 
-						if (mode) {
-							GEPPETTO.SceneController.colorMesh(groupMesh,
-									visualGroup.color);
-						} else {
-							GEPPETTO.SceneController.colorMesh(groupMesh,
-									GEPPETTO.Resources.COLORS.SPLIT);
+						if (mode) 
+						{
+							GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
+						} else 
+						{
+							GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, GEPPETTO.Resources.COLORS.SPLIT);
 						}
 					}
 				}
@@ -970,13 +956,8 @@ define(function(require) {
 			 * Animate simulation
 			 */
 			animate : function() {
-				GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate; // so
-				// that
-				// we
-				// log
-				// only
-				// the
-				// cycles when we are updating the scene
+				GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate; 
+				// so that we log only the cycles when we are updating the scene
 
 				GEPPETTO.getVARS().controls.update();
 

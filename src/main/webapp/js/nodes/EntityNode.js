@@ -133,7 +133,7 @@ define(function(require) {
 				 * @command EntityNode.hide(hideNested)
 				 * 
 				 */
-				changeOpacity : function(opacity,recursive) {
+				setOpacity : function(opacity,recursive) {
 					if(recursive === undefined){
 						recursive = true;
 					}
@@ -144,14 +144,14 @@ define(function(require) {
 					var aspects = this.getAspects();
 					for(var a in aspects){
 						var aspect = aspects[a];
-						aspect.changeOpacity(opacity);
+						aspect.setOpacity(opacity);
 					}
 					
 					var entities = this.getEntities();
 					if(recursive)
 					{
 						for(var e in entities){
-							entities[e].changeOpacity(opacity,recursive);
+							entities[e].setOpacity(opacity,recursive);
 						}
 					}
 					
@@ -229,35 +229,11 @@ define(function(require) {
 						//traverse through children to select them as well
 						this.selectChildren(this, true);
 						
-						var parent  = this.getParent();
-						while(parent!=null){
-							parent.selected = true;
-							parent = parent.getParent();
-						}
-						
 						message = GEPPETTO.Resources.SELECTING_ENTITY + this.instancePath;
-						this.selected = true;
-						//apply ghost effect to unselected nodes
-						GEPPETTO.SceneController.setGhostEffect(true);
-						
-						//look on the simulation selection options and perform necessary
-						//operations
-						if(G.getSelectionOptions().show_inputs){
-							this.showInputConnections(true);
-						}
-						if(G.getSelectionOptions().show_outputs){
-							this.showOutputConnections(true);
-						}
-						if(G.getSelectionOptions().draw_connection_lines){
-							this.showConnectionLines(true);
-						}
-						if(G.getSelectionOptions().hide_not_selected){
-							G.showUnselected(false);
-						}
+
 						// Notify any widgets listening that there has been a
 						// changed to selection
-						GEPPETTO.WidgetsListener
-								.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
+						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
 					} else {
 						message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
 					}
@@ -276,34 +252,16 @@ define(function(require) {
 					
 					G.showUnselected(false);
 
-					if (this.selected) {
-						message = GEPPETTO.Resources.UNSELECTING_ENTITY
-								+ this.instancePath;
-						this.selected = false;
+					if (this.selected) 
+					{
 						
+						//traverse through children to select them as well
 						this.selectChildren(this, false);
-
-						var parent  = this.getParent();
-						while(parent!=null){
-							parent.selected = false;
-							parent = parent.getParent();
-						}
-				
-						//look on the simulation selection options and perform necessary
-						//operations
-						if(G.getSelectionOptions().show_inputs){
-							this.showInputConnections(false);
-						}
-						if(G.getSelectionOptions().show_outputs){
-							this.showOutputConnections(false);
-						}
-						if(G.getSelectionOptions().draw_connection_lines){
-							this.showConnectionLines(false);
-						}
-						if(G.getSelectionOptions().hide_not_selected){
-							G.showUnselected(false);
-						}
-					} else {
+						message = GEPPETTO.Resources.UNSELECTING_ENTITY + this.instancePath;
+						
+					} 
+					else 
+					{
 						message = GEPPETTO.Resources.ENTITY_NOT_SELECTED;
 					}
 
@@ -320,16 +278,13 @@ define(function(require) {
 					
 					for(var a in aspects){
 						var aspect = aspects[a];
-						if(apply){
-							if(!aspect.selected){
-								GEPPETTO.SceneController.selectAspect(aspect.getInstancePath());
-								aspect.selected = true;
-							}
+						if(apply)
+						{
+							aspect.select();
 						}
-						else{
-							GEPPETTO.SceneController.unselectAspect(aspect.instancePath);
-							aspect.selected = false;
-							entity.selected = false;
+						else
+						{
+							aspect.unselect();
 						}
 					}
 								
@@ -482,6 +437,8 @@ define(function(require) {
 					else{
 						GEPPETTO.SceneController.hideConnections(paths);
 					}
+					
+					return paths;
 				},
 				
 				/**
@@ -579,6 +536,7 @@ define(function(require) {
 					else{
 						GEPPETTO.SceneController.hideConnections(paths);
 					}
+					return paths;
 				},
 
 				/**

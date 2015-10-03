@@ -397,6 +397,7 @@ define(function(require) {
 						if(child instanceof THREE.Mesh){
 							child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 							child.material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+							child.material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 							child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
 					});
@@ -529,6 +530,7 @@ define(function(require) {
 					var material = new THREE.LineBasicMaterial(options);
 					material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 					material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+					material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 					return material;
 				},
 
@@ -546,6 +548,7 @@ define(function(require) {
 
 					material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 					material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+					material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 					return material;
 				},
 				
@@ -561,6 +564,7 @@ define(function(require) {
 					pMaterial.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 					pMaterial.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
 					pMaterial.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+					pMaterial.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 					return pMaterial;
 				}
 		};

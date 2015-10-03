@@ -103,17 +103,17 @@ define(function(require) {
 				/**
 				 * Change the opacity of the aspect
 				 *
-				 * @command AspectNode.changeOpacity(opacity)
+				 * @command AspectNode.setOpacity(opacity)
 				 *
 				 */
-				changeOpacity:function(opacity) {
-					GEPPETTO.SceneController.changeOpacity(this.instancePath,opacity);
+				setOpacity:function(opacity) {
+					GEPPETTO.SceneController.setOpacity(this.instancePath,opacity);
 				},
 				
 				/**
 				 * Change the opacity of the aspect
 				 *
-				 * @command AspectNode.changeOpacity(opacity)
+				 * @command AspectNode.setOpacity(opacity)
 				 *
 				 */
 				setColor:function(color) {
@@ -131,6 +131,17 @@ define(function(require) {
 				select : function() {
 					var message;
 					if (!this.selected) {
+						if(G.getSelection().length>0) 
+						{
+							//something is already selected, we make everything not selected transparent
+							GEPPETTO.SceneController.setGhostEffect(true);
+						}
+						else
+						{
+							//nothing is selected, we restore the default opacity for everything
+							GEPPETTO.SceneController.setGhostEffect(false);
+						}
+						
 						GEPPETTO.SceneController.selectAspect(this.instancePath);
 						message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
 						this.selected = true;
@@ -141,21 +152,38 @@ define(function(require) {
 							parent = parent.getParent();
 						}
 
-						GEPPETTO.SceneController.setGhostEffect(true);
 
-						//look on the simulation selection options and perform necessary
-						//operations
-						if(G.getSelectionOptions().show_inputs){
-							this.getParent().showInputConnections(true);
-						}
-						if(G.getSelectionOptions().show_outputs){
-							this.getParent().showOutputConnections(true);
-						}
-						if(G.getSelectionOptions().draw_connection_lines){
-							this.getParent().showConnectionLines(true);
-						}
-						if(G.getSelectionOptions().hide_not_selected){
-							G.showUnselected(true);
+						//Behavior: if the parent entity has connections change the opacity of what is not connected
+						//Rationale: help exploration of networks by hiding non connected
+						if(this.getParent().getConnections().length>0)
+						{
+							//allOtherMeshes will contain a list of all the non connected entities in the scene for the purpose
+							//of changing their opacity
+							var allOtherMeshes= $.extend({}, GEPPETTO.getVARS().meshes);
+							//look on the simulation selection options and perform necessary
+							//operations
+							if(G.getSelectionOptions().show_inputs){
+								var inputs=this.getParent().showInputConnections(true);
+								for(var i in inputs)
+								{
+									delete allOtherMeshes[inputs[i]];
+								}
+							}
+							if(G.getSelectionOptions().show_outputs){
+								
+								var outputs=this.getParent().showOutputConnections(true);
+								for(var o in outputs)
+								{
+									delete allOtherMeshes[outputs[o]];
+								}
+							}
+							if(G.getSelectionOptions().draw_connection_lines){
+								this.getParent().showConnectionLines(true);
+							}
+							if(G.getSelectionOptions().hide_not_selected){
+								G.showUnselected(true);
+							}
+							GEPPETTO.SceneController.ghostEffect(allOtherMeshes,true);		
 						}
 						//signal selection has changed in simulation
 						GEPPETTO.trigger(Events.Select);

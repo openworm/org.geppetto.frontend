@@ -94,7 +94,8 @@ define(function(require) {
 						{
 							var intersects = GEPPETTO.getIntersectedObjects();
 		
-							if ( intersects.length > 0 ) {
+							if ( intersects.length > 0 ) 
+							{
 								var selected = "";
 								
 								// sort intersects
@@ -109,7 +110,8 @@ define(function(require) {
 								intersects.sort(compare);
 								
 								// Iterate and get the first visible item (they are now ordered by proximity)
-								for(var i = 0; i<intersects.length; i++){
+								for(var i = 0; i<intersects.length; i++)
+								{
 									// figure out if the entity is visible
 									var instancePath = "";
 									if(intersects[ i ].object.hasOwnProperty("instancePath"))
@@ -123,19 +125,40 @@ define(function(require) {
 									}
 									
 									var visible = eval(instancePath + '.visible');
-									if(visible){
-										selected = instancePath;
-										break;
+									if(intersects.length==1 || i==intersects.length)
+									{
+										//if there's only one element intersected we select it regardless of its opacity
+										if(visible)
+										{
+											selected = instancePath;
+											break;
+										}
 									}
+									else
+									{
+										//if there are more than one element intersected and opacity of the current one is less than 1 
+										//we skip it to realize a "pick through"
+										var opacity = GEPPETTO.getVARS().meshes[instancePath].defaultOpacity;
+										if((opacity==1 && visible) || GEPPETTO.isKeyPressed("ctrl"))
+										{
+											selected = instancePath;
+											break;
+										}
+									}
+
 								}
+							
 		
-								if(selected == ""){
-									selected = intersects[ 0 ].object.parent.instancePath;
-								}
-								
-								if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected)) {
-									GEPPETTO.G.unSelectAll();
-									GEPPETTO.Console.executeCommand(selected + '.select()');
+								if(selected != "")
+								{
+									if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected)) 
+									{
+										if(!GEPPETTO.isKeyPressed("shift"))
+										{
+											GEPPETTO.G.unSelectAll();
+										}
+										GEPPETTO.Console.executeCommand(selected + '.select()');
+									}
 								}
 							}
 						}

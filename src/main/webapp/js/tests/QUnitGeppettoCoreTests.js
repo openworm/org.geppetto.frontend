@@ -45,7 +45,7 @@ define(function(require) {
 			var help = GEPPETTO.Console.help();
 			var commandCount = help.match(/--/g);  
 			notEqual(help, null, "Global help() command test.");
-			equal(commandCount.length, 41, "Global help() - Looking for 41 commands in help() command.");
+			equal(commandCount.length, 39, "Global help() - Looking for 41 commands in help() command.");
 			
 			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
 

@@ -55,7 +55,6 @@ define(function(require) {
 				show_inputs : true,
 				show_outputs : true,
 				draw_connection_lines : true,
-				hide_not_selected : false
 			},
 			highlightedConnections : [],
 			addWidget: function(type) {
@@ -545,9 +544,6 @@ define(function(require) {
 				if(options.draw_connection_lines != null){
 					this.selectionOptions.draw_connection_lines = options.draw_connection_lines;
 				}
-				if(options.hide_not_selected != null){
-					this.selectionOptions.hide_not_selected = options.hide_not_selected;
-				}
 			},
 			
 			/**
@@ -564,10 +560,13 @@ define(function(require) {
 			 * 
 			 * @command G.unSelectAll()
 			 */
-			unSelectAll : function(){
+			unSelectAll : function()
+			{
 				var selection = this.getSelection();
-				if(selection.length > 0){
-					for(var key in selection){
+				if(selection.length > 0)
+				{
+					for(var key in selection)
+					{
 						var entity = selection[key];
 						entity.unselect();
 					}
@@ -576,44 +575,6 @@ define(function(require) {
 				return GEPPETTO.Resources.UNSELECT_ALL;
 			},
 			
-			/**
-			 * Show unselected entities, leaving selected one(s) visible.
-			 * 
-			 * @param {boolean} mode - Toggle flag for showing unselected entities.
-			 */
-			showUnselected : function(mode){
-				var selection = this.getSelection();
-				var visible = {};
-				for(var e in selection){
-					var entity = selection[e];
-					var connections = entity.getConnections();
-					for(var c in connections){
-						var con = connections[c];
-						visible[con.getEntityInstancePath()] = "";
-					}
-				}
-				this.toggleUnSelected(window.Project.runTimeTree, mode,visible);
-			},
-			
-			/**
-			 * Toggles unselected entities.
-			 */
-			toggleUnSelected : function(entities, mode, visibleEntities){
-                for(var e in entities){
-                    var entity = entities[e];
-                    if((!(entity.instancePath in visibleEntities)) && entity.selected == false){
-                        if(mode){
-                            entity.hide();
-                        }
-                        else{
-                            entity.show();
-                        }
-                    }
-                    if(entity.getEntities()!=null){
-                        this.toggleUnSelected(entity.getEntities(), mode, visibleEntities);
-                    }
-                }
-            },
 			
 			/**
 			 *
@@ -678,16 +639,14 @@ define(function(require) {
 			 */
 			traverseSelection : function(entities){
 				var selection = new Array();
-				for(var e in entities){
+				for(var e in entities)
+				{
 					var entity = entities[e];
-					if(entity.selected){
-						if(entity.getEntities().length==0){
-							selection[selection.length] = entity;
-						}
+					if(entity.selected)
+					{
+						selection.push(entity);
 					}
-					if(entity.getEntities().length >0){
-						selection = selection.concat(this.traverseSelection(entity.getEntities()));
-					}
+					selection = selection.concat(this.traverseSelection(entity.getEntities()));
 				}
 
 				return selection;

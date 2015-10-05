@@ -101,6 +101,20 @@ public class UserResource
 		return user;
 	}
 
+	@RequestMapping(value = "/setPassword", method = RequestMethod.GET)
+	public @ResponseBody
+	IUser setPassword(@RequestParam String username, @RequestParam String oldPassword, @RequestParam String newPassword)
+	{
+		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
+		IUser user = manager.getUserByLogin(username);
+		if (user != null && user.getPassword().equals(oldPassword)){
+			return manager.updateUser(user, newPassword);
+		}
+		else{
+			return null;
+		}
+	}
+	
 	private IUser getGuestUser()
 	{
 		synchronized(this)

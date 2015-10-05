@@ -472,13 +472,9 @@ define(function(require) {
 		 * instance path of the 3D object as search key.
 		 */
 		get3DObjectInVisualizationTree : function(visualizationTree, objectPath) {
-			var objectPathFormat = objectPath.replace(visualizationTree
-					.getInstancePath()
-					+ ".", "");
-			var varName = objectPathFormat.substring(0, objectPathFormat
-					.lastIndexOf("."));
-			var index = objectPathFormat.substring(objectPathFormat
-					.lastIndexOf(".") + 1);
+			var objectPathFormat = objectPath.replace(visualizationTree.getInstancePath()+ ".", "");
+			var varName = objectPathFormat.substring(0, objectPathFormat.lastIndexOf("."));
+			var index = objectPathFormat.substring(objectPathFormat.lastIndexOf(".") + 1);
 			if (!isNaN(parseInt(index))) {
 				// the last token is a number
 				objectPathFormat = varName;
@@ -486,9 +482,7 @@ define(function(require) {
 				// the last token is not a number
 				index = -1;
 			}
-			var object = GEPPETTO.Utility.deepFind(visualizationTree
-					.getInstancePath()
-					+ ".content." + objectPathFormat);
+			var object = GEPPETTO.Utility.deepFind(visualizationTree.getInstancePath()+ ".content." + objectPathFormat);
 			if (index > -1) {
 				object = object[index];
 			}

@@ -69,7 +69,7 @@ public enum InboundMessages {
 	UNLINK_DROPBOX("unlink_drobpox"),
 	UPLOAD_MODEL("upload_model"),
 	UPLOAD_RESULTS("upload_results"),
-	DOWNLOAD_RESULTS("download_results");
+	DOWNLOAD_RESULTS("download_results"), GEPPETTO_PERSISTENCE("geppetto_persistence");
 
 	
 	private InboundMessages(final String text) {

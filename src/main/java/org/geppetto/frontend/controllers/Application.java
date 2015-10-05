@@ -105,9 +105,15 @@ public class Application
 	}
 
 	@RequestMapping(value = "/GeppettoAllTests.html", method = RequestMethod.GET)
-	public String test()
+	public String runTests()
 	{
 		return "dist/GeppettoAllTests";
+	}
+	
+	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)
+	public String tests()
+	{
+		return "dist/Tests";
 	}
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)

@@ -533,8 +533,8 @@ define(function(require) {
 		 * @param ry
 		 * @param rz
 		 */
-		setCameraRotation : function(rx, ry, rz) {
-			GEPPETTO.getVARS().camera.rotation.set(rx, ry, rz, 'XYZ');
+		setCameraUp : function(rx, ry, rz) {
+			GEPPETTO.getVARS().camera.up.set(rx, ry, rz);
 		},
 
 		/**

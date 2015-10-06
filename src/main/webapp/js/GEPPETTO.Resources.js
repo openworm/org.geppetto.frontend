@@ -205,7 +205,7 @@ define(function(require) {
 
 			CAMERA_SET_POSITION: "Set position",
 
-			CAMERA_SET_ROTATION: "Set rotation",
+			CAMERA_SET_UP: "Set up",
 
 			CAMERA_RESET: "Camera reset",
 

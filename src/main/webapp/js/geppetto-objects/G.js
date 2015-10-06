@@ -469,17 +469,17 @@ define(function(require) {
 			},
 
 			/**
-			 * Sets camera rotation
+			 * Sets camera up vector
 			 *
-			 * @command - G.setCameraRotation()
-			 * @param {Integer} rx - new rx axis rotation for the camera
-			 * @param {Integer} ry - new ry axis rotation for the camera
-			 * @param {Integer} rz - new rz axis rotation for the camera
+			 * @command - G.setCameraUp()
+			 * @param {Integer} rx - new x component for the up vector of the camera
+			 * @param {Integer} ry - new y component for the up vector of the camera
+			 * @param {Integer} rz - new z component for the up vector of the camera
 			 */
-			setCameraRotation: function(rx, ry, rz) {
-				GEPPETTO.setCameraRotation(rx, ry, rz);
+			setCameraUp: function(rx, ry, rz) {
+				GEPPETTO.setCameraUp(rx, ry, rz);
 
-				return GEPPETTO.Resources.CAMERA_SET_ROTATION
+				return GEPPETTO.Resources.CAMERA_SET_UP;
 			},
 
 			/**

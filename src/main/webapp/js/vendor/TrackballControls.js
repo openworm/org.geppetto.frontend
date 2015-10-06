@@ -35,6 +35,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	// internals
 
+	this.cameraByConsoleLock		 = true;
+
 	this.target = new THREE.Vector3();
 
 	var lastPosition = new THREE.Vector3();
@@ -130,26 +132,40 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	};
 
-	this.setCameraByConsole = function () {
-		if (_this.lastPosition) {
-			var x = _this.lastPosition[0];
-			var y = _this.lastPosition[1];
-			var z = _this.lastPosition[2];
-			if (x !== 0 ||
-					y !== 0 ||
-					z !== 0)
-				GEPPETTO.Console.executeCommand('G.setCameraPosition('+x+','+y+','+z+')');
-		}
+	this.unsetCameraByConsoleLock = function () {
+		_this.cameraByConsoleLock = false;
+	}
 
-		if (_this.lastRotation) {
-			var rx = _this.lastRotation[0];
-			var ry = _this.lastRotation[1];
-			var rz = _this.lastRotation[2];
-			if (rx !== 0 ||
-					ry !== 0 ||
-					rz !== 0)
-				GEPPETTO.Console.executeCommand('G.setCameraRotation('+rx+','+ry+','+rz+')');
-		}
+	this.setCameraByConsole = function () {
+		if (_this.cameraByConsoleLock)
+			return;
+
+		var p = _this.object.position.toArray();
+		var x = p[0];
+		var y = p[1];
+		var z = p[2];
+
+		GEPPETTO.Console.executeCommand('G.setCameraPosition('+x+','+y+','+z+')');
+
+		var u = _this.object.up.toArray();
+
+		var rx = u[0];
+		var ry = u[1];
+		var rz = u[2];
+
+		GEPPETTO.Console.executeCommand('G.setCameraUp('+rx+','+ry+','+rz+')');
+
+		_this.cameraByConsoleLock = true;
+	}
+
+	this.allSteady = function () {
+		var u = _this.lastUp;
+		var p = _this.lastPosition;
+		var nu = _this.object.up.toArray();
+		var np = _this.object.position.toArray();
+
+		return Math.abs(u[0]+u[1]+u[2] - (nu[0]+nu[1]+nu[2])) < 0.0001 &&
+					 Math.abs(p[0]+p[1]+p[2] - (np[0]+np[1]+np[2])) < 0.0001;
 	}
 
 	this.rotateCamera = function () {
@@ -158,8 +174,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		if ( angle ) {
 
-			var axis = ( new THREE.Vector3() ).crossVectors( _rotateStart, _rotateEnd ).normalize(),
-				quaternion = new THREE.Quaternion();
+			var axis = ( new THREE.Vector3() ).crossVectors( _rotateStart, _rotateEnd ).normalize();
+			quaternion = new THREE.Quaternion();
 
 			angle *= _this.rotateSpeed;
 
@@ -266,8 +282,10 @@ THREE.TrackballControls = function ( object, domElement ) {
 	};
 
 	this.update = function () {
-
 		_eye.subVectors( _this.object.position, _this.target );
+
+		_this.lastUp = _this.object.up.toArray();
+		_this.lastPosition = _this.object.position.toArray();
 
 		if ( !_this.noRotate ) {
 
@@ -287,6 +305,10 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		}
 
+		if (_this.allSteady()) {
+			_this.setCameraByConsole();
+		}
+
 		_this.object.position.addVectors( _this.target, _eye );
 
 		_this.checkDistances();
@@ -300,9 +322,6 @@ THREE.TrackballControls = function ( object, domElement ) {
 			lastPosition.copy( _this.object.position );
 
 		}
-
-		_this.lastRotation = _this.object.rotation.toArray();
-		_this.lastPosition = _this.object.position.toArray();
 	};
 
 	this.reset = function () {
@@ -431,7 +450,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 		document.removeEventListener( 'mousemove', mousemove );
 		document.removeEventListener( 'mouseup', mouseup );
 
-		_this.setCameraByConsole();
+		_this.unsetCameraByConsoleLock();
 	}
 
 	function mousewheel( event ) {
@@ -455,7 +474,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		_zoomStart.y += delta * 0.01;
 
-		_this.setCameraByConsole();
+		_this.unsetCameraByConsoleLock();
 	}
 
 	function touchstart( event ) {
@@ -540,7 +559,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		_state = STATE.NONE;
 
-		_this.setCameraByConsole();
+		_this.unsetCameraByConsoleLock();
 	}
 
 	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );

@@ -222,7 +222,7 @@ define(function(require) {
 				/**
 				 * Selects the entity
 				 * 
-				 * @command EntityNode.unselect()
+				 * @command EntityNode.deselect()
 				 * 
 				 */
 				select : function() {
@@ -249,12 +249,12 @@ define(function(require) {
 				},
 				
 				/**
-				 * Unselects the entity
+				 * Deselects the entity
 				 * 
-				 * @command EntityNode.unselect()
+				 * @command EntityNode.deselect()
 				 * 
 				 */
-				unselect : function() {
+				deselect : function() {
 					var message;
 
 					if (this.selected) 
@@ -262,7 +262,7 @@ define(function(require) {
 						this.selected=false;
 						//traverse through children to select them as well
 						this.selectChildren(this, false);
-						message = GEPPETTO.Resources.UNSELECTING_ENTITY + this.instancePath;
+						message = GEPPETTO.Resources.DESELECTING_ENTITY + this.instancePath;
 						
 					} 
 					else 
@@ -289,7 +289,7 @@ define(function(require) {
 						}
 						else
 						{
-							aspect.unselect();
+							aspect.deselect();
 						}
 					}
 								
@@ -328,29 +328,6 @@ define(function(require) {
 					}
 				},
 				
-				/**
-				 * Helper method for showing/hiding entity and all its children.
-				 * Not a console command. 
-				 * @param {EntityNode} entity - Entity to traverse and alter visibility
-				 * @param {boolean} apply - Visible or invisible
-				 */
-				getZoomPaths : function(entity){
-					var aspects = entity.getAspects();
-					var entities = entity.getEntities();
-					var aspectPaths = {};
-					
-					for(var e in entities){
-						this.getZoomPaths(entities[e]);
-					}
-					
-					for(var a in aspects){
-						var aspect = aspects[a];
-						aspectPaths[aspect.getInstancePath()]="";
-					}
-					
-					return aspectPaths;
-				},
-
 				/**
 				 * Zooms to entity
 				 * 
@@ -525,7 +502,7 @@ define(function(require) {
 						return GEPPETTO.Resources.MISSING_PARAMETER;
 					}
 					
-					//unselect all previously selected nodes
+					//deselect all previously selected nodes
 					if(this.selected == false && (mode))
 					{
 						this.select();

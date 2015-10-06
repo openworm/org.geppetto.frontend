@@ -131,7 +131,8 @@ define(function(require) {
 			 * @param {boolean}
 			 *            apply - Turn on or off the ghost effect
 			 */
-			setGhostEffect : function(apply) {
+			setGhostEffect : function(apply) 
+			{
 				GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().meshes, apply);
 				GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().splitMeshes, apply);
 			},
@@ -155,6 +156,7 @@ define(function(require) {
 						{
 							if (child instanceof THREE.Object3D) 
 							{
+								child.ghosted = true;
 								child.traverse(function(object) 
 								{
 									if (object instanceof THREE.Mesh || object instanceof THREE.Line) 
@@ -179,6 +181,7 @@ define(function(require) {
 						{
 							if (child instanceof THREE.Object3D) 
 							{
+								child.ghosted=false;
 								child.traverse(function(object) 
 								{
 									if (object instanceof THREE.Mesh || object instanceof THREE.Line) 
@@ -186,8 +189,7 @@ define(function(require) {
 										if(object.visible)
 										{
 											object.ghosted = false;
-											GEPPETTO.SceneController.setThreeColor(object.material.color,child.material.defaultColor);
-											object.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+											object.material.opacity = object.material.defaultOpacity;
 										}
 									}
 								});
@@ -195,8 +197,7 @@ define(function(require) {
 							else 
 							{
 								child.ghosted = false;
-								GEPPETTO.SceneController.setThreeColor(child.material.color,child.material.defaultColor);
-								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								child.material.opacity = child.material.defaultOpacity;
 							}
 						}
 					}
@@ -214,7 +215,6 @@ define(function(require) {
 			 */
 			selectAspect : function(instancePath) 
 			{
-
 				var mesh = GEPPETTO.getVARS().meshes[instancePath];
 				if (mesh != null || undefined) 
 				{
@@ -226,15 +226,18 @@ define(function(require) {
 					{
 						if (mesh instanceof THREE.Object3D) 
 						{
-							mesh.traverse(function(child) {
-										if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
-											GEPPETTO.SceneController.setThreeColor(child.material.color,GEPPETTO.Resources.COLORS.SELECTED);
-											child.material.opacity = Math.max(0.5,child.material.defaultOpacity);
-										}
-									});
+							mesh.traverse(function(child) 
+							{
+								if (child instanceof THREE.Mesh || child instanceof THREE.Line) 
+								{
+									GEPPETTO.SceneController.setThreeColor(child.material.color,GEPPETTO.Resources.COLORS.SELECTED);
+									child.material.opacity = Math.max(0.5,child.material.defaultOpacity);
+								}
+							});
 							mesh.selected = true;
 							mesh.ghosted = false;
-						} else 
+						} 
+						else 
 						{
 							GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.SELECTED);
 							mesh.material.opacity = Math.max(0.5,mesh.material.defaultOpacity);
@@ -248,12 +251,12 @@ define(function(require) {
 			},
 
 			/**
-			 * Unselect aspect, or mesh as far as tree js is concerned.
+			 * Deselect aspect, or mesh as far as tree js is concerned.
 			 * 
 			 * @param {String}
 			 *            instancePath - Path of the mesh/aspect to select
 			 */
-			unselectAspect : function(instancePath) 
+			deselectAspect : function(instancePath) 
 			{
 				// match instancePath to mesh store in variables properties
 				var mesh = GEPPETTO.getVARS().meshes[instancePath];
@@ -446,8 +449,7 @@ define(function(require) {
 			},
 
 			/**
-			 * Takes few paths, 3D point locations, and computes center of it to
-			 * focus camera.
+			 * Zoom to a mesh given the instance path of the aspect to which it belongs
 			 */
 			zoomToMesh : function(path) {
 				GEPPETTO.getVARS().controls.reset();
@@ -471,43 +473,74 @@ define(function(require) {
 			},
 
 			/**
-			 * Takes few paths, 3D point locations, and computes center of it to
+			 * Takes a path and zoom to all meshes in the scene that descend from it
 			 * focus camera.
 			 */
-			zoomToMeshes : function(path) {
+			zoomToMeshes : function(path) 
+			{
 				GEPPETTO.getVARS().controls.reset();
 
 				var aabbMin = null;
 				var aabbMax = null;
 
-				for ( var meshInstancePath in GEPPETTO.getVARS().meshes) {
+				for ( var meshInstancePath in GEPPETTO.getVARS().meshes) 
+				{
 					var child = GEPPETTO.getVARS().meshes[meshInstancePath];
-					if (child instanceof THREE.Mesh || child instanceof THREE.Line || child instanceof THREE.PointCloud) {
-						if (meshInstancePath.startsWith(path)) {
-							child.geometry.computeBoundingBox();
-
-							var bb = child.geometry.boundingBox;
-							bb.translate(child
-									.localToWorld(new THREE.Vector3()));
-
-							// If min and max vectors are null, first values
-							// become
-							// default min and max
-							if (aabbMin == null && aabbMax == null) {
-								aabbMin = bb.min;
-								aabbMax = bb.max;
-							}
-
-							// Compare other meshes, particles BB's to find min
-							// and max
-							else {
-								aabbMin.x = Math.min(aabbMin.x, bb.min.x);
-								aabbMin.y = Math.min(aabbMin.y, bb.min.y);
-								aabbMin.z = Math.min(aabbMin.z, bb.min.z);
-								aabbMax.x = Math.max(aabbMax.x, bb.max.x);
-								aabbMax.y = Math.max(aabbMax.y, bb.max.y);
-								aabbMax.z = Math.max(aabbMax.z, bb.max.z);
-							}
+					if (meshInstancePath.startsWith(path)) 
+					{
+						if (child instanceof THREE.Mesh || child instanceof THREE.Line || child instanceof THREE.PointCloud) 
+						{
+								child.geometry.computeBoundingBox();
+	
+								var bb = child.geometry.boundingBox;
+								bb.translate(child.localToWorld(new THREE.Vector3()));
+	
+								// If min and max vectors are null, first values become default min and max
+								if (aabbMin == null && aabbMax == null) 
+								{
+									aabbMin = bb.min;
+									aabbMax = bb.max;
+								}
+	
+								// Compare other meshes, particles BB's to find min and max
+								else {
+									aabbMin.x = Math.min(aabbMin.x, bb.min.x);
+									aabbMin.y = Math.min(aabbMin.y, bb.min.y);
+									aabbMin.z = Math.min(aabbMin.z, bb.min.z);
+									aabbMax.x = Math.max(aabbMax.x, bb.max.x);
+									aabbMax.y = Math.max(aabbMax.y, bb.max.y);
+									aabbMax.z = Math.max(aabbMax.z, bb.max.z);
+								}
+							
+						}
+						else if(child instanceof THREE.Object3D)
+						{
+							child.traverse(function(object) 
+							{
+								if (object instanceof THREE.Mesh || child instanceof THREE.Line || child instanceof THREE.PointCloud)
+								{
+									object.geometry.computeBoundingBox();
+									
+									var bb = object.geometry.boundingBox;
+									bb.translate(object.localToWorld(new THREE.Vector3()));
+		
+									// If min and max vectors are null, first values become default min and max
+									if (aabbMin == null && aabbMax == null) {
+										aabbMin = bb.min;
+										aabbMax = bb.max;
+									}
+		
+									// Compare other meshes, particles BB's to find min and max
+									else {
+										aabbMin.x = Math.min(aabbMin.x, bb.min.x);
+										aabbMin.y = Math.min(aabbMin.y, bb.min.y);
+										aabbMin.z = Math.min(aabbMin.z, bb.min.z);
+										aabbMax.x = Math.max(aabbMax.x, bb.max.x);
+										aabbMax.y = Math.max(aabbMax.y, bb.max.y);
+										aabbMax.z = Math.max(aabbMax.z, bb.max.z);
+									}
+								}
+							});
 						}
 					}
 				}

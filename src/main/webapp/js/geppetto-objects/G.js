@@ -556,7 +556,7 @@ define(function(require) {
 			},
 			
 			/**
-			 * Unselects all selected entities
+			 * Deselects all selected entities
 			 * 
 			 * @command G.unSelectAll()
 			 */
@@ -568,11 +568,11 @@ define(function(require) {
 					for(var key in selection)
 					{
 						var entity = selection[key];
-						entity.unselect();
+						entity.deselect();
 					}
 				}
 				
-				return GEPPETTO.Resources.UNSELECT_ALL;
+				return GEPPETTO.Resources.DESELECT_ALL;
 			},
 			
 			

@@ -153,7 +153,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 		var ry = u[1];
 		var rz = u[2];
 
-		GEPPETTO.Console.executeCommand('G.setCameraUp('+rx+','+ry+','+rz+')');
+		GEPPETTO.Console.executeCommand('G.setCameraRotation('+rx+','+ry+','+rz+')');
 
 		_this.cameraByConsoleLock = true;
 	}

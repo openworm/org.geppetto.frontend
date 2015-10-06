@@ -33,6 +33,10 @@
 
 package org.geppetto.frontend.controllers;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
@@ -48,6 +52,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class Login
@@ -63,7 +68,8 @@ public class Login
 	}
 
 	@RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
-	public String login(@RequestParam String username, @RequestParam String password, @RequestParam(defaultValue="",required=false) String url)
+	public @ResponseBody
+	IUser login(@RequestParam String username, @RequestParam String password, @RequestParam(defaultValue="",required=false) String url, @RequestParam(defaultValue="web",required=false) String outputFormat, HttpServletResponse response) throws IOException
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(!dataManager.isDefault())
@@ -84,7 +90,9 @@ public class Login
 				logger.error(e);
 			}
 		}
-		return "redirect:/" + url;
+		if (outputFormat.equals("web"))
+			response.sendRedirect("/" + url);
+		return geppettoManager.getUser();
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)

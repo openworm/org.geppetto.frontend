@@ -41,6 +41,11 @@ define(function(require) {
 
 	var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone');
 
+	//These two libraries are required here so that Geppetto can work properly in an iframe (as embedded website).
+	//Otherwise, sometimes (randomly)  these libraries are not loaded on time and some js commands failed and the web is not loaded properly. 
+	require('vendor/jquery-ui-1.10.3.custom.min');
+	require('vendor/bootstrap.min');
+	
 	require('vendor/Detector');
 	require('vendor/THREEx.KeyboardState');
 
@@ -527,7 +532,7 @@ define(function(require) {
 		 * @param ry
 		 * @param rz
 		 */
-		setCameraUp : function(rx, ry, rz) {
+		setCameraRotation : function(rx, ry, rz) {
 			GEPPETTO.getVARS().camera.up.set(rx, ry, rz);
 		},
 

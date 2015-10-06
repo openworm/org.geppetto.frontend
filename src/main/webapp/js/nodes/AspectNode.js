@@ -130,7 +130,9 @@ define(function(require) {
 				 */
 				select : function() {
 					var message;
-					if (!this.selected) {
+					if (!this.selected) 
+					{
+						//first, before doing anything, we check what is currently selected
 						if(G.getSelection().length>0) 
 						{
 							//something is already selected, we make everything not selected transparent
@@ -142,15 +144,10 @@ define(function(require) {
 							GEPPETTO.SceneController.setGhostEffect(false);
 						}
 						
+						this.selected = true;
+						this.parent.selected=true;
 						GEPPETTO.SceneController.selectAspect(this.instancePath);
 						message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
-						this.selected = true;
-
-						var parent  = this.getParent();
-						while(parent!=null){
-							parent.selected = true;
-							parent = parent.getParent();
-						}
 
 
 						//Behavior: if the parent entity has connections change the opacity of what is not connected
@@ -180,9 +177,7 @@ define(function(require) {
 							if(G.getSelectionOptions().draw_connection_lines){
 								this.getParent().showConnectionLines(true);
 							}
-							if(G.getSelectionOptions().hide_not_selected){
-								G.showUnselected(true);
-							}
+
 							GEPPETTO.SceneController.ghostEffect(allOtherMeshes,true);		
 						}
 						//signal selection has changed in simulation
@@ -202,22 +197,17 @@ define(function(require) {
 				 */
 				unselect : function() {
 					var message;
-					G.showUnselected(false);
+
 					if (this.selected) {
 						message = GEPPETTO.Resources.UNSELECTING_ASPECT
 								+ this.instancePath;
 						GEPPETTO.SceneController.unselectAspect(this.instancePath);
 						this.selected = false;
+						this.getParent().selected = false;
 
-						var parent  = this.getParent();
-						while(parent!=null){
-							parent.selected = false;
-							parent = parent.getParent();
-						}
-
-						//don't apply ghost effect to meshes if nothing is left selected after
-						//unselecting this entity
-						if(G.getSelection().length ==0){
+						//don't apply ghost effect to meshes if nothing is left selected after unselecting this entity
+						if(G.getSelection().length ==0)
+						{
 							GEPPETTO.SceneController.setGhostEffect(false);
 						}
 						//update ghost effect after unselection of this entity
@@ -235,9 +225,6 @@ define(function(require) {
 						}
 						if(G.getSelectionOptions().draw_connection_lines){
 							this.getParent().showConnectionLines(false);
-						}
-						if(G.getSelectionOptions().hide_not_selected){
-							G.showUnselected(false);
 						}
 
 						//trigger event that selection has been changed

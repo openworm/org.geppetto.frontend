@@ -97,18 +97,17 @@ define(function(require) {
 				/**
 				 * Change the type of geometry to be used to visualize this entity
 				 * 
-				 * @command EntityNode.setGeometryType(type, thickness, recursive)
+				 * @command EntityNode.setGeometryType(type, thickness, applyToNested)
 				 * 
 				 */
-				setGeometryType : function(type, thickness, recursive)
+				setGeometryType : function(type, thickness, applyToNested)
 				{
-					if(recursive === undefined){
-						recursive = true;
+					if(applyToNested === undefined){
+						applyToNested = true;
 					}
 					
 					this.visible = false;
 					
-					// hide aspects for given entity
 					var aspects = this.getAspects();
 					for(var a in aspects){
 						var aspect = aspects[a];
@@ -116,10 +115,10 @@ define(function(require) {
 					}
 					
 					var entities = this.getEntities();
-					if(recursive)
+					if(applyToNested)
 					{
 						for(var e in entities){
-							entities[e].setGeometryType(type, thickness,recursive);
+							entities[e].setGeometryType(type, thickness,applyToNested);
 						}
 					}
 					
@@ -130,12 +129,12 @@ define(function(require) {
 				/**
 				 * Hides the entity
 				 * 
-				 * @command EntityNode.hide(hideNested)
+				 * @command EntityNode.hide(applyToNested)
 				 * 
 				 */
-				setOpacity : function(opacity,recursive) {
-					if(recursive === undefined){
-						recursive = true;
+				setOpacity : function(opacity,applyToNested) {
+					if(applyToNested === undefined){
+						applyToNested = true;
 					}
 					
 					this.visible = false;
@@ -148,10 +147,10 @@ define(function(require) {
 					}
 					
 					var entities = this.getEntities();
-					if(recursive)
+					if(applyToNested)
 					{
 						for(var e in entities){
-							entities[e].setOpacity(opacity,recursive);
+							entities[e].setOpacity(opacity,applyToNested);
 						}
 					}
 					
@@ -163,12 +162,12 @@ define(function(require) {
 				/**
 				 * Change the color for this entity
 				 * 
-				 * @command EntityNode.setColor(hideNested)
+				 * @command EntityNode.setColor(applyToNested)
 				 * 
 				 */
-				setColor : function(color,recursive) {
-					if(recursive === undefined){
-						recursive = true;
+				setColor : function(color,applyToNested) {
+					if(applyToNested === undefined){
+						applyToNested = true;
 					}
 										
 					// hide aspects for given entity
@@ -179,10 +178,10 @@ define(function(require) {
 					}
 					
 					var entities = this.getEntities();
-					if(recursive)
+					if(applyToNested)
 					{
 						for(var e in entities){
-							entities[e].setColor(color,recursive);
+							entities[e].setColor(color,applyToNested);
 						}
 					}
 					
@@ -193,12 +192,13 @@ define(function(require) {
 				/**
 				 * Hides the entity
 				 * 
-				 * @command EntityNode.hide(hideNested)
+				 * @command EntityNode.hide(applyToNested)
 				 * 
 				 */
-				hide : function(hideNested) {
-					if(hideNested === undefined){
-						hideNested = true;
+				hide : function(applyToNested) {
+					if(applyToNested === undefined)
+					{
+						applyToNested = true;
 					}
 					
 					this.visible = false;
@@ -210,7 +210,10 @@ define(function(require) {
 						aspect.hide();
 					}
 					
-					this.showChildren(!hideNested);
+					if(applyToNested)
+					{
+						this.showChildren(false);
+					}
 					
 					var message = GEPPETTO.Resources.HIDE_ENTITY + this.instancePath;
 					return message;
@@ -225,7 +228,9 @@ define(function(require) {
 				select : function() {
 										
 					var message;
-					if (!this.selected) {
+					if (!this.selected) 
+					{
+						this.selected=true;
 						//traverse through children to select them as well
 						this.selectChildren(this, true);
 						
@@ -234,7 +239,9 @@ define(function(require) {
 						// Notify any widgets listening that there has been a
 						// changed to selection
 						GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED);
-					} else {
+					} 
+					else 
+					{
 						message = GEPPETTO.Resources.ENTITY_ALREADY_SELECTED;
 					}
 
@@ -249,12 +256,10 @@ define(function(require) {
 				 */
 				unselect : function() {
 					var message;
-					
-					G.showUnselected(false);
 
 					if (this.selected) 
 					{
-						
+						this.selected=false;
 						//traverse through children to select them as well
 						this.selectChildren(this, false);
 						message = GEPPETTO.Resources.UNSELECTING_ENTITY + this.instancePath;
@@ -289,6 +294,7 @@ define(function(require) {
 					}
 								
 					for(var e in entities){
+						entities[e].selected=apply;
 						this.selectChildren(entities[e],apply);
 					}
 				},
@@ -300,6 +306,7 @@ define(function(require) {
 				 * @param {boolean} apply - Visible or invisible
 				 */
 				showChildren : function(mode){
+					this.visible=mode;
 					var entities = this.getEntities();
 					
 					for(var e in entities){
@@ -316,7 +323,7 @@ define(function(require) {
 							}
 						}
 						
-						// recurse
+						// apply to nested entities also
 						entities[e].showChildren(mode);
 					}
 				},
@@ -471,32 +478,36 @@ define(function(require) {
 				 * @param {boolean} mode - Show or hide connection lines
 				 */
 				showConnectionLines : function(mode){
-					if(mode == null || mode == undefined){
+					if(mode == null || mode == undefined)
+					{
 						return GEPPETTO.Resources.MISSING_PARAMETER;
 					}
+
+					//show or hide connection lines
+					if(mode)
+					{
+						var origin = this.getAspects()[0].getInstancePath();
+						var lines = {};
+						for(var c in this.getConnections())
+						{
+							var connection = this.getConnections()[c];
+							
+							var entity = GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
 					
-					var lines = {};
-					for(var c in this.getConnections()){
-						var connection = this.getConnections()[c];
-						
-						var entity = 
-							GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
-						
-						var paths = this.getAspectPaths(entity);
-						
-						for(var p in paths){
-							lines[paths[p]] = connection.getType();
+							var paths = this.getAspectPaths(entity);
+							
+							for(var p in paths)
+							{
+								lines[paths[p]] = connection.getType();
+							}
 						}
-					}
-					
-					var origin = this.getAspects()[0].getInstancePath();
-					//show/hide connection lines
-					if(mode){
-						if(!jQuery.isEmptyObject(lines)){
+						if(!jQuery.isEmptyObject(lines))
+						{
 							GEPPETTO.SceneController.showConnectionLines(origin,lines);
 						}
 					}
-					else{
+					else
+					{
 						GEPPETTO.SceneController.hideConnectionLines();
 					}
 				},
@@ -507,33 +518,38 @@ define(function(require) {
 				 * @command EntityNode.showOutputConnections()
 				 * @param {boolean} mode - Show or hide output connections
 				 */
-				showOutputConnections : function(mode){
-					if(mode == null || mode == undefined){
+				showOutputConnections : function(mode)
+				{
+					if(mode == null || mode == undefined)
+					{
 						return GEPPETTO.Resources.MISSING_PARAMETER;
 					}
 					
 					//unselect all previously selected nodes
-					if(this.selected == false && (mode)){
+					if(this.selected == false && (mode))
+					{
 						this.select();
 					}
 					
 					var paths = new Array();
-					for(var c in this.getConnections()){
+					for(var c in this.getConnections())
+					{
 						var connection = this.getConnections()[c];
 						
-						if(connection.getType() == GEPPETTO.Resources.OUTPUT_CONNECTION){
-							var entity = 
-								GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
-							
+						if(connection.getType() == GEPPETTO.Resources.OUTPUT_CONNECTION)
+						{
+							var entity = GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
 							paths = paths.concat(this.getAspectPaths(entity));
 						}
 					}
 					
 					//show/hide output connections call
-					if(mode){
+					if(mode)
+					{
 						GEPPETTO.SceneController.showConnections(paths,GEPPETTO.Resources.OUTPUT_CONNECTION);
 					}
-					else{
+					else
+					{
 						GEPPETTO.SceneController.hideConnections(paths);
 					}
 					return paths;

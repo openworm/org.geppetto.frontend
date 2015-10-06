@@ -267,6 +267,12 @@ define(function(require) {
 			},
 			
 			loadProject : function(payload){
+				//we remove anything from any previous loaded project if there was one
+				if(Project)
+				{
+					Project.initialize();
+				}
+				GEPPETTO.G.listeners=[];
 				var project = JSON.parse(payload.project_loaded);
 				window.Project = GEPPETTO.NodeFactory.createProjectNode(project);         
 				if(window.location.search.indexOf("load_project_from_url")!=-1)

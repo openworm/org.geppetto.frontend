@@ -1214,7 +1214,7 @@ public class ConnectionHandler
 	{
 		if(this.geppettoProject != null)
 		{
-			geppettoManager.closeProject(null, geppettoProject);
+			geppettoManager.closeProject(null, this.geppettoProject);
 		}
 		this.geppettoProject = geppettoProject;
 	}

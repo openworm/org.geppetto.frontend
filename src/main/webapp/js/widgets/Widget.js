@@ -355,7 +355,7 @@ define(function(require) {
 			setDraggable: function (draggable){
 				if(draggable){
 					$("#" + this.id).parent().draggable({disabled: false});
-					// NOTE: this will wipe any class applied to the widget...
+					// #NOTE:0 this will wipe any class applied to the widget...
 					this.setClass('');
 				} else {
 					$("#" + this.id).parent().draggable({disabled: true});

@@ -52,7 +52,7 @@ define(function(require) {
 			 * Applies visual transformation to given aspect.
 			 */
 			applyVisualTransformation : function(visualAspect, transformation) {
-				// NOTE: visualAspect currently disregarded as the
+				// #NOTE:0 visualAspect currently disregarded as the
 				// transformation applies to the entire scene
 				GEPPETTO.getVARS().renderer.setCurrentMatrix(transformation);
 			},

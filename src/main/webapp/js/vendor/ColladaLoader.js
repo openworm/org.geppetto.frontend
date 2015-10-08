@@ -762,7 +762,7 @@ THREE.ColladaLoader = function () {
 		// process animation, or simply pose the rig if no animation
 
 		//create an animation for the animated bones
-		//NOTE: this has no effect when using morphtargets
+		//#NOTE:0 this has no effect when using morphtargets
 		var animationdata = {"name":animationBounds.ID,"fps":30,"length":animationBounds.frames/30,"hierarchy":[]};
 
 		for(var j =0; j < sortedbones.length; j++) {

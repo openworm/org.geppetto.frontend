@@ -19,7 +19,7 @@
 //
 // ```keyboard.destroy()```
 //
-// NOTE: this library may be nice as standaline. independant from three.js
+// #NOTE:0 this library may be nice as standaline. independant from three.js
 // - rename it keyboardForGame
 //
 // # Code
@@ -29,7 +29,7 @@
 var THREEx	= THREEx 		|| {};
 
 /**
- * - NOTE: it would be quite easy to push event-driven too
+ * - #NOTE:0 it would be quite easy to push event-driven too
  *   - microevent.js for events handling
  *   - in this._onkeyChange, generate a string from the DOM event
  *   - use this as event name

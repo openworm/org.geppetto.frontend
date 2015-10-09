@@ -87,7 +87,7 @@ define(function(require) {
 			{
 				// NOTE: visualAspect currently disregarded as the
 				// transformation applies to the entire scene
-				GEPPETTO.getVARS().renderer.setCurrentMatrix(transformation);
+				GEPPETTO.getVARS().renderer.setCurrentMatrix(transformation); 
 			},
 
 			/**

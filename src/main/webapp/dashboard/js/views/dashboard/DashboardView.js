@@ -52,7 +52,7 @@ define([ 'jquery', 'underscore', 'backbone',
 				
 				// add to global list if not expanded (means the click is meant to expand)
 				// also add if attribute is undefined or bool false (first time it's not there yet)
-				// NOTE: if the attr is not there it can be undefined or bool false depending on browser
+				// #NOTE:0 if the attr is not there it can be undefined or bool false depending on browser
 				if(expanded === "false" || typeof expanded === typeof undefined || expanded === false){
 					window.openExperiments.push(expID);
 				}

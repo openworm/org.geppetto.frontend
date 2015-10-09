@@ -31,10 +31,13 @@ THREE.TrackballControls = function ( object, domElement ) {
 	this.minDistance = 0;
 	this.maxDistance = Infinity;
 
+	this.logDecimalPlaces = 3;
+
 	this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
 
 	// internals
 	this.cameraByConsoleLock = true;
+	this.cameraChanged = false;
 
 	this.target = new THREE.Vector3();
 
@@ -139,16 +142,27 @@ THREE.TrackballControls = function ( object, domElement ) {
 		if (_this.cameraByConsoleLock)
 			return;
 
+		// Decimal places;
+		var places = _this.logDecimalPlaces;
+
 		var p = _this.object.position.toArray();
 
-		GEPPETTO.Console.executeCommand('G.setCameraPosition('+p[0]+','+p[1]+','+p[2]+')');
+		GEPPETTO.Console.executeCommand('G.setCameraPosition('+p[0].toFixed(places)+
+																												 ','+p[1].toFixed(places)+
+																												 ','+p[2].toFixed(places)+
+																												 ')');
 
 		var u = _this.object.rotation.toArray();
 		var l = _eye.length();
 
-		GEPPETTO.Console.executeCommand('G.setCameraRotation('+u[0]+','+u[1]+','+u[2]+','+l+')');
+		GEPPETTO.Console.executeCommand('G.setCameraRotation('+u[0].toFixed(places)+
+																												 ','+u[1].toFixed(places)+
+																												 ','+u[2].toFixed(places)+
+																												 ','+l.toFixed(places)+
+																												 ')');
 
 		_this.cameraByConsoleLock = true;
+		_this.cameraChanged = false;
 	}
 
 	this.allSteady = function () {
@@ -157,8 +171,22 @@ THREE.TrackballControls = function ( object, domElement ) {
 		var nu = _this.object.up.toArray();
 		var np = _this.object.position.toArray();
 
-		return Math.abs(u[0]+u[1]+u[2] - (nu[0]+nu[1]+nu[2])) < 0.0001 &&
-					 Math.abs(p[0]+p[1]+p[2] - (np[0]+np[1]+np[2])) < 0.0001;
+		var threshold = 1/(10*_this.logDecimalPlaces);
+
+		var steady = Math.abs(u[0]+u[1]+u[2] - (nu[0]+nu[1]+nu[2])) < threshold &&
+								 Math.abs(p[0]+p[1]+p[2] - (np[0]+np[1]+np[2])) < threshold;
+
+		// Console logging is unlocked, this means
+		// we had an input event
+		if (!_this.cameraByConsoleLock) {
+			// If the camera moved, set cameraChanged
+			// if not, keep it
+			if (!steady) {
+				_this.cameraChanged = true;
+			}
+		}
+
+		return steady;
 	}
 
 	this.rotateCamera = function () {
@@ -340,8 +368,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 			lastPosition.copy( _this.object.position );
 		}
 
-		// Has the camera stopped moving?
-		if (_this.allSteady()) {
+		// Has the camera stopped moving? (&& has the camera started moving)
+		if (_this.allSteady() && _this.cameraChanged) {
 			// Log the camera's position
 			_this.setCameraByConsole();
 		}

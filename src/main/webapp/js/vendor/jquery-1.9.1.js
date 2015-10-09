@@ -6919,7 +6919,7 @@ jQuery.extend({
 	}
 });
 
-// #NOTE:0 we've included the "window" in window.getComputedStyle
+// NOTE: we've included the "window" in window.getComputedStyle
 // because jsdom on node.js will break without it.
 if ( window.getComputedStyle ) {
 	getStyles = function( elem ) {

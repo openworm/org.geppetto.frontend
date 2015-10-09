@@ -162,7 +162,7 @@ define(function(require)
 							// get the right node
 							var vizTree = GEPPETTO.Utility.deepFind(node.VisualizationTree.instancePath);
 
-							// #NOTE:0 loop and add SKELETON_ANIMATION_NODE at the
+							// NOTE: loop and add SKELETON_ANIMATION_NODE at the
 							// right level of nesting (only geometries go inside
 							// "content" property)
 							for ( var key in node.VisualizationTree)
@@ -343,7 +343,7 @@ define(function(require)
 				GEPPETTO.NodeFactory.createAspectSimulationTree(aspect.SimulationTree, simulationTree);
 
 				// notify user received tree was empty
-				// #NOTE:0 Don't print to console.log in here, this function is recursive,
+				// NOTE: Don't print to console.log in here, this function is recursive,
 				// and for entities with subentities it repeats printing same statement over and over again
 				if (aspect.SimulationTree.getChildren().length == 0)
 				{

@@ -36,7 +36,7 @@ define(function(require) {
 		 */
 		var setupRenderer = function() {
 			// Reuse a single WebGL renderer.
-			// #NOTE:0 Recreating the renderer causes camera displacement on
+			// NOTE: Recreating the renderer causes camera displacement on
 			// Chrome OSX.
 			if (!GEPPETTO.getVARS().canvasCreated) {
 				GEPPETTO.getVARS().renderer = new THREE.WebGLRenderer({

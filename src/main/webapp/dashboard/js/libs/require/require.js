@@ -219,7 +219,7 @@ var requirejs, require, define;
          * the first path segment, to help with module name lookups,
          * which act like paths, but can be remapped. But the end result,
          * all.json paths that use this function should look normalized.
-         * #NOTE:0 this method MODIFIES the input array.
+         * NOTE: this method MODIFIES the input array.
          * @param {Array} ary the array of path segments.
          */
         function trimDots(ary) {

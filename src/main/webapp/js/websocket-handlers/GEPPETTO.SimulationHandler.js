@@ -411,7 +411,7 @@ define(function(require) {
 
 	/**
 	 * Utility function for formatting output of list variable operations
-	 * #NOTE:0 move from here under wherever it makes sense
+	 * NOTE: move from here under wherever it makes sense
 	 *
 	 * @param vars - array of variables
 	 */

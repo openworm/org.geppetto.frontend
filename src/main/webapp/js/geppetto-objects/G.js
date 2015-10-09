@@ -454,7 +454,7 @@ define(function(require) {
 			},
 
 			/**
-			 * Sets camera position
+			 * Sets the camera position
 			 *
 			 * @command - G.setCameraPosition()
 			 * @param {Integer} x - new x axis position for the camera
@@ -468,18 +468,20 @@ define(function(require) {
 			},
 
 			/**
-			 * Sets camera up vector
+			 * Sets the camera rotation
 			 *
 			 * @command - G.setCameraRotation()
-			 * @param {Integer} rx - new x component for the up vector of the camera
-			 * @param {Integer} ry - new y component for the up vector of the camera
-			 * @param {Integer} rz - new z component for the up vector of the camera
+			 * @param {Integer} rx - x euler angle for the rotation
+			 * @param {Integer} ry - y euler angle for the rotation
+			 * @param {Integer} rz - z euler angle for the rotation
+			 * @param {Integer} a  - trackball's radius
 			 */
-			setCameraRotation: function(rx, ry, rz) {
-				GEPPETTO.setCameraRotation(rx, ry, rz);
+			setCameraRotation: function(rx, ry, rz, a) {
+				GEPPETTO.setCameraRotation(rx, ry, rz, a);
 
-				return GEPPETTO.Resources.CAMERA_SET_UP;
+				return GEPPETTO.Resources.CAMERA_SET_ROTATION;
 			},
+
 
 			/**
 			 * Callback to be called whenever a watched node changes

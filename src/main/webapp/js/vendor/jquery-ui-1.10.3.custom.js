@@ -4546,7 +4546,7 @@ $.extend( $.ui.autocomplete, {
 
 
 // live region extension, adding a `messages` option
-// NOTE: This is an experimental API. We are still investigating
+// #NOTE:0 This is an experimental API. We are still investigating
 // a full solution for string manipulation and internationalization.
 $.widget( "ui.autocomplete", $.ui.autocomplete, {
 	options: {

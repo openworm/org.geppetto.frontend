@@ -1605,7 +1605,7 @@ var RESULT_INDEX_ATTR = 'data-danger-index';
 /**
  * Extracts the `nodeName` from a string of markup.
  *
- * NOTE: Extracting the `nodeName` does not require a regular expression match
+ * #NOTE:0 Extracting the `nodeName` does not require a regular expression match
  * because we make assumptions about React-generated markup (i.e. there are no
  * spaces surrounding the opening tag and there is at least one attribute).
  *
@@ -4306,7 +4306,7 @@ var ReactComponent = {
     /**
      * Initializes the component, renders markup, and registers event listeners.
      *
-     * NOTE: This does not insert any nodes into the DOM.
+     * #NOTE:0 This does not insert any nodes into the DOM.
      *
      * Subclasses that override this method should make sure to invoke
      * `ReactComponent.Mixin.mountComponent.call(this, ...)`.
@@ -4338,7 +4338,7 @@ var ReactComponent = {
     /**
      * Releases any resources allocated by `mountComponent`.
      *
-     * NOTE: This does not remove any nodes from the DOM.
+     * #NOTE:0 This does not remove any nodes from the DOM.
      *
      * Subclasses that override this method should make sure to invoke
      * `ReactComponent.Mixin.unmountComponent.call(this)`.
@@ -4858,7 +4858,7 @@ var ReactCompositeComponentInterface = {
    *     });
    *   }
    *
-   * NOTE: There is no equivalent `componentWillReceiveState`. An incoming prop
+   * #NOTE:0 There is no equivalent `componentWillReceiveState`. An incoming prop
    * transition may cause a state change, but the opposite is not true. If you
    * need it, you are probably looking for `componentWillUpdate`.
    *
@@ -4896,7 +4896,7 @@ var ReactCompositeComponentInterface = {
    *
    * Use this as an opportunity to perform preparation before an update occurs.
    *
-   * NOTE: You **cannot** use `this.setState()` in this method.
+   * #NOTE:0 You **cannot** use `this.setState()` in this method.
    *
    * @param {object} nextProps
    * @param {?object} nextState
@@ -6440,7 +6440,7 @@ var ReactDOM = objMapKeyVal({
   figcaption: false,
   figure: false,
   footer: false,
-  form: false, // NOTE: Injected, see `ReactDOMForm`.
+  form: false, // #NOTE:0 Injected, see `ReactDOMForm`.
   h1: false,
   h2: false,
   h3: false,
@@ -6466,7 +6466,7 @@ var ReactDOM = objMapKeyVal({
   map: false,
   mark: false,
   menu: false,
-  menuitem: false, // NOTE: Close tag should be omitted, but causes problems.
+  menuitem: false, // #NOTE:0 Close tag should be omitted, but causes problems.
   meta: true,
   meter: false,
   nav: false,
@@ -6500,7 +6500,7 @@ var ReactDOM = objMapKeyVal({
   table: false,
   tbody: false,
   td: false,
-  textarea: false, // NOTE: Injected, see `ReactDOMTextarea`.
+  textarea: false, // #NOTE:0 Injected, see `ReactDOMTextarea`.
   tfoot: false,
   th: false,
   thead: false,
@@ -9134,7 +9134,7 @@ var ReactEventEmitter = merge(ReactEventEmitterMixin, {
    * Listens to window scroll and resize events. We cache scroll values so that
    * application code can access them without triggering reflows.
    *
-   * NOTE: Scroll events do not bubble.
+   * #NOTE:0 Scroll events do not bubble.
    *
    * @see http://www.quirksmode.org/dom/events/scroll.html
    */
@@ -9855,7 +9855,7 @@ var ReactInstanceHandles = {
   /**
    * Simulates the traversal of a two-phase, capture/bubble event dispatch.
    *
-   * NOTE: This traversal happens on IDs without touching the DOM.
+   * #NOTE:0 This traversal happens on IDs without touching the DOM.
    *
    * @param {string} targetID ID of the target node.
    * @param {function} cb Callback to invoke.
@@ -9874,7 +9874,7 @@ var ReactInstanceHandles = {
    * example, passing `.0.$row-0.1` would result in `cb` getting called
    * with `.0`, `.0.$row-0`, and `.0.$row-0.1`.
    *
-   * NOTE: This traversal happens on IDs without touching the DOM.
+   * #NOTE:0 This traversal happens on IDs without touching the DOM.
    *
    * @param {string} targetID ID of the target node.
    * @param {function} cb Callback to invoke.
@@ -10773,7 +10773,7 @@ var markupQueue = [];
  * @private
  */
 function enqueueMarkup(parentID, markup, toIndex) {
-  // NOTE: Null values reduce hidden classes.
+  // #NOTE:0 Null values reduce hidden classes.
   updateQueue.push({
     parentID: parentID,
     parentNode: null,
@@ -10794,7 +10794,7 @@ function enqueueMarkup(parentID, markup, toIndex) {
  * @private
  */
 function enqueueMove(parentID, fromIndex, toIndex) {
-  // NOTE: Null values reduce hidden classes.
+  // #NOTE:0 Null values reduce hidden classes.
   updateQueue.push({
     parentID: parentID,
     parentNode: null,
@@ -10814,7 +10814,7 @@ function enqueueMove(parentID, fromIndex, toIndex) {
  * @private
  */
 function enqueueRemove(parentID, fromIndex) {
-  // NOTE: Null values reduce hidden classes.
+  // #NOTE:0 Null values reduce hidden classes.
   updateQueue.push({
     parentID: parentID,
     parentNode: null,
@@ -10834,7 +10834,7 @@ function enqueueRemove(parentID, fromIndex) {
  * @private
  */
 function enqueueTextContent(parentID, textContent) {
-  // NOTE: Null values reduce hidden classes.
+  // #NOTE:0 Null values reduce hidden classes.
   updateQueue.push({
     parentID: parentID,
     parentNode: null,
@@ -11095,7 +11095,7 @@ var ReactMultiChild = {
     /**
      * Mounts a child with the supplied name.
      *
-     * NOTE: This is part of `updateChildren` and is here for readability.
+     * #NOTE:0 This is part of `updateChildren` and is here for readability.
      *
      * @param {ReactComponent} child Component to mount.
      * @param {string} name Name of the child.
@@ -11120,7 +11120,7 @@ var ReactMultiChild = {
     /**
      * Unmounts a rendered child by name.
      *
-     * NOTE: This is part of `updateChildren` and is here for readability.
+     * #NOTE:0 This is part of `updateChildren` and is here for readability.
      *
      * @param {ReactComponent} child Component to unmount.
      * @param {string} name Name of the child in `this._renderedChildren`.
@@ -11475,7 +11475,7 @@ function createTransferStrategy(mergeStrategy) {
 
 /**
  * Transfer strategies dictate how props are transferred by `transferPropsTo`.
- * NOTE: if you add any more exceptions to this list you should be sure to
+ * #NOTE:0 if you add any more exceptions to this list you should be sure to
  * update `cloneWithProps()` accordingly.
  */
 var TransferStrategies = {
@@ -14592,7 +14592,7 @@ module.exports = containsNode;
  * Copy properties from one or more objects (up to 5) into the first object.
  * This is a shallow copy. It mutates the first object and also returns it.
  *
- * NOTE: `arguments` has a very significant performance penalty, which is why
+ * #NOTE:0 `arguments` has a very significant performance penalty, which is why
  * we don't support unlimited arguments.
  */
 function copyProperties(obj, a, b, c, d, e, f) {
@@ -15512,7 +15512,7 @@ var markupWrap = {
 /**
  * Gets the markup wrap configuration for the supplied `nodeName`.
  *
- * NOTE: This lazily detects which wraps are necessary for the current browser.
+ * #NOTE:0 This lazily detects which wraps are necessary for the current browser.
  *
  * @param {string} nodeName Lowercase `nodeName`.
  * @return {?array} Markup wrap configuration, if applicable.
@@ -15960,7 +15960,7 @@ if (ExecutionEnvironment.canUseDOM) {
 /**
  * Checks if an event is supported in the current execution environment.
  *
- * NOTE: This will not work correctly for non-generic events such as `change`,
+ * #NOTE:0 This will not work correctly for non-generic events such as `change`,
  * `reset`, `load`, `error`, and `select`.
  *
  * Borrows from Modernizr.

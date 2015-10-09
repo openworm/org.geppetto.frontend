@@ -173,7 +173,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		String requestID = gmsg.requestID;
 
 		// switch on message type
-		// NOTE: each message handler knows how to interpret the GeppettoMessage data field
+		// #NOTE:0 each message handler knows how to interpret the GeppettoMessage data field
 		switch(InboundMessages.valueOf(gmsg.type.toUpperCase()))
 		{
 			case GEPPETTO_VERSION:
@@ -440,7 +440,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				break;
 			default:
 			{
-				// NOTE: no other messages expected for now
+				// #NOTE:0 no other messages expected for now
 			}
 		}
 	}

@@ -25,6 +25,7 @@ src/main/webapp/css/main.css
 .idea/
 *.iml
 *~
+.imdone/
 /.externalToolBuilders/
 /.settings/
 .classpath

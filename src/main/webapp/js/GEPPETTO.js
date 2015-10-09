@@ -520,20 +520,21 @@ define(function(require) {
 
 		/**
 		 * @param x
-		 * @param y
+		 * @param y 
 		 * @param z
 		 */
 		setCameraPosition : function(x, y, z) {
-			GEPPETTO.getVARS().camera.position.set(x, y, z);
+			GEPPETTO.getVARS().controls.setPosition(x, y, z);
 		},
 
 		/**
 		 * @param rx
 		 * @param ry
 		 * @param rz
+		 * @param radius
 		 */
-		setCameraRotation : function(rx, ry, rz) {
-			GEPPETTO.getVARS().camera.up.set(rx, ry, rz);
+		setCameraRotation : function(rx, ry, rz, radius) {
+			GEPPETTO.getVARS().controls.setRotation(rx, ry, rz, radius);
 		},
 
 		/**

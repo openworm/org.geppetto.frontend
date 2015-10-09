@@ -125,10 +125,11 @@ define(function(require) {
 				/**
 				 * Selects the aspect
 				 *
-				 * @command AspectNode.unselect()
+				 * @command AspectNode.deselect()
 				 *
 				 */
-				select : function() {
+				select : function() 
+				{
 					var message;
 					if (!this.selected) 
 					{
@@ -149,7 +150,6 @@ define(function(require) {
 						GEPPETTO.SceneController.selectAspect(this.instancePath);
 						message = GEPPETTO.Resources.SELECTING_ASPECT + this.instancePath;
 
-
 						//Behavior: if the parent entity has connections change the opacity of what is not connected
 						//Rationale: help exploration of networks by hiding non connected
 						if(this.getParent().getConnections().length>0)
@@ -159,22 +159,24 @@ define(function(require) {
 							var allOtherMeshes= $.extend({}, GEPPETTO.getVARS().meshes);
 							//look on the simulation selection options and perform necessary
 							//operations
-							if(G.getSelectionOptions().show_inputs){
+							if(G.getSelectionOptions().show_inputs)
+							{
 								var inputs=this.getParent().showInputConnections(true);
 								for(var i in inputs)
 								{
 									delete allOtherMeshes[inputs[i]];
 								}
 							}
-							if(G.getSelectionOptions().show_outputs){
-								
+							if(G.getSelectionOptions().show_outputs)
+							{
 								var outputs=this.getParent().showOutputConnections(true);
 								for(var o in outputs)
 								{
 									delete allOtherMeshes[outputs[o]];
 								}
 							}
-							if(G.getSelectionOptions().draw_connection_lines){
+							if(G.getSelectionOptions().draw_connection_lines)
+							{
 								this.getParent().showConnectionLines(true);
 							}
 
@@ -190,28 +192,29 @@ define(function(require) {
 				},
 
 				/**
-				 * Unselects the aspect
+				 * Deselects the aspect
 				 *
-				 * @command AspectNode.unselect()
+				 * @command AspectNode.deselect()
 				 *
 				 */
-				unselect : function() {
+				deselect : function() {
 					var message;
 
 					if (this.selected) {
-						message = GEPPETTO.Resources.UNSELECTING_ASPECT
+						message = GEPPETTO.Resources.DESELECTING_ASPECT
 								+ this.instancePath;
-						GEPPETTO.SceneController.unselectAspect(this.instancePath);
+						GEPPETTO.SceneController.deselectAspect(this.instancePath);
 						this.selected = false;
 						this.getParent().selected = false;
 
-						//don't apply ghost effect to meshes if nothing is left selected after unselecting this entity
-						if(G.getSelection().length ==0)
+						//don't apply ghost effect to meshes if nothing is left selected after deselecting this entity
+						if(G.getSelection().length <=1)
 						{
 							GEPPETTO.SceneController.setGhostEffect(false);
 						}
-						//update ghost effect after unselection of this entity
-						else{
+						else
+						{
+							//update ghost effect after deselection of this entity
 							GEPPETTO.SceneController.setGhostEffect(true);
 						}
 
@@ -241,9 +244,9 @@ define(function(require) {
 				 * @command AspectNode.zoomTo()
 				 *
 				 */
-				 zoomTo : function(){
+				 zoomTo : function()
+				 {
 					 GEPPETTO.SceneController.zoomToMesh(this.instancePath);
-
 					 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.instancePath;
 			     },
 

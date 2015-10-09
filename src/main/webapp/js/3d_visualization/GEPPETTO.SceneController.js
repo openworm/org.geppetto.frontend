@@ -131,7 +131,8 @@ define(function(require) {
 			 * @param {boolean}
 			 *            apply - Turn on or off the ghost effect
 			 */
-			setGhostEffect : function(apply) {
+			setGhostEffect : function(apply) 
+			{
 				GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().meshes, apply);
 				GEPPETTO.SceneController.ghostEffect(GEPPETTO.getVARS().splitMeshes, apply);
 			},
@@ -155,6 +156,7 @@ define(function(require) {
 						{
 							if (child instanceof THREE.Object3D) 
 							{
+								child.ghosted = true;
 								child.traverse(function(object) 
 								{
 									if (object instanceof THREE.Mesh || object instanceof THREE.Line) 
@@ -179,6 +181,7 @@ define(function(require) {
 						{
 							if (child instanceof THREE.Object3D) 
 							{
+								child.ghosted=false;
 								child.traverse(function(object) 
 								{
 									if (object instanceof THREE.Mesh || object instanceof THREE.Line) 
@@ -186,8 +189,7 @@ define(function(require) {
 										if(object.visible)
 										{
 											object.ghosted = false;
-											GEPPETTO.SceneController.setThreeColor(object.material.color,child.material.defaultColor);
-											object.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+											object.material.opacity = object.material.defaultOpacity;
 										}
 									}
 								});
@@ -195,8 +197,7 @@ define(function(require) {
 							else 
 							{
 								child.ghosted = false;
-								GEPPETTO.SceneController.setThreeColor(child.material.color,child.material.defaultColor);
-								child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+								child.material.opacity = child.material.defaultOpacity;
 							}
 						}
 					}
@@ -214,7 +215,6 @@ define(function(require) {
 			 */
 			selectAspect : function(instancePath) 
 			{
-
 				var mesh = GEPPETTO.getVARS().meshes[instancePath];
 				if (mesh != null || undefined) 
 				{
@@ -226,15 +226,18 @@ define(function(require) {
 					{
 						if (mesh instanceof THREE.Object3D) 
 						{
-							mesh.traverse(function(child) {
-										if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
-											GEPPETTO.SceneController.setThreeColor(child.material.color,GEPPETTO.Resources.COLORS.SELECTED);
-											child.material.opacity = Math.max(0.5,child.material.defaultOpacity);
-										}
-									});
+							mesh.traverse(function(child) 
+							{
+								if (child instanceof THREE.Mesh || child instanceof THREE.Line) 
+								{
+									GEPPETTO.SceneController.setThreeColor(child.material.color,GEPPETTO.Resources.COLORS.SELECTED);
+									child.material.opacity = Math.max(0.5,child.material.defaultOpacity);
+								}
+							});
 							mesh.selected = true;
 							mesh.ghosted = false;
-						} else 
+						} 
+						else 
 						{
 							GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.SELECTED);
 							mesh.material.opacity = Math.max(0.5,mesh.material.defaultOpacity);
@@ -248,12 +251,12 @@ define(function(require) {
 			},
 
 			/**
-			 * Unselect aspect, or mesh as far as tree js is concerned.
+			 * Deselect aspect, or mesh as far as tree js is concerned.
 			 * 
 			 * @param {String}
 			 *            instancePath - Path of the mesh/aspect to select
 			 */
-			unselectAspect : function(instancePath) 
+			deselectAspect : function(instancePath) 
 			{
 				// match instancePath to mesh store in variables properties
 				var mesh = GEPPETTO.getVARS().meshes[instancePath];
@@ -446,78 +449,100 @@ define(function(require) {
 			},
 
 			/**
-			 * Takes few paths, 3D point locations, and computes center of it to
-			 * focus camera.
+			 * Zoom to a mesh given the instance path of the aspect to which it belongs
 			 */
-			zoomToMesh : function(path) {
+			zoomToMesh : function(path) 
+			{
 				GEPPETTO.getVARS().controls.reset();
 
-				var aabbMin = null;
-				var aabbMax = null;
-
+				var zoomParameters={};
 				var mesh = GEPPETTO.getVARS().meshes[path];
-				mesh.geometry.computeBoundingBox();
+				mesh.traverse(function(object) 
+				{
+					if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.PointCloud) 
+					{
+						GEPPETTO.SceneController.addMeshToZoom(object, zoomParameters);
+					}
+				});
+				
+				GEPPETTO.SceneController.zoomTo(zoomParameters);
+				
+			},
+			
+			/**
+			 * Zoom to coordinates specified in the zoomParameters dictionary
+			 */
+			zoomTo:function(zoomParameters)
+			{
+				// Compute world AABB center
+				GEPPETTO.getVARS().sceneCenter.x = (zoomParameters.aabbMax.x + zoomParameters.aabbMin.x) * 0.5;
+				GEPPETTO.getVARS().sceneCenter.y = (zoomParameters.aabbMax.y + zoomParameters.aabbMin.y) * 0.5;
+				GEPPETTO.getVARS().sceneCenter.z = (zoomParameters.aabbMax.z + zoomParameters.aabbMin.z) * 0.5;
 
+				GEPPETTO.updateCamera(zoomParameters.aabbMax, zoomParameters.aabbMin)
+			},
+			
+			/**
+			 * To be invoked on a THREE object with a geometry. zoomParameters are updated to take into
+			 * account also this new mesh.
+			 */
+			addMeshToZoom : function(mesh, zoomParameters)
+			{
+				mesh.geometry.computeBoundingBox();
 				aabbMin = mesh.geometry.boundingBox.min;
 				aabbMax = mesh.geometry.boundingBox.max;
 
-				var bb = mesh.geometry.boundingBox;
+				bb = mesh.geometry.boundingBox;
 				bb.translate(mesh.localToWorld(new THREE.Vector3()));
-
-				// Compute world AABB center
-				GEPPETTO.getVARS().sceneCenter = bb.center();
-
-				GEPPETTO.updateCamera(aabbMax, aabbMin);
+				
+				// If min and max vectors are null, first values become default min and max
+				if (zoomParameters.aabbMin == undefined && zoomParameters.aabbMax == undefined) 
+				{
+					zoomParameters.aabbMin = bb.min;
+					zoomParameters.aabbMax = bb.max;
+				}
+				else 
+				{
+					// Compare other meshes, particles BB's to find min and max
+					zoomParameters.aabbMin.x = Math.min(zoomParameters.aabbMin.x, bb.min.x);
+					zoomParameters.aabbMin.y = Math.min(zoomParameters.aabbMin.y, bb.min.y);
+					zoomParameters.aabbMin.z = Math.min(zoomParameters.aabbMin.z, bb.min.z);
+					zoomParameters.aabbMax.x = Math.max(zoomParameters.aabbMax.x, bb.max.x);
+					zoomParameters.aabbMax.y = Math.max(zoomParameters.aabbMax.y, bb.max.y);
+					zoomParameters.aabbMax.z = Math.max(zoomParameters.aabbMax.z, bb.max.z);
+				}
+				
+				return zoomParameters;
 			},
 
 			/**
-			 * Takes few paths, 3D point locations, and computes center of it to
+			 * Takes a path and zoom to all meshes in the scene that descend from it
 			 * focus camera.
+			 * The difference with zoomToMesh is that zoomToMesh only zoom to the one 
+			 * and only mesh identified by the instancePath passed as parameter.
 			 */
-			zoomToMeshes : function(path) {
+			zoomToMeshes : function(path) 
+			{
 				GEPPETTO.getVARS().controls.reset();
 
-				var aabbMin = null;
-				var aabbMax = null;
+				var zoomParameters={};
 
-				for ( var meshInstancePath in GEPPETTO.getVARS().meshes) {
-					var child = GEPPETTO.getVARS().meshes[meshInstancePath];
-					if (child instanceof THREE.Mesh || child instanceof THREE.Line || child instanceof THREE.PointCloud) {
-						if (meshInstancePath.startsWith(path)) {
-							child.geometry.computeBoundingBox();
-
-							var bb = child.geometry.boundingBox;
-							bb.translate(child
-									.localToWorld(new THREE.Vector3()));
-
-							// If min and max vectors are null, first values
-							// become
-							// default min and max
-							if (aabbMin == null && aabbMax == null) {
-								aabbMin = bb.min;
-								aabbMax = bb.max;
+				for ( var meshInstancePath in GEPPETTO.getVARS().meshes) 
+				{
+					var mesh = GEPPETTO.getVARS().meshes[meshInstancePath];
+					if (meshInstancePath.startsWith(path)) 
+					{
+						mesh.traverse(function(object) 
+						{
+							if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.PointCloud) 
+							{
+								GEPPETTO.SceneController.addMeshToZoom(object, zoomParameters);
 							}
-
-							// Compare other meshes, particles BB's to find min
-							// and max
-							else {
-								aabbMin.x = Math.min(aabbMin.x, bb.min.x);
-								aabbMin.y = Math.min(aabbMin.y, bb.min.y);
-								aabbMin.z = Math.min(aabbMin.z, bb.min.z);
-								aabbMax.x = Math.max(aabbMax.x, bb.max.x);
-								aabbMax.y = Math.max(aabbMax.y, bb.max.y);
-								aabbMax.z = Math.max(aabbMax.z, bb.max.z);
-							}
-						}
+						});
 					}
 				}
 
-				// Compute world AABB center
-				GEPPETTO.getVARS().sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
-				GEPPETTO.getVARS().sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
-				GEPPETTO.getVARS().sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
-
-				GEPPETTO.updateCamera(aabbMax, aabbMin)
+				GEPPETTO.SceneController.zoomTo(zoomParameters);
 			},
 
 			/**
@@ -536,11 +561,14 @@ define(function(require) {
 					var mesh = GEPPETTO.getVARS().meshes[paths[e]];
 				
 					// determine whether connection is input or output
-					if (type == GEPPETTO.Resources.INPUT_CONNECTION) {
+					if (type == GEPPETTO.Resources.INPUT_CONNECTION) 
+					{
 						// figure out if connection is both, input and output
-						if (mesh.output) {
+						if (mesh.output) 
+						{
 							GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
-						} else {
+						} else 
+						{
 							GEPPETTO.SceneController.setThreeColor(mesh.material.color,GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
 						}
 						mesh.input = true;

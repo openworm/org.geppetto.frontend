@@ -56,9 +56,25 @@ define([ 'jquery', 'underscore', 'backbone',
 		 *                           node
 		 */
 		initialize : function(options) {
+			for(var experiment in this.experiments)
+			{
+				//this should not exist. MVC an experiment disappears from the model and it should disappear from the view. 
+				this.experiments[experiment].terminateWorker();
+				GEPPETTO.FE.deleteExperimentFromTable(this.experiments[experiment].id);
+				delete this.experiments[experiment];
+			}
+			for(var entity in this.runTimeTree)
+			{
+				GEPPETTO.Console.removeCommands(entity);
+			};
+
 			this.experiments = new Array();
-			this.name = options.name;
-			this.id = options.id;
+			this.runTimeTree={};
+			if(options)
+			{
+				this.name = options.name;
+				this.id = options.id;
+			}
 		},
 
 		/**
@@ -184,6 +200,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		loadFromID: function(projectID,experimentID) {
 			//TODO: Add logic for what happens after loading a new project
 			//when one is already loaded
+			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
 			if(projectID != null && projectID != "") {
@@ -213,6 +230,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		loadFromURL: function(projectURL) {
 			//TODO: Add logic for what happens after loading a new project
 			//when one is already loaded
+			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
 			if(projectURL != null && projectURL != "") {
@@ -243,6 +261,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		loadFromContent: function(content) {
 			//TODO: Add logic for what happens after loading a new project
 			//when one is already loaded
+			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
 			if(content != null && content != "") {

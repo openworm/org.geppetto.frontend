@@ -31,12 +31,30 @@ define(function(require) {
 					for ( var a in aspects) {
 						var aspect = aspects[a];
 						var meshes = GEPPETTO.SceneFactory.generate3DObjects(aspect);
-						for ( var m in meshes) {
-							var mesh = meshes[m];
-							mesh.name = aspect.instancePath;
+						GEPPETTO.SceneFactory.init3DObject(meshes, aspect.instancePath, position);
+					}
+					//load children entities
+					for ( var c =0 ; c< children.length; c++) {
+						GEPPETTO.SceneFactory.loadEntity(children[c]);
+					}
+
+					
+				},
+				
+				/**
+				 * Initializes a group of meshes that were created and adds them to the 3D scene
+				 * @param {Object} meshes - The meshes that need to be initialized
+				 */
+				init3DObject : function(meshes, instancePath, position)
+				{
+					for ( var m in meshes) {
+						var mesh = meshes[m];
+						if(!Array.isArray(mesh))
+						{
+							mesh.instancePath = instancePath;
+							//if the model file is specifying a position for the loaded meshes then we translate them here
 							if (position != null) {
-								p = new THREE.Vector3(position.x, position.y,
-										position.z);
+								p = new THREE.Vector3(position.x, position.y,position.z);
 								mesh.position.set(p.x,p.y,p.z);
 								mesh.matrixAutoUpdate = false;
 								mesh.applyMatrix(new THREE.Matrix4().makeTranslation(p.x,p.y,p.z));
@@ -49,24 +67,20 @@ define(function(require) {
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].visible = true;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].ghosted = false;
+							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].defaultOpacity = 1;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].selected = false;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].input = false;
 							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].output = false;
 						}
 					}
-					//load children entities
-					for ( var c =0 ; c< children.length; c++) {
-						GEPPETTO.SceneFactory.loadEntity(children[c]);
-					}
-
-					GEPPETTO.getVARS().scene.updateMatrixWorld(true);
 				},
 
 				/**
 				 * Updates the scene
 				 * @param {Object} newRuntimeTree - New update received to update the 3D scene
 				 */
-				updateScene : function(newRuntimeTree) {
+				updateScene : function(newRuntimeTree) 
+				{
 					var entities = newRuntimeTree;
 					//traverse entities in updated tree
 					for ( var eindex in entities) {
@@ -101,7 +115,8 @@ define(function(require) {
 				},
 
 
-				updateGeometry : function(g) {
+				updateGeometry : function(g) 
+				{
 					var threeObject = GEPPETTO.getVARS().visualModelMap[g.instancePath];
 					if (threeObject) {
 						if (threeObject instanceof THREE.Vector3) {
@@ -110,27 +125,66 @@ define(function(require) {
 							threeObject.z = g.position.z;
 						} else {
 							// update the position
-							threeObject.position.set(g.position.x, g.position.y,
-									g.position.z);
+							threeObject.position.set(g.position.x, g.position.y, g.position.z);
 						}
 					}
 				},
 				
-				generate3DObjects : function(aspect) {
+				generate3DObjects : function(aspect, lines, thickness) {
+					var previous3DObject = GEPPETTO.getVARS().meshes[aspect.getInstancePath()];
+					if(previous3DObject)
+					{
+						//if an object already exists for this aspect we remove it. This could happen in case we are changing how an aspect
+						//is visualized, e.g. lines over tubes representation
+						GEPPETTO.getVARS().scene.remove(previous3DObject);
+						var splitMeshes=GEPPETTO.getVARS().splitMeshes;
+						for(var m in splitMeshes)
+						{
+							if(m.indexOf(aspect.getInstancePath())!=-1)
+							{
+								GEPPETTO.getVARS().scene.remove(splitMeshes[m]);
+								splitMeshes[m] = null;
+							}
+						}
 
+						
+					}
 					var materials = {
 							"mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(),
+							"line": GEPPETTO.SceneFactory.getLineMaterial(thickness),
 							"particle": GEPPETTO.SceneFactory.getParticleMaterial()
 					};
 					var aspectObjects = [];
-					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(aspect.VisualizationTree.content, materials);
+					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(aspect.VisualizationTree.content, materials, lines);
 
 					//only merge if there are more than one object
 					if(threeDeeObjList.length > 1){
 						var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
 						//investigate need to obj.dispose for obj in threeDeeObjList
-						mergedObjs.aspectInstancePath = aspect.instancePath;
-						aspectObjects.push(mergedObjs);
+						if(mergedObjs!=null)
+						{
+							if(Array.isArray(mergedObjs))
+							{
+								for(var o in mergedObjs)
+								{
+									mergedObjs[o].aspectInstancePath = aspect.instancePath;
+									aspectObjects.push(mergedObjs[o]);
+								}
+							}
+							else
+							{
+								mergedObjs.aspectInstancePath = aspect.instancePath;
+								aspectObjects.push(mergedObjs);
+							}
+						}
+						else
+						{
+							for(var obj in threeDeeObjList)
+							{
+								threeDeeObjList[obj].aspectInstancePath = aspect.instancePath;
+								aspectObjects.push(threeDeeObjList[obj]);
+							}
+						}
 					}else if(threeDeeObjList.length == 1){
 						//only one object in list, add it to local array and set 
 						//instance path from aspect
@@ -141,7 +195,7 @@ define(function(require) {
 					return aspectObjects;
 				},
 
-				walkVisTreeGen3DObjs: function(visTree, materials) {
+				walkVisTreeGen3DObjs: function(visTree, materials, lines) {
 					var threeDeeObj = null;
 					var threeDeeObjList = [];
 
@@ -149,13 +203,13 @@ define(function(require) {
 					{
 						$.each(visTree, function(key, node) {
 							if(node._metaType === 'CompositeNode'){
-								var objects  = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(node, materials);
+								var objects  = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(node, materials, lines);
 								for(var i =0; i<objects.length; i++){
 									threeDeeObjList.push(objects[i]);
 								}
 							}
 							else{
-								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(node, materials)
+								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(node, materials, lines)
 								if(threeDeeObj){
 									threeDeeObjList.push(threeDeeObj);
 								}
@@ -171,22 +225,61 @@ define(function(require) {
 					//TODO: assuming that all objects have the same type, check!
 					objType = objArray[0].type;
 					var mergedMeshesPaths = [];
+					var combined = new THREE.Geometry();
 					var ret = null;
+					var lines=true;
 
 					switch (objType){
 					case "CylinderNode":
 					case "SphereNode":
-						var merged = new THREE.Geometry();
+						var mergedLines;
+						var mergedMeshes;
 						objArray.forEach(function(obj){
-							obj.geometry.dynamic = true;
-							obj.geometry.verticesNeedUpdate = true;
-							obj.updateMatrix();
-							merged.merge(obj.geometry, obj.matrix);
-							mergedMeshesPaths.push(obj.instancePath);
+							if(obj instanceof THREE.Line)
+							{
+								if(mergedLines===undefined)
+								{
+									mergedLines=new THREE.Geometry()
+								}
+								mergedLines.vertices.push(obj.geometry.vertices[0]);
+								mergedLines.vertices.push(obj.geometry.vertices[1]);
+							}
+							else
+							{
+								if(mergedMeshes===undefined)
+								{
+									mergedMeshes=new THREE.Geometry()
+								}
+								obj.geometry.dynamic = true;
+								obj.geometry.verticesNeedUpdate = true;
+								obj.updateMatrix();
+								mergedMeshes.merge(obj.geometry, obj.matrix);
+							}
+							mergedMeshesPaths.push(obj.instancePath);	
+							
 						});
-						//TODO: do we really want to create a _mesh_ for the merged objs?
-						var meshWithAll = new THREE.Mesh(merged, materials["mesh"]);
-						ret = meshWithAll;
+
+						if(mergedLines===undefined)
+						{
+							//There are no line gemeotries, we just create a mesh for the merge of the solid geometries
+							//and apply the mesh material
+							ret = new THREE.Mesh( mergedMeshes,materials["mesh"]);
+						}
+						else
+						{
+							if(mergedMeshes===undefined)
+							{
+								ret = new THREE.Line(mergedLines, materials["line"], THREE.LinePieces);
+							}
+							else
+							{
+								ret=[];
+								ret[0] = new THREE.Mesh( mergedMeshes,materials["line"]);
+								ret[1] = new THREE.Line(mergedLines, materials["line"], THREE.LinePieces);
+							}
+						}
+					 
+
 						break;
 					case "ParticleNode":
 						var particleGeometry = new THREE.Geometry();
@@ -205,28 +298,49 @@ define(function(require) {
 						ret = objArray[0];
 						break;
 					}
-					ret.mergedMeshesPaths = mergedMeshesPaths;
+					if(ret!=null)
+					{
+						ret.mergedMeshesPaths = mergedMeshesPaths;	
+					}
+					
 
 					return ret;
 
 				},
 
 
-				visualizationTreeNodeTo3DObj: function(node, materials) {
+				visualizationTreeNodeTo3DObj: function(node, materials, lines) {
 					var threeObject = null;
+					if(lines===undefined)
+					{
+						//Unless it's being forced we use a threshold to decide whether to use lines or cylinders
+						lines=GEPPETTO.SceneController.complexity>2000;
+					}
 					switch (node._metaType) {
 					case "ParticleNode" : 
 						threeObject = GEPPETTO.SceneFactory.createParticle(node);
 						break;
 
 					case "CylinderNode":
-						threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
+						if(lines){
+							threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
+						}
+						else
+						{
+							threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
+						}
 						break;
 
-					case "SphereNode":
+					case "SphereNode":						
+					if(lines){
+						threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
+					}
+					else
+					{
+						
 						threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, materials["mesh"]);
-						break;
-
+					}
+					break;
 					case "ColladaNode":
 						threeObject = GEPPETTO.SceneFactory.loadColladaModelFromNode(node);
 						break;
@@ -284,6 +398,7 @@ define(function(require) {
 						if(child instanceof THREE.Mesh){
 							child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 							child.material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+							child.material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 							child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 						}
 					});
@@ -307,6 +422,49 @@ define(function(require) {
 				},
 
 
+				/**
+				 * Creates and positions a ThreeJS line object from a Geppetto Cylinder node
+				 * 
+				 * @param {VisualObjectNode} cylNode - a Geppetto Cylinder Node
+				 * @param {ThreeJSMaterial} material - Material to be used for the Mesh
+				 * @returns a ThreeJS line correctly positioned w.r.t the global frame of reference
+				 */
+				create3DLineFromNode : function(node, material) {
+					if(node._metaType=="CylinderNode")
+					{
+						bottomBasePos = new THREE.Vector3(node.position.x,
+								node.position.y,
+								node.position.z);
+						topBasePos = new THREE.Vector3(node.distal.x,
+								node.distal.y,
+								node.distal.z);
+						
+						var axis = new THREE.Vector3();
+						axis.subVectors(topBasePos, bottomBasePos);
+						var midPoint = new THREE.Vector3();
+						midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
+	
+	
+						var geometry = new THREE.Geometry();
+					    geometry.vertices.push(bottomBasePos);
+					    geometry.vertices.push(topBasePos);
+						var threeObject = new THREE.Line(geometry, material);
+						threeObject.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+						threeObject.lookAt(axis);
+						threeObject.position.fromArray(midPoint.toArray());
+	
+						threeObject.geometry.verticesNeedUpdate = true;
+					}
+					else if(node._metaType=="SphereNode")
+					{
+						var sphere = new THREE.SphereGeometry(node.radius, 20, 20);
+						threeObject = new THREE.Mesh(sphere, material);
+						threeObject.position.set(node.position.x, node.position.y, node.position.z);
+						threeObject.geometry.verticesNeedUpdate = true;
+					}
+					return threeObject;
+				},	
+				
 				/**
 				 * Creates and positions a ThreeJS cylinder object from a Geppetto Cylinder node
 				 * 
@@ -363,6 +521,19 @@ define(function(require) {
 					threeObject.geometry.verticesNeedUpdate = true;
 					return threeObject;
 				},	
+				
+				getLineMaterial : function(thickness) {
+				    var options={};
+				    if(thickness)
+			    	{
+				    	options.linewidth=thickness;
+			    	}
+					var material = new THREE.LineBasicMaterial(options);
+					material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+					material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+					material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+					return material;
+				},
 
 				getMeshPhongMaterial : function(shine) {
 					if(shine==undefined)
@@ -378,8 +549,10 @@ define(function(require) {
 
 					material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 					material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+					material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 					return material;
 				},
+				
 				getParticleMaterial : function(){
 					var pMaterial = new THREE.PointCloudMaterial({
 						size : 5,
@@ -392,6 +565,7 @@ define(function(require) {
 					pMaterial.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
 					pMaterial.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
 					pMaterial.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+					pMaterial.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 					return pMaterial;
 				}
 		};

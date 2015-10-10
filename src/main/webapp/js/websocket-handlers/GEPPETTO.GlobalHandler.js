@@ -47,7 +47,9 @@ define(function(require)
 			CLIENT_ID : "client_id",
 			RELOAD_CANVAS : "reload_canvas",
 			ERROR_LOADING_SIM : "error_loading_simulation",
+			ERROR_LOADING_PROJECT : "error_loading_project",
 			ERROR_DOWNLOADING_MODEL : "error_downloading_model",
+			ERROR_DOWNLOADING_RESULTS : "error_downloading_results",
 			ERROR : "generic_error",
 			INFO_MESSAGE : "info_message",
 			GEPPETTO_VERSION : "geppetto_version",
@@ -86,12 +88,26 @@ define(function(require)
 			GEPPETTO.trigger('geppetto:error', payload.message);
 			GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INVALID_SIMULATION_FILE, payload.message);
 		};
+		
+		// Error loading simulation, invalid url or simulation file
+		messageHandler[messageTypes.ERROR_LOADING_PROJECT] = function(payload)
+		{
+			GEPPETTO.trigger('geppetto:error', payload.message);
+			GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_LOADING_PROJECT, payload.message);
+		};
 
 		// Error loading simulation, invalid url or simulation file
 		messageHandler[messageTypes.ERROR_DOWNLOADING_MODEL] = function(payload)
 		{
 			GEPPETTO.trigger('geppetto:error', payload.message);
 			GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_DOWNLOADING_MODEL, payload.message);
+		};
+		
+		// Error loading simulation, invalid url or simulation file
+		messageHandler[messageTypes.ERROR_DOWNLOADING_RESULTS] = function(payload)
+		{
+			GEPPETTO.trigger('geppetto:error', payload.message);
+			GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_DOWNLOADING_RESULTS, payload.message);
 		};
 		
 		// Error loading simulation, invalid url or simulation file

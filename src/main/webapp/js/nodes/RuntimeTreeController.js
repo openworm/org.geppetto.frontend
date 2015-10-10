@@ -90,11 +90,11 @@ define(function(require)
 					{
 						var entityNode = GEPPETTO.NodeFactory.createEntityNode(node);
 
-						runTimeRef[id] = entityNode;
+						runTimeRef[node.id] = entityNode;
 						entityNode.setParent(parentNode);
 						parentNode.getEntities().push(entityNode);
 
-						this.traverseEntities(node, entityNode);
+						this.traverseEntities(node, entityNode, runTimeRef[node.id]);
 					}
 				}
 			},

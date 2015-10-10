@@ -74,12 +74,47 @@ public class Application
 		return "redirect:http://geppetto.org";
 	}
 
-	@RequestMapping(value = "/GeppettoTests.html", method = RequestMethod.GET)
-	public String test()
+	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
+	public String testNeuronal()
 	{
-		return "dist/geppettotests";
+		return "dist/GeppettoNeuronalTests";
+	}
+	
+	@RequestMapping(value = "/GeppettoNeuronalSimulationTests.html", method = RequestMethod.GET)
+	public String testNeuronalSimulation()
+	{
+		return "dist/GeppettoNeuronalSimulationTests";
+	}
+	
+	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
+	public String testCore()
+	{
+		return "dist/GeppettoCoreTests";
+	}
+	
+	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
+	public String testPersistence()
+	{
+		return "dist/GeppettoPersistenceTests";
+	}
+	
+	@RequestMapping(value = "/GeppettoFluidDynamicsTests.html", method = RequestMethod.GET)
+	public String testFluidDynamics()
+	{
+		return "dist/GeppettoFluidDynamicsTests";
 	}
 
+	@RequestMapping(value = "/GeppettoAllTests.html", method = RequestMethod.GET)
+	public String runTests()
+	{
+		return "dist/GeppettoAllTests";
+	}
+	
+	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)
+	public String tests()
+	{
+		return "dist/Tests";
+	}
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String dashboard()

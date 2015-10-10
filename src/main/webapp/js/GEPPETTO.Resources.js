@@ -47,13 +47,13 @@ define(function(require) {
 	return function(GEPPETTO) {
 
 		GEPPETTO.Resources = {
-				
+
 			COLORS : {
 					DEFAULT : "0X199e8",
 					SELECTED : "0Xffcc00",
 					INPUT_TO_SELECTED : "0Xffdfc6",
 					OUTPUT_TO_SELECTED : "0Xff5a02",
-					HIGHLIGHTED : "0Xff1a02", 
+					HIGHLIGHTED : "0Xff1a02",
 					INPUT_AND_OUTPUT : "0X649615",
 					SPLIT : "0XCFCFA6",
 					ENTITY_NODE: "0xcc0000",
@@ -95,11 +95,11 @@ define(function(require) {
 			},
 
 			PROJECT_LOADED: "Project Loaded",
-			
+
 			EXPERIMENT_CREATED: "New experiment created",
-			
+
 			EXPERIMENT_DELETED: "Experiment Deleted",
-			
+
 			UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
 
 			EXPERIMENT_PAUSED: "Experiment Paused",
@@ -111,7 +111,7 @@ define(function(require) {
 			LOADING_PROJECT: "Loading Project",
 
 			LOADING_SIMULATION_SLOW : "Still loading, but things are taking longer than expected, are you on low bandwidth?",
-			
+
 			SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
 
 			SIMULATION_NOT_LOADED: "Unable to stop simulation that hasn't been loaded",
@@ -119,7 +119,7 @@ define(function(require) {
 			SIMULATION_UNSPECIFIED: "Simulation not specified",
 
 			SIMULATION_ALREADY_STOPPED: "Simulation was already stopped",
-			
+
 			SIMULATION_ALREADY_STARTED: "Simulation was already started",
 
 			LOADING_FROM_CONTENT: "Outbound Message Sent: Load Simulation from editing console",
@@ -172,71 +172,77 @@ define(function(require) {
 			SHOW_CONSOLE: "Showing Console",
 
 			HIDE_CONSOLE: "Hiding Console",
-			
+
 			CONSOLE_ALREADY_VISIBLE: "Console is already visible",
 
 			CONSOLE_ALREADY_HIDDEN: "Console is already hidden",
-			
+
 			SHOW_SHAREBAR: "Showing ShareBar",
 
 			HIDE_SHAREBAR: "Hiding ShareBar",
-			
+
 			SHAREBAR_ALREADY_VISIBLE: "ShareBar is already visible",
 
 			SHAREBAR_ALREADY_HIDDEN: "Sharebar is already hidden",
-			
+
 			SHARE_ON_TWITTER : "Sharing Geppetto on Twitter",
-			
+
 			SHARE_ON_FACEBOOK : "Sharing Geppetto on Facebook",
-			
+
 			SHOW_HELP_WINDOW: "Showing Help Window",
 
 			HIDE_HELP_WINDOW: "Hiding Help Window",
-			
+
 			HELP_ALREADY_VISIBLE: "Help Window is already visible",
 
 			HELP_ALREADY_HIDDEN: "Help Window is already hidden",
-			
+
 			CAMERA_PAN_INCREMENT: "Panning increment",
-			
+
 			CAMERA_ROTATE_INCREMENT: "Rotation increment",
-			
+
 			CAMERA_ZOOM_INCREMENT: "Zoom increment",
-			
+
+			CAMERA_SET_POSITION: "Set position",
+
+			CAMERA_SET_ROTATION: "Set rotation",
+
 			CAMERA_RESET: "Camera reset",
-			
+
 			/**
 			 * Node resources
 			 */
 
 			RETRIEVING_MODEL_TREE : 'Model tree requested',
-			
+
 			RETRIEVING_SIMULATION_TREE : 'Simulation tree requested',
-			
+
 			EMPTY_MODEL_TREE : 'Model is empty, nothing to see here.',
-			
+
 			EMPTY_SIMULATION_TREE : 'No variables to simulate.',
-			
+
 			SIMULATION_TREE_POPULATED : 'Simulation tree populated.',
-			
+
 			SIMULATION_TREE_RECEIVED : 'Requested simulation tree received.',
-			
+
 			NO_SIMULATION_TREE : 'Simulation tree is not available.',
-			
+
 			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',
 
 			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
-			
-			DOWNLOADING_MODEL : 'Downloading model as ',	
-			
+
+			DOWNLOADING_MODEL : 'Downloading model as ',
+
 			ERROR_DOWNLOADING_MODEL : "Error downloading model",
+
+			ERROR_LOADING_PROJECT : "Error loading project",
 			
 			RETRIEVING_SUPPORTED_OUTPUTS : 'Supported outputs requested',
-			
+
 			EXPERIMENT_NOT_COMPLETED_UPLOAD : "Can't upload results for an experiment that isn't completed",
-			
+
 			UNACTIVE_EXPERIMENT_UPLOAD : "Unable to upload results for experiment that isn't active",
-			
+
 			/**
 			 * GEPPETTO.Main resources
 			 */
@@ -253,9 +259,9 @@ define(function(require) {
 			CLEAR_CANVAS: "Inbound Message Received: Clear canvas",
 
 			INVALID_SIMULATION_FILE: "Invalid Simulation File",
-			
+
 			INCOMING_MESSAGE: "Incoming message...",
-			
+
 			ERROR: "Houston, we have a problem",
 
 			INVALID_WATCH_LIST: "Invalid Watch List",
@@ -267,16 +273,16 @@ define(function(require) {
 			SERVER_UNAVAILABLE: "Server Unavailable",
 
 			SERVER_AVAILABLE: "Server Available",
-			
+
 			SIMULATOR_FULL : "Simulation Full",
 
 			WEBGL_FAILED: "Initialization Error: Unable to initialize WebGL",
-			
+
 			WEBGL_MESSAGE : "Unable to detect WebGl in your browser. \n" +
 						"Try updating your browser and video card drivers to resolve issue",
-						
+
 			WORKERS_NOT_SUPPORTED: "Initialization Error: WebWorkers not suported",
-			
+
 			WORKERS_NOT_SUPPORTED_MESSAGE : "Unable to detect WebWorkers support in your browser. Try any browser that is not from the stone age.",
 
 			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
@@ -286,15 +292,15 @@ define(function(require) {
 			SIMULATOR_UNAVAILABLE: " is Unavailable",
 
 			WEBSOCKET_CONNECTION_ERROR: "Server Connection Error",
-			
+
 			STOP_SIMULATION_TUTORIAL : "Tutorial Starting",
-			
+
 			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
 					" Okay and enjoy the show!",
-					
+
 			SELECTING_ENTITY : "Selecting entity ",
-			UNSELECTING_ENTITY : "Unselecting entity ",
-			UNSELECT_ALL : "Unselecting all entities ",
+			DESELECTING_ENTITY : "Deselecting entity ",
+			DESELECT_ALL : "Deselecting all entities ",
 			UNHIGHLIGHT_ALL : "Unhighlighting all connections ",
 			CANT_FIND_ENTITY : "Entity not found, can't use selection on it",
 			NO_ENTITIES_SELECTED : "No entities are currently selected.",
@@ -303,10 +309,10 @@ define(function(require) {
 			ZOOM_TO_ENTITY : "Zooming to entity ",
 			HIGHLIGHTING : "Highlighting object ",
 			NO_REFERENCES_TO_HIGHLIGHT : "Connection has no Visual References to highlight.",
-			ENTITY_ALREADY_SELECTED : "Entity already selected",	
+			ENTITY_ALREADY_SELECTED : "Entity already selected",
 			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
 			SELECTING_ASPECT : "Selecting aspect ",
-			UNSELECTING_ASPECT : "Unselecting aspect ",
+			DESELECTING_ASPECT : "Deselecting aspect ",
 			SHOW_ASPECT : "Showing aspect ",
 			HIDE_ASPECT : "Hiding aspect ",
 			ZOOM_TO_ASPECT : "Zooming to aspect ",
@@ -317,7 +323,7 @@ define(function(require) {
 			NO_VISUAL_GROUP_ELEMENTS : "No elements inside visual group to show ",
 			MISSING_PARAMETER : "Command is missing parameter.",
 
-			
+
 			/**
 			 * GEPPETTO resources
 			 */
@@ -358,14 +364,14 @@ define(function(require) {
 			 * Socket Messages
 			 */
 			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto. \nReload page if problems persits",
-			
+
 			/**
 			 * Node Resources
 			 */
 			PROJECT_NODE : "ProjectNode",
 			EXPERIMENT_NODE : "ExperimentNode",
 			SIMULATOR_CONFIGURATION_NODE : "SimulatorConfigurationNode",
-			ENTITY_NODE : "EntityNode", 
+			ENTITY_NODE : "EntityNode",
 			ASPECT_NODE : "AspectNode",
 			ASPECT_SUBTREE_NODE : "AspectSubTreeNode",
 			VARIABLE_NODE : "VariableNode",

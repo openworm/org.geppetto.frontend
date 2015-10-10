@@ -35,7 +35,7 @@
  *
  * Global objects. Handles global operations; clearing js console history commands,
  * turning on/off debug statements, copying history commands, help info, etc.
- * 
+ *
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
@@ -55,7 +55,6 @@ define(function(require) {
 				show_inputs : true,
 				show_outputs : true,
 				draw_connection_lines : true,
-				hide_not_selected : false
 			},
 			highlightedConnections : [],
 			addWidget: function(type) {
@@ -174,7 +173,7 @@ define(function(require) {
 			    }
 			    return "";
 			},
-			
+
 			/**
 			 * Get all commands and descriptions available for object G.
 			 *
@@ -184,7 +183,7 @@ define(function(require) {
 			help: function() {
 				return GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/geppetto-objects/G.js", GEPPETTO.G, "G");
 			},
-			
+
 			setIdleTimeOut : function(timeOut){
 				GEPPETTO.Main.idleTime = timeOut;
 			},
@@ -233,7 +232,7 @@ define(function(require) {
 
 				return returnMessage;
 			},
-			
+
 			/**
 			 * Show or hide share bar
 			 *
@@ -245,7 +244,7 @@ define(function(require) {
 
 				if(mode) {
 					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;
-					
+
 					//show share bar
 					if(!GEPPETTO.Share.isVisible()){
 						$("#geppetto-share").toggleClass("clicked");
@@ -258,7 +257,7 @@ define(function(require) {
 					}
 				}
 				else {
-					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;					
+					returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;
 					//hide share bar
 					if(GEPPETTO.Share.isVisible()){
 						$("#geppetto-share").toggleClass("clicked");
@@ -269,11 +268,11 @@ define(function(require) {
 					else{
 						returnMessage = GEPPETTO.Resources.SHAREBAR_ALREADY_HIDDEN;
 					}
-				}				
+				}
 
 				return returnMessage;
 			},
-			
+
 			/**
 			 * Show or hide help window using command
 			 *
@@ -287,7 +286,7 @@ define(function(require) {
 	                GEPPETTO.trigger('simulation:show_helpwindow');
 					returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
 				}
-				else {	                
+				else {
 					var modalVisible = $('#help-modal').hasClass('in');
 					//don't try to hide already hidden help window
 					if(!modalVisible){
@@ -302,7 +301,7 @@ define(function(require) {
 				}
 				return returnMessage;
 			},
-			
+
 			/**
 			 * Opens window to share geppetto on twitter
 			 * @command G.shareOnTwitter()
@@ -314,32 +313,32 @@ define(function(require) {
 				//shareURL = "http://live.geppeto.org//?sim=" + GEPPETTO.Simulation.simulationURL;
 
 				GEPPETTO.Share.twitter(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!');
-			
+
 				return GEPPETTO.Resources.SHARE_ON_TWITTER;
 			},
-			
+
 			/**
 			 * Opens window to share facebook on twitter
-			 * 
+			 *
 			 * @command - G.shareOnFacebook()
 			 */
 			shareOnFacebook : function(){
 				var shareURL = 'http://geppetto.org';
-				
+
 				//TODO: How to share experiment url in FB, used to be simulation URL
 				//shareURL = "http://live.geppeto.org/?sim=" + GEPPETTO.Simulation.simulationURL;
-				
-				GEPPETTO.Share.facebook(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','');			
-				
+
+				GEPPETTO.Share.facebook(shareURL,'Check out Geppetto, the opensource simulation platform powering OpenWorm!','http://www.geppetto.org/images/sph9.png','');
+
 				return GEPPETTO.Resources.SHARE_ON_FACEBOOK;
 			},
-			
+
 			/**
-			 * Shows a popup widget, used to display a message. 
-			 * 
+			 * Shows a popup widget, used to display a message.
+			 *
 			 * @param {Integer} x - x coordinate of popup widget position
 			 * @param {Integer} y - y coordinate of popup widget position
-			 * @param {Strin} message - Message to display inside widget 
+			 * @param {Strin} message - Message to display inside widget
 			 */
 			showPopup : function(x,y,message){
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(GEPPETTO.Widgets.POPUP);
@@ -380,21 +379,21 @@ define(function(require) {
 					var parameters = {};
 					parameters["key"] = key;
 					GEPPETTO.MessageSocket.send("link_dropbox", parameters);
-					
+
 					return  "Sending request to link dropbox to Geppetto";
 				}
 				else{
-					var dropboxURL = 
+					var dropboxURL =
 						"https://www.dropbox.com/1/oauth2/authorize?locale=en_US&client_id=kbved8e6wnglk4h&response_type=code";
 					var win=window.open(dropboxURL, '_blank');
 					win.focus();
 				}
 			},
-			
+
 			unLinkDropBox : function() {
-				
+
 			},
-			
+
 			/**
 			 * State of debug statements, whether they are turned on or off.
 			 *
@@ -403,7 +402,7 @@ define(function(require) {
 			isDebugOn: function() {
 				return debugMode;
 			},
-			
+
 			/**
 			 * Resets Camera to initial position - same as after loading.
 			 *
@@ -411,10 +410,10 @@ define(function(require) {
 			 */
 			resetCamera: function() {
 				GEPPETTO.resetCamera();
-				
+
 				return GEPPETTO.Resources.CAMERA_RESET;
 			},
-			
+
 			/**
 			 * Increments camera pan.
 			 *
@@ -424,10 +423,10 @@ define(function(require) {
 			 */
 			incrementCameraPan: function(x, y) {
 				GEPPETTO.incrementCameraPan(x, y);
-				
+
 				return GEPPETTO.Resources.CAMERA_PAN_INCREMENT;
 			},
-			
+
 			/**
 			 * Increments camera rotation.
 			 *
@@ -438,10 +437,10 @@ define(function(require) {
 			 */
 			incrementCameraRotate: function(x, y, z) {
 				GEPPETTO.incrementCameraRotate(x, y, z);
-				
+
 				return GEPPETTO.Resources.CAMERA_ROTATE_INCREMENT;
 			},
-			
+
 			/**
 			 * Increments camera zoom.
 			 *
@@ -450,10 +449,40 @@ define(function(require) {
 			 */
 			incrementCameraZoom: function(z) {
 				GEPPETTO.incrementCameraZoom(z);
-				
+
 				return GEPPETTO.Resources.CAMERA_ZOOM_INCREMENT;
 			},
-			
+
+			/**
+			 * Sets the camera position
+			 *
+			 * @command - G.setCameraPosition()
+			 * @param {Integer} x - new x axis position for the camera
+			 * @param {Integer} y - new y axis position for the camera
+			 * @param {Integer} z - new z axis position for the camera
+			 */
+			setCameraPosition: function(x, y, z) {
+				GEPPETTO.setCameraPosition(x, y, z);
+
+				return GEPPETTO.Resources.CAMERA_SET_POSITION;
+			},
+
+			/**
+			 * Sets the camera rotation
+			 *
+			 * @command - G.setCameraRotation()
+			 * @param {Integer} rx - x euler angle for the rotation
+			 * @param {Integer} ry - y euler angle for the rotation
+			 * @param {Integer} rz - z euler angle for the rotation
+			 * @param {Integer} a  - trackball's radius
+			 */
+			setCameraRotation: function(rx, ry, rz, a) {
+				GEPPETTO.setCameraRotation(rx, ry, rz, a);
+
+				return GEPPETTO.Resources.CAMERA_SET_ROTATION;
+			},
+
+
 			/**
 			 * Callback to be called whenever a watched node changes
 			 *
@@ -463,19 +492,19 @@ define(function(require) {
 			addOnNodeUpdatedCallback: function(varnode, callback) {
 				this.listeners[varnode.instancePath] = callback;
 			},
-			
+
 			/**
-			 * Clears callbacks coupled to changes in a node 
-			 * 
+			 * Clears callbacks coupled to changes in a node
+			 *
 			 * @param {VariableNode} varnode - VariableNode to which callbacks are coupled
 			 */
 			clearOnNodeUpdateCallback: function(varnode) {
 				this.listeners[varnode.instancePath] = null;
 			},
-			
+
 			/**
 			 * Applies visual transformations to a given entity given instance path of the transformations.
-			 * 
+			 *
 			 * @param {AspectNode} visualAspect - Aspect for the entity the visual transformation is to be applied to
 			 * @param {SkeletonAnimationNode} visualTransformInstancePath - node that stores the visual transformations
 			 */
@@ -484,14 +513,14 @@ define(function(require) {
 			    	GEPPETTO.SceneController.applyVisualTransformation(visualAspect, varnode.skeletonTransformations[step]);
 				});
 			},
-			
+
 			/**
 			 * Modulates the brightness of an aspect visualization, given a watched node
 			 * and a normalization function. The normalization function should receive
 			 * the value of the watched node and output a number between 0 and 1,
 			 * corresponding to min and max brightness. If no normalization function is
 			 * specified, then brightness = value
-			 * 
+			 *
 			 * @param {AspectNode} aspect - Aspect which contains the entity to be lit
 			 * @param {VariableNode} modulation - Variable which modulates the brightness
 			 * @param {Function} normalizationFunction
@@ -506,7 +535,7 @@ define(function(require) {
 			clearBrightnessFunctions: function(varnode) {
 				this.clearOnNodeUpdateCallback(varnode);
 			},
-			
+
 			/**
 			 * Dynamically change the visual representation of an aspect,
 			 * modulated by the value of a watched node. The _transformation_
@@ -515,24 +544,24 @@ define(function(require) {
 			 * which can be normalized via the _normalization_ function. The
 			 * latter is a function which receives the watched node's value
 			 * an returns a float between 0 and 1.
-			 * 
+			 *
 			 * @param {AspectNode} visualAspect - Aspect which contains the VisualizationTree with the entity to be dynamically changed
 			 * @param {String} visualEntityName - Name of visual entity in the visualAspect VisualizationTree
 			 * @param {VariableNode} dynVar - Dynamical variable which will modulate the transformation
 			 * @param {Function} transformation - Transformation to act upon the visualEntity, given the modulation value
 			 * @param {Function} normalization - Function to be applied to the dynamical variable, normalizing it to a suitable range according to _transformation_
-			 */	
+			 */
 			addDynamicVisualization: function(visualAspect, visualEntityName, dynVar, transformation, normalization){
-				//TODO: things should be VisualizationTree centric instead of aspect centric...  
+				//TODO: things should be VisualizationTree centric instead of aspect centric...
 		    	this.addOnNodeUpdatedCallback(dynVar, function(watchedNode){
 		    		transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0].getValue()) : watchedNode.getTimeSeries()[0].getValue());});
 			},
 
 			/**
-			 * Sets options that happened during selection of an entity. For instance, 
+			 * Sets options that happened during selection of an entity. For instance,
 			 * user can set things that happened during selection as if connections inputs and outputs are shown,
 			 * if connection lines are drawn and if other entities that were not selected are still visible.
-			 * 
+			 *
 			 * @param {Object} options - New set of options for selection process
 			 */
 			setOnSelectionOptions : function(options){
@@ -545,76 +574,38 @@ define(function(require) {
 				if(options.draw_connection_lines != null){
 					this.selectionOptions.draw_connection_lines = options.draw_connection_lines;
 				}
-				if(options.hide_not_selected != null){
-					this.selectionOptions.hide_not_selected = options.hide_not_selected;
-				}
 			},
-			
+
 			/**
 			 * Options set for the selection event, turning on/off connections and lines.
-			 * 
+			 *
 			 * @returns {Object} Options for selection.
 			 */
 			getSelectionOptions : function(){
 				return this.selectionOptions;
 			},
-			
+
 			/**
-			 * Unselects all selected entities
-			 * 
+			 * Deselects all selected entities
+			 *
 			 * @command G.unSelectAll()
 			 */
-			unSelectAll : function(){
+			unSelectAll : function()
+			{
 				var selection = this.getSelection();
-				if(selection.length > 0){
-					for(var key in selection){
+				if(selection.length > 0)
+				{
+					for(var key in selection)
+					{
 						var entity = selection[key];
-						entity.unselect();
+						entity.deselect();
 					}
 				}
-				
-				return GEPPETTO.Resources.UNSELECT_ALL;
+
+				return GEPPETTO.Resources.DESELECT_ALL;
 			},
-			
-			/**
-			 * Show unselected entities, leaving selected one(s) visible.
-			 * 
-			 * @param {boolean} mode - Toggle flag for showing unselected entities.
-			 */
-			showUnselected : function(mode){
-				var selection = this.getSelection();
-				var visible = {};
-				for(var e in selection){
-					var entity = selection[e];
-					var connections = entity.getConnections();
-					for(var c in connections){
-						var con = connections[c];
-						visible[con.getEntityInstancePath()] = "";
-					}
-				}
-				this.toggleUnSelected(window.Project.runTimeTree, mode,visible);
-			},
-			
-			/**
-			 * Toggles unselected entities.
-			 */
-			toggleUnSelected : function(entities, mode, visibleEntities){
-                for(var e in entities){
-                    var entity = entities[e];
-                    if((!(entity.instancePath in visibleEntities)) && entity.selected == false){
-                        if(mode){
-                            entity.hide();
-                        }
-                        else{
-                            entity.show();
-                        }
-                    }
-                    if(entity.getEntities()!=null){
-                        this.toggleUnSelected(entity.getEntities(), mode, visibleEntities);
-                    }
-                }
-            },
-			
+
+
 			/**
 			 *
 			 * Outputs list of commands with descriptions associated with the Simulation object.
@@ -624,46 +615,46 @@ define(function(require) {
 			 */
 			getSelection : function() {
 				var selection = this.traverseSelection(window.Project.runTimeTree);
-				
+
 				return selection;
 			},
 
 			/**
 			 * Unhighlight all highlighted connections
-			 * 
+			 *
 			 * @command G.unHighlightAll()
 			 */
 			unHighlightAll : function(){
 				for(var hc in this.highlightedConnections){
 					this.highlightedConnections[hc].highlight(false);
 				}
-				
+
 				return GEPPETTO.Resources.HIGHLIGHT_ALL;
 			},
-			
+
 			/**
 			 * Sets the timer for updates during play/replay.
-			 * 
+			 *
 			 * @command G.setPlayTimerStep(interval)
 			 */
 			setPlayTimerStep : function(interval){
 				GEPPETTO.getVARS().playTimerStep = interval;
 			},
-			
+
 			/**
 			 * Set play in loop true/false.
-			 * 
+			 *
 			 * @command G.setPlayLoop(loop)
 			 */
 			setPlayLoop : function(loop){
 				GEPPETTO.getVARS().playLoop = loop;
 			},
-			
+
 			/**
 			 * Set canvas color.
-			 * 
+			 *
 			 * @command G.setBackgroundColour(color)
-			 * 
+			 *
 			 * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
 			 */
 			setBackgroundColour : function(color){
@@ -672,23 +663,21 @@ define(function(require) {
 				var threecolor = new THREE.Color( color );
 				GEPPETTO.getVARS().renderer.setClearColor( threecolor, 1 );
 			},
-			
+
 			/**
 			 * Helper method that traverses through run time tree looking for selected entities.
 			 */
 			traverseSelection : function(entities){
 				var selection = new Array();
-				for(var e in entities){
+				for(var e in entities)
+				{
 					var entity = entities[e];
-					if(entity.selected){
-						if(entity.getEntities().length==0){
-							selection[selection.length] = entity;
+					if(entity.selected)
+					{
+						selection.push(entity);
 						}
-					}
-					if(entity.getEntities().length >0){
 						selection = selection.concat(this.traverseSelection(entity.getEntities()));
 					}
-				}
 
 				return selection;
 			},

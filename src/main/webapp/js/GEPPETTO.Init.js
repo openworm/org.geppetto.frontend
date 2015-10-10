@@ -65,27 +65,7 @@ define(function(require) {
 		 */
 		var setupLights = function() {
 			// Lights
-
-			GEPPETTO.getVARS().scene.add(new THREE.AmbientLight(0x111111));
-
-			GEPPETTO.getVARS().scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1.1));
-
-			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.09);
-			directionalLight.position.set(0, 1, 0);
-			directionalLight.castShadow = true;
-			GEPPETTO.getVARS().scene.add(directionalLight);
-
-			var spotLight1 = new THREE.SpotLight(0xffffff, 0.1);
-			spotLight1.position.set(100, 1000, 100);
-			spotLight1.castShadow = true;
-			spotLight1.shadowDarkness = 0.2;
-			GEPPETTO.getVARS().scene.add(spotLight1);
-
-			var spotLight2 = new THREE.SpotLight(0xffffff, 0.22);
-			spotLight2.position.set(100, 1000, 100);
-			spotLight2.castShadow = true;
-			spotLight2.shadowDarkness = 0.2;
-			GEPPETTO.getVARS().scene.add(spotLight2);
+			GEPPETTO.getVARS().camera.add(new THREE.PointLight(0xffffff));
 
 		};
 
@@ -108,42 +88,80 @@ define(function(require) {
 			if(!GEPPETTO.getVARS().listenersCreated){
 				// when the mouse moves, call the given function
 				GEPPETTO.getVARS().renderer.domElement.addEventListener('mousedown', function(event) {
-					if(GEPPETTO.getVARS().pickingEnabled){
-					var intersects = GEPPETTO.getIntersectedObjects();
+					if(event.button==0) //only for left click
+					{
+						if(GEPPETTO.getVARS().pickingEnabled)
+						{
+							var intersects = GEPPETTO.getIntersectedObjects();
+		
+							if ( intersects.length > 0 ) 
+							{
+								var selected = "";
+								
+								// sort intersects
+								var compare = function(a,b) {
+								  if (a.distance < b.distance)
+								    return -1;
+								  if (a.distance > b.distance)
+								    return 1;
+								  return 0;
+								}
+								
+								intersects.sort(compare);
+								
+								// Iterate and get the first visible item (they are now ordered by proximity)
+								for(var i = 0; i<intersects.length; i++)
+								{
+									// figure out if the entity is visible
+									var instancePath = "";
+									if(intersects[ i ].object.hasOwnProperty("instancePath"))
+									{
+										instancePath = intersects[ i ].object.instancePath;	
+									}
+									else
+									{
+										//weak assumption: if the object doesn't have an instancePath its parent will
+										instancePath = intersects[ i ].object.parent.instancePath;	
+									}
+									
+									var visible = eval(instancePath + '.visible');
+									if(intersects.length==1 || i==intersects.length)
+									{
+										//if there's only one element intersected we select it regardless of its opacity
+										if(visible)
+										{
+											selected = instancePath;
+											break;
+										}
+									}
+									else
+									{
+										//if there are more than one element intersected and opacity of the current one is less than 1 
+										//we skip it to realize a "pick through"
+										var opacity = GEPPETTO.getVARS().meshes[instancePath].defaultOpacity;
+										if((opacity==1 && visible) || GEPPETTO.isKeyPressed("ctrl"))
+										{
+											selected = instancePath;
+											break;
+										}
+									}
 
-					if ( intersects.length > 0 ) {
-						var selected = "";
-						
-						// sort intersects
-						var compare = function(a,b) {
-						  if (a.distance < b.distance)
-						    return -1;
-						  if (a.distance > b.distance)
-						    return 1;
-						  return 0;
-						}
-						
-						intersects.sort(compare);
-						
-						// Iterate and get the first visible item (they are now ordered by proximity)
-						for(var i = 0; i<intersects.length; i++){
-							// figure out if the entity is visible
-							var instancePath = intersects[ i ].object.name;
-							var visible = eval(instancePath + '.visible');
-							if(visible){
-								selected = instancePath;
-								break;
+								}
+							
+		
+								if(selected != "")
+								{
+									if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected)) 
+									{
+										if(!GEPPETTO.isKeyPressed("shift"))
+										{
+											GEPPETTO.G.unSelectAll();
+										}
+										GEPPETTO.Console.executeCommand(selected + '.select()');
+									}
+								}
 							}
 						}
-
-						if(selected == ""){
-							selected = intersects[ 0 ].object.parent.name;
-						}
-						if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected)) {
-							GEPPETTO.G.unSelectAll();
-							GEPPETTO.Console.executeCommand(selected + '.select()');
-						}
-					}
 					}
 				}, false);
 

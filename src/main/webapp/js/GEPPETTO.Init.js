@@ -5,6 +5,26 @@ define(function(require) {
 	return function(GEPPETTO) {
 		var $ = require('jquery');
 
+		var createChannel = function() {
+			// Change link from blank to self for embedded environments
+			if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
+				handleRequest = function(e) {
+				  if(window.EMBEDDEDURL.indexOf(e.origin) != -1) {
+					  if (e.data.command == 'loadSimulation'){
+						  if (e.data.projectId){
+							  GEPPETTO.Console.executeCommand('Project.loadFromID(' + e.data.projectId + ')');
+						  }
+						  else if (e.data.url){
+							  GEPPETTO.Console.executeCommand('Project.loadFromURL("' + e.data.url + '")');
+						  }
+					  }
+				  };
+				};
+				// we have to listen for 'message'
+				window.addEventListener('message', handleRequest, false);
+			}
+		};
+		
 		var setupScene = function() {
 			GEPPETTO.getVARS().scene = new THREE.Scene();
 			GEPPETTO.getVARS().visualModelMap = {};
@@ -208,6 +228,7 @@ define(function(require) {
 			},
 			initialize : function(containerp) {
 				GEPPETTO.getVARS().container = containerp;
+				createChannel();
 				setupScene();
 				setupCamera();
 				setupRenderer();

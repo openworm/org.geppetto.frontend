@@ -89,7 +89,7 @@ String.prototype.endsWith = function(suffix) {
 // Change link from blank to self for embedded environments
 if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
 	handleRequest = function(e) {
-	  if(e.origin == window.EMBEDDEDURL) {
+	  if(window.EMBEDDEDURL.indexOf(e.origin)) {
 		  // This is where we have to create the API
 		  //$('#footer').hide();
 	  };

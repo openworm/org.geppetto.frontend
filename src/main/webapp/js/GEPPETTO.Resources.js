@@ -378,6 +378,7 @@ define(function(require) {
 			FUNCTION_NODE : "FunctionNode",
 			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
 			TEXT_METADATA_NODE : "TextMetadataNode",
+			HTML_METADATA_NODE : "HTMLMetadataNode",
 			PARAMETER_NODE : "ParameterNode",
 			CONNECTION_NODE : "ConnectionNode",
 			COMPOSITE_NODE : "CompositeNode",

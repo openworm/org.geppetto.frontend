@@ -51,6 +51,7 @@ define(function(require)
 		var VariableNode = require('nodes/VariableNode');
 		var ConnectionNode = require('nodes/ConnectionNode');
 		var TextMetadataNode = require('nodes/TextMetadataNode');
+		var HTMLMetadataNode = require('nodes/HTMLMetadataNode');
 		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 		var VisualGroupNode = require('nodes/VisualGroupNode');
 		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
@@ -612,6 +613,18 @@ define(function(require)
 								a.getCustomNodes().push(custom);
 							}
 							a[key] = custom;
+						} else if (node[key]._metaType == GEPPETTO.Resources.HTML_METADATA_NODE)
+						{
+							var custom = this.createHTMLMetadataNode(node[key], aspect);
+							custom.setParent(a);
+							if (a._metaType == GEPPETTO.Resources.COMPOSITE_NODE)
+							{
+								a.getChildren().push(custom);
+							} else
+							{
+								a.getCustomNodes().push(custom);
+							}
+							a[key] = custom;
 						} else if (node[key]._metaType == GEPPETTO.Resources.TEXT_METADATA_NODE)
 						{
 							var custom = this.createTextMetadataNode(node[key], aspect);
@@ -681,6 +694,25 @@ define(function(require)
 				GEPPETTO.Console.createTags(a.instancePath, this.nodeTags[GEPPETTO.Resources.TEXT_METADATA_NODE]);
 				return a;
 			},
+			
+			/** Creates and populates client connection nodes for first time */
+			createHTMLMetadataNode : function(node, aspect)
+			{
+				var a = new HTMLMetadataNode(
+				{
+					id : node.id,
+					value : node.value,
+					name : node.name,
+					aspectInstancePath : node.aspectInstancePath,
+					instancePath : node.instancePath,
+					aspectNode : aspect,
+					_metaType : GEPPETTO.Resources.HTML_METADATA_NODE,
+				});
+
+				this.nodes++;
+				GEPPETTO.Console.createTags(a.instancePath, this.nodeTags[GEPPETTO.Resources.HTML_METADATA_NODE]);
+				return a;
+			},			
 
 			/** Creates and populates client aspect nodes for first time */
 			createVariableNode : function(node, aspect)

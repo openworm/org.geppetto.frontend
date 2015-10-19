@@ -31,12 +31,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a text metadata node, used for model
+ * Client class use to represent a html metadata node, used for model
  * tree properties.
  * 
  * @module nodes/TextMetadataNode
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
- * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 

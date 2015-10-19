@@ -81,7 +81,7 @@ define(function(require) {
 			
 			getValueFromData : function(data,step){
 				var labelValue = "";
-				if (data._metaType == "TextMetadataNode"){
+				if (data._metaType == "TextMetadataNode" || data._metaType == "HTMLMetadataNode"){
 					labelValue = data.getValue();
 				}
 				else if (data._metaType == "FunctionNode") {

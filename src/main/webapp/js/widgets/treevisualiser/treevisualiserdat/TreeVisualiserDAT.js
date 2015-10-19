@@ -150,7 +150,7 @@ define(function(require) {
 				}
 
 				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
-						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
+						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "HTMLMetadataNode" |
 						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = new function(){};

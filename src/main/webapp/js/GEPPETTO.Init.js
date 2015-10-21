@@ -144,6 +144,22 @@ define(function(require) {
 											selected = instancePath;
 											break;
 										}
+										else if(visible && opacity<1 && opacity>0)
+										{
+											//if only transparent objects intersected select first or the next down if 
+											//one is already selected in order to enable "burrow through" sample. 
+											if(selected=="")
+											{
+												selected = instancePath;
+											}
+											else
+											{
+												if(intersects[ i ].object.selected && i!=intersects.length-1)
+												{
+													selected = "";
+												}
+											}
+										}
 									}
 
 								}

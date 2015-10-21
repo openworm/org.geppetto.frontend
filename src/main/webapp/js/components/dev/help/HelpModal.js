@@ -32,6 +32,11 @@ define(function (require) {
                             <h5>Zoom</h5>
                             <p>Wheel click and move your mouse up and down to zoom in and out. In addition, you can use the buttons in the upper
                             left corner. The Home button resets the view.</p>
+                            <h4>Selection Controls</h4>
+                            <p>Left click will select the closest object under the pointer. Holding <b>Shift</b> enables multiple objects to be selected at once.</p>
+                            <p>Solid objects are selected over closer transparent objects. Holding <b>Ctrl</b> enables selection of the closest object regardless.</p>
+                            <p>If a transparent object is already selected and clicked on again then if possible the next object below is selected. This will toggle down through objects below the pointer in sequence then back to the closest.</p>
+                            <p>To unselect all objects simply click on empty space with <b>Ctrl</b> pressed.</p>
                             <h4>Geppetto Console</h4>
                             <p>The console provides a way to interact with Geppetto without having to use the UI controls.
                             Through the console, the user can control the Geppetto project and experiments and use the other features available.
@@ -54,8 +59,8 @@ define(function (require) {
                                 <a className="label label-default">Project.loadFromURL(projectURL)</a>
                             </p>
                             <h5>Passing a parameter via URL</h5>
-                            <p>A project can be loaded by specifying its ID as a paramater in the Geppetto URL, for easy bookmarking. 
-                            This will automatically load the project when the Geppetto simulation environment is opened. 
+                            <p>A project can be loaded by specifying its ID as a paramater in the Geppetto URL, for easy bookmarking.
+                            This will automatically load the project when the Geppetto simulation environment is opened.
                             To use this feature add the query string paramater <a className="label label-default">load_project_from_id=PROJECT_ID</a>, where
                             <a className="label label-default">PROJECT_ID</a> corresponds to the ID of the project you want to load.
                             </p>

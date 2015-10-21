@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/openworm/org.geppetto.frontend.png?branch=master)](https://travis-ci.org/openworm/org.geppetto.frontend)
 
 <p align="center">
-  <img src="https://raw.github.com/openworm/org.geppetto.frontend/master/src/main/webapp/images/geppetto-logo@2x.png" alt="Geppetto logo"/>
+  <img src="http://www.geppetto.org/images/logo.png" alt="Geppetto logo"/>
 </p>
 
 # Geppetto Frontend

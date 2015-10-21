@@ -177,6 +177,11 @@ define(function(require) {
 									}
 								}
 							}
+							else if (GEPPETTO.isKeyPressed("ctrl"))
+							{
+								//if empty space is selected and ctrl is pressed then all selections are cleared. 
+								GEPPETTO.G.unSelectAll();
+							}
 						}
 					}
 				}, false);

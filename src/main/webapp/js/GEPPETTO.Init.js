@@ -144,6 +144,22 @@ define(function(require) {
 											selected = instancePath;
 											break;
 										}
+										else if(visible && opacity<1 && opacity>0)
+										{
+											//if only transparent objects intersected select first or the next down if 
+											//one is already selected in order to enable "burrow through" sample. 
+											if(selected=="" && !GEPPETTO.getVARS().meshes[instancePath].selected)
+											{
+												selected = instancePath;
+											}
+											else
+											{
+												if(GEPPETTO.getVARS().meshes[instancePath].selected && i!=intersects.length-1)
+												{
+													selected = "";
+												}
+											}
+										}
 									}
 
 								}
@@ -160,6 +176,11 @@ define(function(require) {
 										GEPPETTO.Console.executeCommand(selected + '.select()');
 									}
 								}
+							}
+							else if (GEPPETTO.isKeyPressed("ctrl"))
+							{
+								//if empty space is selected and ctrl is pressed then all selections are cleared. 
+								GEPPETTO.G.unSelectAll();
 							}
 						}
 					}

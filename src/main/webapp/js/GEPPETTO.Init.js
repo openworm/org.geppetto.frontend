@@ -148,7 +148,7 @@ define(function(require) {
 										{
 											//if only transparent objects intersected select first or the next down if 
 											//one is already selected in order to enable "burrow through" sample. 
-											if(selected=="")
+											if(selected=="" && !intersects[ i ].object.selected)
 											{
 												selected = instancePath;
 											}

@@ -93,11 +93,11 @@ define(function(require) {
 						if(GEPPETTO.getVARS().pickingEnabled)
 						{
 							var intersects = GEPPETTO.getIntersectedObjects();
-		
-							if ( intersects.length > 0 ) 
+
+							if ( intersects.length > 0 )
 							{
 								var selected = "";
-								
+
 								// sort intersects
 								var compare = function(a,b) {
 								  if (a.distance < b.distance)
@@ -106,9 +106,9 @@ define(function(require) {
 								    return 1;
 								  return 0;
 								}
-								
+
 								intersects.sort(compare);
-								
+
 								// Iterate and get the first visible item (they are now ordered by proximity)
 								for(var i = 0; i<intersects.length; i++)
 								{
@@ -116,14 +116,14 @@ define(function(require) {
 									var instancePath = "";
 									if(intersects[ i ].object.hasOwnProperty("instancePath"))
 									{
-										instancePath = intersects[ i ].object.instancePath;	
+										instancePath = intersects[ i ].object.instancePath;
 									}
 									else
 									{
 										//weak assumption: if the object doesn't have an instancePath its parent will
-										instancePath = intersects[ i ].object.parent.instancePath;	
+										instancePath = intersects[ i ].object.parent.instancePath;
 									}
-									
+
 									var visible = eval(instancePath + '.visible');
 									if(intersects.length==1 || i==intersects.length)
 									{
@@ -136,7 +136,7 @@ define(function(require) {
 									}
 									else
 									{
-										//if there are more than one element intersected and opacity of the current one is less than 1 
+										//if there are more than one element intersected and opacity of the current one is less than 1
 										//we skip it to realize a "pick through"
 										var opacity = GEPPETTO.getVARS().meshes[instancePath].defaultOpacity;
 										if((opacity==1 && visible) || GEPPETTO.isKeyPressed("ctrl"))
@@ -146,15 +146,15 @@ define(function(require) {
 										}
 										else if(visible && opacity<1 && opacity>0)
 										{
-											//if only transparent objects intersected select first or the next down if 
-											//one is already selected in order to enable "burrow through" sample. 
-											if(selected=="" && !GEPPETTO.getVARS().meshes[instancePath].selected)
+											//if only transparent objects intersected select first or the next down if
+											//one is already selected in order to enable "burrow through" sample.
+											if(selected=="" && !eval(instancePath + '.selected'))
 											{
 												selected = instancePath;
 											}
 											else
 											{
-												if(GEPPETTO.getVARS().meshes[instancePath].selected && i!=intersects.length-1)
+												if(eval(instancePath + '.selected') && i!=intersects.length-1)
 												{
 													selected = "";
 												}
@@ -163,11 +163,11 @@ define(function(require) {
 									}
 
 								}
-							
-		
+
+
 								if(selected != "")
 								{
-									if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected)) 
+									if (GEPPETTO.getVARS().meshes.hasOwnProperty(selected) || GEPPETTO.getVARS().splitMeshes.hasOwnProperty(selected))
 									{
 										if(!GEPPETTO.isKeyPressed("shift"))
 										{

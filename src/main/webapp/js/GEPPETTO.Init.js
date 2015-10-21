@@ -148,13 +148,13 @@ define(function(require) {
 										{
 											//if only transparent objects intersected select first or the next down if 
 											//one is already selected in order to enable "burrow through" sample. 
-											if(selected=="" && !intersects[ i ].object.selected)
+											if(selected=="" && !GEPPETTO.getVARS().meshes[instancePath].selected)
 											{
 												selected = instancePath;
 											}
 											else
 											{
-												if(intersects[ i ].object.selected && i!=intersects.length-1)
+												if(GEPPETTO.getVARS().meshes[instancePath].selected && i!=intersects.length-1)
 												{
 													selected = "";
 												}

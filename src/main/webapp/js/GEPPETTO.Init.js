@@ -177,6 +177,10 @@ define(function(require) {
 									}
 								}
 							}
+							else if (GEPPETTO.isKeyPressed("ctrl"))
+							{
+								GEPPETTO.G.unSelectAll();
+							}
 						}
 					}
 				}, false);

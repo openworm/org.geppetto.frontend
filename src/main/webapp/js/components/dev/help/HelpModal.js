@@ -34,8 +34,10 @@ define(function (require) {
                             left corner. The Home button resets the view.</p>
                             <h4>Selection Controls</h4>
                             <p>Left click will select the closest object under the pointer. Holding <kbd>Shift</kbd> enables multiple objects to be selected at once.</p>
+                            <h5>Selection Order</h5>
                             <p>Solid objects are selected over closer transparent objects. Holding <kbd>Ctrl</kbd> enables selection of the closest object regardless.</p>
-                            <p>If a transparent object is already selected and clicked on again then if possible the next object below is selected. This will toggle down through objects below the pointer in sequence then back to the closest.</p>
+                            <p>To toggle through multiple stacked transparent objects, just keep clicking.</p>
+                            <h5>Clear Selection</h5>
                             <p>To unselect all objects simply click on empty space with <kbd>Ctrl</kbd> pressed.</p>
                             <h4>Geppetto Console</h4>
                             <p>The console provides a way to interact with Geppetto without having to use the UI controls.

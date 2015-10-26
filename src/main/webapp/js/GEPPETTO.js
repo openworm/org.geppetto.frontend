@@ -85,7 +85,7 @@ define(function(require) {
 			pickingEnabled: true, // flag to enable disable 3d picking
 			playTimerStep: 10, // timer step in milliseconds
 			playLoop: false,
-			backgroundColor: '0x000000',
+			backgroundColor: 0x101010,
 	};
 
 	/**
@@ -476,7 +476,8 @@ define(function(require) {
 		 * Gets 3D object node from Visualization tree by feeding it the
 		 * instance path of the 3D object as search key.
 		 */
-		get3DObjectInVisualizationTree : function(visualizationTree, objectPath) {
+		get3DObjectInVisualizationTree : function(visualizationTree, objectPath) 
+		{
 			var objectPathFormat = objectPath.replace(visualizationTree.getInstancePath()+ ".", "");
 			var varName = objectPathFormat.substring(0, objectPathFormat.lastIndexOf("."));
 			var index = objectPathFormat.substring(objectPathFormat.lastIndexOf(".") + 1);

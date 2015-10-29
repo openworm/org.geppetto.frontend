@@ -139,7 +139,7 @@ define(function(require) {
 		 * @param {Object} parent - Parent tree to paint
 		 * @param {Array} data - Data to paint
 		 */
-		prepareTree : function(parent, data,step) {
+		prepareTree : function(parent, data, step) {
 			if (data._metaType != null){
 				if('labelName' in this.options){
 					label = data[this.options.labelName];

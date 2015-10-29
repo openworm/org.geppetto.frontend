@@ -384,7 +384,6 @@ define(function(require) {
 			COMPOSITE_NODE : "CompositeNode",
 			DYNAMICS_NODE : "DynamicsSpecificationNode",
 			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
-			TEXT_METADATA_NODE : "TextMetadataNode",
 			VISUAL_GROUP_NODE : "VisualGroupNode",
 			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
 			SKELETON_ANIMATION_NODE: "SkeletonAnimationNode",

@@ -34,7 +34,7 @@
  * Client class use to represent a html metadata node, used for model
  * tree properties.
  * 
- * @module nodes/TextMetadataNode
+ * @module nodes/HTMLMetadataNode
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
@@ -63,7 +63,7 @@ define(function(require) {
 		/**
 		 * Get value of quantity
 		 * 
-		 * @command TextMetadataNode.getText()
+		 * @command HTMLMetadataNode.getValue()
 		 * @returns {String} Value of quantity
 		 */
 		getValue : function() {

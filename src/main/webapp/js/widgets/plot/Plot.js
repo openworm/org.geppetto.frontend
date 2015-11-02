@@ -40,6 +40,7 @@ define(function(require) {
 
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
+	var math = require('mathjs');
 
 	return Widget.View.extend({
 			plot: null,
@@ -318,9 +319,8 @@ define(function(require) {
 					if(!this.labelsUpdated) {
 						var unit = this.datasets[key].variable.getUnit();
 						if(unit != null) {
-							// TODO: map units to friendly text
-							var labelY = unit;
-							var labelX = window.Project.getActiveExperiment().time.getUnit();
+							var labelY = this.getUnitLabel(unit);
+							var labelX = this.getUnitLabel(window.Project.getActiveExperiment().time.getUnit());
 							this.setAxisLabel(labelY, labelX);
 							this.labelsUpdated = true;
 						}
@@ -341,9 +341,8 @@ define(function(require) {
 						if(!this.labelsUpdated) {
 							var unit = this.datasets[key].variable.getUnit();
 							if(unit != null) {
-								// TODO: map units to friendly text
-								var labelY = unit;
-								var labelX = window.Project.getActiveExperiment().time.getUnit();
+								var labelY = this.getUnitLabel(unit);
+								var labelX = this.getUnitLabel(window.Project.getActiveExperiment().time.getUnit());
 								this.setAxisLabel(labelY, labelX);
 								this.labelsUpdated = true;
 							}
@@ -379,7 +378,24 @@ define(function(require) {
 					}
 				}
 			},
-
+			
+			/**
+			 * Utility function to get unit label given raw unit symbol string
+			 *
+			 * @param unitSymbol - string representing unit symbol
+			 */
+			getUnitLabel: function(unitSymbol){
+				
+				var unitLabel = unitSymbol;
+				
+				if(unitSymbol != undefined && unitSymbol != null && unitSymbol != "" && unitSymbol.indexOf("_") == -1){
+					var mathUnit = math.unit(1, unitSymbol);
+					unitLabel = (mathUnit.units.length > 0) ? (mathUnit.units[0].unit.base.key + " (" + unitSymbol + ")") : unitSymbol;
+				}
+				
+				return unitLabel;
+			},
+			
 			/**
 			 * Plots a function against a data series
 			 *

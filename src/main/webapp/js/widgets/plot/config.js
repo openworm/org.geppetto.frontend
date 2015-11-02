@@ -47,7 +47,6 @@ require.config({
 	 */
 	paths : {
 		'flot' :"widgets/plot/vendor/jquery.flot.min",
-		'mathjs' :"widgets/plot/vendor/math.min", 
 	},
 	/*
 	 * Notes what dependencies are needed prior to loading each library, values on the right
@@ -66,7 +65,6 @@ require.config({
  */
 var libraries = [];
 libraries.push("flot");
-libraries.push("mathjs");
 libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
 libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
 //libraries.push("widgets/plot/vendor/jquery.flot.downsample");

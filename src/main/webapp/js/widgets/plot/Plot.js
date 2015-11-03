@@ -40,6 +40,7 @@ define(function(require) {
 
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
+	var math = require('mathjs');
 
 	return Widget.View.extend({
 			plot: null,
@@ -103,7 +104,8 @@ define(function(require) {
 				this.datasets = [];
 				this.options = jQuery.extend({},this.defaultPlotOptions);
 				this.render();
-				this.dialog.append("<div class='plot' id='" + this.id + "'></div>");		
+				this.dialog.append("<div id='" + this.id + "'></div>");
+				$("#" + this.id).addClass("plot");
 				
 				//fix conflict between jquery and bootstrap tooltips
 				$.widget.bridge('uitooltip', $.ui.tooltip);
@@ -153,8 +155,7 @@ define(function(require) {
 					else{
 						for(var key=0;key<this.datasets.length;key++) {
 							if(state.getInstancePath() == this.datasets[key].label) {
-								return "Dataset "+ state.getInstancePath() + " is "
-								+ "already being plotted.";
+								return "Dataset "+ state.getInstancePath() + " is " + "already being plotted.";
 							}
 						}
 						
@@ -206,33 +207,21 @@ define(function(require) {
 						this.options.xaxis.show = true;
 						if(window.Project.getActiveExperiment().time!=null || undefined){
 							var timeSeries = window.Project.getActiveExperiment().time.getTimeSeries();
-							var unit = window.Project.getActiveExperiment().time.getUnit();
 							var divideLength = Math.ceil(timeSeries.length/10);
 							var ticks = [];
 							
-							if(unit!=null){
-								ticks[0] = [0,timeSeries[0].getValue().toFixed(4)+ " " +unit];
-							}else{
-								ticks[0] = [0,timeSeries[0].getValue().toFixed(4)];
-							}
+							ticks[0] = [0,timeSeries[0].getValue().toFixed(4)];
+							
 							var index = divideLength;
 							var i = 1;
 							while(index < timeSeries.length){
 								var newTick = [];
-								if(unit!=null){
-									ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+" " +unit];
-								}else{
-									ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
-								}
+								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
 								index= Math.ceil(index+divideLength);
 								i++;
 							}
 							index= timeSeries.length-1;
-							if(unit!=null){
-								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)+ " " +unit];
-							}else{
-								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
-							}
+							ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
 							this.options.xaxis.ticks =ticks;
 						}
 					}
@@ -318,32 +307,43 @@ define(function(require) {
 			 * Updates a data set, use for time series
 			 */
 			updateDataSet: function(step) {
-
+				var plotholder = $("#" + this.id);
+				
 				if(this.options.playAll){
 					for(var key in this.datasets){
-						var timeSeriesData = 
-							this.getTimeSeriesData( this.datasets[key].variable);
+						var timeSeriesData = this.getTimeSeriesData( this.datasets[key].variable);
 
 						this.datasets[key].data = timeSeriesData;
 					}
 					
-					this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+					if(!this.labelsUpdated) {
+						var unit = this.datasets[key].variable.getUnit();
+						if(unit != null) {
+							var labelY = this.getUnitLabel(unit);
+							var labelX = this.getUnitLabel(window.Project.getActiveExperiment().time.getUnit());
+							this.setAxisLabel(labelY, labelX);
+							this.labelsUpdated = true;
+						}
+					}
+					
+					this.plot = $.plot(plotholder, this.datasets, this.options);
 				}
 				else{
-					//console.log("Plotting step "+step);
+					// if not plotAll we are in step-by-step replay mode - check axis visibility and add margin
+					if(this.options.xaxis.show === false){
+						// if we are not showing xaxis (dynamic plots), add margin at the bottom
+						$("#" + this.id).addClass("plot-without-xaxis");
+					}
+					
 					for(var key in this.datasets) {
 						var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
 
 						if(!this.labelsUpdated) {
 							var unit = this.datasets[key].variable.getUnit();
 							if(unit != null) {
-								var labelY = unit;
-								//Matteo: commented until this can move as it doesn't make sense for it to be static.
-								//also ms should not be harcoded but should come from the simulator as the timescale could
-								//be different
-								var labelX = "";
-								//Simulation timestep (ms) " + Simulation.timestep;
-								//this.setAxisLabel(labelY, labelX);
+								var labelY = this.getUnitLabel(unit);
+								var labelX = this.getUnitLabel(window.Project.getActiveExperiment().time.getUnit());
+								this.setAxisLabel(labelY, labelX);
 								this.labelsUpdated = true;
 							}
 						}
@@ -378,7 +378,33 @@ define(function(require) {
 					}
 				}
 			},
-
+			
+			/**
+			 * Utility function to get unit label given raw unit symbol string
+			 *
+			 * @param unitSymbol - string representing unit symbol
+			 */
+			getUnitLabel: function(unitSymbol){
+				
+				unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+				
+				var unitLabel = unitSymbol;
+				
+				if(unitSymbol != undefined && unitSymbol != null && unitSymbol != ""){
+					var mathUnit = math.unit(1, unitSymbol);
+					
+					var formattedUnitName =  (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
+					
+					if (formattedUnitName != ""){
+						formattedUnitName = formattedUnitName.replace(/_/g, " ");
+						formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();
+						unitLabel = formattedUnitName + " (" + unitSymbol.replace(/-?[0-9]/g, function(letter) {return letter.sup(); } ) + ")";
+					}
+				}
+				
+				return unitLabel;
+			},
+			
 			/**
 			 * Plots a function against a data series
 			 *

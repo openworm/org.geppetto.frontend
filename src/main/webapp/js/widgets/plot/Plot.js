@@ -398,7 +398,7 @@ define(function(require) {
 					if (formattedUnitName != ""){
 						formattedUnitName = formattedUnitName.replace(/_/g, " ");
 						formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();
-						unitLabel = formattedUnitName + " (" + unitSymbol + ")";
+						unitLabel = formattedUnitName + " (" + unitSymbol.replace(/-?[0-9]/g, function(letter) {return letter.sup(); } ) + ")";
 					}
 				}
 				

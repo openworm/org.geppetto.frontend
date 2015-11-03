@@ -386,11 +386,20 @@ define(function(require) {
 			 */
 			getUnitLabel: function(unitSymbol){
 				
+				unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+				
 				var unitLabel = unitSymbol;
 				
-				if(unitSymbol != undefined && unitSymbol != null && unitSymbol != "" && unitSymbol.indexOf("_") == -1){
+				if(unitSymbol != undefined && unitSymbol != null && unitSymbol != ""){
 					var mathUnit = math.unit(1, unitSymbol);
-					unitLabel = (mathUnit.units.length > 0) ? (mathUnit.units[0].unit.base.key + " (" + unitSymbol + ")") : unitSymbol;
+					
+					var formattedUnitName =  (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
+					
+					if (formattedUnitName != ""){
+						formattedUnitName = formattedUnitName.replace(/_/g, " ");
+						formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();
+						unitLabel = formattedUnitName + " (" + unitSymbol + ")";
+					}
 				}
 				
 				return unitLabel;

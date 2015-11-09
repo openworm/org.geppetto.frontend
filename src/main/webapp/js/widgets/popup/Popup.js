@@ -50,33 +50,36 @@ define(function(require) {
 		for (var i = 0; i < handlers.length; i++) {
 			// if not hooked already, then go ahead and hook it
 			if(handlers[i].hooked === false){
+				// set hooked to avoid double triggers
+				handlers[i].hooked = true;
+				
 				// Find and iterate <a> element with an instancepath attribute
 				popup.find("a[instancepath]").each(function(){
-					var f = handlers[i].funct;
-					var e = handlers[i].event;
+					var funct = handlers[i].funct;
+					var event = handlers[i].event;
+					var domainType = handlers[i].domain;
+					var path = $(this).attr("instancepath").replace(/\$/g, "");
+					var node;
 					
-					// hookup custom handler
-					$(this).on(e, function(){
-						var path = $(this).attr("instancepath").replace(/\$/g, "");
-						
-						try {
-						    path = eval(path);
-						} catch (e) {
-							// if instance path doesn't exist set path to undefined
-						    path = undefined;
-						}
-						
-						// invoke custom handler with instancepath as arg
-						f(path);
-						
-						// stop default event handler of the anchor from doing anything
-						return false;
-					})
+					try {
+						node = eval(path);
+					} catch (ex) {
+						// if instance path doesn't exist set path to undefined
+						node = undefined;
+					}
 					
-					// to avoid double triggers
-					handlers[i].hooked = true;
+					// hookup IF domain type is undefined OR it's defined and it matches the node type
+					if(domainType === undefined || (domainType !== undefined && node!== undefined && node.domainType === domainType)){
+						// hookup custom handler
+						$(this).on(event, function(){						
+							// invoke custom handler with instancepath as arg
+							funct(node);
+							
+							// stop default event handler of the anchor from doing anything
+							return false;
+						});
+					}
 				});
-				
 			}
 		}
 	}
@@ -128,8 +131,8 @@ define(function(require) {
 		 * @param {fucntion} funct - Handler function
 		 * @param {String} eventType - event that triggers the custom handler 
 		 */
-		addCustomNodeHandler : function(funct, eventType){
-			this.customHandlers.push({ funct: funct, event: eventType, hooked: false});
+		addCustomNodeHandler : function(funct, eventType, domainType){
+			this.customHandlers.push({ funct: funct, event: eventType, domain: domainType, hooked: false});
 			
 			// trigger routine that hooks up handlers
 			hookupCustomHandlers(this.customHandlers, $("#"+this.id));

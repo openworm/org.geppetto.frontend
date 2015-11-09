@@ -55,8 +55,8 @@ define(function(require) {
 				
 				// Find and iterate <a> element with an instancepath attribute
 				popup.find("a[instancepath]").each(function(){
-					var funct = handlers[i].funct;
-					var event = handlers[i].event;
+					var fun = handlers[i].funct;
+					var ev = handlers[i].event;
 					var domainType = handlers[i].domain;
 					var path = $(this).attr("instancepath").replace(/\$/g, "");
 					var node;
@@ -71,9 +71,9 @@ define(function(require) {
 					// hookup IF domain type is undefined OR it's defined and it matches the node type
 					if(domainType === undefined || (domainType !== undefined && node!== undefined && node.domainType === domainType)){
 						// hookup custom handler
-						$(this).on(event, function(){						
+						$(this).on(ev, function(){						
 							// invoke custom handler with instancepath as arg
-							funct(node);
+							fun(node);
 							
 							// stop default event handler of the anchor from doing anything
 							return false;

@@ -40,6 +40,39 @@ define(function(require) {
 
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
+	
+	/**
+	 * Private function to hookup custom event handlers
+	 * 
+	 * NOTE: declared here so that it's private.
+	 */
+	var hookupCustomHandlers = function(handlers, popup){
+		for (var i = 0; i < handlers.length; i++) {
+			// if not hooked already, then go ahead and hook it
+			if(handlers[i].hooked === false){
+				// Find and iterate <a> element with an instancepath attribute
+				popup.find("a[instancepath]").each(function(){
+					var f = handlers[i].funct;
+					var e = handlers[i].event;
+					
+					// hookup custom handler
+					$(this).on(e, function(){
+						var path = $(this).attr("instancepath").replace(/\$/g, "");
+						
+						// invoke custom handler with instancepath as arg
+						f(path);
+						
+						// stop default event handler of the anchor from doing anything
+						return false;
+					})
+					
+					// to avoid double triggers
+					handlers[i].hooked = true;
+				});
+				
+			}
+		}
+	}
 
 	return Widget.View.extend({
 		
@@ -52,6 +85,7 @@ define(function(require) {
 			this.visible = options.visible;
 			this.render();
 			this.setSize(100,300);
+			this.customHandlers = [];
 			//set class pop up
 			$("#"+this.id).addClass("popup");
 		},
@@ -64,9 +98,34 @@ define(function(require) {
 		 */
 		setMessage : function(msg){
 			$("#"+this.id).html(msg);
+			GEPPETTO.Console.log("Set new Message for " + this.id);
 			
-			GEPPETTO.Console.log("Setting new Message for " + this.id);
+			if(this.customHandlers.length > 0){
+				// msg has changed, set hooked attribute on handlers to false
+				for (var i = 0; i < this.customHandlers.length; i++) {
+					this.customHandlers[i].hooked = false;
+				}
+				
+				// trigger routine that hooks up handlers
+				hookupCustomHandlers(this.customHandlers, $("#"+this.id));
+				GEPPETTO.Console.log("Hooked up custom handlers for " + this.id);
+			}
+			
 			return this;
+		},
+		
+		/**
+		 * Sets a custom handler for a given event for nodes that point to nodes via instancePAth attribute on HTML anchors.
+		 * 
+		 * @command addCustomNodeHandler(funct, eventType)
+		 * @param {fucntion} funct - Handler function
+		 * @param {String} eventType - event that triggers the custom handler 
+		 */
+		addCustomNodeHandler : function(funct, eventType){
+			this.customHandlers.push({ funct: funct, event: eventType, hooked: false});
+			
+			// trigger routine that hooks up handlers
+			hookupCustomHandlers(this.customHandlers, $("#"+this.id));
 		}
 	});
 });

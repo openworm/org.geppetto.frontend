@@ -59,6 +59,13 @@ define(function(require) {
 					$(this).on(e, function(){
 						var path = $(this).attr("instancepath").replace(/\$/g, "");
 						
+						try {
+						    path = eval(path);
+						} catch (e) {
+							// if instance path doesn't exist set path to undefined
+						    path = undefined;
+						}
+						
 						// invoke custom handler with instancepath as arg
 						f(path);
 						

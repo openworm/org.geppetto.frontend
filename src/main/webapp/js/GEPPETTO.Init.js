@@ -7,7 +7,7 @@ define(function(require) {
 
 		var createChannel = function() {
 			// Change link from blank to self for embedded environments
-			if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
+			if(window.EMBEDDED && window.EMBEDDEDURL !== "/" && typeof handleRequest == 'undefined') {
 				handleRequest = function(e) {
 				  if(window.EMBEDDEDURL.indexOf(e.origin) != -1) {
 					  if (e.data.command == 'loadSimulation'){
@@ -17,6 +17,9 @@ define(function(require) {
 						  else if (e.data.url){
 							  GEPPETTO.Console.executeCommand('Project.loadFromURL("' + e.data.url + '")');
 						  }
+					  }
+					  else if (e.data.command == 'removeWidgets'){
+						  GEPPETTO.Console.executeCommand('G.removeWidget()');
 					  }
 				  };
 				};
@@ -78,7 +81,7 @@ define(function(require) {
 			GEPPETTO.getVARS().renderer.setSize(width, height);
 			GEPPETTO.getVARS().renderer.autoClear = true;
 			GEPPETTO.getVARS().container.appendChild(GEPPETTO.getVARS().renderer.domElement);
-		}
+		};
 
 		/**
 		 * Light up the scene
@@ -125,7 +128,7 @@ define(function(require) {
 								  if (a.distance > b.distance)
 								    return 1;
 								  return 0;
-								}
+								};
 
 								intersects.sort(compare);
 

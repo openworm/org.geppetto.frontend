@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.geppetto.core.beans.PathConfiguration;
+import org.geppetto.core.common.GeppettoAccessException;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
@@ -75,7 +76,7 @@ public class GeppettoProjectController
 
 	@RequestMapping(value = "/geppettoproject/{projectId}/experiments/{experimentId}/downloadResults", produces = "application/zip")
 	@ResponseBody
-	public FileSystemResource downloadExperimentResults(@PathVariable("projectId") int projectId, @PathVariable("experimentId") int experimentId) throws GeppettoExecutionException, IOException
+	public FileSystemResource downloadExperimentResults(@PathVariable("projectId") int projectId, @PathVariable("experimentId") int experimentId) throws GeppettoExecutionException, IOException, GeppettoAccessException
 	{
 		if(geppettoManager.getUser() != null)
 		{

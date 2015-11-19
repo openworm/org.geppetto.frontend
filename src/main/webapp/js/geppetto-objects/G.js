@@ -57,6 +57,7 @@ define(function(require) {
 				draw_connection_lines : true,
 			},
 			highlightedConnections : [],
+			
 			addWidget: function(type) {
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
 				return newWidget;
@@ -192,10 +193,17 @@ define(function(require) {
 			 * Removes widget from Geppetto
 			 *
 			 * @command G.removeWidget(widgetType)
-			 * @param {WIDGET_EVENT_TYPE} type - Type of widget to remove fro GEPPETTO
+			 * @param {WIDGET_EVENT_TYPE} type - Type of widget to remove from GEPPETTO. If no type is passed remove all the widgets from Geppetto.
 			 */
 			removeWidget: function(type) {
-				return GEPPETTO.WidgetFactory.removeWidget(type);
+				if (type){
+					return GEPPETTO.WidgetFactory.removeWidget(type);
+				}
+				else{
+					for(var widgetKey in GEPPETTO.Widgets) {
+						GEPPETTO.WidgetFactory.removeWidget(GEPPETTO.Widgets[widgetKey]);
+					}
+				}
 			},
 
 			/**

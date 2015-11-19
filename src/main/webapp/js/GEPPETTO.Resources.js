@@ -344,7 +344,6 @@ define(function(require) {
 			/**
 			 * Widget resources
 			 */
-			WIDGET_CREATED: " widget created",
 			REMOVE_PLOT_WIDGETS: "Plotting widget(s) removed",
 			REMOVE_POPUP_WIDGETS: "Popup widget(s) removed",
 			REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",

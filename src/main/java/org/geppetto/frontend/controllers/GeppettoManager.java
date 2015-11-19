@@ -46,6 +46,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.beans.PathConfiguration;
+import org.geppetto.core.common.GeppettoAccessException;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
@@ -56,6 +57,7 @@ import org.geppetto.core.data.model.IPersistedData;
 import org.geppetto.core.data.model.ISimulationResult;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.data.model.ResultsFormat;
+import org.geppetto.core.data.model.UserPrivileges;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
@@ -122,8 +124,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * 
 	 * @see org.geppetto.core.manager.IProjectManager#loadProject(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
 	 */
-	public void loadProject(String requestId, IGeppettoProject project) throws MalformedURLException, GeppettoInitializationException, GeppettoExecutionException
+	public void loadProject(String requestId, IGeppettoProject project) throws MalformedURLException, GeppettoInitializationException, GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.READ_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to load project.");
+		}
+		
 		// RuntimeProject is created and populated when loadProject is called
 		if(!projects.containsKey(project))
 		{
@@ -179,8 +185,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#loadExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public RuntimeTreeRoot loadExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public RuntimeTreeRoot loadExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.READ_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to load experiment.");
+		}
+		
 		IGeppettoProject project = experiment.getParentProject();
 		try
 		{
@@ -206,8 +216,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#runExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void runExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public void runExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.RUN_EXPERIMENT)){
+			throw new GeppettoAccessException("Insufficient access rights to run experiment.");
+		}
+		
 		if(experiment.getStatus().equals(ExperimentStatus.DESIGN))
 		{
 			ExperimentRunManager.getInstance().queueExperiment(user, experiment);
@@ -224,8 +238,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#playExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override
-	public Map<String, AspectSubTreeNode> playExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public Map<String, AspectSubTreeNode> playExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.READ_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to play experiment.");
+		}
+		
 		if(experiment.getStatus().equals(ExperimentStatus.COMPLETED))
 		{
 			return getRuntimeProject(experiment.getParentProject()).getRuntimeExperiment(experiment).updateRuntimeTreesWithResults();
@@ -242,8 +260,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IProjectManager#deleteProject(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void deleteProject(String requestId, IGeppettoProject project) throws GeppettoExecutionException
+	public void deleteProject(String requestId, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.WRITE_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to delete project.");
+		}
+		
 		DataManagerHelper.getDataManager().deleteGeppettoProject(project.getId(), user);
 	}
 
@@ -253,8 +275,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IProjectManager#persistProject(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void persistProject(String requestId, IGeppettoProject project) throws GeppettoExecutionException
+	public void persistProject(String requestId, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.WRITE_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to persist project.");
+		}
+		
 		try
 		{
 			if(project.isVolatile())
@@ -327,8 +353,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#newExperiment(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public IExperiment newExperiment(String requestId, IGeppettoProject project) throws GeppettoExecutionException
+	public IExperiment newExperiment(String requestId, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.WRITE_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to create new experiment.");
+		}
+		
 		IExperiment experiment = DataManagerHelper.getDataManager().newExperiment("New Experiment " + (project.getExperiments().size() + 1), "", project);
 		getRuntimeProject(project).populateNewExperiment(experiment);
 		return experiment;
@@ -340,8 +370,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#deleteExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void deleteExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public void deleteExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.WRITE_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to delete experiment.");
+		}
+		
 		IGeppettoProject project = experiment.getParentProject();
 		if(getRuntimeProject(project).getRuntimeExperiment(experiment) != null)
 		{
@@ -365,6 +399,10 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void linkDropBoxAccount(String key) throws Exception
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.DROPBOX_INTEGRATION)){
+			throw new GeppettoAccessException("Insufficient access rights to link dropbox account.");
+		}
+		
 		String authToken = dropboxService.link(key);
 		getUser().setDropboxToken(authToken);
 		DataManagerHelper.getDataManager().saveEntity(getUser());
@@ -378,6 +416,10 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void unlinkDropBoxAccount(String key) throws Exception
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.DROPBOX_INTEGRATION)){
+			throw new GeppettoAccessException("Insufficient access rights to unlink dropbox account.");
+		}
+		
 		dropboxService.unlink(key);
 	}
 
@@ -389,6 +431,10 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void uploadModelToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ModelFormat format) throws Exception
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.DROPBOX_INTEGRATION)){
+			throw new GeppettoAccessException("Insufficient access rights to upload model to dropbox.");
+		}
+		
 		if(getUser() != null)
 		{
 			if(getUser().getDropboxToken() != null)
@@ -410,8 +456,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDropBoxManager#uploadResultsToDropBox(java.lang.String, org.geppetto.core.simulation.ResultsFormat)
 	 */
 	@Override
-	public void uploadResultsToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ResultsFormat format) throws GeppettoExecutionException
+	public void uploadResultsToDropBox(String aspectID, IExperiment experiment, IGeppettoProject project, ResultsFormat format) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.DROPBOX_INTEGRATION)){
+			throw new GeppettoAccessException("Insufficient access rights to upload results to dropbox.");
+		}
+		
 		if(getUser() != null)
 		{
 			if(getUser().getDropboxToken() != null)
@@ -428,8 +478,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#getModelTree(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public Map<String, AspectSubTreeNode> getModelTree(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public Map<String, AspectSubTreeNode> getModelTree(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.READ_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to get runtime tree.");
+		}
+		
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).populateModelTree(aspectInstancePath);
 	}
 
@@ -439,8 +493,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#getSimulationTree(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public Map<String, AspectSubTreeNode> getSimulationTree(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public Map<String, AspectSubTreeNode> getSimulationTree(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.READ_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to get simulation tree.");
+		}
+		
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).populateSimulationTree(aspectInstancePath);
 	}
 
@@ -450,8 +508,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#setModelParameters(java.lang.String, java.util.Map, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public AspectSubTreeNode setModelParameters(String aspectInstancePath, Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public AspectSubTreeNode setModelParameters(String aspectInstancePath, Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.WRITE_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to set model parameters.");
+		}
+		
 		AspectSubTreeNode setParameters = getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(aspectInstancePath, parameters);
 		DataManagerHelper.getDataManager().saveEntity(project);
 		return setParameters;
@@ -463,8 +525,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#setWatchedVariables(java.util.List, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void setWatchedVariables(List<String> watchedVariables, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public void setWatchedVariables(List<String> watchedVariables, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.WRITE_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to set watched variables.");
+		}
+		
 		getRuntimeProject(project).getRuntimeExperiment(experiment).setWatchedVariables(watchedVariables);
 		DataManagerHelper.getDataManager().saveEntity(project);
 	}
@@ -475,8 +541,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#clearWatchLists(org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void clearWatchLists(IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public void clearWatchLists(IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.WRITE_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to clear watched variables.");
+		}
+		
 		getRuntimeProject(project).getRuntimeExperiment(experiment).clearWatchLists();
 	}
 
@@ -486,8 +556,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadModel(java.lang.String, org.geppetto.core.services.IModelFormat)
 	 */
 	@Override
-	public File downloadModel(String aspectInstancePath, ModelFormat format, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public File downloadModel(String aspectInstancePath, ModelFormat format, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.DOWNLOAD)){
+			throw new GeppettoAccessException("Insufficient access rights to download model.");
+		}
+		
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadModel(aspectInstancePath, format);
 	}
 
@@ -497,8 +571,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#supportedOuputs(java.lang.String)
 	 */
 	@Override
-	public List<ModelFormat> getSupportedOuputs(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public List<ModelFormat> getSupportedOuputs(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.READ_PROJECT)){
+			throw new GeppettoAccessException("Insufficient access rights to get supported outputs.");
+		}
+		
 		return getRuntimeProject(project).getRuntimeExperiment(experiment).supportedOuputs(aspectInstancePath);
 	}
 
@@ -508,8 +586,12 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadResults(org.geppetto.core.simulation.ResultsFormat)
 	 */
 	@Override
-	public URL downloadResults(String aspectPath, ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public URL downloadResults(String aspectPath, ResultsFormat resultsFormat, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
 	{
+		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.DOWNLOAD)){
+			throw new GeppettoAccessException("Insufficient access rights to download results.");
+		}
+		
 		logger.info("Downloading results for " + aspectPath + " in format " + resultsFormat.toString());
 		for(ISimulationResult result : experiment.getSimulationResults())
 		{

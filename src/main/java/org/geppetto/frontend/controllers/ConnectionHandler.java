@@ -49,6 +49,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.beans.PathConfiguration;
+import org.geppetto.core.common.GeppettoAccessException;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
@@ -193,7 +194,7 @@ public class ConnectionHandler
 			}
 
 		}
-		catch(MalformedURLException | GeppettoInitializationException | GeppettoExecutionException e)
+		catch(MalformedURLException | GeppettoInitializationException | GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Could not load geppetto project");
 		}
@@ -221,7 +222,7 @@ public class ConnectionHandler
 				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CREATED, json);
 
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "Error creating a new experiment");
 			}
@@ -260,7 +261,7 @@ public class ConnectionHandler
 			}
 
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Error loading experiment");
 		}
@@ -297,7 +298,7 @@ public class ConnectionHandler
 				}
 
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "Error running experiment");
 			}
@@ -322,12 +323,20 @@ public class ConnectionHandler
 		{
 			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 			IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-
-			geppettoManager.setWatchedVariables(variables, experiment, geppettoProject);
+			
+			try
+			{
+				geppettoManager.setWatchedVariables(variables, experiment, geppettoProject);
+			}
+			catch(GeppettoExecutionException | GeppettoAccessException e)
+			{
+				error(e, "Error setting watched variables");
+			}
 
 			// serialize watch-lists
 			ObjectMapper mapper = new ObjectMapper();
 			String serializedLists;
+			
 			try
 			{
 				serializedLists = mapper.writer().writeValueAsString(variables);
@@ -352,7 +361,13 @@ public class ConnectionHandler
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		geppettoManager.clearWatchLists(experiment, geppettoProject);
+		
+		try {
+			geppettoManager.clearWatchLists(experiment, geppettoProject);
+		} catch (GeppettoAccessException e) {
+			error(e, "Error clearing watch lists");
+		}
+		
 		websocketConnection.sendMessage(requestID, OutboundMessages.CLEAR_WATCH, "");
 	}
 
@@ -406,7 +421,7 @@ public class ConnectionHandler
 
 				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, simulationTreeString);
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "Error playing the experiment " + experimentId);
 			}
@@ -450,7 +465,7 @@ public class ConnectionHandler
 
 			websocketConnection.sendMessage(requestID, OutboundMessages.GET_MODEL_TREE, modelTreeString);
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Error populating the model tree for " + aspectInstancePath);
 		}
@@ -485,7 +500,7 @@ public class ConnectionHandler
 
 			websocketConnection.sendMessage(requestID, OutboundMessages.GET_SIMULATION_TREE, simulationTreeString);
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Error populating the simulation tree for " + aspectInstancePath);
 		}
@@ -527,7 +542,7 @@ public class ConnectionHandler
 				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
 			}
 		}
-		catch(GeppettoExecutionException | IOException e)
+		catch(GeppettoExecutionException | IOException | GeppettoAccessException e)
 		{
 			error(e, "Error downloading model for " + aspectInstancePath + " in format " + format);
 		}
@@ -556,7 +571,7 @@ public class ConnectionHandler
 
 			websocketConnection.sendMessage(requestID, OutboundMessages.GET_SUPPORTED_OUTPUTS, supportedOutputsString);
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Error getting supported outputs for " + aspectInstancePath);
 		}
@@ -639,7 +654,7 @@ public class ConnectionHandler
 
 				websocketConnection.sendMessage(requestID, OutboundMessages.UPDATE_MODEL_TREE, modelTreeString);
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "There was an error setting parameters");
 			}
@@ -825,7 +840,7 @@ public class ConnectionHandler
 				{
 					geppettoManager.deleteExperiment(requestID, experiment);
 				}
-				catch(GeppettoExecutionException e)
+				catch(GeppettoExecutionException | GeppettoAccessException e)
 				{
 					error(e, "Error while deleting the experiment");
 				}
@@ -867,7 +882,7 @@ public class ConnectionHandler
 					error(null, "Error persisting project  " + projectId + ".");
 				}
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "Error persisting project");
 			}
@@ -960,7 +975,7 @@ public class ConnectionHandler
 			geppettoManager.uploadResultsToDropBox(aspectPath, experiment, geppettoProject, resultsFormat);
 			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Unable to upload results for aspect : " + aspectPath);
 		}
@@ -1005,7 +1020,7 @@ public class ConnectionHandler
 				}
 			}
 		}
-		catch(GeppettoExecutionException | IOException e)
+		catch(GeppettoExecutionException | IOException | GeppettoAccessException e)
 		{
 			error(e, "Error downloading results for " + aspectPath + " in format " + format);
 		}

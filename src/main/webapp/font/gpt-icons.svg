@@ -1,11 +1,11 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
 <!--
-2015-6-1: Created with FontForge (http://fontforge.org)
+2015-11-19: Created with FontForge (http://fontforge.org)
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
 <metadata>
-Created by FontForge 20150504 at Mon Jun  1 13:50:23 2015
+Created by FontForge 20150504 at Thu Nov 19 16:11:04 2015
  By Boris Marin
 Copyright (c) 2015, Boris Marin
 </metadata>
@@ -22,11 +22,14 @@ Copyright (c) 2015, Boris Marin
     bbox="-0.128937 -66.0942 512 448"
     underline-thickness="25.6"
     underline-position="-51.2"
-    unicode-range="U+0020-F107"
+    unicode-range="U+0020-F108"
   />
     <missing-glyph />
     <glyph glyph-name="space" unicode=" " horiz-adv-x="200" 
  />
+    <glyph glyph-name="uniF108" unicode="&#xf108;" horiz-adv-x="360" 
+d="M0 29c0 0 53 75 80 150c11 13 192 236 192 236c4 7 20 6 37 -3s56 -48 50 -56l-198 -253c-51 -16 -113 -60 -147 -85c-7 8 -9 8 -14 11zM282 382l-8 13c-51 -62 -97 -118 -147 -181c-12 -15 -25 -27 -33 -44c-8 -28 -44 -80 -55 -106c16 25 50 78 71 103
+c46 52 87 110 131 164zM345 356c5 6 -6 23 -23 37s-35 20 -40 14s5 -22 22 -36s36 -21 41 -15z" />
     <glyph glyph-name="uniF107" unicode="&#xf107;" 
 d="M64 0h448v-64h-512v512h64v-448zM144 32c-27 0 -48 21 -48 48s21 48 48 48h4l52 86c-5 8 -8 16 -8 26c0 27 21 48 48 48s48 -21 48 -48c0 -10 -3 -18 -8 -26l52 -86h4h3l85 149c-5 8 -8 17 -8 27c0 27 21 48 48 48s48 -21 48 -48s-21 -48 -48 -48h-3l-85 -149
 c5 -8 8 -17 8 -27c0 -27 -21 -48 -48 -48s-48 21 -48 48c0 10 3 18 8 26l-52 86h-4h-4l-52 -86c5 -8 8 -16 8 -26c0 -27 -21 -48 -48 -48z" />

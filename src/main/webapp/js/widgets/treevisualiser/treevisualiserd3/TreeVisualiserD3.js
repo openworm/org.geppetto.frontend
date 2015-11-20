@@ -87,7 +87,7 @@ define(function(require) {
 			
 			this.datasets.push(dataset);
 			
-			this.prepareTree('', dataset.data, dataset);
+			this.prepareTree('', dataset.data, 0);
 			this.paintTree();
 
 			return "Metadata or variables to display added to tree visualiser";
@@ -100,7 +100,7 @@ define(function(require) {
 		 * @param {Array} data - Data to paint
 		 * @param {Array} dataset - Sets within the data object to paint
 		 */
-		prepareTree: function(parent, data, dataset){
+		prepareTree: function(parent, data, step){
 			nodeName = data.instancePath;
 			
 			if (nodeName != null){
@@ -110,9 +110,9 @@ define(function(require) {
 				
 				
 				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
-						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
+						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "HTMLMetadataNode" |
 						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
-					var labelValue = this.getValueFromData(data);
+					var labelValue = this.getValueFromData(data, step);
 					
 					dataset.nodes[nodeName] = {name: label + "=" + labelValue, variable: data};
 					if (parent != ''){
@@ -136,7 +136,7 @@ define(function(require) {
 					if (children.length > 0){
 						var parentFolderTmp = nodeName; 
 						for (var childIndex in children){
-							this.prepareTree(parentFolderTmp, children[childIndex], dataset);
+							this.prepareTree(parentFolderTmp, children[childIndex], step);
 						}
 					}
 				}
@@ -153,7 +153,7 @@ define(function(require) {
 				if (dataset.variableToDisplay != null){
 					dataset.links = [];
 					dataset.nodes = {};
-					this.prepareTree('', dataset.data, dataset);
+					this.prepareTree('', dataset.data, step);
 					
 					var nodes = dataset.force.nodes();
 					$.extend(true, nodes, d3.values(dataset.nodes));

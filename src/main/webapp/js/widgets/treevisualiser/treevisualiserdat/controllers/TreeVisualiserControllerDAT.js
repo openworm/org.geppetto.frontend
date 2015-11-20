@@ -87,6 +87,7 @@ define(function(require) {
 			                                                 "ParameterNode",
 			                                                 "ParameterSpecificationNode",
 			                                                 "TextMetadataNode",
+			                                                 "HTMLMetadataNode",
 			                                                 "VariableNode",
 			                                                 "VisualGroupElementNode",
 			                                                 "VisualGroupNode",

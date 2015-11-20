@@ -177,7 +177,7 @@ define(function(require) {
 								formattedNode = GEPPETTO.Utility.formatmodeltree(children[i], indent + 1, formattedNode);
 							}
 							else if(type == "FunctionNode" || type  == "ParameterNode" || type == "ParameterSpecificationNode"
-								|| type == "DynamicsSpecificationNode" || type  == "TextMetadataNode"){
+								|| type == "DynamicsSpecificationNode" || type  == "TextMetadataNode" || type  == "HTMLMetadataNode"){
 								var indentation = "   ↪";
 								for(var j = 0; j < indent; j++) {
 									indentation = " " + indentation;

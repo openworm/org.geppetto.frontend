@@ -299,6 +299,15 @@ define(function(require)
 								parent.getChildren().push(parameterSpecificationNode);
 							}
 							parent[i] = parameterSpecificationNode;
+						} else if (metatype == GEPPETTO.Resources.HTML_METADATA_NODE)
+						{
+							var htmlMetadataNode = GEPPETTO.NodeFactory.createHTMLMetadataNode(node[i], aspect);
+							htmlMetadataNode.setParent(parent);
+							if (parent._metaType == GEPPETTO.Resources.COMPOSITE_NODE || parent._metaType == GEPPETTO.Resources.ASPECT_SUBTREE_NODE)
+							{
+								parent.getChildren().push(htmlMetadataNode);
+							}
+							parent[i] = htmlMetadataNode;
 						} else if (metatype == GEPPETTO.Resources.TEXT_METADATA_NODE)
 						{
 							var textMetadataNode = GEPPETTO.NodeFactory.createTextMetadataNode(node[i], aspect);

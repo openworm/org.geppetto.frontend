@@ -134,38 +134,23 @@ define(function(require) {
 			 *            widgetType - Widget to remove from Geppetto
 			 */
 			removeWidget: function(widgetType) {
+				this.getController(widgetType).removeWidgets();
 				switch(widgetType) {
-					//removes plotting widget from geppetto
 					case GEPPETTO.Widgets.PLOT:
-						this.getController(GEPPETTO.Widgets.PLOT).removePlotWidgets();
 						return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-					//removes popup widget from geppetto
 					case GEPPETTO.Widgets.POPUP:
-						this.getController(GEPPETTO.Widgets.POPUP).removePopupWidgets();
 						return GEPPETTO.Resources.REMOVE_POPUP_WIDGETS;
-					//removes scatter3d widget from geppetto
 					case GEPPETTO.Widgets.SCATTER3D:
-						this.getController(GEPPETTO.Widgets.SCATTER3D).removeScatter3dWidgets();
 						return GEPPETTO.Resources.REMOVE_SCATTER3D_WIDGETS;	
-					//removes tree visualiser DAT widget from geppetto						
 					case GEPPETTO.Widgets.TREEVISUALISERDAT:
-						this.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).removeTreeVisualiserDATWidgets();
 						return GEPPETTO.Resources.REMOVE_TREEVISUALISERDAT_WIDGETS;
-					//removes tree visualiser D3 widget from geppetto												
 					case GEPPETTO.Widgets.TREEVISUALISERD3:
-						this.getController(GEPPETTO.Widgets.TREEVISUALISERD3).removeTreeVisualiserD3Widgets();
 						return GEPPETTO.Resources.REMOVE_TREEVISUALISERD3_WIDGETS;
-					//removes variable visualiser widget from geppetto
 					case GEPPETTO.Widgets.VARIABLEVISUALISER:
-						this.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).removeVariableVisualiserWidgets();
 						return GEPPETTO.Resources.REMOVE_VARIABLEVISUALISER_WIDGETS;
-					//remove connectivity widget
 					case GEPPETTO.Widgets.CONNECTIVITY:
-						this.getController(GEPPETTO.Widgets.CONNECTIVITY).removeConnectivityWidget();
 						return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
-					//remove button bar widget from geppetto
 					case GEPPETTO.Widgets.BUTTONBAR:
-						this.getController(GEPPETTO.Widgets.BUTTONBAR).removeButtonBarWidget();
 						return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
 					default:
 						return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;

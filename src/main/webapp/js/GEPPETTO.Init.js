@@ -5,6 +5,29 @@ define(function(require) {
 	return function(GEPPETTO) {
 		var $ = require('jquery');
 
+		var createChannel = function() {
+			// Change link from blank to self for embedded environments
+			if(window.EMBEDDED && window.EMBEDDEDURL !== "/" && typeof handleRequest == 'undefined') {
+				handleRequest = function(e) {
+				  if(window.EMBEDDEDURL.indexOf(e.origin) != -1) {
+					  if (e.data.command == 'loadSimulation'){
+						  if (e.data.projectId){
+							  GEPPETTO.Console.executeCommand('Project.loadFromID(' + e.data.projectId + ')');
+						  }
+						  else if (e.data.url){
+							  GEPPETTO.Console.executeCommand('Project.loadFromURL("' + e.data.url + '")');
+						  }
+					  }
+					  else if (e.data.command == 'removeWidgets'){
+						  GEPPETTO.Console.executeCommand('G.removeWidget()');
+					  }
+				  };
+				};
+				// we have to listen for 'message'
+				window.addEventListener('message', handleRequest, false);
+			}
+		};
+		
 		var setupScene = function() {
 			GEPPETTO.getVARS().scene = new THREE.Scene();
 			GEPPETTO.getVARS().visualModelMap = {};
@@ -58,7 +81,7 @@ define(function(require) {
 			GEPPETTO.getVARS().renderer.setSize(width, height);
 			GEPPETTO.getVARS().renderer.autoClear = true;
 			GEPPETTO.getVARS().container.appendChild(GEPPETTO.getVARS().renderer.domElement);
-		}
+		};
 
 		/**
 		 * Light up the scene
@@ -105,7 +128,7 @@ define(function(require) {
 								  if (a.distance > b.distance)
 								    return 1;
 								  return 0;
-								}
+								};
 
 								intersects.sort(compare);
 
@@ -228,6 +251,7 @@ define(function(require) {
 			},
 			initialize : function(containerp) {
 				GEPPETTO.getVARS().container = containerp;
+				createChannel();
 				setupScene();
 				setupCamera();
 				setupRenderer();

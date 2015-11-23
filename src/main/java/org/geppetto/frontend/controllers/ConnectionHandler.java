@@ -839,13 +839,13 @@ public class ConnectionHandler
 				try
 				{
 					geppettoManager.deleteExperiment(requestID, experiment);
+					String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"name\":" + '"' + experiment.getName() + '"' + "}";
+					websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, update);
 				}
 				catch(GeppettoExecutionException | GeppettoAccessException e)
 				{
 					error(e, "Error while deleting the experiment");
 				}
-				String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"name\":" + '"' + experiment.getName() + '"' + "}";
-				websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, update);
 			}
 			else
 			{

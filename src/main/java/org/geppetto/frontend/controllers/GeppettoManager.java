@@ -260,13 +260,13 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IProjectManager#deleteProject(java.lang.String, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void deleteProject(String requestId, IGeppettoProject project) throws GeppettoExecutionException, GeppettoAccessException
+	public void deleteProject(long projectID) throws GeppettoExecutionException, GeppettoAccessException
 	{
 		if(!user.getUserGroup().getPrivileges().contains(UserPrivileges.WRITE_PROJECT)){
 			throw new GeppettoAccessException("Insufficient access rights to delete project.");
 		}
 		
-		DataManagerHelper.getDataManager().deleteGeppettoProject(project.getId(), user);
+		DataManagerHelper.getDataManager().deleteGeppettoProject(projectID, user);
 	}
 
 	/*

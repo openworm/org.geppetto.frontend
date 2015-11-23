@@ -122,12 +122,12 @@ public class GeppettoProjectController
 	}
 
 	@RequestMapping(value = "/geppettoproject/delete/{id}")
-	public String deleteGeppettoProject(@PathVariable("id") int id)
+	public String deleteGeppettoProject(@PathVariable("id") int id) throws GeppettoExecutionException, GeppettoAccessException
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
-			dataManager.deleteGeppettoProject(id, geppettoManager.getUser());
+			geppettoManager.deleteProject(id);
 		}
 		return "redirect:/";
 	}

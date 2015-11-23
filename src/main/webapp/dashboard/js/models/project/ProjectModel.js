@@ -36,7 +36,7 @@ define([
                 item.url = url + 'geppetto?load_project_from_id=' + data.id + '&experimentId=' + item.id;
                 data.projectUrl = url + 'geppetto?load_project_from_id=' + data.id;
                 data.deleteUrl = url + '/geppettoproject/delete/' + data.id;
-                item.deleteExperimentUrl = url +'/geppettoproject/' + data.id + '/experiments/' + item.id+'/downloadResults';
+                item.downloadResultsUrl = url +'/geppettoproject/' + data.id + '/experiments/' + item.id+'/downloadResults';
             });
             return data;
         },

@@ -190,6 +190,10 @@ define(function(require) {
 										{
 											object.ghosted = false;
 											object.material.opacity = object.material.defaultOpacity;
+											if(object.material.opacity==1)
+											{
+												object.material.transparent = false;
+											}
 										}
 									}
 								});
@@ -198,6 +202,10 @@ define(function(require) {
 							{
 								child.ghosted = false;
 								child.material.opacity = child.material.defaultOpacity;
+								if(child.material.opacity==1)
+								{
+									child.material.transparent = false;
+								}
 							}
 						}
 					}

@@ -134,16 +134,17 @@ define(function(require) {
 					if (!this.selected) 
 					{
 						//first, before doing anything, we check what is currently selected
-						if(G.getSelection().length>0) 
-						{
-							//something is already selected, we make everything not selected transparent
-							GEPPETTO.SceneController.setGhostEffect(true);
-						}
-						else
-						{
-							//nothing is selected, we restore the default opacity for everything
-							GEPPETTO.SceneController.setGhostEffect(false);
-						}
+						//Commenting out "ghost" effect.A bug introduced in three.js makes transparency misbehave in some scenarios so this is better commented out for now
+//						if(G.getSelection().length>0) 
+//						{
+//							//something is already selected, we make everything not selected transparent
+//							GEPPETTO.SceneController.setGhostEffect(true);
+//						}
+//						else
+//						{
+//							//nothing is selected, we restore the default opacity for everything
+//							GEPPETTO.SceneController.setGhostEffect(false);
+//						}
 						
 						this.selected = true;
 						this.parent.selected=true;
@@ -154,33 +155,33 @@ define(function(require) {
 						//Rationale: help exploration of networks by hiding non connected
 						if(this.getParent().getConnections().length>0)
 						{
-							//allOtherMeshes will contain a list of all the non connected entities in the scene for the purpose
-							//of changing their opacity
-							var allOtherMeshes= $.extend({}, GEPPETTO.getVARS().meshes);
-							//look on the simulation selection options and perform necessary
-							//operations
+//							//allOtherMeshes will contain a list of all the non connected entities in the scene for the purpose
+//							//of changing their opacity
+//							var allOtherMeshes= $.extend({}, GEPPETTO.getVARS().meshes);
+//							//look on the simulation selection options and perform necessary
+//							//operations
 							if(G.getSelectionOptions().show_inputs)
 							{
 								var inputs=this.getParent().showInputConnections(true);
-								for(var i in inputs)
-								{
-									delete allOtherMeshes[inputs[i]];
-								}
+//								for(var i in inputs)
+//								{
+//									delete allOtherMeshes[inputs[i]];
+//								}
 							}
 							if(G.getSelectionOptions().show_outputs)
 							{
 								var outputs=this.getParent().showOutputConnections(true);
-								for(var o in outputs)
-								{
-									delete allOtherMeshes[outputs[o]];
-								}
+//								for(var o in outputs)
+//								{
+//									delete allOtherMeshes[outputs[o]];
+//								}
 							}
 							if(G.getSelectionOptions().draw_connection_lines)
 							{
 								this.getParent().showConnectionLines(true);
 							}
-
-							GEPPETTO.SceneController.ghostEffect(allOtherMeshes,true);		
+//
+//							GEPPETTO.SceneController.ghostEffect(allOtherMeshes,true);		
 						}
 						//signal selection has changed in simulation
 						GEPPETTO.trigger(Events.Select);
@@ -207,16 +208,16 @@ define(function(require) {
 						this.selected = false;
 						this.getParent().selected = false;
 
-						//don't apply ghost effect to meshes if nothing is left selected after deselecting this entity
-						if(G.getSelection().length <=1)
-						{
-							GEPPETTO.SceneController.setGhostEffect(false);
-						}
-						else
-						{
-							//update ghost effect after deselection of this entity
-							GEPPETTO.SceneController.setGhostEffect(true);
-						}
+//						//don't apply ghost effect to meshes if nothing is left selected after deselecting this entity
+//						if(G.getSelection().length <=1)
+//						{
+//							GEPPETTO.SceneController.setGhostEffect(false);
+//						}
+//						else
+//						{
+//							//update ghost effect after deselection of this entity
+//							GEPPETTO.SceneController.setGhostEffect(true);
+//						}
 
 						//look on the simulation selection options and perform necessary
 						//operations

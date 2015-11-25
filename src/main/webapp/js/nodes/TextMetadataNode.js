@@ -31,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a parameter specification node, used for model
+ * Client class use to represent a text metadata node, used for model
  * tree properties.
  * 
  * @module nodes/TextMetadataNode

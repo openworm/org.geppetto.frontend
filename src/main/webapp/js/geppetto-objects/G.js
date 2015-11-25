@@ -55,8 +55,10 @@ define(function(require) {
 				show_inputs : true,
 				show_outputs : true,
 				draw_connection_lines : true,
+				unselected_transparent : true
 			},
 			highlightedConnections : [],
+			
 			addWidget: function(type) {
 				var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
 				return newWidget;
@@ -192,10 +194,17 @@ define(function(require) {
 			 * Removes widget from Geppetto
 			 *
 			 * @command G.removeWidget(widgetType)
-			 * @param {WIDGET_EVENT_TYPE} type - Type of widget to remove fro GEPPETTO
+			 * @param {WIDGET_EVENT_TYPE} type - Type of widget to remove from GEPPETTO. If no type is passed remove all the widgets from Geppetto.
 			 */
 			removeWidget: function(type) {
-				return GEPPETTO.WidgetFactory.removeWidget(type);
+				if (type){
+					return GEPPETTO.WidgetFactory.removeWidget(type);
+				}
+				else{
+					for(var widgetKey in GEPPETTO.Widgets) {
+						GEPPETTO.WidgetFactory.removeWidget(GEPPETTO.Widgets[widgetKey]);
+					}
+				}
 			},
 
 			/**
@@ -574,6 +583,9 @@ define(function(require) {
 				if(options.draw_connection_lines != null){
 					this.selectionOptions.draw_connection_lines = options.draw_connection_lines;
 				}
+				if(options.unselected_transparent != null){
+					this.selectionOptions.unselected_transparent = options.unselected_transparent;
+				}
 			},
 
 			/**
@@ -602,6 +614,10 @@ define(function(require) {
 					}
 				}
 
+				if(G.getSelectionOptions().unselected_transparent)
+				{
+					GEPPETTO.SceneController.setGhostEffect(false);
+				}
 				return GEPPETTO.Resources.DESELECT_ALL;
 			},
 

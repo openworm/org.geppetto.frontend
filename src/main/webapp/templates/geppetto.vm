@@ -24,6 +24,8 @@
             }
 
             window.USE_SSL = <%= useSsl %>;
+            window.EMBEDDED = <%= embedded %>;
+    		window.EMBEDDEDURL = "<%= embedderURL %>".split(",");
         </script>
     /build -->
     

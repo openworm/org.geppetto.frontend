@@ -47,31 +47,33 @@ define(function(require) {
 				 */
 				init3DObject : function(meshes, instancePath, position)
 				{
-					for ( var m in meshes) {
+					for ( var m in meshes) 
+					{
 						var mesh = meshes[m];
-						if(!Array.isArray(mesh))
+
+						mesh.instancePath = instancePath;
+						//if the model file is specifying a position for the loaded meshes then we translate them here
+						if (position != null) 
 						{
-							mesh.instancePath = instancePath;
-							//if the model file is specifying a position for the loaded meshes then we translate them here
-							if (position != null) {
-								p = new THREE.Vector3(position.x, position.y,position.z);
-								mesh.position.set(p.x,p.y,p.z);
-								mesh.matrixAutoUpdate = false;
-								mesh.applyMatrix(new THREE.Matrix4().makeTranslation(p.x,p.y,p.z));
-								mesh.geometry.verticesNeedUpdate = true;
-								mesh.updateMatrix();
-							}
-							GEPPETTO.getVARS().scene.add(mesh);
-							//keep track of aspects created by storing them in VARS property object
-							//under meshes
-							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
-							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].visible = true;
-							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].ghosted = false;
-							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].defaultOpacity = 1;
-							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].selected = false;
-							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].input = false;
-							GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].output = false;
+							p = new THREE.Vector3(position.x, position.y,position.z);
+							mesh.position.set(p.x,p.y,p.z);
+							mesh.matrixAutoUpdate = false;
+							mesh.applyMatrix(new THREE.Matrix4().makeTranslation(p.x,p.y,p.z));
+							mesh.geometry.verticesNeedUpdate = true;
+							mesh.updateMatrix();
+							//mesh.geometry.translate(position.x, position.y,position.z);
 						}
+						GEPPETTO.getVARS().scene.add(mesh);
+						//keep track of aspects created by storing them in VARS property object
+						//under meshes
+						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
+						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].visible = true;
+						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].ghosted = false;
+						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].defaultOpacity = 1;
+						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].selected = false;
+						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].input = false;
+						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].output = false;
+
 					}
 				},
 
@@ -158,24 +160,14 @@ define(function(require) {
 					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(aspect.VisualizationTree.content, materials, lines);
 
 					//only merge if there are more than one object
-					if(threeDeeObjList.length > 1){
+					if(threeDeeObjList.length > 1)
+					{
 						var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
 						//investigate need to obj.dispose for obj in threeDeeObjList
 						if(mergedObjs!=null)
 						{
-							if(Array.isArray(mergedObjs))
-							{
-								for(var o in mergedObjs)
-								{
-									mergedObjs[o].aspectInstancePath = aspect.instancePath;
-									aspectObjects.push(mergedObjs[o]);
-								}
-							}
-							else
-							{
-								mergedObjs.aspectInstancePath = aspect.instancePath;
-								aspectObjects.push(mergedObjs);
-							}
+							mergedObjs.aspectInstancePath = aspect.instancePath;
+							aspectObjects.push(mergedObjs);
 						}
 						else
 						{
@@ -185,7 +177,9 @@ define(function(require) {
 								aspectObjects.push(threeDeeObjList[obj]);
 							}
 						}
-					}else if(threeDeeObjList.length == 1){
+					}
+					else if(threeDeeObjList.length == 1)
+					{
 						//only one object in list, add it to local array and set 
 						//instance path from aspect
 						aspectObjects.push(threeDeeObjList[0]);
@@ -267,19 +261,14 @@ define(function(require) {
 						}
 						else
 						{
-							if(mergedMeshes===undefined)
+							ret = new THREE.LineSegments(mergedLines, materials["line"]);
+							if(mergedMeshes!=undefined)
 							{
-								ret = new THREE.Line(mergedLines, materials["line"], THREE.LinePieces);
-							}
-							else
-							{
-								ret=[];
-								ret[0] = new THREE.Mesh( mergedMeshes,materials["line"]);
-								ret[1] = new THREE.Line(mergedLines, materials["line"], THREE.LinePieces);
+								//we merge into a single mesh both types of geometries (from lines and 3D objects)
+								tempmesh = new THREE.Mesh( mergedMeshes,materials["mesh"]);
+								ret.geometry.merge(tempmesh.geometry, tempmesh.matrix);
 							}
 						}
-					 
-
 						break;
 					case "ParticleNode":
 						var particleGeometry = new THREE.Geometry();
@@ -298,7 +287,7 @@ define(function(require) {
 						ret = objArray[0];
 						break;
 					}
-					if(ret!=null)
+					if(ret!=null && !Array.isArray(ret))
 					{
 						ret.mergedMeshesPaths = mergedMeshesPaths;	
 					}
@@ -375,10 +364,17 @@ define(function(require) {
 							if(child instanceof THREE.Mesh){
 								child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial(40);
 								child.name = node.instancePath.split(".VisualizationTree")[0];
+								child.material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+								child.material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+								child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+								child.geometry.computeVertexNormals();
 							}
 							if (child instanceof THREE.SkinnedMesh) {
 								child.material.skinning = true;
-
+								child.material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
+								child.material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+								child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+								child.geometry.computeVertexNormals();
 							}
 						});
 					});
@@ -400,6 +396,7 @@ define(function(require) {
 							child.material.defaultColor=GEPPETTO.Resources.COLORS.DEFAULT;
 							child.material.defaultOpacity=GEPPETTO.Resources.OPACITY.DEFAULT;
 							child.material.opacity=GEPPETTO.Resources.OPACITY.DEFAULT;
+							child.geometry.computeVertexNormals();
 						}
 					});
 
@@ -542,7 +539,6 @@ define(function(require) {
 					}
 					var material = new THREE.MeshPhongMaterial({
 						opacity : 1,
-						ambient : 0x777777,
 						shininess : shine,
 						shading : THREE.SmoothShading
 					});
@@ -554,10 +550,11 @@ define(function(require) {
 				},
 				
 				getParticleMaterial : function(){
-					var pMaterial = new THREE.PointCloudMaterial({
+					var textureLoader = new THREE.TextureLoader();
+					var pMaterial = new THREE.PointsMaterial({
 						size : 5,
-						map : THREE.ImageUtils
-						.loadTexture("geppetto/images/particle.png"),
+						map : textureLoader
+						.load("geppetto/images/particle.png"),
 						blending : THREE.AdditiveBlending,
 						depthTest : false,
 						transparent : true

@@ -344,7 +344,6 @@ define(function(require) {
 			/**
 			 * Widget resources
 			 */
-			WIDGET_CREATED: " widget created",
 			REMOVE_PLOT_WIDGETS: "Plotting widget(s) removed",
 			REMOVE_POPUP_WIDGETS: "Popup widget(s) removed",
 			REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",
@@ -378,12 +377,12 @@ define(function(require) {
 			FUNCTION_NODE : "FunctionNode",
 			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
 			TEXT_METADATA_NODE : "TextMetadataNode",
+			HTML_METADATA_NODE : "HTMLMetadataNode",
 			PARAMETER_NODE : "ParameterNode",
 			CONNECTION_NODE : "ConnectionNode",
 			COMPOSITE_NODE : "CompositeNode",
 			DYNAMICS_NODE : "DynamicsSpecificationNode",
 			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
-			TEXT_METADATA_NODE : "TextMetadataNode",
 			VISUAL_GROUP_NODE : "VisualGroupNode",
 			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
 			SKELETON_ANIMATION_NODE: "SkeletonAnimationNode",

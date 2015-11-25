@@ -41,14 +41,12 @@
  */
 require.config({
 	shim: {
-		"widgets/scatter3d/vendor/OrbitControls" : ["three"],
-		"widgets/scatter3d/vendor/helvetiker_regular.typeface" : ["three"]
+		"widgets/scatter3d/vendor/OrbitControls" : ["three"]
 	}
 });
 
 var reqs = [];
 reqs.push("widgets/scatter3d/vendor/OrbitControls");
-reqs.push("widgets/scatter3d/vendor/helvetiker_regular.typeface");
 
 require(reqs, function($) {
 	loadCss("geppetto/js/widgets/scatter3d/Scatter3d.css");

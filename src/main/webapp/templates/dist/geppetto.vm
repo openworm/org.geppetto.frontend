@@ -22,6 +22,8 @@
     window.BUNDLE_CONTEXT_PATH = path;
     }
     window.USE_SSL = false;
+    window.EMBEDDED = false;
+    window.EMBEDDEDURL = "/";
     </script>
     
     <link rel="stylesheet/less" type="text/css" href="geppetto/less/main.less" />

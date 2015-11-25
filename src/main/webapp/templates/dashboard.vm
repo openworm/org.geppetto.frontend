@@ -16,7 +16,7 @@
     <!-- build:template
     <script>
     	window.EMBEDDED = <%= embedded %>;
-    	window.EMBEDDEDURL = "<%= embedderURL %>";
+    	window.EMBEDDEDURL = "<%= embedderURL %>".split(",");
     </script>
     /build -->
 

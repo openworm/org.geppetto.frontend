@@ -190,6 +190,10 @@ define(function(require) {
 										{
 											object.ghosted = false;
 											object.material.opacity = object.material.defaultOpacity;
+											if(object.material.opacity==1)
+											{
+												object.material.transparent = false;
+											}
 										}
 									}
 								});
@@ -198,6 +202,10 @@ define(function(require) {
 							{
 								child.ghosted = false;
 								child.material.opacity = child.material.defaultOpacity;
+								if(child.material.opacity==1)
+								{
+									child.material.transparent = false;
+								}
 							}
 						}
 					}
@@ -280,7 +288,6 @@ define(function(require) {
 								}
 							});
 							mesh.selected = false;
-							mesh.ghosted = false;
 						}
 					} 
 					else 
@@ -288,7 +295,6 @@ define(function(require) {
 						mesh.material.color.set(mesh.material.defaultColor);
 						mesh.material.opacity = mesh.material.defaultOpacity;
 						mesh.selected = false;
-						mesh.ghosted = false;
 					}
 					return true;
 				}
@@ -422,7 +428,7 @@ define(function(require) {
 				{
 					return false;
 				}
-				GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(aspect, lines, thickness),aspect.getInstancePath());
+				GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(aspect, lines, thickness),aspect.getInstancePath(),aspect.parent.position);
 
 				return true;
 			},
@@ -604,15 +610,15 @@ define(function(require) {
 						// if there are nodes still selected, give it a ghost
 						// effect. If not nodes are
 						// selected, give the meshes old default color
-						if (G.getSelection().length > 0) {
+
+						if (G.getSelectionOptions().unselected_transparent) 
+						{
 							mesh.material.transparent = true;
 							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
 							mesh.ghosted = true;
-						} else {
-							GEPPETTO.SceneController.setThreeColor(mesh.material.color,mesh.material.defaultColor);
-							mesh.material.transparent = true;
-							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-						}
+						} 
+						GEPPETTO.SceneController.setThreeColor(mesh.material.color,mesh.material.defaultColor);
+
 					}
 					// if mesh is selected, make it look like so
 					else {
@@ -675,7 +681,7 @@ define(function(require) {
 					});
 					material.color.setHex(c);
 
-					var line = new THREE.Line(geometry, material);
+					var line = new THREE.LineSegments(geometry, material);
 					line.updateMatrixWorld(true);
 
 					GEPPETTO.getVARS().scene.add(line);
@@ -716,13 +722,16 @@ define(function(require) {
 
 					// loop through individual meshes, add them to group, set
 					// new material to them
-					for (v in map) {
+					for (v in map) 
+					{
 						var m = GEPPETTO.getVARS().visualModelMap[map[v]];
-						if (m.instancePath in targetObjects) {
+						if (m.instancePath in targetObjects) 
+						{
 							// merged mesh into corresponding geometry
 							var geometry = geometryGroups[highlightedMesh];
 							geometry.merge(m.geometry, m.matrix);
-						} else {
+						} else 
+						{
 							// merged mesh into corresponding geometry
 							var geometry = geometryGroups[a];
 							geometry.merge(m.geometry, m.matrix);
@@ -735,8 +744,7 @@ define(function(require) {
 					var newGroups = {};
 					newGroups[a] = {};
 					newGroups[highlightedMesh] = {};
-					GEPPETTO.SceneController.createGroupMeshes(a,
-							geometryGroups, newGroups);
+					GEPPETTO.SceneController.createGroupMeshes(a, geometryGroups, newGroups);
 				}
 				return groups;
 			},
@@ -802,26 +810,16 @@ define(function(require) {
 				 */
 				GEPPETTO.getVARS().splitMeshes[aspectInstancePath] = null;
 				geometryGroups[aspectInstancePath] = new THREE.Geometry();
+				
 				// create map of geometry groups for groups
-				for ( var g in groups) {
+				for ( var g in groups) 
+				{
 					var groupName = aspectInstancePath + "." + g;
 					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
 
-					var geometry = {};
-					// if there's no group mesh already for this group, we
-					// create a geometry
-					// for it, this will used to merge visual objects
-					if (groupMesh == null || groupMesh == undefined) {
-						geometry = new THREE.Geometry();
-						geometry.groupMerge = true;
-					}
-					// group mesh already exist, set flag to merge false
-					else {
-						geometry = groupMesh.geometry;
-						geometry.groupMerge = false;
-					}
-					// store merge flag value, and new geometry if populate flag
-					// set to true
+					var geometry = new THREE.Geometry();
+					geometry.groupMerge = true;
+
 					geometryGroups[groupName] = geometry;
 				}
 
@@ -833,83 +831,132 @@ define(function(require) {
 				var added = false;
 				// loop through individual meshes, add them to group, set new
 				// material to them
-				for ( var v in map) {
-					var m = GEPPETTO.getVARS().visualModelMap[map[v]];
-					// get object from visualizationtree by using the object's
-					// instance path as search key
-					var object = GEPPETTO.get3DObjectInVisualizationTree(visualizationTree, map[v]);
-					// get group elements list for object
-					var objectsGroups = object.groups;
-					for (g in objectsGroups) 
+				for ( var v in map) 
+				{
+					if(v!=undefined)
 					{
-						if (objectsGroups[g] in groups) 
-						{
-							// name of group, mix of aspect path and group name
-							var groupName = aspectInstancePath + "." + objectsGroups[g];
-							// retrieve corresponding geometry for this group
-							var geometry = geometryGroups[groupName];
-							// only merge if flag is set to true
-							if (geometry.groupMerge) {
+						var m = GEPPETTO.getVARS().visualModelMap[map[v]];
+						// get object from visualizationtree by using the object's
+						// instance path as search key
+						var object = GEPPETTO.get3DObjectInVisualizationTree(visualizationTree, map[v]);
+						
+						// If it is a segment compare to the id otherwise check in the visual groups
+						if (object.id in groups){
+							// true means don't add to mesh with non-groups visual objects
+							added = GEPPETTO.SceneController.addMeshToGeometryGroup(aspectInstancePath, object.id, geometryGroups, m)
+						}
+						else{
+							// get group elements list for object
+							var objectsGroups = object.groups;
+							for (var g in objectsGroups) 
+							{
+								if (objectsGroups[g] in groups) 
+								{
+									// true means don't add to mesh with non-groups visual objects
+									added = GEPPETTO.SceneController.addMeshToGeometryGroup(aspectInstancePath, objectsGroups[g], geometryGroups, m)
+								}
+							}
+						}
+	
+						// if visual object didn't belong to group, add it to mesh
+						// with remainder of them
+						if (!added) {
+							var geometry = geometryGroups[aspectInstancePath];
+							if(m instanceof THREE.Line) 
+							{
+								geometry.vertices.push(m.geometry.vertices[0]);
+								geometry.vertices.push(m.geometry.vertices[1]);
+							}
+							else
+							{
 								// merged mesh into corresponding geometry
 								geometry.merge(m.geometry, m.matrix);
 							}
-							// true means don't add to mesh with non-groups
-							// visual objects
-							added = true;
 						}
+						// reset flag for next visual object
+						added = false;
 					}
-
-					// if visual object didn't belong to group, add it to mesh
-					// with remainder of them
-					if (!added) {
-						var geometry = geometryGroups[aspectInstancePath];
-						geometry.merge(m.geometry, m.matrix);
-					}
-					// reset flag for next visual object
-					added = false;
 				}
 
 				groups[aspectInstancePath] = {};
 				groups[aspectInstancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
 				GEPPETTO.SceneController.createGroupMeshes(aspectInstancePath, geometryGroups, groups);
 			},
+			
+			/**
+			 * Add mesh to geometry groups
+			 * 
+			 * @param {String}
+			 *            aspectInstancePath - Path of aspect, corresponds to
+			 *            original merged mesh
+			 * @param {String}
+			 *            id - local path to the group
+			 * @param {object}
+			 *            groups - The groups that we need to split mesh into
+			 * @param {object}
+			 *            m - current mesh     
+			 */
+			addMeshToGeometryGroup : function(aspectInstancePath, id, geometryGroups, m)
+			{
+				// name of group, mix of aspect path and group name
+				var groupName = aspectInstancePath + "." + id;
+				// retrieve corresponding geometry for this group
+				var geometry = geometryGroups[groupName];
+				// only merge if flag is set to true
+				if(m instanceof THREE.Line) 
+				{
+					geometry.vertices.push(m.geometry.vertices[0]);
+					geometry.vertices.push(m.geometry.vertices[1]);
+				}
+				else
+				{
+					// merged mesh into corresponding geometry
+					geometry.merge(m.geometry, m.matrix);
+				}
+				return true;
+			},
 
 			/**
 			 * Create group meshes for given groups, retrieves from map if
 			 * already present
 			 */
-			createGroupMeshes : function(aspectInstancePath, geometryGroups,
-					groups) {
+			createGroupMeshes : function(aspectInstancePath, geometryGroups, groups) 
+			{
 				var mergedMesh = GEPPETTO.getVARS().meshes[aspectInstancePath];
-				for (g in groups) {
+				// switch visible flag to false for merged mesh and remove from scene
+				mergedMesh.visible = false;
+				GEPPETTO.getVARS().scene.remove(mergedMesh);
+				
+				for (g in groups) 
+				{
 					var groupName = g;
-					if (groupName.indexOf(aspectInstancePath) <= -1) {
+					if (groupName.indexOf(aspectInstancePath) <= -1) 
+					{
 						groupName = aspectInstancePath + "." + g;
 					}
 
 					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
+					var geometryGroup = geometryGroups[groupName];
 
-					if (groupMesh == null || groupMesh == undefined) {
-						var geometryGroup = geometryGroups[groupName];
+					if(mergedMesh instanceof THREE.Line)
+					{
+						var material = GEPPETTO.SceneFactory.getLineMaterial();
+						groupMesh = new THREE.LineSegments(geometryGroup, material);
+					}
+					else
+					{
 						var material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
-
 						groupMesh = new THREE.Mesh(geometryGroup, material);
-						groupMesh.name = aspectInstancePath;
-						groupMesh.geometry.dynamic = false;
-						groupMesh.position.copy(mergedMesh.position);
-						groupMesh.visible = false;
-						GEPPETTO.getVARS().splitMeshes[groupName] = groupMesh;
 					}
-					// if split mesh is not visible, add it to scene
-					if (!groupMesh.visible) {
-						// switch visible flag to false for merged mesh and
-						// remove from scene
-						mergedMesh.visible = false;
-						GEPPETTO.getVARS().scene.remove(mergedMesh);
-						// add split mesh to scenne and set flag to visible
-						groupMesh.visible = true;
-						GEPPETTO.getVARS().scene.add(groupMesh);
-					}
+					groupMesh.name = aspectInstancePath;
+					groupMesh.geometry.dynamic = false;
+					groupMesh.position.copy(mergedMesh.position);
+
+					GEPPETTO.getVARS().splitMeshes[groupName] = groupMesh;
+
+					// add split mesh to scenne and set flag to visible
+					groupMesh.visible = true;
+					GEPPETTO.getVARS().scene.add(groupMesh);
 				}
 			},
 
@@ -925,14 +972,20 @@ define(function(require) {
 
 				// if merged mesh is not visible, turn it on and turn split one
 				// off
-				if (!mergedMesh.visible) {
-					for (path in GEPPETTO.getVARS().splitMeshes) {
+				if (!mergedMesh.visible) 
+				{
+					for (path in GEPPETTO.getVARS().splitMeshes) 
+					{
 						// retrieve split mesh that is on the scene
 						var splitMesh = GEPPETTO.getVARS().splitMeshes[path];
-						if (aspectPath == splitMesh.name) {
-							splitMesh.visible = false;
-							// remove split mesh from scene
-							GEPPETTO.getVARS().scene.remove(splitMesh);
+						if(splitMesh)
+						{
+							if (aspectPath == splitMesh.name) 
+							{
+								splitMesh.visible = false;
+								// remove split mesh from scene
+								GEPPETTO.getVARS().scene.remove(splitMesh);
+							}
 						}
 					}
 					// add merged mesh to scene and set flag to true
@@ -946,34 +999,28 @@ define(function(require) {
 			 */
 			showVisualGroups : function(visualizationTree, visualGroups, mode) {
 				// aspect path of visualization tree parent
-				var aspectPath = visualizationTree.getParent()
-						.getInstancePath();
+				var aspectPath = visualizationTree.getParent().getInstancePath();
 
 				GEPPETTO.SceneController.merge(aspectPath);
 				if (mode) 
 				{
-					GEPPETTO.SceneController.splitGroups(aspectPath,
-							visualizationTree, visualGroups);
-					for (g in visualGroups) {
+					GEPPETTO.SceneController.splitGroups(aspectPath,visualizationTree, visualGroups);
+					for (g in visualGroups) 
+					{
 						// retrieve visual group object
 						var visualGroup = visualGroups[g];
 
 						// get full group name to access group mesh
 						var groupName = g;
-						if (groupName.indexOf(aspectPath) <= -1) {
+						if (groupName.indexOf(aspectPath) <= -1) 
+						{
 							groupName = aspectPath + "." + g;
 						}
 
 						// get group mesh
 						var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
-
-						if (mode) 
-						{
-							GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
-						} else 
-						{
-							GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, GEPPETTO.Resources.COLORS.SPLIT);
-						}
+						groupMesh.visible=true;
+						GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
 					}
 				}
 			},
@@ -989,10 +1036,14 @@ define(function(require) {
 
 				requestAnimationFrame(GEPPETTO.SceneController.animate);
 				GEPPETTO.render();
-				if (GEPPETTO.getVARS().stats) {
+				
+				if (GEPPETTO.getVARS().stats) 
+				{
 					GEPPETTO.getVARS().stats.update();
 				}
-				if (GEPPETTO.getVARS().debugUpdate) {
+				
+				if (GEPPETTO.getVARS().debugUpdate) 
+				{
 					GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
 				}
 			},

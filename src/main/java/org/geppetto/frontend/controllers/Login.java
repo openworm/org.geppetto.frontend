@@ -96,7 +96,7 @@ public class Login
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	public String logout()
+	public String logout(@RequestParam(defaultValue="web",required=false) String outputFormat, HttpServletResponse response) throws IOException
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(!dataManager.isDefault())
@@ -115,7 +115,10 @@ public class Login
 				}
 			}
 		}
-		return "redirect:/";
+		if (outputFormat.equals("web"))
+			response.sendRedirect("/");
+		return null;
+		
 	}
 
 }

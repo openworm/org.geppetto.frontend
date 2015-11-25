@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,73 +30,53 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.plot {
-	width: 100%;
-	height: 100%;
-	margin-top: 5px;
-}
+/**
+ * Client class use to represent a html metadata node, used for model
+ * tree properties.
+ * 
+ * @module nodes/HTMLMetadataNode
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ */
+define(function(require) {
 
-.plot-without-xaxis {
-	margin-bottom: 20px;
-}
+	var Node = require('nodes/Node');
 
-.flot-x-axis {
-	color:white;
-	width : 100%;
-}
+	return Node.Model.extend({
+		value : "",
 
-.flot-y-axis {
-	color:white;
-}
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object} options - Object with options attributes to initialize
+		 *                           node
+		 */
+		initialize : function(options) {
+			this.name = options.name;
+			this.id = options.id;
+			this.instancePath = options.instancePath;
+			this.aspectNode = options.aspectNode;
+			this.value = options.value;
+			this._metaType = options._metaType;
+			this.domainType = options.domainType;
+		},
 
-.legendColorBox {
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-}
-
-.legendLabel {
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-	font-weight: 200;
-	font-style: normal;
-	font-size: 11px;
-	text-decoration: inherit;
-	-webkit-font-smoothing: antialiased;
-}
-
-.ui-widget-content a {
-	color:white;
-}
-
-.ui-tooltip {
-	padding : 0px;
-	background : transparent;
-	max-width : 1000px;
-}
-
-.ui-tooltip div {
-	background: rgb(61, 61, 190)!important;
-	color : white;
-	padding : 0px;
-	max-width : 1000px;
-}
-
-
-.axisLabel {
-    position: absolute;
-    text-align: center;
-    font-size: 12px;
-}
-
-.xaxisLabel {
-    color : white;
-    bottom : 0%;
-    left : 50%;
-    width : 100%;
-}
-
-.yaxisLabel {
-    top: 50%;
-    left: 0px;
-    color : white;
-}
+		/**
+		 * Get value of quantity
+		 * 
+		 * @command HTMLMetadataNode.getValue()
+		 * @returns {String} Value of quantity
+		 */
+		getValue : function() {
+			return this.value;
+		},
+		
+		/**
+		 * Print out formatted node
+		 */
+		print : function() {
+			return "ID : " + this.name + "\n" 
+					+ "    Name : " + this.name + "\n"
+					+ "    value : " + this.text + "\n";
+		}
+	});
+});

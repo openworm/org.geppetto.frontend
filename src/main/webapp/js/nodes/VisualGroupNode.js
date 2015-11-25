@@ -130,23 +130,17 @@ define(function(require) {
 			
 			if(mode){
 				message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
-
-				if(elements.length > 0){
-					this.showAllVisualGroupElements(visualizationTree,elements,mode);
-				}else{
-					message = GEPPETTO.Resources.NO_VISUAL_GROUP_ELEMENTS;
-				}
 			}
 			else{
 				message = GEPPETTO.Resources.HIDING_VISUAL_GROUPS + this.id;
-
-				if(elements.length > 0){
-					this.showAllVisualGroupElements(visualizationTree,elements,mode);
-				}else{
-					message = GEPPETTO.Resources.NO_VISUAL_GROUP_ELEMENTS;
-				}
 			}
-			
+		
+			if(elements.length > 0){
+				this.showAllVisualGroupElements(visualizationTree,elements,mode);
+			} else {
+				message = GEPPETTO.Resources.NO_VISUAL_GROUP_ELEMENTS;
+			}
+		
 			return message;
 		},
 		

@@ -139,7 +139,7 @@ define(function(require) {
 		 * @param {Object} parent - Parent tree to paint
 		 * @param {Array} data - Data to paint
 		 */
-		prepareTree : function(parent, data,step) {
+		prepareTree : function(parent, data, step) {
 			if (data._metaType != null){
 				if('labelName' in this.options){
 					label = data[this.options.labelName];
@@ -150,7 +150,7 @@ define(function(require) {
 				}
 
 				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
-						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" |
+						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "HTMLMetadataNode" |
 						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
 					if (!dataset.isDisplayed) {
 						dataset.valueDict[data.instancePath] = new function(){};

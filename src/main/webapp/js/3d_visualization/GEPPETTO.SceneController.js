@@ -288,7 +288,6 @@ define(function(require) {
 								}
 							});
 							mesh.selected = false;
-							mesh.ghosted = false;
 						}
 					} 
 					else 
@@ -296,7 +295,6 @@ define(function(require) {
 						mesh.material.color.set(mesh.material.defaultColor);
 						mesh.material.opacity = mesh.material.defaultOpacity;
 						mesh.selected = false;
-						mesh.ghosted = false;
 					}
 					return true;
 				}
@@ -612,16 +610,15 @@ define(function(require) {
 						// if there are nodes still selected, give it a ghost
 						// effect. If not nodes are
 						// selected, give the meshes old default color
-						//Commenting out "ghost" effect.A bug introduced in three.js makes transparency misbehave in some scenarios so this is better commented out for no
-//						if (G.getSelection().length > 0) {
-//							mesh.material.transparent = true;
-//							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
-//							mesh.ghosted = true;
-//						} else {
-							GEPPETTO.SceneController.setThreeColor(mesh.material.color,mesh.material.defaultColor);
-//							mesh.material.transparent = true;
-//							mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-//						}
+
+						if (G.getSelectionOptions().unselected_transparent) 
+						{
+							mesh.material.transparent = true;
+							mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+							mesh.ghosted = true;
+						} 
+						GEPPETTO.SceneController.setThreeColor(mesh.material.color,mesh.material.defaultColor);
+
 					}
 					// if mesh is selected, make it look like so
 					else {

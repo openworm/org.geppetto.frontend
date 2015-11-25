@@ -61,7 +61,9 @@ require.config({
 		jsx: 'vendor/jsx',
 	    JSXTransformer: 'vendor/JSXTransformer',
 	    text: 'vendor/text',
-		pako: 'vendor/pako.min'
+		pako: 'vendor/pako.min',
+		mathjs: 'vendor/math.min'
+
 	},
 	/*
 	 * Notes what dependencies are needed prior to loading each library, values on the right
@@ -121,6 +123,7 @@ jqueryLib.push("vendor/Detector");
 jqueryLib.push("vendor/jquery.cookie");
 jqueryLib.push("vendor/rAF");
 jqueryLib.push("pako");
+jqueryLib.push("mathjs");
 
 require(jqueryLib, function($) {
 

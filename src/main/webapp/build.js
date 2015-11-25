@@ -14,7 +14,8 @@
 		jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',
-        pako:'vendor/pako.min'
+        pako:'vendor/pako.min',
+        mathjs:'vendor/math.min'
     },
     name : "main",
     waitSeconds : 200,

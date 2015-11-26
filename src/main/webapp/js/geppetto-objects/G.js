@@ -55,6 +55,7 @@ define(function(require) {
 				show_inputs : true,
 				show_outputs : true,
 				draw_connection_lines : true,
+				unselected_transparent : true
 			},
 			highlightedConnections : [],
 			
@@ -582,6 +583,9 @@ define(function(require) {
 				if(options.draw_connection_lines != null){
 					this.selectionOptions.draw_connection_lines = options.draw_connection_lines;
 				}
+				if(options.unselected_transparent != null){
+					this.selectionOptions.unselected_transparent = options.unselected_transparent;
+				}
 			},
 
 			/**
@@ -610,6 +614,10 @@ define(function(require) {
 					}
 				}
 
+				if(G.getSelectionOptions().unselected_transparent)
+				{
+					GEPPETTO.SceneController.setGhostEffect(false);
+				}
 				return GEPPETTO.Resources.DESELECT_ALL;
 			},
 

@@ -134,16 +134,13 @@ define(function(require) {
 					if (!this.selected) 
 					{
 						//first, before doing anything, we check what is currently selected
-						if(G.getSelection().length>0) 
+
+						if(G.getSelectionOptions().unselected_transparent) 
 						{
 							//something is already selected, we make everything not selected transparent
 							GEPPETTO.SceneController.setGhostEffect(true);
 						}
-						else
-						{
-							//nothing is selected, we restore the default opacity for everything
-							GEPPETTO.SceneController.setGhostEffect(false);
-						}
+
 						
 						this.selected = true;
 						this.parent.selected=true;
@@ -179,8 +176,12 @@ define(function(require) {
 							{
 								this.getParent().showConnectionLines(true);
 							}
-
-							GEPPETTO.SceneController.ghostEffect(allOtherMeshes,true);		
+							if(G.getSelectionOptions().unselected_transparent)
+							{
+								GEPPETTO.SceneController.ghostEffect(allOtherMeshes,true);	
+							}
+							
+								
 						}
 						//signal selection has changed in simulation
 						GEPPETTO.trigger(Events.Select);
@@ -207,26 +208,21 @@ define(function(require) {
 						this.selected = false;
 						this.getParent().selected = false;
 
-						//don't apply ghost effect to meshes if nothing is left selected after deselecting this entity
-						if(G.getSelection().length <=1)
+
+						if(G.getSelectionOptions().unselected_transparent)
 						{
 							GEPPETTO.SceneController.setGhostEffect(false);
 						}
-						else
+						if(G.getSelectionOptions().show_inputs)
 						{
-							//update ghost effect after deselection of this entity
-							GEPPETTO.SceneController.setGhostEffect(true);
-						}
-
-						//look on the simulation selection options and perform necessary
-						//operations
-						if(G.getSelectionOptions().show_inputs){
 							this.getParent().showInputConnections(false);
 						}
-						if(G.getSelectionOptions().show_outputs){
+						if(G.getSelectionOptions().show_outputs)
+						{
 							this.getParent().showOutputConnections(false);
 						}
-						if(G.getSelectionOptions().draw_connection_lines){
+						if(G.getSelectionOptions().draw_connection_lines)
+						{
 							this.getParent().showConnectionLines(false);
 						}
 

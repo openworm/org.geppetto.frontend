@@ -30,20 +30,19 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
  * Client class use to represent a composite variable node, used for simulation
  * tree state variables.
  * 
- * @module nodes/AspectSubTreeNode
+ * @module model/CompositeNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
-	var Node = require('nodes/Node');
+	var Node = require('model/Node');
 
 	return Node.Model.extend({
 		children : null,
-		type : "",
-		modified : false,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -52,14 +51,13 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
+			this.children = new Array();
 			this.id = options.id;
-			this.instancePath = options.instancePath;
 			this.name = options.name;
-			this.type = options.type;
-			this.modified = options.modified;
+			this.aspectNode = options.aspectNode;
+			this.instancePath = options.instancePath;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
-			this.children = new Array();
 		},
 
 		/**
@@ -67,7 +65,7 @@ define(function(require) {
 		 * 
 		 * @command CompositeVariableNode.getChildren()
 		 * 
-		 * @returns {List<Node>} - List of children nodes
+		 * @returns {List<Aspect>} - List of aspects
 		 * 
 		 */
 		getChildren : function() {
@@ -78,53 +76,16 @@ define(function(require) {
 		 * Print out formatted node
 		 */
 		print : function() {
-			// simulation tree is empty
-			if (this.getChildren().length == 0) {
-				if (this.type == "SimulationTree") {
-					return GEPPETTO.Resources.NO_SIMULATION_TREE;
-				} else if (this.type == "VisualizationTree") {
-					var formattedNode = GEPPETTO.Utility
-							.formatVisualizationTree(this.content, 3, "");
-					formattedNode = formattedNode.substring(0, formattedNode
-							.lastIndexOf("\n"));
-					formattedNode.replace(/"/g, "");
-
-					return GEPPETTO.Resources.RETRIEVING_VISUALIZATION_TREE
-							+ "\n" + formattedNode;
-				}
-				if (this.type == "ModelTree") {
-					return GEPPETTO.Resources.EMPTY_MODEL_TREE;
-				}
-			} else {
-				if (this.type == "SimulationTree") {
-					var formattedNode = GEPPETTO.Utility.formatsimulationtree(
-							this, 3, "");
-					formattedNode = formattedNode.substring(0, formattedNode
-							.lastIndexOf("\n"));
-					formattedNode.replace(/"/g, "");
-
-					return GEPPETTO.Resources.RETRIEVING_SIMULATION_TREE + "\n"
-							+ formattedNode;
-				} else if (this.type == "VisualizationTree") {
-					var formattedNode = GEPPETTO.Utility
-							.formatVisualizationTree(this, 3, "");
-					formattedNode = formattedNode.substring(0, formattedNode
-							.lastIndexOf("\n"));
-					formattedNode.replace(/"/g, "");
-
-					return GEPPETTO.Resources.RETRIEVING_VISUALIZATION_TREE
-							+ "\n" + formattedNode;
-				} else if (this.type == "ModelTree") {
-					var formattedNode = GEPPETTO.Utility.formatmodeltree(this,
-							3, "");
-					formattedNode = formattedNode.substring(0, formattedNode
-							.lastIndexOf("\n"));
-					formattedNode.replace(/"/g, "");
-
-					return GEPPETTO.Resources.RETRIEVING_MODEL_TREE + "\n"
-							+ formattedNode;
-				}
+			var formattedNode = "Name : " + this.name + "\n" + "    Id: "
+					+ this.id + "\n" + "    InstancePath : "
+					+ this.instancePath + "\n" + "    Children : \n";
+			for ( var e = 0; e < this.getChildren().length; e++) {
+				var child = this.getChildren().at(e);
+				formattedNode = formattedNode + "      " + child._metaType
+						+ ": " + child.id + "\n";
 			}
+
+			return formattedNode;
 		}
 	});
 });

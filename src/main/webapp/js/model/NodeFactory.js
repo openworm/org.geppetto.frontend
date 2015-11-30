@@ -40,26 +40,23 @@ define(function(require)
 {
 	return function(GEPPETTO)
 	{
-		var AspectNode = require('nodes/AspectNode');
-		var EntityNode = require('nodes/EntityNode');
-		var AspectSubTreeNode = require('nodes/AspectSubTreeNode');
-		var CompositeNode = require('nodes/CompositeNode');
-		var ParameterNode = require('nodes/ParameterNode');
-		var ParameterSpecificationNode = require('nodes/ParameterSpecificationNode');
-		var DynamicsSpecificationNode = require('nodes/DynamicsSpecificationNode');
-		var FunctionNode = require('nodes/FunctionNode');
-		var VariableNode = require('nodes/VariableNode');
-		var ConnectionNode = require('nodes/ConnectionNode');
-		var TextMetadataNode = require('nodes/TextMetadataNode');
-		var HTMLMetadataNode = require('nodes/HTMLMetadataNode');
-		var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
-		var VisualGroupNode = require('nodes/VisualGroupNode');
-		var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
-		var ProjectNode = require('nodes/ProjectNode');
-		var ExperimentNode = require('nodes/ExperimentNode');
-		var SimulatorConfiguration = require('nodes/SimulatorConfiguration');
-		var PhysicalQuantity = require('nodes/PhysicalQuantity');
-		var Quantity = require('nodes/Quantity');
+		var CompositeNode = require('model/CompositeNode');
+		var ParameterNode = require('model/ParameterNode');
+		var ParameterSpecificationNode = require('model/ParameterSpecificationNode');
+		var DynamicsSpecificationNode = require('model/DynamicsSpecificationNode');
+		var FunctionNode = require('model/FunctionNode');
+		var VariableNode = require('model/VariableNode');
+		var ConnectionNode = require('model/ConnectionNode');
+		var TextMetadataNode = require('model/TextMetadataNode');
+		var HTMLMetadataNode = require('model/HTMLMetadataNode');
+		var VisualObjectReferenceNode = require('model/VisualObjectReferenceNode');
+		var VisualGroupNode = require('model/VisualGroupNode');
+		var VisualGroupElementNode = require('model/VisualGroupElementNode');
+		var ProjectNode = require('model/ProjectNode');
+		var ExperimentNode = require('model/ExperimentNode');
+		var SimulatorConfiguration = require('model/SimulatorConfiguration');
+		var PhysicalQuantity = require('model/PhysicalQuantity');
+		var Quantity = require('model/Quantity');
 		var simulationTreeCreated = false;
 
 		/**

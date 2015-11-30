@@ -33,13 +33,13 @@
 /**
  * Client class for Experiment node.
  * 
- * @module nodes/ExperimentNode
+ * @module model/ExperimentNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require)
 {
 
-	var ParameterNode = require('nodes/ParameterNode');
+	var ParameterNode = require('model/ParameterNode');
 	return Backbone.Model.extend(
 	{
 

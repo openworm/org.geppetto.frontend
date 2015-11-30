@@ -34,12 +34,12 @@
  * Client class use to represent a connection node, used to store the connections
  * between two entities in Geppetto.
  * 
- * @module nodes/ConnectionNode
+ * @module model/ConnectionNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
+	var Node = require('model/Node');
 	var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
 
 	return Node.Model.extend({

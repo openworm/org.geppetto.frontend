@@ -30,10 +30,11 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
  * Client class for Project node.
  * 
- * @module nodes/ProjectNode
+ * @module model/ProjectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define([ 'jquery', 'underscore', 'backbone', 

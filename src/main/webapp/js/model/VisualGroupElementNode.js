@@ -30,23 +30,21 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
- * Client class use to represent a specification node, used for model tree
+ * Client class use to represent a VisualGroupElement Node, used for visualization tree
  * properties.
  * 
- * @module nodes/DynamicsSpecificationNode
+ * @module model/VisualGroupElementNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
-	var FunctionNode = require('nodes/FunctionNode');
+	var Node = require('model/Node');
 
 	return Node.Model.extend({
-		dynamics : [],
-		unit : "",
-		value : "",
-		scalingFactor : "",
+		parameter : "",
+		color : "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -55,55 +53,83 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.unit = options.unit;
-			this.value = options.value;
-			this.scalingFactor = options.scalingFactor;
-			this.dynamics = options.dynamics;
-			this.aspectNode = options.aspectNode;
+			this.parameter = options.parameter;
+			this.color = options.color;
 			this.name = options.name;
+			this.aspectNode = options.aspectNode;
 			this.id = options.id;
 			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
 			this.domainType = options.domainType;
-		},
-
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command DynamicsSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function() {
-			return this.unit;
+			this._metaType = options._metaType;
 		},
 
 		/**
 		 * Get value of quantity
 		 * 
-		 * @command DynamicsSpecificationNode.getValue()
+		 * @command VisualGroupElementNode.getValue()
 		 * @returns {String} Value of quantity
 		 */
 		getValue : function() {
-			return this.value;
+			if(this.parameter == "" || this.parameter==undefined){
+				return null;
+			}
+			return this.parameter.value;
+		},
+		
+		/**
+		 * Get unit of quantity
+		 * 
+		 * @command VisualGroupElementNode.getUnit()
+		 * @returns {String} Unit of quantity
+		 */
+		getUnit : function() {
+			if(this.parameter == "" || this.parameter==undefined){
+				return null;
+			}
+			return this.parameter.unit;
 		},
 
 		/**
 		 * Get scaling factor
 		 * 
-		 * @command DynamicsSpecificationNode.getScalingFactor()
+		 * @command VisualGroupElementNode.getScalingFactor()
 		 * @returns {String} Scaling Factor for value and unit
 		 */
 		getScalingFactor : function() {
-			return this.scalingFactor;
+			if(this.parameter == "" || this.parameter==undefined){
+				return null;
+			}
+			return this.parameter.scalingFactor;
 		},
-
+		
 		/**
-		 * Get dynamics function node for this specifications node
+		 * Get color of element
 		 * 
-		 * @returns {Object} Specifies dynamics for node
+		 * @command VisualGroupElementNode.getValue()
+		 * @returns {String} Color of VisualGroupElementNode
 		 */
-		getDynamics : function() {
-			return this.dynamics;
+		getColor : function() {
+			return this.color;
+		},
+		
+		show : function(mode){
+			var visualizationTree = this.getParent().getParent();
+			
+			var findVisTree = false;
+			while(!findVisTree){
+				if(visualizationTree._metaType!= GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+					visualizationTree = visualizationTree.getParent();
+				}
+				else{
+					findVisTree = true;
+				}
+			}
+			
+			var group = {};
+			group[this.getId()] = {};
+			group[this.getId()].color = this.getColor();
+			
+			GEPPETTO.SceneController.showVisualGroups(visualizationTree, group,mode);			
 		},
 
 		/**
@@ -112,10 +138,7 @@ define(function(require) {
 		print : function() {
 			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
 					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n" + "    Dynamics : "
-					+ this.dynamics + "\n";
+					+ "    Properties : " + this.properties + "\n";
 		}
 	});
 });

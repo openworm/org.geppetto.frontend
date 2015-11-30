@@ -30,16 +30,17 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
  * Client class for Simulator Configurator; stores time step, simualtor id
  * and parameters.
  * 
- * @module nodes/SimulatorConfiguration
+ * @module model/SimulatorConfiguration
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
+	var Node = require('model/Node');
 
 	return Node.Model.extend({
 		simulatorId : "",

@@ -30,20 +30,23 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
- * Client class use to represent a text metadata node, used for model
- * tree properties.
+ * Client class use to represent a visual object reference node. This node 
+ * points to a specific object within an aspect, stores object's id and aspect's
+ * instancepath to keep track of location.
  * 
- * @module nodes/TextMetadataNode
- * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
+ * @module model/VisualObjectReferenceNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
+	var Node = require('model/Node');
 
 	return Node.Model.extend({
-		value : "",
+		aspectInstancePath : null,
+		visualObjectID : null,
+		highlighted : false,
 
 		/**
 		 * Initializes this node with passed attributes
@@ -52,32 +55,61 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.name = options.name;
 			this.id = options.id;
+			this.name = options.name;
+			this.aspectInstancePath = options.aspectInstancePath;
+			this.visualObjectID = options.visualObjectID;
 			this.instancePath = options.instancePath;
-			this.aspectNode = options.aspectNode;
-			this.value = options.value;
 			this._metaType = options._metaType;
 			this.domainType = options.domainType;
 		},
 
 		/**
-		 * Get value of quantity
+		 * Get aspect instance path for visual reference
 		 * 
-		 * @command TextMetadataNode.getText()
-		 * @returns {String} Value of quantity
+		 * @command VisualObjectReferenceNode.getAspectInstancePath()
+		 * @returns {String} Aspect instance path for this visual reference node 
 		 */
-		getValue : function() {
-			return this.value;
+		getAspectInstancePath : function() {
+			return this.aspectInstancePath;
 		},
 		
+		/**
+		 * Get ID of object this visual reference node refers to
+		 * 
+		 * @command VisualObjectReferenceNode.getVisualObjectID()
+		 * @returns {String} ID of visual object this node references
+		 */
+		getVisualObjectID : function() {
+			return this.visualObjectID;
+		},
+		
+		/**
+		 * Highlight visual object reference node
+		 * @command VisualObjectReferenceNode.highlight()
+		 * @param {boolean} mode - Highlight or unhighlight the visual reference
+		 */
+		highlight : function(mode){
+			var pathToObject = this.getAspectInstancePath()+ ".VisualizationTree." + this.getVisualObjectID();
+			var targetObjects = {};
+			targetObjects[pathToObject] = "";		
+			GEPPETTO.SceneController.highlight(this.getAspectInstancePath(),targetObjects,mode);
+			
+			this.highlighted = mode;
+			if(this.getParent()._metaType == GEPPETTO.Resources.CONNECTION_NODE){
+				this.getParent().modified = mode;
+			}
+			
+			return GEPPETTO.Resources.HIGHLIGHTING + pathToObject;
+		},
+
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "ID : " + this.name + "\n" 
-					+ "    Name : " + this.name + "\n"
-					+ "    value : " + this.text + "\n";
+			return "Id : " + this.id + "\n" 
+					+ "    AspectInstancePath : " + this.aspectInstancePath + "\n"
+					+ "    VisualObjectID : " + this.visualObjectID + "\n";
 		}
 	});
 });

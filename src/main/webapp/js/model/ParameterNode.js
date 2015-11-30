@@ -31,21 +31,20 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Client class use to represent a visual object reference node. This node 
- * points to a specific object within an aspect, stores object's id and aspect's
- * instancepath to keep track of location.
+ * Client class use to represent a parameter node, used for model tree
+ * properties.
  * 
- * @module nodes/VisualObjectReferenceNode
+ * @module model/ParameterNode
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
+	var Node = require('model/Node');
 
 	return Node.Model.extend({
-		aspectInstancePath : null,
-		visualObjectID : null,
-		highlighted : false,
+		timeSeries : [],
+		unit: "",
 
 		/**
 		 * Initializes this node with passed attributes
@@ -54,61 +53,69 @@ define(function(require) {
 		 *                           node
 		 */
 		initialize : function(options) {
-			this.id = options.id;
 			this.name = options.name;
-			this.aspectInstancePath = options.aspectInstancePath;
-			this.visualObjectID = options.visualObjectID;
+			this.id = options.id;
+			this.unit = options.unit;
+			this.timeSeries = new Array();
+			this.aspectNode = options.aspectNode;
 			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
 			this.domainType = options.domainType;
+			this._metaType = options._metaType;
+			this.watched = options.watched;
 		},
 
 		/**
-		 * Get aspect instance path for visual reference
+		 * Get value of quantity
 		 * 
-		 * @command VisualObjectReferenceNode.getAspectInstancePath()
-		 * @returns {String} Aspect instance path for this visual reference node 
+		 * @command ParameterNode.getTimeSeries()
+		 * @returns {String} Value of quantity
 		 */
-		getAspectInstancePath : function() {
-			return this.aspectInstancePath;
+		getTimeSeries : function() {
+			return this.timeSeries;
 		},
 		
 		/**
-		 * Get ID of object this visual reference node refers to
+		 * Get the type of tree this is
 		 * 
-		 * @command VisualObjectReferenceNode.getVisualObjectID()
-		 * @returns {String} ID of visual object this node references
+		 * @command ParameterNode.getUnit()
+		 * @returns {String} Unit for quantity
 		 */
-		getVisualObjectID : function() {
-			return this.visualObjectID;
+		getUnit : function() {
+			return this.unit;
 		},
 		
 		/**
-		 * Highlight visual object reference node
-		 * @command VisualObjectReferenceNode.highlight()
-		 * @param {boolean} mode - Highlight or unhighlight the visual reference
+		 * Get watched
+		 * 
+		 * @command ParameterNode.isWatched()
+		 * @returns {boolean} true if this variable is being watched
 		 */
-		highlight : function(mode){
-			var pathToObject = this.getAspectInstancePath()+ ".VisualizationTree." + this.getVisualObjectID();
-			var targetObjects = {};
-			targetObjects[pathToObject] = "";		
-			GEPPETTO.SceneController.highlight(this.getAspectInstancePath(),targetObjects,mode);
-			
-			this.highlighted = mode;
-			if(this.getParent()._metaType == GEPPETTO.Resources.CONNECTION_NODE){
-				this.getParent().modified = mode;
+		isWatched : function() {
+			return this.watched;
+		},
+
+		/**
+		 * Set watched
+		 * 
+		 * @command ParameterNode.setWatched()
+		 * @param {Boolean} watched - Object with options attributes to initialize node
+		 */
+		setWatched : function(isWatched) {
+			if (isWatched != this.watched){
+				Project.getActiveExperiment().watchVariables([this]);
 			}
-			
-			return GEPPETTO.Resources.HIGHLIGHTING + pathToObject;
 		},
-
+		
 		/**
 		 * Print out formatted node
 		 */
 		print : function() {
-			return "Id : " + this.id + "\n" 
-					+ "    AspectInstancePath : " + this.aspectInstancePath + "\n"
-					+ "    VisualObjectID : " + this.visualObjectID + "\n";
+			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+					+ "    InstancePath : " + this.instancePath + "\n"
+					+ "    Value : " + this.value + "\n" + "    Unit : "
+					+ this.unit + "\n" + "    ScalingFactor : "
+					+ this.scalingFactor + "\n" +
+					+ "    Watched : " + this.watched + "\n";
 		}
 	});
 });

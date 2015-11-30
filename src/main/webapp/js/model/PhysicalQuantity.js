@@ -30,11 +30,12 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
  * Client class use to represent a Physical Quantity, which stores a value, unit and
  * scale. 
  * 
- * @module nodes/PhysicalQuantity
+ * @module model/PhysicalQuantity
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {

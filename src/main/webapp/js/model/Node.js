@@ -33,7 +33,7 @@
 /**
  * The parent node from where all other nodes extend
  * 
- * @module nodes/Node
+ * @module model/Node
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define([ 'jquery', 'underscore', 'backbone', 

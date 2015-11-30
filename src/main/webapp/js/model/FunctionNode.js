@@ -34,12 +34,12 @@
  * Client class use to represent a function. Used to store properties of model
  * tree
  * 
- * @module nodes/FunctionNode
+ * @module model/FunctionNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
+	var Node = require('model/Node');
 
 	return Node.Model.extend({
 		arguments : "",

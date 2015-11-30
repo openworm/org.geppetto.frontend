@@ -40,7 +40,7 @@ define(function(require)
 	return function(GEPPETTO)
 	{
 		var simulationTreeCreated = false;
-		var Quantity = require('nodes/Quantity');
+		var Quantity = require('model/Quantity');
 
 		/**
 		 * @class GEPPETTO.RuntimeTreeController
@@ -71,8 +71,9 @@ define(function(require)
 
 				if (entityNode != null)
 				{
+					// TODO: revisit this - GI
 					// add commands to console autocomplete and help option
-					GEPPETTO.Console.updateHelpCommand("geppetto/js/nodes/EntityNode.js", entityNode, entityNode.getId());
+					// GEPPETTO.Console.updateHelpCommand("geppetto/js/nodes/EntityNode.js", entityNode, entityNode.getId());
 				}
 			},
 

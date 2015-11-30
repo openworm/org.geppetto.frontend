@@ -30,6 +30,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+
 /**
  * Client class use to represent a VisualGroup Node, used for visualization tree
  * properties.
@@ -39,8 +40,8 @@
  */
 define(function(require) {
 
-	var Node = require('nodes/Node');
-	var VisualGroupElementNode = require('nodes/VisualGroupElementNode');
+	var Node = require('model/Node');
+	var VisualGroupElementNode = require('model/VisualGroupElementNode');
 
 	return Node.Model.extend({
 		visualGroupElements : null,

@@ -58,13 +58,13 @@ import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.data.model.ResultsFormat;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
-import org.geppetto.core.model.runtime.AspectSubTreeNode;
-import org.geppetto.core.model.runtime.RuntimeTreeRoot;
 import org.geppetto.core.s3.S3Manager;
 import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
+import org.geppetto.model.GeppettoModelState;
+import org.geppetto.model.VariableValue;
 import org.geppetto.simulation.RuntimeProject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -179,7 +179,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#loadExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public RuntimeTreeRoot loadExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public GeppettoModelState loadExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
 		IGeppettoProject project = experiment.getParentProject();
 		try
@@ -196,7 +196,7 @@ public class GeppettoManager implements IGeppettoManager
 		}
 
 		getRuntimeProject(project).setActiveExperiment(experiment);
-		return getRuntimeProject(project).getRuntimeExperiment(experiment).getRuntimeTree();
+		return getRuntimeProject(project).getRuntimeExperiment(experiment).getModelState();
 
 	}
 
@@ -224,11 +224,11 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#playExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override
-	public Map<String, AspectSubTreeNode> playExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public List<VariableValue> playExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
 		if(experiment.getStatus().equals(ExperimentStatus.COMPLETED))
 		{
-			return getRuntimeProject(experiment.getParentProject()).getRuntimeExperiment(experiment).updateRuntimeTreesWithResults();
+			return getRuntimeProject(experiment.getParentProject()).getRuntimeExperiment(experiment).getRecordedVariables();
 		}
 		else
 		{
@@ -425,34 +425,12 @@ public class GeppettoManager implements IGeppettoManager
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.geppetto.core.manager.IRuntimeTreeManager#getModelTree(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
-	 */
-	@Override
-	public Map<String, AspectSubTreeNode> getModelTree(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
-	{
-		return getRuntimeProject(project).getRuntimeExperiment(experiment).populateModelTree(aspectInstancePath);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.manager.IRuntimeTreeManager#getSimulationTree(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
-	 */
-	@Override
-	public Map<String, AspectSubTreeNode> getSimulationTree(String aspectInstancePath, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
-	{
-		return getRuntimeProject(project).getRuntimeExperiment(experiment).populateSimulationTree(aspectInstancePath);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#setModelParameters(java.lang.String, java.util.Map, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public AspectSubTreeNode setModelParameters(String aspectInstancePath, Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public List<VariableValue> setModelParameters(Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		AspectSubTreeNode setParameters = getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(aspectInstancePath, parameters);
+		List<VariableValue> setParameters = getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(parameters);
 		DataManagerHelper.getDataManager().saveEntity(project);
 		return setParameters;
 	}
@@ -467,17 +445,6 @@ public class GeppettoManager implements IGeppettoManager
 	{
 		getRuntimeProject(project).getRuntimeExperiment(experiment).setWatchedVariables(watchedVariables);
 		DataManagerHelper.getDataManager().saveEntity(project);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.manager.IRuntimeTreeManager#clearWatchLists(org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
-	 */
-	@Override
-	public void clearWatchLists(IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
-	{
-		getRuntimeProject(project).getRuntimeExperiment(experiment).clearWatchLists();
 	}
 
 	/*

@@ -49,18 +49,13 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.ExperimentStatus;
-import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.Scope;
-import org.geppetto.core.model.runtime.AspectNode;
-import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
 import org.geppetto.simulation.ExperimentRunThread;
 import org.geppetto.simulation.IExperimentListener;
-import org.geppetto.simulation.RuntimeExperiment;
 import org.geppetto.simulation.RuntimeProject;
-import org.geppetto.simulation.visitor.FindAspectNodeVisitor;
 
 /**
  * The ExperimentRunManager is a singleton responsible for managing a queue per each user to run the experiments.
@@ -121,7 +116,6 @@ public class ExperimentRunManager implements IExperimentListener
 		}
 	}
 
-
 	/**
 	 * @param user
 	 * @param experiment
@@ -132,7 +126,6 @@ public class ExperimentRunManager implements IExperimentListener
 
 		addExperimentToQueue(user, experiment, ExperimentStatus.QUEUED);
 	}
-
 
 	/**
 	 * @param experiment
@@ -156,25 +149,8 @@ public class ExperimentRunManager implements IExperimentListener
 			geppettoManager.loadProject(String.valueOf(this.getReqId()), project);
 			RuntimeProject runtimeProject = geppettoManager.getRuntimeProject(project);
 			runtimeProject.openExperiment(String.valueOf(this.getReqId()), experiment);
-			RuntimeExperiment runtimeExperiment = runtimeProject.getRuntimeExperiment(experiment);
 
-			// Populate Simulation Tree
-			List<? extends IAspectConfiguration> aspectConfigs = experiment.getAspectConfigurations();
-			for(IAspectConfiguration aspectConfig : aspectConfigs)
-			{
-				String aspect = aspectConfig.getAspect().getInstancePath();
-
-				// Clear Simulation Tree
-				FindAspectNodeVisitor findAspectNodeVisitor = new FindAspectNodeVisitor(aspect);
-				runtimeExperiment.getRuntimeTree().apply(findAspectNodeVisitor);
-				AspectNode node = findAspectNodeVisitor.getAspectNode();
-				node.flushSubTree(AspectTreeType.SIMULATION_TREE);
-
-				// Populate Simulation Tree per aspect
-				runtimeExperiment.populateSimulationTree(aspect);
-			}
-
-			ExperimentRunThread experimentRun = new ExperimentRunThread(experiment, runtimeExperiment, project, this);
+			ExperimentRunThread experimentRun = new ExperimentRunThread(experiment, runtimeProject, this);
 			experimentRun.start();
 			experiment.setStatus(ExperimentStatus.RUNNING);
 			DataManagerHelper.getDataManager().saveEntity(experiment);
@@ -195,6 +171,7 @@ public class ExperimentRunManager implements IExperimentListener
 		experiment.setStatus(ExperimentStatus.ERROR);
 		DataManagerHelper.getDataManager().saveEntity(experiment);
 	}
+
 	/**
 	 * @throws GeppettoInitializationException
 	 * @throws MalformedURLException
@@ -255,10 +232,10 @@ public class ExperimentRunManager implements IExperimentListener
 	 * @see org.geppetto.simulation.IExperimentListener#experimentRunDone(org.geppetto.simulation.ExperimentRun, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override
-	public void experimentRunDone(ExperimentRunThread experimentRun, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public void experimentRunDone(ExperimentRunThread experimentRun, IExperiment experiment, RuntimeProject project) throws GeppettoExecutionException
 	{
 		experimentRun.release();
-		geppettoManager.closeProject("ERM" + getReqId(), project);
+		geppettoManager.closeProject("ERM" + getReqId(), project.getGeppettoProject());
 	}
 
 	/**

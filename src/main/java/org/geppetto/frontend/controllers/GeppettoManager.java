@@ -65,6 +65,8 @@ import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.model.GeppettoModelState;
 import org.geppetto.model.VariableValue;
+import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.util.GeppettoModelTraversal;
 import org.geppetto.simulation.RuntimeProject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -272,10 +274,13 @@ public class GeppettoManager implements IGeppettoManager
 					// save each model inside GeppettoModel and save every file referenced inside every model
 					PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(
 							getRuntimeProject(project).getActiveExperiment()), project);
-					getRuntimeProject(project).getGeppettoModel().accept(persistModelVisitor);
-					if(persistModelVisitor.getException() != null)
+					try
 					{
-						throw new GeppettoExecutionException(persistModelVisitor.getException());
+						GeppettoModelTraversal.apply(getRuntimeProject(project).getGeppettoModel(),persistModelVisitor);
+					}
+					catch(GeppettoVisitingException e)
+					{
+						throw new GeppettoExecutionException(e);
 					}
 					persistModelVisitor.processLocalGeppettoFile();
 					String fileName = URLReader.getFileName(url);

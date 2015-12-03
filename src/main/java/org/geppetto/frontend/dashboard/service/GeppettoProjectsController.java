@@ -44,7 +44,7 @@ import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.model.GeppettoModel;
-import org.geppetto.model.util.GeppettoModelException;
+import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.GeppettoModelTraversal;
 import org.geppetto.simulation.GeppettoModelReader;
 import org.geppetto.simulation.visitor.PopulateModelReferencesVisitor;
@@ -76,7 +76,7 @@ public class GeppettoProjectsController
 	
 	@RequestMapping(value="/projectswithref", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody
-	Collection<? extends IGeppettoProject> getAllGeppettoProjectsWithReference(@RequestParam String reference) throws GeppettoInitializationException, IOException, GeppettoModelException
+	Collection<? extends IGeppettoProject> getAllGeppettoProjectsWithReference(@RequestParam String reference) throws GeppettoInitializationException, IOException, GeppettoVisitingException
 	{
 		List<IGeppettoProject> projectsFound=new ArrayList<IGeppettoProject>();
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();

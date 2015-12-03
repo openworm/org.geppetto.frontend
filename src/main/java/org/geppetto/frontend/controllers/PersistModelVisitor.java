@@ -48,19 +48,18 @@ import java.util.regex.Pattern;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.IModelInterpreter;
-import org.geppetto.core.model.geppettomodel.Model;
-import org.geppetto.core.model.geppettomodel.visitor.BaseVisitor;
-import org.geppetto.core.model.geppettomodel.visitor.TraversingVisitor;
-import org.geppetto.core.model.state.visitors.DepthFirstTraverserEntitiesFirst;
 import org.geppetto.core.s3.S3Manager;
 import org.geppetto.core.utilities.URLReader;
+import org.geppetto.model.GeppettoLibrary;
+import org.geppetto.model.util.GeppettoSwitch;
+import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.simulation.RuntimeExperiment;
 
 /**
  * @author matteocantarelli
  *
  */
-public class PersistModelVisitor extends TraversingVisitor
+public class PersistModelVisitor extends GeppettoSwitch<Object>
 {
 
 	private RuntimeExperiment runtimeExperiment;
@@ -68,8 +67,6 @@ public class PersistModelVisitor extends TraversingVisitor
 	private IGeppettoProject project;
 
 	private Map<String, String> replaceMap = new HashMap<String, String>();
-
-	private Exception exception = null;
 
 	private Path localGeppettoModelFile;
 
@@ -80,23 +77,17 @@ public class PersistModelVisitor extends TraversingVisitor
 	 */
 	public PersistModelVisitor(Path localGeppettoModelFile, RuntimeExperiment runtimeExperiment, IGeppettoProject project)
 	{
-		super(new DepthFirstTraverserEntitiesFirst(), new BaseVisitor());
 		this.runtimeExperiment = runtimeExperiment;
 		this.project = project;
 		this.localGeppettoModelFile=localGeppettoModelFile;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.massfords.humantask.TraversingVisitor#visit(org.geppetto.simulation.model.Model)
-	 */
 	@Override
-	public void visit(Model model)
+	public Object caseGeppettoLibrary(GeppettoLibrary library)
 	{
 		try
 		{
-			IModelInterpreter modelInterpreter = runtimeExperiment.getModelInterpreters().get(model.getInstancePath());
+			IModelInterpreter modelInterpreter = runtimeExperiment.getModelInterpreters().get(library);
 			List<URL> dependentModels = modelInterpreter.getDependentModels();
 			for(URL url : dependentModels)
 			{
@@ -116,9 +107,11 @@ public class PersistModelVisitor extends TraversingVisitor
 		}
 		catch(URISyntaxException | IOException e)
 		{
-			exception = e;
+			return new GeppettoVisitingException(e);
 		}
+		return super.caseGeppettoLibrary(library);
 	}
+
 
 	/**
 	 * This method replaces in the localFile all the occurrences of the old URLs with the new ones
@@ -139,14 +132,6 @@ public class PersistModelVisitor extends TraversingVisitor
 		Files.write(localFile, content.getBytes(charset));
 	}
 
-
-	/**
-	 * @return
-	 */
-	public Exception getException()
-	{
-		return exception;
-	}
 
 	public void processLocalGeppettoFile() throws IOException
 	{

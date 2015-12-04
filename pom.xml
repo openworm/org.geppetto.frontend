@@ -419,7 +419,7 @@
 					<directoryRoots>
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/nodes</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/model</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/3d_visualization</directoryRoot>
 					</directoryRoots>
 					<sourceFiles>

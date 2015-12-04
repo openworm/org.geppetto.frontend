@@ -40,7 +40,7 @@
 define(function(require) {
 
 	var Node = require('model/Node');
-	var VisualObjectReferenceNode = require('nodes/VisualObjectReferenceNode');
+	var VisualObjectReferenceNode = require('model/VisualObjectReferenceNode');
 
 	return Node.Model.extend({
 		customNodes : null,

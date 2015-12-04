@@ -197,7 +197,7 @@ public class GeppettoManager implements IGeppettoManager
 		}
 
 		getRuntimeProject(project).setActiveExperiment(experiment);
-		return getRuntimeProject(project).getRuntimeExperiment(experiment).getModelState();
+		return getRuntimeProject(project).getRuntimeExperiment(experiment).getExperimentState();
 
 	}
 

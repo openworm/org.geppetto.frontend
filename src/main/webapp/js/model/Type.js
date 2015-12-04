@@ -36,12 +36,36 @@
  * tree state variables.
  * 
  * @module model/CompositeNode
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Giovanni Idili
  */
 define(function(require) {
 	var Node = require('model/Node');
 
 	return Node.Model.extend({
+		wrappedObj : null,
 		
+		/**
+		 * Initializes this node with passed attributes
+		 * 
+		 * @param {Object} options - Object with options attributes to initialize node
+		 */
+		initialize : function(options) {
+			this.wrappedObj = options.wrappedObj;
+			this.id = options.id;
+			this.name = options.name;
+			this.instancePath = options.instancePath;
+		},
+		
+		/**
+		 * Get the wrapped object
+		 * 
+		 * @command Type.getWrappedObject()
+		 * 
+		 * @returns {Object} - Wrapped object
+		 * 
+		 */
+		getWrappedObject : function() {
+			return this.wrappedObj;
+		},
 	});
 });

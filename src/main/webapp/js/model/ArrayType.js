@@ -36,7 +36,7 @@
  * tree state variables.
  * 
  * @module model/CompositeNode
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Giovanni Idili
  */
 define(function(require) {
 	var Type = require('model/Type');
@@ -53,12 +53,10 @@ define(function(require) {
 		initialize : function(options) {
 			this.type = options.type;
 			this.size = options.size;
+			this.wrappedObj = options.wrappedObj;
 			this.id = options.id;
 			this.name = options.name;
-			this.aspectNode = options.aspectNode;
 			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
 		},
 
 		/**

@@ -63,10 +63,9 @@ import org.geppetto.core.services.DropboxUploadService;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
-import org.geppetto.model.GeppettoModelState;
-import org.geppetto.model.VariableValue;
-import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.ExperimentState;
 import org.geppetto.model.util.GeppettoModelTraversal;
+import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.simulation.RuntimeProject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -181,7 +180,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#loadExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public GeppettoModelState loadExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public ExperimentState loadExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
 		IGeppettoProject project = experiment.getParentProject();
 		try
@@ -226,7 +225,7 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#playExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override
-	public List<VariableValue> playExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public ExperimentState playExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
 		if(experiment.getStatus().equals(ExperimentStatus.COMPLETED))
 		{
@@ -433,9 +432,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#setModelParameters(java.lang.String, java.util.Map, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public List<VariableValue> setModelParameters(Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public ExperimentState setModelParameters(Map<String, String> parameters, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		List<VariableValue> setParameters = getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(parameters);
+		ExperimentState setParameters = getRuntimeProject(project).getRuntimeExperiment(experiment).setModelParameters(parameters);
 		DataManagerHelper.getDataManager().saveEntity(project);
 		return setParameters;
 	}

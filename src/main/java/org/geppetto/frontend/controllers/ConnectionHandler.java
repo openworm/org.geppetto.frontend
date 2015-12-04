@@ -66,6 +66,8 @@ import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
 import org.geppetto.frontend.messages.OutboundMessages;
+import org.geppetto.model.ExperimentState;
+import org.geppetto.model.util.GeppettoSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -240,14 +242,8 @@ public class ConnectionHandler
 			// run the matched experiment
 			if(experiment != null)
 			{
-				RuntimeTreeRoot runtimeTree = geppettoManager.loadExperiment(requestID, experiment);
-
-				SerializeTreeVisitor serializeTreeVisitor = new SerializeTreeVisitor();
-				runtimeTree.apply(serializeTreeVisitor);
-				String scene = serializeTreeVisitor.getSerializedTree();
-				// TODO This is ugly, the tree visitor should not have "scene" inside, also it should be called runtimetree
-				String message = "{\"experimentId\":" + experimentID + "," + scene.substring(1);
-				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, message);
+				ExperimentState experimentState = geppettoManager.loadExperiment(requestID, experiment);
+				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, GeppettoSerializer.serializeToJSON(experimentState));
 				logger.info("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
 
 			}
@@ -258,6 +254,10 @@ public class ConnectionHandler
 
 		}
 		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error loading experiment");
+		}
+		catch(IOException e)
 		{
 			error(e, "Error loading experiment");
 		}
@@ -339,19 +339,6 @@ public class ConnectionHandler
 		}
 	}
 
-	/**
-	 * @param requestID
-	 * @param experimentID
-	 * @param projectId
-	 * @throws GeppettoExecutionException
-	 */
-	public void clearWatchLists(String requestID, long experimentID, long projectId) throws GeppettoExecutionException
-	{
-		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		geppettoManager.clearWatchLists(experiment, geppettoProject);
-		websocketConnection.sendMessage(requestID, OutboundMessages.CLEAR_WATCH, "");
-	}
 
 	/**
 	 * @param requestID
@@ -382,28 +369,16 @@ public class ConnectionHandler
 
 		if(experiment != null)
 		{
-			Map<String, AspectSubTreeNode> simulationTree;
 			try
 			{
-				simulationTree = geppettoManager.playExperiment(requestID, experiment);
-
-				String simulationTreeString = "[";
-				for(Map.Entry<String, AspectSubTreeNode> entry : simulationTree.entrySet())
-				{
-					SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
-					entry.getValue().apply(updateClientVisitor);
-					String simTree = updateClientVisitor.getSerializedTree();
-					// remove first and last bracket of sim tree before adding to string
-					// that'll be send to client
-					String formattedTree = simTree.substring(1, simTree.length() - 1);
-					simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
-				}
-				simulationTreeString = simulationTreeString.substring(0, simulationTreeString.length() - 1);
-				simulationTreeString += "]";
-
-				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, simulationTreeString);
+				ExperimentState experimentState = geppettoManager.playExperiment(requestID, experiment);
+				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, GeppettoSerializer.serializeToJSON(experimentState));
 			}
 			catch(GeppettoExecutionException e)
+			{
+				error(e, "Error playing the experiment " + experimentId);
+			}
+			catch(IOException e)
 			{
 				error(e, "Error playing the experiment " + experimentId);
 			}
@@ -414,81 +389,7 @@ public class ConnectionHandler
 		}
 	}
 
-	/**
-	 * @param requestID
-	 * @param aspectInstancePath
-	 */
-	public void getModelTree(String requestID, String aspectInstancePath, long experimentID, long projectId)
-	{
-		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		Map<String, AspectSubTreeNode> modelTree;
-		try
-		{
-			modelTree = geppettoManager.getModelTree(aspectInstancePath, experiment, geppettoProject);
-
-			String modelTreeString = "[";
-			for(Map.Entry<String, AspectSubTreeNode> entry : modelTree.entrySet())
-			{
-				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
-				entry.getValue().apply(updateClientVisitor);
-				String simTree = updateClientVisitor.getSerializedTree();
-				// remove first and last bracket of sim tree before adding to string
-				// that'll be send to client
-				String formattedTree = simTree.substring(1, simTree.length() - 1);
-				modelTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
-
-				// reset flags
-				ModelTreeExitVisitor exitVisitor = new ModelTreeExitVisitor();
-				entry.getValue().apply(exitVisitor);
-			}
-			modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
-			modelTreeString += "]";
-
-			websocketConnection.sendMessage(requestID, OutboundMessages.GET_MODEL_TREE, modelTreeString);
-		}
-		catch(GeppettoExecutionException e)
-		{
-			error(e, "Error populating the model tree for " + aspectInstancePath);
-		}
-	}
-
-	/**
-	 * @param requestID
-	 * @param aspectInstancePath
-	 */
-	public void getSimulationTree(String requestID, String aspectInstancePath, long experimentID, long projectId)
-	{
-		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		Map<String, AspectSubTreeNode> simulationTree;
-		try
-		{
-			simulationTree = geppettoManager.getSimulationTree(aspectInstancePath, experiment, geppettoProject);
-
-			String simulationTreeString = "[";
-			for(Map.Entry<String, AspectSubTreeNode> entry : simulationTree.entrySet())
-			{
-				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
-				entry.getValue().apply(updateClientVisitor);
-				String simTree = updateClientVisitor.getSerializedTree();
-				// remove first and last bracket of sim tree before adding to string
-				// that'll be send to client
-				String formattedTree = simTree.substring(1, simTree.length() - 1);
-				simulationTreeString += "{\"aspectInstancePath\":" + '"' + entry.getKey() + '"' + "," + formattedTree + "},";
-			}
-			simulationTreeString = simulationTreeString.substring(0, simulationTreeString.length() - 1);
-			simulationTreeString += "]";
-
-			websocketConnection.sendMessage(requestID, OutboundMessages.GET_SIMULATION_TREE, simulationTreeString);
-		}
-		catch(GeppettoExecutionException e)
-		{
-			error(e, "Error populating the simulation tree for " + aspectInstancePath);
-		}
-
-	}
-
+	
 	/**
 	 * @param requestID
 	 * @param aspectInstancePath
@@ -615,28 +516,12 @@ public class ConnectionHandler
 		}
 		else
 		{
-
 			try
 			{
-				AspectSubTreeNode modelTreeNode = geppettoManager.setModelParameters(modelPath, modelParameters, experiment, geppettoProject);
-				String modelTreeString = "[";
-				SerializeTreeVisitor updateClientVisitor = new SerializeTreeVisitor();
-				modelTreeNode.apply(updateClientVisitor);
-				String simTree = updateClientVisitor.getSerializedTree();
-				String formattedTree = simTree.substring(1, simTree.length());
-
-				modelTreeString += "{\"aspectInstancePath\":" + '"' + modelPath + '"' + "," + formattedTree + "}";
-
-				modelTreeString = modelTreeString.substring(0, modelTreeString.length() - 1);
-				modelTreeString += "]";
-
-				// reset flags
-				ModelTreeExitVisitor exitVisitor = new ModelTreeExitVisitor();
-				modelTreeNode.apply(exitVisitor);
-
-				websocketConnection.sendMessage(requestID, OutboundMessages.UPDATE_MODEL_TREE, modelTreeString);
+				ExperimentState experimentState= geppettoManager.setModelParameters(modelParameters, experiment, geppettoProject);
+				websocketConnection.sendMessage(requestID, OutboundMessages.UPDATE_MODEL_TREE, GeppettoSerializer.serializeToJSON(experimentState));
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | IOException e)
 			{
 				error(e, "There was an error setting parameters");
 			}

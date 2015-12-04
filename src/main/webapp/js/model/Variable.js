@@ -68,5 +68,70 @@ define(function(require) {
 		getWrappedObject : function() {
 			return this.wrappedObj;
 		},
+		
+		/**
+		 * Get the list of types for this variable
+		 * 
+		 * @command Variable.getTypes()
+		 * 
+		 * @returns {List<Type>} - array of types
+		 * 
+		 */
+		getTypes : function() {
+			// TODO: fetch types from wrapped obj
+			return this.wrappedObj.types;
+		},
+		
+		/**
+		 * Get the list of anonymous types for this variable
+		 * 
+		 * @command Variable.getAnonymousTypes()
+		 * 
+		 * @returns {List<Type>} - array of types
+		 * 
+		 */
+		getAnonymousTypes : function() {
+			// TODO: fetch anonymous types from wrapped obj
+			return this.wrappedObj.anonymousTypes;
+		},
+		
+		/**
+		 * Get the list of values for this variable
+		 * 
+		 * @command Variable.getInitialValues()
+		 * 
+		 * @returns {List<Value>} - array of values
+		 * 
+		 */
+		getInitialValues : function() {
+			// TODO: fetch anonymous types from wrapped obj
+			return this.wrappedObj.initialValues;
+		},
+		
+		/**
+		 * Check if the variable is static
+		 * 
+		 * @command Variable.isStatic()
+		 * 
+		 * @returns {bool} - Boolean 
+		 * 
+		 */
+		isStatic : function() {
+			// TODO: fetch static from wrapped obj
+			return this.wrappedObj.isStatic;
+		},
+		
+		/**
+		 * Gets position for the variable
+		 * 
+		 * @command Variable.isStatic()
+		 * 
+		 * @returns {Object} - position for the variable 
+		 * 
+		 */
+		getPosition : function() {
+			// TODO: fetch static from wrapped obj
+			return this.wrappedObj.position;
+		},
 	});
 });

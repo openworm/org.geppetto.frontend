@@ -68,5 +68,83 @@ define(function(require) {
 		getWrappedObject : function() {
 			return this.wrappedObj;
 		},
+		
+		/**
+		 * Gets the default value for this type
+		 * 
+		 * @command Type.getDefaultValue()
+		 * 
+		 * @returns {Object} - Default value
+		 * 
+		 */
+		getDefaultValue : function() {
+			// TODO: fetch from the right place
+			return this.wrappedObj.getDefaultValue();
+		},
+		
+		/**
+		 * Gets the super type for this type
+		 * 
+		 * @command Type.getSuperType()
+		 * 
+		 * @returns {Type} - Super type
+		 * 
+		 */
+		getSuperType : function() {
+			// TODO: fetch from the right place
+			return this.wrappedObj.superType;
+		},
+		
+		/**
+		 * Gets the super type for this type
+		 * 
+		 * @command Type.getSuperType()
+		 * 
+		 * @returns {Type} - Super type
+		 * 
+		 */
+		getSuperType : function() {
+			// TODO: fetch from the right place
+			return this.wrappedObj.superType;
+		},
+		
+		/**
+		 * Check if the type is abstract
+		 * 
+		 * @command Type.isAbstract()
+		 * 
+		 * @returns {Boolean} - Boolean indicating if the type is abstract
+		 * 
+		 */
+		isAbstract : function() {
+			// TODO: fetch from the right place
+			return this.wrappedObj.abstract;
+		},
+		
+		/**
+		 * Gets the visual type for this type if any
+		 * 
+		 * @command Type.getVisualType()
+		 * 
+		 * @returns {Type} - Super type
+		 * 
+		 */
+		getVisualType : function() {
+			// TODO: fetch from the right place
+			return this.wrappedObj.visualType;
+		},
+		
+		/**
+		 * Gets the list of referenced variables
+		 * 
+		 * @command Type.getReferencedVariables()
+		 * 
+		 * @returns {List<Variables>} - list of referenced variables
+		 * 
+		 */
+		getReferencedVariables : function() {
+			// TODO: fetch from the right place
+			return this.wrappedObj.referencedVariables;
+		},
 	});
 });

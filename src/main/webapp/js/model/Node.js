@@ -50,6 +50,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			_metaType : "",
 			aspectNode : null,
 			parent : null,
+			tags : null,
 
 			/**
 			 * Gets the instance path of the node

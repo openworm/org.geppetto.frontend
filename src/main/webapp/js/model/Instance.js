@@ -35,15 +35,15 @@
  * Client class use to represent a composite variable node, used for simulation
  * tree state variables.
  * 
- * @module model/ArrayType
+ * @module model/Instance
  * @author Giovanni Idili
  */
 define(function(require) {
-	var Type = require('model/Type');
+	var Node = require('model/Node');
 
-	return Type.Model.extend({
-		type: null,
-		elements: [], 
+	return Node.Model.extend({
+		variable : null,
+		children: [],
 		
 		/**
 		 * Initializes this node with passed attributes
@@ -51,36 +51,39 @@ define(function(require) {
 		 * @param {Object} options - Object with options attributes to initialize node
 		 */
 		initialize : function(options) {
-			this.type = options.type;
-			this.wrappedObj = options.wrappedObj;
+			this.variable = options.variable;
 			this.id = options.id;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
 			this._metaType = options._metaType;
 		},
-
+		
 		/**
-		 * Get type for array type
+		 * Get the type for this instance
 		 * 
-		 * @command ArrayType.getType()
+		 * @command Instance.getType()
 		 * 
-		 * @returns {Type} - type
+		 * @returns {List<Type>} - array of types
 		 * 
 		 */
 		getType : function() {
-			return this.type;
+			// TODO: fetch types from wrapped obj
+			// NOTE: an instance can only have one type but the variable can have multiple types - how to pick the right one?
+			return this.variable.getTypes();
 		},
 		
 		/**
-		 * Get array size
+		 * Get this instance children
 		 * 
-		 * @command ArrayType.getSize()
+		 * @command Instance.getChildren()
 		 * 
-		 * @returns {int} - size of the array
+		 * @returns {List<Instance>} - List of instances
 		 * 
 		 */
-		getSize : function() {
-			return this.elements.size;
+		getChildren : function() {
+			return this.children;
 		},
+
+		
 	});
 });

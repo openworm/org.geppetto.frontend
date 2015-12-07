@@ -53,7 +53,7 @@ import org.geppetto.core.utilities.URLReader;
 import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.util.GeppettoSwitch;
 import org.geppetto.model.util.GeppettoVisitingException;
-import org.geppetto.simulation.RuntimeExperiment;
+import org.geppetto.simulation.RuntimeProject;
 
 /**
  * @author matteocantarelli
@@ -62,22 +62,22 @@ import org.geppetto.simulation.RuntimeExperiment;
 public class PersistModelVisitor extends GeppettoSwitch<Object>
 {
 
-	private RuntimeExperiment runtimeExperiment;
-
 	private IGeppettoProject project;
 
 	private Map<String, String> replaceMap = new HashMap<String, String>();
 
 	private Path localGeppettoModelFile;
 
+	private RuntimeProject runtimeProject;
+
 	/**
 	 * @param localGeppettoModelFile 
-	 * @param runtimeExperiment
+	 * @param runtimeProject
 	 * @param project
 	 */
-	public PersistModelVisitor(Path localGeppettoModelFile, RuntimeExperiment runtimeExperiment, IGeppettoProject project)
+	public PersistModelVisitor(Path localGeppettoModelFile, RuntimeProject runtimeProject, IGeppettoProject project)
 	{
-		this.runtimeExperiment = runtimeExperiment;
+		this.runtimeProject = runtimeProject;
 		this.project = project;
 		this.localGeppettoModelFile=localGeppettoModelFile;
 	}
@@ -87,7 +87,7 @@ public class PersistModelVisitor extends GeppettoSwitch<Object>
 	{
 		try
 		{
-			IModelInterpreter modelInterpreter = runtimeExperiment.getModelInterpreters().get(library);
+			IModelInterpreter modelInterpreter = runtimeProject.getModelInterpreter(library);
 			List<URL> dependentModels = modelInterpreter.getDependentModels();
 			for(URL url : dependentModels)
 			{

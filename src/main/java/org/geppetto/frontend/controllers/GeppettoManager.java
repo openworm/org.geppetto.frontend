@@ -271,8 +271,7 @@ public class GeppettoManager implements IGeppettoManager
 					Path localGeppettoModelFile = Paths.get(URLReader.createLocalCopy(scope, project.getId(), url).toURI());
 
 					// save each model inside GeppettoModel and save every file referenced inside every model
-					PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project).getRuntimeExperiment(
-							getRuntimeProject(project).getActiveExperiment()), project);
+					PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project), project);
 					try
 					{
 						GeppettoModelTraversal.apply(getRuntimeProject(project).getGeppettoModel(),persistModelVisitor);

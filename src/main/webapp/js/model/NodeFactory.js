@@ -95,7 +95,6 @@ define(function(require)
 					_metaType : GEPPETTO.Resources.PROJECT_NODE,
 				});
 
-				// create visualization subtree only at first
 				for ( var key in project.experiments)
 				{
 					var experiment = project.experiments[key];

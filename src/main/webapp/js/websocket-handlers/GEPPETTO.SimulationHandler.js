@@ -274,7 +274,19 @@ define(function(require) {
 				}
 				GEPPETTO.G.listeners=[];
 				var project = JSON.parse(payload.project_loaded);
+				
 				window.Project = GEPPETTO.NodeFactory.createProjectNode(project);         
+				
+				// TODO: build Geppetto model here (once off operation when project is loaded) - GI
+				//window.GeppettoModel = GEPPETTO.NodeFactory.createProjectNode(payload.model); 
+				
+				// TODO: build instance tree here (instance tree will be populated with state info for each experiment) - GI
+				//window.InstanceTree = GEPPETTO.NodeFactory.createProjectNode(window.GeppettoModel); 
+				
+				// TODO: compute complexity of scene here - GI
+				// TODO: build scene here from Geppetto model populating visual objects in the instance tree - GI
+				//GEPPETTO.SceneController.buildScene(window.InstanceTree);
+				
 				if(window.location.search.indexOf("load_project_from_url")!=-1)
 				{	
 					window.Project.persisted=false;
@@ -286,6 +298,8 @@ define(function(require) {
 
 			loadExperiment : function(payload){
 				var message=JSON.parse(payload.experiment_loaded);
+				
+				// TODO: there's no scene here anymore only experiment state - GI
 				var jsonRuntimeTree = message.scene;
 				var experimentId=message.experimentId;
 
@@ -300,8 +314,12 @@ define(function(require) {
 				}
 
             	var startCreation = new Date();
+            	// TODO: remove - this complexity calculation does not happen here anymore - GI
             	GEPPETTO.SceneController.complexity=0;
 				GEPPETTO.SceneController.computeComplexity(jsonRuntimeTree);
+				
+				// TODO: empty relevant nodes or rebuild instance tree altogether - GI
+				// TODO: populate instance tree with state info for given experiment (may have to rebuild it too) - GI
             	GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
             
             	var endCreation = new Date() - startCreation;

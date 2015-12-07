@@ -64,6 +64,7 @@ import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.model.ExperimentState;
+import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoModelTraversal;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.simulation.RuntimeProject;
@@ -274,7 +275,7 @@ public class GeppettoManager implements IGeppettoManager
 					PersistModelVisitor persistModelVisitor = new PersistModelVisitor(localGeppettoModelFile, getRuntimeProject(project), project);
 					try
 					{
-						GeppettoModelTraversal.apply(getRuntimeProject(project).getGeppettoModel(),persistModelVisitor);
+						GeppettoModelTraversal.apply(getRuntimeProject(project).getGeppettoModel(), persistModelVisitor);
 					}
 					catch(GeppettoVisitingException e)
 					{
@@ -446,8 +447,16 @@ public class GeppettoManager implements IGeppettoManager
 	@Override
 	public void setWatchedVariables(List<String> watchedVariables, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		getRuntimeProject(project).getRuntimeExperiment(experiment).setWatchedVariables(watchedVariables);
-		DataManagerHelper.getDataManager().saveEntity(project);
+		try
+		{
+			getRuntimeProject(project).getRuntimeExperiment(experiment).setWatchedVariables(watchedVariables);
+			DataManagerHelper.getDataManager().saveEntity(project);
+		}
+		catch(GeppettoModelException e)
+		{
+			throw new GeppettoExecutionException(e);
+		}
+
 	}
 
 	/*
@@ -548,7 +557,6 @@ public class GeppettoManager implements IGeppettoManager
 		// TODO This could be more sophisticated and return only the projects which have changed their status because of a run
 		return project.getExperiments();
 	}
-
 
 	/*
 	 * (non-Javadoc)

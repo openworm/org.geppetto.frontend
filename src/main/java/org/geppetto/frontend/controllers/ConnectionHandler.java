@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Date;
@@ -178,10 +177,13 @@ public class ConnectionHandler
 			geppettoManager.loadProject(requestID, geppettoProject);
 			// serialize project prior to sending it to client
 			Gson gson = new Gson();
-			String json = gson.toJson(geppettoProject);
+			String projectJSON = gson.toJson(geppettoProject);
 			setConnectionProject(geppettoProject);
-			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, json);
-
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, projectJSON);
+			
+			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager)geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel());
+			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_MODEL_LOADED, geppettoModelJSON);
+			
 			if(experimentId != -1)
 			{
 				loadExperiment(requestID, experimentId, geppettoProject.getId());
@@ -192,7 +194,7 @@ public class ConnectionHandler
 			}
 
 		}
-		catch(MalformedURLException | GeppettoInitializationException | GeppettoExecutionException e)
+		catch(GeppettoInitializationException | GeppettoExecutionException | IOException e)
 		{
 			error(e, "Could not load geppetto project");
 		}

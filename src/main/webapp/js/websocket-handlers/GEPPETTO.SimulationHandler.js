@@ -88,15 +88,15 @@ define(function(require) {
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {        	
         	GEPPETTO.SimulationHandler.loadExperiment(payload);
             
-			//Updates the simulation controls visibility
+			// Updates the simulation controls visibility
 			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 			
 			if(webGLStarted) {
-				//we call it only the first time
+				// we call it only the first time
 				GEPPETTO.SceneController.animate();
 			}
 
-            //Populate scene
+            // TODO: Populate scene - use instance tree instead of runtime tree - GI
             GEPPETTO.SceneController.populateScene(window["Project"].runTimeTree); 
             
             GEPPETTO.trigger(Events.Experiment_loaded);

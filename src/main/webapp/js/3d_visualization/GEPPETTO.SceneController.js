@@ -16,15 +16,26 @@ define(function(require) {
 		require('GEPPETTO.Resources')(GEPPETTO);
 
 		GEPPETTO.SceneController = {
+			
+			/**
+			 * Populate the scene with given runtimetree object.
+			 * 
+			 * @param instanceTree - skeleton with instances and visual entities
+			 * @param geppettoModel - 
+			 */
+			buildScene : function(instanceTree, geppettoModel)
+			{
+				// TODO: implement - GI
+			},
 				
 			/**
 			 * Populate the scene with given runtimetree object.
 			 * 
-			 * @param runTimeTree -
-			 *            Object with scene to populate
+			 * @param runTimeTree - Object with scene to populate
 			 */
 			populateScene : function(runTimeTree) 
 			{
+				// TODO: refactor to work with instanceTree - GI
 				for ( var eindex in runTimeTree) 
 				{
 					GEPPETTO.SceneFactory.loadEntity(runTimeTree[eindex]);
@@ -41,6 +52,7 @@ define(function(require) {
 			 */
 			computeComplexity : function(node)
 			{
+				// TODO: modify this to work with Geppetto model and not with the old scene - GI
 				$.each(node, function(key, child) {
 				
 					if(child.hasOwnProperty("_metaType") && child._metaType === 'AspectNode')

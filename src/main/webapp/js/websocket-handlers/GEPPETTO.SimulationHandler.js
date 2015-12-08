@@ -267,7 +267,7 @@ define(function(require) {
 			},
 			
 			loadProject : function(payload){
-				//we remove anything from any previous loaded project if there was one
+				// we remove anything from any previous loaded project if there was one
 				if(Project)
 				{
 					Project.initialize();
@@ -277,15 +277,14 @@ define(function(require) {
 				
 				window.Project = GEPPETTO.NodeFactory.createProjectNode(project);         
 				
-				// TODO: build Geppetto model here (once off operation when project is loaded) - GI
-				//window.GeppettoModel = GEPPETTO.NodeFactory.createProjectNode(payload.model); 
+				// build Geppetto model here (once off operation when project is loaded)
+				window.Project.GeppettoModel = GEPPETTO.ModelFactory.createGeppettoModel(payload.model); 
 				
-				// TODO: build instance tree here (instance tree will be populated with state info for each experiment) - GI
-				//window.InstanceTree = GEPPETTO.NodeFactory.createProjectNode(window.GeppettoModel); 
+				// build instance tree here (instance tree will be populated with state info for each experiment)
+				window.Project.InstanceTree = GEPPETTO.ModelFactory.createInstanceTree(window.Project.GeppettoModel); 
 				
-				// TODO: compute complexity of scene here - GI
-				// TODO: build scene here from Geppetto model populating visual objects in the instance tree - GI
-				//GEPPETTO.SceneController.buildScene(window.InstanceTree);
+				// build scene here from Geppetto model populating visual objects in the instance tree
+				GEPPETTO.SceneController.buildScene(window.Project.InstanceTree, window.Project.GeppettoModel);
 				
 				if(window.location.search.indexOf("load_project_from_url")!=-1)
 				{	
@@ -314,19 +313,20 @@ define(function(require) {
 				}
 
             	var startCreation = new Date();
-            	// TODO: remove - this complexity calculation does not happen here anymore - GI
+				
+				// compute complexity of scene
             	GEPPETTO.SceneController.complexity=0;
 				GEPPETTO.SceneController.computeComplexity(jsonRuntimeTree);
-				
+            	
 				// TODO: empty relevant nodes or rebuild instance tree altogether - GI
-				// TODO: populate instance tree with state info for given experiment (may have to rebuild it too) - GI
+				// TODO: instead of creating runtime tree, populate instance tree with state info for given experiment - GI
             	GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
             
             	var endCreation = new Date() - startCreation;
             	GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");
 	            GEPPETTO.Console.debugLog(GEPPETTO.NodeFactory.nodes + " total nodes created, from which: "+
-            						  GEPPETTO.NodeFactory.entities + " were entities and "+
-            						  GEPPETTO.NodeFactory.connections + " were connections");
+            						  	  GEPPETTO.NodeFactory.entities + " were entities and "+
+            						  	  GEPPETTO.NodeFactory.connections + " were connections");
 
 			},
 			

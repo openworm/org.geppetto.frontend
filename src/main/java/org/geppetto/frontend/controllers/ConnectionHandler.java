@@ -59,6 +59,7 @@ import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.ResultsFormat;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
+import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
@@ -66,7 +67,6 @@ import org.geppetto.frontend.Resources;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.model.ExperimentState;
 import org.geppetto.model.ModelFormat;
-import org.geppetto.model.util.GeppettoSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

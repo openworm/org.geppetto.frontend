@@ -126,7 +126,7 @@ jqueryLib.push("mathjs");
 
 require(jqueryLib, function($) {
 
-	var ProjectNode = require('nodes/ProjectNode');
+	var ProjectNode = require('model/ProjectNode');
 	$(function() {
 		var project = new ProjectNode({name : "Project", id : -1});
 		window.Project = project;

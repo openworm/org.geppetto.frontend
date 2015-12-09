@@ -39,7 +39,7 @@
 define(function(require) {
 
 	var Widget = require('widgets/Widget');
-	var Node = require('nodes/Node');
+	var Node = require('model/Node');
 
 	return {
 		TreeVisualiser: Widget.View.extend({

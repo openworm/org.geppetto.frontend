@@ -44,7 +44,7 @@ define(function(require) {
 		var $ = require('jquery'),
 		React = require('react'),
 		InfoModal = require('jsx!components/popups/InfoModal');
-		var ProjectNode = require('nodes/ProjectNode');
+		var ProjectNode = require('model/ProjectNode');
 
 		/**
 		 * @class GEPPETTO.Main

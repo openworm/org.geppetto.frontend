@@ -117,7 +117,7 @@ var jqueryLib = [
 require(jqueryLib, function($, geppetto){
 	
 	require(['components/app'],function(){});
-	var ProjectNode = require('nodes/ProjectNode');
+	var ProjectNode = require('model/ProjectNode');
 
 	$(function(){
 		window.GEPPETTO = require('geppetto');

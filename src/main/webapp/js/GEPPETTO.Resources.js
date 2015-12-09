@@ -94,7 +94,9 @@ define(function(require) {
 					GHOST : .3,
 			},
 
-			PROJECT_LOADED: "Project Loaded",
+			PROJECT_LOADED: "Project loaded",
+			
+			MMODEL_LOADED: "Model loaded",
 
 			EXPERIMENT_CREATED: "New experiment created",
 

@@ -43,6 +43,7 @@ define(function(require) {
             EXPERIMENT_UPDATE: "experiment_update",
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",
+            MODEL_LOADED: "geppetto_model_loaded",
             PROJECT_PROPS_SAVED: "project_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
             EXPERIMENT_LOADING: "experiment_loading",
@@ -73,6 +74,10 @@ define(function(require) {
 
         messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {        	
             GEPPETTO.SimulationHandler.loadProject(payload);            
+        };
+        
+        messageHandler[messageTypes.MODEL_LOADED] = function(payload) {        	
+            GEPPETTO.SimulationHandler.loadModel(payload);            
         };
         
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {     
@@ -277,6 +282,17 @@ define(function(require) {
 				
 				window.Project = GEPPETTO.NodeFactory.createProjectNode(project);         
 				
+				if(window.location.search.indexOf("load_project_from_url")!=-1)
+				{	
+					window.Project.persisted=false;
+				}
+				
+				GEPPETTO.Init.initEventListeners();
+				GEPPETTO.trigger(Events.Project_loaded);
+	            GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
+			},
+			
+			loadModel : function(payload){
 				// build Geppetto model here (once off operation when project is loaded)
 				window.Project.GeppettoModel = GEPPETTO.ModelFactory.createGeppettoModel(payload.model); 
 				
@@ -286,17 +302,12 @@ define(function(require) {
 				// build scene here from Geppetto model populating visual objects in the instance tree
 				GEPPETTO.SceneController.buildScene(window.Project.InstanceTree, window.Project.GeppettoModel);
 				
-				if(window.location.search.indexOf("load_project_from_url")!=-1)
-				{	
-					window.Project.persisted=false;
-				}
-				GEPPETTO.Init.initEventListeners();
-				GEPPETTO.trigger(Events.Project_loaded);
-	            GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
+				GEPPETTO.trigger(Events.Model_loaded);
+	            GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 			},
 
 			loadExperiment : function(payload){
-				var message=JSON.parse(payload.experiment_loaded);
+				var message=JSON.parse(payload.MODEL_LOADED);
 				
 				// TODO: there's no scene here anymore only experiment state - GI
 				var jsonRuntimeTree = message.scene;

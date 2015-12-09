@@ -42,6 +42,7 @@
 			Select : "experiment:selection_changed",
 			Experiment_over : "experiment:over",
 			Project_loaded : "project:loaded",
+			Model_loaded : "model:loaded",
 			Experiment_loaded : "experiment:loaded",
 			ModelTree_populated : "experiment:modeltreepopulated",
 			SimulationTree_populated : "experiment:simulationtreepopulated",

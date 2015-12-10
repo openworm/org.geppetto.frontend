@@ -43,8 +43,6 @@ define(function(require) {
 
 	return Node.Model.extend({
 		wrappedObj : null,
-		variables : [],
-		isCompositeType : false,
 		
 		/**
 		 * Initializes this node with passed attributes
@@ -122,32 +120,7 @@ define(function(require) {
 			// TODO: fetch from the right place
 			return this.wrappedObj.visualType;
 		},
-		
-		/**
-		 * Gets the list of variables
-		 * 
-		 * @command Type.getVariables()
-		 * 
-		 * @returns {List<Variables>} - list of variables
-		 * 
-		 */
-		getVariables : function() {
-			// TODO: fetch from the right place
-			return this.variables;
-		},
-		
-		/**
-		 * Returns true if it's a composite type
-		 * 
-		 * @command Type.isCompositeType()
-		 * 
-		 * @returns {Boolean} - Bollean indicating if it's a composite type
-		 * 
-		 */
-		isCompositeType : function() {
-			// TODO: fetch from the right place
-			return this.isCompositeType;
-		},
+
 		
 		/**
 		 * Gets the list of referenced variables

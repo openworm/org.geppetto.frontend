@@ -77,8 +77,13 @@ define(function(require)
 							library.getChildren().push(types);
 						}
 						
+						// TODO: traverse everything and populate type references in variables
+						
 						geppettoModel.getChildren().push(variables);
 						geppettoModel.getChildren().push(libraries);
+						
+						// break out of looping elements
+						break;
 					}
 				}
 				
@@ -88,7 +93,7 @@ define(function(require)
 			/** 
 			 * Creates variables starting from an array of variables in the json model format
 			 */
-			createVariables(jsonVariables){
+			createVariables : function(jsonVariables){
 				var variables = [];
 				
 				for(var i=0; i < jsonVariables.length; i++){
@@ -103,27 +108,34 @@ define(function(require)
 				}
 				
 				return variables;
-			}
+			},
 			
 			/** 
 			 * Creates type objects starting from an array of types in the json model format
 			 */
-			createTypes(jsonTypes){
+			createTypes : function(jsonTypes){
 				var types = [];
 				
 				for(var i=0; i < jsonTypes.length; i++){
-					var type = this.createType(jsonTypes[i]);
+					var type = null;
 					
-					// check if it's composite type
+					// check if it's composite type or simple type
 					var eClassID = jsonTypes[i].eClass.split("/")[jsonTypes[i].eClass.split("/").length - 1];
 					if(eClassID == 'CompositeType'){
-						type.isCompositeType = true;
+						type = this.createCompositeType(jsonTypes[i]);
 						type.variables = this.createVariables(jsonTypes[i].variables);
 					}
+					else{
+						type = this.createType(jsonTypes[i]);
+					}
+					
+					// TODO: find out if we treat composite visual type the same way
+					
+					types.push(type);
 				}
 				
 				return types;
-			}
+			},
 			
 			/** 
 			 * Creates and populates instance tree skeleton 
@@ -169,6 +181,18 @@ define(function(require)
 				}
 				
 				var t = new Type(options);
+
+				return t;
+			},
+			
+			/** Creates a composite type node */
+			createCompositeType : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.COMPOSITE_TYPE_NODE, wrappedObj: node};
+				}
+				
+				var t = new CompositeType(options);
 
 				return t;
 			},

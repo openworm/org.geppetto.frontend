@@ -42,7 +42,7 @@ define(function(require) {
 	var Type = require('model/Type');
 
 	return Type.Model.extend({
-		variables : null,
+		variables : [],
 		
 		/**
 		 * Initializes this node with passed attributes
@@ -50,7 +50,6 @@ define(function(require) {
 		 * @param {Object} options - Object with options attributes to initialize node
 		 */
 		initialize : function(options) {
-			this.variables = new Array();
 			this.wrappedObj = options.wrappedObj;
 			this.id = options.id;
 			this.name = options.name;

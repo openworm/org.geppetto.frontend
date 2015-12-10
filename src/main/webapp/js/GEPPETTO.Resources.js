@@ -389,7 +389,10 @@ define(function(require) {
 			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
 			SKELETON_ANIMATION_NODE: "SkeletonAnimationNode",
 			INPUT_CONNECTION : "FROM",
-			OUTPUT_CONNECTION : "TO"
+			OUTPUT_CONNECTION : "TO",
+			TYPE_NODE : "Type",
+			COMPOSITE_TYPE_NODE : "CompositeType",
+			VARIABLE_NODE : "Variable"
 		}
 	}
 });

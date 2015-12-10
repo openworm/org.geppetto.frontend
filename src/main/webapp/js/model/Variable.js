@@ -43,6 +43,8 @@ define(function(require) {
 
 	return Node.Model.extend({
 		wrappedObj : null,
+		anonymousTypes : [],
+		types : [],
 		
 		/**
 		 * Initializes this node with passed attributes
@@ -78,8 +80,8 @@ define(function(require) {
 		 * 
 		 */
 		getTypes : function() {
-			// TODO: fetch types from wrapped obj
-			return this.wrappedObj.types;
+			// TODO: resolve types
+			return this.types;
 		},
 		
 		/**
@@ -91,8 +93,7 @@ define(function(require) {
 		 * 
 		 */
 		getAnonymousTypes : function() {
-			// TODO: fetch anonymous types from wrapped obj
-			return this.wrappedObj.anonymousTypes;
+			return this.anonymousTypes;
 		},
 		
 		/**
@@ -104,7 +105,7 @@ define(function(require) {
 		 * 
 		 */
 		getInitialValues : function() {
-			// TODO: fetch anonymous types from wrapped obj
+			// TODO: fetch initial values
 			return this.wrappedObj.initialValues;
 		},
 		

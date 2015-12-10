@@ -41,13 +41,18 @@ define(function(require)
 {
 	return function(GEPPETTO)
 	{
+		var CompositeNode = require('model/CompositeNode');
+		var Type = require('model/Type');
+		var CompositeType = require('model/CompositeType');
+		var Variable = require('model/Variable');
+		
 		/**
 		 * @class GEPPETTO.ModelFactory
 		 */
 		GEPPETTO.ModelFactory =
 		{
 			/*
-			 * Variables go here
+			 * Variables to keep track of tree building state go here if needed
 			 */
 
 			/**
@@ -57,11 +62,69 @@ define(function(require)
 			{
 				var geppettoModel = null;
 				
-				// TODO: implement - GI
+				for(element in jsonModel){
+					var eClassID = element.eClass.split("/")[element.eClass.split("/").length - 1];
+					if(eClassID == 'GeppettoModel'){
+						geppettoModel = this.createCompositeNode(element);
+						
+						var variables = this.createCompositeNode(element.variables);
+						variables.getChildren().push(createVariables(element.variables));
+						
+						var libraries = null;
+						for(var i=0; i < element.libraries.length; i++){
+							var library = this.createCompositeNode(element.libraries[i]);
+							var types = createTypes(element.libraries[i].types);
+							library.getChildren().push(types);
+						}
+						
+						geppettoModel.getChildren().push(variables);
+						geppettoModel.getChildren().push(libraries);
+					}
+				}
 				
 				return geppettoModel;
 			},
 
+			/** 
+			 * Creates variables starting from an array of variables in the json model format
+			 */
+			createVariables(jsonVariables){
+				var variables = [];
+				
+				for(var i=0; i < jsonVariables.length; i++){
+					var variable = this.createVariable(jsonVariables[i]);
+					
+					// check if it has an anonymous type
+					if(jsonVariables[i].anonymousTypes != undefined){
+						variable.anonymousTypes = this.createTypes(jsonVariables[i].anonymousTypes);
+					}
+					
+					variables.push(variable);
+				}
+				
+				return variables;
+			}
+			
+			/** 
+			 * Creates type objects starting from an array of types in the json model format
+			 */
+			createTypes(jsonTypes){
+				var types = [];
+				
+				for(var i=0; i < jsonTypes.length; i++){
+					var type = this.createType(jsonTypes[i]);
+					
+					// check if it's composite type
+					var eClassID = jsonTypes[i].eClass.split("/")[jsonTypes[i].eClass.split("/").length - 1];
+					if(eClassID == 'CompositeType'){
+						type.isCompositeType = true;
+						type.variables = this.createVariables(jsonTypes[i].variables);
+					}
+				}
+				
+				return types;
+			}
+			
 			/** 
 			 * Creates and populates instance tree skeleton 
 			 */
@@ -72,6 +135,42 @@ define(function(require)
 				// TODO: implement - GI
 				
 				return instanceTree;
+			},
+			
+			/** Creates a simple composite node */
+			createCompositeNode : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.COMPOSITE_NODE};
+				}
+				
+				var n = new CompositeNode(options);
+
+				return n;
+			},
+			
+			/** Creates a variable node */
+			createVariable : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.VARIABLE_NODE, wrappedObj: node};
+				}
+				
+				var v = new Variable(options);
+
+				return v;
+			},
+			
+			/** Creates a type node */
+			createType : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.TYPE_NODE, wrappedObj: node};
+				}
+				
+				var t = new Type(options);
+
+				return t;
 			},
 
 		};

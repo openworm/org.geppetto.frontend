@@ -601,6 +601,7 @@ define(function(require) {
 	// require('GEPPETTO.Tutorial')(GEPPETTO);
 	require("widgets/includeWidget")(GEPPETTO);
 	require('model/NodeFactory')(GEPPETTO);
+	require('model/ModelFactory')(GEPPETTO);
 	require('model/RuntimeTreeController')(GEPPETTO);
 
 	return GEPPETTO;

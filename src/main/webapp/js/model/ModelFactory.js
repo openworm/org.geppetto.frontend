@@ -68,11 +68,12 @@ define(function(require)
 					var variables = this.createCompositeNode(jsonModel.variables);
 					variables.getChildren().push(this.createVariables(jsonModel.variables));
 					
-					var libraries = null;
+					var libraries = [];
 					for(var i=0; i < jsonModel.libraries.length; i++){
 						var library = this.createCompositeNode(jsonModel.libraries[i]);
 						var types = this.createTypes(jsonModel.libraries[i].types);
 						library.getChildren().push(types);
+						libraries.push(library);
 					}
 					
 					// TODO: traverse everything and populate type references in variables
@@ -90,15 +91,17 @@ define(function(require)
 			createVariables : function(jsonVariables){
 				var variables = [];
 				
-				for(var i=0; i < jsonVariables.length; i++){
-					var variable = this.createVariable(jsonVariables[i]);
-					
-					// check if it has an anonymous type
-					if(jsonVariables[i].anonymousTypes != undefined){
-						variable.anonymousTypes = this.createTypes(jsonVariables[i].anonymousTypes);
+				if(jsonVariables != undefined){
+					for(var i=0; i < jsonVariables.length; i++){
+						var variable = this.createVariable(jsonVariables[i]);
+						
+						// check if it has an anonymous type
+						if(jsonVariables[i].anonymousTypes != undefined){
+							variable.anonymousTypes = this.createTypes(jsonVariables[i].anonymousTypes);
+						}
+						
+						variables.push(variable);
 					}
-					
-					variables.push(variable);
 				}
 				
 				return variables;
@@ -110,22 +113,23 @@ define(function(require)
 			createTypes : function(jsonTypes){
 				var types = [];
 				
-				for(var i=0; i < jsonTypes.length; i++){
-					var type = null;
-					
-					// check if it's composite type or simple type
-					var eClassID = jsonTypes[i].eClass.split("/")[jsonTypes[i].eClass.split("/").length - 1];
-					if(eClassID == 'CompositeType'){
-						type = this.createCompositeType(jsonTypes[i]);
-						type.variables = this.createVariables(jsonTypes[i].variables);
+				if(jsonTypes != undefined){
+					for(var i=0; i < jsonTypes.length; i++){
+						var type = null;
+						
+						// check if it's composite type or simple type
+						if(jsonTypes[i].eClass == 'CompositeType'){
+							type = this.createCompositeType(jsonTypes[i]);
+							type.variables = this.createVariables(jsonTypes[i].variables);
+						}
+						else{
+							type = this.createType(jsonTypes[i]);
+						}
+						
+						// TODO: find out if we treat composite visual type the same way
+						
+						types.push(type);
 					}
-					else{
-						type = this.createType(jsonTypes[i]);
-					}
-					
-					// TODO: find out if we treat composite visual type the same way
-					
-					types.push(type);
 				}
 				
 				return types;

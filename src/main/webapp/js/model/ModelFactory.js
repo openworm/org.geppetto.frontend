@@ -43,8 +43,8 @@ define(function(require)
 	{
 		var CompositeNode = require('model/CompositeNode');
 		var Type = require('model/Type');
-		var CompositeType = require('model/CompositeType');
 		var Variable = require('model/Variable');
+		var CompositeType = require('model/CompositeType');
 		
 		/**
 		 * @class GEPPETTO.ModelFactory
@@ -62,29 +62,23 @@ define(function(require)
 			{
 				var geppettoModel = null;
 				
-				for(element in jsonModel){
-					var eClassID = element.eClass.split("/")[element.eClass.split("/").length - 1];
-					if(eClassID == 'GeppettoModel'){
-						geppettoModel = this.createCompositeNode(element);
-						
-						var variables = this.createCompositeNode(element.variables);
-						variables.getChildren().push(createVariables(element.variables));
-						
-						var libraries = null;
-						for(var i=0; i < element.libraries.length; i++){
-							var library = this.createCompositeNode(element.libraries[i]);
-							var types = createTypes(element.libraries[i].types);
-							library.getChildren().push(types);
-						}
-						
-						// TODO: traverse everything and populate type references in variables
-						
-						geppettoModel.getChildren().push(variables);
-						geppettoModel.getChildren().push(libraries);
-						
-						// break out of looping elements
-						break;
+				if(jsonModel.eClass == 'GeppettoModel'){
+					geppettoModel = this.createCompositeNode(element);
+					
+					var variables = this.createCompositeNode(element.variables);
+					variables.getChildren().push(createVariables(element.variables));
+					
+					var libraries = null;
+					for(var i=0; i < element.libraries.length; i++){
+						var library = this.createCompositeNode(element.libraries[i]);
+						var types = createTypes(element.libraries[i].types);
+						library.getChildren().push(types);
 					}
+					
+					// TODO: traverse everything and populate type references in variables
+					
+					geppettoModel.getChildren().push(variables);
+					geppettoModel.getChildren().push(libraries);
 				}
 				
 				return geppettoModel;

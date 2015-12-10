@@ -63,15 +63,15 @@ define(function(require)
 				var geppettoModel = null;
 				
 				if(jsonModel.eClass == 'GeppettoModel'){
-					geppettoModel = this.createCompositeNode(element);
+					geppettoModel = this.createCompositeNode(jsonModel);
 					
-					var variables = this.createCompositeNode(element.variables);
-					variables.getChildren().push(createVariables(element.variables));
+					var variables = this.createCompositeNode(jsonModel.variables);
+					variables.getChildren().push(this.createVariables(jsonModel.variables));
 					
 					var libraries = null;
-					for(var i=0; i < element.libraries.length; i++){
-						var library = this.createCompositeNode(element.libraries[i]);
-						var types = createTypes(element.libraries[i].types);
+					for(var i=0; i < jsonModel.libraries.length; i++){
+						var library = this.createCompositeNode(jsonModel.libraries[i]);
+						var types = this.createTypes(jsonModel.libraries[i].types);
 						library.getChildren().push(types);
 					}
 					

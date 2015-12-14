@@ -296,10 +296,10 @@ define(function(require) {
 				var model = JSON.parse(payload.geppetto_model_loaded);
 				
 				// build Geppetto model here (once off operation when project is loaded)
-				window.Project.GeppettoModel = GEPPETTO.ModelFactory.createGeppettoModel(model);
+				window.Model = GEPPETTO.ModelFactory.createGeppettoModel(model);
 				
 				// build instance tree here (instance tree will be populated with state info for each experiment)
-				window.Project.InstanceTree = GEPPETTO.ModelFactory.createInstanceTree(window.Project.GeppettoModel); 
+				window.InstanceTree = GEPPETTO.ModelFactory.createInstanceTree(window.Project.GeppettoModel); 
 				
 				// build scene here from Geppetto model populating visual objects in the instance tree
 				GEPPETTO.SceneController.buildScene(window.Project.InstanceTree, window.Project.GeppettoModel);

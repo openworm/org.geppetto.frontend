@@ -41,7 +41,8 @@ define(function(require)
 {
 	return function(GEPPETTO)
 	{
-		var CompositeNode = require('model/CompositeNode');
+		var GeppettoModel = require('model/GeppettoModel');
+		var Library = require('model/Library');
 		var Type = require('model/Type');
 		var Variable = require('model/Variable');
 		var CompositeType = require('model/CompositeType');
@@ -63,23 +64,22 @@ define(function(require)
 				var geppettoModel = null;
 				
 				if(jsonModel.eClass == 'GeppettoModel'){
-					geppettoModel = this.createCompositeNode(jsonModel);
+					geppettoModel = this.createModel(jsonModel);
 					
-					var variables = this.createCompositeNode(jsonModel.variables);
-					variables.getChildren().push(this.createVariables(jsonModel.variables));
+					geppettoModel.variables = this.createVariables(jsonModel.variables);
 					
 					var libraries = [];
 					for(var i=0; i < jsonModel.libraries.length; i++){
-						var library = this.createCompositeNode(jsonModel.libraries[i]);
+						var library = this.createLibrary(jsonModel.libraries[i]);
 						var types = this.createTypes(jsonModel.libraries[i].types);
-						library.getChildren().push(types);
+						library.getTypes().push(types);
 						libraries.push(library);
 					}
 					
-					// TODO: traverse everything and populate type references in variables
+					geppettoModel.libraries = libraries;
 					
-					geppettoModel.getChildren().push(variables);
-					geppettoModel.getChildren().push(libraries);
+					// TODO: traverse everything and build shortcuts to children if containment == true
+					// TODO: traverse everything and populate type references in variables
 				}
 				
 				return geppettoModel;
@@ -148,13 +148,25 @@ define(function(require)
 			},
 			
 			/** Creates a simple composite node */
-			createCompositeNode : function(node, options)
+			createModel : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.COMPOSITE_NODE};
+					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.GEPPETTO_MODEL_NODE};
 				}
 				
-				var n = new CompositeNode(options);
+				var n = new GeppettoModel(options);
+
+				return n;
+			},
+			
+			/** Creates a simple composite node */
+			createLibrary : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.LIBRARY_NODE};
+				}
+				
+				var n = new Library(options);
 
 				return n;
 			},

@@ -392,7 +392,9 @@ define(function(require) {
 			OUTPUT_CONNECTION : "TO",
 			TYPE_NODE : "Type",
 			COMPOSITE_TYPE_NODE : "CompositeType",
-			VARIABLE_NODE : "Variable"
+			VARIABLE_NODE : "Variable",
+			GEPPETTO_MODEL_NODE : "GeppettoModel",
+			LIBRARY_NODE : "Library",
 		}
 	}
 });

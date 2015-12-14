@@ -53,6 +53,8 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.wrappedObj = options.wrappedObj;
+			this.set( { "variables" : (options.variables != undefined) ? options.variables : [] });
+			this.set( { "libraries" : (options.libraries != undefined) ? options.libraries : [] });
 			this.id = options.id;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
@@ -80,7 +82,7 @@ define(function(require) {
 		 * 
 		 */
 		getVariables : function() {
-			return this.variables;
+			return this.get('variables');
 		},
 		
 		/**
@@ -92,7 +94,7 @@ define(function(require) {
 		 * 
 		 */
 		getLibraries : function() {
-			return this.libraries;
+			return this.get('libraries');
 		},
 		
 		/**
@@ -104,7 +106,7 @@ define(function(require) {
 		 * 
 		 */
 		getChildren : function() {
-			return this.variables.concat(this.libraries);
+			return this.get("variables").concat(this.get("libraries"));
 		},
 	});
 });

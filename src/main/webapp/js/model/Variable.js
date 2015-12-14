@@ -53,6 +53,8 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.wrappedObj = options.wrappedObj;
+			this.set({ "anonymousTypes" : (options.anonymousTypes != 'undefined') ? options.anonymousTypes : []});
+			this.set({ "types" : (options.types != 'undefined') ? options.types : []});
 			this.id = options.id;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
@@ -80,8 +82,7 @@ define(function(require) {
 		 * 
 		 */
 		getTypes : function() {
-			// TODO: resolve types
-			return this.types;
+			return this.get('types');
 		},
 		
 		/**
@@ -93,7 +94,7 @@ define(function(require) {
 		 * 
 		 */
 		getAnonymousTypes : function() {
-			return this.anonymousTypes;
+			return this.get('anonymousTypes');
 		},
 		
 		/**

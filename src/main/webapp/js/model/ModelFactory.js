@@ -64,28 +64,41 @@ define(function(require)
 				var geppettoModel = null;
 				
 				if(jsonModel.eClass == 'GeppettoModel'){
-					var options = { id : jsonModel.eClass, name : jsonModel.eClass, _metaType : GEPPETTO.Resources.GEPPETTO_MODEL_NODE };
+					var options = { id : jsonModel.eClass, name : jsonModel.eClass, _metaType : GEPPETTO.Resources.GEPPETTO_MODEL_NODE, wrappedObj : jsonModel};
 					geppettoModel = this.createModel(jsonModel, options);
 					
-					geppettoModel.variables = this.createVariables(jsonModel.variables);
+					geppettoModel.set({ "variables": this.createVariables(jsonModel.variables) });
 					
-					var libraries = [];
 					for(var i=0; i < jsonModel.libraries.length; i++){
 						var library = this.createLibrary(jsonModel.libraries[i]);
-						var types = this.createTypes(jsonModel.libraries[i].types);
-						library.getTypes().push(types);
-						libraries.push(library);
+						library.set({ "types" : this.createTypes(jsonModel.libraries[i].types) });
+						geppettoModel.getLibraries().push(library);
 					}
 					
-					geppettoModel.libraries = libraries;
+					// traverse everything and build shortcuts to children if composite --> containment == true
+					this.populateChildrenShortcuts(geppettoModel);
 					
-					// TODO: traverse everything and build shortcuts to children if containment == true
 					// TODO: traverse everything and populate type references in variables
 				}
 				
 				return geppettoModel;
 			},
-
+			
+			/** 
+			 * Creates variables starting from an array of variables in the json model format
+			 */
+			populateChildrenShortcuts : function(node) {
+				// check if getChildren exists, if so add shortcuts based on ids and recurse on each
+				if(typeof node.getChildren === "function"){
+					var children = node.getChildren();
+					
+					for (var i=0; i < children.length; i++){
+						node[children[i].id] = children[i];
+						this.populateChildrenShortcuts(children[i]);
+					}
+				}
+			},
+			
 			/** 
 			 * Creates variables starting from an array of variables in the json model format
 			 */
@@ -98,7 +111,7 @@ define(function(require)
 						
 						// check if it has an anonymous type
 						if(jsonVariables[i].anonymousTypes != undefined){
-							variable.anonymousTypes = this.createTypes(jsonVariables[i].anonymousTypes);
+							variable.set( { "anonymousTypes" : this.createTypes(jsonVariables[i].anonymousTypes) });
 						}
 						
 						variables.push(variable);
@@ -121,7 +134,7 @@ define(function(require)
 						// check if it's composite type or simple type
 						if(jsonTypes[i].eClass == 'CompositeType'){
 							type = this.createCompositeType(jsonTypes[i]);
-							type.variables = this.createVariables(jsonTypes[i].variables);
+							type.set({ "variables" : this.createVariables(jsonTypes[i].variables) });
 						}
 						else{
 							// TODO: deal with array types
@@ -181,6 +194,7 @@ define(function(require)
 				}
 				
 				var v = new Variable(options);
+				v.set({ "types" : node.types });
 
 				return v;
 			},

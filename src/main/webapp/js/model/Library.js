@@ -52,6 +52,7 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.wrappedObj = options.wrappedObj;
+			this.set({ "types" : (options.types != 'undefined') ? options.types : [] });
 			this.id = options.id;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
@@ -80,7 +81,7 @@ define(function(require) {
 		 * 
 		 */
 		getTypes : function() {
-			return this.types;
+			return this.get('types');
 		},
 		
 		/**
@@ -92,7 +93,7 @@ define(function(require) {
 		 * 
 		 */
 		getChildren : function() {
-			return this.types;
+			return this.get('types');
 		},
 	});
 });

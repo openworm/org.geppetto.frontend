@@ -52,6 +52,7 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.variable = options.variable;
+			this.children = (options.children != 'undefined') ? options.children : [];
 			this.id = options.id;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
@@ -61,19 +62,29 @@ define(function(require) {
 		/**
 		 * Get the type for this instance
 		 * 
-		 * @command Instance.getType()
+		 * @command Instance.getTypes()
 		 * 
 		 * @returns {List<Type>} - array of types
 		 * 
 		 */
-		getType : function() {
-			// TODO: fetch types from wrapped obj
-			// NOTE: an instance can only have one type but the variable can have multiple types - how to pick the right one?
-			return this.variable.getTypes();
+		getTypes : function() {
+			return this.get("variable").getTypes();
 		},
 		
 		/**
-		 * Get this instance children
+		 * Get the variable for this instance
+		 * 
+		 * @command Instance.getVariable()
+		 * 
+		 * @returns {Variable} - Variable object for this instance
+		 * 
+		 */
+		getVariable : function() {
+			return this.get("variable");
+		},
+		
+		/**
+		 * Get children instances
 		 * 
 		 * @command Instance.getChildren()
 		 * 
@@ -81,9 +92,7 @@ define(function(require) {
 		 * 
 		 */
 		getChildren : function() {
-			return this.children;
+			return this.get("children");
 		},
-
-		
 	});
 });

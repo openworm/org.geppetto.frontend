@@ -53,6 +53,7 @@ define(function(require) {
 		initialize : function(options) {
 			this.type = options.type;
 			this.wrappedObj = options.wrappedObj;
+			this.set({"elements" : (options.elements != 'undefined') ? options.elements : []});
 			this.id = options.id;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
@@ -68,7 +69,19 @@ define(function(require) {
 		 * 
 		 */
 		getType : function() {
-			return this.type;
+			return this.get('type');
+		},
+		
+		/**
+		 * Get elements
+		 * 
+		 * @command ArrayType.getElements()
+		 * 
+		 * @returns {List<Object>} - get elements of give type
+		 * 
+		 */
+		getElements : function() {
+			return this.get('elements');
 		},
 		
 		/**
@@ -80,7 +93,7 @@ define(function(require) {
 		 * 
 		 */
 		getSize : function() {
-			return this.elements.size;
+			return this.get('elements').size;
 		},
 	});
 });

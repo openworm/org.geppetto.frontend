@@ -51,13 +51,14 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.wrappedObj = options.wrappedObj;
+			this.set({ "variables" : (options.variables != 'undefined') ? options.variables : []});
 			this.id = options.id;
 			this.name = options.name;
 			this.instancePath = options.instancePath;
 		},
 
 		/**
-		 * Get this entity's aspects
+		 * Get variables
 		 * 
 		 * @command CompositeVariableNode.getChildren()
 		 * 
@@ -65,7 +66,7 @@ define(function(require) {
 		 * 
 		 */
 		getVariables : function() {
-			return this.variables;
+			return this.get("variables");
 		},
 		
 		/**
@@ -77,7 +78,7 @@ define(function(require) {
 		 * 
 		 */
 		getChildren : function() {
-			return this.variables;
+			return this.get("variables");
 		},
 	});
 });

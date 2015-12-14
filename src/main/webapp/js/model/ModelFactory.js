@@ -64,7 +64,8 @@ define(function(require)
 				var geppettoModel = null;
 				
 				if(jsonModel.eClass == 'GeppettoModel'){
-					geppettoModel = this.createModel(jsonModel);
+					var options = { id : jsonModel.eClass, name : jsonModel.eClass, _metaType : GEPPETTO.Resources.GEPPETTO_MODEL_NODE };
+					geppettoModel = this.createModel(jsonModel, options);
 					
 					geppettoModel.variables = this.createVariables(jsonModel.variables);
 					

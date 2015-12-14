@@ -82,5 +82,17 @@ define(function(require) {
 		getTypes : function() {
 			return this.types;
 		},
+		
+		/**
+		 * Get combined children
+		 * 
+		 * @command Library.getChildren()
+		 * 
+		 * @returns {List<Object>} - List of children
+		 * 
+		 */
+		getChildren : function() {
+			return this.types;
+		},
 	});
 });

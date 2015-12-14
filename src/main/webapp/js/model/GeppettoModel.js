@@ -94,5 +94,17 @@ define(function(require) {
 		getLibraries : function() {
 			return this.libraries;
 		},
+		
+		/**
+		 * Get combined children
+		 * 
+		 * @command GeppettoModel.getChildren()
+		 * 
+		 * @returns {List<Object>} - List of children
+		 * 
+		 */
+		getChildren : function() {
+			return this.variables.concat(this.libraries);
+		},
 	});
 });

@@ -124,6 +124,7 @@ define(function(require)
 							type.variables = this.createVariables(jsonTypes[i].variables);
 						}
 						else{
+							// TODO: deal with array types
 							type = this.createType(jsonTypes[i]);
 						}
 						

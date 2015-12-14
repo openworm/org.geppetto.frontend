@@ -67,5 +67,17 @@ define(function(require) {
 		getVariables : function() {
 			return this.variables;
 		},
+		
+		/**
+		 * Get combined children
+		 * 
+		 * @command CompositeType.getChildren()
+		 * 
+		 * @returns {List<Object>} - List of children
+		 * 
+		 */
+		getChildren : function() {
+			return this.variables;
+		},
 	});
 });

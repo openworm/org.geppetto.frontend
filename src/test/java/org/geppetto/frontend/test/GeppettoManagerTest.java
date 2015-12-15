@@ -32,8 +32,6 @@
  *******************************************************************************/
 package org.geppetto.frontend.test;
 
-import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -61,7 +59,6 @@ import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.frontend.controllers.ExperimentRunManager;
 import org.geppetto.frontend.controllers.GeppettoManager;
 import org.geppetto.model.ExperimentState;
-import org.geppetto.model.GeppettoFactory;
 import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.ModelFormat;
@@ -543,16 +540,27 @@ public class GeppettoManagerTest
 		List<String> filter = new ArrayList<String>();
 		filter.add("testVar(testType).a(StateVariable)");
 		experimentState = manager.playExperiment("1", addedExperiment, filter);
+		Assert.assertEquals("time(StateVariable)", time.getPointer().getInstancePath());
 		Assert.assertEquals("testVar(testType).c(StateVariable)", c.getPointer().getInstancePath());
 		Assert.assertEquals("testVar(testType).a(StateVariable)", a.getPointer().getInstancePath());
 		Assert.assertEquals("testVar(testType).b(StateVariable)", b.getPointer().getInstancePath());
+		
+		Assert.assertNotNull(time.getValue());
+		checkValues(time, 0);
 		Assert.assertNull(c.getValue());
 		Assert.assertNotNull(a.getValue());
+		checkValues(a, 2);
 		Assert.assertNull(b.getValue());
 
 	}
 
-	private void checkValues(VariableValue a, int column) throws NumberFormatException, IOException
+	/**
+	 * @param variable
+	 * @param columnIndexInTheDATFile
+	 * @throws NumberFormatException
+	 * @throws IOException
+	 */
+	private void checkValues(VariableValue variable, int columnIndexInTheDATFile) throws NumberFormatException, IOException
 	{
 		// read DAT into a buffered reader
 		BufferedReader input = new BufferedReader(new FileReader("./src/test/resources/test/testResults.dat"));
@@ -564,11 +572,11 @@ public class GeppettoManagerTest
 		{
 			String line = input.readLine();
 			String[] columns = line.split("\\s+");
-			storedValues.add(Double.valueOf(columns[column]));
+			storedValues.add(Double.valueOf(columns[columnIndexInTheDATFile]));
 
 		}
 
-		Assert.assertArrayEquals(storedValues.toArray(), ((TimeSeries) a.getValue()).getValue().toArray());
+		Assert.assertArrayEquals(storedValues.toArray(), ((TimeSeries) variable.getValue()).getValue().toArray());
 
 		input.close();
 	}

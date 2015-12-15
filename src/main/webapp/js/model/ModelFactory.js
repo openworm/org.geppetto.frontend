@@ -64,9 +64,7 @@ define(function(require)
 				var geppettoModel = null;
 				
 				if(jsonModel.eClass == 'GeppettoModel'){
-					var options = { id : jsonModel.eClass, name : jsonModel.eClass, _metaType : GEPPETTO.Resources.GEPPETTO_MODEL_NODE, wrappedObj : jsonModel};
-					geppettoModel = this.createModel(jsonModel, options);
-					
+					geppettoModel = this.createModel(jsonModel);
 					geppettoModel.set({ "variables": this.createVariables(jsonModel.variables) });
 					
 					for(var i=0; i < jsonModel.libraries.length; i++){
@@ -93,7 +91,7 @@ define(function(require)
 					var children = node.getChildren();
 					
 					for (var i=0; i < children.length; i++){
-						node[children[i].id] = children[i];
+						node[children[i].getId()] = children[i];
 						this.populateChildrenShortcuts(children[i]);
 					}
 				}
@@ -166,7 +164,7 @@ define(function(require)
 			createModel : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.GEPPETTO_MODEL_NODE};
+					options = {_metaType : GEPPETTO.Resources.GEPPETTO_MODEL_NODE, wrappedObj: node};
 				}
 				
 				var n = new GeppettoModel(options);
@@ -178,7 +176,7 @@ define(function(require)
 			createLibrary : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.LIBRARY_NODE};
+					options = {_metaType : GEPPETTO.Resources.LIBRARY_NODE, wrappedObj: node};
 				}
 				
 				var n = new Library(options);
@@ -190,7 +188,7 @@ define(function(require)
 			createVariable : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.VARIABLE_NODE, wrappedObj: node};
+					options = {_metaType : GEPPETTO.Resources.VARIABLE_NODE, wrappedObj: node};
 				}
 				
 				var v = new Variable(options);
@@ -203,7 +201,7 @@ define(function(require)
 			createType : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.TYPE_NODE, wrappedObj: node};
+					options = {_metaType : GEPPETTO.Resources.TYPE_NODE, wrappedObj: node};
 				}
 				
 				var t = new Type(options);
@@ -215,7 +213,7 @@ define(function(require)
 			createCompositeType : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = { id : node.id, name : node.name, _metaType : GEPPETTO.Resources.COMPOSITE_TYPE_NODE, wrappedObj: node};
+					options = {_metaType : GEPPETTO.Resources.COMPOSITE_TYPE_NODE, wrappedObj: node};
 				}
 				
 				var t = new CompositeType(options);

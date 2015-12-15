@@ -38,61 +38,100 @@
  * @module model/Instance
  * @author Giovanni Idili
  */
-define(function(require) {
-	var Node = require('model/Node');
 
-	return Node.Model.extend({
-		variable : null,
-		children: [],
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.variable = options.variable;
-			this.children = (options.children != 'undefined') ? options.children : [];
-			this.id = options.id;
-			this.name = options.name;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-		},
-		
-		/**
-		 * Get the type for this instance
-		 * 
-		 * @command Instance.getTypes()
-		 * 
-		 * @returns {List<Type>} - array of types
-		 * 
-		 */
-		getTypes : function() {
-			return this.get("variable").getTypes();
-		},
-		
-		/**
-		 * Get the variable for this instance
-		 * 
-		 * @command Instance.getVariable()
-		 * 
-		 * @returns {Variable} - Variable object for this instance
-		 * 
-		 */
-		getVariable : function() {
-			return this.get("variable");
-		},
-		
-		/**
-		 * Get children instances
-		 * 
-		 * @command Instance.getChildren()
-		 * 
-		 * @returns {List<Instance>} - List of instances
-		 * 
-		 */
-		getChildren : function() {
-			return this.get("children");
-		},
-	});
+define([ 'jquery', 'underscore', 'backbone'], function(require) {
+	return {
+		Model : Backbone.Model.extend({
+			id : "",
+			name : "",
+			_metaType : "",
+			variable : null,
+			children: [],
+			
+			/**
+			 * Initializes this node with passed attributes
+			 * 
+			 * @param {Object} options - Object with options attributes to initialize node
+			 */
+			initialize : function(options) {
+				this.set({ "variable" : options.variable });
+				this.set({ "children" : (options.children != 'undefined') ? options.children : [] });
+				this.set({ "id" : options.id });
+				this.set({ "name" : options.name });
+				this.set({ "_metaType" : options._metaType });
+			},
+			
+			/**
+			 * Get id 
+			 * 
+			 * @command Instance.getId()
+			 * 
+			 * @returns {String} - Id
+			 * 
+			 */
+			getId : function() {
+				return this.get("id");
+			},
+			
+			/**
+			 * Get name 
+			 * 
+			 * @command Instance.getName()
+			 * 
+			 * @returns {String} - Name
+			 * 
+			 */
+			getName : function() {
+				return this.get("name");
+			},
+			
+			/**
+			 * Get meta type
+			 * 
+			 * @command Instance.getMetaType()
+			 * 
+			 * @returns {String} - meta type
+			 * 
+			 */
+			getMetaType : function() {
+				return this.get("_metaType");
+			},
+			
+			/**
+			 * Get the type for this instance
+			 * 
+			 * @command Instance.getTypes()
+			 * 
+			 * @returns {List<Type>} - array of types
+			 * 
+			 */
+			getTypes : function() {
+				return this.get("variable").getTypes();
+			},
+			
+			/**
+			 * Get the variable for this instance
+			 * 
+			 * @command Instance.getVariable()
+			 * 
+			 * @returns {Variable} - Variable object for this instance
+			 * 
+			 */
+			getVariable : function() {
+				return this.get("variable");
+			},
+			
+			/**
+			 * Get children instances
+			 * 
+			 * @command Instance.getChildren()
+			 * 
+			 * @returns {List<Instance>} - List of instances
+			 * 
+			 */
+			getChildren : function() {
+				return this.get("children");
+			},
+		})
+	};
 });

@@ -39,10 +39,9 @@
  * @author Giovanni Idili
  */
 define(function(require) {
-	var Node = require('model/Node');
+	var ObjectWrapper = require('model/ObjectWrapper');
 
-	return Node.Model.extend({
-		wrappedObj : null,
+	return ObjectWrapper.Model.extend({
 		variables: [],
 		libraries: [],
 		
@@ -52,25 +51,10 @@ define(function(require) {
 		 * @param {Object} options - Object with options attributes to initialize node
 		 */
 		initialize : function(options) {
-			this.wrappedObj = options.wrappedObj;
-			this.set( { "variables" : (options.variables != undefined) ? options.variables : [] });
-			this.set( { "libraries" : (options.libraries != undefined) ? options.libraries : [] });
-			this.id = options.id;
-			this.name = options.name;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-		},
-		
-		/**
-		 * Get the wrapped object
-		 * 
-		 * @command GeppettoModel.getWrappedObject()
-		 * 
-		 * @returns {Object} - Wrapped object
-		 * 
-		 */
-		getWrappedObject : function() {
-			return this.wrappedObj;
+			this.set({ "variables" : (options.variables != undefined) ? options.variables : [] });
+			this.set({ "libraries" : (options.libraries != undefined) ? options.libraries : [] });
+			this.set({ "wrappedObj" : options.wrappedObj });
+			this.set({ "_metaType" : options._metaType });
 		},
 		
 		/**

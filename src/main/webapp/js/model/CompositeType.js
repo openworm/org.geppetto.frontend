@@ -50,11 +50,9 @@ define(function(require) {
 		 * @param {Object} options - Object with options attributes to initialize node
 		 */
 		initialize : function(options) {
-			this.wrappedObj = options.wrappedObj;
 			this.set({ "variables" : (options.variables != 'undefined') ? options.variables : []});
-			this.id = options.id;
-			this.name = options.name;
-			this.instancePath = options.instancePath;
+			this.set({ "wrappedObj" : options.wrappedObj });
+			this.set({ "_metaType" : options._metaType });
 		},
 
 		/**

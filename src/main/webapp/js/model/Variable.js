@@ -39,10 +39,9 @@
  * @author Giovanni Idili
  */
 define(function(require) {
-	var Node = require('model/Node');
+	var ObjectWrapper = require('model/ObjectWrapper');
 
-	return Node.Model.extend({
-		wrappedObj : null,
+	return ObjectWrapper.Model.extend({
 		anonymousTypes : [],
 		types : [],
 		
@@ -52,25 +51,10 @@ define(function(require) {
 		 * @param {Object} options - Object with options attributes to initialize node
 		 */
 		initialize : function(options) {
-			this.wrappedObj = options.wrappedObj;
 			this.set({ "anonymousTypes" : (options.anonymousTypes != 'undefined') ? options.anonymousTypes : []});
 			this.set({ "types" : (options.types != 'undefined') ? options.types : []});
-			this.id = options.id;
-			this.name = options.name;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-		},
-		
-		/**
-		 * Get the wrapped object
-		 * 
-		 * @command Type.getWrappedObject()
-		 * 
-		 * @returns {Object} - Wrapped object
-		 * 
-		 */
-		getWrappedObject : function() {
-			return this.wrappedObj;
+			this.set({ "wrappedObj" : options.wrappedObj });
+			this.set({ "_metaType" : options._metaType });
 		},
 		
 		/**
@@ -107,7 +91,7 @@ define(function(require) {
 		 */
 		getInitialValues : function() {
 			// TODO: fetch initial values
-			return this.wrappedObj.initialValues;
+			return this.getWrappedObj().initialValues;
 		},
 		
 		/**
@@ -120,7 +104,7 @@ define(function(require) {
 		 */
 		isStatic : function() {
 			// TODO: fetch static from wrapped obj
-			return this.wrappedObj.isStatic;
+			return this.getWrappedObj().isStatic;
 		},
 		
 		/**
@@ -133,7 +117,7 @@ define(function(require) {
 		 */
 		getPosition : function() {
 			// TODO: fetch static from wrapped obj
-			return this.wrappedObj.position;
+			return this.getWrappedObj().position;
 		},
 	});
 });

@@ -39,10 +39,9 @@
  * @author Giovanni Idili
  */
 define(function(require) {
-	var Node = require('model/Node');
+	var ObjectWrapper = require('model/ObjectWrapper');
 
-	return Node.Model.extend({
-		wrappedObj : null,
+	return ObjectWrapper.Model.extend({
 		
 		/**
 		 * Initializes this node with passed attributes
@@ -50,23 +49,8 @@ define(function(require) {
 		 * @param {Object} options - Object with options attributes to initialize node
 		 */
 		initialize : function(options) {
-			this.wrappedObj = options.wrappedObj;
-			this.id = options.id;
-			this.name = options.name;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-		},
-		
-		/**
-		 * Get the wrapped object
-		 * 
-		 * @command Type.getWrappedObject()
-		 * 
-		 * @returns {Object} - Wrapped object
-		 * 
-		 */
-		getWrappedObject : function() {
-			return this.wrappedObj;
+			this.set({ "wrappedObj" : options.wrappedObj });
+			this.set({ "_metaType" : options._metaType });
 		},
 		
 		/**
@@ -79,7 +63,7 @@ define(function(require) {
 		 */
 		getDefaultValue : function() {
 			// TODO: fetch from the right place
-			return this.wrappedObj.getDefaultValue();
+			return this.get('wrappedObj').defaultValue;
 		},
 		
 		/**
@@ -92,7 +76,7 @@ define(function(require) {
 		 */
 		getSuperType : function() {
 			// TODO: fetch from the right place
-			return this.wrappedObj.superType;
+			return this.get('wrappedObj').superType;
 		},
 		
 		/**
@@ -105,7 +89,7 @@ define(function(require) {
 		 */
 		isAbstract : function() {
 			// TODO: fetch from the right place
-			return this.wrappedObj.abstract;
+			return this.get('wrappedObj').abstract;
 		},
 		
 		/**
@@ -118,7 +102,7 @@ define(function(require) {
 		 */
 		getVisualType : function() {
 			// TODO: fetch from the right place
-			return this.wrappedObj.visualType;
+			return this.get('wrappedObj').visualType;
 		},
 
 		
@@ -132,7 +116,7 @@ define(function(require) {
 		 */
 		getReferencedVariables : function() {
 			// TODO: fetch from the right place
-			return this.wrappedObj.referencedVariables;
+			return this.get('wrappedObj').referencedVariables;
 		},
 	});
 });

@@ -17,7 +17,7 @@
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * furnished t do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -32,52 +32,60 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a composite variable node, used for simulation
- * tree state variables.
+ * The parent node from where all other nodes extend
  * 
- * @module model/Library
+ * @module model/ObjectWrapper
  * @author Giovanni Idili
  */
-define(function(require) {
-	var ObjectWrapper = require('model/ObjectWrapper');
 
-	return ObjectWrapper.Model.extend({
-		types: [],
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.set({ "types" : (options.types != 'undefined') ? options.types : [] });
-			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
-		},
-		
-		
-		/**
-		 * Get types for this library
-		 * 
-		 * @command Library.getTypes()
-		 * 
-		 * @returns {List<Type>} - list of Type objects
-		 * 
-		 */
-		getTypes : function() {
-			return this.get('types');
-		},
-		
-		/**
-		 * Get combined children
-		 * 
-		 * @command Library.getChildren()
-		 * 
-		 * @returns {List<Object>} - List of children
-		 * 
-		 */
-		getChildren : function() {
-			return this.get('types');
-		},
-	});
+define([ 'jquery', 'underscore', 'backbone' ], function(require) {
+	return {
+		Model : Backbone.Model.extend({
+			_metaType : "",
+			wrappedObj : null,
+
+			/**
+			 * Gets the name of the node
+			 * 
+			 * @command Node.getName()
+			 * @returns {String} Name of the node
+			 * 
+			 */
+			getName : function() {
+				return this.get('wrappedObj').name;
+			},
+
+			/**
+			 * Get the id associated with node
+			 * 
+			 * @command Node.getId()
+			 * @returns {String} ID of node
+			 */
+			getId : function() {
+				return this.get('wrappedObj').id;
+			},
+			
+			/**
+			 * Get the wrapped obj
+			 * 
+			 * @command Node.getWrappedObj()
+			 * @returns {Object} - Wrapped object
+			 */
+			getWrappedObj : function(){
+				return this.get('wrappedObj');
+			},
+			
+			/**
+			 * Get meta type
+			 * 
+			 * @command Instance.getMetaType()
+			 * 
+			 * @returns {String} - meta type
+			 * 
+			 */
+			getMetaType : function() {
+				return this.get("_metaType");
+			},
+		})
+	};
 });

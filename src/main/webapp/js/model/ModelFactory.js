@@ -98,6 +98,52 @@ define(function(require)
 			},
 			
 			/** 
+			 * Populate type references
+			 */
+			populateTypeReferences : function(node) {
+				
+				// check if variable, if so populate type references
+				if(node.getMetaType() == 'Variable'){
+					var types = node.getTypes();
+					var referencedTypes = [];
+					
+					for (var i=0; i < types.length; i++){
+						// get reference string - looks like this --> '//@libraries.1/@types.5';
+						var refStr = types[i].$ref;
+						
+						// parse data
+						var typePointer = { libraries : undefined, types: undefined};
+						var raw = refStr.replace(/\//g, '').split('@');
+						for(var i=0; i<raw.length; i++){
+						  if(raw[i].indexOf('libraries') > -1){
+						  	typePointer.libraries = parseInt(raw[i].split('.')[1]);
+						  } else if(raw[i].indexOf('types') > -1){
+						  	typePointer.types = parseInt(raw[i].split('.')[1]);
+						  }
+						}
+						
+						// TODO: go grab correct type from Geppetto Model
+						var typeObj = undefined;
+						
+						// add to list
+						referencedTypes.push(typeObj);
+						
+						// set types to actual object references using backbone setter
+						node.set({ "types" : referencedTypes });
+					}
+				}
+				
+				// check if getChildren exists, if so recurse
+				if(typeof node.getChildren === "function"){
+					var children = node.getChildren();
+					
+					for(var i = 0; i < children.length; i++){ 
+						this.populateTypeReferences(children[i]);
+					}
+				}
+			},
+			
+			/** 
 			 * Creates variables starting from an array of variables in the json model format
 			 */
 			createVariables : function(jsonVariables){

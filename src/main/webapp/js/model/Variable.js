@@ -119,5 +119,18 @@ define(function(require) {
 			// TODO: fetch static from wrapped obj
 			return this.getWrappedObj().position;
 		},
+		
+		/**
+		 * Get combined children
+		 * 
+		 * @command Variable.getChildren()
+		 * 
+		 * @returns {List<Object>} - List of children
+		 * 
+		 */
+		getChildren : function() {
+			// only anonymousTypes as containment == true in the model (they are not references)
+			return this.get('anonymousTypes');
+		},
 	});
 });

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<gep:GeppettoModel
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:gep="https://raw.githubusercontent.com/openworm/org.geppetto.model/development/src/main/resources/geppettoModel.ecore"
+    xmlns:gep_1="https://raw.githubusercontent.com/openworm/org.geppetto.model/development/src/main/resources/geppettoModel.ecore#//types">
+  <variables
+      id="testVar"
+      name="TestVariable"
+      types="//@libraries.0/@types.0"/>
+  <libraries
+      id="testLibrary"
+      name="testLibrary">
+    <types xsi:type="gep_1:ImportType"
+        id="bask"
+        url="/projects/AuditoryCortex/bask.cell.nml"
+        modelInterpreterId="testModelInterpreter"/>
+  </libraries>
+</gep:GeppettoModel>

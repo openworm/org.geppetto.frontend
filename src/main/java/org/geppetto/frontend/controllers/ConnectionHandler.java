@@ -373,7 +373,7 @@ public class ConnectionHandler
 		{
 			try
 			{
-				ExperimentState experimentState = geppettoManager.playExperiment(requestID, experiment);
+				ExperimentState experimentState = geppettoManager.playExperiment(requestID, experiment,null);
 				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, GeppettoSerializer.serializeToJSON(experimentState));
 			}
 			catch(GeppettoExecutionException e)

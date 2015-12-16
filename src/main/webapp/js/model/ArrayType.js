@@ -41,7 +41,7 @@
 define(function(require) {
 	var Type = require('model/Type');
 
-	return Type.Model.extend({
+	return Type.extend({
 		type: null,
 		size: null, 
 		

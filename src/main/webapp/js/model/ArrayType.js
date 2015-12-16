@@ -43,7 +43,7 @@ define(function(require) {
 
 	return Type.Model.extend({
 		type: null,
-		elements: [], 
+		size: null, 
 		
 		/**
 		 * Initializes this node with passed attributes
@@ -52,7 +52,7 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.set({ "type" : options.type });
-			this.set({"elements" : (options.elements != undefined) ? options.elements : []});
+			this.set({ "size" : options.elements });
 			this.set({ "wrappedObj" : options.wrappedObj });
 			this.set({ "_metaType" : options._metaType });
 		},
@@ -70,18 +70,6 @@ define(function(require) {
 		},
 		
 		/**
-		 * Get elements
-		 * 
-		 * @command ArrayType.getElements()
-		 * 
-		 * @returns {List<Object>} - get elements of give type
-		 * 
-		 */
-		getElements : function() {
-			return this.get('elements');
-		},
-		
-		/**
 		 * Get array size
 		 * 
 		 * @command ArrayType.getSize()
@@ -90,7 +78,7 @@ define(function(require) {
 		 * 
 		 */
 		getSize : function() {
-			return this.get('elements').size;
+			return this.get('size');
 		},
 	});
 });

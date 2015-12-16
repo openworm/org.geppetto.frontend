@@ -42,6 +42,7 @@ define(function(require) {
 	var ObjectWrapper = require('model/ObjectWrapper');
 
 	return ObjectWrapper.Model.extend({
+		visualType : null,
 		
 		/**
 		 * Initializes this node with passed attributes
@@ -51,6 +52,7 @@ define(function(require) {
 		initialize : function(options) {
 			this.set({ "wrappedObj" : options.wrappedObj });
 			this.set({ "_metaType" : options._metaType });
+			this.set({ "visualType" : options.visualType });
 		},
 		
 		/**
@@ -101,8 +103,7 @@ define(function(require) {
 		 * 
 		 */
 		getVisualType : function() {
-			// TODO: fetch from the right place
-			return this.get('wrappedObj').visualType;
+			return this.get('visualType');
 		},
 
 		

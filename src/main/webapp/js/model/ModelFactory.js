@@ -46,6 +46,7 @@ define(function(require)
 		var Type = require('model/Type');
 		var Variable = require('model/Variable');
 		var CompositeType = require('model/CompositeType');
+		var ArrayType = require('model/ArrayType');
 		
 		/**
 		 * @class GEPPETTO.ModelFactory
@@ -106,7 +107,7 @@ define(function(require)
 			populateTypeReferences : function(node, geppettoModel) {
 				
 				// check if variable, if so populate type references
-				if(node.getMetaType() == 'Variable'){
+				if(node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
 					var types = node.getTypes();
 					var referencedTypes = [];
 					
@@ -116,15 +117,7 @@ define(function(require)
 							var refStr = types[i].$ref;
 							
 							// parse data
-							var typePointer = { libraries : undefined, types: undefined};
-							var raw = refStr.replace(/\//g, '').split('@');
-							for(var i=0; i<raw.length; i++){
-							  if(raw[i].indexOf('libraries') > -1){
-							  	typePointer.libraries = parseInt(raw[i].split('.')[1]);
-							  } else if(raw[i].indexOf('types') > -1){
-							  	typePointer.types = parseInt(raw[i].split('.')[1]);
-							  }
-							}
+							var typePointer = this.parseTypePointerString(refStr);
 							
 							// go grab correct type from Geppetto Model
 							var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes()[typePointer.types];
@@ -135,6 +128,18 @@ define(function(require)
 							// set types to actual object references using backbone setter
 							node.set({ "types" : referencedTypes });
 						}
+					}
+				} else if(node.getMetaType() == GEPPETTO.Resources.TYPE_NODE || node.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+					// take visual type string - looks like this --> '//@libraries.1/@types.5'
+					var vizTypeRefStr = node.getVisualType();
+					
+					if(vizTypeRefStr != undefined){
+						// parse data into typePointer
+						var typePointer =  this.parseTypePointerString(vizTypeRefStr);
+						
+						// replace with reference to actual type
+						var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes()[typePointer.types];
+						node.set({ "visualType" : typeObj})
 					}
 				}
 				
@@ -148,6 +153,24 @@ define(function(require)
 						}
 					}
 				}
+			},
+			
+			/**
+			 * Helper function to parse type pointers to objects
+			 */
+			parseTypePointerString : function(refStr){
+				var typePointer = { libraries : undefined, types: undefined};
+				
+				var raw = refStr.replace(/\//g, '').split('@');
+				for(var i=0; i<raw.length; i++){
+				  if(raw[i].indexOf('libraries') > -1){
+				  	typePointer.libraries = parseInt(raw[i].split('.')[1]);
+				  } else if(raw[i].indexOf('types') > -1){
+				  	typePointer.types = parseInt(raw[i].split('.')[1]);
+				  }
+				}
+				
+				return typePointer;
 			},
 			
 			/** 
@@ -182,13 +205,13 @@ define(function(require)
 					for(var i=0; i < jsonTypes.length; i++){
 						var type = null;
 						
-						// check if it's composite type or simple type
+						// check if it's composite type, array type or simple type
 						if(jsonTypes[i].eClass == 'CompositeType'){
 							type = this.createCompositeType(jsonTypes[i]);
-							type.set({ "variables" : this.createVariables(jsonTypes[i].variables) });
 						}
-						else{
-							// TODO: deal with array types
+						else if(jsonTypes[i].eClass == 'ArrayType'){
+							type = this.createArrayType(jsonTypes[i]);
+						} else {
 							type = this.createType(jsonTypes[i]);
 						}
 						
@@ -208,7 +231,7 @@ define(function(require)
 			{
 				var instanceTree = null;
 				
-				// TODO: implement - GI
+				// TODO: build instance tree exploded to any leaves that haev a visual type 
 				
 				return instanceTree;
 			},
@@ -258,6 +281,7 @@ define(function(require)
 				}
 				
 				var t = new Type(options);
+				t.set({ "visualType" : node.visualType });
 
 				return t;
 			},
@@ -270,6 +294,23 @@ define(function(require)
 				}
 				
 				var t = new CompositeType(options);
+				t.set({ "visualType" : node.visualType });
+				t.set({ "variables" : this.createVariables(node.variables) });
+
+				return t;
+			},
+			
+			/** Creates a composite type node */
+			createArrayType : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = {_metaType : GEPPETTO.Resources.ARRAY_TYPE_NODE, wrappedObj: node};
+				}
+				
+				var t = new ArrayType(options);
+				t.set({ "visualType" : node.visualType });
+				t.set({ "size" :  node.size });
+				t.set({ "type" :  node.arrayType });
 
 				return t;
 			},

@@ -131,9 +131,11 @@ define(function(require)
 					}
 				} else if(node.getMetaType() == GEPPETTO.Resources.TYPE_NODE || node.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
 					// take visual type string - looks like this --> '//@libraries.1/@types.5'
-					var vizTypeRefStr = node.getVisualType();
+					var vizType = node.getVisualType();
 					
-					if(vizTypeRefStr != undefined){
+					if(vizType != undefined){
+						var vizTypeRefStr = vizType.$ref;
+						
 						// parse data into typePointer
 						var typePointer =  this.parseTypePointerString(vizTypeRefStr);
 						
@@ -141,9 +143,23 @@ define(function(require)
 						var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes()[typePointer.types];
 						node.set({ "visualType" : typeObj})
 					}
+				} else if(node.getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
+					// take array type string - looks like this --> '//@libraries.1/@types.5'
+					var arrayType = node.getType();
+					
+					if(arrayType != undefined){
+						var refStr = arrayType.$ref;
+						
+						// parse data into typePointer
+						var typePointer =  this.parseTypePointerString(refStr);
+						
+						// replace with reference to actual type
+						var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes()[typePointer.types];
+						node.set({ "type" : typeObj})
+					}
 				}
 				
-				// check if getChildren exists, if so recurse
+				// check if getChildren exists, if so recurse over children
 				if(typeof node.getChildren === "function"){
 					var children = node.getChildren();
 					
@@ -308,7 +324,6 @@ define(function(require)
 				}
 				
 				var t = new ArrayType(options);
-				t.set({ "visualType" : node.visualType });
 				t.set({ "size" :  node.size });
 				t.set({ "type" :  node.arrayType });
 

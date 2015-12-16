@@ -57,6 +57,7 @@ import org.geppetto.frontend.messaging.DefaultMessageSenderFactory;
 import org.geppetto.frontend.messaging.MessageSender;
 import org.geppetto.frontend.messaging.MessageSenderEvent;
 import org.geppetto.frontend.messaging.MessageSenderListener;
+import org.geppetto.simulation.manager.ExperimentRunManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;

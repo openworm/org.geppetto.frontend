@@ -57,12 +57,12 @@
 		<property name="isSimulationLoaded" value="false" />
 	</bean>
 	
-
-	
 	<bean id="geppettoManager" scope="session"
-		class="org.geppetto.frontend.controllers.GeppettoManager">
+		class="org.geppetto.simulation.GeppettoManager">
 		<aop:scoped-proxy />
 	</bean>
+	
+
 	
 	<!--
 	 Configuration for the default message sender. queuingEnabled: If true 

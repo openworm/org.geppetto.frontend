@@ -58,7 +58,7 @@
 	</bean>
 	
 	<bean id="geppettoManager" scope="session"
-		class="org.geppetto.simulation.GeppettoManager">
+		class="org.geppetto.simulation.manager.GeppettoManager">
 		<aop:scoped-proxy />
 	</bean>
 	

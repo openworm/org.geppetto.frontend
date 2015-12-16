@@ -76,7 +76,8 @@ define(function(require)
 					// traverse everything and build shortcuts to children if composite --> containment == true
 					this.populateChildrenShortcuts(geppettoModel);
 					
-					// TODO: traverse everything and populate type references in variables
+					// traverse everything and populate type references in variables
+					this.populateTypeReferences(geppettoModel, geppettoModel);
 				}
 				
 				return geppettoModel;
@@ -90,9 +91,11 @@ define(function(require)
 				if(typeof node.getChildren === "function"){
 					var children = node.getChildren();
 					
-					for (var i=0; i < children.length; i++){
-						node[children[i].getId()] = children[i];
-						this.populateChildrenShortcuts(children[i]);
+					if(children != undefined){
+						for (var i=0; i < children.length; i++){
+							node[children[i].getId()] = children[i];
+							this.populateChildrenShortcuts(children[i]);
+						}
 					}
 				}
 			},
@@ -107,29 +110,31 @@ define(function(require)
 					var types = node.getTypes();
 					var referencedTypes = [];
 					
-					for (var i=0; i < types.length; i++){
-						// get reference string - looks like this --> '//@libraries.1/@types.5';
-						var refStr = types[i].$ref;
-						
-						// parse data
-						var typePointer = { libraries : undefined, types: undefined};
-						var raw = refStr.replace(/\//g, '').split('@');
-						for(var i=0; i<raw.length; i++){
-						  if(raw[i].indexOf('libraries') > -1){
-						  	typePointer.libraries = parseInt(raw[i].split('.')[1]);
-						  } else if(raw[i].indexOf('types') > -1){
-						  	typePointer.types = parseInt(raw[i].split('.')[1]);
-						  }
+					if(types != undefined){
+						for (var i=0; i < types.length; i++){
+							// get reference string - looks like this --> '//@libraries.1/@types.5';
+							var refStr = types[i].$ref;
+							
+							// parse data
+							var typePointer = { libraries : undefined, types: undefined};
+							var raw = refStr.replace(/\//g, '').split('@');
+							for(var i=0; i<raw.length; i++){
+							  if(raw[i].indexOf('libraries') > -1){
+							  	typePointer.libraries = parseInt(raw[i].split('.')[1]);
+							  } else if(raw[i].indexOf('types') > -1){
+							  	typePointer.types = parseInt(raw[i].split('.')[1]);
+							  }
+							}
+							
+							// go grab correct type from Geppetto Model
+							var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes()[typePointer.types];
+							
+							// add to list
+							referencedTypes.push(typeObj);
+							
+							// set types to actual object references using backbone setter
+							node.set({ "types" : referencedTypes });
 						}
-						
-						// go grab correct type from Geppetto Model
-						var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes(typePointer.types);
-						
-						// add to list
-						referencedTypes.push(typeObj);
-						
-						// set types to actual object references using backbone setter
-						node.set({ "types" : referencedTypes });
 					}
 				}
 				
@@ -137,8 +142,10 @@ define(function(require)
 				if(typeof node.getChildren === "function"){
 					var children = node.getChildren();
 					
-					for(var i = 0; i < children.length; i++){ 
-						this.populateTypeReferences(children[i], geppettoModel);
+					if(children != undefined){
+						for(var i = 0; i < children.length; i++){ 
+							this.populateTypeReferences(children[i], geppettoModel);
+						}
 					}
 				}
 			},

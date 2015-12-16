@@ -100,7 +100,7 @@ define(function(require)
 			/** 
 			 * Populate type references
 			 */
-			populateTypeReferences : function(node) {
+			populateTypeReferences : function(node, geppettoModel) {
 				
 				// check if variable, if so populate type references
 				if(node.getMetaType() == 'Variable'){
@@ -122,8 +122,8 @@ define(function(require)
 						  }
 						}
 						
-						// TODO: go grab correct type from Geppetto Model
-						var typeObj = undefined;
+						// go grab correct type from Geppetto Model
+						var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes(typePointer.types);
 						
 						// add to list
 						referencedTypes.push(typeObj);
@@ -138,7 +138,7 @@ define(function(require)
 					var children = node.getChildren();
 					
 					for(var i = 0; i < children.length; i++){ 
-						this.populateTypeReferences(children[i]);
+						this.populateTypeReferences(children[i], geppettoModel);
 					}
 				}
 			},

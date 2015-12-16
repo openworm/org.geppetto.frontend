@@ -1,0 +1,98 @@
+{
+    "id": 5,
+    "name": "Primary Auditory Cortex Network",
+    "activeExperimentId": 1,
+    "experiments": [
+	    {
+		  	id:1,      
+		  	name: "Auditory Cortex NEURON simulation",
+		  	status: "COMPLETED",
+		  	description:"Network model of primary auditory cortex in rodents. David Beeman, University of Colorado, Boulder. Model developed in NeuroML. Simulation executed in NEURON. For more information see http://opensourcebrain.org/projects/acnet2.",
+            "lastModified":"1436102517799",
+		  	script: "/test/script.js",
+		  	aspectConfigurations: [
+		    {
+		  		id:1,
+		  		aspect: {
+		            id: 1,
+		            instancePath: "testVar(testType)"
+		        },
+		        simulatorConfiguration: {
+		          id: 1,
+		          simulatorId: "neuronSimulator",
+		          conversionServiceId: "lemsConversion",
+		          timestep: 0.00001,
+		          length: 0.3,
+		          parameters: {target: "network_ACnet2"}
+		        },
+		        watchedVariables:[
+			        {
+			            id: 1,
+			            instancePath: "testVar(testType).a(StateVariable)"
+			        },
+					{
+			            id: 1,
+			            instancePath: "testVar(testType).b(StateVariable)"
+			        }
+		        ],
+		        modelParameters:[
+			        {
+			        	id: 1,
+			        	variable:
+				        {
+				            id: 1,
+				            instancePath: "testVar(testType).p1(Parameter)"
+				        },
+				        value: 0.2
+			        },
+					{
+			        	id: 2,
+			        	variable:
+				        {
+				            id: 2,
+				            instancePath: "testVar(testType).p2(Parameter)"
+				        },
+				        value: 0.4
+			        }
+		        ]
+		  	}
+		  	],
+		  	simulationResults: [
+		  	{
+		  		id:1,
+		  		format: "GEPPETTO_RECORDING",
+		  		aspect: {
+		            id: 1,
+		            entityInstancePath: "acnet2.baskets_12_0",
+		            aspect: "electrical",
+		            localInstancePath: ""
+		        },
+		        result: {
+		          id: 1,
+		          url: "/test/results.h5",
+		          type: "RECORDING"
+		        }
+		  	},
+		  	{
+		  		id:2,
+		  		format: "RAW",
+		  		aspect: {
+		            id: 1,
+		            entityInstancePath: "acnet2.baskets_12_0",
+		            aspect: "electrical",
+		            localInstancePath: ""
+		        },
+		        result: {
+		          id: 2,
+		          url: "/test/acnet2.electrical-rawRecording.zip",
+		          type: "RECORDING"
+		        }
+		  	}]
+	}
+    ],
+    "geppettoModel": {
+        "id": 9,
+        "url": "/test/GeppettoModel.xmi",
+        "type": "GEPPETTO_PROJECT"
+    }
+}

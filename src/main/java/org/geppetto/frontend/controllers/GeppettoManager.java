@@ -64,7 +64,6 @@ import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.model.ExperimentState;
 import org.geppetto.model.ModelFormat;
-import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoModelTraversal;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.simulation.RuntimeProject;
@@ -226,11 +225,13 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#playExperiment(java.lang.String, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override
-	public ExperimentState playExperiment(String requestId, IExperiment experiment) throws GeppettoExecutionException
+	public ExperimentState playExperiment(String requestId, IExperiment experiment, List<String> filter) throws GeppettoExecutionException
 	{
 		if(experiment.getStatus().equals(ExperimentStatus.COMPLETED))
 		{
-			return getRuntimeProject(experiment.getParentProject()).getRuntimeExperiment(experiment).getRecordedVariables();
+
+			return getRuntimeProject(experiment.getParentProject()).getRuntimeExperiment(experiment).getRecordedVariables(filter);
+
 		}
 		else
 		{
@@ -311,15 +312,7 @@ public class GeppettoManager implements IGeppettoManager
 				throw new GeppettoExecutionException("Persist failed: Project '" + project.getName() + "' is already persisted");
 			}
 		}
-		catch(MalformedURLException e)
-		{
-			throw new GeppettoExecutionException(e);
-		}
-		catch(IOException e)
-		{
-			throw new GeppettoExecutionException(e);
-		}
-		catch(URISyntaxException e)
+		catch(IOException | URISyntaxException e)
 		{
 			throw new GeppettoExecutionException(e);
 		}
@@ -334,7 +327,14 @@ public class GeppettoManager implements IGeppettoManager
 	public IExperiment newExperiment(String requestId, IGeppettoProject project) throws GeppettoExecutionException
 	{
 		IExperiment experiment = DataManagerHelper.getDataManager().newExperiment("New Experiment " + (project.getExperiments().size() + 1), "", project);
-		getRuntimeProject(project).populateNewExperiment(experiment);
+		try
+		{
+			getRuntimeProject(project).populateNewExperiment(experiment);
+		}
+		catch(GeppettoVisitingException e)
+		{
+			throw new GeppettoExecutionException(e);
+		}
 		return experiment;
 	}
 
@@ -445,18 +445,11 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IRuntimeTreeManager#setWatchedVariables(java.util.List, org.geppetto.core.data.model.IExperiment, org.geppetto.core.data.model.IGeppettoProject)
 	 */
 	@Override
-	public void setWatchedVariables(List<String> watchedVariables, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public ExperimentState setWatchedVariables(List<String> watchedVariables, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		try
-		{
-			getRuntimeProject(project).getRuntimeExperiment(experiment).setWatchedVariables(watchedVariables);
-			DataManagerHelper.getDataManager().saveEntity(project);
-		}
-		catch(GeppettoModelException e)
-		{
-			throw new GeppettoExecutionException(e);
-		}
-
+		ExperimentState experimentState = getRuntimeProject(project).getRuntimeExperiment(experiment).setWatchedVariables(watchedVariables);
+		DataManagerHelper.getDataManager().saveEntity(project);
+		return experimentState;
 	}
 
 	/*
@@ -465,9 +458,9 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IDownloadManager#downloadModel(java.lang.String, org.geppetto.core.services.IModelFormat)
 	 */
 	@Override
-	public File downloadModel(String aspectInstancePath, ModelFormat format, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
+	public File downloadModel(String instancePath, ModelFormat format, IExperiment experiment, IGeppettoProject project) throws GeppettoExecutionException
 	{
-		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadModel(aspectInstancePath, format);
+		return getRuntimeProject(project).getRuntimeExperiment(experiment).downloadModel(instancePath, format);
 	}
 
 	/*
@@ -512,6 +505,11 @@ public class GeppettoManager implements IGeppettoManager
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.geppetto.core.manager.IGeppettoManager#getUser()
+	 */
 	public IUser getUser()
 	{
 		return user;
@@ -540,10 +538,11 @@ public class GeppettoManager implements IGeppettoManager
 	 * @see org.geppetto.core.manager.IExperimentManager#cancelExperimentRun(java.lang.String, org.geppetto.core.data.model.IExperiment)
 	 */
 	@Override
-	public void cancelExperimentRun(String requestId, IExperiment experiment)
+	public void cancelExperimentRun(String requestId, IExperiment experiment) throws GeppettoExecutionException
 	{
-		// TODO Auto-generated method stub
-
+		ExperimentRunManager.getInstance().cancelExperimentRun(getUser(), experiment);
+		experiment.setStatus(ExperimentStatus.DESIGN);
+		DataManagerHelper.getDataManager().saveEntity(experiment);
 	}
 
 	/*

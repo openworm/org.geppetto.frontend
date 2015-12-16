@@ -102,12 +102,9 @@ public class ExperimentRunManager implements IExperimentListener
 			geppettoManager = new GeppettoManager(Scope.RUN);
 			try
 			{
-				if(!DataManagerHelper.getDataManager().isDefault())
-				{
-					loadExperiments();
-					timer = new Timer("ExperimentRunChecker");
-					timer.schedule(new ExperimentRunChecker(), 0, 1000);
-				}
+				loadExperiments();
+				timer = new Timer("ExperimentRunChecker");
+				timer.schedule(new ExperimentRunChecker(), 0, 1000);
 			}
 			catch(GeppettoInitializationException | GeppettoExecutionException | MalformedURLException e)
 			{
@@ -249,6 +246,32 @@ public class ExperimentRunManager implements IExperimentListener
 	public Map<IUser, BlockingQueue<IExperiment>> getQueuedExperiments()
 	{
 		return this.queue;
+	}
+
+	/**
+	 * @param user
+	 * @param experiment
+	 * @throws GeppettoExecutionException
+	 */
+	public void cancelExperimentRun(IUser user, IExperiment experiment) throws GeppettoExecutionException
+	{
+		BlockingQueue<IExperiment> queuedExperiments = getQueuedExperiments().get(user);
+		if(queuedExperiments!=null)
+		{
+			if(queuedExperiments.contains(experiment))
+			{
+				 getQueuedExperiments().get(user).remove(experiment);
+			}
+			else
+			{
+				throw new GeppettoExecutionException("The experiment "+experiment.getId()+" is not queued.");
+			}
+		}
+		else
+		{
+			throw new GeppettoExecutionException("The user "+user.getName()+" has no queued experiments.");	
+		}
+		
 	}
 
 }

@@ -67,6 +67,8 @@ import com.google.gson.reflect.TypeToken;
 /**
  * Class used to process Web Socket Connections. Messages sent from the connecting clients, web socket connections, are received in here.
  * 
+ * @author matteocantarelli
+ *
  */
 public class WebsocketConnection extends MessageInbound implements MessageSenderListener
 {

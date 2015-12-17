@@ -396,6 +396,7 @@ define(function(require) {
 			VARIABLE_NODE : "Variable",
 			GEPPETTO_MODEL_NODE : "GeppettoModel",
 			LIBRARY_NODE : "Library",
+			INSTANCE_NODE : "Instance"
 		}
 	}
 });

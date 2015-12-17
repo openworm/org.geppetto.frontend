@@ -55,7 +55,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			 */
 			initialize : function(options) {
 				this.set({ "variable" : options.variable });
-				this.set({ "children" : (options.children != 'undefined') ? options.children : [] });
+				this.set({ "children" : (options.children != undefined) ? options.children : [] });
 				this.set({ "id" : options.id });
 				this.set({ "name" : options.name });
 				this.set({ "_metaType" : options._metaType });
@@ -131,6 +131,18 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			 */
 			getChildren : function() {
 				return this.get("children");
+			},
+			
+			
+			/**
+			 * Get children instances
+			 * 
+			 * @command Instance.getChildren()
+			 * 
+			 * @returns {List<Instance>} - List of instances
+			 */
+			addChild : function(child) {
+				this.get("children").push(child);
 			},
 		})
 	};

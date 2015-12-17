@@ -243,9 +243,9 @@ define(function(require)
 			/** 
 			 * Creates and populates initial instance tree skeleton with any instance that needs to be visualized
 			 */
-			createInstanceTree : function(geppettoModel)
+			createInstances : function(geppettoModel)
 			{
-				var instanceTree = null;
+				var instances = [];
 				
 				var varsWithVizTypes = [];
 				
@@ -255,10 +255,117 @@ define(function(require)
 					this.fetchVarsWithVisualTypes(vars[i], varsWithVizTypes, '');
 				}
 				
-				// TODO: based on list, traverse again and build instance objects
-				// NOTE: when array type, explode into multiple ('size') instances
+				// based on list, traverse again and build instance objects
+				for(var j=0; j<varsWithVizTypes.length; j++){
+					// TODO: WORK IN PROGRESS
+					//this.buildInstanceHierarchy(varsWithVizTypes[j], null, geppettoModel, instances);
+				}
 				
-				return instanceTree;
+				return instances;
+			},
+			
+			/** 
+			 * Build instance hierarchy
+			 */
+			buildInstanceHierarchy : function(path, parentInstance, model, topLevelInstances)
+			{				
+				var variable = null;
+				var newlyCreatedInstance = null;
+				
+				// find matching first variable in path in the model object passed in
+				var varsIds = path.split('.');
+				// check model MetaType and find variable accordingly
+				if(model.getMetaType() == GEPPETTO.Resources.GEPPETTO_MODEL_NODE){
+					var variables = model.getVariables();
+					for(var i=0; i<variables.length; i++){
+						if(varsIds[0] === variables[i].getId()){
+							variable = variables[i];
+							break;
+						}
+					}
+				}
+				else if(model.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
+					// get all types + anon types
+					var types = (model.getTypes() != undefined) ? model.getTypes() : [];
+					var anonTypes = (model.getAnonymousTypes() != undefined) ? model.getAnonymousTypes() : [];
+					
+					var allTypes = types.concat(anonTypes);
+					// get all variables and match it from there
+					for(var i=0; i<allTypes.length; i++){
+						if(allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+							var variables = allTypes[i].getVariables();
+							for(var i=0; i<variables.length; i++){
+								if(varsIds[0] === variables[i].getId()){
+									variable = variables[i];
+									break;
+								}
+							}
+						}
+					}
+				}
+				
+				// create instance for given variable
+				if(variable != null){
+					
+					var types = variable.getTypes();
+					var arrayType = null;
+					for(var j=0; j<types.length; j++){
+						if(types[j].getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE){
+							arrayType = types[j];
+							break;
+						}
+					}
+					
+					if(arrayType != null){
+						// when array type, explode into multiple ('size') instances
+						var size = arrayType.getSize();
+						
+						for(var i=0; i<size; i++){
+							// create simple instance for this variable
+							var explodedInstance = this.createInstance({ id: variable.getId() + '_' + i, 
+																 name: variable.getId() + '_' + i, 
+																 _metaType: GEPPETTO.Resources.INSTANCE_NODE,
+																 variable : variable,
+																 children: []});
+							
+							//  if there is a parent add to children else add to top level instances
+							if (parentInstance != null && parentInstance != undefined){
+								parentInstance.addChild(explodedInstance);
+							} else {
+								// NOTE: not sure if this can ever happen
+								topLevelInstances.push(explodedInstance);
+							}
+						}
+						
+					} else {
+						// create simple instance for this variable
+						newlyCreatedInstance = this.createInstance({ id: variable.getId(), 
+															 name: variable.getId(), 
+															 _metaType: GEPPETTO.Resources.INSTANCE_NODE,
+															 variable : variable,
+															 children: []});
+						
+						//  if there is a parent add to children else add to top level instances
+						if (parentInstance != null && parentInstance != undefined){
+							parentInstance.addChild(newlyCreatedInstance);
+						} else {
+							topLevelInstances.push(newlyCreatedInstance);
+						}
+					}
+				}
+				
+				// recurse rest of path (without first var) - pass down path, parent instance we just created, model node, top level instance list
+				var newPath = '';
+				for(var i=0; i<varIds.length; i++){
+					if(i!=0){ 
+						newPath += (i<(varIds.length - 1)) ? (varIds[i] + '.') : varIds[i]; 
+					}
+				}
+				
+				// if there is a parent instance - recurse with new parameters
+				if (newlyCreatedInstance!= null){
+					this.buildInstanceHierarchy(newPath, newlyCreatedInstance, variable, topLevelInstances);
+				}
 			},
 			
 			/** 
@@ -266,8 +373,8 @@ define(function(require)
 			 */
 			fetchVarsWithVisualTypes : function(node, varsWithVizTypes, parentPath)
 			{
-				// build "list" of variables that has a visual type (store "path")
-				// check meta type - we are only interested in variables at this level
+				// build "list" of variables that have a visual type (store "path")
+				// check meta type - we are only interested in variables
 				if(node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
 					var types = (node.getTypes() != undefined) ? node.getTypes() : [];
 					var anonTypes = (node.getAnonymousTypes() != undefined) ? node.getAnonymousTypes() : [];
@@ -307,7 +414,7 @@ define(function(require)
 						else if(allTypes[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
 							var arrayType = allTypes[i].getType();
 							
-							// check if the array if of composite type and if so recurse too on variables
+							// check if the array is of composite type and if so recurse too on contained variables
 							if(arrayType.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
 								var vars = arrayType.getVariables();
 								

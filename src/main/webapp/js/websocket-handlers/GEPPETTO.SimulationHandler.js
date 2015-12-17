@@ -299,10 +299,10 @@ define(function(require) {
 				window.Model = GEPPETTO.ModelFactory.createGeppettoModel(model);
 				
 				// build instance tree here (instance tree will be populated with state info for each experiment)
-				window.InstanceTree = GEPPETTO.ModelFactory.createInstanceTree(window.Model); 
+				window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model); 
 				
 				// build scene here from Geppetto model populating visual objects in the instance tree
-				GEPPETTO.SceneController.buildScene(window.Project.InstanceTree, window.Model);
+				GEPPETTO.SceneController.buildScene(window.Instances, window.Model);
 				
 				GEPPETTO.trigger(Events.Model_loaded);
 	            GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);

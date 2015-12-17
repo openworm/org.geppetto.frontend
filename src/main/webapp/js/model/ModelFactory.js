@@ -241,15 +241,85 @@ define(function(require)
 			},
 			
 			/** 
-			 * Creates and populates instance tree skeleton 
+			 * Creates and populates initial instance tree skeleton with any instance that needs to be visualized
 			 */
 			createInstanceTree : function(geppettoModel)
 			{
 				var instanceTree = null;
 				
-				// TODO: build instance tree exploded to any leaves that haev a visual type 
+				var varsWithVizTypes = [];
+				
+				// builds list of vars with visual types - start traversing from top level variables
+				var vars = geppettoModel.getVariables();
+				for(var i=0; i<vars.length; i++){
+					this.fetchVarsWithVisualTypes(vars[i], varsWithVizTypes, '');
+				}
+				
+				// TODO: based on list, traverse again and build instance objects
+				// NOTE: when array type, explode into multiple ('size') instances
 				
 				return instanceTree;
+			},
+			
+			/** 
+			 * Build "list" of variables that have a visual type
+			 */
+			fetchVarsWithVisualTypes : function(node, varsWithVizTypes, parentPath)
+			{
+				// build "list" of variables that has a visual type (store "path")
+				// check meta type - we are only interested in variables at this level
+				if(node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
+					var types = (node.getTypes() != undefined) ? node.getTypes() : [];
+					var anonTypes = (node.getAnonymousTypes() != undefined) ? node.getAnonymousTypes() : [];
+					
+					var allTypes = types.concat(anonTypes);
+					for(var i=0; i<allTypes.length; i++){
+						// if normal type or composite type check if it has a visual type
+						if(allTypes[i].getMetaType() == GEPPETTO.Resources.TYPE_NODE || allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+							var vizType = allTypes[i].getVisualType();
+							
+							if(vizType!=undefined && vizType!=null){
+								// ADD to list of vars with viz types
+								varsWithVizTypes.push(parentPath + '.' + node.getId());
+							}
+						}
+						else if(allTypes[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
+							// if array type, need to check what type the array is of
+							var arrayType = allTypes[i].getType();
+							var vizType = arrayType.getVisualType();
+							
+							if(vizType!=undefined && vizType!=null){
+								// ADD to list of vars with viz types
+								varsWithVizTypes.push(parentPath + '.' + node.getId());
+							}
+						}
+						
+						// RECURSE on any variables inside composite types
+						if(allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+							var vars = allTypes[i].getVariables();
+							
+							if(vars != undefined && vars != null){
+								for(var j=0; j<vars.length; j++){
+									this.fetchVarsWithVisualTypes(vars[j], varsWithVizTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+								}
+							}
+						}
+						else if(allTypes[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
+							var arrayType = allTypes[i].getType();
+							
+							// check if the array if of composite type and if so recurse too on variables
+							if(arrayType.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+								var vars = arrayType.getVariables();
+								
+								if(vars != undefined && vars != null){
+									for(var j=0; j<vars.length; j++){
+										this.fetchVarsWithVisualTypes(vars[j], varsWithVizTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+									}
+								}
+							}
+						}
+					}
+				}
 			},
 			
 			/** Creates a simple composite node */

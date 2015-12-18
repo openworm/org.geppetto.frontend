@@ -40,8 +40,7 @@
  */
 
 define([ 'jquery', 'underscore', 'backbone'], function(require) {
-	return {
-		Model : Backbone.Model.extend({
+	return Backbone.Model.extend({
 			id : "",
 			name : "",
 			_metaType : "",
@@ -51,7 +50,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			/**
 			 * Initializes this node with passed attributes
 			 * 
-			 * @param {Object} options - Object with options attributes to initialize node
+			 * @param {Object} options - Object with options attributes to initialize instance
 			 */
 			initialize : function(options) {
 				this.set({ "variable" : options.variable });
@@ -145,5 +144,4 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 				this.get("children").push(child);
 			},
 		})
-	};
 });

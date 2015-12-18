@@ -356,9 +356,9 @@ define(function(require)
 				
 				// recurse rest of path (without first var) - pass down path, parent instance we just created, model node, top level instance list
 				var newPath = '';
-				for(var i=0; i<varIds.length; i++){
+				for(var i=0; i<varsIds.length; i++){
 					if(i!=0){ 
-						newPath += (i<(varIds.length - 1)) ? (varIds[i] + '.') : varIds[i]; 
+						newPath += (i<(varsIds.length - 1)) ? (varsIds[i] + '.') : varsIds[i]; 
 					}
 				}
 				

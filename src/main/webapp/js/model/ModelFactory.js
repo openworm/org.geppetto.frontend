@@ -47,6 +47,7 @@ define(function(require)
 		var Variable = require('model/Variable');
 		var CompositeType = require('model/CompositeType');
 		var ArrayType = require('model/ArrayType');
+		var Instance = require('model/Instance');
 		
 		/**
 		 * @class GEPPETTO.ModelFactory
@@ -257,8 +258,7 @@ define(function(require)
 				
 				// based on list, traverse again and build instance objects
 				for(var j=0; j<varsWithVizTypes.length; j++){
-					// TODO: WORK IN PROGRESS
-					//this.buildInstanceHierarchy(varsWithVizTypes[j], null, geppettoModel, instances);
+					this.buildInstanceHierarchy(varsWithVizTypes[j], null, geppettoModel, instances);
 				}
 				
 				return instances;
@@ -310,7 +310,7 @@ define(function(require)
 					var types = variable.getTypes();
 					var arrayType = null;
 					for(var j=0; j<types.length; j++){
-						if(types[j].getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE){
+						if(types[j].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
 							arrayType = types[j];
 							break;
 						}
@@ -505,6 +505,18 @@ define(function(require)
 				t.set({ "type" :  node.arrayType });
 
 				return t;
+			},
+			
+			/** Creates an istance node */
+			createInstance : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = {_metaType : GEPPETTO.Resources.INSTANCE_NODE};
+				}
+				
+				var i = new Instance(options);
+
+				return i;
 			},
 
 		};

@@ -322,11 +322,8 @@ define(function(require)
 						
 						for(var i=0; i<size; i++){
 							// create simple instance for this variable
-							var explodedInstance = this.createInstance({ id: variable.getId() + '_' + i, 
-																 name: variable.getId() + '_' + i, 
-																 _metaType: GEPPETTO.Resources.INSTANCE_NODE,
-																 variable : variable,
-																 children: []});
+							var options = { id: variable.getId() + '_' + i, name: variable.getId() + '_' + i, _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: []};
+							var explodedInstance = this.createInstance(options);
 							
 							//  if there is a parent add to children else add to top level instances
 							if (parentInstance != null && parentInstance != undefined){
@@ -339,11 +336,8 @@ define(function(require)
 						
 					} else {
 						// create simple instance for this variable
-						newlyCreatedInstance = this.createInstance({ id: variable.getId(), 
-															 name: variable.getId(), 
-															 _metaType: GEPPETTO.Resources.INSTANCE_NODE,
-															 variable : variable,
-															 children: []});
+						var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: []};
+						newlyCreatedInstance = this.createInstance(options);
 						
 						//  if there is a parent add to children else add to top level instances
 						if (parentInstance != null && parentInstance != undefined){
@@ -508,7 +502,7 @@ define(function(require)
 			},
 			
 			/** Creates an istance node */
-			createInstance : function(node, options)
+			createInstance : function(options)
 			{
 				if (options == null || options == undefined){
 					options = {_metaType : GEPPETTO.Resources.INSTANCE_NODE};

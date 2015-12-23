@@ -180,10 +180,7 @@ define(function(require) {
         	GEPPETTO.FE.infoDialog(GEPPETTO.Resources.NO_FEATURE, payload.message);
         };
         
-        //received model tree from server
-        messageHandler[messageTypes.GET_MODEL_TREE] = function(payload) {
-        	GEPPETTO.SimulationHandler.getModelTree(payload);
-        };
+
         
       //received model tree from server
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function(payload) {        	
@@ -218,9 +215,6 @@ define(function(require) {
         	GEPPETTO.Console.log(supportedOutputs);
         };
         
-        messageHandler[messageTypes.GET_SIMULATION_TREE] = function(payload) {
-        	GEPPETTO.SimulationHandler.getSimulationTree(payload);
-        };
         
         messageHandler[messageTypes.PROJECT_PROPS_SAVED] = function(payload) {
         	GEPPETTO.Console.log("Project saved succesfully");
@@ -327,10 +321,6 @@ define(function(require) {
 
             	var startCreation = new Date();
 				
-				// compute complexity of scene
-            	GEPPETTO.SceneController.complexity=0;
-				GEPPETTO.SceneController.computeComplexity(jsonRuntimeTree);
-            	
 				// TODO: empty relevant nodes or rebuild instance tree altogether - GI
 				// TODO: instead of creating runtime tree, populate instance tree with state info for given experiment - GI
             	GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
@@ -394,47 +384,7 @@ define(function(require) {
 	            }
 	        	var parameters = {name : data.name, id : data.id};
 	            GEPPETTO.trigger(Events.Experiment_deleted, parameters);
-			},
-			
-			getModelTree : function(payload){
-				var initTime = new Date();
-	        	
-	        	GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + "ms.");
-	        	
-	        	var update = JSON.parse(payload.get_model_tree);      
-	        	for (var updateIndex in update){
-		        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
-		        	var modelTree = update[updateIndex].ModelTree;
-		        	
-		        	//create client side model tree
-		        	GEPPETTO.RuntimeTreeController.populateAspectModelTree(aspectInstancePath, modelTree);
-	        	}
-	        	
-	        	GEPPETTO.trigger(Events.ModelTree_populated);
-	        	
-	        	var endCreation = new Date() - initTime;
-	            GEPPETTO.Console.debugLog("It took " + endCreation + "ms to create model tree");
-			},
-			
-			getSimulationTree : function(payload){
-				var initTime = new Date();
-	        	
-	            GEPPETTO.Console.debugLog(GEPPETTO.Resources.LOADING_MODEL + " took: " + initTime + " ms.");
-	           
-	        	var update = JSON.parse(payload.get_simulation_tree);      
-	        	for (var updateIndex in update){
-		        	var aspectInstancePath = update[updateIndex].aspectInstancePath;
-		        	var simulationTree = update[updateIndex].SimulationTree;
-		        	
-		        	//create client side simulation tree
-		        	GEPPETTO.RuntimeTreeController.populateAspectSimulationTree(aspectInstancePath, simulationTree);
-	        	}
-	        	
-				GEPPETTO.Console.log(GEPPETTO.Resources.SIMULATION_TREE_RECEIVED);
-	        	GEPPETTO.trigger(Events.SimulationTree_populated);
-	        	var endCreation = new Date() - initTime;
-	            GEPPETTO.Console.debugLog("It took " + endCreation + "ms to create simulation tree");
-			},
+			}
 		};
 
 		GEPPETTO.SimulationHandler.MESSAGE_TYPE = messageTypes;

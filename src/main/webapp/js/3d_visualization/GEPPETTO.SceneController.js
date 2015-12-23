@@ -17,32 +17,75 @@ define(function(require) {
 
 		GEPPETTO.SceneController = {
 			
+
 			/**
-			 * Populate the scene with given runtimetree object.
+			 * Populate the scene with given instances
 			 * 
-			 * @param instanceTree - skeleton with instances and visual entities
-			 * @param geppettoModel - 
+			 * @param instances - skeleton with instances and visual entities
 			 */
-			buildScene : function(instanceTree, geppettoModel)
+			buildScene : function(instances)
 			{
-				// TODO: implement - GI
+				GEPPETTO.SceneController.complexity=0;
+				GEPPETTO.SceneController.computeComplexity(instances);
+				
+				GEPPETTO.SceneController.traverseInstances(instances);
+				GEPPETTO.getVARS().scene.updateMatrixWorld(true);
+				
 			},
 				
 			/**
-			 * Populate the scene with given runtimetree object.
+			 * Traverse the instances building a visual object when needed
 			 * 
-			 * @param runTimeTree - Object with scene to populate
+			 * @param instances - skeleton with instances and visual entities
 			 */
-			populateScene : function(runTimeTree) 
+			traverseInstances : function(instances)
 			{
-				// TODO: refactor to work with instanceTree - GI
-				for ( var eindex in runTimeTree) 
+				if(instances.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
 				{
-					GEPPETTO.SceneFactory.loadEntity(runTimeTree[eindex]);
+					for(var i=0;i<instances.getSize();i++)
+					{
+						GEPPETTO.SceneController.checkVisualInstance(instances[i]);
+					}
+				}
+				else
+				{
+					for(var inst in instances)
+					{
+						GEPPETTO.SceneController.checkVisualInstance(instances[inst]);
+					}
+				}
+			},
+			
+			/**
+			 * Check if we need to create a visual object for a given instance and keeps iterating
+			 * 
+			 * @param instances - skeleton with instances and visual entities
+			 */
+			checkVisualInstance : function(instance)
+			{
+				//This block creates the visual objects if the variable has any in either the
+				//visual type of a type or if the type itself is a visual type
+				if(instance.getVariable().getType().extendsType("VisualType"))					
+				{
+					GEPPETTO.SceneFactory.buildVisualInstance(instance, instance.getVariable().getType());
+				}
+				else if(instance.getVariable().getType().getVisualType()!=undefined)
+				{
+					GEPPETTO.SceneFactory.buildVisualInstance(instance, instance.getVariable().getType().getVisualType());
 				}
 				
-				GEPPETTO.getVARS().scene.updateMatrixWorld(true);
+				
+				//this block keeps traversing the instances
+				if(instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE)
+				{
+					GEPPETTO.SceneController.traverseInstances(instance.getChildren());
+				}
+				else if(instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
+				{
+					GEPPETTO.SceneController.traverseInstances(instance);
+				}
 			},
+				
 			
 			/**
 			 * This method calculates the complexity of the scene based on the number of cylinders 
@@ -54,26 +97,19 @@ define(function(require) {
 			{
 				// TODO: modify this to work with Geppetto model and not with the old scene - GI
 				$.each(node, function(key, child) {
-				
-					if(child.hasOwnProperty("_metaType") && child._metaType === 'AspectNode')
+					if(child.hasOwnProperty("_metaType"))
 					{
-						GEPPETTO.SceneController.computeComplexity(child);
-					}
-					else if(child.hasOwnProperty("_metaType") && child._metaType === 'AspectSubTreeNode' && child.id==="VisualizationTree")
-					{
-						GEPPETTO.SceneController.computeComplexity(child);
-					}
-					else if(child.hasOwnProperty("_metaType") && child._metaType === 'CylinderNode')
-					{
-						GEPPETTO.SceneController.complexity++;
-					}
-					else if(child.hasOwnProperty("_metaType") && child._metaType === 'SphereNode')
-					{
-						GEPPETTO.SceneController.complexity++;
-					}
-					else if(child.hasOwnProperty("_metaType") && child._metaType === 'EntityNode')
-					{
-						GEPPETTO.SceneController.computeComplexity(child);
+						//TODO handle arrays, e.g. cylinder inside a population of 1000 = complexity+=1000
+						//TODO use resources
+						
+						if(child._metaType === 'Cylinder')
+						{
+							GEPPETTO.SceneController.complexity++;
+						}
+						else if(child._metaType === 'Sphere')
+						{
+							GEPPETTO.SceneController.complexity++;
+						}
 					}
 				});
 			},
@@ -421,7 +457,7 @@ define(function(require) {
 			 *            thickness - Instance path of aspect to change
 			 *            opacity for
 			 */
-			setGeometryType : function(aspect, type, thickness) {
+			setGeometryType : function(instance, type, thickness) {
 				var lines=false;
 				if(type==="lines")
 				{
@@ -439,7 +475,7 @@ define(function(require) {
 				{
 					return false;
 				}
-				GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(aspect, lines, thickness),aspect.getInstancePath(),aspect.parent.position);
+				GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness),instance.getInstancePath(),instace.getVariable().getPosition());
 
 				return true;
 			},
@@ -799,7 +835,7 @@ define(function(require) {
 			 * Split merged mesh into individual meshes
 			 * 
 			 * @param {String}
-			 *            aspectInstancePath - Path of aspect, corresponds to
+			 *            instancePath - Path of aspect, corresponds to
 			 *            original merged mesh
 			 * @param {AspectSubTreeNode}
 			 *            visualizationTree - Aspect Visualization Tree with
@@ -807,9 +843,9 @@ define(function(require) {
 			 * @param {object}
 			 *            groups - The groups that we need to split mesh into
 			 */
-			splitGroups : function(aspectInstancePath, visualizationTree, groups) {
+			splitGroups : function(instancePath, visualizationTree, groups) {
 				// retrieve the merged mesh
-				var mergedMesh = GEPPETTO.getVARS().meshes[aspectInstancePath];
+				var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
 				// create object to hold geometries used for merging objects in
 				// groups
 				var geometryGroups = {};
@@ -819,13 +855,13 @@ define(function(require) {
 				 * group visual objects that don't belong to any of the groups
 				 * passed as parameter
 				 */
-				GEPPETTO.getVARS().splitMeshes[aspectInstancePath] = null;
-				geometryGroups[aspectInstancePath] = new THREE.Geometry();
+				GEPPETTO.getVARS().splitMeshes[instancePath] = null;
+				geometryGroups[instancePath] = new THREE.Geometry();
 				
 				// create map of geometry groups for groups
 				for ( var g in groups) 
 				{
-					var groupName = aspectInstancePath + "." + g;
+					var groupName = instancePath + "." + g;
 					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
 
 					var geometry = new THREE.Geometry();
@@ -854,7 +890,7 @@ define(function(require) {
 						// If it is a segment compare to the id otherwise check in the visual groups
 						if (object.id in groups){
 							// true means don't add to mesh with non-groups visual objects
-							added = GEPPETTO.SceneController.addMeshToGeometryGroup(aspectInstancePath, object.id, geometryGroups, m)
+							added = GEPPETTO.SceneController.addMeshToGeometryGroup(instancePath, object.id, geometryGroups, m)
 						}
 						else{
 							// get group elements list for object
@@ -864,7 +900,7 @@ define(function(require) {
 								if (objectsGroups[g] in groups) 
 								{
 									// true means don't add to mesh with non-groups visual objects
-									added = GEPPETTO.SceneController.addMeshToGeometryGroup(aspectInstancePath, objectsGroups[g], geometryGroups, m)
+									added = GEPPETTO.SceneController.addMeshToGeometryGroup(instancePath, objectsGroups[g], geometryGroups, m)
 								}
 							}
 						}
@@ -872,7 +908,7 @@ define(function(require) {
 						// if visual object didn't belong to group, add it to mesh
 						// with remainder of them
 						if (!added) {
-							var geometry = geometryGroups[aspectInstancePath];
+							var geometry = geometryGroups[instancePath];
 							if(m instanceof THREE.Line) 
 							{
 								geometry.vertices.push(m.geometry.vertices[0]);
@@ -889,16 +925,16 @@ define(function(require) {
 					}
 				}
 
-				groups[aspectInstancePath] = {};
-				groups[aspectInstancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
-				GEPPETTO.SceneController.createGroupMeshes(aspectInstancePath, geometryGroups, groups);
+				groups[instancePath] = {};
+				groups[instancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
+				GEPPETTO.SceneController.createGroupMeshes(instancePath, geometryGroups, groups);
 			},
 			
 			/**
 			 * Add mesh to geometry groups
 			 * 
 			 * @param {String}
-			 *            aspectInstancePath - Path of aspect, corresponds to
+			 *            instancePath - Path of aspect, corresponds to
 			 *            original merged mesh
 			 * @param {String}
 			 *            id - local path to the group
@@ -907,10 +943,10 @@ define(function(require) {
 			 * @param {object}
 			 *            m - current mesh     
 			 */
-			addMeshToGeometryGroup : function(aspectInstancePath, id, geometryGroups, m)
+			addMeshToGeometryGroup : function(instancePath, id, geometryGroups, m)
 			{
 				// name of group, mix of aspect path and group name
-				var groupName = aspectInstancePath + "." + id;
+				var groupName = instancePath + "." + id;
 				// retrieve corresponding geometry for this group
 				var geometry = geometryGroups[groupName];
 				// only merge if flag is set to true
@@ -931,9 +967,9 @@ define(function(require) {
 			 * Create group meshes for given groups, retrieves from map if
 			 * already present
 			 */
-			createGroupMeshes : function(aspectInstancePath, geometryGroups, groups) 
+			createGroupMeshes : function(instancePath, geometryGroups, groups) 
 			{
-				var mergedMesh = GEPPETTO.getVARS().meshes[aspectInstancePath];
+				var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
 				// switch visible flag to false for merged mesh and remove from scene
 				mergedMesh.visible = false;
 				GEPPETTO.getVARS().scene.remove(mergedMesh);
@@ -941,9 +977,9 @@ define(function(require) {
 				for (g in groups) 
 				{
 					var groupName = g;
-					if (groupName.indexOf(aspectInstancePath) <= -1) 
+					if (groupName.indexOf(instancePath) <= -1) 
 					{
-						groupName = aspectInstancePath + "." + g;
+						groupName = instancePath + "." + g;
 					}
 
 					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
@@ -959,7 +995,7 @@ define(function(require) {
 						var material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
 						groupMesh = new THREE.Mesh(geometryGroup, material);
 					}
-					groupMesh.name = aspectInstancePath;
+					groupMesh.name = instancePath;
 					groupMesh.geometry.dynamic = false;
 					groupMesh.position.copy(mergedMesh.position);
 

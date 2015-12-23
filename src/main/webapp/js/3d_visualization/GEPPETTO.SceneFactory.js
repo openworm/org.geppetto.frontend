@@ -17,28 +17,12 @@ define(function(require) {
 
 		GEPPETTO.SceneFactory = {
 
-				/**
-				 * Create ThreeJS objects associated with an entity.
-				 * 
-				 * @param {EntityNode} entityNode - Entity Node to load 
-				 */
-				loadEntity : function(entityNode) {
-					//extract aspects, entities and position from entityNode
-					var aspects = entityNode.getAspects();
-					var children = entityNode.getEntities();
-					var position = entityNode.position;
 
-					for ( var a in aspects) {
-						var aspect = aspects[a];
-						var meshes = GEPPETTO.SceneFactory.generate3DObjects(aspect);
-						GEPPETTO.SceneFactory.init3DObject(meshes, aspect.instancePath, position);
-					}
-					//load children entities
-					for ( var c =0 ; c< children.length; c++) {
-						GEPPETTO.SceneFactory.loadEntity(children[c]);
-					}
-
-					
+				
+				buildVisualInstance : function(instance, visualType)
+				{
+					var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance, visualType);
+					GEPPETTO.SceneFactory.init3DObject(meshes, instance.instancePath, instance.getVariable().getPosition());
 				},
 				
 				/**
@@ -66,13 +50,13 @@ define(function(require) {
 						GEPPETTO.getVARS().scene.add(mesh);
 						//keep track of aspects created by storing them in VARS property object
 						//under meshes
-						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath] = mesh;
-						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].visible = true;
-						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].ghosted = false;
-						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].defaultOpacity = 1;
-						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].selected = false;
-						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].input = false;
-						GEPPETTO.getVARS().meshes[mesh.aspectInstancePath].output = false;
+						GEPPETTO.getVARS().meshes[instancePath] = mesh;
+						GEPPETTO.getVARS().meshes[instancePath].visible = true;
+						GEPPETTO.getVARS().meshes[instancePath].ghosted = false;
+						GEPPETTO.getVARS().meshes[instancePath].defaultOpacity = 1;
+						GEPPETTO.getVARS().meshes[instancePath].selected = false;
+						GEPPETTO.getVARS().meshes[instancePath].input = false;
+						GEPPETTO.getVARS().meshes[instancePath].output = false;
 
 					}
 				},
@@ -132,8 +116,8 @@ define(function(require) {
 					}
 				},
 				
-				generate3DObjects : function(aspect, lines, thickness) {
-					var previous3DObject = GEPPETTO.getVARS().meshes[aspect.getInstancePath()];
+				generate3DObjects : function(instance, visualType, lines, thickness) {
+					var previous3DObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
 					if(previous3DObject)
 					{
 						//if an object already exists for this aspect we remove it. This could happen in case we are changing how an aspect
@@ -142,7 +126,7 @@ define(function(require) {
 						var splitMeshes=GEPPETTO.getVARS().splitMeshes;
 						for(var m in splitMeshes)
 						{
-							if(m.indexOf(aspect.getInstancePath())!=-1)
+							if(m.indexOf(instance.getInstancePath())!=-1)
 							{
 								GEPPETTO.getVARS().scene.remove(splitMeshes[m]);
 								splitMeshes[m] = null;
@@ -156,8 +140,8 @@ define(function(require) {
 							"line": GEPPETTO.SceneFactory.getLineMaterial(thickness),
 							"particle": GEPPETTO.SceneFactory.getParticleMaterial()
 					};
-					var aspectObjects = [];
-					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(aspect.VisualizationTree.content, materials, lines);
+					var instanceObjects = [];
+					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(visualType, materials, lines);
 
 					//only merge if there are more than one object
 					if(threeDeeObjList.length > 1)
@@ -166,15 +150,15 @@ define(function(require) {
 						//investigate need to obj.dispose for obj in threeDeeObjList
 						if(mergedObjs!=null)
 						{
-							mergedObjs.aspectInstancePath = aspect.instancePath;
-							aspectObjects.push(mergedObjs);
+							mergedObjs.instancePath = instance.getInstancePath();
+							instanceObjects.push(mergedObjs);
 						}
 						else
 						{
 							for(var obj in threeDeeObjList)
 							{
-								threeDeeObjList[obj].aspectInstancePath = aspect.instancePath;
-								aspectObjects.push(threeDeeObjList[obj]);
+								threeDeeObjList[obj].instancePath = instance.getInstancePath();
+								instanceObjects.push(threeDeeObjList[obj]);
 							}
 						}
 					}
@@ -182,29 +166,32 @@ define(function(require) {
 					{
 						//only one object in list, add it to local array and set 
 						//instance path from aspect
-						aspectObjects.push(threeDeeObjList[0]);
-						aspectObjects[0].aspectInstancePath = aspect.instancePath;
+						instanceObjects.push(threeDeeObjList[0]);
+						instanceObjects[0].instancePath = instance.getInstancePath();
 					}
 
-					return aspectObjects;
+					return instanceObjects;
 				},
 
-				walkVisTreeGen3DObjs: function(visTree, materials, lines) {
+				walkVisTreeGen3DObjs: function(visualType, materials, lines) {
 					var threeDeeObj = null;
 					var threeDeeObjList = [];
 
-					if(visTree)
+					if(visualType)
 					{
-						$.each(visTree, function(key, node) {
-							if(node._metaType === 'CompositeNode'){
+						$.each(visualType, function(key, node) {
+							if(node._metaType === 'CompositeVisual')//TODO what's the name? use resources
+							{
 								var objects  = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(node, materials, lines);
-								for(var i =0; i<objects.length; i++){
+								for(var i =0; i<objects.length; i++)
+								{
 									threeDeeObjList.push(objects[i]);
 								}
 							}
 							else{
 								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(node, materials, lines)
-								if(threeDeeObj){
+								if(threeDeeObj)
+								{
 									threeDeeObjList.push(threeDeeObj);
 								}
 							}

@@ -392,6 +392,7 @@ define(function(require) {
 			OUTPUT_CONNECTION : "TO",
 			TYPE_NODE : "Type",
 			COMPOSITE_TYPE_NODE : "CompositeType",
+			VISUAL_TYPE_NODE : "VisualType",
 			ARRAY_TYPE_NODE : "ArrayType",
 			VARIABLE_NODE : "Variable",
 			GEPPETTO_MODEL_NODE : "GeppettoModel",

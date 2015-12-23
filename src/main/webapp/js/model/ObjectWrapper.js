@@ -32,7 +32,7 @@
  *******************************************************************************/
 
 /**
- * The parent node from where all other nodes extend
+ * Base class that provides wrapping functionality for a generic underlying object (with id and name).
  * 
  * @module model/ObjectWrapper
  * @author Giovanni Idili

@@ -32,8 +32,7 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a composite variable node, used for simulation
- * tree state variables.
+ * Client class use to represent an array type.
  * 
  * @module model/ArrayType
  * @author Giovanni Idili

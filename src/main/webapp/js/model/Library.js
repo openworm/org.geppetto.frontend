@@ -32,8 +32,7 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a composite variable node, used for simulation
- * tree state variables.
+ * Client class use to represent a library that contains a set of types.
  * 
  * @module model/Library
  * @author Giovanni Idili

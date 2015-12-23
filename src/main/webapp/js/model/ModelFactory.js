@@ -32,8 +32,7 @@
  *******************************************************************************/
 
 /**
- * Factory class with node creation methods. Used by RuntimeTreeFactory class
- * while population of run time tree using json object.
+ * Factory class with model creation methods.
  * 
  * @author Giovanni Idili
  */

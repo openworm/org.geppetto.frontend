@@ -32,9 +32,9 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent an instance object (instantiation of a variable).
+ * Client class use to represent an array of instances.
  * 
- * @module model/Instance
+ * @module model/ArrayInstance
  * @author Giovanni Idili
  */
 
@@ -44,7 +44,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			name : "",
 			_metaType : "",
 			variable : null,
-			children: [],
+			size : 0,
 			
 			/**
 			 * Initializes this node with passed attributes
@@ -53,7 +53,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			 */
 			initialize : function(options) {
 				this.set({ "variable" : options.variable });
-				this.set({ "children" : (options.children != undefined) ? options.children : [] });
+				this.set({ "size" : options.size });
 				this.set({ "id" : options.id });
 				this.set({ "name" : options.name });
 				this.set({ "_metaType" : options._metaType });
@@ -120,27 +120,15 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			},
 			
 			/**
-			 * Get children instances
+			 * Get the size of the array instance
 			 * 
-			 * @command Instance.getChildren()
+			 * @command Instance.getSize()
 			 * 
-			 * @returns {List<Instance>} - List of instances
+			 * @returns {Integer} - size of the array 
 			 * 
 			 */
-			getChildren : function() {
-				return this.get("children");
-			},
-			
-			
-			/**
-			 * Get children instances
-			 * 
-			 * @command Instance.getChildren()
-			 * 
-			 * @returns {List<Instance>} - List of instances
-			 */
-			addChild : function(child) {
-				this.get("children").push(child);
+			getSize : function() {
+				return this.get("size");
 			},
 		})
 });

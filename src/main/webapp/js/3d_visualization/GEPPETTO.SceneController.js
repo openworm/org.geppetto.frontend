@@ -65,7 +65,8 @@ define(function(require) {
 			{
 				//This block creates the visual objects if the variable has any in either the
 				//visual type of a type or if the type itself is a visual type
-				if(instance.getVariable().getType().extendsType("VisualType"))					
+				if((instance.getVariable().getType().getMetaType()==GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)||
+					(instance.getVariable().getType().getMetaType()==GEPPETTO.Resources.VISUAL_TYPE_NODE))
 				{
 					GEPPETTO.SceneFactory.buildVisualInstance(instance, instance.getVariable().getType());
 				}

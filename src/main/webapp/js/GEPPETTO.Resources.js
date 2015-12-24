@@ -390,11 +390,20 @@ define(function(require) {
 			SKELETON_ANIMATION_NODE: "SkeletonAnimationNode",
 			INPUT_CONNECTION : "FROM",
 			OUTPUT_CONNECTION : "TO",
+			//TYPES
 			TYPE_NODE : "Type",
 			COMPOSITE_TYPE_NODE : "CompositeType",
+			COMPOSITE_VISUAL_TYPE_NODE : "CompositeVisualType",
 			VISUAL_TYPE_NODE : "VisualType",
 			ARRAY_TYPE_NODE : "ArrayType",
+			//VARIABLES
 			VARIABLE_NODE : "Variable",
+			//VALUES
+			CYLINDER : "Cylinder",
+			SPHERE : "Sphere",
+			COLLADA : "Collada",
+			OBJ : "OBJ",
+			//GEPPETTO MODEL
 			GEPPETTO_MODEL_NODE : "GeppettoModel",
 			LIBRARY_NODE : "Library",
 			INSTANCE_NODE : "Instance"

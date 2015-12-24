@@ -80,7 +80,7 @@ define(function(require) {
 
 								if (node != null&& typeof node === "object") {
 
-									var metaType = node._metaType;
+									var metaType = node.getMetaType();
 									if(metaType == "CompositeNode"){
 										for ( var gindex in node) {
 											var vo = node[gindex];
@@ -179,23 +179,28 @@ define(function(require) {
 
 					if(visualType)
 					{
-						$.each(visualType, function(key, node) {
-							if(node._metaType === 'CompositeVisual')//TODO what's the name? use resources
+						if(visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)
+						{
+							for(var v in visualType.getVariables())
 							{
-								var objects  = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(node, materials, lines);
-								for(var i =0; i<objects.length; i++)
-								{
-									threeDeeObjList.push(objects[i]);
-								}
-							}
-							else{
-								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(node, materials, lines)
+								var visualValue=node.getVariables()[v].getInitialValue(visualType);
+								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(visualValue, materials, lines)
 								if(threeDeeObj)
 								{
 									threeDeeObjList.push(threeDeeObj);
 								}
 							}
-						});
+						}
+						else
+						{
+							var visualValue=node.getVariables()[v].getInitialValue(visualType);
+							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(visualValue, materials, lines)
+							if(threeDeeObj)
+							{
+								threeDeeObjList.push(threeDeeObj);
+							}
+						}
+				
 					}
 					return threeDeeObjList;
 				},
@@ -204,15 +209,16 @@ define(function(require) {
 				merge3DObjects: function(objArray, materials){
 
 					//TODO: assuming that all objects have the same type, check!
-					objType = objArray[0].type;
+					objType = objArray[0].getMetaType();
 					var mergedMeshesPaths = [];
 					var combined = new THREE.Geometry();
 					var ret = null;
 					var lines=true;
 
-					switch (objType){
-					case "CylinderNode":
-					case "SphereNode":
+					switch (objType)
+					{
+					case GEPPETTO.Resources.CYLINDER:
+					case GEPPETTO.Resources.SPHERE:
 						var mergedLines;
 						var mergedMeshes;
 						objArray.forEach(function(obj){
@@ -257,7 +263,7 @@ define(function(require) {
 							}
 						}
 						break;
-					case "ParticleNode":
+					case GEPPETTO.Resources.PARTICLE:
 						var particleGeometry = new THREE.Geometry();
 						objArray.forEach(function(obj){
 							particleGeometry.vertices.push(obj);
@@ -269,8 +275,8 @@ define(function(require) {
 						merged.geometry.verticesNeedUpdate = true;
 						ret = merged;
 						break;
-					case "ColladaNode":
-					case "OBJNode":
+					case GEPPETTO.Resources.COLLADA:
+					case GEPPETTO.Resources.OBJ:
 						ret = objArray[0];
 						break;
 					}
@@ -292,38 +298,38 @@ define(function(require) {
 						//Unless it's being forced we use a threshold to decide whether to use lines or cylinders
 						lines=GEPPETTO.SceneController.complexity>2000;
 					}
-					switch (node._metaType) {
-					case "ParticleNode" : 
-						threeObject = GEPPETTO.SceneFactory.createParticle(node);
-						break;
-
-					case "CylinderNode":
-						if(lines){
-							threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
-						}
-						else
-						{
-							threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
-						}
-						break;
-
-					case "SphereNode":						
-					if(lines){
-						threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
-					}
-					else
+					switch (node.getMetaType()) 
 					{
-						
-						threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, materials["mesh"]);
-					}
-					break;
-					case "ColladaNode":
-						threeObject = GEPPETTO.SceneFactory.loadColladaModelFromNode(node);
-						break;
-
-					case "OBJNode":
-						threeObject = GEPPETTO.SceneFactory.loadThreeOBJModelFromNode(node);
-						break;
+						case GEPPETTO.Resources.PARTICLE: 
+							threeObject = GEPPETTO.SceneFactory.createParticle(node);
+							break;
+	
+						case GEPPETTO.Resources.CYLINDER:
+							if(lines){
+								threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
+							}
+							else
+							{
+								threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
+							}
+							break;
+	
+						case GEPPETTO.Resources.SPHERE:						
+							if(lines)
+							{
+								threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
+							}
+							else
+							{
+								threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, materials["mesh"]);
+							}
+							break;
+						case GEPPETTO.Resources.COLLADA:
+							threeObject = GEPPETTO.SceneFactory.loadColladaModelFromNode(node);
+							break;
+						case GEPPETTO.Resources.OBJ:
+							threeObject = GEPPETTO.SceneFactory.loadThreeOBJModelFromNode(node);
+							break;
 					}
 					if(threeObject){
 						threeObject.visible = true;
@@ -414,7 +420,7 @@ define(function(require) {
 				 * @returns a ThreeJS line correctly positioned w.r.t the global frame of reference
 				 */
 				create3DLineFromNode : function(node, material) {
-					if(node._metaType=="CylinderNode")
+					if(node.getMetaType()==GEPPETTO.Resources.CYLINDER)
 					{
 						bottomBasePos = new THREE.Vector3(node.position.x,
 								node.position.y,
@@ -439,7 +445,7 @@ define(function(require) {
 	
 						threeObject.geometry.verticesNeedUpdate = true;
 					}
-					else if(node._metaType=="SphereNode")
+					else if(node.getMetaType()==GEPPETTO.Resources.SPHERE)
 					{
 						var sphere = new THREE.SphereGeometry(node.radius, 20, 20);
 						threeObject = new THREE.Mesh(sphere, material);

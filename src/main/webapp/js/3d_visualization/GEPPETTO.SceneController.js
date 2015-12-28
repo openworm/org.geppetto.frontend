@@ -103,11 +103,11 @@ define(function(require) {
 						//TODO handle arrays, e.g. cylinder inside a population of 1000 = complexity+=1000
 						//TODO use resources
 						
-						if(child._metaType === 'Cylinder')
+						if(child.getMetaType() == GEPPETTO.Resources.CYLINDER))
 						{
 							GEPPETTO.SceneController.complexity++;
 						}
-						else if(child._metaType === 'Sphere')
+						else if(child._metaType == GEPPETTO.Resources.SPHERE)
 						{
 							GEPPETTO.SceneController.complexity++;
 						}

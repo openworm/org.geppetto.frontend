@@ -40,9 +40,9 @@ define(function(require) {
 			 */
 			traverseInstances : function(instances)
 			{
-				if(instances.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
+				if(Array.isArray(instances))
 				{
-					for(var i=0;i<instances.getSize();i++)
+					for(var i=0;i<instances.length;i++)
 					{
 						GEPPETTO.SceneController.checkVisualInstance(instances[i]);
 					}
@@ -103,7 +103,7 @@ define(function(require) {
 						//TODO handle arrays, e.g. cylinder inside a population of 1000 = complexity+=1000
 						//TODO use resources
 						
-						if(child.getMetaType() == GEPPETTO.Resources.CYLINDER))
+						if(child.getMetaType() == GEPPETTO.Resources.CYLINDER)
 						{
 							GEPPETTO.SceneController.complexity++;
 						}

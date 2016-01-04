@@ -44,6 +44,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			name : "",
 			_metaType : "",
 			variable : null,
+			parent : null,
 			children: [],
 			
 			/**
@@ -53,6 +54,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			 */
 			initialize : function(options) {
 				this.set({ "variable" : options.variable });
+				this.set({ "parent" : options.parent });
 				this.set({ "children" : (options.children != undefined) ? options.children : [] });
 				this.set({ "id" : options.id });
 				this.set({ "name" : options.name });
@@ -131,6 +133,24 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 				return this.get("children");
 			},
 			
+			/**
+			 * Get instance path
+			 * 
+			 * @command Instance.getInstancePath()
+			 * 
+			 * @returns {String} - Instance path
+			 * 
+			 */
+			getInstancePath : function() {
+				var parent = this.get("parent");
+				var parentPath = "";
+				
+				if(parent != null && parent != undefined){
+					parentPath = parent.getInstancePath();
+				}
+				
+				return (parentPath != "") ? (parentPath + "." + this.getId()) : this.getId();
+			},
 			
 			/**
 			 * Get children instances

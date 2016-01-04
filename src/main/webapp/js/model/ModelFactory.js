@@ -321,12 +321,12 @@ define(function(require)
 						var size = arrayType.getSize();
 						
 						// create new ArrayInstance object, add children to it
-						var arrayOptions = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.ARRAY_INSTANCE_NODE, variable : variable, size: size};
+						var arrayOptions = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.ARRAY_INSTANCE_NODE, variable : variable, size: size, parent : parentInstance};
 						var arrayInstance = this.createArrayInstance(arrayOptions);
 						
 						for(var i=0; i<size; i++){
 							// create simple instance for this variable
-							var options = { id: variable.getId() + '_' + i, name: variable.getId() + '_' + i, _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: []};
+							var options = { id: variable.getId() + '_' + i, name: variable.getId() + '_' + i, _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: [], parent : arrayInstance};
 							var explodedInstance = this.createInstance(options);
 							
 							// add to array instance (adding this way because we want to access as an array)
@@ -351,7 +351,7 @@ define(function(require)
 							newlyCreatedInstance = matchingInstance;
 						} else {						
 							// create simple instance for this variable
-							var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: []};
+							var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: [], parent : parentInstance};
 							newlyCreatedInstance = this.createInstance(options);
 							
 							//  if there is a parent add to children else add to top level instances

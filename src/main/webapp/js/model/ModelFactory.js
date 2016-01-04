@@ -47,6 +47,7 @@ define(function(require)
 		var CompositeType = require('model/CompositeType');
 		var ArrayType = require('model/ArrayType');
 		var Instance = require('model/Instance');
+		var ArrayInstance = require('model/ArrayInstance');
 		
 		/**
 		 * @class GEPPETTO.ModelFactory
@@ -319,18 +320,25 @@ define(function(require)
 						// when array type, explode into multiple ('size') instances
 						var size = arrayType.getSize();
 						
+						// create new ArrayInstance object, add children to it
+						var arrayOptions = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.ARRAY_INSTANCE_NODE, variable : variable, size: size};
+						var arrayInstance = this.createArrayInstance(arrayOptions);
+						
 						for(var i=0; i<size; i++){
 							// create simple instance for this variable
 							var options = { id: variable.getId() + '_' + i, name: variable.getId() + '_' + i, _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: []};
 							var explodedInstance = this.createInstance(options);
 							
-							//  if there is a parent add to children else add to top level instances
-							if (parentInstance != null && parentInstance != undefined){
-								parentInstance.addChild(explodedInstance);
-							} else {
-								// NOTE: not sure if this can ever happen
-								topLevelInstances.push(explodedInstance);
-							}
+							// add to array instance (adding this way because we want to access as an array)
+							arrayInstance[i] = explodedInstance;
+						}
+						
+						//  if there is a parent add to children else add to top level instances
+						if (parentInstance != null && parentInstance != undefined){
+							parentInstance.addChild(arrayInstance);
+						} else {
+							// NOTE: not sure if this can ever happen (top level instance == array)
+							topLevelInstances.push(arrayInstance);
 						}
 						
 					} else {
@@ -510,6 +518,18 @@ define(function(require)
 				var i = new Instance(options);
 
 				return i;
+			},
+			
+			/** Creates an istance node */
+			createArrayInstance : function(options)
+			{
+				if (options == null || options == undefined){
+					options = {_metaType : GEPPETTO.Resources.ARRAY_INSTANCE_NODE};
+				}
+				
+				var a = new ArrayInstance(options);
+
+				return a;
 			},
 
 		};

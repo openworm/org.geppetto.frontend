@@ -406,7 +406,8 @@ define(function(require) {
 			//GEPPETTO MODEL
 			GEPPETTO_MODEL_NODE : "GeppettoModel",
 			LIBRARY_NODE : "Library",
-			INSTANCE_NODE : "Instance"
+			INSTANCE_NODE : "Instance",
+			ARRAY_INSTANCE_NODE : "ArrayInstance"
 		}
 	}
 });

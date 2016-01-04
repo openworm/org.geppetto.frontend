@@ -184,7 +184,7 @@ define(function(require) {
 							for(var v in visualType.getVariables())
 							{
 								var visualValue=visualType.getVariables()[v].get("wrappedObj").initialValues[0].value;
-								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, materials, lines)
+								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines)
 								if(threeDeeObj)
 								{
 									threeDeeObjList.push(threeDeeObj);
@@ -194,7 +194,7 @@ define(function(require) {
 						else
 						{
 							var visualValue=visualType.get("wrappedObj").initialValues[0].value;
-							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, materials, lines)
+							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines)
 							if(threeDeeObj)
 							{
 								threeDeeObjList.push(threeDeeObj);
@@ -289,7 +289,7 @@ define(function(require) {
 				},
 
 
-				visualizationTreeNodeTo3DObj: function(instance, node, materials, lines) {
+				visualizationTreeNodeTo3DObj: function(instance, node, id, materials, lines) {
 					var threeObject = null;
 					if(lines===undefined)
 					{
@@ -332,11 +332,12 @@ define(function(require) {
 					if(threeObject){
 						threeObject.visible = true;
 						//TODO: this is empty for collada and obj nodes 
-						threeObject.instancePath = instance.getInstancePath();
+						var instancePath=instance.getInstancePath()+"."+id;
+						threeObject.instancePath = instancePath;
 						threeObject.highlighted = false;
 
 						//TODO: shouldn't that be the vistree? why is it also done at the loadEntity level??
-						GEPPETTO.getVARS().visualModelMap[instance.getInstancePath()] = threeObject;
+						GEPPETTO.getVARS().visualModelMap[instancePath] = threeObject;
 					}
 					return threeObject;
 				},
@@ -473,12 +474,8 @@ define(function(require) {
 					var midPoint = new THREE.Vector3();
 					midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
 
-					//convert radius values to float from string
-					var bottom = parseFloat(cylNode.radiusBottom);
-					var top = parseFloat(cylNode.radiusTop);
-					
-					var c = new THREE.CylinderGeometry(top,
-												bottom,axis.length(), 6, 1, false);
+										var c = new THREE.CylinderGeometry(cylNode.topRadius,
+							cylNode.bottomRadius,axis.length(), 6, 1, false);
 					c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
 					var threeObject = new THREE.Mesh(c, material);
 

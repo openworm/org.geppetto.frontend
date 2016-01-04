@@ -388,7 +388,8 @@ define(function(require)
 							
 							if(vizType!=undefined && vizType!=null){
 								// ADD to list of vars with viz types
-								varsWithVizTypes.push(parentPath + '.' + node.getId());
+								var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+								varsWithVizTypes.push(path);
 							}
 						}
 						else if(allTypes[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
@@ -398,7 +399,8 @@ define(function(require)
 							
 							if(vizType!=undefined && vizType!=null){
 								// ADD to list of vars with viz types
-								varsWithVizTypes.push(parentPath + '.' + node.getId());
+								var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+								varsWithVizTypes.push(path);
 							}
 						}
 						

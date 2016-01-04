@@ -40,7 +40,7 @@ define(function(require) {
 			 */
 			traverseInstances : function(instances)
 			{
-				if(Array.isArray(instances))
+				if(!Array.isArray(instances) && instances.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
 				{
 					for(var i=0;i<instances.length;i++)
 					{

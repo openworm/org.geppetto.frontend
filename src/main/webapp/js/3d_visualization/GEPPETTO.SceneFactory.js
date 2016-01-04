@@ -22,7 +22,7 @@ define(function(require) {
 				buildVisualInstance : function(instance, visualType)
 				{
 					var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance, visualType);
-					GEPPETTO.SceneFactory.init3DObject(meshes, instance.instancePath, instance.getVariable().getPosition());
+					GEPPETTO.SceneFactory.init3DObject(meshes, instance.getInstancePath(), instance.getVariable().getPosition());
 				},
 				
 				/**
@@ -141,7 +141,7 @@ define(function(require) {
 							"particle": GEPPETTO.SceneFactory.getParticleMaterial()
 					};
 					var instanceObjects = [];
-					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(visualType, materials, lines);
+					threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, visualType, materials, lines);
 
 					//only merge if there are more than one object
 					if(threeDeeObjList.length > 1)
@@ -173,7 +173,7 @@ define(function(require) {
 					return instanceObjects;
 				},
 
-				walkVisTreeGen3DObjs: function(visualType, materials, lines) {
+				walkVisTreeGen3DObjs: function(instance, visualType, materials, lines) {
 					var threeDeeObj = null;
 					var threeDeeObjList = [];
 
@@ -183,8 +183,8 @@ define(function(require) {
 						{
 							for(var v in visualType.getVariables())
 							{
-								var visualValue=node.getVariables()[v].getInitialValue(visualType);
-								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(visualValue, materials, lines)
+								var visualValue=visualType.getVariables()[v].get("wrappedObj").initialValues[0].value;
+								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, materials, lines)
 								if(threeDeeObj)
 								{
 									threeDeeObjList.push(threeDeeObj);
@@ -193,8 +193,8 @@ define(function(require) {
 						}
 						else
 						{
-							var visualValue=node.getVariables()[v].getInitialValue(visualType);
-							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(visualValue, materials, lines)
+							var visualValue=visualType.get("wrappedObj").initialValues[0].value;
+							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, materials, lines)
 							if(threeDeeObj)
 							{
 								threeDeeObjList.push(threeDeeObj);
@@ -207,18 +207,16 @@ define(function(require) {
 
 
 				merge3DObjects: function(objArray, materials){
-
-					//TODO: assuming that all objects have the same type, check!
-					objType = objArray[0].getMetaType();
 					var mergedMeshesPaths = [];
 					var combined = new THREE.Geometry();
 					var ret = null;
 					var lines=true;
 
-					switch (objType)
+					//TODO: assuming that all objects have the same type, check!
+					switch (objArray[0].geometry.type)
 					{
-					case GEPPETTO.Resources.CYLINDER:
-					case GEPPETTO.Resources.SPHERE:
+					case "CylinderGeometry":
+					case "SphereGeometry":
 						var mergedLines;
 						var mergedMeshes;
 						objArray.forEach(function(obj){
@@ -275,8 +273,8 @@ define(function(require) {
 						merged.geometry.verticesNeedUpdate = true;
 						ret = merged;
 						break;
-					case GEPPETTO.Resources.COLLADA:
-					case GEPPETTO.Resources.OBJ:
+					case "Geometry":
+						//This catches both Collada an OBJ
 						ret = objArray[0];
 						break;
 					}
@@ -291,14 +289,14 @@ define(function(require) {
 				},
 
 
-				visualizationTreeNodeTo3DObj: function(node, materials, lines) {
+				visualizationTreeNodeTo3DObj: function(instance, node, materials, lines) {
 					var threeObject = null;
 					if(lines===undefined)
 					{
 						//Unless it's being forced we use a threshold to decide whether to use lines or cylinders
 						lines=GEPPETTO.SceneController.complexity>2000;
 					}
-					switch (node.getMetaType()) 
+					switch (node.eClass) 
 					{
 						case GEPPETTO.Resources.PARTICLE: 
 							threeObject = GEPPETTO.SceneFactory.createParticle(node);
@@ -333,13 +331,12 @@ define(function(require) {
 					}
 					if(threeObject){
 						threeObject.visible = true;
-						threeObject.type = node._metaType;
 						//TODO: this is empty for collada and obj nodes 
-						threeObject.instancePath = node.instancePath;
+						threeObject.instancePath = instance.getInstancePath();
 						threeObject.highlighted = false;
 
 						//TODO: shouldn't that be the vistree? why is it also done at the loadEntity level??
-						GEPPETTO.getVARS().visualModelMap[node.instancePath] = threeObject;
+						GEPPETTO.getVARS().visualModelMap[instance.getInstancePath()] = threeObject;
 					}
 					return threeObject;
 				},

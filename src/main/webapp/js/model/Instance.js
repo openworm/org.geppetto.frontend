@@ -96,6 +96,20 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			},
 			
 			/**
+			 * Get instance path
+			 * 
+			 * @command Instance.getInstancePath()
+			 * 
+			 * @returns {String} - the instance path of this instance
+			 * 
+			 */
+			getInstancePath : function() {
+				//TODO Implement this
+				return "purkinje";
+			},
+			
+			
+			/**
 			 * Get the type for this instance
 			 * 
 			 * @command Instance.getTypes()

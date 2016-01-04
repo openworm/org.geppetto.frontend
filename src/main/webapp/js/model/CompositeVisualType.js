@@ -32,17 +32,16 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a variable.
+ * Client class use to represent a composite type.
  * 
- * @module model/Variable
+ * @module model/CompositeVisualType
  * @author Giovanni Idili
  */
 define(function(require) {
-	var ObjectWrapper = require('model/ObjectWrapper');
+	var Type = require('model/Type');
 
-	return ObjectWrapper.Model.extend({
-		anonymousTypes : [],
-		types : [],
+	return Type.extend({
+		variables : [],
 		
 		/**
 		 * Initializes this node with passed attributes
@@ -50,102 +49,46 @@ define(function(require) {
 		 * @param {Object} options - Object with options attributes to initialize node
 		 */
 		initialize : function(options) {
-			this.set({ "anonymousTypes" : (options.anonymousTypes != undefined) ? options.anonymousTypes : []});
-			this.set({ "types" : (options.types != undefined) ? options.types : []});
+			this.set({ "variables" : (options.variables != 'undefined') ? options.variables : []});
+			this.set({ "visualGroups" : (options.visualGroups != 'undefined') ? options.visualGroups : []});
 			this.set({ "wrappedObj" : options.wrappedObj });
 			this.set({ "_metaType" : options._metaType });
 		},
-		
+
 		/**
-		 * Get the list of types for this variable
+		 * Get variables
 		 * 
-		 * @command Variable.getTypes()
+		 * @command CompositeVariableNode.getChildren()
 		 * 
-		 * @returns {List<Type>} - array of types
+		 * @returns {List<Variable>} - List of variables
 		 * 
 		 */
-		getTypes : function() {
-			return this.get('types');
+		getVariables : function() {
+			return this.get("variables");
 		},
 		
 		/**
-		 * Get the type of this variable, return a list if it has more than one
+		 * Get the visual groups
 		 * 
-		 * @command Variable.getType()
+		 * @command CompositeVariableNode.getVisualGroups()
 		 * 
-		 * @returns List<Type>} - array of types
-		 * 
-		 */
-		getType : function() {
-			if(this.get('types').length==1)
-			{
-				return this.get('types')[0];
-			}
-			else return this.get('types');
-		},
-		
-		/**
-		 * Get the list of anonymous types for this variable
-		 * 
-		 * @command Variable.getAnonymousTypes()
-		 * 
-		 * @returns {List<Type>} - array of types
+		 * @returns {List<VisualGroup>} - List of variables
 		 * 
 		 */
-		getAnonymousTypes : function() {
-			return this.get('anonymousTypes');
-		},
-		
-		/**
-		 * Get the list of values for this variable
-		 * 
-		 * @command Variable.getInitialValues()
-		 * 
-		 * @returns {List<Value>} - array of values
-		 * 
-		 */
-		getInitialValues : function() {
-			// TODO: fetch initial values
-			return this.getWrappedObj().initialValues;
-		},
-		
-		/**
-		 * Check if the variable is static
-		 * 
-		 * @command Variable.isStatic()
-		 * 
-		 * @returns {bool} - Boolean 
-		 * 
-		 */
-		isStatic : function() {
-			// TODO: fetch static from wrapped obj
-			return this.getWrappedObj().isStatic;
-		},
-		
-		/**
-		 * Gets position for the variable
-		 * 
-		 * @command Variable.isStatic()
-		 * 
-		 * @returns {Object} - position for the variable 
-		 * 
-		 */
-		getPosition : function() {
-			// TODO: fetch static from wrapped obj
-			return this.getWrappedObj().position;
+		getVisualGroups : function() {
+			return this.get("visualGroups");
 		},
 		
 		/**
 		 * Get combined children
 		 * 
-		 * @command Variable.getChildren()
+		 * @command CompositeType.getChildren()
 		 * 
 		 * @returns {List<Object>} - List of children
 		 * 
 		 */
 		getChildren : function() {
-			// only anonymousTypes as containment == true in the model (they are not references)
-			return this.get('anonymousTypes');
+			return this.get("variables");
 		},
 	});
 });

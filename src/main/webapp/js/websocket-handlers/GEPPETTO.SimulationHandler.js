@@ -93,16 +93,6 @@ define(function(require) {
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {        	
         	GEPPETTO.SimulationHandler.loadExperiment(payload);
             
-			// Updates the simulation controls visibility
-			var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-			
-			if(webGLStarted) {
-				// we call it only the first time
-				GEPPETTO.SceneController.animate();
-			}
-
-            // TODO: Populate scene - use instance tree instead of runtime tree - GI
-            GEPPETTO.SceneController.populateScene(window["Project"].runTimeTree); 
             
             GEPPETTO.trigger(Events.Experiment_loaded);
             
@@ -296,6 +286,13 @@ define(function(require) {
 				window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model); 
 				
 				// build scene here from Geppetto model populating visual objects in the instance tree
+				// Updates the simulation controls visibility
+				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
+				
+				if(webGLStarted) {
+					// we call it only the first time
+					GEPPETTO.SceneController.animate();
+				}
 				GEPPETTO.SceneController.buildScene(window.Instances, window.Model);
 				
 				GEPPETTO.trigger(Events.Model_loaded);
@@ -303,10 +300,8 @@ define(function(require) {
 			},
 
 			loadExperiment : function(payload){
-				var message=JSON.parse(payload.MODEL_LOADED);
+				var message=JSON.parse(payload.experiment_loaded);
 				
-				// TODO: there's no scene here anymore only experiment state - GI
-				var jsonRuntimeTree = message.scene;
 				var experimentId=message.experimentId;
 
 				//Keep going with load of simulation only if webgl container was created
@@ -323,7 +318,7 @@ define(function(require) {
 				
 				// TODO: empty relevant nodes or rebuild instance tree altogether - GI
 				// TODO: instead of creating runtime tree, populate instance tree with state info for given experiment - GI
-            	GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+            	//GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
             
             	var endCreation = new Date() - startCreation;
             	GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");

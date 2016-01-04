@@ -43,8 +43,10 @@ define(function(require)
 		var GeppettoModel = require('model/GeppettoModel');
 		var Library = require('model/Library');
 		var Type = require('model/Type');
+		var VisualType = require('model/VisualType');
 		var Variable = require('model/Variable');
 		var CompositeType = require('model/CompositeType');
+		var CompositeVisualType = require('model/CompositeVisualType');
 		var ArrayType = require('model/ArrayType');
 		var Instance = require('model/Instance');
 		var ArrayInstance = require('model/ArrayInstance');
@@ -225,6 +227,12 @@ define(function(require)
 						// check if it's composite type, array type or simple type
 						if(jsonTypes[i].eClass == 'CompositeType'){
 							type = this.createCompositeType(jsonTypes[i]);
+						}
+						else if(jsonTypes[i].eClass == 'CompositeVisualType'){
+							type = this.createCompositeVisualType(jsonTypes[i]);
+						}
+						else if(jsonTypes[i].eClass == 'VisualType'){
+							type = this.createVisualType(jsonTypes[i]);
 						}
 						else if(jsonTypes[i].eClass == 'ArrayType'){
 							type = this.createArrayType(jsonTypes[i]);
@@ -482,6 +490,19 @@ define(function(require)
 				return t;
 			},
 			
+			
+			/** Creates a visual type node */
+			createVisualType : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = {_metaType : GEPPETTO.Resources.VISUAL_TYPE_NODE, wrappedObj: node};
+				}
+				
+				var t = new Type(options);
+
+				return t;
+			},
+			
 			/** Creates a composite type node */
 			createCompositeType : function(node, options)
 			{
@@ -492,6 +513,21 @@ define(function(require)
 				var t = new CompositeType(options);
 				t.set({ "visualType" : node.visualType });
 				t.set({ "variables" : this.createVariables(node.variables) });
+
+				return t;
+			},
+			
+			/** Creates a composite visual type node */
+			createCompositeVisualType : function(node, options)
+			{
+				if (options == null || options == undefined){
+					options = {_metaType : GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE, wrappedObj: node};
+				}
+				
+				var t = new CompositeVisualType(options);
+				t.set({ "visualType" : node.visualType });
+				t.set({ "variables" : this.createVariables(node.variables) });
+				t.set({ "visualGroups" : this.createVisualGroups(node.visualGroups) });
 
 				return t;
 			},
@@ -532,6 +568,34 @@ define(function(require)
 				var a = new ArrayInstance(options);
 
 				return a;
+			},
+			
+			
+			/** Creates visual groups */
+			createVisualGroups : function(node, options)
+			{
+				//TODO start of implementation, the visual group objects need to be updated to use the wrappedObj
+//				if (options == null || options == undefined){
+//					options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: node};
+//				}
+//				
+//				var v = new VisualGroup(options);
+//				t.set({ "visualGroupElements" : this.createVisualGroupElements(node.visualGroupElements) });
+//
+//				return v;
+			},
+			
+			/** Creates visual group elements */
+			createVisualGroupElements : function(node, options)
+			{
+				//TODO start of implementation, the visual group element objects need to be updated to use the wrappedObj
+//				if (options == null || options == undefined){
+//					options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE, wrappedObj: node};
+//				}
+//				
+//				var v = new VisualGroupElement(options);
+//
+//				return v;
 			},
 
 		};

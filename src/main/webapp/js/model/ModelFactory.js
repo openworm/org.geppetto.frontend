@@ -342,15 +342,24 @@ define(function(require)
 						}
 						
 					} else {
-						// create simple instance for this variable
-						var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: []};
-						newlyCreatedInstance = this.createInstance(options);
+						// check in top level instances if we have an instance for the current variable already
+						var matchingInstance = null;
+						matchingInstance = this.findMatchingInstance(variable, topLevelInstances);
 						
-						//  if there is a parent add to children else add to top level instances
-						if (parentInstance != null && parentInstance != undefined){
-							parentInstance.addChild(newlyCreatedInstance);
-						} else {
-							topLevelInstances.push(newlyCreatedInstance);
+						if(matchingInstance != null){
+							// there is a match, simply re-use that instance as the "newly created one" instead of creating a new one
+							newlyCreatedInstance = matchingInstance;
+						} else {						
+							// create simple instance for this variable
+							var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: []};
+							newlyCreatedInstance = this.createInstance(options);
+							
+							//  if there is a parent add to children else add to top level instances
+							if (parentInstance != null && parentInstance != undefined){
+								parentInstance.addChild(newlyCreatedInstance);
+							} else {
+								topLevelInstances.push(newlyCreatedInstance);
+							}
 						}
 					}
 				}
@@ -367,6 +376,26 @@ define(function(require)
 				if (newlyCreatedInstance!= null){
 					this.buildInstanceHierarchy(newPath, newlyCreatedInstance, variable, topLevelInstances);
 				}
+			},
+			
+			/**
+			 * Find instance given variable id (unique), if any
+			 */
+			findMatchingInstance : function(variable, instances) {
+				var matching = null;
+				
+				for(var i=0; i < instances.length; i++){
+					if(instances[i].getId() == variable.getId()){
+						matching = instances[i];
+						break;
+					} else {
+						if(typeof instances[i].getChildren === "function"){
+							matching = this.findMatchingInstance(variable, instances[i].getChildren());
+						}
+					}
+				}
+				
+				return matching;
 			},
 			
 			/** 

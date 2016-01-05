@@ -50,6 +50,8 @@ define(function(require)
 		var ArrayType = require('model/ArrayType');
 		var Instance = require('model/Instance');
 		var ArrayInstance = require('model/ArrayInstance');
+		var VisualGroup = require('model/VisualGroup');
+		var VisualGroupElement = require('model/VisualGroupElement');
 		
 		/**
 		 * @class GEPPETTO.ModelFactory
@@ -224,7 +226,7 @@ define(function(require)
 					for(var i=0; i < jsonTypes.length; i++){
 						var type = null;
 						
-						// check if it's composite type, array type or simple type
+						// check if it's composite type, visual type, array type or simple type
 						if(jsonTypes[i].eClass == 'CompositeType'){
 							type = this.createCompositeType(jsonTypes[i]);
 						}
@@ -239,8 +241,6 @@ define(function(require)
 						} else {
 							type = this.createType(jsonTypes[i]);
 						}
-						
-						// TODO: find out if we treat composite visual type the same way
 						
 						types.push(type);
 					}
@@ -601,30 +601,35 @@ define(function(require)
 			
 			
 			/** Creates visual groups */
-			createVisualGroups : function(node, options)
+			createVisualGroups : function(nodes)
 			{
-				//TODO start of implementation, the visual group objects need to be updated to use the wrappedObj
-//				if (options == null || options == undefined){
-//					options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: node};
-//				}
-//				
-//				var v = new VisualGroup(options);
-//				t.set({ "visualGroupElements" : this.createVisualGroupElements(node.visualGroupElements) });
-//
-//				return v;
+				var visualGroups = [];
+				
+				for(var i=0; i < nodes.length; i++){
+					var	options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: nodes[i], visualGroupElements : this.createVisualGroupElements(nodes[i].visualGroupElements)};
+					
+					var vg = new VisualGroup(options);
+					
+					visualGroups.push(vg);
+				}
+
+				return visualGroups;
 			},
 			
 			/** Creates visual group elements */
-			createVisualGroupElements : function(node, options)
+			createVisualGroupElements : function(nodes)
 			{
-				//TODO start of implementation, the visual group element objects need to be updated to use the wrappedObj
-//				if (options == null || options == undefined){
-//					options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE, wrappedObj: node};
-//				}
-//				
-//				var v = new VisualGroupElement(options);
-//
-//				return v;
+				var visualGroupElements = [];
+				
+				for(var i=0; i < nodes.length; i++){
+					var options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE, wrappedObj: nodes[i]};
+					
+					var vge = new VisualGroupElement(options);
+					
+					visualGroupElements.push(vge);
+				}
+
+				return visualGroupElements;
 			},
 
 		};

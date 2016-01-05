@@ -42,9 +42,9 @@ define(function(require) {
 			{
 				if(!Array.isArray(instances) && instances.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
 				{
-					for(var i=0;i<instances.length;i++)
+					for(var i=0;i<instances.getSize();i++)
 					{
-						GEPPETTO.SceneController.checkVisualInstance(instances[i]);
+						GEPPETTO.SceneController.checkVisualInstance(instances[i],i);
 					}
 				}
 				else
@@ -61,7 +61,7 @@ define(function(require) {
 			 * 
 			 * @param instances - skeleton with instances and visual entities
 			 */
-			checkVisualInstance : function(instance)
+			checkVisualInstance : function(instance, index)
 			{
 				//This block creates the visual objects if the variable has any in either the
 				//visual type of a type or if the type itself is a visual type
@@ -74,7 +74,12 @@ define(function(require) {
 				{
 					GEPPETTO.SceneFactory.buildVisualInstance(instance, instance.getVariable().getType().getVisualType());
 				}
-				
+				else if((instance.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE) &&
+						(instance.getVariable().getType().getMetaType()==GEPPETTO.Resources.ARRAY_TYPE_NODE) &&
+						(instance.getVariable().getType().getType().getVisualType()!=undefined))
+				{
+					GEPPETTO.SceneFactory.buildVisualInstance(instance, instance.getVariable().getType().getType().getVisualType(), index);
+				}
 				
 				//this block keeps traversing the instances
 				if(instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE)

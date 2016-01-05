@@ -19,10 +19,15 @@ define(function(require) {
 
 
 				
-				buildVisualInstance : function(instance, visualType)
+				buildVisualInstance : function(instance, visualType, index)
 				{
 					var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance, visualType);
-					GEPPETTO.SceneFactory.init3DObject(meshes, instance.getInstancePath(), instance.getVariable().getPosition());
+					var position = instance.getVariable().getPosition();
+					if(instance.getVariable().getType().getMetaType()==GEPPETTO.Resources.ARRAY_TYPE_NODE)
+					{
+						position=instance.getVariable().getType().getDefaultValue().elements[index].position;
+					}
+					GEPPETTO.SceneFactory.init3DObject(meshes, instance.getInstancePath(), position);
 				},
 				
 				/**

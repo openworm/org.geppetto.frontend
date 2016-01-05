@@ -188,7 +188,7 @@ define(function(require) {
 						{
 							for(var v in visualType.getVariables())
 							{
-								var visualValue=visualType.getVariables()[v].get("wrappedObj").initialValues[0].value;
+								var visualValue=visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
 								threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines)
 								if(threeDeeObj)
 								{
@@ -198,8 +198,8 @@ define(function(require) {
 						}
 						else
 						{
-							var visualValue=visualType.get("wrappedObj").initialValues[0].value;
-							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines)
+							var visualValue=visualType.getWrappedObj().defaultValue;
+							threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getId(), materials, lines)
 							if(threeDeeObj)
 							{
 								threeDeeObjList.push(threeDeeObj);
@@ -352,7 +352,7 @@ define(function(require) {
 					var loader = new THREE.ColladaLoader();
 					loader.options.convertUpAxis = true;
 					var xmlParser = new DOMParser();
-					var responseXML = xmlParser.parseFromString(node.model.data, "application/xml");
+					var responseXML = xmlParser.parseFromString(node.collada, "application/xml");
 					var scene = null;
 					loader.parse(responseXML, function(collada) {
 						scene = collada.scene;
@@ -384,7 +384,7 @@ define(function(require) {
 						console.log(item, loaded, total);
 					};
 					var loader = new THREE.OBJLoader(manager);
-					var scene = loader.parse(node.model.data);
+					var scene = loader.parse(node.obj);
 					
 					scene.traverse(function(child){
 						if(child instanceof THREE.Mesh){

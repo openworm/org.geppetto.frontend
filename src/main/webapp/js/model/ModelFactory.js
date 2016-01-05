@@ -431,7 +431,7 @@ define(function(require)
 							if(vizType!=undefined && vizType!=null){
 								// ADD to list of vars with viz types
 								var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
-								varsWithVizTypes.push(path);
+								varsWithVizTypes.push(path); 
 							}
 						}
 						else if(allTypes[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
@@ -444,6 +444,10 @@ define(function(require)
 								var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 								varsWithVizTypes.push(path);
 							}
+						}
+						else if(allTypes[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE){
+							var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+							varsWithVizTypes.push(path);
 						}
 						
 						// RECURSE on any variables inside composite types

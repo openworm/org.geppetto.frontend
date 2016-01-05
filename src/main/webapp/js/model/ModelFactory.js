@@ -269,6 +269,11 @@ define(function(require)
 					this.buildInstanceHierarchy(varsWithVizTypes[j], null, geppettoModel, instances);
 				}
 				
+				// populate shortcuts
+				for(var k=0; k<instances.length; k++){
+					this.populateChildrenShortcuts(instances[k]);
+				}
+				
 				return instances;
 			},
 			

@@ -283,7 +283,13 @@ define(function(require) {
 				window.Model = GEPPETTO.ModelFactory.createGeppettoModel(model);
 				
 				// build instance tree here (instance tree will be populated with state info for each experiment)
-				window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model); 
+				window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model);
+				
+				// create global shortcuts to top level instances
+				for(var i=0; i < window.Instances.length; i++){
+					// NOTE: tampering with the window object like this is probably a horrible idea
+					window[window.Instances[i].getId()] = window.Instances[i];
+				}
 				
 				// build scene here from Geppetto model populating visual objects in the instance tree
 				// Updates the simulation controls visibility

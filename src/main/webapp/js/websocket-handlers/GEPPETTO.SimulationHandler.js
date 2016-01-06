@@ -87,7 +87,7 @@ define(function(require) {
         
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function(payload) { 
 			
-        	GEPPETTO.trigger('project:show_spinner');
+        	GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.LOADING_EXPERIMENT);
         }
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {        	
@@ -256,6 +256,9 @@ define(function(require) {
 			},
 			
 			loadProject : function(payload){
+				
+				
+				
 				// we remove anything from any previous loaded project if there was one
 				if(Project)
 				{
@@ -277,6 +280,13 @@ define(function(require) {
 			},
 			
 			loadModel : function(payload){
+				
+            	var startCreation = new Date();
+				
+				// TODO: empty relevant nodes or rebuild instance tree altogether - GI
+				// TODO: instead of creating runtime tree, populate instance tree with state info for given experiment - GI
+            	//GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
+
 				var model = JSON.parse(payload.geppetto_model_loaded);
 				
 				// build Geppetto model here (once off operation when project is loaded)
@@ -303,6 +313,12 @@ define(function(require) {
 				
 				GEPPETTO.trigger(Events.Model_loaded);
 	            GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
+	            
+	            
+            	var endCreation = new Date() - startCreation;
+            	GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create the model and the instances");
+            	
+            	GEPPETTO.trigger("hide:spinner");
 			},
 
 			loadExperiment : function(payload){
@@ -319,18 +335,6 @@ define(function(require) {
 						break;
 					}
 				}
-
-            	var startCreation = new Date();
-				
-				// TODO: empty relevant nodes or rebuild instance tree altogether - GI
-				// TODO: instead of creating runtime tree, populate instance tree with state info for given experiment - GI
-            	//GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
-            
-            	var endCreation = new Date() - startCreation;
-            	GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create runtime tree");
-	            GEPPETTO.Console.debugLog(GEPPETTO.NodeFactory.nodes + " total nodes created, from which: "+
-            						  	  GEPPETTO.NodeFactory.entities + " were entities and "+
-            						  	  GEPPETTO.NodeFactory.connections + " were connections");
 
 			},
 			

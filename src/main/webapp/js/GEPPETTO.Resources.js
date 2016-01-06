@@ -111,6 +111,8 @@ define(function(require) {
 			EXPERIMENT_STOP: "Simulation Stopped",
 
 			LOADING_PROJECT: "Loading Project",
+			
+			LOADING_EXPERIMENT: "Loading Experiment",
 
 			LOADING_SIMULATION_SLOW : "Still loading, but things are taking longer than expected, are you on low bandwidth?",
 

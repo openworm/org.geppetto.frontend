@@ -199,9 +199,11 @@ define([ 'jquery', 'underscore', 'backbone',
 		 * @returns {String}  Status of attempt to load simulation using url.
 		 */
 		loadFromID: function(projectID,experimentID) {
-			//TODO: Add logic for what happens after loading a new project
-			//when one is already loaded
+
 			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+			
+			GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.LOADING_PROJECT);
+			
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
 			if(projectID != null && projectID != "") {
@@ -229,9 +231,11 @@ define([ 'jquery', 'underscore', 'backbone',
 		 * @returns {String}  Status of attempt to load project using url.
 		 */
 		loadFromURL: function(projectURL) {
-			//TODO: Add logic for what happens after loading a new project
-			//when one is already loaded
+
 			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+			
+			GEPPETTO.trigger('show_spinner');
+
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
 			if(projectURL != null && projectURL != "") {
@@ -260,9 +264,11 @@ define([ 'jquery', 'underscore', 'backbone',
 		 * @returns {String}  Status of attempt to load project
 		 */
 		loadFromContent: function(content) {
-			//TODO: Add logic for what happens after loading a new project
-			//when one is already loaded
+
 			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+			
+			GEPPETTO.trigger('show_spinner');
+			
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
 			if(content != null && content != "") {

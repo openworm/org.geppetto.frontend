@@ -569,7 +569,9 @@ define(function(require)
 				var t = new CompositeVisualType(options);
 				t.set({ "visualType" : node.visualType });
 				t.set({ "variables" : this.createVariables(node.variables) });
-				t.set({ "visualGroups" : this.createVisualGroups(node.visualGroups) });
+				if(node.visualGroups!=undefined){
+					t.set({ "visualGroups" : this.createVisualGroups(node.visualGroups) });
+				}
 
 				return t;
 			},
@@ -618,36 +620,37 @@ define(function(require)
 			{
 				var visualGroups = [];
 				
-				for(var i=0; i < nodes.length; i++){					
-					var	options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: nodes[i], visualGroupElements : this.createVisualGroupElements(nodes[i].visualGroupElements)};
-					
-					// get tags from raw json
-					var tagRefObjs = nodes[i].tags;
-					
-					if(tagRefObjs != undefined){
-						var tags = [];
+				for(var i=0; i < nodes.length; i++){	
+					if(nodes[i].visualGroupElements!=undefined){
+						var	options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: nodes[i], visualGroupElements : this.createVisualGroupElements(nodes[i].visualGroupElements)};
 						
-						// populate tags from references
-						for(var j=0; j<tagRefObjs.length; j++){
-							// get reference string - looks like this --> '//@tags.1/@tags.5';
-							var refStr = tagRefObjs[j].$ref;
+						// get tags from raw json
+						var tagRefObjs = nodes[i].tags;
+						
+						if(tagRefObjs != undefined){
+							var tags = [];
 							
-							// parse
-							var tagPointer = this.parseTagPointerString(refStr);
+							// populate tags from references
+							for(var j=0; j<tagRefObjs.length; j++){
+								// get reference string - looks like this --> '//@tags.1/@tags.5';
+								var refStr = tagRefObjs[j].$ref;
+								
+								// parse
+								var tagPointer = this.parseTagPointerString(refStr);
+								
+								// go fetch tag from geppetto model and add it to tags (bloody hawkard)
+								var tagStr = this.rawGeppetoModel.tags[tagPointer.tagIndex1].tags[tagPointer.tagIndex2].name;
+								
+								tags.push(tagStr);
+							}
 							
-							// go fetch tag from geppetto model and add it to tags (bloody hawkard)
-							var tagStr = this.rawGeppetoModel.tags[tagPointer.tagIndex1].tags[tagPointer.tagIndex2].name;
-							
-							tags.push(tagStr);
+							// add to options to init object
+							options.tags = tags;
 						}
 						
-						// add to options to init object
-						options.tags = tags;
+						var vg = new VisualGroup(options);
+						visualGroups.push(vg);
 					}
-					
-					var vg = new VisualGroup(options);
-					
-					visualGroups.push(vg);
 				}
 
 				return visualGroups;

@@ -46,6 +46,7 @@ define(function(require) {
 
 	return ObjectWrapper.Model.extend({
 		visualGroupElements : [],
+		tags : [],
 
 		/**
 		 * Initializes this node with passed attributes
@@ -59,6 +60,7 @@ define(function(require) {
 			
 			// visual group
 			this.set({ "visualGroupElements" : (options.visualGroupElements != undefined) ? options.visualGroupElements : []});
+			this.set({ "tags" : (options.tags != undefined) ? options.tags : []});
 		},
 
 		/**
@@ -98,7 +100,7 @@ define(function(require) {
 		 * @returns {List<String>} All tags for this visual group
 		 */
 		getTags : function() {
-			 return this.get("wrappedObj").tags;
+			 return this.get("tags");
 		},
 		
 		/**

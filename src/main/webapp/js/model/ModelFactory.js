@@ -61,12 +61,16 @@ define(function(require)
 			/*
 			 * Variables to keep track of tree building state go here if needed
 			 */
+			rawGeppetoModel : null,
 
 			/**
 			 * Creates and populates Geppetto model
 			 */
 			createGeppettoModel : function(jsonModel)
 			{
+				// store raw model for easy access during model building operations
+				this.rawGeppetoModel = jsonModel;
+				
 				var geppettoModel = null;
 				
 				if(jsonModel.eClass == 'GeppettoModel'){
@@ -614,8 +618,32 @@ define(function(require)
 			{
 				var visualGroups = [];
 				
-				for(var i=0; i < nodes.length; i++){
+				for(var i=0; i < nodes.length; i++){					
 					var	options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: nodes[i], visualGroupElements : this.createVisualGroupElements(nodes[i].visualGroupElements)};
+					
+					// get tags from raw json
+					var tagRefObjs = nodes[i].tags;
+					
+					if(tagRefObjs != undefined){
+						var tags = [];
+						
+						// populate tags from references
+						for(var j=0; j<tagRefObjs.length; j++){
+							// get reference string - looks like this --> '//@tags.1/@tags.5';
+							var refStr = tagRefObjs[j].$ref;
+							
+							// parse
+							var tagPointer = this.parseTagPointerString(refStr);
+							
+							// go fetch tag from geppetto model and add it to tags (bloody hawkard)
+							var tagStr = this.rawGeppetoModel.tags[tagPointer.tagIndex1].tags[tagPointer.tagIndex2].name;
+							
+							tags.push(tagStr);
+						}
+						
+						// add to options to init object
+						options.tags = tags;
+					}
 					
 					var vg = new VisualGroup(options);
 					
@@ -623,6 +651,24 @@ define(function(require)
 				}
 
 				return visualGroups;
+			},
+			
+			/**
+			 * Helper function to parse tag pointer strings to objects
+			 */
+			parseTagPointerString : function(refStr){
+				var tagPointer = { tagIndex1 : undefined, tagIndex2: undefined};
+				
+				var raw = refStr.replace(/\//g, '').split('@');
+				for(var i=0; i<raw.length; i++){
+				  if(raw[i].indexOf('tags') > -1 && i === 1){
+				  	tagPointer.tagIndex1 = parseInt(raw[i].split('.')[1]);
+				  } else if(raw[i].indexOf('tags') > -1 && i === 2){
+				  	tagPointer.tagIndex2 = parseInt(raw[i].split('.')[1]);
+				  }
+				}
+				
+				return tagPointer;
 			},
 			
 			/** Creates visual group elements */

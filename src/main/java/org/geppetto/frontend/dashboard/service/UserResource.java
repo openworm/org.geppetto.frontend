@@ -32,6 +32,8 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
+import java.util.Arrays;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
@@ -40,6 +42,8 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IUser;
+import org.geppetto.core.data.model.IUserGroup;
+import org.geppetto.core.data.model.UserPrivileges;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -56,11 +60,12 @@ public class UserResource
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
+	private static IUserGroup userGroup = null;
+	
 	private volatile static int guestId;
 
 	@RequestMapping("/currentuser")
-	public @ResponseBody
-	IUser getCurrentUser()
+	public @ResponseBody IUser getCurrentUser()
 	{
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
@@ -90,44 +95,63 @@ public class UserResource
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
-	public @ResponseBody
-	IUser addNewUser(@RequestParam String username, @RequestParam String password)
+	public @ResponseBody IUser addNewUser(@RequestParam String username, @RequestParam String password)
 	{
 		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
-		
+
 		IUser user;
-		if (!manager.isDefault()) {
+		if(!manager.isDefault())
+		{
 			return manager.getUserByLogin(username);
 		}
-		else 
+		else
 		{
 			user = manager.newUser(username, password, true, null);
 		}
-		
+
 		return user;
 	}
 
 	@RequestMapping(value = "/setPassword", method = RequestMethod.GET)
-	public @ResponseBody
-	IUser setPassword(@RequestParam String username, @RequestParam String oldPassword, @RequestParam String newPassword)
+	public @ResponseBody IUser setPassword(@RequestParam String username, @RequestParam String oldPassword, @RequestParam String newPassword)
 	{
 		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
 		IUser user = manager.getUserByLogin(username);
-		if (user != null && user.getPassword().equals(oldPassword)){
+		if(user != null && user.getPassword().equals(oldPassword))
+		{
 			return manager.updateUser(user, newPassword);
 		}
-		else{
+		else
+		{
 			return null;
 		}
 	}
-	
+
+	/**
+	 * @return
+	 */
 	private IUser getGuestUser()
 	{
 		synchronized(this)
 		{
 			guestId++;
 		}
-		return DataManagerHelper.getDataManager().newUser("Guest " + guestId, "", false, null);
+		return DataManagerHelper.getDataManager().newUser("Guest " + guestId, "", false, getUserGroup());
+	}
+
+	/**
+	 * @return
+	 */
+	private IUserGroup getUserGroup()
+	{
+		if(userGroup==null)
+		{
+			userGroup=DataManagerHelper.getDataManager().newUserGroup("guest",
+					Arrays.asList(UserPrivileges.READ_PROJECT, UserPrivileges.DOWNLOAD, UserPrivileges.DROPBOX_INTEGRATION), 
+					1000l * 1000 * 1000, 
+					1000l * 1000 * 1000 * 2);
+		}
+		return userGroup;
 	}
 
 }

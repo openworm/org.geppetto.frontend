@@ -77,6 +77,9 @@ define(function(require) {
 				GEPPETTO.on(Events.Project_loaded, function(){
 					GEPPETTO.FE.populateExperimentsTable();
 				});
+				GEPPETTO.on(Events.Model_loaded, function(){
+					G.resetCamera();
+				});
 				GEPPETTO.on(Events.Experiment_status_check, function(){
 					GEPPETTO.FE.updateExperimentsTableStatus();
 				});

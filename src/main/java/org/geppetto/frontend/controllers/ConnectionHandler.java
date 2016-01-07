@@ -48,6 +48,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.beans.PathConfiguration;
+import org.geppetto.core.common.GeppettoAccessException;
 import org.geppetto.core.common.GeppettoErrorCodes;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
@@ -195,7 +196,7 @@ public class ConnectionHandler
 			}
 
 		}
-		catch(GeppettoInitializationException | GeppettoExecutionException | IOException e)
+		catch(GeppettoInitializationException | GeppettoExecutionException | GeppettoAccessException | IOException e)
 		{
 			error(e, "Could not load geppetto project");
 		}
@@ -223,7 +224,7 @@ public class ConnectionHandler
 				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CREATED, json);
 
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "Error creating a new experiment");
 			}
@@ -256,7 +257,7 @@ public class ConnectionHandler
 			}
 
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Error loading experiment");
 		}
@@ -297,7 +298,7 @@ public class ConnectionHandler
 				}
 
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "Error running experiment");
 			}
@@ -322,12 +323,20 @@ public class ConnectionHandler
 		{
 			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 			IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-
-			geppettoManager.setWatchedVariables(variables, experiment, geppettoProject);
+			
+			try
+			{
+				geppettoManager.setWatchedVariables(variables, experiment, geppettoProject);
+			}
+			catch(GeppettoExecutionException | GeppettoAccessException e)
+			{
+				error(e, "Error setting watched variables");
+			}
 
 			// serialize watch-lists
 			ObjectMapper mapper = new ObjectMapper();
 			String serializedLists;
+			
 			try
 			{
 				serializedLists = mapper.writer().writeValueAsString(variables);
@@ -377,7 +386,7 @@ public class ConnectionHandler
 				ExperimentState experimentState = geppettoManager.playExperiment(requestID, experiment,null);
 				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, GeppettoSerializer.serializeToJSON(experimentState));
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "Error playing the experiment " + experimentId);
 			}
@@ -428,7 +437,7 @@ public class ConnectionHandler
 				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_MODEL, "");
 			}
 		}
-		catch(GeppettoExecutionException | IOException e)
+		catch(GeppettoExecutionException | IOException | GeppettoAccessException e)
 		{
 			error(e, "Error downloading model for " + aspectInstancePath + " in format " + format);
 		}
@@ -457,7 +466,7 @@ public class ConnectionHandler
 
 			websocketConnection.sendMessage(requestID, OutboundMessages.GET_SUPPORTED_OUTPUTS, supportedOutputsString);
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Error getting supported outputs for " + aspectInstancePath);
 		}
@@ -524,7 +533,7 @@ public class ConnectionHandler
 				ExperimentState experimentState= geppettoManager.setModelParameters(modelParameters, experiment, geppettoProject);
 				websocketConnection.sendMessage(requestID, OutboundMessages.UPDATE_MODEL_TREE, GeppettoSerializer.serializeToJSON(experimentState));
 			}
-			catch(GeppettoExecutionException | IOException e)
+			catch(GeppettoExecutionException | GeppettoAccessException | IOException e)
 			{
 				error(e, "There was an error setting parameters");
 			}
@@ -709,13 +718,13 @@ public class ConnectionHandler
 				try
 				{
 					geppettoManager.deleteExperiment(requestID, experiment);
+					String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"name\":" + '"' + experiment.getName() + '"' + "}";
+					websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, update);
 				}
-				catch(GeppettoExecutionException e)
+				catch(GeppettoExecutionException | GeppettoAccessException e)
 				{
 					error(e, "Error while deleting the experiment");
 				}
-				String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"name\":" + '"' + experiment.getName() + '"' + "}";
-				websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, update);
 			}
 			else
 			{
@@ -752,7 +761,7 @@ public class ConnectionHandler
 					error(null, "Error persisting project  " + projectId + ".");
 				}
 			}
-			catch(GeppettoExecutionException e)
+			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
 				error(e, "Error persisting project");
 			}
@@ -845,7 +854,7 @@ public class ConnectionHandler
 			geppettoManager.uploadResultsToDropBox(aspectPath, experiment, geppettoProject, resultsFormat);
 			websocketConnection.sendMessage(null, OutboundMessages.RESULTS_UPLOADED, null);
 		}
-		catch(GeppettoExecutionException e)
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Unable to upload results for aspect : " + aspectPath);
 		}
@@ -890,7 +899,7 @@ public class ConnectionHandler
 				}
 			}
 		}
-		catch(GeppettoExecutionException | IOException e)
+		catch(GeppettoExecutionException | IOException | GeppettoAccessException e)
 		{
 			error(e, "Error downloading results for " + aspectPath + " in format " + format);
 		}

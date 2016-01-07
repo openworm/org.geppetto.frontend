@@ -1,11 +1,12 @@
-define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
+define([ 'jquery', 'underscore', 'backbone', 
+        'models/project/ProjectModel', 'models/session/SessionModel',
 		'text!templates/projects/projectDetailsTemplate.hbs',
 		// dirty hack for handlebars loading wait
 		'handlebars', 'libs/ginny/ginny' ], function($, _, Backbone,
-		ProjectModel, projectDetailsTemplate) {
+		ProjectModel, SessionModel, projectDetailsTemplate) {
 
 	var ProjectDetailsView = Backbone.View.extend({
-
+		
 		template : Handlebars.compile(projectDetailsTemplate),
 
 		initialize : function(options) {
@@ -57,7 +58,31 @@ define([ 'jquery', 'underscore', 'backbone', 'models/project/ProjectModel',
             if(window.EMBEDDED) {
 				$(".embeddedLinks").attr('target','_self');
 			}
-		}
+            
+            // check user access rights
+            this.checkAccessRights();
+		},
+		
+		checkAccessRights : function() {
+            // Retrieve user details
+    		var userRef = SessionModel.getInstance().get('user');
+    		var privileges = undefined;
+    		if(userRef != undefined) {
+    			privileges = userRef.userGroup.privileges;
+    		}
+    		
+    		// Check if the user has WRITE and hide / show stuff accordingly
+    		if(privileges.indexOf("WRITE_PROJECT", privileges) == -1){
+    			// hide delete project button
+    			$('.delete-project').hide();
+			}
+    		
+    		// Check if the user has DOWNLOAD access and hide / show stuff accordingly
+    		if(privileges.indexOf("DOWNLOAD", privileges) == -1){
+    			// hide download results buttons for experiments
+    			$('.download-results').hide();
+			}
+		},
 	});
 
 	return ProjectDetailsView;

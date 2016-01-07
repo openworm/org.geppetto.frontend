@@ -7,10 +7,12 @@ define(function(require) {
 
 	require('./components');
 
-	GEPPETTO.on('project:show_spinner', function() {
+
+	GEPPETTO.on('show_spinner', function(label) {
 		React.renderComponent(LoadingSpinner({
 			show : true,
-			keyboard : false
+			keyboard : false,
+			text: label
 		}), $('#modal-region').get(0));
 	});
 

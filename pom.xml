@@ -92,7 +92,8 @@
 									<goal>grunt</goal>
 								</goals>
 								<configuration>
-									<arguments>dist --contextPath ${contextPath} --useSsl ${useSsl} --embedded ${embedded} --embedderURL ${embedderURL}</arguments>
+									<arguments>dist --contextPath ${contextPath} --useSsl ${useSsl}
+										--embedded ${embedded} --embedderURL ${embedderURL}</arguments>
 								</configuration>
 								<phase>generate-resources</phase>
 							</execution>
@@ -143,7 +144,8 @@
 									<goal>grunt</goal>
 								</goals>
 								<configuration>
-									<arguments>--contextPath ${contextPath}  --useSsl ${useSsl} --embedded ${embedded} --embedderURL ${embedderURL}</arguments>
+									<arguments>--contextPath ${contextPath} --useSsl ${useSsl}
+										--embedded ${embedded} --embedderURL ${embedderURL}</arguments>
 								</configuration>
 								<phase>generate-resources</phase>
 							</execution>
@@ -300,6 +302,11 @@
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring</artifactId>
 			<version>1.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.cglib</groupId>
+			<artifactId>com.springsource.net.sf.cglib</artifactId>
+			<version>2.2.0</version>
 		</dependency>
 	</dependencies>
 	<build>

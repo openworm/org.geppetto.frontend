@@ -94,10 +94,16 @@ public class UserResource
 	IUser addNewUser(@RequestParam String username, @RequestParam String password)
 	{
 		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
-		IUser user = manager.newUser(username, password, true);
+		
+		IUser user;
 		if (!manager.isDefault()) {
 			return manager.getUserByLogin(username);
 		}
+		else 
+		{
+			user = manager.newUser(username, password, true, null);
+		}
+		
 		return user;
 	}
 
@@ -121,7 +127,7 @@ public class UserResource
 		{
 			guestId++;
 		}
-		return DataManagerHelper.getDataManager().newUser("Guest " + guestId, "", false);
+		return DataManagerHelper.getDataManager().newUser("Guest " + guestId, "", false, null);
 	}
 
 }

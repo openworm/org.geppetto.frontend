@@ -52,6 +52,7 @@ define(function(require)
 		var ArrayInstance = require('model/ArrayInstance');
 		var VisualGroup = require('model/VisualGroup');
 		var VisualGroupElement = require('model/VisualGroupElement');
+		var AVisualCapability = require('model/AVisualCapability');
 		
 		/**
 		 * @class GEPPETTO.ModelFactory
@@ -341,10 +342,21 @@ define(function(require)
 						var arrayOptions = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.ARRAY_INSTANCE_NODE, variable : variable, size: size, parent : parentInstance};
 						var arrayInstance = this.createArrayInstance(arrayOptions);
 						
+						// check if visual type and inject AVisualCapability 
+						if(arrayInstance.hasVisualType()){
+							arrayInstance.extendApi(AVisualCapability);
+						}
+						
 						for(var i=0; i<size; i++){
 							// create simple instance for this variable
 							var options = { id: variable.getId() + '_' + i, name: variable.getId() + '_' + i, _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: [], parent : arrayInstance};
 							var explodedInstance = this.createInstance(options);
+							
+							// check if visual type and inject AVisualCapability
+							// NOTE: should always be the case for an exploded instance but better to check
+							if(explodedInstance.hasVisualType()){
+								explodedInstance.extendApi(AVisualCapability);
+							}
 							
 							// add to array instance (adding this way because we want to access as an array)
 							arrayInstance[i] = explodedInstance;
@@ -370,6 +382,11 @@ define(function(require)
 							// create simple instance for this variable
 							var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: [], parent : parentInstance};
 							newlyCreatedInstance = this.createInstance(options);
+							
+							// check if visual type and inject AVisualCapability
+							if(newlyCreatedInstance.hasVisualType()){
+								newlyCreatedInstance.extendApi(AVisualCapability);
+							}
 							
 							//  if there is a parent add to children else add to top level instances
 							if (parentInstance != null && parentInstance != undefined){
@@ -569,7 +586,9 @@ define(function(require)
 				var t = new CompositeVisualType(options);
 				t.set({ "visualType" : node.visualType });
 				t.set({ "variables" : this.createVariables(node.variables) });
-				t.set({ "visualGroups" : this.createVisualGroups(node.visualGroups) });
+				if(node.visualGroups!=undefined){
+					t.set({ "visualGroups" : this.createVisualGroups(node.visualGroups) });
+				}
 
 				return t;
 			},
@@ -618,36 +637,37 @@ define(function(require)
 			{
 				var visualGroups = [];
 				
-				for(var i=0; i < nodes.length; i++){					
-					var	options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: nodes[i], visualGroupElements : this.createVisualGroupElements(nodes[i].visualGroupElements)};
-					
-					// get tags from raw json
-					var tagRefObjs = nodes[i].tags;
-					
-					if(tagRefObjs != undefined){
-						var tags = [];
+				for(var i=0; i < nodes.length; i++){	
+					if(nodes[i].visualGroupElements!=undefined){
+						var	options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: nodes[i], visualGroupElements : this.createVisualGroupElements(nodes[i].visualGroupElements)};
 						
-						// populate tags from references
-						for(var j=0; j<tagRefObjs.length; j++){
-							// get reference string - looks like this --> '//@tags.1/@tags.5';
-							var refStr = tagRefObjs[j].$ref;
+						// get tags from raw json
+						var tagRefObjs = nodes[i].tags;
+						
+						if(tagRefObjs != undefined){
+							var tags = [];
 							
-							// parse
-							var tagPointer = this.parseTagPointerString(refStr);
+							// populate tags from references
+							for(var j=0; j<tagRefObjs.length; j++){
+								// get reference string - looks like this --> '//@tags.1/@tags.5';
+								var refStr = tagRefObjs[j].$ref;
+								
+								// parse
+								var tagPointer = this.parseTagPointerString(refStr);
+								
+								// go fetch tag from geppetto model and add it to tags (bloody hawkard)
+								var tagStr = this.rawGeppetoModel.tags[tagPointer.tagIndex1].tags[tagPointer.tagIndex2].name;
+								
+								tags.push(tagStr);
+							}
 							
-							// go fetch tag from geppetto model and add it to tags (bloody hawkard)
-							var tagStr = this.rawGeppetoModel.tags[tagPointer.tagIndex1].tags[tagPointer.tagIndex2].name;
-							
-							tags.push(tagStr);
+							// add to options to init object
+							options.tags = tags;
 						}
 						
-						// add to options to init object
-						options.tags = tags;
+						var vg = new VisualGroup(options);
+						visualGroups.push(vg);
 					}
-					
-					var vg = new VisualGroup(options);
-					
-					visualGroups.push(vg);
 				}
 
 				return visualGroups;

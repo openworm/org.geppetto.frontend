@@ -110,6 +110,36 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			},
 			
 			/**
+			 * Checks if this instance has a visual type
+			 * 
+			 * @command Instance.hasVisualType()
+			 * 
+			 * @returns {Boolean}
+			 * 
+			 */
+			hasVisualType : function() {
+				var hasVisual = false;
+				var types = this.getTypes();
+				
+				// check if any of types is VISUAL_TYPE_NODE or if types HAVE .visualType
+				for(var i=0; i < types.length; i++){
+					// could be pointing to an array variable if it's an exploded instance
+					if(types[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){ 
+						// check it if is a visual type or has a visual type
+						if(types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || (types[i].getType().getVisualType() != null && types[i].getType().getVisualType() != null)){
+							hasVisual = true;
+							break;
+						}
+					} else if(types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || (types[i].getVisualType() != null && types[i].getVisualType() != null)){
+						hasVisual = true;
+						break;
+					}
+				}
+
+				return hasVisual;
+			},
+			
+			/**
 			 * Get the variable for this instance
 			 * 
 			 * @command Instance.getVariable()
@@ -155,12 +185,21 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			/**
 			 * Get children instances
 			 * 
-			 * @command Instance.getChildren()
+			 * @command Instance.addChild()
 			 * 
 			 * @returns {List<Instance>} - List of instances
 			 */
 			addChild : function(child) {
 				this.get("children").push(child);
 			},
+			
+			/**
+			 * Extends with methods from another object
+			 * 
+			 * @command Instance.extendApi(extensionObj)
+			 */
+			extendApi : function(extensionObj){
+				$.extend(this, extensionObj);
+			}
 		})
 });

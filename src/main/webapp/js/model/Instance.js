@@ -178,8 +178,15 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 				if(parent != null && parent != undefined){
 					parentPath = parent.getInstancePath();
 				}
-				
-				return (parentPath != "") ? (parentPath + "." + this.getId()) : this.getId();
+				var path=(parentPath + "." + this.getId());
+				if((parentPath!="") && 
+					(parent.getMetaType()==GEPPETTO.Resources.ARRAY_INSTANCE_NODE) &&
+					(this.getId().indexOf(parent.getId(), 0) === 0))
+				{
+					var index=this.getId().substring(parent.getId().length+1,this.getId().length);
+					path=parentPath+"["+index+"]";
+				}
+				return (parentPath != "") ?  path : this.getId();
 			},
 			
 			/**

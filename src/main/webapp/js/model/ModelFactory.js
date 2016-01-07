@@ -52,6 +52,7 @@ define(function(require)
 		var ArrayInstance = require('model/ArrayInstance');
 		var VisualGroup = require('model/VisualGroup');
 		var VisualGroupElement = require('model/VisualGroupElement');
+		var AVisualCapability = require('model/AVisualCapability');
 		
 		/**
 		 * @class GEPPETTO.ModelFactory
@@ -341,10 +342,21 @@ define(function(require)
 						var arrayOptions = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.ARRAY_INSTANCE_NODE, variable : variable, size: size, parent : parentInstance};
 						var arrayInstance = this.createArrayInstance(arrayOptions);
 						
+						// check if visual type and inject AVisualCapability 
+						if(arrayInstance.hasVisualType()){
+							arrayInstance.extendApi(AVisualCapability);
+						}
+						
 						for(var i=0; i<size; i++){
 							// create simple instance for this variable
 							var options = { id: variable.getId() + '_' + i, name: variable.getId() + '_' + i, _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: [], parent : arrayInstance};
 							var explodedInstance = this.createInstance(options);
+							
+							// check if visual type and inject AVisualCapability
+							// NOTE: should always be the case for an exploded instance but better to check
+							if(explodedInstance.hasVisualType()){
+								explodedInstance.extendApi(AVisualCapability);
+							}
 							
 							// add to array instance (adding this way because we want to access as an array)
 							arrayInstance[i] = explodedInstance;
@@ -370,6 +382,11 @@ define(function(require)
 							// create simple instance for this variable
 							var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: [], parent : parentInstance};
 							newlyCreatedInstance = this.createInstance(options);
+							
+							// check if visual type and inject AVisualCapability
+							if(newlyCreatedInstance.hasVisualType()){
+								newlyCreatedInstance.extendApi(AVisualCapability);
+							}
 							
 							//  if there is a parent add to children else add to top level instances
 							if (parentInstance != null && parentInstance != undefined){

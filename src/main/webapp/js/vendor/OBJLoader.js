@@ -63,30 +63,6 @@ THREE.OBJLoader.prototype = {
 
 		}
 
-		function createMesh( vertices, color ) {
-
-			var i, c;
-			var vl = vertices.length;
-
-			var geometry = new THREE.Geometry();
-			var vertices_tmp = [];
-
-			for ( i = 0; i < vl; i ++ ) {
-
-				geometry.vertices.push(new THREE.Vector3( vertices[ i++ ],  vertices[ i++ ], vertices[ i ] ));
-
-			}
-
-
-			mesh = new THREE.Points( geometry, new THREE.PointsMaterial( { size: 1, color: color } ) );
-
-			
-			return mesh;
-			
-
-		}
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-		
 		function addVertex( a, b, c ) {
 
 			geometry.vertices.push(
@@ -366,15 +342,36 @@ THREE.OBJLoader.prototype = {
 
 		var container = new THREE.Object3D();
 
+		for ( var i = 0, l = objects.length; i < l; i ++ ) {
 
-		container.add( createMesh( vertices, 0xff0000 ) );
-		
-        var geometry = new THREE.BoxGeometry( 200, 200, 200 );
-		
+			object = objects[ i ];
+			geometry = object.geometry;
 
-		var mesh = new THREE.Mesh( geometry );
-		container.add( mesh );
-		
+			var buffergeometry = new THREE.BufferGeometry();
+
+			buffergeometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry.vertices ), 3 ) );
+
+			if ( geometry.normals.length > 0 ) {
+
+				buffergeometry.addAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( geometry.normals ), 3 ) );
+
+			}
+
+			if ( geometry.uvs.length > 0 ) {
+
+				buffergeometry.addAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry.uvs ), 2 ) );
+
+			}
+
+			material = new THREE.MeshLambertMaterial();
+			material.name = object.material.name;
+
+			var mesh = new THREE.Mesh( buffergeometry, material );
+			mesh.name = object.name;
+
+			container.add( mesh );
+
+		}
 
 		console.timeEnd( 'OBJLoader' );
 

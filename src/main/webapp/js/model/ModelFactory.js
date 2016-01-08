@@ -289,6 +289,38 @@ define(function(require)
 				return instances;
 			},
 			
+			/**
+			 * Adds instances to a list of existing instances. It will expand the instance tree if it partially exists or create it if doesn't.
+			 */
+			addInstances : function(newInstancesPaths, topInstances, geppettoModel){
+				// based on list of new paths, expand instance tree 
+				for(var j=0; j<newInstancesPaths.length; j++){
+					// process instance paths and convert array syntax to id concatenation syntax
+					// e.g. acnet2.baskets_12[0].v --> acnet2.baskets_12.baskets_12_0.v
+					var idConcatPath = '';
+					var splitInstancePath = newInstancesPaths[j].split('.');
+					for(var i=0; i<splitInstancePath.length; i++){
+						if(splitInstancePath[i].indexOf('[') > -1){
+							// contains array syntax = so grab array id
+							var arrayId = splitInstancePath[i].split('[')[0];
+							// replace brackets
+							var arrayElementId = splitInstancePath[i].replace('[', '_').replace(']', '');
+							
+							splitInstancePath[i] = arrayId + '.' + arrayElementId;
+						}
+						
+						idConcatPath += (i != splitInstancePath.length - 1) ? (splitInstancePath[i] + '.') : splitInstancePath[i];
+					}
+					
+					this.buildInstanceHierarchy(idConcatPath, null, geppettoModel, topInstances);
+				}
+				
+				// populate shortcuts
+				for(var k=0; k<topInstances.length; k++){
+					this.populateChildrenShortcuts(topInstances[k]);
+				}
+			},
+			
 			/** 
 			 * Build instance hierarchy
 			 */
@@ -296,6 +328,7 @@ define(function(require)
 			{				
 				var variable = null;
 				var newlyCreatedInstance = null;
+				var newlyCreatedInstances = [];
 				
 				// find matching first variable in path in the model object passed in
 				var varsIds = path.split('.');
@@ -310,8 +343,7 @@ define(function(require)
 					}
 				}
 				else if(model.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
-				
-					var allTypes =model.getTypes();
+					var allTypes = model.getTypes();
 					// get all variables and match it from there
 					for(var i=0; i<allTypes.length; i++){
 						if(allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
@@ -338,7 +370,21 @@ define(function(require)
 						}
 					}
 					
-					if(arrayType != null){
+					// check in top level instances if we have an instance for the current variable already
+					var matchingInstance = null;
+					matchingInstance = this.findMatchingInstance(variable, topLevelInstances);
+					
+					if(matchingInstance != null){
+						// there is a match, simply re-use that instance as the "newly created one" instead of creating a new one
+						newlyCreatedInstance = matchingInstance;
+						
+						if(matchingInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE){
+							var arrayElements = matchingInstance.getChildren();
+							for(var z=0; z<arrayElements.length; z++){
+								matchingInstances.push(arrayElements[z]);
+							}
+						}
+					} else if(arrayType != null){
 						// when array type, explode into multiple ('size') instances
 						var size = arrayType.getSize();
 						
@@ -362,8 +408,25 @@ define(function(require)
 								explodedInstance.extendApi(AVisualCapability);
 							}
 							
+							// check if it has connections and inject AConnectionCapability
+							if((explodedInstance.getType().getMetaType()==GEPPETTO.Resources.CompositeTypeNode)&&
+								(explodedInstance.getType().getConnections().length>0)){
+								explodedInstance.extendApi(AConnectionCapability);
+							}
+								
+							if(explodedInstance.getType().getId()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
+								explodedInstance.extendApi(AStateVariableCapability);
+							}
+								
+							if(explodedInstance.getType().getId()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
+								explodedInstance.extendApi(AParameterCapability);
+							}
+							
 							// add to array instance (adding this way because we want to access as an array)
 							arrayInstance[i] = explodedInstance;
+							
+							// ad to newly created instances list
+							newlyCreatedInstances.push(explodedInstance);
 						}
 						
 						//  if there is a parent add to children else add to top level instances
@@ -374,44 +437,35 @@ define(function(require)
 							topLevelInstances.push(arrayInstance);
 						}
 						
-					} else {
-						// check in top level instances if we have an instance for the current variable already
-						var matchingInstance = null;
-						matchingInstance = this.findMatchingInstance(variable, topLevelInstances);
+					} else {					
+						// create simple instance for this variable
+						var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: [], parent : parentInstance};
+						newlyCreatedInstance = this.createInstance(options);
 						
-						if(matchingInstance != null){
-							// there is a match, simply re-use that instance as the "newly created one" instead of creating a new one
-							newlyCreatedInstance = matchingInstance;
-						} else {						
-							// create simple instance for this variable
-							var options = { id: variable.getId(), name: variable.getId(), _metaType: GEPPETTO.Resources.INSTANCE_NODE, variable : variable, children: [], parent : parentInstance};
-							newlyCreatedInstance = this.createInstance(options);
+						// check if visual type and inject AVisualCapability
+						if(newlyCreatedInstance.hasVisualType()){
+							newlyCreatedInstance.extendApi(AVisualCapability);
+						}
+						
+						// check if it has connections and inject AConnectionCapability
+						if((newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.CompositeTypeNode)&&
+							(newlyCreatedInstance.getType().getConnections().length>0)){
+							newlyCreatedInstance.extendApi(AConnectionCapability);
+						}
 							
-							// check if visual type and inject AVisualCapability
-							if(newlyCreatedInstance.hasVisualType()){
-								newlyCreatedInstance.extendApi(AVisualCapability);
-							}
+						if(newlyCreatedInstance.getType().getId()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
+							newlyCreatedInstance.extendApi(AStateVariableCapability);
+						}
 							
-							// check if it has connections and inject AConnectionCapability
-							if((newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.CompositeTypeNode)&&
-								(newlyCreatedInstance.getType().getConnections().length>0)){
-								newlyCreatedInstance.extendApi(AConnectionCapability);
-							}
-							
-							if(newlyCreatedInstance.getType().getId()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
-								newlyCreatedInstance.extendApi(AStateVariableCapability);
-							}
-							
-							if(newlyCreatedInstance.getType().getId()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
-								newlyCreatedInstance.extendApi(AParameterCapability);
-							}
-							
-							//  if there is a parent add to children else add to top level instances
-							if (parentInstance != null && parentInstance != undefined){
-								parentInstance.addChild(newlyCreatedInstance);
-							} else {
-								topLevelInstances.push(newlyCreatedInstance);
-							}
+						if(newlyCreatedInstance.getType().getId()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
+							newlyCreatedInstance.extendApi(AParameterCapability);
+						}
+						
+						//  if there is a parent add to children else add to top level instances
+						if (parentInstance != null && parentInstance != undefined){
+							parentInstance.addChild(newlyCreatedInstance);
+						} else {
+							topLevelInstances.push(newlyCreatedInstance);
 						}
 					}
 				}
@@ -427,6 +481,13 @@ define(function(require)
 				// if there is a parent instance - recurse with new parameters
 				if (newlyCreatedInstance!= null){
 					this.buildInstanceHierarchy(newPath, newlyCreatedInstance, variable, topLevelInstances);
+				}
+				
+				// if there is a list of exploded instances
+				if (newlyCreatedInstances.length > 0) {
+					for(var x=0; x < newlyCreatedInstances.length ; x++){
+						this.buildInstanceHierarchy(newPath, newlyCreatedInstances[x], variable, topLevelInstances);
+					}
 				}
 			},
 			

@@ -256,9 +256,6 @@ define(function(require) {
 			},
 			
 			loadProject : function(payload){
-				
-				
-				
 				// we remove anything from any previous loaded project if there was one
 				if(Project)
 				{
@@ -280,12 +277,7 @@ define(function(require) {
 			},
 			
 			loadModel : function(payload){
-				
             	var startCreation = new Date();
-				
-				// TODO: empty relevant nodes or rebuild instance tree altogether - GI
-				// TODO: instead of creating runtime tree, populate instance tree with state info for given experiment - GI
-            	//GEPPETTO.RuntimeTreeController.createRuntimeTree(jsonRuntimeTree);
 
 				var model = JSON.parse(payload.geppetto_model_loaded);
 				
@@ -294,6 +286,9 @@ define(function(require) {
 				
 				// build instance tree here (instance tree will be populated with state info for each experiment)
 				window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model);
+				
+				// TEST add instances
+				GEPPETTO.ModelFactory.addInstances(['acnet2.baskets_12[0].v'], window.Instances, window.Model);
 				
 				// create global shortcuts to top level instances
 				for(var i=0; i < window.Instances.length; i++){

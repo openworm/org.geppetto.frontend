@@ -48,7 +48,17 @@ define(function(require) {
 	
 	require('vendor/Detector');
 	require('vendor/THREEx.KeyboardState');
-
+	require('vendor/shaders/ConvolutionShader');
+	require('vendor/shaders/CopyShader');
+	require('vendor/shaders/FilmShader');
+	require('vendor/shaders/FocusShader');
+	require('vendor/postprocessing/EffectComposer');
+	require('vendor/postprocessing/MaskPass');
+	require('vendor/postprocessing/RenderPass');
+	require('vendor/postprocessing/BloomPass');
+	require('vendor/postprocessing/ShaderPass');
+	require('vendor/postprocessing/FilmPass');
+	
 	var step = 0;
 
 	var VARS = {
@@ -379,7 +389,9 @@ define(function(require) {
 		 * Renders objects in the scene
 		 */
 		render : function() {
-			GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene,GEPPETTO.getVARS().camera);
+			GEPPETTO.getVARS().renderer.clear();
+			GEPPETTO.getVARS().composer.render( 0.01 );
+			//GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene,GEPPETTO.getVARS().camera);
 		},
 
 		/**

@@ -78,9 +78,33 @@ define(function(require) {
 			GEPPETTO.getVARS().renderer.setClearColor(color, 1);
 			var width = $(GEPPETTO.getVARS().container).width();
 			var height = $(GEPPETTO.getVARS().container).height();
+			GEPPETTO.getVARS().renderer.setPixelRatio( window.devicePixelRatio );
 			GEPPETTO.getVARS().renderer.setSize(width, height);
-			GEPPETTO.getVARS().renderer.autoClear = true;
+			GEPPETTO.getVARS().renderer.autoClear = false;
 			GEPPETTO.getVARS().container.appendChild(GEPPETTO.getVARS().renderer.domElement);
+			
+			var renderModel = new THREE.RenderPass( GEPPETTO.getVARS().scene, GEPPETTO.getVARS().camera );
+			var effectBloom = new THREE.BloomPass( 0.75 );
+			var effectFilm = new THREE.FilmPass( 0.5, 0.5, 1448, false );
+
+			effectFocus = new THREE.ShaderPass( THREE.FocusShader );
+
+			effectFocus.uniforms[ "screenWidth" ].value = window.innerWidth;
+			effectFocus.uniforms[ "screenHeight" ].value = window.innerHeight;
+
+			effectFocus.renderToScreen = true;
+
+			GEPPETTO.getVARS().composer = new THREE.EffectComposer( GEPPETTO.getVARS().renderer );
+
+			
+			var copyPass = new THREE.ShaderPass( THREE.CopyShader );
+			copyPass.renderToScreen = true;
+			
+			GEPPETTO.getVARS().composer.addPass( renderModel );
+			//GEPPETTO.getVARS().composer.addPass( effectBloom );
+			GEPPETTO.getVARS().composer.addPass( copyPass );
+			//GEPPETTO.getVARS().composer.addPass( effectFilm );
+			//GEPPETTO.getVARS().composer.addPass( effectFocus );
 		};
 
 		/**

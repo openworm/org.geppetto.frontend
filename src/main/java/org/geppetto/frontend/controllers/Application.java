@@ -8,7 +8,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.geppetto.core.auth.IAuthService;
+import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.data.DefaultGeppettoDataManager;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +38,17 @@ public class Application
 			{
 				// Default no persistence, no users
 				auth = true;
+				if(geppettoManager.getUser()==null)
+				{
+					try
+					{
+						geppettoManager.setUser(DefaultGeppettoDataManager.getGuestUser());
+					}
+					catch(GeppettoExecutionException e)
+					{
+						logger.error(e);
+					}
+				}
 			}
 			else if(geppettoManager.getUser() != null)
 			{

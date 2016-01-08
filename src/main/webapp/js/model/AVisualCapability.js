@@ -130,8 +130,8 @@ define([ 'jquery' ], function(require) {
 
 				
 				this.selected = true;
-				this.parent.selected=true;
-				GEPPETTO.SceneController.selectAspect(this.instancePath);
+				this.get("parent").selected=true;
+				GEPPETTO.SceneController.selectAspect(this.getInstancePath());
 				message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
 
 				//Behavior: if the parent entity has connections change the opacity of what is not connected

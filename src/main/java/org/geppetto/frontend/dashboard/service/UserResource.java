@@ -32,18 +32,15 @@
  *******************************************************************************/
 package org.geppetto.frontend.dashboard.service;
 
-import java.util.Arrays;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
+import org.geppetto.core.data.DefaultGeppettoDataManager;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IUser;
-import org.geppetto.core.data.model.IUserGroup;
-import org.geppetto.core.data.model.UserPrivileges;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -60,9 +57,7 @@ public class UserResource
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
-	private static IUserGroup userGroup = null;
-	
-	private volatile static int guestId;
+
 
 	@RequestMapping("/currentuser")
 	public @ResponseBody IUser getCurrentUser()
@@ -79,7 +74,7 @@ public class UserResource
 			// If we have no persistence bundle we use a guest user
 			if(!currentUser.isAuthenticated() && geppettoManager.getUser() == null)
 			{
-				IUser guest = getGuestUser();
+				IUser guest = DefaultGeppettoDataManager.getGuestUser();
 				try
 				{
 					geppettoManager.setUser(guest);
@@ -127,31 +122,6 @@ public class UserResource
 		}
 	}
 
-	/**
-	 * @return
-	 */
-	private IUser getGuestUser()
-	{
-		synchronized(this)
-		{
-			guestId++;
-		}
-		return DataManagerHelper.getDataManager().newUser("Guest " + guestId, "", false, getUserGroup());
-	}
 
-	/**
-	 * @return
-	 */
-	private IUserGroup getUserGroup()
-	{
-		if(userGroup==null)
-		{
-			userGroup=DataManagerHelper.getDataManager().newUserGroup("guest",
-					Arrays.asList(UserPrivileges.READ_PROJECT, UserPrivileges.DOWNLOAD, UserPrivileges.DROPBOX_INTEGRATION), 
-					1000l * 1000 * 1000, 
-					1000l * 1000 * 1000 * 2);
-		}
-		return userGroup;
-	}
 
 }

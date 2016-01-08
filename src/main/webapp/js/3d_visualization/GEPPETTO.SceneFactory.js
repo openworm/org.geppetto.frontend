@@ -442,7 +442,7 @@ define(function(require)
 			 */
 			create3DLineFromNode : function(node, material)
 			{
-				if (node.getMetaType() == GEPPETTO.Resources.CYLINDER)
+				if (node.eClass == GEPPETTO.Resources.CYLINDER)
 				{
 					bottomBasePos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
 					topBasePos = new THREE.Vector3(node.distal.x, node.distal.y, node.distal.z);
@@ -461,7 +461,7 @@ define(function(require)
 					threeObject.position.fromArray(midPoint.toArray());
 
 					threeObject.geometry.verticesNeedUpdate = true;
-				} else if (node.getMetaType() == GEPPETTO.Resources.SPHERE)
+				} else if (node.eClass == GEPPETTO.Resources.SPHERE)
 				{
 					var sphere = new THREE.SphereGeometry(node.radius, 20, 20);
 					threeObject = new THREE.Mesh(sphere, material);

@@ -542,7 +542,7 @@ define(function(require)
 								varsWithVizTypes.push(path);
 							}
 						}
-						else if(allTypes[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE){
+						else if((allTypes[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) || (allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)){
 							var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 							varsWithVizTypes.push(path);
 						}

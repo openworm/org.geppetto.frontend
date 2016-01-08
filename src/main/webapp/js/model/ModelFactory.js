@@ -409,7 +409,8 @@ define(function(require)
 							}
 							
 							// check if it has connections and inject AConnectionCapability
-							if(explodedInstance.getType().getConnections().length>0){
+							if((explodedInstance.getType().getMetaType()==GEPPETTO.Resources.CompositeTypeNode)&&
+								(explodedInstance.getType().getConnections().length>0)){
 								explodedInstance.extendApi(AConnectionCapability);
 							}
 								
@@ -447,7 +448,8 @@ define(function(require)
 						}
 						
 						// check if it has connections and inject AConnectionCapability
-						if(newlyCreatedInstance.getType().getConnections().length>0){
+						if((newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.CompositeTypeNode)&&
+							(newlyCreatedInstance.getType().getConnections().length>0)){
 							newlyCreatedInstance.extendApi(AConnectionCapability);
 						}
 							

@@ -54,7 +54,6 @@ define(function(require) {
 		initialize : function(options) {
 			// object wrapper
 			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
 		},
 
 		/**

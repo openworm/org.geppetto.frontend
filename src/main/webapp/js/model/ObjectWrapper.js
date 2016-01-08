@@ -84,7 +84,7 @@ define([ 'jquery', 'underscore', 'backbone' ], function(require) {
 			 * 
 			 */
 			getMetaType : function() {
-				return this.get("_metaType");
+				return this.get('wrappedObj').eClass;
 			},
 		})
 	};

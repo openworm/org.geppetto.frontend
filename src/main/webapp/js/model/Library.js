@@ -51,7 +51,6 @@ define(function(require) {
 		initialize : function(options) {
 			this.set({ "types" : (options.types != 'undefined') ? options.types : [] });
 			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
 		},
 		
 		

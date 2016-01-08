@@ -50,7 +50,6 @@ define(function(require) {
 		 */
 		initialize : function(options) {
 			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
 			this.set({ "visualType" : options.visualType });
 		},
 		

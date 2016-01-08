@@ -518,7 +518,7 @@ define(function(require)
 			createModel : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = {_metaType : GEPPETTO.Resources.GEPPETTO_MODEL_NODE, wrappedObj: node};
+					options = {wrappedObj: node};
 				}
 				
 				var n = new GeppettoModel(options);
@@ -530,7 +530,7 @@ define(function(require)
 			createLibrary : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = {_metaType : GEPPETTO.Resources.LIBRARY_NODE, wrappedObj: node};
+					options = {wrappedObj: node};
 				}
 				
 				var n = new Library(options);
@@ -542,7 +542,7 @@ define(function(require)
 			createVariable : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = {_metaType : GEPPETTO.Resources.VARIABLE_NODE, wrappedObj: node};
+					options = {wrappedObj: node};
 				}
 				
 				var v = new Variable(options);
@@ -555,7 +555,7 @@ define(function(require)
 			createType : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = {_metaType : GEPPETTO.Resources.TYPE_NODE, wrappedObj: node};
+					options = {wrappedObj: node};
 				}
 				
 				var t = new Type(options);
@@ -569,7 +569,7 @@ define(function(require)
 			createVisualType : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = {_metaType : GEPPETTO.Resources.VISUAL_TYPE_NODE, wrappedObj: node};
+					options = {wrappedObj: node};
 				}
 				
 				var t = new Type(options);
@@ -581,7 +581,7 @@ define(function(require)
 			createCompositeType : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = {_metaType : GEPPETTO.Resources.COMPOSITE_TYPE_NODE, wrappedObj: node};
+					options = {wrappedObj: node};
 				}
 				
 				var t = new CompositeType(options);
@@ -595,7 +595,7 @@ define(function(require)
 			createCompositeVisualType : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = {_metaType : GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE, wrappedObj: node};
+					options = {wrappedObj: node};
 				}
 				
 				var t = new CompositeVisualType(options);
@@ -612,7 +612,7 @@ define(function(require)
 			createArrayType : function(node, options)
 			{
 				if (options == null || options == undefined){
-					options = {_metaType : GEPPETTO.Resources.ARRAY_TYPE_NODE, wrappedObj: node};
+					options = {wrappedObj: node};
 				}
 				
 				var t = new ArrayType(options);
@@ -654,7 +654,7 @@ define(function(require)
 				
 				for(var i=0; i < nodes.length; i++){	
 					if(nodes[i].visualGroupElements!=undefined){
-						var	options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_NODE, wrappedObj: nodes[i], visualGroupElements : this.createVisualGroupElements(nodes[i].visualGroupElements)};
+						var	options = { wrappedObj: nodes[i], visualGroupElements : this.createVisualGroupElements(nodes[i].visualGroupElements)};
 						
 						// get tags from raw json
 						var tagRefObjs = nodes[i].tags;
@@ -712,7 +712,7 @@ define(function(require)
 				var visualGroupElements = [];
 				
 				for(var i=0; i < nodes.length; i++){
-					var options = {_metaType : GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE, wrappedObj: nodes[i]};
+					var options = {wrappedObj: nodes[i]};
 					
 					var vge = new VisualGroupElement(options);
 					

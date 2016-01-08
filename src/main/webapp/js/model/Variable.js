@@ -53,7 +53,6 @@ define(function(require) {
 			this.set({ "anonymousTypes" : (options.anonymousTypes != undefined) ? options.anonymousTypes : []});
 			this.set({ "types" : (options.types != undefined) ? options.types : []});
 			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
 		},
 		
 		/**

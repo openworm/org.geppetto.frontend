@@ -53,7 +53,6 @@ define(function(require) {
 			this.set({ "type" : options.type });
 			this.set({ "size" : options.elements });
 			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
 		},
 
 		/**

@@ -52,7 +52,6 @@ define(function(require) {
 		initialize : function(options) {
 			this.set({ "variables" : (options.variables != 'undefined') ? options.variables : []});
 			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
 		},
 
 		/**

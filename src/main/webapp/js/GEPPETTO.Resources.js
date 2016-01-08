@@ -374,27 +374,15 @@ define(function(require) {
 			PROJECT_NODE : "ProjectNode",
 			EXPERIMENT_NODE : "ExperimentNode",
 			SIMULATOR_CONFIGURATION_NODE : "SimulatorConfigurationNode",
-			ENTITY_NODE : "EntityNode",
-			ASPECT_NODE : "AspectNode",
-			ASPECT_SUBTREE_NODE : "AspectSubTreeNode",
-			VARIABLE_NODE : "VariableNode",
-			FUNCTION_NODE : "FunctionNode",
-			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
-			TEXT_METADATA_NODE : "TextMetadataNode",
-			HTML_METADATA_NODE : "HTMLMetadataNode",
-			PARAMETER_NODE : "ParameterNode",
-			CONNECTION_NODE : "ConnectionNode",
-			COMPOSITE_NODE : "CompositeNode",
-			DYNAMICS_NODE : "DynamicsSpecificationNode",
-			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
 			VISUAL_GROUP_NODE : "VisualGroup",
 			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElement",
-			SKELETON_ANIMATION_NODE: "SkeletonAnimationNode",
+			
 			INPUT_CONNECTION : "FROM",
 			OUTPUT_CONNECTION : "TO",
 			//TYPES
 			TYPE_NODE : "Type",
 			VISUAL_TYPE_NODE : "VisualType",
+			CONNECTION_TYPE_NODE : "ConnectionType",
 			COMPOSITE_TYPE_NODE : "CompositeType",
 			COMPOSITE_VISUAL_TYPE_NODE : "CompositeVisualType",
 			VISUAL_TYPE_NODE : "VisualType",
@@ -409,8 +397,18 @@ define(function(require) {
 			//GEPPETTO MODEL
 			GEPPETTO_MODEL_NODE : "GeppettoModel",
 			LIBRARY_NODE : "Library",
+			//INSTANCES
 			INSTANCE_NODE : "Instance",
-			ARRAY_INSTANCE_NODE : "ArrayInstance"
+			ARRAY_INSTANCE_NODE : "ArrayInstance",
+			//COMMON LIBRARY
+			PARAMETER : "Parameter",
+			STATE_VARIABLE : "StateVariable",
+			CONNECTION : "Connection",
+			DYNAMICS : "Dynamics",
+			FUNCTION : "Function",
+			TEXT : "Text",
+			HTM : "HTML",
+			SKELETON_ANIMATION_NODE: "SkeletonAnimation"
 		}
 	}
 });

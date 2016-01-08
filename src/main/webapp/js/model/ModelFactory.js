@@ -127,6 +127,7 @@ define(function(require)
 					if(types != undefined){
 						for (var i=0; i < types.length; i++){
 							// get reference string - looks like this --> '//@libraries.1/@types.5';
+							
 							var refStr = types[i].$ref;
 							
 							//if it's anonymous there's no reference
@@ -342,7 +343,6 @@ define(function(require)
 					}
 				}
 				else if(model.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
-					
 					var allTypes = model.getTypes();
 					// get all variables and match it from there
 					for(var i=0; i<allTypes.length; i++){

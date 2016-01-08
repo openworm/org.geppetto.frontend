@@ -98,6 +98,18 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			},
 			
 			/**
+			 * Get parent
+			 * 
+			 * @command Instance.getParent()
+			 * 
+			 * @returns {Instance} - Parent instance
+			 * 
+			 */
+			getParent : function() {
+				return this.get("parent");
+			},
+			
+			/**
 			 * Get the type for this instance
 			 * 
 			 * @command Instance.getTypes()
@@ -107,6 +119,22 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			 */
 			getTypes : function() {
 				return this.get("variable").getTypes();
+			},
+			
+			/**
+			 * Get the children for the array instance
+			 * 
+			 * @command Instance.getChildren()
+			 * 
+			 * @returns {List<Instance>} - array of instances
+			 * 
+			 */
+			getChildren : function() {
+				var children=[]
+				for(var i=0;i<this.length;i++){
+					children.push(this[i]);
+				}
+				return children;
 			},
 			
 			/**

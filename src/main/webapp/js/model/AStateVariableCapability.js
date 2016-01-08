@@ -32,73 +32,68 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a composite type.
+ * Client class use to augment a model with state variable capabilities
  * 
- * @module model/CompositeType
- * @author Giovanni Idili
+ * @module model/AStateVariableCapability
+ * @author Matteo Cantarelli
  */
-define(function(require) {
-	var Type = require('model/Type');
 
-	return Type.extend({
-		variables : [],
+define([ 'jquery' ], function(require) {
+	return {
 		
 		/**
-		 * Initializes this node with passed attributes
+		 * Get value of quantity
 		 * 
-		 * @param {Object}
-		 *            options - Object with options attributes to initialize node
+		 * @command VariableNode.getTimeSeries()
+		 * @returns {String} Value of quantity
 		 */
-		initialize : function(options) {
-			this.set({ "variables" : (options.variables != 'undefined') ? options.variables : []});
-			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
-		},
-
-		/**
-		 * Get variables
-		 * 
-		 * @command CompositeVariableNode.getChildren()
-		 * 
-		 * @returns {List<Variable>} - List of variables
-		 * 
-		 */
-		getVariables : function() {
-			return this.get("variables");
+		getTimeSeries : function() {
+			return this.timeSeries;
 		},
 		
 		/**
-		 * Get combined children
+		 * Get the type of tree this is
 		 * 
-		 * @command CompositeType.getChildren()
-		 * 
-		 * @returns {List<Object>} - List of children
-		 * 
+		 * @command VariableNode.getUnit()
+		 * @returns {String} Unit for quantity
 		 */
-		getChildren : function() {
-			return this.get("variables");
+		getUnit : function() {
+			return this.unit;
 		},
 		
 		/**
-		 * Return connections
+		 * Set unit
 		 * 
-		 * @command CompositeType.getConnections()
-		 * 
-		 * @returns {Boolean}
-		 * 
+		 * @command VariableNode.setUnit()
+		 * @param {String} unit - unit for variable node
 		 */
-		getConnections : function() {
-			var connectionVariables = [];
+		setUnit : function(unit) {
+			this.unit = unit;
+			return this;
+		},
 
-			for(var v in this.getVariables()){
-				var variable=this.getVariables()[v];
-				if(variable.getType().getId()==GEPPETTO.Resources.CONNECTION)
-				{
-					connectionVariables.push(variable);
-				}
+		/**
+		 * Get watched
+		 * 
+		 * @command VariableNode.getWatched()
+		 * @returns {boolean} true if this variable is being watched
+		 */
+		isWatched : function() {
+			return this.watched;
+		},
+		
+		/**
+		 * Set watched
+		 * 
+		 * @command VariableNode.setWatched()
+		 * @param {Boolean} watched - Object with options attributes to initialize node
+		 */
+		setWatched : function(isWatched) {
+			if (isWatched != this.watched){
+				Project.getActiveExperiment().watchVariables([this]);
+				this.watched=isWatched;
 			}
-				
-			return connectionVariables;
-		},
-	});
+			return this;
+		}
+	}
 });

@@ -393,7 +393,8 @@ define(function(require)
 							}
 							
 							// check if it has connections and inject AConnectionCapability
-							if(newlyCreatedInstance.getType().getConnections().length>0){
+							if((newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.CompositeTypeNode)&&
+								(newlyCreatedInstance.getType().getConnections().length>0)){
 								newlyCreatedInstance.extendApi(AConnectionCapability);
 							}
 							

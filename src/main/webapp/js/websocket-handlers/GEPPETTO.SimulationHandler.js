@@ -287,9 +287,6 @@ define(function(require) {
 				// build instance tree here (instance tree will be populated with state info for each experiment)
 				window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model);
 				
-				// TEST add instances
-				GEPPETTO.ModelFactory.addInstances(['acnet2.baskets_12[0].v'], window.Instances, window.Model);
-				
 				// create global shortcuts to top level instances
 				for(var i=0; i < window.Instances.length; i++){
 					// NOTE: tampering with the window object like this is probably a horrible idea

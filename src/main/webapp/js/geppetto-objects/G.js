@@ -630,7 +630,7 @@ define(function(require) {
 			 * @returns  {Array} Returns list of all entities selected
 			 */
 			getSelection : function() {
-				var selection = this.traverseSelection(window.Project.runTimeTree);
+				var selection = this.traverseSelection(window.Instances);
 
 				return selection;
 			},
@@ -683,17 +683,17 @@ define(function(require) {
 			/**
 			 * Helper method that traverses through run time tree looking for selected entities.
 			 */
-			traverseSelection : function(entities){
+			traverseSelection : function(instances){
 				var selection = new Array();
-				for(var e in entities)
+				for(var e in instances)
 				{
-					var entity = entities[e];
-					if(entity.selected)
+					var instance = instances[e];
+					if(instance.selected)
 					{
-						selection.push(entity);
-						}
-						selection = selection.concat(this.traverseSelection(entity.getEntities()));
+						selection.push(instance);
 					}
+						selection = selection.concat(this.traverseSelection(instance.getChildren()));
+				}
 
 				return selection;
 			},

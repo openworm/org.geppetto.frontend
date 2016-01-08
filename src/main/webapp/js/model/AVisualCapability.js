@@ -116,7 +116,6 @@ define([ 'jquery' ], function(require) {
 		{
 			// TODO: adapt to types / variables
 			
-			// TODO: FIXME
 			var message;
 			if (!this.selected) 
 			{
@@ -188,7 +187,6 @@ define([ 'jquery' ], function(require) {
 		deselect : function() {
 			// TODO: adapt to types / variables
 			
-			// TODO: FIXME
 			var message;
 
 			if (this.selected) {
@@ -196,8 +194,6 @@ define([ 'jquery' ], function(require) {
 						+ this.instancePath;
 				GEPPETTO.SceneController.deselectAspect(this.getInstancePath());
 				this.selected = false;
-				this.getParent().selected = false;
-
 
 				if(G.getSelectionOptions().unselected_transparent)
 				{

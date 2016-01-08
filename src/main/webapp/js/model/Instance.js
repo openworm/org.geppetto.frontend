@@ -110,6 +110,23 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			},
 			
 			/**
+			 * Get the type of this variable, return a list if it has more than one
+			 * 
+			 * @command Variable.getType()
+			 * 
+			 * @returns List<Type>} - array of types
+			 * 
+			 */
+			getType : function() {
+				var types=this.get("variable").getTypes();
+				if(types.length==1)
+				{
+					return types[0];
+				}
+				else return types;
+			},
+			
+			/**
 			 * Checks if this instance has a visual type
 			 * 
 			 * @command Instance.hasVisualType()
@@ -139,6 +156,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 				return hasVisual;
 			},
 			
+		
 			/**
 			 * Get the variable for this instance
 			 * 
@@ -187,6 +205,19 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 					path=parentPath+"["+index+"]";
 				}
 				return (parentPath != "") ?  path : this.getId();
+			},
+			
+			
+			/**
+			 * Get parent
+			 * 
+			 * @command Instance.getParent()
+			 * 
+			 * @returns {Instance} - Parent instance
+			 * 
+			 */
+			getParent : function() {
+				return this.get("parent");
 			},
 			
 			/**

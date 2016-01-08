@@ -65,7 +65,10 @@ define(function(require) {
 		 * 
 		 */
 		getTypes : function() {
-			return this.get('types');
+			var types = (this.get('types') != undefined) ? this.get('types') : [];
+			var anonTypes = (this.get('anonymousTypes') != undefined) ? this.get('anonymousTypes') : [];
+			var allTypes = types.concat(anonTypes);
+			return allTypes;
 		},
 		
 		/**
@@ -77,25 +80,15 @@ define(function(require) {
 		 * 
 		 */
 		getType : function() {
-			if(this.get('types').length==1)
+			var types=this.getTypes();
+			if(types.length==1)
 			{
-				return this.get('types')[0];
+				return types[0];
 			}
-			else return this.get('types');
+			else return types;
 		},
 		
-		/**
-		 * Get the list of anonymous types for this variable
-		 * 
-		 * @command Variable.getAnonymousTypes()
-		 * 
-		 * @returns {List<Type>} - array of types
-		 * 
-		 */
-		getAnonymousTypes : function() {
-			return this.get('anonymousTypes');
-		},
-		
+
 		/**
 		 * Get the list of values for this variable
 		 * 

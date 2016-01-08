@@ -53,6 +53,9 @@ define(function(require)
 		var VisualGroup = require('model/VisualGroup');
 		var VisualGroupElement = require('model/VisualGroupElement');
 		var AVisualCapability = require('model/AVisualCapability');
+		var AConnectionCapability = require('model/AConnectionCapability');
+		var AParameterCapability = require('model/AParameterCapability');
+		var AStateVariableCapability = require('model/AStateVariableCapability');
 		
 		/**
 		 * @class GEPPETTO.ModelFactory
@@ -99,7 +102,7 @@ define(function(require)
 			 */
 			populateChildrenShortcuts : function(node) {
 				// check if getChildren exists, if so add shortcuts based on ids and recurse on each
-				if(typeof node.getChildren === "function"){
+				if((node.getMetaType()!=GEPPETTO.Resources.ARRAY_INSTANCE_NODE) && (typeof node.getChildren === "function")){
 					var children = node.getChildren();
 					
 					if(children != undefined){
@@ -124,19 +127,23 @@ define(function(require)
 					if(types != undefined){
 						for (var i=0; i < types.length; i++){
 							// get reference string - looks like this --> '//@libraries.1/@types.5';
+							
 							var refStr = types[i].$ref;
 							
-							// parse data
-							var typePointer = this.parseTypePointerString(refStr);
-							
-							// go grab correct type from Geppetto Model
-							var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes()[typePointer.types];
-							
-							// add to list
-							referencedTypes.push(typeObj);
-							
-							// set types to actual object references using backbone setter
-							node.set({ "types" : referencedTypes });
+							//if it's anonymous there's no reference
+							if(refStr!=undefined){
+								// parse data
+								var typePointer = this.parseTypePointerString(refStr);
+								
+								// go grab correct type from Geppetto Model
+								var typeObj = geppettoModel.getLibraries()[typePointer.libraries].getTypes()[typePointer.types];
+								
+								// add to list
+								referencedTypes.push(typeObj);
+								
+								// set types to actual object references using backbone setter
+								node.set({ "types" : referencedTypes });
+							}
 						}
 					}
 				} else if(node.getMetaType() == GEPPETTO.Resources.TYPE_NODE || node.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
@@ -303,11 +310,8 @@ define(function(require)
 					}
 				}
 				else if(model.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
-					// get all types + anon types
-					var types = (model.getTypes() != undefined) ? model.getTypes() : [];
-					var anonTypes = (model.getAnonymousTypes() != undefined) ? model.getAnonymousTypes() : [];
-					
-					var allTypes = types.concat(anonTypes);
+				
+					var allTypes =model.getTypes();
 					// get all variables and match it from there
 					for(var i=0; i<allTypes.length; i++){
 						if(allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
@@ -388,6 +392,19 @@ define(function(require)
 								newlyCreatedInstance.extendApi(AVisualCapability);
 							}
 							
+							// check if it has connections and inject AConnectionCapability
+							if(newlyCreatedInstance.getType().getConnections().length>0){
+								newlyCreatedInstance.extendApi(AConnectionCapability);
+							}
+							
+							if(newlyCreatedInstance.getType().getId()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
+								newlyCreatedInstance.extendApi(AStateVariableCapability);
+							}
+							
+							if(newlyCreatedInstance.getType().getId()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
+								newlyCreatedInstance.extendApi(AParameterCapability);
+							}
+							
 							//  if there is a parent add to children else add to top level instances
 							if (parentInstance != null && parentInstance != undefined){
 								parentInstance.addChild(newlyCreatedInstance);
@@ -440,10 +457,7 @@ define(function(require)
 				// build "list" of variables that have a visual type (store "path")
 				// check meta type - we are only interested in variables
 				if(node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
-					var types = (node.getTypes() != undefined) ? node.getTypes() : [];
-					var anonTypes = (node.getAnonymousTypes() != undefined) ? node.getAnonymousTypes() : [];
-					
-					var allTypes = types.concat(anonTypes);
+					var allTypes = node.getTypes();
 					for(var i=0; i<allTypes.length; i++){
 						// if normal type or composite type check if it has a visual type
 						if(allTypes[i].getMetaType() == GEPPETTO.Resources.TYPE_NODE || allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){

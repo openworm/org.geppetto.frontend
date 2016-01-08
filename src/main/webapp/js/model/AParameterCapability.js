@@ -32,73 +32,55 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a composite type.
+ * Client class use to augment a model with parameter capabilities
  * 
- * @module model/CompositeType
- * @author Giovanni Idili
+ * @module model/AParameterCapability
+ * @author Matteo Cantarelli
  */
-define(function(require) {
-	var Type = require('model/Type');
 
-	return Type.extend({
-		variables : [],
-		
+define([ 'jquery' ], function(require) {
+	return {
 		/**
-		 * Initializes this node with passed attributes
+		 * Get the type of tree this is
 		 * 
-		 * @param {Object}
-		 *            options - Object with options attributes to initialize node
+		 * @command ParameterSpecificationNode.getUnit()
+		 * @returns {String} Unit for quantity
 		 */
-		initialize : function(options) {
-			this.set({ "variables" : (options.variables != 'undefined') ? options.variables : []});
-			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
+		getUnit : function()
+		{
+			return this.unit;
 		},
 
 		/**
-		 * Get variables
+		 * Get value of quantity
 		 * 
-		 * @command CompositeVariableNode.getChildren()
-		 * 
-		 * @returns {List<Variable>} - List of variables
-		 * 
+		 * @command ParameterSpecificationNode.getValue()
+		 * @returns {String} Value of quantity
 		 */
-		getVariables : function() {
-			return this.get("variables");
+		getValue : function()
+		{
+			return this.value;
 		},
-		
-		/**
-		 * Get combined children
-		 * 
-		 * @command CompositeType.getChildren()
-		 * 
-		 * @returns {List<Object>} - List of children
-		 * 
-		 */
-		getChildren : function() {
-			return this.get("variables");
-		},
-		
-		/**
-		 * Return connections
-		 * 
-		 * @command CompositeType.getConnections()
-		 * 
-		 * @returns {Boolean}
-		 * 
-		 */
-		getConnections : function() {
-			var connectionVariables = [];
 
-			for(var v in this.getVariables()){
-				var variable=this.getVariables()[v];
-				if(variable.getType().getId()==GEPPETTO.Resources.CONNECTION)
-				{
-					connectionVariables.push(variable);
-				}
-			}
-				
-			return connectionVariables;
+		/**
+		 * Get scaling factor
+		 * 
+		 * @command ParameterSpecificationNode.getScalingFactor()
+		 * @returns {String} Scaling Factor for value and unit
+		 */
+		getScalingFactor : function()
+		{
+			return this.scalingFactor;
 		},
-	});
+
+		/**
+		 * Sets Value for parameter node.
+		 */
+		setValue : function(value)
+		{
+			this.value = value;
+			Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);
+			return this;
+		}
+	}
 });

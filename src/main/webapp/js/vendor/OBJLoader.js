@@ -171,8 +171,20 @@ THREE.OBJLoader.prototype = {
 
 			}
 
+			
+			var textureLoader = new THREE.TextureLoader();
+			var material = new THREE.PointsMaterial(
+			{
+				size : 2,
+				map : textureLoader.load("geppetto/images/particle.png"),
+		        blending: THREE.AdditiveBlending,
+		        depthTest: false,
+		        transparent:true,
+		        color: color
+			});
 
-			mesh = new THREE.Points( geometry, new THREE.PointsMaterial( { size: 1, color: color } ) );
+
+			mesh = new THREE.Points( geometry, material);
 
 			
 			return mesh;

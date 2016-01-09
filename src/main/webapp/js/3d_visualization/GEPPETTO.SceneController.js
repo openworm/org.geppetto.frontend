@@ -26,7 +26,7 @@ define(function(require)
 			 */
 			buildScene : function(instances)
 			{
-				GEPPETTO.SceneController.complexity = 999999;
+				GEPPETTO.SceneController.complexity = 0;
 				GEPPETTO.SceneController.computeComplexity(instances);
 
 				GEPPETTO.SceneController.traverseInstances(instances);

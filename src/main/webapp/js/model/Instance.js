@@ -207,6 +207,25 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 				return (parentPath != "") ?  path : this.getId();
 			},
 			
+			/**
+			 * Get raw instance path (without array shortening)
+			 * 
+			 * @command Instance.getRawInstancePath()
+			 * 
+			 * @returns {String} - Instance path
+			 * 
+			 */
+			getRawInstancePath : function() {
+				var parent = this.get("parent");
+				var parentPath = "";
+				
+				if(parent != null && parent != undefined){
+					parentPath = parent.getInstancePath();
+				}
+				
+				return (parentPath != "") ? (parentPath + "." + this.getId()) : this.getId();
+			},
+			
 			
 			/**
 			 * Get parent

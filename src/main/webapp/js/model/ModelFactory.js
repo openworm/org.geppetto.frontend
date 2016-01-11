@@ -384,7 +384,8 @@ define(function(require)
 					
 					// check in top level instances if we have an instance for the current variable already
 					var matchingInstance = null;
-					matchingInstance = this.findMatchingInstance(varsIds[0], topLevelInstances);
+					var instancePath = (parentInstance != null) ? (parentInstance.getInstancePath() + '.' + varsIds[0]) : varsIds[0];
+					matchingInstance = this.findMatchingInstance(instancePath, topLevelInstances);
 					
 					if(matchingInstance != null){
 						// there is a match, simply re-use that instance as the "newly created one" instead of creating a new one
@@ -507,16 +508,16 @@ define(function(require)
 			/**
 			 * Find instance given variable id (unique), if any
 			 */
-			findMatchingInstance : function(id, instances) {
+			findMatchingInstance : function(instancePath, instances) {
 				var matching = null;
 				
 				for(var i=0; i < instances.length; i++){
-					if(instances[i].getId() == id){
+					if(instances[i].getRawInstancePath() == instancePath){
 						matching = instances[i];
 						break;
 					} else {
 						if(typeof instances[i].getChildren === "function"){
-							var recurseMatch = this.findMatchingInstance(id, instances[i].getChildren());
+							var recurseMatch = this.findMatchingInstance(instancePath, instances[i].getChildren());
 							if(recurseMatch != null){
 								matching = recurseMatch;
 								break;

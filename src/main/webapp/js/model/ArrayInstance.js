@@ -197,6 +197,18 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			},
 			
 			/**
+			 * Get raw instance path (without array shortening)
+			 * 
+			 * @command Instance.getRawInstancePath()
+			 * 
+			 * @returns {String} - Raw instance path
+			 * 
+			 */
+			getRawInstancePath : function() {
+				return this.getInstancePath();
+			},
+			
+			/**
 			 * Get the size of the array instance
 			 * 
 			 * @command Instance.getSize()

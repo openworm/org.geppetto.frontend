@@ -238,6 +238,7 @@ public class ConnectionHandler
 	 */
 	public void loadExperiment(String requestID, long experimentID, long projectId)
 	{
+		long start=System.currentTimeMillis();
 		websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADING, "");
 		try
 		{
@@ -265,6 +266,7 @@ public class ConnectionHandler
 		{
 			error(e, "Error loading experiment");
 		}
+		logger.debug("Loading experiment took "+(System.currentTimeMillis()-start)+"ms");
 	}
 
 	/**

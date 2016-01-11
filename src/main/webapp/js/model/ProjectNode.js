@@ -202,6 +202,7 @@ define([ 'jquery', 'underscore', 'backbone',
 
 			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 			
+			console.time(GEPPETTO.Resources.LOADING_PROJECT);
 			GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.LOADING_PROJECT);
 			
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
@@ -234,7 +235,8 @@ define([ 'jquery', 'underscore', 'backbone',
 
 			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 			
-			GEPPETTO.trigger('show_spinner');
+			console.time(GEPPETTO.Resources.LOADING_PROJECT);
+			GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.LOADING_PROJECT);
 
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
@@ -267,7 +269,8 @@ define([ 'jquery', 'underscore', 'backbone',
 
 			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 			
-			GEPPETTO.trigger('show_spinner');
+			console.time(GEPPETTO.Resources.LOADING_PROJECT);
+			GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.LOADING_PROJECT);
 			
 			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 

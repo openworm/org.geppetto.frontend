@@ -228,74 +228,61 @@ define(function(require)
 				var mergedMeshesPaths = [];
 				var combined = new THREE.Geometry();
 				var ret = null;
-				var lines = true;
-
-				// TODO: assuming that all objects have the same type, check!
-				switch (objArray[0].geometry.type)
+				var mergedLines;
+				var mergedMeshes;
+				objArray.forEach(function(obj)
 				{
-				case "CylinderGeometry":
-				case "SphereGeometry":
-					var mergedLines;
-					var mergedMeshes;
-					objArray.forEach(function(obj)
+					if (obj instanceof THREE.Line)
 					{
-						if (obj instanceof THREE.Line)
+						if (mergedLines === undefined)
 						{
-							if (mergedLines === undefined)
-							{
-								mergedLines = new THREE.Geometry()
-							}
-							mergedLines.vertices.push(obj.geometry.vertices[0]);
-							mergedLines.vertices.push(obj.geometry.vertices[1]);
-						} else
-						{
-							if (mergedMeshes === undefined)
-							{
-								mergedMeshes = new THREE.Geometry()
-							}
-							obj.geometry.dynamic = true;
-							obj.geometry.verticesNeedUpdate = true;
-							obj.updateMatrix();
-							mergedMeshes.merge(obj.geometry, obj.matrix);
+							mergedLines = new THREE.Geometry()
 						}
-						mergedMeshesPaths.push(obj.instancePath);
-
-					});
-
-					if (mergedLines === undefined)
-					{
-						// There are no line gemeotries, we just create a mesh for the merge of the solid geometries
-						// and apply the mesh material
-						ret = new THREE.Mesh(mergedMeshes, materials["mesh"]);
-					} else
-					{
-						ret = new THREE.LineSegments(mergedLines, materials["line"]);
-						if (mergedMeshes != undefined)
+						mergedLines.vertices.push(obj.geometry.vertices[0]);
+						mergedLines.vertices.push(obj.geometry.vertices[1]);
+					} 
+					else if(obj.geometry.type=="Geometry"){
+						// This catches both Collada an OBJ
+						if(objArray.length>1)
 						{
-							// we merge into a single mesh both types of geometries (from lines and 3D objects)
-							tempmesh = new THREE.Mesh(mergedMeshes, materials["mesh"]);
-							ret.geometry.merge(tempmesh.geometry, tempmesh.matrix);
+							throw Error("Merging of multiple OBJs or Colladas not supported");
+						}
+						else
+						{
+							ret = obj;
 						}
 					}
-					break;
-				case GEPPETTO.Resources.PARTICLE:
-					var particleGeometry = new THREE.Geometry();
-					objArray.forEach(function(obj)
+					else
 					{
-						particleGeometry.vertices.push(obj);
-						// TODO: do we want to store the path for each one of the nodes into mergedMeshesPaths?
-						// it doesn't seem to be done correctly in the original code
-					});
-					var merged = new THREE.PointCloud(particleGeometry, materials["particle"]);
-					merged.sortParticles = true;
-					merged.geometry.verticesNeedUpdate = true;
-					ret = merged;
-					break;
-				case "Geometry":
-					// This catches both Collada an OBJ
-					ret = objArray[0];
-					break;
+						if (mergedMeshes === undefined)
+						{
+							mergedMeshes = new THREE.Geometry()
+						}
+						obj.geometry.dynamic = true;
+						obj.geometry.verticesNeedUpdate = true;
+						obj.updateMatrix();
+						mergedMeshes.merge(obj.geometry, obj.matrix);
+					}
+					mergedMeshesPaths.push(obj.instancePath);
+
+				});
+
+				if (mergedLines === undefined)
+				{
+					// There are no line gemeotries, we just create a mesh for the merge of the solid geometries
+					// and apply the mesh material
+					ret = new THREE.Mesh(mergedMeshes, materials["mesh"]);
+				} else
+				{
+					ret = new THREE.LineSegments(mergedLines, materials["line"]);
+					if (mergedMeshes != undefined)
+					{
+						// we merge into a single mesh both types of geometries (from lines and 3D objects)
+						tempmesh = new THREE.Mesh(mergedMeshes, materials["mesh"]);
+						ret.geometry.merge(tempmesh.geometry, tempmesh.matrix);
+					}
 				}
+
 				if (ret != null && !Array.isArray(ret))
 				{
 					ret.mergedMeshesPaths = mergedMeshesPaths;
@@ -442,7 +429,7 @@ define(function(require)
 			 */
 			create3DLineFromNode : function(node, material)
 			{
-				if (node.getMetaType() == GEPPETTO.Resources.CYLINDER)
+				if (node.eClass == GEPPETTO.Resources.CYLINDER)
 				{
 					bottomBasePos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
 					topBasePos = new THREE.Vector3(node.distal.x, node.distal.y, node.distal.z);
@@ -461,7 +448,7 @@ define(function(require)
 					threeObject.position.fromArray(midPoint.toArray());
 
 					threeObject.geometry.verticesNeedUpdate = true;
-				} else if (node.getMetaType() == GEPPETTO.Resources.SPHERE)
+				} else if (node.eClass == GEPPETTO.Resources.SPHERE)
 				{
 					var sphere = new THREE.SphereGeometry(node.radius, 20, 20);
 					threeObject = new THREE.Mesh(sphere, material);

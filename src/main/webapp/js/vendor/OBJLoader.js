@@ -63,30 +63,6 @@ THREE.OBJLoader.prototype = {
 
 		}
 
-		function createMesh( vertices, color ) {
-
-			var i, c;
-			var vl = vertices.length;
-
-			var geometry = new THREE.Geometry();
-			var vertices_tmp = [];
-
-			for ( i = 0; i < vl; i ++ ) {
-
-				geometry.vertices.push(new THREE.Vector3( vertices[ i++ ],  vertices[ i++ ], vertices[ i ] ));
-
-			}
-
-
-			mesh = new THREE.Points( geometry, new THREE.PointsMaterial( { size: 1, color: color } ) );
-
-			
-			return mesh;
-			
-
-		}
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-		
 		function addVertex( a, b, c ) {
 
 			geometry.vertices.push(
@@ -180,6 +156,41 @@ THREE.OBJLoader.prototype = {
 			}
 
 		}
+		
+		function createMesh( vertices, color ) {
+
+			var i, c;
+			var vl = vertices.length;
+
+			var geometry = new THREE.Geometry();
+			var vertices_tmp = [];
+
+			for ( i = 0; i < vl; i ++ ) {
+
+				geometry.vertices.push(new THREE.Vector3( vertices[ i++ ],  vertices[ i++ ], vertices[ i ] ));
+
+			}
+
+			
+			var textureLoader = new THREE.TextureLoader();
+			var material = new THREE.PointsMaterial(
+			{
+				size : 2,
+				map : textureLoader.load("geppetto/images/particle.png"),
+		        blending: THREE.AdditiveBlending,
+		        depthTest: false,
+		        transparent:true,
+		        color: color
+			});
+
+
+			mesh = new THREE.Points( geometry, material);
+
+			
+			return mesh;
+			
+
+		}
 
 		// create mesh if no objects in text
 
@@ -240,6 +251,8 @@ THREE.OBJLoader.prototype = {
 		//
 
 		var lines = text.split( '\n' );
+		
+		var hasFaces=false;
 
 		for ( var i = 0; i < lines.length; i ++ ) {
 
@@ -284,7 +297,7 @@ THREE.OBJLoader.prototype = {
 			} else if ( ( result = face_pattern1.exec( line ) ) !== null ) {
 
 				// ["f 1 2 3", "1", "2", "3", undefined]
-
+				hasFaces=true;
 				addFace(
 					result[ 1 ], result[ 2 ], result[ 3 ], result[ 4 ]
 				);
@@ -292,7 +305,7 @@ THREE.OBJLoader.prototype = {
 			} else if ( ( result = face_pattern2.exec( line ) ) !== null ) {
 
 				// ["f 1/1 2/2 3/3", " 1/1", "1", "1", " 2/2", "2", "2", " 3/3", "3", "3", undefined, undefined, undefined]
-
+				hasFaces=true;
 				addFace(
 					result[ 2 ], result[ 5 ], result[ 8 ], result[ 11 ],
 					result[ 3 ], result[ 6 ], result[ 9 ], result[ 12 ]
@@ -301,7 +314,7 @@ THREE.OBJLoader.prototype = {
 			} else if ( ( result = face_pattern3.exec( line ) ) !== null ) {
 
 				// ["f 1/1/1 2/2/2 3/3/3", " 1/1/1", "1", "1", "1", " 2/2/2", "2", "2", "2", " 3/3/3", "3", "3", "3", undefined, undefined, undefined, undefined]
-
+				hasFaces=true;
 				addFace(
 					result[ 2 ], result[ 6 ], result[ 10 ], result[ 14 ],
 					result[ 3 ], result[ 7 ], result[ 11 ], result[ 15 ],
@@ -311,7 +324,7 @@ THREE.OBJLoader.prototype = {
 			} else if ( ( result = face_pattern4.exec( line ) ) !== null ) {
 
 				// ["f 1//1 2//2 3//3", " 1//1", "1", "1", " 2//2", "2", "2", " 3//3", "3", "3", undefined, undefined, undefined]
-
+				hasFaces=true;
 				addFace(
 					result[ 2 ], result[ 5 ], result[ 8 ], result[ 11 ],
 					undefined, undefined, undefined, undefined,
@@ -365,16 +378,51 @@ THREE.OBJLoader.prototype = {
 		}
 
 		var container = new THREE.Object3D();
-
-
-		container.add( createMesh( vertices, 0xff0000 ) );
 		
-        var geometry = new THREE.BoxGeometry( 200, 200, 200 );
+		if(hasFaces)
+		{
+
+			for ( var i = 0, l = objects.length; i < l; i ++ ) {
+	
+				object = objects[ i ];
+				geometry = object.geometry;
+	
+				var buffergeometry = new THREE.BufferGeometry();
+	
+				buffergeometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geometry.vertices ), 3 ) );
+	
+				if ( geometry.normals.length > 0 ) {
+	
+					buffergeometry.addAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( geometry.normals ), 3 ) );
+	
+				}
+	
+				if ( geometry.uvs.length > 0 ) {
+	
+					buffergeometry.addAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( geometry.uvs ), 2 ) );
+	
+				}
+	
+				material = new THREE.MeshLambertMaterial();
+				material.name = object.material.name;
+	
+				var mesh = new THREE.Mesh( buffergeometry, material );
+				mesh.name = object.name;
+	
+				container.add( mesh );
+	
+			}
+		}
+		else
+		{
+			container.add( createMesh( vertices, ('#'+Math.floor(Math.random()*16777215).toString(16)) ) );
+		
+        	var geometry = new THREE.BoxGeometry( 2, 2, 2 );
 		
 
-		var mesh = new THREE.Mesh( geometry );
-		container.add( mesh );
-		
+			var mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color:0x000000}) );
+			container.add( mesh );
+		}
 
 		console.timeEnd( 'OBJLoader' );
 

@@ -356,6 +356,12 @@ define(function(require)
 							}
 						}
 					}
+					
+					// check if parent is an array - if so we know the variable cannot exist so set the same variable as the array 
+					if(variable == null && parentInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE){
+						// the variable associated to an array element is still the array variable
+						variable = model;
+					}
 				}
 				
 				// create instance for given variable
@@ -372,7 +378,7 @@ define(function(require)
 					
 					// check in top level instances if we have an instance for the current variable already
 					var matchingInstance = null;
-					matchingInstance = this.findMatchingInstance(variable, topLevelInstances);
+					matchingInstance = this.findMatchingInstance(varsIds[0], topLevelInstances);
 					
 					if(matchingInstance != null){
 						// there is a match, simply re-use that instance as the "newly created one" instead of creating a new one
@@ -494,16 +500,16 @@ define(function(require)
 			/**
 			 * Find instance given variable id (unique), if any
 			 */
-			findMatchingInstance : function(variable, instances) {
+			findMatchingInstance : function(id, instances) {
 				var matching = null;
 				
 				for(var i=0; i < instances.length; i++){
-					if(instances[i].getId() == variable.getId()){
+					if(instances[i].getId() == id){
 						matching = instances[i];
 						break;
 					} else {
 						if(typeof instances[i].getChildren === "function"){
-							matching = this.findMatchingInstance(variable, instances[i].getChildren());
+							matching = this.findMatchingInstance(id, instances[i].getChildren());
 						}
 					}
 				}
@@ -542,7 +548,7 @@ define(function(require)
 								varsWithVizTypes.push(path);
 							}
 						}
-						else if(allTypes[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE){
+						else if((allTypes[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) || (allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)){
 							var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 							varsWithVizTypes.push(path);
 						}

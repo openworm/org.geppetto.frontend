@@ -277,13 +277,22 @@ define(function(require) {
 			},
 			
 			loadModel : function(payload){
-            	var startCreation = new Date();
-
+            	
+				console.time(GEPPETTO.Resources.PARSING_MODEL);
+            	GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.PARSING_MODEL);
+            	
 				var model = JSON.parse(payload.geppetto_model_loaded);
 				
+				console.timeEnd(GEPPETTO.Resources.PARSING_MODEL);
+				
+				console.time(GEPPETTO.Resources.CREATING_MODEL);
+				GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.CREATING_MODEL);
 				// build Geppetto model here (once off operation when project is loaded)
 				window.Model = GEPPETTO.ModelFactory.createGeppettoModel(model);
+				console.timeEnd(GEPPETTO.Resources.CREATING_MODEL);
 				
+				console.time(GEPPETTO.Resources.CREATING_INSTANCES);
+				GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.CREATING_INSTANCES);
 				// build instance tree here (instance tree will be populated with state info for each experiment)
 				window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model);
 				
@@ -292,7 +301,10 @@ define(function(require) {
 					// NOTE: tampering with the window object like this is probably a horrible idea
 					window[window.Instances[i].getId()] = window.Instances[i];
 				}
+				console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);
 				
+				console.time(GEPPETTO.Resources.CREATING_SCENE);
+				GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.CREATING_SCENE);
 				// build scene here from Geppetto model populating visual objects in the instance tree
 				// Updates the simulation controls visibility
 				var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
@@ -302,18 +314,16 @@ define(function(require) {
 					GEPPETTO.SceneController.animate();
 				}
 				GEPPETTO.SceneController.buildScene(window.Instances, window.Model);
-				
+				console.timeEnd(GEPPETTO.Resources.CREATING_SCENE);
 				GEPPETTO.trigger(Events.Model_loaded);
 	            GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 	            
-	            
-            	var endCreation = new Date() - startCreation;
-            	GEPPETTO.Console.debugLog("It took " + endCreation + " ms to create the model and the instances");
-            	
+	            console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);
             	GEPPETTO.trigger("hide:spinner");
 			},
 
 			loadExperiment : function(payload){
+				console.timeEnd(GEPPETTO.Resources.LOADING_EXPERIMENT);
 				var message=JSON.parse(payload.experiment_loaded);
 				
 				var experimentId=message.experimentId;
@@ -327,7 +337,7 @@ define(function(require) {
 						break;
 					}
 				}
-
+				console.timeEnd(GEPPETTO.Resources.LOADING_EXPERIMENT);
 			},
 			
 			createExperiment : function(payload){

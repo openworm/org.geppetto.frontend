@@ -54,10 +54,8 @@ define(function(require) {
 			this.children = new Array();
 			this.id = options.id;
 			this.name = options.name;
-			this.aspectNode = options.aspectNode;
-			this.instancePath = options.instancePath;
 			this._metaType = options._metaType;
-			this.domainType = options.domainType;
+			this.value = options.value;
 		},
 
 		/**
@@ -71,21 +69,31 @@ define(function(require) {
 		getChildren : function() {
 			return this.children;
 		},
-
+		
 		/**
-		 * Print out formatted node
+		 * Get meta type
+		 * 
+		 * @command Instance.getMetaType()
+		 * 
+		 * @returns {String} - meta type
+		 * 
 		 */
-		print : function() {
-			var formattedNode = "Name : " + this.name + "\n" + "    Id: "
-					+ this.id + "\n" + "    InstancePath : "
-					+ this.instancePath + "\n" + "    Children : \n";
-			for ( var e = 0; e < this.getChildren().length; e++) {
-				var child = this.getChildren().at(e);
-				formattedNode = formattedNode + "      " + child._metaType
-						+ ": " + child.id + "\n";
-			}
-
-			return formattedNode;
-		}
+		getMetaType : function() {
+			return this._metaType;
+		},
+		
+		/**
+		 * Get the list of values for this variable
+		 * 
+		 * @command Variable.getInitialValues()
+		 * 
+		 * @returns {List<Value>} - array of values
+		 * 
+		 */
+		getInitialValues : function() {
+			var values = new Array();
+			values.push({value: {value: this.value}});
+			return values;
+		},
 	});
 });

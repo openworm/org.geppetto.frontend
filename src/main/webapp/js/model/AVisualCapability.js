@@ -49,22 +49,26 @@ define([ 'jquery' ], function(require) {
 		 * @command AVisualCapability.hide()
 		 *
 		 */
-		hide : function() {
+		hide : function(nested) {
 			// TODO: adapt to types / variables
+			if(nested === undefined){
+				nested = true;
+			}
 			
 			GEPPETTO.SceneController.hideAspect(this.getInstancePath());
 			this.visible = false;
 			
-			if(typeof this.getChildren === "function"){
+			if(nested === true && typeof this.getChildren === "function"){
 				var children = this.getChildren();
 				for(var i=0; i<children.lenght; i++){
 					if(typeof children[i].hide === "function"){
-						children[i].hide();
+						children[i].hide(nested);
 					}
 				}
 			}
 
 			var message = GEPPETTO.Resources.HIDE_ASPECT + this.getInstancePath();
+			
 			return message;
 		},
 		
@@ -74,18 +78,21 @@ define([ 'jquery' ], function(require) {
 		 * @command AVisualCapability.show()
 		 *
 		 */
-		show : function() {
+		show : function(nested) {
 			// TODO: adapt to types / variables
+			if(nested === undefined){
+				nested = true;
+			}
 			
 			GEPPETTO.SceneController.showAspect(this.getInstancePath());
 
 			this.visible = true;
 			
-			if(typeof this.getChildren === "function"){
+			if(nested === true && typeof this.getChildren === "function"){
 				var children = this.getChildren();
 				for(var i=0; i<children.lenght; i++){
 					if(typeof children[i].show === "function"){
-						children[i].show();
+						children[i].show(nested);
 					}
 				}
 			}
@@ -100,16 +107,19 @@ define([ 'jquery' ], function(require) {
 		 * @command AVisualCapability.setOpacity(opacity)
 		 *
 		 */
-		setOpacity : function(opacity) {
+		setOpacity : function(opacity, nested) {
 			// TODO: adapt to types / variables
+			if(nested === undefined){
+				nested = true;
+			}
 			
 			GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
 			
-			if(typeof this.getChildren === "function"){
+			if(nested === true && typeof this.getChildren === "function"){
 				var children = this.getChildren();
 				for(var i=0; i<children.lenght; i++){
 					if(typeof children[i].setOpacity === "function"){
-						children[i].setOpacity(opacity);
+						children[i].setOpacity(opacity, nested);
 					}
 				}
 			}
@@ -121,16 +131,19 @@ define([ 'jquery' ], function(require) {
 		 * @command AVisualCapability.setColor(color)
 		 *
 		 */
-		setColor : function(color) {
+		setColor : function(color, nested) {
 			// TODO: adapt to types / variables
+			if(nested === undefined){
+				nested = true;
+			}
 			
 			GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
 			
-			if(typeof this.getChildren === "function"){
+			if(nested === true && typeof this.getChildren === "function"){
 				var children = this.getChildren();
 				for(var i=0; i<children.lenght; i++){
 					if(typeof children[i].setColor === "function"){
-						children[i].setColor(color);
+						children[i].setColor(color, nested);
 					}
 				}
 			}
@@ -142,9 +155,12 @@ define([ 'jquery' ], function(require) {
 		 * @command AVisualCapability.select()
 		 *
 		 */
-		select : function() 
+		select : function(nested) 
 		{
 			// TODO: adapt to types / variables
+			if(nested === undefined){
+				nested = true;
+			}
 			
 			var message;
 			if (!this.selected) 
@@ -204,6 +220,15 @@ define([ 'jquery' ], function(require) {
 			} else {
 				message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
 			}
+			
+			if(nested === true && typeof this.getChildren === "function"){
+				var children = this.getChildren();
+				for(var i=0; i<children.lenght; i++){
+					if(typeof children[i].select === "function"){
+						children[i].select(nested);
+					}
+				}
+			}
 
 			return message;
 		},
@@ -214,8 +239,11 @@ define([ 'jquery' ], function(require) {
 		 * @command AVisualCapability.deselect()
 		 *
 		 */
-		deselect : function() {
+		deselect : function(nested) {
 			// TODO: adapt to types / variables
+			if(nested === undefined){
+				nested = true;
+			}
 			
 			var message;
 
@@ -247,6 +275,17 @@ define([ 'jquery' ], function(require) {
 			} else {
 				message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
 			}
+			
+			// nested
+			if(nested === true && typeof this.getChildren === "function"){
+				var children = this.getChildren();
+				for(var i=0; i<children.lenght; i++){
+					if(typeof children[i].deselect === "function"){
+						children[i].deselect(nested);
+					}
+				}
+			}
+			
 			return message;
 		},
 		
@@ -267,16 +306,33 @@ define([ 'jquery' ], function(require) {
 		/**
 		 * Set the type of geometry to be used for this aspect
 		 */
-		setGeometryType : function(type, thickness)
+		setGeometryType : function(type, thickness, nested)
 		{
 			// TODO: adapt to types / variables
+			if(nested === undefined){
+				nested = true;
+			}
+			
+			var message = '';
 			
 			if(GEPPETTO.SceneController.setGeometryType(this, type, thickness)){
-				return "Geometry type successfully changed for " + this.getInstancePath(); 
+				message = "Geometry type successfully changed for " + this.getInstancePath(); 
 			}
 			else {
-				return "Error changing the geometry type for " + this.getInstancePath();
+				message = "Error changing the geometry type for " + this.getInstancePath();
 			}
+			
+			// nested
+			if(nested === true && typeof this.getChildren === "function"){
+				var children = this.getChildren();
+				for(var i=0; i<children.lenght; i++){
+					if(typeof children[i].setGeometryType === "function"){
+						children[i].setGeometryType(nested);
+					}
+				}
+			}
+			
+			return message;
 		},
 	}
 });

@@ -102,7 +102,7 @@ define(function(require)
 			 */
 			populateChildrenShortcuts : function(node) {
 				// check if getChildren exists, if so add shortcuts based on ids and recurse on each
-				if((node.getMetaType()!=GEPPETTO.Resources.ARRAY_INSTANCE_NODE) && (typeof node.getChildren === "function")){
+				if(typeof node.getChildren === "function"){
 					var children = node.getChildren();
 					
 					if(children != undefined){
@@ -344,6 +344,12 @@ define(function(require)
 				}
 				else if(model.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
 					var allTypes = model.getTypes();
+					
+					// if array, and the array type
+					if(allTypes.length == 1 && allTypes[0].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
+						allTypes.push(model.getTypes()[0].getType());
+					}
+					
 					// get all variables and match it from there
 					for(var i=0; i<allTypes.length; i++){
 						if(allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
@@ -384,10 +390,11 @@ define(function(require)
 						// there is a match, simply re-use that instance as the "newly created one" instead of creating a new one
 						newlyCreatedInstance = matchingInstance;
 						
+						// if the matching instance is an array instance - add children to newly created instances list
 						if(matchingInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE){
 							var arrayElements = matchingInstance.getChildren();
 							for(var z=0; z<arrayElements.length; z++){
-								matchingInstances.push(arrayElements[z]);
+								newlyCreatedInstances.push(arrayElements[z]);
 							}
 						}
 					} else if(arrayType != null){
@@ -420,11 +427,11 @@ define(function(require)
 								explodedInstance.extendApi(AConnectionCapability);
 							}
 								
-							if(explodedInstance.getType().getId()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
+							if(explodedInstance.getType().getMetaType()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
 								explodedInstance.extendApi(AStateVariableCapability);
 							}
 								
-							if(explodedInstance.getType().getId()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
+							if(explodedInstance.getType().getMetaType()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
 								explodedInstance.extendApi(AParameterCapability);
 							}
 							
@@ -459,11 +466,11 @@ define(function(require)
 							newlyCreatedInstance.extendApi(AConnectionCapability);
 						}
 							
-						if(newlyCreatedInstance.getType().getId()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
+						if(newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
 							newlyCreatedInstance.extendApi(AStateVariableCapability);
 						}
 							
-						if(newlyCreatedInstance.getType().getId()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
+						if(newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
 							newlyCreatedInstance.extendApi(AParameterCapability);
 						}
 						
@@ -485,12 +492,12 @@ define(function(require)
 				}
 				
 				// if there is a parent instance - recurse with new parameters
-				if (newlyCreatedInstance!= null){
+				if (newlyCreatedInstance!= null && newPath!=''){
 					this.buildInstanceHierarchy(newPath, newlyCreatedInstance, variable, topLevelInstances);
 				}
 				
 				// if there is a list of exploded instances
-				if (newlyCreatedInstances.length > 0) {
+				if (newlyCreatedInstances.length > 0 && newPath!='') {
 					for(var x=0; x < newlyCreatedInstances.length ; x++){
 						this.buildInstanceHierarchy(newPath, newlyCreatedInstances[x], variable, topLevelInstances);
 					}
@@ -509,7 +516,11 @@ define(function(require)
 						break;
 					} else {
 						if(typeof instances[i].getChildren === "function"){
-							matching = this.findMatchingInstance(id, instances[i].getChildren());
+							var recurseMatch = this.findMatchingInstance(id, instances[i].getChildren());
+							if(recurseMatch != null){
+								matching = recurseMatch;
+								break;
+							}
 						}
 					}
 				}

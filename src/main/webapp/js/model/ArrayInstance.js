@@ -131,7 +131,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			 */
 			getChildren : function() {
 				var children=[]
-				for(var i=0;i<this.length;i++){
+				for(var i=0;i<this.getSize();i++){
 					children.push(this[i]);
 				}
 				return children;

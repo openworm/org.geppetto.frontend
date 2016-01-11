@@ -291,6 +291,7 @@ define(function(require)
 			
 			/**
 			 * Adds instances to a list of existing instances. It will expand the instance tree if it partially exists or create it if doesn't.
+			 * NOTE: instances will only be added if a matching variable can be found in the GeppettoModel 
 			 */
 			addInstances : function(newInstancesPaths, topInstances, geppettoModel){
 				// based on list of new paths, expand instance tree 
@@ -506,7 +507,7 @@ define(function(require)
 			},
 			
 			/**
-			 * Find instance given variable id (unique), if any
+			 * Find instance given instance path (unique), if any
 			 */
 			findMatchingInstance : function(instancePath, instances) {
 				var matching = null;

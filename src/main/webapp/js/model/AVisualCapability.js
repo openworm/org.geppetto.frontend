@@ -52,10 +52,17 @@ define([ 'jquery' ], function(require) {
 		hide : function() {
 			// TODO: adapt to types / variables
 			
-			// TODO: FIXME
-			// TODO: swap out showAspect for appropriate method
 			GEPPETTO.SceneController.hideAspect(this.getInstancePath());
 			this.visible = false;
+			
+			if(typeof this.getChildren === "function"){
+				var children = this.getChildren();
+				for(var i=0; i<children.lenght; i++){
+					if(typeof children[i].hide === "function"){
+						children[i].hide();
+					}
+				}
+			}
 
 			var message = GEPPETTO.Resources.HIDE_ASPECT + this.getInstancePath();
 			return message;
@@ -70,11 +77,18 @@ define([ 'jquery' ], function(require) {
 		show : function() {
 			// TODO: adapt to types / variables
 			
-			// TODO: FIXME
-			// TODO: swap out showAspect for appropriate method 
 			GEPPETTO.SceneController.showAspect(this.getInstancePath());
 
 			this.visible = true;
+			
+			if(typeof this.getChildren === "function"){
+				var children = this.getChildren();
+				for(var i=0; i<children.lenght; i++){
+					if(typeof children[i].show === "function"){
+						children[i].show();
+					}
+				}
+			}
 
 			var message = GEPPETTO.Resources.SHOW_ASPECT + this.getInstancePath();
 			return message;
@@ -89,8 +103,16 @@ define([ 'jquery' ], function(require) {
 		setOpacity : function(opacity) {
 			// TODO: adapt to types / variables
 			
-			// TODO: FIXME
 			GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
+			
+			if(typeof this.getChildren === "function"){
+				var children = this.getChildren();
+				for(var i=0; i<children.lenght; i++){
+					if(typeof children[i].setOpacity === "function"){
+						children[i].setOpacity(opacity);
+					}
+				}
+			}
 		},
 		
 		/**
@@ -102,8 +124,16 @@ define([ 'jquery' ], function(require) {
 		setColor : function(color) {
 			// TODO: adapt to types / variables
 			
-			// TODO: FIXME
 			GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
+			
+			if(typeof this.getChildren === "function"){
+				var children = this.getChildren();
+				for(var i=0; i<children.lenght; i++){
+					if(typeof children[i].setColor === "function"){
+						children[i].setColor(color);
+					}
+				}
+			}
 		},
 		
 		/**
@@ -230,7 +260,6 @@ define([ 'jquery' ], function(require) {
 		 {
 			// TODO: adapt to types / variables
 				
-			// TODO: FIXME
 			GEPPETTO.SceneController.zoomToMesh(this.getInstancePath());
 			return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.getInstancePath();
 	     },
@@ -242,7 +271,6 @@ define([ 'jquery' ], function(require) {
 		{
 			// TODO: adapt to types / variables
 			
-			// TODO: FIXME
 			if(GEPPETTO.SceneController.setGeometryType(this, type, thickness)){
 				return "Geometry type successfully changed for " + this.getInstancePath(); 
 			}

@@ -395,6 +395,13 @@ define(function(require) {
 			COMPOSITE_VISUAL_TYPE_NODE : "CompositeVisualType",
 			VISUAL_TYPE_NODE : "VisualType",
 			ARRAY_TYPE_NODE : "ArrayType",
+			PARAMETER_TYPE : "ParameterType",
+			STATE_VARIABLE_TYPE : "StateVariableType",
+			CONNECTION_TYPE : "ConnectionType",
+			DYNAMICS_TYPE : "DynamicsType",
+			FUNCTION_TYPE : "FunctionType",
+			TEXT_TYPE : "TextType",
+			HTML_TYPE : "HTMLType",
 			//VARIABLES
 			VARIABLE_NODE : "Variable",
 			//VALUES
@@ -415,7 +422,7 @@ define(function(require) {
 			DYNAMICS : "Dynamics",
 			FUNCTION : "Function",
 			TEXT : "Text",
-			HTM : "HTML",
+			HTML : "HTML",
 			SKELETON_ANIMATION_NODE: "SkeletonAnimation"
 		}
 	}

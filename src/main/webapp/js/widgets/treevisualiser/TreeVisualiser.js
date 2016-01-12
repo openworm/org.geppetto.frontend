@@ -40,6 +40,8 @@ define(function(require) {
 
 	var Widget = require('widgets/Widget');
 	var Node = require('model/Node');
+	var TreeVisualiserNode = require('widgets/treevisualiser/TreeVisualiserNode');
+	var TreeVisualiserWrappedObject = require('widgets/treevisualiser/TreeVisualiserWrappedObject');
 
 	return {
 		TreeVisualiser: Widget.View.extend({
@@ -63,10 +65,7 @@ define(function(require) {
 				}
 	
 				if (state!= null) {	
-					var dataset = this.createDataset();
-					dataset.variableToDisplay = state;
-					dataset.data = state;
-					return dataset;
+					return this.createDataset(state);
 				}
 				return null;
 			},
@@ -75,8 +74,59 @@ define(function(require) {
 				return this.datasets;
 			},
 			
-			createDataset: function(){
-				return {variableToDisplay:'', data:{}, isDisplayed:false};
+			createDataset: function(state){
+				var stateTreeVisualiserNode = this.createTreeVisualiserNode(state);
+				return {data:stateTreeVisualiserNode, isDisplayed:false};
+			},
+			
+			createTreeVisualiserNode: function(state){
+				var tvOptions = {wrappedObj : state};
+				var tvn = new TreeVisualiserNode(tvOptions);
+				tvn.set({ "children" : this.createTreeVisualiserNodeChildren(state)});
+				return tvn;
+			},
+			
+			createTreeVisualiserNodeChildren: function(state){
+				var children = [];
+				if (state.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+					for (var i=0; i<state.getChildren().length; i++){
+						var child = state.getChildren()[i];
+						if (typeof child.getTypes != "undefined" && child.getTypes().length == 1){
+							if (child.getTypes()[0].getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE ||
+									child.getTypes()[0].getMetaType() == GEPPETTO.Resources.STATE_VARIABLE_TYPE ||
+									child.getTypes()[0].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE ||
+									child.getTypes()[0].getMetaType() == GEPPETTO.Resources.DYNAMICS_TYPE ||
+									child.getTypes()[0].getMetaType() == GEPPETTO.Resources.FUNCTION_TYPE ||
+									child.getTypes()[0].getMetaType() == GEPPETTO.Resources.TEXT_TYPE ||
+									child.getTypes()[0].getMetaType() == GEPPETTO.Resources.HTML_TYPE){
+								children.push(this.createTreeVisualiserNode(child));
+							}
+							else{
+								children.push(this.createTreeVisualiserNode(child.getTypes()[0]));
+								
+							}
+
+						}
+						if (typeof child.getAnonymousTypes != "undefined" && child.getAnonymousTypes().length == 1){
+							children.push(this.createTreeVisualiserNode(child.getAnonymousTypes()[0]));	
+						}
+					}
+				}
+				else if (state.getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
+					var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({"name": "size", "id": "size", "_metaType": "", "value": state.getSize()});
+					var tvOptions = {wrappedObj : treeVisualiserWrappedObject};
+					var tvn = new TreeVisualiserNode(tvOptions);
+					children.push(tvn);
+					children.push(this.createTreeVisualiserNode(state.getType()));
+					
+					//state.getDefaultValue()
+					
+				}	
+				else if (state.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
+					
+				}
+				return children;
+				
 			},
 			
 			getValueFromData : function(data,step){

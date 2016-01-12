@@ -104,7 +104,7 @@ define(function(require) {
 
 			if(state instanceof Array){
 				var that = this;
-				$.each(state, function(d){that.setData(state[d], options)})
+				$.each(state, function(d){that.setData(state[d], options)});
 			}
 			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
 			
@@ -140,112 +140,150 @@ define(function(require) {
 		 * @param {Array} data - Data to paint
 		 */
 		prepareTree : function(parent, data, step) {
-			if (data._metaType != null){
-				if('labelName' in this.options){
-					label = data[this.options.labelName];
-				}else{
-					//TODO: Remove once all getName are implemented in all nodes
-					if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
-					else{label = data.getName();}
-				}
-
-				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
-						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "HTMLMetadataNode" |
-						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
-					if (!dataset.isDisplayed) {
-						dataset.valueDict[data.instancePath] = new function(){};
-						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
-						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
-						
-						if(data._metaType=="ParameterSpecificationNode")
-						{
-							$(dataset.valueDict[data.instancePath]["controller"].__li).find('div > div > input[type="text"]').change(function(){
-								GEPPETTO.Console.executeCommand(data.instancePath+".setValue(" + $(this).val().split(" ")[0] + ")");
-							});
+			//if (data._metaType != null){
+			if (!dataset.isDisplayed) {
+				
+				
+				
+				var children = data.getChildren();
+				if (children.length > 0){
+					parentFolder = parent.addFolder(data.getName());
+					//Add class to dom element depending on node metatype
+					$(parentFolder.domElement).find("li").addClass(data.getMetaType().toLowerCase() + "tv");
+					//Add instancepath as data attribute. This attribute will be used in the event framework
+					$(parentFolder.domElement).find("li").data("instancepath", data.getId());
+					
+					
+					
+					var parentFolderTmp = parentFolder;
+					for (var childIndex in children){
+						if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
+							this.prepareTree(parentFolderTmp, children[childIndex],step);
 						}
-						
-						//Add class to dom element depending on node metatype
-						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
-						//Add instancepath as data attribute. This attribute will be used in the event framework
-						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
-						
-						//if no values are presentn for a group element,display theh color
-						if (data._metaType == "VisualGroupElementNode" 
-							&& dataset.valueDict[data.instancePath][label] == "null ") {
-							//set label to empty
-							dataset.valueDict[data.instancePath][label] = "";
-							
-							$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
-
-							//apply color to label by getting unique class and using jquery
-							var color = data.getColor().replace("0X","#");
-							$(this.dialog).find("."+label + " .c").css({"background-color": color, "width": "60%", "height": "95%"});
-						}	
 					}
-					else{
-						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
-						if(!set.__ul.closed){
-							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
-						}
+					if (this.options.expandNodes){
+						parentFolderTmp.open();
 					}
 				}
 				else{
-					if (!dataset.isDisplayed) {
-						parentFolder = parent.addFolder(label);
-						//Add class to dom element depending on node metatype
-						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
-						//Add instancepath as data attribute. This attribute will be used in the event framework
-						$(parentFolder.domElement).find("li").data("instancepath", data.getInstancePath());
-						
-						//if no values are presentn for a group element,display theh color
-						if (data._metaType == "VisualGroupNode") {
-							
-							$(parentFolder.domElement).find("li").addClass(label);
-							
-							$(this.dialog).find("."+label).append($('<a>').attr('class',label+"-mean"));
-							$(this.dialog).find("."+label).css("width", "100%");
-							$(this.dialog).find("."+label+"-mean").css({"float": "right", "width": "60%", "height": "90%", "color": "black"});
-
-							if (data.getMinDensity() != null){
-
-								if(data.getMinDensity() != data.getMaxDensity()){
-	
-									var lowHexColor = rgbToHex(255, Math.floor(255), 0);
-									var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
-									var lowcolor = lowHexColor.replace("0X","#");
-									var highcolor = highHexColor.replace("0X","#");
-
-									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-low").append(data.getMinDensity()));
-									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
-
-									$(this.dialog).find("."+label+"-low").css({"width": "50%", "height": "90%", "text-align": "center", "float": "left", "background-color": lowcolor});
-									$(this.dialog).find("."+label+"-high").css({"width": "50%", "height": "90%", "text-align": "center", "float": "right", "background-color": highcolor});
-									
-								} else {
-									var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
-									var color = hex.replace("0X","#");
-	
-									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-text").append(data.getMinDensity()));
-									$(this.dialog).find("."+label+"-mean").css({"text-align": "center", "background-color": color});
-									$(this.dialog).find("."+label+"-text").css({"width": "60%", "background-color": color});
-								}
-							}	
-						}
-					}
-					var children = data.getChildren();
-					if (children.length > 0){
-						var parentFolderTmp = parentFolder;
-							for (var childIndex in children){
-								if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
-									this.prepareTree(parentFolderTmp, children[childIndex],step);
-								}
-							}
-						if (this.options.expandNodes){
-							parentFolderTmp.open();
-						}
-					}
+					dataset.valueDict[data.getId()] = new function(){};
+					//AQP
+					//dataset.valueDict[data.instancePath][data.getName()] = this.getValueFromData(data,step);
+					dataset.valueDict[data.getId()][data.getName()] = data.getValue();
+					dataset.valueDict[data.getId()]["controller"] = parent.add(dataset.valueDict[data.getId()], data.getName()).listen();
+					
+					
+					//Add class to dom element depending on node metatype
+					$(dataset.valueDict[data.getId()]["controller"].__li).addClass(data.getMetaType().toLowerCase() + "tv");
+					//Add instancepath as data attribute. This attribute will be used in the event framework
+					$(dataset.valueDict[data.getId()]["controller"].__li).data("instancepath", data.getId());
 				}
-			}	
+			}
+			else{
+				var set = dataset.valueDict[data.getId()]["controller"].__gui;
+				if(!set.__ul.closed){
+					dataset.valueDict[data.getId()][data.getName()] = data.getValue();
+				}
+			}
+				
+				
+//				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
+//						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "HTMLMetadataNode" |
+//						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
+//					if (!dataset.isDisplayed) {
+//						dataset.valueDict[data.instancePath] = new function(){};
+//						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
+//						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
+//						
+//						if(data._metaType=="ParameterSpecificationNode")
+//						{
+//							$(dataset.valueDict[data.instancePath]["controller"].__li).find('div > div > input[type="text"]').change(function(){
+//								GEPPETTO.Console.executeCommand(data.instancePath+".setValue(" + $(this).val().split(" ")[0] + ")");
+//							});
+//						}
+//						
+//						//Add class to dom element depending on node metatype
+//						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
+//						//Add instancepath as data attribute. This attribute will be used in the event framework
+//						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
+//						
+//						//if no values are presentn for a group element,display theh color
+//						if (data._metaType == "VisualGroupElementNode" 
+//							&& dataset.valueDict[data.instancePath][label] == "null ") {
+//							//set label to empty
+//							dataset.valueDict[data.instancePath][label] = "";
+//							
+//							$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
+//
+//							//apply color to label by getting unique class and using jquery
+//							var color = data.getColor().replace("0X","#");
+//							$(this.dialog).find("."+label + " .c").css({"background-color": color, "width": "60%", "height": "95%"});
+//						}	
+//					}
+//					else{
+//						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
+//						if(!set.__ul.closed){
+//							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
+//						}
+//					}
+//				}
+//				else{
+//					if (!dataset.isDisplayed) {
+//						parentFolder = parent.addFolder(label);
+//						//Add class to dom element depending on node metatype
+//						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
+//						//Add instancepath as data attribute. This attribute will be used in the event framework
+//						$(parentFolder.domElement).find("li").data("instancepath", data.getInstancePath());
+//						
+//						//if no values are presentn for a group element,display theh color
+//						if (data._metaType == "VisualGroupNode") {
+//							
+//							$(parentFolder.domElement).find("li").addClass(label);
+//							
+//							$(this.dialog).find("."+label).append($('<a>').attr('class',label+"-mean"));
+//							$(this.dialog).find("."+label).css("width", "100%");
+//							$(this.dialog).find("."+label+"-mean").css({"float": "right", "width": "60%", "height": "90%", "color": "black"});
+//
+//							if (data.getMinDensity() != null){
+//
+//								if(data.getMinDensity() != data.getMaxDensity()){
+//	
+//									var lowHexColor = rgbToHex(255, Math.floor(255), 0);
+//									var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
+//									var lowcolor = lowHexColor.replace("0X","#");
+//									var highcolor = highHexColor.replace("0X","#");
+//
+//									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-low").append(data.getMinDensity()));
+//									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
+//
+//									$(this.dialog).find("."+label+"-low").css({"width": "50%", "height": "90%", "text-align": "center", "float": "left", "background-color": lowcolor});
+//									$(this.dialog).find("."+label+"-high").css({"width": "50%", "height": "90%", "text-align": "center", "float": "right", "background-color": highcolor});
+//									
+//								} else {
+//									var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
+//									var color = hex.replace("0X","#");
+//	
+//									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-text").append(data.getMinDensity()));
+//									$(this.dialog).find("."+label+"-mean").css({"text-align": "center", "background-color": color});
+//									$(this.dialog).find("."+label+"-text").css({"width": "60%", "background-color": color});
+//								}
+//							}	
+//						}
+//					}
+//					var children = data.getChildren();
+//					if (children.length > 0){
+//						var parentFolderTmp = parentFolder;
+//							for (var childIndex in children){
+//								if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
+//									this.prepareTree(parentFolderTmp, children[childIndex],step);
+//								}
+//							}
+//						if (this.options.expandNodes){
+//							parentFolderTmp.open();
+//						}
+//					}
+//				}
+			//}	
 		},
 		
 		/**
@@ -254,9 +292,9 @@ define(function(require) {
 		updateData : function(step) {
 			for ( var key in this.datasets) {
 				dataset = this.datasets[key];
-				if (dataset.variableToDisplay != null) {
+				//if (dataset.variableToDisplay != null) {
 					this.prepareTree(this.gui, dataset.data,step);
-				}
+				//}
 			}
 		},
 		

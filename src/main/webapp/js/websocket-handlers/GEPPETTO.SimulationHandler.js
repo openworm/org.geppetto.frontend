@@ -301,6 +301,17 @@ define(function(require) {
 					// NOTE: tampering with the window object like this is probably a horrible idea
 					window[window.Instances[i].getId()] = window.Instances[i];
 				}
+				
+				// add method to add instances to window.Instances
+				window.Instances.addInstances = function(instancePaths){
+					if(!(instancePaths.constructor === Array)){
+						// if it's not an array throw it into an array with a single element
+						instancePaths = [instancePaths];
+					}
+					
+					GEPPETTO.ModelFactory.addInstances(instancePaths, window.Instances, window.Model);
+				}
+				
 				console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);
 				
 				console.time(GEPPETTO.Resources.CREATING_SCENE);

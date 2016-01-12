@@ -269,16 +269,19 @@ define(function(require)
 				var instances = [];
 				
 				var varsWithVizTypes = [];
+				var varsWithConnTypes = [];
 				
 				// builds list of vars with visual types - start traversing from top level variables
 				var vars = geppettoModel.getVariables();
 				for(var i=0; i<vars.length; i++){
-					this.fetchVarsWithVisualTypes(vars[i], varsWithVizTypes, '');
+					this.fetchVarsWithVisualOrConnectionTypes(vars[i], varsWithVizTypes, varsWithConnTypes, '');
 				}
 				
+				var varsToInstantiate = varsWithVizTypes.concat(varsWithConnTypes);
+				
 				// based on list, traverse again and build instance objects
-				for(var j=0; j<varsWithVizTypes.length; j++){
-					this.buildInstanceHierarchy(varsWithVizTypes[j], null, geppettoModel, instances);
+				for(var j=0; j<varsToInstantiate.length; j++){
+					this.buildInstanceHierarchy(varsToInstantiate[j], null, geppettoModel, instances);
 				}
 				
 				// populate shortcuts
@@ -533,7 +536,7 @@ define(function(require)
 			/** 
 			 * Build "list" of variables that have a visual type
 			 */
-			fetchVarsWithVisualTypes : function(node, varsWithVizTypes, parentPath)
+			fetchVarsWithVisualOrConnectionTypes : function(node, varsWithVizTypes, varsWithConnTypes, parentPath)
 			{
 				// build "list" of variables that have a visual type (store "path")
 				// check meta type - we are only interested in variables
@@ -566,13 +569,19 @@ define(function(require)
 							varsWithVizTypes.push(path);
 						}
 						
+						// check if type is connection 
+						if(allTypes[i].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE_NODE){
+							var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+							varsWithConnTypes.push(path);
+						}
+						
 						// RECURSE on any variables inside composite types
 						if(allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
 							var vars = allTypes[i].getVariables();
 							
 							if(vars != undefined && vars != null){
 								for(var j=0; j<vars.length; j++){
-									this.fetchVarsWithVisualTypes(vars[j], varsWithVizTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+									this.fetchVarsWithVisualOrConnectionTypes(vars[j], varsWithVizTypes, varsWithConnTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
 								}
 							}
 						}
@@ -585,7 +594,7 @@ define(function(require)
 								
 								if(vars != undefined && vars != null){
 									for(var j=0; j<vars.length; j++){
-										this.fetchVarsWithVisualTypes(vars[j], varsWithVizTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+										this.fetchVarsWithVisualOrConnectionTypes(vars[j], varsWithVizTypes, varsWithConnTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
 									}
 								}
 							}

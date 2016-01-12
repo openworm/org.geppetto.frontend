@@ -390,7 +390,6 @@ define(function(require) {
 			//TYPES
 			TYPE_NODE : "Type",
 			VISUAL_TYPE_NODE : "VisualType",
-			CONNECTION_TYPE_NODE : "ConnectionType",
 			COMPOSITE_TYPE_NODE : "CompositeType",
 			COMPOSITE_VISUAL_TYPE_NODE : "CompositeVisualType",
 			VISUAL_TYPE_NODE : "VisualType",

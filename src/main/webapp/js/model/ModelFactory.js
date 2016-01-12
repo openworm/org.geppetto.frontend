@@ -421,22 +421,20 @@ define(function(require)
 							var explodedInstance = this.createInstance(options);
 							
 							// check if visual type and inject AVisualCapability
-							// NOTE: should always be the case for an exploded instance but better to check
 							if(explodedInstance.hasVisualType()){
 								explodedInstance.extendApi(AVisualCapability);
 							}
 							
 							// check if it has connections and inject AConnectionCapability
-							if((explodedInstance.getType().getMetaType()==GEPPETTO.Resources.CompositeTypeNode)&&
-								(explodedInstance.getType().getConnections().length>0)){
+							if(explodedInstance.getType().getMetaType()==GEPPETTO.Resources.CONNECTION_TYPE){
 								explodedInstance.extendApi(AConnectionCapability);
 							}
 								
-							if(explodedInstance.getType().getMetaType()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
+							if(explodedInstance.getType().getMetaType()==GEPPETTO.Resources.STATE_VARIABLE_TYPE){
 								explodedInstance.extendApi(AStateVariableCapability);
 							}
 								
-							if(explodedInstance.getType().getMetaType()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
+							if(explodedInstance.getType().getMetaType()==GEPPETTO.Resources.PARAMETER_TYPE){
 								explodedInstance.extendApi(AParameterCapability);
 							}
 							
@@ -466,16 +464,15 @@ define(function(require)
 						}
 						
 						// check if it has connections and inject AConnectionCapability
-						if((newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.CompositeTypeNode)&&
-							(newlyCreatedInstance.getType().getConnections().length>0)){
+						if(newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.CONNECTION_TYPE){
 							newlyCreatedInstance.extendApi(AConnectionCapability);
 						}
 							
-						if(newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.STATE_VARIABLE_TYPE_NODE){
+						if(newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.STATE_VARIABLE_TYPE){
 							newlyCreatedInstance.extendApi(AStateVariableCapability);
 						}
 							
-						if(newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.PARAMETER_TYPE_NODE){
+						if(newlyCreatedInstance.getType().getMetaType()==GEPPETTO.Resources.PARAMETER_TYPE){
 							newlyCreatedInstance.extendApi(AParameterCapability);
 						}
 						
@@ -570,7 +567,7 @@ define(function(require)
 						}
 						
 						// check if type is connection 
-						if(allTypes[i].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE_NODE){
+						if(allTypes[i].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE){
 							var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 							varsWithConnTypes.push(path);
 						}

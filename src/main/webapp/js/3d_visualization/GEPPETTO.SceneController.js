@@ -42,17 +42,14 @@ define(function(require)
 			 */
 			traverseInstances : function(instances)
 			{
-				if (!Array.isArray(instances) && instances.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
-				{
-					for (var i = 0; i < instances.getSize(); i++)
-					{
+				if (!Array.isArray(instances) && instances.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE){
+					// array - go over array elements
+					for (var i = 0; i < instances.getSize(); i++){
 						GEPPETTO.SceneController.checkVisualInstance(instances[i], i);
 					}
-				} else
-				{
-					for ( var inst in instances)
-					{
-						GEPPETTO.SceneController.checkVisualInstance(instances[inst]);
+				} else {
+					for ( var j = 0; j < instances.length; j++){
+						GEPPETTO.SceneController.checkVisualInstance(instances[j]);
 					}
 				}
 			},

@@ -685,7 +685,7 @@ define(function(require) {
 			 */
 			traverseSelection : function(instances){
 				var selection = new Array();
-				for(var e in instances)
+				for(var e=0; e<instances.length;e++)
 				{
 					var instance = instances[e];
 					if(instance.selected)

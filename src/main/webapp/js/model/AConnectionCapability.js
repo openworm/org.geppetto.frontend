@@ -51,6 +51,7 @@ define([ 'jquery' ], function(require) {
 				return GEPPETTO.Resources.MISSING_PARAMETER;
 			}
 			
+			// NOTE: selected depends on the Visual Capability API...
 			if(this.selected == false && (mode)){
 				this.select();
 			}

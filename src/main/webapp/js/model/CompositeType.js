@@ -91,7 +91,7 @@ define(function(require) {
 
 			for(var v in this.getVariables()){
 				var variable=this.getVariables()[v];
-				if(variable.getType().getId()==GEPPETTO.Resources.CONNECTION)
+				if(variable.getType().getMetaType()==GEPPETTO.Resources.CONNECTION_TYPE)
 				{
 					connectionVariables.push(variable);
 				}

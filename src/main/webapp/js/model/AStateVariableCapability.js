@@ -40,6 +40,7 @@
 
 define([ 'jquery' ], function(require) {
 	return {
+		watched : false,
 		
 		/**
 		 * Get value of quantity
@@ -48,7 +49,18 @@ define([ 'jquery' ], function(require) {
 		 * @returns {String} Value of quantity
 		 */
 		getTimeSeries : function() {
-			return this.timeSeries;
+			// TODO: adapt to type / variable
+			
+			var timeSeries = undefined;
+			var initialValues = this.getVariable().getWrappedObj().initialValues;
+			
+			for(var i=0; i<initialValues.length; i++){
+				if(initialValues[i].value.eClass === 'TimeSeries'){
+					timeSeries = initialValues[i].value.timeSeries;
+				}
+			}
+			
+			return timeSeries;
 		},
 		
 		/**
@@ -58,18 +70,18 @@ define([ 'jquery' ], function(require) {
 		 * @returns {String} Unit for quantity
 		 */
 		getUnit : function() {
-			return this.unit;
-		},
-		
-		/**
-		 * Set unit
-		 * 
-		 * @command VariableNode.setUnit()
-		 * @param {String} unit - unit for variable node
-		 */
-		setUnit : function(unit) {
-			this.unit = unit;
-			return this;
+			// TODO: adapt to type / variable
+			
+			var unit = undefined;
+			var initialValues = this.getVariable().getWrappedObj().initialValues;
+			
+			for(var i=0; i<initialValues.length; i++){
+				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
+					unit = initialValues[i].value.unit.unit
+				}
+			}
+			
+			return unit;
 		},
 
 		/**
@@ -79,6 +91,7 @@ define([ 'jquery' ], function(require) {
 		 * @returns {boolean} true if this variable is being watched
 		 */
 		isWatched : function() {
+			// NOTE: this.watched is a flag added by this API / Capability
 			return this.watched;
 		},
 		
@@ -90,7 +103,10 @@ define([ 'jquery' ], function(require) {
 		 */
 		setWatched : function(isWatched) {
 			if (isWatched != this.watched){
-				Project.getActiveExperiment().watchVariables([this]);
+				// TODO: FIX below
+				//Project.getActiveExperiment().watchVariables([this]);
+				
+				// NOTE: this.watched is a flag added by this API / Capability
 				this.watched=isWatched;
 			}
 			return this;

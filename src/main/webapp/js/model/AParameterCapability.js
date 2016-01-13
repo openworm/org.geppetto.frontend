@@ -48,7 +48,18 @@ define([ 'jquery' ], function(require) {
 		 */
 		getUnit : function()
 		{
-			return this.unit;
+			// TODO: adapt to Type / Variable
+			
+			var unit = undefined;
+			var initialValues = this.getVariable().getWrappedObj().initialValues;
+			
+			for(var i=0; i<initialValues.length; i++){
+				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
+					unit = initialValues[i].value.unit.unit
+				}
+			}
+			
+			return unit;
 		},
 
 		/**
@@ -59,7 +70,19 @@ define([ 'jquery' ], function(require) {
 		 */
 		getValue : function()
 		{
-			return this.value;
+			// TODO: adapt to Type / Variable
+			
+			var value = undefined;
+			var initialValues = this.getVariable().getWrappedObj().initialValues;
+			
+			for(var i=0; i<initialValues.length; i++){
+				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
+					// this is ugly
+					value = initialValues[i].value.value;
+				}
+			}
+			
+			return value;
 		},
 
 		/**
@@ -70,7 +93,18 @@ define([ 'jquery' ], function(require) {
 		 */
 		getScalingFactor : function()
 		{
-			return this.scalingFactor;
+			// TODO: adapt to Type / Variable
+			
+			var scalingFactor = undefined;
+			var initialValues = this.getVariable().getWrappedObj().initialValues;
+			
+			for(var i=0; i<initialValues.length; i++){
+				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
+					scalingFactor = initialValues[i].value.scalingFactor;
+				}
+			}
+			
+			return scalingFactor;
 		},
 
 		/**
@@ -78,8 +112,19 @@ define([ 'jquery' ], function(require) {
 		 */
 		setValue : function(value)
 		{
-			this.value = value;
-			Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);
+			// TODO: adapt to Type / Variable
+			var initialValues = this.getVariable().getWrappedObj().initialValues;
+			
+			for(var i=0; i<initialValues.length; i++){
+				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
+					// setting value on wrapped object... this is ugly
+					initialValues[i].value.value = value;
+				}
+			}
+			
+			// TODO: FIX below
+			//Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);
+			
 			return this;
 		}
 	}

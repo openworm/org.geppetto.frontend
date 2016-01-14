@@ -46,6 +46,7 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			variable : null,
 			parent : null,
 			size : 0,
+			capabilities: [],
 			
 			/**
 			 * Initializes this node with passed attributes
@@ -59,6 +60,9 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 				this.set({ "id" : options.id });
 				this.set({ "name" : options.name });
 				this.set({ "_metaType" : options._metaType });
+				
+				// capability list is for private use
+				this.set({ "capabilities" : [] });
 			},
 			
 			/**
@@ -227,6 +231,27 @@ define([ 'jquery', 'underscore', 'backbone'], function(require) {
 			 */
 			extendApi : function(extensionObj){
 				$.extend(this, extensionObj);
+				this.get("capabilities").push(extensionObj.capabilityId);
+			},
+			
+			/**
+			 * Checks if the instance has a given capability
+			 * 
+			 * @command ArrayInstance.hasCapability(capabilityId)
+			 * 
+			 * @returns {Boolean}
+			 */
+			hasCapability : function(capabilityId){
+				var hasCapability = false;
+				var capabilities = this.get('capabilities');
+				
+				for(var i=0; i<capabilities.length; i++){
+					if(capabilities[i] === capabilityId){
+						hasCapability = true;
+					}
+				}
+				
+				return hasCapability;
 			}
 		})
 });

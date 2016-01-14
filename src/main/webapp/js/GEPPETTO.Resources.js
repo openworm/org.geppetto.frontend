@@ -422,7 +422,12 @@ define(function(require) {
 			FUNCTION : "Function",
 			TEXT : "Text",
 			HTML : "HTML",
-			SKELETON_ANIMATION_NODE: "SkeletonAnimation"
+			SKELETON_ANIMATION_NODE : "SkeletonAnimation",
+			// CAPABBILITIES
+			VISUAL_CAPABILITY : 'VisualCapability',
+			STATE_VARIABLE_CAPABILITY : 'StateVariableCapability',
+			PARAMETER_CAPABILITY : 'ParameterCapability',
+			CONNECTION_CAPABILITY : 'ConnectionCapability',
 		}
 	}
 });

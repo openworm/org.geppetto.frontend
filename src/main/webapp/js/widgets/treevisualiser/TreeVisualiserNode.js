@@ -92,11 +92,29 @@ define([ 'jquery', 'underscore', 'backbone' ], function(require) {
 			 * @returns {String} ID of node
 			 */
 			getValue : function() {
-				var value = null;
+				var formattedValue = null;
+				console.log('Getting value for ' + this.getId());
 				if (this.get('wrappedObj').getInitialValues() != undefined){
-					value = this.get('wrappedObj').getInitialValues()[0].value.value;
+					var value = this.get('wrappedObj').getInitialValues()[0].value;
+					if (value.eClass == 'Text'){
+						formattedValue = value.text;
+					}
+					else if (value.eClass == 'Connection'){
+						//AQP: To be fixed once this part is solved
+						formattedValue = 'Connection';
+					}
+					else if (value.eClass == 'HTML'){
+						formattedValue = value.html;
+					}
+					else if (value.eClass == 'Dynamics'){
+						//AQP: Let's try to beautify this thing
+						formattedValue = value.dynamics.expression.expression;
+					}
+					else {
+						formattedValue = value.value;	
+					}
 				}
-				return value;
+				return formattedValue;
 			},
 			
 			/**

@@ -101,7 +101,9 @@ define(function(require) {
 		 * @param {Object} options - Set of options passed to widget to customize it
 		 */
 		setData : function(state, options) {
-
+			labelsInTV = [];
+			
+			
 			if(state instanceof Array){
 				var that = this;
 				$.each(state, function(d){that.setData(state[d], options)});
@@ -141,13 +143,32 @@ define(function(require) {
 		 */
 		prepareTree : function(parent, data, step) {
 			//if (data._metaType != null){
+			
+			if('labelName' in this.options){
+				// We need to verify if this is working
+				label = data.getWrappedObj().get(this.options.labelName);
+			}else{
+				label = data.getName();
+			}
+			
+			while (true){
+				if (labelsInTV.indexOf(label) >= 0){
+					label = label + " ";
+				}
+				else{
+					labelsInTV.push(label);
+					break;
+				}
+			}
+			
+			
 			if (!dataset.isDisplayed) {
 				
 				
 				
 				var children = data.getChildren();
 				if (children.length > 0){
-					parentFolder = parent.addFolder(data.getName());
+					parentFolder = parent.addFolder(label);
 					//Add class to dom element depending on node metatype
 					$(parentFolder.domElement).find("li").addClass(data.getMetaType().toLowerCase() + "tv");
 					//Add instancepath as data attribute. This attribute will be used in the event framework
@@ -167,10 +188,8 @@ define(function(require) {
 				}
 				else{
 					dataset.valueDict[data.getId()] = new function(){};
-					//AQP
-					//dataset.valueDict[data.instancePath][data.getName()] = this.getValueFromData(data,step);
-					dataset.valueDict[data.getId()][data.getName()] = data.getValue();
-					dataset.valueDict[data.getId()]["controller"] = parent.add(dataset.valueDict[data.getId()], data.getName()).listen();
+					dataset.valueDict[data.getId()][label] = data.getValue();
+					dataset.valueDict[data.getId()]["controller"] = parent.add(dataset.valueDict[data.getId()], label).listen();
 					
 					
 					//Add class to dom element depending on node metatype
@@ -182,7 +201,7 @@ define(function(require) {
 			else{
 				var set = dataset.valueDict[data.getId()]["controller"].__gui;
 				if(!set.__ul.closed){
-					dataset.valueDict[data.getId()][data.getName()] = data.getValue();
+					dataset.valueDict[data.getId()][label] = data.getValue();
 				}
 			}
 				

@@ -239,7 +239,7 @@ define(function(require)
 						var type = null;
 						
 						// check if it's composite type, visual type, array type or simple type
-						if(jsonTypes[i].eClass == 'CompositeType'){
+						if(jsonTypes[i].eClass == 'CompositeType' || jsonTypes[i].eClass == 'ConnectionType'){
 							type = this.createCompositeType(jsonTypes[i]);
 						}
 						else if(jsonTypes[i].eClass == 'CompositeVisualType'){

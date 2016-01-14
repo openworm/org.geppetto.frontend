@@ -38,8 +38,9 @@
  * @author Matteo Cantarelli
  */
 
-define([ 'jquery' ], function(require) {
+define([ 'jquery' ], function(require) {	
 	return {
+		capabilityId : 'StateVariableCapability',
 		watched : false,
 		
 		/**

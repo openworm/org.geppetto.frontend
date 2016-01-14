@@ -40,6 +40,7 @@
 
 define([ 'jquery' ], function(require) {
 	return {
+		capabilityId: 'ConnectionCapability',
 		
 		/**
 		 * Show input connections for this entity

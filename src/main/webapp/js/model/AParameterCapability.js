@@ -38,8 +38,10 @@
  * @author Matteo Cantarelli
  */
 
-define([ 'jquery' ], function(require) {
+define([ 'jquery' ], function(require) {	
 	return {
+		capabilityId: 'ParameterCapability',
+		
 		/**
 		 * Get the type of tree this is
 		 * 

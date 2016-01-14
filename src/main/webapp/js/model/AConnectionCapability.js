@@ -53,9 +53,10 @@ define([ 'jquery' ], function(require) {
 			}
 			
 			// NOTE: selected depends on the Visual Capability API...
-			if(this.selected == false && (mode)){
+			if(this.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY) && this.selected == false && (mode)){
 				this.select();
 			}
+			
 			var paths = new Array();
 			//match all aspect paths that are connected to this entity
 			for(var c in this.getConnections()){
@@ -134,10 +135,10 @@ define([ 'jquery' ], function(require) {
 				return GEPPETTO.Resources.MISSING_PARAMETER;
 			}
 			
-			//deselect all previously selected nodes
-			if(this.selected == false && (mode))
+			// deselect all previously selected nodes
+			if(this.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY) && this.selected == false && (mode))
 			{
-				this.select();
+				this.deselect();
 			}
 			
 			var paths = new Array();

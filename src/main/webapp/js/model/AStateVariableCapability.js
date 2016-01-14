@@ -55,6 +55,7 @@ define([ 'jquery' ], function(require) {
 			var timeSeries = undefined;
 			var initialValues = this.getVariable().getWrappedObj().initialValues;
 			
+			// TODO: make sure this is being pulled from the right place
 			for(var i=0; i<initialValues.length; i++){
 				if(initialValues[i].value.eClass === 'TimeSeries'){
 					timeSeries = initialValues[i].value.timeSeries;

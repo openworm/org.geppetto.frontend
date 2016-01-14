@@ -176,7 +176,8 @@ define([ 'jquery' ], function(require) {
 
 				
 				this.selected = true;
-				this.get("parent").selected=true;
+				// TODO: investigate why is the parent being set to selected too?
+				this.getParent().selected=true;
 				GEPPETTO.SceneController.selectAspect(this.getInstancePath());
 				message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
 

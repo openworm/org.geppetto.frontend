@@ -93,7 +93,7 @@ define([ 'jquery', 'underscore', 'backbone' ], function(require) {
 			 */
 			getValue : function() {
 				var formattedValue = null;
-				console.log('Getting value for ' + this.getId());
+//				console.log('Getting value for ' + this.getId());
 				if (this.get('wrappedObj').getInitialValues() != undefined){
 					var value = this.get('wrappedObj').getInitialValues()[0].value;
 					if (value.eClass == 'Text'){
@@ -110,25 +110,15 @@ define([ 'jquery', 'underscore', 'backbone' ], function(require) {
 						//AQP: Let's try to beautify this thing
 						formattedValue = value.dynamics.expression.expression;
 					}
+					else if (value.eClass == 'PhysicalQuantity'){
+						formattedValue = value.value + " " + value.unit.unit;
+					}
 					else {
+						//AQP: In here, it should only go the size of the population
 						formattedValue = value.value;	
 					}
 				}
 				return formattedValue;
-			},
-			
-			/**
-			 * Get the metatype associated with node
-			 * 
-			 * @command Node.getMetaType()
-			 * @returns {String} ID of node
-			 */
-			getUnit : function() {
-				var unit = null;
-				if (this.get('wrappedObj').getInitialValues() != undefined && this.get('wrappedObj').getInitialValues()[0].unit != undefined){ 
-					value = this.get('wrappedObj').getInitialValues()[0].value.unit; 
-				}
-				return unit;
 			},
 			
 			/**

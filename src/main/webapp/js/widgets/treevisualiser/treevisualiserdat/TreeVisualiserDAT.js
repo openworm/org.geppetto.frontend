@@ -165,7 +165,7 @@ define(function(require) {
 			if (!dataset.isDisplayed) {
 				
 				
-				
+				//AQP: Better ask for the children or for compositetype?
 				var children = data.getChildren();
 				if (children.length > 0){
 					parentFolder = parent.addFolder(label);

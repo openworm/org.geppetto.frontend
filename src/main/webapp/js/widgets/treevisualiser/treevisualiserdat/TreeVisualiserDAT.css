@@ -123,7 +123,7 @@ color: #85ea0e;
 }	
 
 /*  NODE STYLE BY METATYPE*/
-.entitynodetv {
+/*.entitynodetv {
 	border-left: 3px solid #0499e6;
 	background-color: #231f1f!important;
 	
@@ -131,11 +131,11 @@ color: #85ea0e;
 .aspectnodetv {
 	border-left: 3px solid #fe4807;
 	background-color: #fe4807!important;
-}
-.aspectsubtreenodetv {
+}*/
+.arraytypetv {
 	border-left: 3px solid #fe4807;
 }
-.compositenodetv {
+.compositetypetv {
 	border-left: 3px solid #2e2a2a;
 	background-color:#2e2a2a!important;
 }

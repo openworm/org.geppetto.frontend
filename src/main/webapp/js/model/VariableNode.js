@@ -34,100 +34,99 @@
 /**
  * Client class use to represent a variable node, used for simulation tree
  * states.
- * 
+ *
  * @module model/VariableNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
-define(function(require) {
-	var Node = require('model/Node');
+define(function (require) {
+    var Node = require('model/Node');
 
-	return Node.Model.extend({
-		timeSeries : [],
-		unit: "",
+    return Node.Model.extend({
+        timeSeries: [],
+        unit: "",
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.name = options.name;
-			this.id = options.id;
-			this.unit = options.unit;
-			this.timeSeries = new Array();
-			this.aspectNode = options.aspectNode;
-			this.instancePath = options.instancePath;
-			this.watched = options.watched;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.name = options.name;
+            this.id = options.id;
+            this.unit = options.unit;
+            this.timeSeries = [];
+            this.aspectNode = options.aspectNode;
+            this.instancePath = options.instancePath;
+            this.watched = options.watched;
+            this._metaType = options._metaType;
+            this.domainType = options.domainType;
+        },
 
-		/**
-		 * Get value of quantity
-		 * 
-		 * @command VariableNode.getTimeSeries()
-		 * @returns {String} Value of quantity
-		 */
-		getTimeSeries : function() {
-			return this.timeSeries;
-		},
-		
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command VariableNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function() {
-			return this.unit;
-		},
-		
-		/**
-		 * Set unit
-		 * 
-		 * @command VariableNode.setUnit()
-		 * @param {String} unit - unit for variable node
-		 */
-		setUnit : function(unit) {
-			this.unit = unit;
-			return this;
-		},
+        /**
+         * Get value of quantity
+         *
+         * @command VariableNode.getTimeSeries()
+         * @returns {String} Value of quantity
+         */
+        getTimeSeries: function () {
+            return this.timeSeries;
+        },
 
-		/**
-		 * Get watched
-		 * 
-		 * @command VariableNode.getWatched()
-		 * @returns {boolean} true if this variable is being watched
-		 */
-		isWatched : function() {
-			return this.watched;
-		},
-		
-		/**
-		 * Set watched
-		 * 
-		 * @command VariableNode.setWatched()
-		 * @param {Boolean} watched - Object with options attributes to initialize node
-		 */
-		setWatched : function(isWatched) {
-			if (isWatched != this.watched){
-				Project.getActiveExperiment().watchVariables([this]);
-				this.watched=isWatched;
-			}
-			return this;
-		},
-		
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n" +
-					+ "    Watched : " + this.watched + "\n";
-		}
-	});
+        /**
+         * Get the type of tree this is
+         *
+         * @command VariableNode.getUnit()
+         * @returns {String} Unit for quantity
+         */
+        getUnit: function () {
+            return this.unit;
+        },
+
+        /**
+         * Set unit
+         *
+         * @command VariableNode.setUnit()
+         * @param {String} unit - unit for variable node
+         */
+        setUnit: function (unit) {
+            this.unit = unit;
+            return this;
+        },
+
+        /**
+         * Get watched
+         *
+         * @command VariableNode.getWatched()
+         * @returns {boolean} true if this variable is being watched
+         */
+        isWatched: function () {
+            return this.watched;
+        },
+
+        /**
+         * Set watched
+         *
+         * @command VariableNode.setWatched()
+         * @param {Boolean} watched - Object with options attributes to initialize node
+         */
+        setWatched: function (isWatched) {
+            if (isWatched != this.watched) {
+                Project.getActiveExperiment().watchVariables([this]);
+                this.watched = isWatched;
+            }
+            return this;
+        },
+
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+                + "    InstancePath : " + this.instancePath + "\n"
+                + "    Value : " + this.value + "\n" + "    Unit : "
+                + this.unit + "\n" + "    ScalingFactor : "
+                + this.scalingFactor + "\n" + +"    Watched : " + this.watched + "\n";
+        }
+    });
 });

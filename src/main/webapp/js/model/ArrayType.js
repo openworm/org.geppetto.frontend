@@ -33,50 +33,50 @@
 
 /**
  * Client class use to represent an array type.
- * 
+ *
  * @module model/ArrayType
  * @author Giovanni Idili
  */
-define(function(require) {
-	var Type = require('model/Type');
+define(function (require) {
+    var Type = require('model/Type');
 
-	return Type.extend({
-		type: null,
-		size: null, 
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.set({ "type" : options.type });
-			this.set({ "size" : options.elements });
-			this.set({ "wrappedObj" : options.wrappedObj });
-		},
+    return Type.extend({
+        type: null,
+        size: null,
 
-		/**
-		 * Get type for array type
-		 * 
-		 * @command ArrayType.getType()
-		 * 
-		 * @returns {Type} - type
-		 * 
-		 */
-		getType : function() {
-			return this.get('type');
-		},
-		
-		/**
-		 * Get array size
-		 * 
-		 * @command ArrayType.getSize()
-		 * 
-		 * @returns {int} - size of the array
-		 * 
-		 */
-		getSize : function() {
-			return this.get('size');
-		},
-	});
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.set({"type": options.type});
+            this.set({"size": options.elements});
+            this.set({"wrappedObj": options.wrappedObj});
+        },
+
+        /**
+         * Get type for array type
+         *
+         * @command ArrayType.getType()
+         *
+         * @returns {Type} - type
+         *
+         */
+        getType: function () {
+            return this.get('type');
+        },
+
+        /**
+         * Get array size
+         *
+         * @command ArrayType.getSize()
+         *
+         * @returns {int} - size of the array
+         *
+         */
+        getSize: function () {
+            return this.get('size');
+        },
+    });
 });

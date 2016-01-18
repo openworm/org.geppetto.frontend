@@ -35,65 +35,67 @@
  *
  * @author Dan Kruchinin (dkruchinin@acm.org)
  */
-define(function(require) {
+define(function (require) {
 
-	var AWidgetController = require('widgets/AWidgetController');
-	var VarVis = require('widgets/variablevisualiser/VariableVisualiser');
+    var AWidgetController = require('widgets/AWidgetController');
+    var VarVis = require('widgets/variablevisualiser/VariableVisualiser');
 
-	/**
-	 * @exports Widgets/VariableVisualiser/VariableVisualiserController
-	 */
-	return AWidgetController.View.extend ({
+    /**
+     * @exports Widgets/VariableVisualiser/VariableVisualiserController
+     */
+    return AWidgetController.View.extend({
 
-		initialize: function() {
-			this.widgets = new Array();
-		},
+        initialize: function () {
+            this.widgets = [];
+        },
 
-		/**
-		 * Creates new variable visualiser widget
-		 */
-		addVariableVisualiserWidget: function() {
-			//look for a name and id for the new widget
-			var id = this.getAvailableWidgetId("VarVis", this.widgets);
-			var name = id;
-			var vv = window[name] = new VarVis({id:id, name:name,visible:true});
-			vv.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
-			this.widgets.push(vv);
+        /**
+         * Creates new variable visualiser widget
+         */
+        addVariableVisualiserWidget: function () {
+            //look for a name and id for the new widget
+            var id = this.getAvailableWidgetId("VarVis", this.widgets);
+            var name = id;
+            var vv = window[name] = new VarVis({id: id, name: name, visible: true});
+            vv.help = function () {
+                return GEPPETTO.Console.getObjectCommands(id);
+            };
+            this.widgets.push(vv);
 
-			GEPPETTO.WidgetsListener.subscribe(this, id);
+            GEPPETTO.WidgetsListener.subscribe(this, id);
 
-			//updates help command options
-			GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
-			//update tags for autocompletion
-			GEPPETTO.Console.updateTags(vv.getId(),vv);
-			return vv;
-		},
+            //updates help command options
+            GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/variablevisualiser/VariableVisualiser.js", vv, id);
+            //update tags for autocompletion
+            GEPPETTO.Console.updateTags(vv.getId(), vv);
+            return vv;
+        },
 
-		/**
-		 * Receives updates from widget listener class to update variable visualiser widget(s)
-		 *
-		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-		 */
-		update: function(event,parameters) {
-			//delete a widget(s)
-			if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-				this.removeWidgets();
-			}
+        /**
+         * Receives updates from widget listener class to update variable visualiser widget(s)
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+         */
+        update: function (event, parameters) {
+            //delete a widget(s)
+            if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+                this.removeWidgets();
+            }
 
-			//reset widget's datasets
-			else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
-				for (var i = 0; i < this.widgets.length; i++) {
-					this.widgets[i].clearVariable();
-				}
-			}
+            //reset widget's datasets
+            else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+                for (var i = 0; i < this.widgets.length; i++) {
+                    this.widgets[i].clearVariable();
+                }
+            }
 
-			//update widgets
-			else if (event == Events.Experiment_update) {
-				var step = parameters.steps;
-				for (var i = 0; i < this.widgets.length; i++) {
-					this.widgets[i].updateVariable(step);
-				}
-			}
-		}
-	});
+            //update widgets
+            else if (event == Events.Experiment_update) {
+                var step = parameters.steps;
+                for (var i = 0; i < this.widgets.length; i++) {
+                    this.widgets[i].updateVariable(step);
+                }
+            }
+        }
+    });
 });

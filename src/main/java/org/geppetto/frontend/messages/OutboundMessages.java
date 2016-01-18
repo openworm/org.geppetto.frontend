@@ -46,7 +46,6 @@ public enum OutboundMessages {
 	SERVER_AVAILABLE("server_available"),
 	EXPERIMENT_RUNNING("experiment_running"),
 	INFO_MESSAGE("info_message"),
-	EXPERIMENT_UPDATE("experiment_update"), 
 	RELOAD_CANVAS("reload_canvas"),
 	SIMULATION_CONFIGURATION("simulation_configuration"),
 	ERROR("generic_error"),

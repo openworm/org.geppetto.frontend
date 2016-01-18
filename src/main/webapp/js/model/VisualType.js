@@ -33,24 +33,24 @@
 
 /**
  * Client class use to represent a visual type.
- * 
+ *
  * @module model/VisualType
  * @author Giovanni Idili
  */
-define(function(require) {
-	var ObjectWrapper = require('model/ObjectWrapper');
+define(function (require) {
+    var ObjectWrapper = require('model/ObjectWrapper');
 
-	return ObjectWrapper.Model.extend({
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.set({ "wrappedObj" : options.wrappedObj });
-		}
-		
-		
-	});
+    return ObjectWrapper.Model.extend({
+
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.set({"wrappedObj": options.wrappedObj});
+        }
+
+
+    });
 });

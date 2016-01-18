@@ -34,66 +34,66 @@
 /**
  * Client class use to represent a composite variable node, used for simulation
  * tree state variables.
- * 
+ *
  * @module model/CompositeNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
-	var Node = require('model/Node');
+define(function (require) {
+    var Node = require('model/Node');
 
-	return Node.Model.extend({
-		children : null,
+    return Node.Model.extend({
+        children: null,
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			this.children = new Array();
-			this.id = options.id;
-			this.name = options.name;
-			this._metaType = options._metaType;
-			this.value = options.value;
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            this.children = [];
+            this.id = options.id;
+            this.name = options.name;
+            this._metaType = options._metaType;
+            this.value = options.value;
+        },
 
-		/**
-		 * Get this entity's aspects
-		 * 
-		 * @command CompositeVariableNode.getChildren()
-		 * 
-		 * @returns {List<Aspect>} - List of aspects
-		 * 
-		 */
-		getChildren : function() {
-			return this.children;
-		},
-		
-		/**
-		 * Get meta type
-		 * 
-		 * @command Instance.getMetaType()
-		 * 
-		 * @returns {String} - meta type
-		 * 
-		 */
-		getMetaType : function() {
-			return this._metaType;
-		},
-		
-		/**
-		 * Get the list of values for this variable
-		 * 
-		 * @command Variable.getInitialValues()
-		 * 
-		 * @returns {List<Value>} - array of values
-		 * 
-		 */
-		getInitialValues : function() {
-			var values = new Array();
-			values.push({value: {value: this.value}});
-			return values;
-		},
-	});
+        /**
+         * Get this entity's aspects
+         *
+         * @command CompositeVariableNode.getChildren()
+         *
+         * @returns {List<Aspect>} - List of aspects
+         *
+         */
+        getChildren: function () {
+            return this.children;
+        },
+
+        /**
+         * Get meta type
+         *
+         * @command Instance.getMetaType()
+         *
+         * @returns {String} - meta type
+         *
+         */
+        getMetaType: function () {
+            return this._metaType;
+        },
+
+        /**
+         * Get the list of values for this variable
+         *
+         * @command Variable.getInitialValues()
+         *
+         * @returns {List<Value>} - array of values
+         *
+         */
+        getInitialValues: function () {
+            var values = [];
+            values.push({value: {value: this.value}});
+            return values;
+        },
+    });
 });

@@ -33,89 +33,88 @@
 /**
  * Client class use to represent a parameter node, used for model tree
  * properties.
- * 
+ *
  * @module model/ParameterNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
-define(function(require) {
+define(function (require) {
 
-	var Node = require('model/Node');
+    var Node = require('model/Node');
 
-	return Node.Model.extend({
-		timeSeries : [],
-		unit: "",
+    return Node.Model.extend({
+        timeSeries: [],
+        unit: "",
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			this.name = options.name;
-			this.id = options.id;
-			this.unit = options.unit;
-			this.timeSeries = new Array();
-			this.aspectNode = options.aspectNode;
-			this.instancePath = options.instancePath;
-			this.domainType = options.domainType;
-			this._metaType = options._metaType;
-			this.watched = options.watched;
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            this.name = options.name;
+            this.id = options.id;
+            this.unit = options.unit;
+            this.timeSeries = [];
+            this.aspectNode = options.aspectNode;
+            this.instancePath = options.instancePath;
+            this.domainType = options.domainType;
+            this._metaType = options._metaType;
+            this.watched = options.watched;
+        },
 
-		/**
-		 * Get value of quantity
-		 * 
-		 * @command ParameterNode.getTimeSeries()
-		 * @returns {String} Value of quantity
-		 */
-		getTimeSeries : function() {
-			return this.timeSeries;
-		},
-		
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command ParameterNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function() {
-			return this.unit;
-		},
-		
-		/**
-		 * Get watched
-		 * 
-		 * @command ParameterNode.isWatched()
-		 * @returns {boolean} true if this variable is being watched
-		 */
-		isWatched : function() {
-			return this.watched;
-		},
+        /**
+         * Get value of quantity
+         *
+         * @command ParameterNode.getTimeSeries()
+         * @returns {String} Value of quantity
+         */
+        getTimeSeries: function () {
+            return this.timeSeries;
+        },
 
-		/**
-		 * Set watched
-		 * 
-		 * @command ParameterNode.setWatched()
-		 * @param {Boolean} watched - Object with options attributes to initialize node
-		 */
-		setWatched : function(isWatched) {
-			if (isWatched != this.watched){
-				Project.getActiveExperiment().watchVariables([this]);
-			}
-		},
-		
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n" +
-					+ "    Watched : " + this.watched + "\n";
-		}
-	});
+        /**
+         * Get the type of tree this is
+         *
+         * @command ParameterNode.getUnit()
+         * @returns {String} Unit for quantity
+         */
+        getUnit: function () {
+            return this.unit;
+        },
+
+        /**
+         * Get watched
+         *
+         * @command ParameterNode.isWatched()
+         * @returns {boolean} true if this variable is being watched
+         */
+        isWatched: function () {
+            return this.watched;
+        },
+
+        /**
+         * Set watched
+         *
+         * @command ParameterNode.setWatched()
+         * @param {Boolean} watched - Object with options attributes to initialize node
+         */
+        setWatched: function (isWatched) {
+            if (isWatched != this.watched) {
+                Project.getActiveExperiment().watchVariables([this]);
+            }
+        },
+
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+                + "    InstancePath : " + this.instancePath + "\n"
+                + "    Value : " + this.value + "\n" + "    Unit : "
+                + this.unit + "\n" + "    ScalingFactor : "
+                + this.scalingFactor + "\n" + +"    Watched : " + this.watched + "\n";
+        }
+    });
 });

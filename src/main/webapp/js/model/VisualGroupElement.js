@@ -34,111 +34,111 @@
 /**
  * Client class use to represent a VisualGroupElement Node, used for visualization tree
  * properties.
- * 
+ *
  * @module model/VisualGroupElementNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Giovanni Idili
  */
-define(function(require) {
+define(function (require) {
 
-	var ObjectWrapper = require('model/ObjectWrapper');
+    var ObjectWrapper = require('model/ObjectWrapper');
 
-	return ObjectWrapper.Model.extend({
+    return ObjectWrapper.Model.extend({
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			// object wrapper
-			this.set({ "wrappedObj" : options.wrappedObj });
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            // object wrapper
+            this.set({"wrappedObj": options.wrappedObj});
+        },
 
-		/**
-		 * Get value of quantity
-		 * 
-		 * @command VisualGroupElementNode.getValue()
-		 * @returns {String} Value of quantity
-		 */
-		getValue : function() {
-			var param = this.get("wrappedObj").parameter;
-			
-			if(param == "" || param == undefined){
-				return null;
-			}
-			
-			return param.value;
-		},
-		
-		/**
-		 * Get unit of quantity
-		 * 
-		 * @command VisualGroupElementNode.getUnit()
-		 * @returns {String} Unit of quantity
-		 */
-		getUnit : function() {
-			var param = this.get("wrappedObj").parameter;
-			
-			if(param == "" || param == undefined){
-				return null;
-			}
-			
-			return param.unit.unit;
-		},
+        /**
+         * Get value of quantity
+         *
+         * @command VisualGroupElementNode.getValue()
+         * @returns {String} Value of quantity
+         */
+        getValue: function () {
+            var param = this.get("wrappedObj").parameter;
 
-		/**
-		 * Get scaling factor
-		 * 
-		 * @command VisualGroupElementNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
-		 */
-		getScalingFactor : function() {
-			var param = this.get("wrappedObj").parameter;
-			
-			if(param == "" || param == undefined){
-				return null;
-			}
-			
-			return param.scalingFactor;
-		},
-		
-		/**
-		 * Get color of element
-		 * 
-		 * @command VisualGroupElementNode.getValue()
-		 * @returns {String} Color of VisualGroupElementNode
-		 */
-		getColor : function() {
-			return this.get("wrappedObj").defaultColor;
-		},
-		
-		show : function(mode){
-			/*var visualizationTree = this.getParent().getParent();
-			
-			var findVisTree = false;
-			while(!findVisTree){
-				if(visualizationTree._metaType!= GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
-					visualizationTree = visualizationTree.getParent();
-				}
-				else{
-					findVisTree = true;
-				}
-			}
-			
-			var group = {};
-			group[this.getId()] = {};
-			group[this.getId()].color = this.getColor();
-			
-			GEPPETTO.SceneController.showVisualGroups(visualizationTree, group,mode);*/			
-		},
+            if (param == "" || param == undefined) {
+                return null;
+            }
 
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "Name : " + this.getName() + "\n" + "    Id: " + this.getId() + "\n";
-		}
-	});
+            return param.value;
+        },
+
+        /**
+         * Get unit of quantity
+         *
+         * @command VisualGroupElementNode.getUnit()
+         * @returns {String} Unit of quantity
+         */
+        getUnit: function () {
+            var param = this.get("wrappedObj").parameter;
+
+            if (param == "" || param == undefined) {
+                return null;
+            }
+
+            return param.unit.unit;
+        },
+
+        /**
+         * Get scaling factor
+         *
+         * @command VisualGroupElementNode.getScalingFactor()
+         * @returns {String} Scaling Factor for value and unit
+         */
+        getScalingFactor: function () {
+            var param = this.get("wrappedObj").parameter;
+
+            if (param == "" || param == undefined) {
+                return null;
+            }
+
+            return param.scalingFactor;
+        },
+
+        /**
+         * Get color of element
+         *
+         * @command VisualGroupElementNode.getValue()
+         * @returns {String} Color of VisualGroupElementNode
+         */
+        getColor: function () {
+            return this.get("wrappedObj").defaultColor;
+        },
+
+        show: function (mode) {
+            /*var visualizationTree = this.getParent().getParent();
+
+             var findVisTree = false;
+             while(!findVisTree){
+             if(visualizationTree._metaType!= GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
+             visualizationTree = visualizationTree.getParent();
+             }
+             else{
+             findVisTree = true;
+             }
+             }
+
+             var group = {};
+             group[this.getId()] = {};
+             group[this.getId()].color = this.getColor();
+
+             GEPPETTO.SceneController.showVisualGroups(visualizationTree, group,mode);*/
+        },
+
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            return "Name : " + this.getName() + "\n" + "    Id: " + this.getId() + "\n";
+        }
+    });
 });

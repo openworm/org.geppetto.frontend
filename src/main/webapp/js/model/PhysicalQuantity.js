@@ -33,30 +33,30 @@
 
 /**
  * Client class use to represent a Physical Quantity, which stores a value, unit and
- * scale. 
- * 
+ * scale.
+ *
  * @module model/PhysicalQuantity
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
-	var value = "", unit = "", scale = "";
-	
-	var PhysicalQuantity = function (value,unit,scale) {
-		this.value = value;
-		this.unit = unit;
-		this.scale = scale;
-	};
+define(function (require) {
+    var value = "", unit = "", scale = "";
 
-	PhysicalQuantity.prototype.getValue = function() {
-		return this.value;
-	};
+    var PhysicalQuantity = function (value, unit, scale) {
+        this.value = value;
+        this.unit = unit;
+        this.scale = scale;
+    };
 
-	PhysicalQuantity.prototype.getUnit = function() {
-		return this.unit;
-	};
+    PhysicalQuantity.prototype.getValue = function () {
+        return this.value;
+    };
 
-	PhysicalQuantity.prototype.getScale = function() {
-		return this.scale;
-	};
-	return PhysicalQuantity;
+    PhysicalQuantity.prototype.getUnit = function () {
+        return this.unit;
+    };
+
+    PhysicalQuantity.prototype.getScale = function () {
+        return this.scale;
+    };
+    return PhysicalQuantity;
 });

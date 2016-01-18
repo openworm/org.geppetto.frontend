@@ -31,39 +31,38 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 .link {
-  fill: none;
-  stroke: #666;
-  stroke-width: 1.5px;
+    fill: none;
+    stroke: #666;
+    stroke-width: 1.5px;
 }
 
 #licensing {
-  fill: green;
+    fill: green;
 }
 
 .link.licensing {
-  stroke: green;
+    stroke: green;
 }
 
 .link.resolved {
-  stroke-dasharray: 0,2 1;
+    stroke-dasharray: 0, 2 1;
 }
 
 circle {
-  fill: #ccc;
-  stroke: #333;
-  stroke-width: 1.5px;
+    fill: #ccc;
+    stroke: #333;
+    stroke-width: 1.5px;
 }
 
 text {
-  font-size: 10px;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  /*pointer-events: none;*/
-  fill:white;
-  stroke: none;
-  text-rendering: optimizeLegibility;
+    font-size: 10px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*pointer-events: none;*/
+    fill: white;
+    stroke: none;
+    text-rendering: optimizeLegibility;
 }
 
-div[id^='TreeVisualiserD3']
- {
- 	overflow-y:auto !important;
- }
+div[id^='TreeVisualiserD3'] {
+    overflow-y: auto !important;
+}

@@ -33,61 +33,61 @@
 
 /**
  * Client class use to represent a composite type.
- * 
+ *
  * @module model/CompositeVisualType
  * @author Giovanni Idili
  */
-define(function(require) {
-	var Type = require('model/Type');
+define(function (require) {
+    var Type = require('model/Type');
 
-	return Type.extend({
-		variables : [],
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.set({ "variables" : (options.variables != 'undefined') ? options.variables : []});
-			this.set({ "visualGroups" : (options.visualGroups != 'undefined') ? options.visualGroups : []});
-			this.set({ "wrappedObj" : options.wrappedObj });
-		},
+    return Type.extend({
+        variables: [],
 
-		/**
-		 * Get variables
-		 * 
-		 * @command CompositeVariableNode.getChildren()
-		 * 
-		 * @returns {List<Variable>} - List of variables
-		 * 
-		 */
-		getVariables : function() {
-			return this.get("variables");
-		},
-		
-		/**
-		 * Get the visual groups
-		 * 
-		 * @command CompositeVariableNode.getVisualGroups()
-		 * 
-		 * @returns {List<VisualGroup>} - List of variables
-		 * 
-		 */
-		getVisualGroups : function() {
-			return this.get("visualGroups");
-		},
-		
-		/**
-		 * Get combined children
-		 * 
-		 * @command CompositeType.getChildren()
-		 * 
-		 * @returns {List<Object>} - List of children
-		 * 
-		 */
-		getChildren : function() {
-			return this.get("variables");
-		},
-	});
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.set({"variables": (options.variables != 'undefined') ? options.variables : []});
+            this.set({"visualGroups": (options.visualGroups != 'undefined') ? options.visualGroups : []});
+            this.set({"wrappedObj": options.wrappedObj});
+        },
+
+        /**
+         * Get variables
+         *
+         * @command CompositeVariableNode.getChildren()
+         *
+         * @returns {List<Variable>} - List of variables
+         *
+         */
+        getVariables: function () {
+            return this.get("variables");
+        },
+
+        /**
+         * Get the visual groups
+         *
+         * @command CompositeVariableNode.getVisualGroups()
+         *
+         * @returns {List<VisualGroup>} - List of variables
+         *
+         */
+        getVisualGroups: function () {
+            return this.get("visualGroups");
+        },
+
+        /**
+         * Get combined children
+         *
+         * @command CompositeType.getChildren()
+         *
+         * @returns {List<Object>} - List of children
+         *
+         */
+        getChildren: function () {
+            return this.get("variables");
+        },
+    });
 });

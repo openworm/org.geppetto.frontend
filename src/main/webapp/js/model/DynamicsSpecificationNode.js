@@ -33,89 +33,89 @@
 /**
  * Client class use to represent a specification node, used for model tree
  * properties.
- * 
+ *
  * @module model/DynamicsSpecificationNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define(function (require) {
 
-	var Node = require('model/Node');
-	var FunctionNode = require('model/FunctionNode');
+    var Node = require('model/Node');
+    var FunctionNode = require('model/FunctionNode');
 
-	return Node.Model.extend({
-		dynamics : [],
-		unit : "",
-		value : "",
-		scalingFactor : "",
+    return Node.Model.extend({
+        dynamics: [],
+        unit: "",
+        value: "",
+        scalingFactor: "",
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			this.unit = options.unit;
-			this.value = options.value;
-			this.scalingFactor = options.scalingFactor;
-			this.dynamics = options.dynamics;
-			this.aspectNode = options.aspectNode;
-			this.name = options.name;
-			this.id = options.id;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            this.unit = options.unit;
+            this.value = options.value;
+            this.scalingFactor = options.scalingFactor;
+            this.dynamics = options.dynamics;
+            this.aspectNode = options.aspectNode;
+            this.name = options.name;
+            this.id = options.id;
+            this.instancePath = options.instancePath;
+            this._metaType = options._metaType;
+            this.domainType = options.domainType;
+        },
 
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command DynamicsSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function() {
-			return this.unit;
-		},
+        /**
+         * Get the type of tree this is
+         *
+         * @command DynamicsSpecificationNode.getUnit()
+         * @returns {String} Unit for quantity
+         */
+        getUnit: function () {
+            return this.unit;
+        },
 
-		/**
-		 * Get value of quantity
-		 * 
-		 * @command DynamicsSpecificationNode.getValue()
-		 * @returns {String} Value of quantity
-		 */
-		getValue : function() {
-			return this.value;
-		},
+        /**
+         * Get value of quantity
+         *
+         * @command DynamicsSpecificationNode.getValue()
+         * @returns {String} Value of quantity
+         */
+        getValue: function () {
+            return this.value;
+        },
 
-		/**
-		 * Get scaling factor
-		 * 
-		 * @command DynamicsSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
-		 */
-		getScalingFactor : function() {
-			return this.scalingFactor;
-		},
+        /**
+         * Get scaling factor
+         *
+         * @command DynamicsSpecificationNode.getScalingFactor()
+         * @returns {String} Scaling Factor for value and unit
+         */
+        getScalingFactor: function () {
+            return this.scalingFactor;
+        },
 
-		/**
-		 * Get dynamics function node for this specifications node
-		 * 
-		 * @returns {Object} Specifies dynamics for node
-		 */
-		getDynamics : function() {
-			return this.dynamics;
-		},
+        /**
+         * Get dynamics function node for this specifications node
+         *
+         * @returns {Object} Specifies dynamics for node
+         */
+        getDynamics: function () {
+            return this.dynamics;
+        },
 
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Value : " + this.value + "\n" + "    Unit : "
-					+ this.unit + "\n" + "    ScalingFactor : "
-					+ this.scalingFactor + "\n" + "    Dynamics : "
-					+ this.dynamics + "\n";
-		}
-	});
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+                + "    InstancePath : " + this.instancePath + "\n"
+                + "    Value : " + this.value + "\n" + "    Unit : "
+                + this.unit + "\n" + "    ScalingFactor : "
+                + this.scalingFactor + "\n" + "    Dynamics : "
+                + this.dynamics + "\n";
+        }
+    });
 });

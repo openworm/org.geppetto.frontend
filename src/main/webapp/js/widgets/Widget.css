@@ -32,130 +32,132 @@
  *******************************************************************************/
 
 .ui-dialog {
-	border:0px;
+    border: 0px;
 }
+
 .ui-dialog .ui-dialog-titlebar-close {
-	margin-top: -10px!important;
-	color:#fc6320;
-	text-shadow: none;
-	right:0;
-	font-size:15px;
-	opacity:1!important;
-}	
+    margin-top: -10px !important;
+    color: #fc6320;
+    text-shadow: none;
+    right: 0;
+    font-size: 15px;
+    opacity: 1 !important;
+}
 
 .ui-dialog .ui-dialog-titlebar-close:hover {
-	color:white;
+    color: white;
 }
 
 .ui-dialog .ui-dialog-titlebar {
-	margin-left:5px;
-	padding:0!important;
-	border-top:0!important;
-	border-left:0!important;
-	border-right:0!important;
-	border-bottom:1px solid rgba(66,59,59,0.80)!important;
-	
+    margin-left: 5px;
+    padding: 0 !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(66, 59, 59, 0.80) !important;
+
 }
 
 .ui-dialog .ui-dialog-title:before {
-	font-family: FontAwesome;
-	font-weight: normal;
-	font-style: normal;
-	font-size: 10px;
-	text-decoration: inherit;
-	-webkit-font-smoothing: antialiased;
-	/* sprites.less reset */
-	display: inline;
-	width: auto;
-	height: auto;
-	line-height: normal;
-	vertical-align: baseline;
-	background-image: none;
-	background-position: 0% 0%;
-	background-repeat: repeat;
-	content: "\f111";
-	color:#fe4807;
-	margin-left:2px;
-	margin-right:4px;
-	margin-bottom:2px;
+    font-family: FontAwesome;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 10px;
+    text-decoration: inherit;
+    -webkit-font-smoothing: antialiased;
+    /* sprites.less reset */
+    display: inline;
+    width: auto;
+    height: auto;
+    line-height: normal;
+    vertical-align: baseline;
+    background-image: none;
+    background-position: 0% 0%;
+    background-repeat: repeat;
+    content: "\f111";
+    color: #fe4807;
+    margin-left: 2px;
+    margin-right: 4px;
+    margin-bottom: 2px;
 
 }
 
 .ui-dialog .ui-dialog-title {
-	padding:0!important;
-	margin:0!important;
-	font-size:12px;
-	font-weight:200;
-	color:#fd6808;
-	margin-left:5px;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 12px;
+    font-weight: 200;
+    color: #fd6808;
+    margin-left: 5px;
 }
 
 .ui-dialog {
-	border-radius: 0px;
-	background:rgba(66,59,59,0.90)!important;
-	color:white;
-	z-index: 3;
+    border-radius: 0px;
+    background: rgba(66, 59, 59, 0.90) !important;
+    color: white;
+    z-index: 3;
 }
 
 .ui-dialog .ui-dialog-content {
-	overflow : visible;
+    overflow: visible;
 }
 
 .dialog {
-	width: 350px;
-	height: 300px;
+    width: 350px;
+    height: 300px;
 }
 
 /*Context Menu*/
-.contextMenuView{
-	z-index: 1000;
-	display: inline-block;
-	min-width: 120px;
-	margin: 0;
-	padding: 0;
-	color: #fafafa;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 12px;
-	font-weight: 200;
+.contextMenuView {
+    z-index: 1000;
+    display: inline-block;
+    min-width: 120px;
+    margin: 0;
+    padding: 0;
+    color: #fafafa;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 200;
 }
 
-.contextMenuView ul{
-	margin: 0;
-	padding: 0;
-	display: block;
-	list-style-type: none;
+.contextMenuView ul {
+    margin: 0;
+    padding: 0;
+    display: block;
+    list-style-type: none;
 }
 
-.contextMenuView ul:not(:first-child){
-	border-top: 1px solid #DDD;
+.contextMenuView ul:not(:first-child) {
+    border-top: 1px solid #DDD;
 }
 
-.contextMenuView ul:first-child li:first-child{
-	border-top-left-radius: 7px;
-	border-top-right-radius: 7px;
-	border-top: 1px solid #DDD;
+.contextMenuView ul:first-child li:first-child {
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-top: 1px solid #DDD;
 }
-.contextMenuView ul:last-child li:last-child{
-	border-bottom-right-radius: 7px;
-	border-bottom-left-radius: 7px;
-	border-bottom: 1px solid #DDD;
+
+.contextMenuView ul:last-child li:last-child {
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-bottom: 1px solid #DDD;
 }
-	
-.contextMenuView li{
-	padding: 2px 10px 2px 24px;
-	background-color: rgba(66,59,59,0.9);
-	position: relative;
-	-webkit-user-select: none;
-	-moz-user-select: -moz-none;
-	-ms-user-select: none;
-	user-select: none;	
-	border-left: 1px solid #DDD;
-	border-right: 1px solid #DDD;
+
+.contextMenuView li {
+    padding: 2px 10px 2px 24px;
+    background-color: rgba(66, 59, 59, 0.9);
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    user-select: none;
+    border-left: 1px solid #DDD;
+    border-right: 1px solid #DDD;
 }
 
 .contextMenuView li:hover {
-	cursor: pointer;
-	background-color: #fd6808;
+    cursor: pointer;
+    background-color: #fd6808;
 }
 
 .contextMenuView li.disabled {
@@ -165,19 +167,20 @@
 .contextMenuView li.disabled.hover {
     cursor: default;
     background-color: #EEE;
-} 
+}
 
 .contextMenuView ul > li ul {
-	display: none;
+    display: none;
 }
 
 .contextMenuView li:hover > ul {
-	display: block;
-	-webkit-transition: left 200ms ease-in;
+    display: block;
+    -webkit-transition: left 200ms ease-in;
     -moz-transition: left 200ms ease-in;
     -ms-transition: left 200ms ease-in;
     transition: left 200ms ease-in;
 }
+
 .contextMenuView > ul > li ul {
     position: absolute;
     left: 100%;
@@ -189,8 +192,9 @@
     min-width: 100%;
 
 }
+
 .contextMenuView > ul > li li {
-	/*min-width: 100%;*/
+    /*min-width: 100%;*/
 }
 
 /* SCROLL BAR*/
@@ -202,25 +206,29 @@
 .ui-widget-content::-webkit-scrollbar-thumb,
 .ui-widget-content::-webkit-scrollbar-corner,
 .ui-widget-content::-webkit-resizer {
-	background: transparent;
+    background: transparent;
 }
+
 .ui-widget-content::-webkit-scrollbar {
-	width:  7px;
-	height: 7px;
-	-webkit-border-radius: 4px;
-	        border-radius: 4px;
+    width: 7px;
+    height: 7px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 }
+
 .ui-widget-content::-webkit-scrollbar-track-piece {
-	-webkit-border-radius: 5px;
-	        border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
+
 .ui-widget-content::-webkit-scrollbar-thumb {
-	background: #4f4f4f;
-	        border-radius: 5px;
+    background: #4f4f4f;
+    border-radius: 5px;
 }
+
 .ui-widget-content::-webkit-scrollbar-button {
-	width:0;
-	height:0;
+    width: 0;
+    height: 0;
 }
 
 .noStyleDisableDrag {
@@ -229,5 +237,5 @@
 }
 
 .noStyleDisableDrag .ui-dialog-titlebar {
-	cursor: default;
+    cursor: default;
 }

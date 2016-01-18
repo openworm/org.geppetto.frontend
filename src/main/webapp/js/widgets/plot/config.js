@@ -41,23 +41,23 @@
  */
 
 require.config({
-	/*
-	 * Values in here are for dependencies that more than one module/script requires and/or needs.
-	 * E.G. If depenedency it's used more than once, it goes in here.
-	 */
-	paths : {
-		'flot' :"widgets/plot/vendor/jquery.flot.min",
-	},
-	/*
-	 * Notes what dependencies are needed prior to loading each library, values on the right
-	 * of colon are dependencies. If dependency was declared in path above, then add it's dependencies 
-	 * to that object in here.
-	 */
-	shim: {
-		"widgets/plot/vendor/jquery.flot.resize.min" : ["flot"],
-		"widgets/plot/vendor/jquery.flot.axislabels.min" : ["flot"],
-		"widgets/plot/vendor/jquery.flot.downsample" : ["flot"]
-	}
+    /*
+     * Values in here are for dependencies that more than one module/script requires and/or needs.
+     * E.G. If depenedency it's used more than once, it goes in here.
+     */
+    paths: {
+        'flot': "widgets/plot/vendor/jquery.flot.min",
+    },
+    /*
+     * Notes what dependencies are needed prior to loading each library, values on the right
+     * of colon are dependencies. If dependency was declared in path above, then add it's dependencies
+     * to that object in here.
+     */
+    shim: {
+        "widgets/plot/vendor/jquery.flot.resize.min": ["flot"],
+        "widgets/plot/vendor/jquery.flot.axislabels.min": ["flot"],
+        "widgets/plot/vendor/jquery.flot.downsample": ["flot"]
+    }
 });
 
 /*
@@ -69,15 +69,15 @@ libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
 libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
 //libraries.push("widgets/plot/vendor/jquery.flot.downsample");
 
-define("math.global", ["mathjs"], function(_) {
-	  math = _;
-	});
+define("math.global", ["mathjs"], function (_) {
+    math = _;
+});
 
 /*
  * Load libraries, and CSS after libraries are loaded
  */
-require(libraries,function(flot, math){
+require(libraries, function (flot, math) {
 //	console.log(math.parser());
-	window.math = math;
-	loadCss("geppetto/js/widgets/plot/Plot.css");
+    window.math = math;
+    loadCss("geppetto/js/widgets/plot/Plot.css");
 });	

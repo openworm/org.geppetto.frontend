@@ -33,111 +33,123 @@
 
 /**
  * Client class use to represent a variable.
- * 
+ *
  * @module model/Variable
  * @author Giovanni Idili
  */
-define(function(require) {
-	var ObjectWrapper = require('model/ObjectWrapper');
+define(function (require) {
+    var ObjectWrapper = require('model/ObjectWrapper');
 
-	return ObjectWrapper.Model.extend({
-		anonymousTypes : [],
-		types : [],
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.set({ "anonymousTypes" : (options.anonymousTypes != undefined) ? options.anonymousTypes : []});
-			this.set({ "types" : (options.types != undefined) ? options.types : []});
-			this.set({ "wrappedObj" : options.wrappedObj });
-		},
-		
-		/**
-		 * Get the list of types for this variable
-		 * 
-		 * @command Variable.getTypes()
-		 * 
-		 * @returns {List<Type>} - array of types
-		 * 
-		 */
-		getTypes : function() {
-			var types = (this.get('types') != undefined) ? this.get('types') : [];
-			var anonTypes = (this.get('anonymousTypes') != undefined) ? this.get('anonymousTypes') : [];
-			var allTypes = types.concat(anonTypes);
-			return allTypes;
-		},
-		
-		/**
-		 * Get the type of this variable, return a list if it has more than one
-		 * 
-		 * @command Variable.getType()
-		 * 
-		 * @returns List<Type>} - array of types
-		 * 
-		 */
-		getType : function() {
-			var types=this.getTypes();
-			if(types.length==1)
-			{
-				return types[0];
-			}
-			else return types;
-		},
-		
+    return ObjectWrapper.Model.extend({
+        anonymousTypes: [],
+        types: [],
 
-		/**
-		 * Get the list of values for this variable
-		 * 
-		 * @command Variable.getInitialValues()
-		 * 
-		 * @returns {List<Value>} - array of values
-		 * 
-		 */
-		getInitialValues : function() {
-			// TODO: fetch initial values
-			return this.getWrappedObj().initialValues;
-		},
-		
-		/**
-		 * Check if the variable is static
-		 * 
-		 * @command Variable.isStatic()
-		 * 
-		 * @returns {bool} - Boolean 
-		 * 
-		 */
-		isStatic : function() {
-			// TODO: fetch static from wrapped obj
-			return this.getWrappedObj().isStatic;
-		},
-		
-		/**
-		 * Gets position for the variable
-		 * 
-		 * @command Variable.isStatic()
-		 * 
-		 * @returns {Object} - position for the variable 
-		 * 
-		 */
-		getPosition : function() {
-			// TODO: fetch static from wrapped obj
-			return this.getWrappedObj().position;
-		},
-		
-		/**
-		 * Get combined children
-		 * 
-		 * @command Variable.getChildren()
-		 * 
-		 * @returns {List<Object>} - List of children
-		 * 
-		 */
-		getChildren : function() {
-			// only anonymousTypes as containment == true in the model (they are not references)
-			return this.get('anonymousTypes');
-		},
-	});
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.set({"anonymousTypes": (options.anonymousTypes != undefined) ? options.anonymousTypes : []});
+            this.set({"types": (options.types != undefined) ? options.types : []});
+            this.set({"wrappedObj": options.wrappedObj});
+        },
+
+        /**
+         * Get the list of types for this variable
+         *
+         * @command Variable.getTypes()
+         *
+         * @returns {List<Type>} - array of types
+         *
+         */
+        getTypes: function () {
+            var types = (this.get('types') != undefined) ? this.get('types') : [];
+            var anonTypes = (this.get('anonymousTypes') != undefined) ? this.get('anonymousTypes') : [];
+            var allTypes = types.concat(anonTypes);
+            return allTypes;
+        },
+
+        /**
+         * Get the list of the anonymous types for this variable
+         *
+         * @command Variable.getAnonymousTypes()
+         *
+         * @returns {List<Type>} - array of types
+         *
+         */
+        getAnonymousTypes: function () {
+            return this.get('anonymousTypes');
+        },
+
+
+        /**
+         * Get the type of this variable, return a list if it has more than one
+         *
+         * @command Variable.getType()
+         *
+         * @returns List<Type>} - array of types
+         *
+         */
+        getType: function () {
+            var types = this.getTypes();
+            if (types.length == 1) {
+                return types[0];
+            }
+            else return types;
+        },
+
+
+        /**
+         * Get the list of values for this variable
+         *
+         * @command Variable.getInitialValues()
+         *
+         * @returns {List<Value>} - array of values
+         *
+         */
+        getInitialValues: function () {
+            // TODO: fetch initial values
+            return this.getWrappedObj().initialValues;
+        },
+
+        /**
+         * Check if the variable is static
+         *
+         * @command Variable.isStatic()
+         *
+         * @returns {bool} - Boolean
+         *
+         */
+        isStatic: function () {
+            // TODO: fetch static from wrapped obj
+            return this.getWrappedObj().isStatic;
+        },
+
+        /**
+         * Gets position for the variable
+         *
+         * @command Variable.isStatic()
+         *
+         * @returns {Object} - position for the variable
+         *
+         */
+        getPosition: function () {
+            // TODO: fetch static from wrapped obj
+            return this.getWrappedObj().position;
+        },
+
+        /**
+         * Get combined children
+         *
+         * @command Variable.getChildren()
+         *
+         * @returns {List<Object>} - List of children
+         *
+         */
+        getChildren: function () {
+            // only anonymousTypes as containment == true in the model (they are not references)
+            return this.get('anonymousTypes');
+        },
+    });
 });

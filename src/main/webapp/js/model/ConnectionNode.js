@@ -33,151 +33,151 @@
 /**
  * Client class use to represent a connection node, used to store the connections
  * between two entities in Geppetto.
- * 
+ *
  * @module model/ConnectionNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define(function (require) {
 
-	var Node = require('model/Node');
-	var VisualObjectReferenceNode = require('model/VisualObjectReferenceNode');
+    var Node = require('model/Node');
+    var VisualObjectReferenceNode = require('model/VisualObjectReferenceNode');
 
-	return Node.Model.extend({
-		customNodes : null,
-		visualObjectReferenceNodes : null,
-		entityInstancePath : null,
-		type : null,
-		highlighted : null,
+    return Node.Model.extend({
+        customNodes: null,
+        visualObjectReferenceNodes: null,
+        entityInstancePath: null,
+        type: null,
+        highlighted: null,
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			this.customNodes = new Array();
-			this.visualObjectReferenceNodes = new Array();
-			this.id = options.id;
-			this.entityInstancePath = options.entityInstancePath;
-			this.aspectNode = options.aspectNode;
-			this.type = options.type;
-			this.name = options.name;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            this.customNodes = [];
+            this.visualObjectReferenceNodes = [];
+            this.id = options.id;
+            this.entityInstancePath = options.entityInstancePath;
+            this.aspectNode = options.aspectNode;
+            this.type = options.type;
+            this.name = options.name;
+            this.instancePath = options.instancePath;
+            this._metaType = options._metaType;
+            this.domainType = options.domainType;
+        },
 
-		/**
-		 * Get Instance path of entity this connection is connected to
-		 * 
-		 * @command ConnectionNode.getEntityInstancePath()
-		 * @returns {String} Entity instance patch for entity this connection 
-		 *                   is connected to
-		 */
-		getEntityInstancePath : function() {
-			return this.entityInstancePath;
-		},
-		
-		/**
-		 * Get type of connection
-		 * 
-		 * @command ConnectionNode.getType()
-		 * @returns {String} Type of connection
-		 */
-		getType : function() {
-			return this.type;
-		},
+        /**
+         * Get Instance path of entity this connection is connected to
+         *
+         * @command ConnectionNode.getEntityInstancePath()
+         * @returns {String} Entity instance patch for entity this connection
+         *                   is connected to
+         */
+        getEntityInstancePath: function () {
+            return this.entityInstancePath;
+        },
 
-		/**
-		 * Returns array of custom nodes for this connection
-		 * 
-		 * @command ConnectionNode.getCustomNodes()
-		 * @returns {Array} Array of nodes for custom properties of connection node.
-		 */
-		getCustomNodes : function(){
-			return this.customNodes;
-		},
-		
-		/**
-		 * Returns array of visual object reference nodes for this connection
-		 * @command ConnectionNode.getVisualObjectReferenceNodes()
-		 * @returns {Array} Array of nodes for visual object references
-		 */
-		getVisualObjectReferenceNodes : function(){
-			return this.visualObjectReferenceNodes;
-		},
-		
-		/**
-		 * Highlight the visual references of this connection
-		 * @command ConnectionNode.highlight()
-		 * @param {boolean} - Highlight or unhighlight reference nodes
-		 */
-		highlight : function(mode){
-			
-			if(mode == null || mode == undefined){
-				return GEPPETTO.Resources.MISSING_PARAMETER;
-			}
-			
-			var references = this.getVisualObjectReferenceNodes();
-			var message = GEPPETTO.Resources.HIGHLIGHTING + this.id;
-			
-			if(references.length > 0){
-				//highlight all reference nodes
-				var targetObjects = {};
-				var aspects = {};
-				for(var ref in references){
-					var pathToObject = references[ref].getAspectInstancePath()+ ".VisualizationTree." + references[ref].getVisualObjectID();
-					targetObjects[pathToObject] = "";
-					if(!(references[ref].getAspectInstancePath() in aspects)){
-						aspects[references[ref].getAspectInstancePath()] = "";
-					}
-				}
-				GEPPETTO.SceneController.highlight(targetObjects,aspects,mode);
-			}else{
-				message = GEPPETTO.Resources.NO_REFERENCES_TO_HIGHLIGHT;
-			}
-			
-			this.highlighted = mode;
-			G.highlightedConnections[this.getInstancePath()] = this;
-						
-			return message;
-		},
-		
-		/**
-		 * Show lines for connections of this entity
-		 * @command ConnectionNode.showConnectionsLine()
-		 */
-		showConnectionsLine : function(mode){
-			var from;
-			var to;
-			GEPPETTO.SceneController.drawLine(from,to);
-		},
-		
-		/**
-		 * Get this entity's children entities
-		 * 
-		 * @command ConnectionNode.getChildren()
-		 * @returns {List<Aspect>} All children e.g. aspects and
-		 *          entities
-		 * 
-		 */
-		getChildren : function() {
-			 var children = new Array();
-			 children = children.concat(this.customNodes);
-			 children  = children.concat(this.visualObjectReferenceNodes);
-			 return children;
-		},
-		
-		/**
-		 * Print out formatted node
-		 * @command ConnectionNode.print()
-		 */
-		print : function() {
-			return "Id : " + this.id + "\n" 
-					+ "    Name : " + this.name + "\n"
-					+ "    ConnectionEntityInstancePath : " + this.entityInstancePath + "\n"
-					+ "    Type : " + this.type + "\n";
-		}
-	});
+        /**
+         * Get type of connection
+         *
+         * @command ConnectionNode.getType()
+         * @returns {String} Type of connection
+         */
+        getType: function () {
+            return this.type;
+        },
+
+        /**
+         * Returns array of custom nodes for this connection
+         *
+         * @command ConnectionNode.getCustomNodes()
+         * @returns {Array} Array of nodes for custom properties of connection node.
+         */
+        getCustomNodes: function () {
+            return this.customNodes;
+        },
+
+        /**
+         * Returns array of visual object reference nodes for this connection
+         * @command ConnectionNode.getVisualObjectReferenceNodes()
+         * @returns {Array} Array of nodes for visual object references
+         */
+        getVisualObjectReferenceNodes: function () {
+            return this.visualObjectReferenceNodes;
+        },
+
+        /**
+         * Highlight the visual references of this connection
+         * @command ConnectionNode.highlight()
+         * @param {boolean} - Highlight or unhighlight reference nodes
+         */
+        highlight: function (mode) {
+
+            if (mode == null || mode == undefined) {
+                return GEPPETTO.Resources.MISSING_PARAMETER;
+            }
+
+            var references = this.getVisualObjectReferenceNodes();
+            var message = GEPPETTO.Resources.HIGHLIGHTING + this.id;
+
+            if (references.length > 0) {
+                //highlight all reference nodes
+                var targetObjects = {};
+                var aspects = {};
+                for (var ref in references) {
+                    var pathToObject = references[ref].getAspectInstancePath() + ".VisualizationTree." + references[ref].getVisualObjectID();
+                    targetObjects[pathToObject] = "";
+                    if (!(references[ref].getAspectInstancePath() in aspects)) {
+                        aspects[references[ref].getAspectInstancePath()] = "";
+                    }
+                }
+                GEPPETTO.SceneController.highlight(targetObjects, aspects, mode);
+            } else {
+                message = GEPPETTO.Resources.NO_REFERENCES_TO_HIGHLIGHT;
+            }
+
+            this.highlighted = mode;
+            G.highlightedConnections[this.getInstancePath()] = this;
+
+            return message;
+        },
+
+        /**
+         * Show lines for connections of this entity
+         * @command ConnectionNode.showConnectionsLine()
+         */
+        showConnectionsLine: function (mode) {
+            var from;
+            var to;
+            GEPPETTO.SceneController.drawLine(from, to);
+        },
+
+        /**
+         * Get this entity's children entities
+         *
+         * @command ConnectionNode.getChildren()
+         * @returns {List<Aspect>} All children e.g. aspects and
+         *          entities
+         *
+         */
+        getChildren: function () {
+            var children = [];
+            children = children.concat(this.customNodes);
+            children = children.concat(this.visualObjectReferenceNodes);
+            return children;
+        },
+
+        /**
+         * Print out formatted node
+         * @command ConnectionNode.print()
+         */
+        print: function () {
+            return "Id : " + this.id + "\n"
+                + "    Name : " + this.name + "\n"
+                + "    ConnectionEntityInstancePath : " + this.entityInstancePath + "\n"
+                + "    Type : " + this.type + "\n";
+        }
+    });
 });

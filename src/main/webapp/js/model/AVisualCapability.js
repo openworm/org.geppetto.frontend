@@ -33,308 +33,292 @@
 
 /**
  * Client class use to represent an instance object (instantiation of a variable).
- * 
+ *
  * @module model/AVisualCapability
  * @author Giovanni Idili
  */
 
-define([ 'jquery' ], function(require) {
-	return {
-		capabilityId : 'VisualCapability',
-		visible : true,
-		selected : false,
-		
-		/**
-		 * Hides the instance or class of instances
-		 *
-		 * @command AVisualCapability.hide()
-		 *
-		 */
-		hide : function(nested) {
-			// TODO: adapt to types / variables
-			if(nested === undefined){
-				nested = true;
-			}
-			
-			GEPPETTO.SceneController.hideAspect(this.getInstancePath());
-			this.visible = false;
-			
-			if(nested === true && typeof this.getChildren === "function"){
-				var children = this.getChildren();
-				for(var i=0; i<children.lenght; i++){
-					if(typeof children[i].hide === "function"){
-						children[i].hide(nested);
-					}
-				}
-			}
+define(['jquery'], function (require) {
+    return {
+        capabilityId: 'VisualCapability',
+        visible: true,
+        selected: false,
 
-			var message = GEPPETTO.Resources.HIDE_ASPECT + this.getInstancePath();
-			
-			return message;
-		},
-		
-		/**
-		 * Shows the instance or class of instances
-		 *
-		 * @command AVisualCapability.show()
-		 *
-		 */
-		show : function(nested) {
-			// TODO: adapt to types / variables
-			if(nested === undefined){
-				nested = true;
-			}
-			
-			GEPPETTO.SceneController.showAspect(this.getInstancePath());
+        /**
+         * Hides the instance or class of instances
+         *
+         * @command AVisualCapability.hide()
+         *
+         */
+        hide: function (nested) {
+            // TODO: adapt to types / variables
+            if (nested === undefined) {
+                nested = true;
+            }
 
-			this.visible = true;
-			
-			if(nested === true && typeof this.getChildren === "function"){
-				var children = this.getChildren();
-				for(var i=0; i<children.lenght; i++){
-					if(typeof children[i].show === "function"){
-						children[i].show(nested);
-					}
-				}
-			}
+            GEPPETTO.SceneController.hideAspect(this.getInstancePath());
+            this.visible = false;
 
-			var message = GEPPETTO.Resources.SHOW_ASPECT + this.getInstancePath();
-			return message;
-		},
-		
-		/**
-		 * Change the opacity of an instance or class of instances
-		 *
-		 * @command AVisualCapability.setOpacity(opacity)
-		 *
-		 */
-		setOpacity : function(opacity, nested) {
-			// TODO: adapt to types / variables
-			if(nested === undefined){
-				nested = true;
-			}
-			
-			GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
-			
-			if(nested === true && typeof this.getChildren === "function"){
-				var children = this.getChildren();
-				for(var i=0; i<children.lenght; i++){
-					if(typeof children[i].setOpacity === "function"){
-						children[i].setOpacity(opacity, nested);
-					}
-				}
-			}
-		},
-		
-		/**
-		 * Change the color of an instance or class of instances
-		 *
-		 * @command AVisualCapability.setColor(color)
-		 *
-		 */
-		setColor : function(color, nested) {
-			// TODO: adapt to types / variables
-			if(nested === undefined){
-				nested = true;
-			}
-			
-			GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
-			
-			if(nested === true && typeof this.getChildren === "function"){
-				var children = this.getChildren();
-				for(var i=0; i<children.lenght; i++){
-					if(typeof children[i].setColor === "function"){
-						children[i].setColor(color, nested);
-					}
-				}
-			}
-		},
-		
-		/**
-		 * Select the instance or class of instances
-		 *
-		 * @command AVisualCapability.select()
-		 *
-		 */
-		select : function(nested) 
-		{
-			// TODO: adapt to types / variables
-			if(nested === undefined){
-				nested = true;
-			}
-			
-			var message;
-			if (!this.selected) 
-			{
-				//first, before doing anything, we check what is currently selected
+            if (nested === true && typeof this.getChildren === "function") {
+                var children = this.getChildren();
+                for (var i = 0; i < children.lenght; i++) {
+                    if (typeof children[i].hide === "function") {
+                        children[i].hide(nested);
+                    }
+                }
+            }
 
-				if(G.getSelectionOptions().unselected_transparent) 
-				{
-					//something is already selected, we make everything not selected transparent
-					GEPPETTO.SceneController.setGhostEffect(true);
-				}
+            var message = GEPPETTO.Resources.HIDE_ASPECT + this.getInstancePath();
 
-				
-				this.selected = true;
-				// TODO: investigate why is the parent being set to selected too?
-				this.getParent().selected=true;
-				GEPPETTO.SceneController.selectAspect(this.getInstancePath());
-				message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
+            return message;
+        },
 
-				//Behavior: if the parent entity has connections change the opacity of what is not connected
-				//Rationale: help exploration of networks by hiding non connected
-				if(this.getParent().getConnections().length>0)
-				{
-					//allOtherMeshes will contain a list of all the non connected entities in the scene for the purpose
-					//of changing their opacity
-					var allOtherMeshes= $.extend({}, GEPPETTO.getVARS().meshes);
-					//look on the simulation selection options and perform necessary
-					//operations
-					if(G.getSelectionOptions().show_inputs)
-					{
-						var inputs=this.getParent().showInputConnections(true);
-						for(var i in inputs)
-						{
-							delete allOtherMeshes[inputs[i]];
-						}
-					}
-					if(G.getSelectionOptions().show_outputs)
-					{
-						var outputs=this.getParent().showOutputConnections(true);
-						for(var o in outputs)
-						{
-							delete allOtherMeshes[outputs[o]];
-						}
-					}
-					if(G.getSelectionOptions().draw_connection_lines)
-					{
-						this.getParent().showConnectionLines(true);
-					}
-					if(G.getSelectionOptions().unselected_transparent)
-					{
-						GEPPETTO.SceneController.ghostEffect(allOtherMeshes,true);	
-					}
-					
-						
-				}
-				//signal selection has changed in simulation
-				GEPPETTO.trigger(Events.Select);
-			} else {
-				message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
-			}
-			
-			if(nested === true && typeof this.getChildren === "function"){
-				var children = this.getChildren();
-				for(var i=0; i<children.lenght; i++){
-					if(typeof children[i].select === "function"){
-						children[i].select(nested);
-					}
-				}
-			}
+        /**
+         * Shows the instance or class of instances
+         *
+         * @command AVisualCapability.show()
+         *
+         */
+        show: function (nested) {
+            // TODO: adapt to types / variables
+            if (nested === undefined) {
+                nested = true;
+            }
 
-			return message;
-		},
-		
-		/**
-		 * Deselects the instance or class of instances
-		 *
-		 * @command AVisualCapability.deselect()
-		 *
-		 */
-		deselect : function(nested) {
-			// TODO: adapt to types / variables
-			if(nested === undefined){
-				nested = true;
-			}
-			
-			var message;
+            GEPPETTO.SceneController.showAspect(this.getInstancePath());
 
-			if (this.selected) {
-				message = GEPPETTO.Resources.DESELECTING_ASPECT
-						+ this.instancePath;
-				GEPPETTO.SceneController.deselectAspect(this.getInstancePath());
-				this.selected = false;
+            this.visible = true;
 
-				if(G.getSelectionOptions().unselected_transparent)
-				{
-					GEPPETTO.SceneController.setGhostEffect(false);
-				}
-				if(G.getSelectionOptions().show_inputs)
-				{
-					this.getParent().showInputConnections(false);
-				}
-				if(G.getSelectionOptions().show_outputs)
-				{
-					this.getParent().showOutputConnections(false);
-				}
-				if(G.getSelectionOptions().draw_connection_lines)
-				{
-					this.getParent().showConnectionLines(false);
-				}
+            if (nested === true && typeof this.getChildren === "function") {
+                var children = this.getChildren();
+                for (var i = 0; i < children.lenght; i++) {
+                    if (typeof children[i].show === "function") {
+                        children[i].show(nested);
+                    }
+                }
+            }
 
-				//trigger event that selection has been changed
-				GEPPETTO.trigger(Events.Selection);
-			} else {
-				message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
-			}
-			
-			// nested
-			if(nested === true && typeof this.getChildren === "function"){
-				var children = this.getChildren();
-				for(var i=0; i<children.lenght; i++){
-					if(typeof children[i].deselect === "function"){
-						children[i].deselect(nested);
-					}
-				}
-			}
-			
-			return message;
-		},
-		
-		/**
-		 * Zooms to instance or class of instances
-		 *
-		 * @command AVisualCapability.zoomTo()
-		 *
-		 */
-		 zoomTo : function()
-		 {
-			// TODO: adapt to types / variables
-				
-			GEPPETTO.SceneController.zoomToMesh(this.getInstancePath());
-			return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.getInstancePath();
-	     },
-	     
-		/**
-		 * Set the type of geometry to be used for this aspect
-		 */
-		setGeometryType : function(type, thickness, nested)
-		{
-			// TODO: adapt to types / variables
-			if(nested === undefined){
-				nested = true;
-			}
-			
-			var message = '';
-			
-			if(GEPPETTO.SceneController.setGeometryType(this, type, thickness)){
-				message = "Geometry type successfully changed for " + this.getInstancePath(); 
-			}
-			else {
-				message = "Error changing the geometry type for " + this.getInstancePath();
-			}
-			
-			// nested
-			if(nested === true && typeof this.getChildren === "function"){
-				var children = this.getChildren();
-				for(var i=0; i<children.lenght; i++){
-					if(typeof children[i].setGeometryType === "function"){
-						children[i].setGeometryType(nested);
-					}
-				}
-			}
-			
-			return message;
-		},
-	}
+            var message = GEPPETTO.Resources.SHOW_ASPECT + this.getInstancePath();
+            return message;
+        },
+
+        /**
+         * Change the opacity of an instance or class of instances
+         *
+         * @command AVisualCapability.setOpacity(opacity)
+         *
+         */
+        setOpacity: function (opacity, nested) {
+            // TODO: adapt to types / variables
+            if (nested === undefined) {
+                nested = true;
+            }
+
+            GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
+
+            if (nested === true && typeof this.getChildren === "function") {
+                var children = this.getChildren();
+                for (var i = 0; i < children.lenght; i++) {
+                    if (typeof children[i].setOpacity === "function") {
+                        children[i].setOpacity(opacity, nested);
+                    }
+                }
+            }
+        },
+
+        /**
+         * Change the color of an instance or class of instances
+         *
+         * @command AVisualCapability.setColor(color)
+         *
+         */
+        setColor: function (color, nested) {
+            // TODO: adapt to types / variables
+            if (nested === undefined) {
+                nested = true;
+            }
+
+            GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
+
+            if (nested === true && typeof this.getChildren === "function") {
+                var children = this.getChildren();
+                for (var i = 0; i < children.lenght; i++) {
+                    if (typeof children[i].setColor === "function") {
+                        children[i].setColor(color, nested);
+                    }
+                }
+            }
+        },
+
+        /**
+         * Select the instance or class of instances
+         *
+         * @command AVisualCapability.select()
+         *
+         */
+        select: function (nested) {
+            // TODO: adapt to types / variables
+            if (nested === undefined) {
+                nested = true;
+            }
+
+            var message;
+            if (!this.selected) {
+                //first, before doing anything, we check what is currently selected
+
+                if (G.getSelectionOptions().unselected_transparent) {
+                    //something is already selected, we make everything not selected transparent
+                    GEPPETTO.SceneController.setGhostEffect(true);
+                }
+
+
+                this.selected = true;
+                // TODO: investigate why is the parent being set to selected too?
+                this.getParent().selected = true;
+                GEPPETTO.SceneController.selectAspect(this.getInstancePath());
+                message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
+
+                //Behavior: if the parent entity has connections change the opacity of what is not connected
+                //Rationale: help exploration of networks by hiding non connected
+                if (this.getParent().getConnections().length > 0) {
+                    //allOtherMeshes will contain a list of all the non connected entities in the scene for the purpose
+                    //of changing their opacity
+                    var allOtherMeshes = $.extend({}, GEPPETTO.getVARS().meshes);
+                    //look on the simulation selection options and perform necessary
+                    //operations
+                    if (G.getSelectionOptions().show_inputs) {
+                        var inputs = this.getParent().showInputConnections(true);
+                        for (var i in inputs) {
+                            delete allOtherMeshes[inputs[i]];
+                        }
+                    }
+                    if (G.getSelectionOptions().show_outputs) {
+                        var outputs = this.getParent().showOutputConnections(true);
+                        for (var o in outputs) {
+                            delete allOtherMeshes[outputs[o]];
+                        }
+                    }
+                    if (G.getSelectionOptions().draw_connection_lines) {
+                        this.getParent().showConnectionLines(true);
+                    }
+                    if (G.getSelectionOptions().unselected_transparent) {
+                        GEPPETTO.SceneController.ghostEffect(allOtherMeshes, true);
+                    }
+
+
+                }
+                //signal selection has changed in simulation
+                GEPPETTO.trigger(Events.Select);
+            } else {
+                message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
+            }
+
+            if (nested === true && typeof this.getChildren === "function") {
+                var children = this.getChildren();
+                for (var i = 0; i < children.lenght; i++) {
+                    if (typeof children[i].select === "function") {
+                        children[i].select(nested);
+                    }
+                }
+            }
+
+            return message;
+        },
+
+        /**
+         * Deselects the instance or class of instances
+         *
+         * @command AVisualCapability.deselect()
+         *
+         */
+        deselect: function (nested) {
+            // TODO: adapt to types / variables
+            if (nested === undefined) {
+                nested = true;
+            }
+
+            var message;
+
+            if (this.selected) {
+                message = GEPPETTO.Resources.DESELECTING_ASPECT
+                    + this.instancePath;
+                GEPPETTO.SceneController.deselectAspect(this.getInstancePath());
+                this.selected = false;
+
+                if (G.getSelectionOptions().unselected_transparent) {
+                    GEPPETTO.SceneController.setGhostEffect(false);
+                }
+                if (G.getSelectionOptions().show_inputs) {
+                    this.getParent().showInputConnections(false);
+                }
+                if (G.getSelectionOptions().show_outputs) {
+                    this.getParent().showOutputConnections(false);
+                }
+                if (G.getSelectionOptions().draw_connection_lines) {
+                    this.getParent().showConnectionLines(false);
+                }
+
+                //trigger event that selection has been changed
+                GEPPETTO.trigger(Events.Selection);
+            } else {
+                message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
+            }
+
+            // nested
+            if (nested === true && typeof this.getChildren === "function") {
+                var children = this.getChildren();
+                for (var i = 0; i < children.lenght; i++) {
+                    if (typeof children[i].deselect === "function") {
+                        children[i].deselect(nested);
+                    }
+                }
+            }
+
+            return message;
+        },
+
+        /**
+         * Zooms to instance or class of instances
+         *
+         * @command AVisualCapability.zoomTo()
+         *
+         */
+        zoomTo: function () {
+            // TODO: adapt to types / variables
+
+            GEPPETTO.SceneController.zoomToMesh(this.getInstancePath());
+            return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.getInstancePath();
+        },
+
+        /**
+         * Set the type of geometry to be used for this aspect
+         */
+        setGeometryType: function (type, thickness, nested) {
+            // TODO: adapt to types / variables
+            if (nested === undefined) {
+                nested = true;
+            }
+
+            var message = '';
+
+            if (GEPPETTO.SceneController.setGeometryType(this, type, thickness)) {
+                message = "Geometry type successfully changed for " + this.getInstancePath();
+            }
+            else {
+                message = "Error changing the geometry type for " + this.getInstancePath();
+            }
+
+            // nested
+            if (nested === true && typeof this.getChildren === "function") {
+                var children = this.getChildren();
+                for (var i = 0; i < children.lenght; i++) {
+                    if (typeof children[i].setGeometryType === "function") {
+                        children[i].setGeometryType(nested);
+                    }
+                }
+            }
+
+            return message;
+        },
+    }
 });

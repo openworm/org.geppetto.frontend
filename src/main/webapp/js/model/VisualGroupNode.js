@@ -34,193 +34,192 @@
 /**
  * Client class use to represent a VisualGroup Node, used for visualization tree
  * properties.
- * 
+ *
  * @module nodes/VisualGroupNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define(function (require) {
 
-	var Node = require('model/Node');
-	var VisualGroupElementNode = require('model/VisualGroupElementNode');
+    var Node = require('model/Node');
+    var VisualGroupElementNode = require('model/VisualGroupElementNode');
 
-	return Node.Model.extend({
-		visualGroupElements : null,
-		type : "",
-		highSpectrumColor : "",
-		lowSpectrumColor : "",
-		minDensity : "",
-		maxDensity : "",
+    return Node.Model.extend({
+        visualGroupElements: null,
+        type: "",
+        highSpectrumColor: "",
+        lowSpectrumColor: "",
+        minDensity: "",
+        maxDensity: "",
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			this.type = options.type;
-			this.highSpectrumColor = options.highSpectrumColor;
-			this.lowSpectrumColor = options.lowSpectrumColor;
-			this.name = options.name;
-			this.id = options.id;
-			this.aspectNode = options.aspectNode;
-			this.instancePath = options.instancePath;
-			this.domainType = options.domainType;
-			this._metaType = options._metaType;
-			this.visualGroupElements = new Array();
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            this.type = options.type;
+            this.highSpectrumColor = options.highSpectrumColor;
+            this.lowSpectrumColor = options.lowSpectrumColor;
+            this.name = options.name;
+            this.id = options.id;
+            this.aspectNode = options.aspectNode;
+            this.instancePath = options.instancePath;
+            this.domainType = options.domainType;
+            this._metaType = options._metaType;
+            this.visualGroupElements = [];
+        },
 
-		/**
-		 * Get type of Visual Group Node
-		 * 
-		 * @command VisualGroupNode.getType()
-		 * @returns {String} Type of Visual Group
-		 */
-		getType : function() {
-			return this.type;
-		},
+        /**
+         * Get type of Visual Group Node
+         *
+         * @command VisualGroupNode.getType()
+         * @returns {String} Type of Visual Group
+         */
+        getType: function () {
+            return this.type;
+        },
 
-		/**
-		 * Get low spectrum color
-		 * 
-		 * @command VisualGroupNode.getLowSpectrumColor()
-		 * @returns {String} Low Spectrum Color
-		 */
-		getLowSpectrumColor : function() {
-			return this.lowSpectrumColor;
-		},
-		
-		/**
-		 * Get high spectrum color of visual group
-		 * 
-		 * @command VisualGroupNode.getHighSpectrumColor()
-		 * @returns {String} High Spectrum color of visual gorup
-		 */
-		getHighSpectrumColor : function() {
-			return this.highSpectrumColor;
-		},
+        /**
+         * Get low spectrum color
+         *
+         * @command VisualGroupNode.getLowSpectrumColor()
+         * @returns {String} Low Spectrum Color
+         */
+        getLowSpectrumColor: function () {
+            return this.lowSpectrumColor;
+        },
 
-		/**
-		 * Get this visual group children
-		 * 
-		 * @command VisualGroupNode.getVisualGroupElements()
-		 * @returns {List<Aspect>} All children e.g. Visual Group Element Nodes
-		 */
-		getVisualGroupElements : function() {
-			 return this.visualGroupElements;
-		},
-		
-		getChildren : function(){
-			return this.visualGroupElements;
-		},
-		
-		show : function(mode){		
-			var visualizationTree = this.getParent();
-			var message;
-			var elements = this.getVisualGroupElements();
-			
-			var findVisTree = false;
-			while(!findVisTree){
-				if(visualizationTree._metaType!= GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
-					visualizationTree = visualizationTree.getParent();
-				}
-				else{
-					findVisTree = true;
-				}
-			}
-			
-			if(mode){
-				message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
-			}
-			else{
-				message = GEPPETTO.Resources.HIDING_VISUAL_GROUPS + this.id;
-			}
-		
-			if(elements.length > 0){
-				this.showAllVisualGroupElements(visualizationTree,elements,mode);
-			} else {
-				message = GEPPETTO.Resources.NO_VISUAL_GROUP_ELEMENTS;
-			}
-		
-			return message;
-		},
-		
-		showAllVisualGroupElements : function(visualizationTree, elements,mode){
-			var groups = {};
-			var allElements = [];
-			
-			var total =0, mean =0;
-			
-			//calculate mean;
-			for(var el in elements){
-				if(elements[el].getValue()!=null){
-					total = total + parseFloat(elements[el].getValue());
-					allElements.push(elements[el].getValue());
-				}
-			}					
-			mean = total/elements.length;
-			
-			this.minDensity = Math.min.apply(null, allElements);
-			this.maxDensity = Math.max.apply(null, allElements);
-			
-			//highlight all reference nodes
-			for(var el in elements){
-				groups[elements[el].getId()] = {};
-				var color = elements[el].getColor();
-				if(elements[el].getValue()!=null){
-					var intensity = 1;
-					if (this.maxDensity != this.minDensity)
-					{
-						intensity = (elements[el].getValue() - this.minDensity) / (this.maxDensity - this.minDensity);
-					}
-					
-					color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
-				}
-				groups[elements[el].getId()].color = color;						
-			}
-			
-			GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups, mode);
-		},
-		
-		getMinDensity : function(){
-			
-			var allElements = new Array();
-						
-			var elements = this.getVisualGroupElements();
+        /**
+         * Get high spectrum color of visual group
+         *
+         * @command VisualGroupNode.getHighSpectrumColor()
+         * @returns {String} High Spectrum color of visual gorup
+         */
+        getHighSpectrumColor: function () {
+            return this.highSpectrumColor;
+        },
 
-			//calculate mean;
-			for(var el in elements){
-				if(elements[el].getValue()!=null){
-					allElements.push(elements[el].getValue());
-				}
-			}
-			
-			return (allElements.length == 0)?null:Math.min.apply(null, allElements);
-		},
-		
-		getMaxDensity : function(){
-			var allElements = new Array();
-			
-			var elements = this.getVisualGroupElements();
+        /**
+         * Get this visual group children
+         *
+         * @command VisualGroupNode.getVisualGroupElements()
+         * @returns {List<Aspect>} All children e.g. Visual Group Element Nodes
+         */
+        getVisualGroupElements: function () {
+            return this.visualGroupElements;
+        },
 
-			//calculate mean;
-			for(var el in elements){
-				if(elements[el].getValue()!=null){
-					allElements.push(elements[el].getValue());
-				}
-			}
-			
-			return (allElements.length == 0)?null:Math.max.apply(null, allElements);
-		},
-		
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    Type : " + this.type + "\n"
-					+ "    HighSpectrumColor : " + this.highSpectrumColor + "\n"
-					+ "    LowSpectrumColor : " + this.lowSpectrumColor + "\n";
-		}
-	});
+        getChildren: function () {
+            return this.visualGroupElements;
+        },
+
+        show: function (mode) {
+            var visualizationTree = this.getParent();
+            var message;
+            var elements = this.getVisualGroupElements();
+
+            var findVisTree = false;
+            while (!findVisTree) {
+                if (visualizationTree._metaType != GEPPETTO.Resources.ASPECT_SUBTREE_NODE) {
+                    visualizationTree = visualizationTree.getParent();
+                }
+                else {
+                    findVisTree = true;
+                }
+            }
+
+            if (mode) {
+                message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
+            }
+            else {
+                message = GEPPETTO.Resources.HIDING_VISUAL_GROUPS + this.id;
+            }
+
+            if (elements.length > 0) {
+                this.showAllVisualGroupElements(visualizationTree, elements, mode);
+            } else {
+                message = GEPPETTO.Resources.NO_VISUAL_GROUP_ELEMENTS;
+            }
+
+            return message;
+        },
+
+        showAllVisualGroupElements: function (visualizationTree, elements, mode) {
+            var groups = {};
+            var allElements = [];
+
+            var total = 0, mean = 0;
+
+            //calculate mean;
+            for (var el in elements) {
+                if (elements[el].getValue() != null) {
+                    total = total + parseFloat(elements[el].getValue());
+                    allElements.push(elements[el].getValue());
+                }
+            }
+            mean = total / elements.length;
+
+            this.minDensity = Math.min.apply(null, allElements);
+            this.maxDensity = Math.max.apply(null, allElements);
+
+            //highlight all reference nodes
+            for (var el in elements) {
+                groups[elements[el].getId()] = {};
+                var color = elements[el].getColor();
+                if (elements[el].getValue() != null) {
+                    var intensity = 1;
+                    if (this.maxDensity != this.minDensity) {
+                        intensity = (elements[el].getValue() - this.minDensity) / (this.maxDensity - this.minDensity);
+                    }
+
+                    color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
+                }
+                groups[elements[el].getId()].color = color;
+            }
+
+            GEPPETTO.SceneController.showVisualGroups(visualizationTree, groups, mode);
+        },
+
+        getMinDensity: function () {
+
+            var allElements = [];
+
+            var elements = this.getVisualGroupElements();
+
+            //calculate mean;
+            for (var el in elements) {
+                if (elements[el].getValue() != null) {
+                    allElements.push(elements[el].getValue());
+                }
+            }
+
+            return (allElements.length == 0) ? null : Math.min.apply(null, allElements);
+        },
+
+        getMaxDensity: function () {
+            var allElements = [];
+
+            var elements = this.getVisualGroupElements();
+
+            //calculate mean;
+            for (var el in elements) {
+                if (elements[el].getValue() != null) {
+                    allElements.push(elements[el].getValue());
+                }
+            }
+
+            return (allElements.length == 0) ? null : Math.max.apply(null, allElements);
+        },
+
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+                + "    Type : " + this.type + "\n"
+                + "    HighSpectrumColor : " + this.highSpectrumColor + "\n"
+                + "    LowSpectrumColor : " + this.lowSpectrumColor + "\n";
+        }
+    });
 });

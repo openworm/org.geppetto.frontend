@@ -33,85 +33,113 @@
 
 /**
  * Client class use to augment a model with state variable capabilities
- * 
+ *
  * @module model/AStateVariableCapability
  * @author Matteo Cantarelli
  */
 
-define([ 'jquery' ], function(require) {	
-	return {
-		capabilityId : 'StateVariableCapability',
-		watched : false,
-		
-		/**
-		 * Get value of quantity
-		 * 
-		 * @command VariableNode.getTimeSeries()
-		 * @returns {String} Value of quantity
-		 */
-		getTimeSeries : function() {
-			// TODO: adapt to type / variable
-			
-			var timeSeries = undefined;
-			var initialValues = this.getVariable().getWrappedObj().initialValues;
-			
-			// TODO: make sure this is being pulled from the right place
-			for(var i=0; i<initialValues.length; i++){
-				if(initialValues[i].value.eClass === 'TimeSeries'){
-					timeSeries = initialValues[i].value.timeSeries;
-				}
-			}
-			
-			return timeSeries;
-		},
-		
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command VariableNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function() {
-			// TODO: adapt to type / variable
-			
-			var unit = undefined;
-			var initialValues = this.getVariable().getWrappedObj().initialValues;
-			
-			for(var i=0; i<initialValues.length; i++){
-				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
-					unit = initialValues[i].value.unit.unit
-				}
-			}
-			
-			return unit;
-		},
+define(['jquery'], function (require) {
+    return {
+        capabilityId: 'StateVariableCapability',
+        watched: false,
+        timeSeries: null,
 
-		/**
-		 * Get watched
-		 * 
-		 * @command VariableNode.getWatched()
-		 * @returns {boolean} true if this variable is being watched
-		 */
-		isWatched : function() {
-			// NOTE: this.watched is a flag added by this API / Capability
-			return this.watched;
-		},
-		
-		/**
-		 * Set watched
-		 * 
-		 * @command VariableNode.setWatched()
-		 * @param {Boolean} watched - Object with options attributes to initialize node
-		 */
-		setWatched : function(isWatched) {
-			if (isWatched != this.watched){
-				// TODO: FIX below
-				Project.getActiveExperiment().watchVariables([this]);
-				
-				// NOTE: this.watched is a flag added by this API / Capability
-				this.watched=isWatched;
-			}
-			return this;
-		}
-	}
+        /**
+         * Get value of quantity
+         *
+         * @command VariableNode.getTimeSeries()
+         * @returns {String} Value of quantity
+         */
+        getTimeSeries: function () {
+            // TODO: adapt to type / variable
+
+            return this.timeSeries;
+        },
+
+
+        /**
+         * Set the time series for the state variable
+         *
+         * @command VariableNode.setTimeSeries()
+         * @returns {Object} The state variable
+         */
+        setTimeSeries: function (timeSeries) {
+            this.timeSeries = timeSeries;
+            return this;
+        },
+
+        /**
+         * Get the initial value for the state variable
+         *
+         * @command VariableNode.getInitialValue()
+         * @returns {Object} The initial value of the state variable
+         */
+        getInitialValue: function () {
+
+            return this.getVariable().getWrappedObj().initialValues;
+        },
+
+
+        /**
+         * Set the unit for the state variable
+         *
+         * @command VariableNode.setUnit()
+         * @returns {Object} The state variable
+         */
+        setUnit: function (unit) {
+            this.unit = unit;
+            return this;
+        },
+
+        /**
+         * Get the type of tree this is
+         *
+         * @command VariableNode.getUnit()
+         * @returns {String} Unit for quantity
+         */
+        getUnit: function () {
+            // TODO: adapt to type / variable
+
+            if (!this.unit) {
+                //returns the unit associated with the initial value
+                var unit = undefined;
+                var initialValues = this.getVariable().getWrappedObj().initialValues;
+
+                for (var i = 0; i < initialValues.length; i++) {
+                    if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                        unit = initialValues[i].value.unit.unit
+                    }
+                }
+            }
+            return this.unit;
+        },
+
+        /**
+         * Get watched
+         *
+         * @command VariableNode.getWatched()
+         * @returns {boolean} true if this variable is being watched
+         */
+        isWatched: function () {
+            // NOTE: this.watched is a flag added by this API / Capability
+            return this.watched;
+        },
+
+        /**
+         * Set watched
+         *
+         * @command VariableNode.setWatched()
+         * @param {Boolean} watched - Object with options attributes to initialize node
+         */
+        setWatched: function (isWatched) {
+            if (isWatched != this.watched) {
+                // TODO: FIX below
+                Project.getActiveExperiment().watchVariables([this]);
+
+                // NOTE: this.watched is a flag added by this API / Capability
+                this.watched = isWatched;
+            }
+            return this;
+        }
+    }
 });

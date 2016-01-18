@@ -33,89 +33,89 @@
 
 /**
  * Client class use to represent a simple type.
- * 
+ *
  * @module model/Type
  * @author Giovanni Idili
  */
-define(function(require) {
-	var ObjectWrapper = require('model/ObjectWrapper');
+define(function (require) {
+    var ObjectWrapper = require('model/ObjectWrapper');
 
-	return ObjectWrapper.Model.extend({
-		visualType : null,
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "visualType" : options.visualType });
-		},
-		
-		/**
-		 * Gets the default value for this type
-		 * 
-		 * @command Type.getDefaultValue()
-		 * 
-		 * @returns {Object} - Default value
-		 * 
-		 */
-		getDefaultValue : function() {
-			// TODO: fetch from the right place
-			return this.get('wrappedObj').defaultValue;
-		},
-		
-		/**
-		 * Gets the super type for this type
-		 * 
-		 * @command Type.getSuperType()
-		 * 
-		 * @returns {Type} - Super type
-		 * 
-		 */
-		getSuperType : function() {
-			// TODO: fetch from the right place
-			return this.get('wrappedObj').superType;
-		},
-		
-		/**
-		 * Check if the type is abstract
-		 * 
-		 * @command Type.isAbstract()
-		 * 
-		 * @returns {Boolean} - Boolean indicating if the type is abstract
-		 * 
-		 */
-		isAbstract : function() {
-			// TODO: fetch from the right place
-			return this.get('wrappedObj').abstract;
-		},
-		
-		/**
-		 * Gets the visual type for this type if any
-		 * 
-		 * @command Type.getVisualType()
-		 * 
-		 * @returns {Type} - Super type
-		 * 
-		 */
-		getVisualType : function() {
-			return this.get('visualType');
-		},
+    return ObjectWrapper.Model.extend({
+        visualType: null,
 
-		
-		/**
-		 * Gets the list of referenced variables
-		 * 
-		 * @command Type.getReferencedVariables()
-		 * 
-		 * @returns {List<Variables>} - list of referenced variables
-		 * 
-		 */
-		getReferencedVariables : function() {
-			// TODO: fetch from the right place
-			return this.get('wrappedObj').referencedVariables;
-		},
-	});
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.set({"wrappedObj": options.wrappedObj});
+            this.set({"visualType": options.visualType});
+        },
+
+        /**
+         * Gets the default value for this type
+         *
+         * @command Type.getDefaultValue()
+         *
+         * @returns {Object} - Default value
+         *
+         */
+        getDefaultValue: function () {
+            // TODO: fetch from the right place
+            return this.get('wrappedObj').defaultValue;
+        },
+
+        /**
+         * Gets the super type for this type
+         *
+         * @command Type.getSuperType()
+         *
+         * @returns {Type} - Super type
+         *
+         */
+        getSuperType: function () {
+            // TODO: fetch from the right place
+            return this.get('wrappedObj').superType;
+        },
+
+        /**
+         * Check if the type is abstract
+         *
+         * @command Type.isAbstract()
+         *
+         * @returns {Boolean} - Boolean indicating if the type is abstract
+         *
+         */
+        isAbstract: function () {
+            // TODO: fetch from the right place
+            return this.get('wrappedObj').abstract;
+        },
+
+        /**
+         * Gets the visual type for this type if any
+         *
+         * @command Type.getVisualType()
+         *
+         * @returns {Type} - Super type
+         *
+         */
+        getVisualType: function () {
+            return this.get('visualType');
+        },
+
+
+        /**
+         * Gets the list of referenced variables
+         *
+         * @command Type.getReferencedVariables()
+         *
+         * @returns {List<Variables>} - list of referenced variables
+         *
+         */
+        getReferencedVariables: function () {
+            // TODO: fetch from the right place
+            return this.get('wrappedObj').referencedVariables;
+        },
+    });
 });

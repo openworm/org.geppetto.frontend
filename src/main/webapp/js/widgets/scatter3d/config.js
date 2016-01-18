@@ -40,14 +40,14 @@
  * Configure what dependencies are needed for each library
  */
 require.config({
-	shim: {
-		"widgets/scatter3d/vendor/OrbitControls" : ["three"]
-	}
+    shim: {
+        "widgets/scatter3d/vendor/OrbitControls": ["three"]
+    }
 });
 
 var reqs = [];
 reqs.push("widgets/scatter3d/vendor/OrbitControls");
 
-require(reqs, function($) {
-	loadCss("geppetto/js/widgets/scatter3d/Scatter3d.css");
+require(reqs, function ($) {
+    loadCss("geppetto/js/widgets/scatter3d/Scatter3d.css");
 });

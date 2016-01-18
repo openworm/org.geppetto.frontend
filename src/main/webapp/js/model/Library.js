@@ -33,49 +33,49 @@
 
 /**
  * Client class use to represent a library that contains a set of types.
- * 
+ *
  * @module model/Library
  * @author Giovanni Idili
  */
-define(function(require) {
-	var ObjectWrapper = require('model/ObjectWrapper');
+define(function (require) {
+    var ObjectWrapper = require('model/ObjectWrapper');
 
-	return ObjectWrapper.Model.extend({
-		types: [],
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.set({ "types" : (options.types != 'undefined') ? options.types : [] });
-			this.set({ "wrappedObj" : options.wrappedObj });
-		},
-		
-		
-		/**
-		 * Get types for this library
-		 * 
-		 * @command Library.getTypes()
-		 * 
-		 * @returns {List<Type>} - list of Type objects
-		 * 
-		 */
-		getTypes : function() {
-			return this.get('types');
-		},
-		
-		/**
-		 * Get combined children
-		 * 
-		 * @command Library.getChildren()
-		 * 
-		 * @returns {List<Object>} - List of children
-		 * 
-		 */
-		getChildren : function() {
-			return this.get('types');
-		},
-	});
+    return ObjectWrapper.Model.extend({
+        types: [],
+
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.set({"types": (options.types != 'undefined') ? options.types : []});
+            this.set({"wrappedObj": options.wrappedObj});
+        },
+
+
+        /**
+         * Get types for this library
+         *
+         * @command Library.getTypes()
+         *
+         * @returns {List<Type>} - list of Type objects
+         *
+         */
+        getTypes: function () {
+            return this.get('types');
+        },
+
+        /**
+         * Get combined children
+         *
+         * @command Library.getChildren()
+         *
+         * @returns {List<Object>} - List of children
+         *
+         */
+        getChildren: function () {
+            return this.get('types');
+        },
+    });
 });

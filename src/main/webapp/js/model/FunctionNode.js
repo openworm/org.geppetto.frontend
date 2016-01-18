@@ -33,75 +33,75 @@
 /**
  * Client class use to represent a function. Used to store properties of model
  * tree
- * 
+ *
  * @module model/FunctionNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define(function (require) {
 
-	var Node = require('model/Node');
+    var Node = require('model/Node');
 
-	return Node.Model.extend({
-		arguments : "",
-		expression : "",
-		_metaType : "FunctionNode",
+    return Node.Model.extend({
+        arguments: "",
+        expression: "",
+        _metaType: "FunctionNode",
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.name = options.name;
-			this.id = options.id;
-			this.instancePath = options.instancePath;
-			this.arguments = options.arguments;
-			this.aspectNode = options.aspectNode;
-			this.expression = options.expression;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
-			this.plotMetadata = options.plotMetadata;
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.name = options.name;
+            this.id = options.id;
+            this.instancePath = options.instancePath;
+            this.arguments = options.arguments;
+            this.aspectNode = options.aspectNode;
+            this.expression = options.expression;
+            this._metaType = options._metaType;
+            this.domainType = options.domainType;
+            this.plotMetadata = options.plotMetadata;
+        },
 
-		/**
-		 * Get arguments for function
-		 * 
-		 * @command FunctionNode.getArguments()
-		 * @returns {String} Arguments for function
-		 */
-		getArguments : function() {
-			return this.arguments;
-		},
+        /**
+         * Get arguments for function
+         *
+         * @command FunctionNode.getArguments()
+         * @returns {String} Arguments for function
+         */
+        getArguments: function () {
+            return this.arguments;
+        },
 
-		/**
-		 * Get function's expression
-		 * 
-		 * @command FunctionNode.getExpression()
-		 * @returns {String} Expression for function
-		 */
-		getExpression : function() {
-			return this.expression;
-		},
-		
-		/**
-		 * Get plot metadata information for function
-		 * 
-		 * @command FunctionNode.getPlotMetadata()
-		 * @returns {Dict} Plot Metadata Dictionary containing info about how to plot
-		 */
-		getPlotMetadata : function () {
-			return this.plotMetadata;
-		},
+        /**
+         * Get function's expression
+         *
+         * @command FunctionNode.getExpression()
+         * @returns {String} Expression for function
+         */
+        getExpression: function () {
+            return this.expression;
+        },
 
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Arguments : " + this.arguments + "\n"
-					+ "    Expression : " + this.expression + "\n"
-					+ "    PlotMetadata : " + this.plotMetadata + "\n";
-		}
-	});
+        /**
+         * Get plot metadata information for function
+         *
+         * @command FunctionNode.getPlotMetadata()
+         * @returns {Dict} Plot Metadata Dictionary containing info about how to plot
+         */
+        getPlotMetadata: function () {
+            return this.plotMetadata;
+        },
+
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+                + "    InstancePath : " + this.instancePath + "\n"
+                + "    Arguments : " + this.arguments + "\n"
+                + "    Expression : " + this.expression + "\n"
+                + "    PlotMetadata : " + this.plotMetadata + "\n";
+        }
+    });
 });

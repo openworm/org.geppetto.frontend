@@ -33,101 +33,97 @@
 
 /**
  * Client class use to augment a model with parameter capabilities
- * 
+ *
  * @module model/AParameterCapability
  * @author Matteo Cantarelli
  */
 
-define([ 'jquery' ], function(require) {	
-	return {
-		capabilityId: 'ParameterCapability',
-		
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command ParameterSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function()
-		{
-			// TODO: adapt to Type / Variable
-			
-			var unit = undefined;
-			var initialValues = this.getVariable().getWrappedObj().initialValues;
-			
-			for(var i=0; i<initialValues.length; i++){
-				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
-					unit = initialValues[i].value.unit.unit
-				}
-			}
-			
-			return unit;
-		},
+define(['jquery'], function (require) {
+    return {
+        capabilityId: 'ParameterCapability',
 
-		/**
-		 * Get value of quantity
-		 * 
-		 * @command ParameterSpecificationNode.getValue()
-		 * @returns {String} Value of quantity
-		 */
-		getValue : function()
-		{
-			// TODO: adapt to Type / Variable
-			
-			var value = undefined;
-			var initialValues = this.getVariable().getWrappedObj().initialValues;
-			
-			for(var i=0; i<initialValues.length; i++){
-				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
-					// this is ugly
-					value = initialValues[i].value.value;
-				}
-			}
-			
-			return value;
-		},
+        /**
+         * Get the type of tree this is
+         *
+         * @command ParameterSpecificationNode.getUnit()
+         * @returns {String} Unit for quantity
+         */
+        getUnit: function () {
+            // TODO: adapt to Type / Variable
 
-		/**
-		 * Get scaling factor
-		 * 
-		 * @command ParameterSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
-		 */
-		getScalingFactor : function()
-		{
-			// TODO: adapt to Type / Variable
-			
-			var scalingFactor = undefined;
-			var initialValues = this.getVariable().getWrappedObj().initialValues;
-			
-			for(var i=0; i<initialValues.length; i++){
-				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
-					scalingFactor = initialValues[i].value.scalingFactor;
-				}
-			}
-			
-			return scalingFactor;
-		},
+            var unit = undefined;
+            var initialValues = this.getVariable().getWrappedObj().initialValues;
 
-		/**
-		 * Sets Value for parameter node.
-		 */
-		setValue : function(value)
-		{
-			// TODO: adapt to Type / Variable
-			var initialValues = this.getVariable().getWrappedObj().initialValues;
-			
-			for(var i=0; i<initialValues.length; i++){
-				if(initialValues[i].value.eClass === 'PhysicalQuantity'){
-					// setting value on wrapped object... this is ugly
-					initialValues[i].value.value = value;
-				}
-			}
-			
-			// TODO: FIX below
-			//Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);
-			
-			return this;
-		}
-	}
+            for (var i = 0; i < initialValues.length; i++) {
+                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                    unit = initialValues[i].value.unit.unit
+                }
+            }
+
+            return unit;
+        },
+
+        /**
+         * Get value of quantity
+         *
+         * @command ParameterSpecificationNode.getValue()
+         * @returns {String} Value of quantity
+         */
+        getValue: function () {
+            // TODO: adapt to Type / Variable
+
+            var value = undefined;
+            var initialValues = this.getVariable().getWrappedObj().initialValues;
+
+            for (var i = 0; i < initialValues.length; i++) {
+                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                    // this is ugly
+                    value = initialValues[i].value.value;
+                }
+            }
+
+            return value;
+        },
+
+        /**
+         * Get scaling factor
+         *
+         * @command ParameterSpecificationNode.getScalingFactor()
+         * @returns {String} Scaling Factor for value and unit
+         */
+        getScalingFactor: function () {
+            // TODO: adapt to Type / Variable
+
+            var scalingFactor = undefined;
+            var initialValues = this.getVariable().getWrappedObj().initialValues;
+
+            for (var i = 0; i < initialValues.length; i++) {
+                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                    scalingFactor = initialValues[i].value.scalingFactor;
+                }
+            }
+
+            return scalingFactor;
+        },
+
+        /**
+         * Sets Value for parameter node.
+         */
+        setValue: function (value) {
+            // TODO: adapt to Type / Variable
+            var initialValues = this.getVariable().getWrappedObj().initialValues;
+
+            for (var i = 0; i < initialValues.length; i++) {
+                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                    // setting value on wrapped object... this is ugly
+                    initialValues[i].value.value = value;
+                }
+            }
+
+            // TODO: FIX below
+            //Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);
+
+            return this;
+        }
+    }
 });

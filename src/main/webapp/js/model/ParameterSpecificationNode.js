@@ -33,91 +33,84 @@
 /**
  * Client class use to represent a parameter specification node, used for model
  * tree properties.
- * 
+ *
  * @module nodes/ParameterSpecificationNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require)
-{
+define(function (require) {
 
-	var Node = require('model/Node');
+    var Node = require('model/Node');
 
-	return Node.Model.extend(
-	{
-		unit : "",
-		value : "",
-		scalingFactor : "",
+    return Node.Model.extend(
+        {
+            unit: "",
+            value: "",
+            scalingFactor: "",
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object}
-		 *            options - Object with options attributes to initialize
-		 *            node
-		 */
-		initialize : function(options)
-		{
-			this.name = options.name;
-			this.id = options.id;
-			this.unit = options.unit;
-			this.instancePath = options.instancePath;
-			this.aspectNode = options.aspectNode;
-			this.value = options.value;
-			this.scalingFactor = options.scalingFactor;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
-		},
+            /**
+             * Initializes this node with passed attributes
+             *
+             * @param {Object}
+             *            options - Object with options attributes to initialize
+             *            node
+             */
+            initialize: function (options) {
+                this.name = options.name;
+                this.id = options.id;
+                this.unit = options.unit;
+                this.instancePath = options.instancePath;
+                this.aspectNode = options.aspectNode;
+                this.value = options.value;
+                this.scalingFactor = options.scalingFactor;
+                this._metaType = options._metaType;
+                this.domainType = options.domainType;
+            },
 
-		/**
-		 * Get the type of tree this is
-		 * 
-		 * @command ParameterSpecificationNode.getUnit()
-		 * @returns {String} Unit for quantity
-		 */
-		getUnit : function()
-		{
-			return this.unit;
-		},
+            /**
+             * Get the type of tree this is
+             *
+             * @command ParameterSpecificationNode.getUnit()
+             * @returns {String} Unit for quantity
+             */
+            getUnit: function () {
+                return this.unit;
+            },
 
-		/**
-		 * Get value of quantity
-		 * 
-		 * @command ParameterSpecificationNode.getValue()
-		 * @returns {String} Value of quantity
-		 */
-		getValue : function()
-		{
-			return this.value;
-		},
+            /**
+             * Get value of quantity
+             *
+             * @command ParameterSpecificationNode.getValue()
+             * @returns {String} Value of quantity
+             */
+            getValue: function () {
+                return this.value;
+            },
 
-		/**
-		 * Get scaling factor
-		 * 
-		 * @command ParameterSpecificationNode.getScalingFactor()
-		 * @returns {String} Scaling Factor for value and unit
-		 */
-		getScalingFactor : function()
-		{
-			return this.scalingFactor;
-		},
+            /**
+             * Get scaling factor
+             *
+             * @command ParameterSpecificationNode.getScalingFactor()
+             * @returns {String} Scaling Factor for value and unit
+             */
+            getScalingFactor: function () {
+                return this.scalingFactor;
+            },
 
-		/**
-		 * Sets Value for parameter node.
-		 */
-		setValue : function(value)
-		{
-			this.value = value;
-			Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);
-			return this;
-		},
+            /**
+             * Sets Value for parameter node.
+             */
+            setValue: function (value) {
+                this.value = value;
+                Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [this]);
+                return this;
+            },
 
-		/**
-		 * Print out formatted node
-		 */
-		print : function()
-		{
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n" + "    InstancePath : " + this.instancePath + "\n" + "    Value : " + this.value + "\n" + "    Unit : " + this.unit
-					+ "\n" + "    ScalingFactor : " + this.scalingFactor + "\n";
-		}
-	});
+            /**
+             * Print out formatted node
+             */
+            print: function () {
+                return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n" + "    InstancePath : " + this.instancePath + "\n" + "    Value : " + this.value + "\n" + "    Unit : " + this.unit
+                    + "\n" + "    ScalingFactor : " + this.scalingFactor + "\n";
+            }
+        });
 });

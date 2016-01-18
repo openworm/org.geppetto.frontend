@@ -87,11 +87,12 @@
 		<property name="compressionEnabled" value="true" />
 		<property name="minMessageLengthForCompression" value="20000" />
 
-		<property name="queuedMessageTypes">
+		<!-- <property name="queuedMessageTypes">
 			<set>
 				<value type="org.geppetto.frontend.messages.OutboundMessages">EXPERIMENT_UPDATE</value>
 			</set>
 		</property>
+		 -->
 
 	</bean>
 

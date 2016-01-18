@@ -34,58 +34,58 @@
 /**
  * Client class use to represent a composite variable node, used for simulation
  * tree state variables.
- * 
+ *
  * @module model/CompositeNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
-	var Node = require('model/Node');
+define(function (require) {
+    var Node = require('model/Node');
 
-	return Node.Model.extend({
-		children : null,
+    return Node.Model.extend({
+        children: null,
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			this.children = new Array();
-			this.id = options.id;
-			this.name = options.name;
-			this.aspectNode = options.aspectNode;
-			this.instancePath = options.instancePath;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            this.children = [];
+            this.id = options.id;
+            this.name = options.name;
+            this.aspectNode = options.aspectNode;
+            this.instancePath = options.instancePath;
+            this._metaType = options._metaType;
+            this.domainType = options.domainType;
+        },
 
-		/**
-		 * Get this entity's aspects
-		 * 
-		 * @command CompositeVariableNode.getChildren()
-		 * 
-		 * @returns {List<Aspect>} - List of aspects
-		 * 
-		 */
-		getChildren : function() {
-			return this.children;
-		},
+        /**
+         * Get this entity's aspects
+         *
+         * @command CompositeVariableNode.getChildren()
+         *
+         * @returns {List<Aspect>} - List of aspects
+         *
+         */
+        getChildren: function () {
+            return this.children;
+        },
 
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			var formattedNode = "Name : " + this.name + "\n" + "    Id: "
-					+ this.id + "\n" + "    InstancePath : "
-					+ this.instancePath + "\n" + "    Children : \n";
-			for ( var e = 0; e < this.getChildren().length; e++) {
-				var child = this.getChildren().at(e);
-				formattedNode = formattedNode + "      " + child._metaType
-						+ ": " + child.id + "\n";
-			}
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            var formattedNode = "Name : " + this.name + "\n" + "    Id: "
+                + this.id + "\n" + "    InstancePath : "
+                + this.instancePath + "\n" + "    Children : \n";
+            for (var e = 0; e < this.getChildren().length; e++) {
+                var child = this.getChildren().at(e);
+                formattedNode = formattedNode + "      " + child._metaType
+                    + ": " + child.id + "\n";
+            }
 
-			return formattedNode;
-		}
-	});
+            return formattedNode;
+        }
+    });
 });

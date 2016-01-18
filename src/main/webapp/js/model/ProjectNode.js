@@ -33,284 +33,280 @@
 
 /**
  * Client class for Project node.
- * 
+ *
  * @module model/ProjectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define([ 'jquery', 'underscore', 'backbone', 
-      // Add requirement for Backbone-associations module
-],function(require) {
+define(['jquery', 'underscore', 'backbone',
+    // Add requirement for Backbone-associations module
+], function (require) {
 
-	return Backbone.Model.extend({
-		experiments : null,
-		activeExperiment : null,
-		initializationTime : null,
-		name : "",
-		id : "",
-		persisted:true,
-		runTimeTree : {},
+    return Backbone.Model.extend({
+        experiments: null,
+        activeExperiment: null,
+        initializationTime: null,
+        name: "",
+        id: "",
+        persisted: true,
+        runTimeTree: {},
 
-		/**
-		 * Initializes this project with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			for(var experiment in this.experiments)
-			{
-				//this should not exist. MVC an experiment disappears from the model and it should disappear from the view. 
-				this.experiments[experiment].terminateWorker();
-				GEPPETTO.FE.deleteExperimentFromTable(this.experiments[experiment].id);
-				delete this.experiments[experiment];
-			}
-			for(var entity in this.runTimeTree)
-			{
-				GEPPETTO.Console.removeCommands(entity);
-			};
+        /**
+         * Initializes this project with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            for (var experiment in this.experiments) {
+                //this should not exist. MVC an experiment disappears from the model and it should disappear from the view.
+                this.experiments[experiment].terminateWorker();
+                GEPPETTO.FE.deleteExperimentFromTable(this.experiments[experiment].id);
+                delete this.experiments[experiment];
+            }
+            for (var entity in this.runTimeTree) {
+                GEPPETTO.Console.removeCommands(entity);
+            }
+            this.experiments = [];
+            this.runTimeTree = {};
+            if (options) {
+                this.name = options.name;
+                this.id = options.id;
+            }
+        },
 
-			this.experiments = new Array();
-			this.runTimeTree={};
-			if(options)
-			{
-				this.name = options.name;
-				this.id = options.id;
-			}
-		},
+        /**
+         * Gets the name of the node
+         *
+         * @command Node.getName()
+         * @returns {String} Name of the node
+         *
+         */
+        getName: function () {
+            return this.name;
+        },
 
-		/**
-		 * Gets the name of the node
-		 * 
-		 * @command Node.getName()
-		 * @returns {String} Name of the node
-		 * 
-		 */
-		getName : function() {
-			return this.name;
-		},
+        /**
+         * Sets the name of the node
+         *
+         * @command Node.setName()
+         *
+         */
+        setName: function (newname) {
+            this.saveProjectProperties({"name": newname});
+            this.name = newname;
+        },
 
-		/**
-		 * Sets the name of the node
-		 * 
-		 * @command Node.setName()
-		 * 
-		 */
-		setName : function(newname) {
-			this.saveProjectProperties({"name":newname});
-			this.name = newname;
-		},
+        /**
+         * Get the id associated with node
+         *
+         * @command Node.getId()
+         * @returns {String} ID of node
+         */
+        getId: function () {
+            return this.id;
+        },
 
-		/**
-		 * Get the id associated with node
-		 * 
-		 * @command Node.getId()
-		 * @returns {String} ID of node
-		 */
-		getId : function() {
-			return this.id;
-		},
-		
-		/**
-		 * Get experiments for this project
-		 * 
-		 * @command ProjectNode.getExperiments()
-		 * @returns {Array} Array of ExperimentNodes
-		 */
-		getExperiments : function() {
-			return this.experiments;
-		},
-		
-		/**
-		 * Get experiment by id
-		 * 
-		 * @command ProjectNode.getExperimentById(id)
-		 * @returns {Array} Array of ExperimentNodes
-		 */
-		getExperimentById : function(id) {
-			var experiment = null;
-			
-			for(var i=0; i<this.experiments.length; i++){
-				if(this.experiments[i].getId() == id){
-					experiment = this.experiments[i];
-					break;
-				}
-			}
-			
-			return experiment;
-		},
-		
-		/**
-		 * Set active experiment for this project
-		 * 
-		 * @command ProjectNode.setActiveExperiment()
-		 * @param {ExperimentNode} experiment - Active Experiment
-		 */
-		setActiveExperiment : function(experiment){
-			this.activeExperiment = experiment;
-		},
-		
-		/**
-		 * Get active experiment for this project
-		 * 
-		 * @command ProjectNode.getActiveExperiment()
-		 * @returns ExperimentNode
-		 */
-		getActiveExperiment : function(){
-			return this.activeExperiment;
-		},
-		
-		/**
-		 * Gets an experiment from this project. 
-		 * 
-		 * @command ProjectNode.getExperiment(name)
-		 * @returns {ExperimentNode} ExperimentNode for given name
-		 */
-		getExperiment : function(name){
-			return this.experiments[name];
-		},
-		
-		/**
-		 * Gets an experiment from this project. 
-		 * 
-		 * @command ProjectNode.getExperiment(name)
-		 * @returns {ExperimentNode} ExperimentNode for given name
-		 */
-		getExperiment : function(name){
-			return this.experiments[name];
-		},
-		
-		/**
-		 * Gets an experiment from this project. 
-		 * 
-		 * @command ProjectNode.newExperiment()
-		 * @returns {ExperimentNode} Creates a new ExperimentNode
-		 */
-		newExperiment : function(){
-			var parameters = {};
-			parameters["projectId"] = this.id;
-			GEPPETTO.MessageSocket.send("new_experiment", parameters);
-		},
-		
-		/**
-		 * Loads a project from content.
-		 *
-		 * @command Project.loadFromContent(projectID)
-		 * @param {URL} projectID - Id of project to load
-		 * @returns {String}  Status of attempt to load simulation using url.
-		 */
-		loadFromID: function(projectID,experimentID) {
+        /**
+         * Get experiments for this project
+         *
+         * @command ProjectNode.getExperiments()
+         * @returns {Array} Array of ExperimentNodes
+         */
+        getExperiments: function () {
+            return this.experiments;
+        },
 
-			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-			
-			console.time(GEPPETTO.Resources.LOADING_PROJECT);
-			GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.LOADING_PROJECT);
-			
-			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
+        /**
+         * Get experiment by id
+         *
+         * @command ProjectNode.getExperimentById(id)
+         * @returns {Array} Array of ExperimentNodes
+         */
+        getExperimentById: function (id) {
+            var experiment = null;
 
-			if(projectID != null && projectID != "") {
-				var parameters = {};
-				parameters["experimentId"] = experimentID;
-				parameters["projectId"] = projectID;
-				GEPPETTO.MessageSocket.send("load_project_from_id", parameters);
-				this.initializationTime = new Date();
-				GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-				GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-			}
+            for (var i = 0; i < this.experiments.length; i++) {
+                if (this.experiments[i].getId() == id) {
+                    experiment = this.experiments[i];
+                    break;
+                }
+            }
 
-			else {
-				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
-			}
+            return experiment;
+        },
 
-			return loadStatus;
-		},
-		
-		/**
-		 * Loads a project from url.
-		 *
-		 * @command Project.loadFromContent(projectURL)
-		 * @param {URL} simulationURL - URL of project to be loaded
-		 * @returns {String}  Status of attempt to load project using url.
-		 */
-		loadFromURL: function(projectURL) {
+        /**
+         * Set active experiment for this project
+         *
+         * @command ProjectNode.setActiveExperiment()
+         * @param {ExperimentNode} experiment - Active Experiment
+         */
+        setActiveExperiment: function (experiment) {
+            this.activeExperiment = experiment;
+        },
 
-			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-			
-			console.time(GEPPETTO.Resources.LOADING_PROJECT);
-			GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.LOADING_PROJECT);
+        /**
+         * Get active experiment for this project
+         *
+         * @command ProjectNode.getActiveExperiment()
+         * @returns ExperimentNode
+         */
+        getActiveExperiment: function () {
+            return this.activeExperiment;
+        },
 
-			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
+        /**
+         * Gets an experiment from this project.
+         *
+         * @command ProjectNode.getExperiment(name)
+         * @returns {ExperimentNode} ExperimentNode for given name
+         */
+        getExperiment: function (name) {
+            return this.experiments[name];
+        },
 
-			if(projectURL != null && projectURL != "") {
-				GEPPETTO.MessageSocket.send("load_project_from_url", projectURL);
-				GEPPETTO.trigger(Events.Volatile_project_loaded);
-				this.persisted=false;
-				this.initializationTime = new Date();
-				GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-				GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-				//trigger simulation restart event
-				GEPPETTO.trigger(Events.Simulation_restarted);
-			}
+        /**
+         * Gets an experiment from this project.
+         *
+         * @command ProjectNode.getExperiment(name)
+         * @returns {ExperimentNode} ExperimentNode for given name
+         */
+        getExperiment: function (name) {
+            return this.experiments[name];
+        },
 
-			else {
-				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
-			}
+        /**
+         * Gets an experiment from this project.
+         *
+         * @command ProjectNode.newExperiment()
+         * @returns {ExperimentNode} Creates a new ExperimentNode
+         */
+        newExperiment: function () {
+            var parameters = {};
+            parameters["projectId"] = this.id;
+            GEPPETTO.MessageSocket.send("new_experiment", parameters);
+        },
 
-			return loadStatus;
-		},
+        /**
+         * Loads a project from content.
+         *
+         * @command Project.loadFromContent(projectID)
+         * @param {URL} projectID - Id of project to load
+         * @returns {String}  Status of attempt to load simulation using url.
+         */
+        loadFromID: function (projectID, experimentID) {
 
-		/**
-		 * Loads a project from content.
-		 *
-		 * @command Project.loadFromContent(content)
-		 * @param {String} content - Content of project to load
-		 * @returns {String}  Status of attempt to load project
-		 */
-		loadFromContent: function(content) {
+            GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 
-			GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-			
-			console.time(GEPPETTO.Resources.LOADING_PROJECT);
-			GEPPETTO.trigger('show_spinner',GEPPETTO.Resources.LOADING_PROJECT);
-			
-			var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
+            console.time(GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
 
-			if(content != null && content != "") {
-				//Updates the simulation controls visibility
+            var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
-				GEPPETTO.MessageSocket.send("load_project_from_content", content);
-				this.initializationTime = new Date();
-				GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-				GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
-				//trigger simulation restart event
+            if (projectID != null && projectID != "") {
+                var parameters = {};
+                parameters["experimentId"] = experimentID;
+                parameters["projectId"] = projectID;
+                GEPPETTO.MessageSocket.send("load_project_from_id", parameters);
+                this.initializationTime = new Date();
+                GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+                GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+            }
 
-			}
+            else {
+                loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
+            }
 
-			else {
-				loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
-			}
-			return loadStatus;
-		},
-		
-		saveProjectProperties : function(properties) {
-			var parameters = {};
-			parameters["projectId"] = this.getId();
-			parameters["properties"] = properties;
-			GEPPETTO.MessageSocket.send("save_project_properties", parameters);
-		},
-		
-		persist : function(){
-			var parameters = {};
-			parameters["projectId"] = this.id;
-			GEPPETTO.MessageSocket.send("persist_project", parameters);
-		},
+            return loadStatus;
+        },
 
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
-					+ "    InstancePath : " + this.instancePath + "\n"
-					+ "    Properties : " + this.experiments + "\n";
-		}
-	});
+        /**
+         * Loads a project from url.
+         *
+         * @command Project.loadFromContent(projectURL)
+         * @param {URL} simulationURL - URL of project to be loaded
+         * @returns {String}  Status of attempt to load project using url.
+         */
+        loadFromURL: function (projectURL) {
+
+            GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+
+            console.time(GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
+
+            var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
+
+            if (projectURL != null && projectURL != "") {
+                GEPPETTO.MessageSocket.send("load_project_from_url", projectURL);
+                GEPPETTO.trigger(Events.Volatile_project_loaded);
+                this.persisted = false;
+                this.initializationTime = new Date();
+                GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+                GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+                //trigger simulation restart event
+                GEPPETTO.trigger(Events.Simulation_restarted);
+            }
+
+            else {
+                loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
+            }
+
+            return loadStatus;
+        },
+
+        /**
+         * Loads a project from content.
+         *
+         * @command Project.loadFromContent(content)
+         * @param {String} content - Content of project to load
+         * @returns {String}  Status of attempt to load project
+         */
+        loadFromContent: function (content) {
+
+            GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+
+            console.time(GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
+
+            var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
+
+            if (content != null && content != "") {
+                //Updates the simulation controls visibility
+
+                GEPPETTO.MessageSocket.send("load_project_from_content", content);
+                this.initializationTime = new Date();
+                GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
+                GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+                //trigger simulation restart event
+
+            }
+
+            else {
+                loadStatus = GEPPETTO.Resources.PROJECT_UNSPECIFIED;
+            }
+            return loadStatus;
+        },
+
+        saveProjectProperties: function (properties) {
+            var parameters = {};
+            parameters["projectId"] = this.getId();
+            parameters["properties"] = properties;
+            GEPPETTO.MessageSocket.send("save_project_properties", parameters);
+        },
+
+        persist: function () {
+            var parameters = {};
+            parameters["projectId"] = this.id;
+            GEPPETTO.MessageSocket.send("persist_project", parameters);
+        },
+
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n"
+                + "    InstancePath : " + this.instancePath + "\n"
+                + "    Properties : " + this.experiments + "\n";
+        }
+    });
 });

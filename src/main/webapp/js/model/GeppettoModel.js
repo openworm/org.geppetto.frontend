@@ -33,63 +33,63 @@
 
 /**
  * Client class use to represent top level Geppetto model.
- * 
+ *
  * @module model/GeppettoModel
  * @author Giovanni Idili
  */
-define(function(require) {
-	var ObjectWrapper = require('model/ObjectWrapper');
+define(function (require) {
+    var ObjectWrapper = require('model/ObjectWrapper');
 
-	return ObjectWrapper.Model.extend({
-		variables: [],
-		libraries: [],
-		
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize node
-		 */
-		initialize : function(options) {
-			this.set({ "variables" : (options.variables != undefined) ? options.variables : [] });
-			this.set({ "libraries" : (options.libraries != undefined) ? options.libraries : [] });
-			this.set({ "wrappedObj" : options.wrappedObj });
-			this.set({ "_metaType" : options._metaType });
-		},
-		
-		/**
-		 * Get variables
-		 * 
-		 * @command GeppettoModel.getVariables()
-		 * 
-		 * @returns {List<Variable>} - List of Variable objects
-		 * 
-		 */
-		getVariables : function() {
-			return this.get('variables');
-		},
-		
-		/**
-		 * Get libraries
-		 * 
-		 * @command GeppettoModel.getLibraries()
-		 * 
-		 * @returns {List<Library>} - List of library objects
-		 * 
-		 */
-		getLibraries : function() {
-			return this.get('libraries');
-		},
-		
-		/**
-		 * Get combined children
-		 * 
-		 * @command GeppettoModel.getChildren()
-		 * 
-		 * @returns {List<Object>} - List of children
-		 * 
-		 */
-		getChildren : function() {
-			return this.get("variables").concat(this.get("libraries"));
-		},
-	});
+    return ObjectWrapper.Model.extend({
+        variables: [],
+        libraries: [],
+
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize node
+         */
+        initialize: function (options) {
+            this.set({"variables": (options.variables != undefined) ? options.variables : []});
+            this.set({"libraries": (options.libraries != undefined) ? options.libraries : []});
+            this.set({"wrappedObj": options.wrappedObj});
+            this.set({"_metaType": options._metaType});
+        },
+
+        /**
+         * Get variables
+         *
+         * @command GeppettoModel.getVariables()
+         *
+         * @returns {List<Variable>} - List of Variable objects
+         *
+         */
+        getVariables: function () {
+            return this.get('variables');
+        },
+
+        /**
+         * Get libraries
+         *
+         * @command GeppettoModel.getLibraries()
+         *
+         * @returns {List<Library>} - List of library objects
+         *
+         */
+        getLibraries: function () {
+            return this.get('libraries');
+        },
+
+        /**
+         * Get combined children
+         *
+         * @command GeppettoModel.getChildren()
+         *
+         * @returns {List<Object>} - List of children
+         *
+         */
+        getChildren: function () {
+            return this.get("variables").concat(this.get("libraries"));
+        },
+    });
 });

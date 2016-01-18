@@ -30,42 +30,41 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-define(function(require) {
-	return function(GEPPETTO) {
-		
-		var commandsProviders = {};
-		
-		/**
-		 * @class GEPPETTO.MenuManager
-		 */
-		GEPPETTO.MenuManager = {
-				
-		    resetMap : function(){
-		    	commandsProviders = {};
-		    },
-			registerNewCommandProvider: function(nodeTypes, handler) {
-				for (var nodeTypeKey in nodeTypes){
-					nodeType = nodeTypes[nodeTypeKey];
-					commandsItem = [];
-					if (nodeType in commandsProviders){
-						commandsItem = commandsProviders[nodeType];
-					}
-					commandsItem.push(handler);	
-					commandsProviders[nodeType] = commandsItem;
-				}
-			},
-			
-			
-			getCommandsProvidersFor: function(nodeType) {
-				var commandsProvidersForNodeType = [];
-				if (nodeType in commandsProviders){
-					commandsProvidersForNodeType = commandsProviders[nodeType];
-				}
-				return commandsProvidersForNodeType;
-			}
-			
-			
+define(function (require) {
+    return function (GEPPETTO) {
 
-		};
-	}
+        var commandsProviders = {};
+
+        /**
+         * @class GEPPETTO.MenuManager
+         */
+        GEPPETTO.MenuManager = {
+
+            resetMap: function () {
+                commandsProviders = {};
+            },
+            registerNewCommandProvider: function (nodeTypes, handler) {
+                for (var nodeTypeKey in nodeTypes) {
+                    nodeType = nodeTypes[nodeTypeKey];
+                    commandsItem = [];
+                    if (nodeType in commandsProviders) {
+                        commandsItem = commandsProviders[nodeType];
+                    }
+                    commandsItem.push(handler);
+                    commandsProviders[nodeType] = commandsItem;
+                }
+            },
+
+
+            getCommandsProvidersFor: function (nodeType) {
+                var commandsProvidersForNodeType = [];
+                if (nodeType in commandsProviders) {
+                    commandsProvidersForNodeType = commandsProviders[nodeType];
+                }
+                return commandsProvidersForNodeType;
+            }
+
+
+        };
+    }
 });

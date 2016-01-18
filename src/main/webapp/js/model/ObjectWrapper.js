@@ -33,59 +33,59 @@
 
 /**
  * Base class that provides wrapping functionality for a generic underlying object (with id and name).
- * 
+ *
  * @module model/ObjectWrapper
  * @author Giovanni Idili
  */
 
-define([ 'jquery', 'underscore', 'backbone' ], function(require) {
-	return {
-		Model : Backbone.Model.extend({
-			_metaType : "",
-			wrappedObj : null,
+define(['jquery', 'underscore', 'backbone'], function (require) {
+    return {
+        Model: Backbone.Model.extend({
+            _metaType: "",
+            wrappedObj: null,
 
-			/**
-			 * Gets the name of the node
-			 * 
-			 * @command Node.getName()
-			 * @returns {String} Name of the node
-			 * 
-			 */
-			getName : function() {
-				return this.get('wrappedObj').name;
-			},
+            /**
+             * Gets the name of the node
+             *
+             * @command Node.getName()
+             * @returns {String} Name of the node
+             *
+             */
+            getName: function () {
+                return this.get('wrappedObj').name;
+            },
 
-			/**
-			 * Get the id associated with node
-			 * 
-			 * @command Node.getId()
-			 * @returns {String} ID of node
-			 */
-			getId : function() {
-				return this.get('wrappedObj').id;
-			},
-			
-			/**
-			 * Get the wrapped obj
-			 * 
-			 * @command Node.getWrappedObj()
-			 * @returns {Object} - Wrapped object
-			 */
-			getWrappedObj : function(){
-				return this.get('wrappedObj');
-			},
-			
-			/**
-			 * Get meta type
-			 * 
-			 * @command Instance.getMetaType()
-			 * 
-			 * @returns {String} - meta type
-			 * 
-			 */
-			getMetaType : function() {
-				return this.get('wrappedObj').eClass;
-			},
-		})
-	};
+            /**
+             * Get the id associated with node
+             *
+             * @command Node.getId()
+             * @returns {String} ID of node
+             */
+            getId: function () {
+                return this.get('wrappedObj').id;
+            },
+
+            /**
+             * Get the wrapped obj
+             *
+             * @command Node.getWrappedObj()
+             * @returns {Object} - Wrapped object
+             */
+            getWrappedObj: function () {
+                return this.get('wrappedObj');
+            },
+
+            /**
+             * Get meta type
+             *
+             * @command Instance.getMetaType()
+             *
+             * @returns {String} - meta type
+             *
+             */
+            getMetaType: function () {
+                return this.get('wrappedObj').eClass;
+            },
+        })
+    };
 });

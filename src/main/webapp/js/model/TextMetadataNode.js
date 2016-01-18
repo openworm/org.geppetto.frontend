@@ -34,51 +34,51 @@
 /**
  * Client class use to represent a text metadata node, used for model
  * tree properties.
- * 
+ *
  * @module model/TextMetadataNode
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define(function (require) {
 
-	var Node = require('model/Node');
+    var Node = require('model/Node');
 
-	return Node.Model.extend({
-		value : "",
+    return Node.Model.extend({
+        value: "",
 
-		/**
-		 * Initializes this node with passed attributes
-		 * 
-		 * @param {Object} options - Object with options attributes to initialize
-		 *                           node
-		 */
-		initialize : function(options) {
-			this.name = options.name;
-			this.id = options.id;
-			this.instancePath = options.instancePath;
-			this.aspectNode = options.aspectNode;
-			this.value = options.value;
-			this._metaType = options._metaType;
-			this.domainType = options.domainType;
-		},
+        /**
+         * Initializes this node with passed attributes
+         *
+         * @param {Object} options - Object with options attributes to initialize
+         *                           node
+         */
+        initialize: function (options) {
+            this.name = options.name;
+            this.id = options.id;
+            this.instancePath = options.instancePath;
+            this.aspectNode = options.aspectNode;
+            this.value = options.value;
+            this._metaType = options._metaType;
+            this.domainType = options.domainType;
+        },
 
-		/**
-		 * Get value of quantity
-		 * 
-		 * @command TextMetadataNode.getText()
-		 * @returns {String} Value of quantity
-		 */
-		getValue : function() {
-			return this.value;
-		},
-		
-		/**
-		 * Print out formatted node
-		 */
-		print : function() {
-			return "ID : " + this.name + "\n" 
-					+ "    Name : " + this.name + "\n"
-					+ "    value : " + this.text + "\n";
-		}
-	});
+        /**
+         * Get value of quantity
+         *
+         * @command TextMetadataNode.getText()
+         * @returns {String} Value of quantity
+         */
+        getValue: function () {
+            return this.value;
+        },
+
+        /**
+         * Print out formatted node
+         */
+        print: function () {
+            return "ID : " + this.name + "\n"
+                + "    Name : " + this.name + "\n"
+                + "    value : " + this.text + "\n";
+        }
+    });
 });

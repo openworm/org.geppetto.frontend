@@ -42,6 +42,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
     return Backbone.Model.extend({
         wrappedObj: null,
         children: [],
+        formattedValue: "",
 
         /**
          * Initializes this node with passed attributes
@@ -52,6 +53,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
 
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"children": (options.children != undefined) ? options.children : []});
+            this.set({"formattedValue": (options.formattedValue != undefined) ? options.formattedValue : ""});
         },
 
         /**
@@ -92,34 +94,9 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          * @returns {String} ID of node
          */
         getValue: function () {
-            var formattedValue = null;
-//				console.log('Getting value for ' + this.getId());
-            if (this.get('wrappedObj').getInitialValues() != undefined) {
-                var value = this.get('wrappedObj').getInitialValues()[0].value;
-                if (value.eClass == 'Text') {
-                    formattedValue = value.text;
-                }
-                else if (value.eClass == 'Connection') {
-                    //AQP: To be fixed once this part is solved
-                    formattedValue = 'Connection';
-                }
-                else if (value.eClass == 'HTML') {
-                    formattedValue = value.html;
-                }
-                else if (value.eClass == 'Dynamics') {
-                    //AQP: Let's try to beautify this thing
-                    formattedValue = value.dynamics.expression.expression;
-                }
-                else if (value.eClass == 'PhysicalQuantity') {
-                    formattedValue = value.value + " " + value.unit.unit;
-                }
-                else {
-                    //AQP: In here, it should only go the size of the population
-                    formattedValue = value.value;
-                }
-            }
-            return formattedValue;
+            return this.get('formattedValue');
         },
+
 
         /**
          * Get the children of the node
@@ -139,7 +116,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          */
         getWrappedObj: function () {
             return this.get('wrappedObj');
-        },
+        }
 
     });
 });

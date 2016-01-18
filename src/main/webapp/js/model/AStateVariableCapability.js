@@ -106,7 +106,7 @@ define([ 'jquery' ], function(require) {
 		setWatched : function(isWatched) {
 			if (isWatched != this.watched){
 				// TODO: FIX below
-				//Project.getActiveExperiment().watchVariables([this]);
+				Project.getActiveExperiment().watchVariables([this]);
 				
 				// NOTE: this.watched is a flag added by this API / Capability
 				this.watched=isWatched;

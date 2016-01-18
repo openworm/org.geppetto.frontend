@@ -267,6 +267,7 @@ define(function(require)
 			createInstances : function(geppettoModel)
 			{
 				var instances = [];
+				window.allPaths=[];
 				
 				var varsWithVizTypes = [];
 				var varsWithConnTypes = [];
@@ -537,6 +538,8 @@ define(function(require)
 			{
 				// build "list" of variables that have a visual type (store "path")
 				// check meta type - we are only interested in variables
+				var path= (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+				window.allPaths.push(path);
 				if(node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE){
 					var allTypes = node.getTypes();
 					for(var i=0; i<allTypes.length; i++){
@@ -546,7 +549,6 @@ define(function(require)
 							
 							if(vizType!=undefined && vizType!=null){
 								// ADD to list of vars with viz types
-								var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 								varsWithVizTypes.push(path); 
 							}
 						}
@@ -557,18 +559,15 @@ define(function(require)
 							
 							if(vizType!=undefined && vizType!=null){
 								// ADD to list of vars with viz types
-								var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 								varsWithVizTypes.push(path);
 							}
 						}
 						else if((allTypes[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) || (allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)){
-							var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 							varsWithVizTypes.push(path);
 						}
 						
 						// check if type is connection 
 						if(allTypes[i].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE){
-							var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 							varsWithConnTypes.push(path);
 						}
 						

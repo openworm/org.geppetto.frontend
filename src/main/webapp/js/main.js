@@ -51,6 +51,8 @@ require.config({
 		three : 'vendor/three.min',
 		d3 : 'vendor/d3.min',
 		codemirror :"vendor/codemirror.min",
+		typeahead: "vendor/typeahead.jquery",
+		bloodhound: "vendor/bloodhound",
 		underscore : 'vendor/underscore.min',
 		backbone : 'vendor/backbone.min',
 		'backbone-associations' : 'vendor/backbone-associations-min',
@@ -94,6 +96,16 @@ require.config({
 		'vendor/rAF': ["jquery"],
 		JSXTransformer: {
             exports: "JSXTransformer"
+        },
+        typeahead:{
+            deps: ['jquery'],
+            init: function ($) {
+                return require.s.contexts._.registry['typeahead.js'].factory( $ );
+            }
+        },
+        bloodhound: {
+           deps: ['jquery'],
+           exports: 'Bloodhound'
         }
 	}
 });

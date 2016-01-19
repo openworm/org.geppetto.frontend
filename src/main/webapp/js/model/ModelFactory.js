@@ -120,7 +120,7 @@ define(function (require) {
             populateTypeReferences: function (node, geppettoModel) {
 
                 // check if variable, if so populate type references
-                if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE) {
+                if (node instanceof Variable) {
                     var types = node.getTypes();
                     var referencedTypes = [];
 
@@ -143,22 +143,38 @@ define(function (require) {
                             }
                         }
                     }
-                } else if (node.getMetaType() == GEPPETTO.Resources.TYPE_NODE || node.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                } else if (!(node instanceof ArrayType) && (node instanceof Type || node instanceof CompositeType)) {
                     // take visual type string - looks like this --> '//@libraries.1/@types.5'
                     var vizType = node.getVisualType();
 
                     if (vizType != undefined) {
                         // replace with reference to actual type
                         var typeObj = this.resolve(vizType.$ref);
-                        node.set({"visualType": typeObj})
+                        node.set({"visualType": typeObj});
                     }
-                } else if (node.getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
+
+                    // resolve super type
+                    var superType = node.getSuperType();
+                    if (superType != undefined) {
+                        // replace with reference to actual type
+                        var typeObj = this.resolve(superType.$ref);
+                        node.set({"superType": typeObj});
+                    }
+                } else if (node instanceof ArrayType) {
                     // take array type string - looks like this --> '//@libraries.1/@types.5'
                     var arrayType = node.getType();
 
                     if (arrayType != undefined) {
                         var typeObj = this.resolve(arrayType.$ref);
-                        node.set({"type": typeObj})
+                        node.set({"type": typeObj});
+                    }
+
+                    // resolve super type
+                    var superType = node.getSuperType();
+                    if (superType != undefined) {
+                        // replace with reference to actual type
+                        var typeObj = this.resolve(superType.$ref);
+                        node.set({"superType": typeObj});
                     }
                 }
 
@@ -212,9 +228,6 @@ define(function (require) {
                         }
                         else if (jsonTypes[i].eClass == 'CompositeVisualType') {
                             type = this.createCompositeVisualType(jsonTypes[i]);
-                        }
-                        else if (jsonTypes[i].eClass == 'VisualType') {
-                            type = this.createVisualType(jsonTypes[i]);
                         }
                         else if (jsonTypes[i].eClass == 'ArrayType') {
                             type = this.createArrayType(jsonTypes[i]);
@@ -631,18 +644,7 @@ define(function (require) {
 
                 var t = new Type(options);
                 t.set({"visualType": node.visualType});
-
-                return t;
-            },
-
-
-            /** Creates a visual type node */
-            createVisualType: function (node, options) {
-                if (options == null || options == undefined) {
-                    options = {wrappedObj: node};
-                }
-
-                var t = new Type(options);
+                t.set({"superType": node.superType});
 
                 return t;
             },
@@ -655,6 +657,7 @@ define(function (require) {
 
                 var t = new CompositeType(options);
                 t.set({"visualType": node.visualType});
+                t.set({"superType": node.superType});
                 t.set({"variables": this.createVariables(node.variables)});
 
                 return t;
@@ -668,6 +671,7 @@ define(function (require) {
 
                 var t = new CompositeVisualType(options);
                 t.set({"visualType": node.visualType});
+                t.set({"superType": node.superType});
                 t.set({"variables": this.createVariables(node.variables)});
                 if (node.visualGroups != undefined) {
                     t.set({"visualGroups": this.createVisualGroups(node.visualGroups)});

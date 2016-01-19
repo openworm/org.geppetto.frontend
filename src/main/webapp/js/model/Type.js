@@ -42,6 +42,7 @@ define(function (require) {
 
     return ObjectWrapper.Model.extend({
         visualType: null,
+        superType: null,
 
         /**
          * Initializes this node with passed attributes
@@ -51,6 +52,7 @@ define(function (require) {
         initialize: function (options) {
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"visualType": options.visualType});
+            this.set({"superType": options.superType});
         },
 
         /**
@@ -76,7 +78,7 @@ define(function (require) {
          */
         getSuperType: function () {
             // TODO: fetch from the right place
-            return this.get('wrappedObj').superType;
+            return this.get('superType');
         },
 
         /**

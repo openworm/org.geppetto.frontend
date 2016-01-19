@@ -59,12 +59,6 @@ define(function (require) {
          * is created
          */
         defaultPlotOptions: {
-//				series: {
-//					shadowSize: 0,
-//					downsample: {
-//					    threshold: 1000 
-//					  }
-//				},
             yaxis: {
                 max: 1,
                 min: -.1
@@ -76,7 +70,7 @@ define(function (require) {
                 tickLength: 0,
                 ticks: [],
                 font: {
-                    size: 11
+                    size: 10
                 },
                 labelWidth: 30,
                 axisLabelPadding: 5,
@@ -181,52 +175,51 @@ define(function (require) {
             return "Line plot added to widget";
         },
 
-        getTimeSeriesData: function (state) {
-            var timeSeries = state.getTimeSeries();
+        getTimeSeriesData: function (instance) {
+            var timeSeries = instance.getTimeSeries();
             var timeSeriesData = [];
-            var id = state.getInstancePath();
             var i = 0;
 
-            if (timeSeries.length > 1) {
-                if (this.options.playAll == true) {
-                    for (var step=0; step<timeSeries.length;step++) {
-                        var value = timeSeries[step];
-                        timeSeriesData.push([i, value]);
-                        i++;
-                        if (value < this.yMin) {
-                            this.yMin = value;
-                        }
-                        if (value > this.yMax) {
-                            this.yMax = value;
-                        }
-                    }
-                    this.options.yaxis.max = this.yMax;
-                    this.options.yaxis.min = this.yMin;
-                    this.limit = timeSeries.length;
-                    this.options.xaxis.max = this.limit;
-                    this.options.xaxis.show = true;
-                    if (window.Project.getActiveExperiment().time != null || undefined) {
-                        var timeSeries = window.time.getTimeSeries();
-                        var divideLength = Math.ceil(timeSeries.length / 10);
-                        var ticks = [];
-
-                        ticks[0] = [0, timeSeries[0].toFixed(4)];
-
-                        var index = divideLength;
-                        var i = 1;
-                        while (index < timeSeries.length) {
-                            var newTick = [];
-                            ticks[i] = [index, timeSeries[index].toFixed(4)];
-                            index = Math.ceil(index + divideLength);
+            if (timeSeries) {
+                if (timeSeries.length > 1) {
+                    if (this.options.playAll == true) {
+                        for (var step = 0; step < timeSeries.length; step++) {
+                            var value = timeSeries[step];
+                            timeSeriesData.push([i, value]);
                             i++;
+                            if (value < this.yMin) {
+                                this.yMin = value;
+                            }
+                            if (value > this.yMax) {
+                                this.yMax = value;
+                            }
                         }
-                        index = timeSeries.length - 1;
-                        ticks[i] = [index, timeSeries[index].toFixed(4)];
-                        this.options.xaxis.ticks = ticks;
+                        this.options.yaxis.max = this.yMax;
+                        this.options.yaxis.min = this.yMin;
+                        this.limit = timeSeries.length;
+                        this.options.xaxis.max = this.limit;
+                        this.options.xaxis.show = true;
+                        if (window.Instances.time) {
+                            var timeTimeSeries = window.time.getTimeSeries();
+                            var divideLength = Math.ceil(timeTimeSeries.length / 10);
+                            var ticks = [];
+
+                            ticks[0] = [0, timeTimeSeries[0].toFixed(6)];
+
+                            var index = divideLength;
+                            var i = 1;
+                            while (index < timeTimeSeries.length) {
+                                ticks[i] = [index, timeTimeSeries[index].toFixed(6)];
+                                index = Math.ceil(index + divideLength);
+                                i++;
+                            }
+                            index = timeTimeSeries.length - 1;
+                            ticks[i] = [index, timeTimeSeries[index].toFixed(6)];
+                            this.options.xaxis.ticks = ticks;
+                        }
                     }
                 }
             }
-
             return timeSeriesData;
         },
         /**
@@ -307,7 +300,7 @@ define(function (require) {
          * Updates a data set, use for time series
          */
         updateDataSet: function (step) {
-            var plotholder = $("#" + this.id);
+            var plotHolder = $("#" + this.id);
 
             if (this.options.playAll) {
                 for (var key in this.datasets) {
@@ -320,13 +313,13 @@ define(function (require) {
                     var unit = this.datasets[key].variable.getUnit();
                     if (unit != null) {
                         var labelY = this.getUnitLabel(unit);
-                        var labelX = this.getUnitLabel(window.Project.getActiveExperiment().time.getUnit());
+                        var labelX = this.getUnitLabel(window.Instances.time.getUnit());
                         this.setAxisLabel(labelY, labelX);
                         this.labelsUpdated = true;
                     }
                 }
 
-                this.plot = $.plot(plotholder, this.datasets, this.options);
+                this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
             else {
                 // if not plotAll we are in step-by-step replay mode - check axis visibility and add margin
@@ -336,40 +329,40 @@ define(function (require) {
                 }
 
                 for (var key in this.datasets) {
-                    var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
+                    var newValue = this.datasets[key].variable.getTimeSeries()[step];
 
                     if (!this.labelsUpdated) {
                         var unit = this.datasets[key].variable.getUnit();
                         if (unit != null) {
                             var labelY = this.getUnitLabel(unit);
-                            var labelX = this.getUnitLabel(window.Project.getActiveExperiment().time.getUnit());
+                            var labelX = this.getUnitLabel(window.Instances.time.getUnit());
                             this.setAxisLabel(labelY, labelX);
                             this.labelsUpdated = true;
                         }
                     }
 
-                    var oldata = this.datasets[key].data;
+                    var oldData = this.datasets[key].data;
                     var reIndex = false;
 
-                    if (oldata.length > this.limit) {
-                        oldata.splice(0, 1);
+                    if (oldData.length > this.limit) {
+                        oldData.splice(0, 1);
                         reIndex = true;
                     }
 
-                    oldata.push([oldata.length, newValue]);
+                    oldData.push([oldData.length, newValue]);
 
                     if (reIndex) {
                         // re-index data
                         var indexedData = [];
-                        for (var index = 0, len = oldata.length; index < len; index++) {
-                            var value = oldata[index][1];
+                        for (var index = 0, len = oldData.length; index < len; index++) {
+                            var value = oldData[index][1];
                             indexedData.push([index, value]);
                         }
 
                         this.datasets[key].data = indexedData;
                     }
                     else {
-                        this.datasets[key].data = oldata;
+                        this.datasets[key].data = oldData;
                     }
                 }
                 if (this.plot != null) {

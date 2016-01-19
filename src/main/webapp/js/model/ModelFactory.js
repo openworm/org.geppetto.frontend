@@ -292,6 +292,7 @@ define(function (require) {
                     this.populateChildrenShortcuts(topInstances[k]);
                     if (!window.hasOwnProperty(topInstances[k].getId())) {
                         window[topInstances[k].getId()] = topInstances[k];
+                        window.Instances[topInstances[k].getId()] = topInstances[k];
                     }
 
                 }

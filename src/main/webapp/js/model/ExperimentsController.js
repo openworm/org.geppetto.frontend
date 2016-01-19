@@ -33,7 +33,7 @@
 /**
  * Factory class that figures out what kind of nodes to create with the updates received from the server. Creates the client nodes for entities, aspects, etc and updates them.
  *
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Matteo Cantarelli
  */
 define(function (require) {
     return function (GEPPETTO) {
@@ -48,11 +48,12 @@ define(function (require) {
                 var maxSteps = 0;
                 for (var i = 0; i < experimentState.recordedVariables.length; i++) {
                     var recordedVariable = experimentState.recordedVariables[i];
+                    var instancePath = this.getInstancePathFromPointer(recordedVariable.pointer, false);
+                    var instance = Instances.getInstance(instancePath);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
-                        var instancePath = this.getInstancePathFromPointer(recordedVariable.pointer, false);
-                        var instance = Instances.getInstance(instancePath);
-
-                        instance.setUnit(recordedVariable.value.unit);
+                        if(recordedVariable.value.unit && recordedVariable.value.unit.unit){
+                            instance.setUnit(recordedVariable.value.unit.unit);
+                        }
                         instance.setTimeSeries(recordedVariable.value.value);
                         if (recordedVariable.value.value.length > maxSteps) {
                             maxSteps = recordedVariable.value.value.length;

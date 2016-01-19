@@ -499,7 +499,7 @@ define(function (require) {
              * @param {Function} callback - Callback function to be called whenever _variable_ changes
              */
             addOnNodeUpdatedCallback: function (varnode, callback) {
-                this.listeners[varnode.instancePath] = callback;
+                this.listeners[varnode.getInstancePath()] = callback;
             },
 
             /**
@@ -537,7 +537,7 @@ define(function (require) {
             addBrightnessFunction: function (aspect, modulation, normalizationFunction) {
                 this.addOnNodeUpdatedCallback(modulation, function (varnode, step) {
                     GEPPETTO.SceneController.lightUpEntity(aspect.instancePath,
-                        normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[step].getValue()) : varnode.getTimeSeries()[0].getValue());
+                        normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[step]) : varnode.getTimeSeries()[0]);
                 });
             },
 
@@ -563,7 +563,7 @@ define(function (require) {
             addDynamicVisualization: function (visualAspect, visualEntityName, dynVar, transformation, normalization) {
                 //TODO: things should be VisualizationTree centric instead of aspect centric...
                 this.addOnNodeUpdatedCallback(dynVar, function (watchedNode) {
-                    transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0].getValue()) : watchedNode.getTimeSeries()[0].getValue());
+                    transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0]) : watchedNode.getTimeSeries()[0]);
                 });
             },
 

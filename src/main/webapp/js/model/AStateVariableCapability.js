@@ -110,6 +110,7 @@ define(['jquery'], function (require) {
                         unit = initialValues[i].value.unit.unit
                     }
                 }
+                return unit;
             }
             return this.unit;
         },

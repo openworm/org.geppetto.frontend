@@ -293,6 +293,7 @@ define(function (require) {
                 for (var i = 0; i < window.Instances.length; i++) {
                     // NOTE: tampering with the window object like this is probably a horrible idea
                     window[window.Instances[i].getId()] = window.Instances[i];
+                    window.Instances[window.Instances[i].getId()] = window.Instances[i];
                 }
 
                 // add method to add instances to window.Instances
@@ -307,15 +308,16 @@ define(function (require) {
 
                 window.Instances.getInstance = function (instancePath) {
                     var instance = undefined;
+                    var InstanceVarName = "Instances.";
                     try {
-                        instance = eval(instancePath);
+                        instance = eval(InstanceVarName + instancePath);
                         if (instance == undefined) {
                             Instances.addInstances([instancePath]);
-                            instance = eval(instancePath);
+                            instance = eval(InstanceVarName + instancePath);
                         }
                     } catch (e) {
                         Instances.addInstances([instancePath]);
-                        instance = eval(instancePath);
+                        instance = eval(InstanceVarName + instancePath);
                     }
                     if (instance == undefined) {
                         throw( "The instance " + instancePath + " does not exist in the current model" );
@@ -345,18 +347,25 @@ define(function (require) {
             },
 
             loadExperiment: function (payload) {
-                console.timeEnd(GEPPETTO.Resources.LOADING_EXPERIMENT);
+                console.time(GEPPETTO.Resources.LOADING_EXPERIMENT);
                 var message = JSON.parse(payload.experiment_loaded);
 
                 var experimentId = message.experimentId;
+                var experiment = undefined;
 
-                //Keep going with load of simulation only if webgl container was created
-                for (var experiment in window.Project.getExperiments()) {
-                    if (window.Project.getExperiments()[experiment].getId() == experimentId) {
-                        window.Project.setActiveExperiment(window.Project.getExperiments()[experiment]);
+                for (var e in window.Project.getExperiments()) {
+                    if (window.Project.getExperiments()[e].getId() == experimentId) {
+                        experiment = window.Project.getExperiments()[e];
                         break;
                     }
                 }
+
+                if (experiment == undefined) {
+                    throw ("Could not find the experiment with id " + experimentId);
+                }
+
+                window.Project.setActiveExperiment(experiment);
+                GEPPETTO.ExperimentsController.updateExperiment(experiment, message);
                 console.timeEnd(GEPPETTO.Resources.LOADING_EXPERIMENT);
             },
 

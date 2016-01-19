@@ -74,13 +74,13 @@ define(function (require) {
 
             createDataset: function (state) {
                 var stateTreeVisualiserNode = this.createTreeVisualiserNode(state);
+                stateTreeVisualiserNode.set({"children": this.createTreeVisualiserNodeChildren(state)});
                 return {data: stateTreeVisualiserNode, isDisplayed: false};
             },
 
             createTreeVisualiserNode: function (state, formattedValue) {
                 var tvOptions = {wrappedObj: state, formattedValue: formattedValue};
                 var tvn = new TreeVisualiserNode(tvOptions);
-                tvn.set({"children": this.createTreeVisualiserNodeChildren(state)});
                 return tvn;
             },
 
@@ -147,23 +147,29 @@ define(function (require) {
                                 return projtvn;
                             }
                             else {
-                                return this.createTreeVisualiserNode(node.getTypes()[0]);
+                                var tvn = this.createTreeVisualiserNode(node.getTypes()[0]);
+                                tvn.set({"children": this.createTreeVisualiserNodeChildren(node.getTypes()[0])});
+                                return tvn;
                             }
                             break;
 
                         default:
                             //formattedValue = child.getInitialValues()[0].value.value;
-                            return this.createTreeVisualiserNode(node.getTypes()[0]);
+                        	var tvn = this.createTreeVisualiserNode(node.getTypes()[0]);
+	                        tvn.set({"children": this.createTreeVisualiserNodeChildren(node.getTypes()[0])});
+	                        return tvn;
                     }
                 }
                 if (typeof node.getAnonymousTypes != "undefined" && node.getAnonymousTypes().length == 1) {
-                    return this.createTreeVisualiserNode(node.getAnonymousTypes()[0]);
+                	var tvn = this.createTreeVisualiserNode(node.getAnonymousTypes()[0]);
+                    tvn.set({"children": this.createTreeVisualiserNodeChildren(node.getAnonymousTypes()[0])});
+                    return tvn;
                 }
             },
 
             createTreeVisualiserNodeChildren: function (state) {
                 var children = [];
-                if (state.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                if (state.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || state.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
                     for (var i = 0; i < state.getChildren().length; i++) {
                         var child = state.getChildren()[i];
                         var node = this.convertVariableToTreeVisualiserNode(child);
@@ -184,14 +190,19 @@ define(function (require) {
                     children.push(tvn);
 
                     // Array Type
-                    children.push(this.createTreeVisualiserNode(state.getType()));
+                    var arraytypetvn = this.createTreeVisualiserNode(state.getType());
+                    arraytypetvn.set({"children": this.createTreeVisualiserNodeChildren(state.getType())});
+                    children.push(arraytypetvn);
 
                     //state.getDefaultValue()
 
                 }
                 else if (state.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE) {
-
+				    var node = this.convertVariableToTreeVisualiserNode(state);
+				    if (node != undefined)
+				        children.push(node);
                 }
+                
                 return children;
 
             }

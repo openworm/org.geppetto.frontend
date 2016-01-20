@@ -43,6 +43,7 @@ define(function (require) {
     return ObjectWrapper.Model.extend({
         anonymousTypes: [],
         types: [],
+        pointerValue: null,
 
         /**
          * Initializes this node with passed attributes
@@ -52,6 +53,7 @@ define(function (require) {
         initialize: function (options) {
             this.set({"anonymousTypes": (options.anonymousTypes != undefined) ? options.anonymousTypes : []});
             this.set({"types": (options.types != undefined) ? options.types : []});
+            this.set({"pointerValue": options.pointerValue});
             this.set({"wrappedObj": options.wrappedObj});
         },
 
@@ -80,6 +82,18 @@ define(function (require) {
          */
         getAnonymousTypes: function () {
             return this.get('anonymousTypes');
+        },
+
+        /**
+         * Get the pointer value if any (used for Pointer Variables)
+         *
+         * @command Variable.getPointerValue()
+         *
+         * @returns {Pointer} - pointer object
+         *
+         */
+        getPointerValue: function () {
+            return this.get('pointerValue');
         },
 
 

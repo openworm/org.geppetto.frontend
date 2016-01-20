@@ -111,6 +111,10 @@ define(function (require) {
                             formattedValue = node.getInitialValues()[0].value.text;
                             return this.createTreeVisualiserNode(node, formattedValue);
                             break;
+                        case GEPPETTO.Resources.POINTER_TYPE:
+                        	formattedValue = "Pointer";
+                            return this.createTreeVisualiserNode(node, formattedValue);
+                            break;
                         case GEPPETTO.Resources.HTML_TYPE:
                             //children.push(this.createTreeVisualiserNode(child));
                             break;

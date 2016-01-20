@@ -401,6 +401,7 @@ define(function (require) {
             FUNCTION_TYPE: "FunctionType",
             TEXT_TYPE: "TextType",
             HTML_TYPE: "HTMLType",
+            POINTER_TYPE: "PointerType",
             //VARIABLES
             VARIABLE_NODE: "Variable",
             //VALUES

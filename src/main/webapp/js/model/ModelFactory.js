@@ -51,6 +51,8 @@ define(function (require) {
         var ArrayInstance = require('model/ArrayInstance');
         var VisualGroup = require('model/VisualGroup');
         var VisualGroupElement = require('model/VisualGroupElement');
+        var Pointer = require('model/Pointer');
+        var PointerElement = require('model/PointerElement');
         var AVisualCapability = require('model/AVisualCapability');
         var AConnectionCapability = require('model/AConnectionCapability');
         var AParameterCapability = require('model/AParameterCapability');
@@ -123,6 +125,7 @@ define(function (require) {
                 if (node instanceof Variable) {
                     var types = node.getTypes();
                     var referencedTypes = [];
+                    var hasPointerType = false;
 
                     if (types != undefined) {
                         for (var i = 0; i < types.length; i++) {
@@ -135,12 +138,32 @@ define(function (require) {
                                 // go grab correct type from Geppetto Model
                                 var typeObj = this.resolve(refStr);
 
+                                // track if we have pointer type
+                                if(typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
+                                    hasPointerType = true;
+                                }
+
                                 // add to list
                                 referencedTypes.push(typeObj);
-
-                                // set types to actual object references using backbone setter
-                                node.set({"types": referencedTypes});
                             }
+                        }
+
+                        // set types to actual object references using backbone setter
+                        node.set({"types": referencedTypes});
+                    }
+
+                    // check if pointer type
+                    if(hasPointerType){
+                        var initialValues = node.getInitialValues();
+
+                        if(initialValues != undefined && initialValues.length == 1){
+                            // go to initial values and parse pointer into Pointer with its PointerElements
+                            var val = initialValues[0];
+                            var pointer = this.createPointer(val.value);
+                            // populate pointerValue on variable
+                            node.set({"pointerValue": pointer});
+                        } else {
+                            throw( "The variable " + node.getId() + " does not have initial values. Initial values expected." );
                         }
                     }
                 } else if (!(node instanceof ArrayType) && (node instanceof Type || node instanceof CompositeType)) {
@@ -188,6 +211,41 @@ define(function (require) {
                         }
                     }
                 }
+            },
+
+            /**
+             * Creates pointer given a pointer in raw json format
+             */
+            createPointer: function(jsonPointer) {
+
+                // get raw pointer elements
+                var rawElements = jsonPointer.elements;
+                var pointerElements = [];
+
+                // loop elements and create PointerElements (resolving variables / types)
+                for(var i=0; i<rawElements.length; i++){
+                    var element = this.createPointerElement(rawElements[i]);
+                    pointerElements.push(element);
+                }
+
+                // create pointer object setting elements
+                var pointer = new Pointer({"wrappedObj": jsonPointer, "elements": pointerElements});
+
+                return pointer;
+            },
+
+            /**
+             * Creates pointer given a pointer in raw json format
+             */
+            createPointerElement: function(jsonPointerElement) {
+                var variable = this.resolve(jsonPointerElement.variable.$ref);
+                var type = this.resolve(jsonPointerElement.type.$ref);
+                var index = jsonPointerElement.index;
+
+                // create pointer object setting elements
+                var pointerElement = new PointerElement({"wrappedObj": jsonPointerElement, "variable": variable, "type": type, "index": index});
+
+                return pointerElement;
             },
 
             /**

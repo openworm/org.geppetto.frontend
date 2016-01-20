@@ -61,9 +61,31 @@ define(function (require) {
          * @returns {String} - Path
          *
          */
-        getPath: function () {
-            // TODO: build path from elements
-            return '';
+        getPath: function (types) {
+            if (types === undefined) {
+                types = false;
+            }
+
+            var path = "";
+            var pointer = this.getWrappedObj();
+
+            for (var e = 0; e < pointer.elements.length; e++) {
+                var element = pointer.elements[e];
+                var resolvedVar = GEPPETTO.ModelFactory.resolve(element.variable.$ref);
+                var resolvedType = GEPPETTO.ModelFactory.resolve(element.type.$ref);
+                path += resolvedVar.getId();
+                if (types) {
+                    path += "(" + resolvedType.getId() + ")";
+                }
+                if (element.hasOwnProperty("index")) {
+                    path += "[" + element.index + "]";
+                }
+                if (e < pointer.elements.length - 1) {
+                    path += ".";
+                }
+            }
+
+            return path;
         }
     });
 });

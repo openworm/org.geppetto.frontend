@@ -116,13 +116,14 @@ define(function (require) {
                             break;
                         case GEPPETTO.Resources.COMPOSITE_TYPE_NODE:
                             //AQP: This should be changed with supertype
-                            if (node.getTypes()[0].getName().startsWith("projection -")) {
+                            if (node.getTypes()[0].getSuperType() != undefined && node.getTypes()[0].getSuperType().getId() == 'projection') {
+                            	console.log(node.getTypes()[0].getSuperType().getId());
                                 var projectionChildren = node.getTypes()[0].getChildren();
                                 var numConnections = 0;
                                 var projectionsChildrenNode = [];
                                 for (var j = 0; j < projectionChildren.length; j++) {
                                     //AQP: This should be changed with supertype
-                                    if (projectionChildren[j].getTypes()[0].getName().startsWith("connection -")) {
+                                    if (projectionChildren[j].getTypes()[0].getSuperType() != undefined && projectionChildren[j].getTypes()[0].getSuperType().getId() == 'connection') {
                                         numConnections++;
                                     }
                                     else {
@@ -181,7 +182,7 @@ define(function (require) {
 
                     // Size
                     var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
-                        "name": "size",
+                        "name": "Size",
                         "id": "size",
                         "_metaType": ""
                     });

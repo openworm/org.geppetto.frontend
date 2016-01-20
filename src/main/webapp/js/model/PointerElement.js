@@ -32,7 +32,7 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a simple type.
+ * Client class use to represent a pointer element.
  *
  * @module model/PointerElement
  * @author Giovanni Idili

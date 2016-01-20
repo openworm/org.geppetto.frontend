@@ -114,7 +114,7 @@ define(function (require) {
                             var payload = JSON.parse(parsedServerMessage.data);
                             var timeSeries =
                                 hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
-                            GEPPETTO.SimulationHandler.playExperiment(payload);
+                            GEPPETTO.SimulationHandler.playExperimentReady(payload);
                             timeSeries =
                                 hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
                             equal(timeSeries.length, 6001, "Checking time series after running and playing of experiment");

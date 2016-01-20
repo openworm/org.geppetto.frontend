@@ -107,7 +107,6 @@ define(function (require) {
             var experiment = window.Project.getActiveExperiment();
 
             GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);
-            GEPPETTO.ExperimentsController.playExperiment(experiment, experimentState);
 
             GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
         };

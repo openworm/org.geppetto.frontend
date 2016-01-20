@@ -49,11 +49,6 @@ define(function (require) {
             status: null,
             parent: null,
             variables: null,
-            playOptions: {},
-            played: false,
-            worker: null,
-            maxSteps: null,
-            paused: false,
             parameters: null,
             script: "",
 
@@ -70,9 +65,7 @@ define(function (require) {
                 this.description = options.description;
                 this.lastModified = options.lastModified;
                 this.variables = [];
-                this.simulatorConfigurations =
-                {};
-                this.played = false;
+                this.simulatorConfigurations = {};
                 this.parameters = [];
                 this.script = options.script;
             },
@@ -227,45 +220,16 @@ define(function (require) {
             },
 
             /**
-             * Play experiment. Takes a JS object as parameter where two options can be set, but not together: steps or playAll. If experiment is to be play all at once: {playAll : true} If experiment is
-             * to be play by timeSteps: {steps : 1} where the value can be something else than 1.
+             * Play experiment. Takes a JS object as parameter where two options can be set, but not together: steps or playAll.
+             * If experiment is to be play all at once: {playAll : true} If experiment is
+             * to be played by timeSteps: {steps : 1} where the value can be something else than 1.
              *
              * @command ExperimentNode.play()
              */
             play: function (options) {
-                // set options
-                if (options != undefined) {
-                    this.playOptions = options;
-                } else {
-                    this.playOptions =
-                    {
-                        step: 1
-                    };
-                }
-                if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                    if (this.paused) {
-                        GEPPETTO.trigger(Events.Experiment_play);
-                        this.getWorker().postMessage([Events.Experiment_resume]);
-                        this.paused = false;
-                        return "Pause Experiment";
-                    } else {
-                        if (!this.played) {
-                            GEPPETTO.trigger(Events.Experiment_play);
-                            var parameters = {};
-                            parameters["experimentId"] = this.id;
-                            parameters["projectId"] = this.getParent().getId();
-                            GEPPETTO.MessageSocket.send("play_experiment", parameters);
-                            return "Play Experiment";
-                        } else {
-                            GEPPETTO.trigger(Events.Experiment_replay);
-                            this.terminateWorker();
-                            this.experimentUpdateWorker();
-                            return "Play Experiment";
-                        }
-                    }
-                } else {
-                    GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + this.name + " with id " + this.id + " isn't completed, and can't be played.");
-                }
+
+                GEPPETTO.ExperimentsController.play(this, options);
+
             },
 
             playAll: function () {
@@ -276,62 +240,15 @@ define(function (require) {
             },
 
             pause: function () {
-                this.paused = true;
-                this.getWorker().postMessage([Events.Experiment_pause]);
-                GEPPETTO.trigger(Events.Experiment_pause);
+                GEPPETTO.ExperimentsController.pause();
                 return "Pause Experiment";
             },
 
             stop: function () {
-                this.terminateWorker();
-                this.paused = false;
-                GEPPETTO.trigger(Events.Experiment_stop);
+                GEPPETTO.ExperimentsController.stop();
                 return "Stop Experiment";
             },
 
-            experimentUpdateWorker: function () {
-                var lastExecutedStep = 0;
-                var steps = this.playOptions.step;
-                var playAll = this.playOptions.playAll;
-
-                if (steps == null || undefined) {
-                    steps = 0;
-                }
-
-                // create web worker
-                this.worker = new Worker("geppetto/js/ExperimentWorker.js");
-
-                // tells worker to update each half a second
-                this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, steps, playAll]);
-
-                // receives message from web worker
-                this.worker.onmessage = function (event) {
-                    // get current timeSteps to execute from web worker
-                    var step = event.data[0];
-                    if (window.Project.getActiveExperiment() != null) {
-                        //console.log(step);
-                        var maxSteps = window.Project.getActiveExperiment().maxSteps;
-                        if (step >= maxSteps) {
-                            //console.log("triggering loop, step="+step+" maxSteps="+maxSteps);
-                            this.postMessage(["experiment:loop"]);
-                        } else {
-                            var playAllFlag = event.data[1];
-                            var parameters =
-                            {
-                                steps: step,
-                                playAll: playAllFlag
-                            };
-                            GEPPETTO.trigger(Events.Experiment_update, parameters);
-                            if (playAllFlag) {
-                                // end worker, since we are playing all
-                                window.Project.getActiveExperiment().terminateWorker();
-                                GEPPETTO.trigger(Events.Experiment_stop);
-                            }
-                        }
-                        this.postMessage(["experiment:processed"]);
-                    }
-                };
-            },
 
             saveExperimentProperties: function (properties) {
                 var parameters =
@@ -342,16 +259,6 @@ define(function (require) {
                 GEPPETTO.MessageSocket.send("save_experiment_properties", parameters);
             },
 
-            terminateWorker: function () {
-                if (this.worker != undefined) {
-                    this.worker.terminate();
-                    this.worker = undefined;
-                }
-            },
-
-            getWorker: function () {
-                return this.worker;
-            },
 
             /**
              * Start watching of variables for this experiment
@@ -360,8 +267,8 @@ define(function (require) {
              */
             watchVariables: function (variables) {
                 var watchedVariables = [];
-                for (var index in variables) {
-                    watchedVariables.push(variables[index].getInstancePath());
+                for (var i = 0; i < variables.length; i++) {
+                    watchedVariables.push(variables[i].getInstancePath());
                 }
                 if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                     var parameters =
@@ -372,8 +279,8 @@ define(function (require) {
                     GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
                 }
 
-                for (var i in variables) {
-                    this.variables.push(variables[i].getInstancePath());
+                for (var v = 0; v < variables.length; v++) {
+                    this.variables.push(variables[v].getInstancePath());
                 }
             },
 
@@ -381,9 +288,6 @@ define(function (require) {
                 return this.variables;
             },
 
-            getPlayOptions: function () {
-                return this.playOptions;
-            },
 
             /**
              * Gets an experiment from this project.

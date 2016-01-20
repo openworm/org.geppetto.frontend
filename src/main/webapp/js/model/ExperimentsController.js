@@ -31,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Factory class that figures out what kind of nodes to create with the updates received from the server. Creates the client nodes for entities, aspects, etc and updates them.
+ * Controller responsible to manage the experiments
  *
  * @author Matteo Cantarelli
  */
@@ -43,34 +43,141 @@ define(function (require) {
         GEPPETTO.ExperimentsController =
         {
 
+            playExperimentReady: false,
+            worker: null,
+            playOptions: {},
+            maxSteps: 0,
+            paused: false,
+
+
             /** Update the instances of this experiment given the experiment state */
             updateExperiment: function (experiment, experimentState) {
-                var maxSteps = 0;
+                this.playExperimentReady = false; //we reset
+                this.maxSteps = 0;
                 for (var i = 0; i < experimentState.recordedVariables.length; i++) {
                     var recordedVariable = experimentState.recordedVariables[i];
                     var instancePath = this.getInstancePathFromPointer(recordedVariable.pointer, false);
                     var instance = Instances.getInstance(instancePath);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
-                        if(recordedVariable.value.unit && recordedVariable.value.unit.unit){
+                        //if at least one of the varialbes has a value we consider the experiment as ready to be played
+                        this.playExperimentReady = true;
+                        if (recordedVariable.value.unit && recordedVariable.value.unit.unit) {
                             instance.setUnit(recordedVariable.value.unit.unit);
                         }
                         instance.setTimeSeries(recordedVariable.value.value);
-                        if (recordedVariable.value.value.length > maxSteps) {
-                            maxSteps = recordedVariable.value.value.length;
+                        if (recordedVariable.value.value.length > this.maxSteps) {
+                            this.maxSteps = recordedVariable.value.value.length;
                         }
                     }
                 }
-                experiment.maxSteps = maxSteps;
+
+                if (this.playExperimentReady) {
+                    //creation of the worker will trigger the event for the listening widgets
+                    //to update themselves
+                    this.triggerPlayExperiment(experiment);
+                }
+            },
+
+            play: function (experiment, options) {
+                // set options
+                if (options != undefined) {
+                    this.playOptions = options;
+                } else {
+                    this.playOptions =
+                    {
+                        step: 1
+                    };
+                }
+                if (experiment.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+
+                    if (!this.playExperimentReady) {
+                        GEPPETTO.trigger(Events.Experiment_play);
+                        var parameters = {};
+                        parameters["experimentId"] = experiment.id;
+                        parameters["projectId"] = experiment.getParent().getId();
+                        //sending to the server request for data
+                        GEPPETTO.MessageSocket.send("play_experiment", parameters);
+                        return "Play Experiment";
+                    } else {
+                        GEPPETTO.trigger(Events.Experiment_replay);
+                        this.triggerPlayExperiment();
+                        return "Play Experiment";
+                    }
+
+                } else {
+                    GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + experiment.name + " with id " + experiment.id + " isn't completed, and can't be played.");
+                }
+            },
+
+            pause: function () {
+                this.paused = true;
+                this.getWorker().postMessage([Events.Experiment_pause]);
+                GEPPETTO.trigger(Events.Experiment_pause);
             },
 
 
-            /** Plays the experiment */
-            playExperiment: function (experiment) {
+            stop: function () {
+                this.terminateWorker();
+                this.paused = false;
+                GEPPETTO.trigger(Events.Experiment_stop);
+            },
 
-                if (!experiment.played) {
-                    experiment.experimentUpdateWorker();
+            triggerPlayExperiment: function (experiment) {
+
+                if (this.playOptions.playAll) {
+                    if (this.paused) {
+                        this.stop();
+                    }
+                    GEPPETTO.ExperimentsController.terminateWorker();
+                    GEPPETTO.trigger(Events.Experiment_update, {step: this.maxSteps, playAll: true});
+                    GEPPETTO.trigger(Events.Experiment_stop);
                 }
-                experiment.played = true;
+                else {
+                    //we'll use a worker
+                    if (this.paused) {
+                        GEPPETTO.trigger(Events.Experiment_play);
+                        GEPPETTO.ExperimentsController.getWorker().postMessage([Events.Experiment_resume]);
+                        this.paused = false;
+                        return "Pause Experiment";
+                    }
+
+                    if (this.playOptions.step == null || undefined) {
+                        this.playOptions.step = 0;
+                    }
+
+                    // create web worker
+                    this.worker = new Worker("geppetto/js/ExperimentWorker.js");
+
+                    // tells worker to update each half a second
+                    this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
+
+                    // receives message from web worker
+                    this.worker.onmessage = function (event) {
+                        // get current timeSteps to execute from web worker
+                        var currentStep = event.data[0];
+
+                        if (currentStep >= this.maxSteps) {
+                            this.postMessage(["experiment:loop"]);
+                        } else {
+                            GEPPETTO.trigger(Events.Experiment_update, {step: currentStep, playAll: false});
+                        }
+                        this.postMessage(["experiment:lastStepConsumed"]);
+                    }
+
+
+                }
+                ;
+            },
+
+            terminateWorker: function () {
+                if (this.worker != undefined) {
+                    this.worker.terminate();
+                    this.worker = undefined;
+                }
+            },
+
+            getWorker: function () {
+                return this.worker;
             },
 
 

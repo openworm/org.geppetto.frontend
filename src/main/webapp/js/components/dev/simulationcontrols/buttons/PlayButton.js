@@ -11,7 +11,7 @@ define(function (require) {
         popoverContent: "Once you have loaded a simulation, it's time to see it in action by pressing Start. Click it now to see the simulation in action",
 
         onClick: function() {
-            GEPPETTO.Console.executeCommand("Project.getActiveExperiment().play({step:1});");
+            GEPPETTO.Console.executeCommand("Project.getActiveExperiment().playAll();");
         },
 
         componentDidMount: function() {

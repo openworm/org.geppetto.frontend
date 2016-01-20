@@ -131,7 +131,7 @@ define(function (require) {
                             var timeSeries =
                                 hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
                             equal(timeSeries.length, 0, "Checking updated time series in variable");
-                            GEPPETTO.SimulationHandler.playExperiment(payload);
+                            GEPPETTO.SimulationHandler.playExperimentReady(payload);
                             timeSeries =
                                 hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
                             equal(timeSeries.length, 6001, "Checking updated time series in variable");

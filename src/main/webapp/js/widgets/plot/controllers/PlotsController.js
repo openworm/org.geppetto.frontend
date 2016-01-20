@@ -110,24 +110,16 @@ define(function (require) {
 
             //update plotting widgets
             else if (event == Events.Experiment_update) {
-                var playAll = parameters.playAll;
-                var step = parameters.steps;
+
                 //loop through all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
 
-                    if (playAll) {
-                        plot.options.playAll = true;
-                    } else {
-                        if (plot.options.playAll) {
-                            var options = {xaxis: {min: 0, max: 400, show: false}};
-                            plot.setOptions(options);
-                        }
-                        plot.plot.getPlaceholder().resize();
-                        plot.options.playAll = false;
-                    }
+                    plot.plot.getPlaceholder().resize();
+                    plot.options.playAll = parameters.playAll;
+
                     //update plot with new data set
-                    plot.updateDataSet(step);
+                    plot.updateDataSet(parameters.step);
                 }
             }
         },

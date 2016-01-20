@@ -318,15 +318,14 @@ define(function (require) {
                         this.labelsUpdated = true;
                     }
                 }
-
+                $("#" + this.id).removeClass("plot-without-xaxis");
+                this.options.xaxis.show = true;
                 this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
             else {
-                // if not plotAll we are in step-by-step replay mode - check axis visibility and add margin
-                if (this.options.xaxis.show === false) {
-                    // if we are not showing xaxis (dynamic plots), add margin at the bottom
-                    $("#" + this.id).addClass("plot-without-xaxis");
-                }
+
+                // if we are not showing xaxis (dynamic plots), add margin at the bottom
+                $("#" + this.id).addClass("plot-without-xaxis");
 
                 for (var key in this.datasets) {
                     var newValue = this.datasets[key].variable.getTimeSeries()[step];

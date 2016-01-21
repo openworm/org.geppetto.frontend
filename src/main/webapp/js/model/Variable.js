@@ -85,19 +85,6 @@ define(function (require) {
         },
 
         /**
-         * Get the pointer value if any (used for Pointer Variables)
-         *
-         * @command Variable.getPointerValue()
-         *
-         * @returns {Pointer} - pointer object
-         *
-         */
-        getPointerValue: function () {
-            return this.get('pointerValue');
-        },
-
-
-        /**
          * Get the type of this variable, return a list if it has more than one
          *
          * @command Variable.getType()
@@ -123,8 +110,47 @@ define(function (require) {
          *
          */
         getInitialValues: function () {
-            // TODO: fetch initial values
-            return this.getWrappedObj().initialValues;
+            var pointerValue = this.get('pointerValue');
+            var values = this.getWrappedObj().initialValues;
+
+            if (values == undefined){
+                values = [];
+            }
+
+            // if there is a pointer value just return that
+            if(pointerValue != undefined && pointerValue != null){
+                values = [ pointerValue ];
+            }
+
+            return values;
+        },
+
+        /**
+         * Get the initial value for this variable, or a list if more than one
+         *
+         * @command Variable.getInitialValue()
+         *
+         * @returns {Value} - array of values
+         *
+         */
+        getInitialValue: function () {
+            var pointerValue = this.get('pointerValue');
+            var values = this.getWrappedObj().initialValues;
+
+            if (values == undefined){
+                values = [];
+            }
+
+            // if there is a pointer value just return that
+            if(pointerValue != undefined && pointerValue != null){
+                values = [ pointerValue ];
+            }
+
+            if(values.length == 1){
+                return values[0];
+            } else {
+                values;
+            }
         },
 
         /**

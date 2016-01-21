@@ -177,47 +177,12 @@ define(function (require) {
 
         getTimeSeriesData: function (instance) {
             var timeSeries = instance.getTimeSeries();
+            var timeTimeSeries = window.time.getTimeSeries();
             var timeSeriesData = [];
-            var i = 0;
 
-            if (timeSeries) {
-                if (timeSeries.length > 1) {
-                    if (this.options.playAll == true) {
-                        for (var step = 0; step < timeSeries.length; step++) {
-                            var value = timeSeries[step];
-                            timeSeriesData.push([i, value]);
-                            i++;
-                            if (value < this.yMin) {
-                                this.yMin = value;
-                            }
-                            if (value > this.yMax) {
-                                this.yMax = value;
-                            }
-                        }
-                        this.options.yaxis.max = this.yMax;
-                        this.options.yaxis.min = this.yMin;
-                        this.limit = timeSeries.length;
-                        this.options.xaxis.max = this.limit;
-                        this.options.xaxis.show = true;
-                        if (window.Instances.time) {
-                            var timeTimeSeries = window.time.getTimeSeries();
-                            var divideLength = Math.ceil(timeTimeSeries.length / 10);
-                            var ticks = [];
-
-                            ticks[0] = [0, timeTimeSeries[0].toFixed(6)];
-
-                            var index = divideLength;
-                            var i = 1;
-                            while (index < timeTimeSeries.length) {
-                                ticks[i] = [index, timeTimeSeries[index].toFixed(6)];
-                                index = Math.ceil(index + divideLength);
-                                i++;
-                            }
-                            index = timeTimeSeries.length - 1;
-                            ticks[i] = [index, timeTimeSeries[index].toFixed(6)];
-                            this.options.xaxis.ticks = ticks;
-                        }
-                    }
+            if (timeSeries && timeSeries.length > 1) {
+                for (var step = 0; step < timeSeries.length; step++) {
+                    timeSeriesData.push([timeTimeSeries[step], timeSeries[step]]);
                 }
             }
             return timeSeriesData;
@@ -302,48 +267,21 @@ define(function (require) {
         updateDataSet: function (step) {
             var plotHolder = $("#" + this.id);
 
-            if (this.options.playAll) {
-                for (var key in this.datasets) {
-                    var timeSeriesData = this.getTimeSeriesData(this.datasets[key].variable);
+            for (var key in this.datasets) {
 
-                    this.datasets[key].data = timeSeriesData;
+                if (this.options.playAll) {
+                    //we simply set the whole time series
+                    this.datasets[key].data = this.getTimeSeriesData(this.datasets[key].variable);
                 }
-
-                if (!this.labelsUpdated) {
-                    var unit = this.datasets[key].variable.getUnit();
-                    if (unit != null) {
-                        var labelY = this.getUnitLabel(unit);
-                        var labelX = this.getUnitLabel(window.Instances.time.getUnit());
-                        this.setAxisLabel(labelY, labelX);
-                        this.labelsUpdated = true;
-                    }
-                }
-                $("#" + this.id).removeClass("plot-without-xaxis");
-                this.options.xaxis.show = true;
-                this.plot = $.plot(plotHolder, this.datasets, this.options);
-            }
-            else {
-
-                // if we are not showing xaxis (dynamic plots), add margin at the bottom
-                $("#" + this.id).addClass("plot-without-xaxis");
-
-                for (var key in this.datasets) {
+                else {
                     var newValue = this.datasets[key].variable.getTimeSeries()[step];
-
-                    if (!this.labelsUpdated) {
-                        var unit = this.datasets[key].variable.getUnit();
-                        if (unit != null) {
-                            var labelY = this.getUnitLabel(unit);
-                            var labelX = this.getUnitLabel(window.Instances.time.getUnit());
-                            this.setAxisLabel(labelY, labelX);
-                            this.labelsUpdated = true;
-                        }
-                    }
 
                     var oldData = this.datasets[key].data;
                     var reIndex = false;
 
-                    if (oldData.length > this.limit) {
+                    if (oldData.length >= this.limit) {
+                        //this happens when we reach the end of the width of the plot
+                        //i.e. when we have already put all the points that it can contain
                         oldData.splice(0, 1);
                         reIndex = true;
                     }
@@ -364,11 +302,27 @@ define(function (require) {
                         this.datasets[key].data = oldData;
                     }
                 }
-                if (this.plot != null) {
-                    this.plot.setData(this.datasets);
-                    this.plot.draw();
+
+                if (!this.labelsUpdated) {
+                    var unit = this.datasets[key].variable.getUnit();
+                    if (unit != null) {
+                        var labelY = this.getUnitLabel(unit);
+                        var labelX = this.getUnitLabel(window.Instances.time.getUnit());
+                        this.setAxisLabel(labelY, labelX);
+                        this.labelsUpdated = true;
+                    }
                 }
             }
+
+
+            if (this.plot != null) {
+                this.plot.setData(this.datasets);
+                this.plot.draw();
+            }
+            else {
+                this.plot = $.plot(plotHolder, this.datasets, this.options);
+            }
+
         },
 
         /**
@@ -472,9 +426,27 @@ define(function (require) {
          */
         setOptions: function (options) {
             this.options = options;
-            this.limit = this.options.xaxis.max;
+            if (options.xaxis && options.xaxis.max) {
+                this.limit = options.xaxis.max;
+            }
             this.plot = $.plot($("#" + this.id), this.datasets, this.options);
             return this;
+        },
+
+        initialise: function (playAll) {
+            this.options.playAll = playAll;
+            this.cleanDataSets();
+            if (!playAll) {
+                this.options.xaxis.show = false;
+                this.options.xaxis.max = this.limit;
+                $("#" + this.id).addClass("plot-without-xaxis");
+            }
+            else {
+                this.options.xaxis.show = true;
+                this.options.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
+                $("#" + this.id).removeClass("plot-without-xaxis");
+            }
+            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
         },
 
         /**

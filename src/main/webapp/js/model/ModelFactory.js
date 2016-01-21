@@ -618,12 +618,13 @@ define(function (require) {
             /**
              * Augment pointer with fully qualified chain to point to a specific instance
              */
-            augmentPointer: function (pointer, instance) {
+            augmentPointer: function (pointer, connectionInstance) {
                 // find root for this branch
-                var rootInstance = this.findRoot(instance);
+                var rootInstance = this.findRoot(connectionInstance);
 
                 // find instance for given pointed variable if any
                 var pointedVariable = pointer.getElements()[0].getVariable();
+                var pointedIndex = pointer.getElements()[0].getIndex();
 
                 // TODO: this could return potentially more than one match - need to extend to resolve to one
                 var matchingInstance = this.findMatchingInstanceByID(pointedVariable.getId(), [rootInstance]);
@@ -636,7 +637,12 @@ define(function (require) {
                 // horribly override elements with newly created ones
                 pointer.set({'elements' : pointerElements});
 
-                // TODO: add connection instance reference to matching instance
+                // add connection instance reference to matching instance for easy retrieval
+                if(pointedIndex > -1){
+                    matchingInstance.getChildren()[pointedIndex].addConnection(connectionInstance);
+                } else {
+                    matchingInstance.addConnection(connectionInstance);
+                }
             },
 
             /**

@@ -47,6 +47,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         parent: null,
         size: 0,
         capabilities: [],
+        connections:  [],
 
         /**
          * Initializes this node with passed attributes
@@ -63,6 +64,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
 
             // capability list is for private use
             this.set({"capabilities": []});
+            this.set({"connections": []});
         },
 
         /**
@@ -252,6 +254,27 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             }
 
             return hasCapability;
-        }
+        },
+
+        /**
+         * Return connections
+         *
+         * @command Instance.getConnections()
+         *
+         * @returns {List<Instance>}
+         *
+         */
+        getConnections: function () {
+            return this.get('connections');
+        },
+
+        /**
+         * Get children instances
+         *
+         * @command Instance.addConnection()
+         */
+        addConnection: function (connection) {
+            this.get("connections").push(connection);
+        },
     })
 });

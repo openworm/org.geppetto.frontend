@@ -93,7 +93,7 @@ define(function (require) {
         listenersCreated: false,
         selected: [],
         pickingEnabled: true, // flag to enable disable 3d picking
-        playTimerStep: 10, // timer step in milliseconds
+        playTimerStep: 5, // timer step in milliseconds
         playLoop: false,
         backgroundColor: 0x101010,
     };

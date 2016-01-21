@@ -104,7 +104,7 @@ define(function (require) {
             else if (event == Events.Experiment_play) {
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
-                    plot.initialise(parameters.playAll);
+                    plot.clean(parameters.playAll);
                 }
 
             }

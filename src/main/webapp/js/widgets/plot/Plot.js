@@ -53,6 +53,8 @@ define(function (require) {
         labelsMap: {},
         yMix: 0,
         yMax: 0,
+        updateLegendTimeout: null,
+        latestPosition: null,
 
         /**
          * Default options for plot widget, used if none specified when plot
@@ -77,10 +79,16 @@ define(function (require) {
                 color: "#FFFFFF",
                 alignTicksWithAxis: true,
             },
+            series: {
+                lines: {
+                    show: true
+                }
+            },
+            crosshair: {},
             grid: {
                 margin: {
-                    left: 15,
-                    bottom: 15
+                    left: 10,
+                    bottom: 10
                 }
             },
             playAll: false
@@ -104,10 +112,59 @@ define(function (require) {
             //fix conflict between jquery and bootstrap tooltips
             $.widget.bridge('uitooltip', $.ui.tooltip);
 
-            //show tooltip for legends
-            $(".legendLabel").tooltip();
+            $("#" + this.id).bind("plothover", {plot: this}, function (event, pos, item) {
+                event.data.plot.latestPosition = pos;
+                if (!event.data.plot.updateLegendTimeout) {
+                    event.data.plot.updateLegendTimeout = setTimeout(function () {
+                        event.data.plot.updateLegend();
+                    }, 50);
+                }
+            });
         },
 
+
+        updateLegend: function () {
+
+            this.updateLegendTimeout = null;
+
+            var pos = this.latestPosition;
+
+            var axes = this.plot.getAxes();
+            if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
+                pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
+                return;
+            }
+
+            var i, j, dataSet = this.plot.getData();
+            for (i = 0; i < dataSet.length; ++i) {
+
+                var series = dataSet[i];
+
+                // Find the nearest points, x-wise
+
+                for (j = 0; j < series.data.length; ++j) {
+                    if (series.data[j][0] > pos.x) {
+                        break;
+                    }
+                }
+
+                // Now Interpolate
+
+                var y,
+                    p1 = series.data[j - 1],
+                    p2 = series.data[j];
+
+                if (p1 == null) {
+                    y = p2[1];
+                } else if (p2 == null) {
+                    y = p1[1];
+                } else {
+                    y = p1[1] + (p2[1] - p1[1]) * (pos.x - p1[0]) / (p2[0] - p1[0]);
+                }
+
+                $("#" + this.id + " div.legendLabel").eq(i).text(series.label + " = " + y.toFixed(3));
+            }
+        },
         /**
          * Takes data series and plots them. To plot array(s) , use it as
          * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
@@ -134,7 +191,10 @@ define(function (require) {
             var labelsMap = this.labelsMap;
             this.initializeLegend(function (label, series) {
                 var split = label.split(".");
-                var shortLabel = split[0] + "." + split[1] + "....." + split[split.length - 1];
+                var shortLabel = label;
+                if (split.length > 4) {
+                    shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 2] + "." + split[split.length - 1];
+                }
                 labelsMap[label] = {label: shortLabel};
                 return '<div class="legendLabel" id="' + label + '" title="' + label + '">' + shortLabel + '</div>';
             });
@@ -170,10 +230,12 @@ define(function (require) {
             }
             else {
                 this.plot = $.plot(plotHolder, this.datasets, this.options);
+
             }
 
             return "Line plot added to widget";
         },
+
 
         getTimeSeriesData: function (instance) {
             var timeSeries = instance.getTimeSeries();
@@ -425,57 +487,38 @@ define(function (require) {
          * @param {Object} options - options to modify the plot widget
          */
         setOptions: function (options) {
-            this.options = options;
+            jQuery.extend(this.options, this.defaultPlotOptions, options);
             if (options.xaxis && options.xaxis.max) {
                 this.limit = options.xaxis.max;
             }
+
             this.plot = $.plot($("#" + this.id), this.datasets, this.options);
             return this;
         },
 
-        initialise: function (playAll) {
+        clean: function (playAll) {
             this.options.playAll = playAll;
             this.cleanDataSets();
             if (!playAll) {
                 this.options.xaxis.show = false;
                 this.options.xaxis.max = this.limit;
+                this.options.crosshair = {};
+                this.options.grid.hoverable = false;
+                this.options.grid.autoHighlight = true;
                 $("#" + this.id).addClass("plot-without-xaxis");
             }
             else {
                 this.options.xaxis.show = true;
                 this.options.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
+                this.options.crosshair.mode = "x";
+                this.options.grid.hoverable = true;
+                this.options.grid.autoHighlight = false;
                 $("#" + this.id).removeClass("plot-without-xaxis");
+                //enables updating the legend on mouse hover, still few bugs
+
             }
             this.plot = $.plot($("#" + this.id), this.datasets, this.options);
-        },
 
-        /**
-         * Sets the legend for a variable
-         *
-         * @command setLegend(variable, legend)
-         * @param {Object} variable - variable to change display label in legends
-         * @param {String} legend - new legend name
-         */
-        setLegend: function (variable, legend) {
-            //Check if it is a string or a geppetto object
-            var plotId = variable;
-            if ((typeof variable) != "string")    plotId = variable.getInstancePath();
-
-            var labelsMap = this.labelsMap;
-            this.initializeLegend(function (label, series) {
-                var shortLabel;
-
-                if (plotId != label) {
-                    shortLabel = labelsMap[label].label;
-                }
-                else {
-                    shortLabel = legend;
-                    labelsMap[label].label = shortLabel;
-                }
-                return '<div class="legendLabel" id="' + label + '" title="' + label + '">' + shortLabel + '</div>';
-            });
-
-            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
         },
 
         /**
@@ -507,8 +550,6 @@ define(function (require) {
             //fix conflict between jquery and bootstrap tooltips
             $.widget.bridge('uitooltip', $.ui.tooltip);
 
-            //show tooltip for legends
-            $(".legendLabel").tooltip();
         },
 
         /**

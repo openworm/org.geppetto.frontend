@@ -123,79 +123,73 @@ div[id^='TreeVisualiserDAT'] {
 }
 
 /*  NODE STYLE BY METATYPE*/
-/*.entitynodetv {
+.instancefoldertv {
 	border-left: 3px solid #0499e6;
 	background-color: #231f1f!important;
-	
-}
-.aspectnodetv {
-	border-left: 3px solid #fe4807;
-	background-color: #fe4807!important;
-}*/
-.arraytypetv {
-    border-left: 3px solid #fe4807;
 }
 
-.compositetypetv {
+.arrayinstancetv {
+	border-left: 3px solid #ff5a02;
+	background-color: #231f1f!important;
+}
+
+.arraytypetv {
+    border-left: 3px solid #fe4807;
+    background-color: #fe4807 !important;
+}
+
+.foldertv {
     border-left: 3px solid #2e2a2a;
     background-color: #2e2a2a !important;
 }
 
-.dg .cr.string.connectionnodetv {
-    border-left: 3px solid #ff5a02;
-}
-
-.dg .cr.string.connectionnodetv input[type=text] {
-    color: #ff5a02;
-}
-
-.dg .cr.string.dynamicsspecificationnodetv {
+.dg .cr.string.dynamicstypetv {
     border-left: 3px solid #00cc66;
 }
 
-.dg .cr.string.dynamicsspecificationnodetv input[type=text] {
+.dg .cr.string.dynamicstypetv input[type=text] {
     color: #00cc66;
 }
 
-.dg .cr.string.functionnodetv {
+.dg .cr.string.functiontypetv {
     border-left: 3px solid #00cccc;
 }
 
-.dg .cr.string.functionnodetv input[type=text] {
+.dg .cr.string.functiontypetv input[type=text] {
     color: #00cccc;
 }
 
-.dg .cr.string.parameternodetv {
+.dg .cr.string.parametertypetv {
     border-left: 3px solid #0066cc;
 }
 
-.dg .cr.string.parameternodetv input[type=text] {
+.dg .cr.string.parametertypetv input[type=text] {
     color: #0066cc;
 }
 
-.dg .cr.string.parameterspecificationnodetv {
+.dg .cr.string.statevariabletypetv {
     border-left: 3px solid #42b6ff;
 }
 
-.dg .cr.string.parameterspecificationnodetv input[type=text] {
+.dg .cr.string.statevariabletypetv input[type=text] {
     color: #42b6ff;
 }
 
-.dg .cr.string.textmetadatanodetv {
+.dg .cr.string.texttypetv {
     border-left: 3px solid #10b7bd;
 }
 
-.dg .cr.string.textmetadatanodetv input[type=text],
-.dg .cr.string.textmetadatanodetv textarea {
+.dg .cr.string.texttypetv input[type=text],
+.dg .cr.string.texttypetv textarea {
     color: #10b7bd;
 }
 
-.dg .cr.string.htmlmetadatanodetv {
+.dg .cr.string.pointertypetv {
     border-left: 3px solid #10b7bd;
 }
 
-.dg .cr.string.htmlmetadatanodetv input[type=text],
-.dg .cr.string.htmlmetadatanodetv textarea {
+.dg .cr.string.pointertypetv input[type=text],
+.dg .cr.string.pointertypetv textarea {
     color: #10b7bd;
 }
 
@@ -203,15 +197,15 @@ div[id^='TreeVisualiserDAT'] {
     height: 100%;
 }
 
-.dg .cr.string.urlmetadatanodetv {
+.dg .cr.string.stateinstancetv {
     border-left: 3px solid #cc00cc;
 }
 
-.dg .cr.string.urlmetadatanodetv input[type=text] {
+.dg .cr.string.stateinstancetv input[type=text] {
     color: #cc00cc;
 }
 
-.dg .cr.string.variablenodetv {
+/*.dg .cr.string.variablenodetv {
     border-left: 3px solid #FFA500;
 }
 
@@ -233,4 +227,4 @@ div[id^='TreeVisualiserDAT'] {
 
 .dg .cr.string.visualgroupelementnodetv input[type=text] {
     color: #a462ff;
-}
+}*/

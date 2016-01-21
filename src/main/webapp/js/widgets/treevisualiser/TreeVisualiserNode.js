@@ -43,6 +43,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         wrappedObj: null,
         children: [],
         formattedValue: "",
+        style: "",
 
         /**
          * Initializes this node with passed attributes
@@ -54,6 +55,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"children": (options.children != undefined) ? options.children : []});
             this.set({"formattedValue": (options.formattedValue != undefined) ? options.formattedValue : ""});
+            this.set({"style": (options.style != undefined) ? options.style : ""});
         },
 
         /**
@@ -116,6 +118,10 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          */
         getWrappedObj: function () {
             return this.get('wrappedObj');
+        },
+        
+        getStyle: function() {
+        	return this.get('style');
         }
 
     });

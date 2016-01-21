@@ -73,17 +73,9 @@ define(function (require) {
             },
 
             createDataset: function (state) {
-                var stateTreeVisualiserNode = this.createTreeVisualiserNode(state);
-                stateTreeVisualiserNode.set({"children": this.createTreeVisualiserNodeChildren(state)});
-                return {data: stateTreeVisualiserNode, isDisplayed: false};
+            	return {data: this.convertNodeToTreeVisualiserNode(state), isDisplayed: false};
             },
 
-            createTreeVisualiserNode: function (state, formattedValue) {
-                var tvOptions = {wrappedObj: state, formattedValue: formattedValue};
-                var tvn = new TreeVisualiserNode(tvOptions);
-                return tvn;
-            },
-            
             getFormattedValue: function(node, type, step){
             	var formattedValue = "";
             	switch (type) {
@@ -106,20 +98,71 @@ define(function (require) {
             			formattedValue = node.getInitialValues()[0].value.text;
             			break;
             		case GEPPETTO.Resources.POINTER_TYPE:
-                    	//AQP: Add sth!
-            			formattedValue = "Pointer";
+                    	//AQP: Add sth! A button?
+            			formattedValue = "Pointer - " + node.getPointerValue();
             			break;
             		case GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY:
                         if(node.getTimeSeries() != null && node.getTimeSeries().length>0)
                 			formattedValue = node.getTimeSeries()[step] + " " + ((node.getUnit()!=null && node.getUnit()!="null")?(" " + node.getUnit()):"");
                         break;
+            		case GEPPETTO.Resources.VISUAL_CAPABILITY:
+            			formattedValue = "";
+            			break;
+            		case GEPPETTO.Resources.PARAMETER_CAPABILITY:
+            			formattedValue = "";
+            			break;
+            		case GEPPETTO.Resources.CONNECTION_CAPABILITY:
+            			formattedValue = "";
+            			break;
             		default:
                     	throw "Unknown type";
             	}
             	return formattedValue;
             },
+            
+            getStyle: function(type){
+            	var formattedValue = "";
+            	switch (type) {
+            		case GEPPETTO.Resources.PARAMETER_TYPE:
+            			return "parametertypetv";
+            		case GEPPETTO.Resources.STATE_VARIABLE_TYPE:
+            			return "statevariabletypetv";
+            		case GEPPETTO.Resources.CONNECTION_TYPE:
+            			//AQP: Probably it is not needed
+            			return null;
+            		case GEPPETTO.Resources.DYNAMICS_TYPE:
+            			return "dynamicstypetv";
+            		case GEPPETTO.Resources.FUNCTION_TYPE:
+            			return "functiontypetv;"
+            		case GEPPETTO.Resources.TEXT_TYPE:
+            			return "texttypetv";
+            		case GEPPETTO.Resources.POINTER_TYPE:
+            			return "pointertypetv;"
+            		case GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY:
+            			return "stateinstancetv";
+            		case GEPPETTO.Resources.VISUAL_CAPABILITY:
+            			//AQP: currently no css for this
+            			return "visualinstancetv";
+            		case GEPPETTO.Resources.PARAMETER_CAPABILITY:
+            			//AQP: currently no css for this
+            			return "parameterinstancetv";
+            		case GEPPETTO.Resources.CONNECTION_CAPABILITY:
+            			//AQP: currently no css for this
+            			return "connectioninstancetv";
+            		case GEPPETTO.Resources.COMPOSITE_TYPE_NODE:
+            			return "foldertv";
+            		case GEPPETTO.Resources.ARRAY_INSTANCE_NODE:
+            			return "arrayinstancetv";
+            		case GEPPETTO.Resources.INSTANCE_NODE:	
+            			return "instancefoldertv";
+            		case GEPPETTO.Resources.ARRAY_TYPE_NODE:
+            			return "arraytypetv";
+            	}
+            	return null;
+            },
+            
 
-            convertVariableToTreeVisualiserNode: function (node) {
+            convertNodeToTreeVisualiserNode: function (node) {
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getType().getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
                 	if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || node.getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
                 		if (node.getType().getSuperType() != undefined && node.getType().getSuperType().getId() == 'projection') {
@@ -131,7 +174,7 @@ define(function (require) {
                                     numConnections++;
                                 }
                                 else {
-                                    projectionsChildrenNode.push(this.convertVariableToTreeVisualiserNode(projectionChildren[j]));
+                                    projectionsChildrenNode.push(this.convertNodeToTreeVisualiserNode(projectionChildren[j]));
                                 }
                             }
 
@@ -140,46 +183,32 @@ define(function (require) {
                                 "id": "numberConnections",
                                 "_metaType": ""
                             });
-                            var tvOptions = {
-                                wrappedObj: treeVisualiserWrappedObject,
-                                formattedValue: numConnections
-                            };
-                            var tvn = new TreeVisualiserNode(tvOptions);
-                            projectionsChildrenNode.push(tvn);
+                            projectionsChildrenNode.push(new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: numConnections, style:this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
-                            var projtvn = new TreeVisualiserNode({wrappedObj: node.getType()});
-                            projtvn.set({"children": projectionsChildrenNode});
-                            return projtvn;
+                            return new TreeVisualiserNode({wrappedObj: node.getType(), children: projectionsChildrenNode, style:this.getStyle(node.getType().getMetaType())});
                         }
                         else {
-                            var tvn = this.createTreeVisualiserNode(node.getType());
-                            tvn.set({"children": this.createTreeVisualiserNodeChildren(node.getType())});
-                            return tvn;
+                            return new TreeVisualiserNode({wrappedObj: node.getType(), children: this.createTreeVisualiserNodeChildren(node.getType()), style:this.getStyle(node.getType().getMetaType())})
                         }
                 	}
                 	else{
-                		return this.createTreeVisualiserNode(node, this.getFormattedValue(node, node.getType().getMetaType()));
+                		return new TreeVisualiserNode({wrappedObj: node, formattedValue: this.getFormattedValue(node, node.getType().getMetaType()), style:this.getStyle(node.getType().getMetaType())})
                 	}
                 }
                 else if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE || node.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                	var tvn;
-                	if (node.hasCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY)){
-                		tvn = this.createTreeVisualiserNode(node, this.getFormattedValue(node, GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY, 0));
+                	var formattedValue = undefined;
+                	var style = this.getStyle(node.getMetaType());
+                	//AQP: Do we want to do sth with every single capability?
+                	if (node.get("capabilities") != undefined && node.get("capabilities").length > 0 ){
+                		formattedValue = this.getFormattedValue(node, node.get("capabilities")[0], 0);
+                		style = this.getStyle(node.get("capabilities")[0]);
                 	}
-                	else if (node.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)){
-                		tvn = this.createTreeVisualiserNode(node, "VisualCapability");   		
-                	}
-                	else if (node.hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)){
-                		tvn = this.createTreeVisualiserNode(node, "ParameterCapability");  
-					}
-                	else if (node.hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY)){
-                		tvn = this.createTreeVisualiserNode(node, "ConnectionCapability");  
-                	}
-                	else{
-                		tvn = this.createTreeVisualiserNode(node);
-                	}
-                    tvn.set({"children": this.createTreeVisualiserNodeChildren(node)});
-                    return tvn;
+                	console.log("style");
+                	console.log(style);
+                    return new TreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, children: this.createTreeVisualiserNodeChildren(node)});
+                }
+                else if (node.getMetaType() != GEPPETTO.Resources.VARIABLE_NODE && node.getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
+                	return new TreeVisualiserNode({wrappedObj: node, children: this.createTreeVisualiserNodeChildren(node), style: this.getStyle(node.getMetaType())})
                 }
             },
 
@@ -189,7 +218,7 @@ define(function (require) {
                 		|| state.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                     for (var i = 0; i < state.getChildren().length; i++) {
                         var child = state.getChildren()[i];
-                        var node = this.convertVariableToTreeVisualiserNode(child);
+                        var node = this.convertNodeToTreeVisualiserNode(child);
                         if (node != undefined)
                             children.push(node);
                     }
@@ -202,20 +231,16 @@ define(function (require) {
                         "id": "size",
                         "_metaType": ""
                     });
-                    var tvOptions = {wrappedObj: treeVisualiserWrappedObject, formattedValue: state.getSize()};
-                    var tvn = new TreeVisualiserNode(tvOptions);
-                    children.push(tvn);
+                    children.push(new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: state.getSize(), style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
-                    // Array Type
-                    var arraytypetvn = this.createTreeVisualiserNode(state.getType());
-                    arraytypetvn.set({"children": this.createTreeVisualiserNodeChildren(state.getType())});
-                    children.push(arraytypetvn);
+                    // Array Type: Cell
+                    children.push(new TreeVisualiserNode({wrappedObj: state.getType(), children: this.createTreeVisualiserNodeChildren(state.getType()), style: this.getStyle(state.getType().getMetaType())}));
 
                     //state.getDefaultValue()
 
                 }
                 else if (state.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE) {
-				    var node = this.convertVariableToTreeVisualiserNode(state);
+				    var node = this.convertNodeToTreeVisualiserNode(state);
 				    if (node != undefined)
 				        children.push(node);
                 }

@@ -198,7 +198,7 @@ define(function (require) {
                     if (types) {
                         instancePath += "(" + resolvedType.getId() + ")";
                     }
-                    if (element.hasOwnProperty("index") && element.index > 0) {
+                    if (element.hasOwnProperty("index") && element.index > -1) {
                         instancePath += "[" + element.index + "]";
                     }
                     if (e < pointer.elements.length - 1) {

@@ -48,7 +48,6 @@ var Events = {
     SimulationTree_populated: "experiment:simulationtreepopulated",
     Experiment_play: "experiment:play",
     Experiment_status_check: "experiment:status_check",
-    Experiment_replay: "experiment:replay",
     Experiment_pause: "experiment:pause",
     Experiment_resume: "experiment:resume",
     Experiment_running: "experiment:running",
@@ -114,13 +113,8 @@ define(function (require) {
                         GEPPETTO.Console.log("Experiment " + name + " with " + id + " is over ");
                     }
                 });
-                GEPPETTO.on(Events.ModelTree_populated, function () {
-                    //notify widgets a restart of data is needed
-                    GEPPETTO.WidgetsListener.update(Events.ModelTree_populated);
-                });
-                GEPPETTO.on(Events.SimulationTree_populated, function () {
-                    //notify widgets a restart of data is needed
-                    GEPPETTO.WidgetsListener.update(Events.SimulationTree_populated);
+                GEPPETTO.on(Events.Experiment_play, function (parameters) {
+                    GEPPETTO.WidgetsListener.update(Events.Experiment_play, parameters);
                 });
                 GEPPETTO.on(Events.Experiment_update, function (parameters) {
                     if (parameters.playAll != null || parameters.steps != undefined) {

@@ -249,6 +249,11 @@ define(function (require) {
                 return "Stop Experiment";
             },
 
+            resume: function () {
+                GEPPETTO.ExperimentsController.resume();
+                return "Resume Experiment";
+            },
+
 
             saveExperimentProperties: function (properties) {
                 var parameters =

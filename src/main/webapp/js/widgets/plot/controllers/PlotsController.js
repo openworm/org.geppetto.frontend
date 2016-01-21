@@ -102,6 +102,11 @@ define(function (require) {
 
             //update plotting widgets
             else if (event == Events.Experiment_play) {
+                for (var i = 0; i < this.widgets.length; i++) {
+                    var plot = this.widgets[i];
+                    plot.initialise(parameters.playAll);
+                }
+
             }
 
             //update plotting widgets
@@ -114,9 +119,7 @@ define(function (require) {
                 //loop through all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
-
                     plot.plot.getPlaceholder().resize();
-                    plot.options.playAll = parameters.playAll;
 
                     //update plot with new data set
                     plot.updateDataSet(parameters.step);

@@ -161,8 +161,8 @@ define(function (require) {
                 } else {
                     y = p1[1] + (p2[1] - p1[1]) * (pos.x - p1[0]) / (p2[0] - p1[0]);
                 }
-
-                $("#" + this.id + " div.legendLabel").eq(i).text(series.label + " = " + y.toFixed(3));
+                var shortLabel=$("#" + this.id + " div.legendLabel").attr("shortLabel");
+                $("#" + this.id + " div.legendLabel").eq(i).text(shortLabel + " = " + y.toFixed(3) + " @(" + pos.x.toFixed(3) + ")");
             }
         },
         /**
@@ -196,7 +196,7 @@ define(function (require) {
                     shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 2] + "." + split[split.length - 1];
                 }
                 labelsMap[label] = {label: shortLabel};
-                return '<div class="legendLabel" id="' + label + '" title="' + label + '">' + shortLabel + '</div>';
+                return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
             });
 
             if (state != null) {
@@ -439,7 +439,7 @@ define(function (require) {
                 var split = label.split(/-(.+)?/);
                 if (split.length > 1) shortLabel = split[1];
                 labelsMap[label] = {label: shortLabel};
-                return '<div class="legendLabel" id="' + label + '" title="' + label + '">' + shortLabel + '</div>';
+                return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
             });
 
             //Parse func as a mathjs object

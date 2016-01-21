@@ -68,6 +68,8 @@ define(function (require) {
              */
             rawGeppetoModel: null,
             geppettoModel: null,
+            instances: null,
+            allPaths: [],
 
             /**
              * Creates and populates Geppetto model
@@ -305,7 +307,6 @@ define(function (require) {
              */
             createInstances: function (geppettoModel) {
                 var instances = [];
-                window.allPaths = [];
 
                 var varsWithVizTypes = [];
                 var varsWithConnTypes = [];
@@ -323,12 +324,38 @@ define(function (require) {
                     this.buildInstanceHierarchy(varsToInstantiate[j], null, geppettoModel, instances);
                 }
 
-                // populate shortcuts
+                // set instances to internal cache of the factory
+                this.instances = instances;
+
+                // populate shortcuts / populate connection references
                 for (var k = 0; k < instances.length; k++) {
                     this.populateChildrenShortcuts(instances[k]);
+                    this.populateConnections(instances[k]);
                 }
 
                 return instances;
+            },
+
+            /**
+             * Populate connections
+             */
+            populateConnections: function(instance){
+                // check if it's a connection
+                if (instance.getVariable().getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE){
+                    // do the bit of bidness
+                    this.resolveConnectionValues(instance);
+                }
+
+                // check if getChildren exists, if so add shortcuts based on ids and recurse on each
+                if (typeof instance.getChildren === "function") {
+                    var children = instance.getChildren();
+                    if (children != undefined) {
+                        for (var i = 0; i < children.length; i++) {
+                            // recurse like no tomorrow
+                            this.populateConnections(children[i]);
+                        }
+                    }
+                }
             },
 
             /**
@@ -430,9 +457,8 @@ define(function (require) {
                     }
 
                     // check in top level instances if we have an instance for the current variable already
-                    var matchingInstance = null;
                     var instancePath = (parentInstance != null) ? (parentInstance.getInstancePath() + '.' + varsIds[0]) : varsIds[0];
-                    matchingInstance = this.findMatchingInstance(instancePath, topLevelInstances);
+                    var matchingInstance = this.findMatchingInstance(instancePath, topLevelInstances);
 
                     if (matchingInstance != null) {
                         // there is a match, simply re-use that instance as the "newly created one" instead of creating a new one
@@ -571,6 +597,130 @@ define(function (require) {
             },
 
             /**
+             * Resolve connection values
+             */
+            resolveConnectionValues: function(connectionInstance){
+                // get pointer A and pointer B
+                var initialValues = connectionInstance.getVariable().getWrappedObj().initialValues;
+                var connectionValue = initialValues[0].value;
+                // resolve A and B to Pointer Objects
+                var pointerA = this.createPointer(connectionValue.a[0]);
+                var pointerB = this.createPointer(connectionValue.b[0]);
+
+                this.augmentPointer(pointerA, connectionInstance);
+                this.augmentPointer(pointerB, connectionInstance);
+
+                // set A and B on connection
+                connectionInstance.setA(pointerA);
+                connectionInstance.setB(pointerB);
+            },
+
+            /**
+             * Augment pointer with fully qualified chain to point to a specific instance
+             */
+            augmentPointer: function (pointer, instance) {
+                // find root for this branch
+                var rootInstance = this.findRoot(instance);
+
+                // find instance for given pointed variable if any
+                var pointedVariable = pointer.getElements()[0].getVariable();
+
+                // TODO: this could return potentially more than one match - need to extend to resolve to one
+                var matchingInstance = this.findMatchingInstanceByID(pointedVariable.getId(), [rootInstance]);
+
+                // traverse branch and build new array of PointerElements down to instance, given instancepath
+                var pointerElements = [];
+                var originalElement = pointer.getElements()[0];
+                this.buildPointerElementsChain(matchingInstance.getRawInstancePath(), rootInstance, pointerElements, originalElement);
+
+                // horribly override elements with newly created ones
+                pointer.set({'elements' : pointerElements});
+
+                // TODO: add connection instance reference to matching instance
+            },
+
+            /**
+             * Build Pointer elements chain
+             * 
+             * TODO: need to make a distinction if it's array instance element, the pointer needs an index
+             */
+            buildPointerElementsChain: function (path, instance, pointerElements, originalElement) {
+                var instanceIds = path.split('.');
+
+                if(instance.getId() === instanceIds[0]){
+                    if(originalElement.getVariable().getId() === instanceIds[0]){
+                        // re-use original element
+                        pointerElements.push(originalElement);
+                    } else {
+                        // create pointer element
+                        var options = {"variable": instance.getVariable(), "type": instance.getType(), "index": undefined};
+                        var pointerEl = new PointerElement(options);
+                        pointerElements.push(pointerEl);
+                    }
+
+                    // build new path
+                    var newPath = '';
+                    for (var i = 0; i < instanceIds.length; i++) {
+                        if (i != 0) {
+                            newPath += (i < (instanceIds.length - 1)) ? (instanceIds[i] + '.') : instanceIds[i];
+                        }
+                    }
+
+                    // recurse
+                    if(newPath != '') {
+                        var children = instance.getChildren();
+                        for (var i = 0; i < children.length; i++) {
+                            this.buildPointerElementsChain(newPath, children[i], pointerElements, originalElement);
+                        }
+                    }
+                }
+                // else do nothing, do not recurse on dead branches
+            },
+
+            /**
+             * Find root instance
+             */
+            findRoot: function (instance) {
+                var matching = null;
+
+                var parent = instance.getParent();
+                if(parent == undefined || parent == null){
+                    matching = instance;
+                } else {
+                    var recurseMatching = this.findRoot(parent);
+                    if(recurseMatching != null){
+                        matching = recurseMatching;
+                    }
+                }
+
+                return matching;
+            },
+
+            /**
+             * Find instance(s) given variable id, if any
+             */
+            findMatchingInstanceByID: function (id, instances) {
+                var matching = null;
+
+                for (var i = 0; i < instances.length; i++) {
+                    if (instances[i].getId() == id) {
+                        matching = instances[i];
+                        break;
+                    } else {
+                        if (typeof instances[i].getChildren === "function") {
+                            var recurseMatch = this.findMatchingInstanceByID(id, instances[i].getChildren());
+                            if (recurseMatch != null) {
+                                matching = recurseMatch;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                return matching;
+            },
+
+            /**
              * Find instance given instance path (unique), if any
              */
             findMatchingInstance: function (instancePath, instances) {
@@ -601,7 +751,7 @@ define(function (require) {
                 // build "list" of variables that have a visual type (store "path")
                 // check meta type - we are only interested in variables
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
-                window.allPaths.push(path);
+                this.allPaths.push(path);
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE) {
                     var allTypes = node.getTypes();
                     for (var i = 0; i < allTypes.length; i++) {

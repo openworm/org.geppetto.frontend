@@ -86,6 +86,17 @@ define(function (require) {
             }
 
             return path;
+        },
+
+        /**
+         * Get PointerElements
+         *
+         * @command POinter.getElements()
+         *
+         * @returns {List<PointerElement>} - array of elements
+         */
+        getElements: function () {
+            return this.get('elements');
         }
     });
 });

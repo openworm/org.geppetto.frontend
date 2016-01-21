@@ -56,6 +56,20 @@ define(['jquery'], function (require) {
          */
         getB: function(){
             return this.B;
+        },
+
+        /**
+         * Set A
+         */
+        setA: function(a){
+            this.A = a;
+        },
+
+        /**
+         * Set B
+         */
+        setB: function(b){
+            this.B = b;
         }
     }
 });

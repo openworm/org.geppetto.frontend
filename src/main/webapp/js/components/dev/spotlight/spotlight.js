@@ -52,7 +52,7 @@ define(function (require) {
             
             GEPPETTO.on(Events.Experiment_loaded, (function() { 
             	
-                states.add(window.allPaths);
+                states.add(GEPPETTO.ModelFactory.allPaths);
 
             }));
 

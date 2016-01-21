@@ -77,9 +77,36 @@ define(function (require) {
          */
         events: {
             'contextmenu .title': 'manageRightClickEvent',
-            'contextmenu .cr.string': 'manageRightClickEvent'
+            'contextmenu .cr.string': 'manageRightClickEvent',
+            'click': 'manageClickEvent',
+            'click': 'manageClickEvent'
+            	
         },
 
+        /**
+         * Register right click event with widget
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
+         */
+        manageClickEvent: function (event) {
+        	var nodeInstancePath = $(event.target).data("instancepath");
+            if (nodeInstancePath == undefined) {
+                nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
+            }
+            if (nodeInstancePath != null || undefined) {
+                //Read node from instancepath data property attached to dom element
+                dataset.isDisplayed = false;
+                var node = dataset.valueDict[nodeInstancePath]["model"];
+                if (node.getChildren().length == 0){
+	                node.set({"children": node.getHiddenChildren()});
+	                for (var childIndex in node.getChildren()){
+	                	this.prepareTree(dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
+	                }
+	                dataset.isDisplayed = true;
+                }
+            }
+        },
+        
         /**
          * Register right click event with widget
          *
@@ -159,6 +186,7 @@ define(function (require) {
             } else {
                 label = data.getName();
             }
+            console.log(label);
 
             while (true) {
                 if (labelsInTV.indexOf(label) >= 0) {
@@ -176,15 +204,20 @@ define(function (require) {
 
                 //AQP: Better ask for the children or for compositetype?
                 var children = data.getChildren();
-                if (children.length > 0) {
-                    parentFolder = parent.addFolder(label);
+                var _children = data.getHiddenChildren();
+                if (children.length > 0 || _children.length > 0) {
+                	dataset.valueDict[data.getId()] = new function () {};
+                    dataset.valueDict[data.getId()]["folder"] = parent.addFolder(label);
+                	
+                	
+                    //parentFolder = parent.addFolder(label);
                     //Add class to dom element depending on node metatype
-                    $(parentFolder.domElement).find("li").addClass(data.getStyle());
+                    $(dataset.valueDict[data.getId()]["folder"].domElement).find("li").addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
-                    $(parentFolder.domElement).find("li").data("instancepath", data.getId());
+                    $(dataset.valueDict[data.getId()]["folder"].domElement).find("li").data("instancepath", data.getId());
 
 
-                    var parentFolderTmp = parentFolder;
+                    var parentFolderTmp = dataset.valueDict[data.getId()]["folder"];
                     for (var childIndex in children) {
                         if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")) {
                             this.prepareTree(parentFolderTmp, children[childIndex], step);
@@ -212,6 +245,7 @@ define(function (require) {
 //						});
 //					}
                 }
+                dataset.valueDict[data.getId()]["model"] = data;
             }
             else {
                 var set = dataset.valueDict[data.getId()]["controller"].__gui;

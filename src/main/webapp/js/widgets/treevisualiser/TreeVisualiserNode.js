@@ -42,6 +42,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
     return Backbone.Model.extend({
         wrappedObj: null,
         children: [],
+        _children: [],
         formattedValue: "",
         style: "",
 
@@ -51,9 +52,9 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          * @param {Object} options - Object with options attributes to initialize node
          */
         initialize: function (options) {
-
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"children": (options.children != undefined) ? options.children : []});
+            this.set({"_children": (options._children != undefined) ? options._children : []});
             this.set({"formattedValue": (options.formattedValue != undefined) ? options.formattedValue : ""});
             this.set({"style": (options.style != undefined) ? options.style : ""});
         },
@@ -110,6 +111,16 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             return this.get('children');
         },
 
+        /**
+         * Get the hidden children of the node
+         *
+         * @command getChildren()
+         * @returns {Object} Children of node
+         */
+        getHiddenChildren: function () {
+            return this.get('_children');
+        },
+        
         /**
          * Get the wrapped obj
          *

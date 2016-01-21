@@ -73,6 +73,7 @@ define(function (require) {
             },
 
             createDataset: function (state) {
+            	taka = 0;
             	return {data: this.convertNodeToTreeVisualiserNode(state), isDisplayed: false};
             },
 
@@ -99,7 +100,8 @@ define(function (require) {
             			break;
             		case GEPPETTO.Resources.POINTER_TYPE:
                     	//AQP: Add sth! A button?
-            			formattedValue = "Pointer - " + node.getPointerValue();
+            			//formattedValue = "Pointer - " + node.getPointerValue();
+            			formattedValue = "Pointer - ";
             			break;
             		case GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY:
                         if(node.getTimeSeries() != null && node.getTimeSeries().length>0)
@@ -163,6 +165,13 @@ define(function (require) {
             
 
             convertNodeToTreeVisualiserNode: function (node) {
+            	if (typeof node.getPath == 'undefined'){
+            		//console.log(node.getName());
+            		  //          	            console.log(node.getMetaType());
+            		            	}
+            	else{
+            		//console.log("taka");
+            	}
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getType().getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
                 	if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || node.getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
                 		if (node.getType().getSuperType() != undefined && node.getType().getSuperType().getId() == 'projection') {
@@ -185,10 +194,21 @@ define(function (require) {
                             });
                             projectionsChildrenNode.push(new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: numConnections, style:this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
-                            return new TreeVisualiserNode({wrappedObj: node.getType(), children: projectionsChildrenNode, style:this.getStyle(node.getType().getMetaType())});
+                            return new TreeVisualiserNode({wrappedObj: node.getType(), _children: projectionsChildrenNode, style:this.getStyle(node.getType().getMetaType())});
                         }
                         else {
-                            return new TreeVisualiserNode({wrappedObj: node.getType(), children: this.createTreeVisualiserNodeChildren(node.getType()), style:this.getStyle(node.getType().getMetaType())})
+                        	
+                        	var options = {wrappedObj: node.getType(), style:this.getStyle(node.getType().getMetaType())};
+                        	if (!node.getName().startsWith('Summary')){
+	                        	//For now we are assuming either you have anonymous type or type
+//	                        	if (node.getAnonymousTypes().length>0){
+//	                        		options["_children"] = this.createTreeVisualiserNodeChildren(node.getAnonymousTypes()[0]);
+//	                        	}
+//	                        	else if (node.getType() != null){
+	                        		options["_children"] = this.createTreeVisualiserNodeChildren(node.getType());
+//	                        	}
+                        	}
+                            return new TreeVisualiserNode(options);
                         }
                 	}
                 	else{
@@ -203,12 +223,10 @@ define(function (require) {
                 		formattedValue = this.getFormattedValue(node, node.get("capabilities")[0], 0);
                 		style = this.getStyle(node.get("capabilities")[0]);
                 	}
-                	console.log("style");
-                	console.log(style);
                     return new TreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, children: this.createTreeVisualiserNodeChildren(node)});
                 }
                 else if (node.getMetaType() != GEPPETTO.Resources.VARIABLE_NODE && node.getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
-                	return new TreeVisualiserNode({wrappedObj: node, children: this.createTreeVisualiserNodeChildren(node), style: this.getStyle(node.getMetaType())})
+                	return new TreeVisualiserNode({wrappedObj: node, _children: this.createTreeVisualiserNodeChildren(node), style: this.getStyle(node.getMetaType())})
                 }
             },
 
@@ -234,7 +252,7 @@ define(function (require) {
                     children.push(new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: state.getSize(), style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
                     // Array Type: Cell
-                    children.push(new TreeVisualiserNode({wrappedObj: state.getType(), children: this.createTreeVisualiserNodeChildren(state.getType()), style: this.getStyle(state.getType().getMetaType())}));
+                    children.push(new TreeVisualiserNode({wrappedObj: state.getType(), _children: this.createTreeVisualiserNodeChildren(state.getType()), style: this.getStyle(state.getType().getMetaType())}));
 
                     //state.getDefaultValue()
 

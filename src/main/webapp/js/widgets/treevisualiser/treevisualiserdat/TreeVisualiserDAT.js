@@ -179,7 +179,7 @@ define(function (require) {
                 if (children.length > 0) {
                     parentFolder = parent.addFolder(label);
                     //Add class to dom element depending on node metatype
-                    $(parentFolder.domElement).find("li").addClass(data.getMetaType().toLowerCase() + "tv");
+                    $(parentFolder.domElement).find("li").addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
                     $(parentFolder.domElement).find("li").data("instancepath", data.getId());
 
@@ -195,16 +195,22 @@ define(function (require) {
                     }
                 }
                 else {
-                    dataset.valueDict[data.getId()] = new function () {
-                    };
+                    dataset.valueDict[data.getId()] = new function () {};
                     dataset.valueDict[data.getId()][label] = data.getValue();
                     dataset.valueDict[data.getId()]["controller"] = parent.add(dataset.valueDict[data.getId()], label).listen();
 
-
                     //Add class to dom element depending on node metatype
-                    $(dataset.valueDict[data.getId()]["controller"].__li).addClass(data.getMetaType().toLowerCase() + "tv");
+                    $(dataset.valueDict[data.getId()]["controller"].__li).addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
                     $(dataset.valueDict[data.getId()]["controller"].__li).data("instancepath", data.getId());
+                    
+                    // Execute set value if it is a parameter specification
+//                    if(data._metaType=="ParameterSpecificationNode")
+//					{
+//						$(dataset.valueDict[data.getId()]["controller"].__li).find('div > div > input[type="text"]').change(function(){
+//							GEPPETTO.Console.executeCommand(data.getId() + ".setValue(" + $(this).val().split(" ")[0] + ")");
+//						});
+//					}
                 }
             }
             else {

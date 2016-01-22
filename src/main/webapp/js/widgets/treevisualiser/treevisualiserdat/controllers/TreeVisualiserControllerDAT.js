@@ -173,7 +173,7 @@ define(function (require) {
         getCommands: function (node) {
             var group1 = [{
                 label: "Open with DAT Widget",
-                action: ["var tv = G.addWidget(Widgets.TREEVISUALISERDAT)", "tv.setData(#node_instancepath#)"],
+                action: ["G.addWidget(Widgets.TREEVISUALISERDAT).setData(#node_instancepath#)"],
             }];
 
 

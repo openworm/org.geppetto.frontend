@@ -120,6 +120,10 @@ define(function (require) {
                     }, 50);
                 }
             });
+
+            $("#" + this.id).bind("mouseout", {plot: this}, function (event) {
+                event.data.plot.latestPosition = null;
+            });
         },
 
 
@@ -128,41 +132,51 @@ define(function (require) {
             this.updateLegendTimeout = null;
 
             var pos = this.latestPosition;
+            var dataSet = this.plot.getData();
+            if (pos) {
 
-            var axes = this.plot.getAxes();
-            if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
-                pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
-                return;
-            }
 
-            var i, j, dataSet = this.plot.getData();
-            for (i = 0; i < dataSet.length; ++i) {
+                var axes = this.plot.getAxes();
+                if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
+                    pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
+                    return;
+                }
 
-                var series = dataSet[i];
+                var i, j;
+                for (i = 0; i < dataSet.length; ++i) {
 
-                // Find the nearest points, x-wise
+                    var series = dataSet[i];
 
-                for (j = 0; j < series.data.length; ++j) {
-                    if (series.data[j][0] > pos.x) {
-                        break;
+                    // Find the nearest points, x-wise
+
+                    for (j = 0; j < series.data.length; ++j) {
+                        if (series.data[j][0] > pos.x) {
+                            break;
+                        }
                     }
+
+                    // Now Interpolate
+
+                    var y,
+                        p1 = series.data[j - 1],
+                        p2 = series.data[j];
+
+                    if (p1 == null) {
+                        y = p2[1];
+                    } else if (p2 == null) {
+                        y = p1[1];
+                    } else {
+                        y = p1[1] + (p2[1] - p1[1]) * (pos.x - p1[0]) / (p2[0] - p1[0]);
+                    }
+                    var shortLabel = $("#" + this.id + " div.legendLabel").attr("shortLabel");
+                    $("#" + this.id + " div.legendLabel").eq(i).text(shortLabel + " = " + y.toFixed(3) + " @(" + pos.x.toFixed(3) + ")");
                 }
-
-                // Now Interpolate
-
-                var y,
-                    p1 = series.data[j - 1],
-                    p2 = series.data[j];
-
-                if (p1 == null) {
-                    y = p2[1];
-                } else if (p2 == null) {
-                    y = p1[1];
-                } else {
-                    y = p1[1] + (p2[1] - p1[1]) * (pos.x - p1[0]) / (p2[0] - p1[0]);
+            }
+            else {
+                for (i = 0; i < dataSet.length; ++i) {
+                    var shortLabel = $("#" + this.id + " div.legendLabel").attr("shortLabel");
+                    $("#" + this.id + " div.legendLabel").eq(i).text(shortLabel);
                 }
-                var shortLabel=$("#" + this.id + " div.legendLabel").attr("shortLabel");
-                $("#" + this.id + " div.legendLabel").eq(i).text(shortLabel + " = " + y.toFixed(3) + " @(" + pos.x.toFixed(3) + ")");
             }
         },
         /**
@@ -192,8 +206,8 @@ define(function (require) {
             this.initializeLegend(function (label, series) {
                 var split = label.split(".");
                 var shortLabel = label;
-                if (split.length > 4) {
-                    shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 2] + "." + split[split.length - 1];
+                if (split.length > 5) {
+                    shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 3] + "." + split[split.length - 2] + "." + split[split.length - 1];
                 }
                 labelsMap[label] = {label: shortLabel};
                 return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';

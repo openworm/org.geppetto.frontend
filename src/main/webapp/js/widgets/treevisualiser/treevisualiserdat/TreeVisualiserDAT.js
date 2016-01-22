@@ -97,7 +97,10 @@ define(function (require) {
                 //Read node from instancepath data property attached to dom element
                 dataset.isDisplayed = false;
                 var node = dataset.valueDict[nodeInstancePath]["model"];
-                if (node.getChildren().length == 0){
+                if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
+                	GEPPETTO.Console.executeCommand("G.addWidget(Widgets.TREEVISUALISERDAT).setData(Model.neuroml." + node.getWrappedObj().getInitialValues()[0].getElements()[0].getType().getId() + ")");
+                }
+                else if (node.getChildren().length == 0 && node.getHiddenChildren().length > 0){
 	                node.set({"children": node.getHiddenChildren()});
 	                for (var childIndex in node.getChildren()){
 	                	this.prepareTree(dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
@@ -186,8 +189,7 @@ define(function (require) {
             } else {
                 label = data.getName();
             }
-            console.log(label);
-
+            
             while (true) {
                 if (labelsInTV.indexOf(label) >= 0) {
                     label = label + " ";

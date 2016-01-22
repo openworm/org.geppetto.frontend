@@ -84,6 +84,9 @@ define(function (require) {
                     show: true
                 }
             },
+            legend: {
+                backgroundOpacity: 0
+            },
             crosshair: {},
             grid: {
                 margin: {
@@ -204,12 +207,19 @@ define(function (require) {
 
             var labelsMap = this.labelsMap;
             this.initializeLegend(function (label, series) {
-                var split = label.split(".");
                 var shortLabel = label;
-                if (split.length > 5) {
-                    shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 3] + "." + split[split.length - 2] + "." + split[split.length - 1];
+                if (labelsMap[label] != undefined && labelsMap[label] != label) {
+                    //a legend was set
+                    shortLabel = labelsMap[label];
                 }
-                labelsMap[label] = {label: shortLabel};
+                else {
+
+                    var split = label.split(".");
+
+                    if (split.length > 5) {
+                        shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 3] + "." + split[split.length - 2] + "." + split[split.length - 1];
+                    }
+                }
                 return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
             });
 
@@ -238,14 +248,7 @@ define(function (require) {
             }
 
             var plotHolder = $("#" + this.id);
-            if (this.plot == null) {
-                this.plot = $.plot(plotHolder, this.datasets, this.options);
-                plotHolder.resize();
-            }
-            else {
-                this.plot = $.plot(plotHolder, this.datasets, this.options);
-
-            }
+            this.plot = $.plot(plotHolder, this.datasets, this.options);
 
             return "Line plot added to widget";
         },
@@ -296,13 +299,9 @@ define(function (require) {
             }
 
             var plotHolder = $("#" + this.id);
-            if (this.plot == null) {
-                this.plot = $.plot(plotHolder, this.datasets, this.options);
-                plotHolder.resize();
-            }
-            else {
-                this.plot = $.plot(plotHolder, this.datasets, this.options);
-            }
+
+            this.plot = $.plot(plotHolder, this.datasets, this.options);
+
 
             return "Line plot added to widget";
         },
@@ -452,7 +451,7 @@ define(function (require) {
                 //FIXME: Adhoc solution for org.neuroml.export
                 var split = label.split(/-(.+)?/);
                 if (split.length > 1) shortLabel = split[1];
-                labelsMap[label] = {label: shortLabel};
+                labelsMap[label] = shortLabel;
                 return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
             });
 
@@ -559,11 +558,28 @@ define(function (require) {
         initializeLegend: function (labelFormatterFunction) {
 
             //set label legends to shorter label
-            this.options.legend = {labelFormatter: labelFormatterFunction};
+            this.options.legend = {backgroundOpacity: 0, labelFormatter: labelFormatterFunction};
 
             //fix conflict between jquery and bootstrap tooltips
             $.widget.bridge('uitooltip', $.ui.tooltip);
 
+        },
+
+        /**
+         * Sets the legend for a variable
+         *
+         * @command setLegend(variable, legend)
+         * @param {Object} instance - variable to change display label in legends
+         * @param {String} legend - new legend name
+         */
+        setLegend: function (instance, legend) {
+            //Check if it is a string or a geppetto object
+            var instancePath = instance;
+            if ((typeof instance) != "string") {
+                instancePath = instance.getInstancePath();
+            }
+
+            this.labelsMap[instancePath] = legend;
         },
 
         /**

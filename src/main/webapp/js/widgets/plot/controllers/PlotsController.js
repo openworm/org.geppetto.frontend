@@ -119,9 +119,6 @@ define(function (require) {
                 //loop through all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
-                    plot.plot.getPlaceholder().resize();
-
-                    //update plot with new data set
                     plot.updateDataSet(parameters.step);
                 }
             }

@@ -232,7 +232,7 @@ public class DefaultMessageSender implements MessageSender
 	@Override
 	public void sendMessage(String requestID, OutboundMessages messageType, String update)
 	{
-
+		long start=System.currentTimeMillis();
 		try
 		{
 
@@ -252,6 +252,7 @@ public class DefaultMessageSender implements MessageSender
 			logger.warn("Failed to send binary message", e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
 		}
+		logger.info("Sending message to the client took "+(System.currentTimeMillis()-start)+"ms");
 	}
 
 	@Override

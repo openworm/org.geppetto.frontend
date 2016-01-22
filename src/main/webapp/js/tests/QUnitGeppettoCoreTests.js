@@ -37,208 +37,208 @@
  */
 "use strict";
 
-define(function(require) {
+define(function (require) {
 
-	var run = function() {
-		module("Global Scope Test");
-		test("Global scope Test", function() {
-			var help = GEPPETTO.Console.help();
-			var commandCount = help.match(/--/g);  
-			notEqual(help, null, "Global help() command test.");
-			equal(commandCount.length, 41, "Global help() - Looking for 41 commands in help() command.");
-			
-			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
+    var run = function () {
+        module("Global Scope Test");
+        test("Global scope Test", function () {
+            var help = GEPPETTO.Console.help();
+            var commandCount = help.match(/--/g);
+            notEqual(help, null, "Global help() command test.");
+            equal(commandCount.length, 41, "Global help() - Looking for 41 commands in help() command.");
 
-			G.showHelpWindow(false);
-			
-			var modalVisible = $('#help-modal').hasClass('in');
-			
-			equal(modalVisible, false, "Help Window Hidden");
-		});
+            equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
 
-		test("Test Debug Mode", function() {
-			G.debug(true);
+            G.showHelpWindow(false);
 
-			equal(G.isDebugOn(), true, "Testing debug mode on scenario");
+            var modalVisible = $('#help-modal').hasClass('in');
 
-			G.debug(false);
+            equal(modalVisible, false, "Help Window Hidden");
+        });
 
-			equal(G.isDebugOn(), false, "Testing debug mode off scenario");
-		});
+        test("Test Debug Mode", function () {
+            G.debug(true);
 
-		test("Test G Object help method", function() {
-			notEqual(G.help(), null, "Help command for object G is available, passed.");
-		});
+            equal(G.isDebugOn(), true, "Testing debug mode on scenario");
 
-		test("Test Clear Console", function() {
-			equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
-		});
+            G.debug(false);
 
-		test("Test Plot Widget", function() {
-			G.addWidget(Widgets.PLOT);
+            equal(G.isDebugOn(), false, "Testing debug mode off scenario");
+        });
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
+        test("Test G Object help method", function () {
+            notEqual(G.help(), null, "Help command for object G is available, passed.");
+        });
 
-			var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
+        test("Test Clear Console", function () {
+            equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
+        });
 
-			equal(plot.isVisible(), true, "Test Default Widget Visibility");
+        test("Test Plot Widget", function () {
+            G.addWidget(Widgets.PLOT);
 
-			plot.hide();
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
 
-			equal(plot.isVisible(), false, "Test hide()");
+            var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
 
-			plot.show();
+            equal(plot.isVisible(), true, "Test Default Widget Visibility");
 
-			equal(plot.isVisible(), true, "Test show()");
+            plot.hide();
 
-			plot.destroy();
+            equal(plot.isVisible(), false, "Test hide()");
 
-			equal($("#" + plot.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test Popup Widget", function() {
-			G.addWidget(Widgets.POPUP);
+            plot.show();
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.POPUP).getWidgets().length, 1, "Popup widget.");
+            equal(plot.isVisible(), true, "Test show()");
 
-			var pop = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.POPUP).getWidgets()[0];
+            plot.destroy();
 
-			equal(pop.isVisible(), true, "Test Default Visibility");
+            equal($("#" + plot.getId()).html(), null, "Test destroy()");
+        });
 
-			pop.hide();
+        test("Test Popup Widget", function () {
+            G.addWidget(Widgets.POPUP);
 
-			equal(pop.isVisible(), false, "Test hide()");
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.POPUP).getWidgets().length, 1, "Popup widget.");
 
-			pop.show();
+            var pop = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.POPUP).getWidgets()[0];
 
-			equal(pop.isVisible(), true, "Test show()");
+            equal(pop.isVisible(), true, "Test Default Visibility");
 
-			pop.destroy();
+            pop.hide();
 
-			equal($("#" + pop.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test Scattered-3D Widget", function() {
-			G.addWidget(Widgets.SCATTER3D);
+            equal(pop.isVisible(), false, "Test hide()");
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
+            pop.show();
 
-			var scatter = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.SCATTER3D).getWidgets()[0];
+            equal(pop.isVisible(), true, "Test show()");
 
-			equal(scatter.isVisible(), true, "Test Default Visibility");
+            pop.destroy();
 
-			scatter.hide();
+            equal($("#" + pop.getId()).html(), null, "Test destroy()");
+        });
 
-			equal(scatter.isVisible(), false, "Test hide()");
+        test("Test Scattered-3D Widget", function () {
+            G.addWidget(Widgets.SCATTER3D);
 
-			scatter.show();
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
 
-			equal(scatter.isVisible(), true, "Test show()");
+            var scatter = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.SCATTER3D).getWidgets()[0];
 
-			scatter.destroy();
+            equal(scatter.isVisible(), true, "Test Default Visibility");
 
-			equal($("#" + scatter.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test VARIABLEVISUALISER Widget", function() {
-			G.addWidget(Widgets.VARIABLEVISUALISER);
+            scatter.hide();
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.VARIABLEVISUALISER).getWidgets().length, 1, "VARIABLEVISUALISER widget created");
+            equal(scatter.isVisible(), false, "Test hide()");
 
-			var VARIABLEVISUALISER = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).getWidgets()[0];
+            scatter.show();
 
-			equal(VARIABLEVISUALISER.isVisible(), true, "Test Default Visibility");
+            equal(scatter.isVisible(), true, "Test show()");
 
-			VARIABLEVISUALISER.hide();
+            scatter.destroy();
 
-			equal(VARIABLEVISUALISER.isVisible(), false, "Test hide()");
+            equal($("#" + scatter.getId()).html(), null, "Test destroy()");
+        });
 
-			VARIABLEVISUALISER.show();
+        test("Test VARIABLEVISUALISER Widget", function () {
+            G.addWidget(Widgets.VARIABLEVISUALISER);
 
-			equal(VARIABLEVISUALISER.isVisible(), true, "Test show()");
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.VARIABLEVISUALISER).getWidgets().length, 1, "VARIABLEVISUALISER widget created");
 
-			VARIABLEVISUALISER.destroy();
+            var VARIABLEVISUALISER = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).getWidgets()[0];
 
-			equal($("#" + VARIABLEVISUALISER.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test TREEVISUALISERDAT Widget", function() {
-			G.addWidget(Widgets.TREEVISUALISERDAT);
+            equal(VARIABLEVISUALISER.isVisible(), true, "Test Default Visibility");
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERDAT).getWidgets().length, 1, "TREEVISUALISERDAT widget created");
+            VARIABLEVISUALISER.hide();
 
-			var TREEVISUALISERDAT = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets()[0];
+            equal(VARIABLEVISUALISER.isVisible(), false, "Test hide()");
 
-			equal(TREEVISUALISERDAT.isVisible(), true, "Test Default Visibility");
+            VARIABLEVISUALISER.show();
 
-			TREEVISUALISERDAT.hide();
+            equal(VARIABLEVISUALISER.isVisible(), true, "Test show()");
 
-			equal(TREEVISUALISERDAT.isVisible(), false, "Test hide()");
+            VARIABLEVISUALISER.destroy();
 
-			TREEVISUALISERDAT.show();
+            equal($("#" + VARIABLEVISUALISER.getId()).html(), null, "Test destroy()");
+        });
 
-			equal(TREEVISUALISERDAT.isVisible(), true, "Test show()");
+        test("Test TREEVISUALISERDAT Widget", function () {
+            G.addWidget(Widgets.TREEVISUALISERDAT);
 
-			TREEVISUALISERDAT.destroy();
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERDAT).getWidgets().length, 1, "TREEVISUALISERDAT widget created");
 
-			equal($("#" + TREEVISUALISERDAT.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test TreeVisualizerD3 Widget", function() {
-			G.addWidget(Widgets.TREEVISUALISERD3);
+            var TREEVISUALISERDAT = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets()[0];
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERD3).getWidgets().length, 1, "TREEVISUALISERD3 widget created");
+            equal(TREEVISUALISERDAT.isVisible(), true, "Test Default Visibility");
 
-			var TREEVISUALISERD3 = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets()[0];
+            TREEVISUALISERDAT.hide();
 
-			equal(TREEVISUALISERD3.isVisible(), true, "Test Default Visibility");
+            equal(TREEVISUALISERDAT.isVisible(), false, "Test hide()");
 
-			TREEVISUALISERD3.hide();
+            TREEVISUALISERDAT.show();
 
-			equal(TREEVISUALISERD3.isVisible(), false, "Test hide()");
+            equal(TREEVISUALISERDAT.isVisible(), true, "Test show()");
 
-			TREEVISUALISERD3.show();
+            TREEVISUALISERDAT.destroy();
 
-			equal(TREEVISUALISERD3.isVisible(), true, "Test show()");
+            equal($("#" + TREEVISUALISERDAT.getId()).html(), null, "Test destroy()");
+        });
 
-			TREEVISUALISERD3.destroy();
+        test("Test TreeVisualizerD3 Widget", function () {
+            G.addWidget(Widgets.TREEVISUALISERD3);
 
-			equal($("#" + TREEVISUALISERD3.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test Commands", function() {
-			G.showConsole(true);
-			
-			equal(GEPPETTO.Console.isConsoleVisible(), true, "Console Visible");
-			
-			G.showConsole(false);
-			
-			equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
-			
-			G.showShareBar(true);
-			
-			equal(GEPPETTO.Share.isVisible(), true, "ShareBar Visible");
-			
-			G.showShareBar(false);
-			
-			equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
-			
-			equal(G.shareOnTwitter(), GEPPETTO.Resources.SHARE_ON_TWITTER, "Share On Twitter");
-						
-			equal(G.shareOnFacebook(), GEPPETTO.Resources.SHARE_ON_FACEBOOK, "Share On Facebook");
-		});
-		
-		
-		test("Test Copy History To Clipboard", function() {
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERD3).getWidgets().length, 1, "TREEVISUALISERD3 widget created");
 
-			//add some commands to history
-			GEPPETTO.Console.executeCommand("G.help();");
-			GEPPETTO.Console.executeCommand("help();");
+            var TREEVISUALISERD3 = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets()[0];
 
-			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "Commands copied, test passed");		
-		});
-	};
-	return {run: run};
+            equal(TREEVISUALISERD3.isVisible(), true, "Test Default Visibility");
+
+            TREEVISUALISERD3.hide();
+
+            equal(TREEVISUALISERD3.isVisible(), false, "Test hide()");
+
+            TREEVISUALISERD3.show();
+
+            equal(TREEVISUALISERD3.isVisible(), true, "Test show()");
+
+            TREEVISUALISERD3.destroy();
+
+            equal($("#" + TREEVISUALISERD3.getId()).html(), null, "Test destroy()");
+        });
+
+        test("Test Commands", function () {
+            G.showConsole(true);
+
+            equal(GEPPETTO.Console.isConsoleVisible(), true, "Console Visible");
+
+            G.showConsole(false);
+
+            equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
+
+            G.showShareBar(true);
+
+            equal(GEPPETTO.Share.isVisible(), true, "ShareBar Visible");
+
+            G.showShareBar(false);
+
+            equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
+
+            equal(G.shareOnTwitter(), GEPPETTO.Resources.SHARE_ON_TWITTER, "Share On Twitter");
+
+            equal(G.shareOnFacebook(), GEPPETTO.Resources.SHARE_ON_FACEBOOK, "Share On Facebook");
+        });
+
+
+        test("Test Copy History To Clipboard", function () {
+
+            //add some commands to history
+            GEPPETTO.Console.executeCommand("G.help();");
+            GEPPETTO.Console.executeCommand("help();");
+
+            equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "Commands copied, test passed");
+        });
+    };
+    return {run: run};
 
 });
 

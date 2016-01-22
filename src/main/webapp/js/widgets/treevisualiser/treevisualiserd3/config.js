@@ -43,20 +43,20 @@
  */
 
 require.config({
-	  paths: {
-	    "d3": "widgets/treevisualiser/treevisualiserd3/vendor/d3.min"
-	  }
-	});
+    paths: {
+        "d3": "widgets/treevisualiser/treevisualiserd3/vendor/d3.min"
+    }
+});
 
 var reqs = [];
 reqs.push("d3");
 
-define("d3.global", ["d3"], function(_) {
-	  d3 = _;
-	});
+define("d3.global", ["d3"], function (_) {
+    d3 = _;
+});
 
-require(reqs, function(d3) {
-	window.d3 = d3;
-	loadCss("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.css");
-	
+require(reqs, function (d3) {
+    window.d3 = d3;
+    loadCss("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.css");
+
 });

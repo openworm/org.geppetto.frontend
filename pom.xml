@@ -92,7 +92,8 @@
 									<goal>grunt</goal>
 								</goals>
 								<configuration>
-									<arguments>dist --contextPath ${contextPath} --useSsl ${useSsl} --embedded ${embedded} --embedderURL ${embedderURL}</arguments>
+									<arguments>dist --contextPath ${contextPath} --useSsl ${useSsl}
+										--embedded ${embedded} --embedderURL ${embedderURL}</arguments>
 								</configuration>
 								<phase>generate-resources</phase>
 							</execution>
@@ -143,7 +144,8 @@
 									<goal>grunt</goal>
 								</goals>
 								<configuration>
-									<arguments>--contextPath ${contextPath}  --useSsl ${useSsl} --embedded ${embedded} --embedderURL ${embedderURL}</arguments>
+									<arguments>--contextPath ${contextPath} --useSsl ${useSsl}
+										--embedded ${embedded} --embedderURL ${embedderURL}</arguments>
 								</configuration>
 								<phase>generate-resources</phase>
 							</execution>
@@ -193,12 +195,12 @@
 		<dependency>
 			<groupId>org.geppetto</groupId>
 			<artifactId>core</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geppetto</groupId>
 			<artifactId>simulation</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -273,7 +275,7 @@
 		<dependency>
 			<groupId>org.junit</groupId>
 			<artifactId>com.springsource.org.junit</artifactId>
-			<version>4.5.0</version>
+			<version>4.7.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -301,6 +303,11 @@
 			<artifactId>shiro-spring</artifactId>
 			<version>1.2.1</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.cglib</groupId>
+			<artifactId>com.springsource.net.sf.cglib</artifactId>
+			<version>2.2.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -318,9 +325,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.15</version>
-				<configuration>
-					<skipTests>true</skipTests>
-				</configuration>
 			</plugin>
 
 			<plugin>
@@ -419,7 +423,7 @@
 					<directoryRoots>
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/nodes</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/model</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/3d_visualization</directoryRoot>
 					</directoryRoots>
 					<sourceFiles>

@@ -43,60 +43,60 @@
  */
 require.config({
 
-	/*
-	 * Values in here are for dependencies that more than one module/script requires and/or needs.
-	 * E.G. If depenedency it's used more than once, it goes in here.
-	 */
-	paths: {
-		'jquery': "vendor/jquery-1.9.1.min",
-		'three': 'vendor/three.min',
-		'd3' : 'vendor/d3.min',
-		'codemirror': "vendor/codemirror.min",
-		'underscore': 'vendor/underscore.min',
-		'backbone': 'vendor/backbone.min',
-		'backbone-store': 'vendor/backbone-localStorage.min',
-		'geppetto': "GEPPETTO",
-		'QUnit': 'vendor/qunit',
-		react: 'vendor/react',
-		jsx: 'vendor/jsx',
-	    JSXTransformer: 'vendor/JSXTransformer',
-	    text: 'vendor/text',
-		pako: 'vendor/pako.min',
-		mathjs: 'vendor/math.min'
-	},
-	/*
-	 * Notes what dependencies are needed prior to loading each library, values on the right
-	 * of colon are dependencies. If dependency was declared in path above, then add it's dependencies
-	 * to that object in here.
-	 */
-	shim: {
-		'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
-		'vendor/TrackballControls': ["three"],
-		'vendor/THREEx.KeyboardState': ['three'],
-		'vendor/ColladaLoader': ['three'],
-		'vendor/OBJLoader' : ['three'],
-		'vendor/ColorConverter': ["three"],
-		'vendor/bootstrap.min': ["jquery"],
-		'vendor/codemirror-formats.min': ["codemirror"],
-		'vendor/backbone-localStorage.min': ["backbone"],
-		'vendor/dat.gui.min': ["jquery"],
-		'vendor/stats.min': ["jquery"],
-		'vendor/Detector': ["jquery"],
-		'vendor/jquery.cookie': ["jquery"],
-		'vendor/rAF': ["jquery"],
-		'widgets/plot/vendor/jquery.flot.min' : ['jquery'],
-		'widgets/plot/vendor/jquery.flot.resize.min': ['widgets/plot/vendor/jquery.flot.min'],
-		'widgets/plot/vendor/jquery.flot.axislabels.min': ['widgets/plot/vendor/jquery.flot.min'],
-		'QUnit': {
-			exports: 'QUnit',
-			deps: ['geppetto'],
-			init: function() {
-				QUnit.config.autoload = false;
-				QUnit.config.autostart = false;
-			}
-		}
+    /*
+     * Values in here are for dependencies that more than one module/script requires and/or needs.
+     * E.G. If depenedency it's used more than once, it goes in here.
+     */
+    paths: {
+        'jquery': "vendor/jquery-1.9.1.min",
+        'three': 'vendor/three.min',
+        'd3': 'vendor/d3.min',
+        'codemirror': "vendor/codemirror.min",
+        'underscore': 'vendor/underscore.min',
+        'backbone': 'vendor/backbone.min',
+        'backbone-store': 'vendor/backbone-localStorage.min',
+        'geppetto': "GEPPETTO",
+        'QUnit': 'vendor/qunit',
+        react: 'vendor/react',
+        jsx: 'vendor/jsx',
+        JSXTransformer: 'vendor/JSXTransformer',
+        text: 'vendor/text',
+        pako: 'vendor/pako.min',
+        mathjs: 'vendor/math.min'
+    },
+    /*
+     * Notes what dependencies are needed prior to loading each library, values on the right
+     * of colon are dependencies. If dependency was declared in path above, then add it's dependencies
+     * to that object in here.
+     */
+    shim: {
+        'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
+        'vendor/TrackballControls': ["three"],
+        'vendor/THREEx.KeyboardState': ['three'],
+        'vendor/ColladaLoader': ['three'],
+        'vendor/OBJLoader': ['three'],
+        'vendor/ColorConverter': ["three"],
+        'vendor/bootstrap.min': ["jquery"],
+        'vendor/codemirror-formats.min': ["codemirror"],
+        'vendor/backbone-localStorage.min': ["backbone"],
+        'vendor/dat.gui.min': ["jquery"],
+        'vendor/stats.min': ["jquery"],
+        'vendor/Detector': ["jquery"],
+        'vendor/jquery.cookie': ["jquery"],
+        'vendor/rAF': ["jquery"],
+        'widgets/plot/vendor/jquery.flot.min': ['jquery'],
+        'widgets/plot/vendor/jquery.flot.resize.min': ['widgets/plot/vendor/jquery.flot.min'],
+        'widgets/plot/vendor/jquery.flot.axislabels.min': ['widgets/plot/vendor/jquery.flot.min'],
+        'QUnit': {
+            exports: 'QUnit',
+            deps: ['geppetto'],
+            init: function () {
+                QUnit.config.autoload = false;
+                QUnit.config.autostart = false;
+            }
+        }
 
-	}
+    }
 });
 
 /*
@@ -124,27 +124,27 @@ jqueryLib.push("vendor/rAF");
 jqueryLib.push("pako");
 jqueryLib.push("mathjs");
 
-require(jqueryLib, function($) {
+require(jqueryLib, function ($) {
 
-	var ProjectNode = require('nodes/ProjectNode');
-	$(function() {
-		var project = new ProjectNode({name : "Project", id : -1});
-		window.Project = project;
-		window.GEPPETTO = require('geppetto');
-		//Alias G, Simulation, and help() to global vars for easy access
-		window.G = GEPPETTO.G;
-		window.Widgets = GEPPETTO.Widgets;
-		window.help = GEPPETTO.Utility.help;
-				
-		require(
-			['QUnit','tests/QUnitPersistenceTests'],
-			function(QUnit, persistenceTests) {
-				persistenceTests.run();
-				// start QUnit.
-				QUnit.load();
-				QUnit.start();
-			}
-		);
-	});
+    var ProjectNode = require('model/ProjectNode');
+    $(function () {
+        var project = new ProjectNode({name: "Project", id: -1});
+        window.Project = project;
+        window.GEPPETTO = require('geppetto');
+        //Alias G, Simulation, and help() to global vars for easy access
+        window.G = GEPPETTO.G;
+        window.Widgets = GEPPETTO.Widgets;
+        window.help = GEPPETTO.Utility.help;
+
+        require(
+            ['QUnit', 'tests/QUnitPersistenceTests'],
+            function (QUnit, persistenceTests) {
+                persistenceTests.run();
+                // start QUnit.
+                QUnit.load();
+                QUnit.start();
+            }
+        );
+    });
 
 });

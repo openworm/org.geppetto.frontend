@@ -36,578 +36,624 @@
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
-define(function(require) {
+define(function (require) {
 
-	var Widget = require('widgets/Widget');
-	var $ = require('jquery');
-	var math = require('mathjs');
+    var Widget = require('widgets/Widget');
+    var $ = require('jquery');
+    var math = require('mathjs');
 
-	return Widget.View.extend({
-			plot: null,
-			datasets: [],
-			limit: 400,
-			options: null,
-			xaxisLabel: null,
-			yaxisLabel: null,
-			labelsUpdated: false,
-			labelsMap : {},
-			yMix : 0,
-			yMax : 0,
+    return Widget.View.extend({
+        plot: null,
+        datasets: [],
+        limit: 400,
+        options: null,
+        xaxisLabel: null,
+        yaxisLabel: null,
+        labelsUpdated: false,
+        labelsMap: {},
+        yMix: 0,
+        yMax: 0,
+        updateLegendTimeout: null,
+        latestPosition: null,
 
-			/**
-			 * Default options for plot widget, used if none specified when plot
-			 * is created
-			 */
-			defaultPlotOptions:  {
-//				series: {
-//					shadowSize: 0,
-//					downsample: {
-//					    threshold: 1000 
-//					  }
-//				},
-				yaxis: {
-					max: 1,
-					min : -.1
-				},
-				xaxis: {
-					min: 0,
-					max: 400,
-					show: false,
-					tickLength: 0,
-					ticks : [],
-					font: {
-						size: 11
-					},
-					labelWidth : 30,
-					axisLabelPadding: 5,
-					color : "#FFFFFF",
-					alignTicksWithAxis : true,
-				},
-				grid: {
-					margin: {
-						left: 15,
-						bottom: 15
-					}
-				},
-				playAll : false
-			},
+        /**
+         * Default options for plot widget, used if none specified when plot
+         * is created
+         */
+        defaultPlotOptions: {
+            yaxis: {
+                max: 1,
+                min: -.1
+            },
+            xaxis: {
+                min: 0,
+                max: 400,
+                show: false,
+                tickLength: 0,
+                ticks: [],
+                font: {
+                    size: 10
+                },
+                labelWidth: 30,
+                axisLabelPadding: 5,
+                color: "#FFFFFF",
+                alignTicksWithAxis: true,
+            },
+            series: {
+                lines: {
+                    show: true
+                }
+            },
+            legend: {
+                backgroundOpacity: 0
+            },
+            crosshair: {},
+            grid: {
+                margin: {
+                    left: 10,
+                    bottom: 10
+                }
+            },
+            playAll: false
+        },
 
-			/**
-			 * Initializes the plot given a set of options
-			 * 
-		     * @param {Object} options - Object with options for the plot widget
-		     */
-			initialize: function(options) {
-				this.id = options.id;
-				this.name = options.name;
-				this.visible = options.visible;
-				this.datasets = [];
-				this.options = jQuery.extend({},this.defaultPlotOptions);
-				this.render();
-				this.dialog.append("<div id='" + this.id + "'></div>");
-				$("#" + this.id).addClass("plot");
-				
-				//fix conflict between jquery and bootstrap tooltips
-				$.widget.bridge('uitooltip', $.ui.tooltip);
-				
-				//show tooltip for legends
-				$(".legendLabel").tooltip();
-			},
+        /**
+         * Initializes the plot given a set of options
+         *
+         * @param {Object} options - Object with options for the plot widget
+         */
+        initialize: function (options) {
+            this.id = options.id;
+            this.name = options.name;
+            this.visible = options.visible;
+            this.datasets = [];
+            this.options = jQuery.extend({}, this.defaultPlotOptions);
+            this.render();
+            this.dialog.append("<div id='" + this.id + "'></div>");
+            $("#" + this.id).addClass("plot");
 
-			/**
-			 * Takes data series and plots them. To plot array(s) , use it as
-			 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
-			 * plotData(object) Multiples arrays can be specified at once in
-			 * this method, but only one object at a time.
-			 *
-			 * @command plotData(state, options)
-			 * @param {Object} state - series to plot, can be array of data or an geppetto simulation variable
-			 * @param {Object} options - options for the plotting widget, if null uses default
-			 */
-			plotData: function(state, options) {
+            //fix conflict between jquery and bootstrap tooltips
+            $.widget.bridge('uitooltip', $.ui.tooltip);
 
-				// If no options specify by user, use default options
-				if(options != null) {
-					for(var e in options){
-						if(options[e]!= null || options[e]!= undefined){
-							if(this.options.hasOwnProperty(e)){
-								this.options[e] = options[e];
-							}
-						}
-					}
-				}
+            $("#" + this.id).bind("plothover", {plot: this}, function (event, pos, item) {
+                event.data.plot.latestPosition = pos;
+                //Enable to change cursor on hover, couldnt find anything that felt better than the default pointer
+                //$("#" + event.data.plot.id).css("cursor", "ew-resize");
+                if (!event.data.plot.updateLegendTimeout) {
+                    event.data.plot.updateLegendTimeout = setTimeout(function () {
+                        event.data.plot.updateLegend();
+                    }, 50);
+                }
+            });
 
-				var labelsMap = this.labelsMap;
-	        	this.initializeLegend(function(label, series){
-	        		var split = label.split(".");
-					var shortLabel = split[0] +"."+split[1]+"....." + split[split.length-1];
-					labelsMap[label] = {label : shortLabel};
-	        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
-	        	});
-		        
-				if (state!= null) {	
-					if(state instanceof Array){
-						this.datasets.push({
-							data : state 
-						});
-					}
-					
-					else{
-						for(var key=0;key<this.datasets.length;key++) {
-							if(state.getInstancePath() == this.datasets[key].label) {
-								return "Dataset "+ state.getInstancePath() + " is " + "already being plotted.";
-							}
-						}
-						
-						var timeSeriesData = this.getTimeSeriesData(state);
-						
-						this.datasets.push({
-							label : state.getInstancePath(),
-							variable : state,
-							data : timeSeriesData
-						});
-					}
-				}
+            $("#" + this.id).bind("mouseout", {plot: this}, function (event) {
+                //$("#" + event.data.plot.id).css("cursor", "default");
+                event.data.plot.latestPosition = null;
+            });
+        },
 
-				var plotHolder = $("#" + this.id);
-				if(this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
-					plotHolder.resize();
-				}
-				else {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
-				}
-				
-				return "Line plot added to widget";
-			},
-			
-			getTimeSeriesData : function(state){
-				var timeSeries = state.getTimeSeries();
-				var timeSeriesData = new Array();
-				var id = state.getInstancePath();
-				var i =0;
 
-				if(timeSeries.length > 1){
-					if(this.options.playAll == true){
-						for(var key in timeSeries){
-							var value = timeSeries[key].getValue();
-							timeSeriesData.push([i,value]);
-							i++;
-							if(value<this.yMin){
-								this.yMin = value;
-							}
-							if(value > this.yMax){
-								this.yMax = value;
-							}
-						}
-						this.options.yaxis.max = this.yMax;
-						this.options.yaxis.min = this.yMin;
-						this.limit = timeSeries.length;
-						this.options.xaxis.max = this.limit;
-						this.options.xaxis.show = true;
-						if(window.Project.getActiveExperiment().time!=null || undefined){
-							var timeSeries = window.Project.getActiveExperiment().time.getTimeSeries();
-							var divideLength = Math.ceil(timeSeries.length/10);
-							var ticks = [];
-							
-							ticks[0] = [0,timeSeries[0].getValue().toFixed(4)];
-							
-							var index = divideLength;
-							var i = 1;
-							while(index < timeSeries.length){
-								var newTick = [];
-								ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
-								index= Math.ceil(index+divideLength);
-								i++;
-							}
-							index= timeSeries.length-1;
-							ticks[i] = [index,timeSeries[index].getValue().toFixed(4)];
-							this.options.xaxis.ticks =ticks;
-						}
-					}
-				}
-				
-				return timeSeriesData;
-			},
-			/**
-			 * Takes two time series and plots one against the other. To plot
-			 * array(s) , use it as plotData([[1,2],[2,3]]) To plot an object ,
-			 * use it as plotData(objectNameX,objectNameY)
-			 *
-			 * @command plotData(dataX,dataY, options)
-			 * @param {Object} dataX - series to plot on X axis, can be array or an object
-			 * @param {Object} dataY - series to plot on Y axis, can be array or an object
-			 * @param options - options for the plotting widget, if null uses default
-			 */
-			plotXYData: function(dataX, dataY, options) {
+        updateLegend: function () {
 
-				// If no options specify by user, use default options
-				if(options != null) {
-					this.options = options;
-					if(this.options.xaxis.max > this.limit) {
-						this.limit = this.options.xaxis.max;
-					}
-				}
+            this.updateLegendTimeout = null;
 
-				this.datasets.push({
-					label: dataX.name,
-					data: dataX.data
-				});
-				
-				if (dataY != undefined){
-					this.datasets.push({
-						label: dataY.name,
-						data: dataY.data
-					});
-				}
+            var pos = this.latestPosition;
+            var dataSet = this.plot.getData();
+            if (pos) {
 
-				var plotHolder = $("#" + this.id);
-				if(this.plot == null) {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
-					plotHolder.resize();
-				}
-				else {
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
-				}
 
-				return "Line plot added to widget";
-			},
-			/**
-			 * Removes the data set from the plot. EX:
-			 * 
-			 * @command removeDataSet(state)
-			 *
-			 * @param {Object} state -Data set to be removed from the plot
-			 */
-			removeDataSet: function(state) {
-				if(state != null) {
-					for(var key=0;key<this.datasets.length;key++) {
-						if(state.getInstancePath() == this.datasets[key].label) {
-							this.datasets.splice(key, 1);
-						}
-					}
+                var axes = this.plot.getAxes();
+                if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
+                    pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
+                    return;
+                }
 
-					var data = [];
+                var i, j;
+                for (i = 0; i < dataSet.length; ++i) {
 
-					for(var i = 0; i < this.datasets.length; i++) {
-						data.push(this.datasets[i]);
-					}
+                    var series = dataSet[i];
 
-					this.plot.setData(data);
-					this.plot.setupGrid();
-					this.plot.draw();
-				}
+                    // Find the nearest points, x-wise
 
-				if(this.datasets.length == 0) {
-					this.resetPlot();
-				}
-			},
+                    for (j = 0; j < series.data.length; ++j) {
+                        if (series.data[j][0] > pos.x) {
+                            break;
+                        }
+                    }
 
-			/**
-			 * Updates a data set, use for time series
-			 */
-			updateDataSet: function(step) {
-				var plotholder = $("#" + this.id);
-				
-				if(this.options.playAll){
-					for(var key in this.datasets){
-						var timeSeriesData = this.getTimeSeriesData( this.datasets[key].variable);
+                    // Now Interpolate
 
-						this.datasets[key].data = timeSeriesData;
-					}
-					
-					if(!this.labelsUpdated) {
-						var unit = this.datasets[key].variable.getUnit();
-						if(unit != null) {
-							var labelY = this.getUnitLabel(unit);
-							var labelX = this.getUnitLabel(window.Project.getActiveExperiment().time.getUnit());
-							this.setAxisLabel(labelY, labelX);
-							this.labelsUpdated = true;
-						}
-					}
-					
-					this.plot = $.plot(plotholder, this.datasets, this.options);
-				}
-				else{
-					// if not plotAll we are in step-by-step replay mode - check axis visibility and add margin
-					if(this.options.xaxis.show === false){
-						// if we are not showing xaxis (dynamic plots), add margin at the bottom
-						$("#" + this.id).addClass("plot-without-xaxis");
-					}
-					
-					for(var key in this.datasets) {
-						var newValue = this.datasets[key].variable.getTimeSeries()[step].getValue();
+                    var y,
+                        p1 = series.data[j - 1],
+                        p2 = series.data[j];
 
-						if(!this.labelsUpdated) {
-							var unit = this.datasets[key].variable.getUnit();
-							if(unit != null) {
-								var labelY = this.getUnitLabel(unit);
-								var labelX = this.getUnitLabel(window.Project.getActiveExperiment().time.getUnit());
-								this.setAxisLabel(labelY, labelX);
-								this.labelsUpdated = true;
-							}
-						}
+                    if (p1 == null) {
+                        y = p2[1];
+                    } else if (p2 == null) {
+                        y = p1[1];
+                    } else {
+                        y = p1[1] + (p2[1] - p1[1]) * (pos.x - p1[0]) / (p2[0] - p1[0]);
+                    }
+                    var shortLabel = $("#" + this.id + " div.legendLabel").attr("shortLabel");
+                    $("#" + this.id + " div.legendLabel").eq(i).text(shortLabel + " = " + y.toFixed(3) + " @(" + pos.x.toFixed(3) + ")");
+                }
+            }
+            else {
+                for (i = 0; i < dataSet.length; ++i) {
+                    var shortLabel = $("#" + this.id + " div.legendLabel").attr("shortLabel");
+                    $("#" + this.id + " div.legendLabel").eq(i).text(shortLabel);
+                }
+            }
+        },
+        /**
+         * Takes data series and plots them. To plot array(s) , use it as
+         * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
+         * plotData(object) Multiples arrays can be specified at once in
+         * this method, but only one object at a time.
+         *
+         * @command plotData(state, options)
+         * @param {Object} state - series to plot, can be array of data or an geppetto simulation variable
+         * @param {Object} options - options for the plotting widget, if null uses default
+         */
+        plotData: function (state, options) {
 
-						var oldata = this.datasets[key].data;;
-						var reIndex = false;
+            // If no options specify by user, use default options
+            if (options != null) {
+                for (var e in options) {
+                    if (options[e] != null || options[e] != undefined) {
+                        if (this.options.hasOwnProperty(e)) {
+                            this.options[e] = options[e];
+                        }
+                    }
+                }
+            }
 
-						if(oldata.length > this.limit) {
-							oldata.splice(0, 1);
-							reIndex = true;
-						}
+            var labelsMap = this.labelsMap;
+            this.initializeLegend(function (label, series) {
+                var shortLabel = label;
+                if (labelsMap[label] != undefined && labelsMap[label] != label) {
+                    //a legend was set
+                    shortLabel = labelsMap[label];
+                }
+                else {
 
-						oldata.push([ oldata.length, newValue]);
+                    var split = label.split(".");
 
-						if(reIndex) {
-							// re-index data
-							var indexedData = [];
-							for(var index = 0, len = oldata.length; index < len; index++) {
-								var value = oldata[index][1];
-								indexedData.push([ index, value ]);
-							}
+                    if (split.length > 5) {
+                        shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 3] + "." + split[split.length - 2] + "." + split[split.length - 1];
+                    }
+                }
+                return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
+            });
 
-							this.datasets[key].data = indexedData;
-						}
-						else {
-							this.datasets[key].data = oldata;
-						}
-					}
-					if(this.plot != null){
-						this.plot.setData(this.datasets);
-						this.plot.draw();
-					}
-				}
-			},
-			
-			/**
-			 * Utility function to get unit label given raw unit symbol string
-			 *
-			 * @param unitSymbol - string representing unit symbol
-			 */
-			getUnitLabel: function(unitSymbol){
-				
-				unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
-				
-				var unitLabel = unitSymbol;
-				
-				if(unitSymbol != undefined && unitSymbol != null && unitSymbol != ""){
-					var mathUnit = math.unit(1, unitSymbol);
-					
-					var formattedUnitName =  (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
-					
-					if (formattedUnitName != ""){
-						formattedUnitName = formattedUnitName.replace(/_/g, " ");
-						formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();
-						unitLabel = formattedUnitName + " (" + unitSymbol.replace(/-?[0-9]/g, function(letter) {return letter.sup(); } ) + ")";
-					}
-				}
-				
-				return unitLabel;
-			},
-			
-			/**
-			 * Plots a function against a data series
-			 *
-			 * @command dataFunction(func, data, options)
-			 * @param func - function to plot vs data
-			 * @param data - data series to plot against function
-			 * @param options - options for plotting widget
-			 */
-			plotDataFunction: function(func, data_x, options) {
-				// If no options specify by user, use default options
-				if(options != null) {
-					this.options = options;
-					if(this.options.xaxis.max > this.limit) {
-						this.limit = this.options.xaxis.max;
-					}
-				}
-				
-				var labelsMap = this.labelsMap;
-	        	this.initializeLegend(function(label, series){
-	        		var shortLabel = label;
-	        		//FIXME: Adhoc solution for org.neuroml.export
-	        		var split = label.split(/-(.+)?/);
-	        		if (split.length > 1) shortLabel = split[1];
-					labelsMap[label] = {label : shortLabel};
-	        		return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
-	        	});
-				
-				//Parse func as a mathjs object
-				var parser = math.parser();
-				var mathFunc = parser.eval(func);
-				var data = []; 
-				data.name = options.legendText;
-				data.data = [];
-				for (var data_xIndex in data_x){
-					var dataElementString = data_x[data_xIndex].valueOf();
-					data_y = mathFunc(dataElementString);
-					//TODO: Understand why sometimes it returns an array and not a value
-					if (typeof value == 'object'){
-						data.data.push([data_x[data_xIndex][0], data_y[0]]);
-					}
-					else{
-						data.data.push([data_x[data_xIndex][0], data_y]);
-					}
-				}
+            if (state != null) {
+                if (state instanceof Array) {
+                    this.datasets.push({
+                        data: state
+                    });
+                }
 
-				//Plot values 
-				this.plotXYData(data);
-			},
+                else {
+                    for (var key = 0; key < this.datasets.length; key++) {
+                        if (state.getInstancePath() == this.datasets[key].label) {
+                            return "Dataset " + state.getInstancePath() + " is " + "already being plotted.";
+                        }
+                    }
 
-			/**
-			 * Resets the plot widget, deletes all the data series but does not
-			 * destroy the widget window.
-			 *
-			 * @command resetPlot()
-			 */
-			resetPlot: function() {
-				if(this.plot != null) {
-					this.datasets = [];
-					this.options = jQuery.extend({}, this.defaultPlotOptions);
-					var plotHolder = $("#" + this.id);
-					this.plot = $.plot(plotHolder, this.datasets, this.options);
-				}
-			},
+                    var timeSeriesData = this.getTimeSeriesData(state);
 
-			/**
-			 *
-			 * Set the options for the plotting widget
-			 *
-			 * @command setOptions(options)
-			 * @param {Object} options - options to modify the plot widget
-			 */
-			setOptions: function(options) {
-				this.options=options;
-				this.limit = this.options.xaxis.max;
-				this.plot = $.plot($("#" + this.id), this.datasets, this.options);
-				return this;
-			},
-			
-			/**
-			 * Sets the legend for a variable
-			 * 
-			 * @command setLegend(variable, legend)
-			 * @param {Object} variable - variable to change display label in legends
-			 * @param {String} legend - new legend name
-			 */
-			setLegend : function(variable, legend){
-				//Check if it is a string or a geppetto object
-				var plotId = variable;
-				if ((typeof variable) != "string")	plotId = variable.getInstancePath();
-				
-				var labelsMap = this.labelsMap;
-	        	this.initializeLegend(function(label, series){
-					var shortLabel;
-					
-					if(plotId != label){
-						shortLabel = labelsMap[label].label;
-					}
-					else{
-						shortLabel = legend;
-						labelsMap[label].label = shortLabel;
-					}
-					return '<div class="legendLabel" id="'+label+'" title="'+label+'">'+shortLabel+'</div>';
-	        	});
-				
-				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
-			},
+                    this.datasets.push({
+                        label: state.getInstancePath(),
+                        variable: state,
+                        data: timeSeriesData
+                    });
+                }
+            }
 
-			/**
-			 * Retrieve the data sets for the plot
-			 * @returns {Array}
-			 */
-			getDataSets: function() {
-				return this.datasets;
-			},
+            var plotHolder = $("#" + this.id);
+            this.plot = $.plot(plotHolder, this.datasets, this.options);
 
-			/**
-			 * Resets the datasets for the plot
-			 */
-			cleanDataSets: function() {
-				// update corresponding data set
-				for(var key=0;key<this.datasets.length;key++) {
-					this.datasets[key].data = [[]];
-				}
-			},
-			
-			/**
-			 * Initialize legend
-			 */
-			initializeLegend: function(labelFormatterFunction){
-				
-				//set label legends to shorter label
-				this.options.legend = {labelFormatter :labelFormatterFunction};
-				
-				//fix conflict between jquery and bootstrap tooltips
-				$.widget.bridge('uitooltip', $.ui.tooltip);
-				
-				//show tooltip for legends
-				$(".legendLabel").tooltip();
-			},
-			
-			/**
-			 * Sets a label next to the Y Axis
-			 *
-			 * @command setAxisLabel(labelY, labelX)
-			 * @param {String} labelY - Label to use for Y Axis
-			 * @param {String} labelX - Label to use for X Axis
-			 */
-			setAxisLabel: function(labelY, labelX) {
-				if (this.options.yaxis == undefined){
-					this.options["yaxis"] = {};
-				}
-				this.options.yaxis.axisLabel = labelY;
-				if (this.options.xaxis == undefined){
-					this.options["xaxis"] = {};
-				}
-				this.options.xaxis.axisLabel = labelX;
-				this.plot = $.plot($("#" + this.id), this.datasets,this.options);
-			},
-			
-			/**
-			 * Takes a FunctionNode and plots the expression and set the attributes from the plot metadata information
-			 *
-			 * @command plotFunctionNode(functionNode)
-			 * @param {Node} functionNode - Function Node to be displayed
-			 */
-			plotFunctionNode: function(functionNode){
-				//Check there is metada information to plot
-				if (functionNode.plotMetadata != null){
-					
-					//Read the information to plot
-					var expression = functionNode.getExpression();
-					var arguments = functionNode.getArguments();
+            return "Line plot added to widget";
+        },
 
-					var finalValue = parseFloat(functionNode.plotMetadata["FinalValue"]);
-					var initialValue = parseFloat(functionNode.plotMetadata["InitialValue"]);
-					var stepValue = parseFloat(functionNode.plotMetadata["StepValue"]);
 
-					//Create data series for plot 
-					//TODO: What are we going to do if we have two arguments?
-					var values = [];
-					for (var i=initialValue; i<finalValue; i = i + stepValue){values.push([i]);}
+        getTimeSeriesData: function (instance) {
+            var timeSeries = instance.getTimeSeries();
+            var timeTimeSeries = window.time.getTimeSeries();
+            var timeSeriesData = [];
 
-					var plotTitle = functionNode.plotMetadata["PlotTitle"];
-					var XAxisLabel = functionNode.plotMetadata["XAxisLabel"];
-					var YAxisLabel = functionNode.plotMetadata["YAxisLabel"];
-					//Generate options from metadata information
-					options = {xaxis:{min:initialValue,max:finalValue,show:true,axisLabel:XAxisLabel}, yaxis:{axisLabel:YAxisLabel}, legendText: plotTitle};
+            if (timeSeries && timeSeries.length > 1) {
+                for (var step = 0; step < timeSeries.length; step++) {
+                    timeSeriesData.push([timeTimeSeries[step], timeSeries[step]]);
+                }
+            }
+            return timeSeriesData;
+        },
+        /**
+         * Takes two time series and plots one against the other. To plot
+         * array(s) , use it as plotData([[1,2],[2,3]]) To plot an object ,
+         * use it as plotData(objectNameX,objectNameY)
+         *
+         * @command plotData(dataX,dataY, options)
+         * @param {Object} dataX - series to plot on X axis, can be array or an object
+         * @param {Object} dataY - series to plot on Y axis, can be array or an object
+         * @param options - options for the plotting widget, if null uses default
+         */
+        plotXYData: function (dataX, dataY, options) {
 
-					//Convert from single expresion to parametired expresion (2x -> f(x)=2x)
-					var  parameterizedExpression = "f(";
-					for (var argumentIndex in arguments){
-						parameterizedExpression += arguments[argumentIndex] + ","; 
-					}
-					parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
-					parameterizedExpression += ") =" + expression;
-					
-					//Plot data function
-					this.plotDataFunction(parameterizedExpression, values, options);
+            // If no options specify by user, use default options
+            if (options != null) {
+                this.options = options;
+                if (this.options.xaxis.max > this.limit) {
+                    this.limit = this.options.xaxis.max;
+                }
+            }
 
-					//Set title to widget
-					this.setName(plotTitle);
-				}
-			},
+            this.datasets.push({
+                label: dataX.name,
+                data: dataX.data
+            });
 
-		});
+            if (dataY != undefined) {
+                this.datasets.push({
+                    label: dataY.name,
+                    data: dataY.data
+                });
+            }
+
+            var plotHolder = $("#" + this.id);
+
+            this.plot = $.plot(plotHolder, this.datasets, this.options);
+
+
+            return "Line plot added to widget";
+        },
+        /**
+         * Removes the data set from the plot. EX:
+         *
+         * @command removeDataSet(state)
+         *
+         * @param {Object} state -Data set to be removed from the plot
+         */
+        removeDataSet: function (state) {
+            if (state != null) {
+                for (var key = 0; key < this.datasets.length; key++) {
+                    if (state.getInstancePath() == this.datasets[key].label) {
+                        this.datasets.splice(key, 1);
+                    }
+                }
+
+                var data = [];
+
+                for (var i = 0; i < this.datasets.length; i++) {
+                    data.push(this.datasets[i]);
+                }
+
+                this.plot.setData(data);
+                this.plot.setupGrid();
+                this.plot.draw();
+            }
+
+            if (this.datasets.length == 0) {
+                this.resetPlot();
+            }
+        },
+
+        /**
+         * Updates a data set, use for time series
+         */
+        updateDataSet: function (step) {
+            var plotHolder = $("#" + this.id);
+
+            for (var key in this.datasets) {
+
+                if (this.options.playAll) {
+                    //we simply set the whole time series
+                    this.datasets[key].data = this.getTimeSeriesData(this.datasets[key].variable);
+                }
+                else {
+                    var newValue = this.datasets[key].variable.getTimeSeries()[step];
+
+                    var oldData = this.datasets[key].data;
+                    var reIndex = false;
+
+                    if (oldData.length >= this.limit) {
+                        //this happens when we reach the end of the width of the plot
+                        //i.e. when we have already put all the points that it can contain
+                        oldData.splice(0, 1);
+                        reIndex = true;
+                    }
+
+                    oldData.push([oldData.length, newValue]);
+
+                    if (reIndex) {
+                        // re-index data
+                        var indexedData = [];
+                        for (var index = 0, len = oldData.length; index < len; index++) {
+                            var value = oldData[index][1];
+                            indexedData.push([index, value]);
+                        }
+
+                        this.datasets[key].data = indexedData;
+                    }
+                    else {
+                        this.datasets[key].data = oldData;
+                    }
+                }
+
+                if (!this.labelsUpdated) {
+                    var unit = this.datasets[key].variable.getUnit();
+                    if (unit != null) {
+                        var labelY = this.getUnitLabel(unit);
+                        var labelX = this.getUnitLabel(window.Instances.time.getUnit());
+                        this.setAxisLabel(labelY, labelX);
+                        this.labelsUpdated = true;
+                    }
+                }
+            }
+
+
+            if (this.plot != null) {
+                this.plot.setData(this.datasets);
+                this.plot.draw();
+            }
+            else {
+                this.plot = $.plot(plotHolder, this.datasets, this.options);
+            }
+
+        },
+
+        /**
+         * Utility function to get unit label given raw unit symbol string
+         *
+         * @param unitSymbol - string representing unit symbol
+         */
+        getUnitLabel: function (unitSymbol) {
+
+            unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+
+            var unitLabel = unitSymbol;
+
+            if (unitSymbol != undefined && unitSymbol != null && unitSymbol != "") {
+                var mathUnit = math.unit(1, unitSymbol);
+
+                var formattedUnitName = (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
+
+                if (formattedUnitName != "") {
+                    formattedUnitName = formattedUnitName.replace(/_/g, " ");
+                    formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();
+                    unitLabel = formattedUnitName + " (" + unitSymbol.replace(/-?[0-9]/g, function (letter) {
+                            return letter.sup();
+                        }) + ")";
+                }
+            }
+
+            return unitLabel;
+        },
+
+        /**
+         * Plots a function against a data series
+         *
+         * @command dataFunction(func, data, options)
+         * @param func - function to plot vs data
+         * @param data - data series to plot against function
+         * @param options - options for plotting widget
+         */
+        plotDataFunction: function (func, data_x, options) {
+            // If no options specify by user, use default options
+            if (options != null) {
+                this.options = options;
+                if (this.options.xaxis.max > this.limit) {
+                    this.limit = this.options.xaxis.max;
+                }
+            }
+
+            var labelsMap = this.labelsMap;
+            this.initializeLegend(function (label, series) {
+                var shortLabel = label;
+                //FIXME: Adhoc solution for org.neuroml.export
+                var split = label.split(/-(.+)?/);
+                if (split.length > 1) shortLabel = split[1];
+                labelsMap[label] = shortLabel;
+                return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
+            });
+
+            //Parse func as a mathjs object
+            var parser = math.parser();
+            var mathFunc = parser.eval(func);
+            var data = [];
+            data.name = options.legendText;
+            data.data = [];
+            for (var data_xIndex in data_x) {
+                var dataElementString = data_x[data_xIndex].valueOf();
+                data_y = mathFunc(dataElementString);
+                //TODO: Understand why sometimes it returns an array and not a value
+                if (typeof value == 'object') {
+                    data.data.push([data_x[data_xIndex][0], data_y[0]]);
+                }
+                else {
+                    data.data.push([data_x[data_xIndex][0], data_y]);
+                }
+            }
+
+            //Plot values
+            this.plotXYData(data);
+        },
+
+        /**
+         * Resets the plot widget, deletes all the data series but does not
+         * destroy the widget window.
+         *
+         * @command resetPlot()
+         */
+        resetPlot: function () {
+            if (this.plot != null) {
+                this.datasets = [];
+                this.options = jQuery.extend({}, this.defaultPlotOptions);
+                var plotHolder = $("#" + this.id);
+                this.plot = $.plot(plotHolder, this.datasets, this.options);
+            }
+        },
+
+        /**
+         *
+         * Set the options for the plotting widget
+         *
+         * @command setOptions(options)
+         * @param {Object} options - options to modify the plot widget
+         */
+        setOptions: function (options) {
+            jQuery.extend(this.options, this.defaultPlotOptions, options);
+            if (options.xaxis && options.xaxis.max) {
+                this.limit = options.xaxis.max;
+            }
+
+            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+            return this;
+        },
+
+        clean: function (playAll) {
+            this.options.playAll = playAll;
+            this.cleanDataSets();
+            if (!playAll) {
+                this.options.xaxis.show = false;
+                this.options.xaxis.max = this.limit;
+                this.options.crosshair = {};
+                this.options.grid.hoverable = false;
+                this.options.grid.autoHighlight = true;
+                $("#" + this.id).addClass("plot-without-xaxis");
+            }
+            else {
+                this.options.xaxis.show = true;
+                this.options.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
+                this.options.crosshair.mode = "x";
+                this.options.grid.hoverable = true;
+                this.options.grid.autoHighlight = false;
+                $("#" + this.id).removeClass("plot-without-xaxis");
+                //enables updating the legend on mouse hover, still few bugs
+
+            }
+            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+
+        },
+
+        /**
+         * Retrieve the data sets for the plot
+         * @returns {Array}
+         */
+        getDataSets: function () {
+            return this.datasets;
+        },
+
+        /**
+         * Resets the datasets for the plot
+         */
+        cleanDataSets: function () {
+            // update corresponding data set
+            for (var key = 0; key < this.datasets.length; key++) {
+                this.datasets[key].data = [[]];
+            }
+        },
+
+        /**
+         * Initialize legend
+         */
+        initializeLegend: function (labelFormatterFunction) {
+
+            //set label legends to shorter label
+            this.options.legend = {backgroundOpacity: 0, labelFormatter: labelFormatterFunction};
+
+            //fix conflict between jquery and bootstrap tooltips
+            $.widget.bridge('uitooltip', $.ui.tooltip);
+
+        },
+
+        /**
+         * Sets the legend for a variable
+         *
+         * @command setLegend(variable, legend)
+         * @param {Object} instance - variable to change display label in legends
+         * @param {String} legend - new legend name
+         */
+        setLegend: function (instance, legend) {
+            //Check if it is a string or a geppetto object
+            var instancePath = instance;
+            if ((typeof instance) != "string") {
+                instancePath = instance.getInstancePath();
+            }
+
+            this.labelsMap[instancePath] = legend;
+        },
+
+        /**
+         * Sets a label next to the Y Axis
+         *
+         * @command setAxisLabel(labelY, labelX)
+         * @param {String} labelY - Label to use for Y Axis
+         * @param {String} labelX - Label to use for X Axis
+         */
+        setAxisLabel: function (labelY, labelX) {
+            if (this.options.yaxis == undefined) {
+                this.options["yaxis"] = {};
+            }
+            this.options.yaxis.axisLabel = labelY;
+            if (this.options.xaxis == undefined) {
+                this.options["xaxis"] = {};
+            }
+            this.options.xaxis.axisLabel = labelX;
+            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+        },
+
+        /**
+         * Takes a FunctionNode and plots the expression and set the attributes from the plot metadata information
+         *
+         * @command plotFunctionNode(functionNode)
+         * @param {Node} functionNode - Function Node to be displayed
+         */
+        plotFunctionNode: function (functionNode) {
+            //Check there is metada information to plot
+            if (functionNode.plotMetadata != null) {
+
+                //Read the information to plot
+                var expression = functionNode.getExpression();
+                var arguments = functionNode.getArguments();
+
+                var finalValue = parseFloat(functionNode.plotMetadata["FinalValue"]);
+                var initialValue = parseFloat(functionNode.plotMetadata["InitialValue"]);
+                var stepValue = parseFloat(functionNode.plotMetadata["StepValue"]);
+
+                //Create data series for plot
+                //TODO: What are we going to do if we have two arguments?
+                var values = [];
+                for (var i = initialValue; i < finalValue; i = i + stepValue) {
+                    values.push([i]);
+                }
+
+                var plotTitle = functionNode.plotMetadata["PlotTitle"];
+                var XAxisLabel = functionNode.plotMetadata["XAxisLabel"];
+                var YAxisLabel = functionNode.plotMetadata["YAxisLabel"];
+                //Generate options from metadata information
+                options = {
+                    xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
+                    yaxis: {axisLabel: YAxisLabel},
+                    legendText: plotTitle
+                };
+
+                //Convert from single expresion to parametired expresion (2x -> f(x)=2x)
+                var parameterizedExpression = "f(";
+                for (var argumentIndex in arguments) {
+                    parameterizedExpression += arguments[argumentIndex] + ",";
+                }
+                parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
+                parameterizedExpression += ") =" + expression;
+
+                //Plot data function
+                this.plotDataFunction(parameterizedExpression, values, options);
+
+                //Set title to widget
+                this.setName(plotTitle);
+            }
+        },
+
+    });
 });

@@ -46,7 +46,6 @@ public enum OutboundMessages {
 	SERVER_AVAILABLE("server_available"),
 	EXPERIMENT_RUNNING("experiment_running"),
 	INFO_MESSAGE("info_message"),
-	EXPERIMENT_UPDATE("experiment_update"), 
 	RELOAD_CANVAS("reload_canvas"),
 	SIMULATION_CONFIGURATION("simulation_configuration"),
 	ERROR("generic_error"),
@@ -83,7 +82,8 @@ public enum OutboundMessages {
 	MODEL_UPLOADED("model_uploaded"),
 	DOWNLOAD_RESULTS("download_results"),
 	UPDATE_MODEL_TREE("update_model_tree"), 
-	EXPERIMENT_CREATED("experiment_created");
+	EXPERIMENT_CREATED("experiment_created"), 
+	GEPPETTO_MODEL_LOADED("geppetto_model_loaded");
 
 	private OutboundMessages(final String text) {
 		this.text = text;

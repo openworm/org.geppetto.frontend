@@ -206,8 +206,8 @@ define(function (require) {
             this.initializeLegend(function (label, series) {
                 var split = label.split(".");
                 var shortLabel = label;
-                if (split.length > 4) {
-                    shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 2] + "." + split[split.length - 1];
+                if (split.length > 5) {
+                    shortLabel = split[0] + "." + split[1] + "..." + split[split.length - 3] + "." + split[split.length - 2] + "." + split[split.length - 1];
                 }
                 labelsMap[label] = {label: shortLabel};
                 return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';

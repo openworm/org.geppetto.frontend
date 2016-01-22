@@ -67,20 +67,20 @@ define(function (require) {
             }
 
             var path = "";
-            var pointer = this.getWrappedObj();
+            var elements = this.getElements();
 
-            for (var e = 0; e < pointer.elements.length; e++) {
-                var element = pointer.elements[e];
-                var resolvedVar = GEPPETTO.ModelFactory.resolve(element.variable.$ref);
-                var resolvedType = GEPPETTO.ModelFactory.resolve(element.type.$ref);
+            for (var e = 0; e < elements.length; e++) {
+                var element = elements[e];
+                var resolvedVar = element.getVariable();
+                var resolvedType =  element.getType();
                 path += resolvedVar.getId();
                 if (types) {
                     path += "(" + resolvedType.getId() + ")";
                 }
-                if (element.hasOwnProperty("index")) {
-                    path += "[" + element.index + "]";
+                if (element.getIndex() > -1) {
+                    path += "[" + element.getIndex() + "]";
                 }
-                if (e < pointer.elements.length - 1) {
+                if (e < elements.length - 1) {
                     path += ".";
                 }
             }

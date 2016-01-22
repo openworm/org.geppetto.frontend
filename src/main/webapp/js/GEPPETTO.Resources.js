@@ -429,6 +429,12 @@ define(function (require) {
             STATE_VARIABLE_CAPABILITY: 'StateVariableCapability',
             PARAMETER_CAPABILITY: 'ParameterCapability',
             CONNECTION_CAPABILITY: 'ConnectionCapability',
+            // CONNECTION DIRECTION
+            INPUT: 'input',
+            OUTPUT: 'output',
+            INPUT_OUTPUT: 'input_output',
+            DIRECTIONAL: 'DIRECTIONAL',
+            BIDIRECTIONAL: 'BIDIRECTIONAL'
         }
     }
 });

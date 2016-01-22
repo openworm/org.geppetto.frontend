@@ -283,15 +283,42 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         },
 
         /**
-         * Return connections
+         * Return connections, user GEPPETTO.Resources.INPUT / OUTPUT / INPUT_OUTPUT to filter
          *
-         * @command Instance.getConnections()
+         * @command Instance.getConnections(direction)
          *
          * @returns {List<Instance>}
          *
          */
-        getConnections: function () {
-            return this.get('connections');
+        getConnections: function (direction) {
+            var connections = this.get('connections');
+
+            if (direction === GEPPETTO.Resources.INPUT || direction === GEPPETTO.Resources.OUTPUT || direction === GEPPETTO.Resources.INPUT_OUTPUT) {
+                var filteredConnections = [];
+                for(var i=0; i<connections.length; i++){
+                    // get directionality
+                    var connectivity = connections[i].getVariable().getInitialValue().value.connectivity;
+                    if(connectivity == GEPPETTO.Resources.DIRECTIONAL) {
+                        var a = connections[i].getA();
+                        var b = connections[i].getB();
+                        // if A is this then it's an output connection
+                        if(this.getInstancePath() == a.getPath() && direction === GEPPETTO.Resources.OUTPUT){
+                            filteredConnections.push(connections[i]);
+                        }
+                        // if B is this then it's an input connection
+                        if(this.getInstancePath() == b.getPath() && direction === GEPPETTO.Resources.INPUT){
+                            filteredConnections.push(connections[i]);
+                        }
+                    } else if (connectivity == GEPPETTO.Resources.BIDIRECTIONAL) {
+                        filteredConnections.push(connections[i]);
+                    }
+                }
+
+                // set return variable to filtered list
+                connections = filteredConnections;
+            }
+
+            return connections;
         },
 
         /**

@@ -73,7 +73,6 @@ define(function (require) {
             },
 
             createDataset: function (state) {
-            	taka = 0;
             	return {data: this.convertNodeToTreeVisualiserNode(state), isDisplayed: false};
             },
 
@@ -100,8 +99,7 @@ define(function (require) {
             			break;
             		case GEPPETTO.Resources.POINTER_TYPE:
                     	//AQP: Add sth! A button?
-            			//formattedValue = "Pointer - " + node.getPointerValue();
-            			formattedValue = "Pointer - ";
+            			formattedValue = "> " + node.getInitialValues()[0].getElements()[0].getType().getName();
             			break;
             		case GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY:
                         if(node.getTimeSeries() != null && node.getTimeSeries().length>0)
@@ -165,13 +163,6 @@ define(function (require) {
             
 
             convertNodeToTreeVisualiserNode: function (node) {
-            	if (typeof node.getPath == 'undefined'){
-            		//console.log(node.getName());
-            		  //          	            console.log(node.getMetaType());
-            		            	}
-            	else{
-            		//console.log("taka");
-            	}
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getType().getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
                 	if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || node.getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
                 		if (node.getType().getSuperType() != undefined && node.getType().getSuperType().getId() == 'projection') {
@@ -197,18 +188,7 @@ define(function (require) {
                             return new TreeVisualiserNode({wrappedObj: node.getType(), _children: projectionsChildrenNode, style:this.getStyle(node.getType().getMetaType())});
                         }
                         else {
-                        	
-                        	var options = {wrappedObj: node.getType(), style:this.getStyle(node.getType().getMetaType())};
-                        	if (!node.getName().startsWith('Summary')){
-	                        	//For now we are assuming either you have anonymous type or type
-//	                        	if (node.getAnonymousTypes().length>0){
-//	                        		options["_children"] = this.createTreeVisualiserNodeChildren(node.getAnonymousTypes()[0]);
-//	                        	}
-//	                        	else if (node.getType() != null){
-	                        		options["_children"] = this.createTreeVisualiserNodeChildren(node.getType());
-//	                        	}
-                        	}
-                            return new TreeVisualiserNode(options);
+                        	return new TreeVisualiserNode({wrappedObj: node.getType(), style:this.getStyle(node.getType().getMetaType()), _children: this.createTreeVisualiserNodeChildren(node.getType())});
                         }
                 	}
                 	else{
@@ -223,7 +203,7 @@ define(function (require) {
                 		formattedValue = this.getFormattedValue(node, node.get("capabilities")[0], 0);
                 		style = this.getStyle(node.get("capabilities")[0]);
                 	}
-                    return new TreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, children: this.createTreeVisualiserNodeChildren(node)});
+                    return new TreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, _children: this.createTreeVisualiserNodeChildren(node)});
                 }
                 else if (node.getMetaType() != GEPPETTO.Resources.VARIABLE_NODE && node.getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
                 	return new TreeVisualiserNode({wrappedObj: node, _children: this.createTreeVisualiserNodeChildren(node), style: this.getStyle(node.getMetaType())})

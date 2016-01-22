@@ -50,7 +50,7 @@ define(function (require) {
          * @exports geppetto-objects/G
          */
         GEPPETTO.G = {
-            listeners: [],
+            listeners: {},
             selectionOptions: {
                 show_inputs: true,
                 show_outputs: true,
@@ -495,20 +495,23 @@ define(function (require) {
             /**
              * Callback to be called whenever a watched node changes
              *
-             * @param {VariableNode} varnode - VariableNode to couple callback to
+             * @param {Instance} node - VariableNode to couple callback to
              * @param {Function} callback - Callback function to be called whenever _variable_ changes
              */
-            addOnNodeUpdatedCallback: function (varnode, callback) {
-                this.listeners[varnode.getInstancePath()] = callback;
+            addOnNodeUpdatedCallback: function (node, callback) {
+                if (!this.listeners[node.getInstancePath()]) {
+                    this.listeners[node.getInstancePath()] = [];
+                }
+                this.listeners[node.getInstancePath()].push(callback);
             },
 
             /**
              * Clears callbacks coupled to changes in a node
              *
-             * @param {VariableNode} varnode - VariableNode to which callbacks are coupled
+             * @param {Instance} node - VariableNode to which callbacks are coupled
              */
-            clearOnNodeUpdateCallback: function (varnode) {
-                this.listeners[varnode.instancePath] = null;
+            clearOnNodeUpdateCallback: function (node) {
+                this.listeners[node.getInstancePath()] = null;
             },
 
             /**
@@ -530,14 +533,14 @@ define(function (require) {
              * corresponding to min and max brightness. If no normalization function is
              * specified, then brightness = value
              *
-             * @param {AspectNode} aspect - Aspect which contains the entity to be lit
-             * @param {VariableNode} modulation - Variable which modulates the brightness
+             * @param {Instance} instance - The instance to be lit
+             * @param {Instance} modulation - Variable which modulates the brightness
              * @param {Function} normalizationFunction
              */
-            addBrightnessFunction: function (aspect, modulation, normalizationFunction) {
-                this.addOnNodeUpdatedCallback(modulation, function (varnode, step) {
-                    GEPPETTO.SceneController.lightUpEntity(aspect.instancePath,
-                        normalizationFunction ? normalizationFunction(varnode.getTimeSeries()[step]) : varnode.getTimeSeries()[0]);
+            addBrightnessFunction: function (instance, modulation, normalizationFunction) {
+                this.addOnNodeUpdatedCallback(modulation, function (modulation, step) {
+                    GEPPETTO.SceneController.lightUpEntity(instance,
+                        normalizationFunction ? normalizationFunction(modulation.getTimeSeries()[step]) : modulation.getTimeSeries()[step]);
                 });
             },
 

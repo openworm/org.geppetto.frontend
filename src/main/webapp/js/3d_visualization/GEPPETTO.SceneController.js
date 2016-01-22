@@ -123,21 +123,19 @@ define(function (require) {
             /**
              * Light up the entity
              *
-             * @param {String}
-             *            aspectPath - the aspect path of the entity to be lit
-             * @param {String}
-             *            entityName - the name of the entity to be lit (in the 3d model)
+             * @param {Instance}
+             *            instance - the instance to be lit
              * @param {Float}
              *            intensity - the lighting intensity from 0 (no illumination) to 1 (full illumination)
              */
-            lightUpEntity: function (instancePath, intensity) {
+            lightUpEntity: function (instance, intensity) {
                 if (intensity <= 0) {
                     intensity = 1e-6;
                 }
                 if (intensity > 1) {
                     intensity = 1;
                 }
-                var threeObject = GEPPETTO.getVARS().meshes[instancePath];
+                var threeObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 if (threeObject != null) {
                     if (threeObject instanceof THREE.Line) {
                         threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity))

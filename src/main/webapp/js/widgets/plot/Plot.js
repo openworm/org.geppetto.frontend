@@ -117,6 +117,8 @@ define(function (require) {
 
             $("#" + this.id).bind("plothover", {plot: this}, function (event, pos, item) {
                 event.data.plot.latestPosition = pos;
+                //Enable to change cursor on hover, couldnt find anything that felt better than the default pointer
+                //$("#" + event.data.plot.id).css("cursor", "ew-resize");
                 if (!event.data.plot.updateLegendTimeout) {
                     event.data.plot.updateLegendTimeout = setTimeout(function () {
                         event.data.plot.updateLegend();
@@ -125,6 +127,7 @@ define(function (require) {
             });
 
             $("#" + this.id).bind("mouseout", {plot: this}, function (event) {
+                //$("#" + event.data.plot.id).css("cursor", "default");
                 event.data.plot.latestPosition = null;
             });
         },

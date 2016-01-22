@@ -142,7 +142,7 @@ define(function (require) {
                         this.stop();
                     }
                     GEPPETTO.ExperimentsController.terminateWorker();
-                    GEPPETTO.trigger(Events.Experiment_update, {step: this.maxSteps});
+                    GEPPETTO.trigger(Events.Experiment_update, {step: this.maxSteps-1});
                     GEPPETTO.trigger(Events.Experiment_stop);
                 }
                 else {

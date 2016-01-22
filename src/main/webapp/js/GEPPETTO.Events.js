@@ -117,14 +117,12 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(Events.Experiment_play, parameters);
                 });
                 GEPPETTO.on(Events.Experiment_update, function (parameters) {
-                    if (parameters.playAll != null || parameters.steps != undefined) {
+                    if (parameters.playAll != null || parameters.step != undefined) {
                         //update scene brightness
                         for (var key in GEPPETTO.G.listeners) {
-                            //retrieve the variable/node state from tree
-                            var simState = Instances.getInstance(key);
-
-                            //update simulation state
-                            GEPPETTO.G.listeners[key](simState, parameters.steps);
+                            for (var i = 0; i < GEPPETTO.G.listeners[key].length; i++) {
+                                GEPPETTO.G.listeners[key][i](Instances.getInstance(key), parameters.step);
+                            }
                         }
                     }
                     //notify widgets a restart of data is needed
@@ -137,4 +135,5 @@ define(function (require) {
             },
         };
     }
-});
+})
+;

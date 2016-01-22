@@ -53,7 +53,11 @@ define(function (require) {
             //TODO: Those are not sane defaults.
             //      Once things have types, we should ideally use sthing like  x.getType()
             nodeType: function (node) {
-                return node.getId().split('_')[0]
+                if(typeof node.getPath === "function"){
+                    return node.getPath().split('_')[0]
+                } else {
+                    return node.getId().split('_')[0]
+                }
             },
             linkWeight: function (conn) {
                 return 1
@@ -106,33 +110,45 @@ define(function (require) {
 
         createDataFromConnections: function () {
 
-            if (this.dataset["root"]._metaType == "EntityNode") {
-                var subEntities = this.dataset["root"].getEntities();
+            if (this.dataset["root"].getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
+                var subInstances = this.dataset["root"].getChildren();
                 this.dataset["nodes"] = [];
                 this.dataset["links"] = [];
 
-                for (var subEntityIndex in subEntities) {
-                    var subEntity = subEntities[subEntityIndex];
-                    this.createNode(subEntity.getId(), this.options.nodeType(subEntity));
-                    var connections = subEntity.getConnections();
-                    for (var connectionIndex in connections) {
-                        var connectionItem = connections[connectionIndex];
-                        if (connectionItem.getType() == "FROM") {
-                            //TODO: isn't there an easier way to get source/target objs from a conn???
-                            var source = connectionItem.getParent();
-                            var target = eval(connectionItem.getEntityInstancePath().substring(connectionItem.getEntityInstancePath().indexOf('.') + 1));
-                            var sourceId = source.getId();
-                            var targetId = target.getId();
+                for (var k=0; k<subInstances.length; k++) {
+                    var subInstance = subInstances[k];
+                    this.createNode(subInstance.getId(), this.options.nodeType(subInstance));
 
-                            this.createNode(targetId, this.options.nodeType(target));
-                            this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
+                    // get children that are connections
+                    var connections = this.getConnectionChildren(subInstance);
+                    for (var x = 0; x<connections.length; x++) {
+                        var connectionItem = connections[x];
 
-                        }
+                        var source = connectionItem.getA();
+                        var target = connectionItem.getB();
+                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
+                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
+
+                        this.createNode(targetId, this.options.nodeType(target.getElements()[source.getElements().length - 1]));
+                        this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
                     }
+
                 }
             }
             this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
             this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
+        },
+
+        // gets children of the given entity if their type is 'connection'
+        getConnectionChildren: function (instance) {
+            var connections = [];
+            var children = instance.getChildren();
+            for(var i=0; i<children.length; i++){
+                if(children[i].getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE){
+                    connections.push(children[i]);
+                }
+            }
+            return connections;
         },
 
         //TODO: move to graph utils to package, maybe consider jsnetworkx?

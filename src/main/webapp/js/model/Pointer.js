@@ -71,15 +71,9 @@ define(function (require) {
 
             for (var e = 0; e < elements.length; e++) {
                 var element = elements[e];
-                var resolvedVar = element.getVariable();
-                var resolvedType =  element.getType();
-                path += resolvedVar.getId();
-                if (types) {
-                    path += "(" + resolvedType.getId() + ")";
-                }
-                if (element.getIndex() > -1) {
-                    path += "[" + element.getIndex() + "]";
-                }
+
+                path += element.getPath(types);
+
                 if (e < elements.length - 1) {
                     path += ".";
                 }

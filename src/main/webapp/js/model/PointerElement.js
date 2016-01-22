@@ -60,7 +60,7 @@ define(function (require) {
         /**
          * Gets the variable
          *
-         * @command Pointer.getVariable()
+         * @command PointerElement.getVariable()
          *
          * @returns {Variable} - variable
          *
@@ -72,7 +72,7 @@ define(function (require) {
         /**
          * Gets the type
          *
-         * @command Pointer.getType()
+         * @command PointerElement.getType()
          *
          * @returns {Type} - type
          *
@@ -84,13 +84,41 @@ define(function (require) {
         /**
          * Gets the index if it's pointing to an array element
          *
-         * @command Pointer.getIndex()
+         * @command PointerElement.getIndex()
          *
          * @returns {Integer} - index in a given array
          *
          */
         getIndex: function () {
             return this.get('index');
+        },
+
+        /**
+         * Get the path for this pointer element
+         *
+         * @command PointerElement.getPath()
+         *
+         * @returns {String} - path
+         */
+        getPath: function (types) {
+            if (types === undefined) {
+                types = false;
+            }
+
+            var path = '';
+
+            var element = this;
+            var resolvedVar = element.getVariable();
+            var resolvedType =  element.getType();
+            path += resolvedVar.getId();
+            if (types) {
+                path += "(" + resolvedType.getId() + ")";
+            }
+            if (element.getIndex() > -1) {
+                path += "[" + element.getIndex() + "]";
+            }
+
+            return path;
         }
     });
 });

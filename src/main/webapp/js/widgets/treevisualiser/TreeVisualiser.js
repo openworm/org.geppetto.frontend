@@ -50,7 +50,7 @@ define(function (require) {
             initialize: function (options) {
                 Widget.View.prototype.initialize.call(this, options);
 
-                this.datasets = [];
+                this.dataset = {data: [], isDisplayed: false, valueDict: {}};
                 this.visible = options.visible;
                 this.render();
                 this.setSize(options.width, options.height);
@@ -73,7 +73,7 @@ define(function (require) {
             },
 
             createDataset: function (state) {
-            	return {data: this.convertNodeToTreeVisualiserNode(state), isDisplayed: false};
+            	return this.convertNodeToTreeVisualiserNode(state);
             },
 
             getFormattedValue: function(node, type, step){
@@ -163,6 +163,8 @@ define(function (require) {
             
 
             convertNodeToTreeVisualiserNode: function (node) {
+            	
+            	
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getType().getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
                 	if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || node.getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
                 		if (node.getType().getSuperType() != undefined && node.getType().getSuperType().getId() == 'projection') {

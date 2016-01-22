@@ -95,17 +95,17 @@ define(function (require) {
             }
             if (nodeInstancePath != null || undefined) {
                 //Read node from instancepath data property attached to dom element
-                dataset.isDisplayed = false;
-                var node = dataset.valueDict[nodeInstancePath]["model"];
+                this.dataset.isDisplayed = false;
+                var node = this.dataset.valueDict[nodeInstancePath]["model"];
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
                 	GEPPETTO.Console.executeCommand("G.addWidget(Widgets.TREEVISUALISERDAT).setData(Model.neuroml." + node.getWrappedObj().getInitialValues()[0].getElements()[0].getType().getId() + ")");
                 }
                 else if (node.getChildren().length == 0 && node.getHiddenChildren().length > 0){
 	                node.set({"children": node.getHiddenChildren()});
 	                for (var childIndex in node.getChildren()){
-	                	this.prepareTree(dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
+	                	this.prepareTree(this.dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
 	                }
-	                dataset.isDisplayed = true;
+	                this.dataset.isDisplayed = true;
                 }
             }
         },
@@ -135,20 +135,19 @@ define(function (require) {
         setData: function (state, options) {
             labelsInTV = [];
 
-
             if (state instanceof Array) {
                 var that = this;
                 $.each(state, function (d) {
                     that.setData(state[d], options)
                 });
             }
-            dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
-
-            dataset.valueDict = {};
-            this.prepareTree(this.gui, dataset.data, 0);
-            this.datasets.push(dataset);
-
-            dataset.isDisplayed = true;
+            
+            var currentDataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
+            this.dataset.data.push(currentDataset);
+            this.dataset.isDisplayed = false;
+            this.prepareTree(this.gui, currentDataset, 0);
+            this.dataset.isDisplayed = true;
+            
             //Disable input elements
             $(this.dialog).find("input").prop('disabled', true);
             $(this.dialog).find(".parameterspecificationnodetv input").prop('disabled', false);
@@ -181,8 +180,8 @@ define(function (require) {
          * @param {Array} data - Data to paint
          */
         prepareTree: function (parent, data, step) {
-            //if (data._metaType != null){
 
+        	
             if ('labelName' in this.options) {
                 // We need to verify if this is working
                 label = data.getWrappedObj().get(this.options.labelName);
@@ -201,27 +200,27 @@ define(function (require) {
             }
 
 
-            if (!dataset.isDisplayed) {
+            if (!this.dataset.isDisplayed) {
 
 
                 //AQP: Better ask for the children or for compositetype?
                 var children = data.getChildren();
                 var _children = data.getHiddenChildren();
                 if (children.length > 0 || _children.length > 0) {
-                	dataset.valueDict[data.getId()] = new function () {};
-                    dataset.valueDict[data.getId()]["folder"] = parent.addFolder(label);
+                	this.dataset.valueDict[data.getId()] = new function () {};
+                	this.dataset.valueDict[data.getId()]["folder"] = parent.addFolder(label);
                 	
                 	
                     //parentFolder = parent.addFolder(label);
                     //Add class to dom element depending on node metatype
-                    $(dataset.valueDict[data.getId()]["folder"].domElement).find("li").addClass(data.getStyle());
+                    $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
-                    $(dataset.valueDict[data.getId()]["folder"].domElement).find("li").data("instancepath", data.getId());
+                    $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").data("instancepath", data.getId());
 
 
-                    var parentFolderTmp = dataset.valueDict[data.getId()]["folder"];
+                    var parentFolderTmp = this.dataset.valueDict[data.getId()]["folder"];
                     for (var childIndex in children) {
-                        if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")) {
+                        if (!this.dataset.isDisplayed || (this.dataset.isDisplayed && children[childIndex].name != "ModelTree")) {
                             this.prepareTree(parentFolderTmp, children[childIndex], step);
                         }
                     }
@@ -230,29 +229,29 @@ define(function (require) {
                     }
                 }
                 else {
-                    dataset.valueDict[data.getId()] = new function () {};
-                    dataset.valueDict[data.getId()][label] = data.getValue();
-                    dataset.valueDict[data.getId()]["controller"] = parent.add(dataset.valueDict[data.getId()], label).listen();
+                	this.dataset.valueDict[data.getId()] = new function () {};
+                	this.dataset.valueDict[data.getId()][label] = data.getValue();
+                	this.dataset.valueDict[data.getId()]["controller"] = parent.add(this.dataset.valueDict[data.getId()], label).listen();
 
                     //Add class to dom element depending on node metatype
-                    $(dataset.valueDict[data.getId()]["controller"].__li).addClass(data.getStyle());
+                    $(this.dataset.valueDict[data.getId()]["controller"].__li).addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
-                    $(dataset.valueDict[data.getId()]["controller"].__li).data("instancepath", data.getId());
+                    $(this.dataset.valueDict[data.getId()]["controller"].__li).data("instancepath", data.getId());
                     
                     // Execute set value if it is a parameter specification
-//                    if(data._metaType=="ParameterSpecificationNode")
-//					{
-//						$(dataset.valueDict[data.getId()]["controller"].__li).find('div > div > input[type="text"]').change(function(){
-//							GEPPETTO.Console.executeCommand(data.getId() + ".setValue(" + $(this).val().split(" ")[0] + ")");
-//						});
-//					}
+                    if(data.getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE)
+					{
+						$(dataset.valueDict[data.getId()]["controller"].__li).find('div > div > input[type="text"]').change(function(){
+							GEPPETTO.Console.executeCommand(data.getId() + ".setValue(" + $(this).val().split(" ")[0] + ")");
+						});
+					}
                 }
-                dataset.valueDict[data.getId()]["model"] = data;
+                this.dataset.valueDict[data.getId()]["model"] = data;
             }
             else {
-                var set = dataset.valueDict[data.getId()]["controller"].__gui;
+                var set = this.dataset.valueDict[data.getId()]["controller"].__gui;
                 if (!set.__ul.closed) {
-                    dataset.valueDict[data.getId()][label] = data.getValue();
+                	this.dataset.valueDict[data.getId()][label] = data.getValue();
                 }
             }
 
@@ -360,12 +359,9 @@ define(function (require) {
          * Updates the data that the TreeVisualiserDAT is rendering
          */
         updateData: function (step) {
-            for (var key in this.datasets) {
-                dataset = this.datasets[key];
-                //if (dataset.variableToDisplay != null) {
-                this.prepareTree(this.gui, dataset.data, step);
-                //}
-            }
+        	for (var i = 0; i < this.dataset.data.length; i++){
+        		this.prepareTree(this.gui, this.dataset.data[i], step);
+        	}
         },
 
         /**
@@ -402,7 +398,7 @@ define(function (require) {
          * Clear Widget
          */
         reset: function () {
-            this.datasets = [];
+        	this.dataset = {data: [], isDisplayed: false, valueDict: {}};
             $(this.dialog).children().remove();
             this.initDATGUI();
         },
@@ -411,13 +407,11 @@ define(function (require) {
          * Refresh data in tree visualiser
          */
         refresh: function () {
-            var currentDatasets = this.datasets;
-
+            var currentDatasets = this.dataset;
             this.reset();
-
-            for (var currentDatasetIndex in currentDatasets) {
-                this.setData(currentDatasets[currentDatasetIndex].data);
-            }
+            for (var i = 0; i < currentDatasets.length; i++){
+        		this.prepareTree(this.gui, currentDatasets.data[i], step);
+        	}
         },
 
         initDATGUI: function () {

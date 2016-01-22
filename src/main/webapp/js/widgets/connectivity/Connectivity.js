@@ -117,20 +117,27 @@ define(function (require) {
 
                 for (var k=0; k<subInstances.length; k++) {
                     var subInstance = subInstances[k];
-                    this.createNode(subInstance.getId(), this.options.nodeType(subInstance));
-
-                    // get children that are connections
-                    var connections = this.getConnectionChildren(subInstance);
-                    for (var x = 0; x<connections.length; x++) {
-                        var connectionItem = connections[x];
-
-                        var source = connectionItem.getA();
-                        var target = connectionItem.getB();
-                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
-                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
-
-                        this.createNode(targetId, this.options.nodeType(target.getElements()[source.getElements().length - 1]));
-                        this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
+                    if (subInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {   
+                    	var populationChildren = subInstance.getChildren();
+                    	for (var l=0; l<populationChildren.length; l++) {
+                    		var populationChild = populationChildren[l];
+	                    	this.createNode(populationChild.getId(), this.options.nodeType(populationChild));
+                    	}
+                    }
+                    else{
+                    	// get children that are connections
+	                    var connections = this.getConnectionChildren(subInstance);
+	                    for (var x = 0; x<connections.length; x++) {
+	                        var connectionItem = connections[x];
+	
+	                        var source = connectionItem.getA();
+	                        var target = connectionItem.getB();
+	                        //AQP: Where is the error?
+	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath().replace('[', '_').replace(']', '');
+	                        var targetId = target.getElements()[source.getElements().length - 1].getPath().replace('[', '_').replace(']', '');
+	
+	                        this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
+	                    }
                     }
 
                 }

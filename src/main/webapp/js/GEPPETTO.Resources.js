@@ -385,8 +385,6 @@ define(function (require) {
             VISUAL_GROUP_NODE: "VisualGroup",
             VISUAL_GROUP_ELEMENT_NODE: "VisualGroupElement",
 
-            INPUT_CONNECTION: "FROM",
-            OUTPUT_CONNECTION: "TO",
             //TYPES
             TYPE_NODE: "Type",
             VISUAL_TYPE_NODE: "VisualType",

@@ -492,49 +492,62 @@ define(function (require) {
             },
 
             /**
-             * Change color for meshes that are connected to other meshes. Color depends on whether that mesh (aspect) is an output, input or both connection.
+             * Change color for meshes that are connected to other meshes. Color depends on whether that instance is an output, input or both
              *
-             * @param {Array}
-             *            paths - Array containing the paths of meshes (aspects) that are the connections.
+             * @param {Instance}
+             *            instance - The instance for which we want to show the connections
              * @param {String}
-             *            type - Type of connection, input or output
+             *            type - Type of connection, input or output (See GEPPETTO.Resources.INPUT/OUTPUT)
              */
-            showConnections: function (paths, type) {
-                for (var e in paths) {
-                    var mesh = GEPPETTO.getVARS().meshes[paths[e]];
+            highlightConnectedInstances: function (instance, type) {
+
+                var connections = instance.getConnections(type);
+                for (var c = 0; c < connections.length; c++) {
+                    var connection = connections[c];
 
                     // determine whether connection is input or output
-                    if (type == GEPPETTO.Resources.INPUT_CONNECTION) {
-                        // figure out if connection is both, input and output
+                    if (type == GEPPETTO.Resources.INPUT) {
+                        //I want to change the colour the instances that are an input to the instance passed as a parameter
+                        var mesh = GEPPETTO.getVARS().meshes[connection.getA().getPath()]; //this is the instance input to the current one
                         if (mesh.output) {
                             GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
-                        } else {
+                        }
+                        else {
                             GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
                         }
                         mesh.input = true;
-                    } else if (type == GEPPETTO.Resources.OUTPUT_CONNECTION) {
-                        // figure out if connection is both, input and output
+
+                    } else if (type == GEPPETTO.Resources.OUTPUT) {
+                        //I want to change the colour the instances that are an output of the instance passed as a parameter
+                        var mesh = GEPPETTO.getVARS().meshes[connection.getB().getPath()]; //this is the instance output of the current on
                         if (mesh.input) {
-                            GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
-                        } else {
+                            GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
+                        }
+                        else {
                             GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED);
                         }
                         mesh.output = true;
                     }
-
                 }
+            }
 
-            },
+            ,
 
             /**
-             * Hide connections. Undoes changes done by show connections, in which the connections were shown and ghost effects apply after selection.
+             * Restore the original colour of the connected instances
              *
-             * @param {Array}
-             *            paths - Array of aspects that have the connections
+             * @param {Instance}
+             *            instance - A connected instance
              */
-            hideConnections: function (paths) {
-                for (var e in paths) {
-                    var mesh = GEPPETTO.getVARS().meshes[paths[e]];
+            restoreConnectedInstancesColour: function (instance) {
+                var connections = instance.getConnections();
+                for (var c = 0; c < connections.length; c++) {
+                    var connection = connections[c];
+
+                    var mesh = connection.getA().getPath() == instance.getInstancePath() ?
+                        GEPPETTO.getVARS().meshes[connection.getB().getPath()] :
+                        GEPPETTO.getVARS().meshes[connection.getA().getPath()];
+
 
                     // if mesh is not selected, give it ghost or default color
                     // and opacity
@@ -563,16 +576,23 @@ define(function (require) {
                 }
             },
 
-            showConnectionLines: function (path, lines) {
-                var segments = Object.keys(lines).length;
+            showConnectionLines: function (instance) {
+                var connections = instance.getConnections();
 
-                var mesh = GEPPETTO.getVARS().meshes[path];
+                var mesh = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 var origin = mesh.position.clone();
 
-                for (var aspectPath in lines) {
+                for (var c = 0; c < connections.length; c++) {
 
-                    var type = lines[aspectPath];
-                    var destinationMesh = GEPPETTO.getVARS().meshes[aspectPath];
+                    var connection = connections[c];
+                    var type = connection.getA().getPath() == instance.getInstancePath() ?
+                        GEPPETTO.Resources.OUTPUT :
+                        GEPPETTO.Resources.INPUT;
+
+                    var destinationMesh = connection.getA().getPath() == instance.getInstancePath() ?
+                        GEPPETTO.getVARS().meshes[connection.getB().getPath()] :
+                        GEPPETTO.getVARS().meshes[connection.getA().getPath()];
+
                     var destination = destinationMesh.position.clone();
 
                     var geometry = new THREE.Geometry();
@@ -581,21 +601,21 @@ define(function (require) {
                     geometry.verticesNeedUpdate = true;
                     geometry.dynamic = true;
 
-                    var c;
+                    var colour;
 
-                    if (type == GEPPETTO.Resources.INPUT_CONNECTION) {
+                    if (type == GEPPETTO.Resources.INPUT) {
                         // figure out if connection is both, input and output
                         if (mesh.output) {
-                            c = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
+                            colour = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
                         } else {
-                            c = GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED;
+                            colour = GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED;
                         }
-                    } else if (type == GEPPETTO.Resources.OUTPUT_CONNECTION) {
+                    } else if (type == GEPPETTO.Resources.OUTPUT) {
                         // figure out if connection is both, input and output
                         if (mesh.input) {
-                            c = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
+                            colour = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
                         } else {
-                            c = GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED;
+                            colour = GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED;
                         }
                     }
 
@@ -604,22 +624,31 @@ define(function (require) {
                             opacity: 1,
                             linewidth: 2
                         });
-                    material.color.setHex(c);
+                    material.color.setHex(colour);
 
                     var line = new THREE.LineSegments(geometry, material);
                     line.updateMatrixWorld(true);
 
-                    GEPPETTO.getVARS().scene.add(line);
-                    GEPPETTO.getVARS().connectionLines[path + "to" + aspectPath] = line;
-                }
-            },
+                    if (GEPPETTO.getVARS().connectionLines[connection.getInstancePath()]) {
+                        GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[connection.getInstancePath()]);
+                    }
 
-            hideConnectionLines: function () {
-                var lines = GEPPETTO.getVARS().connectionLines;
-                for (line in lines) {
-                    GEPPETTO.getVARS().scene.remove(lines[line]);
+                    GEPPETTO.getVARS().scene.add(line);
+                    GEPPETTO.getVARS().connectionLines[connection.getInstancePath()] = line;
                 }
-            },
+            }
+            ,
+
+            removeAllConnectionLines: function () {
+                var lines = GEPPETTO.getVARS().connectionLines;
+                for (var key in lines) {
+                    if (lines.hasOwnProperty(key)) {
+                        GEPPETTO.getVARS().scene.remove(lines[key]);
+                    }
+                }
+                GEPPETTO.getVARS().connectionLines = [];
+            }
+            ,
 
             splitHighlightedMesh: function (targetObjects, aspects) {
                 var groups =
@@ -673,7 +702,8 @@ define(function (require) {
                     GEPPETTO.SceneController.createGroupMeshes(a, geometryGroups, newGroups);
                 }
                 return groups;
-            },
+            }
+            ,
 
             /**
              * Highlight part of a mesh
@@ -702,7 +732,8 @@ define(function (require) {
                         GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, splitHighlightedGroups[groupName].color.getHex());
                     }
                 }
-            },
+            }
+            ,
 
             /**
              * Split merged mesh into individual meshes
@@ -790,7 +821,8 @@ define(function (require) {
                 {};
                 groups[instancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
                 GEPPETTO.SceneController.createGroupMeshes(instancePath, geometryGroups, groups);
-            },
+            }
+            ,
 
             /**
              * Add mesh to geometry groups
@@ -818,7 +850,8 @@ define(function (require) {
                     geometry.merge(m.geometry, m.matrix);
                 }
                 return true;
-            },
+            }
+            ,
 
             /**
              * Create group meshes for given groups, retrieves from map if already present
@@ -855,7 +888,8 @@ define(function (require) {
                     groupMesh.visible = true;
                     GEPPETTO.getVARS().scene.add(groupMesh);
                 }
-            },
+            }
+            ,
 
             /**
              * Merge mesh that was split before
@@ -885,7 +919,8 @@ define(function (require) {
                     mergedMesh.visible = true;
                     GEPPETTO.getVARS().scene.add(mergedMesh);
                 }
-            },
+            }
+            ,
 
             /**
              * Shows a visual group
@@ -913,7 +948,8 @@ define(function (require) {
                         GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
                     }
                 }
-            },
+            }
+            ,
 
             /**
              * Animate simulation
@@ -934,7 +970,9 @@ define(function (require) {
                 if (GEPPETTO.getVARS().debugUpdate) {
                     GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
                 }
-            },
+            }
+            ,
         }
     }
-});
+})
+;

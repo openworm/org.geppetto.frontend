@@ -180,26 +180,26 @@ define(['jquery'], function (require) {
 
                 //Behavior: if the parent entity has connections change the opacity of what is not connected
                 //Rationale: help exploration of networks by hiding non connected
-                if (this.getParent().getConnections().length > 0) {
+                if (this.getConnections().length > 0) {
                     //allOtherMeshes will contain a list of all the non connected entities in the scene for the purpose
                     //of changing their opacity
                     var allOtherMeshes = $.extend({}, GEPPETTO.getVARS().meshes);
                     //look on the simulation selection options and perform necessary
                     //operations
                     if (G.getSelectionOptions().show_inputs) {
-                        var inputs = this.getParent().showInputConnections(true);
+                        var inputs = this.highlightInputInstances(true);
                         for (var i in inputs) {
                             delete allOtherMeshes[inputs[i]];
                         }
                     }
                     if (G.getSelectionOptions().show_outputs) {
-                        var outputs = this.getParent().showOutputConnections(true);
+                        var outputs = this.highlightOutputInstances(true);
                         for (var o in outputs) {
                             delete allOtherMeshes[outputs[o]];
                         }
                     }
                     if (G.getSelectionOptions().draw_connection_lines) {
-                        this.getParent().showConnectionLines(true);
+                        this.showConnectionLines(true);
                     }
                     if (G.getSelectionOptions().unselected_transparent) {
                         GEPPETTO.SceneController.ghostEffect(allOtherMeshes, true);
@@ -249,13 +249,13 @@ define(['jquery'], function (require) {
                     GEPPETTO.SceneController.setGhostEffect(false);
                 }
                 if (G.getSelectionOptions().show_inputs) {
-                    this.getParent().showInputConnections(false);
+                    this.highlightInputInstances(false);
                 }
                 if (G.getSelectionOptions().show_outputs) {
-                    this.getParent().showOutputConnections(false);
+                    this.highlightOutputInstances(false);
                 }
                 if (G.getSelectionOptions().draw_connection_lines) {
-                    this.getParent().showConnectionLines(false);
+                    this.showConnectionLines(false);
                 }
 
                 //trigger event that selection has been changed
@@ -323,112 +323,63 @@ define(['jquery'], function (require) {
 
         /**
          * Show input connections for this entity
-         * @command EntityNode.showInputConnections()
+         * @command instance.highlightInputInstances()
          * @param {boolean} mode- Show/hide input connections for this entity
          */
-        showInputConnections: function (mode) {
+        highlightInputInstances: function (mode) {
             if (mode == null || mode == undefined) {
-                return GEPPETTO.Resources.MISSING_PARAMETER;
-            }
-
-            // NOTE: selected depends on the Visual Capability API...
-            if (this.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY) && this.selected == false && (mode)) {
-                this.select();
-            }
-
-            var paths = [];
-            //match all aspect paths that are connected to this entity
-            for (var c in this.getConnections()) {
-                var connection = this.getConnections()[c];
-
-                if (connection.getType() == GEPPETTO.Resources.INPUT_CONNECTION) {
-                    var entity =
-                        GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
-
-                    paths = paths.concat(this.getAspectPaths(entity));
-                }
+                mode = true;
             }
 
             //show/hide connections
             if (mode) {
-                GEPPETTO.SceneController.showConnections(paths, GEPPETTO.Resources.INPUT_CONNECTION);
+                GEPPETTO.SceneController.highlightConnectedInstances(this, GEPPETTO.Resources.INPUT);
             }
             else {
-                GEPPETTO.SceneController.hideConnections(paths);
-            }
-
-            return paths;
-        },
-
-        /**
-         * Show connection lines for this entity.
-
-         * @command EntityNode.showConnectionLines()
-         * @param {boolean} mode - Show or hide connection lines
-         */
-        showConnectionLines: function (mode) {
-            if (mode == null || mode == undefined) {
-                return GEPPETTO.Resources.MISSING_PARAMETER;
-            }
-
-            //show or hide connection lines
-            if (mode) {
-                var origin = this.getAspects()[0].getInstancePath();
-                var lines = {};
-                for (var c in this.getConnections()) {
-                    var connection = this.getConnections()[c];
-
-                    var entity = GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
-
-                    var paths = this.getAspectPaths(entity);
-
-                    for (var p in paths) {
-                        lines[paths[p]] = connection.getType();
-                    }
-                }
-                if (!jQuery.isEmptyObject(lines)) {
-                    GEPPETTO.SceneController.showConnectionLines(origin, lines);
-                }
-            }
-            else {
-                GEPPETTO.SceneController.hideConnectionLines();
+                GEPPETTO.SceneController.restoreConnectedInstancesColour(this);
             }
         },
+
 
         /**
          * Show output connections for this entity.
 
-         * @command EntityNode.showOutputConnections()
+         * @command EntityNode.highlightOutputInstances()
          * @param {boolean} mode - Show or hide output connections
          */
-        showOutputConnections: function (mode) {
+        highlightOutputInstances: function (mode) {
             if (mode == null || mode == undefined) {
-                return GEPPETTO.Resources.MISSING_PARAMETER;
+                mode = true;
             }
 
-            // deselect all previously selected nodes
-            if (this.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY) && this.selected == false && (mode)) {
-                this.deselect();
-            }
-
-            var paths = [];
-            for (var c in this.getConnections()) {
-                var connection = this.getConnections()[c];
-
-                if (connection.getType() == GEPPETTO.Resources.OUTPUT_CONNECTION) {
-                    var entity = GEPPETTO.Utility.deepFind(connection.getEntityInstancePath());
-                    paths = paths.concat(this.getAspectPaths(entity));
-                }
-            }
-
-            //show/hide output connections call
+            //show/hide connections
             if (mode) {
-                GEPPETTO.SceneController.showConnections(paths, GEPPETTO.Resources.OUTPUT_CONNECTION);
+                GEPPETTO.SceneController.highlightConnectedInstances(this, GEPPETTO.Resources.OUTPUT);
             }
             else {
-                GEPPETTO.SceneController.hideConnections(paths);
+                GEPPETTO.SceneController.restoreConnectedInstancesColour(this);
             }
-            return paths;
+        },
+
+
+        /**
+         * Show connection lines for this instance.
+
+         * @command instance.showConnectionLines()
+         * @param {boolean} mode - Show or hide connection lines
+         */
+        showConnectionLines: function (mode) {
+            if (mode == null || mode == undefined) {
+                mode = true;
+            }
+
+            //show or hide connection lines
+            if (mode) {
+                GEPPETTO.SceneController.showConnectionLines(this);
+            }
+            else {
+                GEPPETTO.SceneController.removeAllConnectionLines(this);
+            }
         }
     }
 });

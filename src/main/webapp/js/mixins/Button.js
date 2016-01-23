@@ -1,10 +1,9 @@
-
-define(function(require) {
-	/**
-	 * Button used as part of GEPPETTO Components
-	 * 
-	 * @mixin Button
-	 */
+define(function (require) {
+    /**
+     * Button used as part of GEPPETTO Components
+     *
+     * @mixin Button
+     */
     var React = require('react');
 
     return {
@@ -19,7 +18,7 @@ define(function(require) {
                     onClick: this.props.onClick,
                     disabled: this.props.disabled
                 }, React.DOM.i({className: this.props.icon}), " " + this.props.label)
-                );
+            );
         }
     };
 });

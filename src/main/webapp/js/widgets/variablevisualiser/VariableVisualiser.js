@@ -37,119 +37,119 @@
  */
 define(function (require) {
 
-	var Widget = require('widgets/Widget');
-	var $ = require('jquery');
+    var Widget = require('widgets/Widget');
+    var $ = require('jquery');
 
-	return Widget.View.extend({
-		root: null,
-		variable: null,
-		options: null,
-		default_width: 250,
-		default_height: 150,
+    return Widget.View.extend({
+        root: null,
+        variable: null,
+        options: null,
+        default_width: 250,
+        default_height: 150,
 
-		/**
-		 * Initialises viriables visualiser with a set of options
-		 *
-		 * @param {Object} options - Object with options for the widget
-		 */
-		initialize: function (options) {
-			this.id = options.id;
-			this.name = options.name;
-			this.options = options;
+        /**
+         * Initialises viriables visualiser with a set of options
+         *
+         * @param {Object} options - Object with options for the widget
+         */
+        initialize: function (options) {
+            this.id = options.id;
+            this.name = options.name;
+            this.options = options;
 
-			if (!('width' in options)) {
-				options.width = this.default_width;
-			}
-			if (!('height' in options)) {
-				options.height = this.default_height;
-			}
+            if (!('width' in options)) {
+                options.width = this.default_width;
+            }
+            if (!('height' in options)) {
+                options.height = this.default_height;
+            }
 
-			this.render();
-			this.setSize(options.height, options.width);
-			this.dialog.append("<div class='varvis_header'></div><div class='varvis_body'></div>");
-		},
+            this.render();
+            this.setSize(options.height, options.width);
+            this.dialog.append("<div class='varvis_header'></div><div class='varvis_body'></div>");
+        },
 
-		/**
-		 * Takes time series data and shows it as a floating point variable changing in time.
-		 *
-		 * @command addVariable(state, options)
-		 * @param {Object} state - time series data (a geppetto simulation variable)
-		 * @param {Object} options - options for the plotting widget, if null uses default
-		 */
-		setVariable: function (state, options) {
-			this.variable = {
-				name: state.getInstancePath(),
-				state: state
-			};
+        /**
+         * Takes time series data and shows it as a floating point variable changing in time.
+         *
+         * @command addVariable(state, options)
+         * @param {Object} state - time series data (a geppetto simulation variable)
+         * @param {Object} options - options for the plotting widget, if null uses default
+         */
+        setVariable: function (state, options) {
+            this.variable = {
+                name: state.getInstancePath(),
+                state: state
+            };
 
-			if (this.root == null) {
-				this.root = $("#" + this.id)
-			}
+            if (this.root == null) {
+                this.root = $("#" + this.id)
+            }
 
-			this.updateVariable();
-			return "Variable visualisation added to widget";
-		},
-
-
-		/**
-		 * Clear variable
-		 *
-		 * @command removeVariable(state)
-		 *
-		 * @param {Object} state - geppetto similation variable to remove
-		 */
-		clearVariable: function () {
-			if (this.variable == null) {
-				return;
-			}
-
-			this.variable = null;
-			this.setHeader("");
-			this.setBody("");
-		},
-
-		/**
-		 * Updates variable values
-		 */
-		updateVariable: function (step) {
-			this.setHeader(this.variable.name);
-			if (typeof step != 'undefined'){
-				this.setBody(this.variable.state.getTimeSeries()[step].getValue().toFixed(4) + " " + this.variable.state.getUnit());
-			}
-		},
-
-		/**
-		 * Change name of the variable (if there's one)
-		 *
-		 * @param newName - the new name
-		 */
-		renameVariable: function (newName) {
-			if (this.variable != null) {
-				this.variable.name = newName;
-				this.setHeader(newName);
-			}
-		},
+            this.updateVariable();
+            return "Variable visualisation added to widget";
+        },
 
 
-		/**
-		 * @private
-		 */
-		setHeader: function (content) {
-			this.getSelector("varvis_header").html(content);
-		},
+        /**
+         * Clear variable
+         *
+         * @command removeVariable(state)
+         *
+         * @param {Object} state - geppetto similation variable to remove
+         */
+        clearVariable: function () {
+            if (this.variable == null) {
+                return;
+            }
 
-		/**
-		 * @private
-		 */
-		setBody: function (content) {
-			this.getSelector("varvis_body").html(content);
-		},
+            this.variable = null;
+            this.setHeader("");
+            this.setBody("");
+        },
 
-		/**
-		 * @private
-		 */
-		getSelector: function (name) {
-			return $(this.root.selector + " ." + name);
-		}
-	});
+        /**
+         * Updates variable values
+         */
+        updateVariable: function (step) {
+            this.setHeader(this.variable.name);
+            if (typeof step != 'undefined') {
+                this.setBody(this.variable.state.getTimeSeries()[step].getValue().toFixed(4) + " " + this.variable.state.getUnit());
+            }
+        },
+
+        /**
+         * Change name of the variable (if there's one)
+         *
+         * @param newName - the new name
+         */
+        renameVariable: function (newName) {
+            if (this.variable != null) {
+                this.variable.name = newName;
+                this.setHeader(newName);
+            }
+        },
+
+
+        /**
+         * @private
+         */
+        setHeader: function (content) {
+            this.getSelector("varvis_header").html(content);
+        },
+
+        /**
+         * @private
+         */
+        setBody: function (content) {
+            this.getSelector("varvis_body").html(content);
+        },
+
+        /**
+         * @private
+         */
+        getSelector: function (name) {
+            return $(this.root.selector + " ." + name);
+        }
+    });
 });

@@ -37,221 +37,221 @@
  */
 
 
-define(function(require) {
-	return function(GEPPETTO) {
+define(function (require) {
+    return function (GEPPETTO) {
 
-		var messageHandlers = [];
-		var clientID = null;
-		var nextID = 0;
-		var connectionInterval = 300;
-		var pako = require("pako");
-		
-		/**
-		 * Web socket creation and communication
-		 */
-		GEPPETTO.MessageSocket = {
-			socket:null,
+        var messageHandlers = [];
+        var clientID = null;
+        var nextID = 0;
+        var connectionInterval = 300;
+        var pako = require("pako");
+
+        /**
+         * Web socket creation and communication
+         */
+        GEPPETTO.MessageSocket = {
+            socket: null,
 
             //sets protocol to use for connection
-            protocol : window.USE_SSL ? "wss://" : "ws://",
+            protocol: window.USE_SSL ? "wss://" : "ws://",
 
             //flag used to connect using ws protocol if wss failed
-            failsafe : false,
+            failsafe: false,
 
-			connect: function(host) {
-				if('WebSocket' in window) {
-					GEPPETTO.MessageSocket.socket = new WebSocket(host);
-					GEPPETTO.MessageSocket.socket.binaryType = "arraybuffer";
-				}
-				else if('MozWebSocket' in window) {
-					GEPPETTO.MessageSocket.socket = new MozWebSocket(host);
-				}
-				else {
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_NOT_SUPPORTED);
-					return;
-				}
+            connect: function (host) {
+                if ('WebSocket' in window) {
+                    GEPPETTO.MessageSocket.socket = new WebSocket(host);
+                    GEPPETTO.MessageSocket.socket.binaryType = "arraybuffer";
+                }
+                else if ('MozWebSocket' in window) {
+                    GEPPETTO.MessageSocket.socket = new MozWebSocket(host);
+                }
+                else {
+                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_NOT_SUPPORTED);
+                    return;
+                }
 
-				GEPPETTO.MessageSocket.socket.onopen = function() {
-					//enable load simulation button, and welcome message buttons
-					GEPPETTO.FE.postSocketConnection();
-					
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_OPENED);
+                GEPPETTO.MessageSocket.socket.onopen = function () {
+                    //enable load simulation button, and welcome message buttons
+                    GEPPETTO.FE.postSocketConnection();
 
-					//attach the handlers once socket is opened
-					messageHandlers.push(GEPPETTO.SimulationHandler);
-					messageHandlers.push(GEPPETTO.GlobalHandler);
-				};
+                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_OPENED);
 
-				GEPPETTO.MessageSocket.socket.onclose = function() {
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_CLOSED);
-				};
+                    //attach the handlers once socket is opened
+                    messageHandlers.push(GEPPETTO.SimulationHandler);
+                    messageHandlers.push(GEPPETTO.GlobalHandler);
+                };
 
-				GEPPETTO.MessageSocket.socket.onmessage = function(msg) {
-					var messageData = msg.data;
+                GEPPETTO.MessageSocket.socket.onclose = function () {
+                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_CLOSED);
+                };
 
-					if(messageData == "ping") {
-						return;
-					}
-	
-					// if it's a binary (possibly compressed) then determine its type and process it
-					if (messageData instanceof ArrayBuffer) {
-						processBinaryMessage(messageData);
-						
-					// otherwise, for a text message, parse it and notify listeners
-					} else{
-						// a non compresed message
-						parseAndNotify(messageData);
-					}
+                GEPPETTO.MessageSocket.socket.onmessage = function (msg) {
+                    var messageData = msg.data;
 
-				};
+                    if (messageData == "ping") {
+                        return;
+                    }
+
+                    // if it's a binary (possibly compressed) then determine its type and process it
+                    if (messageData instanceof ArrayBuffer) {
+                        processBinaryMessage(messageData);
+
+                        // otherwise, for a text message, parse it and notify listeners
+                    } else {
+                        // a non compresed message
+                        parseAndNotify(messageData);
+                    }
+
+                };
 
                 //Detects problems when connecting to Geppetto server
-                GEPPETTO.MessageSocket.socket.onerror = function(evt) {
+                GEPPETTO.MessageSocket.socket.onerror = function (evt) {
                     var message = GEPPETTO.Resources.SERVER_CONNECTION_ERROR;
                     //Attempt to connect using ws first time wss fails,
                     //if ws fails too then don't try again and display info error window
-                    if(GEPPETTO.MessageSocket.failsafe) {
+                    if (GEPPETTO.MessageSocket.failsafe) {
                         GEPPETTO.MessageSocket.protocol = "ws://";
                         GEPPETTO.MessageSocket.failsafe = true;
-                        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+window.BUNDLE_CONTEXT_PATH+'/GeppettoServlet');
+                        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
                     } else {
                         GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
                     }
                 };
             },
 
-			/**
-			 * Sends messages to the server
-			 */
-			send: function(command, parameter) {
-				var requestID = this.createRequestID();
+            /**
+             * Sends messages to the server
+             */
+            send: function (command, parameter) {
+                var requestID = this.createRequestID();
 
-				//if there's a script running let it know the requestID it's using to send one of it's commands
-				if(GEPPETTO.ScriptRunner.isScriptRunning()) {
-					GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
-				}
+                //if there's a script running let it know the requestID it's using to send one of it's commands
+                if (GEPPETTO.ScriptRunner.isScriptRunning()) {
+                    GEPPETTO.ScriptRunner.waitingForServerResponse(requestID);
+                }
 
-				this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
-			},
-			
-			waitForConnection: function(messageTemplate, interval){
-				if (this.isReady() === 1) {
-					GEPPETTO.MessageSocket.socket.send(messageTemplate);
-				}
-				else{
-					var that = this;
-			        setTimeout(function () {
-			            that.waitForConnection(messageTemplate);
-			        }, interval);
-				}
-			},
+                this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
+            },
 
-			isReady: function() {
-				return GEPPETTO.MessageSocket.socket.readyState;
-			},
+            waitForConnection: function (messageTemplate, interval) {
+                if (this.isReady() === 1) {
+                    GEPPETTO.MessageSocket.socket.send(messageTemplate);
+                }
+                else {
+                    var that = this;
+                    setTimeout(function () {
+                        that.waitForConnection(messageTemplate);
+                    }, interval);
+                }
+            },
 
-			close: function() {
-				GEPPETTO.MessageSocket.socket.close();
-				//dispose of handlers upon closing connection
-				messageHandlers = [];
-			},
+            isReady: function () {
+                return GEPPETTO.MessageSocket.socket.readyState;
+            },
 
-			/**
-			 * Add handler to receive updates from server
-			 */
-			addHandler: function(handler) {
-				messageHandlers.push(handler);
-			},
+            close: function () {
+                GEPPETTO.MessageSocket.socket.close();
+                //dispose of handlers upon closing connection
+                messageHandlers = [];
+            },
 
-			/**
-			 * Removes a handler from the socket
-			 */
-			removeHandler: function(handler) {
-				var index = messageHandlers.indexOf(handler);
+            /**
+             * Add handler to receive updates from server
+             */
+            addHandler: function (handler) {
+                messageHandlers.push(handler);
+            },
 
-				if(index > -1) {
-					messageHandlers.splice(index, 1);
-				}
-			},
+            /**
+             * Removes a handler from the socket
+             */
+            removeHandler: function (handler) {
+                var index = messageHandlers.indexOf(handler);
 
-			/**
-			 * Clear handlers
-			 */
-			clearHandlers: function() {
-				messageHandlers = [];
-			},
+                if (index > -1) {
+                    messageHandlers.splice(index, 1);
+                }
+            },
+
+            /**
+             * Clear handlers
+             */
+            clearHandlers: function () {
+                messageHandlers = [];
+            },
 
 
-			/**
-			 * Sets the id of the client
-			 */
-			setClientID: function(id) {
-				clientID = id;
-			},
+            /**
+             * Sets the id of the client
+             */
+            setClientID: function (id) {
+                clientID = id;
+            },
 
-			/**
-			 * Creates a request id to send with the message to the server
-			 */
-			createRequestID: function() {
-				return clientID + "-" + (nextID++);
-			}
-		};
+            /**
+             * Creates a request id to send with the message to the server
+             */
+            createRequestID: function () {
+                return clientID + "-" + (nextID++);
+            }
+        };
 
-		/**
-		 * Template for Geppetto message
-		 *
-		 * @param msgtype - message type
-		 * @param payload - message payload, can be anything
-		 * @returns JSON stringified object
-		 */
-		function messageTemplate(id, msgtype, payload) {
+        /**
+         * Template for Geppetto message
+         *
+         * @param msgtype - message type
+         * @param payload - message payload, can be anything
+         * @returns JSON stringified object
+         */
+        function messageTemplate(id, msgtype, payload) {
 
-			if(!(typeof payload == 'string' || payload instanceof String)) {
-				payload = JSON.stringify(payload);
-			}
+            if (!(typeof payload == 'string' || payload instanceof String)) {
+                payload = JSON.stringify(payload);
+            }
 
-			var object = {
-				requestID: id,
-				type: msgtype,
-				data: payload
-			};
-			return  JSON.stringify(object);
-		}
+            var object = {
+                requestID: id,
+                type: msgtype,
+                data: payload
+            };
+            return JSON.stringify(object);
+        }
 
-		function gzipUncompress(compressedMessage) {
-			var messageBytes = new Uint8Array(compressedMessage);
-			var message = pako.ungzip(messageBytes, {to:"string"});
-			return message;
-		}
-		
-		function parseAndNotify(messageData){
-			var parsedServerMessage = JSON.parse(messageData);
+        function gzipUncompress(compressedMessage) {
+            var messageBytes = new Uint8Array(compressedMessage);
+            var message = pako.ungzip(messageBytes, {to: "string"});
+            return message;
+        }
 
-			//notify all handlers
-			for(var i = 0, len = messageHandlers.length; i < len; i++) {
-				var handler = messageHandlers[i];
-				if(handler != null || handler != undefined){
-					handler.onMessage(parsedServerMessage);
-				}
-			}
-		}
+        function parseAndNotify(messageData) {
+            var parsedServerMessage = JSON.parse(messageData);
 
-		function processBinaryMessage(message) {
-			
-			var messageBytes = new Uint8Array(message);
+            //notify all handlers
+            for (var i = 0, len = messageHandlers.length; i < len; i++) {
+                var handler = messageHandlers[i];
+                if (handler != null || handler != undefined) {
+                    handler.onMessage(parsedServerMessage);
+                }
+            }
+        }
 
-			// if it's a binary message and first byte it's zero then assume it's a compressed json string
-			//otherwise is a file and a 'save as' dialog is opened
-			if (messageBytes[0] == 0){
-				var message = pako.ungzip(messageBytes.subarray(1), {to:"string"});
-				parseAndNotify(message);
-			}
-			else{
-				var fileNameLength = messageBytes[1];
-				var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2,2+fileNameLength));
-				var blob = new Blob([message]);
-				saveData(blob.slice(2+fileNameLength), fileName);
-			}
-		}
-	}
+        function processBinaryMessage(message) {
+
+            var messageBytes = new Uint8Array(message);
+
+            // if it's a binary message and first byte it's zero then assume it's a compressed json string
+            //otherwise is a file and a 'save as' dialog is opened
+            if (messageBytes[0] == 0) {
+                var message = pako.ungzip(messageBytes.subarray(1), {to: "string"});
+                parseAndNotify(message);
+            }
+            else {
+                var fileNameLength = messageBytes[1];
+                var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2, 2 + fileNameLength));
+                var blob = new Blob([message]);
+                saveData(blob.slice(2 + fileNameLength), fileName);
+            }
+        }
+    }
 });

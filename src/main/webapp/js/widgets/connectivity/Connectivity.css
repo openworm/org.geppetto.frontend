@@ -32,75 +32,80 @@
  *******************************************************************************/
 .legend-text {
     font-size: 12px;
-    font-weight:100;
-  }
-.legend-title{
+    font-weight: 100;
+}
+
+.legend-title {
     font-size: 14px;
-  }
-.connectivity-ordering{
-	position: absolute;
 }
-.connectivity-ordering-label{
-	margin-left:2px;
-	font-size: 12px;
-    font-weight:100;
-	color: #FFFFFF;
+
+.connectivity-ordering {
+    position: absolute;
 }
-.connectivity-ordering-label select{
-	color: #000000;
+
+.connectivity-ordering-label {
+    margin-left: 2px;
+    font-size: 12px;
+    font-weight: 100;
+    color: #FFFFFF;
 }
-.connectionlabel{
-  font-size: 16px;
-  font-weight:100;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  fill:white;
-  stroke: none;
-  text-rendering: optimizeLegibility;
+
+.connectivity-ordering-label select {
+    color: #000000;
+}
+
+.connectionlabel {
+    font-size: 16px;
+    font-weight: 100;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    fill: white;
+    stroke: none;
+    text-rendering: optimizeLegibility;
 }
 
 .axis {
-  stroke: #000;
-  stroke-width: 1.5px;
+    stroke: #000;
+    stroke-width: 1.5px;
 }
 
 .node circle {
-  stroke: #000;
+    stroke: #000;
 }
 
 .link {
-  fill: none;
-  stroke: #999;
-  stroke-width: 1.5px;
-  stroke-opacity: .3;
+    fill: none;
+    stroke: #999;
+    stroke-width: 1.5px;
+    stroke-opacity: .3;
 }
 
 .link.active {
-  stroke: red;
-  stroke-width: 2px;
-  stroke-opacity: 1;
+    stroke: red;
+    stroke-width: 2px;
+    stroke-opacity: 1;
 }
 
 .node circle.active {
-  stroke: red;
-  stroke-width: 3px;
+    stroke: red;
+    stroke-width: 3px;
 }
 
 .chord path {
-  fill-opacity: .67;
-  stroke: #000;
-  stroke-width: .5px;
+    fill-opacity: .67;
+    stroke: #000;
+    stroke-width: .5px;
 }
 
 .chord-tick {
-  stroke: white;
-  stroke-width: .5px;
+    stroke: white;
+    stroke-width: .5px;
 }
 
 .chord-tick-scale {
-  font-size: 12px;
-  font-weight:100;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  fill:white;
-  stroke: none;
-  text-rendering: optimizeLegibility;
+    font-size: 12px;
+    font-weight: 100;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    fill: white;
+    stroke: none;
+    text-rendering: optimizeLegibility;
 }

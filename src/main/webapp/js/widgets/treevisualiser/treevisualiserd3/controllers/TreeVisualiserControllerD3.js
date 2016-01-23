@@ -38,146 +38,154 @@
  * @module Widgets/TreeVisualizerControllerD3
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
-define(function(require) {
-	var AWidgetController = require('widgets/AWidgetController');
-	var TreeVisualiserD3 = require('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3');
+define(function (require) {
+    var AWidgetController = require('widgets/AWidgetController');
+    var TreeVisualiserD3 = require('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3');
 
-	/**
-	 * @exports Widgets/Connectivity/TreeVisualiserControllerD3Controller
-	 */
-	return AWidgetController.View.extend ({
+    /**
+     * @exports Widgets/Connectivity/TreeVisualiserControllerD3Controller
+     */
+    return AWidgetController.View.extend({
 
-		initialize: function() {
-			this.widgets = new Array();
-			
-			GEPPETTO.MenuManager.resetMap();
-			// Register Commands
-			GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
-			                                                 "AspectSubTreeNode",
-			                                                 "CompositeNode",
-			                                                 "ConnectionNode",
-			                                                 "DynamicsSpecificationNode",
-			                                                 "EntityNode",
-			                                                 "FunctionNode",
-			                                                 "ParameterNode",
-			                                                 "ParameterSpecificationNode",
-			                                                 "TextMetadataNode",
-			                                                 "HTMLMetadataNode",
-			                                                 "VariableNode",
-			                                                 "VisualGroupElementNode",
-			                                                 "VisualGroupNode",
-			                                                 "VisualObjectReferenceNode"],this.getCommands);
-		},
+        initialize: function () {
+            this.widgets = [];
 
-		/**
-		 * Adds a new TreeVisualizer3D Widget to Geppetto
-		 */
-		addTreeVisualiserD3Widget : function(){
-			//look for a name and id for the new widget
-			var id = this.getAvailableWidgetId("TreeVisualiserD3", this.widgets);
-			var name = id;
+            GEPPETTO.MenuManager.resetMap();
+            // Register Commands
+            GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
+                "AspectSubTreeNode",
+                "CompositeNode",
+                "ConnectionNode",
+                "DynamicsSpecificationNode",
+                "EntityNode",
+                "FunctionNode",
+                "ParameterNode",
+                "ParameterSpecificationNode",
+                "TextMetadataNode",
+                "HTMLMetadataNode",
+                "VariableNode",
+                "VisualGroupElementNode",
+                "VisualGroupNode",
+                "VisualObjectReferenceNode"], this.getCommands);
+        },
 
-			//create tree visualiser widget
-			var tvd3 = window[name] = new TreeVisualiserD3({id:id, name:name,visible:true, width: 500, height: 500});
+        /**
+         * Adds a new TreeVisualizer3D Widget to Geppetto
+         */
+        addTreeVisualiserD3Widget: function () {
+            //look for a name and id for the new widget
+            var id = this.getAvailableWidgetId("TreeVisualiserD3", this.widgets);
+            var name = id;
 
-			//create help command for tree visualiser d3
-			tvd3.help = function(){return GEPPETTO.Utility.getObjectCommands(id);};
+            //create tree visualiser widget
+            var tvd3 = window[name] = new TreeVisualiserD3({
+                id: id,
+                name: name,
+                visible: true,
+                width: 500,
+                height: 500
+            });
 
-			//store in local stack
-			this.widgets.push(tvd3);
+            //create help command for tree visualiser d3
+            tvd3.help = function () {
+                return GEPPETTO.Utility.getObjectCommands(id);
+            };
 
-			GEPPETTO.WidgetsListener.subscribe(this, id);
+            //store in local stack
+            this.widgets.push(tvd3);
 
-			//add commands to console autocomplete and help option
-			GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
+            GEPPETTO.WidgetsListener.subscribe(this, id);
 
-			//update tags for autocompletion
-			GEPPETTO.Console.updateTags(tvd3.getId(), tvd3);
+            //add commands to console autocomplete and help option
+            GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
 
-			return tvd3;
-		},
+            //update tags for autocompletion
+            GEPPETTO.Console.updateTags(tvd3.getId(), tvd3);
 
-		/**
-		 * Receives updates from widget listener class to update TreeVisualizer3D widget(s)
-		 * 
-		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-		 */
-		update: function(event) {
-			//delete treevisualiser widget(s)
-			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-				this.removeWidgets();
-			}
-			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED) {
-				//loop through all existing widgets
-				for(var i = 0; i < this.widgets.length; i++) {
-					var treeVisualiserD3 = this.widgets[i];
+            return tvd3;
+        },
 
-					if(treeVisualiserD3.registeredEvents.indexOf(event)>-1){
-						var selected = G.getSelection();
-						//update treevisualiser with new data set
-						treeVisualiserD3.setData(selected[0]);
-					}
-				}
-			}
-			//update treevisualiser widgets
-			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-				//loop through all existing widgets
-				for(var i = 0; i < this.widgets.length; i++) {
-					var treeVisualiserD3 = this.widgets[i];
+        /**
+         * Receives updates from widget listener class to update TreeVisualizer3D widget(s)
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+         */
+        update: function (event) {
+            //delete treevisualiser widget(s)
+            if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+                this.removeWidgets();
+            }
+            else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.SELECTION_CHANGED) {
+                //loop through all existing widgets
+                for (var i = 0; i < this.widgets.length; i++) {
+                    var treeVisualiserD3 = this.widgets[i];
 
-					//update treevisualiser with new data set
-					treeVisualiserD3.updateData();
-				}
-			}
-		},
+                    if (treeVisualiserD3.registeredEvents.indexOf(event) > -1) {
+                        var selected = G.getSelection();
+                        //update treevisualiser with new data set
+                        treeVisualiserD3.setData(selected[0]);
+                    }
+                }
+            }
+            //update treevisualiser widgets
+            else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+                //loop through all existing widgets
+                for (var i = 0; i < this.widgets.length; i++) {
+                    var treeVisualiserD3 = this.widgets[i];
 
-		/**
-		 * Retrieve commands for a specific variable node
-		 * 
-		 * @param {Node} node - Geppetto Node used for extracting commands
-		 * @returns {Array} Set of commands associated with this node 
-		 */
-		getCommands: function(node) {
-			var group1 = [{
-				label:"Open with D3 Widget",
-				action: ["GEPPETTO.TreeVisualiserControllerD3.actionMenu(#node_instancepath#)"],
-			}];
+                    //update treevisualiser with new data set
+                    treeVisualiserD3.updateData();
+                }
+            }
+        },
+
+        /**
+         * Retrieve commands for a specific variable node
+         *
+         * @param {Node} node - Geppetto Node used for extracting commands
+         * @returns {Array} Set of commands associated with this node
+         */
+        getCommands: function (node) {
+            var group1 = [{
+                label: "Open with D3 Widget",
+                action: ["GEPPETTO.TreeVisualiserControllerD3.actionMenu(#node_instancepath#)"],
+            }];
 
 
-			var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets();
-			if (availableWidgets.length > 0){
-				var group1Add =  [ {
-					label : "Add to D3 Widget",
-					position : 0
-				} ] ;
+            var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets();
+            if (availableWidgets.length > 0) {
+                var group1Add = [{
+                    label: "Add to D3 Widget",
+                    position: 0
+                }];
 
-				var subgroups1Add = [];
-				for (var availableWidgetIndex in availableWidgets){
-					var availableWidget = availableWidgets[availableWidgetIndex];
-					subgroups1Add = subgroups1Add.concat([{
-						label: "Add to " + availableWidget.name,
-						action: [availableWidget.id + ".setData(#node_instancepath#)"],
-						position: availableWidgetIndex
-					}]);
-				}
+                var subgroups1Add = [];
+                for (var availableWidgetIndex in availableWidgets) {
+                    var availableWidget = availableWidgets[availableWidgetIndex];
+                    subgroups1Add = subgroups1Add.concat([{
+                        label: "Add to " + availableWidget.name,
+                        action: [availableWidget.id + ".setData(#node_instancepath#)"],
+                        position: availableWidgetIndex
+                    }]);
+                }
 
-				group1Add[0]["groups"] = [subgroups1Add];
+                group1Add[0]["groups"] = [subgroups1Add];
 
-				group1 = group1.concat(group1Add);
-			}
+                group1 = group1.concat(group1Add);
+            }
 
-			var groups = [group1];
+            var groups = [group1];
 
-			return groups;
+            return groups;
 
-		},
+        },
 
-		/**
-		 * Register action menu with the TreeVisualizer3D widget
-		 */
-		actionMenu: function(node){
-			tv = GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
-			tv.setData(node);
-		}
-	});
+        /**
+         * Register action menu with the TreeVisualizer3D widget
+         */
+        actionMenu: function (node) {
+            tv = GEPPETTO.TreeVisualiserControllerD3.addTreeVisualiserD3Widget();
+            tv.setData(node);
+        }
+    });
 });

@@ -5,6 +5,7 @@ require('jsx!./dev/simulationcontrols/ExperimentControls');
 require('jsx!./dev/cameracontrols/CameraControls');
 //require('jsx!./dev/tutorial/IntroModal');
 require('jsx!./dev/logo/logo');
+require('jsx!./dev/spotlight/spotlight');
 require('jsx!./dev/share/share');
 require('jsx!./dev/contact/contact');
 }); 

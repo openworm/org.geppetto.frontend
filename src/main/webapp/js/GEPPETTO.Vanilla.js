@@ -37,34 +37,34 @@
  * @author matteo@openworm.org (Matteo Cantarelli)
  * @author giovanni@openworm.org (Giovanni Idili)
  */
-define(function(require) {
-		
-	return function(GEPPETTO){
-		GEPPETTO.Vanilla = {
-			keyboardEnabled : true,
-			/**
-			 * Business logic for Geppetto Vanilla
-			 */
-			checkKeyboard: function() {
-				if(GEPPETTO.isKeyPressed("ctrl+alt+p")) {
-					GEPPETTO.Console.executeCommand("G.addWidget(0)");
-				}
-				else if(GEPPETTO.isKeyPressed("ctrl+alt+t")) {
-					GEPPETTO.Console.executeCommand("G.addWidget(3)");
-				}
-				else if(GEPPETTO.isKeyPressed("ctrl+alt+j")) {
-					GEPPETTO.Console.toggleConsole();
-				}
+define(function (require) {
 
-			},
-			
-			isKeyboardEnabled : function(){
-				this.keyboardEnabled;
-			},
-			
-			enableKeyboard: function(enable){
-				this.keyboardEnabled = enable;
-			}
-		}
-	}
+    return function (GEPPETTO) {
+        GEPPETTO.Vanilla = {
+            keyboardEnabled: true,
+            /**
+             * Business logic for Geppetto Vanilla
+             */
+            checkKeyboard: function () {
+                if (GEPPETTO.isKeyPressed("ctrl+alt+p")) {
+                    GEPPETTO.Console.executeCommand("G.addWidget(0)");
+                }
+                else if (GEPPETTO.isKeyPressed("ctrl+alt+t")) {
+                    GEPPETTO.Console.executeCommand("G.addWidget(3)");
+                }
+                else if (GEPPETTO.isKeyPressed("ctrl+alt+j")) {
+                    GEPPETTO.Console.toggleConsole();
+                }
+
+            },
+
+            isKeyboardEnabled: function () {
+                this.keyboardEnabled;
+            },
+
+            enableKeyboard: function (enable) {
+                this.keyboardEnabled = enable;
+            }
+        }
+    }
 });

@@ -91,6 +91,9 @@ public class TransportMessageFactory {
 			case PROJECT_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
+			case GEPPETTO_MODEL_LOADED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.GEPPETTO_MODEL_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
 			case SIMULATION_OVER:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;	
@@ -108,9 +111,6 @@ public class TransportMessageFactory {
 				break;
 			case EXPERIMENT_CREATED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.EXPERIMENT_CREATED.toString(),  (update!=null) ? update : EMPTY_STRING));
-				break;
-			case EXPERIMENT_UPDATE:
-				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case DOWNLOAD_MODEL:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));

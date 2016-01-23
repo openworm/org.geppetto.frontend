@@ -2,7 +2,7 @@
     <div class="peoject-heading">
         <div class="col-md-10 projectnametop">{{name}}</div>
         <a href="{{projectUrl}}" target="_blank" data-toggle="tooltip" title="Open project" class="embeddedLinks"><i class="fa fa-folder-open fa-2 icon firsticontop"></i></a>
-    	<a href="{{deleteUrl}}" onclick="return confirm('Are you sure you want to delete the project?')" data-toggle="tooltip" title="Delete project"><i class="fa fa-trash-o fa-2 icon secondicontop"></i></a>
+    	<a href="{{deleteUrl}}" onclick="return confirm('Are you sure you want to delete the project?')" data-toggle="tooltip" title="Delete project" class="delete-project"><i class="fa fa-trash-o fa-2 icon secondicontop"></i></a>
     </div>
 	<br><br>
     <div role="tabpanel">
@@ -16,7 +16,7 @@
         <div class="tab-content experiments">
             <div role="tabpanel" class="tab-pane" id="details">
                 <dl class="dl-horizontal">
-                
+
 
                 </dl>
             </div>
@@ -38,7 +38,7 @@
                                         </a>
                                         &nbsp;&nbsp;&nbsp;&nbsp;
                                         <a href="{{url}}" target="_blank" data-toggle="tooltip" title="Open experiment" class="embeddedLinks"><i class="fa fa-folder-open fa-1 icon firsticon"></i></a>
-                                        <a href="{{deleteExperimentUrl}}" data-toggle="tooltip" title="Download all experiment results"><i class="fa fa-cloud-download fa-1 icon secondicon"></i></a>
+                                        <a href="{{downloadResultsUrl}}" data-toggle="tooltip" title="Download all experiment results" class="download-results"><i class="fa fa-cloud-download fa-1 icon secondicon"></i></a>
                                     </div>
                                 </div>
                             </h4>
@@ -72,8 +72,8 @@
                                     {{#each watchedVariables}}
                                         <div class="row instance-path col-md-12" title={{instancePath}}>{{shorten instancePath}}</div>
                                     {{/each}}
-                    	            <div class="row menuHeader col-md-12" title="These are the simulations of the experiment">Aspects</div>
-                    	            
+                    	            <div class="row menuHeader col-md-12" title="These are the simulations of the experiment">Simulations</div>
+
                                     <div class="row menuOrange col-md-12" title={{aspect.instancePath}}>{{aspect.instancePath}}</div>
 									<div class="row">
 		                            	<div class="menuHeader col-md-4">Simulator</div>

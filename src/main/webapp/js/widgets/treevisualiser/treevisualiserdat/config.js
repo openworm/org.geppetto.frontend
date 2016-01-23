@@ -42,6 +42,6 @@
 // Libraries used by Tree Visualizer widget
 var reqs = [];
 reqs.push("widgets/treevisualiser/treevisualiserdat/vendor/dat.gui.min");
-require(reqs, function(d3) {
-	loadCss("geppetto/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
+require(reqs, function (d3) {
+    loadCss("geppetto/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
 });

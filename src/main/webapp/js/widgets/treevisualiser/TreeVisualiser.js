@@ -164,8 +164,8 @@ define(function (require) {
 
             convertNodeToTreeVisualiserNode: function (node) {
             	
-            	
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getType().getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
+                	console.log(node.getType().getMetaType());
                 	if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || node.getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
                 		if (node.getType().getSuperType() != undefined && node.getType().getSuperType().getId() == 'projection') {
                             var projectionChildren = node.getType().getChildren();
@@ -234,8 +234,18 @@ define(function (require) {
                     children.push(new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: state.getSize(), style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
                     // Array Type: Cell
-                    children.push(new TreeVisualiserNode({wrappedObj: state.getType(), _children: this.createTreeVisualiserNodeChildren(state.getType()), style: this.getStyle(state.getType().getMetaType())}));
+                    var cellNode = new TreeVisualiserNode({wrappedObj: state.getType(), style: this.getStyle(state.getType().getMetaType())});
+                    var cellNodeChildren = this.createTreeVisualiserNodeChildren(state.getType());
+                    cellNodeChildren.push(new TreeVisualiserNode({wrappedObj: state.getType().getVisualType()}));
+                    
+                    
+                    
+                    cellNode.set({"_children": cellNodeChildren});
+                    
+                    children.push(cellNode);
 
+                    
+                    
                     //state.getDefaultValue()
 
                 }

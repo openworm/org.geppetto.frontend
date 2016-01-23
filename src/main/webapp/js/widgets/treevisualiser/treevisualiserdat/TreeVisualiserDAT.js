@@ -202,21 +202,16 @@ define(function (require) {
 
             if (!this.dataset.isDisplayed) {
 
-
-                //AQP: Better ask for the children or for compositetype?
                 var children = data.getChildren();
                 var _children = data.getHiddenChildren();
                 if (children.length > 0 || _children.length > 0) {
                 	this.dataset.valueDict[data.getId()] = new function () {};
                 	this.dataset.valueDict[data.getId()]["folder"] = parent.addFolder(label);
                 	
-                	
-                    //parentFolder = parent.addFolder(label);
                     //Add class to dom element depending on node metatype
                     $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
                     $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").data("instancepath", data.getId());
-
 
                     var parentFolderTmp = this.dataset.valueDict[data.getId()]["folder"];
                     for (var childIndex in children) {

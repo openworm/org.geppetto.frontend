@@ -622,7 +622,7 @@ define(function (require) {
                     var material = new THREE.LineBasicMaterial(
                         {
                             opacity: 1,
-                            linewidth: 2
+                            linewidth: 1
                         });
                     material.color.setHex(colour);
 

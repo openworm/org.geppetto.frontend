@@ -227,16 +227,13 @@ define(function (require) {
                     .addEventListener(
                     'resize',
                     function () {
-                        var container = $(GEPPETTO.getVARS().container), width = container
-                            .width(), height = container
-                            .height();
+                        var container = $(GEPPETTO.getVARS().container), width = container.width(), height = container.height();
 
-                        GEPPETTO.getVARS().camera.aspect = (width)
-                            / (height);
-                        GEPPETTO.getVARS().camera
-                            .updateProjectionMatrix();
-                        GEPPETTO.getVARS().renderer.setSize(width,
-                            height);
+                        GEPPETTO.getVARS().camera.aspect = (width) / (height);
+
+                        GEPPETTO.getVARS().camera.updateProjectionMatrix();
+                        GEPPETTO.getVARS().renderer.setSize(width, height);
+                        GEPPETTO.getVARS().composer.setSize(width, height);
                     }, false);
 
                 document.addEventListener("keydown",

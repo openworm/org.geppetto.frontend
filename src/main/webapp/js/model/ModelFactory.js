@@ -71,6 +71,7 @@ define(function (require) {
             geppettoModel: null,
             instances: null,
             allPaths: [],
+            instanceTags: {},
 
             /**
              * Creates and populates Geppetto model
@@ -312,6 +313,9 @@ define(function (require) {
              */
             createInstances: function (geppettoModel) {
                 var instances = [];
+
+                // pre-populate
+                this.populateInstanceTags();
 
                 // we need to explode instances for variables with visual and connection types
                 var varsWithVizTypes = [];
@@ -915,13 +919,15 @@ define(function (require) {
                 return t;
             },
 
-            /** Creates an istance */
+            /** Creates an instance */
             createInstance: function (options) {
                 if (options == null || options == undefined) {
                     options = {_metaType: GEPPETTO.Resources.INSTANCE_NODE};
                 }
 
                 var i = new Instance(options);
+
+                GEPPETTO.Console.createTags(i.getInstancePath(), this.instanceTags[GEPPETTO.Resources.INSTANCE_NODE]);
 
                 return i;
             },
@@ -934,16 +940,20 @@ define(function (require) {
 
                 var aei = new ArrayElementInstance(options);
 
+                GEPPETTO.Console.createTags(aei.getInstancePath(), this.instanceTags[GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE]);
+
                 return aei;
             },
 
-            /** Creates an arra istance */
+            /** Creates an array istance */
             createArrayInstance: function (options) {
                 if (options == null || options == undefined) {
                     options = {_metaType: GEPPETTO.Resources.ARRAY_INSTANCE_NODE};
                 }
 
                 var a = new ArrayInstance(options);
+
+                GEPPETTO.Console.createTags(a.getInstancePath(), this.instanceTags[GEPPETTO.Resources.ARRAY_INSTANCE_NODE]);
 
                 return a;
             },
@@ -1034,8 +1044,19 @@ define(function (require) {
                 }
 
                 return reference;
-            }
+            },
 
+            /**
+             * Populates "tags" for instances
+             */
+            populateInstanceTags: function () {
+                var i = new Instance({});
+                this.instanceTags[GEPPETTO.Resources.INSTANCE_NODE] = GEPPETTO.Utility.extractMethodsFromObject(i, true);
+                var ai = new ArrayInstance({});
+                this.instanceTags[GEPPETTO.Resources.ARRAY_INSTANCE_NODE] = GEPPETTO.Utility.extractMethodsFromObject(ai, true);
+                var aei = new ArrayElementInstance({});
+                this.instanceTags[GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE] = GEPPETTO.Utility.extractMethodsFromObject(aei, true);
+            }
         };
     };
 });

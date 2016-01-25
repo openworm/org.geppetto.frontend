@@ -367,8 +367,8 @@ define(function (require) {
             addInstances: function (newInstancesPaths, topInstances, geppettoModel) {
                 // based on list of new paths, expand instance tree
                 for (var j = 0; j < newInstancesPaths.length; j++) {
-                    // process instance paths and convert array syntax to id concatenation syntax
-                    // e.g. acnet2.baskets_12[0].v --> acnet2.baskets_12.baskets_12_0.v
+                    // process instance paths and convert instance path syntax to raw id concatenation syntax
+                    // e.g. acnet2.baskets_12[0].v --> acnet2.baskets_12.baskets_12[0].v
                     var idConcatPath = '';
                     var splitInstancePath = newInstancesPaths[j].split('.');
                     for (var i = 0; i < splitInstancePath.length; i++) {
@@ -376,7 +376,7 @@ define(function (require) {
                             // contains array syntax = so grab array id
                             var arrayId = splitInstancePath[i].split('[')[0];
                             // replace brackets
-                            var arrayElementId = splitInstancePath[i].replace('[', '_').replace(']', '');
+                            var arrayElementId = splitInstancePath[i];
 
                             splitInstancePath[i] = arrayId + '.' + arrayElementId;
                         }
@@ -496,8 +496,8 @@ define(function (require) {
                         for (var i = 0; i < size; i++) {
                             // create simple instance for this variable
                             var options = {
-                                id: variable.getId() + '_' + i,
-                                name: variable.getId() + '_' + i,
+                                id: variable.getId() + '[' + i + ']',
+                                name: variable.getId() + '[' + i + ']',
                                 _metaType: GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE,
                                 variable: variable,
                                 children: [],

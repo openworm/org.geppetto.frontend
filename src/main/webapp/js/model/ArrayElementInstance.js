@@ -75,5 +75,28 @@ define(function (require) {
         getIndex: function () {
             return this.get('index');
         },
+
+        /**
+         * Get instance path
+         *
+         * @command Instance.getInstancePath()
+         *
+         * @returns {String} - Instance path
+         *
+         */
+        getInstancePath: function () {
+            var parent = this.get("parent");
+            var parentPath = "";
+            var parentId = "";
+
+            if (parent != null && parent != undefined) {
+                parentPath = parent.getInstancePath();
+                parentId = parent.getId();
+            }
+
+            var path = parentPath.replace(parentId, this.getId());
+
+            return (parentPath != "") ? path : this.getId();
+        },
     });
 });

@@ -501,32 +501,45 @@ define(function (require) {
              */
             highlightConnectedInstances: function (instance, type) {
 
+                var inputs = {};
+                var outputs = {};
+
                 var connections = instance.getConnections(type);
+
+
                 for (var c = 0; c < connections.length; c++) {
                     var connection = connections[c];
 
+                    var otherEndPath = connection.getA().getPath() == instance.getInstancePath() ?
+                        connection.getB().getPath() :
+                        connection.getA().getPath();
+
+                    var connectionType = connection.getA().getPath() == instance.getInstancePath() ?
+                        GEPPETTO.Resources.OUTPUT :
+                        GEPPETTO.Resources.INPUT;
+
+
                     // determine whether connection is input or output
-                    if (type == GEPPETTO.Resources.INPUT) {
+                    if (connectionType == GEPPETTO.Resources.INPUT) {
                         //I want to change the colour the instances that are an input to the instance passed as a parameter
                         var mesh = GEPPETTO.getVARS().meshes[connection.getA().getPath()]; //this is the instance input to the current one
-                        if (mesh.output) {
+                        if (outputs[otherEndPath]) {
                             GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
                         }
                         else {
                             GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
                         }
-                        mesh.input = true;
-
-                    } else if (type == GEPPETTO.Resources.OUTPUT) {
+                        inputs[otherEndPath] = connection.getInstancePath();
+                    } else if (connectionType == GEPPETTO.Resources.OUTPUT) {
                         //I want to change the colour the instances that are an output of the instance passed as a parameter
                         var mesh = GEPPETTO.getVARS().meshes[connection.getB().getPath()]; //this is the instance output of the current on
-                        if (mesh.input) {
-                            GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED);
+                        if (inputs[otherEndPath]) {
+                            GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT);
                         }
                         else {
                             GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED);
                         }
-                        mesh.output = true;
+                        outputs[otherEndPath] = connection.getInstancePath();
                     }
                 }
             }
@@ -540,7 +553,9 @@ define(function (require) {
              *            instance - A connected instance
              */
             restoreConnectedInstancesColour: function (instance) {
+
                 var connections = instance.getConnections();
+
                 for (var c = 0; c < connections.length; c++) {
                     var connection = connections[c];
 
@@ -570,9 +585,6 @@ define(function (require) {
                         mesh.material.transparent = true;
                         mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                     }
-
-                    mesh.input = false;
-                    mesh.output = false;
                 }
             },
 
@@ -580,6 +592,8 @@ define(function (require) {
                 var connections = instance.getConnections();
 
                 var mesh = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
+                var inputs = {};
+                var outputs = {};
                 var origin = mesh.position.clone();
 
                 for (var c = 0; c < connections.length; c++) {
@@ -589,11 +603,14 @@ define(function (require) {
                         GEPPETTO.Resources.OUTPUT :
                         GEPPETTO.Resources.INPUT;
 
-                    var destinationMesh = connection.getA().getPath() == instance.getInstancePath() ?
-                        GEPPETTO.getVARS().meshes[connection.getB().getPath()] :
-                        GEPPETTO.getVARS().meshes[connection.getA().getPath()];
+                    var otherEndPath = connection.getA().getPath() == instance.getInstancePath() ?
+                        connection.getB().getPath() :
+                        connection.getA().getPath();
 
-                    var destination = destinationMesh.position.clone();
+
+                    var otherEndMesh = GEPPETTO.getVARS().meshes[otherEndPath];
+
+                    var destination = otherEndMesh.position.clone();
 
                     var geometry = new THREE.Geometry();
 
@@ -601,28 +618,69 @@ define(function (require) {
                     geometry.verticesNeedUpdate = true;
                     geometry.dynamic = true;
 
-                    var colour;
+                    var colour = null;
+                    var thickness = 0;
 
                     if (type == GEPPETTO.Resources.INPUT) {
+
+                        colour = GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED;
+
                         // figure out if connection is both, input and output
-                        if (mesh.output) {
+                        if (outputs[otherEndPath]) {
                             colour = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
-                        } else {
-                            colour = GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED;
+
+                            var lastLine = outputs[otherEndPath][outputs[otherEndPath].length - 1];
+                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
+                            delete GEPPETTO.getVARS().connectionLines[lastLine];
+                            thickness = outputs[otherEndPath].length;
                         }
-                    } else if (type == GEPPETTO.Resources.OUTPUT) {
+
+                        if (inputs[otherEndPath]) {
+                            var lastLine = inputs[otherEndPath][inputs[otherEndPath].length - 1];
+                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
+                            delete GEPPETTO.getVARS().connectionLines[lastLine];
+                            inputs[otherEndPath].push(connection.getInstancePath());
+                        }
+                        else {
+                            inputs[otherEndPath] = [];
+                            inputs[otherEndPath].push(connection.getInstancePath());
+                        }
+
+                        thickness = thickness + inputs[otherEndPath].length;
+
+                    }
+
+                    else if (type == GEPPETTO.Resources.OUTPUT) {
+
+                        colour = GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED;
                         // figure out if connection is both, input and output
-                        if (mesh.input) {
+                        if (inputs[otherEndPath]) {
                             colour = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
-                        } else {
-                            colour = GEPPETTO.Resources.COLORS.OUTPUT_TO_SELECTED;
+                            var lastLine = inputs[otherEndPath][inputs[otherEndPath].length - 1];
+                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
+                            delete GEPPETTO.getVARS().connectionLines[lastLine];
+                            thickness = inputs[otherEndPath].length;
                         }
+
+                        if (outputs[otherEndPath]) {
+                            var lastLine = outputs[otherEndPath][outputs[otherEndPath].length - 1];
+                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
+                            delete GEPPETTO.getVARS().connectionLines[lastLine];
+                            outputs[otherEndPath].push(connection.getInstancePath());
+                        }
+                        else {
+                            outputs[otherEndPath] = [];
+                            outputs[otherEndPath].push(connection.getInstancePath());
+                        }
+
+                        thickness = thickness + outputs[otherEndPath].length;
+
                     }
 
                     var material = new THREE.LineBasicMaterial(
                         {
                             opacity: 1,
-                            linewidth: 1
+                            linewidth: thickness
                         });
                     material.color.setHex(colour);
 
@@ -648,6 +706,7 @@ define(function (require) {
                 }
                 GEPPETTO.getVARS().connectionLines = [];
             }
+
             ,
 
             splitHighlightedMesh: function (targetObjects, aspects) {

@@ -186,14 +186,20 @@ define(['jquery'], function (require) {
                     var allOtherMeshes = $.extend({}, GEPPETTO.getVARS().meshes);
                     //look on the simulation selection options and perform necessary
                     //operations
-                    if (G.getSelectionOptions().show_inputs) {
-                        var inputs = this.highlightInputInstances(true);
+                    if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
+                        var meshes = this.highlightInstances(true);
+                        for (var i in meshes) {
+                            delete allOtherMeshes[meshes[i]];
+                        }
+                    }
+                    else if (G.getSelectionOptions().show_inputs) {
+                        var inputs = this.highlightInstances(true, GEPPETTO.Resources.INPUT);
                         for (var i in inputs) {
                             delete allOtherMeshes[inputs[i]];
                         }
                     }
-                    if (G.getSelectionOptions().show_outputs) {
-                        var outputs = this.highlightOutputInstances(true);
+                    else if (G.getSelectionOptions().show_outputs) {
+                        var outputs = this.highlightInstances(true, GEPPETTO.Resources.OUTPUT);
                         for (var o in outputs) {
                             delete allOtherMeshes[outputs[o]];
                         }
@@ -248,11 +254,14 @@ define(['jquery'], function (require) {
                 if (G.getSelectionOptions().unselected_transparent) {
                     GEPPETTO.SceneController.setGhostEffect(false);
                 }
-                if (G.getSelectionOptions().show_inputs) {
-                    this.highlightInputInstances(false);
+                if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
+                    this.highlightInstances(false);
                 }
-                if (G.getSelectionOptions().show_outputs) {
-                    this.highlightOutputInstances(false);
+                else if (G.getSelectionOptions().show_inputs) {
+                    this.highlightInstances(false, GEPPETTO.Resources.INPUT);
+                }
+                else if (G.getSelectionOptions().show_outputs) {
+                    this.highlightInstances(false, GEPPETTO.Resources.OUTPUT);
                 }
                 if (G.getSelectionOptions().draw_connection_lines) {
                     this.showConnectionLines(false);
@@ -321,25 +330,6 @@ define(['jquery'], function (require) {
             return message;
         },
 
-        /**
-         * Show input connections for this entity
-         * @command instance.highlightInputInstances()
-         * @param {boolean} mode- Show/hide input connections for this entity
-         */
-        highlightInputInstances: function (mode) {
-            if (mode == null || mode == undefined) {
-                mode = true;
-            }
-
-            //show/hide connections
-            if (mode) {
-                GEPPETTO.SceneController.highlightConnectedInstances(this, GEPPETTO.Resources.INPUT);
-            }
-            else {
-                GEPPETTO.SceneController.restoreConnectedInstancesColour(this);
-            }
-        },
-
 
         /**
          * Show output connections for this entity.
@@ -347,14 +337,14 @@ define(['jquery'], function (require) {
          * @command EntityNode.highlightOutputInstances()
          * @param {boolean} mode - Show or hide output connections
          */
-        highlightOutputInstances: function (mode) {
+        highlightInstances: function (mode, type) {
             if (mode == null || mode == undefined) {
                 mode = true;
             }
 
             //show/hide connections
             if (mode) {
-                GEPPETTO.SceneController.highlightConnectedInstances(this, GEPPETTO.Resources.OUTPUT);
+                GEPPETTO.SceneController.highlightConnectedInstances(this, type);
             }
             else {
                 GEPPETTO.SceneController.restoreConnectedInstancesColour(this);

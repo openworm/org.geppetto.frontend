@@ -496,11 +496,6 @@ define(function (require) {
                         };
                         var arrayInstance = this.createArrayInstance(arrayOptions);
 
-                        // check if visual type and inject AVisualCapability
-                        if (arrayInstance.hasVisualType()) {
-                            arrayInstance.extendApi(AVisualCapability);
-                        }
-
                         for (var i = 0; i < size; i++) {
                             // create simple instance for this variable
                             var options = {
@@ -517,6 +512,7 @@ define(function (require) {
                             // check if visual type and inject AVisualCapability
                             if (explodedInstance.hasVisualType()) {
                                 explodedInstance.extendApi(AVisualCapability);
+                                this.propagateCapabilityToParents(AVisualCapability, explodedInstance);
                             }
 
                             // check if it has connections and inject AConnectionCapability
@@ -562,6 +558,7 @@ define(function (require) {
                         // check if visual type and inject AVisualCapability
                         if (newlyCreatedInstance.hasVisualType()) {
                             newlyCreatedInstance.extendApi(AVisualCapability);
+                            this.propagateCapabilityToParents(AVisualCapability, newlyCreatedInstance);
                         }
 
                         // check if it has connections and inject AConnectionCapability
@@ -711,6 +708,23 @@ define(function (require) {
                 }
 
                 return matching;
+            },
+
+            /**
+             * Propagates a capability to parents of the given instance
+             */
+            propagateCapabilityToParents: function (capability, instance){
+                var parent = instance.getParent();
+
+                // check if it has capability
+                if(!(parent == undefined || parent == null) && !parent.hasCapability(capability.capabilityId)){
+                    // apply capability
+                    parent.extendApi(capability);
+
+                    this.propagateCapabilityToParents(capability, parent);
+                }
+
+                // else --> live & let die
             },
 
             /**

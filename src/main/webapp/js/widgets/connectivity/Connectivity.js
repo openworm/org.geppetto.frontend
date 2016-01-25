@@ -133,8 +133,8 @@ define(function (require) {
 	                        var source = connectionItem.getA();
 	                        var target = connectionItem.getB();
 	                        //AQP: Where is the error?
-	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath().replace('[', '_').replace(']', '');
-	                        var targetId = target.getElements()[source.getElements().length - 1].getPath().replace('[', '_').replace(']', '');
+	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
+	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
 	
 	                        this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
 	                    }
@@ -516,10 +516,10 @@ define(function (require) {
                     .on("click", function (d) {
                         G.unSelectAll();
                         //Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.
-                        eval(root.name + "." + nodes[d.x].id).select();
-                        eval(root.name + "." + nodes[d.x].id).showConnectionLines(false);
-                        eval(root.name + "." + nodes[d.y].id).select();
-                        eval(root.name + "." + nodes[d.y].id).showConnectionLines(false);
+                        eval(root.getId() + "." + nodes[d.x].id).select();
+                        eval(root.getId() + "." + nodes[d.x].id).showConnectionLines(false);
+                        eval(root.getId() + "." + nodes[d.y].id).select();
+                        eval(root.getId() + "." + nodes[d.y].id).showConnectionLines(false);
                     })
                     .on("mouseover", function (d) {
                         d3.select(this.parentNode.appendChild(this)).transition().duration(100).style({

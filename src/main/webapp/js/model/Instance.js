@@ -201,13 +201,8 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             if (parent != null && parent != undefined) {
                 parentPath = parent.getInstancePath();
             }
-            var path = (parentPath + "." + this.getId());
-            if ((parentPath != "") &&
-                (parent.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) &&
-                (this.getId().indexOf(parent.getId(), 0) === 0)) {
-                var index = this.getId().substring(parent.getId().length + 1, this.getId().length);
-                path = parentPath + "[" + index + "]";
-            }
+            var path = parentPath + "." + this.getId();
+
             return (parentPath != "") ? path : this.getId();
         },
 

@@ -49,6 +49,7 @@ define(function (require) {
         var ArrayType = require('model/ArrayType');
         var Instance = require('model/Instance');
         var ArrayInstance = require('model/ArrayInstance');
+        var ArrayElementInstance = require('model/ArrayElementInstance');
         var VisualGroup = require('model/VisualGroup');
         var VisualGroupElement = require('model/VisualGroupElement');
         var Pointer = require('model/Pointer');
@@ -308,10 +309,11 @@ define(function (require) {
             createInstances: function (geppettoModel) {
                 var instances = [];
 
+                // we need to explode instances for variables with visual and connection types
                 var varsWithVizTypes = [];
                 var varsWithConnTypes = [];
 
-                // builds list of vars with visual types - start traversing from top level variables
+                // builds list of vars with visual types and connection types - start traversing from top level variables
                 var vars = geppettoModel.getVariables();
                 for (var i = 0; i < vars.length; i++) {
                     this.fetchVarsWithVisualOrConnectionTypes(vars[i], varsWithVizTypes, varsWithConnTypes, '');
@@ -404,7 +406,7 @@ define(function (require) {
                 var newlyCreatedInstance = null;
                 var newlyCreatedInstances = [];
 
-                // find matching first variable in path in the model object passed in
+                // STEP 1: find matching first variable in path in the model object passed in
                 var varsIds = path.split('.');
                 // check model MetaType and find variable accordingly
                 if (model.getMetaType() == GEPPETTO.Resources.GEPPETTO_MODEL_NODE) {
@@ -444,7 +446,7 @@ define(function (require) {
                     }
                 }
 
-                // create instance for given variable
+                // STEP 2: create instance for given variable
                 if (variable != null) {
 
                     var types = variable.getTypes();
@@ -496,12 +498,13 @@ define(function (require) {
                             var options = {
                                 id: variable.getId() + '_' + i,
                                 name: variable.getId() + '_' + i,
-                                _metaType: GEPPETTO.Resources.INSTANCE_NODE,
+                                _metaType: GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE,
                                 variable: variable,
                                 children: [],
-                                parent: arrayInstance
+                                parent: arrayInstance,
+                                index: i
                             };
-                            var explodedInstance = this.createInstance(options);
+                            var explodedInstance = this.createArrayElementInstance(options);
 
                             // check if visual type and inject AVisualCapability
                             if (explodedInstance.hasVisualType()) {
@@ -575,7 +578,7 @@ define(function (require) {
                     }
                 }
 
-                // recurse rest of path (without first var) - pass down path, parent instance we just created, model node, top level instance list
+                // STEP: 3 recurse rest of path (without first / leftmost var)
                 var newPath = '';
                 for (var i = 0; i < varsIds.length; i++) {
                     if (i != 0) {
@@ -588,7 +591,7 @@ define(function (require) {
                     this.buildInstanceHierarchy(newPath, newlyCreatedInstance, variable, topLevelInstances);
                 }
 
-                // if there is a list of exploded instances
+                // if there is a list of exploded instances recurse on each
                 if (newlyCreatedInstances.length > 0 && newPath != '') {
                     for (var x = 0; x < newlyCreatedInstances.length; x++) {
                         this.buildInstanceHierarchy(newPath, newlyCreatedInstances[x], variable, topLevelInstances);
@@ -817,7 +820,7 @@ define(function (require) {
                 }
             },
 
-            /** Creates a simple composite node */
+            /** Creates a simple composite */
             createModel: function (node, options) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
@@ -828,7 +831,7 @@ define(function (require) {
                 return n;
             },
 
-            /** Creates a simple composite node */
+            /** Creates a simple composite */
             createLibrary: function (node, options) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
@@ -839,7 +842,7 @@ define(function (require) {
                 return n;
             },
 
-            /** Creates a variable node */
+            /** Creates a variable */
             createVariable: function (node, options) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
@@ -864,7 +867,7 @@ define(function (require) {
                 return t;
             },
 
-            /** Creates a composite type node */
+            /** Creates a composite type */
             createCompositeType: function (node, options) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
@@ -878,7 +881,7 @@ define(function (require) {
                 return t;
             },
 
-            /** Creates a composite visual type node */
+            /** Creates a composite visual type */
             createCompositeVisualType: function (node, options) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
@@ -895,7 +898,7 @@ define(function (require) {
                 return t;
             },
 
-            /** Creates a composite type node */
+            /** Creates a composite type */
             createArrayType: function (node, options) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
@@ -908,7 +911,7 @@ define(function (require) {
                 return t;
             },
 
-            /** Creates an istance node */
+            /** Creates an istance */
             createInstance: function (options) {
                 if (options == null || options == undefined) {
                     options = {_metaType: GEPPETTO.Resources.INSTANCE_NODE};
@@ -919,7 +922,18 @@ define(function (require) {
                 return i;
             },
 
-            /** Creates an istance node */
+            /** Creates an array element istance */
+            createArrayElementInstance: function (options) {
+                if (options == null || options == undefined) {
+                    options = {_metaType: GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE};
+                }
+
+                var aei = new ArrayElementInstance(options);
+
+                return aei;
+            },
+
+            /** Creates an arra istance */
             createArrayInstance: function (options) {
                 if (options == null || options == undefined) {
                     options = {_metaType: GEPPETTO.Resources.ARRAY_INSTANCE_NODE};

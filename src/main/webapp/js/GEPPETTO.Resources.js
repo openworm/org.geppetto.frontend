@@ -413,6 +413,7 @@ define(function (require) {
             //INSTANCES
             INSTANCE_NODE: "Instance",
             ARRAY_INSTANCE_NODE: "ArrayInstance",
+            ARRAY_ELEMENT_INSTANCE_NODE: "ArrayElementInstance",
             //COMMON LIBRARY
             PARAMETER: "Parameter",
             STATE_VARIABLE: "StateVariable",

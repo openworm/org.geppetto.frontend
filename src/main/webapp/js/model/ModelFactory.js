@@ -103,7 +103,7 @@ define(function (require) {
             },
 
             /**
-             * Creates variables starting from an array of variables in the json model format
+             * Populate shortcuts of children onto parents
              */
             populateChildrenShortcuts: function (node) {
                 // check if getChildren exists, if so add shortcuts based on ids and recurse on each
@@ -112,7 +112,11 @@ define(function (require) {
 
                     if (children != undefined) {
                         for (var i = 0; i < children.length; i++) {
-                            node[children[i].getId()] = children[i];
+                            // do not populate shortcuts for array instances - children are accessed as array elements
+                            if(node.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE){
+                                node[children[i].getId()] = children[i];
+                            }
+
                             this.populateChildrenShortcuts(children[i]);
                         }
                     }

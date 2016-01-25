@@ -489,27 +489,12 @@ define(function (require) {
              * Update output of the help command. Usually called after widget
              * is created.
              *
-             * @param scriptLocation - Location of files from where to read the comments
              * @param object - Object whose commands will be added
              * @param id - Id of object
+             * @param comments - the comments to use to decorate the methods
              * @returns {}
              */
-            updateHelpCommand: function (scriptLocation, object, id) {
-                var descriptions = [];
-
-                //retrieve the script to get the comments for all the methods
-                $.ajax({
-                    async: false,
-                    type: 'GET',
-                    url: scriptLocation,
-                    dataType: "text",
-                    //at success, read the file and extract the comments
-                    success: function (data) {
-                        var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-                        descriptions = data.match(STRIP_COMMENTS);
-                    }
-                });
-
+            updateHelpCommand: function (object, id, comments) {
                 var commandsFormmatted = id + GEPPETTO.Resources.COMMANDS;
 
                 var commandsCount = commands.length;
@@ -536,8 +521,8 @@ define(function (require) {
                             commandsCount++;
                             //match the function to comment
                             var matchedDescription = "";
-                            for (var i = 0; i < descriptions.length; i++) {
-                                var description = descriptions[i].toString();
+                            for (var i = 0; i < comments.length; i++) {
+                                var description = comments[i].toString();
 
                                 //items matched
                                 if (description.indexOf(prop) != -1) {
@@ -572,7 +557,7 @@ define(function (require) {
                 }
 
                 if (proto.__proto__ != null) {
-                    GEPPETTO.Console.updateHelpCommand(scriptLocation, proto, id);
+                    GEPPETTO.Console.updateHelpCommand(proto, id, comments);
                 }
             },
 

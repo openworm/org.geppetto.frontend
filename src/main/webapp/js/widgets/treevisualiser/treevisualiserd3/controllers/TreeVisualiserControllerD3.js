@@ -97,7 +97,7 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //add commands to console autocomplete and help option
-            GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js", tvd3, id);
+            GEPPETTO.Console.updateHelpCommand(tvd3, id, this.getFileComments("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.js"));
 
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(tvd3.getId(), tvd3);

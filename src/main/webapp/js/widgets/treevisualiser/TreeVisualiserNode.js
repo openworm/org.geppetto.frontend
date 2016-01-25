@@ -45,6 +45,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         _children: [],
         formattedValue: "",
         style: "",
+        backgroundColors: [], 
 
         /**
          * Initializes this node with passed attributes
@@ -57,6 +58,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             this.set({"_children": (options._children != undefined) ? options._children : []});
             this.set({"formattedValue": (options.formattedValue != undefined) ? options.formattedValue : ""});
             this.set({"style": (options.style != undefined) ? options.style : ""});
+            this.set({"backgroundColors": (options.backgroundColors != undefined) ? options.backgroundColors : []});
         },
 
         /**
@@ -119,6 +121,16 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          */
         getHiddenChildren: function () {
             return this.get('_children');
+        },
+        
+        /**
+         * Get the backgroundColors of the node
+         *
+         * @command getChildren()
+         * @returns {Object} Children of node
+         */
+        getBackgroundColors: function () {
+            return this.get('backgroundColors');
         },
         
         /**

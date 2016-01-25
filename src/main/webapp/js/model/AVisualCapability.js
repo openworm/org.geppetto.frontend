@@ -61,7 +61,7 @@ define(['jquery'], function (require) {
 
             if (nested === true && typeof this.getChildren === "function") {
                 var children = this.getChildren();
-                for (var i = 0; i < children.lenght; i++) {
+                for (var i = 0; i < children.length; i++) {
                     if (typeof children[i].hide === "function") {
                         children[i].hide(nested);
                     }
@@ -91,7 +91,7 @@ define(['jquery'], function (require) {
 
             if (nested === true && typeof this.getChildren === "function") {
                 var children = this.getChildren();
-                for (var i = 0; i < children.lenght; i++) {
+                for (var i = 0; i < children.length; i++) {
                     if (typeof children[i].show === "function") {
                         children[i].show(nested);
                     }
@@ -118,7 +118,7 @@ define(['jquery'], function (require) {
 
             if (nested === true && typeof this.getChildren === "function") {
                 var children = this.getChildren();
-                for (var i = 0; i < children.lenght; i++) {
+                for (var i = 0; i < children.length; i++) {
                     if (typeof children[i].setOpacity === "function") {
                         children[i].setOpacity(opacity, nested);
                     }
@@ -142,7 +142,7 @@ define(['jquery'], function (require) {
 
             if (nested === true && typeof this.getChildren === "function") {
                 var children = this.getChildren();
-                for (var i = 0; i < children.lenght; i++) {
+                for (var i = 0; i < children.length; i++) {
                     if (typeof children[i].setColor === "function") {
                         children[i].setColor(color, nested);
                     }
@@ -221,7 +221,7 @@ define(['jquery'], function (require) {
 
             if (nested === true && typeof this.getChildren === "function") {
                 var children = this.getChildren();
-                for (var i = 0; i < children.lenght; i++) {
+                for (var i = 0; i < children.length; i++) {
                     if (typeof children[i].select === "function") {
                         children[i].select(nested);
                     }
@@ -276,7 +276,7 @@ define(['jquery'], function (require) {
             // nested
             if (nested === true && typeof this.getChildren === "function") {
                 var children = this.getChildren();
-                for (var i = 0; i < children.lenght; i++) {
+                for (var i = 0; i < children.length; i++) {
                     if (typeof children[i].deselect === "function") {
                         children[i].deselect(nested);
                     }
@@ -320,7 +320,7 @@ define(['jquery'], function (require) {
             // nested
             if (nested === true && typeof this.getChildren === "function") {
                 var children = this.getChildren();
-                for (var i = 0; i < children.lenght; i++) {
+                for (var i = 0; i < children.length; i++) {
                     if (typeof children[i].setGeometryType === "function") {
                         children[i].setGeometryType(nested);
                     }

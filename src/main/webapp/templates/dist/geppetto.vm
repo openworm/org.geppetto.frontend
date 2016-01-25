@@ -57,7 +57,7 @@
 
 <div id="modal-region"></div>
 
-<div id="controls">
+<div id="controls" class="noSelection">
 
 	<div id="SaveButton" class="row"></div>
 	<div id="HomeButton" class="row"></div>
@@ -73,9 +73,9 @@
 </div>
 
 <div id="mainContainer">
-     <div id="geppettologo" ></div>
+     <div id="geppettologo" class="noSelection" ></div>
      <div id="spotlight" ></div>
-    <div id="sim"></div>
+    <div id="sim" class="noSelection"></div>
 
     <div id="footer">
         <div id="footerHeader">

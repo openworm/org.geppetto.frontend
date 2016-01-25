@@ -83,6 +83,19 @@ define(function (require) {
             		case GEPPETTO.Resources.STATE_VARIABLE_TYPE:
             			formattedValue = node.getInitialValues()[0].value.value + " " + node.getInitialValues()[0].value.unit.unit;
             			break;
+            		case GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE:
+            			formattedValue = (node.getValue()!=null)?(node.getValue() + " " + node.getUnit()):"";
+            			break;
+            		case GEPPETTO.Resources.VISUAL_GROUP_NODE:
+            			formattedValue = []
+            			if (node.getMinDensity() != undefined){
+            				//AQP: Is this the best way
+            				formattedValue.push(Math.floor(node.getMinDensity() * 1000)/1000);
+            			}
+            			if (node.getMaxDensity() != undefined && node.getMinDensity() != node.getMaxDensity()){
+            				formattedValue.push(Math.floor(node.getMaxDensity() * 1000)/1000);
+            			}
+            			break;
             		case GEPPETTO.Resources.CONNECTION_TYPE:
                         //AQP: This is probably not needed as we are not going to show the connections
             			formattedValue = 'Connection';
@@ -91,6 +104,7 @@ define(function (require) {
             			formattedValue = node.getInitialValues()[0].value.dynamics.expression.expression;
             			break;
             		case GEPPETTO.Resources.FUNCTION_TYPE:
+            			console.log('function');
                     	//AQP: Review this case!
             			formattedValue = "";
             			break;
@@ -157,15 +171,72 @@ define(function (require) {
             			return "instancefoldertv";
             		case GEPPETTO.Resources.ARRAY_TYPE_NODE:
             			return "arraytypetv";
+            		case GEPPETTO.Resources.VISUAL_GROUP_ELEMENT_NODE:
+            			return "visualgroupelementtv";
+
             	}
             	return null;
             },
             
-
+            createVisualisationSubTree: function (compositeVisualType) {
+            	var tagsNode = {};
+            	var children = [];
+            	for (var i = 0; i < compositeVisualType.getVisualGroups().length; i++) {
+                    var visualGroup = compositeVisualType.getVisualGroups()[i];
+                    
+                    var nodeChildren = [];
+                    for (var j=0; j < visualGroup.getVisualGroupElements().length; j++){
+                    	var visualGroupElement = visualGroup.getVisualGroupElements()[j];
+                    	
+                    	var nodeChild = new TreeVisualiserNode({wrappedObj: visualGroupElement, formattedValue: this.getFormattedValue(visualGroupElement, visualGroupElement.getMetaType()),
+                    		style:this.getStyle(visualGroupElement.getMetaType())});
+                    	
+                    	if (visualGroupElement.getColor() != undefined){
+                    		nodeChild.set({"backgroundColors":[visualGroupElement.getColor()]});
+                    	}
+                    	
+                    	nodeChildren.push(nodeChild);
+                    }
+                    
+                    var node = new TreeVisualiserNode({wrappedObj: visualGroup, _children: nodeChildren, style:this.getStyle(visualGroup.getMetaType()), formattedValue: this.getFormattedValue(visualGroup, visualGroup.getMetaType())});
+                    var backgroundColors = [];
+                	if (visualGroup.getLowSpectrumColor() != undefined){
+                		backgroundColors.push(visualGroup.getLowSpectrumColor());
+                	}
+                    if (visualGroup.getHighSpectrumColor() != undefined && visualGroup.getMaxDensity() != undefined && visualGroup.getMinDensity() != visualGroup.getMaxDensity()){
+                		backgroundColors.push(visualGroup.getHighSpectrumColor());
+                	}
+                    if (backgroundColors.length > 0){
+                    	node.set({"backgroundColors":backgroundColors});
+                    }
+                    
+                    if (visualGroup.getTags().length >0){
+	                    for (var j = 0; j < visualGroup.getTags().length; j++){
+	                    	var tag = visualGroup.getTags()[j];
+	                    	if (!(tag in tagsNode)){
+	                    		var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
+	                                name: tag,
+	                                id: tag,
+	                                _metaType: ""
+	                            });
+	                    		//AQP: style?
+	                    		tagsNode[tag] = new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, _children: []});
+	                    		children.push(tagsNode[tag]);
+	                    	}
+	                    	tagsNode[tag].getHiddenChildren().push(node);
+	                    }
+                    }
+                    else{
+                    	children.push(node)
+                    }
+                    
+                }
+            	return children;
+            },
+            
             convertNodeToTreeVisualiserNode: function (node) {
             	
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getType().getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
-                	console.log(node.getType().getMetaType());
                 	if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || node.getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
                 		if (node.getType().getSuperType() != undefined && node.getType().getSuperType().getId() == 'projection') {
                             var projectionChildren = node.getType().getChildren();
@@ -223,6 +294,9 @@ define(function (require) {
                             children.push(node);
                     }
                 }
+                else if (state.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                	children = this.createVisualisationSubTree(state);
+                }
                 else if (state.getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
 
                     // Size
@@ -236,7 +310,10 @@ define(function (require) {
                     // Array Type: Cell
                     var cellNode = new TreeVisualiserNode({wrappedObj: state.getType(), style: this.getStyle(state.getType().getMetaType())});
                     var cellNodeChildren = this.createTreeVisualiserNodeChildren(state.getType());
-                    cellNodeChildren.push(new TreeVisualiserNode({wrappedObj: state.getType().getVisualType()}));
+                    
+                    var cellVisualTypes = new TreeVisualiserNode({wrappedObj: state.getType().getVisualType(), _children: this.createTreeVisualiserNodeChildren(state.getType().getVisualType())});
+                    
+                    cellNodeChildren.push(cellVisualTypes);
                     
                     
                     

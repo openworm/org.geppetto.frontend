@@ -205,14 +205,15 @@ div[id^='TreeVisualiserDAT'] {
     color: #cc00cc;
 }
 
-/*.dg .cr.string.variablenodetv {
+.dg .cr.string.visualgroupelementtv {
     border-left: 3px solid #FFA500;
 }
 
-.dg .cr.string.variablenodetv input[type=text] {
-    color: #FFA500;
+.dg .cr.string.visualgroupelementtv input[type=text] {
+    text-align: center;
 }
 
+/*
 .dg .cr.string.visualobjectreferencenodetv {
     border-left: 3px solid #a462ff;
 }

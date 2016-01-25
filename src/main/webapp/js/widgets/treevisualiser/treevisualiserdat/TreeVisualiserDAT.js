@@ -130,7 +130,7 @@ define(function (require) {
          * Sets the data used inside the TreeVisualiserDAT for rendering.
          *
          * @param {Array} state - Array of variables used to display inside TreeVisualiserDAT
-         * @param {Object} options - Set of options passed to widget to customize it
+         * @param {Object} options - Set of options passed to widget to customise it
          */
         setData: function (state, options) {
             labelsInTV = [];
@@ -222,6 +222,24 @@ define(function (require) {
                     if (this.options.expandNodes) {
                         parentFolderTmp.open();
                     }
+                    
+                    if (data.getBackgroundColors().length > 0){
+                    	$(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").append($('<a id="backgroundSections">').css({"z-index":1, "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
+	                    for (var index in data.getBackgroundColors()){
+	                    	 var color = data.getBackgroundColors()[index].replace("0X","#");
+	                    	 $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").find('#backgroundSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "background-color": color, "height": "90%"}).html("&nbsp"));
+	                    }
+                    }
+                    
+                    if (data.getValue().length > 0){
+                    	$(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").css({"position": "relative"});
+                    	$(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").append($('<a id="contentSections">').css({"z-index":2, "text-align": "center", "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
+	                    for (var index in data.getValue()){
+	                    	 $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").find('#contentSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "height": "90%"}).html(data.getValue()[index]));
+	                    }
+                    }
+                    
+
                 }
                 else {
                 	this.dataset.valueDict[data.getId()] = new function () {};
@@ -240,6 +258,16 @@ define(function (require) {
 							GEPPETTO.Console.executeCommand(data.getId() + ".setValue(" + $(this).val().split(" ")[0] + ")");
 						});
 					}
+                    
+                    
+                    if (data.getBackgroundColors().length > 0){
+	                    var color = data.getBackgroundColors()[0].replace("0X","#");
+	                    $(this.dataset.valueDict[data.getId()]["controller"].__li).find(".c").css({"background-color": color, "height": "90%"});
+                    }
+                    
+
+                    
+                    
                 }
                 this.dataset.valueDict[data.getId()]["model"] = data;
             }
@@ -249,105 +277,6 @@ define(function (require) {
                 	this.dataset.valueDict[data.getId()][label] = data.getValue();
                 }
             }
-
-
-//				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
-//						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "HTMLMetadataNode" |
-//						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
-//					if (!dataset.isDisplayed) {
-//						dataset.valueDict[data.instancePath] = new function(){};
-//						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
-//						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
-//						
-//						if(data._metaType=="ParameterSpecificationNode")
-//						{
-//							$(dataset.valueDict[data.instancePath]["controller"].__li).find('div > div > input[type="text"]').change(function(){
-//								GEPPETTO.Console.executeCommand(data.instancePath+".setValue(" + $(this).val().split(" ")[0] + ")");
-//							});
-//						}
-//						
-//						//Add class to dom element depending on node metatype
-//						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
-//						//Add instancepath as data attribute. This attribute will be used in the event framework
-//						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
-//						
-//						//if no values are presentn for a group element,display theh color
-//						if (data._metaType == "VisualGroupElementNode" 
-//							&& dataset.valueDict[data.instancePath][label] == "null ") {
-//							//set label to empty
-//							dataset.valueDict[data.instancePath][label] = "";
-//							
-//							$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
-//
-//							//apply color to label by getting unique class and using jquery
-//							var color = data.getColor().replace("0X","#");
-//							$(this.dialog).find("."+label + " .c").css({"background-color": color, "width": "60%", "height": "95%"});
-//						}	
-//					}
-//					else{
-//						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
-//						if(!set.__ul.closed){
-//							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
-//						}
-//					}
-//				}
-//				else{
-//					if (!dataset.isDisplayed) {
-//						parentFolder = parent.addFolder(label);
-//						//Add class to dom element depending on node metatype
-//						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
-//						//Add instancepath as data attribute. This attribute will be used in the event framework
-//						$(parentFolder.domElement).find("li").data("instancepath", data.getInstancePath());
-//						
-//						//if no values are presentn for a group element,display theh color
-//						if (data._metaType == "VisualGroupNode") {
-//							
-//							$(parentFolder.domElement).find("li").addClass(label);
-//							
-//							$(this.dialog).find("."+label).append($('<a>').attr('class',label+"-mean"));
-//							$(this.dialog).find("."+label).css("width", "100%");
-//							$(this.dialog).find("."+label+"-mean").css({"float": "right", "width": "60%", "height": "90%", "color": "black"});
-//
-//							if (data.getMinDensity() != null){
-//
-//								if(data.getMinDensity() != data.getMaxDensity()){
-//	
-//									var lowHexColor = rgbToHex(255, Math.floor(255), 0);
-//									var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
-//									var lowcolor = lowHexColor.replace("0X","#");
-//									var highcolor = highHexColor.replace("0X","#");
-//
-//									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-low").append(data.getMinDensity()));
-//									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
-//
-//									$(this.dialog).find("."+label+"-low").css({"width": "50%", "height": "90%", "text-align": "center", "float": "left", "background-color": lowcolor});
-//									$(this.dialog).find("."+label+"-high").css({"width": "50%", "height": "90%", "text-align": "center", "float": "right", "background-color": highcolor});
-//									
-//								} else {
-//									var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
-//									var color = hex.replace("0X","#");
-//	
-//									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-text").append(data.getMinDensity()));
-//									$(this.dialog).find("."+label+"-mean").css({"text-align": "center", "background-color": color});
-//									$(this.dialog).find("."+label+"-text").css({"width": "60%", "background-color": color});
-//								}
-//							}	
-//						}
-//					}
-//					var children = data.getChildren();
-//					if (children.length > 0){
-//						var parentFolderTmp = parentFolder;
-//							for (var childIndex in children){
-//								if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
-//									this.prepareTree(parentFolderTmp, children[childIndex],step);
-//								}
-//							}
-//						if (this.options.expandNodes){
-//							parentFolderTmp.open();
-//						}
-//					}
-//				}
-            //}
         },
 
         /**

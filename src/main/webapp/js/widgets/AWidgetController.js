@@ -49,6 +49,7 @@ define(function (require) {
             widgets: [],
             on: true,
             registeredEvents: null,
+            comments: [],
 
             constructor: function () {
                 // Call the original constructor
@@ -129,6 +130,36 @@ define(function (require) {
                 while (available == false);
 
                 return id;
+            },
+
+            /**
+             * Get the comments of a given widget file through an Ajax call. This is used to extract the comments on the methods
+             * and visualize them when using the help command.
+             *
+             * @param {String} file
+             */
+            getFileComments: function (file) {
+                if (this.comments.length == 0) {
+                    var fetchedComments = [];
+                    //retrieve the script to get the comments for all the methods
+                    $.ajax({
+                        async: false,
+                        type: 'GET',
+                        url: file,
+                        dataType: "text",
+                        //at success, read the file and extract the comments
+                        success: function (data) {
+                            var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+                            fetchedComments = data.match(STRIP_COMMENTS);
+                        },
+                        error: function () {
+                            console.log('error fetching file with Ajax request');
+                        }
+                    });
+
+                    this.comments = fetchedComments;
+                }
+                return this.comments;
             }
         })
     };

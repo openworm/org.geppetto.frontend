@@ -442,11 +442,17 @@ define(function (require) {
                     for (var i = 0; i < allTypes.length; i++) {
                         if (allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
                             var variables = allTypes[i].getVariables();
-                            for (var i = 0; i < variables.length; i++) {
-                                if (varsIds[0] === variables[i].getId()) {
-                                    variable = variables[i];
+
+                            for (var m = 0; m < variables.length; m++) {
+                                if (varsIds[0] === variables[m].getId()) {
+                                    variable = variables[m];
                                     break;
                                 }
+                            }
+
+                            // break outer loop too
+                            if(variable != null){
+                                break;
                             }
                         }
                     }
@@ -477,14 +483,6 @@ define(function (require) {
                     if (matchingInstance != null) {
                         // there is a match, simply re-use that instance as the "newly created one" instead of creating a new one
                         newlyCreatedInstance = matchingInstance;
-
-                        // if the matching instance is an array instance - add children to newly created instances list
-                        if (matchingInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                            var arrayElements = matchingInstance.getChildren();
-                            for (var z = 0; z < arrayElements.length; z++) {
-                                newlyCreatedInstances.push(arrayElements[z]);
-                            }
-                        }
                     } else if (arrayType != null) {
                         // when array type, explode into multiple ('size') instances
                         var size = arrayType.getSize();
@@ -868,11 +866,15 @@ define(function (require) {
                     // STEP 1: build list of potential parent paths
                     if(arrayType != undefined){
                         // add the [*] entry
-                        potentialParentPaths.push(path + '[' + '*' + ']');
+                        var starPath = path + '[' + '*' + ']';
+                        potentialParentPaths.push(starPath);
+                        allPotentialPaths.push(starPath);
 
                         // add each array element path
                         for(var n=0; n<arrayType.getSize(); n++){
-                            potentialParentPaths.push(path + '[' + n + ']');
+                            var arrayElementPath = path + '[' + n + ']';
+                            potentialParentPaths.push(arrayElementPath);
+                            allPotentialPaths.push(arrayElementPath);
                         }
                     } else {
                         potentialParentPaths.push(path);

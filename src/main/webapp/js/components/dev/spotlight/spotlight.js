@@ -56,6 +56,7 @@ define(function (require) {
                     if (!this.instance || this.instance.getInstancePath() != $('#typeahead').val()) {
                         var instancePath = $('#typeahead').val();
                         this.instance = Instances.getInstance(instancePath);
+                        e.data.loadToolbarFor(this.instance);
                     }
 
                     if(this.instance) {
@@ -101,11 +102,11 @@ define(function (require) {
 
         BootstrapMenuMaker: {
             named: function (constructor, name, def, instance) {
-                return constructor.bind(this)(def, instance).attr('id', name);
+                return constructor.bind(this)(def, name, instance).attr('id', name);
             },
 
 
-            createButtonCallback: function (button, bInstance) {
+            buttonCallback: function (button, bInstance) {
                 var instance=bInstance;
                 return function () {
                     button.actions.forEach(function (action) {
@@ -114,7 +115,40 @@ define(function (require) {
                 }
             },
 
-            createButton: function (button, instance) {
+            statefulButtonCallback: function (button, name, bInstance) {
+                var that=this;
+                var instance=bInstance;
+                return function () {
+                    var condition=eval(instance.getInstancePath()+button.condition);
+                    var actions=button[condition].actions;
+                    actions.forEach(function (action) {
+                        GEPPETTO.Console.executeCommand(instance.getInstancePath()+action)
+                    });
+                    that.switchStatefulButtonState(button, name, condition);
+                }
+            },
+
+            switchStatefulButtonState : function(button, name, condition) {
+                $("#"+name)
+                    .attr('title', button[condition].tooltip)
+                    .removeClass(button[condition].icon)
+                    .addClass(button[!condition].icon);
+            },
+
+            createButton: function (button, name, instance) {
+                if(button.hasOwnProperty("condition")){
+                    var condition=eval(instance.getInstancePath()+button.condition);
+                    var b=button[condition];
+                    return $('<button>')
+                        .addClass('btn btn-default btn-lg fa spotlight-button')
+                        .addClass(b.icon)
+                        .attr('data-toogle', 'tooltip')
+                        .attr('data-placement', 'bottom')
+                        .attr('title', b.tooltip)
+                        .attr('container', 'body')
+                        .on('click', this.statefulButtonCallback(button, name, instance));
+                }
+                else{
                 return $('<button>')
                     .addClass('btn btn-default btn-lg fa spotlight-button')
                     .addClass(button.icon)
@@ -122,7 +156,8 @@ define(function (require) {
                     .attr('data-placement', 'bottom')
                     .attr('title', button.tooltip)
                     .attr('container', 'body')
-                    .on('click', this.createButtonCallback(button, instance));
+                    .on('click', this.buttonCallback(button, instance));
+                }
             },
 
             createButtonGroup: function (bgName, bgDef, bgInstance) {
@@ -138,7 +173,13 @@ define(function (require) {
                     $(button).keypress(that, function (e) {
                         if(e.which == 13 || e.keyCode == 13)  // enter
                         {
-                            e.data.createButtonCallback(button, instance);
+                            if(button.hasOwnProperty("condition")) {
+                                e.data.statefulButtonCallback(button, instance);
+                            }
+                            else{
+                                e.data.buttonCallback(button, instance);
+                            }
+
                         }
                     });
                     $(button).keydown(that, function (e) {
@@ -162,7 +203,10 @@ define(function (require) {
                         }
                     });
                     $(button).mouseover(function (e) {
-                        $(".spotlight-button").focusout();
+                        $(button).focus();
+                    });
+                    $(button).mouseout(function (e) {
+                        $(".typeahead-wrapper").focus();
                     })
                 });
                 return bg;
@@ -194,7 +238,42 @@ define(function (require) {
         configuration: {
             "SpotlightBar": {
                 "VisualCapability": {
-                    "buttonOne": {
+                    "buttonOne":{
+                        "condition":".isSelected()",
+                        "false": {
+                            "actions": [".select(true)"],
+                            "icon": "fa-hand-stop-o",
+                            "label": "Select",
+                            "tooltip": "Select"
+                        },
+                        "true": {
+                            "actions": [".deselect(true)"],
+                            "icon": "fa-hand-rock-o",
+                            "label": "Deselect",
+                            "tooltip": "Deselect"
+                        },
+                    },
+                    "buttonTwo": {
+                        "condition":".isVisible()",
+                        "false": {
+                            "actions": [
+                                ".show(true)"
+                            ],
+                            "icon": "fa-eye-slash",
+                            "label": "Show",
+                            "tooltip": "Show"
+                        },
+                        "true":{
+                            "actions": [
+                                ".hide(true)"
+                            ],
+                            "icon": "fa-eye",
+                            "label": "Hide",
+                            "tooltip": "Hide"
+                        }
+
+                    },
+                    "buttonThree": {
                         "actions": [
                             ".zoomTo()"
                         ],
@@ -202,24 +281,36 @@ define(function (require) {
                         "label": "Zoom",
                         "tooltip": "Zoom"
                     },
-                        "buttonTwo": {
-                        "actions": [".select()"],
-                        "icon": "fa-mouse-pointer",
-                        "label": "Select",
-                        "tooltip": "Select"
-                    }
                 },
                 "ParameterCapability": {
-                        "buttonOne": {
-                            "actions": [
-                                ".setValue($value)"
-                            ],
-                            "icon": "fa-i-cursor",
-                            "label": "Set Value",
-                            "tooltip": "Set Value"
-                        }
+                    "buttonOne": {
+                        "actions": [
+                            ".setValue($value)"
+                        ],
+                        "icon": "fa-i-cursor",
+                        "label": "Set value",
+                        "tooltip": "Set parameter value"
                     }
+                },
+                "StateVariableCapability": {
+                    "buttonOne":{
+                        "condition":".isWatched()",
+                        "false": {
+                            "actions": [".setWatched(true)"],
+                            "icon": "fa-circle-0",
+                            "label": "Record",
+                            "tooltip": "Record the state variable"
+                        },
+                        "true": {
+                            "actions": [".setWatched(false)"],
+                            "icon": "fa-dot-circle-o",
+                            "label": "Stop recording",
+                            "tooltip": "Stop recording the state variable"
+                        }
+                    },
                 }
+            }
+
         },
     });
 

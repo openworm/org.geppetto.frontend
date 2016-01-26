@@ -81,7 +81,7 @@ define(function (require) {
                         .append(' ' + button.label)
                 },
 
-                createButtonCallback: function (button) {
+                buttonCallback: function (button) {
                     return function () {
                         button.actions.forEach(function (action) {
                             GEPPETTO.Console.executeCommand(action)

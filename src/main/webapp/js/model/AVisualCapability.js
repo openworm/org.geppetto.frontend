@@ -103,6 +103,26 @@ define(['jquery'], function (require) {
         },
 
         /**
+         * Returns whether the object is visible or not
+         *
+         * @command AVisualCapability.isVisible()
+         *
+         */
+        isVisible: function () {
+            return this.visible;
+        },
+
+        /**
+         * Returns whether the object is selected or not
+         *
+         * @command AVisualCapability.isSelected()
+         *
+         */
+        isSelected: function () {
+            return this.selected;
+        },
+
+        /**
          * Change the opacity of an instance or class of instances
          *
          * @command AVisualCapability.setOpacity(opacity)

@@ -1,5 +1,5 @@
 #spotlight {
-    position: absolute!important;
+    position: absolute !important;
     background-color: rgba(0, 0, 0, 0.6);
     display: none;
     z-index: 9;
@@ -23,7 +23,7 @@
 }
 
 .typeaheadWrapper {
-    position: absolute!important;
+    position: absolute !important;
     margin-left: auto;
     margin-right: auto;
     left: 0;
@@ -89,4 +89,30 @@
 
 .gist {
     font-size: 14px;
+}
+
+.spotlight-toolbar {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 400px;
+    top: 40%;
+}
+
+.spotlight-button {
+    height: 60px;
+    width: 60px;
+    margin: 5px;
+    background: none !important;
+    color: white !important;
+    font-size: 35px !important;
+    border: 0 !important;
+}
+
+.spotlight-button:hover {
+    font-size: 55px !important;
+    background: none !important;
+    color: #fd6808;
 }

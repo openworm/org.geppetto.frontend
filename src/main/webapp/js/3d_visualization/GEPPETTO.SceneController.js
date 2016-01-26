@@ -677,15 +677,12 @@ define(function (require) {
 
                     }
 
-                    var material = new THREE.LineBasicMaterial(
-                        {
-                            opacity: 1,
-                            linewidth: thickness
-                        });
+                    var material =  new THREE.LineDashedMaterial( { cdashSize: 3, gapSize: 1, linewidth: thickness });
                     material.color.setHex(colour);
 
                     var line = new THREE.LineSegments(geometry, material);
                     line.updateMatrixWorld(true);
+
 
                     if (GEPPETTO.getVARS().connectionLines[connection.getInstancePath()]) {
                         GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[connection.getInstancePath()]);

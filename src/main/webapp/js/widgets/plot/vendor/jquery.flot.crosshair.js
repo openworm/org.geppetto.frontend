@@ -62,7 +62,7 @@ The plugin also adds four public methods:
     var options = {
         crosshair: {
             mode: null, // one of null, "x", "y" or "xy",
-            color: "rgba(170, 0, 0, 0.80)",
+            color: "rgba(254, 110, 3, 1)",
             lineWidth: 1
         }
     };

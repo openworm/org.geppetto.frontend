@@ -297,7 +297,7 @@ define(function (require) {
                         "condition":".isWatched()",
                         "false": {
                             "actions": [".setWatched(true)"],
-                            "icon": "fa-circle-0",
+                            "icon": "fa-circle-o",
                             "label": "Record",
                             "tooltip": "Record the state variable"
                         },

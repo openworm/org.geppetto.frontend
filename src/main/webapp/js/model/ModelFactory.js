@@ -314,19 +314,23 @@ define(function (require) {
             createInstances: function (geppettoModel) {
                 var instances = [];
 
-                // pre-populate
+                // pre-populate instance tags for console suggestions
                 this.populateInstanceTags();
 
                 // we need to explode instances for variables with visual and connection types
                 var varsWithVizTypes = [];
                 var varsWithConnTypes = [];
+                // we need to fetch all potential instance paths (even for not exploded instances)
+                var allPotentialInstancePaths = [];
 
                 // builds list of vars with visual types and connection types - start traversing from top level variables
                 var vars = geppettoModel.getVariables();
                 for (var i = 0; i < vars.length; i++) {
                     this.fetchVarsWithVisualOrConnectionTypes(vars[i], varsWithVizTypes, varsWithConnTypes, '');
+                    this.fetchAllPotentialInstancePaths(vars[i], allPotentialInstancePaths, '');
                 }
 
+                this.allPaths = allPotentialInstancePaths;
                 var varsToInstantiate = varsWithVizTypes.concat(varsWithConnTypes);
 
                 // based on list, traverse again and build instance objects
@@ -782,7 +786,6 @@ define(function (require) {
                 // build "list" of variables that have a visual type (store "path")
                 // check meta type - we are only interested in variables
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
-                this.allPaths.push(path);
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE) {
                     var allTypes = node.getTypes();
                     for (var i = 0; i < allTypes.length; i++) {
@@ -834,6 +837,74 @@ define(function (require) {
                                 if (vars != undefined && vars != null) {
                                     for (var j = 0; j < vars.length; j++) {
                                         this.fetchVarsWithVisualOrConnectionTypes(vars[j], varsWithVizTypes, varsWithConnTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            /**
+             * Build list of potential instance paths
+             */
+            fetchAllPotentialInstancePaths: function (node, allPotentialPaths, parentPath) {
+                // build new path
+                var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+                allPotentialPaths.push(path);
+
+                var potentialParentPaths = [];
+                // check meta type - we are only interested in variables
+                if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE) {
+                    var allTypes = node.getTypes();
+
+                    var arrayType = undefined;
+                    for (var m = 0; m < allTypes.length; m++) {
+                        if (allTypes[m].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
+                            arrayType = allTypes[m];
+                        }
+                    }
+
+                    // STEP 1: build list of potential parent paths
+                    if(arrayType != undefined){
+                        // add the [*] entry
+                        potentialParentPaths.push(path + '[' + '*' + ']');
+
+                        // add each array element path
+                        for(var n=0; n<arrayType.getSize(); n++){
+                            potentialParentPaths.push(path + '[' + n + ']');
+                        }
+                    } else {
+                        potentialParentPaths.push(path);
+                    }
+
+                    // STEp 2: RECURSE on ALL potential parent paths
+                    var allTypes = node.getTypes();
+                    for (var i = 0; i < allTypes.length; i++) {
+                        // RECURSE on any variables inside composite types
+                        if (allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                            var vars = allTypes[i].getVariables();
+
+                            if (vars != undefined && vars != null) {
+                                for (var j = 0; j < vars.length; j++) {
+                                    for(var g=0; g<potentialParentPaths.length; g++){
+                                        this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, potentialParentPaths[g]);
+                                    }
+                                }
+                            }
+                        }
+                        else if (allTypes[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
+                            var arrayType = allTypes[i].getType();
+
+                            // check if the array is of composite type and if so recurse too on contained variables
+                            if (arrayType.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                                var vars = arrayType.getVariables();
+
+                                if (vars != undefined && vars != null) {
+                                    for (var l = 0; l < vars.length; l++) {
+                                        for(var h=0; h<potentialParentPaths.length; h++) {
+                                            this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, potentialParentPaths[h]);
+                                        }
                                     }
                                 }
                             }

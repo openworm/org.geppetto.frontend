@@ -2,7 +2,7 @@
     position: absolute !important;
     background-color: rgba(0, 0, 0, 0.6);
     display: none;
-    z-index: 9;
+    z-index: 99;
     height: 100%;
     width: 100%;
 }
@@ -114,5 +114,17 @@
 .spotlight-button:hover {
     font-size: 55px !important;
     background: none !important;
-    color: #fd6808;
+    color: #fd6808!important;
+}
+
+.spotlight-button:focus {
+    font-size: 55px !important;
+    background: none !important;
+    color: #fd6808!important;
+}
+
+.spotlight-button-hover {
+    font-size: 55px !important;
+    background: none !important;
+    color: #fd6808!important;
 }

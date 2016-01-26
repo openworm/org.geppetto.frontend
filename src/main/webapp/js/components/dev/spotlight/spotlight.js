@@ -44,15 +44,33 @@ define(function (require) {
                 }
             });
 
+            $('#typeahead').keydown(this, function (e) {
+                    if (e.which == 9 || e.keyCode == 9) {
+                        e.preventDefault();
+                }
+            });
+
             $('#typeahead').keypress(this, function (e) {
                 if (e.which == 13 || e.keyCode == 13) {
-                    var instancePath = $('#typeahead').val();
-                    var instance = Instances.getInstance(instancePath);
 
-                    e.data.loadToolbarFor(instance);
+                    if (!this.instance || this.instance.getInstancePath() != $('#typeahead').val()) {
+                        var instancePath = $('#typeahead').val();
+                        this.instance = Instances.getInstance(instancePath);
+                    }
+
+                    if(this.instance) {
+                        if ($(".spotlight-toolbar").length == 0) {
+                            e.data.loadToolbarFor(this.instance);
+                        }
+
+                        $(".tt-menu").hide();
+                        $(".spotlight-button").eq(0).focus();
+                    }
 
                 }
             });
+
+
 
             GEPPETTO.on(Events.Experiment_loaded, (function () {
 
@@ -104,18 +122,48 @@ define(function (require) {
                     .attr('data-placement', 'bottom')
                     .attr('title', button.tooltip)
                     .attr('container', 'body')
-                    .on('click', this.createButtonCallback(button, instance))
+                    .on('click', this.createButtonCallback(button, instance));
             },
 
             createButtonGroup: function (bgName, bgDef, bgInstance) {
                 var that = this;
-                var instance = bgInstance;
+                var instance = bgInstance;s
                 var bg = $('<div>')
                     .addClass('btn-group')
                     .attr('role', 'group')
                     .attr('id', bgName);
                 $.each(bgDef, function (bName, bData) {
-                    bg.append(that.named(that.createButton, bName, bData, instance))
+                    var button=that.named(that.createButton, bName, bData, instance);
+                    bg.append(button)
+                    $(button).keypress(that, function (e) {
+                        if(e.which == 13 || e.keyCode == 13)  // enter
+                        {
+                            e.data.createButtonCallback(button, instance);
+                        }
+                    });
+                    $(button).keydown(that, function (e) {
+                        if(e.which == 27 || e.keyCode == 27)  // escape
+                        {
+                            $(".spotlight-toolbar").remove();
+                            $('#typeahead').focus();
+                            e.stopPropagation();
+                        }
+                    });
+                    $(button).keydown(function (e) {
+                        if(e.which == 9 || e.keyCode == 9)  // tab
+                        {
+                            e.preventDefault();
+                            var next=$(this).next();
+                            if(next.length==0)
+                            {
+                                next=$(".spotlight-button").eq(0);
+                            }
+                            $(next).focus();
+                        }
+                    });
+                    $(button).mouseover(function (e) {
+                        $(".spotlight-button").focusout();
+                    })
                 });
                 return bg;
             },
@@ -154,7 +202,7 @@ define(function (require) {
                         "label": "Zoom",
                         "tooltip": "Zoom"
                     },
-                    "buttonTwo": {
+                        "buttonTwo": {
                         "actions": [".select()"],
                         "icon": "fa-mouse-pointer",
                         "label": "Select",

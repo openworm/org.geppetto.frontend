@@ -677,7 +677,7 @@ define(function (require) {
 
                     }
 
-                    var material =  new THREE.LineDashedMaterial( { cdashSize: 3, gapSize: 1, linewidth: thickness });
+                    var material =  new THREE.LineDashedMaterial( { dashSize: 3, gapSize: 1, linewidth: thickness });
                     material.color.setHex(colour);
 
                     var line = new THREE.LineSegments(geometry, material);

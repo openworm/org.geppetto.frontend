@@ -188,7 +188,7 @@ define(function (require) {
                     for (var j=0; j < visualGroup.getVisualGroupElements().length; j++){
                     	var visualGroupElement = visualGroup.getVisualGroupElements()[j];
                     	
-                    	var nodeChild = new TreeVisualiserNode({wrappedObj: visualGroupElement, formattedValue: this.getFormattedValue(visualGroupElement, visualGroupElement.getMetaType()),
+                    	var nodeChild = this.createTreeVisualiserNode({wrappedObj: visualGroupElement, formattedValue: this.getFormattedValue(visualGroupElement, visualGroupElement.getMetaType()),
                     		style:this.getStyle(visualGroupElement.getMetaType())});
                     	
                     	if (visualGroupElement.getColor() != undefined){
@@ -198,7 +198,7 @@ define(function (require) {
                     	nodeChildren.push(nodeChild);
                     }
                     
-                    var node = new TreeVisualiserNode({wrappedObj: visualGroup, _children: nodeChildren, style:this.getStyle(visualGroup.getMetaType()), formattedValue: this.getFormattedValue(visualGroup, visualGroup.getMetaType())});
+                    var node = this.createTreeVisualiserNode({wrappedObj: visualGroup, _children: nodeChildren, style:this.getStyle(visualGroup.getMetaType()), formattedValue: this.getFormattedValue(visualGroup, visualGroup.getMetaType())});
                     var backgroundColors = [];
                 	if (visualGroup.getLowSpectrumColor() != undefined){
                 		backgroundColors.push(visualGroup.getLowSpectrumColor());
@@ -220,7 +220,7 @@ define(function (require) {
 	                                _metaType: ""
 	                            });
 	                    		//AQP: style?
-	                    		tagsNode[tag] = new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, _children: []});
+	                    		tagsNode[tag] = this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, _children: []});
 	                    		children.push(tagsNode[tag]);
 	                    	}
 	                    	tagsNode[tag].getHiddenChildren().push(node);
@@ -232,6 +232,14 @@ define(function (require) {
                     
                 }
             	return children;
+            },
+            
+            createTreeVisualiserNode: function(options){
+            	if (this.options.expandNodes) {
+            		options["children"] = options._children;
+            		options._children = [];
+                }
+            	return new TreeVisualiserNode(options);
             },
             
             convertNodeToTreeVisualiserNode: function (node) {
@@ -251,21 +259,17 @@ define(function (require) {
                                 }
                             }
 
-                            var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
-                                "name": "Number of Connections",
-                                "id": "numberConnections",
-                                "_metaType": ""
-                            });
-                            projectionsChildrenNode.push(new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: numConnections, style:this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
+                            var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({name: "Number of Connections", id: "numberConnections", _metaType: ""});
+                            projectionsChildrenNode.push(this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: numConnections, style:this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
-                            return new TreeVisualiserNode({wrappedObj: node.getType(), _children: projectionsChildrenNode, style:this.getStyle(node.getType().getMetaType())});
+                            return this.createTreeVisualiserNode({wrappedObj: node.getType(), _children: projectionsChildrenNode, style:this.getStyle(node.getType().getMetaType())});
                         }
                         else {
-                        	return new TreeVisualiserNode({wrappedObj: node.getType(), style:this.getStyle(node.getType().getMetaType()), _children: this.createTreeVisualiserNodeChildren(node.getType())});
+                        	return this.createTreeVisualiserNode({wrappedObj: node.getType(), style:this.getStyle(node.getType().getMetaType()), _children: this.createTreeVisualiserNodeChildren(node.getType())});
                         }
                 	}
                 	else{
-                		return new TreeVisualiserNode({wrappedObj: node, formattedValue: this.getFormattedValue(node, node.getType().getMetaType()), style:this.getStyle(node.getType().getMetaType())})
+                		return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: this.getFormattedValue(node, node.getType().getMetaType()), style:this.getStyle(node.getType().getMetaType())})
                 	}
                 }
                 else if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE || node.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
@@ -276,10 +280,10 @@ define(function (require) {
                 		formattedValue = this.getFormattedValue(node, node.get("capabilities")[0], 0);
                 		style = this.getStyle(node.get("capabilities")[0]);
                 	}
-                    return new TreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, _children: this.createTreeVisualiserNodeChildren(node)});
+                    return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, _children: this.createTreeVisualiserNodeChildren(node)});
                 }
                 else if (node.getMetaType() != GEPPETTO.Resources.VARIABLE_NODE && node.getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
-                	return new TreeVisualiserNode({wrappedObj: node, _children: this.createTreeVisualiserNodeChildren(node), style: this.getStyle(node.getMetaType())})
+                	return this.createTreeVisualiserNode({wrappedObj: node, _children: this.createTreeVisualiserNodeChildren(node), style: this.getStyle(node.getMetaType())})
                 }
             },
 
@@ -305,13 +309,13 @@ define(function (require) {
                         "id": "size",
                         "_metaType": ""
                     });
-                    children.push(new TreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: state.getSize(), style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
+                    children.push(this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: state.getSize(), style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
                     // Array Type: Cell
-                    var cellNode = new TreeVisualiserNode({wrappedObj: state.getType(), style: this.getStyle(state.getType().getMetaType())});
+                    var cellNode = this.createTreeVisualiserNode({wrappedObj: state.getType(), style: this.getStyle(state.getType().getMetaType())});
                     var cellNodeChildren = this.createTreeVisualiserNodeChildren(state.getType());
                     
-                    var cellVisualTypes = new TreeVisualiserNode({wrappedObj: state.getType().getVisualType(), _children: this.createTreeVisualiserNodeChildren(state.getType().getVisualType())});
+                    var cellVisualTypes = this.createTreeVisualiserNode({wrappedObj: state.getType().getVisualType(), _children: this.createTreeVisualiserNodeChildren(state.getType().getVisualType())});
                     
                     cellNodeChildren.push(cellVisualTypes);
                     

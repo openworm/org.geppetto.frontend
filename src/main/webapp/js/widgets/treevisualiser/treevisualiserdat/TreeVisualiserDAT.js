@@ -95,18 +95,23 @@ define(function (require) {
             }
             if (nodeInstancePath != null || undefined) {
                 //Read node from instancepath data property attached to dom element
-                this.dataset.isDisplayed = false;
+                
                 var node = this.dataset.valueDict[nodeInstancePath]["model"];
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
                 	GEPPETTO.Console.executeCommand("G.addWidget(Widgets.TREEVISUALISERDAT).setData(Model.neuroml." + node.getWrappedObj().getInitialValues()[0].getElements()[0].getType().getId() + ")");
                 }
-                else if (node.getChildren().length == 0 && node.getHiddenChildren().length > 0){
-	                node.set({"children": node.getHiddenChildren()});
-	                for (var childIndex in node.getChildren()){
-	                	this.prepareTree(this.dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
-	                }
-	                this.dataset.isDisplayed = true;
+                else{
+                	this.dataset.isDisplayed = false;
+                	if (node.getChildren().length == 0 && node.getHiddenChildren().length > 0){
+        	            node.set({"children": node.getHiddenChildren()});
+        	            for (var childIndex in node.getChildren()){
+        	            	this.prepareTree(this.dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
+        	            }
+        	            
+        	        }
+                	this.dataset.isDisplayed = true;
                 }
+                
             }
         },
         
@@ -219,9 +224,6 @@ define(function (require) {
                             this.prepareTree(parentFolderTmp, children[childIndex], step);
                         }
                     }
-                    if (this.options.expandNodes) {
-                        parentFolderTmp.open();
-                    }
                     
                     if (data.getBackgroundColors().length > 0){
                     	$(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").append($('<a id="backgroundSections">').css({"z-index":1, "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
@@ -239,7 +241,9 @@ define(function (require) {
 	                    }
                     }
                     
-
+                    if (this.options.expandNodes){
+                    	parent.open();
+					}
                 }
                 else {
                 	this.dataset.valueDict[data.getId()] = new function () {};

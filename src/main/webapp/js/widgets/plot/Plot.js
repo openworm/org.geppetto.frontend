@@ -611,16 +611,21 @@ define(function (require) {
          * @param {Node} functionNode - Function Node to be displayed
          */
         plotFunctionNode: function (functionNode) {
+        	
+//        	node.getInitialValues()[0].value.arguments
+//        	node.getInitialValues()[0].value.expression.expression
+        	
             //Check there is metada information to plot
-            if (functionNode.plotMetadata != null) {
+            if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
 
                 //Read the information to plot
-                var expression = functionNode.getExpression();
-                var arguments = functionNode.getArguments();
+                var expression = functionNode.getInitialValues()[0].value.dynamics.expression.expression;
+                var arguments = functionNode.getInitialValues()[0].value.dynamics.arguments;
+                var plotMetadata = functionNode.getInitialValues()[0].value.dynamics.functionPlot;
 
-                var finalValue = parseFloat(functionNode.plotMetadata["FinalValue"]);
-                var initialValue = parseFloat(functionNode.plotMetadata["InitialValue"]);
-                var stepValue = parseFloat(functionNode.plotMetadata["StepValue"]);
+                var finalValue = parseFloat(plotMetadata["finalValue"]);
+                var initialValue = parseFloat(plotMetadata["initialValue"]);
+                var stepValue = parseFloat(plotMetadata["stepValue"]);
 
                 //Create data series for plot
                 //TODO: What are we going to do if we have two arguments?
@@ -629,9 +634,9 @@ define(function (require) {
                     values.push([i]);
                 }
 
-                var plotTitle = functionNode.plotMetadata["PlotTitle"];
-                var XAxisLabel = functionNode.plotMetadata["XAxisLabel"];
-                var YAxisLabel = functionNode.plotMetadata["YAxisLabel"];
+                var plotTitle = plotMetadata["plotTitle"];
+                var XAxisLabel = plotMetadata["xAxisLabel"];
+                var YAxisLabel = plotMetadata["yAxisLabel"];
                 //Generate options from metadata information
                 options = {
                     xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
@@ -642,7 +647,7 @@ define(function (require) {
                 //Convert from single expresion to parametired expresion (2x -> f(x)=2x)
                 var parameterizedExpression = "f(";
                 for (var argumentIndex in arguments) {
-                    parameterizedExpression += arguments[argumentIndex] + ",";
+                    parameterizedExpression += arguments[argumentIndex].argument + ",";
                 }
                 parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
                 parameterizedExpression += ") =" + expression;

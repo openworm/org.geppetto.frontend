@@ -133,8 +133,6 @@ define(function (require) {
             var groups = [];
 
             if (node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.DYNAMICS_TYPE) {
-//            	node.getInitialValues()[0].value.arguments
-//            	node.getInitialValues()[0].value.expression.expression
                 if (node.getWrappedObj().getInitialValues()[0].value.dynamics.functionPlot != undefined) {
                     var group1 = [{
                         label: "Plot Function",

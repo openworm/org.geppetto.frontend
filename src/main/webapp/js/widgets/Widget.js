@@ -301,7 +301,7 @@ define(function (require) {
             },
 
             showContextMenu: function (event, data) {
-                var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor(data._metaType);
+                var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor(data.getMetaType());
 
                 if (handlers.length > 0) {
                     var groups = [];

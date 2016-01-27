@@ -49,24 +49,6 @@ define(function (require) {
 
         initialize: function () {
             this.widgets = [];
-
-            GEPPETTO.MenuManager.resetMap();
-            // Register Commands
-            GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
-                "AspectSubTreeNode",
-                "CompositeNode",
-                "ConnectionNode",
-                "DynamicsSpecificationNode",
-                "EntityNode",
-                "FunctionNode",
-                "ParameterNode",
-                "ParameterSpecificationNode",
-                "TextMetadataNode",
-                "HTMLMetadataNode",
-                "VariableNode",
-                "VisualGroupElementNode",
-                "VisualGroupNode",
-                "VisualObjectReferenceNode"], this.getCommands);
         },
 
         /**

@@ -87,7 +87,7 @@ define(function (require) {
             			formattedValue = (node.getValue()!=null)?(node.getValue() + " " + node.getUnit()):"";
             			break;
             		case GEPPETTO.Resources.VISUAL_GROUP_NODE:
-            			formattedValue = []
+            			formattedValue = [];
             			if (node.getMinDensity() != undefined){
             				//AQP: Is this the best way
             				formattedValue.push(Math.floor(node.getMinDensity() * 1000)/1000);
@@ -147,11 +147,11 @@ define(function (require) {
             		case GEPPETTO.Resources.DYNAMICS_TYPE:
             			return "dynamicstypetv";
             		case GEPPETTO.Resources.FUNCTION_TYPE:
-            			return "functiontypetv;"
+            			return "functiontypetv";
             		case GEPPETTO.Resources.TEXT_TYPE:
             			return "texttypetv";
             		case GEPPETTO.Resources.POINTER_TYPE:
-            			return "pointertypetv;"
+            			return "pointertypetv";
             		case GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY:
             			return "stateinstancetv";
             		case GEPPETTO.Resources.VISUAL_CAPABILITY:
@@ -227,7 +227,7 @@ define(function (require) {
 	                    }
                     }
                     else{
-                    	children.push(node)
+                    	children.push(node);
                     }
                     
                 }
@@ -269,7 +269,7 @@ define(function (require) {
                         }
                 	}
                 	else{
-                		return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: this.getFormattedValue(node, node.getType().getMetaType()), style:this.getStyle(node.getType().getMetaType())})
+                		return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: this.getFormattedValue(node, node.getType().getMetaType()), style:this.getStyle(node.getType().getMetaType())});
                 	}
                 }
                 else if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE || node.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
@@ -283,7 +283,7 @@ define(function (require) {
                     return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, _children: this.createTreeVisualiserNodeChildren(node)});
                 }
                 else if (node.getMetaType() != GEPPETTO.Resources.VARIABLE_NODE && node.getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
-                	return this.createTreeVisualiserNode({wrappedObj: node, _children: this.createTreeVisualiserNodeChildren(node), style: this.getStyle(node.getMetaType())})
+                	return this.createTreeVisualiserNode({wrappedObj: node, _children: this.createTreeVisualiserNodeChildren(node), style: this.getStyle(node.getMetaType())});
                 }
             },
 

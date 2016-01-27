@@ -126,8 +126,10 @@ define(function (require) {
                 nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
             }
             if (nodeInstancePath != null || undefined) {
+            	var node = this.dataset.valueDict[nodeInstancePath]["model"];
+            	
                 //Read node from instancepath data property attached to dom element
-                this.showContextMenu(event, eval(nodeInstancePath));
+                this.showContextMenu(event, node);
             }
         },
 
@@ -138,12 +140,15 @@ define(function (require) {
          * @param {Object} options - Set of options passed to widget to customise it
          */
         setData: function (state, options) {
+        	if (state == undefined){
+        		return "Data can not be added to " + this.name + ". Data does not exist in current experiment.";
+        	}
             labelsInTV = [];
 
             if (state instanceof Array) {
                 var that = this;
                 $.each(state, function (d) {
-                    that.setData(state[d], options)
+                    that.setData(state[d], options);
                 });
             }
             

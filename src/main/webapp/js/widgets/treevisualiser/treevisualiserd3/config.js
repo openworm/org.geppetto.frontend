@@ -60,3 +60,15 @@ require(reqs, function (d3) {
     loadCss("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.css");
 
 });
+
+define(function(require) {
+	return function(GEPPETTO) {
+		// Register Commands
+        GEPPETTO.MenuManager.registerNewCommandProvider([GEPPETTO.Resources.VARIABLE_NODE,
+                                                         GEPPETTO.Resources.COMPOSITE_TYPE_NODE,
+                                                         GEPPETTO.Resources.ARRAY_TYPE_NODE,
+                                                         GEPPETTO.Resources.INSTANCE_NODE,
+                                                         GEPPETTO.Resources.ARRAY_INSTANCE_NODE],
+                                                         GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getCommands);
+	};
+});

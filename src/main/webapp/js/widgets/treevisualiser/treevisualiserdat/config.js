@@ -42,6 +42,18 @@
 // Libraries used by Tree Visualizer widget
 var reqs = [];
 reqs.push("widgets/treevisualiser/treevisualiserdat/vendor/dat.gui.min");
-require(reqs, function (d3) {
-    loadCss("geppetto/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
+require(reqs, function(d3) {
+	loadCss("geppetto/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
+});
+
+define(function(require) {
+	return function(GEPPETTO) {
+		// Register Commands
+        GEPPETTO.MenuManager.registerNewCommandProvider([GEPPETTO.Resources.VARIABLE_NODE,
+                                                         GEPPETTO.Resources.COMPOSITE_TYPE_NODE,
+                                                         GEPPETTO.Resources.ARRAY_TYPE_NODE,
+                                                         GEPPETTO.Resources.INSTANCE_NODE,
+                                                         GEPPETTO.Resources.ARRAY_INSTANCE_NODE],
+                                                         GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getCommands);
+	};
 });

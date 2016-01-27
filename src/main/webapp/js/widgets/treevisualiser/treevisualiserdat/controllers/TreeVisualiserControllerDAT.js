@@ -81,25 +81,6 @@ define(function (require) {
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
 
-            GEPPETTO.MenuManager.resetMap();
-            // Register Commands
-            GEPPETTO.MenuManager.registerNewCommandProvider(["AspectNode",
-                    "AspectSubTreeNode",
-                    "CompositeNode",
-                    "ConnectionNode",
-                    "DynamicsSpecificationNode",
-                    "EntityNode",
-                    "FunctionNode",
-                    "ParameterNode",
-                    "ParameterSpecificationNode",
-                    "TextMetadataNode",
-                    "HTMLMetadataNode",
-                    "VariableNode",
-                    "VisualGroupElementNode",
-                    "VisualGroupNode",
-                    "VisualObjectReferenceNode"],
-                this.getCommands);
-
             return tvdat;
         },
 
@@ -120,7 +101,7 @@ define(function (require) {
                     var treeVisualiserDAT = this.widgets[i];
 
                     if (_.find(treeVisualiserDAT.registeredEvents, function (el) {
-                            return el.id === event
+                            return el.id === event;
                         })) {
                         var selected = G.getSelection();
                         treeVisualiserDAT.reset();
@@ -147,7 +128,7 @@ define(function (require) {
                     var treeVisualiserDAT = treeVisualisersDAT[i];
 
                     var ev = _.find(treeVisualiserDAT.registeredEvents, function (el) {
-                        return el.id === event
+                        return el.id === event;
                     });
                     if (typeof ev !== 'undefined') {
                         if (typeof ev.callback === 'undefined') {
@@ -173,7 +154,7 @@ define(function (require) {
         getCommands: function (node) {
             var group1 = [{
                 label: "Open with DAT Widget",
-                action: ["G.addWidget(Widgets.TREEVISUALISERDAT).setData(#node_instancepath#)"],
+                action: ["G.addWidget(Widgets.TREEVISUALISERDAT).setData(" + node.getId() + ")"],
             }];
 
 
@@ -189,7 +170,7 @@ define(function (require) {
                     var availableWidget = availableWidgets[availableWidgetIndex];
                     subgroups1Add = subgroups1Add.concat([{
                         label: "Add to " + availableWidget.name,
-                        action: [availableWidget.id + ".setData(#node_instancepath#)"],
+                        action: [availableWidget.id + ".setData(" + node.getId() + ")"],
                         position: availableWidgetIndex
                     }]);
                 }
@@ -200,42 +181,19 @@ define(function (require) {
 
             var groups = [group1];
 
-            if (node._metaType == "ConnectionNode") {
-                var connectionGroup = [{
-                    label: "Highlight Connection",
-                    action: ["G.unHighlightAll();", "#node_instancepath#.highlight(true)"],
-                }];
-
-                groups.push(connectionGroup);
-            }
-            if (node._metaType == "EntityNode") {
+           if (node.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && node.getWrappedObj().getVisualType() != undefined) {
                 var entity = [{
-                    label: "Select Entity",
-                    action: ["G.unSelectAll();", "#node_instancepath#.select()"],
+                    label: "Select Visual Component",
+                    action: ["G.unSelectAll();", node.getId() + ".select()"],
                 }];
 
                 groups.push(entity);
             }
-            if (node._metaType == "AspectNode") {
-                var aspect = [{
-                    label: "Select Aspect",
-                    action: ["G.unSelectAll();", "#node_instancepath#.select()"],
-                }];
-
-                groups.push(aspect);
-            }
-            if (node._metaType == "AspectSubTreeNode" && node.id == "ModelTree") {
-                var aspectSubTreeNode = [{
-                    label: "Extract Model Tree",
-                    action: ["#node_instancepath#.getParent().getModelTree();"],
-                }];
-
-                groups.push(aspectSubTreeNode);
-            }
+            
             if (node._metaType == "VisualGroupNode") {
                 var visualGroup = [{
                     label: "Show Visual Group",
-                    action: ["G.unSelectAll();", "#node_instancepath#.show(true)"],
+                    action: ["G.unSelectAll();", node.getId() + ".show(true)"],
                 }];
 
                 groups.push(visualGroup);

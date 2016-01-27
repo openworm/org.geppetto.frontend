@@ -46,15 +46,15 @@ define(function (require) {
         require("widgets/WidgetUtility");
         require("widgets/ContextMenu")(GEPPETTO);
         //Plot Widget
-        require("widgets/plot/config");
+        require("widgets/plot/config")(GEPPETTO);
         //Popup Widget
         require("widgets/popup/config");
         //Scatter3d Widget
         require("widgets/scatter3d/config");
         //TreeVisualiser DAT Widget
-        require("widgets/treevisualiser/treevisualiserdat/config");
+        require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
         //TreeVisualiser D3 Widget
-        require("widgets/treevisualiser/treevisualiserd3/config");
+        require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
         //VariableVisualiser widget
         require("widgets/variablevisualiser/config");
         //Connectivity Widget

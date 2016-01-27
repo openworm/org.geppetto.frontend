@@ -155,8 +155,7 @@ define(function (require) {
 
                 //TODO: We are not using the option parameter (registeredItem["option"])
                 for (var actionIndex in registeredItem["action"]) {
-                    var action = registeredItem["action"][actionIndex].replace("#node_instancepath#", this.data.getInstancePath());
-                    GEPPETTO.Console.executeCommand(action);
+                    GEPPETTO.Console.executeCommand(registeredItem["action"][actionIndex]);
                 }
             },
 

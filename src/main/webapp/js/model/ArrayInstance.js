@@ -175,12 +175,12 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Gets visual types for the instance if any
          *
-         * @command Instance.getVisualTypes()
+         * @command Instance.getVisualType()
          *
-         * @returns {List<Type>}
+         * @returns {Type}
          *
          */
-        getVisualTypes: function () {
+        getVisualType: function () {
             var visualTypes = [];
 
             var types = this.getTypes();
@@ -198,7 +198,11 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                 }
             }
 
-            return visualTypes;
+            if(visualTypes.length == 1){
+                return visualTypes[0];
+            } else {
+                return visualTypes;
+            }
         },
 
         /**

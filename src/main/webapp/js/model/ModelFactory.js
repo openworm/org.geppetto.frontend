@@ -55,6 +55,7 @@ define(function (require) {
         var Pointer = require('model/Pointer');
         var PointerElement = require('model/PointerElement');
         var AVisualCapability = require('model/AVisualCapability');
+        var AVisualGroupCapability = require('model/AVisualGroupCapability');
         var AConnectionCapability = require('model/AConnectionCapability');
         var AParameterCapability = require('model/AParameterCapability');
         var AStateVariableCapability = require('model/AStateVariableCapability');
@@ -517,17 +518,22 @@ define(function (require) {
                             var explodedInstance = this.createArrayElementInstance(options);
 
                             // check if visual type and inject AVisualCapability
-                            var visualTypes = explodedInstance.getVisualTypes();
-                            if (visualTypes != null && visualTypes.length > 0) {
+                            var visualType = explodedInstance.getVisualType();
+                            if ((!(visualType instanceof Array) && visualType != null && visualType != undefined) ||
+                                (visualType instanceof Array && visualType.length > 0)) {
                                 explodedInstance.extendApi(AVisualCapability);
                                 this.propagateCapabilityToParents(AVisualCapability, explodedInstance);
 
+                                if(visualType instanceof Array && visualType.length > 1){
+                                    throw( "Support for more than one visual type is not implemented." );
+                                }
+
                                 // check if it has visual groups - if so add visual group capability
-                                if((typeof visualTypes.getVisualGroups === "function") &&
-                                    visualTypes.getVisualGroups() != null &&
-                                    visualTypes.getVisualGroups() >0){
+                                if((typeof visualType.getVisualGroups === "function") &&
+                                    visualType.getVisualGroups() != null &&
+                                    visualType.getVisualGroups().length >0){
                                     explodedInstance.extendApi(AVisualGroupCapability);
-                                    explodedInstance.setVisualGroups(setVisualGroups);
+                                    explodedInstance.setVisualGroups(visualType.getVisualGroups());
                                 }
                             }
 
@@ -572,18 +578,23 @@ define(function (require) {
                         newlyCreatedInstance = this.createInstance(options);
 
                         // check if visual type and inject AVisualCapability
-                        var visualTypes = newlyCreatedInstance.getVisualTypes();
+                        var visualType = newlyCreatedInstance.getVisualType();
                         // check if visual type and inject AVisualCapability
-                        if (visualTypes != null && visualTypes.length > 0) {
+                        if ((!(visualType instanceof Array) && visualType != null && visualType != undefined) ||
+                            (visualType instanceof Array && visualType.length > 0)) {
                             newlyCreatedInstance.extendApi(AVisualCapability);
                             this.propagateCapabilityToParents(AVisualCapability, newlyCreatedInstance);
 
+                            if(visualType instanceof Array && visualType.length > 1){
+                                throw( "Support for more than one visual type is not implemented." );
+                            }
+
                             // check if it has visual groups - if so add visual group capability
-                            if((typeof visualTypes.getVisualGroups === "function") &&
-                                visualTypes.getVisualGroups() != null &&
-                                visualTypes.getVisualGroups() >0){
+                            if((typeof visualType.getVisualGroups === "function") &&
+                                visualType.getVisualGroups() != null &&
+                                visualType.getVisualGroups().length >0){
                                 newlyCreatedInstance.extendApi(AVisualGroupCapability);
-                                newlyCreatedInstance.setVisualGroups(setVisualGroups);
+                                newlyCreatedInstance.setVisualGroups(visualType.getVisualGroups());
                             }
                         }
 

@@ -40,6 +40,7 @@
 
 define(['jquery'], function (require) {
     return {
+        capabilityId: 'VisualGroupCapability',
         visualGroups: [],
 
         /**

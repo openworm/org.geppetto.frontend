@@ -265,7 +265,7 @@ define(function (require) {
                             return this.createTreeVisualiserNode({wrappedObj: node.getType(), _children: projectionsChildrenNode, style:this.getStyle(node.getType().getMetaType())});
                         }
                         else {
-                        	return this.createTreeVisualiserNode({wrappedObj: node.getType(), style:this.getStyle(node.getType().getMetaType()), _children: this.createTreeVisualiserNodeChildren(node.getType())});
+                        	return this.createTreeVisualiserNode({wrappedObj: node, style:this.getStyle(node.getType().getMetaType()), _children: this.createTreeVisualiserNodeChildren(node.getType())});
                         }
                 	}
                 	else{

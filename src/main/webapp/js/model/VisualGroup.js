@@ -47,7 +47,6 @@ define(function (require) {
     return ObjectWrapper.Model.extend({
         visualGroupElements: [],
         tags: [],
-        parent,
 
         /**
          * Initializes this node with passed attributes

@@ -136,7 +136,7 @@ define(function (require) {
                 if (node.getWrappedObj().getInitialValues()[0].value.dynamics.functionPlot != undefined) {
                     var group1 = [{
                         label: "Plot Function",
-                        action: ["var p = G.addWidget(Widgets.PLOT).plotFunctionNode(" + node.getId() + ")", "p.setSize(200,450)"],
+                        action: ["var p = G.addWidget(Widgets.PLOT).plotFunctionNode(" + node.getPath() + ")", "p.setSize(200,450)"],
                     }];
 
                     var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
@@ -151,7 +151,7 @@ define(function (require) {
                             var availableWidget = availableWidgets[availableWidgetIndex];
                             subgroups1Add = subgroups1Add.concat([{
                                 label: "Add to " + availableWidget.name,
-                                action: [availableWidget.id + ".plotFunctionNode(" + node.getId() + ")"],
+                                action: [availableWidget.id + ".plotFunctionNode(" + node.getPath() + ")"],
                                 position: availableWidgetIndex
                             }]);
                         }

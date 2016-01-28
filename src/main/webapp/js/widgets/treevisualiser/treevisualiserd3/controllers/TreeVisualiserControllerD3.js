@@ -146,7 +146,7 @@ define(function (require) {
                     var availableWidget = availableWidgets[availableWidgetIndex];
                     subgroups1Add = subgroups1Add.concat([{
                         label: "Add to " + availableWidget.name,
-                        action: [availableWidget.id + ".setData(#node_instancepath#)"],
+                        action: [availableWidget.id + ".setData(" + node.getPath() + ")"],
                         position: availableWidgetIndex
                     }]);
                 }

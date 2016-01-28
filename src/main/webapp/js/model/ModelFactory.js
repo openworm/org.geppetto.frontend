@@ -520,6 +520,9 @@ define(function (require) {
                             if (explodedInstance.hasVisualType()) {
                                 explodedInstance.extendApi(AVisualCapability);
                                 this.propagateCapabilityToParents(AVisualCapability, explodedInstance);
+
+                                // TODO: check if it has visual groups - if so add visual group capability
+                                // TODO: capability has getVisualGroups and return the objects
                             }
 
                             // check if it has connections and inject AConnectionCapability

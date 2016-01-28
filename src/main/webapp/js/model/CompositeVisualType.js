@@ -42,6 +42,7 @@ define(function (require) {
 
     return Type.extend({
         variables: [],
+        visualGroups: [],
 
         /**
          * Initializes this node with passed attributes

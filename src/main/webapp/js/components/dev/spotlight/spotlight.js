@@ -9,7 +9,8 @@ define(function (require) {
     var React = require('react'),
         $ = require('jquery'),
         typeahead = require('typeahead'),
-        bh = require('bloodhound');
+        bh = require('bloodhound'),
+        handlebars = require('handlebars');
 
     var GEPPETTO = require('geppetto');
 
@@ -20,21 +21,19 @@ define(function (require) {
 
         componentDidMount: function () {
 
-            var ctrlDown = false;
-            var ctrlKey = 17, space = 32;
+            var space = 32;
             var escape = 27;
 
-            //there's a bug if I use keypress and .ctrlKey, which/keyCode returns always 0 when spacebar is pressed, works for other ctrl combinations
             $(document).keydown(function (e) {
-                if (e.keyCode == ctrlKey) ctrlDown = true;
-            }).keyup(function (e) {
-                if (e.keyCode == ctrlKey) ctrlDown = false;
-            });
-
-            $(document).keydown(function (e) {
-                if (ctrlDown && e.keyCode == space) {
+                if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == space) {
                     $("#spotlight").show();
                     $("#typeahead").focus();
+                    var selection = GEPPETTO.G.getSelection();
+                    if(selection.length>0){
+                        var instance = selection[selection.length-1];
+                        $(".typeahead").typeahead('val',instance.getInstancePath());
+                        $("#typeahead").trigger(jQuery.Event("keypress",{which:13}));
+                    }
                 }
             });
 
@@ -75,16 +74,18 @@ define(function (require) {
 
             GEPPETTO.on(Events.Experiment_loaded, (function () {
 
-                states.add(GEPPETTO.ModelFactory.allPaths);
+                instances.add(GEPPETTO.ModelFactory.allPaths);
 
             }));
 
 
-            // constructs the suggestion engine
-            var states = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.whitespace,
+            var instances = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('path'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
-                // `states` is an array of state names defined in "The Basics"
+            });
+
+            Handlebars.registerHelper('geticon', function(metaType) {
+                return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType]+"' style='color: " + GEPPETTO.Resources.Colour[metaType]+";'/>");
             });
 
             $('#typeahead').typeahead({
@@ -93,9 +94,15 @@ define(function (require) {
                     minLength: 1
                 },
                 {
-                    name: 'states',
-                    source: states
-                });
+                    name: 'instances',
+                    source: instances,
+                    display: 'path',
+                    templates: {
+                    empty: ['<div class="empty-message">', 'No suggestions', '</div>'].join('\n'),
+                    suggestion: Handlebars.compile('<div>{{geticon metaType}} {{path}}</div>')
+                }
+            });
+
             $('.twitter-typeahead').addClass("typeaheadWrapper");
 
         },

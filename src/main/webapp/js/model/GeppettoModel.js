@@ -43,6 +43,7 @@ define(function (require) {
     return ObjectWrapper.Model.extend({
         variables: [],
         libraries: [],
+        id: '',
 
         /**
          * Initializes this node with passed attributes
@@ -52,8 +53,20 @@ define(function (require) {
         initialize: function (options) {
             this.set({"variables": (options.variables != undefined) ? options.variables : []});
             this.set({"libraries": (options.libraries != undefined) ? options.libraries : []});
+            this.set({"id": options.id});
+            this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"_metaType": options._metaType});
+        },
+
+        /**
+         * Get the id associated with node
+         *
+         * @command Node.getId()
+         * @returns {String} ID of node
+         */
+        getId: function () {
+            return this.get('id');
         },
 
         /**

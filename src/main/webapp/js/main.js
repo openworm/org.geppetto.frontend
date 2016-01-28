@@ -51,6 +51,7 @@ require.config({
         three: 'vendor/three.min',
         d3: 'vendor/d3.min',
         codemirror: "vendor/codemirror.min",
+        handlebars: "vendor/handlebars",
         typeahead: "vendor/typeahead.jquery",
         bloodhound: "vendor/bloodhound",
         underscore: 'vendor/underscore.min',

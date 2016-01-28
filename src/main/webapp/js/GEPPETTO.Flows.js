@@ -31,8 +31,6 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-
-
 /**
  * UI flows controller
  *
@@ -57,24 +55,22 @@ define(function (require) {
             /*
              * Handles flow on run experiment
              */
-            onRun: function () {
+            onRun: function (callbackCommand) {
                 // TODO: check if anything is being recorded
                 // TODO: if not, bring up spotlight configured with following suggestions:
                 // - Record all state variables
                 // - Record all state variables within types (show all grouping options)
-                // TODO: after spotlight selection execute run
-
-                // NOTE: how do we know from here when spotlight is selected? Maybe need an event when spotlight disappears?
+                // TODO: after spotlight selection execute run ==> pass to spotlight as a callback
             },
 
             /*
              * Handles flow on play recording
              */
-            onPlay: function () {
-                // TODO: check if a plot is already up
+            onPlay: function (callbackCommand) {
+                // TODO: check if a plot is already up or light up functions are set
                 // TODO: if not, bring up spotlight configured with following suggestions:
                 // - Plot all recorded variables
-                // TODO: after spotlight selection is picked execute play
+                // TODO: after spotlight selection is picked execute play ==> pass to spotlight as a callback
 
                 // NOTE: what happens on step by step play, the same?
             },

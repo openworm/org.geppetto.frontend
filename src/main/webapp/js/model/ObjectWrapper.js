@@ -43,6 +43,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         Model: Backbone.Model.extend({
             _metaType: "",
             wrappedObj: null,
+            parent: null,
 
             /**
              * Gets the name of the node
@@ -86,6 +87,39 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             getMetaType: function () {
                 return this.get('wrappedObj').eClass;
             },
+
+            /**
+             * Get parent
+             *
+             * @command Type.getParent()
+             *
+             * @returns {Object} - Parent object
+             *
+             */
+            getParent: function () {
+                return this.get("parent");
+            },
+
+            /**
+             * Get instance path
+             *
+             * @command Instance.getInstancePath()
+             *
+             * @returns {String} - Instance path
+             *
+             */
+            getPath: function () {
+                var parent = this.get("parent");
+                var parentPath = "";
+
+                if (parent != null && parent != undefined) {
+                    parentPath = parent.getPath();
+                }
+
+                var path = parentPath + "." + this.getId();
+
+                return (parentPath != "") ? path : this.getId();
+            }
         })
     };
 });

@@ -53,6 +53,7 @@ define(function (require) {
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"visualType": options.visualType});
             this.set({"superType": options.superType});
+            this.set({"parent": options.parent});
         },
 
         /**

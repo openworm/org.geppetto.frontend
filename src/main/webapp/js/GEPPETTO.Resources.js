@@ -48,6 +48,28 @@ define(function (require) {
 
         GEPPETTO.Resources = {
 
+            Icon:{
+                "ParameterType":"fa-sign-in",
+                "TextType":"fa-text-o",
+                "CompositeType":"fa-align-justify",
+                "ArrayType":"fa-list",
+                "PointerType":"fa-link",
+                "HTMLType":"fa-code",
+                "StateVariableType":"fa-superscript",
+
+            },
+
+            Colour:{
+                "ParameterType":"#0066cc",
+                "TextType":"#10b7bd",
+                "CompositeType":"#2e2a2a",
+                "ArrayType":"#ff5a02",
+                "PointerType":"#10b7bd",
+                "HTMLType":"0xdddddd",
+                "StateVariableType":"#42b6ff",
+                "DynamicsType":"#00cc66"
+            },
+
             COLORS: {
                 DEFAULT: "0X199e8",
                 SELECTED: "0Xffcc00",

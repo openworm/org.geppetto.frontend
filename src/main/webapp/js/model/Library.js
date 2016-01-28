@@ -50,6 +50,7 @@ define(function (require) {
          */
         initialize: function (options) {
             this.set({"types": (options.types != 'undefined') ? options.types : []});
+            this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
         },
 

@@ -52,6 +52,7 @@ define(function (require) {
             this.set({"variables": (options.variables != 'undefined') ? options.variables : []});
             this.set({"visualGroups": (options.visualGroups != 'undefined') ? options.visualGroups : []});
             this.set({"wrappedObj": options.wrappedObj});
+            this.set({"parent": options.parent});
         },
 
         /**

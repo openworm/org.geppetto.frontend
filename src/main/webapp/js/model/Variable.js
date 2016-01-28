@@ -55,6 +55,7 @@ define(function (require) {
             this.set({"types": (options.types != undefined) ? options.types : []});
             this.set({"pointerValue": options.pointerValue});
             this.set({"wrappedObj": options.wrappedObj});
+            this.set({"parent": options.parent});
         },
 
         /**
@@ -190,6 +191,6 @@ define(function (require) {
         getChildren: function () {
             // only anonymousTypes as containment == true in the model (they are not references)
             return this.get('anonymousTypes');
-        },
+        }
     });
 });

@@ -148,17 +148,56 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                 // could be pointing to an array variable if it's an exploded instance
                 if (types[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
                     // check it if is a visual type or has a visual type
-                    if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || (types[i].getType().getVisualType() != null && types[i].getType().getVisualType() != null)) {
+                    if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
+                        types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE ||
+                        (types[i].getType().getVisualType() != null)) {
                         hasVisual = true;
                         break;
                     }
-                } else if (types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || (types[i].getVisualType() != null && types[i].getVisualType() != null)) {
+                } else if (types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
+                           types[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE ||
+                           types[i].getVisualType() != null) {
                     hasVisual = true;
                     break;
                 }
             }
 
             return hasVisual;
+        },
+
+        /**
+         * Gets visual types for the instance if any
+         *
+         * @command Instance.getVisualTypes()
+         *
+         * @returns {List<Type>}
+         *
+         */
+        getVisualTypes: function () {
+            var visualTypes = [];
+
+            var types = this.getTypes();
+            // check if any of types is VISUAL_TYPE_NODE or if types HAVE .visualType
+            for (var i = 0; i < types.length; i++) {
+                // could be pointing to an array variable if it's an exploded instance
+                if (types[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
+                    // check it if is a visual type or has a visual type
+                    if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                        visualTypes.push(types[i].getType());
+                    } else if (types[i].getType().getVisualType() != null){
+                        visualTypes.push(types[i].getType().getVisualType());
+                    }
+                } else {
+                    // check it if is a visual type or has a visual type
+                    if (types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                        visualTypes.push(types[i].getType());
+                    } else if (types[i].getVisualType() != null){
+                        visualTypes.push(types[i].getVisualType());
+                    }
+                }
+            }
+
+            return visualTypes;
         },
 
 

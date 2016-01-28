@@ -161,7 +161,8 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                 if (types[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
                     // check it the array is of visual type or has a visual type
                     if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
-                        (types[i].getType().getVisualType() != null && types[i].getType().getVisualType() != null)) {
+                        types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE ||
+                        types[i].getType().getVisualType() != null) {
                         hasVisual = true;
                         break;
                     }
@@ -169,6 +170,35 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             }
 
             return hasVisual;
+        },
+
+        /**
+         * Gets visual types for the instance if any
+         *
+         * @command Instance.getVisualTypes()
+         *
+         * @returns {List<Type>}
+         *
+         */
+        getVisualTypes: function () {
+            var visualTypes = [];
+
+            var types = this.getTypes();
+            // check if any of types is VISUAL_TYPE_NODE or if types HAVE .visualType
+            for (var i = 0; i < types.length; i++) {
+                // make sure it's array type
+                if (types[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
+                    // check it if is a visual type or has a visual type
+                    if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
+                        types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                        visualTypes.push(types[i].getType());
+                    } else if (types[i].getType().getVisualType() != null){
+                        visualTypes.push(types[i].getType().getVisualType());
+                    }
+                }
+            }
+
+            return visualTypes;
         },
 
         /**

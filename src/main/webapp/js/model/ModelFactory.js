@@ -517,9 +517,18 @@ define(function (require) {
                             var explodedInstance = this.createArrayElementInstance(options);
 
                             // check if visual type and inject AVisualCapability
-                            if (explodedInstance.hasVisualType()) {
+                            var visualTypes = explodedInstance.getVisualTypes();
+                            if (visualTypes != null && visualTypes.length > 0) {
                                 explodedInstance.extendApi(AVisualCapability);
                                 this.propagateCapabilityToParents(AVisualCapability, explodedInstance);
+
+                                // check if it has visual groups - if so add visual group capability
+                                if((typeof visualTypes.getVisualGroups === "function") &&
+                                    visualTypes.getVisualGroups() != null &&
+                                    visualTypes.getVisualGroups() >0){
+                                    explodedInstance.extendApi(AVisualGroupCapability);
+                                    explodedInstance.setVisualGroups(setVisualGroups);
+                                }
                             }
 
                             // check if it has connections and inject AConnectionCapability
@@ -563,9 +572,19 @@ define(function (require) {
                         newlyCreatedInstance = this.createInstance(options);
 
                         // check if visual type and inject AVisualCapability
-                        if (newlyCreatedInstance.hasVisualType()) {
+                        var visualTypes = newlyCreatedInstance.getVisualTypes();
+                        // check if visual type and inject AVisualCapability
+                        if (visualTypes != null && visualTypes.length > 0) {
                             newlyCreatedInstance.extendApi(AVisualCapability);
                             this.propagateCapabilityToParents(AVisualCapability, newlyCreatedInstance);
+
+                            // check if it has visual groups - if so add visual group capability
+                            if((typeof visualTypes.getVisualGroups === "function") &&
+                                visualTypes.getVisualGroups() != null &&
+                                visualTypes.getVisualGroups() >0){
+                                newlyCreatedInstance.extendApi(AVisualGroupCapability);
+                                newlyCreatedInstance.setVisualGroups(setVisualGroups);
+                            }
                         }
 
                         // check if it has connections and inject AConnectionCapability
@@ -779,6 +798,41 @@ define(function (require) {
                 }
 
                 return matching;
+            },
+
+            /**
+             * Find instance given Type
+             */
+            findMatchingInstancesByType: function (type, instances, matchingInstance) {
+                for (var i = 0; i < instances.length; i++) {
+                    var types = instances[i].getTypes();
+                    for(var j=0; j<types.length; j++){
+                        if (types[j] === type) {
+                            matchingInstance.push(instances[i]);
+                            break;
+                        }
+                    }
+
+                    if (typeof instances[i].getChildren === "function") {
+                        this.findMatchingInstancesByType(type, instances[i].getChildren(), matchingInstance);
+                    }
+                }
+            },
+
+            /**
+             * Find instance given Variable
+             */
+            findMatchingInstancesByVariable: function (variable, instances, matchingInstance) {
+                for (var i = 0; i < instances.length; i++) {
+                    if (instances[i].getVariable() === variable) {
+                        matchingInstance.push(instances[i]);
+                        break;
+                    }
+
+                    if (typeof instances[i].getChildren === "function") {
+                        this.findMatchingInstancesByVariable(variable, instances[i].getChildren(), matchingInstance);
+                    }
+                }
             },
 
             /**
@@ -1101,7 +1155,76 @@ define(function (require) {
                 return visualGroupElements;
             },
 
-            /** Proposal for a generic method to resolve a reference */
+            /**
+             * Get all instance given a type or a variable (path or actual object)
+             */
+            getAllInstancesOf: function (typeOrVar, instances) {
+                if (typeof typeOrVar === 'string' || typeOrVar instanceof String){
+                    // it's an evil string, try to eval as path in the name of satan
+                    typeOrVar = eval(typeOrVar);
+                }
+
+                var allInstances = [];
+
+                if (instances == undefined){
+                    instances = this.instances;
+                }
+
+                if(typeOrVar instanceof Type){
+                    allInstances = this.getAllInstancesOfType(typeOrVar, instances);
+                } else if(typeOrVar instanceof Variable) {
+                    allInstances = this.getAllInstancesOfVariable(typeOrVar, instances);
+                } else {
+                    // good luck
+                    throw( "The argument " + typeOrVar + " is neither a Type or a Variable. Good luck." );
+                }
+
+                return allInstances;
+            },
+
+            /**
+             * Get all instances given a type
+             */
+            getAllInstancesOfType: function (type, instances) {
+                if (! (type instanceof Type)){
+                    // raise hell
+                    throw( "The argument " + type + " is not a Type or a valid Type path. Good luck." );
+                }
+
+                if (instances == undefined){
+                    instances = this.instances;
+                }
+
+                // do stuff
+                var matchingInstances = [];
+                this.findMatchingInstancesByType(type, instances, matchingInstances);
+
+                return matchingInstances;
+            },
+
+            /**
+             * Get all instances given a variable
+             */
+            getAllInstancesOfVariable: function (variable, instances) {
+                if (! (variable instanceof Variable)){
+                    // raise hell
+                    throw( "The argument " + variable + " is not a Type or a valid Type path. Good luck." );
+                }
+
+                if (instances == undefined){
+                    instances = this.instances;
+                }
+
+                // do stuff
+                var matchingInstances = [];
+                this.findMatchingInstancesByVariable(variable, instances, matchingInstances);
+
+                return matchingInstances;
+            },
+
+            /**
+             * A generic method to resolve a reference
+             * */
             resolve: function (refStr) {
 
                 var reference = undefined;

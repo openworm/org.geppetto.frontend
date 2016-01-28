@@ -86,7 +86,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          * Get the metatype associated with node
          *
          * @command Node.getMetaType()
-         * @returns {String} ID of node
+         * @returns {String} MetaType of node
          */
         getMetaType: function () {
             return this.get('wrappedObj').getMetaType();
@@ -96,17 +96,16 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          * Get the metatype associated with node
          *
          * @command Node.getMetaType()
-         * @returns {String} ID of node
+         * @returns {String} formatted value of node
          */
         getValue: function () {
             return this.get('formattedValue');
         },
 
-
         /**
          * Get the children of the node
          *
-         * @command getChildren()
+         * @command Node.getChildren()
          * @returns {Object} Children of node
          */
         getChildren: function () {
@@ -116,8 +115,8 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get the hidden children of the node
          *
-         * @command getChildren()
-         * @returns {Object} Children of node
+         * @command Node.getHiddenChildren()
+         * @returns {Object} Hidden children of node
          */
         getHiddenChildren: function () {
             return this.get('_children');
@@ -126,7 +125,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get the backgroundColors of the node
          *
-         * @command getChildren()
+         * @command Node.getBackgroundColors()
          * @returns {Object} Children of node
          */
         getBackgroundColors: function () {
@@ -134,7 +133,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         },
         
         /**
-         * Get the wrapped obj
+         * Get the wrapped object
          *
          * @command Node.getWrappedObj()
          * @returns {Object} - Wrapped object
@@ -143,8 +142,24 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             return this.get('wrappedObj');
         },
         
+        /**
+         * Get the style of the node
+         *
+         * @command Node.getStyle()
+         * @returns {String} - Wrapped object
+         */
         getStyle: function() {
         	return this.get('style');
+        },
+        
+        /**
+         * Get the unique path
+         *
+         * @command Node.getPath()
+         * @returns {String} - Wrapped object
+         */
+        getPath: function() {
+        	return this.get('wrappedObj').getPath();
         }
 
     });

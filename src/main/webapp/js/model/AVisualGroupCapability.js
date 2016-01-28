@@ -32,64 +32,28 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a composite type.
+ * Client class use to augment a model with visual group capabilities
  *
- * @module model/CompositeVisualType
+ * @module model/AVisualGroupCapability
  * @author Giovanni Idili
  */
-define(function (require) {
-    var Type = require('model/Type');
 
-    return Type.extend({
-        variables: [],
+define(['jquery'], function (require) {
+    return {
         visualGroups: [],
 
         /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
+         * Get VisualGroups
          */
-        initialize: function (options) {
-            this.set({"variables": (options.variables != 'undefined') ? options.variables : []});
-            this.set({"visualGroups": (options.visualGroups != 'undefined') ? options.visualGroups : []});
-            this.set({"wrappedObj": options.wrappedObj});
-            this.set({"parent": options.parent});
+        getVisualGroups: function(){
+            return this.visualGroups;
         },
 
         /**
-         * Get variables
-         *
-         * @command CompositeVariableNode.getChildren()
-         *
-         * @returns {List<Variable>} - List of variables
-         *
+         * Get VisualGroups
          */
-        getVariables: function () {
-            return this.get("variables");
+        setVisualGroups: function(visualGroups){
+            this.visualGroups = visualGroups;
         },
-
-        /**
-         * Get the visual groups
-         *
-         * @command CompositeVariableNode.getVisualGroups()
-         *
-         * @returns {List<VisualGroup>} - List of variables
-         *
-         */
-        getVisualGroups: function () {
-            return this.get("visualGroups");
-        },
-
-        /**
-         * Get combined children
-         *
-         * @command CompositeType.getChildren()
-         *
-         * @returns {List<Object>} - List of children
-         *
-         */
-        getChildren: function () {
-            return this.get("variables");
-        },
-    });
+    }
 });

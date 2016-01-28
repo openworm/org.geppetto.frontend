@@ -987,7 +987,7 @@ define(function (require) {
                 t.set({"superType": node.superType});
                 t.set({"variables": this.createVariables(node.variables)});
                 if (node.visualGroups != undefined) {
-                    t.set({"visualGroups": this.createVisualGroups(node.visualGroups)});
+                    t.set({"visualGroups": this.createVisualGroups(t, node.visualGroups)});
                 }
 
                 return t;
@@ -1047,13 +1047,14 @@ define(function (require) {
 
 
             /** Creates visual groups */
-            createVisualGroups: function (nodes) {
+            createVisualGroups: function (parent, nodes) {
                 var visualGroups = [];
 
                 for (var i = 0; i < nodes.length; i++) {
                     if (nodes[i].visualGroupElements != undefined) {
                         var options = {
                             wrappedObj: nodes[i],
+                            parent: parent,
                             visualGroupElements: this.createVisualGroupElements(nodes[i].visualGroupElements)
                         };
 

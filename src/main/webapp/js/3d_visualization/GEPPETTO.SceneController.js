@@ -981,13 +981,11 @@ define(function (require) {
             /**
              * Shows a visual group
              */
-            showVisualGroups: function (visualizationTree, visualGroups, mode) {
-                // aspect path of visualization tree parent
-                var aspectPath = visualizationTree.getParent().getInstancePath();
+            showVisualGroups: function (instance, visualGroups, mode) {
 
                 GEPPETTO.SceneController.merge(aspectPath);
                 if (mode) {
-                    GEPPETTO.SceneController.splitGroups(aspectPath, visualizationTree, visualGroups);
+                    GEPPETTO.SceneController.splitGroups(instance, visualizationTree, visualGroups);
                     for (g in visualGroups) {
                         // retrieve visual group object
                         var visualGroup = visualGroups[g];

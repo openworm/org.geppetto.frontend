@@ -79,7 +79,7 @@ define(function (require) {
         /**
          * Get instance path
          *
-         * @command Instance.getInstancePath()
+         * @command ArrayElementInstance.getInstancePath()
          *
          * @returns {String} - Instance path
          *
@@ -97,6 +97,35 @@ define(function (require) {
             var path = parentPath.replace(parentId, this.getId());
 
             return (parentPath != "") ? path : this.getId();
+        },
+
+        /**
+         * Get the type for this instance
+         *
+         * @command ArrayElementInstance.getTypes()
+         *
+         * @returns {List<Type>} - array of types
+         *
+         */
+        getTypes: function () {
+            // TODO: what if multiple types?
+            return [this.get("variable").getType().getType()];
+        },
+
+        /**
+         * Get the type of this variable, return a list if it has more than one
+         *
+         * @command ArrayElementInstance.getType()
+         *
+         * @returns List<Type>} - array of types
+         *
+         */
+        getType: function () {
+            var types = this.getTypes();
+            if (types.length == 1) {
+                return types[0];
+            }
+            else return types;
         },
     });
 });

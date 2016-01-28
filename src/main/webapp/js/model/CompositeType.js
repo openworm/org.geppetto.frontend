@@ -51,6 +51,7 @@ define(function (require) {
          */
         initialize: function (options) {
             this.set({"variables": (options.variables != 'undefined') ? options.variables : []});
+            this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
         },
 

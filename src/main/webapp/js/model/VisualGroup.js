@@ -56,6 +56,7 @@ define(function (require) {
         initialize: function (options) {
             // object wrapper
             this.set({"wrappedObj": options.wrappedObj});
+            this.set({"parent": options.parent});
 
             // visual group
             this.set({"visualGroupElements": (options.visualGroupElements != undefined) ? options.visualGroupElements : []});

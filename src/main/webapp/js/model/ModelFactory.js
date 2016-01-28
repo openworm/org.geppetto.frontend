@@ -85,11 +85,12 @@ define(function (require) {
                 if (jsonModel.eClass == 'GeppettoModel') {
                     geppettoModel = this.createModel(jsonModel);
                     this.geppettoModel = geppettoModel;
-                    geppettoModel.set({"variables": this.createVariables(jsonModel.variables)});
+                    geppettoModel.set({"variables": this.createVariables(jsonModel.variables, geppettoModel)});
 
                     for (var i = 0; i < jsonModel.libraries.length; i++) {
                         var library = this.createLibrary(jsonModel.libraries[i]);
-                        library.set({"types": this.createTypes(jsonModel.libraries[i].types)});
+                        library.set({"parent": geppettoModel});
+                        library.set({"types": this.createTypes(jsonModel.libraries[i].types, library)});
                         geppettoModel.getLibraries().push(library);
                     }
 
@@ -259,16 +260,17 @@ define(function (require) {
             /**
              * Creates variables starting from an array of variables in the json model format
              */
-            createVariables: function (jsonVariables) {
+            createVariables: function (jsonVariables, parent) {
                 var variables = [];
 
                 if (jsonVariables != undefined) {
                     for (var i = 0; i < jsonVariables.length; i++) {
                         var variable = this.createVariable(jsonVariables[i]);
+                        variable.set({"parent": parent});
 
                         // check if it has an anonymous type
                         if (jsonVariables[i].anonymousTypes != undefined) {
-                            variable.set({"anonymousTypes": this.createTypes(jsonVariables[i].anonymousTypes)});
+                            variable.set({"anonymousTypes": this.createTypes(jsonVariables[i].anonymousTypes, variable)});
                         }
 
                         variables.push(variable);
@@ -281,7 +283,7 @@ define(function (require) {
             /**
              * Creates type objects starting from an array of types in the json model format
              */
-            createTypes: function (jsonTypes) {
+            createTypes: function (jsonTypes, parent) {
                 var types = [];
 
                 if (jsonTypes != undefined) {
@@ -300,6 +302,9 @@ define(function (require) {
                         } else {
                             type = this.createType(jsonTypes[i]);
                         }
+
+                        // set parent
+                        type.set({"parent": parent});
 
                         types.push(type);
                     }
@@ -917,7 +922,7 @@ define(function (require) {
             /** Creates a simple composite */
             createModel: function (node, options) {
                 if (options == null || options == undefined) {
-                    options = {wrappedObj: node};
+                    options = {wrappedObj: node, id: 'Model', parent: undefined};
                 }
 
                 var n = new GeppettoModel(options);
@@ -970,7 +975,7 @@ define(function (require) {
                 var t = new CompositeType(options);
                 t.set({"visualType": node.visualType});
                 t.set({"superType": node.superType});
-                t.set({"variables": this.createVariables(node.variables)});
+                t.set({"variables": this.createVariables(node.variables, t)});
 
                 return t;
             },
@@ -984,9 +989,9 @@ define(function (require) {
                 var t = new CompositeVisualType(options);
                 t.set({"visualType": node.visualType});
                 t.set({"superType": node.superType});
-                t.set({"variables": this.createVariables(node.variables)});
+                t.set({"variables": this.createVariables(node.variables, t)});
                 if (node.visualGroups != undefined) {
-                    t.set({"visualGroups": this.createVisualGroups(node.visualGroups)});
+                    t.set({"visualGroups": this.createVisualGroups(node.visualGroups, t)});
                 }
 
                 return t;
@@ -1046,19 +1051,17 @@ define(function (require) {
 
 
             /** Creates visual groups */
-            createVisualGroups: function (nodes) {
+            createVisualGroups: function (nodes, parent) {
                 var visualGroups = [];
 
                 for (var i = 0; i < nodes.length; i++) {
                     if (nodes[i].visualGroupElements != undefined) {
                         var options = {
-                            wrappedObj: nodes[i],
-                            visualGroupElements: this.createVisualGroupElements(nodes[i].visualGroupElements)
+                            wrappedObj: nodes[i]
                         };
 
-                        // get tags from raw json
+                        // get tags from raw json abd add to options
                         var tagRefObjs = nodes[i].tags;
-
                         if (tagRefObjs != undefined) {
                             var tags = [];
 
@@ -1072,6 +1075,9 @@ define(function (require) {
                         }
 
                         var vg = new VisualGroup(options);
+                        vg.set({"parent": parent});
+                        vg.set({"visualGroupElements": this.createVisualGroupElements(nodes[i].visualGroupElements, vg)});
+
                         visualGroups.push(vg);
                     }
                 }
@@ -1081,11 +1087,11 @@ define(function (require) {
 
 
             /** Creates visual group elements */
-            createVisualGroupElements: function (nodes) {
+            createVisualGroupElements: function (nodes, parent) {
                 var visualGroupElements = [];
 
                 for (var i = 0; i < nodes.length; i++) {
-                    var options = {wrappedObj: nodes[i]};
+                    var options = {wrappedObj: nodes[i], parent: parent};
 
                     var vge = new VisualGroupElement(options);
 

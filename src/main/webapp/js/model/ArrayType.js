@@ -52,6 +52,7 @@ define(function (require) {
         initialize: function (options) {
             this.set({"type": options.type});
             this.set({"size": options.elements});
+            this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
         },
 

@@ -142,6 +142,7 @@ define(function (require) {
                     .attr('title', button[condition].tooltip)
                     .removeClass(button[condition].icon)
                     .addClass(button[!condition].icon);
+                $("#"+name+" .spotlight-button-label").html(button[!condition].label);
             },
 
             getCommand:function(action,instance){
@@ -153,10 +154,14 @@ define(function (require) {
             },
 
             createButton: function (button, name, instance) {
+                var label=null;
+                var buttonElement=null;
+
                 if(button.hasOwnProperty("condition")){
                     var condition=this.execute(button.condition, instance);
                     var b=button[condition];
-                    return $('<button>')
+                    label=$("<div class='spotlight-button-label'>").html(b.label);
+                    buttonElement= $('<button>')
                         .addClass('btn btn-default btn-lg fa spotlight-button')
                         .addClass(b.icon)
                         .attr('data-toogle', 'tooltip')
@@ -165,16 +170,20 @@ define(function (require) {
                         .attr('container', 'body')
                         .on('click', this.statefulButtonCallback(button, name, instance));
                 }
-                else{
-                return $('<button>')
-                    .addClass('btn btn-default btn-lg fa spotlight-button')
-                    .addClass(button.icon)
-                    .attr('data-toogle', 'tooltip')
-                    .attr('data-placement', 'bottom')
-                    .attr('title', button.tooltip)
-                    .attr('container', 'body')
-                    .on('click', this.buttonCallback(button, instance));
+                else {
+                    label=$("<div class='spotlight-button-label'>").html(button.label);
+                    buttonElement = $('<button>')
+                        .addClass('btn btn-default btn-lg fa spotlight-button')
+                        .addClass(button.icon)
+                        .attr('data-toogle', 'tooltip')
+                        .attr('data-placement', 'bottom')
+                        .attr('title', button.tooltip)
+                        .attr('container', 'body')
+                        .on('click', this.buttonCallback(button, instance));
                 }
+
+                buttonElement.append(label);
+                return buttonElement;
             },
 
             createButtonGroup: function (bgName, bgDef, bgInstance) {
@@ -260,13 +269,13 @@ define(function (require) {
                         "false": {
                             "actions": ["$instance$.select(true)"],
                             "icon": "fa-hand-stop-o",
-                            "label": "Select",
+                            "label": "Unselected",
                             "tooltip": "Select"
                         },
                         "true": {
                             "actions": ["$instance$.deselect(true)"],
                             "icon": "fa-hand-rock-o",
-                            "label": "Deselect",
+                            "label": "Selected",
                             "tooltip": "Deselect"
                         },
                     },
@@ -277,7 +286,7 @@ define(function (require) {
                                 "$instance$.show(true)"
                             ],
                             "icon": "fa-eye-slash",
-                            "label": "Show",
+                            "label": "Hidden",
                             "tooltip": "Show"
                         },
                         "true":{
@@ -285,7 +294,7 @@ define(function (require) {
                                 "$instance$.hide(true)"
                             ],
                             "icon": "fa-eye",
-                            "label": "Hide",
+                            "label": "Visible",
                             "tooltip": "Hide"
                         }
 
@@ -315,13 +324,13 @@ define(function (require) {
                         "false": {
                             "actions": ["$instance$.setWatched(true)"],
                             "icon": "fa-circle-o",
-                            "label": "Record",
+                            "label": "Not recorded",
                             "tooltip": "Record the state variable"
                         },
                         "true": {
                             "actions": ["$instance$.setWatched(false)"],
                             "icon": "fa-dot-circle-o",
-                            "label": "Stop recording",
+                            "label": "Recorded",
                             "tooltip": "Stop recording the state variable"
                         }
                     },

@@ -22,6 +22,7 @@
     outline: none;
 }
 
+
 .typeaheadWrapper {
     position: absolute !important;
     margin-left: auto;
@@ -63,11 +64,13 @@
     -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
     -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
     box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    max-height: 150px;
+    overflow-y: auto;
 }
 
 .tt-suggestion {
     padding: 3px 20px;
-    font-size: 18px;
+    font-size: 13px;
     line-height: 24px;
 }
 

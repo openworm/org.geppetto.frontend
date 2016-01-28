@@ -85,7 +85,7 @@ define(function (require) {
             });
 
             Handlebars.registerHelper('geticon', function(metaType) {
-                return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType]+"' style='color: " + GEPPETTO.Resources.Colour[metaType]+";'/>");
+                return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType]+"' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType]+";'/>");
             });
 
             $('#typeahead').typeahead({
@@ -96,6 +96,7 @@ define(function (require) {
                 {
                     name: 'instances',
                     source: instances,
+                    limit: 50,
                     display: 'path',
                     templates: {
                     empty: ['<div class="empty-message">', 'No suggestions', '</div>'].join('\n'),
@@ -115,9 +116,10 @@ define(function (require) {
 
             buttonCallback: function (button, bInstance) {
                 var instance=bInstance;
+                var that=this;
                 return function () {
                     button.actions.forEach(function (action) {
-                        GEPPETTO.Console.executeCommand(instance.getInstancePath()+action)
+                        GEPPETTO.Console.executeCommand(that.getCommand(action,instance))
                     });
                 }
             },
@@ -126,10 +128,10 @@ define(function (require) {
                 var that=this;
                 var instance=bInstance;
                 return function () {
-                    var condition=eval(instance.getInstancePath()+button.condition);
+                    var condition=that.execute(button.condition,instance);
                     var actions=button[condition].actions;
                     actions.forEach(function (action) {
-                        GEPPETTO.Console.executeCommand(instance.getInstancePath()+action)
+                        GEPPETTO.Console.executeCommand(that.getCommand(action,instance));
                     });
                     that.switchStatefulButtonState(button, name, condition);
                 }
@@ -142,9 +144,17 @@ define(function (require) {
                     .addClass(button[!condition].icon);
             },
 
+            getCommand:function(action,instance){
+                return action.split("$instance$").join(instance.getInstancePath());
+            },
+
+            execute:function(action, instance){
+                return eval(this.getCommand(action, instance));
+            },
+
             createButton: function (button, name, instance) {
                 if(button.hasOwnProperty("condition")){
-                    var condition=eval(instance.getInstancePath()+button.condition);
+                    var condition=this.execute(button.condition, instance);
                     var b=button[condition];
                     return $('<button>')
                         .addClass('btn btn-default btn-lg fa spotlight-button')
@@ -246,25 +256,25 @@ define(function (require) {
             "SpotlightBar": {
                 "VisualCapability": {
                     "buttonOne":{
-                        "condition":".isSelected()",
+                        "condition":"$instance$.isSelected()",
                         "false": {
-                            "actions": [".select(true)"],
+                            "actions": ["$instance$.select(true)"],
                             "icon": "fa-hand-stop-o",
                             "label": "Select",
                             "tooltip": "Select"
                         },
                         "true": {
-                            "actions": [".deselect(true)"],
+                            "actions": ["$instance$.deselect(true)"],
                             "icon": "fa-hand-rock-o",
                             "label": "Deselect",
                             "tooltip": "Deselect"
                         },
                     },
                     "buttonTwo": {
-                        "condition":".isVisible()",
+                        "condition":"$instance$.isVisible()",
                         "false": {
                             "actions": [
-                                ".show(true)"
+                                "$instance$.show(true)"
                             ],
                             "icon": "fa-eye-slash",
                             "label": "Show",
@@ -272,7 +282,7 @@ define(function (require) {
                         },
                         "true":{
                             "actions": [
-                                ".hide(true)"
+                                "$instance$.hide(true)"
                             ],
                             "icon": "fa-eye",
                             "label": "Hide",
@@ -282,7 +292,7 @@ define(function (require) {
                     },
                     "buttonThree": {
                         "actions": [
-                            ".zoomTo()"
+                            "$instance$.zoomTo()"
                         ],
                         "icon": "fa-search-plus",
                         "label": "Zoom",
@@ -292,7 +302,7 @@ define(function (require) {
                 "ParameterCapability": {
                     "buttonOne": {
                         "actions": [
-                            ".setValue($value)"
+                            "$instance$.setValue($value)"
                         ],
                         "icon": "fa-i-cursor",
                         "label": "Set value",
@@ -300,21 +310,29 @@ define(function (require) {
                     }
                 },
                 "StateVariableCapability": {
-                    "buttonOne":{
-                        "condition":".isWatched()",
+                    "watch":{
+                        "condition":"$instance$.isWatched()",
                         "false": {
-                            "actions": [".setWatched(true)"],
+                            "actions": ["$instance$.setWatched(true)"],
                             "icon": "fa-circle-o",
                             "label": "Record",
                             "tooltip": "Record the state variable"
                         },
                         "true": {
-                            "actions": [".setWatched(false)"],
+                            "actions": ["$instance$.setWatched(false)"],
                             "icon": "fa-dot-circle-o",
                             "label": "Stop recording",
                             "tooltip": "Stop recording the state variable"
                         }
                     },
+                    "plot": {
+                        "actions": [
+                            "G.addWidget(0).plotData($instance$).setName('$instance$')",
+                        ],
+                        "icon": "fa-area-chart ",
+                        "label": "Plot",
+                        "tooltip": "Plot state variable"
+                    }
                 }
             }
 

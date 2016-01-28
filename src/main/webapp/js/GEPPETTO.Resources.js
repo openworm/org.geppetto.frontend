@@ -50,7 +50,7 @@ define(function (require) {
 
             Icon:{
                 "ParameterType":"fa-sign-in",
-                "TextType":"fa-text-o",
+                "TextType":"fa-file-text-o",
                 "CompositeType":"fa-align-justify",
                 "ArrayType":"fa-list",
                 "PointerType":"fa-link",

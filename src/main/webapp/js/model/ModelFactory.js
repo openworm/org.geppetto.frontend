@@ -657,8 +657,7 @@ define(function (require) {
 
             /**
              * Build Pointer elements chain
-             * 
-             * TODO: need to make a distinction if it's array instance element, the pointer needs an index
+             *
              */
             buildPointerElementsChain: function (path, instance, pointerElements, originalElement) {
                 var instanceIds = path.split('.');
@@ -849,7 +848,7 @@ define(function (require) {
             fetchAllPotentialInstancePaths: function (node, allPotentialPaths, parentPath) {
                 // build new path
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
-                allPotentialPaths.push(path);
+                allPotentialPaths.push({path: path, metaType: node.getType().getMetaType()});
 
                 var potentialParentPaths = [];
                 // check meta type - we are only interested in variables
@@ -868,19 +867,19 @@ define(function (require) {
                         // add the [*] entry
                         var starPath = path + '[' + '*' + ']';
                         potentialParentPaths.push(starPath);
-                        allPotentialPaths.push(starPath);
+                        allPotentialPaths.push({path: starPath, metaType: arrayType.getMetaType()});
 
                         // add each array element path
                         for(var n=0; n<arrayType.getSize(); n++){
                             var arrayElementPath = path + '[' + n + ']';
                             potentialParentPaths.push(arrayElementPath);
-                            allPotentialPaths.push(arrayElementPath);
+                            allPotentialPaths.push({path: arrayElementPath, metaType: arrayType.getType().getMetaType()});
                         }
                     } else {
                         potentialParentPaths.push(path);
                     }
 
-                    // STEp 2: RECURSE on ALL potential parent paths
+                    // STEP 2: RECURSE on ALL potential parent paths
                     var allTypes = node.getTypes();
                     for (var i = 0; i < allTypes.length; i++) {
                         // RECURSE on any variables inside composite types

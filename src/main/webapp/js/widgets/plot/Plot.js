@@ -61,23 +61,15 @@ define(function (require) {
          * is created
          */
         defaultPlotOptions: {
-            yaxis: {
-                max: 1,
-                min: -.1
-            },
+            yaxis: {},
             xaxis: {
-                min: 0,
-                max: 400,
-                show: false,
-                tickLength: 0,
-                ticks: [],
+                show: true,
                 font: {
                     size: 10
                 },
                 labelWidth: 30,
                 axisLabelPadding: 5,
-                color: "#FFFFFF",
-                alignTicksWithAxis: true,
+                color: "#FFFFFF"
             },
             series: {
                 lines: {
@@ -87,8 +79,12 @@ define(function (require) {
             legend: {
                 backgroundOpacity: 0
             },
-            crosshair: {},
+            crosshair: {
+                mode: "x"
+            },
             grid: {
+                hoverable : true,
+                autoHighlight : false,
                 margin: {
                     left: 10,
                     bottom: 10
@@ -207,7 +203,6 @@ define(function (require) {
                     }
                 }
             }
-
             var labelsMap = this.labelsMap;
             this.initializeLegend(function (label, series) {
                 var shortLabel = label;
@@ -250,10 +245,12 @@ define(function (require) {
                 }
             }
 
+            this.updateAxis(this.datasets.length - 1);
+
             var plotHolder = $("#" + this.id);
             this.plot = $.plot(plotHolder, this.datasets, this.options);
 
-            return "Line plot added to widget";
+            return this;
         },
 
 
@@ -267,6 +264,12 @@ define(function (require) {
                     timeSeriesData.push([timeTimeSeries[step], timeSeries[step]]);
                 }
             }
+
+            this.options.xaxis.min = Math.min.apply(null, timeTimeSeries);
+            this.options.yaxis.min = Math.min.apply(null, timeSeries) * 1.1;
+            this.options.xaxis.max = Math.max.apply(null, timeTimeSeries);
+            this.options.yaxis.max = Math.max.apply(null, timeSeries) * 1.1;
+
             return timeSeriesData;
         },
         /**
@@ -306,7 +309,7 @@ define(function (require) {
             this.plot = $.plot(plotHolder, this.datasets, this.options);
 
 
-            return "Line plot added to widget";
+            return this;
         },
         /**
          * Removes the data set from the plot. EX:
@@ -337,6 +340,7 @@ define(function (require) {
             if (this.datasets.length == 0) {
                 this.resetPlot();
             }
+            return this;
         },
 
         /**
@@ -381,15 +385,7 @@ define(function (require) {
                     }
                 }
 
-                if (!this.labelsUpdated) {
-                    var unit = this.datasets[key].variable.getUnit();
-                    if (unit != null) {
-                        var labelY = this.getUnitLabel(unit);
-                        var labelX = this.getUnitLabel(window.Instances.time.getUnit());
-                        this.setAxisLabel(labelY, labelX);
-                        this.labelsUpdated = true;
-                    }
-                }
+                this.updateAxis(key);
             }
 
 
@@ -401,6 +397,18 @@ define(function (require) {
                 this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
 
+        },
+
+        updateAxis: function (key) {
+            if (!this.labelsUpdated) {
+                var unit = this.datasets[key].variable.getUnit();
+                if (unit != null) {
+                    var labelY = this.getUnitLabel(unit);
+                    var labelX = this.getUnitLabel(window.Instances.time.getUnit());
+                    this.setAxisLabel(labelY, labelX);
+                    this.labelsUpdated = true;
+                }
+            }
         },
 
         /**
@@ -478,6 +486,7 @@ define(function (require) {
 
             //Plot values
             this.plotXYData(data);
+            return this;
         },
 
         /**
@@ -493,6 +502,7 @@ define(function (require) {
                 var plotHolder = $("#" + this.id);
                 this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
+            return this;
         },
 
         /**
@@ -583,6 +593,7 @@ define(function (require) {
             }
 
             this.labelsMap[instancePath] = legend;
+            return this;
         },
 
         /**
@@ -602,6 +613,7 @@ define(function (require) {
             }
             this.options.xaxis.axisLabel = labelX;
             this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+            return this;
         },
 
         /**
@@ -611,10 +623,10 @@ define(function (require) {
          * @param {Node} functionNode - Function Node to be displayed
          */
         plotFunctionNode: function (functionNode) {
-        	
+
 //        	node.getInitialValues()[0].value.arguments
 //        	node.getInitialValues()[0].value.expression.expression
-        	
+
             //Check there is metada information to plot
             if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
 
@@ -658,6 +670,7 @@ define(function (require) {
                 //Set title to widget
                 this.setName(plotTitle);
             }
+            return this;
         },
 
     });

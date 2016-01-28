@@ -154,7 +154,7 @@ define(function (require) {
         getCommands: function (node) {
             var group1 = [{
                 label: "Open with DAT Widget",
-                action: ["G.addWidget(Widgets.TREEVISUALISERDAT).setData(" + node.getId() + ")"],
+                action: ["G.addWidget(Widgets.TREEVISUALISERDAT).setData(" + node.getPath() + ")"],
             }];
 
 
@@ -170,7 +170,7 @@ define(function (require) {
                     var availableWidget = availableWidgets[availableWidgetIndex];
                     subgroups1Add = subgroups1Add.concat([{
                         label: "Add to " + availableWidget.name,
-                        action: [availableWidget.id + ".setData(" + node.getId() + ")"],
+                        action: [availableWidget.id + ".setData(" + node.getPath() + ")"],
                         position: availableWidgetIndex
                     }]);
                 }
@@ -184,7 +184,7 @@ define(function (require) {
            if (node.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && node.getWrappedObj().getVisualType() != undefined) {
                 var entity = [{
                     label: "Select Visual Component",
-                    action: ["G.unSelectAll();", node.getId() + ".select()"],
+                    action: ["G.unSelectAll();", node.getPath() + ".select()"],
                 }];
 
                 groups.push(entity);
@@ -193,7 +193,7 @@ define(function (require) {
             if (node._metaType == "VisualGroupNode") {
                 var visualGroup = [{
                     label: "Show Visual Group",
-                    action: ["G.unSelectAll();", node.getId() + ".show(true)"],
+                    action: ["G.unSelectAll();", node.getPath() + ".show(true)"],
                 }];
 
                 groups.push(visualGroup);

@@ -47,6 +47,13 @@ define(['jquery'], function (require) {
          */
         getVisualGroups: function(){
             return this.visualGroups;
-        }
+        },
+
+        /**
+         * Get VisualGroups
+         */
+        setVisualGroups: function(visualGroups){
+            this.visualGroups = visualGroups;
+        },
     }
 });

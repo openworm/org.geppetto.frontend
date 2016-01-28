@@ -517,12 +517,18 @@ define(function (require) {
                             var explodedInstance = this.createArrayElementInstance(options);
 
                             // check if visual type and inject AVisualCapability
-                            if (explodedInstance.hasVisualType()) {
+                            var visualTypes = explodedInstance.getVisualTypes();
+                            if (visualTypes != null && visualTypes.length > 0) {
                                 explodedInstance.extendApi(AVisualCapability);
                                 this.propagateCapabilityToParents(AVisualCapability, explodedInstance);
 
-                                // TODO: check if it has visual groups - if so add visual group capability
-                                // TODO: capability has getVisualGroups and return the objects
+                                // check if it has visual groups - if so add visual group capability
+                                if((typeof visualTypes.getVisualGroups === "function") &&
+                                    visualTypes.getVisualGroups() != null &&
+                                    visualTypes.getVisualGroups() >0){
+                                    explodedInstance.extendApi(AVisualGroupCapability);
+                                    explodedInstance.setVisualGroups(setVisualGroups);
+                                }
                             }
 
                             // check if it has connections and inject AConnectionCapability
@@ -566,9 +572,19 @@ define(function (require) {
                         newlyCreatedInstance = this.createInstance(options);
 
                         // check if visual type and inject AVisualCapability
-                        if (newlyCreatedInstance.hasVisualType()) {
+                        var visualTypes = newlyCreatedInstance.getVisualTypes();
+                        // check if visual type and inject AVisualCapability
+                        if (visualTypes != null && visualTypes.length > 0) {
                             newlyCreatedInstance.extendApi(AVisualCapability);
                             this.propagateCapabilityToParents(AVisualCapability, newlyCreatedInstance);
+
+                            // check if it has visual groups - if so add visual group capability
+                            if((typeof visualTypes.getVisualGroups === "function") &&
+                                visualTypes.getVisualGroups() != null &&
+                                visualTypes.getVisualGroups() >0){
+                                newlyCreatedInstance.extendApi(AVisualGroupCapability);
+                                newlyCreatedInstance.setVisualGroups(setVisualGroups);
+                            }
                         }
 
                         // check if it has connections and inject AConnectionCapability

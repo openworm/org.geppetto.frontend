@@ -181,7 +181,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          *
          */
         getVisualTypes: function () {
-            var visualTypes = null;
+            var visualTypes = [];
 
             var types = this.getTypes();
             // check if any of types is VISUAL_TYPE_NODE or if types HAVE .visualType

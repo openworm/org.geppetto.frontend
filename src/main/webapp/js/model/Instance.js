@@ -174,7 +174,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          *
          */
         getVisualTypes: function () {
-            var visualTypes = null;
+            var visualTypes = [];
 
             var types = this.getTypes();
             // check if any of types is VISUAL_TYPE_NODE or if types HAVE .visualType
@@ -189,7 +189,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                     }
                 } else {
                     // check it if is a visual type or has a visual type
-                    if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                    if (types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
                         visualTypes.push(types[i].getType());
                     } else if (types[i].getVisualType() != null){
                         visualTypes.push(types[i].getVisualType());

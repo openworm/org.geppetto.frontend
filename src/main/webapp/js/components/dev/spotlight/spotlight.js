@@ -29,10 +29,10 @@ define(function (require) {
                     $("#spotlight").show();
                     $("#typeahead").focus();
                     var selection = GEPPETTO.G.getSelection();
-                    if(selection.length>0){
-                        var instance = selection[selection.length-1];
-                        $(".typeahead").typeahead('val',instance.getInstancePath());
-                        $("#typeahead").trigger(jQuery.Event("keypress",{which:13}));
+                    if (selection.length > 0) {
+                        var instance = selection[selection.length - 1];
+                        $(".typeahead").typeahead('val', instance.getInstancePath());
+                        $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
                     }
                 }
             });
@@ -44,8 +44,8 @@ define(function (require) {
             });
 
             $('#typeahead').keydown(this, function (e) {
-                    if (e.which == 9 || e.keyCode == 9) {
-                        e.preventDefault();
+                if (e.which == 9 || e.keyCode == 9) {
+                    e.preventDefault();
                 }
             });
 
@@ -58,7 +58,7 @@ define(function (require) {
                         e.data.loadToolbarFor(this.instance);
                     }
 
-                    if(this.instance) {
+                    if (this.instance) {
                         if ($(".spotlight-toolbar").length == 0) {
                             e.data.loadToolbarFor(this.instance);
                         }
@@ -69,7 +69,6 @@ define(function (require) {
 
                 }
             });
-
 
 
             GEPPETTO.on(Events.Experiment_loaded, (function () {
@@ -84,8 +83,8 @@ define(function (require) {
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
             });
 
-            Handlebars.registerHelper('geticon', function(metaType) {
-                return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType]+"' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType]+";'/>");
+            Handlebars.registerHelper('geticon', function (metaType) {
+                return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType] + "' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType] + ";'/>");
             });
 
             $('#typeahead').typeahead({
@@ -99,10 +98,10 @@ define(function (require) {
                     limit: 50,
                     display: 'path',
                     templates: {
-                    empty: ['<div class="empty-message">', 'No suggestions', '</div>'].join('\n'),
-                    suggestion: Handlebars.compile('<div>{{geticon metaType}} {{path}}</div>')
-                }
-            });
+                        empty: ['<div class="empty-message">', 'No suggestions', '</div>'].join('\n'),
+                        suggestion: Handlebars.compile('<div>{{geticon metaType}} {{path}}</div>')
+                    }
+                });
 
             $('.twitter-typeahead').addClass("typeaheadWrapper");
 
@@ -115,53 +114,55 @@ define(function (require) {
 
 
             buttonCallback: function (button, bInstance) {
-                var instance=bInstance;
-                var that=this;
+                var instance = bInstance;
+                var that = this;
                 return function () {
                     button.actions.forEach(function (action) {
-                        GEPPETTO.Console.executeCommand(that.getCommand(action,instance))
+                        GEPPETTO.Console.executeCommand(that.getCommand(action, instance))
                     });
                 }
             },
 
             statefulButtonCallback: function (button, name, bInstance) {
-                var that=this;
-                var instance=bInstance;
+                var that = this;
+                var instance = bInstance;
                 return function () {
-                    var condition=that.execute(button.condition,instance);
-                    var actions=button[condition].actions;
+                    var condition = that.execute(button.condition, instance);
+                    var actions = button[condition].actions;
                     actions.forEach(function (action) {
-                        GEPPETTO.Console.executeCommand(that.getCommand(action,instance));
+                        GEPPETTO.Console.executeCommand(that.getCommand(action, instance));
                     });
                     that.switchStatefulButtonState(button, name, condition);
                 }
             },
 
-            switchStatefulButtonState : function(button, name, condition) {
-                $("#"+name)
+            switchStatefulButtonState: function (button, name, condition) {
+                $("#" + name)
                     .attr('title', button[condition].tooltip)
                     .removeClass(button[condition].icon)
                     .addClass(button[!condition].icon);
-                $("#"+name+" .spotlight-button-label").html(button[!condition].label);
+                $("#" + name + " .spotlight-button-label").html(button[!condition].label);
             },
 
-            getCommand:function(action,instance){
-                return action.split("$instance$").join(instance.getInstancePath());
+            getCommand: function (action, instance) {
+                var processed = action.split("$instance$").join(instance.getInstancePath());
+                processed = processed.split("$type$").join(instance.getType().getPath());
+                return processed;
             },
 
-            execute:function(action, instance){
+            execute: function (action, instance) {
                 return eval(this.getCommand(action, instance));
             },
 
             createButton: function (button, name, instance) {
-                var label=null;
-                var buttonElement=null;
+                var label = null;
+                var buttonElement = null;
 
-                if(button.hasOwnProperty("condition")){
-                    var condition=this.execute(button.condition, instance);
-                    var b=button[condition];
-                    label=$("<div class='spotlight-button-label'>").html(b.label);
-                    buttonElement= $('<button>')
+                if (button.hasOwnProperty("condition")) {
+                    var condition = this.execute(button.condition, instance);
+                    var b = button[condition];
+                    label = $("<div class='spotlight-button-label'>").html(b.label);
+                    buttonElement = $('<button>')
                         .addClass('btn btn-default btn-lg fa spotlight-button')
                         .addClass(b.icon)
                         .attr('data-toogle', 'tooltip')
@@ -171,7 +172,7 @@ define(function (require) {
                         .on('click', this.statefulButtonCallback(button, name, instance));
                 }
                 else {
-                    label=$("<div class='spotlight-button-label'>").html(button.label);
+                    label = $("<div class='spotlight-button-label'>").html(button.label);
                     buttonElement = $('<button>')
                         .addClass('btn btn-default btn-lg fa spotlight-button')
                         .addClass(button.icon)
@@ -188,28 +189,29 @@ define(function (require) {
 
             createButtonGroup: function (bgName, bgDef, bgInstance) {
                 var that = this;
-                var instance = bgInstance;s
+                var instance = bgInstance;
+                s
                 var bg = $('<div>')
                     .addClass('btn-group')
                     .attr('role', 'group')
                     .attr('id', bgName);
                 $.each(bgDef, function (bName, bData) {
-                    var button=that.named(that.createButton, bName, bData, instance);
+                    var button = that.named(that.createButton, bName, bData, instance);
                     bg.append(button)
                     $(button).keypress(that, function (e) {
-                        if(e.which == 13 || e.keyCode == 13)  // enter
+                        if (e.which == 13 || e.keyCode == 13)  // enter
                         {
-                            if(button.hasOwnProperty("condition")) {
+                            if (button.hasOwnProperty("condition")) {
                                 e.data.statefulButtonCallback(button, instance);
                             }
-                            else{
+                            else {
                                 e.data.buttonCallback(button, instance);
                             }
 
                         }
                     });
                     $(button).keydown(that, function (e) {
-                        if(e.which == 27 || e.keyCode == 27)  // escape
+                        if (e.which == 27 || e.keyCode == 27)  // escape
                         {
                             $(".spotlight-toolbar").remove();
                             $('#typeahead').focus();
@@ -217,13 +219,19 @@ define(function (require) {
                         }
                     });
                     $(button).keydown(function (e) {
-                        if(e.which == 9 || e.keyCode == 9)  // tab
+                        if (e.which == 9 || e.keyCode == 9)  // tab
                         {
                             e.preventDefault();
-                            var next=$(this).next();
-                            if(next.length==0)
-                            {
-                                next=$(".spotlight-button").eq(0);
+                            var next = $(this).next();
+                            if (next.length == 0) {
+                                //check if there is a sibling of the parent, i.e. another buttonGroup
+                                var nextParent = $(this).parent().next();
+                                if (nextParent.length > 0) {
+                                    next = $(nextParent).eq(0).children(" .spotlight-button").eq(0);
+                                }
+                                else {
+                                    next = $(".spotlight-button").eq(0);
+                                }
                             }
                             $(next).focus();
                         }
@@ -242,17 +250,19 @@ define(function (require) {
                 var that = this;
                 var tbar = $('<div>').addClass('spotlight-toolbar');
                 $.each(buttonGroups, function (groupName, groupDef) {
-                    if(instance.get("capabilities").indexOf(groupName)!=-1) {
+                    if ((instance.get("capabilities").indexOf(groupName) != -1) ||
+                        (instance.getType().getMetaType() == groupName)) {
                         tbar.append(that.createButtonGroup(groupName, groupDef, instance));
                     }
                 });
+
                 return tbar;
             }
         },
 
-        loadToolbarFor: function(instance){
+        loadToolbarFor: function (instance) {
             $(".spotlight-toolbar").remove();
-            $('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar,instance));
+            $('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance));
 
         },
 
@@ -264,8 +274,8 @@ define(function (require) {
         configuration: {
             "SpotlightBar": {
                 "VisualCapability": {
-                    "buttonOne":{
-                        "condition":"$instance$.isSelected()",
+                    "buttonOne": {
+                        "condition": "$instance$.isSelected()",
                         "false": {
                             "actions": ["$instance$.select(true)"],
                             "icon": "fa-hand-stop-o",
@@ -280,7 +290,7 @@ define(function (require) {
                         },
                     },
                     "buttonTwo": {
-                        "condition":"$instance$.isVisible()",
+                        "condition": "$instance$.isVisible()",
                         "false": {
                             "actions": [
                                 "$instance$.show(true)"
@@ -289,7 +299,7 @@ define(function (require) {
                             "label": "Hidden",
                             "tooltip": "Show"
                         },
-                        "true":{
+                        "true": {
                             "actions": [
                                 "$instance$.hide(true)"
                             ],
@@ -319,8 +329,8 @@ define(function (require) {
                     }
                 },
                 "StateVariableCapability": {
-                    "watch":{
-                        "condition":"$instance$.isWatched()",
+                    "watch": {
+                        "condition": "$instance$.isWatched()",
                         "false": {
                             "actions": ["$instance$.setWatched(true)"],
                             "icon": "fa-circle-o",
@@ -341,6 +351,16 @@ define(function (require) {
                         "icon": "fa-area-chart ",
                         "label": "Plot",
                         "tooltip": "Plot state variable"
+                    }
+                },
+                "CompositeType": {
+                    "type": {
+                        "actions": [
+                            "G.addWidget(3).setData($type$).setName('$type$')",
+                        ],
+                        "icon": "fa-puzzle-piece",
+                        "label": "Explore type",
+                        "tooltip": "Explore type"
                     }
                 }
             }

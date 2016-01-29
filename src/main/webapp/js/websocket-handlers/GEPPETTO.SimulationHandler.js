@@ -313,6 +313,24 @@ define(function (require) {
                         instancePath = [instancePath];
                     }
 
+                    // check if we have any [*] for array notation and replace with exploded paths
+                    for(var j=0; j<instancePath.length; j++){
+                        if(instancePath[j].indexOf('[*]') > -1){
+                            var arrayPath = instancePath[j].substring(0, instancePath[j].indexOf('['));
+                            var subArrayPath = instancePath[j].substring(instancePath[j].indexOf(']') + 1, instancePath[j].length);
+                            var arrayInstance = Instances.getInstance(arrayPath);
+                            var arraySize = arrayInstance.getSize();
+
+                            // remove original * entry
+                            instancePath.splice(j, 1);
+                            // add exploded elements
+                            for(var x=0; x<arraySize; x++){
+                                instancePath.push(arrayPath + '[' + x + ']' + subArrayPath);
+                            }
+                        }
+                    }
+
+
                     for(var i=0; i<instancePath.length; i++) {
                         try {
                             instances[i] = eval(InstanceVarName + instancePath[i]);

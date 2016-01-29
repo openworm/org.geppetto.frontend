@@ -358,6 +358,16 @@ define(function (require) {
 
         configuration: {
             "SpotlightBar": {
+                "CompositeType": {
+                    "type": {
+                        "actions": [
+                            "G.addWidget(3).setData($type$).setName('$typeid$')",
+                        ],
+                        "icon": "fa-puzzle-piece",
+                        "label": "Explore type",
+                        "tooltip": "Explore type"
+                    }
+                },
                 "VisualCapability": {
                     "buttonOne": {
                         "condition": "$instance$.isSelected()",
@@ -437,17 +447,8 @@ define(function (require) {
                         "label": "Plot",
                         "tooltip": "Plot state variable"
                     }
-                },
-                "CompositeType": {
-                    "type": {
-                        "actions": [
-                            "G.addWidget(3).setData($type$).setName('$typeid$')",
-                        ],
-                        "icon": "fa-puzzle-piece",
-                        "label": "Explore type",
-                        "tooltip": "Explore type"
-                    }
                 }
+
             }
 
         },

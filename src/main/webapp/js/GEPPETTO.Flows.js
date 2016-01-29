@@ -58,14 +58,24 @@ define(function (require) {
             onRun: function (callbackCommand) {
                 var anythingRecorded = false;
 
-                // TODO: check if anything is being recorded
+                // check if anything is being recorded
+                // 1. get all existing instances of type StateVariable
+                var instantiatedStateVariables = GEPPETTO.ModelFactory.getAllInstancesOf("Model.common.StateVariable");
+                for(var i=0; i<instantiatedStateVariables.length; i++){
+                    // 2. check if any isWatched
+                    if(instantiatedStateVariables[i].isWatched()){
+                        anythingRecorded = true;
+                        break;
+                    }
+                }
 
                 if(!anythingRecorded){
                     // TODO: if not, bring up spotlight configured for the RUN flow
 
                     // TODO: listen to spotlight exit event and handle it running the callbackCommand passed in
                 } else {
-                    // TODO: nothing to do - run callbackCommand directly
+                    // nothing to do - run callbackCommand directly
+                    GEPPETTO.Console.executeCommand(callbackCommand);
                 }
             },
 
@@ -87,7 +97,8 @@ define(function (require) {
 
                     // TODO: listen to spotlight exit event and handle it running the callbackCommand passed in
                 } else {
-                    // TODO: nothing to do - run callbackCommand directly
+                    // nothing to do - run callbackCommand directly
+                    GEPPETTO.Console.executeCommand(callbackCommand);
                 }
             },
         };

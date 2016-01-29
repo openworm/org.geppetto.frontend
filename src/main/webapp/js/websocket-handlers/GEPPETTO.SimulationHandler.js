@@ -306,22 +306,34 @@ define(function (require) {
                 };
 
                 window.Instances.getInstance = function (instancePath) {
-                    var instance = undefined;
+                    var instances = [];
                     var InstanceVarName = "Instances.";
-                    try {
-                        instance = eval(InstanceVarName + instancePath);
-                        if (instance == undefined) {
-                            Instances.addInstances([instancePath]);
-                            instance = eval(InstanceVarName + instancePath);
+
+                    if(!(instancePath.constructor === Array)){
+                        instancePath = [instancePath];
+                    }
+
+                    for(var i=0; i<instancePath.length; i++) {
+                        try {
+                            instances[i] = eval(InstanceVarName + instancePath[i]);
+                            if(instances[i] == undefined){
+                                Instances.addInstances(instancePath[i]);
+                                instances[i] = eval(InstanceVarName + instancePath[i]);
+                            }
+                        } catch (e) {
+                            Instances.addInstances(instancePath[i]);
+                            instances[i] = eval(InstanceVarName + instancePath[i]);
                         }
-                    } catch (e) {
-                        Instances.addInstances([instancePath]);
-                        instance = eval(InstanceVarName + instancePath);
+                        if (instances[i] == undefined) {
+                            throw( "The instance " + instancePath[i] + " does not exist in the current model" );
+                        }
                     }
-                    if (instance == undefined) {
-                        throw( "The instance " + instancePath + " does not exist in the current model" );
+
+                    if(instances.length == 1) {
+                        return instances[0];
+                    } else {
+                        return instances;
                     }
-                    return instance;
                 };
 
                 console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);

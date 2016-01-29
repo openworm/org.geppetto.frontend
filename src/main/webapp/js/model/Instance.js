@@ -190,7 +190,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                 } else {
                     // check it if is a visual type or has a visual type
                     if (types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
-                        visualTypes.push(types[i].getType());
+                        visualTypes.push(types[i]);
                     } else if (types[i].getVisualType() != null){
                         visualTypes.push(types[i].getVisualType());
                     }

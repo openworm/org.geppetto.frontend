@@ -65,7 +65,8 @@ define(function (require) {
 
                     // TODO: listen to spotlight exit event and handle it running the callbackCommand passed in
                 } else {
-                    // TODO: nothing to do - run callbackCommand directly
+                    // nothing to do - run callbackCommand directly
+                    GEPPETTO.Console.executeCommand(callbackCommand);
                 }
             },
 
@@ -87,7 +88,8 @@ define(function (require) {
 
                     // TODO: listen to spotlight exit event and handle it running the callbackCommand passed in
                 } else {
-                    // TODO: nothing to do - run callbackCommand directly
+                    // nothing to do - run callbackCommand directly
+                    GEPPETTO.Console.executeCommand(callbackCommand);
                 }
             },
         };

@@ -56,23 +56,39 @@ define(function (require) {
              * Handles flow on run experiment
              */
             onRun: function (callbackCommand) {
+                var anythingRecorded = false;
+
                 // TODO: check if anything is being recorded
-                // TODO: if not, bring up spotlight configured with following suggestions:
-                // - Record all state variables
-                // - Record all state variables within types (show all grouping options)
-                // TODO: after spotlight selection execute run ==> pass to spotlight as a callback
+
+                if(!anythingRecorded){
+                    // TODO: if not, bring up spotlight configured for the RUN flow
+
+                    // TODO: listen to spotlight exit event and handle it running the callbackCommand passed in
+                } else {
+                    // TODO: nothing to do - run callbackCommand directly
+                }
             },
 
             /*
              * Handles flow on play recording
              */
             onPlay: function (callbackCommand) {
-                // TODO: check if a plot is already up or light up functions are set
-                // TODO: if not, bring up spotlight configured with following suggestions:
-                // - Plot all recorded variables
-                // TODO: after spotlight selection is picked execute play ==> pass to spotlight as a callback
+                var anyPlotUp = false;
 
-                // NOTE: what happens on step by step play, the same?
+                // check if any plots are up
+                if(GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT) != null && GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT) != undefined &&
+                    GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets() != null && GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets() != undefined &&
+                    GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets().length > 0){
+                    anyPlotUp = true;
+                }
+
+                if(!anyPlotUp){
+                    // TODO: if not, bring up spotlight configured for the PLAY flow
+
+                    // TODO: listen to spotlight exit event and handle it running the callbackCommand passed in
+                } else {
+                    // TODO: nothing to do - run callbackCommand directly
+                }
             },
         };
 

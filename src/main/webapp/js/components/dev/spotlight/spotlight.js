@@ -257,7 +257,7 @@ define(function (require) {
         },
 
         render: function () {
-            return <input id = "typeahead" className = "typeahead fa fa-search" type = "text" placeholder = "Lightspeed Search" />
+            return <input id = "typeahead" className = "typeahead" type = "text" placeholder = "Lightspeed Search" />
         },
 
 

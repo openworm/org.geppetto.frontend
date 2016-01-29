@@ -148,6 +148,7 @@ define(function (require) {
             getCommand: function (action, instance) {
                 var processed = action.split("$instance$").join(instance.getInstancePath());
                 processed = processed.split("$type$").join(instance.getType().getPath());
+                processed = processed.split("$typeid$").join(instance.getType().getId());
                 return processed;
             },
 
@@ -357,7 +358,7 @@ define(function (require) {
                 "CompositeType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(3).setData($type$).setName('$type$')",
+                            "G.addWidget(3).setData($type$).setName('$typeid$')",
                         ],
                         "icon": "fa-puzzle-piece",
                         "label": "Explore type",

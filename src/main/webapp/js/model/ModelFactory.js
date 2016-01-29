@@ -1234,6 +1234,21 @@ define(function (require) {
             },
 
             /**
+             * Get all POTENTIAL instances given a variable id
+             */
+            getAllPotentialInstancesEndingWith: function (endingString) {
+                var matchingPotentialInstances = [];
+
+                for(var i=0; i<this.allPaths.length; i++){
+                    if(this.allPaths[i].path.endsWith(endingString)){
+                        matchingPotentialInstances.push(this.allPaths[i].path);
+                    }
+                }
+
+                return matchingPotentialInstances;
+            },
+
+            /**
              * A generic method to resolve a reference
              * */
             resolve: function (refStr) {

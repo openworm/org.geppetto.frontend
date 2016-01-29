@@ -113,13 +113,14 @@ define(function (require) {
             },
 
 
-            buttonCallback: function (button, bInstance) {
+            buttonCallback: function (button, name, bInstance) {
                 var instance = bInstance;
                 var that = this;
                 return function () {
                     button.actions.forEach(function (action) {
                         GEPPETTO.Console.executeCommand(that.getCommand(action, instance))
                     });
+                    $("#" + name).focus();
                 }
             },
 
@@ -180,7 +181,7 @@ define(function (require) {
                         .attr('data-placement', 'bottom')
                         .attr('title', button.tooltip)
                         .attr('container', 'body')
-                        .on('click', this.buttonCallback(button, instance));
+                        .on('click', this.buttonCallback(button, name, instance));
                 }
 
                 buttonElement.append(label);

@@ -120,7 +120,7 @@ define(['jquery', 'underscore', 'backbone',
                 }
 
                 if (predicate(this)) {
-                    matches.push(this)
+                    matches.push(this);
                 }
 
                 if (typeof this.getChildren === "function") {
@@ -143,8 +143,8 @@ define(['jquery', 'underscore', 'backbone',
              */
             getSubNodesOfDomainType: function (domainType) {
                 return this._all(function (n) {
-                    return n.domainType === domainType
-                })
+                    return n.domainType === domainType;
+                });
             },
 
             /**
@@ -157,8 +157,8 @@ define(['jquery', 'underscore', 'backbone',
              */
             getSubNodesOfMetaType: function (metaType) {
                 return this._all(function (n) {
-                    return n._metaType === metaType
-                })
+                    return n._metaType === metaType;
+                });
             }
         })
     };

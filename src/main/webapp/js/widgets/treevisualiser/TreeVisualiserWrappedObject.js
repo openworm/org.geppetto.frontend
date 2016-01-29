@@ -37,12 +37,16 @@
  *
  * @module model/CompositeNode
  * @author Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function (require) {
-    var Node = require('model/Node');
 
-    return Node.Model.extend({
-        children: null,
+    return Backbone.Model.extend({
+        children: [],
+        id: "",
+        name: "",
+        _metaType: "",
+        value: "",
 
         /**
          * Initializes this node with passed attributes
@@ -51,11 +55,11 @@ define(function (require) {
          *                           node
          */
         initialize: function (options) {
-            this.children = [];
-            this.id = options.id;
-            this.name = options.name;
-            this._metaType = options._metaType;
-            this.value = options.value;
+            this.set({"children": (options.children != 'undefined') ? options.children : []});
+            this.set({"id": options.id});
+            this.set({"name": options.name});
+            this.set({"_metaType": options._metaType});
+            this.set({"value": options.value});
         },
 
         /**
@@ -67,7 +71,7 @@ define(function (require) {
          *
          */
         getChildren: function () {
-            return this.children;
+            return this.get('children');
         },
 
         /**
@@ -79,9 +83,31 @@ define(function (require) {
          *
          */
         getMetaType: function () {
-            return this._metaType;
+            return this.get('_metaType');
         },
 
+        /**
+         * Gets the name of the node
+         *
+         * @command Node.getName()
+         * @returns {String} Name of the node
+         *
+         */
+        getName: function () {
+            return this.get('name');
+        },
+        
+        /**
+         * Get the id associated with node
+         *
+         * @command Node.getId()
+         * @returns {String} ID of node
+         */
+        getId: function () {
+            return this.get('id');
+        },
+
+        
         /**
          * Get the list of values for this variable
          *
@@ -92,8 +118,8 @@ define(function (require) {
          */
         getInitialValues: function () {
             var values = [];
-            values.push({value: {value: this.value}});
+            values.push({value: {value: this.get('value')}});
             return values;
-        },
+        }
     });
 });

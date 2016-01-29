@@ -19,6 +19,9 @@ define(function (require) {
             require('jsx!mixins/bootstrap/modal')
         ],
 
+        suggestions:null,
+        instances:null,
+
         componentDidMount: function () {
 
             var space = 32;
@@ -52,60 +55,140 @@ define(function (require) {
             $('#typeahead').keypress(this, function (e) {
                 if (e.which == 13 || e.keyCode == 13) {
 
-                    if (!this.instance || this.instance.getInstancePath() != $('#typeahead').val()) {
-                        var instancePath = $('#typeahead').val();
-                        this.instance = Instances.getInstance(instancePath);
-                        e.data.loadToolbarFor(this.instance);
+                    //check suggestions
+                    var suggestionFound=false
+
+                    if (e.data.suggestions.get($('#typeahead').val())){
+                        var found=e.data.suggestions.get($('#typeahead').val());
+                        if(found.length==1){
+                            suggestionFound = true;
+                            var actions = found[0].actions;
+                            actions.forEach(function (action) {
+                                eval(action);
+                            });
+                        }
                     }
 
-                    if (this.instance) {
-                        if ($(".spotlight-toolbar").length == 0) {
+                    //check the instances
+                    if(!suggestionFound){
+                        if (!this.instance || this.instance.getInstancePath() != $('#typeahead').val()) {
+                            var instancePath = $('#typeahead').val();
+                            this.instance = Instances.getInstance(instancePath);
                             e.data.loadToolbarFor(this.instance);
                         }
+                        if (this.instance) {
+                            if ($(".spotlight-toolbar").length == 0) {
+                                e.data.loadToolbarFor(this.instance);
+                            }
 
-                        $(".tt-menu").hide();
-                        $(".spotlight-button").eq(0).focus();
+                            $(".tt-menu").hide();
+                            $(".spotlight-button").eq(0).focus();
+                        }
                     }
 
                 }
             });
 
+            var that=this;
 
             GEPPETTO.on(Events.Experiment_loaded, (function () {
 
-                instances.add(GEPPETTO.ModelFactory.allPaths);
+                that.instances.add(GEPPETTO.ModelFactory.allPaths);
 
             }));
 
 
-            var instances = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('path'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
+            this.instances = new Bloodhound({
+                datumTokenizer: function(str) { return str.path ? str.path.split(".") : [];},
+                queryTokenizer: function(str) { return str ? str.split(/[\.\s]/) : [];},
+                identify: function(obj) { return obj.path; }
             });
 
-            Handlebars.registerHelper('geticon', function (metaType) {
+            this.suggestions = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                identify: function(obj) { return obj.label; }
+            });
+
+            Handlebars.registerHelper('geticonFromMetaType', function (metaType) {
                 return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType] + "' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType] + ";'/>");
             });
+
+            Handlebars.registerHelper('geticon', function (icon) {
+                return new Handlebars.SafeString("<icon class='fa " + icon + "' style='margin-right:5px;'/>");
+            });
+
 
             $('#typeahead').typeahead({
                     hint: true,
                     highlight: true,
-                    minLength: 1
+                    minLength: 0
+                },
+                {
+                    name: 'suggestions',
+                    source: this.defaultSuggestions,
+                    limit: 5,
+                    display: 'label',
+                    templates: {
+                        suggestion: Handlebars.compile('<div class="spotlight-suggestion">{{geticon icon}} {{label}}</div>')
+                    }
                 },
                 {
                     name: 'instances',
-                    source: instances,
+                    source: this.defaultInstances,
                     limit: 50,
                     display: 'path',
                     templates: {
-                        empty: ['<div class="empty-message">', 'No suggestions', '</div>'].join('\n'),
-                        suggestion: Handlebars.compile('<div>{{geticon metaType}} {{path}}</div>')
+                        suggestion: Handlebars.compile('<div>{{geticonFromMetaType metaType}} {{path}}</div>')
                     }
                 });
 
             $('.twitter-typeahead').addClass("typeaheadWrapper");
 
+            GEPPETTO.Spotlight=this;
+
+            this.addSuggestion("Run",this.suggestionSample);
+
         },
+
+        defaultSuggestions:function(q, sync) {
+            if (q === '') {
+                sync(this.suggestions.index.all());
+            }
+            else {
+                this.suggestions.search(q, sync);
+            }
+        },
+
+        defaultInstances:function(q, sync) {
+            if (q === '') {
+                var rootInstances=[];
+                for(var i=0;i<window.Instances.length;i++){
+                    rootInstances.push(window.Instances[i].getId());
+                }
+                sync(this.instances.get(rootInstances));
+            }
+            else {
+                this.instances.search(q, sync);
+            }
+        },
+
+
+        suggestionSample:{
+            "label":"Record all membrane potentials",
+            "actions": ["alert('ciao');"],
+            "icon": "fa-dot-circle-o"
+        },
+
+        addSuggestion:function(flow,suggestion){
+            if(!this.suggestions[flow]){
+                this.suggestions[flow]=[];
+            }
+            this.suggestions[flow].push(suggestion);
+            this.suggestions.add(suggestion);
+        },
+
+
 
         BootstrapMenuMaker: {
             named: function (constructor, name, def, instance) {

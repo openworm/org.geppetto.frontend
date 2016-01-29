@@ -76,12 +76,12 @@
 .tt-suggestion:hover {
     cursor: pointer;
     color: #fff;
-    background-color: #fd6808;
+    background-color: #aaaaaa;
 }
 
 .tt-suggestion.tt-cursor {
     color: #fff;
-    background-color: #fd6808;
+    background-color: #aaaaaa;
 
 }
 
@@ -134,4 +134,9 @@
     font-size: 55px !important;
     background: none !important;
     color: #fd6808 !important;
+}
+
+.spotlight-suggestion{
+    background-color: #fd6808;
+    color:white;
 }

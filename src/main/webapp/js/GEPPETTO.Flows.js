@@ -58,7 +58,16 @@ define(function (require) {
             onRun: function (callbackCommand) {
                 var anythingRecorded = false;
 
-                // TODO: check if anything is being recorded
+                // check if anything is being recorded
+                // 1. get all existing instances of type StateVariable
+                var instantiatedStateVariables = GEPPETTO.ModelFactory.getAllInstancesOf("Model.common.StateVariable");
+                for(var i=0; i<instantiatedStateVariables.length; i++){
+                    // 2. check if any isWatched
+                    if(instantiatedStateVariables[i].isWatched()){
+                        anythingRecorded = true;
+                        break;
+                    }
+                }
 
                 if(!anythingRecorded){
                     // TODO: if not, bring up spotlight configured for the RUN flow

@@ -135,10 +135,11 @@ define(['jquery'], function (require) {
         setWatched: function (isWatched) {
             if (isWatched != this.watched) {
                 Project.getActiveExperiment().watchVariables([this]);
-
-                // NOTE: stateful operation - this.watched is updated by the callback upon success
             }
+            this.watched=isWatched;
             return this;
         }
+
+
     }
 });

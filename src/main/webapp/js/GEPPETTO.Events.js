@@ -57,7 +57,8 @@ var Events = {
     Experiment_deleted: "experiment_deleted",
     Experiment_active: "experiment_active",
     Volatile_project_loaded: "project:volatile",
-    Project_persisted: "project:persisted"
+    Project_persisted: "project:persisted",
+    Spotlight_closed : "spotlight:closed"
 };
 define(function (require) {
     return function (GEPPETTO) {

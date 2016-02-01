@@ -241,17 +241,17 @@ define(function (require) {
 
             pause: function () {
                 GEPPETTO.ExperimentsController.pause();
-                return "Pause Experiment";
+                return this;
             },
 
             stop: function () {
                 GEPPETTO.ExperimentsController.stop();
-                return "Stop Experiment";
+                return this;
             },
 
             resume: function () {
                 GEPPETTO.ExperimentsController.resume();
-                return "Resume Experiment";
+                return this;
             },
 
 
@@ -284,7 +284,9 @@ define(function (require) {
                 }
 
                 for (var v = 0; v < variables.length; v++) {
-                    this.variables.push(variables[v].getInstancePath());
+                    if (this.variables.indexOf(variables[v]) == -1) {
+                        this.variables.push(variables[v].getInstancePath());
+                    }
                 }
             },
 
@@ -294,14 +296,30 @@ define(function (require) {
              * @command ExperimentNode.getWatchedVariables(asObjs)
              * @returns {List<String>} - List of watched variables for given name
              */
-            getWatchedVariables: function (asObjs) {
+            getWatchedVariables: function (asObjs, time) {
                 if (asObjs === undefined) {
                     asObjs = false;
                 }
+                if (time === undefined) {
+                    time = true;
+                }
 
                 var watchedVariables = [];
-                if(asObjs){
+                if (asObjs) {
                     watchedVariables = GEPPETTO.ModelFactory.instances.getInstance(this.variables);
+                    if (!time) {
+                        var timeIndex = -1;
+                        for (var i = 0; i < watchedVariables.length; i++) {
+                            if (watchedVariables[i].getId() == "time") {
+                                //TODO Check also if it's a root variable, there might be another time variable somewhere in the tree
+                                timeIndex = i;
+                                break;
+                            }
+                        }
+                        if (timeIndex != -1) {
+                            watchedVariables.splice(timeIndex, 1); //we remove the time variable
+                        }
+                    }
                 } else {
                     watchedVariables = this.variables;
                 }
@@ -337,7 +355,7 @@ define(function (require) {
 
                     GEPPETTO.MessageSocket.send("set_parameters", parameters);
 
-                    return "Sending request to set parameters";
+                    return this;
                 }
             },
 
@@ -373,7 +391,7 @@ define(function (require) {
                 parameters["projectId"] = this.getParent().getId();
                 GEPPETTO.MessageSocket.send("delete_experiment", parameters);
 
-                return "Request to delete experiment sent";
+                return this;
             },
 
             uploadModel: function (aspectPath, format) {

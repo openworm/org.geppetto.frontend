@@ -19,6 +19,7 @@ define(function (require) {
             require('jsx!mixins/bootstrap/modal')
         ],
 
+        potentialSuggestions:{},
         suggestions:null,
         instances:null,
 
@@ -27,22 +28,18 @@ define(function (require) {
             var space = 32;
             var escape = 27;
 
+            var that=this;
+
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == space) {
-                    $("#spotlight").show();
-                    $("#typeahead").focus();
-                    var selection = GEPPETTO.G.getSelection();
-                    if (selection.length > 0) {
-                        var instance = selection[selection.length - 1];
-                        $(".typeahead").typeahead('val', instance.getInstancePath());
-                        $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
-                    }
+                    that.open(GEPPETTO.Resources.SEARCH_FLOW, true);
                 }
             });
 
             $(document).keydown(function (e) {
                 if ($("#spotlight").is(':visible') && e.keyCode == escape) {
                     $("#spotlight").hide();
+                    GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
                 }
             });
 
@@ -54,50 +51,29 @@ define(function (require) {
 
             $('#typeahead').keypress(this, function (e) {
                 if (e.which == 13 || e.keyCode == 13) {
-
-                    //check suggestions
-                    var suggestionFound=false
-
-                    if (e.data.suggestions.get($('#typeahead').val())){
-                        var found=e.data.suggestions.get($('#typeahead').val());
-                        if(found.length==1){
-                            suggestionFound = true;
-                            var actions = found[0].actions;
-                            actions.forEach(function (action) {
-                                eval(action);
-                            });
-                        }
-                    }
-
-                    //check the instances
-                    if(!suggestionFound){
-                        if (!this.instance || this.instance.getInstancePath() != $('#typeahead').val()) {
-                            var instancePath = $('#typeahead').val();
-                            this.instance = Instances.getInstance(instancePath);
-                            e.data.loadToolbarFor(this.instance);
-                        }
-                        if (this.instance) {
-                            if ($(".spotlight-toolbar").length == 0) {
-                                e.data.loadToolbarFor(this.instance);
-                            }
-
-                            $(".tt-menu").hide();
-                            $(".spotlight-button").eq(0).focus();
-                        }
-                    }
-
+                    that.confirmed($('#typeahead').val());
                 }
             });
 
-            var that=this;
+            $('#typeahead').bind('typeahead:selected', function(obj, datum, name) {
+                if(datum.hasOwnProperty("path")){
+                    //it's an instance
+                    that.confirmed(datum.path);
+                }
+                else if(datum.hasOwnProperty("label")){
+                    //it's a suggestion
+                    that.confirmed(datum.label);
+                }
+            });
 
-            GEPPETTO.on(Events.Experiment_loaded, (function () {
+
+            GEPPETTO.on(Events.Experiment_loaded, function () {
 
                 that.instances.add(GEPPETTO.ModelFactory.allPaths);
 
-            }));
+            });
 
-
+            //Initializing Bloodhound sources, we have one for instances and one for the suggestions
             this.instances = new Bloodhound({
                 datumTokenizer: function(str) { return str.path ? str.path.split(".") : [];},
                 queryTokenizer: function(str) { return str ? str.split(/[\.\s]/) : [];},
@@ -111,43 +87,89 @@ define(function (require) {
             });
 
             Handlebars.registerHelper('geticonFromMetaType', function (metaType) {
-                return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType] + "' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType] + ";'/>");
+                if(metaType){
+                    return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType] + "' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType] + ";'/>");
+                }
+                else{
+                    return;
+                }
+
             });
 
             Handlebars.registerHelper('geticon', function (icon) {
-                return new Handlebars.SafeString("<icon class='fa " + icon + "' style='margin-right:5px;'/>");
+                if(icon){
+                    return new Handlebars.SafeString("<icon class='fa " + icon + "' style='margin-right:5px;'/>");
+                }else{
+                    return;
+                }
+
             });
 
 
-            $('#typeahead').typeahead({
-                    hint: true,
-                    highlight: true,
-                    minLength: 0
-                },
-                {
-                    name: 'suggestions',
-                    source: this.defaultSuggestions,
-                    limit: 5,
-                    display: 'label',
-                    templates: {
-                        suggestion: Handlebars.compile('<div class="spotlight-suggestion">{{geticon icon}} {{label}}</div>')
-                    }
-                },
-                {
-                    name: 'instances',
-                    source: this.defaultInstances,
-                    limit: 50,
-                    display: 'path',
-                    templates: {
-                        suggestion: Handlebars.compile('<div>{{geticonFromMetaType metaType}} {{path}}</div>')
-                    }
-                });
-
-            $('.twitter-typeahead').addClass("typeaheadWrapper");
+            this.initTypeahead();
 
             GEPPETTO.Spotlight=this;
 
-            this.addSuggestion("Run",this.suggestionSample);
+
+            //TODO: To be removed, just a sample of how to add a suggestion
+            this.addSuggestion(this.recordSample,GEPPETTO.Resources.RUN_FLOW);
+            this.addSuggestion(this.plotSample,GEPPETTO.Resources.PLAY_FLOW);
+
+        },
+
+        recordSample:{
+            "label":"Record all membrane potentials",
+            "actions": [
+                "var instances=Instances.getInstance(ModelFactory.getAllPotentialInstancesEndingWith('.v'));",
+                "$.each(instances,function(index,value){value.setWatched(true);});"
+            ],
+            "icon": "fa-dot-circle-o"
+        },
+
+        plotSample:{
+            "label":"Plot all recorded variables",
+            "actions": [
+                "var p=GEPPETTO.G.addWidget(0).setName('Recorded Variables');",
+                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
+            ],
+            "icon": "fa-area-chart"
+        },
+
+        confirmed:function(item){
+            //check suggestions
+            var suggestionFound=false
+
+            if (this.suggestions.get(item)){
+                var found=this.suggestions.get(item);
+                if(found.length==1){
+                    suggestionFound = true;
+                    var actions = found[0].actions;
+                    var allActions="";
+                    actions.forEach(function (action) {
+                        allActions=allActions+action;
+                    });
+                    eval(allActions);
+                    $("#typeahead").typeahead('val', "");
+                }
+            }
+
+            //check the instances
+            if(!suggestionFound){
+                if (!this.instance || this.instance.getInstancePath() != item) {
+                    var instancePath = item;
+                    this.instance = Instances.getInstance(instancePath);
+                    this.loadToolbarFor(this.instance);
+                }
+                if (this.instance) {
+                    if ($(".spotlight-toolbar").length == 0) {
+                        this.loadToolbarFor(this.instance);
+                    }
+
+                    $(".tt-menu").hide();
+                    $(".spotlight-button").eq(0).focus();
+                }
+            }
+
 
         },
 
@@ -174,18 +196,92 @@ define(function (require) {
         },
 
 
-        suggestionSample:{
-            "label":"Record all membrane potentials",
-            "actions": ["alert('ciao');"],
-            "icon": "fa-dot-circle-o"
+        initTypeahead:function(){
+            $('#typeahead').typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 0
+                },
+                {
+                    name: 'suggestions',
+                    source: this.defaultSuggestions,
+                    limit: 5,
+                    display: 'label',
+                    templates: {
+                        suggestion: Handlebars.compile('<div class="spotlight-suggestion">{{geticon icon}} {{label}}</div>')
+                    }
+                },
+                {
+                    name: 'instances',
+                    source: this.defaultInstances,
+                    limit: 50,
+                    display: 'path',
+                    templates: {
+                        suggestion: Handlebars.compile('<div>{{geticonFromMetaType metaType}} {{path}}</div>')
+                    }
+                });
+            $('.twitter-typeahead').addClass("typeaheadWrapper");
         },
 
-        addSuggestion:function(flow,suggestion){
-            if(!this.suggestions[flow]){
-                this.suggestions[flow]=[];
+
+
+        open:function(flowFilter, useSelection){
+            if(useSelection==undefined){
+                useSelection=false;
             }
-            this.suggestions[flow].push(suggestion);
-            this.suggestions.add(suggestion);
+            this.suggestions.initialize(true);
+            var that=this;
+            if(flowFilter){
+                if($.isArray(flowFilter)){
+                    $.each(flowFilter,function(index,value){
+                        if(that.potentialSuggestions[value]) {
+                            that.suggestions.add(that.potentialSuggestions[value]);
+                        }
+                    });
+                }
+                else{
+                    if(flowFilter && that.potentialSuggestions[flowFilter]) {
+                        that.suggestions.add(that.potentialSuggestions[flowFilter]);
+                    }
+                }
+
+            }
+            else{
+                $.each(this.potentialSuggestions,function(key,value){
+                    that.suggestions.add(value);
+                });
+            }
+            $("#spotlight").show();
+            $("#typeahead").focus();
+            if(useSelection){
+                var selection = GEPPETTO.G.getSelection();
+                if (selection.length > 0) {
+                    var instance = selection[selection.length - 1];
+                    $(".typeahead").typeahead('val', instance.getInstancePath());
+                    $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
+                }
+            }
+            else{
+                $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+                $("#typeahead").typeahead('val', "");
+            }
+
+        },
+
+
+
+        addSuggestion:function(suggestion, flow){
+            if(flow==undefined){
+                flow=GEPPETTO.Resources.SEARCH_FLOW;
+            }
+            if(!this.potentialSuggestions[flow]){
+                this.potentialSuggestions[flow]=[];
+            }
+            this.potentialSuggestions[flow].push(suggestion);
+            if(flow==GEPPETTO.Resources.SEARCH_FLOW){
+                //the only suggestions always displayed are those for the search flow
+                this.suggestions.add(suggestion);
+            }
         },
 
 
@@ -443,7 +539,7 @@ define(function (require) {
                         "actions": [
                             "G.addWidget(0).plotData($instance$).setName('$instance$')",
                         ],
-                        "icon": "fa-area-chart ",
+                        "icon": "fa-area-chart",
                         "label": "Plot",
                         "tooltip": "Plot state variable"
                     }

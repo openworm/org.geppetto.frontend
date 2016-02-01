@@ -210,8 +210,7 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             setActive: function () {
-                var parameters =
-                {};
+                var parameters = {};
                 parameters["experimentId"] = this.id;
                 parameters["projectId"] = this.getParent().getId();
                 GEPPETTO.MessageSocket.send("load_experiment", parameters);

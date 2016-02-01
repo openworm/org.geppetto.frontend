@@ -457,6 +457,7 @@ define(function (require) {
             DIRECTIONAL: 'DIRECTIONAL',
             BIDIRECTIONAL: 'BIDIRECTIONAL',
             // FLOWS
+            SEARCH_FLOW: 'SearchFlow',
             PLAY_FLOW: 'PlayFlow',
             RUN_FLOW: 'RunFlow'
         }

@@ -115,7 +115,7 @@ define(function (require) {
                 //Unfocused close button
                 $(".ui-dialog-titlebar-close").blur();
 
-                return "Showing " + this.name + " widget";
+                return this;
             },
 
             /**
@@ -139,7 +139,7 @@ define(function (require) {
                 // set name to widget window
                 $("#" + this.id).dialog("option", "title", this.name);
 
-                return "Widget has been renamed to " + this.name;
+                return this;
             },
 
             /**
@@ -153,7 +153,7 @@ define(function (require) {
                 this.position.top = top;
                 $("#" + this.id).dialog('option', 'position', [this.position.left, this.position.top]);
 
-                return this.name + " Widget's position has been updated";
+                return this;
             },
 
             /**
@@ -167,7 +167,7 @@ define(function (require) {
                 this.size.width = w;
                 $("#" + this.id).dialog({height: this.size.height, width: this.size.width});
 
-                return this.name + " Widget has been resized";
+                return this;
             },
 
             /**
@@ -176,7 +176,7 @@ define(function (require) {
              */
             setMinHeight: function (h) {
                 $("#" + this.id).dialog('option', 'minHeight', h);
-                return this.name + " Widget's minimum height set to " + h;
+                return this;
             },
 
             /**
@@ -185,7 +185,7 @@ define(function (require) {
              */
             setMinWidth: function (w) {
                 $("#" + this.id).dialog('option', 'minWidth', w);
-                return this.name + " Widget's minimum width set to " + w;
+                return this;
             },
 
             /**
@@ -196,6 +196,7 @@ define(function (require) {
             setMinSize: function (h, w) {
                 this.setMinHeight(h);
                 this.setMinWidth(w);
+                return this;
             },
 
             /**
@@ -204,7 +205,7 @@ define(function (require) {
              */
             setResizable: function (resize) {
                 $("#" + this.id).dialog('option', 'resizable', resize);
-                return this.name + " Widget resizability set to: " + resize;
+                return this;
             },
 
             /**
@@ -212,7 +213,7 @@ define(function (require) {
              */
             setAutoWidth: function () {
                 $("#" + this.id).dialog('option', 'width', 'auto');
-                return this.name + " Widget's width set to 'auto'";
+                return this;
             },
 
             /**
@@ -220,7 +221,7 @@ define(function (require) {
              */
             setAutoHeight: function () {
                 $("#" + this.id).dialog('option', 'height', 'auto');
-                return this.name + " Widget's height set to 'auto'";
+                return this;
             },
 
 

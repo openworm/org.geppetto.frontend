@@ -65,7 +65,6 @@ define(function (require) {
                             instance.setUnit(recordedVariable.value.unit.unit);
                         }
                         instance.setTimeSeries(recordedVariable.value.value);
-                        instance.setWatched(true);
                         if (recordedVariable.value.value.length > this.maxSteps) {
                             this.maxSteps = recordedVariable.value.value.length;
                         }

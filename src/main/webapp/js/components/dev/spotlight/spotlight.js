@@ -137,40 +137,43 @@ define(function (require) {
 
         confirmed:function(item){
             //check suggestions
-            var suggestionFound=false
 
-            if (this.suggestions.get(item)){
-                var found=this.suggestions.get(item);
-                if(found.length==1){
-                    suggestionFound = true;
-                    var actions = found[0].actions;
-                    var allActions="";
-                    actions.forEach(function (action) {
-                        allActions=allActions+action;
-                    });
-                    eval(allActions);
-                    $("#typeahead").typeahead('val', "");
-                }
-            }
+            if(item && item!="") {
+                var suggestionFound = false
 
-            //check the instances
-            if(!suggestionFound){
-                if (!this.instance || this.instance.getInstancePath() != item) {
-                    var instancePath = item;
-                    this.instance = Instances.getInstance(instancePath);
-                    this.loadToolbarFor(this.instance);
-                }
-                if (this.instance) {
-                    if ($(".spotlight-toolbar").length == 0) {
-                        this.loadToolbarFor(this.instance);
+                if (this.suggestions.get(item)) {
+                    var found = this.suggestions.get(item);
+                    if (found.length == 1) {
+                        suggestionFound = true;
+                        var actions = found[0].actions;
+                        var allActions = "";
+                        actions.forEach(function (action) {
+                            allActions = allActions + action;
+                        });
+                        eval(allActions);
+                        $("#typeahead").typeahead('val', "");
                     }
-
-                    $(".tt-menu").hide();
-                    $(".spotlight-button").eq(0).focus();
                 }
+
+                //check the instances
+                if (!suggestionFound) {
+                    if (!this.instance || this.instance.getInstancePath() != item) {
+                        var instancePath = item;
+                        this.instance = Instances.getInstance(instancePath);
+                    }
+                    if (this.instance) {
+                        this.loadToolbarFor(this.instance);
+
+                        if ($(".spotlight-toolbar").length == 0) {
+                            this.loadToolbarFor(this.instance);
+                        }
+
+                        $(".tt-menu").hide();
+                        $(".spotlight-button").eq(0).focus();
+                    }
+                }
+
             }
-
-
         },
 
         defaultSuggestions:function(q, sync) {

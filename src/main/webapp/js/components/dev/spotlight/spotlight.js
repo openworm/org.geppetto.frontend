@@ -260,6 +260,10 @@ define(function (require) {
                     $(".typeahead").typeahead('val', instance.getInstancePath());
                     $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
                 }
+                else{
+                    $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+                    $("#typeahead").typeahead('val', "");
+                }
             }
             else{
                 $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update

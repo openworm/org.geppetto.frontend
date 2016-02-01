@@ -17,10 +17,10 @@ define(function (require) {
             }
             else {
                 if (GEPPETTO.isKeyPressed("shift")) {
-                    GEPPETTO.Console.executeCommand("Project.getActiveExperiment().play();");
+                    GEPPETTO.Flows.onPlay("Project.getActiveExperiment().play();");
                 }
                 else {
-                    GEPPETTO.Console.executeCommand("Project.getActiveExperiment().playAll();");
+                    GEPPETTO.Flows.onPlay("Project.getActiveExperiment().playAll();");
                 }
             }
 

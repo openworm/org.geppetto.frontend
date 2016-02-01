@@ -71,7 +71,7 @@ define(function (require) {
 
                 if(!anythingRecorded){
                     // if not, bring up spotlight configured for the RUN flow
-                    GEPPETTO.Spotlight.show(GEPPETTO.Resources.RUN_FLOW);
+                    GEPPETTO.Spotlight.open(GEPPETTO.Resources.RUN_FLOW);
 
                     // listen to spotlight exit event and handle it running the callbackCommand passed in
                     GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, function(){
@@ -98,7 +98,7 @@ define(function (require) {
 
                 if(!anyPlotUp){
                     // if not, bring up spotlight configured for the PLAY flow
-                    GEPPETTO.Spotlight.show(GEPPETTO.Resources.PLAY_FLOW);
+                    GEPPETTO.Spotlight.open(GEPPETTO.Resources.PLAY_FLOW);
 
                     // listen to spotlight exit event and handle it running the callbackCommand passed in
                     GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, function(){

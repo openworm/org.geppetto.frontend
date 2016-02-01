@@ -291,8 +291,8 @@ define(function (require) {
             /**
              * Gets the watched variables for this experiment.
              *
-             * @command ProjectNode.getWatchedVariables(asObjs)
-             * @returns {List<String} - List of watched variables for given name
+             * @command ExperimentNode.getWatchedVariables(asObjs)
+             * @returns {List<String>} - List of watched variables for given name
              */
             getWatchedVariables: function (asObjs) {
                 if (asObjs === undefined) {

@@ -391,7 +391,7 @@ define(function (require) {
                     var simulatorConfigurations = experiment.simulatorConfigurations;
                     for (var config in simulatorConfigurations) {
                         var simulatorConfig = simulatorConfigurations[config];
-                        GEPPETTO.Console.executeCommand(simulatorConfig["aspectInstancePath"] + '.downloadModel();');
+                        GEPPETTO.Console.executeCommand('Project.downloadModel("' + simulatorConfig["aspectInstancePath"] + '");');
                     }
 
                     window.event.stopPropagation();

@@ -301,6 +301,24 @@ define(['jquery', 'underscore', 'backbone',
         },
 
         /**
+         * Download model for this project.
+         *
+         * @command ProjectNode.downloadModel(format)
+         * * @param {String} name - File format to download
+         */
+        downloadModel : function(path, format) {
+            var parameters = {};
+            parameters["experimentId"] = this.getActiveExperiment().getId();
+            parameters["projectId"] = this.getId();
+            parameters["instancePath"] = path;
+            parameters["format"] = format;
+            GEPPETTO.MessageSocket.send("download_model", parameters);
+
+            var formatMessage = (format=="")?"default format":format
+            return GEPPETTO.Resources.DOWNLOADING_MODEL + formatMessage;
+        },
+
+        /**
          * Print out formatted node
          */
         print: function () {

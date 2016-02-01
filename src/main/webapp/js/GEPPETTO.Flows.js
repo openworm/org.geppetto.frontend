@@ -49,13 +49,13 @@ define(function (require) {
          */
         GEPPETTO.Flows =
         {
-            // any variables here
-            whatever: null,
+            callbackCommand: null,
 
             /*
              * Handles flow on run experiment
              */
             onRun: function (callbackCommand) {
+                this.callbackCommand = callbackCommand;
                 var anythingRecorded = false;
 
                 // check if anything is being recorded
@@ -74,9 +74,7 @@ define(function (require) {
                     GEPPETTO.Spotlight.open(GEPPETTO.Resources.RUN_FLOW);
 
                     // listen to spotlight exit event and handle it running the callbackCommand passed in
-                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, function(){
-                        GEPPETTO.Console.executeCommand(callbackCommand);
-                    });
+                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback);
                 } else {
                     // nothing to do - run callbackCommand directly
                     GEPPETTO.Console.executeCommand(callbackCommand);
@@ -87,6 +85,7 @@ define(function (require) {
              * Handles flow on play recording
              */
             onPlay: function (callbackCommand) {
+                this.callbackCommand = callbackCommand;
                 var anyPlotUp = false;
 
                 // check if any plots are up
@@ -101,14 +100,17 @@ define(function (require) {
                     GEPPETTO.Spotlight.open(GEPPETTO.Resources.PLAY_FLOW);
 
                     // listen to spotlight exit event and handle it running the callbackCommand passed in
-                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, function(){
-                        GEPPETTO.Console.executeCommand(callbackCommand);
-                    });
+                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback);
                 } else {
                     // nothing to do - run callbackCommand directly
                     GEPPETTO.Console.executeCommand(callbackCommand);
                 }
             },
+
+            onSpotlightExitFlowCallback : function(){
+                GEPPETTO.Console.executeCommand(this.callbackCommand);
+                GEPPETTO.off(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback);
+            }
         };
 
     };

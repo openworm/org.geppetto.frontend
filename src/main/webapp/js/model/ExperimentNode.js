@@ -288,15 +288,32 @@ define(function (require) {
                 }
             },
 
-            getWatchedVariables: function () {
-                return this.variables;
+            /**
+             * Gets the watched variables for this experiment.
+             *
+             * @command ProjectNode.getWatchedVariables(asObjs)
+             * @returns {List<String} - List of watched variables for given name
+             */
+            getWatchedVariables: function (asObjs) {
+                if (asObjs === undefined) {
+                    asObjs = false;
+                }
+
+                var watchedVariables = [];
+                if(asObjs){
+                    watchedVariables = GEPPETTO.ModelFactory.instances.getInstances(this.variables);
+                } else {
+                    watchedVariables = this.variables;
+                }
+
+                return watchedVariables;
             },
 
 
             /**
-             * Gets an experiment from this project.
+             * Sets parameters for this experiment.
              *
-             * @command ProjectNode.setParameters(parameters)
+             * @command ExperimentNode.setParameters(parameters)
              * @returns {ExperimentNode} ExperimentNode for given name
              */
             setParameters: function (aspectPath, newParameters) {

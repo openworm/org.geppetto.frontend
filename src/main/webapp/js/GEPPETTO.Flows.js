@@ -74,7 +74,7 @@ define(function (require) {
                     GEPPETTO.Spotlight.open(GEPPETTO.Resources.RUN_FLOW);
 
                     // listen to spotlight exit event and handle it running the callbackCommand passed in
-                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback);
+                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
                 } else {
                     // nothing to do - run callbackCommand directly
                     GEPPETTO.Console.executeCommand(callbackCommand);
@@ -100,7 +100,7 @@ define(function (require) {
                     GEPPETTO.Spotlight.open(GEPPETTO.Resources.PLAY_FLOW);
 
                     // listen to spotlight exit event and handle it running the callbackCommand passed in
-                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback);
+                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
                 } else {
                     // nothing to do - run callbackCommand directly
                     GEPPETTO.Console.executeCommand(callbackCommand);
@@ -109,7 +109,7 @@ define(function (require) {
 
             onSpotlightExitFlowCallback : function(){
                 GEPPETTO.Console.executeCommand(this.callbackCommand);
-                GEPPETTO.off(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback);
+                GEPPETTO.off(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
             }
         };
 

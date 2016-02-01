@@ -56,7 +56,7 @@ define(function (require) {
                 "PointerType":"fa-link",
                 "HTMLType":"fa-code",
                 "StateVariableType":"fa-superscript",
-
+                "DynamicsType":"fa-bolt",
             },
 
             Colour:{
@@ -67,7 +67,7 @@ define(function (require) {
                 "PointerType":"#10b7bd",
                 "HTMLType":"0xdddddd",
                 "StateVariableType":"#42b6ff",
-                "DynamicsType":"#00cc66"
+                "DynamicsType":"#00cc66",
             },
 
             COLORS: {

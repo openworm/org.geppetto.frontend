@@ -455,7 +455,10 @@ define(function (require) {
             OUTPUT: 'output',
             INPUT_OUTPUT: 'input_output',
             DIRECTIONAL: 'DIRECTIONAL',
-            BIDIRECTIONAL: 'BIDIRECTIONAL'
+            BIDIRECTIONAL: 'BIDIRECTIONAL',
+            // FLOWS
+            PLAY_FLOW: 'PlayFlow',
+            RUN_FLOW: 'RunFlow'
         }
     }
 });

@@ -276,8 +276,7 @@ define(function (require) {
                     watchedVariables.push(variables[i].getInstancePath());
                 }
                 if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                    var parameters =
-                    {};
+                    var parameters = {};
                     parameters["experimentId"] = this.id;
                     parameters["projectId"] = this.getParent().getId();
                     parameters["variables"] = watchedVariables;
@@ -289,7 +288,7 @@ define(function (require) {
                 }
             },
 
-            getVariables: function () {
+            getWatchedVariables: function () {
                 return this.variables;
             },
 

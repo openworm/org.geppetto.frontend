@@ -129,7 +129,7 @@ define(function (require) {
                     if (variables != null || variables != undefined) {
                         for (var key in variables) {
                             var variableName = variables[key].instancePath;
-                            e.getVariables().push(variableName);
+                            e.getWatchedVariables().push(variableName);
                         }
                     }
 

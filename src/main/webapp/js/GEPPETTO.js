@@ -584,6 +584,7 @@ define(function (require) {
     require('3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
     require('GEPPETTO.Vanilla')(GEPPETTO);
     require('GEPPETTO.FE')(GEPPETTO);
+    require('GEPPETTO.Flows')(GEPPETTO);
     require('GEPPETTO.ScriptRunner')(GEPPETTO);
     // require('GEPPETTO.SimulationContentEditor')(GEPPETTO);
     require('GEPPETTO.JSEditor')(GEPPETTO);

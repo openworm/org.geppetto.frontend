@@ -301,7 +301,7 @@ define(function (require) {
 
                 var watchedVariables = [];
                 if(asObjs){
-                    watchedVariables = GEPPETTO.ModelFactory.instances.getInstances(this.variables);
+                    watchedVariables = GEPPETTO.ModelFactory.instances.getInstance(this.variables);
                 } else {
                     watchedVariables = this.variables;
                 }

@@ -70,9 +70,13 @@ define(function (require) {
                 }
 
                 if(!anythingRecorded){
-                    // TODO: if not, bring up spotlight configured for the RUN flow
+                    // if not, bring up spotlight configured for the RUN flow
+                    GEPPETTO.Spotlight.show(GEPPETTO.Resources.RUN_FLOW);
 
-                    // TODO: listen to spotlight exit event and handle it running the callbackCommand passed in
+                    // listen to spotlight exit event and handle it running the callbackCommand passed in
+                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, function(){
+                        GEPPETTO.Console.executeCommand(callbackCommand);
+                    });
                 } else {
                     // nothing to do - run callbackCommand directly
                     GEPPETTO.Console.executeCommand(callbackCommand);
@@ -93,9 +97,13 @@ define(function (require) {
                 }
 
                 if(!anyPlotUp){
-                    // TODO: if not, bring up spotlight configured for the PLAY flow
+                    // if not, bring up spotlight configured for the PLAY flow
+                    GEPPETTO.Spotlight.show(GEPPETTO.Resources.PLAY_FLOW);
 
-                    // TODO: listen to spotlight exit event and handle it running the callbackCommand passed in
+                    // listen to spotlight exit event and handle it running the callbackCommand passed in
+                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, function(){
+                        GEPPETTO.Console.executeCommand(callbackCommand);
+                    });
                 } else {
                     // nothing to do - run callbackCommand directly
                     GEPPETTO.Console.executeCommand(callbackCommand);

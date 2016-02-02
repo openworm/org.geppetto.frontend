@@ -195,17 +195,14 @@ define(['jquery'], function (require) {
                 this.selected = true;
                 // TODO: investigate why is the parent being set to selected too?
                 this.getParent().selected = true;
-                GEPPETTO.SceneController.selectAspect(this.getInstancePath());
+                GEPPETTO.SceneController.selectInstance(this.getInstancePath());
                 message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
 
-                //Behavior: if the parent entity has connections change the opacity of what is not connected
-                //Rationale: help exploration of networks by hiding non connected
+                // Behaviour: help exploration of networks by ghosting and not highlighting non connected or selected
                 if (this.getConnections().length > 0) {
-                    //allOtherMeshes will contain a list of all the non connected entities in the scene for the purpose
-                    //of changing their opacity
+                    // allOtherMeshes will contain a list of all the non connected entities in the scene
                     var allOtherMeshes = $.extend({}, GEPPETTO.getVARS().meshes);
-                    //look on the simulation selection options and perform necessary
-                    //operations
+                    // look on the simulation selection options and perform necessary operations
                     if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
                         var meshes = this.highlightInstances(true);
                         for (var i in meshes) {
@@ -230,8 +227,6 @@ define(['jquery'], function (require) {
                     if (G.getSelectionOptions().unselected_transparent) {
                         GEPPETTO.SceneController.ghostEffect(allOtherMeshes, true);
                     }
-
-
                 }
                 //signal selection has changed in simulation
                 GEPPETTO.trigger(Events.Select);
@@ -266,14 +261,10 @@ define(['jquery'], function (require) {
             var message;
 
             if (this.selected) {
-                message = GEPPETTO.Resources.DESELECTING_ASPECT
-                    + this.instancePath;
-                GEPPETTO.SceneController.deselectAspect(this.getInstancePath());
+                message = GEPPETTO.Resources.DESELECTING_ASPECT + this.instancePath;
+                GEPPETTO.SceneController.deselectInstance(this.getInstancePath());
                 this.selected = false;
 
-                if (G.getSelectionOptions().unselected_transparent) {
-                    GEPPETTO.SceneController.setGhostEffect(false);
-                }
                 if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
                     this.highlightInstances(false);
                 }
@@ -283,8 +274,14 @@ define(['jquery'], function (require) {
                 else if (G.getSelectionOptions().show_outputs) {
                     this.highlightInstances(false, GEPPETTO.Resources.OUTPUT);
                 }
+
                 if (G.getSelectionOptions().draw_connection_lines) {
                     this.showConnectionLines(false);
+                }
+
+                // NOTE: do this down here, ghost effect won't be removed if stuff is still highlighted
+                if (G.getSelectionOptions().unselected_transparent) {
+                    GEPPETTO.SceneController.setGhostEffect(false);
                 }
 
                 //trigger event that selection has been changed

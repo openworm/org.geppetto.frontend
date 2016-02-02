@@ -219,7 +219,7 @@ define(function (require) {
              * @param {String}
              *            instancePath - Path of aspect of mesh to select
              */
-            selectAspect: function (instancePath) {
+            selectInstance: function (instancePath) {
                 var mesh = GEPPETTO.getVARS().meshes[instancePath];
                 if (mesh != null || undefined) {
                     if (!mesh.visible) {
@@ -253,7 +253,7 @@ define(function (require) {
              * @param {String}
              *            instancePath - Path of the mesh/aspect to select
              */
-            deselectAspect: function (instancePath) {
+            deselectInstance: function (instancePath) {
                 // match instancePath to mesh store in variables properties
                 var mesh = GEPPETTO.getVARS().meshes[instancePath];
                 if (mesh != undefined) {

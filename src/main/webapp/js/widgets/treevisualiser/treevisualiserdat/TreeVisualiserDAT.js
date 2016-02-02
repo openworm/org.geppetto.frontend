@@ -78,8 +78,8 @@ define(function (require) {
         events: {
             'contextmenu .title': 'manageRightClickEvent',
             'contextmenu .cr.string': 'manageRightClickEvent',
-            'click': 'manageClickEvent',
-            'click': 'manageClickEvent'
+            'click': 'manageLeftClickEvent',
+            'click': 'manageLeftClickEvent'
             	
         },
 
@@ -88,7 +88,7 @@ define(function (require) {
          *
          * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
          */
-        manageClickEvent: function (event) {
+        manageLeftClickEvent: function (event) {
         	var nodeInstancePath = $(event.target).data("instancepath");
             if (nodeInstancePath == undefined) {
                 nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
@@ -98,7 +98,7 @@ define(function (require) {
                 
                 var node = this.dataset.valueDict[nodeInstancePath]["model"];
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
-                	GEPPETTO.Console.executeCommand("G.addWidget(Widgets.TREEVISUALISERDAT).setData(Model.neuroml." + node.getWrappedObj().getInitialValues()[0].getElements()[0].getType().getId() + ")");
+                	GEPPETTO.Console.executeCommand("G.addWidget(Widgets.TREEVISUALISERDAT).setData(" + node.getPath() + ")");
                 }
                 else{
                 	this.dataset.isDisplayed = false;
@@ -143,7 +143,7 @@ define(function (require) {
         	if (state == undefined){
         		return "Data can not be added to " + this.name + ". Data does not exist in current experiment.";
         	}
-            labelsInTV = [];
+            labelsInTV = {};
 
             if (state instanceof Array) {
                 var that = this;
@@ -199,31 +199,31 @@ define(function (require) {
                 label = data.getName();
             }
             
-            while (true) {
-                if (labelsInTV.indexOf(label) >= 0) {
-                    label = label + " ";
-                }
-                else {
-                    labelsInTV.push(label);
-                    break;
-                }
-            }
-
+            var children = data.getChildren();
+            var _children = data.getHiddenChildren();
 
             if (!this.dataset.isDisplayed) {
 
-                var children = data.getChildren();
-                var _children = data.getHiddenChildren();
+            	while (true) {
+                    if (label in labelsInTV) {
+                        label = label + " ";
+                    }
+                    else {
+                        labelsInTV[data.getPath()] = label;
+                        break;
+                    }
+                }
+            	
                 if (children.length > 0 || _children.length > 0) {
-                	this.dataset.valueDict[data.getId()] = new function () {};
-                	this.dataset.valueDict[data.getId()]["folder"] = parent.addFolder(label);
+                	this.dataset.valueDict[data.getPath()] = new function () {};
+                	this.dataset.valueDict[data.getPath()]["folder"] = parent.addFolder(labelsInTV[data.getPath()]);
                 	
                     //Add class to dom element depending on node metatype
-                    $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").addClass(data.getStyle());
+                    $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
-                    $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").data("instancepath", data.getId());
+                    $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").data("instancepath", data.getPath());
 
-                    var parentFolderTmp = this.dataset.valueDict[data.getId()]["folder"];
+                    var parentFolderTmp = this.dataset.valueDict[data.getPath()]["folder"];
                     for (var childIndex in children) {
                         if (!this.dataset.isDisplayed || (this.dataset.isDisplayed && children[childIndex].name != "ModelTree")) {
                             this.prepareTree(parentFolderTmp, children[childIndex], step);
@@ -231,59 +231,65 @@ define(function (require) {
                     }
                     
                     if (data.getBackgroundColors().length > 0){
-                    	$(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").append($('<a id="backgroundSections">').css({"z-index":1, "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
+                    	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").append($('<a id="backgroundSections">').css({"z-index":1, "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
 	                    for (var index in data.getBackgroundColors()){
 	                    	 var color = data.getBackgroundColors()[index].replace("0X","#");
-	                    	 $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").find('#backgroundSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "background-color": color, "height": "90%"}).html("&nbsp"));
+	                    	 $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").find('#backgroundSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "background-color": color, "height": "90%"}).html("&nbsp"));
 	                    }
                     }
                     
                     if (data.getValue().length > 0){
-                    	$(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").css({"position": "relative"});
-                    	$(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").append($('<a id="contentSections">').css({"z-index":2, "text-align": "center", "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
+                    	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").css({"position": "relative"});
+                    	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").append($('<a id="contentSections">').css({"z-index":2, "text-align": "center", "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
 	                    for (var index in data.getValue()){
-	                    	 $(this.dataset.valueDict[data.getId()]["folder"].domElement).find("li").find('#contentSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "height": "90%"}).html(data.getValue()[index]));
+	                    	 $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").find('#contentSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "height": "90%"}).html(data.getValue()[index]));
 	                    }
                     }
                     
-                    if (this.options.expandNodes){
-                    	parent.open();
-					}
                 }
                 else {
-                	this.dataset.valueDict[data.getId()] = new function () {};
-                	this.dataset.valueDict[data.getId()][label] = data.getValue();
-                	this.dataset.valueDict[data.getId()]["controller"] = parent.add(this.dataset.valueDict[data.getId()], label).listen();
+                	this.dataset.valueDict[data.getPath()] = new function () {};
+                	this.dataset.valueDict[data.getPath()][labelsInTV[data.getPath()]] = data.getValue();
+                	this.dataset.valueDict[data.getPath()]["controller"] = parent.add(this.dataset.valueDict[data.getPath()], labelsInTV[data.getPath()]).listen();
 
                     //Add class to dom element depending on node metatype
-                    $(this.dataset.valueDict[data.getId()]["controller"].__li).addClass(data.getStyle());
+                    $(this.dataset.valueDict[data.getPath()]["controller"].__li).addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
-                    $(this.dataset.valueDict[data.getId()]["controller"].__li).data("instancepath", data.getId());
+                    $(this.dataset.valueDict[data.getPath()]["controller"].__li).data("instancepath", data.getPath());
                     
                     // Execute set value if it is a parameter specification
                     if(data.getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE)
 					{
-						$(dataset.valueDict[data.getId()]["controller"].__li).find('div > div > input[type="text"]').change(function(){
-							GEPPETTO.Console.executeCommand(data.getId() + ".setValue(" + $(this).val().split(" ")[0] + ")");
+						$(dataset.valueDict[data.getPath()]["controller"].__li).find('div > div > input[type="text"]').change(function(){
+							GEPPETTO.Console.executeCommand(data.getPath() + ".setValue(" + $(this).val().split(" ")[0] + ")");
 						});
 					}
                     
                     
                     if (data.getBackgroundColors().length > 0){
 	                    var color = data.getBackgroundColors()[0].replace("0X","#");
-	                    $(this.dataset.valueDict[data.getId()]["controller"].__li).find(".c").css({"background-color": color, "height": "90%"});
+	                    $(this.dataset.valueDict[data.getPath()]["controller"].__li).find(".c").css({"background-color": color, "height": "90%"});
                     }
-                    
-
                     
                     
                 }
-                this.dataset.valueDict[data.getId()]["model"] = data;
+                
+                if (this.options.expandNodes){
+                	parent.open();
+				}
+                this.dataset.valueDict[data.getPath()]["model"] = data;
             }
             else {
-                var set = this.dataset.valueDict[data.getId()]["controller"].__gui;
-                if (!set.__ul.closed) {
-                	this.dataset.valueDict[data.getId()][label] = data.getValue();
+                if (children.length > 0 || _children.length > 0) {
+                	for (var childIndex in children){
+						this.prepareTree(parent, children[childIndex],step);
+					}
+                }
+                else if (data.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE){
+                	var set = this.dataset.valueDict[data.getPath()]["controller"].__gui;
+	                if (!set.__ul.closed) {
+	                	this.dataset.valueDict[data.getPath()][labelsInTV[data.getPath()]] = this.treeVisualiserController.getFormattedValue(data.getWrappedObj(), data.getWrappedObj().get("capabilities")[0], step);
+	                }
                 }
             }
         },

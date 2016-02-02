@@ -101,11 +101,11 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             },
 
             /**
-             * Get instance path
+             * Get path
              *
-             * @command Instance.getInstancePath()
+             * @command Type.getPath()
              *
-             * @returns {String} - Instance path
+             * @returns {String} - path
              *
              */
             getPath: function () {

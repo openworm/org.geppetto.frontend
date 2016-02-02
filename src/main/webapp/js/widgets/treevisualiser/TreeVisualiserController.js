@@ -198,7 +198,8 @@ define(function (require) {
 	                    		var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
 	                                name: tag,
 	                                id: tag,
-	                                _metaType: ""
+	                                _metaType: "",
+	                                path: visualGroup.getPath() + "." + tag
 	                            });
 	                    		//AQP: style?
 	                    		tagsNode[tag] = this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, _children: []});
@@ -240,7 +241,7 @@ define(function (require) {
                                 }
                             }
 
-                            var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({name: "Number of Connections", id: "numberConnections", _metaType: ""});
+                            var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({name: "Number of Connections", id: "numberConnections", _metaType: "", path: node.getType().getPath() + ".numberConnections"});
                             projectionsChildrenNode.push(this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: numConnections, style:this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
                             return this.createTreeVisualiserNode({wrappedObj: node.getType(), _children: projectionsChildrenNode, style:this.getStyle(node.getType().getMetaType())});
@@ -270,8 +271,7 @@ define(function (require) {
 
             createTreeVisualiserNodeChildren: function (state) {
                 var children = [];
-                if (state.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || state.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE
-                		|| state.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
+                if (state.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || state.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE || state.getMetaType() == GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
                     for (var i = 0; i < state.getChildren().length; i++) {
                         var child = state.getChildren()[i];
                         var node = this.convertNodeToTreeVisualiserNode(child);
@@ -282,13 +282,31 @@ define(function (require) {
                 else if (state.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
                 	children = this.createVisualisationSubTree(state);
                 }
+                else if (state.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
+                	for (var i = 0; i < state.getChildren().length; i++) {
+                		var child = state.getChildren()[i];
+                		
+                		var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
+                            "name": i,
+                            "id": i,
+                            "_metaType": "",
+                            "path": state.getPath + "." + i
+                        });
+                		
+                        var node = this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE), _children: this.createTreeVisualiserNodeChildren(child)});
+                        if (node != undefined)
+                            children.push(node);
+                    }
+                }
                 else if (state.getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
 
+                	
                     // Size
                     var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
                         "name": "Size",
                         "id": "size",
-                        "_metaType": ""
+                        "_metaType": "",
+                        "path": state.getPath() + ".size"
                     });
                     children.push(this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: state.getSize(), style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 

@@ -47,6 +47,7 @@ define(function (require) {
         name: "",
         _metaType: "",
         value: "",
+        path: "",
 
         /**
          * Initializes this node with passed attributes
@@ -60,6 +61,7 @@ define(function (require) {
             this.set({"name": options.name});
             this.set({"_metaType": options._metaType});
             this.set({"value": options.value});
+            this.set({"path": options.path});
         },
 
         /**
@@ -120,6 +122,10 @@ define(function (require) {
             var values = [];
             values.push({value: {value: this.get('value')}});
             return values;
+        },
+        
+        getPath: function(){
+        	return this.get('path');
         }
     });
 });

@@ -43,6 +43,8 @@ define(function (require) {
     return {
         TreeVisualiser: Widget.View.extend({
 
+        	treeVisualiserController: null,
+        	
             initialize: function (options) {
                 Widget.View.prototype.initialize.call(this, options);
 
@@ -50,6 +52,7 @@ define(function (require) {
                 this.visible = options.visible;
                 this.render();
                 this.setSize(options.width, options.height);
+                
             },
 
             setData: function (state, options, dataset) {
@@ -59,8 +62,8 @@ define(function (require) {
                 }
 
                 if (state != null) {
-                	var tvc = new TreeVisualiserController(this.options); 
-                    return tvc.convertNodeToTreeVisualiserNode(state);
+                	this.treeVisualiserController = new TreeVisualiserController(this.options);
+                    return this.treeVisualiserController.convertNodeToTreeVisualiserNode(state);
                 }
                 return null;
             },

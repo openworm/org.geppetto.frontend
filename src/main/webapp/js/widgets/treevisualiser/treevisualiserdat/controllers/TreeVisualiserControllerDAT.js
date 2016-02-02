@@ -112,13 +112,12 @@ define(function (require) {
             }
             // update treevisualiser widgets
             else if (event == Events.Experiment_update) {
-                var step = parameters.steps;
                 // loop through all existing widgets
                 for (var i = 0; i < treeVisualisersDAT.length; i++) {
                     var treeVisualiserDAT = treeVisualisersDAT[i];
 
                     // update treevisualiser with new data set
-                    treeVisualiserDAT.updateData(step);
+                    treeVisualiserDAT.updateData(parameters.step);
                 }
             }
             // update treevisualiser widgets

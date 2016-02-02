@@ -41,14 +41,8 @@ define(function (require) {
 
     var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
     var $ = require('jquery');
-
+    
     return TreeVisualiser.TreeVisualiser.extend({
-
-        defaultTreeVisualiserOptions: {
-            width: "auto",
-            autoPlace: false,
-            expandNodes: false
-        },
 
         /**
          * Initializes the TreeVisualiserDAT given a set of options
@@ -58,7 +52,8 @@ define(function (require) {
         initialize: function (options) {
             TreeVisualiser.TreeVisualiser.prototype.initialize.call(this, options);
 
-            this.options = this.defaultTreeVisualiserOptions;
+            // Initialise default options
+            this.options = { width: "auto", autoPlace: false, expandNodes: false};
 
             //This function allows to access a node by its data attribute (this function is required is the data property has been added by jquery)
             $.fn.filterByData = function (prop, val) {
@@ -145,6 +140,7 @@ define(function (require) {
         	}
             labelsInTV = {};
 
+            // If data is an array, let's iterate and call setdata
             if (state instanceof Array) {
                 var that = this;
                 $.each(state, function (d) {
@@ -152,8 +148,20 @@ define(function (require) {
                 });
             }
             
+            //Call setData for parent class (TreeVisualiser)
             var currentDataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
-            this.dataset.data.push(currentDataset);
+            
+            //Initialise nodes
+            this.initialiseGUIElements(currentDataset);
+
+            return this;
+        },
+        
+        initialiseGUIElements: function(currentDataset){
+        	//Add to data variable
+        	this.dataset.data.push(currentDataset);
+        	
+        	//Generate DAT nodes
             this.dataset.isDisplayed = false;
             this.prepareTree(this.gui, currentDataset, 0);
             this.dataset.isDisplayed = true;
@@ -162,7 +170,7 @@ define(function (require) {
             $(this.dialog).find("input").prop('disabled', true);
             $(this.dialog).find(".parameterspecificationnodetv input").prop('disabled', false);
 
-            //Change input text to textarea
+            //Change input text to textarea if text is too big
             var testingSizeElement = $('<div></div>').css({
                 'position': 'absolute',
                 'float': 'left',
@@ -178,11 +186,8 @@ define(function (require) {
                     $(this).replaceWith(textarea);
                 }
             });
-
-            //return "Metadata or variables to display added to tree visualiser";
-            return this;
         },
-
+        
         /**
          * Prepares the tree for painting it on the widget
          *
@@ -204,6 +209,7 @@ define(function (require) {
 
             if (!this.dataset.isDisplayed) {
 
+            	//Ugly hack: DAT doesn't allow nodes with the same name
             	while (true) {
                     if (label in labelsInTV) {
                         label = label + " ";
@@ -304,36 +310,6 @@ define(function (require) {
         },
 
         /**
-         * Expands or collapses node folder (and all the parent folder until the root node) in the widgets
-         *
-         * @param {Node} node - Geppetto Node which identifies the folder to be expanded/collapsed.
-         * @param {Boolean} expandEndNode - If true only final node is expanded/collapsed. Otherwise the whole path is expanded/collapsed
-         */
-        toggleFolder: function (node, expandEndNode) {
-            var instancePath = node.getInstancePath();
-            if (expandEndNode) {
-                this.getFolderByInstancePath(instancePath).trigger('click');
-            }
-            else {
-                var nodePathElements = instancePath.split(".");
-                var parentComponent = "";
-                for (var nodePathElementsIndex in nodePathElements) {
-                    this.getFolderByInstancePath(parentComponent + nodePathElements[nodePathElementsIndex]).trigger('click');
-                    parentComponent += nodePathElements[nodePathElementsIndex] + ".";
-                }
-            }
-        },
-
-        /**
-         * Returns li element which corresponds to the instance path
-         *
-         * @param {String} instancePath - Node instance path
-         */
-        getFolderByInstancePath: function (instancePath) {
-            return $(this.dialog).find('li').filterByData('instancepath', instancePath);
-        },
-
-        /**
          * Clear Widget
          */
         reset: function () {
@@ -346,13 +322,16 @@ define(function (require) {
          * Refresh data in tree visualiser
          */
         refresh: function () {
-            var currentDatasets = this.dataset;
+            var currentDatasets = this.dataset.data;
             this.reset();
             for (var i = 0; i < currentDatasets.length; i++){
-        		this.prepareTree(this.gui, currentDatasets.data[i], step);
+            	this.initialiseGUIElements(currentDatasets[i]);
         	}
         },
 
+        /**
+         * Initialising GUI with default values
+         */
         initDATGUI: function () {
             this.gui = new dat.GUI({
                 width: this.options.width,

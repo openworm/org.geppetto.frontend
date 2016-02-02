@@ -123,9 +123,13 @@ define(function (require) {
         },
 
 
-        show: function (mode) {
+        show: function (mode, instances) {
             var message;
             var elements = this.getVisualGroupElements();
+
+            if(instances==undefined){
+                throw("Applying visual groups for a type is not supported yet.");
+            }
 
             if (mode) {
                 message = GEPPETTO.Resources.SHOWING_VISUAL_GROUPS + this.id;
@@ -135,7 +139,7 @@ define(function (require) {
             }
 
             if (elements.length > 0) {
-                this.showAllVisualGroupElements(elements, mode);
+                this.showAllVisualGroupElements(elements, mode, instances);
             } else {
                 message = GEPPETTO.Resources.NO_VISUAL_GROUP_ELEMENTS;
             }
@@ -143,7 +147,7 @@ define(function (require) {
             return message;
         },
 
-        showAllVisualGroupElements: function (elements, mode) {
+        showAllVisualGroupElements: function (elements, mode, instances) {
             var groups = {};
             var allElements = [];
 
@@ -175,7 +179,7 @@ define(function (require) {
                 groups[elements[el].getId()].color = color;
             }
 
-            GEPPETTO.SceneController.showVisualGroups(groups, mode);
+            GEPPETTO.SceneController.showVisualGroups(groups, mode, instances);
         },
 
         getMinDensity: function () {

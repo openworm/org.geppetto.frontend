@@ -46,14 +46,19 @@ define(['jquery'], function (require) {
         /**
          * Get VisualGroups
          */
-        getVisualGroups: function(){
+        getVisualGroups: function () {
             return this.visualGroups;
+        },
+
+
+        applyVisualGroup: function (visualGroup, mode) {
+            visualGroup.show(mode, [this]);
         },
 
         /**
          * Get VisualGroups
          */
-        setVisualGroups: function(visualGroups){
+        setVisualGroups: function (visualGroups) {
             this.visualGroups = visualGroups;
         },
     }

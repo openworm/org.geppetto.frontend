@@ -485,15 +485,6 @@ define(function (require) {
         },
 
         /**
-         * Gets 3D object node from Visualization tree by feeding it the
-         * instance path of the 3D object as search key.
-         */
-        get3DObjectInVisualizationTree: function (visualizationTree, objectPath) {
-            var object = Instances.getInstance(objectPath);
-            return object;
-        },
-
-        /**
          * @param x
          * @param y
          */

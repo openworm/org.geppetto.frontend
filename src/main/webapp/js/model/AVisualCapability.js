@@ -390,6 +390,20 @@ define(['jquery'], function (require) {
             else {
                 GEPPETTO.SceneController.removeAllConnectionLines(this);
             }
-        }
+        },
+
+        getVisualType: function () {
+            var visualType = null;
+            if ((this.getVariable().getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)
+                || (this.getVariable().getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE)) {
+                visualType = this.getVariable().getType();
+            } else if (this.getVariable().getType().getVisualType() != undefined) {
+                visualType = this.getVariable().getType().getVisualType();
+            } else if ((this.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE) && (this.getVariable().getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE)
+                && (this.getVariable().getType().getType().getVisualType() != undefined)) {
+                visualType = this.getVariable().getType().getType().getVisualType();
+            }
+            return visualType;
+        },
     }
 });

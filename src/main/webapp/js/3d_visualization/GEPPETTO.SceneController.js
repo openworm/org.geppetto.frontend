@@ -77,6 +77,7 @@ define(function (require) {
                 }
             },
 
+
             /**
              * This method calculates the complexity of the scene based on the number of cylinders Note that this method doesn't currently take into account complexity coming from particles or
              * Collada/OBJ meshes
@@ -677,7 +678,7 @@ define(function (require) {
 
                     }
 
-                    var material =  new THREE.LineDashedMaterial( { dashSize: 3, gapSize: 1, linewidth: thickness });
+                    var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1, linewidth: thickness});
                     material.color.setHex(colour);
 
                     var line = new THREE.LineSegments(geometry, material);
@@ -801,7 +802,10 @@ define(function (require) {
              * @param {object}
              *            groups - The groups that we need to split mesh into
              */
-            splitGroups: function (instancePath, visualizationTree, groups) {
+            splitGroups: function (instance, groups) {
+
+                var instancePath = instance.getInstancePath();
+
                 // retrieve the merged mesh
                 var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
                 // create object to hold geometries used for merging objects in
@@ -837,21 +841,30 @@ define(function (require) {
                 for (var v in map) {
                     if (v != undefined) {
                         var m = GEPPETTO.getVARS().visualModelMap[map[v]];
-                        // get object from visualizationtree by using the object's
-                        // instance path as search key
-                        var object = GEPPETTO.get3DObjectInVisualizationTree(visualizationTree, map[v]);
+
+                        var visualType = instance.getVisualType();
+                        var object = null;
+
+                        for (var i = 0; i < visualType.getChildren().length; i++) {
+                            var child = visualType.getChildren()[i];
+                            //TODO Matteo: I don't like this...
+                            if (instancePath + "." + child.getId() == map[v]) {
+                                object = child;
+                                break;
+                            }
+                        }
 
                         // If it is a segment compare to the id otherwise check in the visual groups
-                        if (object.id in groups) {
+                        if (object.getId() in groups) {
                             // true means don't add to mesh with non-groups visual objects
-                            added = GEPPETTO.SceneController.addMeshToGeometryGroup(instancePath, object.id, geometryGroups, m)
+                            added = GEPPETTO.SceneController.addMeshToGeometryGroup(instance, object.getId(), geometryGroups, m)
                         } else {
                             // get group elements list for object
                             var objectsGroups = object.groups;
                             for (var g in objectsGroups) {
                                 if (objectsGroups[g] in groups) {
                                     // true means don't add to mesh with non-groups visual objects
-                                    added = GEPPETTO.SceneController.addMeshToGeometryGroup(instancePath, objectsGroups[g], geometryGroups, m)
+                                    added = GEPPETTO.SceneController.addMeshToGeometryGroup(instance, objectsGroups[g], geometryGroups, m)
                                 }
                             }
                         }
@@ -873,8 +886,7 @@ define(function (require) {
                     }
                 }
 
-                groups[instancePath] =
-                {};
+                groups[instancePath] = {};
                 groups[instancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
                 GEPPETTO.SceneController.createGroupMeshes(instancePath, geometryGroups, groups);
             }
@@ -981,25 +993,28 @@ define(function (require) {
             /**
              * Shows a visual group
              */
-            showVisualGroups: function (instance, visualGroups, mode) {
+            showVisualGroups: function (visualGroups, mode, instances) {
+                for (var i = 0; i < instances.length; i++) {
+                    var instance = instances[i];
+                    var instancePath = instance.getInstancePath();
+                    GEPPETTO.SceneController.merge(instancePath);
+                    if (mode) {
+                        GEPPETTO.SceneController.splitGroups(instance, visualGroups);
+                        for (g in visualGroups) {
+                            // retrieve visual group object
+                            var visualGroup = visualGroups[g];
 
-                GEPPETTO.SceneController.merge(aspectPath);
-                if (mode) {
-                    GEPPETTO.SceneController.splitGroups(instance, visualizationTree, visualGroups);
-                    for (g in visualGroups) {
-                        // retrieve visual group object
-                        var visualGroup = visualGroups[g];
+                            // get full group name to access group mesh
+                            var groupName = g;
+                            if (groupName.indexOf(instancePath) <= -1) {
+                                groupName = instancePath + "." + g;
+                            }
 
-                        // get full group name to access group mesh
-                        var groupName = g;
-                        if (groupName.indexOf(aspectPath) <= -1) {
-                            groupName = aspectPath + "." + g;
+                            // get group mesh
+                            var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
+                            groupMesh.visible = true;
+                            GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
                         }
-
-                        // get group mesh
-                        var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
-                        groupMesh.visible = true;
-                        GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
                     }
                 }
             }

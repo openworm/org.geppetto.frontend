@@ -210,15 +210,18 @@ define(function (require) {
             if (!this.dataset.isDisplayed) {
 
             	//Ugly hack: DAT doesn't allow nodes with the same name
-            	while (true) {
-                    if (label in labelsInTV) {
-                        label = label + " ";
-                    }
-                    else {
-                        labelsInTV[data.getPath()] = label;
-                        break;
-                    }
+            	var isDuplicated = true;
+            	while (isDuplicated) {
+            		isDuplicated = false;
+            		for (var key in labelsInTV){
+            			if (labelsInTV[key] == label){
+            				label = label + " ";
+            				isDuplicated = true;
+            				break;
+            			}
+            		}
                 }
+            	labelsInTV[data.getPath()] = label;
             	
                 if (children.length > 0 || _children.length > 0) {
                 	this.dataset.valueDict[data.getPath()] = new function () {};

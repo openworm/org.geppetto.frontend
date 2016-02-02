@@ -167,12 +167,12 @@ define(function (require) {
              */
             ghostEffect: function (meshes, apply) {
                 for (var v in meshes) {
-                    var child = meshes[v];
-                    if (child.visible) {
-                        if (apply && (!child.ghosted) && (!child.selected)) {
-                            if (child instanceof THREE.Object3D) {
-                                child.ghosted = true;
-                                child.traverse(function (object) {
+                    var mesh = meshes[v];
+                    if (mesh.visible) {
+                        if (apply && (!mesh.ghosted) && (!mesh.selected)) {
+                            if (mesh instanceof THREE.Object3D) {
+                                mesh.ghosted = true;
+                                mesh.traverse(function (object) {
                                     if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
                                         if (object.visible) {
                                             object.ghosted = true;
@@ -182,14 +182,14 @@ define(function (require) {
                                     }
                                 });
                             } else {
-                                child.ghosted = true;
-                                child.material.transparent = true;
-                                child.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+                                mesh.ghosted = true;
+                                mesh.material.transparent = true;
+                                mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
                             }
-                        } else if ((!apply) && (child.ghosted)) {
-                            if (child instanceof THREE.Object3D) {
-                                child.ghosted = false;
-                                child.traverse(function (object) {
+                        } else if ((!apply) && (mesh.ghosted)) {
+                            if (mesh instanceof THREE.Object3D) {
+                                mesh.ghosted = false;
+                                mesh.traverse(function (object) {
                                     if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
                                         if (object.visible) {
                                             object.ghosted = false;
@@ -201,16 +201,16 @@ define(function (require) {
                                     }
                                 });
                             } else {
-                                child.ghosted = false;
-                                child.material.opacity = child.material.defaultOpacity;
-                                if (child.material.opacity == 1) {
-                                    child.material.transparent = false;
+                                mesh.ghosted = false;
+                                mesh.material.opacity = mesh.material.defaultOpacity;
+                                if (mesh.material.opacity == 1) {
+                                    mesh.material.transparent = false;
                                 }
                             }
                         }
                     }
-                    child.output = false;
-                    child.input = false;
+                    mesh.output = false;
+                    mesh.input = false;
                 }
             },
 

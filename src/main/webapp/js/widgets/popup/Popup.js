@@ -125,6 +125,28 @@ define(function (require) {
         },
 
         /**
+         * Sets the message that is displayed inside the widget through an instance of type Text
+         *
+         * @command setText(textInstance)
+         * @param {String} textInstance - An instance of type Text
+         */
+        setText: function(textInstance){
+            return this.setMessage(textInstance.getVariable().getInitialValues()[0].value.text);
+        },
+
+        /**
+         * Sets the message that is displayed inside the widget through an instance of type HTML
+         *
+         * @command setHTML(htmlInstance)
+         * @param {String} htmlInstance - An instance of type HTML
+         */
+        setHTML:function(htmlInstance){
+            return this.setMessage(htmlInstance.getVariable().getInitialValues()[0].value.html);
+        },
+
+
+
+        /**
          * Sets a custom handler for a given event for nodes that point to nodes via instancePAth attribute on HTML anchors.
          *
          * @command addCustomNodeHandler(funct, eventType)

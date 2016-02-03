@@ -335,6 +335,7 @@ define(function (require) {
                 var processed = action.split("$instance$").join(instance.getInstancePath());
                 processed = processed.split("$type$").join(instance.getType().getPath());
                 processed = processed.split("$typeid$").join(instance.getType().getId());
+                processed = processed.split("$variableid$").join(instance.getVariable().getId());
                 return processed;
             },
 
@@ -469,6 +470,26 @@ define(function (require) {
                         "icon": "fa-puzzle-piece",
                         "label": "Explore type",
                         "tooltip": "Explore type"
+                    }
+                },
+                "TextType": {
+                    "type": {
+                        "actions": [
+                            "G.addWidget(1).setText($instance$).setName('$variableid$')",
+                        ],
+                        "icon": "fa-eye",
+                        "label": "View text",
+                        "tooltip": "View text"
+                    }
+                },
+                "HTMLType": {
+                    "type": {
+                        "actions": [
+                            "G.addWidget(1).setHTML($instance$).setName('$variableid$')",
+                        ],
+                        "icon": "fa-eye",
+                        "label": "View HTML",
+                        "tooltip": "View HTML"
                     }
                 },
                 "VisualCapability": {

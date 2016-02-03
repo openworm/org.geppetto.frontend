@@ -695,14 +695,34 @@ define(function (require) {
             }
             ,
 
-            removeAllConnectionLines: function () {
-                var lines = GEPPETTO.getVARS().connectionLines;
-                for (var key in lines) {
-                    if (lines.hasOwnProperty(key)) {
-                        GEPPETTO.getVARS().scene.remove(lines[key]);
+            /**
+             * Removes connection lines, all if nothing is passed in or just the ones passed in.
+             *
+             * @param connections - optional, connection to remove
+             */
+            removeConnectionLines: function (instance) {
+                if(instance != undefined){
+                    var connections = instance.getConnections();
+                    // get connections for given instance and remove only those
+                    var lines = GEPPETTO.getVARS().connectionLines;
+                    for(var i=0; i<connections.length; i++){
+                        if (lines.hasOwnProperty(connections[i].getInstancePath())) {
+                            // remove the connection line from the scene
+                            GEPPETTO.getVARS().scene.remove(lines[connections[i].getInstancePath()]);
+                            // remove the conneciton line from the GEPPETTO list of connection lines
+                            delete lines[connections[i].getInstancePath()];
+                        }
                     }
+                } else {
+                    // remove all connection lines
+                    var lines = GEPPETTO.getVARS().connectionLines;
+                    for (var key in lines) {
+                        if (lines.hasOwnProperty(key)) {
+                            GEPPETTO.getVARS().scene.remove(lines[key]);
+                        }
+                    }
+                    GEPPETTO.getVARS().connectionLines = [];
                 }
-                GEPPETTO.getVARS().connectionLines = [];
             }
 
             ,

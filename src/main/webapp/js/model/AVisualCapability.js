@@ -191,10 +191,8 @@ define(['jquery'], function (require) {
                     GEPPETTO.SceneController.setGhostEffect(true);
                 }
 
-
+                // set selection flag local to the instance and add to geppetto selection list
                 this.selected = true;
-                // TODO: investigate why is the parent being set to selected too?
-                this.getParent().selected = true;
                 GEPPETTO.SceneController.selectInstance(this.getInstancePath());
                 message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
 
@@ -279,9 +277,21 @@ define(['jquery'], function (require) {
                     this.showConnectionLines(false);
                 }
 
+                // TODO: trigger highlight on the ones still selected
+
                 // NOTE: do this down here, ghost effect won't be removed if stuff is still highlighted
                 if (G.getSelectionOptions().unselected_transparent) {
-                    GEPPETTO.SceneController.setGhostEffect(false);
+                    if(G.getSelection() != undefined && G.getSelection().length > 0){
+                        // else (there is something selected) make this ghosted
+                        var mesh = {};
+                        mesh[this.getInstancePath()] = GEPPETTO.getVARS().meshes[this.getInstancePath()];
+                        if(mesh[this.getInstancePath()] != undefined) {
+                            GEPPETTO.SceneController.ghostEffect(mesh, true);
+                        }
+                    } else {
+                        // if nothing else is selected do remove ghost effect
+                        GEPPETTO.SceneController.setGhostEffect(false);
+                    }
                 }
 
                 //trigger event that selection has been changed
@@ -385,7 +395,7 @@ define(['jquery'], function (require) {
                 GEPPETTO.SceneController.showConnectionLines(this);
             }
             else {
-                GEPPETTO.SceneController.removeAllConnectionLines(this);
+                GEPPETTO.SceneController.removeConnectionLines(this);
             }
         },
 

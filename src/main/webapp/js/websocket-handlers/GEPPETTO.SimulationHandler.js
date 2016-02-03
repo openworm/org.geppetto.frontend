@@ -86,13 +86,11 @@ define(function (require) {
         };
 
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function (payload) {
-
             GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
         };
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function (payload) {
             GEPPETTO.SimulationHandler.loadExperiment(payload);
-
 
             GEPPETTO.trigger(Events.Experiment_loaded);
 

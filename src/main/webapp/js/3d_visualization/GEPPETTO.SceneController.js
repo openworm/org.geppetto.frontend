@@ -136,14 +136,20 @@ define(function (require) {
                 if (intensity > 1) {
                     intensity = 1;
                 }
-                var threeObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
-                if (threeObject != null) {
-                    if (threeObject instanceof THREE.Line) {
-                        threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity))
-                    } else {
-                        threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity))
-                    }
+                var threeObject;
+                if (instance in GEPPETTO.getVARS().meshes){
+                	threeObject = GEPPETTO.getVARS().meshes[instance];
                 }
+                else{
+                	threeObject = GEPPETTO.getVARS().splitMeshes[instance];
+                }
+                
+                if (threeObject instanceof THREE.Line) {
+                    threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity));
+                } else {
+                    threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity));
+                }
+                
             },
 
             /**

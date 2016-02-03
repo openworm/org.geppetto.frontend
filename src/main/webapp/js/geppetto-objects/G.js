@@ -537,13 +537,61 @@ define(function (require) {
              * @param {Instance} modulation - Variable which modulates the brightness
              * @param {Function} normalizationFunction
              */
-            addBrightnessFunction: function (instance, modulation, normalizationFunction) {
-                this.addOnNodeUpdatedCallback(modulation, function (modulation, step) {
-                    GEPPETTO.SceneController.lightUpEntity(instance,
-                        normalizationFunction ? normalizationFunction(modulation.getTimeSeries()[step]) : modulation.getTimeSeries()[step]);
-                });
+            addBrightnessFunction: function (instance, stateVariableInstances, normalizationFunction) {
+            	this.addBrightnessFunctionBulk(instance.getParent(), [instance.getId()], [stateVariableInstances], normalizationFunction);
+            },
+            
+            /**
+             * Modulates the brightness of an aspect visualization, given a watched node
+             * and a normalization function. The normalization function should receive
+             * the value of the watched node and output a number between 0 and 1,
+             * corresponding to min and max brightness. If no normalization function is
+             * specified, then brightness = value
+             *
+             * @param {Instance} instance - The instance to be lit
+             * @param {Instance} modulation - Variable which modulates the brightness
+             * @param {Function} normalizationFunction
+             */
+            addBrightnessFunctionBulkSimplified: function (instances, normalizationFunction) {
+            	var instance = instances[0].getParent().getParent();
+            	var visualObjects = [];
+            	for (var voInstance in instances){
+            		visualObjects.push(instances[voInstance].getParent().getId());
+            	}
+            	
+            	this.addBrightnessFunctionBulk(instance, visualObjects, instances, normalizationFunction);
             },
 
+            /**
+             * Modulates the brightness of an aspect visualization, given a watched node
+             * and a normalization function. The normalization function should receive
+             * the value of the watched node and output a number between 0 and 1,
+             * corresponding to min and max brightness. If no normalization function is
+             * specified, then brightness = value
+             *
+             * @param {Instance} instance - The instance to be lit
+             * @param {Instance} modulation - Variable which modulates the brightness
+             * @param {Function} normalizationFunction
+             */
+            addBrightnessFunctionBulk: function (instance, visualObjects, stateVariableInstances, normalizationFunction) {
+            	var modulations = [];
+            	if (visualObjects != null){
+	            	var elements = {};
+	            	for (var voIndex in visualObjects){
+	            		elements[visualObjects[voIndex]] = "";
+	            		modulations.push(instance.getInstancePath() + "." + visualObjects[voIndex]);
+	            	}
+	            	GEPPETTO.SceneController.splitGroups(instance, elements);
+            	}
+            	
+            	for (var index in modulations){
+	                this.addOnNodeUpdatedCallback(stateVariableInstances[index], function (stateVariableInstance, step) {
+	                    GEPPETTO.SceneController.lightUpEntity(modulations[index],
+	                        normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+	                });
+            	}
+            },
+            
             clearBrightnessFunctions: function (varnode) {
                 this.clearOnNodeUpdateCallback(varnode);
             },

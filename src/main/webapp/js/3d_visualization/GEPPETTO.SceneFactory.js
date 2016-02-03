@@ -136,7 +136,7 @@ define(function (require) {
                     "particle": GEPPETTO.SceneFactory.getParticleMaterial()
                 };
                 var instanceObjects = [];
-                threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, visualType, materials, lines);
+                var threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, visualType, materials, lines);
 
                 // only merge if there are more than one object
                 if (threeDeeObjList.length > 1) {
@@ -223,7 +223,7 @@ define(function (require) {
                 });
 
                 if (mergedLines === undefined) {
-                    // There are no line gemeotries, we just create a mesh for the merge of the solid geometries
+                    // There are no line geometries, we just create a mesh for the merge of the solid geometries
                     // and apply the mesh material
                     ret = new THREE.Mesh(mergedMeshes, materials["mesh"]);
                 } else {

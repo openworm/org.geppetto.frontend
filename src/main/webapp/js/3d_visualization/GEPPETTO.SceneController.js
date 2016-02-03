@@ -830,8 +830,8 @@ define(function (require) {
                 geometryGroups[instancePath] = new THREE.Geometry();
 
                 // create map of geometry groups for groups
-                for (var i=0;i<groupElements.length;i++) {
-                    var groupName = instancePath + "." + groupElements[i];
+                for (var groupElement in groupElements) {
+                    var groupName = instancePath + "." + groupElement;
 
                     var geometry = new THREE.Geometry();
                     geometry.groupMerge = true;
@@ -847,21 +847,13 @@ define(function (require) {
                 var added = false;
                 // loop through individual meshes, add them to group, set new
                 // material to them
+
                 for (var v in map) {
                     if (v != undefined) {
                         var m = GEPPETTO.getVARS().visualModelMap[map[v]];
-
-                        var visualType = instance.getVisualType();
-                        var object = null;
-
-                        for (var i = 0; i < visualType.getChildren().length; i++) {
-                            var child = visualType.getChildren()[i];
-                            //TODO Matteo: I don't like this...
-                            if (instancePath + "." + child.getId() == map[v]) {
-                                object = child;
-                                break;
-                            }
-                        }
+                        
+                        eval(map[v].substring(0,map[v].lastIndexOf(".")));
+                        var object = instance.getVisualType()[map[v].replace(instancePath+".","")];
 
                         // If it is a segment compare to the id otherwise check in the visual groups
                         if (object.getId() in groupElements) {

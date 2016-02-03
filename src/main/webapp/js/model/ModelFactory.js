@@ -1259,6 +1259,7 @@ define(function (require) {
                 // geppettoModel#//@libraries.0/@types.20/@variables.5/@anonymousTypes.0/@variables.7
                 // //@libraries.1/@types.5
                 // //@tags.1/@tags.5
+                // //@libraries.0/@types.8/@visualGroups.0/@visualGroupElements.1
                 var raw = refStr.replace("geppettoModel#", "");
 
                 raw = raw.replace(/\//g, '').split('@');
@@ -1281,6 +1282,10 @@ define(function (require) {
                         reference = this.rawGeppetoModel.tags[index]
                     } else if (raw[i].indexOf('tags') > -1 && i === 2) {
                         reference = reference.tags[index];
+                    } else if (raw[i].indexOf('visualGroups') > -1) {
+                        reference = reference.getVisualGroups()[index];
+                    } else if (raw[i].indexOf('visualGroupElements') > -1) {
+                        reference = reference.getVisualGroupElements()[index];
                     }
                 }
 

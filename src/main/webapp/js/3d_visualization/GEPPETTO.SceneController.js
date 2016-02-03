@@ -698,14 +698,14 @@ define(function (require) {
             /**
              * Removes connection lines, all if nothing is passed in or just the ones passed in.
              *
-             * @param connections - optional, connection to remove
+             * @param instance - optional, instance for which we want to remove the connections
              */
             removeConnectionLines: function (instance) {
-                if(instance != undefined){
+                if (instance != undefined) {
                     var connections = instance.getConnections();
                     // get connections for given instance and remove only those
                     var lines = GEPPETTO.getVARS().connectionLines;
-                    for(var i=0; i<connections.length; i++){
+                    for (var i = 0; i < connections.length; i++) {
                         if (lines.hasOwnProperty(connections[i].getInstancePath())) {
                             // remove the connection line from the scene
                             GEPPETTO.getVARS().scene.remove(lines[connections[i].getInstancePath()]);
@@ -723,18 +723,14 @@ define(function (require) {
                     }
                     GEPPETTO.getVARS().connectionLines = [];
                 }
-            }
-
-            ,
+            },
 
             splitHighlightedMesh: function (targetObjects, aspects) {
-                var groups =
-                {};
+                var groups = {};
                 for (a in aspects) {
                     // create object to hold geometries used for merging objects
                     // in groups
-                    var geometryGroups =
-                    {};
+                    var geometryGroups = {};
 
                     var mergedMesh = GEPPETTO.getVARS().meshes[a];
 
@@ -765,17 +761,12 @@ define(function (require) {
                         }
                     }
 
-                    groups[a] =
-                    {};
+                    groups[a] = {};
                     groups[a].color = mergedMesh.material.color;
-                    groups[highlightedMesh] =
-                    {};
-                    var newGroups =
-                    {};
-                    newGroups[a] =
-                    {};
-                    newGroups[highlightedMesh] =
-                    {};
+                    groups[highlightedMesh] = {};
+                    var newGroups = {};
+                    newGroups[a] = {};
+                    newGroups[highlightedMesh] = {};
                     GEPPETTO.SceneController.createGroupMeshes(a, geometryGroups, newGroups);
                 }
                 return groups;
@@ -822,7 +813,7 @@ define(function (require) {
              * @param {object}
              *            groups - The groups that we need to split mesh into
              */
-            splitGroups: function (instance, groups) {
+            splitGroups: function (instance, groupElements) {
 
                 var instancePath = instance.getInstancePath();
 
@@ -830,8 +821,7 @@ define(function (require) {
                 var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
                 // create object to hold geometries used for merging objects in
                 // groups
-                var geometryGroups =
-                {};
+                var geometryGroups = {};
 
                 /*
                  * reset the aspect instance path group mesh, this is used to group visual objects that don't belong to any of the groups passed as parameter
@@ -840,9 +830,8 @@ define(function (require) {
                 geometryGroups[instancePath] = new THREE.Geometry();
 
                 // create map of geometry groups for groups
-                for (var g in groups) {
-                    var groupName = instancePath + "." + g;
-                    var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
+                for (var i=0;i<groupElements.length;i++) {
+                    var groupName = instancePath + "." + groupElements[i];
 
                     var geometry = new THREE.Geometry();
                     geometry.groupMerge = true;
@@ -875,16 +864,17 @@ define(function (require) {
                         }
 
                         // If it is a segment compare to the id otherwise check in the visual groups
-                        if (object.getId() in groups) {
+                        if (object.getId() in groupElements) {
                             // true means don't add to mesh with non-groups visual objects
                             added = GEPPETTO.SceneController.addMeshToGeometryGroup(instance, object.getId(), geometryGroups, m)
                         } else {
                             // get group elements list for object
-                            var objectsGroups = object.groups;
-                            for (var g in objectsGroups) {
-                                if (objectsGroups[g] in groups) {
+                            var groupElementsReference = object.getInitialValue().value.groupElements;
+                            for (var i = 0; i < groupElementsReference.length; i++) {
+                                var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
+                                if (objectGroup in groupElements) {
                                     // true means don't add to mesh with non-groups visual objects
-                                    added = GEPPETTO.SceneController.addMeshToGeometryGroup(instance, objectsGroups[g], geometryGroups, m)
+                                    added = GEPPETTO.SceneController.addMeshToGeometryGroup(instance, objectGroup, geometryGroups, m)
                                 }
                             }
                         }
@@ -906,9 +896,9 @@ define(function (require) {
                     }
                 }
 
-                groups[instancePath] = {};
-                groups[instancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
-                GEPPETTO.SceneController.createGroupMeshes(instancePath, geometryGroups, groups);
+                groupElements[instancePath] = {};
+                groupElements[instancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
+                GEPPETTO.SceneController.createGroupMeshes(instancePath, geometryGroups, groupElements);
             }
             ,
 
@@ -924,9 +914,9 @@ define(function (require) {
              * @param {object}
              *            m - current mesh
              */
-            addMeshToGeometryGroup: function (instancePath, id, geometryGroups, m) {
+            addMeshToGeometryGroup: function (instance, id, geometryGroups, m) {
                 // name of group, mix of aspect path and group name
-                var groupName = instancePath + "." + id;
+                var groupName = instance.getInstancePath() + "." + id;
                 // retrieve corresponding geometry for this group
                 var geometry = geometryGroups[groupName];
                 // only merge if flag is set to true

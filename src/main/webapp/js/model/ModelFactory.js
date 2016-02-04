@@ -1166,6 +1166,23 @@ define(function (require) {
             },
 
             /**
+             * Clean up state of instance tree
+             */
+            cleanupInstanceTreeState: function(){
+                // get state variables - clean out time series and watched status
+                var stateVariableInstances = this.getAllInstancesOf('Model.common.StateVariable');
+                for(var i=0; i<stateVariableInstances.length; i++){
+                    stateVariableInstances[i].setTimeSeries([]);
+                    stateVariableInstances[i].setWatched(false);
+                }
+                // get parameters - clean out values
+                var parameterInstances = this.getAllInstancesOf('Model.common.Parameter');
+                for(var j=0; j<parameterInstances.length; j++){
+                    parameterInstances[j].setValue(null);
+                }
+            },
+
+            /**
              * Get all instance given a type or a variable (path or actual object)
              */
             getAllInstancesOf: function (typeOrVar, instances) {

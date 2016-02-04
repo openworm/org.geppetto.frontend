@@ -58,6 +58,7 @@ define(function (require) {
                     var recordedVariable = experimentState.recordedVariables[i];
                     var instancePath = this.getInstancePathFromPointer(recordedVariable.pointer, false);
                     var instance = Instances.getInstance(instancePath);
+                    instance.setWatched(true, false);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
                         //if at least one of the varialbes has a value we consider the experiment as ready to be played
                         this.playExperimentReady = true;
@@ -133,11 +134,11 @@ define(function (require) {
                 GEPPETTO.trigger(Events.Experiment_stop);
             },
 
-            closeCurrentExperiment:function(){
-                var experiment=Project.getActiveExperiment();
-                if(experiment){
+            closeCurrentExperiment: function () {
+                var experiment = Project.getActiveExperiment();
+                if (experiment) {
                     //we clear all the listeners
-                    GEPPETTO.G.listeners=[];
+                    GEPPETTO.G.listeners = [];
                 }
 
                 // clean instance tree state
@@ -153,7 +154,7 @@ define(function (require) {
                         this.stop();
                     }
                     GEPPETTO.ExperimentsController.terminateWorker();
-                    GEPPETTO.trigger(Events.Experiment_update, {step: this.maxSteps-1});
+                    GEPPETTO.trigger(Events.Experiment_update, {step: this.maxSteps - 1});
                     GEPPETTO.trigger(Events.Experiment_stop);
                 }
                 else {

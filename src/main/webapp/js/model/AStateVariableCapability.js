@@ -117,8 +117,11 @@ define(['jquery'], function (require) {
          * @command VariableNode.setWatched()
          * @param {Boolean} watched - Object with options attributes to initialize node
          */
-        setWatched: function (isWatched) {
-            if (isWatched != this.watched) {
+        setWatched: function (isWatched, updateServer) {
+            if(updateServer==undefined){
+                updateServer=true;
+            }
+            if (updateServer && isWatched != this.watched) {
                 Project.getActiveExperiment().watchVariables([this]);
             }
             this.watched=isWatched;

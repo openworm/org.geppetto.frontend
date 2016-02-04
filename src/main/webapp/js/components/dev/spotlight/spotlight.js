@@ -121,7 +121,7 @@ define(function (require) {
             "label":"Record all membrane potentials",
             "actions": [
                 "var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'));",
-                "$.each(instances,function(index,value){value.setWatched(true);});"
+                "Project.getActiveExperiment().watchVariables(instances);"
             ],
             "icon": "fa-dot-circle-o"
         },

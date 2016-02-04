@@ -379,7 +379,7 @@ define(function (require) {
             createButtonGroup: function (bgName, bgDef, bgInstance) {
                 var that = this;
                 var instance = bgInstance;
-                s
+
                 var bg = $('<div>')
                     .addClass('btn-group')
                     .attr('role', 'group')
@@ -439,8 +439,13 @@ define(function (require) {
                 var that = this;
                 var tbar = $('<div>').addClass('spotlight-toolbar');
                 $.each(buttonGroups, function (groupName, groupDef) {
-                    if ((instance.get("capabilities").indexOf(groupName) != -1) ||
-                        (instance.getType().getMetaType() == groupName)) {
+                    var instanceToCheck=instance;
+                    if($.isArray(instance)){
+                        //asterisk was used, this is an array
+                        instanceToCheck=instance[0];
+                    }
+                    if ((instanceToCheck.get("capabilities").indexOf(groupName) != -1) ||
+                        (instanceToCheck.getType().getMetaType() == groupName)) {
                         tbar.append(that.createButtonGroup(groupName, groupDef, instance));
                     }
                 });

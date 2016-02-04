@@ -61,8 +61,13 @@ define(function (require) {
          * is created
          */
         defaultPlotOptions: {
-            yaxis: {},
+            yaxis: {
+                max:-9999999,
+                min:9999999,
+            },
             xaxis: {
+                max:-9999999,
+                min:9999999,
                 show: true,
                 font: {
                     size: 10
@@ -103,7 +108,7 @@ define(function (require) {
             this.name = options.name;
             this.visible = options.visible;
             this.datasets = [];
-            this.options = jQuery.extend({}, this.defaultPlotOptions);
+            this.options = jQuery.extend(true, {}, this.defaultPlotOptions);
             this.render();
             this.dialog.append("<div id='" + this.id + "'></div>");
             $("#" + this.id).addClass("plot");
@@ -265,10 +270,15 @@ define(function (require) {
                 }
             }
 
-            this.options.xaxis.min = Math.min.apply(null, timeTimeSeries);
-            this.options.yaxis.min = Math.min.apply(null, timeSeries) * 1.1;
-            this.options.xaxis.max = Math.max.apply(null, timeTimeSeries);
-            this.options.yaxis.max = Math.max.apply(null, timeSeries) * 1.1;
+            var localxmin = Math.min.apply(null, timeTimeSeries);
+            var localymin = Math.min.apply(null, timeSeries) * 1.1;
+            var localxmax = Math.max.apply(null, timeTimeSeries);
+            var localymax = Math.max.apply(null, timeSeries) * 1.1;
+
+            this.options.xaxis.min = Math.min(this.options.xaxis.min, localxmin);
+            this.options.yaxis.min = Math.min(this.options.yaxis.min, localymin);
+            this.options.xaxis.max = Math.max(this.options.xaxis.max, localxmax);
+            this.options.yaxis.max = Math.max(this.options.yaxis.max, localymax);
 
             return timeSeriesData;
         },
@@ -498,7 +508,7 @@ define(function (require) {
         resetPlot: function () {
             if (this.plot != null) {
                 this.datasets = [];
-                this.options = jQuery.extend({}, this.defaultPlotOptions);
+                this.options = jQuery.extend(true, {}, this.defaultPlotOptions);
                 var plotHolder = $("#" + this.id);
                 this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
@@ -513,7 +523,7 @@ define(function (require) {
          * @param {Object} options - options to modify the plot widget
          */
         setOptions: function (options) {
-            jQuery.extend(this.options, this.defaultPlotOptions, options);
+            jQuery.extend(true, this.options, this.defaultPlotOptions, options);
             if (options.xaxis && options.xaxis.max) {
                 this.limit = options.xaxis.max;
             }

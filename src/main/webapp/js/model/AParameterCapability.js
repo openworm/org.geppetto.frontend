@@ -41,6 +41,7 @@
 define(['jquery'], function (require) {
     return {
         capabilityId: 'ParameterCapability',
+        value: null,
 
         /**
          * Get the type of tree this is
@@ -72,13 +73,16 @@ define(['jquery'], function (require) {
         getValue: function () {
             // TODO: adapt to Type / Variable
 
-            var value = undefined;
-            var initialValues = this.getVariable().getWrappedObj().initialValues;
+            var value = this.value;
 
-            for (var i = 0; i < initialValues.length; i++) {
-                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
-                    // this is ugly
-                    value = initialValues[i].value.value;
+            if(value == null || value == undefined){
+                var initialValues = this.getVariable().getWrappedObj().initialValues;
+
+                for (var i = 0; i < initialValues.length; i++) {
+                    if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                        // this is ugly
+                        value = initialValues[i].value.value;
+                    }
                 }
             }
 
@@ -111,14 +115,7 @@ define(['jquery'], function (require) {
          */
         setValue: function (value) {
             // TODO: adapt to Type / Variable
-            var initialValues = this.getVariable().getWrappedObj().initialValues;
-
-            for (var i = 0; i < initialValues.length; i++) {
-                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
-                    // setting value on wrapped object... this is ugly
-                    initialValues[i].value.value = value;
-                }
-            }
+            this.value = value;
 
             // TODO: FIX below
             //Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);

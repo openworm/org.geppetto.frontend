@@ -385,12 +385,6 @@ define(function (require) {
             loadExperiment: function (payload) {
                 console.time(GEPPETTO.Resources.LOADING_EXPERIMENT);
 
-                // regenerate clean instance tree from model
-                if(window.Project.getActiveExperiment() != undefined && window.Project.getActiveExperiment() != null){
-                    window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model);
-                    this.augmentInstancesArray(window.Instances);
-                }
-
                 var message = JSON.parse(payload.experiment_loaded);
 
                 var experimentId = message.experimentId;

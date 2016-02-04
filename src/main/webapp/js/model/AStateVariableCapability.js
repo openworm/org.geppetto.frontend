@@ -79,18 +79,6 @@ define(['jquery'], function (require) {
             return this.getVariable().getWrappedObj().initialValues;
         },
 
-
-        /**
-         * Set the unit for the state variable
-         *
-         * @command VariableNode.setUnit()
-         * @returns {Object} The state variable
-         */
-        setUnit: function (unit) {
-            this.unit = unit;
-            return this;
-        },
-
         /**
          * Get the type of tree this is
          *
@@ -100,19 +88,16 @@ define(['jquery'], function (require) {
         getUnit: function () {
             // TODO: adapt to type / variable
 
-            if (!this.unit) {
-                //returns the unit associated with the initial value
-                var unit = undefined;
-                var initialValues = this.getVariable().getWrappedObj().initialValues;
+            //returns the unit associated with the initial value
+            var unit = undefined;
+            var initialValues = this.getVariable().getWrappedObj().initialValues;
 
-                for (var i = 0; i < initialValues.length; i++) {
-                    if (initialValues[i].value.eClass === 'PhysicalQuantity') {
-                        unit = initialValues[i].value.unit.unit
-                    }
+            for (var i = 0; i < initialValues.length; i++) {
+                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                    unit = initialValues[i].value.unit.unit
                 }
-                return unit;
             }
-            return this.unit;
+            return unit;
         },
 
         /**

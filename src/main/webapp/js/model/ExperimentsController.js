@@ -139,6 +139,9 @@ define(function (require) {
                     //we clear all the listeners
                     GEPPETTO.G.listeners=[];
                 }
+
+                // clean instance tree state
+                GEPPETTO.ModelFactory.cleanupInstanceTreeState();
             },
 
             triggerPlayExperiment: function (experiment) {

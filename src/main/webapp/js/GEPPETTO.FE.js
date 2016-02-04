@@ -367,6 +367,7 @@ define(function (require) {
                 $(row).find(".activeIcon").click(function () {
                     var experiment = window.Project.getExperimentById(this.attributes.experimentid.value);
                     var index = window.Project.getExperiments().indexOf(experiment);
+                    GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
                     GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
 
                     $(".activeIcon").hide();

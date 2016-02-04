@@ -42,7 +42,6 @@ define(function (require) {
         var GeppettoModel = require('model/GeppettoModel');
         var Library = require('model/Library');
         var Type = require('model/Type');
-        var VisualType = require('model/VisualType');
         var Variable = require('model/Variable');
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');
@@ -817,7 +816,7 @@ define(function (require) {
                 for (var i = 0; i < instances.length; i++) {
                     var types = instances[i].getTypes();
                     for(var j=0; j<types.length; j++){
-                        if (types[j] === type) {
+                        if (types[j] === type || types[j].getVisualType() === type) {
                             matchingInstance.push(instances[i]);
                             break;
                         }
@@ -1170,13 +1169,13 @@ define(function (require) {
              */
             cleanupInstanceTreeState: function(){
                 // get state variables - clean out time series and watched status
-                var stateVariableInstances = this.getAllInstancesOf('Model.common.StateVariable');
+                var stateVariableInstances = this.getAllInstancesOf(GEPPETTO.Resources.STATE_VARIABLE_TYPE_PATH);
                 for(var i=0; i<stateVariableInstances.length; i++){
                     stateVariableInstances[i].setTimeSeries([]);
                     stateVariableInstances[i].setWatched(false);
                 }
                 // get parameters - clean out values
-                var parameterInstances = this.getAllInstancesOf('Model.common.Parameter');
+                var parameterInstances = this.getAllInstancesOf(GEPPETTO.Resources.PARAMETER_TYPE_PATH);
                 for(var j=0; j<parameterInstances.length; j++){
                     parameterInstances[j].setValue(null);
                 }

@@ -127,8 +127,8 @@ define(function (require) {
             var message;
             var elements = this.getVisualGroupElements();
 
-            if(instances==undefined){
-                throw("Applying visual groups for a type is not supported yet.");
+            if(instances == undefined){
+                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this.getParent());
             }
 
             if (mode) {

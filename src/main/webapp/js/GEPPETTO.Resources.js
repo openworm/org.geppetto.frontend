@@ -459,7 +459,10 @@ define(function (require) {
             // FLOWS
             SEARCH_FLOW: 'SearchFlow',
             PLAY_FLOW: 'PlayFlow',
-            RUN_FLOW: 'RunFlow'
+            RUN_FLOW: 'RunFlow',
+            // COMMMON TYPE PATHS
+            STATE_VARIABLE_TYPE_PATH: 'Model.common.StateVariable',
+            PARAMETER_TYPE_PATH: 'Model.common.Parameter'
         }
     }
 });

@@ -1170,13 +1170,13 @@ define(function (require) {
              */
             cleanupInstanceTreeState: function(){
                 // get state variables - clean out time series and watched status
-                var stateVariableInstances = this.getAllInstancesOf('Model.common.StateVariable');
+                var stateVariableInstances = this.getAllInstancesOf(GEPPETTO.Resources.STATE_VARIABLE_TYPE_PATH);
                 for(var i=0; i<stateVariableInstances.length; i++){
                     stateVariableInstances[i].setTimeSeries([]);
                     stateVariableInstances[i].setWatched(false);
                 }
                 // get parameters - clean out values
-                var parameterInstances = this.getAllInstancesOf('Model.common.Parameter');
+                var parameterInstances = this.getAllInstancesOf(GEPPETTO.Resources.PARAMETER_TYPE_PATH);
                 for(var j=0; j<parameterInstances.length; j++){
                     parameterInstances[j].setValue(null);
                 }

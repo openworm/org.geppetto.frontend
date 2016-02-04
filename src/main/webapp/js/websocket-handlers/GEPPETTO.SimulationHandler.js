@@ -332,9 +332,11 @@ define(function (require) {
                 instances.getInstance = function (instancePath) {
                     var instances = [];
                     var InstanceVarName = "Instances.";
+                    var arrayParameter=true;
 
                     if(!(instancePath.constructor === Array)){
                         instancePath = [instancePath];
+                        arrayParameter=false;
                     }
 
                     // check if we have any [*] for array notation and replace with exploded paths
@@ -371,7 +373,8 @@ define(function (require) {
                         }
                     }
 
-                    if(instances.length == 1) {
+                    if(instances.length == 1 && !arrayParameter) {
+                        //if we received an array we want to return an array even if there's only one element
                         return instances[0];
                     } else {
                         return instances;

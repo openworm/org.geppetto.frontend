@@ -1239,7 +1239,7 @@ define(function (require) {
                 var matchingPotentialInstances = [];
 
                 for(var i=0; i<this.allPaths.length; i++){
-                    if(this.allPaths[i].path.endsWith(endingString)){
+                    if(this.allPaths[i].path.endsWith(endingString) && this.allPaths[i].path.indexOf("*")==-1){
                         matchingPotentialInstances.push(this.allPaths[i].path);
                     }
                 }

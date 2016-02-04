@@ -307,6 +307,10 @@ define(function (require) {
                 var watchedVariables = [];
                 if (asObjs) {
                     watchedVariables = GEPPETTO.ModelFactory.instances.getInstance(this.variables);
+                    if (!$.isArray(watchedVariables)) {
+                        //we always want it to be an array
+                        watchedVariables = [watchedVariables];
+                    }
                     if (!time) {
                         var timeIndex = -1;
                         for (var i = 0; i < watchedVariables.length; i++) {

@@ -120,7 +120,7 @@ define(function (require) {
         recordSample:{
             "label":"Record all membrane potentials",
             "actions": [
-                "var instances=Instances.getInstance(ModelFactory.getAllPotentialInstancesEndingWith('.v'));",
+                "var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'));",
                 "$.each(instances,function(index,value){value.setWatched(true);});"
             ],
             "icon": "fa-dot-circle-o"
@@ -129,7 +129,7 @@ define(function (require) {
         plotSample:{
             "label":"Plot all recorded variables",
             "actions": [
-                "var p=GEPPETTO.G.addWidget(0).setName('Recorded Variables');",
+                "var p=G.addWidget(0).setName('Recorded Variables');",
                 "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
             ],
             "icon": "fa-area-chart"
@@ -146,11 +146,9 @@ define(function (require) {
                     if (found.length == 1) {
                         suggestionFound = true;
                         var actions = found[0].actions;
-                        var allActions = "";
                         actions.forEach(function (action) {
-                            allActions = allActions + action;
+                            GEPPETTO.Console.executeCommand(action)
                         });
-                        eval(allActions);
                         $("#typeahead").typeahead('val', "");
                     }
                 }

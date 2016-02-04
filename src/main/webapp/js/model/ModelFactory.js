@@ -405,14 +405,13 @@ define(function (require) {
                     this.buildInstanceHierarchy(idConcatPath, null, geppettoModel, topInstances);
                 }
 
-                // populate shortcuts
+                // populate shortcuts including new instances just created
                 for (var k = 0; k < topInstances.length; k++) {
                     this.populateChildrenShortcuts(topInstances[k]);
-                    if (!window.hasOwnProperty(topInstances[k].getId())) {
-                        window[topInstances[k].getId()] = topInstances[k];
-                        window.Instances[topInstances[k].getId()] = topInstances[k];
-                    }
 
+                    // populate at window level
+                    window[topInstances[k].getId()] = topInstances[k];
+                    window.Instances[topInstances[k].getId()] = topInstances[k];
                 }
             },
 

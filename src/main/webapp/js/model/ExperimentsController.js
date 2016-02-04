@@ -133,6 +133,14 @@ define(function (require) {
                 GEPPETTO.trigger(Events.Experiment_stop);
             },
 
+            closeCurrentExperiment:function(){
+                var experiment=Project.getActiveExperiment();
+                if(experiment){
+                    //we clear all the listeners
+                    GEPPETTO.G.listeners=[];
+                }
+            },
+
             triggerPlayExperiment: function (experiment) {
 
                 GEPPETTO.trigger(Events.Experiment_play, {playAll: this.playOptions.playAll});

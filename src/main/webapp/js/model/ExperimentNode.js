@@ -210,6 +210,7 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             setActive: function () {
+                GEPPETTO.ExperimentsController.closeCurrentExperiment();
                 var parameters = {};
                 parameters["experimentId"] = this.id;
                 parameters["projectId"] = this.getParent().getId();

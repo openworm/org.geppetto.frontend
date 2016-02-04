@@ -68,7 +68,8 @@ define(function(require) {
                                                          GEPPETTO.Resources.COMPOSITE_TYPE_NODE,
                                                          GEPPETTO.Resources.ARRAY_TYPE_NODE,
                                                          GEPPETTO.Resources.INSTANCE_NODE,
-                                                         GEPPETTO.Resources.ARRAY_INSTANCE_NODE],
+                                                         GEPPETTO.Resources.ARRAY_INSTANCE_NODE,
+                                                         GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE],
                                                          GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getCommands);
 	};
 });

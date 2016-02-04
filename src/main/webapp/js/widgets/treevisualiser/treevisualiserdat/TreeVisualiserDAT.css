@@ -213,6 +213,20 @@ div[id^='TreeVisualiserDAT'] {
     text-align: center;
 }
 
+#tvIcons {
+	z-index: 9999; 
+	width:5%; 
+	right: 0; 
+	margin-right: 10px; 
+	margin-top: 5px; 
+	position: absolute;
+}
+
+#tvIcons:hover {
+	color: #FF6700;
+}	
+
+
 /*
 .dg .cr.string.visualobjectreferencenodetv {
     border-left: 3px solid #a462ff;

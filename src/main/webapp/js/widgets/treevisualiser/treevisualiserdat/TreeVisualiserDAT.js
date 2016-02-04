@@ -41,6 +41,7 @@ define(function (require) {
 
     var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
     var $ = require('jquery');
+    var aIcons = $("<a id='tvIcons'><icon class='fa fa-sign-in'/></a>");
     
     return TreeVisualiser.TreeVisualiser.extend({
 
@@ -73,21 +74,54 @@ define(function (require) {
         events: {
             'contextmenu .title': 'manageRightClickEvent',
             'contextmenu .cr.string': 'manageRightClickEvent',
-            'click': 'manageLeftClickEvent',
-            'click': 'manageLeftClickEvent'
+            'contextmenu .cr.number': 'manageRightClickEvent',
+            'click .title': 'manageLeftClickEvent',
+            'click .cr.string': 'manageLeftClickEvent',
+            'click .cr.number': 'manageLeftClickEvent',
+            'mouseenter .title': 'manageHover',
+            'mouseenter .cr.string': 'manageHover',
+            'mouseenter .cr.number': 'manageHover',
+            'mouseleave .title': 'manageUnhover',
+            'mouseleave .cr.string': 'manageUnhover',
+            'mouseleave .cr.number': 'manageUnhover'
             	
         },
 
+        getTriggeredElement: function(event){
+        	if ($(event.target).is('li')){
+        		return $(event.target); 
+        	}
+        	else{
+        		return $(event.target).closest('li');
+        	}
+        },
+        
+        manageHover: function(event){
+        	var liElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = liElement.data("instancepath");
+            if (nodeInstancePath != null || undefined) {
+            	var node = this.dataset.valueDict[nodeInstancePath]["model"];
+            	var that = this;
+            	aIcons.click(function(event){that.showContextMenu(event, node);event.stopPropagation();});
+            	liElement.prepend(aIcons);
+            }
+        },
+        
+        manageUnhover: function(event){
+        	var liElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = liElement.data("instancepath");
+        	aIcons.remove();
+        },
+        
         /**
          * Register right click event with widget
          *
          * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
          */
         manageLeftClickEvent: function (event) {
-        	var nodeInstancePath = $(event.target).data("instancepath");
-            if (nodeInstancePath == undefined) {
-                nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
-            }
+        	var liElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = liElement.data("instancepath");
+        	
             if (nodeInstancePath != null || undefined) {
                 //Read node from instancepath data property attached to dom element
                 
@@ -116,10 +150,8 @@ define(function (require) {
          * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
          */
         manageRightClickEvent: function (event) {
-            var nodeInstancePath = $(event.target).data("instancepath");
-            if (nodeInstancePath == undefined) {
-                nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
-            }
+        	var liElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = liElement.data("instancepath");
             if (nodeInstancePath != null || undefined) {
             	var node = this.dataset.valueDict[nodeInstancePath]["model"];
             	

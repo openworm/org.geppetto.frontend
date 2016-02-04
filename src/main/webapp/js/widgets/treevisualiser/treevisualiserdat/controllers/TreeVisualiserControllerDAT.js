@@ -189,14 +189,26 @@ define(function (require) {
                 groups.push(entity);
             }
             
-            if (node._metaType == "VisualGroupNode") {
-                var visualGroup = [{
-                    label: "Show Visual Group",
-                    action: ["G.unSelectAll();", node.getPath() + ".show(true)"],
-                }];
+           if (node.get("capabilities") != null && node.get("capabilities").length > 0 && node.get("capabilities").indexOf('VisualGroupCapability') != -1){
+        	   var visualGroup = [{
+                   label: "Show Visual Group",
+                   action: ["G.unSelectAll();", node.getPath() + ".show(true)"],
+               }];
 
-                groups.push(visualGroup);
-            }
+        	   //node.getVisualGroups()
+        	   //ca1.CA1_CG[0].applyVisualGroup(ca1.CA1_CG[0].getVisualGroups()[0],true)
+        	   
+               groups.push(visualGroup);
+           }
+           
+//            if (node._metaType == "VisualGroupNode") {
+//                var visualGroup = [{
+//                    label: "Show Visual Group",
+//                    action: ["G.unSelectAll();", node.getPath() + ".show(true)"],
+//                }];
+//
+//                groups.push(visualGroup);
+//            }
 
             return groups;
         },

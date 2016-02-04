@@ -286,16 +286,19 @@ define(function (require) {
                 	for (var i = 0; i < state.getChildren().length; i++) {
                 		var child = state.getChildren()[i];
                 		
-                		var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
-                            "name": i,
-                            "id": i,
-                            "_metaType": "",
-                            "path": state.getPath + "." + i
-                        });
                 		
-                        var node = this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE), _children: this.createTreeVisualiserNodeChildren(child)});
-                        if (node != undefined)
-                            children.push(node);
+                		children.push(this.createTreeVisualiserNode({wrappedObj: child, formattedValue: "taka", style: "", _children: this.createTreeVisualiserNodeChildren(child)}));
+                		
+//                		var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
+//                            "name": i,
+//                            "id": i,
+//                            "_metaType": "",
+//                            "path": state.getPath + "." + i
+//                        });
+                		
+                        //var node = this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE), _children: this.createTreeVisualiserNodeChildren(child)});
+                        //if (node != undefined)
+                            //children.push(node);
                     }
                 }
                 else if (state.getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {

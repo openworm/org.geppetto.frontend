@@ -216,7 +216,6 @@ define(function (require) {
                 parameters["experimentId"] = this.id;
                 parameters["projectId"] = this.getParent().getId();
                 GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
                 GEPPETTO.trigger(Events.Experiment_active);
             },
 

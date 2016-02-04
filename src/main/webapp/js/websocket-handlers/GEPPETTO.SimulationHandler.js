@@ -276,13 +276,11 @@ define(function (require) {
                 console.timeEnd(GEPPETTO.Resources.PARSING_MODEL);
 
                 console.time(GEPPETTO.Resources.CREATING_MODEL);
-                GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.CREATING_MODEL);
                 // build Geppetto model here (once off operation when project is loaded)
                 window.Model = GEPPETTO.ModelFactory.createGeppettoModel(model);
                 console.timeEnd(GEPPETTO.Resources.CREATING_MODEL);
 
                 console.time(GEPPETTO.Resources.CREATING_INSTANCES);
-                GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.CREATING_INSTANCES);
                 // build instance tree here (instance tree will be populated with state info for each experiment)
                 window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model);
                 this.augmentInstancesArray(window.Instances);
@@ -290,7 +288,6 @@ define(function (require) {
                 console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);
 
                 console.time(GEPPETTO.Resources.CREATING_SCENE);
-                GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.CREATING_SCENE);
                 // build scene here from Geppetto model populating visual objects in the instance tree
                 // Updates the simulation controls visibility
                 var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());

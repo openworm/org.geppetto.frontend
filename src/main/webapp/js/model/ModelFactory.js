@@ -817,7 +817,7 @@ define(function (require) {
                 for (var i = 0; i < instances.length; i++) {
                     var types = instances[i].getTypes();
                     for(var j=0; j<types.length; j++){
-                        if (types[j] === type) {
+                        if (types[j] === type || types[j].getVisualType() === type) {
                             matchingInstance.push(instances[i]);
                             break;
                         }

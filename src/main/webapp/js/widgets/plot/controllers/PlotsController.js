@@ -76,7 +76,6 @@ define(function (require) {
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(p.getId(), p);
             return p;
-            L
         },
 
         /**

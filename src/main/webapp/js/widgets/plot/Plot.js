@@ -62,12 +62,12 @@ define(function (require) {
          */
         defaultPlotOptions: {
             yaxis: {
-                max:-9999999,
-                min:9999999,
+                max: -9999999,
+                min: 9999999,
             },
             xaxis: {
-                max:-9999999,
-                min:9999999,
+                max: -9999999,
+                min: 9999999,
                 show: true,
                 font: {
                     size: 10
@@ -88,8 +88,8 @@ define(function (require) {
                 mode: "x"
             },
             grid: {
-                hoverable : true,
-                autoHighlight : false,
+                hoverable: true,
+                autoHighlight: false,
                 margin: {
                     left: 10,
                     bottom: 10
@@ -400,8 +400,14 @@ define(function (require) {
 
 
             if (this.plot != null) {
-                this.plot.setData(this.datasets);
-                this.plot.draw();
+                if (this.plot.getOptions().yaxes[0].max == -9999999) {
+                    //we had no data the first time plotdata was called so we create the plot
+                    this.plot = $.plot(plotHolder, this.datasets, this.options);
+                }
+                else {
+                    this.plot.setData(this.datasets);
+                    this.plot.draw();
+                }
             }
             else {
                 this.plot = $.plot(plotHolder, this.datasets, this.options);

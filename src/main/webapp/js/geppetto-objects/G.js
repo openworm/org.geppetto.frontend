@@ -585,11 +585,15 @@ define(function (require) {
             	}
             	
             	for (var index in modulations){
-	                this.addOnNodeUpdatedCallback(stateVariableInstances[index], function (stateVariableInstance, step) {
-	                    GEPPETTO.SceneController.lightUpEntity(modulations[index],
-	                        normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
-	                });
+	                this.addBrightnessListener(modulations[index], stateVariableInstances[index], normalizationFunction);
             	}
+            },
+            
+            addBrightnessListener: function(instance, modulation, normalizationFunction){
+            	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
+                    GEPPETTO.SceneController.lightUpEntity(instance,
+                        normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+                });
             },
             
             clearBrightnessFunctions: function (varnode) {

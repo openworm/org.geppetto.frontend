@@ -42,7 +42,6 @@ define(function (require) {
         var GeppettoModel = require('model/GeppettoModel');
         var Library = require('model/Library');
         var Type = require('model/Type');
-        var VisualType = require('model/VisualType');
         var Variable = require('model/Variable');
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');

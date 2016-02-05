@@ -514,7 +514,7 @@ public class ConnectionHandler
 	 * @param projectId
 	 * @param experimentID
 	 */
-	public void setParameters(String requestID, String modelPath, Map<String, String> modelParameters, long projectId, long experimentID)
+	public void setParameters(String requestID, Map<String, String> modelParameters, long projectId, long experimentID)
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{

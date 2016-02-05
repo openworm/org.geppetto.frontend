@@ -338,7 +338,7 @@ define(function (require) {
              * @command ExperimentNode.setParameters(parameters)
              * @returns {ExperimentNode} ExperimentNode for given name
              */
-            setParameters: function (aspectPath, newParameters) {
+            setParameters: function (newParameters) {
                 if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                     var modelParameters =
                     {};
@@ -350,7 +350,6 @@ define(function (require) {
                     {};
                     parameters["experimentId"] = this.id;
                     parameters["projectId"] = this.getParent().getId();
-                    parameters["modelAspectPath"] = aspectPath;
                     parameters["modelParameters"] = modelParameters;
 
                     for (var key in newParameters) {

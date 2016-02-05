@@ -63,7 +63,7 @@ define(function (require) {
                 var instantiatedStateVariables = GEPPETTO.ModelFactory.getAllInstancesOf(GEPPETTO.Resources.STATE_VARIABLE_TYPE_PATH);
                 for(var i=0; i<instantiatedStateVariables.length; i++){
                     // 2. check if any isWatched
-                    if(instantiatedStateVariables[i].isWatched()){
+                    if(instantiatedStateVariables[i].isWatched() && instantiatedStateVariables[i].getId()!="time"){
                         anythingRecorded = true;
                         break;
                     }

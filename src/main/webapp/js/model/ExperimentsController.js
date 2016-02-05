@@ -71,7 +71,16 @@ define(function (require) {
                         }
                     }
                 }
-
+                if (experimentState.setParameters) {
+                    for (var i = 0; i < experimentState.setParameters.length; i++) {
+                        var setParameter = experimentState.setParameters[i];
+                        var instancePath = this.getInstancePathFromPointer(setParameter.pointer, false);
+                        var instance = Instances.getInstance(instancePath);
+                        if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
+                            instance.setValue(setParameter.value.value, false);
+                        }
+                    }
+                }
                 if (this.playExperimentReady) {
                     //creation of the worker will trigger the event for the listening widgets
                     //to update themselves
@@ -106,17 +115,21 @@ define(function (require) {
                 } else {
                     GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + experiment.name + " with id " + experiment.id + " isn't completed, and can't be played.");
                 }
-            },
+            }
+
+            ,
 
             pause: function () {
                 this.paused = true;
                 this.getWorker().postMessage([Events.Experiment_pause]);
                 GEPPETTO.trigger(Events.Experiment_pause);
-            },
+            }
+            ,
 
             isPaused: function () {
                 return this.paused;
-            },
+            }
+            ,
 
             resume: function () {
                 //we'll use a worker
@@ -126,13 +139,15 @@ define(function (require) {
                     this.paused = false;
                     return "Pause Experiment";
                 }
-            },
+            }
+            ,
 
             stop: function () {
                 this.terminateWorker();
                 this.paused = false;
                 GEPPETTO.trigger(Events.Experiment_stop);
-            },
+            }
+            ,
 
             closeCurrentExperiment: function () {
                 var experiment = Project.getActiveExperiment();
@@ -143,7 +158,8 @@ define(function (require) {
 
                 // clean instance tree state
                 GEPPETTO.ModelFactory.cleanupInstanceTreeState();
-            },
+            }
+            ,
 
             triggerPlayExperiment: function (experiment) {
 
@@ -185,18 +201,21 @@ define(function (require) {
 
                 }
                 ;
-            },
+            }
+            ,
 
             terminateWorker: function () {
                 if (this.worker != undefined) {
                     this.worker.terminate();
                     this.worker = undefined;
                 }
-            },
+            }
+            ,
 
             getWorker: function () {
                 return this.worker;
-            },
+            }
+            ,
 
 
             /** Retrieves the instance path of a given pointer */
@@ -225,4 +244,5 @@ define(function (require) {
     }
 
 
-});
+})
+;

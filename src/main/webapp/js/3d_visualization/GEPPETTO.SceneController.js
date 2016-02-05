@@ -954,7 +954,7 @@ define(function (require) {
                         var material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
                         groupMesh = new THREE.Mesh(geometryGroup, material);
                     }
-                    groupMesh.name = instancePath;
+                    groupMesh.instancePath = instancePath;
                     groupMesh.geometry.dynamic = false;
                     groupMesh.position.copy(mergedMesh.position);
 
@@ -984,7 +984,7 @@ define(function (require) {
                         // retrieve split mesh that is on the scene
                         var splitMesh = GEPPETTO.getVARS().splitMeshes[path];
                         if (splitMesh) {
-                            if (aspectPath == splitMesh.name) {
+                            if (aspectPath == splitMesh.instancePath) {
                                 splitMesh.visible = false;
                                 // remove split mesh from scene
                                 GEPPETTO.getVARS().scene.remove(splitMesh);

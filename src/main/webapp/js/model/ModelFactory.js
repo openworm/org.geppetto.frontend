@@ -1184,8 +1184,8 @@ define(function (require) {
                 // get state variables - clean out time series and watched status
                 var stateVariableInstances = this.getAllInstancesOf(GEPPETTO.Resources.STATE_VARIABLE_TYPE_PATH);
                 for(var i=0; i<stateVariableInstances.length; i++){
-                    stateVariableInstances[i].setTimeSeries([]);
-                    stateVariableInstances[i].setWatched(false);
+                    stateVariableInstances[i].setTimeSeries(null);
+                    stateVariableInstances[i].setWatched(false, false);
                 }
                 // get parameters - clean out values
                 var parameterInstances = this.getAllInstancesOf(GEPPETTO.Resources.PARAMETER_TYPE_PATH);

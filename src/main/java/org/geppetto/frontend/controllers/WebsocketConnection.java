@@ -348,7 +348,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case SET_PARAMETERS:
 			{
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.setParameters(requestID, receivedObject.modelAspectPath, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
+				connectionHandler.setParameters(requestID, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
 				break;
 			}
 			case LINK_DROPBOX:
@@ -447,7 +447,6 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Long projectId;
 		Long experimentId;
 		List<String> variables;
-		String modelAspectPath;
 		Map<String, String> modelParameters;
 		Map<String, String> properties;
 	}

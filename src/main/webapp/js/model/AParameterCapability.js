@@ -75,7 +75,7 @@ define(['jquery'], function (require) {
 
             var value = this.value;
 
-            if(value == null || value == undefined){
+            if (value == null || value == undefined) {
                 var initialValues = this.getVariable().getWrappedObj().initialValues;
 
                 for (var i = 0; i < initialValues.length; i++) {
@@ -113,13 +113,16 @@ define(['jquery'], function (require) {
         /**
          * Sets Value for parameter node.
          */
-        setValue: function (value) {
+        setValue: function (value, updateServer) {
+            if (updateServer == undefined) {
+                updateServer = true;
+            }
             // TODO: adapt to Type / Variable
             this.value = value;
 
-            // TODO: FIX below
-            //Project.getActiveExperiment().setParameters(this.getAspectNode().getInstancePath(), [ this ]);
-
+            if (updateServer) {
+                Project.getActiveExperiment().setParameters([this]);
+            }
             return this;
         }
     }

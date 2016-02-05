@@ -317,6 +317,9 @@ define(function (require) {
              * Creates and populates initial instance tree skeleton with any instance that needs to be visualized
              */
             createInstances: function (geppettoModel) {
+                // reset scene complexity index
+                GEPPETTO.SceneController.complexity = 0;
+
                 var instances = [];
 
                 // pre-populate instance tags for console suggestions
@@ -533,6 +536,11 @@ define(function (require) {
                                     explodedInstance.extendApi(AVisualGroupCapability);
                                     explodedInstance.setVisualGroups(visualType.getVisualGroups());
                                 }
+
+                                // increase scene complexity counter
+                                if(visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                                    GEPPETTO.SceneController.complexity += visualType.getVariables().length;
+                                }
                             }
 
                             // check if it has connections and inject AConnectionCapability
@@ -593,6 +601,11 @@ define(function (require) {
                                 visualType.getVisualGroups().length >0){
                                 newlyCreatedInstance.extendApi(AVisualGroupCapability);
                                 newlyCreatedInstance.setVisualGroups(visualType.getVisualGroups());
+                            }
+
+                            // increase scene complexity counter
+                            if(visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                                GEPPETTO.SceneController.complexity += visualType.getVariables().length;
                             }
                         }
 
@@ -1171,8 +1184,8 @@ define(function (require) {
                 // get state variables - clean out time series and watched status
                 var stateVariableInstances = this.getAllInstancesOf(GEPPETTO.Resources.STATE_VARIABLE_TYPE_PATH);
                 for(var i=0; i<stateVariableInstances.length; i++){
-                    stateVariableInstances[i].setTimeSeries([]);
-                    stateVariableInstances[i].setWatched(false);
+                    stateVariableInstances[i].setTimeSeries(null);
+                    stateVariableInstances[i].setWatched(false, false);
                 }
                 // get parameters - clean out values
                 var parameterInstances = this.getAllInstancesOf(GEPPETTO.Resources.PARAMETER_TYPE_PATH);

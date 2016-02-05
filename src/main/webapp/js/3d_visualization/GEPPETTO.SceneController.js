@@ -15,7 +15,6 @@ define(function (require) {
 
         GEPPETTO.SceneController =
         {
-
             /**
              * Populate the scene with given instances
              *
@@ -23,9 +22,6 @@ define(function (require) {
              *            skeleton with instances and visual entities
              */
             buildScene: function (instances) {
-                GEPPETTO.SceneController.complexity = 0;
-                GEPPETTO.SceneController.computeComplexity(instances);
-
                 GEPPETTO.SceneController.traverseInstances(instances);
                 GEPPETTO.getVARS().scene.updateMatrixWorld(true);
 
@@ -75,30 +71,6 @@ define(function (require) {
                 } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                     GEPPETTO.SceneController.traverseInstances(instance);
                 }
-            },
-
-
-            /**
-             * This method calculates the complexity of the scene based on the number of cylinders Note that this method doesn't currently take into account complexity coming from particles or
-             * Collada/OBJ meshes
-             *
-             * @param node -
-             *            runtime tree node to compute complexity for
-             */
-            computeComplexity: function (node) {
-                // TODO: modify this to work with Geppetto model and not with the old scene - GI
-                $.each(node, function (key, child) {
-
-                    // TODO handle arrays, e.g. cylinder inside a population of 1000 = complexity+=1000
-                    // TODO use resources
-
-                    if (child.getMetaType() == GEPPETTO.Resources.CYLINDER) {
-                        GEPPETTO.SceneController.complexity++;
-                    } else if (child.getMetaType() == GEPPETTO.Resources.SPHERE) {
-                        GEPPETTO.SceneController.complexity++;
-                    }
-
-                });
             },
 
             /**

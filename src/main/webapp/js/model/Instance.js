@@ -64,6 +64,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
 
             // capability list is for private use
             this.set({"capabilities": []});
+            // connections are set after creation
             this.set({"connections": []});
         },
 

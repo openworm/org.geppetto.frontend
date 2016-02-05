@@ -504,20 +504,5 @@ define(function (require) {
                 message = GEPPETTO.Resources.BATCH_SHOW_CONNECTIONS_LINES;
             }
         }
-
-        // NOTE: both instance and type already have this method
-       /*getVisualType: function () {
-            var visualType = null;
-            if ((this.getVariable().getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)
-                || (this.getVariable().getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE)) {
-                visualType = this.getVariable().getType();
-            } else if (this.getVariable().getType().getVisualType() != undefined) {
-                visualType = this.getVariable().getType().getVisualType();
-            } else if ((this.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE) && (this.getVariable().getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE)
-                && (this.getVariable().getType().getType().getVisualType() != undefined)) {
-                visualType = this.getVariable().getType().getType().getVisualType();
-            }
-            return visualType;
-        },*/
     }
 });

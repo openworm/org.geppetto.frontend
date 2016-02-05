@@ -53,6 +53,9 @@ define(function (require) {
             this.set({"variables": (options.variables != 'undefined') ? options.variables : []});
             this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
+
+            // capability list is for private use
+            this.set({"capabilities": []});
         },
 
         /**

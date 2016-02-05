@@ -54,6 +54,9 @@ define(function (require) {
             this.set({"visualGroups": (options.visualGroups != 'undefined') ? options.visualGroups : []});
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"parent": options.parent});
+
+            // capability list is for private use
+            this.set({"capabilities": []});
         },
 
         /**

@@ -128,6 +128,22 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         },
 
         /**
+         * Get the type of this instance, return a list if it has more than one
+         *
+         * @command ArrayInstance.getType()
+         *
+         * @returns List<Type>} - array of types
+         *
+         */
+        getType: function () {
+            var types = this.get("variable").getTypes();
+            if (types.length == 1) {
+                return types[0];
+            }
+            else return types;
+        },
+
+        /**
          * Get the children for the array instance
          *
          * @command Instance.getChildren()

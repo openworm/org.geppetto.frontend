@@ -356,6 +356,12 @@ define(function (require) {
             HIDING_VISUAL_GROUPS: "Hiding visual group ",
             NO_VISUAL_GROUP_ELEMENTS: "No elements inside visual group to show ",
             MISSING_PARAMETER: "Command is missing parameter.",
+            BATCH_SELECTION: "Batch selection performed",
+            BATCH_DESELECTION: "Batch deselection performed",
+            BATCH_SET_GEOMETRY: "Batch ser geometry performed",
+            BATCH_HIGHLIGHT_CONNECTIONS: "Batch highlight connections performed",
+            BATCH_SHOW_CONNECTIONS_LINES: "Batch show/hide connection lines performed",
+            OPERATION_NOT_SUPPORTED: "Operation not supported: ",
 
 
             /**

@@ -120,6 +120,7 @@ div[id^='TreeVisualiserDAT'] {
     margin-top: 5px;
     line-height: 20px;
     resize: none;
+    height: 60px;
 }
 
 /*  NODE STYLE BY METATYPE*/
@@ -218,7 +219,7 @@ div[id^='TreeVisualiserDAT'] {
 	width:5%; 
 	right: 0; 
 	margin-right: 10px; 
-	margin-top: 5px; 
+	margin-top: 7px; 
 	position: absolute;
 }
 

@@ -201,6 +201,7 @@
 
 .contextMenuView > ul > li li {
     /*min-width: 100%;*/
+   white-space: nowrap;
 }
 
 /* SCROLL BAR*/

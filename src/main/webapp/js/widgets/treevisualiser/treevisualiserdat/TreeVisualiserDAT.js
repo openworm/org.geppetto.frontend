@@ -148,25 +148,6 @@ define(function (require) {
             }
         },
         
-        customiseLayout: function(folder){
-        	//Disable input elements
-            $(folder).find("input").prop('disabled', true);
-            
-            //AQP: What should be editable?
-            //$(folder).find(".parameterspecificationnodetv input").prop('disabled', false);
-
-            //Change textfield to textarea if it is too big
-            $(folder).find('.texttypetv').find('div > div > input[type="text"]').each(function () {
-                testingSizeElement.text($(this).val());
-                if (testingSizeElement.width() > $(this).width()) {
-                    $(this).closest('.texttypetv').addClass('textarea');
-                    var textarea = $(document.createElement('textarea')).attr('readonly', true).attr('rows', 2);
-                    textarea.val($(this).val());
-                    $(this).replaceWith(textarea);
-                }
-            });
-        },
-        
         /**
          * Register right click event with widget
          *
@@ -224,6 +205,25 @@ define(function (require) {
             // Customise layout: make text field non-editable, convert text field into text area...
             this.customiseLayout($(this.dialog));
             
+        },
+        
+        customiseLayout: function(folder){
+        	//Disable input elements
+            $(folder).find("input").prop('disabled', true);
+            
+            //AQP: What should be editable?
+            //$(folder).find(".parameterspecificationnodetv input").prop('disabled', false);
+
+            //Change textfield to textarea if it is too big
+            $(folder).find('.texttypetv').find('div > div > input[type="text"]').each(function () {
+                testingSizeElement.text($(this).val());
+                if (testingSizeElement.width() > $(this).width()) {
+                    $(this).closest('.texttypetv').addClass('textarea');
+                    var textarea = $(document.createElement('textarea')).attr('readonly', true).attr('rows', 2);
+                    textarea.val($(this).val());
+                    $(this).replaceWith(textarea);
+                }
+            });
         },
         
         /**

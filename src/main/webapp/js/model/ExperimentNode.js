@@ -343,7 +343,7 @@ define(function (require) {
                     var modelParameters =
                     {};
                     for (var index in newParameters) {
-                        modelParameters[newParameters[index].getInstancePath()] = newParameters[index].getValue();
+                        modelParameters[newParameters[index].getPath()] = newParameters[index].getValue();
                     }
                     this.parameters = [];
                     var parameters =

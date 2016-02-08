@@ -36,9 +36,14 @@
  *
  * @module model/AParameterCapability
  * @author Matteo Cantarelli
+ * @author Giovanni Idili
  */
 
-define(['jquery'], function (require) {
+define(function (require) {
+
+    var Instance = require('model/Instance');
+    var Variable = require('model/Variable');
+
     return {
         capabilityId: 'ParameterCapability',
         value: null,
@@ -50,10 +55,14 @@ define(['jquery'], function (require) {
          * @returns {String} Unit for quantity
          */
         getUnit: function () {
-            // TODO: adapt to Type / Variable
-
             var unit = undefined;
-            var initialValues = this.getVariable().getWrappedObj().initialValues;
+            var initialValues = null;
+
+            if(this instanceof Instance) {
+                initialValues = this.getVariable().getWrappedObj().initialValues;
+            } else if(this instanceof Variable){
+                initialValues = this.getWrappedObj().initialValues;
+            }
 
             for (var i = 0; i < initialValues.length; i++) {
                 if (initialValues[i].value.eClass === 'PhysicalQuantity') {
@@ -71,12 +80,23 @@ define(['jquery'], function (require) {
          * @returns {String} Value of quantity
          */
         getValue: function () {
-            // TODO: adapt to Type / Variable
+            var value = null;
 
-            var value = this.value;
+            if((this instanceof Instance) && this.getVariable().isStatic()){
+                value = this.getVariable().getValue();
+            } else {
+                value = this.value;
+            }
 
             if (value == null || value == undefined) {
-                var initialValues = this.getVariable().getWrappedObj().initialValues;
+                // if value is empty fetch from initial values
+                var initialValues = null;
+
+                if(this instanceof Instance) {
+                    initialValues = this.getVariable().getWrappedObj().initialValues;
+                } else if(this instanceof Variable){
+                    initialValues = this.getWrappedObj().initialValues;
+                }
 
                 for (var i = 0; i < initialValues.length; i++) {
                     if (initialValues[i].value.eClass === 'PhysicalQuantity') {
@@ -96,10 +116,14 @@ define(['jquery'], function (require) {
          * @returns {String} Scaling Factor for value and unit
          */
         getScalingFactor: function () {
-            // TODO: adapt to Type / Variable
-
             var scalingFactor = undefined;
-            var initialValues = this.getVariable().getWrappedObj().initialValues;
+            var initialValues = null;
+
+            if(this instanceof Instance) {
+                initialValues = this.getVariable().getWrappedObj().initialValues;
+            } else if(this instanceof Variable){
+                initialValues = this.getWrappedObj().initialValues;
+            }
 
             for (var i = 0; i < initialValues.length; i++) {
                 if (initialValues[i].value.eClass === 'PhysicalQuantity') {
@@ -117,12 +141,18 @@ define(['jquery'], function (require) {
             if (updateServer == undefined) {
                 updateServer = true;
             }
-            // TODO: adapt to Type / Variable
+
+            if((this instanceof Instance) && this.getVariable().isStatic()) {
+                this.getVariable().value = value;
+            }
+
+            // always set this regardless of variable vs instance (so the value will be in the call below)
             this.value = value;
 
             if (updateServer) {
                 Project.getActiveExperiment().setParameters([this]);
             }
+
             return this;
         }
     }

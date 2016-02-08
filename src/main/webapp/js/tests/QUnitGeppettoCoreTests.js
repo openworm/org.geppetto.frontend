@@ -35,17 +35,15 @@
  *
  * @author Jesus Martinez (jesus@metacell.us)
  */
-"use strict";
 
 define(function (require) {
 
     var run = function () {
-        module("Global Scope Test");
-        test("Global scope Test", function () {
+        QUnit.module("Global Scope Test");
+        QUnit.test("Global scope Test", function () {
             var help = GEPPETTO.Console.help();
-            var commandCount = help.match(/--/g);
+
             notEqual(help, null, "Global help() command test.");
-            equal(commandCount.length, 41, "Global help() - Looking for 41 commands in help() command.");
 
             equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
 
@@ -56,7 +54,7 @@ define(function (require) {
             equal(modalVisible, false, "Help Window Hidden");
         });
 
-        test("Test Debug Mode", function () {
+        QUnit.test("Test Debug Mode", function () {
             G.debug(true);
 
             equal(G.isDebugOn(), true, "Testing debug mode on scenario");
@@ -66,15 +64,15 @@ define(function (require) {
             equal(G.isDebugOn(), false, "Testing debug mode off scenario");
         });
 
-        test("Test G Object help method", function () {
+        QUnit.test("Test G Object help method", function () {
             notEqual(G.help(), null, "Help command for object G is available, passed.");
         });
 
-        test("Test Clear Console", function () {
+        QUnit.test("Test Clear Console", function () {
             equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
         });
 
-        test("Test Plot Widget", function () {
+        QUnit.test("Test Plot Widget", function () {
             G.addWidget(Widgets.PLOT);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
@@ -96,7 +94,7 @@ define(function (require) {
             equal($("#" + plot.getId()).html(), null, "Test destroy()");
         });
 
-        test("Test Popup Widget", function () {
+        QUnit.test("Test Popup Widget", function () {
             G.addWidget(Widgets.POPUP);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.POPUP).getWidgets().length, 1, "Popup widget.");
@@ -118,7 +116,7 @@ define(function (require) {
             equal($("#" + pop.getId()).html(), null, "Test destroy()");
         });
 
-        test("Test Scattered-3D Widget", function () {
+        QUnit.test("Test Scattered-3D Widget", function () {
             G.addWidget(Widgets.SCATTER3D);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
@@ -140,7 +138,7 @@ define(function (require) {
             equal($("#" + scatter.getId()).html(), null, "Test destroy()");
         });
 
-        test("Test VARIABLEVISUALISER Widget", function () {
+        QUnit.test("Test VARIABLEVISUALISER Widget", function () {
             G.addWidget(Widgets.VARIABLEVISUALISER);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.VARIABLEVISUALISER).getWidgets().length, 1, "VARIABLEVISUALISER widget created");
@@ -162,7 +160,7 @@ define(function (require) {
             equal($("#" + VARIABLEVISUALISER.getId()).html(), null, "Test destroy()");
         });
 
-        test("Test TREEVISUALISERDAT Widget", function () {
+        QUnit.test("Test TREEVISUALISERDAT Widget", function () {
             G.addWidget(Widgets.TREEVISUALISERDAT);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERDAT).getWidgets().length, 1, "TREEVISUALISERDAT widget created");
@@ -184,7 +182,7 @@ define(function (require) {
             equal($("#" + TREEVISUALISERDAT.getId()).html(), null, "Test destroy()");
         });
 
-        test("Test TreeVisualizerD3 Widget", function () {
+        QUnit.test("Test TreeVisualizerD3 Widget", function () {
             G.addWidget(Widgets.TREEVISUALISERD3);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERD3).getWidgets().length, 1, "TREEVISUALISERD3 widget created");
@@ -206,7 +204,7 @@ define(function (require) {
             equal($("#" + TREEVISUALISERD3.getId()).html(), null, "Test destroy()");
         });
 
-        test("Test Commands", function () {
+        QUnit.test("Test Commands", function () {
             G.showConsole(true);
 
             equal(GEPPETTO.Console.isConsoleVisible(), true, "Console Visible");
@@ -222,20 +220,42 @@ define(function (require) {
             G.showShareBar(false);
 
             equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
-
-            equal(G.shareOnTwitter(), GEPPETTO.Resources.SHARE_ON_TWITTER, "Share On Twitter");
-
-            equal(G.shareOnFacebook(), GEPPETTO.Resources.SHARE_ON_FACEBOOK, "Share On Facebook");
         });
 
+        QUnit.module("Test Model Factory");
+        QUnit.test("Test ModelFactory", function ( assert ) {
 
-        test("Test Copy History To Clipboard", function () {
+            var done = assert.async();
 
-            //add some commands to history
-            GEPPETTO.Console.executeCommand("G.help();");
-            GEPPETTO.Console.executeCommand("help();");
+            var testModelFactory = function() {
+                // test that geppetto model high level is as expected
+                assert.ok(window.Model != undefined, "Model is not undefined");
+                assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2, "2 Variables as expected");
+                assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                // test that instance tree high level is as expected
+                assert.ok(window.Instances != undefined, "Instances are not undefined");
+                assert.ok(window.Instances.length == 1, "1 top level instance as expected");
+                assert.ok(window.acnet2 != undefined && window.acnet2.baskets_12 != undefined, "Shortcuts created as expected");
+                assert.ok(window.acnet2.baskets_12.getChildren().length == 12, "12 exploded baskets as expected");
+                assert.ok(window.acnet2.pyramidals_48.getChildren().length == 48, "48 exploded pyramidals as expected");
 
-            equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "Commands copied, test passed");
+                // TODO: check resolve
+                // TODO: check that types are resolved as expected in the model
+                // TODO: check visual groups are created
+                // TODO: test that ModelFactory.getInsantceOf gives expected results
+                // - for variables, obj and path
+                // - for types, obj and path
+                // TODO: check AllPotentialInstances
+                // TODO: check getAllPotentialInstancesEndingWith
+                // TODO: check getInstance:
+                // - for existing instance
+                // - when creating a new instance
+
+                done();
+            };
+            
+            GEPPETTO.on(GEPPETTO.Events.Model_loaded, testModelFactory);
+            window.Project.loadFromID("5", "1");
         });
     };
     return {run: run};

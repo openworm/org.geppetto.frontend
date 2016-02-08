@@ -175,6 +175,14 @@ define(function (require) {
                             throw( "The variable " + node.getId() + " does not have initial values. Initial values expected." );
                         }
                     }
+
+                    // if a variable has a Parameter type, add AParameterCapability to the variable
+                    var resolvedTypes = node.getTypes();
+                    for(var j=0; j<resolvedTypes.length; j++){
+                        if(resolvedTypes[j].getMetaType() ==  GEPPETTO.Resources.PARAMETER_TYPE){
+                            node.extendApi(AParameterCapability);
+                        }
+                    }
                 } else if (!(node instanceof ArrayType) && (node instanceof Type || node instanceof CompositeType)) {
                     // take visual type string - looks like this --> '//@libraries.1/@types.5'
                     var vizType = node.getVisualType();

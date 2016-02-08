@@ -100,6 +100,18 @@ define(function (require) {
         },
 
         /**
+         * Synonym of get instance path
+         *
+         * @command ArrayElementInstance.getPath()
+         *
+         * @returns {String} - Instance path
+         *
+         */
+        getPath: function () {
+            this.getInstancePath();
+        },
+
+        /**
          * Get the type for this instance
          *
          * @command ArrayElementInstance.getTypes()
@@ -108,8 +120,7 @@ define(function (require) {
          *
          */
         getTypes: function () {
-            // TODO: what if multiple types?
-            return [this.get("variable").getType().getType()];
+            return [this.getVariable().getType().getType()];
         },
 
         /**

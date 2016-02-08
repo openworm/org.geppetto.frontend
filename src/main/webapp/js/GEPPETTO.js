@@ -176,8 +176,7 @@ define(function (require) {
             var aabbMax = null;
 
             GEPPETTO.getVARS().scene.traverse(function (child) {
-                if (child instanceof THREE.Mesh
-                    || child instanceof THREE.PointCloud) {
+                if (child.hasOwnProperty("geometry")) {
                     child.geometry.computeBoundingBox();
 
                     var bb = child.geometry.boundingBox;
@@ -223,18 +222,14 @@ define(function (require) {
 
             GEPPETTO.pointCameraTo(GEPPETTO.getVARS().sceneCenter);
 
-            // Compute offset needed to move the camera back that much needed to
-            // center AABB
-            var offset = radius
-                / Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov
-                    * 0.5);
+            // Compute offset needed to move the camera back that much needed to center AABB
+            var offset = radius / Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.8);
 
             var dir = new THREE.Vector3(0, 0, 1);
             dir.multiplyScalar(offset);
 
             // Store camera position
-            GEPPETTO.getVARS().camera.position.addVectors(dir, GEPPETTO
-                .getVARS().controls.target);
+            GEPPETTO.getVARS().camera.position.addVectors(dir, GEPPETTO.getVARS().controls.target);
             GEPPETTO.getVARS().camera.updateProjectionMatrix();
         },
 

@@ -41,6 +41,7 @@
 define(function (require) {
 
     var Instance = require('model/Instance');
+    var ArrayInstance = require('model/ArrayInstance');
     var Type = require('model/Type');
     var Variable = require('model/Variable');
 
@@ -60,7 +61,7 @@ define(function (require) {
                 nested = true;
             }
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance) {
                 GEPPETTO.SceneController.hideInstance(this.getInstancePath());
                 this.visible = false;
 
@@ -77,8 +78,8 @@ define(function (require) {
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].hide(nested);
                     }
                 }
@@ -100,7 +101,7 @@ define(function (require) {
                 nested = true;
             }
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance) {
                 GEPPETTO.SceneController.showInstance(this.getInstancePath());
 
                 this.visible = true;
@@ -118,8 +119,8 @@ define(function (require) {
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call show on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].show(nested);
                     }
                 }
@@ -160,7 +161,7 @@ define(function (require) {
                 nested = true;
             }
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance) {
                 GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
 
                 if (nested === true && typeof this.getChildren === "function") {
@@ -174,8 +175,8 @@ define(function (require) {
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].setOpacity(opacity, nested);
                     }
                 }
@@ -193,7 +194,7 @@ define(function (require) {
                 nested = true;
             }
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance) {
                 GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
 
                 if (nested === true && typeof this.getChildren === "function") {
@@ -207,8 +208,8 @@ define(function (require) {
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].setColor(color, nested);
                     }
                 }
@@ -228,7 +229,7 @@ define(function (require) {
 
             var message;
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance) {
                 if (!this.selected) {
                     //first, before doing anything, we check what is currently selected
 
@@ -289,8 +290,8 @@ define(function (require) {
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].select(nested);
                     }
                 }
@@ -314,9 +315,9 @@ define(function (require) {
 
             var message;
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 if (this.selected) {
-					message = GEPPETTO.Resources.DESELECTING_ASPECT + this.instancePath;
+                    message = GEPPETTO.Resources.DESELECTING_ASPECT + this.instancePath;
                     GEPPETTO.SceneController.deselectInstance(this.getInstancePath());
                     this.selected = false;
 
@@ -369,8 +370,8 @@ define(function (require) {
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].deselect(nested);
                     }
                 }
@@ -388,7 +389,7 @@ define(function (require) {
          *
          */
         zoomTo: function () {
-            if(this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 GEPPETTO.SceneController.zoomToInstance(this);
                 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.getInstancePath();
             } else if (this instanceof Type || this instanceof Variable) {
@@ -408,7 +409,7 @@ define(function (require) {
 
             var message = '';
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 if (GEPPETTO.SceneController.setGeometryType(this, type, thickness)) {
                     message = "Geometry type successfully changed for " + this.getInstancePath();
                 }
@@ -421,15 +422,15 @@ define(function (require) {
                     var children = this.getChildren();
                     for (var i = 0; i < children.length; i++) {
                         if (typeof children[i].setGeometryType === "function") {
-                            children[i].setGeometryType(nested);
+                            children[i].setGeometryType(type, nested);
                         }
                     }
                 }
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].setGeometryType(type, thickness, nested);
                     }
                 }
@@ -452,7 +453,7 @@ define(function (require) {
                 mode = true;
             }
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 //show/hide connections
                 if (mode) {
                     GEPPETTO.SceneController.highlightConnectedInstances(this, type);
@@ -463,8 +464,8 @@ define(function (require) {
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].highlightInstances(mode, type);
                     }
                 }
@@ -485,7 +486,7 @@ define(function (require) {
                 mode = true;
             }
 
-            if(this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 //show or hide connection lines
                 if (mode) {
                     GEPPETTO.SceneController.showConnectionLines(this);
@@ -496,8 +497,8 @@ define(function (require) {
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for(var j=0; j<instances.length; j++){
-                    if(instances[j].hasCapability(this.capabilityId)){
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability(this.capabilityId)) {
                         instances[j].showConnectionLines(mode);
                     }
                 }

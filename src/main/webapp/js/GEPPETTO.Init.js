@@ -41,16 +41,15 @@ define(function (require) {
          */
         var setupCamera = function () {
             // Camera
-            var SCREEN_WIDTH = $(GEPPETTO.getVARS().container).width(), SCREEN_HEIGHT = $(
-                GEPPETTO.getVARS().container).height();
-            var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 500000;
-            GEPPETTO.getVARS().camera = new THREE.PerspectiveCamera(VIEW_ANGLE,
-                ASPECT, NEAR, FAR);
+            var SCREEN_WIDTH = $(GEPPETTO.getVARS().container).width();
+            var SCREEN_HEIGHT = $(GEPPETTO.getVARS().container).height();
+            var VIEW_ANGLE = 45;
+            var ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
+            var NEAR = 0.1;
+            var FAR = 500000;
+            GEPPETTO.getVARS().camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
             GEPPETTO.getVARS().scene.add(GEPPETTO.getVARS().camera);
-            GEPPETTO.getVARS().camera.position.set(
-                GEPPETTO.getVARS().cameraPosition.x,
-                GEPPETTO.getVARS().cameraPosition.y,
-                GEPPETTO.getVARS().cameraPosition.z);
+            GEPPETTO.getVARS().camera.position.set(GEPPETTO.getVARS().cameraPosition.x, GEPPETTO.getVARS().cameraPosition.y, GEPPETTO.getVARS().cameraPosition.z);
             GEPPETTO.getVARS().camera.lookAt(GEPPETTO.getVARS().sceneCenter);
         };
 

@@ -1281,13 +1281,28 @@ define(function (require) {
             },
 
             /**
-             * Get all POTENTIAL instances given a variable id
+             * Get all POTENTIAL instances ending with a given string
              */
             getAllPotentialInstancesEndingWith: function (endingString) {
                 var matchingPotentialInstances = [];
 
                 for(var i=0; i<this.allPaths.length; i++){
                     if(this.allPaths[i].path.endsWith(endingString) && this.allPaths[i].path.indexOf("*")==-1){
+                        matchingPotentialInstances.push(this.allPaths[i].path);
+                    }
+                }
+
+                return matchingPotentialInstances;
+            },
+
+            /**
+             * Get all POTENTIAL instances starting with a given string
+             */
+            getAllPotentialInstancesStartingWith: function (startingString) {
+                var matchingPotentialInstances = [];
+
+                for(var i=0; i<this.allPaths.length; i++){
+                    if(this.allPaths[i].path.startsWith(startingString) && this.allPaths[i].path.indexOf("*")==-1){
                         matchingPotentialInstances.push(this.allPaths[i].path);
                     }
                 }

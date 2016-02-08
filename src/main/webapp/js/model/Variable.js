@@ -118,13 +118,13 @@ define(function (require) {
             var pointerValue = this.get('pointerValue');
             var values = this.getWrappedObj().initialValues;
 
-            if (values == undefined){
+            if (values == undefined) {
                 values = [];
             }
 
             // if there is a pointer value just return that
-            if(pointerValue != undefined && pointerValue != null){
-                values = [ pointerValue ];
+            if (pointerValue != undefined && pointerValue != null) {
+                values = [pointerValue];
             }
 
             return values;
@@ -142,16 +142,16 @@ define(function (require) {
             var pointerValue = this.get('pointerValue');
             var values = this.getWrappedObj().initialValues;
 
-            if (values == undefined){
+            if (values == undefined) {
                 values = [];
             }
 
             // if there is a pointer value just return that
-            if(pointerValue != undefined && pointerValue != null){
-                values = [ pointerValue ];
+            if (pointerValue != undefined && pointerValue != null) {
+                values = [pointerValue];
             }
 
-            if(values.length == 1){
+            if (values.length == 1) {
                 return values[0];
             } else {
                 values;
@@ -167,8 +167,7 @@ define(function (require) {
          *
          */
         isStatic: function () {
-            // TODO: fetch static from wrapped obj
-            return this.getWrappedObj().isStatic;
+            return this.getWrappedObj().static;
         },
 
         /**
@@ -180,7 +179,6 @@ define(function (require) {
          *
          */
         getPosition: function () {
-            // TODO: fetch static from wrapped obj
             return this.getWrappedObj().position;
         },
 

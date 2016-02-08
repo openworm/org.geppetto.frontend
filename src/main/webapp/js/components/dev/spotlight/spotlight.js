@@ -343,6 +343,7 @@ define(function (require) {
                         label = "Multiple instances of " + instance[0].getVariable().getId();
                     }
                     processed = action.split("$instance$").join("_spotlightInstance");
+                    processed = processed.split("$instance0$").join("_spotlightInstance[0]");
                     processed = processed.split("$label$").join(label);
                     processed = processed.split("$value$").join(value);
                     processed = processed.split("$type$").join(instance[0].getType().getPath());
@@ -526,7 +527,7 @@ define(function (require) {
                 "TextType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(1).setText($instance$).setName('$variableid$')",
+                            "G.addWidget(1).setText($instance0$).setName('$variableid$')",
                         ],
                         "icon": "fa-eye",
                         "label": "View text",
@@ -536,7 +537,7 @@ define(function (require) {
                 "HTMLType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(1).setHTML($instance$).setName('$variableid$')",
+                            "G.addWidget(1).setHTML($instance0$).setName('$variableid$')",
                         ],
                         "icon": "fa-eye",
                         "label": "View HTML",

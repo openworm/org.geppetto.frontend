@@ -15,8 +15,8 @@ define(function (require) {
         GEPPETTO.SceneFactory =
         {
 
-            buildVisualInstance: function (instance, visualType, index) {
-                var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance, visualType);
+            buildVisualInstance: function (instance, index) {
+                var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance);
                 var position = instance.getVariable().getPosition();
                 if (instance.getVariable().getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
                     if ((instance.getVariable().getType().getDefaultValue().elements != undefined) &&
@@ -114,7 +114,7 @@ define(function (require) {
                 }
             },
 
-            generate3DObjects: function (instance, visualType, lines, thickness) {
+            generate3DObjects: function (instance, lines, thickness) {
                 var previous3DObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 if (previous3DObject) {
                     // if an object already exists for this aspect we remove it. This could happen in case we are changing how an aspect
@@ -136,7 +136,7 @@ define(function (require) {
                     "particle": GEPPETTO.SceneFactory.getParticleMaterial()
                 };
                 var instanceObjects = [];
-                var threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, visualType, materials, lines);
+                var threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, materials, lines);
 
                 // only merge if there are more than one object
                 if (threeDeeObjList.length > 1) {
@@ -161,28 +161,35 @@ define(function (require) {
                 return instanceObjects;
             },
 
-            walkVisTreeGen3DObjs: function (instance, visualType, materials, lines) {
+            walkVisTreeGen3DObjs: function (instance, materials, lines) {
                 var threeDeeObj = null;
                 var threeDeeObjList = [];
-
-                if (visualType) {
-                    if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
-                        for (var v in visualType.getVariables()) {
-                            var visualValue = visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
-                            threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
-                            if (threeDeeObj) {
-                                threeDeeObjList.push(threeDeeObj);
-                            }
-                        }
-                    } else {
-                        var visualValue = visualType.getWrappedObj().defaultValue;
-                        threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getId(), materials, lines);
+                var visualType = instance.getVisualType();
+                if (visualType==undefined || visualType.length == 0) {
+                    return threeDeeObjList;
+                }
+                else {
+                    if($.isArray(visualType)){
+                        //TODO if there is more than one visual type we need to display all of them
+                        visualType = visualType[0];
+                    }
+                }
+                if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
+                    for (var v in visualType.getVariables()) {
+                        var visualValue = visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
+                        threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
                         if (threeDeeObj) {
                             threeDeeObjList.push(threeDeeObj);
                         }
                     }
-
+                } else {
+                    var visualValue = visualType.getWrappedObj().defaultValue;
+                    threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getId(), materials, lines);
+                    if (threeDeeObj) {
+                        threeDeeObjList.push(threeDeeObj);
+                    }
                 }
+
                 return threeDeeObjList;
             },
 

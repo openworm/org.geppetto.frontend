@@ -41,6 +41,7 @@ define(function (require) {
 
     var Widget = require('widgets/Widget');
     var $ = require('jquery');
+    var Instance = require('model/Instance');
 
     return Widget.View.extend({
 
@@ -53,10 +54,10 @@ define(function (require) {
             //TODO: Those are not sane defaults.
             //      Once things have types, we should ideally use sthing like  x.getType()
             nodeType: function (node) {
-                if(typeof node.getPath === "function"){
-                    return node.getPath().split('_')[0]
+                if(node instanceof Instance){
+                    return node.getId().split('_')[0];
                 } else {
-                    return node.getId().split('_')[0]
+                    return node.getPath().split('_')[0];
                 }
             },
             linkWeight: function (conn) {

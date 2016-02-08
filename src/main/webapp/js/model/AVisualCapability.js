@@ -61,7 +61,7 @@ define(function (require) {
             }
 
             if(this instanceof Instance) {
-                GEPPETTO.SceneController.hideAspect(this.getInstancePath());
+                GEPPETTO.SceneController.hideInstance(this.getInstancePath());
                 this.visible = false;
 
                 if (nested === true && typeof this.getChildren === "function") {
@@ -101,7 +101,7 @@ define(function (require) {
             }
 
             if(this instanceof Instance) {
-                GEPPETTO.SceneController.showAspect(this.getInstancePath());
+                GEPPETTO.SceneController.showInstance(this.getInstancePath());
 
                 this.visible = true;
 
@@ -316,7 +316,7 @@ define(function (require) {
 
             if(this instanceof Instance) {
                 if (this.selected) {
-                    message = GEPPETTO.Resources.DESELECTING_ASPECT + this.instancePath;
+
                     GEPPETTO.SceneController.deselectInstance(this.getInstancePath());
                     this.selected = false;
 
@@ -389,11 +389,12 @@ define(function (require) {
          */
         zoomTo: function () {
             if(this instanceof Instance) {
-                GEPPETTO.SceneController.zoomToMesh(this.getInstancePath());
+                GEPPETTO.SceneController.zoomToInstance(this);
                 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.getInstancePath();
             } else if (this instanceof Type || this instanceof Variable) {
-                // can't batch zoom on types on variables
-                return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + this.getPath();
+                // fetch all instances for the given type or variable and call hide on each
+                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
+                GEPPETTO.SceneController.zoomTo(instances);
             }
         },
 
@@ -505,19 +506,5 @@ define(function (require) {
             }
         }
 
-        // NOTE: both instance and type already have this method
-       /*getVisualType: function () {
-            var visualType = null;
-            if ((this.getVariable().getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)
-                || (this.getVariable().getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE)) {
-                visualType = this.getVariable().getType();
-            } else if (this.getVariable().getType().getVisualType() != undefined) {
-                visualType = this.getVariable().getType().getVisualType();
-            } else if ((this.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE) && (this.getVariable().getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE)
-                && (this.getVariable().getType().getType().getVisualType() != undefined)) {
-                visualType = this.getVariable().getType().getType().getVisualType();
-            }
-            return visualType;
-        },*/
     }
 });

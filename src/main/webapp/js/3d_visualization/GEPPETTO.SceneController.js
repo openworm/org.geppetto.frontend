@@ -109,19 +109,19 @@ define(function (require) {
                     intensity = 1;
                 }
                 var threeObject;
-                if (instance in GEPPETTO.getVARS().meshes){
-                	threeObject = GEPPETTO.getVARS().meshes[instance];
+                if (instance in GEPPETTO.getVARS().meshes) {
+                    threeObject = GEPPETTO.getVARS().meshes[instance];
                 }
-                else{
-                	threeObject = GEPPETTO.getVARS().splitMeshes[instance];
+                else {
+                    threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
-                
+
                 if (threeObject instanceof THREE.Line) {
                     threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity));
                 } else {
                     threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity));
                 }
-                
+
             },
 
             /**
@@ -189,6 +189,19 @@ define(function (require) {
                     }
                     mesh.output = false;
                     mesh.input = false;
+                }
+            },
+
+            select: function (instances) {
+                for (var i = 0; i < instances.length; i++) {
+                    instances[i].select();
+                }
+
+            },
+
+            deselect: function (instances) {
+                for (var i = 0; i < instances.length; i++) {
+                    instances[i].deselect();
                 }
             },
 
@@ -260,13 +273,25 @@ define(function (require) {
                 return false;
             },
 
+            show: function (instances) {
+                for (var i = 0; i < instances.length; i++) {
+                    instances[i].show();
+                }
+            },
+
+            hide: function (instances) {
+                for (var i = 0; i < instances.length; i++) {
+                    instances[i].hide();
+                }
+            },
+
             /**
              * Show aspect, make it visible.
              *
              * @param {String}
              *            instancePath - Instance path of aspect to make visible
              */
-            showAspect: function (instancePath) {
+            showInstance: function (instancePath) {
                 // if already visible, return false for unsuccessful
                 // operation
                 if (GEPPETTO.getVARS().meshes[instancePath].visible == true) {
@@ -277,6 +302,26 @@ define(function (require) {
                     GEPPETTO.getVARS().meshes[instancePath].visible = true;
                     return true;
                 }
+            },
+
+            /**
+             * Hide aspect
+             *
+             * @param {String}
+             *            instancePath - Path of the aspect to make invisible
+             */
+            hideInstance: function (instancePath) {
+                for (var v in GEPPETTO.getVARS().meshes) {
+                    if (v == instancePath) {
+                        if (GEPPETTO.getVARS().meshes[v].visible == false) {
+                            return false;
+                        } else {
+                            GEPPETTO.getVARS().meshes[v].visible = false;
+                            return true;
+                        }
+                    }
+                }
+                return false;
             },
 
             /**
@@ -367,49 +412,31 @@ define(function (require) {
                 return true;
             },
 
-            /**
-             * Hide aspect
-             *
-             * @param {String}
-             *            instancePath - Path of the aspect to make invisible
-             */
-            hideAspect: function (instancePath) {
-                for (var v in GEPPETTO.getVARS().meshes) {
-                    if (v == instancePath) {
-                        if (GEPPETTO.getVARS().meshes[v].visible == false) {
-                            return false;
-                        } else {
-                            GEPPETTO.getVARS().meshes[v].visible = false;
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            },
 
             /**
-             * Zoom to a mesh given the instance path of the aspect to which it belongs
+             *
+             * @param instance
              */
-            zoomToMesh: function (path) {
+            zoomToInstance: function (instance) {
                 GEPPETTO.getVARS().controls.reset();
 
-                var zoomParameters =
-                {};
-                var mesh = GEPPETTO.getVARS().meshes[path];
+                var zoomParameters = {};
+                var mesh = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 mesh.traverse(function (object) {
                     if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.PointCloud) {
-                        GEPPETTO.SceneController.addMeshToZoom(object, zoomParameters);
+                        GEPPETTO.SceneController.addMeshToZoomParameters(object, zoomParameters);
                     }
                 });
 
-                GEPPETTO.SceneController.zoomTo(zoomParameters);
+                GEPPETTO.SceneController.zoomToParameters(zoomParameters);
 
             },
 
             /**
-             * Zoom to coordinates specified in the zoomParameters dictionary
+             *
+             * @param zoomParameters
              */
-            zoomTo: function (zoomParameters) {
+            zoomToParameters: function (zoomParameters) {
                 // Compute world AABB center
                 GEPPETTO.getVARS().sceneCenter.x = (zoomParameters.aabbMax.x + zoomParameters.aabbMin.x) * 0.5;
                 GEPPETTO.getVARS().sceneCenter.y = (zoomParameters.aabbMax.y + zoomParameters.aabbMin.y) * 0.5;
@@ -419,9 +446,12 @@ define(function (require) {
             },
 
             /**
-             * To be invoked on a THREE object with a geometry. zoomParameters are updated to take into account also this new mesh.
+             *
+             * @param mesh
+             * @param zoomParameters
+             * @returns {*}
              */
-            addMeshToZoom: function (mesh, zoomParameters) {
+            addMeshToZoomParameters: function (mesh, zoomParameters) {
                 mesh.geometry.computeBoundingBox();
                 aabbMin = mesh.geometry.boundingBox.min;
                 aabbMax = mesh.geometry.boundingBox.max;
@@ -447,27 +477,25 @@ define(function (require) {
             },
 
             /**
-             * Takes a path and zoom to all meshes in the scene that descend from it focus camera. The difference with zoomToMesh is that zoomToMesh only zoom to the one and only mesh identified by
-             * the instancePath passed as parameter.
+             *
+             * @param instances
              */
-            zoomToMeshes: function (path) {
+            zoomTo: function (instances) {
                 GEPPETTO.getVARS().controls.reset();
 
-                var zoomParameters =
-                {};
+                var zoomParameters = {};
 
-                for (var meshInstancePath in GEPPETTO.getVARS().meshes) {
-                    var mesh = GEPPETTO.getVARS().meshes[meshInstancePath];
-                    if (meshInstancePath.startsWith(path)) {
-                        mesh.traverse(function (object) {
-                            if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.PointCloud) {
-                                GEPPETTO.SceneController.addMeshToZoom(object, zoomParameters);
-                            }
-                        });
-                    }
+                for (var i = 0; i < instances.length; i++) {
+                    var instancePath = instances[i].getInstancePath();
+                    var mesh = GEPPETTO.getVARS().meshes[instancePath];
+                    mesh.traverse(function (object) {
+                        if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.PointCloud) {
+                            GEPPETTO.SceneController.addMeshToZoomParameters(object, zoomParameters);
+                        }
+                    });
                 }
 
-                GEPPETTO.SceneController.zoomTo(zoomParameters);
+                GEPPETTO.SceneController.zoomToParameters(zoomParameters);
             },
 
             /**
@@ -829,9 +857,9 @@ define(function (require) {
                 for (var v in map) {
                     if (v != undefined) {
                         var m = GEPPETTO.getVARS().visualModelMap[map[v]];
-                        
-                        eval(map[v].substring(0,map[v].lastIndexOf(".")));
-                        var object = instance.getVisualType()[map[v].replace(instancePath+".","")];
+
+                        eval(map[v].substring(0, map[v].lastIndexOf(".")));
+                        var object = instance.getVisualType()[map[v].replace(instancePath + ".", "")];
 
                         // If it is a segment compare to the id otherwise check in the visual groups
                         if (object.getId() in groupElements) {
@@ -997,8 +1025,30 @@ define(function (require) {
                         }
                     }
                 }
-            }
-            ,
+            },
+
+
+            isVisible: function (variables) {
+                var visible = true;
+                for (var i = 0; i < variables.length; i++) {
+                    if (!variables[i].isVisible()) {
+                        visible = false;
+                        break;
+                    }
+                }
+                return visible;
+            },
+
+            isSelected: function (variables) {
+                var selected = true;
+                for (var i = 0; i < variables.length; i++) {
+                    if (!variables[i].isSelected()) {
+                        selected = false;
+                        break;
+                    }
+                }
+                return selected;
+            },
 
             /**
              * Animate simulation

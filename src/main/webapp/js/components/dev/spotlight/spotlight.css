@@ -93,6 +93,27 @@
     font-size: 14px;
 }
 
+.spotlight-input {
+    border: 0;
+    font-size: 24px;
+    color: white;
+    background-color: transparent;
+    float:left;
+    margin-right:5px;
+}
+
+.spotlight-input-label{
+    color:#fd6808;
+    font-size: 24px;
+    background-color: transparent;
+    float:left;
+}
+
+.spotlight-input:focus {
+    outline:0px !important;
+    -webkit-appearance:none;
+}
+
 .spotlight-toolbar {
     position: absolute;
     margin-left: auto;
@@ -136,7 +157,7 @@
     color: #fd6808 !important;
 }
 
-.spotlight-suggestion{
+.spotlight-suggestion {
     background-color: #fd6808;
-    color:white;
+    color: white;
 }

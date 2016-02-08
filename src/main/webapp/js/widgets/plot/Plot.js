@@ -196,7 +196,10 @@ define(function (require) {
          * @param {Object} state - series to plot, can be array of data or an geppetto simulation variable
          * @param {Object} options - options for the plotting widget, if null uses default
          */
-        plotData: function (state, options) {
+        plotData: function (data, options) {
+            if (!$.isArray(data)) {
+                data = [data];
+            }
 
             // If no options specify by user, use default options
             if (options != null) {
@@ -208,6 +211,8 @@ define(function (require) {
                     }
                 }
             }
+
+
             var labelsMap = this.labelsMap;
             this.initializeLegend(function (label, series) {
                 var shortLabel = label;
@@ -226,27 +231,24 @@ define(function (require) {
                 return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
             });
 
-            if (state != null) {
-                if (state instanceof Array) {
-                    this.datasets.push({
-                        data: state
-                    });
-                }
+            for (var i = 0; i < data.length; i++) {
+                var instance = data[i];
+                if (instance != null && instance.getTimeSeries()) {
 
-                else {
                     for (var key = 0; key < this.datasets.length; key++) {
-                        if (state.getInstancePath() == this.datasets[key].label) {
-                            return "Dataset " + state.getInstancePath() + " is " + "already being plotted.";
+                        if (instance.getInstancePath() == this.datasets[key].label) {
+                            continue;
                         }
                     }
 
-                    var timeSeriesData = this.getTimeSeriesData(state);
+                    var timeSeriesData = this.getTimeSeriesData(instance);
 
                     this.datasets.push({
-                        label: state.getInstancePath(),
-                        variable: state,
+                        label: instance.getInstancePath(),
+                        variable: instance,
                         data: timeSeriesData
                     });
+
                 }
             }
 

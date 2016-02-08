@@ -88,6 +88,68 @@ define(function (require) {
                 }
             },
 
+            /**
+             * Sets parameters for this experiment.
+             *
+             * @command ExperimentNode.setParameters(parameters)
+             * @returns {ExperimentNode} ExperimentNode for given name
+             */
+            setParameters: function (newParameters) {
+                if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                    var modelParameters = {};
+                    for (var index in newParameters) {
+                        modelParameters[newParameters[index].getInstancePath()] = newParameters[index].getValue();
+                    }
+                    Project.getActiveExperiment().parameters = [];
+                    var parameters = {};
+                    parameters["experimentId"] = this.id;
+                    parameters["projectId"] = this.getParent().getId();
+                    parameters["modelParameters"] = modelParameters;
+
+                    for (var key in newParameters) {
+                        Project.getActiveExperiment().parameters.push(key);
+                    }
+
+                    GEPPETTO.MessageSocket.send("set_parameters", parameters);
+
+                }
+            },
+
+            watchVariables: function (variables, watch) {
+                var watchedVariables = [];
+                for (var i = 0; i < variables.length; i++) {
+                    watchedVariables.push(variables[i].getInstancePath());
+                    variables[i].setWatched(watch, false);
+                }
+                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                    var parameters = {};
+                    parameters["experimentId"] = Project.getActiveExperiment().id;
+                    parameters["projectId"] = Project.getId();
+                    parameters["variables"] = watchedVariables;
+                    parameters["watch"] = watch;
+                    GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
+                }
+
+
+                for (var v = 0; v < variables.length; v++) {
+                    if (Project.getActiveExperiment().variables.indexOf(variables[v]) == -1) {
+                        Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
+                    }
+                }
+            },
+
+            isWatched: function (variables) {
+                var watched = true;
+                for (var i = 0; i < variables.length; i++) {
+                    if (!variables[i].isWatched()) {
+                        watched = false;
+                        break;
+                    }
+                }
+                return watched;
+            },
+
+
             play: function (experiment, options) {
                 // set options
                 if (options != undefined) {

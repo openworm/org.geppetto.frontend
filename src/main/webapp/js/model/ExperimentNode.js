@@ -266,31 +266,6 @@ define(function (require) {
 
 
             /**
-             * Start watching of variables for this experiment
-             *
-             * @command ExperimentNode.watchVariables()
-             */
-            watchVariables: function (variables) {
-                var watchedVariables = [];
-                for (var i = 0; i < variables.length; i++) {
-                    watchedVariables.push(variables[i].getInstancePath());
-                }
-                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                    var parameters = {};
-                    parameters["experimentId"] = this.id;
-                    parameters["projectId"] = this.getParent().getId();
-                    parameters["variables"] = watchedVariables;
-                    GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
-                }
-
-                for (var v = 0; v < variables.length; v++) {
-                    if (this.variables.indexOf(variables[v]) == -1) {
-                        this.variables.push(variables[v].getInstancePath());
-                    }
-                }
-            },
-
-            /**
              * Gets the watched variables for this experiment.
              *
              * @command ExperimentNode.getWatchedVariables(asObjs)
@@ -331,36 +306,6 @@ define(function (require) {
                 return watchedVariables;
             },
 
-
-            /**
-             * Sets parameters for this experiment.
-             *
-             * @command ExperimentNode.setParameters(parameters)
-             * @returns {ExperimentNode} ExperimentNode for given name
-             */
-            setParameters: function (newParameters) {
-                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                    var modelParameters =
-                    {};
-                    for (var index in newParameters) {
-                        modelParameters[newParameters[index].getPath()] = newParameters[index].getValue();
-                    }
-                    this.parameters = [];
-                    var parameters =
-                    {};
-                    parameters["experimentId"] = this.id;
-                    parameters["projectId"] = this.getParent().getId();
-                    parameters["modelParameters"] = modelParameters;
-
-                    for (var key in newParameters) {
-                        this.parameters.push(key);
-                    }
-
-                    GEPPETTO.MessageSocket.send("set_parameters", parameters);
-
-                    return this;
-                }
-            },
 
             /**
              * Download results for recording file

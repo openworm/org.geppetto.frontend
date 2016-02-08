@@ -150,7 +150,7 @@ define(function (require) {
             this.value = value;
 
             if (updateServer) {
-                Project.getActiveExperiment().setParameters([this]);
+                GEPPETTO.ExperimentsController.setParameters([this]);
             }
 
             return this;

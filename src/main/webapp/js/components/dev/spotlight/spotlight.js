@@ -19,16 +19,16 @@ define(function (require) {
             require('jsx!mixins/bootstrap/modal')
         ],
 
-        potentialSuggestions:{},
-        suggestions:null,
-        instances:null,
+        potentialSuggestions: {},
+        suggestions: null,
+        instances: null,
 
         componentDidMount: function () {
 
             var space = 32;
             var escape = 27;
 
-            var that=this;
+            var that = this;
 
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == space) {
@@ -55,12 +55,12 @@ define(function (require) {
                 }
             });
 
-            $('#typeahead').bind('typeahead:selected', function(obj, datum, name) {
-                if(datum.hasOwnProperty("path")){
+            $('#typeahead').bind('typeahead:selected', function (obj, datum, name) {
+                if (datum.hasOwnProperty("path")) {
                     //it's an instance
                     that.confirmed(datum.path);
                 }
-                else if(datum.hasOwnProperty("label")){
+                else if (datum.hasOwnProperty("label")) {
                     //it's a suggestion
                     that.confirmed(datum.label);
                 }
@@ -75,31 +75,39 @@ define(function (require) {
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions
             this.instances = new Bloodhound({
-                datumTokenizer: function(str) { return str.path ? str.path.split(".") : [];},
-                queryTokenizer: function(str) { return str ? str.split(/[\.\s]/) : [];},
-                identify: function(obj) { return obj.path; }
+                datumTokenizer: function (str) {
+                    return str.path ? str.path.split(".") : [];
+                },
+                queryTokenizer: function (str) {
+                    return str ? str.split(/[\.\s]/) : [];
+                },
+                identify: function (obj) {
+                    return obj.path;
+                }
             });
 
             this.suggestions = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
-                identify: function(obj) { return obj.label; }
+                identify: function (obj) {
+                    return obj.label;
+                }
             });
 
             Handlebars.registerHelper('geticonFromMetaType', function (metaType) {
-                if(metaType){
+                if (metaType) {
                     return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType] + "' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType] + ";'/>");
                 }
-                else{
+                else {
                     return;
                 }
 
             });
 
             Handlebars.registerHelper('geticon', function (icon) {
-                if(icon){
+                if (icon) {
                     return new Handlebars.SafeString("<icon class='fa " + icon + "' style='margin-right:5px;'/>");
-                }else{
+                } else {
                     return;
                 }
 
@@ -108,17 +116,17 @@ define(function (require) {
 
             this.initTypeahead();
 
-            GEPPETTO.Spotlight=this;
+            GEPPETTO.Spotlight = this;
 
 
             //TODO: To be removed, just a sample of how to add a suggestion
-            this.addSuggestion(this.recordSample,GEPPETTO.Resources.RUN_FLOW);
-            this.addSuggestion(this.plotSample,GEPPETTO.Resources.PLAY_FLOW);
+            this.addSuggestion(this.recordSample, GEPPETTO.Resources.RUN_FLOW);
+            this.addSuggestion(this.plotSample, GEPPETTO.Resources.PLAY_FLOW);
 
         },
 
-        recordSample:{
-            "label":"Record all membrane potentials",
+        recordSample: {
+            "label": "Record all membrane potentials",
             "actions": [
                 "var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'));",
                 "Project.getActiveExperiment().watchVariables(instances);"
@@ -126,8 +134,8 @@ define(function (require) {
             "icon": "fa-dot-circle-o"
         },
 
-        plotSample:{
-            "label":"Plot all recorded variables",
+        plotSample: {
+            "label": "Plot all recorded variables",
             "actions": [
                 "var p=G.addWidget(0).setName('Recorded Variables');",
                 "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
@@ -135,10 +143,10 @@ define(function (require) {
             "icon": "fa-area-chart"
         },
 
-        confirmed:function(item){
+        confirmed: function (item) {
             //check suggestions
 
-            if(item && item!="") {
+            if (item && item != "") {
                 var suggestionFound = false
 
                 if (this.suggestions.get(item)) {
@@ -155,26 +163,24 @@ define(function (require) {
 
                 //check the instances
                 if (!suggestionFound) {
-                    if (!this.instance || this.instance.getInstancePath() != item) {
-                        var instancePath = item;
-                        this.instance = Instances.getInstance(instancePath);
-                    }
-                    if (this.instance) {
-                        this.loadToolbarFor(this.instance);
+                    window._spotlightInstance = Instances.getInstance([item]);
+                    if (window._spotlightInstance) {
+                        this.loadToolbarFor(window._spotlightInstance);
 
                         if ($(".spotlight-toolbar").length == 0) {
-                            this.loadToolbarFor(this.instance);
+                            this.loadToolbarFor(window._spotlightInstance);
                         }
 
                         $(".tt-menu").hide();
                         $(".spotlight-button").eq(0).focus();
+                        $(".spotlight-input").eq(0).focus();
                     }
                 }
 
             }
         },
 
-        defaultSuggestions:function(q, sync) {
+        defaultSuggestions: function (q, sync) {
             if (q === '') {
                 sync(this.suggestions.index.all());
             }
@@ -183,10 +189,10 @@ define(function (require) {
             }
         },
 
-        defaultInstances:function(q, sync) {
+        defaultInstances: function (q, sync) {
             if (q === '') {
-                var rootInstances=[];
-                for(var i=0;i<window.Instances.length;i++){
+                var rootInstances = [];
+                for (var i = 0; i < window.Instances.length; i++) {
                     rootInstances.push(window.Instances[i].getId());
                 }
                 sync(this.instances.get(rootInstances));
@@ -197,7 +203,7 @@ define(function (require) {
         },
 
 
-        initTypeahead:function(){
+        initTypeahead: function () {
             $('#typeahead').typeahead({
                     hint: true,
                     highlight: true,
@@ -225,48 +231,47 @@ define(function (require) {
         },
 
 
-
-        open:function(flowFilter, useSelection){
-            if(useSelection==undefined){
-                useSelection=false;
+        open: function (flowFilter, useSelection) {
+            if (useSelection == undefined) {
+                useSelection = false;
             }
             this.suggestions.initialize(true);
-            var that=this;
-            if(flowFilter){
-                if($.isArray(flowFilter)){
-                    $.each(flowFilter,function(index,value){
-                        if(that.potentialSuggestions[value]) {
+            var that = this;
+            if (flowFilter) {
+                if ($.isArray(flowFilter)) {
+                    $.each(flowFilter, function (index, value) {
+                        if (that.potentialSuggestions[value]) {
                             that.suggestions.add(that.potentialSuggestions[value]);
                         }
                     });
                 }
-                else{
-                    if(flowFilter && that.potentialSuggestions[flowFilter]) {
+                else {
+                    if (flowFilter && that.potentialSuggestions[flowFilter]) {
                         that.suggestions.add(that.potentialSuggestions[flowFilter]);
                     }
                 }
 
             }
-            else{
-                $.each(this.potentialSuggestions,function(key,value){
+            else {
+                $.each(this.potentialSuggestions, function (key, value) {
                     that.suggestions.add(value);
                 });
             }
             $("#spotlight").show();
             $("#typeahead").focus();
-            if(useSelection){
+            if (useSelection) {
                 var selection = GEPPETTO.G.getSelection();
                 if (selection.length > 0) {
                     var instance = selection[selection.length - 1];
                     $(".typeahead").typeahead('val', instance.getInstancePath());
                     $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
                 }
-                else{
+                else {
                     $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
                     $("#typeahead").typeahead('val', "");
                 }
             }
-            else{
+            else {
                 $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
                 $("#typeahead").typeahead('val', "");
             }
@@ -274,21 +279,19 @@ define(function (require) {
         },
 
 
-
-        addSuggestion:function(suggestion, flow){
-            if(flow==undefined){
-                flow=GEPPETTO.Resources.SEARCH_FLOW;
+        addSuggestion: function (suggestion, flow) {
+            if (flow == undefined) {
+                flow = GEPPETTO.Resources.SEARCH_FLOW;
             }
-            if(!this.potentialSuggestions[flow]){
-                this.potentialSuggestions[flow]=[];
+            if (!this.potentialSuggestions[flow]) {
+                this.potentialSuggestions[flow] = [];
             }
             this.potentialSuggestions[flow].push(suggestion);
-            if(flow==GEPPETTO.Resources.SEARCH_FLOW){
+            if (flow == GEPPETTO.Resources.SEARCH_FLOW) {
                 //the only suggestions always displayed are those for the search flow
                 this.suggestions.add(suggestion);
             }
         },
-
 
 
         BootstrapMenuMaker: {
@@ -329,11 +332,32 @@ define(function (require) {
                 $("#" + name + " .spotlight-button-label").html(button[!condition].label);
             },
 
-            getCommand: function (action, instance) {
-                var processed = action.split("$instance$").join(instance.getInstancePath());
-                processed = processed.split("$type$").join(instance.getType().getPath());
-                processed = processed.split("$typeid$").join(instance.getType().getId());
-                processed = processed.split("$variableid$").join(instance.getVariable().getId());
+            getCommand: function (action, instance, value) {
+                var label="";
+                var processed="";
+                if($.isArray(instance)){
+                    if (instance.length == 1) {
+                        label = instance[0].getInstancePath();
+                    }
+                    else {
+                        label = "Multiple instances of " + instance[0].getVariable().getId();
+                    }
+                    processed = action.split("$instance$").join("_spotlightInstance");
+                    processed = processed.split("$label$").join(label);
+                    processed = processed.split("$value$").join(value);
+                    processed = processed.split("$type$").join(instance[0].getType().getPath());
+                    processed = processed.split("$typeid$").join(instance[0].getType().getId());
+                    processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
+                }
+                else{
+                    processed = action.split("$instance$").join(instance.getInstancePath());
+                    processed = processed.split("$label$").join(instance.getInstancePath());
+                    processed = processed.split("$value$").join(value);
+                    processed = processed.split("$type$").join(instance.getType().getPath());
+                    processed = processed.split("$typeid$").join(instance.getType().getId());
+                    processed = processed.split("$variableid$").join(instance.getVariable().getId());
+                }
+
                 return processed;
             },
 
@@ -341,37 +365,62 @@ define(function (require) {
                 return eval(this.getCommand(action, instance));
             },
 
-            createButton: function (button, name, instance) {
+            createUIElement: function (element, name, instance) {
                 var label = null;
-                var buttonElement = null;
-
-                if (button.hasOwnProperty("condition")) {
-                    var condition = this.execute(button.condition, instance);
-                    var b = button[condition];
+                var uiElement = null;
+                var that=this;
+                if (element.hasOwnProperty("condition")) {
+                    //a stateful button
+                    var condition = this.execute(element.condition, instance);
+                    var b = element[condition];
                     label = $("<div class='spotlight-button-label'>").html(b.label);
-                    buttonElement = $('<button>')
+                    uiElement = $('<button>')
                         .addClass('btn btn-default btn-lg fa spotlight-button')
                         .addClass(b.icon)
                         .attr('data-toogle', 'tooltip')
                         .attr('data-placement', 'bottom')
                         .attr('title', b.tooltip)
                         .attr('container', 'body')
-                        .on('click', this.statefulButtonCallback(button, name, instance));
+                        .on('click', this.statefulButtonCallback(element, name, instance));
+                    uiElement.append(label);
+                }
+                else if (element.hasOwnProperty("inputValue")) {
+                    //an input box
+                    if(!(instance.length>1)){
+                        var uiElement=$("<div>");
+                        var value=eval(this.getCommand(element.inputValue, instance[0]));
+                        var unit=eval(this.getCommand(element.label, instance[0]));
+                        label = $("<div class='spotlight-input-label'>").html(unit);
+                        var input = $('<input>')
+                            .addClass('spotlight-input')
+                            .attr('value', value)
+                            .on('change', function() {
+                                var value=$("#" + name + " .spotlight-input").val();
+                                GEPPETTO.Console.executeCommand(that.getCommand(element.onChange, instance[0],value));
+                            })
+                            .css("width",((value.length + 1) * 14) + 'px')
+                            .on('keyup',function() {
+                                this.style.width = ((this.value.length + 1) * 14) + 'px';
+                            });
+                        uiElement.append(input);
+                        uiElement.append(label);
+                    }
                 }
                 else {
-                    label = $("<div class='spotlight-button-label'>").html(button.label);
-                    buttonElement = $('<button>')
+                    label = $("<div class='spotlight-button-label'>").html(element.label);
+                    uiElement = $('<button>')
                         .addClass('btn btn-default btn-lg fa spotlight-button')
-                        .addClass(button.icon)
+                        .addClass(element.icon)
                         .attr('data-toogle', 'tooltip')
                         .attr('data-placement', 'bottom')
-                        .attr('title', button.tooltip)
+                        .attr('title', element.tooltip)
                         .attr('container', 'body')
-                        .on('click', this.buttonCallback(button, name, instance));
+                        .on('click', this.buttonCallback(element, name, instance));
+                    uiElement.append(label);
                 }
 
-                buttonElement.append(label);
-                return buttonElement;
+
+                return uiElement;
             },
 
             createButtonGroup: function (bgName, bgDef, bgInstance) {
@@ -383,7 +432,7 @@ define(function (require) {
                     .attr('role', 'group')
                     .attr('id', bgName);
                 $.each(bgDef, function (bName, bData) {
-                    var button = that.named(that.createButton, bName, bData, instance);
+                    var button = that.named(that.createUIElement, bName, bData, instance);
                     bg.append(button)
                     $(button).keypress(that, function (e) {
                         if (e.which == 13 || e.keyCode == 13)  // enter
@@ -436,12 +485,12 @@ define(function (require) {
             generateToolbar: function (buttonGroups, instance) {
                 var that = this;
                 var tbar = $('<div>').addClass('spotlight-toolbar');
+                var instanceToCheck = instance;
+                if ($.isArray(instance)) {
+                    //asterisk was used, this is an array
+                    instanceToCheck = instance[0];
+                }
                 $.each(buttonGroups, function (groupName, groupDef) {
-                    var instanceToCheck=instance;
-                    if($.isArray(instance)){
-                        //asterisk was used, this is an array
-                        instanceToCheck=instance[0];
-                    }
                     if ((instanceToCheck.get("capabilities").indexOf(groupName) != -1) ||
                         (instanceToCheck.getType().getMetaType() == groupName)) {
                         tbar.append(that.createButtonGroup(groupName, groupDef, instance));
@@ -461,7 +510,6 @@ define(function (require) {
         render: function () {
             return <input id = "typeahead" className = "typeahead" type = "text" placeholder = "Lightspeed Search" />
         },
-
 
         configuration: {
             "SpotlightBar": {
@@ -497,25 +545,25 @@ define(function (require) {
                 },
                 "VisualCapability": {
                     "buttonOne": {
-                        "condition": "$instance$.isSelected()",
+                        "condition": "GEPPETTO.SceneController.isSelected($instance$)",
                         "false": {
-                            "actions": ["$instance$.select(true)"],
+                            "actions": ["GEPPETTO.SceneController.select($instance$)"],
                             "icon": "fa-hand-stop-o",
                             "label": "Unselected",
                             "tooltip": "Select"
                         },
                         "true": {
-                            "actions": ["$instance$.deselect(true)"],
+                            "actions": ["GEPPETTO.SceneController.deselect($instance$)"],
                             "icon": "fa-hand-rock-o",
                             "label": "Selected",
                             "tooltip": "Deselect"
                         },
                     },
                     "buttonTwo": {
-                        "condition": "$instance$.isVisible()",
+                        "condition": "GEPPETTO.SceneController.isVisible($instance$)",
                         "false": {
                             "actions": [
-                                "$instance$.show(true)"
+                                "GEPPETTO.SceneController.show($instance$)"
                             ],
                             "icon": "fa-eye-slash",
                             "label": "Hidden",
@@ -523,7 +571,7 @@ define(function (require) {
                         },
                         "true": {
                             "actions": [
-                                "$instance$.hide(true)"
+                                "GEPPETTO.SceneController.hide($instance$)"
                             ],
                             "icon": "fa-eye",
                             "label": "Visible",
@@ -533,7 +581,7 @@ define(function (require) {
                     },
                     "buttonThree": {
                         "actions": [
-                            "$instance$.zoomTo()"
+                            "GEPPETTO.SceneController.zoomTo($instance$)"
                         ],
                         "icon": "fa-search-plus",
                         "label": "Zoom",
@@ -541,26 +589,25 @@ define(function (require) {
                     },
                 },
                 "ParameterCapability": {
-                    "buttonOne": {
-                        "actions": [
-                            "$instance$.setValue($value)"
-                        ],
-                        "icon": "fa-i-cursor",
-                        "label": "Set value",
-                        "tooltip": "Set parameter value"
+                    "parameterInput": {
+                        "inputValue":"$instance$.getValue()",
+                        "label":"$instance$.getUnit()",
+                        "onChange":"$instance$.setValue($value$);",
+                        "tooltip": "Set parameter value",
+                        "multipleInstances":false
                     }
                 },
                 "StateVariableCapability": {
                     "watch": {
-                        "condition": "$instance$.isWatched()",
+                        "condition": "GEPPETTO.ExperimentsController.isWatched($instance$);",
                         "false": {
-                            "actions": ["$instance$.setWatched(true)"],
+                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instance$,true);"],
                             "icon": "fa-circle-o",
                             "label": "Not recorded",
                             "tooltip": "Record the state variable"
                         },
                         "true": {
-                            "actions": ["$instance$.setWatched(false)"],
+                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instance$,false);"],
                             "icon": "fa-dot-circle-o",
                             "label": "Recorded",
                             "tooltip": "Stop recording the state variable"
@@ -568,7 +615,7 @@ define(function (require) {
                     },
                     "plot": {
                         "actions": [
-                            "G.addWidget(0).plotData($instance$).setName('$instance$')",
+                            "G.addWidget(0).plotData($instance$).setName('$label$')",
                         ],
                         "icon": "fa-area-chart",
                         "label": "Plot",

@@ -479,7 +479,7 @@ define(function (require) {
                     var instancePath = instances[i].getInstancePath();
                     var mesh = GEPPETTO.getVARS().meshes[instancePath];
                     mesh.traverse(function (object) {
-                        if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.PointCloud) {
+                        if (object.hasOwnProperty("geometry")) {
                             GEPPETTO.SceneController.addMeshToZoomParameters(object, zoomParameters);
                         }
                     });

@@ -133,6 +133,14 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         },
 
         /**
+         *
+         * @returns {*|Object}
+         */
+        getPosition:function(){
+            return this.getVariable().getPosition();
+        },
+
+        /**
          * Checks if this instance has a visual type
          *
          * @command Instance.hasVisualType()
@@ -171,8 +179,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          *
          * @command Instance.getVisualType()
          *
-         * @returns {Type} - Type or list of Types if more than one is found
-         *
+          * @returns {*} - Type or list of Types if more than one is found
          */
         getVisualType: function () {
             var visualTypes = [];
@@ -198,7 +205,9 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                 }
             }
 
-            if(visualTypes.length == 1){
+            if(visualTypes.length == 0){
+                return undefined;
+            } else if(visualTypes.length == 1){
                 return visualTypes[0];
             } else {
                 return visualTypes;

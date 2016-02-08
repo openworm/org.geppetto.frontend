@@ -47,7 +47,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         parent: null,
         size: 0,
         capabilities: [],
-        connections:  [],
+        connections: [],
 
         /**
          * Initializes this node with passed attributes
@@ -58,6 +58,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             this.set({"variable": options.variable});
             this.set({"parent": options.parent});
             this.set({"size": options.size});
+            this.length = options.size; //we want this object to be used like an array
             this.set({"id": options.id});
             this.set({"name": options.name});
             this.set({"_metaType": options._metaType});
@@ -113,6 +114,14 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          */
         getParent: function () {
             return this.get("parent");
+        },
+
+        /**
+         *
+         * @returns {*|Object}
+         */
+        getPosition: function () {
+            return this.getVariable().getPosition();
         },
 
         /**
@@ -206,15 +215,15 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                 if (types[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
                     // check it if is a visual type or has a visual type
                     if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
-                        types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                        types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
                         visualTypes.push(types[i].getType());
-                    } else if (types[i].getType().getVisualType() != null){
+                    } else if (types[i].getType().getVisualType() != null) {
                         visualTypes.push(types[i].getType().getVisualType());
                     }
                 }
             }
 
-            if(visualTypes.length == 1){
+            if (visualTypes.length == 1) {
                 return visualTypes[0];
             } else {
                 return visualTypes;
@@ -331,18 +340,18 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
 
             if (direction === GEPPETTO.Resources.INPUT || direction === GEPPETTO.Resources.OUTPUT || direction === GEPPETTO.Resources.INPUT_OUTPUT) {
                 var filteredConnections = [];
-                for(var i=0; i<connections.length; i++){
+                for (var i = 0; i < connections.length; i++) {
                     // get directionality
                     var connectivity = connections[i].getVariable().getInitialValue().value.connectivity;
-                    if(connectivity == GEPPETTO.Resources.DIRECTIONAL) {
+                    if (connectivity == GEPPETTO.Resources.DIRECTIONAL) {
                         var a = connections[i].getA();
                         var b = connections[i].getB();
                         // if A is this then it's an output connection
-                        if(this.getInstancePath() == a.getPath() && direction === GEPPETTO.Resources.OUTPUT){
+                        if (this.getInstancePath() == a.getPath() && direction === GEPPETTO.Resources.OUTPUT) {
                             filteredConnections.push(connections[i]);
                         }
                         // if B is this then it's an input connection
-                        if(this.getInstancePath() == b.getPath() && direction === GEPPETTO.Resources.INPUT){
+                        if (this.getInstancePath() == b.getPath() && direction === GEPPETTO.Resources.INPUT) {
                             filteredConnections.push(connections[i]);
                         }
                     } else if (connectivity == GEPPETTO.Resources.BIDIRECTIONAL) {

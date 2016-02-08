@@ -100,6 +100,19 @@ define(function (require) {
         },
 
         /**
+         *
+         * @returns {*}
+         */
+        getPosition: function () {
+
+            if ((this.getVariable().getType().getDefaultValue().elements != undefined) &&
+                (this.getVariable().getType().getDefaultValue().elements[this.getIndex()] != undefined)) {
+                return this.getVariable().getType().getDefaultValue().elements[this.getIndex()].position;
+            }
+
+        },
+
+        /**
          * Synonym of get instance path
          *
          * @command ArrayElementInstance.getPath()

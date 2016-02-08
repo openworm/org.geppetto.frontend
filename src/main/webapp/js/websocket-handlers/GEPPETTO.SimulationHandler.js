@@ -106,7 +106,6 @@ define(function (require) {
 
             GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);
 
-            GEPPETTO.SceneController.updateScene(window.Project.runTimeTree);
         };
 
         messageHandler[messageTypes.EXPERIMENT_STATUS] = function (payload) {

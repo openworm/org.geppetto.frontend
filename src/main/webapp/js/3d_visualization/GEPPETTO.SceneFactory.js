@@ -15,16 +15,9 @@ define(function (require) {
         GEPPETTO.SceneFactory =
         {
 
-            buildVisualInstance: function (instance, index) {
+            buildVisualInstance: function (instance) {
                 var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance);
-                var position = instance.getVariable().getPosition();
-                if (instance.getVariable().getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
-                    if ((instance.getVariable().getType().getDefaultValue().elements != undefined) &&
-                        (instance.getVariable().getType().getDefaultValue().elements[index] != undefined)) {
-                        position = instance.getVariable().getType().getDefaultValue().elements[index].position;
-                    }
-                }
-                GEPPETTO.SceneFactory.init3DObject(meshes, instance.getInstancePath(), position);
+                GEPPETTO.SceneFactory.init3DObject(meshes, instance);
             },
 
             /**
@@ -33,14 +26,16 @@ define(function (require) {
              * @param {Object}
              *            meshes - The meshes that need to be initialized
              */
-            init3DObject: function (meshes, instancePath, position) {
+            init3DObject: function (meshes, instance) {
+                var instancePath = instance.getInstancePath();
+                var position = instance.getPosition();
                 for (var m in meshes) {
                     var mesh = meshes[m];
 
                     mesh.instancePath = instancePath;
                     // if the model file is specifying a position for the loaded meshes then we translate them here
                     if (position != null) {
-                        p = new THREE.Vector3(position.x, position.y, position.z);
+                        var p = new THREE.Vector3(position.x, position.y, position.z);
                         mesh.position.set(p.x, p.y, p.z);
                         mesh.matrixAutoUpdate = false;
                         mesh.applyMatrix(new THREE.Matrix4().makeTranslation(p.x, p.y, p.z));
@@ -49,8 +44,6 @@ define(function (require) {
                         // mesh.geometry.translate(position.x, position.y,position.z);
                     }
                     GEPPETTO.getVARS().scene.add(mesh);
-                    // keep track of aspects created by storing them in VARS property object
-                    // under meshes
                     GEPPETTO.getVARS().meshes[instancePath] = mesh;
                     GEPPETTO.getVARS().meshes[instancePath].visible = true;
                     GEPPETTO.getVARS().meshes[instancePath].ghosted = false;
@@ -59,58 +52,6 @@ define(function (require) {
                     GEPPETTO.getVARS().meshes[instancePath].input = false;
                     GEPPETTO.getVARS().meshes[instancePath].output = false;
 
-                }
-            },
-
-            /**
-             * Updates the scene
-             *
-             * @param {Object}
-             *            newRuntimeTree - New update received to update the 3D scene
-             */
-            updateScene: function (newRuntimeTree) {
-                var entities = newRuntimeTree;
-                // traverse entities in updated tree
-                for (var eindex in entities) {
-                    var entity = entities[eindex];
-                    // traverse apects of new updated entity
-                    for (var a in entity.getAspects()) {
-                        var aspect = entity.getAspects()[a];
-                        var visualTree = aspect.VisualizationTree;
-                        for (var vm in visualTree.content) {
-                            var node = visualTree.content[vm];
-
-                            if (node != null && typeof node === "object") {
-
-                                var metaType = node.getMetaType();
-                                if (metaType == "CompositeNode") {
-                                    for (var gindex in node) {
-                                        var vo = node[gindex];
-                                        var voType = vo._metaType;
-                                        if (voType == "ParticleNode" || voType == "SphereNode" || voType == "CylinderNode") {
-                                            GEPPETTO.SceneFactory.updateGeometry(vo);
-                                        }
-                                    }
-                                } else if (metaType == "ParticleNode" || metaType == "SphereNode" || metaType == "CylinderNode") {
-                                    GEPPETTO.SceneFactory.updateGeometry(node);
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-
-            updateGeometry: function (g) {
-                var threeObject = GEPPETTO.getVARS().visualModelMap[g.instancePath];
-                if (threeObject) {
-                    if (threeObject instanceof THREE.Vector3) {
-                        threeObject.x = g.position.x;
-                        threeObject.y = g.position.y;
-                        threeObject.z = g.position.z;
-                    } else {
-                        // update the position
-                        threeObject.position.set(g.position.x, g.position.y, g.position.z);
-                    }
                 }
             },
 
@@ -165,11 +106,11 @@ define(function (require) {
                 var threeDeeObj = null;
                 var threeDeeObjList = [];
                 var visualType = instance.getVisualType();
-                if (visualType==undefined || visualType.length == 0) {
+                if (visualType == undefined) {
                     return threeDeeObjList;
                 }
                 else {
-                    if($.isArray(visualType)){
+                    if ($.isArray(visualType)) {
                         //TODO if there is more than one visual type we need to display all of them
                         visualType = visualType[0];
                     }

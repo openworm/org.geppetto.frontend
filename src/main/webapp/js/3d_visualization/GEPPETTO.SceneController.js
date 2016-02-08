@@ -34,15 +34,8 @@ define(function (require) {
              *            skeleton with instances and visual entities
              */
             traverseInstances: function (instances) {
-                if (!Array.isArray(instances) && instances.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                    // array - go over array elements
-                    for (var i = 0; i < instances.getSize(); i++) {
-                        GEPPETTO.SceneController.checkVisualInstance(instances[i], i);
-                    }
-                } else {
-                    for (var j = 0; j < instances.length; j++) {
-                        GEPPETTO.SceneController.checkVisualInstance(instances[j]);
-                    }
+                for (var j = 0; j < instances.length; j++) {
+                    GEPPETTO.SceneController.checkVisualInstance(instances[j]);
                 }
             },
 
@@ -52,27 +45,21 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            checkVisualInstance: function (instance, index) {
-                GEPPETTO.SceneFactory.buildVisualInstance(instance, index);
-
-                // this block keeps traversing the instances
-                if (instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
-                    GEPPETTO.SceneController.traverseInstances(instance.getChildren());
-                } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                    GEPPETTO.SceneController.traverseInstances(instance);
+            checkVisualInstance: function (instance) {
+                if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
+                    //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
+                    if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()){
+                        GEPPETTO.SceneFactory.buildVisualInstance(instance);
+                    }
+                    // this block keeps traversing the instances
+                    if (instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
+                        GEPPETTO.SceneController.traverseInstances(instance.getChildren());
+                    } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
+                        GEPPETTO.SceneController.traverseInstances(instance);
+                    }
                 }
             },
 
-            /**
-             * Updates the scene call, tells factory to do it's job updating meshes
-             *
-             * @param {Object}
-             *            newRuntimeTree - New server update.
-             */
-            updateScene: function (newRuntimeTree) {
-                GEPPETTO.SceneFactory.updateScene(newRuntimeTree);
-                GEPPETTO.getVARS().needsUpdate = false;
-            },
 
             /**
              * Applies visual transformation to given aspect.
@@ -397,7 +384,7 @@ define(function (require) {
                 } else {
                     return false;
                 }
-                GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance.getInstancePath(), instance.getVariable().getPosition());
+                GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance);
 
                 return true;
             },
@@ -413,7 +400,7 @@ define(function (require) {
                 var zoomParameters = {};
                 var mesh = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 mesh.traverse(function (object) {
-                    if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.PointCloud) {
+                    if (object.hasOwnProperty("geometry")) {
                         GEPPETTO.SceneController.addMeshToZoomParameters(object, zoomParameters);
                     }
                 });

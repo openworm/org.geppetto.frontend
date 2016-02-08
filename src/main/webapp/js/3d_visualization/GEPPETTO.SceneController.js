@@ -53,17 +53,7 @@ define(function (require) {
              *            skeleton with instances and visual entities
              */
             checkVisualInstance: function (instance, index) {
-                // This block creates the visual objects if the variable has any in either the
-                // visual type of a type or if the type itself is a visual type
-                if ((instance.getVariable().getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE)
-                    || (instance.getVariable().getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE)) {
-                    GEPPETTO.SceneFactory.buildVisualInstance(instance, instance.getVariable().getType());
-                } else if (instance.getVariable().getType().getVisualType() != undefined) {
-                    GEPPETTO.SceneFactory.buildVisualInstance(instance, instance.getVariable().getType().getVisualType());
-                } else if ((instance.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE) && (instance.getVariable().getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE)
-                    && (instance.getVariable().getType().getType().getVisualType() != undefined)) {
-                    GEPPETTO.SceneFactory.buildVisualInstance(instance, instance.getVariable().getType().getType().getVisualType(), index);
-                }
+                GEPPETTO.SceneFactory.buildVisualInstance(instance, index);
 
                 // this block keeps traversing the instances
                 if (instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
@@ -407,7 +397,7 @@ define(function (require) {
                 } else {
                     return false;
                 }
-                GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance.getInstancePath(), instace.getVariable().getPosition());
+                GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance.getInstancePath(), instance.getVariable().getPosition());
 
                 return true;
             },

@@ -316,7 +316,7 @@ define(function (require) {
 
             if(this instanceof Instance) {
                 if (this.selected) {
-
+					message = GEPPETTO.Resources.DESELECTING_ASPECT + this.instancePath;
                     GEPPETTO.SceneController.deselectInstance(this.getInstancePath());
                     this.selected = false;
 

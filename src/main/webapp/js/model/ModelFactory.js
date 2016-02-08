@@ -296,11 +296,22 @@ define(function (require) {
                         }
                         else if (jsonTypes[i].eClass == 'CompositeVisualType') {
                             type = this.createCompositeVisualType(jsonTypes[i]);
+                            // inject visual capability to all CompositeVisualType
+                            type.extendApi(AVisualCapability);
                         }
                         else if (jsonTypes[i].eClass == 'ArrayType') {
                             type = this.createArrayType(jsonTypes[i]);
                         } else {
                             type = this.createType(jsonTypes[i]);
+                            // inject visual capability if MetaType == VisualType
+                            if(type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE){
+                                type.extendApi(AVisualCapability);
+                            }
+                        }
+
+                        // if getVisualType != null also inject visual capability
+                        if(type.getVisualType() != undefined){
+                            type.extendApi(AVisualCapability);
                         }
 
                         // set parent

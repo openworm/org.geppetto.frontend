@@ -189,26 +189,24 @@ define(function (require) {
                 groups.push(entity);
             }
             
-           if (node.get("capabilities") != null && node.get("capabilities").length > 0 && node.get("capabilities").indexOf('VisualGroupCapability') != -1){
+           if (node.getWrappedObj().get("capabilities") != null && node.getWrappedObj().get("capabilities").length > 0 && node.getWrappedObj().get("capabilities").indexOf('VisualGroupCapability') != -1){
         	   var visualGroup = [{
-                   label: "Show Visual Group",
+                   label: "Show Visual Groups",
                    action: ["G.unSelectAll();", node.getPath() + ".show(true)"],
                }];
 
-        	   //node.getVisualGroups()
-        	   //ca1.CA1_CG[0].applyVisualGroup(ca1.CA1_CG[0].getVisualGroups()[0],true)
-        	   
+        	   var subgroups1Add = [];
+               for (var visualGroupIndex in node.getWrappedObj().getVisualGroups()) {
+                   subgroups1Add = subgroups1Add.concat([{
+                       label: "Show " + node.getWrappedObj().getVisualGroups()[visualGroupIndex].getName(),
+                       action: ["G.unSelectAll();", node.getPath() + ".applyVisualGroup(" + node.getPath() + ".getVisualGroups()[" + visualGroupIndex + "], true)"],
+                       position: visualGroupIndex
+                   }]);
+               }
+               visualGroup[0]["groups"] = [subgroups1Add];
+
                groups.push(visualGroup);
            }
-           
-//            if (node._metaType == "VisualGroupNode") {
-//                var visualGroup = [{
-//                    label: "Show Visual Group",
-//                    action: ["G.unSelectAll();", node.getPath() + ".show(true)"],
-//                }];
-//
-//                groups.push(visualGroup);
-//            }
 
             return groups;
         },

@@ -43,6 +43,7 @@ define(function (require) {
     return ObjectWrapper.Model.extend({
         visualType: null,
         superType: null,
+        capabilities: [],
 
         /**
          * Initializes this node with passed attributes
@@ -54,6 +55,9 @@ define(function (require) {
             this.set({"visualType": options.visualType});
             this.set({"superType": options.superType});
             this.set({"parent": options.parent});
+
+            // capability list is for private use
+            this.set({"capabilities": []});
         },
 
         /**
@@ -119,6 +123,36 @@ define(function (require) {
         getReferencedVariables: function () {
             // TODO: fetch from the right place
             return this.get('wrappedObj').referencedVariables;
+        },
+
+        /**
+         * Extends with methods from another object
+         *
+         * @command Type.extendApi(extensionObj)
+         */
+        extendApi: function (extensionObj) {
+            $.extend(this, extensionObj);
+            this.get("capabilities").push(extensionObj.capabilityId);
+        },
+
+        /**
+         * Checks if the instance has a given capability
+         *
+         * @command Type.hasCapability(capabilityId)
+         *
+         * @returns {Boolean}
+         */
+        hasCapability: function (capabilityId) {
+            var hasCapability = false;
+            var capabilities = this.get('capabilities');
+
+            for (var i = 0; i < capabilities.length; i++) {
+                if (capabilities[i] === capabilityId) {
+                    hasCapability = true;
+                }
+            }
+
+            return hasCapability;
         },
     });
 });

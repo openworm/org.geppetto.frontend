@@ -41,7 +41,11 @@ define(function (require) {
 
     var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
     var $ = require('jquery');
+    
+    // Icons to display on hover
     var aIcons = $("<a id='tvIcons'><icon class='fa fa-sign-in'/></a>");
+    // div to verify if textfield should be change to textarea
+    var testingSizeElement = $('<div></div>').css({'position': 'absolute','float': 'left','white-space': 'nowrap','visibility': 'hidden'}).appendTo($('body'));
     
     return TreeVisualiser.TreeVisualiser.extend({
 
@@ -64,7 +68,6 @@ define(function (require) {
                     }
                 );
             };
-
             this.initDATGUI();
         },
 
@@ -136,7 +139,8 @@ define(function (require) {
         	            for (var childIndex in node.getChildren()){
         	            	this.prepareTree(this.dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
         	            }
-        	            
+        	        
+        	            this.customiseLayout(this.dataset.valueDict[nodeInstancePath]["folder"].domElement);
         	        }
                 	this.dataset.isDisplayed = true;
                 }
@@ -198,21 +202,23 @@ define(function (require) {
             this.prepareTree(this.gui, currentDataset, 0);
             this.dataset.isDisplayed = true;
             
-            //Disable input elements
-            $(this.dialog).find("input").prop('disabled', true);
-            $(this.dialog).find(".parameterspecificationnodetv input").prop('disabled', false);
+            // Customise layout: make text field non-editable, convert text field into text area...
+            this.customiseLayout($(this.dialog));
+            
+        },
+        
+        customiseLayout: function(folder){
+        	//Disable input elements
+            $(folder).find("input").prop('disabled', true);
+            
+            //AQP: What should be editable?
+            //$(folder).find(".parameterspecificationnodetv input").prop('disabled', false);
 
-            //Change input text to textarea if text is too big
-            var testingSizeElement = $('<div></div>').css({
-                'position': 'absolute',
-                'float': 'left',
-                'white-space': 'nowrap',
-                'visibility': 'hidden'
-            }).appendTo($('body'));
-            $(this.dialog).find('.textmetadatanodetv').find('div > div > input[type="text"]').each(function () {
+            //Change textfield to textarea if it is too big
+            $(folder).find('.texttypetv').find('div > div > input[type="text"]').each(function () {
                 testingSizeElement.text($(this).val());
                 if (testingSizeElement.width() > $(this).width()) {
-                    $(this).closest('.textmetadatanodetv').addClass('textarea');
+                    $(this).closest('.texttypetv').addClass('textarea');
                     var textarea = $(document.createElement('textarea')).attr('readonly', true).attr('rows', 2);
                     textarea.val($(this).val());
                     $(this).replaceWith(textarea);

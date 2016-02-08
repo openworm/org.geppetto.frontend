@@ -287,7 +287,7 @@ define(function (require) {
                 		var child = state.getChildren()[i];
                 		
                 		
-                		children.push(this.createTreeVisualiserNode({wrappedObj: child, formattedValue: "taka", style: "", _children: this.createTreeVisualiserNodeChildren(child)}));
+                		children.push(this.createTreeVisualiserNode({wrappedObj: child, formattedValue: "", style: "", _children: this.createTreeVisualiserNodeChildren(child)}));
                 		
 //                		var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
 //                            "name": i,

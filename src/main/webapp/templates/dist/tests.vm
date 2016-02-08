@@ -32,10 +32,6 @@
 	<p>
 		<h3><a href=".\GeppettoNeuronalTests.html">NeuroML Tests</a></h3>
 	</p>
-	<i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend, org.geppetto.model.neuroml, org.geppetto.simulator.external, NEURON installed</i>
-	<p>
-		<h3><a href=".\GeppettoNeuronalSimulationTests.html">Neuronal Simulation Tests</a></h3>
-	</p>
 	<i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend, org.geppetto.model.sph, org.geppetto.simulator.sph</i>
 	<p>
 		<h3><a href=".\GeppettoFluidDynamicsTests.html">Fluid Dynamics Tests</a></h3>

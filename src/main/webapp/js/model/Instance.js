@@ -113,7 +113,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          *
          */
         getTypes: function () {
-            return this.get("variable").getTypes();
+            return this.getVariable().getTypes();
         },
 
         /**
@@ -248,6 +248,18 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             var path = parentPath + "." + this.getId();
 
             return (parentPath != "") ? path : this.getId();
+        },
+
+        /**
+         * Synonym of get instance path
+         *
+         * @command Instance.getPath()
+         *
+         * @returns {String} - Instance path
+         *
+         */
+        getPath: function () {
+            this.getInstancePath();
         },
 
         /**

@@ -70,7 +70,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get id
          *
-         * @command Instance.getId()
+         * @command ArrayInstance.getId()
          *
          * @returns {String} - Id
          *
@@ -82,7 +82,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get name
          *
-         * @command Instance.getName()
+         * @command ArrayInstance.getName()
          *
          * @returns {String} - Name
          *
@@ -94,7 +94,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get meta type
          *
-         * @command Instance.getMetaType()
+         * @command ArrayInstance.getMetaType()
          *
          * @returns {String} - meta type
          *
@@ -106,7 +106,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get parent
          *
-         * @command Instance.getParent()
+         * @command ArrayInstance.getParent()
          *
          * @returns {Instance} - Parent instance
          *
@@ -118,13 +118,13 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get the type for this instance
          *
-         * @command Instance.getTypes()
+         * @command ArrayInstance.getTypes()
          *
          * @returns {List<Type>} - array of types
          *
          */
         getTypes: function () {
-            return this.get("variable").getTypes();
+            return this.getVariable().getTypes();
         },
 
         /**
@@ -146,7 +146,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get the children for the array instance
          *
-         * @command Instance.getChildren()
+         * @command ArrayInstance.getChildren()
          *
          * @returns {List<Instance>} - array of instances
          *
@@ -162,7 +162,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Checks if this instance has a visual type
          *
-         * @command Instance.hasVisualType()
+         * @command ArrayInstance.hasVisualType()
          *
          * @returns {Boolean}
          *
@@ -191,7 +191,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Gets visual types for the instance if any
          *
-         * @command Instance.getVisualType()
+         * @command ArrayInstance.getVisualType()
          *
          * @returns {Type}
          *
@@ -224,7 +224,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get the variable for this instance
          *
-         * @command Instance.getVariable()
+         * @command ArrayInstance.getVariable()
          *
          * @returns {Variable} - Variable object for this instance
          *
@@ -236,7 +236,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get instance path
          *
-         * @command Instance.getInstancePath()
+         * @command ArrayInstance.getInstancePath()
          *
          * @returns {String} - Instance path
          *
@@ -253,9 +253,21 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         },
 
         /**
+         * Synonym of get instance path
+         *
+         * @command ArrayInstance.getPath()
+         *
+         * @returns {String} - Instance path
+         *
+         */
+        getPath: function () {
+            this.getInstancePath();
+        },
+
+        /**
          * Get raw instance path (without array shortening)
          *
-         * @command Instance.getRawInstancePath()
+         * @command ArrayInstance.getRawInstancePath()
          *
          * @returns {String} - Raw instance path
          *
@@ -267,7 +279,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get the size of the array instance
          *
-         * @command Instance.getSize()
+         * @command ArrayInstance.getSize()
          *
          * @returns {Integer} - size of the array
          *
@@ -309,7 +321,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Return connections, user GEPPETTO.Resources.INPUT / OUTPUT / INPUT_OUTPUT to filter
          *
-         * @command Instance.getConnections(direction)
+         * @command ArrayInstance.getConnections(direction)
          *
          * @returns {List<Instance>}
          *
@@ -348,7 +360,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         /**
          * Get children instances
          *
-         * @command Instance.addConnection()
+         * @command ArrayInstance.addConnection()
          */
         addConnection: function (connection) {
             this.get("connections").push(connection);

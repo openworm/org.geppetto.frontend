@@ -44,6 +44,7 @@ define(function (require) {
         anonymousTypes: [],
         types: [],
         pointerValue: null,
+        capabilities: [],
 
         /**
          * Initializes this node with passed attributes
@@ -56,6 +57,9 @@ define(function (require) {
             this.set({"pointerValue": options.pointerValue});
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"parent": options.parent});
+
+            // capability list is for private use
+            this.set({"capabilities": []});
         },
 
         /**
@@ -191,6 +195,36 @@ define(function (require) {
         getChildren: function () {
             // only anonymousTypes as containment == true in the model (they are not references)
             return this.get('anonymousTypes');
-        }
+        },
+
+        /**
+         * Extends with methods from another object
+         *
+         * @command Variable.extendApi(extensionObj)
+         */
+        extendApi: function (extensionObj) {
+            $.extend(this, extensionObj);
+            this.get("capabilities").push(extensionObj.capabilityId);
+        },
+
+        /**
+         * Checks if the instance has a given capability
+         *
+         * @command Variable.hasCapability(capabilityId)
+         *
+         * @returns {Boolean}
+         */
+        hasCapability: function (capabilityId) {
+            var hasCapability = false;
+            var capabilities = this.get('capabilities');
+
+            for (var i = 0; i < capabilities.length; i++) {
+                if (capabilities[i] === capabilityId) {
+                    hasCapability = true;
+                }
+            }
+
+            return hasCapability;
+        },
     });
 });

@@ -51,8 +51,6 @@ define(['jquery'], function (require) {
          * @returns {String} Value of quantity
          */
         getTimeSeries: function () {
-            // TODO: adapt to type / variable
-
             return this.timeSeries;
         },
 
@@ -86,8 +84,6 @@ define(['jquery'], function (require) {
          * @returns {String} Unit for quantity
          */
         getUnit: function () {
-            // TODO: adapt to type / variable
-
             //returns the unit associated with the initial value
             var unit = undefined;
             var initialValues = this.getVariable().getWrappedObj().initialValues;

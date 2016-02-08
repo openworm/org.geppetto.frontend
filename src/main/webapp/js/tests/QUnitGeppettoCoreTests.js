@@ -227,36 +227,107 @@ define(function (require) {
 
             var done = assert.async();
 
-            var testModelFactory = function() {
-                // test that geppetto model high level is as expected
-                assert.ok(window.Model != undefined, "Model is not undefined");
-                assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2, "2 Variables as expected");
-                assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
-                // test that instance tree high level is as expected
-                assert.ok(window.Instances != undefined, "Instances are not undefined");
-                assert.ok(window.Instances.length == 1, "1 top level instance as expected");
-                assert.ok(window.acnet2 != undefined && window.acnet2.baskets_12 != undefined, "Shortcuts created as expected");
-                assert.ok(window.acnet2.baskets_12.getChildren().length == 12, "12 exploded baskets as expected");
-                assert.ok(window.acnet2.pyramidals_48.getChildren().length == 48, "48 exploded pyramidals as expected");
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            equal(window.Project.getId(), 5, "Project ID checked");
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadModel(payload);
 
-                // TODO: check resolve
-                // TODO: check that types are resolved as expected in the model
-                // TODO: check visual groups are created
-                // TODO: test that ModelFactory.getInsantceOf gives expected results
-                // - for variables, obj and path
-                // - for types, obj and path
-                // TODO: check AllPotentialInstances
-                // TODO: check getAllPotentialInstancesEndingWith
-                // TODO: check getInstance:
-                // - for existing instance
-                // - when creating a new instance
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2, "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined, "Instances are not undefined");
+                            assert.ok(window.Instances.length == 1, "1 top level instance as expected");
+                            assert.ok(window.acnet2 != undefined && window.acnet2.baskets_12 != undefined, "Shortcuts created as expected");
+                            assert.ok(window.acnet2.baskets_12.getChildren().length == 12 && window.acnet2.pyramidals_48.getChildren().length == 48, "Visual types exploded into instances as expected");
+                            // check resolve
+                            assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getId() == 'Text' &&
+                                      GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getMetaType() == 'TextType', "Ref string resolved to Type as expected");
+                            assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.20/@variables.5/@anonymousTypes.0/@variables.7').getId() == 'rateScale' &&
+                                      GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.20/@variables.5/@anonymousTypes.0/@variables.7').getMetaType() == 'Variable', "Ref string resolved to Variable as expected");
+                            // check that types are resolved as expected in the model
+                            assert.ok(acnet2.baskets_12[0].getTypes().length == 1 &&
+                                      acnet2.baskets_12[0].getTypes()[0].getId() ==  'bask' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getMetaType() == 'CompositeType', 'Type in the model resolved as expected');
+                            // check visual groups are created
+                            assert.ok(acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups().length == 3 &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[0].getId() == 'Cell_Regions' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Na_bask_soma_group' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask_soma_group', 'Visual groups created as expected');
+                            // test that ModelFactory.getInstanceOf gives expected results
+                            assert.ok(GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType()).length == 12 &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType().getPath()).length == 12 &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType())[0].getId() == "baskets_12[0]" &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType())[0].getMetaType() == "ArrayElementInstance",
+                                      'getAllInstanceOf returning instances as expected for Type and Type path.');
+                            assert.ok(GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable()).length == 1 &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable().getPath()).length == 1 &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getId() == "baskets_12" &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
+                                      'getAllInstanceOf returning instances as expected for Variable and Variable path.');
+                            // check AllPotentialInstances
+                            assert.ok(GEPPETTO.ModelFactory.allPaths.length == 14661 &&
+                                      GEPPETTO.ModelFactory.allPaths[0].path == 'acnet2' &&
+                                      GEPPETTO.ModelFactory.allPaths[0].metaType == 'CompositeType' &&
+                                      GEPPETTO.ModelFactory.allPaths[14661 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPaths[14661 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                            // check getAllPotentialInstancesEndingWith
+                            assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
+                                      GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&
+                                      GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[333] == 'acnet2.pyramidals_48[45].basal0_6.v' &&
+                                      GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[456 - 1] == 'acnet2.baskets_12[11].dend_1.v',
+                                      'getAllPotentialInstancesEndingWith returning expected paths');
+                            // check getInstance:
+                            assert.ok(window.Instances.getInstance('acnet2.baskets_12[3]').getInstancePath() == 'acnet2.baskets_12[3]', 'Instances.getInstance fetches existing instance as expected');
+                            assert.ok(window.Instances.getInstance('acnet2.baskets_12[3].soma_0.v').getInstancePath() == 'acnet2.baskets_12[3].soma_0.v', 'Instances.getInstance creates and fetches instance as expected');
 
-                done();
+                            // TODO: figure out how to test for exception passing parameters to the function --> https://api.qunitjs.com/throws/
+                            /*assert.raises(window.Instances.getInstance('acnet2.baskets_12[3].sticaxxi'),
+                                          function( err ) { return err.toString() === 'The instance acnet2.baskets_12[3].sticaxxi does not exist in the current model';},
+                                          'Trying to fetch something that does not exist in the model throws exception');*/
+
+                            done();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+                            ok(false, message);
+                            done();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+                            ok(false, message);
+                            done();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+                            ok(false, message);
+                            done();
+
+                            break;
+                    }
+                }
             };
-            
-            GEPPETTO.on(GEPPETTO.Events.Model_loaded, testModelFactory);
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("5", "1");
         });
+
     };
     return {run: run};
 

@@ -273,9 +273,11 @@ define(function (require) {
             }
 
             var localxmin = Math.min.apply(null, timeTimeSeries);
-            var localymin = Math.min.apply(null, timeSeries) * 1.1;
+            var localymin = Math.min.apply(null, timeSeries);
+            localymin = localymin - Math.abs(localymin * 0.1);
             var localxmax = Math.max.apply(null, timeTimeSeries);
-            var localymax = Math.max.apply(null, timeSeries) * 1.1;
+            var localymax = Math.max.apply(null, timeSeries);
+            localymax = localymax + Math.abs(localymax * 0.1);
 
             this.options.xaxis.min = Math.min(this.options.xaxis.min, localxmin);
             this.options.yaxis.min = Math.min(this.options.yaxis.min, localymin);

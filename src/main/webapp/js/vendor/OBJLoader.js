@@ -416,12 +416,6 @@ THREE.OBJLoader.prototype = {
 		else
 		{
 			container.add( createMesh( vertices, ('#'+Math.floor(Math.random()*16777215).toString(16)) ) );
-		
-        	var geometry = new THREE.BoxGeometry( 2, 2, 2 );
-		
-
-			var mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color:0x000000}) );
-			container.add( mesh );
 		}
 
 		console.timeEnd( 'OBJLoader' );

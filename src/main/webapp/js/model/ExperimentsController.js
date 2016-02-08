@@ -98,7 +98,7 @@ define(function (require) {
                 if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                     var modelParameters = {};
                     for (var index in newParameters) {
-                        modelParameters[newParameters[index].getInstancePath()] = newParameters[index].getValue();
+                        modelParameters[newParameters[index].getPath()] = newParameters[index].getValue();
                     }
                     Project.getActiveExperiment().parameters = [];
                     var parameters = {};

@@ -72,7 +72,7 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //add commands to console autocomplete and help option
-            GEPPETTO.Console.updateHelpCommand(p, id,  this.getFileComments("geppetto/js/widgets/plot/Plot.js"));
+            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/widgets/plot/Plot.js"));
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(p.getId(), p);
             return p;
@@ -117,7 +117,10 @@ define(function (require) {
                 //loop through all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
-                    plot.updateDataSet(parameters.step);
+                    //we need the playAll parameter here because the plot might be coming up after the play
+                    //event was triggered and in that case we need to catch up knowing what kind of play
+                    //it's happening
+                    plot.updateDataSet(parameters.step, parameters.playAll);
                 }
             }
         },

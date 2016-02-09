@@ -159,11 +159,11 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          * @returns {String} - Wrapped object
          */
         getPath: function() {
-        	if (typeof this.get('wrappedObj').getPath === "function"){
-        		return this.get('wrappedObj').getPath();
-        	}
-        	else if (typeof this.get('wrappedObj').getInstancePath === "function"){
+        	if (typeof this.get('wrappedObj').getInstancePath === "function"){
         		return this.get('wrappedObj').getInstancePath();
+        	}
+        	else if (typeof this.get('wrappedObj').getPath === "function"){
+        		return this.get('wrappedObj').getPath();
         	}
         	else{
         		return this.getId();

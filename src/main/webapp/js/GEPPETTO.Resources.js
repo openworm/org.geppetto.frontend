@@ -450,7 +450,7 @@ define(function (require) {
             TEXT: "Text",
             HTML: "HTML",
             SKELETON_ANIMATION_NODE: "SkeletonAnimation",
-            // CAPABBILITIES
+            // CAPABILITIES
             VISUAL_CAPABILITY: 'VisualCapability',
             STATE_VARIABLE_CAPABILITY: 'StateVariableCapability',
             PARAMETER_CAPABILITY: 'ParameterCapability',

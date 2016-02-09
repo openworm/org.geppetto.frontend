@@ -59,7 +59,7 @@ define(['jquery', 'underscore', 'backbone',
         initialize: function (options) {
             for (var experiment in this.experiments) {
                 //this should not exist. MVC an experiment disappears from the model and it should disappear from the view.
-                this.experiments[experiment].terminateWorker();
+                GEPPETTO.ExperimentsController.terminateWorker();
                 GEPPETTO.FE.deleteExperimentFromTable(this.experiments[experiment].id);
                 delete this.experiments[experiment];
             }

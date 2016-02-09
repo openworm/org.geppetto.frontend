@@ -494,9 +494,14 @@
 
                 //START PATCH
                 var un=unique(matches);
-                if(un.length>50000){
-                    //let's not return anything if there are more than 50000 options
-                    return [];
+                if(un.length>50){
+                    var reducedUn=[];
+                    for(var i=0;i<50;i++){
+                        var currentShortest =un.reduce(function (a, b) { return a.length < b.length ? a : b; });
+                        reducedUn.push(currentShortest);
+                        un.splice(un.indexOf(currentShortest),1);
+                    }
+                    un=reducedUn;
                 }
                 //END PATCH
 

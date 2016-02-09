@@ -40,8 +40,6 @@
 
 define(function (require) {
 
-    var AConnectionCapability = require('model/AConnectionCapability');
-
     return Backbone.Model.extend({
         id: "",
         name: "",
@@ -358,42 +356,7 @@ define(function (require) {
          */
         getConnections: function (direction) {
             if (!this.get('connectionsLoaded')) {
-
-                var typesToSearch = GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE);
-                var connectionVariables = GEPPETTO.ModelFactory.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
-                var connectionInstances = [];
-
-                for (var x = 0; x < connectionVariables.length; x++) {
-                    var variable = connectionVariables[x];
-                    var initialValues = variable.getWrappedObj().initialValues;
-                    var connectionValue = initialValues[0].value;
-                    // resolve A and B to Pointer Objects
-                    var pointerA = GEPPETTO.ModelFactory.createPointer(connectionValue.a[0]);
-                    var pointerB = GEPPETTO.ModelFactory.createPointer(connectionValue.b[0]);
-                    if (pointerA.getPath() == this.getId() || pointerB.getPath() == this.getId()) {
-                        var options = {
-                            id: variable.getId(),
-                            name: variable.getId(),
-                            _metaType: GEPPETTO.Resources.INSTANCE_NODE,
-                            variable: variable,
-                            children: [],
-                            parent: this
-                        };
-                        var instance = GEPPETTO.ModelFactory.createInstance(options);
-                        instance.extendApi(AConnectionCapability);
-                        GEPPETTO.ModelFactory.augmentPointer(pointerA, instance);
-                        GEPPETTO.ModelFactory.augmentPointer(pointerB, instance);
-
-                        // set A and B on connection
-                        instance.setA(pointerA);
-                        instance.setB(pointerB);
-
-                        connectionInstances.push(instance);
-                    }
-                }
-
-                this.set({'connections': connectionInstances});
-                this.set({'connectionsLoaded': true});
+                GEPPETTO.ModelFactory.createConnectionInstances(this);
             }
             var connections = this.get('connections');
 

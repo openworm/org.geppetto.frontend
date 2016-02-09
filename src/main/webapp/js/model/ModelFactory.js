@@ -1441,7 +1441,7 @@ define(function (require) {
                             // add if superType matches
                             types.push(libraryTypes[j]);
                         } else {
-                            // no immediate matches - recurse on super type and see if any matches if any matches add this type
+                            // TODO: no immediate matches - recurse on super type and see if any matches if any matches add this type
                             /*if(libraryTypes[j].getSuperType() != undefined && libraryTypes[j].getSuperType() != null) {
                              var superTypeMatches = this.getAllTypesOfType(libraryTypes[j].getSuperType());
                              if (superTypeMatches.length > 0) {

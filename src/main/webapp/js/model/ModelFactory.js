@@ -1031,7 +1031,7 @@ define(function (require) {
                     // STEP 1: build list of potential parent paths
                     if (arrayType != undefined) {
                         // add the [*] entry
-                        if(arrayType.getSize()>1){
+                        if (arrayType.getSize() > 1) {
                             var starPath = path + '[' + '*' + ']';
                             potentialParentPaths.push(starPath);
                             allPotentialPaths.push({path: starPath, metaType: arrayType.getMetaType()});
@@ -1177,6 +1177,47 @@ define(function (require) {
                 t.set({"type": node.arrayType});
 
                 return t;
+            },
+
+            createConnectionInstances: function (instance) {
+                var typesToSearch = this.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE);
+                var connectionVariables = this.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
+                var connectionInstances = [];
+
+                for (var x = 0; x < connectionVariables.length; x++) {
+                    var variable = connectionVariables[x];
+                    var initialValues = variable.getWrappedObj().initialValues;
+
+                    var connectionValue = initialValues[0].value;
+                    // resolve A and B to Pointer Objects
+                    var pointerA = this.createPointer(connectionValue.a[0]);
+                    var pointerB = this.createPointer(connectionValue.b[0]);
+                    if (pointerA.getPath() == instance.getId() || pointerB.getPath() == instance.getId()) {
+                        //TODO if there is more than one instance of the same projection this code will break
+                        var parentInstance = this.instances.getInstance(this.getAllPotentialInstancesEndingWith(variable.getParent().getId())[0]);
+                        var options = {
+                            id: variable.getId(),
+                            name: variable.getId(),
+                            _metaType: GEPPETTO.Resources.INSTANCE_NODE,
+                            variable: variable,
+                            children: [],
+                            parent: parentInstance
+                        };
+                        var connectionInstance = this.createInstance(options);
+                        connectionInstance.extendApi(AConnectionCapability);
+                        this.augmentPointer(pointerA, connectionInstance);
+                        this.augmentPointer(pointerB, connectionInstance);
+
+                        // set A and B on connection
+                        connectionInstance.setA(pointerA);
+                        connectionInstance.setB(pointerB);
+
+                        connectionInstances.push(connectionInstance);
+                    }
+                }
+
+                instance.set({'connections': connectionInstances});
+                instance.set({'connectionsLoaded': true});
             },
 
             /** Creates an instance */

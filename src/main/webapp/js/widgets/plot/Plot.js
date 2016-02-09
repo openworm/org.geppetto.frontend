@@ -55,6 +55,7 @@ define(function (require) {
         yMax: 0,
         updateLegendTimeout: null,
         latestPosition: null,
+        initialized:null,
 
         /**
          * Default options for plot widget, used if none specified when plot
@@ -233,7 +234,7 @@ define(function (require) {
 
             for (var i = 0; i < data.length; i++) {
                 var instance = data[i];
-                if (instance != null && instance.getTimeSeries()) {
+                if (instance != null && instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
 
                     for (var key = 0; key < this.datasets.length; key++) {
                         if (instance.getInstancePath() == this.datasets[key].label) {
@@ -252,7 +253,10 @@ define(function (require) {
                 }
             }
 
-            this.updateAxis(this.datasets.length - 1);
+            if (this.datasets.length > 0) {
+                this.updateAxis(this.datasets.length - 1);
+            }
+
 
             var plotHolder = $("#" + this.id);
             this.plot = $.plot(plotHolder, this.datasets, this.options);
@@ -360,7 +364,10 @@ define(function (require) {
         /**
          * Updates a data set, use for time series
          */
-        updateDataSet: function (step) {
+        updateDataSet: function (step, playAll) {
+            if(!this.initialized){
+                this.clean(playAll);
+            }
             var plotHolder = $("#" + this.id);
 
             for (var key in this.datasets) {
@@ -564,6 +571,7 @@ define(function (require) {
 
             }
             this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+            this.initialized=true;
 
         },
 

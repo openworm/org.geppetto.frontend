@@ -60,7 +60,6 @@ onmessage = function (e) {
         setInterval(function () {
             if (!isPaused && lastStepConsumed) {
                 lastExecutedStep = lastExecutedStep + step;
-                //console.log("New step "+lastExecutedStep+" now triggering the event");
                 postMessage([lastExecutedStep]);
                 lastStepConsumed = false;
             }

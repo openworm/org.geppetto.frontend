@@ -85,7 +85,8 @@ define(function (require) {
              * Handles flow on play recording
              */
             onPlay: function (callbackCommand) {
-                this.callbackCommand = callbackCommand;
+                // nothing to do - run callbackCommand directly
+                GEPPETTO.Console.executeCommand(callbackCommand);
                 var anyPlotUp = false;
 
                 // check if any plots are up
@@ -99,11 +100,6 @@ define(function (require) {
                     // if not, bring up spotlight configured for the PLAY flow
                     GEPPETTO.Spotlight.open(GEPPETTO.Resources.PLAY_FLOW);
 
-                    // listen to spotlight exit event and handle it running the callbackCommand passed in
-                    GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
-                } else {
-                    // nothing to do - run callbackCommand directly
-                    GEPPETTO.Console.executeCommand(callbackCommand);
                 }
             },
 

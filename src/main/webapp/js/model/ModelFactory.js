@@ -1339,8 +1339,116 @@ define(function (require) {
             },
 
             /**
+             * Get all types of given a meta type (string)
+             *
+             * @param metaType - metaType String
+             *
+             * @returns {Array} - Types
+             */
+            getAllTypesOfMetaType: function(metaType){
+                var types = [];
+
+                // iterate all libraries
+                var libraries = this.geppettoModel.getLibraries();
+                for(var i=0; i<libraries.length; i++){
+                    // iterate all types within library
+                    var libraryTypes = libraries[i].getTypes();
+                    for(var j=0; j<libraryTypes.length; j++){
+                        // add if its metatype matches
+                        if(libraryTypes[j].getMetaType() == metaType){
+                            types.push(libraryTypes[j]);
+                        }
+                    }
+                }
+
+                return types;
+            },
+
+            /**
+             * Get all types of given a type (checks inheritance)
+             *
+             * @param type - Type object or Type path string
+             *
+             * @returns {Array} - Types
+             */
+            getAllTypesOfType: function(type){
+                if (typeof type === 'string' || type instanceof String){
+                    // it's an evil string, try to eval as type path in the name of baal
+                    type = eval(type);
+                }
+
+                var types = [];
+
+                // iterate all libraries
+                var libraries = this.geppettoModel.getLibraries();
+                for(var i=0; i<libraries.length; i++){
+                    // iterate all types within library
+                    var libraryTypes = libraries[i].getTypes();
+                    for(var j=0; j<libraryTypes.length; j++) {
+                        if (libraryTypes[j] == type) {
+                            // add if it's a straight match (the type himself)
+                            types.push(libraryTypes[j]);
+                        } else if (libraryTypes[j].getSuperType() != undefined &&
+                                   libraryTypes[j].getSuperType() != null &&
+                                   libraryTypes[j].getSuperType() == type){
+                            // add if superType matches
+                            types.push(libraryTypes[j]);
+                        } else {
+                            // no immediate matches - recurse on super type and see if any matches if any matches add this type
+                            /*if(libraryTypes[j].getSuperType() != undefined && libraryTypes[j].getSuperType() != null) {
+                                var superTypeMatches = this.getAllTypesOfType(libraryTypes[j].getSuperType());
+                                if (superTypeMatches.length > 0) {
+                                    types.push(libraryTypes[j]);
+                                }
+                            }*/
+                        }
+                    }
+                }
+
+                return types;
+            },
+
+            /**
+             * Gets all variables of the types provided
+             *
+             * @param typesToSearch
+             *
+             * @param typeToMatch
+             *
+             * @returns {Array}
+             */
+            getAllVariablesOfType: function(typesToSearch, typeToMatch){
+                // check if array and if not "make it so"
+                if(!(typesToSearch.constructor === Array)){
+                    typesToSearch = [typesToSearch];
+                }
+
+                var variables = [];
+
+                for(var i=0; i<typesToSearch.length; i++){
+                    if(typesToSearch[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+                        var nestedVariables = typesToSearch[i].getVariables();
+                        if(typeToMatch!= undefined && typeToMatch!= null) {
+                            for (var j = 0; j < nestedVariables.length; j++) {
+                                var varTypes = nestedVariables[j].getTypes();
+                                for(var x=0; x<varTypes.length; x++){
+                                    if(varTypes[x] == typeToMatch){
+                                        variables.push(nestedVariables[j]);
+                                    }
+                                }
+                            }
+                        } else {
+                            variables = variables.concat(nestedVariables);
+                        }
+                    }
+                }
+
+                return variables;
+            },
+
+            /**
              * A generic method to resolve a reference
-             * */
+             */
             resolve: function (refStr) {
 
                 var reference = undefined;

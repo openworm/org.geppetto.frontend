@@ -1031,9 +1031,11 @@ define(function (require) {
                     // STEP 1: build list of potential parent paths
                     if (arrayType != undefined) {
                         // add the [*] entry
-                        var starPath = path + '[' + '*' + ']';
-                        potentialParentPaths.push(starPath);
-                        allPotentialPaths.push({path: starPath, metaType: arrayType.getMetaType()});
+                        if(arrayType.getSize()>1){
+                            var starPath = path + '[' + '*' + ']';
+                            potentialParentPaths.push(starPath);
+                            allPotentialPaths.push({path: starPath, metaType: arrayType.getMetaType()});
+                        }
 
                         // add each array element path
                         for (var n = 0; n < arrayType.getSize(); n++) {

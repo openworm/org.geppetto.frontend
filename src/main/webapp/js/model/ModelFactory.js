@@ -176,11 +176,16 @@ define(function (require) {
                         }
                     }
 
-                    // if a variable has a Parameter type, add AParameterCapability to the variable
+                    // add capabilities to variables
                     var resolvedTypes = node.getTypes();
                     for(var j=0; j<resolvedTypes.length; j++){
                         if(resolvedTypes[j].getMetaType() ==  GEPPETTO.Resources.PARAMETER_TYPE){
+                            // if a variable has a Parameter type, add AParameterCapability to the variable
                             node.extendApi(AParameterCapability);
+                        } else if(resolvedTypes[j].getMetaType() ==  GEPPETTO.Resources.CONNECTION_TYPE){
+                            // if a variable has a connection type, add connection capability
+                            node.extendApi(AConnectionCapability);
+                            this.resolveConnectionValues(node);
                         }
                     }
                 } else if (!(node instanceof ArrayType) && (node instanceof Type || node instanceof CompositeType)) {
@@ -674,20 +679,30 @@ define(function (require) {
             /**
              * Resolve connection values
              */
-            resolveConnectionValues: function(connectionInstance){
+            resolveConnectionValues: function(connectionInstanceOrVariable){
+
+                // get initial values
+                var initialValues = null;
+                if(connectionInstanceOrVariable instanceof Instance){
+                    initialValues = connectionInstanceOrVariable.getVariable().getWrappedObj().initialValues;
+                } else if (connectionInstanceOrVariable instanceof Variable) {
+                    initialValues = connectionInstanceOrVariable.getWrappedObj().initialValues;
+                }
+
                 // get pointer A and pointer B
-                var initialValues = connectionInstance.getVariable().getWrappedObj().initialValues;
                 var connectionValue = initialValues[0].value;
                 // resolve A and B to Pointer Objects
                 var pointerA = this.createPointer(connectionValue.a[0]);
                 var pointerB = this.createPointer(connectionValue.b[0]);
 
-                this.augmentPointer(pointerA, connectionInstance);
-                this.augmentPointer(pointerB, connectionInstance);
+                if(connectionInstanceOrVariable instanceof Instance) {
+                    this.augmentPointer(pointerA, connectionInstanceOrVariable);
+                    this.augmentPointer(pointerB, connectionInstanceOrVariable);
+                }
 
                 // set A and B on connection
-                connectionInstance.setA(pointerA);
-                connectionInstance.setB(pointerB);
+                connectionInstanceOrVariable.setA(pointerA);
+                connectionInstanceOrVariable.setB(pointerB);
             },
 
             /**
@@ -943,12 +958,16 @@ define(function (require) {
             },
 
             /**
-             * Build list of potential instance paths
+             * Build list of potential instance paths (excluding connection instances)
              */
             fetchAllPotentialInstancePaths: function (node, allPotentialPaths, parentPath) {
                 // build new path
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
-                allPotentialPaths.push({path: path, metaType: node.getType().getMetaType()});
+
+                // only add if it's not a connection
+                if(node.getType().getMetaType() != GEPPETTO.Resources.CONNECTION_TYPE) {
+                    allPotentialPaths.push({path: path, metaType: node.getType().getMetaType()});
+                }
 
                 var potentialParentPaths = [];
                 // check meta type - we are only interested in variables
@@ -973,7 +992,13 @@ define(function (require) {
                         for(var n=0; n<arrayType.getSize(); n++){
                             var arrayElementPath = path + '[' + n + ']';
                             potentialParentPaths.push(arrayElementPath);
-                            allPotentialPaths.push({path: arrayElementPath, metaType: arrayType.getType().getMetaType()});
+
+                            if(arrayType.getType().getMetaType() != GEPPETTO.Resources.CONNECTION_TYPE) {
+                                allPotentialPaths.push({
+                                    path: arrayElementPath,
+                                    metaType: arrayType.getType().getMetaType()
+                                });
+                            }
                         }
                     } else {
                         potentialParentPaths.push(path);

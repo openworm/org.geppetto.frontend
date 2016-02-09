@@ -38,7 +38,10 @@
  * @author Giovanni Idili
  */
 
-define(['jquery', 'underscore', 'backbone'], function (require) {
+define(function (require) {
+
+    var AConnectionCapability = require('model/AConnectionCapability');
+
     return Backbone.Model.extend({
         id: "",
         name: "",
@@ -48,6 +51,8 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         children: [],
         capabilities: [],
         connections: [],
+        connectionsLoaded: false,
+
 
         /**
          * Initializes this node with passed attributes
@@ -66,6 +71,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
             this.set({"capabilities": []});
             // connections are set after creation
             this.set({"connections": []});
+            this.set({"connectionsLoaded": false});
         },
 
         /**
@@ -136,7 +142,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          *
          * @returns {*|Object}
          */
-        getPosition:function(){
+        getPosition: function () {
             return this.getVariable().getPosition();
         },
 
@@ -164,8 +170,8 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                         break;
                     }
                 } else if (types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
-                           types[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE ||
-                           types[i].getVisualType() != null) {
+                    types[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE ||
+                    types[i].getVisualType() != null) {
                     hasVisual = true;
                     break;
                 }
@@ -179,7 +185,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          *
          * @command Instance.getVisualType()
          *
-          * @returns {*} - Type or list of Types if more than one is found
+         * @returns {*} - Type or list of Types if more than one is found
          */
         getVisualType: function () {
             var visualTypes = [];
@@ -190,24 +196,24 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
                 // could be pointing to an array variable if it's an exploded instance
                 if (types[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
                     // check it if is a visual type or has a visual type
-                    if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                    if (types[i].getType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
                         visualTypes.push(types[i].getType());
-                    } else if (types[i].getType().getVisualType() != null){
+                    } else if (types[i].getType().getVisualType() != null) {
                         visualTypes.push(types[i].getType().getVisualType());
                     }
                 } else {
                     // check it if is a visual type or has a visual type
-                    if (types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                    if (types[i].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE || types[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
                         visualTypes.push(types[i]);
-                    } else if (types[i].getVisualType() != null){
+                    } else if (types[i].getVisualType() != null) {
                         visualTypes.push(types[i].getVisualType());
                     }
                 }
             }
 
-            if(visualTypes.length == 0){
+            if (visualTypes.length == 0) {
                 return undefined;
-            } else if(visualTypes.length == 1){
+            } else if (visualTypes.length == 1) {
                 return visualTypes[0];
             } else {
                 return visualTypes;
@@ -351,22 +357,67 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
          *
          */
         getConnections: function (direction) {
+            if (!this.get('connectionsLoaded')) {
+
+                var connectionVariables = [];//TODO prendi tutte le variabili di tipo CONNECTION_TYPE, they could be anywhere
+
+                for(var x=0; x<GEPPETTO.ModelFactory.allPaths.length; x++){
+                    if(GEPPETTO.ModelFactory.allPaths[x].metaType == GEPPETTO.Resources.CONNECTION_TYPE){
+                        connectionVariables.push(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.allPaths[x].path).getVariable());
+                    }
+                }
+
+                var connectionInstances=[];
+
+                for (var x = 0; x < connectionVariables.length; x++) {
+                    var variable=connectionVariables[x];
+                    var initialValues = variable.getWrappedObj().initialValues;
+                    var connectionValue = initialValues[0].value;
+                    // resolve A and B to Pointer Objects
+                    var pointerA = GEPPETTO.ModelFactory.createPointer(connectionValue.a[0]);
+                    var pointerB = GEPPETTO.ModelFactory.createPointer(connectionValue.b[0]);
+                    if(pointerA.getPath()==this.getId() || pointerB.getPath()==this.getId())
+                    {
+                        var options = {
+                            id: variable.getId(),
+                            name: variable.getId(),
+                            _metaType: GEPPETTO.Resources.INSTANCE_NODE,
+                            variable: variable,
+                            children: [],
+                            parent: this
+                        };
+                        var instance = GEPPETTO.ModelFactory.createInstance(options);
+                        instance.extendApi(AConnectionCapability);
+                        GEPPETTO.ModelFactory.augmentPointer(pointerA, instance);
+                        GEPPETTO.ModelFactory.augmentPointer(pointerB, instance);
+
+                        // set A and B on connection
+                        instance.setA(pointerA);
+                        instance.setB(pointerB);
+
+                        connectionInstances.push(instance);
+                    }
+                }
+
+                this.set({'connections': connectionInstances});
+                this.set({'connectionsLoaded': true});
+            }
             var connections = this.get('connections');
 
             if (direction === GEPPETTO.Resources.INPUT || direction === GEPPETTO.Resources.OUTPUT || direction === GEPPETTO.Resources.INPUT_OUTPUT) {
                 var filteredConnections = [];
-                for(var i=0; i<connections.length; i++){
+                for (var i = 0; i < connections.length; i++) {
                     // get directionality
                     var connectivity = connections[i].getVariable().getInitialValue().value.connectivity;
-                    if(connectivity == GEPPETTO.Resources.DIRECTIONAL) {
+                    if (connectivity == GEPPETTO.Resources.DIRECTIONAL) {
                         var a = connections[i].getA();
                         var b = connections[i].getB();
                         // if A is this then it's an output connection
-                        if(this.getInstancePath() == a.getPath() && direction === GEPPETTO.Resources.OUTPUT){
+                        if (this.getInstancePath() == a.getPath() && direction === GEPPETTO.Resources.OUTPUT) {
                             filteredConnections.push(connections[i]);
                         }
                         // if B is this then it's an input connection
-                        if(this.getInstancePath() == b.getPath() && direction === GEPPETTO.Resources.INPUT){
+                        if (this.getInstancePath() == b.getPath() && direction === GEPPETTO.Resources.INPUT) {
                             filteredConnections.push(connections[i]);
                         }
                     } else if (connectivity == GEPPETTO.Resources.BIDIRECTIONAL) {

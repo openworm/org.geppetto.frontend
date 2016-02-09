@@ -358,7 +358,7 @@ define(function (require) {
                 }
 
                 this.allPaths = allPotentialInstancePaths;
-                var varsToInstantiate = varsWithVizTypes.concat(varsWithConnTypes);
+                var varsToInstantiate = varsWithVizTypes;//.concat(varsWithConnTypes);
 
                 // based on list, traverse again and build instance objects
                 for (var j = 0; j < varsToInstantiate.length; j++) {
@@ -565,6 +565,7 @@ define(function (require) {
                             // check if it has connections and inject AConnectionCapability
                             if (explodedInstance.getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
                                 explodedInstance.extendApi(AConnectionCapability);
+                                this.resolveConnectionValues(explodedInstance);
                             }
 
                             if (explodedInstance.getType().getMetaType() == GEPPETTO.Resources.STATE_VARIABLE_TYPE) {
@@ -631,6 +632,7 @@ define(function (require) {
                         // check if it has connections and inject AConnectionCapability
                         if (newlyCreatedInstance.getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
                             newlyCreatedInstance.extendApi(AConnectionCapability);
+                            this.resolveConnectionValues(newlyCreatedInstance);
                         }
 
                         if (newlyCreatedInstance.getType().getMetaType() == GEPPETTO.Resources.STATE_VARIABLE_TYPE) {
@@ -1294,6 +1296,7 @@ define(function (require) {
 
                 return matchingPotentialInstances;
             },
+
 
             /**
              * A generic method to resolve a reference

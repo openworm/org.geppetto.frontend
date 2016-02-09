@@ -54,7 +54,7 @@ define(function (require) {
             //TODO: Those are not sane defaults.
             //      Once things have types, we should ideally use sthing like  x.getType()
             nodeType: function (node) {
-                if(node instanceof Instance){
+                if (node instanceof Instance) {
                     return node.getId().split('_')[0];
                 } else {
                     return node.getPath().split('_')[0];
@@ -116,48 +116,43 @@ define(function (require) {
                 this.dataset["nodes"] = [];
                 this.dataset["links"] = [];
 
-                for (var k=0; k<subInstances.length; k++) {
+                for (var k = 0; k < subInstances.length; k++) {
                     var subInstance = subInstances[k];
-                    if (subInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {   
-                    	var populationChildren = subInstance.getChildren();
-                    	for (var l=0; l<populationChildren.length; l++) {
-                    		var populationChild = populationChildren[l];
-	                    	this.createNode(populationChild.getId(), this.options.nodeType(populationChild));
-                    	}
-                    }
-                    else{
-                    	// get children that are connections
-	                    var connections = this.getConnectionChildren(subInstance);
-	                    for (var x = 0; x<connections.length; x++) {
-	                        var connectionItem = connections[x];
-	
-	                        var source = connectionItem.getA();
-	                        var target = connectionItem.getB();
-	                        //AQP: Where is the error?
-	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
-	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
-	
-	                        this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
-	                    }
-                    }
+                    if (subInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
+                        var populationChildren = subInstance.getChildren();
+                        for (var l = 0; l < populationChildren.length; l++) {
+                            var populationChild = populationChildren[l];
+                            this.createNode(populationChild.getId(), this.options.nodeType(populationChild));
+                        }
 
+                    }
                 }
+
+                //TODO Replace this loop with something smarter that doesn't create an instance. The proper way is to
+                //TODO add a ConnectionCapability to a Variabile and find all variables children of the type of the root
+                //TODO with type ConnectionType which will then have the capability
+                for(var x=0; x<GEPPETTO.ModelFactory.allPaths.length; x++){
+                    if(GEPPETTO.ModelFactory.allPaths[x].metaType == GEPPETTO.Resources.CONNECTION_TYPE){
+                        var connectionItem = GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.allPaths[x].path);
+
+                        var source = connectionItem.getA();
+                        var target = connectionItem.getB();
+                        //AQP: Where is the error?
+                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
+                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
+
+                        this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
+                    }
+                }
+
+
+
+
             }
             this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
             this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
         },
 
-        // gets children of the given entity if their type is 'connection'
-        getConnectionChildren: function (instance) {
-            var connections = [];
-            var children = instance.getChildren();
-            for(var i=0; i<children.length; i++){
-                if(children[i].getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE){
-                    connections.push(children[i]);
-                }
-            }
-            return connections;
-        },
 
         //TODO: move to graph utils to package, maybe consider jsnetworkx?
         // this is very rough, we should think about directionality and weights...

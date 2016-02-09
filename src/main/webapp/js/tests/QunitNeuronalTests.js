@@ -298,8 +298,9 @@ define(function (require) {
                             var time = (new Date() - initializationTime) / 1000;
                             GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
 
-                            assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experimetns checked");
+                            assert.equal(window.Project.getExperiments().length, 2, "Initial amount of experiments checked");
                             assert.equal(window.Project.getId(), 5, "Project loaded ID checked");
+
                             window.Project.getExperiments()[0].setActive();
 
                             break;
@@ -328,13 +329,11 @@ define(function (require) {
                             }
 
                             assert.equal(passTimeTest, true, "Testing Simulation load time: " + time + " ms");
-                            assert.notEqual(acnet2, null, "Entities checked");
-                            assert.equal(acnet2.getAspects().length, 1, "Aspects checked");
-                            assert.equal(acnet2.baskets_12_9.getConnections().length, 60, "Connections checked");
-                            assert.equal(jQuery.isEmptyObject(acnet2.electrical.VisualizationTree), false, "Test Visualization at load");
-                            assert.equal(acnet2.electrical.VisualizationTree.getChildren().length, 1, "Test Visual Groups amount");
-                            assert.equal(jQuery.isEmptyObject(acnet2.electrical.ModelTree), false, "Test Model tree at load");
-                            assert.equal(jQuery.isEmptyObject(acnet2.electrical.SimulationTree), false, "Test Simulation tree at load");
+                            assert.ok(acnet2.baskets_12[3] != undefined && acnet2.pyramidals_48[12] != undefined, "Instances exploded as expected");
+                            assert.equal(acnet2.baskets_12[9].getConnections().length, 60, "Connections checked on bask");
+                            assert.equal(acnet2.pyramidals_48[23].getConnections().length, 22, "Connections checked on pyramidal");
+                            assert.equal(acnet2.baskets_12[9].getVisualGroups().length, 3, "Test number of Visual Groups on bask");
+                            assert.equal(acnet2.pyramidals_48[23].getVisualGroups().length, 5, "Test number of Visual Groups on pyramidal");
 
                             done();
                             launch();
@@ -398,7 +397,7 @@ define(function (require) {
                             var payload = JSON.parse(parsedServerMessage.data);
                             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
-                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project chekced");
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 
                             var passTimeTest = false;
                             if (time < 10) {
@@ -406,13 +405,9 @@ define(function (require) {
                             }
 
                             assert.equal(passTimeTest, true, "Simulation loaded within time limit: " + time);
-                            assert.notEqual(c302, null, "Entities checked");
+                            assert.notEqual(c302, null, "Top level instance is not null");
                             assert.equal(c302.getChildren().length, 300, "C302 Children checked");
-                            assert.equal(c302.getAspects().length, 1, "Aspects checked");
-                            assert.equal(jQuery.isEmptyObject(c302.electrical.VisualizationTree), false, "Test Visualization at load");
-                            assert.equal(jQuery.isEmptyObject(c302.electrical.ModelTree), false, "Test Model tree at load");
-                            assert.equal(jQuery.isEmptyObject(c302.electrical.SimulationTree), false, "Test Simulation tree at load");
-                            assert.equal(c302.ADAL_0.getConnections().length, 31, "ADAL_0 connections check");
+                            assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL[0] connections check");
 
                             done();
                             launch();

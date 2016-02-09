@@ -321,7 +321,7 @@ define(function (require) {
                             var payload = JSON.parse(parsedServerMessage.data);
                             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
-                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project chekced");
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 
                             var passTimeTest = false;
                             if (time < 10) {
@@ -388,8 +388,20 @@ define(function (require) {
                             var time = (new Date() - initializationTime) / 1000;
                             GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
 
-                            assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experimetns checked");
+                            assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experiments checked");
                             assert.equal(window.Project.getId(), 6, "Project loaded ID checked");
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                window.Model.getVariables()[0].getId() == 'c302' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'c302', "1 top level instance as expected");
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
@@ -400,14 +412,16 @@ define(function (require) {
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 
                             var passTimeTest = false;
-                            if (time < 10) {
+                            if (time < 18) {
                                 passTimeTest = true;
                             }
 
                             assert.equal(passTimeTest, true, "Simulation loaded within time limit: " + time);
                             assert.notEqual(c302, null, "Top level instance is not null");
-                            assert.equal(c302.getChildren().length, 300, "C302 Children checked");
-                            assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL[0] connections check");
+                            assert.equal(c302.getChildren().length, 299, "C302 Children count checked");
+                            assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL connections check");
+                            assert.equal(c302.AVAL[0].getConnections().length, 170, "AVAL connections check");
+                            assert.equal(c302.PVDR[0].getConnections().length, 7, "AVAL connections check");
 
                             done();
                             launch();
@@ -463,12 +477,24 @@ define(function (require) {
                             assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experimetns checked");
                             assert.equal(window.Project.getId(), 4, "Project loaded ID checked");
                             break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                window.Model.getVariables()[0].getId() == 'net1' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'net1', "1 top level instance as expected");
+
+                            break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
                             var payload = JSON.parse(parsedServerMessage.data);
                             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
-                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project chekced");
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 
                             var passTimeTest = false;
                             if (time < 10) {

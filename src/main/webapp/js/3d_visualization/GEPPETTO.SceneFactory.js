@@ -51,7 +51,21 @@ define(function (require) {
                     GEPPETTO.getVARS().meshes[instancePath].selected = false;
                     GEPPETTO.getVARS().meshes[instancePath].input = false;
                     GEPPETTO.getVARS().meshes[instancePath].output = false;
-
+                    
+                    //Split anything that was splitted before
+                    if (instancePath in GEPPETTO.getVARS().splitMeshes){
+	                    var splitMeshes = GEPPETTO.getVARS().splitMeshes;
+	                    var elements = {};
+	                    for (var splitMesh in splitMeshes){
+	                    	if (splitMeshes[splitMesh].instancePath == instancePath && splitMesh != instancePath){
+	                    		visualObject = splitMesh.substring(instancePath.length + 1);
+	                    		elements[visualObject] = "";
+	                    	}
+	                    }
+	                    if (Object.keys(elements).length > 0){
+	                    	GEPPETTO.SceneController.splitGroups(instance, elements);
+	                    }
+                    }
                 }
             },
 
@@ -65,7 +79,7 @@ define(function (require) {
                     for (var m in splitMeshes) {
                         if (m.indexOf(instance.getInstancePath()) != -1) {
                             GEPPETTO.getVARS().scene.remove(splitMeshes[m]);
-                            splitMeshes[m] = null;
+                            //splitMeshes[m] = null;
                         }
                     }
 

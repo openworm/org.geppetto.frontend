@@ -422,7 +422,7 @@ define(function (require) {
                     var children = this.getChildren();
                     for (var i = 0; i < children.length; i++) {
                         if (typeof children[i].setGeometryType === "function") {
-                            children[i].setGeometryType(type, nested);
+                            children[i].setGeometryType(type, thickness, nested);
                         }
                     }
                 }
@@ -437,7 +437,7 @@ define(function (require) {
 
                 message = GEPPETTO.Resources.BATCH_SET_GEOMETRY;
             }
-
+            
             return message;
         },
 

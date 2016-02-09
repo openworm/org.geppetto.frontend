@@ -315,7 +315,7 @@ public class ConnectionHandler
 	 * @throws GeppettoExecutionException
 	 * @throws GeppettoInitializationException
 	 */
-	public void setWatchedVariables(String requestID, List<String> variables, long experimentID, long projectId) throws GeppettoExecutionException, GeppettoInitializationException
+	public void setWatchedVariables(String requestID, List<String> variables, long experimentID, long projectId, boolean watch) throws GeppettoExecutionException, GeppettoInitializationException
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
@@ -328,7 +328,7 @@ public class ConnectionHandler
 			
 			try
 			{
-				geppettoManager.setWatchedVariables(variables, experiment, geppettoProject);
+				geppettoManager.setWatchedVariables(variables, experiment, geppettoProject, watch);
 			}
 			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{

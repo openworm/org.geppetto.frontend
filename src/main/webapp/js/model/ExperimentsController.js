@@ -102,8 +102,8 @@ define(function (require) {
                     }
                     Project.getActiveExperiment().parameters = [];
                     var parameters = {};
-                    parameters["experimentId"] = this.id;
-                    parameters["projectId"] = this.getParent().getId();
+                    parameters["experimentId"] = Project.getActiveExperiment().getId();
+                    parameters["projectId"] = Project.getId();
                     parameters["modelParameters"] = modelParameters;
 
                     for (var key in newParameters) {
@@ -121,7 +121,7 @@ define(function (require) {
                     watchedVariables.push(variables[i].getInstancePath());
                     variables[i].setWatched(watch, false);
                 }
-                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                     var parameters = {};
                     parameters["experimentId"] = Project.getActiveExperiment().id;
                     parameters["projectId"] = Project.getId();

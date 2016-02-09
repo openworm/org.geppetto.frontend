@@ -33,12 +33,9 @@
 define(function (require) {
 
     /**
-     * Calls "start()" from QUnit to start qunit tests, closes socket and clears
-     * handlers. Method is called from each test.
+     * Closes socket and clears handlers. Method is called from each test.
      */
     function launch() {
-        //start qunit tests
-        //start();
         //close socket
         GEPPETTO.MessageSocket.close();
         //clear message handlers, all tests within module should have performed by time method it's called
@@ -203,7 +200,7 @@ define(function (require) {
         });
 
         QUnit.module("Test C.elegans PVDR Neuron morphology");
-        QUnit.asyncTest("Tests C.elegans PVDR Neuron morphology", function ( assert ) {
+        QUnit.test("Tests C.elegans PVDR Neuron morphology", function ( assert ) {
 
             var done = assert.async();
 
@@ -227,16 +224,17 @@ define(function (require) {
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
                             assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
-                                window.Model.getVariables()[0].getId() == 'hhcell' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                                window.Model.getVariables()[0].getId() == 'pvdr' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
                             assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
                             // test that instance tree high level is as expected
-                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'hhcell', "1 top level instance as expected");
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'pvdr', "1 top level instance as expected");
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
                             var payload = JSON.parse(parsedServerMessage.data);
                             GEPPETTO.SimulationHandler.loadExperiment(payload);
+
                             assert.equal(window.Project.getActiveExperiment().getId(), 1,"Experiment id of loaded project chekced");
 
                             var passTimeTest = false;
@@ -246,12 +244,8 @@ define(function (require) {
 
                             assert.equal(passTimeTest, true, "Testing Simulation load time: " + time + " ms");
                             assert.notEqual(pvdr, null, "Entities checked");
-                            assert.equal(pvdr.getAspects().length, 1, "Aspects checked");
                             assert.equal(pvdr.getConnections().length, 0, "Connections checked");
-                            assert.equal(jQuery.isEmptyObject(pvdr.electrical.VisualizationTree), false, "Test Visualization at load");
-                            assert.equal(pvdr.electrical.VisualizationTree.getChildren().length, 1, "Test Visual Groups amount");
-                            assert.equal(jQuery.isEmptyObject(pvdr.electrical.ModelTree), false, "Test Model tree at load");
-                            assert.equal(jQuery.isEmptyObject(pvdr.electrical.SimulationTree), false, "Test Simulation tree at load");
+                            assert.equal(pvdr.getVisualGroups().length, 1, "Test number of VisualGroups");
 
                             done();
                             launch();
@@ -290,15 +284,13 @@ define(function (require) {
             window.Project.loadFromID("8", "1");
         });
 
-        QUnit.module("Test Purkinje Cell");
-        QUnit.asyncTest("Tests Purkinje cell with Model Tree call and Visual Groups", function ( assert ) {
+        QUnit.module("Test Primary Auditory Cortex Network (ACNET2)");
+        QUnit.test("Tests Primary Auditory Cortex Network", function ( assert ) {
 
             var done = assert.async();
 
             var initializationTime;
             var handler = {
-                checkUpdate2: false,
-                startRequestID: null,
                 onMessage: function (parsedServerMessage) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
@@ -306,8 +298,22 @@ define(function (require) {
                             var time = (new Date() - initializationTime) / 1000;
                             GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
 
-                            assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experimetns checked");
-                            assert.equal(window.Project.getId(), 7, "Project loaded ID checked");
+                            assert.equal(window.Project.getExperiments().length, 2, "Initial amount of experiments checked");
+                            assert.equal(window.Project.getId(), 5, "Project loaded ID checked");
+
+                            window.Project.getExperiments()[0].setActive();
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                window.Model.getVariables()[0].getId() == 'acnet2' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'acnet2', "1 top level instance as expected");
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
@@ -323,13 +329,11 @@ define(function (require) {
                             }
 
                             assert.equal(passTimeTest, true, "Testing Simulation load time: " + time + " ms");
-                            assert.notEqual(purkinje, null, "Entities checked");
-                            assert.equal(purkinje.getAspects().length, 1, "Aspects checked");
-                            assert.equal(purkinje.getConnections().length, 0, "Connections checked");
-                            assert.equal(jQuery.isEmptyObject(purkinje.electrical.VisualizationTree), false, "Test Visualization at load");
-                            assert.equal(purkinje.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount");
-                            assert.equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree), false, "Test Model tree at load");
-                            assert.equal(jQuery.isEmptyObject(purkinje.electrical.SimulationTree), false, "Test Simulation tree at load");
+                            assert.ok(acnet2.baskets_12[3] != undefined && acnet2.pyramidals_48[12] != undefined, "Instances exploded as expected");
+                            assert.equal(acnet2.baskets_12[9].getConnections().length, 60, "Connections checked on bask");
+                            assert.equal(acnet2.pyramidals_48[23].getConnections().length, 22, "Connections checked on pyramidal");
+                            assert.equal(acnet2.baskets_12[9].getVisualGroups().length, 3, "Test number of Visual Groups on bask");
+                            assert.equal(acnet2.pyramidals_48[23].getVisualGroups().length, 5, "Test number of Visual Groups on pyramidal");
 
                             done();
                             launch();
@@ -364,12 +368,12 @@ define(function (require) {
 
             GEPPETTO.MessageSocket.clearHandlers();
             GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("5", "1");
             initializationTime = new Date();
-            window.Project.loadFromID("7", "1");
         });
 
         QUnit.module("Test C302 Simulation");
-        QUnit.asyncTest("Test C302 Network", function ( assert ) {
+        QUnit.test("Test C302 Network", function ( assert ) {
 
             var done = assert.async();
 
@@ -393,7 +397,7 @@ define(function (require) {
                             var payload = JSON.parse(parsedServerMessage.data);
                             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
-                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project chekced");
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 
                             var passTimeTest = false;
                             if (time < 10) {
@@ -401,13 +405,9 @@ define(function (require) {
                             }
 
                             assert.equal(passTimeTest, true, "Simulation loaded within time limit: " + time);
-                            assert.notEqual(c302, null, "Entities checked");
+                            assert.notEqual(c302, null, "Top level instance is not null");
                             assert.equal(c302.getChildren().length, 300, "C302 Children checked");
-                            assert.equal(c302.getAspects().length, 1, "Aspects checked");
-                            assert.equal(jQuery.isEmptyObject(c302.electrical.VisualizationTree), false, "Test Visualization at load");
-                            assert.equal(jQuery.isEmptyObject(c302.electrical.ModelTree), false, "Test Model tree at load");
-                            assert.equal(jQuery.isEmptyObject(c302.electrical.SimulationTree), false, "Test Simulation tree at load");
-                            assert.equal(c302.ADAL_0.getConnections().length, 31, "ADAL_0 connections check");
+                            assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL[0] connections check");
 
                             done();
                             launch();
@@ -514,6 +514,8 @@ define(function (require) {
                     }
                 }
             };
+
+            GEPPETTO.MessageSocket.clearHandlers();
             GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("4", "1");
             initializationTime = new Date();

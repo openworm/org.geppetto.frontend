@@ -538,7 +538,18 @@ define(function (require) {
              * @param {Function} normalizationFunction
              */
             addBrightnessFunction: function (instance, stateVariableInstances, normalizationFunction) {
-            	this.addBrightnessFunctionBulk(instance.getParent(), [instance.getId()], [stateVariableInstances], normalizationFunction);
+            	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
+            	var newInstance = "";
+            	var visualObjects = [];
+            	if (instance.getInstancePath() in GEPPETTO.getVARS().meshes){
+            		newInstance = instance; 
+            	}
+            	else{
+            		newInstance = instance.getParent();
+            		visualObjects= [stateVariableInstances.getId()];
+            	}
+            	
+            	this.addBrightnessFunctionBulk(newInstance, visualObjects, [stateVariableInstances], normalizationFunction);
             },
             
             /**
@@ -576,12 +587,18 @@ define(function (require) {
             addBrightnessFunctionBulk: function (instance, visualObjects, stateVariableInstances, normalizationFunction) {
             	var modulations = [];
             	if (visualObjects != null){
-	            	var elements = {};
-	            	for (var voIndex in visualObjects){
-	            		elements[visualObjects[voIndex]] = "";
-	            		modulations.push(instance.getInstancePath() + "." + visualObjects[voIndex]);
-	            	}
-	            	GEPPETTO.SceneController.splitGroups(instance, elements);
+            		if (visualObjects.length > 0 ){
+		            	var elements = {};
+		            	for (var voIndex in visualObjects){
+		            		elements[visualObjects[voIndex]] = "";
+		            		modulations.push(instance.getInstancePath() + "." + visualObjects[voIndex]);
+		            		
+		            	}
+		            	GEPPETTO.SceneController.splitGroups(instance, elements);
+            		}
+            		else{
+            			modulations.push(instance.getInstancePath());
+            		}
             	}
             	
             	for (var index in modulations){

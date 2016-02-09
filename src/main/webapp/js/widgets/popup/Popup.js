@@ -130,8 +130,8 @@ define(function (require) {
          * @command setText(textInstance)
          * @param {String} textInstance - An instance of type Text
          */
-        setText: function(textInstance){
-            return this.setMessage(textInstance.getVariable().getInitialValues()[0].value.text);
+        setText: function(textNode){
+        	return this.setMessage(this.getVariable(textNode).getInitialValues()[0].value.text);
         },
 
         /**
@@ -140,14 +140,27 @@ define(function (require) {
          * @command setHTML(htmlInstance)
          * @param {String} htmlInstance - An instance of type HTML
          */
-        setHTML:function(htmlInstance){
-            return this.setMessage(htmlInstance.getVariable().getInitialValues()[0].value.html);
+        setHTML:function(htmlNode){
+            return this.setMessage(this.getVariable(htmlNode).getInitialValues()[0].value.html);
+        },
+        
+        /**
+         * Returns the variable for a node or variable node
+         *
+         * @command getVariable(node)
+         * @param {Object} variable - A variable
+         */
+        getVariable:function(node){
+        	if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE){
+        		return node.getVariable();
+        	}
+        	else{
+        		return node;
+        	}
         },
 
-
-
         /**
-         * Sets a custom handler for a given event for nodes that point to nodes via instancePAth attribute on HTML anchors.
+         * Sets a custom handler for a given event for nodes that point to nodes via instancePath attribute on HTML anchors.
          *
          * @command addCustomNodeHandler(funct, eventType)
          * @param {fucntion} funct - Handler function

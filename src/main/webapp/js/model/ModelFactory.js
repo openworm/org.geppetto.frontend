@@ -115,7 +115,7 @@ define(function (require) {
                     if (children != undefined) {
                         for (var i = 0; i < children.length; i++) {
                             // do not populate shortcuts for array instances - children are accessed as array elements
-                            if(node.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE){
+                            if (node.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                                 node[children[i].getId()] = children[i];
                             }
 
@@ -148,7 +148,7 @@ define(function (require) {
                                 var typeObj = this.resolve(refStr);
 
                                 // track if we have pointer type
-                                if(typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
+                                if (typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE) {
                                     hasPointerType = true;
                                 }
 
@@ -162,10 +162,10 @@ define(function (require) {
                     }
 
                     // check if pointer type
-                    if(hasPointerType){
+                    if (hasPointerType) {
                         var initialValues = node.getInitialValues();
 
-                        if(initialValues != undefined && initialValues.length == 1){
+                        if (initialValues != undefined && initialValues.length == 1) {
                             // go to initial values and parse pointer into Pointer with its PointerElements
                             var val = initialValues[0];
                             var pointer = this.createPointer(val.value);
@@ -178,11 +178,11 @@ define(function (require) {
 
                     // add capabilities to variables
                     var resolvedTypes = node.getTypes();
-                    for(var j=0; j<resolvedTypes.length; j++){
-                        if(resolvedTypes[j].getMetaType() ==  GEPPETTO.Resources.PARAMETER_TYPE){
+                    for (var j = 0; j < resolvedTypes.length; j++) {
+                        if (resolvedTypes[j].getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
                             // if a variable has a Parameter type, add AParameterCapability to the variable
                             node.extendApi(AParameterCapability);
-                        } else if(resolvedTypes[j].getMetaType() ==  GEPPETTO.Resources.CONNECTION_TYPE){
+                        } else if (resolvedTypes[j].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
                             // if a variable has a connection type, add connection capability
                             node.extendApi(AConnectionCapability);
                             this.resolveConnectionValues(node);
@@ -238,14 +238,14 @@ define(function (require) {
             /**
              * Creates pointer given a pointer in raw json format
              */
-            createPointer: function(jsonPointer) {
+            createPointer: function (jsonPointer) {
 
                 // get raw pointer elements
                 var rawElements = jsonPointer.elements;
                 var pointerElements = [];
 
                 // loop elements and create PointerElements (resolving variables / types)
-                for(var i=0; i<rawElements.length; i++){
+                for (var i = 0; i < rawElements.length; i++) {
                     var element = this.createPointerElement(rawElements[i]);
                     pointerElements.push(element);
                 }
@@ -259,13 +259,18 @@ define(function (require) {
             /**
              * Creates pointer given a pointer in raw json format
              */
-            createPointerElement: function(jsonPointerElement) {
+            createPointerElement: function (jsonPointerElement) {
                 var variable = this.resolve(jsonPointerElement.variable.$ref);
                 var type = this.resolve(jsonPointerElement.type.$ref);
                 var index = jsonPointerElement.index;
 
                 // create pointer object setting elements
-                var pointerElement = new PointerElement({"wrappedObj": jsonPointerElement, "variable": variable, "type": type, "index": index});
+                var pointerElement = new PointerElement({
+                    "wrappedObj": jsonPointerElement,
+                    "variable": variable,
+                    "type": type,
+                    "index": index
+                });
 
                 return pointerElement;
             },
@@ -317,13 +322,13 @@ define(function (require) {
                         } else {
                             type = this.createType(jsonTypes[i]);
                             // inject visual capability if MetaType == VisualType
-                            if(type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE){
+                            if (type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) {
                                 type.extendApi(AVisualCapability);
                             }
                         }
 
                         // if getVisualType != null also inject visual capability
-                        if(type.getVisualType() != undefined){
+                        if (type.getVisualType() != undefined) {
                             type.extendApi(AVisualCapability);
                         }
 
@@ -385,9 +390,9 @@ define(function (require) {
             /**
              * Populate connections
              */
-            populateConnections: function(instance){
+            populateConnections: function (instance) {
                 // check if it's a connection
-                if (instance.getVariable().getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE){
+                if (instance.getVariable().getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
                     // do the bit of bidness
                     this.resolveConnectionValues(instance);
                 }
@@ -482,7 +487,7 @@ define(function (require) {
                             }
 
                             // break outer loop too
-                            if(variable != null){
+                            if (variable != null) {
                                 break;
                             }
                         }
@@ -521,7 +526,7 @@ define(function (require) {
                         // create new ArrayInstance object, add children to it
                         var arrayOptions = {
                             id: variable.getId(),
-                            name: variable.getId(),
+                            name: variable.getName(),
                             _metaType: GEPPETTO.Resources.ARRAY_INSTANCE_NODE,
                             variable: variable,
                             size: size,
@@ -533,7 +538,7 @@ define(function (require) {
                             // create simple instance for this variable
                             var options = {
                                 id: variable.getId() + '[' + i + ']',
-                                name: variable.getId() + '[' + i + ']',
+                                name: variable.getName() + '[' + i + ']',
                                 _metaType: GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE,
                                 variable: variable,
                                 children: [],
@@ -549,20 +554,20 @@ define(function (require) {
                                 explodedInstance.extendApi(AVisualCapability);
                                 this.propagateCapabilityToParents(AVisualCapability, explodedInstance);
 
-                                if(visualType instanceof Array && visualType.length > 1){
+                                if (visualType instanceof Array && visualType.length > 1) {
                                     throw( "Support for more than one visual type is not implemented." );
                                 }
 
                                 // check if it has visual groups - if so add visual group capability
-                                if((typeof visualType.getVisualGroups === "function") &&
+                                if ((typeof visualType.getVisualGroups === "function") &&
                                     visualType.getVisualGroups() != null &&
-                                    visualType.getVisualGroups().length >0){
+                                    visualType.getVisualGroups().length > 0) {
                                     explodedInstance.extendApi(AVisualGroupCapability);
                                     explodedInstance.setVisualGroups(visualType.getVisualGroups());
                                 }
 
                                 // increase scene complexity counter
-                                if(visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                                if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
                                     GEPPETTO.SceneController.complexity += visualType.getVariables().length;
                                 }
                             }
@@ -600,7 +605,7 @@ define(function (require) {
                         // create simple instance for this variable
                         var options = {
                             id: variable.getId(),
-                            name: variable.getId(),
+                            name: variable.getName(),
                             _metaType: GEPPETTO.Resources.INSTANCE_NODE,
                             variable: variable,
                             children: [],
@@ -616,20 +621,20 @@ define(function (require) {
                             newlyCreatedInstance.extendApi(AVisualCapability);
                             this.propagateCapabilityToParents(AVisualCapability, newlyCreatedInstance);
 
-                            if(visualType instanceof Array && visualType.length > 1){
+                            if (visualType instanceof Array && visualType.length > 1) {
                                 throw( "Support for more than one visual type is not implemented." );
                             }
 
                             // check if it has visual groups - if so add visual group capability
-                            if((typeof visualType.getVisualGroups === "function") &&
+                            if ((typeof visualType.getVisualGroups === "function") &&
                                 visualType.getVisualGroups() != null &&
-                                visualType.getVisualGroups().length >0){
+                                visualType.getVisualGroups().length > 0) {
                                 newlyCreatedInstance.extendApi(AVisualGroupCapability);
                                 newlyCreatedInstance.setVisualGroups(visualType.getVisualGroups());
                             }
 
                             // increase scene complexity counter
-                            if(visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE){
+                            if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
                                 GEPPETTO.SceneController.complexity += visualType.getVariables().length;
                             }
                         }
@@ -681,11 +686,11 @@ define(function (require) {
             /**
              * Resolve connection values
              */
-            resolveConnectionValues: function(connectionInstanceOrVariable){
+            resolveConnectionValues: function (connectionInstanceOrVariable) {
 
                 // get initial values
                 var initialValues = null;
-                if(connectionInstanceOrVariable instanceof Instance){
+                if (connectionInstanceOrVariable instanceof Instance) {
                     initialValues = connectionInstanceOrVariable.getVariable().getWrappedObj().initialValues;
                 } else if (connectionInstanceOrVariable instanceof Variable) {
                     initialValues = connectionInstanceOrVariable.getWrappedObj().initialValues;
@@ -697,7 +702,7 @@ define(function (require) {
                 var pointerA = this.createPointer(connectionValue.a[0]);
                 var pointerB = this.createPointer(connectionValue.b[0]);
 
-                if(connectionInstanceOrVariable instanceof Instance) {
+                if (connectionInstanceOrVariable instanceof Instance) {
                     this.augmentPointer(pointerA, connectionInstanceOrVariable);
                     this.augmentPointer(pointerB, connectionInstanceOrVariable);
                 }
@@ -727,10 +732,10 @@ define(function (require) {
                 this.buildPointerElementsChain(matchingInstance.getRawInstancePath(), rootInstance, pointerElements, originalElement);
 
                 // horribly override elements with newly created ones
-                pointer.set({'elements' : pointerElements});
+                pointer.set({'elements': pointerElements});
 
                 // add connection instance reference to matching instance for easy retrieval
-                if(pointedIndex > -1){
+                if (pointedIndex > -1) {
                     matchingInstance.getChildren()[pointedIndex].addConnection(connectionInstance);
                 } else {
                     matchingInstance.addConnection(connectionInstance);
@@ -744,13 +749,17 @@ define(function (require) {
             buildPointerElementsChain: function (path, instance, pointerElements, originalElement) {
                 var instanceIds = path.split('.');
 
-                if(instance.getId() === instanceIds[0]){
-                    if(originalElement.getVariable().getId() === instanceIds[0]){
+                if (instance.getId() === instanceIds[0]) {
+                    if (originalElement.getVariable().getId() === instanceIds[0]) {
                         // re-use original element
                         pointerElements.push(originalElement);
                     } else {
                         // create pointer element
-                        var options = {"variable": instance.getVariable(), "type": instance.getType(), "index": undefined};
+                        var options = {
+                            "variable": instance.getVariable(),
+                            "type": instance.getType(),
+                            "index": undefined
+                        };
                         var pointerEl = new PointerElement(options);
                         pointerElements.push(pointerEl);
                     }
@@ -764,7 +773,7 @@ define(function (require) {
                     }
 
                     // recurse
-                    if(newPath != '') {
+                    if (newPath != '') {
                         var children = instance.getChildren();
                         for (var i = 0; i < children.length; i++) {
                             this.buildPointerElementsChain(newPath, children[i], pointerElements, originalElement);
@@ -781,11 +790,11 @@ define(function (require) {
                 var matching = null;
 
                 var parent = instance.getParent();
-                if(parent == undefined || parent == null){
+                if (parent == undefined || parent == null) {
                     matching = instance;
                 } else {
                     var recurseMatching = this.findRoot(parent);
-                    if(recurseMatching != null){
+                    if (recurseMatching != null) {
                         matching = recurseMatching;
                     }
                 }
@@ -796,11 +805,11 @@ define(function (require) {
             /**
              * Propagates a capability to parents of the given instance
              */
-            propagateCapabilityToParents: function (capability, instance){
+            propagateCapabilityToParents: function (capability, instance) {
                 var parent = instance.getParent();
 
                 // check if it has capability
-                if(!(parent == undefined || parent == null) && !parent.hasCapability(capability.capabilityId)){
+                if (!(parent == undefined || parent == null) && !parent.hasCapability(capability.capabilityId)) {
                     // apply capability
                     parent.extendApi(capability);
 
@@ -864,7 +873,7 @@ define(function (require) {
             findMatchingInstancesByType: function (type, instances, matchingInstance) {
                 for (var i = 0; i < instances.length; i++) {
                     var types = instances[i].getTypes();
-                    for(var j=0; j<types.length; j++){
+                    for (var j = 0; j < types.length; j++) {
                         if (types[j] === type || types[j].getVisualType() === type) {
                             matchingInstance.push(instances[i]);
                             break;
@@ -960,6 +969,42 @@ define(function (require) {
             },
 
             /**
+             *
+             * @param node
+             * @param path
+             * @returns {boolean}
+             */
+            includePotentialInstance: function (node, path) {
+                if (node.getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
+                    return false;
+                }
+
+                if (node.getType().getMetaType() == GEPPETTO.Resources.TEXT_TYPE) {
+                    return false;
+                }
+
+                var nested = path.length - path.replace(/\./g, '').length;
+                if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && nested > 4) {
+                    return false;
+                }
+
+                return true;
+            },
+
+            printInstanceStats: function () {
+                var stats = {};
+                for (var i = 0; i < this.allPaths.length; i++) {
+                    var path = this.allPaths[i];
+                    if (!stats.hasOwnProperty(path.metaType)) {
+                        stats[path.metaType] = 0;
+                    }
+                    stats[path.metaType]++;
+                }
+                console.log(stats);
+            },
+
+
+            /**
              * Build list of potential instance paths (excluding connection instances)
              */
             fetchAllPotentialInstancePaths: function (node, allPotentialPaths, parentPath) {
@@ -967,7 +1012,7 @@ define(function (require) {
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 
                 // only add if it's not a connection
-                if(node.getType().getMetaType() != GEPPETTO.Resources.CONNECTION_TYPE) {
+                if (this.includePotentialInstance(node, path)) {
                     allPotentialPaths.push({path: path, metaType: node.getType().getMetaType()});
                 }
 
@@ -984,18 +1029,18 @@ define(function (require) {
                     }
 
                     // STEP 1: build list of potential parent paths
-                    if(arrayType != undefined){
+                    if (arrayType != undefined) {
                         // add the [*] entry
                         var starPath = path + '[' + '*' + ']';
                         potentialParentPaths.push(starPath);
                         allPotentialPaths.push({path: starPath, metaType: arrayType.getMetaType()});
 
                         // add each array element path
-                        for(var n=0; n<arrayType.getSize(); n++){
+                        for (var n = 0; n < arrayType.getSize(); n++) {
                             var arrayElementPath = path + '[' + n + ']';
                             potentialParentPaths.push(arrayElementPath);
 
-                            if(arrayType.getType().getMetaType() != GEPPETTO.Resources.CONNECTION_TYPE) {
+                            if (this.includePotentialInstance(node, path)) {
                                 allPotentialPaths.push({
                                     path: arrayElementPath,
                                     metaType: arrayType.getType().getMetaType()
@@ -1015,7 +1060,7 @@ define(function (require) {
 
                             if (vars != undefined && vars != null) {
                                 for (var j = 0; j < vars.length; j++) {
-                                    for(var g=0; g<potentialParentPaths.length; g++){
+                                    for (var g = 0; g < potentialParentPaths.length; g++) {
                                         this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, potentialParentPaths[g]);
                                     }
                                 }
@@ -1030,7 +1075,7 @@ define(function (require) {
 
                                 if (vars != undefined && vars != null) {
                                     for (var l = 0; l < vars.length; l++) {
-                                        for(var h=0; h<potentialParentPaths.length; h++) {
+                                        for (var h = 0; h < potentialParentPaths.length; h++) {
                                             this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, potentialParentPaths[h]);
                                         }
                                     }
@@ -1226,16 +1271,16 @@ define(function (require) {
             /**
              * Clean up state of instance tree
              */
-            cleanupInstanceTreeState: function(){
+            cleanupInstanceTreeState: function () {
                 // get state variables - clean out time series and watched status
                 var stateVariableInstances = this.getAllInstancesOf(GEPPETTO.Resources.STATE_VARIABLE_TYPE_PATH);
-                for(var i=0; i<stateVariableInstances.length; i++){
+                for (var i = 0; i < stateVariableInstances.length; i++) {
                     stateVariableInstances[i].setTimeSeries(null);
                     stateVariableInstances[i].setWatched(false, false);
                 }
                 // get parameters - clean out values
                 var parameterInstances = this.getAllInstancesOf(GEPPETTO.Resources.PARAMETER_TYPE_PATH);
-                for(var j=0; j<parameterInstances.length; j++){
+                for (var j = 0; j < parameterInstances.length; j++) {
                     parameterInstances[j].setValue(null);
                 }
             },
@@ -1244,20 +1289,20 @@ define(function (require) {
              * Get all instance given a type or a variable (path or actual object)
              */
             getAllInstancesOf: function (typeOrVar, instances) {
-                if (typeof typeOrVar === 'string' || typeOrVar instanceof String){
+                if (typeof typeOrVar === 'string' || typeOrVar instanceof String) {
                     // it's an evil string, try to eval as path in the name of satan
                     typeOrVar = eval(typeOrVar);
                 }
 
                 var allInstances = [];
 
-                if (instances == undefined){
+                if (instances == undefined) {
                     instances = this.instances;
                 }
 
-                if(typeOrVar instanceof Type){
+                if (typeOrVar instanceof Type) {
                     allInstances = this.getAllInstancesOfType(typeOrVar, instances);
-                } else if(typeOrVar instanceof Variable) {
+                } else if (typeOrVar instanceof Variable) {
                     allInstances = this.getAllInstancesOfVariable(typeOrVar, instances);
                 } else {
                     // good luck
@@ -1271,12 +1316,12 @@ define(function (require) {
              * Get all instances given a type
              */
             getAllInstancesOfType: function (type, instances) {
-                if (! (type instanceof Type)){
+                if (!(type instanceof Type)) {
                     // raise hell
                     throw( "The argument " + type + " is not a Type or a valid Type path. Good luck." );
                 }
 
-                if (instances == undefined){
+                if (instances == undefined) {
                     instances = this.instances;
                 }
 
@@ -1291,12 +1336,12 @@ define(function (require) {
              * Get all instances given a variable
              */
             getAllInstancesOfVariable: function (variable, instances) {
-                if (! (variable instanceof Variable)){
+                if (!(variable instanceof Variable)) {
                     // raise hell
                     throw( "The argument " + variable + " is not a Type or a valid Type path. Good luck." );
                 }
 
-                if (instances == undefined){
+                if (instances == undefined) {
                     instances = this.instances;
                 }
 
@@ -1313,8 +1358,8 @@ define(function (require) {
             getAllPotentialInstancesEndingWith: function (endingString) {
                 var matchingPotentialInstances = [];
 
-                for(var i=0; i<this.allPaths.length; i++){
-                    if(this.allPaths[i].path.endsWith(endingString) && this.allPaths[i].path.indexOf("*")==-1){
+                for (var i = 0; i < this.allPaths.length; i++) {
+                    if (this.allPaths[i].path.endsWith(endingString) && this.allPaths[i].path.indexOf("*") == -1) {
                         matchingPotentialInstances.push(this.allPaths[i].path);
                     }
                 }
@@ -1329,8 +1374,8 @@ define(function (require) {
             getAllPotentialInstancesStartingWith: function (startingString) {
                 var matchingPotentialInstances = [];
 
-                for(var i=0; i<this.allPaths.length; i++){
-                    if(this.allPaths[i].path.startsWith(startingString) && this.allPaths[i].path.indexOf("*")==-1){
+                for (var i = 0; i < this.allPaths.length; i++) {
+                    if (this.allPaths[i].path.startsWith(startingString) && this.allPaths[i].path.indexOf("*") == -1) {
                         matchingPotentialInstances.push(this.allPaths[i].path);
                     }
                 }
@@ -1345,17 +1390,17 @@ define(function (require) {
              *
              * @returns {Array} - Types
              */
-            getAllTypesOfMetaType: function(metaType){
+            getAllTypesOfMetaType: function (metaType) {
                 var types = [];
 
                 // iterate all libraries
                 var libraries = this.geppettoModel.getLibraries();
-                for(var i=0; i<libraries.length; i++){
+                for (var i = 0; i < libraries.length; i++) {
                     // iterate all types within library
                     var libraryTypes = libraries[i].getTypes();
-                    for(var j=0; j<libraryTypes.length; j++){
+                    for (var j = 0; j < libraryTypes.length; j++) {
                         // add if its metatype matches
-                        if(libraryTypes[j].getMetaType() == metaType){
+                        if (libraryTypes[j].getMetaType() == metaType) {
                             types.push(libraryTypes[j]);
                         }
                     }
@@ -1371,8 +1416,8 @@ define(function (require) {
              *
              * @returns {Array} - Types
              */
-            getAllTypesOfType: function(type){
-                if (typeof type === 'string' || type instanceof String){
+            getAllTypesOfType: function (type) {
+                if (typeof type === 'string' || type instanceof String) {
                     // it's an evil string, try to eval as type path in the name of baal
                     type = eval(type);
                 }
@@ -1381,26 +1426,26 @@ define(function (require) {
 
                 // iterate all libraries
                 var libraries = this.geppettoModel.getLibraries();
-                for(var i=0; i<libraries.length; i++){
+                for (var i = 0; i < libraries.length; i++) {
                     // iterate all types within library
                     var libraryTypes = libraries[i].getTypes();
-                    for(var j=0; j<libraryTypes.length; j++) {
+                    for (var j = 0; j < libraryTypes.length; j++) {
                         if (libraryTypes[j] == type) {
                             // add if it's a straight match (the type himself)
                             types.push(libraryTypes[j]);
                         } else if (libraryTypes[j].getSuperType() != undefined &&
-                                   libraryTypes[j].getSuperType() != null &&
-                                   libraryTypes[j].getSuperType() == type){
+                            libraryTypes[j].getSuperType() != null &&
+                            libraryTypes[j].getSuperType() == type) {
                             // add if superType matches
                             types.push(libraryTypes[j]);
                         } else {
                             // no immediate matches - recurse on super type and see if any matches if any matches add this type
                             /*if(libraryTypes[j].getSuperType() != undefined && libraryTypes[j].getSuperType() != null) {
-                                var superTypeMatches = this.getAllTypesOfType(libraryTypes[j].getSuperType());
-                                if (superTypeMatches.length > 0) {
-                                    types.push(libraryTypes[j]);
-                                }
-                            }*/
+                             var superTypeMatches = this.getAllTypesOfType(libraryTypes[j].getSuperType());
+                             if (superTypeMatches.length > 0) {
+                             types.push(libraryTypes[j]);
+                             }
+                             }*/
                         }
                     }
                 }
@@ -1417,22 +1462,61 @@ define(function (require) {
              *
              * @returns {Array}
              */
-            getAllVariablesOfType: function(typesToSearch, typeToMatch){
+            getAllVariablesOfType: function (typesToSearch, typeToMatch) {
                 // check if array and if not "make it so"
-                if(!(typesToSearch.constructor === Array)){
+                if (!(typesToSearch.constructor === Array)) {
                     typesToSearch = [typesToSearch];
                 }
 
                 var variables = [];
 
-                for(var i=0; i<typesToSearch.length; i++){
-                    if(typesToSearch[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+                for (var i = 0; i < typesToSearch.length; i++) {
+                    if (typesToSearch[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
                         var nestedVariables = typesToSearch[i].getVariables();
-                        if(typeToMatch!= undefined && typeToMatch!= null) {
+                        if (typeToMatch != undefined && typeToMatch != null) {
                             for (var j = 0; j < nestedVariables.length; j++) {
                                 var varTypes = nestedVariables[j].getTypes();
-                                for(var x=0; x<varTypes.length; x++){
-                                    if(varTypes[x] == typeToMatch){
+                                for (var x = 0; x < varTypes.length; x++) {
+                                    if (varTypes[x] == typeToMatch || varTypes[x].getSuperType() == typeToMatch) {
+                                        variables.push(nestedVariables[j]);
+                                    }
+                                }
+                            }
+                        } else {
+                            variables = variables.concat(nestedVariables);
+                        }
+                    }
+                }
+
+                return variables;
+            },
+
+
+            /**
+             * Gets all variables with the given metaType
+             *
+             * @param typesToSearch
+             *
+             * @param metaType
+             *
+             * @returns {Array}
+             */
+            getAllVariablesOfMetaType: function (typesToSearch, metaType) {
+                // check if array and if not "make it so"
+                if (!(typesToSearch.constructor === Array)) {
+                    typesToSearch = [typesToSearch];
+                }
+
+                var variables = [];
+
+                for (var i = 0; i < typesToSearch.length; i++) {
+                    if (typesToSearch[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                        var nestedVariables = typesToSearch[i].getVariables();
+                        if (metaType != undefined && metaType != null) {
+                            for (var j = 0; j < nestedVariables.length; j++) {
+                                var varTypes = nestedVariables[j].getTypes();
+                                for (var x = 0; x < varTypes.length; x++) {
+                                    if (varTypes[x].getMetaType() == metaType) {
                                         variables.push(nestedVariables[j]);
                                     }
                                 }

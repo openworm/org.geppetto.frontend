@@ -128,21 +128,19 @@ define(function (require) {
                     }
                 }
 
-                //TODO Replace this loop with something smarter that doesn't create an instance. The proper way is to
-                //TODO add a ConnectionCapability to a Variabile and find all variables children of the type of the root
-                //TODO with type ConnectionType which will then have the capability
-                for(var x=0; x<GEPPETTO.ModelFactory.allPaths.length; x++){
-                    if(GEPPETTO.ModelFactory.allPaths[x].metaType == GEPPETTO.Resources.CONNECTION_TYPE){
-                        var connectionItem = GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.allPaths[x].path);
+                var typesToSearch=GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.projection);
+                var connectionVariables = GEPPETTO.ModelFactory.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
 
-                        var source = connectionItem.getA();
-                        var target = connectionItem.getB();
+                for(var x=0; x<connectionVariables.length; x++){
+                        var connectionVariable = connectionVariables[x];
+
+                        var source = connectionVariable.getA();
+                        var target = connectionVariable.getB();
                         //AQP: Where is the error?
                         var sourceId = source.getElements()[source.getElements().length - 1].getPath();
                         var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
-                        this.createLink(sourceId, targetId, this.options.linkType(connectionItem), this.options.linkWeight(connectionItem));
-                    }
+                        this.createLink(sourceId, targetId, this.options.linkType(connectionVariable), this.options.linkWeight(connectionVariable));
                 }
 
 

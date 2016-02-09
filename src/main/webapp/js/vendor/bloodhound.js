@@ -491,7 +491,16 @@
                         return false;
                     }
                 });
-                return matches ? _.map(unique(matches), function (id) {
+
+                //START PATCH
+                var un=unique(matches);
+                if(un.length>50000){
+                    //let's not return anything if there are more than 50000 options
+                    return [];
+                }
+                //END PATCH
+
+                return matches ? _.map(un, function (id) {
                     return that.datums[id];
                 }) : [];
             },

@@ -392,6 +392,7 @@ define(function (require) {
                         var value=eval(this.getCommand(element.inputValue, instance[0]));
                         var unit=eval(this.getCommand(element.label, instance[0]));
                         label = $("<div class='spotlight-input-label'>").html(unit);
+                        var staticLabel=$("<div class='spotlight-input-label-info'>").html("This parameter is declared as <span class='code'>STATIC</span> in the underlying model, changing it will affect all of its instances.");
                         var input = $('<input>')
                             .addClass('spotlight-input')
                             .attr('value', value)
@@ -403,8 +404,12 @@ define(function (require) {
                             .on('keyup',function() {
                                 this.style.width = ((this.value.length + 1) * 14) + 'px';
                             });
+                        if(instance[0].getVariable().isStatic()){
+                            uiElement.append(staticLabel);
+                        }
                         uiElement.append(input);
                         uiElement.append(label);
+
                     }
                 }
                 else {

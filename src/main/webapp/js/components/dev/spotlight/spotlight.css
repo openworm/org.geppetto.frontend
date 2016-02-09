@@ -109,6 +109,34 @@
     float:left;
 }
 
+.spotlight-input-label-info{
+    color: #D8D8D8;
+    font-size: 14px;
+    background-color: transparent;
+    float: left;
+    bottom: -45px;
+    position: absolute;
+    width: 350px;
+    text-align: center;
+}
+
+.code{
+    font-family: courier, monospace;
+    color:#AB81FF;
+}
+
+#parameterInput{
+    width: 350px;
+    height: 50px;
+    margin: 0 auto;
+    position: relative;
+}
+
+#ParameterCapability{
+    width: 500px;
+    margin: 0 auto;
+}
+
 .spotlight-input:focus {
     outline:0px !important;
     -webkit-appearance:none;

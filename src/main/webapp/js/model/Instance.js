@@ -359,25 +359,18 @@ define(function (require) {
         getConnections: function (direction) {
             if (!this.get('connectionsLoaded')) {
 
-                var connectionVariables = [];//TODO prendi tutte le variabili di tipo CONNECTION_TYPE, they could be anywhere
-
-                for(var x=0; x<GEPPETTO.ModelFactory.allPaths.length; x++){
-                    if(GEPPETTO.ModelFactory.allPaths[x].metaType == GEPPETTO.Resources.CONNECTION_TYPE){
-                        connectionVariables.push(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.allPaths[x].path).getVariable());
-                    }
-                }
-
-                var connectionInstances=[];
+                var typesToSearch = GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE);
+                var connectionVariables = GEPPETTO.ModelFactory.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
+                var connectionInstances = [];
 
                 for (var x = 0; x < connectionVariables.length; x++) {
-                    var variable=connectionVariables[x];
+                    var variable = connectionVariables[x];
                     var initialValues = variable.getWrappedObj().initialValues;
                     var connectionValue = initialValues[0].value;
                     // resolve A and B to Pointer Objects
                     var pointerA = GEPPETTO.ModelFactory.createPointer(connectionValue.a[0]);
                     var pointerB = GEPPETTO.ModelFactory.createPointer(connectionValue.b[0]);
-                    if(pointerA.getPath()==this.getId() || pointerB.getPath()==this.getId())
-                    {
+                    if (pointerA.getPath() == this.getId() || pointerB.getPath() == this.getId()) {
                         var options = {
                             id: variable.getId(),
                             name: variable.getId(),

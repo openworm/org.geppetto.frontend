@@ -188,11 +188,19 @@ define(function (require) {
 
                 groups.push(entity);
             }
-            
-           if (node.getWrappedObj().get("capabilities") != null && node.getWrappedObj().get("capabilities").length > 0 && node.getWrappedObj().get("capabilities").indexOf('VisualGroupCapability') != -1){
+           
+           if (node.getMetaType() == GEPPETTO.Resources.VISUAL_GROUP_NODE){
         	   var visualGroup = [{
                    label: "Show Visual Groups",
-                   action: ["G.unSelectAll();", node.getPath() + ".show(true)"],
+                   action: ["G.unSelectAll();", node.getPath() + ".show(true)"]
+               }];
+        	   
+        	   groups.push(visualGroup);
+           }
+           
+           if (node.getWrappedObj().get("capabilities") != null && node.getWrappedObj().get("capabilities").length > 0 && node.getWrappedObj().get("capabilities").indexOf('VisualGroupCapability') != -1){
+        	   var visualGroup = [{
+                   label: "Show Visual Groups"
                }];
 
         	   var subgroups1Add = [];

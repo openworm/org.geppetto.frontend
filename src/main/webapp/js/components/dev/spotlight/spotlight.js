@@ -122,6 +122,7 @@ define(function (require) {
             //TODO: To be removed, just a sample of how to add a suggestion
             this.addSuggestion(this.recordSample, GEPPETTO.Resources.RUN_FLOW);
             this.addSuggestion(this.plotSample, GEPPETTO.Resources.PLAY_FLOW);
+            this.addSuggestion(this.lightUpSample, GEPPETTO.Resources.PLAY_FLOW);
 
         },
 
@@ -142,6 +143,16 @@ define(function (require) {
             ],
             "icon": "fa-area-chart"
         },
+
+        lightUpSample: {
+            "label": "Link morphology colour to recorded membrane potentials",
+            "actions": [
+                "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
+            ],
+            "icon": "fa-lightbulb-o"
+        },
+
+
 
         confirmed: function (item) {
             //check suggestions

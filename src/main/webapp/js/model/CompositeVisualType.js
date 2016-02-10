@@ -92,7 +92,14 @@ define(function (require) {
          *
          */
         getChildren: function () {
-            return this.get("variables");
+            var vg=this.get("visualGroups");
+            if(vg){
+                return this.get("variables").concat(vg);
+            }
+            else{
+                return this.get("variables");
+            }
+
         },
     });
 });

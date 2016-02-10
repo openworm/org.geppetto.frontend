@@ -341,7 +341,7 @@ define(function (require) {
                 var mesh = GEPPETTO.getVARS().meshes[instancePath];
                 if (mesh != undefined) {
                     mesh.traverse(function (object) {
-                        if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+                        if (object.hasOwnProperty("material")) {
                             GEPPETTO.SceneController.setThreeColor(object.material.color, color);
                             object.material.defaultColor = color;
                         }
@@ -372,7 +372,7 @@ define(function (require) {
                     mesh.defaultOpacity = opacity;
                     if (opacity == 1) {
                         mesh.traverse(function (object) {
-                            if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+                            if (object.hasOwnProperty("material")) {
                                 object.material.transparent = false;
                                 object.material.opacity = 1;
                                 object.material.defaultOpacity = 1;
@@ -380,7 +380,7 @@ define(function (require) {
                         });
                     } else {
                         mesh.traverse(function (object) {
-                            if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+                            if (object.hasOwnProperty("material")) {
                                 object.material.transparent = true;
                                 object.material.opacity = opacity;
                                 object.material.defaultOpacity = opacity;

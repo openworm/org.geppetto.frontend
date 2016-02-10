@@ -304,7 +304,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
 				try
 				{
-					connectionHandler.setWatchedVariables(requestID, receivedObject.variables, receivedObject.experimentId, receivedObject.projectId);
+					connectionHandler.setWatchedVariables(requestID, receivedObject.variables, receivedObject.experimentId, receivedObject.projectId, receivedObject.watch);
 				}
 				catch(GeppettoExecutionException e)
 				{
@@ -447,6 +447,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Long projectId;
 		Long experimentId;
 		List<String> variables;
+		boolean watch;
 		Map<String, String> modelParameters;
 		Map<String, String> properties;
 	}

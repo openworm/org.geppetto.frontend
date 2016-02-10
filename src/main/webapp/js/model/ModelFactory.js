@@ -1581,7 +1581,7 @@ define(function (require) {
                 var reference = undefined;
 
                 // Examples of reference strings
-                // geppettoModel#//@libraries.0/@types.20/@variables.5/@anonymousTypes.0/@variables.7
+                // //@libraries.0/@types.20/@variables.5/@anonymousTypes.0/@variables.7
                 // //@libraries.1/@types.5
                 // //@tags.1/@tags.5
                 // //@libraries.0/@types.8/@visualGroups.0/@visualGroupElements.1

@@ -455,6 +455,7 @@ define(function (require) {
             STATE_VARIABLE_CAPABILITY: 'StateVariableCapability',
             PARAMETER_CAPABILITY: 'ParameterCapability',
             CONNECTION_CAPABILITY: 'ConnectionCapability',
+            VISUAL_GROUP_CAPABILITY: 'VisualGroupCapability',
             // CONNECTION DIRECTION
             INPUT: 'input',
             OUTPUT: 'output',

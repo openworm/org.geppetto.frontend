@@ -38,6 +38,18 @@
 
 define(function (require) {
 
+    /**
+     * Closes socket and clears handlers. Method is called from each test.
+     */
+    function launch() {
+        //close socket
+        GEPPETTO.MessageSocket.close();
+        //clear message handlers, all tests within module should have performed by time method it's called
+        GEPPETTO.MessageSocket.clearHandlers();
+        //connect to socket again for next test
+        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+    }
+
     var run = function () {
         QUnit.module("Global Scope Test");
         QUnit.test("Global scope Test", function () {
@@ -250,10 +262,13 @@ define(function (require) {
                             assert.ok(window.acnet2 != undefined && window.acnet2.baskets_12 != undefined, "Shortcuts created as expected");
                             assert.ok(window.acnet2.baskets_12.getChildren().length == 12 && window.acnet2.pyramidals_48.getChildren().length == 48, "Visual types exploded into instances as expected");
                             // check resolve
-                            assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getId() == 'Text' &&
-                                      GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getMetaType() == 'TextType', "Ref string resolved to Type as expected");
-                            assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.20/@variables.5/@anonymousTypes.0/@variables.7').getId() == 'rateScale' &&
-                                      GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.20/@variables.5/@anonymousTypes.0/@variables.7').getMetaType() == 'Variable', "Ref string resolved to Variable as expected");
+                            assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getId() == window.Model.getLibraries()[1].getTypes()[5].getId() &&
+                                      GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getMetaType() == window.Model.getLibraries()[1].getTypes()[5].getMetaType(),
+                                      "Ref string resolved to Type as expected");
+                            assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.15/@variables.5').getId() == window.Model.getLibraries()[0].getTypes()[15].getVariables()[5].getId() &&
+                                      GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.15/@variables.5').getMetaType() == window.Model.getLibraries()[0].getTypes()[15].getVariables()[5].getMetaType() &&
+                                      GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.15/@variables.5').getType().getMetaType() == window.Model.getLibraries()[0].getTypes()[15].getVariables()[5].getType().getMetaType(),
+                                      "Ref string resolved to Variable as expected");
                             // check that types are resolved as expected in the model
                             assert.ok(acnet2.baskets_12[0].getTypes().length == 1 &&
                                       acnet2.baskets_12[0].getTypes()[0].getId() ==  'bask' &&
@@ -275,11 +290,11 @@ define(function (require) {
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
                                       'getAllInstanceOf returning instances as expected for Variable and Variable path.');
                             // check AllPotentialInstances
-                            assert.ok(GEPPETTO.ModelFactory.allPaths.length == 14661 &&
+                            assert.ok(GEPPETTO.ModelFactory.allPaths.length == 10536 &&
                                       GEPPETTO.ModelFactory.allPaths[0].path == 'acnet2' &&
                                       GEPPETTO.ModelFactory.allPaths[0].metaType == 'CompositeType' &&
-                                      GEPPETTO.ModelFactory.allPaths[14661 - 1].path == 'time' &&
-                                      GEPPETTO.ModelFactory.allPaths[14661 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                                      GEPPETTO.ModelFactory.allPaths[10536 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPaths[10536 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
                             // check getAllPotentialInstancesEndingWith
                             assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
                                       GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&
@@ -289,34 +304,124 @@ define(function (require) {
                             // check getInstance:
                             assert.ok(window.Instances.getInstance('acnet2.baskets_12[3]').getInstancePath() == 'acnet2.baskets_12[3]', 'Instances.getInstance fetches existing instance as expected');
                             assert.ok(window.Instances.getInstance('acnet2.baskets_12[3].soma_0.v').getInstancePath() == 'acnet2.baskets_12[3].soma_0.v', 'Instances.getInstance creates and fetches instance as expected');
-
-                            // TODO: figure out how to test for exception passing parameters to the function --> https://api.qunitjs.com/throws/
-                            /*assert.raises(window.Instances.getInstance('acnet2.baskets_12[3].sticaxxi'),
-                                          function( err ) { return err.toString() === 'The instance acnet2.baskets_12[3].sticaxxi does not exist in the current model';},
-                                          'Trying to fetch something that does not exist in the model throws exception');*/
+                            // try to get instance that doesn't exist in the model
+                            assert.throws(function() { window.Instances.getInstance('acnet2.baskets_12[3].sticaxxi'); }, 'Trying to fetch something that does not exist in the model throws exception');
 
                             done();
+                            launch();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
                             var payload = JSON.parse(parsedServerMessage.data);
                             var message = JSON.parse(payload.message);
-                            ok(false, message);
+
+                            // make it fail
+                            assert.ok(false, message);
                             done();
+                            launch();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
                             var payload = JSON.parse(parsedServerMessage.data);
                             var message = JSON.parse(payload.message).message;
-                            ok(false, message);
+
+                            // make it fail
+                            assert.ok(false, message);
                             done();
+                            launch();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
                             var payload = JSON.parse(parsedServerMessage.data);
                             var message = payload.message;
-                            ok(false, message);
+
+                            // make it fail
+                            assert.ok(false, message);
                             done();
+                            launch();
+
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("5", "1");
+        });
+
+        QUnit.module("Test Capabilities");
+        QUnit.test("Test Capability Injection", function ( assert ) {
+
+            var done = assert.async();
+
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            equal(window.Project.getId(), 5, "Project ID checked");
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadModel(payload);
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2, "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined, "Instances are not undefined");
+                            assert.ok(window.Instances.length == 1, "1 top level instance as expected");
+                            assert.ok(window.acnet2 != undefined && window.acnet2.baskets_12 != undefined, "Shortcuts created as expected");
+
+                            // test if visual capability is injected in instances
+                            assert.ok(window.acnet2.baskets_12[0].hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY), "Visual capability injected to instances of visual types");
+                            // test if visual capability is injected in types
+                            assert.ok(window.acnet2.baskets_12[0].getType().hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY), "Visual capability injected to types with visual types");
+                            // test if parameter capability is injected in instances
+                            assert.ok(window.Instances.getInstance('acnet2.temperature').hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY), "Parameter capability injected to parameter instances");
+                            assert.ok(window.Instances.getInstance('acnet2.temperature').getVariable().hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY), "Parameter capability injected to parameter variables");
+                            // test if visual group capability is injected in visual groups
+                            assert.ok(window.acnet2.pyramidals_48[0].hasCapability(GEPPETTO.Resources.VISUAL_GROUP_CAPABILITY), "Visual group capability injected to instances of visual types with visual groups");
+                            // test if connection capability is injected in connection variables
+                            assert.ok(GEPPETTO.ModelFactory.getAllVariablesOfMetaType(GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE), 'ConnectionType')[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to variables of ConnectionType");
+                            assert.ok(window.acnet2.pyramidals_48[0].getConnections()[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to instances of connection types")
+
+                            done();
+                            launch();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            launch();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            launch();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            launch();
 
                             break;
                     }

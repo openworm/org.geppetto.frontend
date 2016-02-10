@@ -58,7 +58,7 @@ define(function (require) {
 
             //create popup widget
             var p = window[name] = new Popup({id: id, name: name, visible: true});
-
+            p.setSize(394,490);
             //create help command for plot
             p.help = function () {
                 return GEPPETTO.Console.getObjectCommands(id);

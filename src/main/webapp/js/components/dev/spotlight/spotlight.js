@@ -553,7 +553,7 @@ define(function (require) {
                 "HTMLType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(1).setHTML($instance0$).setName('$variableid$')",
+                            "G.addWidget(1).setHTML($instance0$).setName('$variableid$').addCustomNodeHandler(function(node){G.addWidget(3).setData(node);}, 'click');",
                         ],
                         "icon": "fa-eye",
                         "label": "View HTML",

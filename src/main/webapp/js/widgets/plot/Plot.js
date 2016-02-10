@@ -56,6 +56,7 @@ define(function (require) {
         updateLegendTimeout: null,
         latestPosition: null,
         initialized:null,
+        inhomogeneousUnits: false,
 
         /**
          * Default options for plot widget, used if none specified when plot
@@ -254,9 +255,20 @@ define(function (require) {
             }
 
             if (this.datasets.length > 0) {
+
+                // check for inhomogeneousUnits and set flag
+                var refUnit = undefined;
+                for(var i=0; i<this.datasets.length; i++){
+                    if(i==0){
+                        refUnit = this.datasets[i].variable.getUnit();
+                    } else if(refUnit != this.datasets[i].variable.getUnit()) {
+                        this.inhomogeneousUnits = true;
+                        break;
+                    }
+                }
+
                 this.updateAxis(this.datasets.length - 1);
             }
-
 
             var plotHolder = $("#" + this.id);
             this.plot = $.plot(plotHolder, this.datasets, this.options);
@@ -430,7 +442,7 @@ define(function (require) {
             if (!this.labelsUpdated) {
                 var unit = this.datasets[key].variable.getUnit();
                 if (unit != null) {
-                    var labelY = this.getUnitLabel(unit);
+                    var labelY = this.inhomogeneousUnits ? "Inhomogeneous" : this.getUnitLabel(unit);
                     var labelX = this.getUnitLabel(window.Instances.time.getUnit());
                     this.setAxisLabel(labelY, labelX);
                     this.labelsUpdated = true;

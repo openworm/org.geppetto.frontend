@@ -105,7 +105,6 @@ require.config({
                 QUnit.config.autostart = false;
             }
         }
-
     }
 });
 

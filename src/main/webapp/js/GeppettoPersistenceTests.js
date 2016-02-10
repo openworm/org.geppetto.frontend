@@ -45,7 +45,7 @@ require.config({
 
     /*
      * Values in here are for dependencies that more than one module/script requires and/or needs.
-     * E.G. If depenedency it's used more than once, it goes in here.
+     * E.G. If dependency it's used more than once, it goes in here.
      */
     paths: {
         'jquery': "vendor/jquery-1.9.1.min",

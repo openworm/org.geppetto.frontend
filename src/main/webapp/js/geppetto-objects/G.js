@@ -564,13 +564,20 @@ define(function (require) {
              * @param {Function} normalizationFunction
              */
             addBrightnessFunctionBulkSimplified: function (instances, normalizationFunction) {
-            	var instance = instances[0].getParent().getParent();
+            	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
+            	var newInstance = "";
             	var visualObjects = [];
-            	for (var voInstance in instances){
-            		visualObjects.push(instances[voInstance].getParent().getId());
+            	if (instances[0].getParent().getInstancePath() in GEPPETTO.getVARS().meshes){
+            		newInstance = instances[0].getParent(); 
+            	}
+            	else{
+            		newInstance = instances[0].getParent().getParent();
+            		for (var voInstance in instances){
+                		visualObjects.push(instances[voInstance].getParent().getId());
+                	}
             	}
             	
-            	this.addBrightnessFunctionBulk(instance, visualObjects, instances, normalizationFunction);
+            	this.addBrightnessFunctionBulk(newInstance, visualObjects, instances, normalizationFunction);
             },
 
             /**

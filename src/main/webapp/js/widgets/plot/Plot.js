@@ -263,6 +263,7 @@ define(function (require) {
                         refUnit = this.datasets[i].variable.getUnit();
                     } else if(refUnit != this.datasets[i].variable.getUnit()) {
                         this.inhomogeneousUnits = true;
+                        this.labelsUpdated = false;
                         break;
                     }
                 }

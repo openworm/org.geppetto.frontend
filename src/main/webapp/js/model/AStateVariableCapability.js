@@ -118,7 +118,7 @@ define(['jquery'], function (require) {
                 updateServer=true;
             }
             if (updateServer && isWatched != this.watched) {
-                Project.getActiveExperiment().watchVariables([this], isWatched);
+                GEPPETTO.ExperimentsController.watchVariables([this], isWatched);
             }
             this.watched=isWatched;
             return this;

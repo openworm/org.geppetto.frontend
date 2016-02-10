@@ -1427,6 +1427,21 @@ define(function (require) {
             },
 
             /**
+             * Get all POTENTIAL instances starting with a given string and ending with another string
+             */
+            getAllPotentialInstancesWith: function (startingString,endingString) {
+                var matchingPotentialInstances = [];
+
+                for (var i = 0; i < this.allPaths.length; i++) {
+                    if (this.allPaths[i].path.startsWith(startingString) && this.allPaths[i].path.endsWith(endingString)  && this.allPaths[i].path.indexOf("*") == -1) {
+                        matchingPotentialInstances.push(this.allPaths[i].path);
+                    }
+                }
+
+                return matchingPotentialInstances;
+            },
+
+            /**
              * Get all types of given a meta type (string)
              *
              * @param metaType - metaType String

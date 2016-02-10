@@ -48,7 +48,7 @@ define(function (require) {
             checkVisualInstance: function (instance) {
                 if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                     //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
-                    if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()){
+                    if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
                         GEPPETTO.SceneFactory.buildVisualInstance(instance);
                     }
                     // this block keeps traversing the instances
@@ -92,11 +92,11 @@ define(function (require) {
                 else {
                     threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
-
+                var baseColor = threeObject.material.defaultColor;
                 if (threeObject instanceof THREE.Line) {
-                    threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity));
+                    threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range([baseColor, "red"])(intensity));
                 } else {
-                    threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range(["#199e8", "red"])(intensity));
+                    threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range([baseColor, "red"])(intensity));
                 }
 
             },
@@ -189,12 +189,12 @@ define(function (require) {
              *            instancePath - Path of aspect of mesh to select
              */
             selectInstance: function (instancePath) {
-            	var meshes = this.getRealMeshesForInstancePath(instancePath);
+                var meshes = this.getRealMeshesForInstancePath(instancePath);
                 if (meshes.length > 0) {
-                	for (var meshesIndex in meshes){
-                		var mesh = meshes[meshesIndex];
-                		
-                		if (!mesh.visible) {
+                    for (var meshesIndex in meshes) {
+                        var mesh = meshes[meshesIndex];
+
+                        if (!mesh.visible) {
                             GEPPETTO.SceneController.merge(instancePath);
                         }
                         if (mesh.selected == false) {
@@ -213,10 +213,10 @@ define(function (require) {
                                 mesh.selected = true;
                                 mesh.ghosted = false;
                             }
-                            
+
                         }
-                	}
-                	return true;
+                    }
+                    return true;
                 }
                 return false;
             },
@@ -227,22 +227,22 @@ define(function (require) {
              * @param {String}
              *            instancePath - Path of the instance
              */
-            getRealMeshesForInstancePath: function(instancePath){
-            	var meshes= [];
-            	if (instancePath in GEPPETTO.getVARS().splitMeshes){
-            		for (var keySplitMeshes in GEPPETTO.getVARS().splitMeshes){
-            			if (keySplitMeshes.startsWith(instancePath)){
-            				if (GEPPETTO.getVARS().splitMeshes[instancePath].visible)
-            					meshes.push(GEPPETTO.getVARS().splitMeshes[keySplitMeshes]);
-            			}
-            		}
-            	}
-            	else{
-            		meshes.push(GEPPETTO.getVARS().meshes[instancePath]);
-            	}
-            	return meshes;
+            getRealMeshesForInstancePath: function (instancePath) {
+                var meshes = [];
+                if (instancePath in GEPPETTO.getVARS().splitMeshes) {
+                    for (var keySplitMeshes in GEPPETTO.getVARS().splitMeshes) {
+                        if (keySplitMeshes.startsWith(instancePath)) {
+                            if (GEPPETTO.getVARS().splitMeshes[instancePath].visible)
+                                meshes.push(GEPPETTO.getVARS().splitMeshes[keySplitMeshes]);
+                        }
+                    }
+                }
+                else {
+                    meshes.push(GEPPETTO.getVARS().meshes[instancePath]);
+                }
+                return meshes;
             },
-            
+
             /**
              * Deselect aspect, or mesh as far as tree js is concerned.
              *
@@ -250,34 +250,34 @@ define(function (require) {
              *            instancePath - Path of the mesh/aspect to select
              */
             deselectInstance: function (instancePath) {
-            	var meshes = this.getRealMeshesForInstancePath(instancePath);
-            	if (meshes.length > 0) {
-                	for (var meshesIndex in meshes){
-                		var mesh = meshes[meshesIndex];
-		                // match instancePath to mesh store in variables properties
-	                    if (!mesh.visible) {
-	                        GEPPETTO.SceneController.merge(instancePath);
-	                    }
-	                    // make sure that path was selected in the first place
-	                    if (mesh.selected == true) {
-	                        if (mesh instanceof THREE.Object3D) {
-	                            mesh.traverse(function (child) {
-	                                if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
-	                                    GEPPETTO.SceneController.setThreeColor(child.material.color, child.material.defaultColor);
-	                                    child.material.opacity = child.material.defaultOpacity;
-	                                }
-	                            });
-	                            mesh.selected = false;
-	                        }
-	                    } else {
-	                        mesh.material.color.set(mesh.material.defaultColor);
-	                        mesh.material.opacity = mesh.material.defaultOpacity;
-	                        mesh.selected = false;
-	                    }
-                	}
-                	return true;
-            	}
-            	return false;
+                var meshes = this.getRealMeshesForInstancePath(instancePath);
+                if (meshes.length > 0) {
+                    for (var meshesIndex in meshes) {
+                        var mesh = meshes[meshesIndex];
+                        // match instancePath to mesh store in variables properties
+                        if (!mesh.visible) {
+                            GEPPETTO.SceneController.merge(instancePath);
+                        }
+                        // make sure that path was selected in the first place
+                        if (mesh.selected == true) {
+                            if (mesh instanceof THREE.Object3D) {
+                                mesh.traverse(function (child) {
+                                    if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
+                                        GEPPETTO.SceneController.setThreeColor(child.material.color, child.material.defaultColor);
+                                        child.material.opacity = child.material.defaultOpacity;
+                                    }
+                                });
+                                mesh.selected = false;
+                            }
+                        } else {
+                            mesh.material.color.set(mesh.material.defaultColor);
+                            mesh.material.opacity = mesh.material.defaultOpacity;
+                            mesh.selected = false;
+                        }
+                    }
+                    return true;
+                }
+                return false;
             },
 
             show: function (instances) {
@@ -312,7 +312,7 @@ define(function (require) {
             },
 
             /**
-             * Hide aspect
+             * Hide instance
              *
              * @param {String}
              *            instancePath - Path of the aspect to make invisible
@@ -338,15 +338,20 @@ define(function (require) {
              *            instancePath - Instance path of aspect to change color
              */
             setColor: function (instancePath, color) {
-                var mesh = GEPPETTO.getVARS().meshes[instancePath];
-                if (mesh != undefined) {
-                    mesh.traverse(function (object) {
-                        if (object.hasOwnProperty("material")) {
-                            GEPPETTO.SceneController.setThreeColor(object.material.color, color);
-                            object.material.defaultColor = color;
+                var meshes = this.getRealMeshesForInstancePath(instancePath);
+                if (meshes.length > 0) {
+                    for (var i = 0; i < meshes.length; i++) {
+                        var mesh = meshes[i];
+                        if (mesh) {
+                            mesh.traverse(function (object) {
+                                if (object.hasOwnProperty("material")) {
+                                    GEPPETTO.SceneController.setThreeColor(object.material.color, color);
+                                    object.material.defaultColor = color;
+                                }
+                            });
                         }
-                    });
-                    return true;
+                        return true;
+                    }
                 }
                 return false;
             },
@@ -964,17 +969,18 @@ define(function (require) {
                     groupMesh.instancePath = instancePath;
                     groupMesh.geometry.dynamic = false;
                     groupMesh.position.copy(mergedMesh.position);
+                    groupMesh.material.defaultColor = mergedMesh.material.defaultColor;
 
                     GEPPETTO.getVARS().splitMeshes[groupName] = groupMesh;
-                    
+
                     // Update visualization feature for a mesh
-                    if (mergedMesh.ghosted){
-                    	 GEPPETTO.SceneController.ghostEffect([groupMesh], true);
+                    if (mergedMesh.ghosted) {
+                        GEPPETTO.SceneController.ghostEffect([groupMesh], true);
                     }
-                    if (mergedMesh.selected){
-                    	GEPPETTO.SceneController.selectInstance(groupName);
+                    if (mergedMesh.selected) {
+                        GEPPETTO.SceneController.selectInstance(groupName);
                     }
-                	groupMesh.selected = mergedMesh.selected;
+                    groupMesh.selected = mergedMesh.selected;
 
                     // add split mesh to scenne and set flag to visible
                     groupMesh.visible = true;

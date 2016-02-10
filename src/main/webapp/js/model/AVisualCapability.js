@@ -61,7 +61,7 @@ define(function (require) {
                 nested = true;
             }
 
-            if (this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 GEPPETTO.SceneController.hideInstance(this.getInstancePath());
                 this.visible = false;
 
@@ -101,7 +101,7 @@ define(function (require) {
                 nested = true;
             }
 
-            if (this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 GEPPETTO.SceneController.showInstance(this.getInstancePath());
 
                 this.visible = true;
@@ -161,7 +161,7 @@ define(function (require) {
                 nested = true;
             }
 
-            if (this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
 
                 if (nested === true && typeof this.getChildren === "function") {
@@ -194,7 +194,7 @@ define(function (require) {
                 nested = true;
             }
 
-            if (this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
 
                 if (nested === true && typeof this.getChildren === "function") {
@@ -229,7 +229,7 @@ define(function (require) {
 
             var message;
 
-            if (this instanceof Instance) {
+            if (this instanceof Instance || this instanceof ArrayInstance) {
                 if (!this.selected) {
                     //first, before doing anything, we check what is currently selected
 

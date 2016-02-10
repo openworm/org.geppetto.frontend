@@ -218,10 +218,6 @@ define(function (require) {
                 GEPPETTO.MessageSocket.send("load_experiment", parameters);
                 GEPPETTO.trigger(Events.Experiment_active);
             },
-            
-            watchVariables: function (variables) {
-            	GEPPETTO.ExperimentsController.watchVariables(variables, true);
-            },
 
             /**
              * Play experiment. Takes a JS object as parameter where two options can be set, but not together: steps or playAll.

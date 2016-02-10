@@ -436,7 +436,7 @@ define(function (require) {
             window.Project.loadFromID("1", "1");
         });
 
-        /*QUnit.test("Test Persist Project", function ( assert ) {
+        QUnit.test("Test Persist Project (requires aws.credentials)", function ( assert ) {
 
             var done = assert.async();
 
@@ -485,8 +485,8 @@ define(function (require) {
 
             GEPPETTO.MessageSocket.clearHandlers();
             GEPPETTO.MessageSocket.addHandler(handler);
-            Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/LEMS/SingleComponentHH/GEPPETTO.json");
-        });*/
+            Project.loadFromURL("https://raw.githubusercontent.com/gidili/geppetto-samples/master/SingleComponentHH/GEPPETTO.json");
+        });
 
         QUnit.test("Test Save Project Properties", function ( assert ) {
 

@@ -388,7 +388,7 @@ define(function (require) {
                             var time = (new Date() - initializationTime) / 1000;
                             GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
 
-                            assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experiments checked");
+                            assert.equal(window.Project.getExperiments().length, 2, "Initial amount of experiments checked");
                             assert.equal(window.Project.getId(), 6, "Project loaded ID checked");
 
                             break;

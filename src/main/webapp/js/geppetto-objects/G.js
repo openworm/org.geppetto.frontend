@@ -546,7 +546,7 @@ define(function (require) {
             	}
             	else{
             		newInstance = instance.getParent();
-            		visualObjects= [stateVariableInstances.getId()];
+            		visualObjects= [instance.getId()];
             	}
             	
             	this.addBrightnessFunctionBulk(newInstance, visualObjects, [stateVariableInstances], normalizationFunction);

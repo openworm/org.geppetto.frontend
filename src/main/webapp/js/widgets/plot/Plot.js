@@ -233,24 +233,29 @@ define(function (require) {
                 return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
             });
 
+            var isPlotable = true;
             for (var i = 0; i < data.length; i++) {
                 var instance = data[i];
-                if (instance != null && instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
+                if (instance != null){
+                	
+                   for (var key = 0; key < this.datasets.length; key++) {
+	                   if (instance.getInstancePath() == this.datasets[key].label) {
+	                       continue;
+	                   }
+                   }
 
-                    for (var key = 0; key < this.datasets.length; key++) {
-                        if (instance.getInstancePath() == this.datasets[key].label) {
-                            continue;
-                        }
-                    }
-
-                    var timeSeriesData = this.getTimeSeriesData(instance);
-
-                    this.datasets.push({
-                        label: instance.getInstancePath(),
-                        variable: instance,
-                        data: timeSeriesData
-                    });
-
+                   var timeSeriesData;
+                   if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
+	                   timeSeriesData = this.getTimeSeriesData(instance);
+                   }
+                   else{
+                	   isPlotable = false;
+                   }
+                   this.datasets.push({
+                       label: instance.getInstancePath(),
+                       variable: instance,
+                       data: timeSeriesData
+                   });
                 }
             }
 
@@ -271,9 +276,11 @@ define(function (require) {
                 this.updateAxis(this.datasets.length - 1);
             }
 
-            var plotHolder = $("#" + this.id);
-            this.plot = $.plot(plotHolder, this.datasets, this.options);
-
+            if (isPlotable){
+            	var plotHolder = $("#" + this.id);
+            	this.plot = $.plot(plotHolder, this.datasets, this.options);
+            }
+            	
             return this;
         },
 
@@ -653,7 +660,7 @@ define(function (require) {
                 this.options["xaxis"] = {};
             }
             this.options.xaxis.axisLabel = labelX;
-            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+            
             return this;
         },
 

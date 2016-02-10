@@ -45,7 +45,7 @@ require.config({
 
     /*
      * Values in here are for dependencies that more than one module/script requires and/or needs.
-     * E.G. If depenedency it's used more than once, it goes in here.
+     * E.G. If dependency it's used more than once, it goes in here.
      */
     paths: {
         'jquery': "vendor/jquery-1.9.1.min",
@@ -73,6 +73,16 @@ require.config({
         'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
+        'vendor/shaders/ConvolutionShader': ['three'],
+        'vendor/shaders/CopyShader': ['three'],
+        'vendor/shaders/FilmShader': ['three'],
+        'vendor/shaders/FocusShader': ['three'],
+        'vendor/postprocessing/EffectComposer': ['three'],
+        'vendor/postprocessing/MaskPass': ['three'],
+        'vendor/postprocessing/RenderPass': ['three'],
+        'vendor/postprocessing/BloomPass': ['three'],
+        'vendor/postprocessing/ShaderPass': ['three'],
+        'vendor/postprocessing/FilmPass': ['three'],
         'vendor/ColladaLoader': ['three'],
         'vendor/OBJLoader': ['three'],
         'vendor/ColorConverter': ["three"],
@@ -95,7 +105,6 @@ require.config({
                 QUnit.config.autostart = false;
             }
         }
-
     }
 });
 

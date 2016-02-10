@@ -23,13 +23,16 @@
 	<p>
 		<h3><a href=".\GeppettoCoreTests.html">Core Tests</a></h3>
 	</p>
-	<i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend, org.geppetto.persistence</i>
+    <i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend, org.geppetto.model.neuroml</i><br/>
+    <i>NOTE: tests core samples - fails if persistence bundle is deployed</i>
+    <p>
+    <p>
+    	<h3><a href=".\GeppettoNeuronalTests.html">NeuroML Tests</a></h3>
+    </p>
+	<i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend, org.geppetto.persistence</i><br/>
+    <i>NOTE: tests persistence samples and functionality - fails if persistence bundle is NOT deployed</i>
 	<p>
 		<h3><a href=".\GeppettoPersistenceTests.html">Persistence Tests</a></h3>
-	</p>
-	<i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend, org.geppetto.model.neuroml</i>
-	<p>
-		<h3><a href=".\GeppettoNeuronalTests.html">NeuroML Tests</a></h3>
 	</p>
 </body>
 </html>

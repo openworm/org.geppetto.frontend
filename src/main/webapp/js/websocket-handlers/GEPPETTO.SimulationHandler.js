@@ -328,7 +328,11 @@ define(function (require) {
                     GEPPETTO.ModelFactory.addInstances(instancePaths, window.Instances, window.Model);
                 };
 
-                instances.getInstance = function (instancePath) {
+                instances.getInstance = function (instancePath, create) {
+                    if(create == undefined){
+                        create = true;
+                    }
+
                     var instances = [];
                     var InstanceVarName = "Instances.";
                     var arrayParameter=true;
@@ -360,14 +364,18 @@ define(function (require) {
                         try {
                             instances[i] = eval(InstanceVarName + instancePath[i]);
                             if(instances[i] == undefined){
+                                if(create) {
+                                    Instances.addInstances(instancePath[i]);
+                                    instances[i] = eval(InstanceVarName + instancePath[i]);
+                                }
+                            }
+                        } catch (e) {
+                            if(create) {
                                 Instances.addInstances(instancePath[i]);
                                 instances[i] = eval(InstanceVarName + instancePath[i]);
                             }
-                        } catch (e) {
-                            Instances.addInstances(instancePath[i]);
-                            instances[i] = eval(InstanceVarName + instancePath[i]);
                         }
-                        if (instances[i] == undefined) {
+                        if (instances[i] == undefined && create) {
                             throw( "The instance " + instancePath[i] + " does not exist in the current model" );
                         }
                     }

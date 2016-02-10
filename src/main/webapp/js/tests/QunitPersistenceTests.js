@@ -36,7 +36,7 @@ define(function (require) {
      * Calls "start()" from QUnit to start qunit tests, closes socket and clears
      * handlers. Method is called from each test.
      */
-    function launch() {
+    function resetConnection() {
         //close socket
         GEPPETTO.MessageSocket.close();
         //clear message handlers, all tests within module should have performed by time method it's called
@@ -51,6 +51,8 @@ define(function (require) {
         QUnit.test("Test switching active experiment", function ( assert ) {
 
             var done = assert.async();
+            // once off on the first test to establish connection
+            resetConnection();
 
             var handler = {
                 switchExperiment: false,
@@ -90,13 +92,13 @@ define(function (require) {
                                     assert.equal(window.Project.getActiveExperiment().getId(), 2, "New Active experiment id of loaded project checked");
 
                                     done();
-                                    launch();
+                                    resetConnection();
                                 }
                             } else {
                                 assert.ok(false, "Failed to load project from persistence");
 
                                 done();
-                                launch();
+                                resetConnection();
                             }
 
                             break;
@@ -107,7 +109,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -117,7 +119,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -169,7 +171,7 @@ define(function (require) {
                             assert.ok("Results Uploaded", "Results Uploaded Okay!");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -179,7 +181,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -189,7 +191,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -241,7 +243,7 @@ define(function (require) {
                             assert.ok("Model Uploaded", "Model Uploaded Okay!");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -252,7 +254,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -263,7 +265,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -315,21 +317,21 @@ define(function (require) {
                             assert.ok("Model Not Downloaded", "Results Not Downloaded Okay!");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.ERROR:
                             assert.ok("Model Not Downloaded", "Results Not Downloaded Okay!");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.DOWNLOAD_RESULTS:
                             assert.ok("Model Downloaded", "Results Donwloaded Okay!");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -340,7 +342,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -351,7 +353,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -402,7 +404,7 @@ define(function (require) {
                             assert.ok("Model Downloaded", "Model Downloaded Okay!");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -413,7 +415,7 @@ define(function (require) {
                             assert.ok(false, "Failed to load project from persistence");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -424,7 +426,7 @@ define(function (require) {
                             assert.ok(false, "Failed to load project from persistence");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -454,7 +456,7 @@ define(function (require) {
                             assert.ok(true, "Project persisted");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -465,7 +467,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -476,7 +478,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -509,7 +511,7 @@ define(function (require) {
                             assert.ok(true, "Project saved");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -520,7 +522,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -531,7 +533,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -573,7 +575,7 @@ define(function (require) {
                             assert.equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -584,7 +586,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -595,7 +597,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -635,7 +637,7 @@ define(function (require) {
                             assert.equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -646,7 +648,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -657,7 +659,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }

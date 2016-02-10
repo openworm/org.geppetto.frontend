@@ -35,7 +35,7 @@ define(function (require) {
     /**
      * Closes socket and clears handlers. Method is called from each test.
      */
-    function launch() {
+    function resetConnection() {
         //close socket
         GEPPETTO.MessageSocket.close();
         //clear message handlers, all tests within module should have performed by time method it's called
@@ -50,6 +50,8 @@ define(function (require) {
         QUnit.test("Test Project 1 - SingleComponentHH", function ( assert ) {
 
             var done = assert.async();
+            // once off on the first test to establish connection
+            resetConnection();
 
             var handler = {
                 onMessage: function (parsedServerMessage) {
@@ -78,7 +80,7 @@ define(function (require) {
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Active experiment id of loaded project checked");
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -86,7 +88,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -94,7 +96,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -102,11 +104,12 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                     }
                 }
             };
+
             GEPPETTO.MessageSocket.clearHandlers();
             GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("1", "1");
@@ -146,7 +149,7 @@ define(function (require) {
                                 assert.ok(false, "Unable to play experiment for project");
 
                                 done();
-                                launch();
+                                resetConnection();
                             } else {
                                 Project.getActiveExperiment().play();
                             }
@@ -164,7 +167,7 @@ define(function (require) {
                             assert.equal(timeSeries.length, 6001, "Checking updated time series in variable");
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -172,7 +175,7 @@ define(function (require) {
                             ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -180,7 +183,7 @@ define(function (require) {
                             ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -188,7 +191,7 @@ define(function (require) {
                             ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                     }
                 }
@@ -248,7 +251,7 @@ define(function (require) {
                             assert.equal(pvdr.getVisualGroups().length, 1, "Test number of VisualGroups");
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -256,7 +259,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -264,7 +267,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -272,7 +275,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                     }
                 }
@@ -336,7 +339,7 @@ define(function (require) {
                             assert.equal(acnet2.pyramidals_48[23].getVisualGroups().length, 5, "Test number of Visual Groups on pyramidal");
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -344,7 +347,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -352,7 +355,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -360,7 +363,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                     }
                 }
@@ -424,7 +427,7 @@ define(function (require) {
                             assert.equal(c302.PVDR[0].getConnections().length, 7, "AVAL connections check");
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -432,7 +435,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -440,7 +443,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -448,7 +451,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                     }
                 }
@@ -511,7 +514,7 @@ define(function (require) {
                             assert.equal(jQuery.isEmptyObject(net1.neuron_0.electrical.SimulationTree), false, "Test Simulation tree at load");
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -519,7 +522,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -527,7 +530,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -535,7 +538,7 @@ define(function (require) {
                             assert.ok(false, message);
 
                             done();
-                            launch();
+                            resetConnection();
                             break;
                     }
                 }

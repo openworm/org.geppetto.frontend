@@ -41,7 +41,7 @@ define(function (require) {
     /**
      * Closes socket and clears handlers. Method is called from each test.
      */
-    function launch() {
+    function resetConnection() {
         //close socket
         GEPPETTO.MessageSocket.close();
         //clear message handlers, all tests within module should have performed by time method it's called
@@ -238,6 +238,8 @@ define(function (require) {
         QUnit.test("Test ModelFactory", function ( assert ) {
 
             var done = assert.async();
+            // once off on the first test to establish connection
+            resetConnection();
 
             var handler = {
                 onMessage: function (parsedServerMessage) {
@@ -308,7 +310,7 @@ define(function (require) {
                             assert.throws(function() { window.Instances.getInstance('acnet2.baskets_12[3].sticaxxi'); }, 'Trying to fetch something that does not exist in the model throws exception');
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -318,7 +320,7 @@ define(function (require) {
                             // make it fail
                             assert.ok(false, message);
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -328,7 +330,7 @@ define(function (require) {
                             // make it fail
                             assert.ok(false, message);
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
@@ -338,7 +340,7 @@ define(function (require) {
                             // make it fail
                             assert.ok(false, message);
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }
@@ -391,7 +393,7 @@ define(function (require) {
                             assert.ok(window.acnet2.pyramidals_48[0].getConnections()[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to instances of connection types")
 
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
@@ -401,7 +403,7 @@ define(function (require) {
                             // make it fail
                             assert.ok(false, message);
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
@@ -411,7 +413,7 @@ define(function (require) {
                             // make it fail
                             assert.ok(false, message);
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
@@ -421,7 +423,7 @@ define(function (require) {
                             // make it fail
                             assert.ok(false, message);
                             done();
-                            launch();
+                            resetConnection();
 
                             break;
                     }

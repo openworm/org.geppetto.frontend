@@ -107,7 +107,7 @@ define(function (require) {
                         .attr('role', 'group')
                         .attr('id', bgName);
                     $.each(bgDef, function (bName, bData) {
-                        bg.append(that.named(that.createButton, bName, bData))
+                        bg.append(that.named(that.createUIElement, bName, bData))
                     });
                     return bg;
                 },

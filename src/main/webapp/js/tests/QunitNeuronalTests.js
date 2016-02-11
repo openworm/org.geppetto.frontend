@@ -505,13 +505,12 @@ define(function (require) {
                             }
 
                             assert.equal(passTimeTest, true, "Testing Simulation load time: " + time + " ms");
-                            assert.notEqual(net1, null, "Entities checked");
-                            assert.equal(net1.getAspects().length, 1, "Aspects checked");
+                            assert.notEqual(net1, null, "Top level entities not null");
                             assert.equal(net1.getConnections().length, 0, "Connections checked");
-                            assert.equal(jQuery.isEmptyObject(net1.neuron_0.electrical.VisualizationTree), false, "Test Visualization at load");
-                            assert.equal(net1.neuron_0.electrical.VisualizationTree.getChildren().length, 1, "Test Visual Groups amount");
-                            assert.equal(jQuery.isEmptyObject(net1.neuron_0.electrical.ModelTree), false, "Test Model tree at load");
-                            assert.equal(jQuery.isEmptyObject(net1.neuron_0.electrical.SimulationTree), false, "Test Simulation tree at load");
+                            assert.equal(net1.getChildren().length, 2, "Children checked");
+                            assert.equal(net1.neuron[0].getVisualType().hasCapability('VisualGroupCapability'), false, "No visual groups");
+                            assert.equal(net1.neuron[0].getVisualType().hasCapability('VisualCapability'), true, "Visual capability on neuron");
+                            assert.equal(net1.muscle[0].getVisualType().hasCapability('VisualCapability'), true, "Visual capability on muscle");
 
                             done();
                             resetConnection();

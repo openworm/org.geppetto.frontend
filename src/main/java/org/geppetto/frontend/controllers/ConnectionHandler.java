@@ -126,9 +126,12 @@ public class ConnectionHandler
 		try
 		{
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
-			if(geppettoProject == null){
+			if(geppettoProject == null)
+			{
 				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_LOADING_PROJECT, "Project not found");
-			}else{
+			}
+			else
+			{
 				loadGeppettoProject(requestID, geppettoProject, experimentId);
 			}
 		}
@@ -182,10 +185,10 @@ public class ConnectionHandler
 			String projectJSON = gson.toJson(geppettoProject);
 			setConnectionProject(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, projectJSON);
-			
-			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager)geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel());
+
+			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager) geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel());
 			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_MODEL_LOADED, geppettoModelJSON);
-			
+
 			if(experimentId != -1)
 			{
 				loadExperiment(requestID, experimentId, geppettoProject.getId());
@@ -208,27 +211,22 @@ public class ConnectionHandler
 	 */
 	public void newExperiment(String requestID, long projectId)
 	{
-		if(DataManagerHelper.getDataManager().isDefault())
-		{
-			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
-		}
-		else
-		{
-			IGeppettoProject project = retrieveGeppettoProject(projectId);
 
-			try
-			{
-				IExperiment experiment = geppettoManager.newExperiment(requestID, project);
-				Gson gson = new Gson();
-				String json = gson.toJson(experiment);
-				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CREATED, json);
+		IGeppettoProject project = retrieveGeppettoProject(projectId);
 
-			}
-			catch(GeppettoExecutionException | GeppettoAccessException e)
-			{
-				error(e, "Error creating a new experiment");
-			}
+		try
+		{
+			IExperiment experiment = geppettoManager.newExperiment(requestID, project);
+			Gson gson = new Gson();
+			String json = gson.toJson(experiment);
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CREATED, json);
+
 		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error creating a new experiment");
+		}
+
 	}
 
 	/**
@@ -238,7 +236,7 @@ public class ConnectionHandler
 	 */
 	public void loadExperiment(String requestID, long experimentID, long projectId)
 	{
-		long start=System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADING, "");
 		try
 		{
@@ -266,7 +264,7 @@ public class ConnectionHandler
 		{
 			error(e, "Error loading experiment");
 		}
-		logger.debug("Loading experiment took "+(System.currentTimeMillis()-start)+"ms");
+		logger.debug("Loading experiment took " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	/**
@@ -274,15 +272,12 @@ public class ConnectionHandler
 	 */
 	public void runExperiment(String requestID, long experimentID, long projectId)
 	{
-		if(DataManagerHelper.getDataManager().isDefault())
-		{
-			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
-		}
+
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(requestID,Resources.VOLATILE_PROJECT.toString());
+			info(requestID, Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
@@ -317,42 +312,36 @@ public class ConnectionHandler
 	 */
 	public void setWatchedVariables(String requestID, List<String> variables, long experimentID, long projectId, boolean watch) throws GeppettoExecutionException, GeppettoInitializationException
 	{
-		if(DataManagerHelper.getDataManager().isDefault())
-		{
-			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
-		}
-		else
-		{
-			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-			IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-			
-			try
-			{
-				geppettoManager.setWatchedVariables(variables, experiment, geppettoProject, watch);
-			}
-			catch(GeppettoExecutionException | GeppettoAccessException e)
-			{
-				error(e, "Error setting watched variables");
-			}
 
-			// serialize watch-lists
-			ObjectMapper mapper = new ObjectMapper();
-			String serializedLists;
-			
-			try
-			{
-				serializedLists = mapper.writer().writeValueAsString(variables);
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 
-				// send to the client the watch lists were added
-				websocketConnection.sendMessage(requestID, OutboundMessages.WATCHED_VARIABLES_SET, serializedLists);
-			}
-			catch(JsonProcessingException e)
-			{
-				error(e, "There was an error serializing the watched lists");
-			}
+		try
+		{
+			geppettoManager.setWatchedVariables(variables, experiment, geppettoProject, watch);
 		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error setting watched variables");
+		}
+
+		// serialize watch-lists
+		ObjectMapper mapper = new ObjectMapper();
+		String serializedLists;
+
+		try
+		{
+			serializedLists = mapper.writer().writeValueAsString(variables);
+
+			// send to the client the watch lists were added
+			websocketConnection.sendMessage(requestID, OutboundMessages.WATCHED_VARIABLES_SET, serializedLists);
+		}
+		catch(JsonProcessingException e)
+		{
+			error(e, "There was an error serializing the watched lists");
+		}
+
 	}
-
 
 	/**
 	 * @param requestID
@@ -385,7 +374,7 @@ public class ConnectionHandler
 		{
 			try
 			{
-				ExperimentState experimentState = geppettoManager.playExperiment(requestID, experiment,null);
+				ExperimentState experimentState = geppettoManager.playExperiment(requestID, experiment, null);
 				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, GeppettoSerializer.serializeToJSON(experimentState));
 			}
 			catch(GeppettoExecutionException | GeppettoAccessException e)
@@ -403,7 +392,6 @@ public class ConnectionHandler
 		}
 	}
 
-	
 	/**
 	 * @param requestID
 	 * @param aspectInstancePath
@@ -516,23 +504,19 @@ public class ConnectionHandler
 	 */
 	public void setParameters(String requestID, Map<String, String> modelParameters, long projectId, long experimentID)
 	{
-		if(DataManagerHelper.getDataManager().isDefault())
-		{
-			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
-			return;
-		}
+
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(requestID,Resources.VOLATILE_PROJECT.toString());
+			info(requestID, Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
 		{
 			try
 			{
-				ExperimentState experimentState= geppettoManager.setModelParameters(modelParameters, experiment, geppettoProject);
+				ExperimentState experimentState = geppettoManager.setModelParameters(modelParameters, experiment, geppettoProject);
 				websocketConnection.sendMessage(requestID, OutboundMessages.UPDATE_MODEL_TREE, GeppettoSerializer.serializeToJSON(experimentState));
 			}
 			catch(GeppettoExecutionException | GeppettoAccessException | IOException e)
@@ -638,7 +622,7 @@ public class ConnectionHandler
 	}
 
 	/**
-	 * @param requestID 
+	 * @param requestID
 	 * @param exception
 	 * @param errorMessage
 	 */
@@ -706,33 +690,28 @@ public class ConnectionHandler
 	 */
 	public void deleteExperiment(String requestID, long experimentId, long projectId)
 	{
-		if(DataManagerHelper.getDataManager().isDefault())
+
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+
+		if(experiment != null)
 		{
-			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
+			try
+			{
+				geppettoManager.deleteExperiment(requestID, experiment);
+				String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"name\":" + '"' + experiment.getName() + '"' + "}";
+				websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, update);
+			}
+			catch(GeppettoExecutionException | GeppettoAccessException e)
+			{
+				error(e, "Error while deleting the experiment");
+			}
 		}
 		else
 		{
-			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-			IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
-
-			if(experiment != null)
-			{
-				try
-				{
-					geppettoManager.deleteExperiment(requestID, experiment);
-					String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"name\":" + '"' + experiment.getName() + '"' + "}";
-					websocketConnection.sendMessage(requestID, OutboundMessages.DELETE_EXPERIMENT, update);
-				}
-				catch(GeppettoExecutionException | GeppettoAccessException e)
-				{
-					error(e, "Error while deleting the experiment");
-				}
-			}
-			else
-			{
-				error(null, "Error deleting experiment, the experiment " + experimentId + " was not found in project " + projectId);
-			}
+			error(null, "Error deleting experiment, the experiment " + experimentId + " was not found in project " + projectId);
 		}
+
 	}
 
 	/**
@@ -741,33 +720,28 @@ public class ConnectionHandler
 	 */
 	public void persistProject(String requestID, long projectId)
 	{
-		if(DataManagerHelper.getDataManager().isDefault())
+
+		try
 		{
-			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
-		}
-		else
-		{
-			try
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+
+			if(geppettoProject != null)
 			{
-				IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 
-				if(geppettoProject != null)
-				{
-
-					geppettoManager.persistProject(requestID, geppettoProject);
-					PersistedProject persistedProject = new PersistedProject(geppettoProject.getId(), geppettoProject.getActiveExperimentId());
-					websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTED, getGson().toJson(persistedProject));
-				}
-				else
-				{
-					error(null, "Error persisting project  " + projectId + ".");
-				}
+				geppettoManager.persistProject(requestID, geppettoProject);
+				PersistedProject persistedProject = new PersistedProject(geppettoProject.getId(), geppettoProject.getActiveExperimentId());
+				websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTED, getGson().toJson(persistedProject));
 			}
-			catch(GeppettoExecutionException | GeppettoAccessException e)
+			else
 			{
-				error(e, "Error persisting project");
+				error(null, "Error persisting project  " + projectId + ".");
 			}
 		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error persisting project");
+		}
+
 	}
 
 	class PersistedProject
@@ -916,27 +890,28 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID, Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		if(geppettoProject.isVolatile())
 		{
-			info(requestID,Resources.VOLATILE_PROJECT.toString());
+			info(requestID, Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else
 		{
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-			if(properties!=null){
+			if(properties != null)
+			{
 				for(String p : properties.keySet())
 				{
 					switch(p)
 					{
-					case "name":
-					{
-						geppettoProject.setName(properties.get(p));
-						break;
-					}
+						case "name":
+						{
+							geppettoProject.setName(properties.get(p));
+							break;
+						}
 					}
 				}
 			}
@@ -955,13 +930,13 @@ public class ConnectionHandler
 	{
 		if(DataManagerHelper.getDataManager().isDefault())
 		{
-			info(requestID,Resources.UNSUPPORTED_OPERATION.toString());
+			info(requestID, Resources.UNSUPPORTED_OPERATION.toString());
 		}
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		if(geppettoProject.isVolatile())
 		{
-			info(requestID,Resources.VOLATILE_PROJECT.toString());
+			info(requestID, Resources.VOLATILE_PROJECT.toString());
 			return;
 		}
 		else

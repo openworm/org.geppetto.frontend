@@ -81,6 +81,19 @@ define(function (require) {
         /**
          * Get name
          *
+         * @command ArrayInstance.getConnections()
+         *
+         * @returns {Array}
+         *
+         */
+        getConnections: function () {
+            //We don't currently support connections for arrays
+            return [];
+        },
+
+        /**
+         * Get name
+         *
          * @command ArrayInstance.getName()
          *
          * @returns {String} - Name

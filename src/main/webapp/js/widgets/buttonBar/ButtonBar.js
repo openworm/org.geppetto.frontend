@@ -89,7 +89,7 @@ define(function (require) {
                     }
                 },
 
-                createUIElement: function (button) {
+                createButton: function (button) {
                     return $('<button>')
                         .addClass('btn btn-default btn-lg')
                         .append(this.createButtonContent(button))
@@ -107,7 +107,7 @@ define(function (require) {
                         .attr('role', 'group')
                         .attr('id', bgName);
                     $.each(bgDef, function (bName, bData) {
-                        bg.append(that.named(that.createUIElement, bName, bData))
+                        bg.append(that.named(that.createButton, bName, bData))
                     });
                     return bg;
                 },

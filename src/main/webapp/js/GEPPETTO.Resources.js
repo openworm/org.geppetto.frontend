@@ -118,7 +118,7 @@ define(function (require) {
 
             PROJECT_LOADED: "Project loaded",
 
-            MMODEL_LOADED: "Model loaded",
+            MODEL_LOADED: "The model for the current project was loaded",
 
             EXPERIMENT_CREATED: "New experiment created",
 

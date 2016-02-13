@@ -128,13 +128,12 @@ define(function (require) {
                     var variables = aC.watchedVariables;
                     if (variables != null || variables != undefined) {
                         for (var key in variables) {
-                            var variableName = variables[key].instancePath;
-                            e.getWatchedVariables().push(variableName);
+                            e.getWatchedVariables().push(variables[key]);
                         }
                     }
 
                     if (aC.simulatorConfiguration != null) {
-                        var aspect = aC.aspect.instancePath;
+                        var aspect = aC.instance;
                         var sC = this.createSimulatorConfigurationNode(aC.simulatorConfiguration, aspect);
                         sC.setParent(e);
                         // add simulator configuration node to experiment
@@ -214,7 +213,7 @@ define(function (require) {
                         simulator: aspect.simulator,
                         model: aspect.model,
                         domainType: aspect.domainType,
-                        instancePath: aspect.instancePath,
+                        instancePath: aspect.instance,
                         _metaType: GEPPETTO.Resources.ASPECT_NODE
                     });
 

@@ -969,7 +969,7 @@ public class ConnectionHandler
 						String aspectPath = properties.get("aspectInstancePath");
 						for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 						{
-							if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+							if(aspectConfiguration.getInstance().equals(aspectPath))
 							{
 								aspectConfiguration.getSimulatorConfiguration().setTimestep(Float.parseFloat(properties.get(p)));
 								dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
@@ -983,7 +983,7 @@ public class ConnectionHandler
 						String aspectPath = properties.get("aspectInstancePath");
 						for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 						{
-							if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+							if(aspectConfiguration.getInstance().equals(aspectPath))
 							{
 								aspectConfiguration.getSimulatorConfiguration().setLength(Float.parseFloat(properties.get(p)));
 								dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
@@ -997,7 +997,7 @@ public class ConnectionHandler
 						String aspectPath = properties.get("aspectInstancePath");
 						for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 						{
-							if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+							if(aspectConfiguration.getInstance().equals(aspectPath))
 							{
 								aspectConfiguration.getSimulatorConfiguration().setSimulatorId(properties.get(p));
 								dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
@@ -1011,7 +1011,7 @@ public class ConnectionHandler
 						String aspectPath = properties.get("aspectInstancePath");
 						for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 						{
-							if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+							if(aspectConfiguration.getInstance().equals(aspectPath))
 							{
 								aspectConfiguration.getSimulatorConfiguration().setConversionServiceId(properties.get(p));
 								dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
@@ -1032,7 +1032,7 @@ public class ConnectionHandler
 							String aspectPath = properties.get("aspectInstancePath");
 							for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
 							{
-								if(aspectConfiguration.getAspect().getInstancePath().equals(aspectPath))
+								if(aspectConfiguration.getInstance().equals(aspectPath))
 								{
 
 									Map<String, String> parameters = aspectConfiguration.getSimulatorConfiguration().getParameters();

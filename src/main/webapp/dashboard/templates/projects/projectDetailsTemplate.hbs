@@ -64,17 +64,17 @@
 	                                <div class="row menuHeader col-md-12" title="These are the parameters that have been changed for this experiment">Model parameters</div>
 	                                {{#each modelParameter}}
 	                                <div class="row">
-   		                                <div class="instance-path col-md-10" title={{variable.instancePath}}>{{shorten variable.instancePath}}</div>
+   		                                <div class="instance-path col-md-10" title={{variable}}>{{shorten variable}}</div>
        	        	                    <div class="paramvalue col-md-2">{{value}}</div>
        	        	                </div>
                     	            {{/each}}
                     	            <div class="row menuHeader col-md-12" title="These are the variables that the experiment is watching">Watched Variables</div>
                                     {{#each watchedVariables}}
-                                        <div class="row instance-path col-md-12" title={{instancePath}}>{{shorten instancePath}}</div>
+                                        <div class="row instance-path col-md-12" title={{this}}>{{shorten this}}</div>
                                     {{/each}}
                     	            <div class="row menuHeader col-md-12" title="These are the simulations of the experiment">Simulations</div>
 
-                                    <div class="row menuOrange col-md-12" title={{aspect.instancePath}}>{{aspect.instancePath}}</div>
+                                    <div class="row menuOrange col-md-12" title={{instance}}>{{instance}}</div>
 									<div class="row">
 		                            	<div class="menuHeader col-md-4">Simulator</div>
 	   		                        	<div class="instance-path col-md-8">{{simulatorConfiguration.simulatorId}}</div>

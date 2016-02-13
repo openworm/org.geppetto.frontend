@@ -89,7 +89,7 @@ define(function (require) {
                     }
                 },
 
-                createUIElement: function (button) {
+                createButton: function (button) {
                     return $('<button>')
                         .addClass('btn btn-default btn-lg')
                         .append(this.createButtonContent(button))

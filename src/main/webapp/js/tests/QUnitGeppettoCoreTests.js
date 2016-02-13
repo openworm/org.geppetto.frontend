@@ -267,10 +267,6 @@ define(function (require) {
                             assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getId() == window.Model.getLibraries()[1].getTypes()[5].getId() &&
                                       GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getMetaType() == window.Model.getLibraries()[1].getTypes()[5].getMetaType(),
                                       "Ref string resolved to Type as expected");
-                            assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.15/@variables.5').getId() == window.Model.getLibraries()[0].getTypes()[15].getVariables()[5].getId() &&
-                                      GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.15/@variables.5').getMetaType() == window.Model.getLibraries()[0].getTypes()[15].getVariables()[5].getMetaType() &&
-                                      GEPPETTO.ModelFactory.resolve('//@libraries.0/@types.15/@variables.5').getType().getMetaType() == window.Model.getLibraries()[0].getTypes()[15].getVariables()[5].getType().getMetaType(),
-                                      "Ref string resolved to Variable as expected");
                             // check that types are resolved as expected in the model
                             assert.ok(acnet2.baskets_12[0].getTypes().length == 1 &&
                                       acnet2.baskets_12[0].getTypes()[0].getId() ==  'bask' &&

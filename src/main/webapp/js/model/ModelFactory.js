@@ -1559,13 +1559,15 @@ define(function (require) {
              *
              * @returns {Array}
              */
-            getAllVariablesOfMetaType: function (typesToSearch, metaType) {
-                // check if array and if not "make it so"
+            getAllVariablesOfMetaType: function (typesToSearch, metaType, recursive, variables) {
+            	if (variables == undefined)
+            		 variables = [];
+            	// check if array and if not "make it so"
                 if (!(typesToSearch.constructor === Array)) {
                     typesToSearch = [typesToSearch];
                 }
 
-                var variables = [];
+                
 
                 for (var i = 0; i < typesToSearch.length; i++) {
                     if (typesToSearch[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
@@ -1577,7 +1579,11 @@ define(function (require) {
                                     if (varTypes[x].getMetaType() == metaType) {
                                         variables.push(nestedVariables[j]);
                                     }
+                                    if (recursive){
+                                    	this.getAllVariablesOfMetaType(varTypes[x], metaType, recursive, variables);
+                                    }
                                 }
+                                
                             }
                         } else {
                             variables = variables.concat(nestedVariables);

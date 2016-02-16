@@ -35,78 +35,44 @@
  *
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
+define(function (require) {
 
-define(function(require) {
+    var Widget = require('widgets/Widget');
+    var TreeVisualiserController = require('widgets/treevisualiser/TreeVisualiserController');
 
-	var Widget = require('widgets/Widget');
-	var Node = require('nodes/Node');
+    return {
+        TreeVisualiser: Widget.View.extend({
 
-	return {
-		TreeVisualiser: Widget.View.extend({
-		
-			datasets: [],
-			
-			initialize : function(options){
-				Widget.View.prototype.initialize.call(this,options);
-				
-				this.datasets = [];
-				this.visible = options.visible;
-				this.render();
-				this.setSize(options.width,options.height);
-	
-			},
-			
-			setData : function(state, options, dataset){
-				// If no options specify by user, use default options
-				if(options != null) {
-					$.extend(this.options, options);
-				}
-	
-				if (state!= null) {	
-					var dataset = this.createDataset();
-					dataset.variableToDisplay = state;
-					dataset.data = state;
-					return dataset;
-				}
-				return null;
-			},
-			
-			getDatasets: function(){
-				return this.datasets;
-			},
-			
-			createDataset: function(){
-				return {variableToDisplay:'', data:{}, isDisplayed:false};
-			},
-			
-			getValueFromData : function(data,step){
-				var labelValue = "";
-				if (data._metaType == "TextMetadataNode" || data._metaType == "HTMLMetadataNode"){
-					labelValue = data.getValue();
-				}
-				else if (data._metaType == "FunctionNode") {
-					labelValue = data.getExpression();
-				}
-				else if (data._metaType == "VisualObjectReferenceNode") {
-					labelValue = data.getAspectInstancePath() + " -> " + data.getVisualObjectID();
-				}
-				else if (data._metaType == "VariableNode") {
-					//we get the first value from the time series, could be more in time series array
-					if(data.getTimeSeries() != null && data.getTimeSeries().length>0){
-						labelValue = data.getTimeSeries()[step].getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
-					}else{
-						labelValue = "";
-					}
-				}
-				else{
-					labelValue = data.getValue() + " " + ((data.getUnit()!=null && data.getUnit()!="null")?(" " + data.getUnit()):"");
-				}
-				return labelValue;
-			}
-			
-			
-	
-		})	
-	};	
-	
+        	treeVisualiserController: null,
+        	
+            initialize: function (options) {
+                Widget.View.prototype.initialize.call(this, options);
+
+                this.dataset = {data: [], isDisplayed: false, valueDict: {}};
+                this.visible = options.visible;
+                this.render();
+                this.setSize(options.width, options.height);
+                
+            },
+
+            setData: function (state, options, dataset) {
+                // If no options specify by user, use default options
+                if (options != null) {
+                    $.extend(this.options, options);
+                }
+
+                if (state != null) {
+                	this.treeVisualiserController = new TreeVisualiserController(this.options);
+                    return this.treeVisualiserController.convertNodeToTreeVisualiserNode(state);
+                }
+                return null;
+            },
+
+            getDatasets: function () {
+                return this.datasets;
+            }
+
+        })
+    };
+
 });

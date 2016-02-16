@@ -38,6 +38,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
+import org.geppetto.core.data.DefaultGeppettoDataManager;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
@@ -56,11 +57,10 @@ public class UserResource
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
-	private volatile static int guestId;
+
 
 	@RequestMapping("/currentuser")
-	public @ResponseBody
-	IUser getCurrentUser()
+	public @ResponseBody IUser getCurrentUser()
 	{
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
@@ -74,7 +74,7 @@ public class UserResource
 			// If we have no persistence bundle we use a guest user
 			if(!currentUser.isAuthenticated() && geppettoManager.getUser() == null)
 			{
-				IUser guest = getGuestUser();
+				IUser guest = DefaultGeppettoDataManager.getGuestUser();
 				try
 				{
 					geppettoManager.setUser(guest);
@@ -90,38 +90,38 @@ public class UserResource
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
-	public @ResponseBody
-	IUser addNewUser(@RequestParam String username, @RequestParam String password)
+	public @ResponseBody IUser addNewUser(@RequestParam String username, @RequestParam String password)
 	{
 		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
-		IUser user = manager.newUser(username, password, true);
-		if (!manager.isDefault()) {
+
+		IUser user;
+		if(!manager.isDefault())
+		{
 			return manager.getUserByLogin(username);
 		}
+		else
+		{
+			user = manager.newUser(username, password, true, null);
+		}
+
 		return user;
 	}
 
 	@RequestMapping(value = "/setPassword", method = RequestMethod.GET)
-	public @ResponseBody
-	IUser setPassword(@RequestParam String username, @RequestParam String oldPassword, @RequestParam String newPassword)
+	public @ResponseBody IUser setPassword(@RequestParam String username, @RequestParam String oldPassword, @RequestParam String newPassword)
 	{
 		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
 		IUser user = manager.getUserByLogin(username);
-		if (user != null && user.getPassword().equals(oldPassword)){
+		if(user != null && user.getPassword().equals(oldPassword))
+		{
 			return manager.updateUser(user, newPassword);
 		}
-		else{
+		else
+		{
 			return null;
 		}
 	}
-	
-	private IUser getGuestUser()
-	{
-		synchronized(this)
-		{
-			guestId++;
-		}
-		return DataManagerHelper.getDataManager().newUser("Guest " + guestId, "", false);
-	}
+
+
 
 }

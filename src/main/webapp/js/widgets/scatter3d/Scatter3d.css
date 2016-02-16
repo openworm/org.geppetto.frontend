@@ -1,26 +1,26 @@
 .legendColor {
-	border: 1px solid #424242;
-	font-weight: bold;
-	width: 10px;
-	height: 10px;
-	line-height: 10px;
-	text-align: center;
-	margin: 4px;
-	float: left;
-	cursor: pointer;
+    border: 1px solid #424242;
+    font-weight: bold;
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
+    text-align: center;
+    margin: 4px;
+    float: left;
+    cursor: pointer;
 }
 
-#legendBox{
-	position:absolute;
-	top:20px;
-	right:20px;
+#legendBox {
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
 
-.datasetLegendText{
-	float:right;
+.datasetLegendText {
+    float: right;
 }
 
-.datasetLegend{
-	clear:both;
-	margin-top: 10px;
+.datasetLegend {
+    clear: both;
+    margin-top: 10px;
 }

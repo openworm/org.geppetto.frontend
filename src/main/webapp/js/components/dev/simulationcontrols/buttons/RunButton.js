@@ -9,7 +9,7 @@ define(function (require) {
         popoverTitle: 'Run Experiment',
 
         onClick: function() {
-            GEPPETTO.Console.executeCommand("Project.getActiveExperiment().run();");
+            GEPPETTO.Flows.onRun("Project.getActiveExperiment().run();");
         },
 
         componentDidMount: function() {

@@ -55,7 +55,7 @@
 #console div.output span.number    { color:#7f7; }
 #console div.output span.error     { color:#f77; }
 #console div.output span.debug     { color: gold; }
-#console div.output span.message     { color: #fd6808; }
+#console div.output span.message     { color: #fd6808; display: block; }
 #console div.output span.commandsSuggestions     { color: grey; white-space:pre; }
 
 #console .input {

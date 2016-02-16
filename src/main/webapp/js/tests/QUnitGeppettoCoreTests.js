@@ -35,210 +35,404 @@
  *
  * @author Jesus Martinez (jesus@metacell.us)
  */
-"use strict";
 
-define(function(require) {
+define(function (require) {
 
-	var run = function() {
-		module("Global Scope Test");
-		test("Global scope Test", function() {
-			var help = GEPPETTO.Console.help();
-			var commandCount = help.match(/--/g);  
-			notEqual(help, null, "Global help() command test.");
-			equal(commandCount.length, 41, "Global help() - Looking for 41 commands in help() command.");
-			
-			equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
+    /**
+     * Closes socket and clears handlers. Method is called from each test.
+     */
+    function resetConnection() {
+        //close socket
+        GEPPETTO.MessageSocket.close();
+        //clear message handlers, all tests within module should have performed by time method it's called
+        GEPPETTO.MessageSocket.clearHandlers();
+        //connect to socket again for next test
+        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+    }
 
-			G.showHelpWindow(false);
-			
-			var modalVisible = $('#help-modal').hasClass('in');
-			
-			equal(modalVisible, false, "Help Window Hidden");
-		});
+    var run = function () {
+        QUnit.module("Global Scope Test");
+        QUnit.test("Global scope Test", function () {
+            var help = GEPPETTO.Console.help();
 
-		test("Test Debug Mode", function() {
-			G.debug(true);
+            notEqual(help, null, "Global help() command test.");
 
-			equal(G.isDebugOn(), true, "Testing debug mode on scenario");
+            equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
 
-			G.debug(false);
+            G.showHelpWindow(false);
 
-			equal(G.isDebugOn(), false, "Testing debug mode off scenario");
-		});
+            var modalVisible = $('#help-modal').hasClass('in');
 
-		test("Test G Object help method", function() {
-			notEqual(G.help(), null, "Help command for object G is available, passed.");
-		});
+            equal(modalVisible, false, "Help Window Hidden");
+        });
 
-		test("Test Clear Console", function() {
-			equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
-		});
+        QUnit.test("Test Debug Mode", function () {
+            G.debug(true);
 
-		test("Test Plot Widget", function() {
-			G.addWidget(Widgets.PLOT);
+            equal(G.isDebugOn(), true, "Testing debug mode on scenario");
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
+            G.debug(false);
 
-			var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
+            equal(G.isDebugOn(), false, "Testing debug mode off scenario");
+        });
 
-			equal(plot.isVisible(), true, "Test Default Widget Visibility");
+        QUnit.test("Test G Object help method", function () {
+            notEqual(G.help(), null, "Help command for object G is available, passed.");
+        });
 
-			plot.hide();
+        QUnit.test("Test Clear Console", function () {
+            equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
+        });
 
-			equal(plot.isVisible(), false, "Test hide()");
+        QUnit.test("Test Plot Widget", function () {
+            G.addWidget(Widgets.PLOT);
 
-			plot.show();
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
 
-			equal(plot.isVisible(), true, "Test show()");
+            var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
 
-			plot.destroy();
+            equal(plot.isVisible(), true, "Test Default Widget Visibility");
 
-			equal($("#" + plot.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test Popup Widget", function() {
-			G.addWidget(Widgets.POPUP);
+            plot.hide();
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.POPUP).getWidgets().length, 1, "Popup widget.");
+            equal(plot.isVisible(), false, "Test hide()");
 
-			var pop = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.POPUP).getWidgets()[0];
+            plot.show();
 
-			equal(pop.isVisible(), true, "Test Default Visibility");
+            equal(plot.isVisible(), true, "Test show()");
 
-			pop.hide();
+            plot.destroy();
 
-			equal(pop.isVisible(), false, "Test hide()");
+            equal($("#" + plot.getId()).html(), null, "Test destroy()");
+        });
 
-			pop.show();
+        QUnit.test("Test Popup Widget", function () {
+            G.addWidget(Widgets.POPUP);
 
-			equal(pop.isVisible(), true, "Test show()");
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.POPUP).getWidgets().length, 1, "Popup widget.");
 
-			pop.destroy();
+            var pop = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.POPUP).getWidgets()[0];
 
-			equal($("#" + pop.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test Scattered-3D Widget", function() {
-			G.addWidget(Widgets.SCATTER3D);
+            equal(pop.isVisible(), true, "Test Default Visibility");
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
+            pop.hide();
 
-			var scatter = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.SCATTER3D).getWidgets()[0];
+            equal(pop.isVisible(), false, "Test hide()");
 
-			equal(scatter.isVisible(), true, "Test Default Visibility");
+            pop.show();
 
-			scatter.hide();
+            equal(pop.isVisible(), true, "Test show()");
 
-			equal(scatter.isVisible(), false, "Test hide()");
+            pop.destroy();
 
-			scatter.show();
+            equal($("#" + pop.getId()).html(), null, "Test destroy()");
+        });
 
-			equal(scatter.isVisible(), true, "Test show()");
+        QUnit.test("Test Scattered-3D Widget", function () {
+            G.addWidget(Widgets.SCATTER3D);
 
-			scatter.destroy();
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
 
-			equal($("#" + scatter.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test VARIABLEVISUALISER Widget", function() {
-			G.addWidget(Widgets.VARIABLEVISUALISER);
+            var scatter = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.SCATTER3D).getWidgets()[0];
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.VARIABLEVISUALISER).getWidgets().length, 1, "VARIABLEVISUALISER widget created");
+            equal(scatter.isVisible(), true, "Test Default Visibility");
 
-			var VARIABLEVISUALISER = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).getWidgets()[0];
+            scatter.hide();
 
-			equal(VARIABLEVISUALISER.isVisible(), true, "Test Default Visibility");
+            equal(scatter.isVisible(), false, "Test hide()");
 
-			VARIABLEVISUALISER.hide();
+            scatter.show();
 
-			equal(VARIABLEVISUALISER.isVisible(), false, "Test hide()");
+            equal(scatter.isVisible(), true, "Test show()");
 
-			VARIABLEVISUALISER.show();
+            scatter.destroy();
 
-			equal(VARIABLEVISUALISER.isVisible(), true, "Test show()");
+            equal($("#" + scatter.getId()).html(), null, "Test destroy()");
+        });
 
-			VARIABLEVISUALISER.destroy();
+        QUnit.test("Test VARIABLEVISUALISER Widget", function () {
+            G.addWidget(Widgets.VARIABLEVISUALISER);
 
-			equal($("#" + VARIABLEVISUALISER.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test TREEVISUALISERDAT Widget", function() {
-			G.addWidget(Widgets.TREEVISUALISERDAT);
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.VARIABLEVISUALISER).getWidgets().length, 1, "VARIABLEVISUALISER widget created");
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERDAT).getWidgets().length, 1, "TREEVISUALISERDAT widget created");
+            var VARIABLEVISUALISER = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).getWidgets()[0];
 
-			var TREEVISUALISERDAT = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets()[0];
+            equal(VARIABLEVISUALISER.isVisible(), true, "Test Default Visibility");
 
-			equal(TREEVISUALISERDAT.isVisible(), true, "Test Default Visibility");
+            VARIABLEVISUALISER.hide();
 
-			TREEVISUALISERDAT.hide();
+            equal(VARIABLEVISUALISER.isVisible(), false, "Test hide()");
 
-			equal(TREEVISUALISERDAT.isVisible(), false, "Test hide()");
+            VARIABLEVISUALISER.show();
 
-			TREEVISUALISERDAT.show();
+            equal(VARIABLEVISUALISER.isVisible(), true, "Test show()");
 
-			equal(TREEVISUALISERDAT.isVisible(), true, "Test show()");
+            VARIABLEVISUALISER.destroy();
 
-			TREEVISUALISERDAT.destroy();
+            equal($("#" + VARIABLEVISUALISER.getId()).html(), null, "Test destroy()");
+        });
 
-			equal($("#" + TREEVISUALISERDAT.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test TreeVisualizerD3 Widget", function() {
-			G.addWidget(Widgets.TREEVISUALISERD3);
+        QUnit.test("Test TREEVISUALISERDAT Widget", function () {
+            G.addWidget(Widgets.TREEVISUALISERDAT);
 
-			equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERD3).getWidgets().length, 1, "TREEVISUALISERD3 widget created");
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERDAT).getWidgets().length, 1, "TREEVISUALISERDAT widget created");
 
-			var TREEVISUALISERD3 = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets()[0];
+            var TREEVISUALISERDAT = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getWidgets()[0];
 
-			equal(TREEVISUALISERD3.isVisible(), true, "Test Default Visibility");
+            equal(TREEVISUALISERDAT.isVisible(), true, "Test Default Visibility");
 
-			TREEVISUALISERD3.hide();
+            TREEVISUALISERDAT.hide();
 
-			equal(TREEVISUALISERD3.isVisible(), false, "Test hide()");
+            equal(TREEVISUALISERDAT.isVisible(), false, "Test hide()");
 
-			TREEVISUALISERD3.show();
+            TREEVISUALISERDAT.show();
 
-			equal(TREEVISUALISERD3.isVisible(), true, "Test show()");
+            equal(TREEVISUALISERDAT.isVisible(), true, "Test show()");
 
-			TREEVISUALISERD3.destroy();
+            TREEVISUALISERDAT.destroy();
 
-			equal($("#" + TREEVISUALISERD3.getId()).html(), null, "Test destroy()");
-		});
-		
-		test("Test Commands", function() {
-			G.showConsole(true);
-			
-			equal(GEPPETTO.Console.isConsoleVisible(), true, "Console Visible");
-			
-			G.showConsole(false);
-			
-			equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
-			
-			G.showShareBar(true);
-			
-			equal(GEPPETTO.Share.isVisible(), true, "ShareBar Visible");
-			
-			G.showShareBar(false);
-			
-			equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
-			
-			equal(G.shareOnTwitter(), GEPPETTO.Resources.SHARE_ON_TWITTER, "Share On Twitter");
-						
-			equal(G.shareOnFacebook(), GEPPETTO.Resources.SHARE_ON_FACEBOOK, "Share On Facebook");
-		});
-		
-		
-		test("Test Copy History To Clipboard", function() {
+            equal($("#" + TREEVISUALISERDAT.getId()).html(), null, "Test destroy()");
+        });
 
-			//add some commands to history
-			GEPPETTO.Console.executeCommand("G.help();");
-			GEPPETTO.Console.executeCommand("help();");
+        QUnit.test("Test TreeVisualizerD3 Widget", function () {
+            G.addWidget(Widgets.TREEVISUALISERD3);
 
-			equal(G.copyHistoryToClipboard(), GEPPETTO.Resources.COPY_CONSOLE_HISTORY, "Commands copied, test passed");		
-		});
-	};
-	return {run: run};
+            equal(GEPPETTO.WidgetFactory.getController(Widgets.TREEVISUALISERD3).getWidgets().length, 1, "TREEVISUALISERD3 widget created");
+
+            var TREEVISUALISERD3 = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERD3).getWidgets()[0];
+
+            equal(TREEVISUALISERD3.isVisible(), true, "Test Default Visibility");
+
+            TREEVISUALISERD3.hide();
+
+            equal(TREEVISUALISERD3.isVisible(), false, "Test hide()");
+
+            TREEVISUALISERD3.show();
+
+            equal(TREEVISUALISERD3.isVisible(), true, "Test show()");
+
+            TREEVISUALISERD3.destroy();
+
+            equal($("#" + TREEVISUALISERD3.getId()).html(), null, "Test destroy()");
+        });
+
+        QUnit.test("Test Commands", function () {
+            G.showConsole(true);
+
+            equal(GEPPETTO.Console.isConsoleVisible(), true, "Console Visible");
+
+            G.showConsole(false);
+
+            equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
+
+            G.showShareBar(true);
+
+            equal(GEPPETTO.Share.isVisible(), true, "ShareBar Visible");
+
+            G.showShareBar(false);
+
+            equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
+        });
+
+        QUnit.module("Test Model Factory");
+        QUnit.test("Test ModelFactory", function ( assert ) {
+
+            var done = assert.async();
+            // once off on the first test to establish connection
+            resetConnection();
+
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            equal(window.Project.getId(), 5, "Project ID checked");
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadModel(payload);
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2, "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined, "Instances are not undefined");
+                            assert.ok(window.Instances.length == 1, "1 top level instance as expected");
+                            assert.ok(window.acnet2 != undefined && window.acnet2.baskets_12 != undefined, "Shortcuts created as expected");
+                            assert.ok(window.acnet2.baskets_12.getChildren().length == 12 && window.acnet2.pyramidals_48.getChildren().length == 48, "Visual types exploded into instances as expected");
+                            // check resolve
+                            assert.ok(GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getId() == window.Model.getLibraries()[1].getTypes()[5].getId() &&
+                                      GEPPETTO.ModelFactory.resolve('//@libraries.1/@types.5').getMetaType() == window.Model.getLibraries()[1].getTypes()[5].getMetaType(),
+                                      "Ref string resolved to Type as expected");
+                            // check that types are resolved as expected in the model
+                            assert.ok(acnet2.baskets_12[0].getTypes().length == 1 &&
+                                      acnet2.baskets_12[0].getTypes()[0].getId() ==  'bask' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getMetaType() == 'CompositeType', 'Type in the model resolved as expected');
+                            // check visual groups are created
+                            assert.ok(acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups().length == 3 &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[0].getId() == 'Cell_Regions' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Na_bask_soma_group' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask_soma_group', 'Visual groups created as expected');
+                            // test that ModelFactory.getInstanceOf gives expected results
+                            assert.ok(GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType()).length == 12 &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType().getPath()).length == 12 &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType())[0].getId() == "baskets_12[0]" &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType())[0].getMetaType() == "ArrayElementInstance",
+                                      'getAllInstanceOf returning instances as expected for Type and Type path.');
+                            assert.ok(GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable()).length == 1 &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable().getPath()).length == 1 &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getId() == "baskets_12" &&
+                                      GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
+                                      'getAllInstanceOf returning instances as expected for Variable and Variable path.');
+                            // check AllPotentialInstances
+                            assert.ok(GEPPETTO.ModelFactory.allPaths.length == 10536 &&
+                                      GEPPETTO.ModelFactory.allPaths[0].path == 'acnet2' &&
+                                      GEPPETTO.ModelFactory.allPaths[0].metaType == 'CompositeType' &&
+                                      GEPPETTO.ModelFactory.allPaths[10536 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPaths[10536 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                            // check getAllPotentialInstancesEndingWith
+                            assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
+                                      GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&
+                                      GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[333] == 'acnet2.pyramidals_48[45].basal0_6.v' &&
+                                      GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[456 - 1] == 'acnet2.baskets_12[11].dend_1.v',
+                                      'getAllPotentialInstancesEndingWith returning expected paths');
+                            // check getInstance:
+                            assert.ok(window.Instances.getInstance('acnet2.baskets_12[3]').getInstancePath() == 'acnet2.baskets_12[3]', 'Instances.getInstance fetches existing instance as expected');
+                            assert.ok(window.Instances.getInstance('acnet2.baskets_12[3].soma_0.v').getInstancePath() == 'acnet2.baskets_12[3].soma_0.v', 'Instances.getInstance creates and fetches instance as expected');
+                            // try to get instance that doesn't exist in the model
+                            assert.throws(function() { window.Instances.getInstance('acnet2.baskets_12[3].sticaxxi'); }, 'Trying to fetch something that does not exist in the model throws exception');
+
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            resetConnection();
+
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("5", "1");
+        });
+
+        QUnit.module("Test Capabilities");
+        QUnit.test("Test Capability Injection", function ( assert ) {
+
+            var done = assert.async();
+
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            equal(window.Project.getId(), 5, "Project ID checked");
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadModel(payload);
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2, "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined, "Instances are not undefined");
+                            assert.ok(window.Instances.length == 1, "1 top level instance as expected");
+                            assert.ok(window.acnet2 != undefined && window.acnet2.baskets_12 != undefined, "Shortcuts created as expected");
+
+                            // test if visual capability is injected in instances
+                            assert.ok(window.acnet2.baskets_12[0].hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY), "Visual capability injected to instances of visual types");
+                            // test if visual capability is injected in types
+                            assert.ok(window.acnet2.baskets_12[0].getType().hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY), "Visual capability injected to types with visual types");
+                            // test if parameter capability is injected in instances
+                            assert.ok(window.Instances.getInstance('acnet2.temperature').hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY), "Parameter capability injected to parameter instances");
+                            assert.ok(window.Instances.getInstance('acnet2.temperature').getVariable().hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY), "Parameter capability injected to parameter variables");
+                            // test if visual group capability is injected in visual groups
+                            assert.ok(window.acnet2.pyramidals_48[0].hasCapability(GEPPETTO.Resources.VISUAL_GROUP_CAPABILITY), "Visual group capability injected to instances of visual types with visual groups");
+                            // test if connection capability is injected in connection variables
+                            assert.ok(GEPPETTO.ModelFactory.getAllVariablesOfMetaType(GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE), 'ConnectionType')[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to variables of ConnectionType");
+                            assert.ok(window.acnet2.pyramidals_48[0].getConnections()[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to instances of connection types")
+
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+
+                            // make it fail
+                            assert.ok(false, message);
+                            done();
+                            resetConnection();
+
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("5", "1");
+        });
+
+    };
+    return {run: run};
 
 });
 

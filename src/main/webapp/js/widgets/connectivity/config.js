@@ -44,23 +44,23 @@
  */
 
 require.config({
-	  paths: {
-	    "d3": "widgets/connectivity/vendor/d3",
-	    "d3.hive": "widgets/connectivity/vendor/d3.hive.v0"
-	  }
-	});
+    paths: {
+        "d3": "widgets/connectivity/vendor/d3",
+        "d3.hive": "widgets/connectivity/vendor/d3.hive.v0"
+    }
+});
 
 var reqs = [];
 reqs.push("d3");
 reqs.push("d3.hive");
 
-define("d3.global", ["d3"], function(_) {
-	  d3 = _;
-	});
+define("d3.global", ["d3"], function (_) {
+    d3 = _;
+});
 
-require(reqs, function(d3) {
-	window.d3 = d3;
-	window.d3.hive = d3.hive;
-	loadCss("geppetto/js/widgets/connectivity/Connectivity.css");
-	
+require(reqs, function (d3) {
+    window.d3 = d3;
+    window.d3.hive = d3.hive;
+    loadCss("geppetto/js/widgets/connectivity/Connectivity.css");
+
 });

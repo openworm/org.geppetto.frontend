@@ -8,7 +8,7 @@ define(function (require) {
 
         displayName: 'Button',
 
-        getDefaultProps: function() {
+        getDefaultProps: function () {
             return {
                 disabled: false,
                 className: ''
@@ -24,7 +24,7 @@ define(function (require) {
                     onClick: this.props.onClick,
                     disabled: this.props.disabled
                 }, React.DOM.i({className: this.props.icon}, " " + this.props.children))
-                );
+            );
         }
     });
 });

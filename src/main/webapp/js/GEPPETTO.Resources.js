@@ -43,351 +43,432 @@
 /**
  * Simulation Object Resources
  */
-define(function(require) {
-	return function(GEPPETTO) {
+define(function (require) {
+    return function (GEPPETTO) {
+
+        GEPPETTO.Resources = {
+
+            Icon:{
+                "ParameterType":"fa-sign-in",
+                "TextType":"fa-file-text-o",
+                "CompositeType":"fa-align-justify",
+                "ArrayType":"fa-list",
+                "PointerType":"fa-link",
+                "HTMLType":"fa-code",
+                "StateVariableType":"fa-superscript",
+                "DynamicsType":"fa-bolt",
+            },
 
-		GEPPETTO.Resources = {
+            Colour:{
+                "ParameterType":"#0066cc",
+                "TextType":"#10b7bd",
+                "CompositeType":"#2e2a2a",
+                "ArrayType":"#ff5a02",
+                "PointerType":"#10b7bd",
+                "HTMLType":"0xdddddd",
+                "StateVariableType":"#42b6ff",
+                "DynamicsType":"#00cc66",
+            },
 
-			COLORS : {
-					DEFAULT : "0X199e8",
-					SELECTED : "0Xffcc00",
-					INPUT_TO_SELECTED : "0Xffdfc6",
-					OUTPUT_TO_SELECTED : "0Xff5a02",
-					HIGHLIGHTED : "0Xff1a02",
-					INPUT_AND_OUTPUT : "0X649615",
-					SPLIT : "0XCFCFA6",
-					ENTITY_NODE: "0xcc0000",
-					ASPECT_NODE: "0xcc6600",
-					ASPECT_SUBTREE_NODE: "0xcccc00",
-					COMPOSITE_NODE: "0x66cc00",
-					CONNECTION_NODE: "0x00cc00",
-					DYNAMICS_SPECIFICATION_NODE: "0x00cc66",
-					FUNCTION_NODE:"0x00cccc",
-					PARAMETER_NODE: "0x0066cc",
-					PARAMETER_SPECIFICATION_NODE: "0x0000cc",
-					TEXT_METADATA_NODE: "0x6600cc",
-					URL_METADATA_NODE: "0xcc00cc",
-					VARIABLE_NODE: "0xcc0066",
-					VISUAL_OBJECT_REFERENCE_NODE: "0x606060",
-					VISUAL_GROUP_ELEMENT_NODE:"0xffffff",
-			},
+            COLORS: {
+                DEFAULT: "0X199e8",
+                SELECTED: "0Xffcc00",
+                INPUT_TO_SELECTED: "0Xffdfc6",
+                OUTPUT_TO_SELECTED: "0Xff5a02",
+                HIGHLIGHTED: "0Xff1a02",
+                INPUT_AND_OUTPUT: "0X649615",
+                SPLIT: "0XCFCFA6",
+                ENTITY_NODE: "0xcc0000",
+                ASPECT_NODE: "0xcc6600",
+                ASPECT_SUBTREE_NODE: "0xcccc00",
+                COMPOSITE_NODE: "0x66cc00",
+                CONNECTION_NODE: "0x00cc00",
+                DYNAMICS_SPECIFICATION_NODE: "0x00cc66",
+                FUNCTION_NODE: "0x00cccc",
+                PARAMETER_NODE: "0x0066cc",
+                PARAMETER_SPECIFICATION_NODE: "0x0000cc",
+                TEXT_METADATA_NODE: "0x6600cc",
+                URL_METADATA_NODE: "0xcc00cc",
+                VARIABLE_NODE: "0xcc0066",
+                VISUAL_OBJECT_REFERENCE_NODE: "0x606060",
+                VISUAL_GROUP_ELEMENT_NODE: "0xffffff",
+            },
 
-			/**
-			 *
-			 * Different status an experiment can be on
-			 *
-			 * @enum
-			 */
-			ExperimentStatus : {
-					DESIGN : "DESIGN",
-					CANCELED : "CANCELED",
-					QUEUED : "QUEUED",
-					RUNNING: "RUNNING",
-					ERROR : "ERROR",
-					COMPLETED : "COMPLETED",
-					DELETED : "DELETED",
-			},
+            /**
+             *
+             * Different status an experiment can be on
+             *
+             * @enum
+             */
+            ExperimentStatus: {
+                DESIGN: "DESIGN",
+                CANCELED: "CANCELED",
+                QUEUED: "QUEUED",
+                RUNNING: "RUNNING",
+                ERROR: "ERROR",
+                COMPLETED: "COMPLETED",
+                DELETED: "DELETED",
+            },
 
 
-			OPACITY : {
-					DEFAULT : 1,
-					GHOST : .3,
-			},
+            OPACITY: {
+                DEFAULT: 1,
+                GHOST: .3,
+            },
 
-			PROJECT_LOADED: "Project Loaded",
+            PROJECT_LOADED: "Project loaded",
 
-			EXPERIMENT_CREATED: "New experiment created",
+            MODEL_LOADED: "The model for the current project was loaded",
 
-			EXPERIMENT_DELETED: "Experiment Deleted",
+            EXPERIMENT_CREATED: "New experiment created",
 
-			UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
+            EXPERIMENT_DELETED: "Experiment Deleted",
 
-			EXPERIMENT_PAUSED: "Experiment Paused",
+            UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
 
-			UNABLE_TO_PAUSE_EXPERIMENT: "Simulation not running, must run simulation first",
+            EXPERIMENT_PAUSED: "Experiment Paused",
 
-			EXPERIMENT_STOP: "Simulation Stopped",
+            UNABLE_TO_PAUSE_EXPERIMENT: "Simulation not running, must run simulation first",
 
-			LOADING_PROJECT: "Loading Project",
+            EXPERIMENT_STOP: "Simulation Stopped",
 
-			LOADING_SIMULATION_SLOW : "Still loading, but things are taking longer than expected, are you on low bandwidth?",
+            LOADING_PROJECT: "Loading Project",
 
-			SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
+            LOADING_EXPERIMENT: "Loading Experiment",
 
-			SIMULATION_NOT_LOADED: "Unable to stop simulation that hasn't been loaded",
+            PARSING_MODEL: "Parsing model",
 
-			SIMULATION_UNSPECIFIED: "Simulation not specified",
+            CREATING_MODEL: "Creating model",
 
-			SIMULATION_ALREADY_STOPPED: "Simulation was already stopped",
+            CREATING_INSTANCES: "Creating instances",
 
-			SIMULATION_ALREADY_STARTED: "Simulation was already started",
+            CREATING_SCENE: "Creating scene",
 
-			LOADING_FROM_CONTENT: "Outbound Message Sent: Load Simulation from editing console",
+            LOADING_SIMULATION_SLOW: "Still loading, but things are taking longer than expected, are you on low bandwidth?",
 
-			MESSAGE_OUTBOUND_LOAD: 'Outbound Message Sent: Loading Simulation',
+            SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
 
-			MESSAGE_OUTBOUND_STOP: 'Outbund Message Sent: Simulation Stopped',
+            SIMULATION_NOT_LOADED: "Unable to stop simulation that hasn't been loaded",
 
-			MESSAGE_OUTBOUND_PAUSE: 'Outbund Message Sent: Simulation Paused',
+            SIMULATION_UNSPECIFIED: "Simulation not specified",
 
-			MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
+            SIMULATION_ALREADY_STOPPED: "Simulation was already stopped",
 
-			MESSAGE_OUTBOUND_SET_WATCHED_VARIABLES: 'Outbund Message Sent: add variables to watch',
+            SIMULATION_ALREADY_STARTED: "Simulation was already started",
 
-			MESSAGE_OUTBOUND_CLEAR_WATCH: 'Outbund Message Sent: clear watch lists',
+            LOADING_FROM_CONTENT: "Outbound Message Sent: Load Simulation from editing console",
 
-			SIMULATION_NOT_LOADED_ERROR: "Unable to perform operation, the simulation hasn't been loaded",
+            MESSAGE_OUTBOUND_LOAD: 'Outbound Message Sent: Loading Simulation',
 
-			SIMULATION_SET_WATCHED_VARIABLES: "Watch variables requested",
+            MESSAGE_OUTBOUND_STOP: 'Outbund Message Sent: Simulation Stopped',
 
-			SIMULATION_CLEAR_WATCH: 'Clear watched variables requested',
+            MESSAGE_OUTBOUND_PAUSE: 'Outbund Message Sent: Simulation Paused',
 
-			NO_FEATURE : "The feature is not avaialble for the current service",
+            MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
 
-			/**
-			 * Object G resources
-			 */
-			RUNNING_SCRIPT: "Running script",
+            MESSAGE_OUTBOUND_SET_WATCHED_VARIABLES: 'Outbund Message Sent: add variables to watch',
 
-			NO_SIMULATION_TO_GET: "No Simulation to get as no simulation is running",
+            MESSAGE_OUTBOUND_CLEAR_WATCH: 'Outbund Message Sent: clear watch lists',
 
-			DEBUG_ON: "Debug log statements on",
+            SIMULATION_NOT_LOADED_ERROR: "Unable to perform operation, the simulation hasn't been loaded",
 
-			DEBUG_OFF: "Debug log statements off",
+            SIMULATION_SET_WATCHED_VARIABLES: "Watch variables requested",
 
-			CLEAR_HISTORY: "Console history cleared",
+            SIMULATION_CLEAR_WATCH: 'Clear watched variables requested',
 
-			COPY_CONSOLE_HISTORY: "Copying history to clipboard",
+            NO_FEATURE: "The feature is not avaialble for the current service",
 
-			EMPTY_CONSOLE_HISTORY: "No console history to copy to clipboard",
+            /**
+             * Object G resources
+             */
+            RUNNING_SCRIPT: "Running script",
 
-			COPY_TO_CLIPBOARD_WINDOWS: "Copy to Clipboard: CTRL+C , OK",
+            NO_SIMULATION_TO_GET: "No Simulation to get as no simulation is running",
 
-			COPY_TO_CLIPBOARD_MAC: "Copy to Clipboard: Cmd+C , OK",
+            DEBUG_ON: "Debug log statements on",
 
-			INVALID_WAIT_USE: "GEPPETTO.G.wait(ms) command must be used inside script",
+            DEBUG_OFF: "Debug log statements off",
 
-			WAITING: "Waiting ms",
+            CLEAR_HISTORY: "Console history cleared",
 
-			SHOW_CONSOLE: "Showing Console",
+            COPY_CONSOLE_HISTORY: "Copying history to clipboard",
 
-			HIDE_CONSOLE: "Hiding Console",
+            EMPTY_CONSOLE_HISTORY: "No console history to copy to clipboard",
 
-			CONSOLE_ALREADY_VISIBLE: "Console is already visible",
+            COPY_TO_CLIPBOARD_WINDOWS: "Copy to Clipboard: CTRL+C , OK",
 
-			CONSOLE_ALREADY_HIDDEN: "Console is already hidden",
+            COPY_TO_CLIPBOARD_MAC: "Copy to Clipboard: Cmd+C , OK",
 
-			SHOW_SHAREBAR: "Showing ShareBar",
+            INVALID_WAIT_USE: "GEPPETTO.G.wait(ms) command must be used inside script",
 
-			HIDE_SHAREBAR: "Hiding ShareBar",
+            WAITING: "Waiting ms",
 
-			SHAREBAR_ALREADY_VISIBLE: "ShareBar is already visible",
+            SHOW_CONSOLE: "Showing Console",
 
-			SHAREBAR_ALREADY_HIDDEN: "Sharebar is already hidden",
+            HIDE_CONSOLE: "Hiding Console",
 
-			SHARE_ON_TWITTER : "Sharing Geppetto on Twitter",
+            CONSOLE_ALREADY_VISIBLE: "Console is already visible",
 
-			SHARE_ON_FACEBOOK : "Sharing Geppetto on Facebook",
+            CONSOLE_ALREADY_HIDDEN: "Console is already hidden",
 
-			SHOW_HELP_WINDOW: "Showing Help Window",
+            SHOW_SHAREBAR: "Showing ShareBar",
 
-			HIDE_HELP_WINDOW: "Hiding Help Window",
+            HIDE_SHAREBAR: "Hiding ShareBar",
 
-			HELP_ALREADY_VISIBLE: "Help Window is already visible",
+            SHAREBAR_ALREADY_VISIBLE: "ShareBar is already visible",
 
-			HELP_ALREADY_HIDDEN: "Help Window is already hidden",
+            SHAREBAR_ALREADY_HIDDEN: "Sharebar is already hidden",
 
-			CAMERA_PAN_INCREMENT: "Panning increment",
+            SHARE_ON_TWITTER: "Sharing Geppetto on Twitter",
 
-			CAMERA_ROTATE_INCREMENT: "Rotation increment",
+            SHARE_ON_FACEBOOK: "Sharing Geppetto on Facebook",
 
-			CAMERA_ZOOM_INCREMENT: "Zoom increment",
+            SHOW_HELP_WINDOW: "Showing Help Window",
 
-			CAMERA_SET_POSITION: "Set position",
+            HIDE_HELP_WINDOW: "Hiding Help Window",
 
-			CAMERA_SET_ROTATION: "Set rotation",
+            HELP_ALREADY_VISIBLE: "Help Window is already visible",
 
-			CAMERA_RESET: "Camera reset",
+            HELP_ALREADY_HIDDEN: "Help Window is already hidden",
 
-			/**
-			 * Node resources
-			 */
+            CAMERA_PAN_INCREMENT: "Panning increment",
 
-			RETRIEVING_MODEL_TREE : 'Model tree requested',
+            CAMERA_ROTATE_INCREMENT: "Rotation increment",
 
-			RETRIEVING_SIMULATION_TREE : 'Simulation tree requested',
+            CAMERA_ZOOM_INCREMENT: "Zoom increment",
 
-			EMPTY_MODEL_TREE : 'Model is empty, nothing to see here.',
+            CAMERA_SET_POSITION: "Set position",
 
-			EMPTY_SIMULATION_TREE : 'No variables to simulate.',
+            CAMERA_SET_ROTATION: "Set rotation",
 
-			SIMULATION_TREE_POPULATED : 'Simulation tree populated.',
+            CAMERA_RESET: "Camera reset",
 
-			SIMULATION_TREE_RECEIVED : 'Requested simulation tree received.',
+            /**
+             * Node resources
+             */
 
-			NO_SIMULATION_TREE : 'Simulation tree is not available.',
+            RETRIEVING_MODEL_TREE: 'Model tree requested',
 
-			NO_VISUALIZATION_TREE : 'Visualization tree is not available.',
+            RETRIEVING_SIMULATION_TREE: 'Simulation tree requested',
 
-			RETRIEVING_VISUALIZATION_TREE : 'Visualization tree: ',
+            EMPTY_MODEL_TREE: 'Model is empty, nothing to see here.',
 
-			DOWNLOADING_MODEL : 'Downloading model as ',
+            EMPTY_SIMULATION_TREE: 'No variables to simulate.',
 
-			ERROR_DOWNLOADING_MODEL : "Error downloading model",
+            SIMULATION_TREE_POPULATED: 'Simulation tree populated.',
 
-			ERROR_LOADING_PROJECT : "Error loading project",
-			
-			RETRIEVING_SUPPORTED_OUTPUTS : 'Supported outputs requested',
+            SIMULATION_TREE_RECEIVED: 'Requested simulation tree received.',
 
-			EXPERIMENT_NOT_COMPLETED_UPLOAD : "Can't upload results for an experiment that isn't completed",
+            NO_SIMULATION_TREE: 'Simulation tree is not available.',
 
-			UNACTIVE_EXPERIMENT_UPLOAD : "Unable to upload results for experiment that isn't active",
+            NO_VISUALIZATION_TREE: 'Visualization tree is not available.',
 
-			/**
-			 * GEPPETTO.Main resources
-			 */
-			GEPPETTO_INITIALIZED: 'Geppetto Initialised',
+            RETRIEVING_VISUALIZATION_TREE: 'Visualization tree: ',
 
-			SIMULATION_OBSERVED: 'Sent: Simulation being observed',
+            DOWNLOADING_MODEL: 'Downloading model as ',
 
-			WEBSOCKET_NOT_SUPPORTED: 'Error: WebSocket is not supported by this browser.',
+            ERROR_DOWNLOADING_MODEL: "Error downloading model",
 
-			WEBSOCKET_OPENED: 'Info: WebSocket connection opened',
+            ERROR_LOADING_PROJECT: "Error loading project",
 
-			WEBSOCKET_CLOSED: "Info: WebSocket connection closed",
+            RETRIEVING_SUPPORTED_OUTPUTS: 'Supported outputs requested',
 
-			CLEAR_CANVAS: "Inbound Message Received: Clear canvas",
+            EXPERIMENT_NOT_COMPLETED_UPLOAD: "Can't upload results for an experiment that isn't completed",
 
-			INVALID_SIMULATION_FILE: "Invalid Simulation File",
+            UNACTIVE_EXPERIMENT_UPLOAD: "Unable to upload results for experiment that isn't active",
 
-			INCOMING_MESSAGE: "Incoming message...",
+            /**
+             * GEPPETTO.Main resources
+             */
+            GEPPETTO_INITIALIZED: 'Geppetto Initialised',
 
-			ERROR: "Houston, we have a problem",
+            SIMULATION_OBSERVED: 'Sent: Simulation being observed',
 
-			INVALID_WATCH_LIST: "Invalid Watch List",
+            WEBSOCKET_NOT_SUPPORTED: 'Error: WebSocket is not supported by this browser.',
 
-			LOADING_MODEL: "Inbound Message Received: Loading Model ",
+            WEBSOCKET_OPENED: 'Info: WebSocket connection opened',
 
-			OBSERVING_MODE: "Observing Simulation Mode",
+            WEBSOCKET_CLOSED: "Info: WebSocket connection closed",
 
-			SERVER_UNAVAILABLE: "Server Unavailable",
+            CLEAR_CANVAS: "Inbound Message Received: Clear canvas",
 
-			SERVER_AVAILABLE: "Server Available",
+            INVALID_SIMULATION_FILE: "Invalid Simulation File",
 
-			SIMULATOR_FULL : "Simulation Full",
+            INCOMING_MESSAGE: "Incoming message...",
 
-			WEBGL_FAILED: "Initialization Error: Unable to initialize WebGL",
+            ERROR: "Houston, we have a problem",
 
-			WEBGL_MESSAGE : "Unable to detect WebGl in your browser. \n" +
-						"Try updating your browser and video card drivers to resolve issue",
+            INVALID_WATCH_LIST: "Invalid Watch List",
 
-			WORKERS_NOT_SUPPORTED: "Initialization Error: WebWorkers not suported",
+            LOADING_MODEL: "Inbound Message Received: Loading Model ",
 
-			WORKERS_NOT_SUPPORTED_MESSAGE : "Unable to detect WebWorkers support in your browser. Try any browser that is not from the stone age.",
+            OBSERVING_MODE: "Observing Simulation Mode",
 
-			ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
+            SERVER_UNAVAILABLE: "Server Unavailable",
 
-			GEPPETTO_VERSION_HOLDER: "geppetto v$1 is ready",
+            SERVER_AVAILABLE: "Server Available",
 
-			SIMULATOR_UNAVAILABLE: " is Unavailable",
+            SIMULATOR_FULL: "Simulation Full",
 
-			WEBSOCKET_CONNECTION_ERROR: "Server Connection Error",
+            WEBGL_FAILED: "Initialization Error: Unable to initialize WebGL",
 
-			STOP_SIMULATION_TUTORIAL : "Tutorial Starting",
+            WEBGL_MESSAGE: "Unable to detect WebGl in your browser. \n" +
+            "Try updating your browser and video card drivers to resolve issue",
 
-			STOP_SIMULATION_TUTORIAL_MSG : "Current Simulation will be stopping in order to start tutorial, press" +
-					" Okay and enjoy the show!",
+            WORKERS_NOT_SUPPORTED: "Initialization Error: WebWorkers not suported",
 
-			SELECTING_ENTITY : "Selecting entity ",
-			DESELECTING_ENTITY : "Deselecting entity ",
-			DESELECT_ALL : "Deselecting all entities ",
-			UNHIGHLIGHT_ALL : "Unhighlighting all connections ",
-			CANT_FIND_ENTITY : "Entity not found, can't use selection on it",
-			NO_ENTITIES_SELECTED : "No entities are currently selected.",
-			SHOW_ENTITY : "Showing entity ",
-			HIDE_ENTITY : "Hiding entity ",
-			ZOOM_TO_ENTITY : "Zooming to entity ",
-			HIGHLIGHTING : "Highlighting object ",
-			NO_REFERENCES_TO_HIGHLIGHT : "Connection has no Visual References to highlight.",
-			ENTITY_ALREADY_SELECTED : "Entity already selected",
-			ENTITY_NOT_SELECTED : "Entity not selected, can't uselect what it isn't selected.",
-			SELECTING_ASPECT : "Selecting aspect ",
-			DESELECTING_ASPECT : "Deselecting aspect ",
-			SHOW_ASPECT : "Showing aspect ",
-			HIDE_ASPECT : "Hiding aspect ",
-			ZOOM_TO_ASPECT : "Zooming to aspect ",
-			ASPECT_ALREADY_SELECTED : "Aspect already selected",
-			ASPECT_NOT_SELECTED : "Aspect not selected, can't uselect what it isn't selected.",
-			SHOWING_VISUAL_GROUPS : "Showing visual group ",
-			HIDING_VISUAL_GROUPS : "Hiding visual group ",
-			NO_VISUAL_GROUP_ELEMENTS : "No elements inside visual group to show ",
-			MISSING_PARAMETER : "Command is missing parameter.",
+            WORKERS_NOT_SUPPORTED_MESSAGE: "Unable to detect WebWorkers support in your browser. Try any browser that is not from the stone age.",
 
+            ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 
-			/**
-			 * GEPPETTO resources
-			 */
-			UPDATE_FRAME_STARTING: "Starting update frame",
+            GEPPETTO_VERSION_HOLDER: "geppetto v$1 is ready",
 
-			UPDATE_FRAME_END: "Ending update frame",
+            SIMULATOR_UNAVAILABLE: " is Unavailable",
 
-			/**
-			 * GEPPETTO.SimulationContentEditor resources
-			 */
-			SAMPLES_DROPDOWN_PLACEHOLDER: "Select simulation from list...",
+            WEBSOCKET_CONNECTION_ERROR: "Server Connection Error",
 
-			/**
-			 * Global resources
-			 */
-			COMMANDS: " commands: \n\n",
+            STOP_SIMULATION_TUTORIAL: "Tutorial Starting",
 
-			/**
-			 * Widget resources
-			 */
-			REMOVE_PLOT_WIDGETS: "Plotting widget(s) removed",
-			REMOVE_POPUP_WIDGETS: "Popup widget(s) removed",
-			REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",
-			REMOVE_TREEVISUALISERD3_WIDGETS: "Tree Visualiser D3 widget(s) removed",
-			REMOTE_VARIABLEVISUALISER_WIDGETS: "Variable Visualiser widget(s) removed",
-			REMOVE_CONNECTIVITY_WIDGETS: "Connectivity widget(s) removed",
-			NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
+            STOP_SIMULATION_TUTORIAL_MSG: "Current Simulation will be stopping in order to start tutorial, press" +
+            " Okay and enjoy the show!",
 
-			/**
-			 * Idle messages
-			 */
-			IDLE_MESSAGE: "Are you still there?",
+            SELECTING_ENTITY: "Selecting entity ",
+            DESELECTING_ENTITY: "Deselecting entity ",
+            DESELECT_ALL: "Deselecting all entities ",
+            UNHIGHLIGHT_ALL: "Unhighlighting all connections ",
+            CANT_FIND_ENTITY: "Entity not found, can't use selection on it",
+            NO_ENTITIES_SELECTED: "No entities are currently selected.",
+            SHOW_ENTITY: "Showing entity ",
+            HIDE_ENTITY: "Hiding entity ",
+            ZOOM_TO_ENTITY: "Zooming to entity ",
+            HIGHLIGHTING: "Highlighting object ",
+            NO_REFERENCES_TO_HIGHLIGHT: "Connection has no Visual References to highlight.",
+            ENTITY_ALREADY_SELECTED: "Entity already selected",
+            ENTITY_NOT_SELECTED: "Entity not selected, can't uselect what it isn't selected.",
+            SELECTING_ASPECT: "Selecting aspect ",
+            DESELECTING_ASPECT: "Deselecting aspect ",
+            SHOW_ASPECT: "Showing aspect ",
+            HIDE_ASPECT: "Hiding aspect ",
+            ZOOM_TO_ASPECT: "Zooming to aspect ",
+            ASPECT_ALREADY_SELECTED: "Aspect already selected",
+            ASPECT_NOT_SELECTED: "Aspect not selected, can't uselect what it isn't selected.",
+            SHOWING_VISUAL_GROUPS: "Showing visual group ",
+            HIDING_VISUAL_GROUPS: "Hiding visual group ",
+            NO_VISUAL_GROUP_ELEMENTS: "No elements inside visual group to show ",
+            MISSING_PARAMETER: "Command is missing parameter.",
+            BATCH_SELECTION: "Batch selection performed",
+            BATCH_DESELECTION: "Batch deselection performed",
+            BATCH_SET_GEOMETRY: "Batch ser geometry performed",
+            BATCH_HIGHLIGHT_CONNECTIONS: "Batch highlight connections performed",
+            BATCH_SHOW_CONNECTIONS_LINES: "Batch show/hide connection lines performed",
+            OPERATION_NOT_SUPPORTED: "Operation not supported: ",
 
-			DISCONNECT_MESSAGE: "A prolonged inactivity has been detected and you have been disconnected from Geppetto. Please refresh your browser if you wish to continue",
 
-			/**
-			 * Socket Messages
-			 */
-			SERVER_CONNECTION_ERROR: "Error communicating with Geppetto. \nReload page if problems persits",
+            /**
+             * GEPPETTO resources
+             */
+            UPDATE_FRAME_STARTING: "Starting update frame",
 
-			/**
-			 * Node Resources
-			 */
-			PROJECT_NODE : "ProjectNode",
-			EXPERIMENT_NODE : "ExperimentNode",
-			SIMULATOR_CONFIGURATION_NODE : "SimulatorConfigurationNode",
-			ENTITY_NODE : "EntityNode",
-			ASPECT_NODE : "AspectNode",
-			ASPECT_SUBTREE_NODE : "AspectSubTreeNode",
-			VARIABLE_NODE : "VariableNode",
-			FUNCTION_NODE : "FunctionNode",
-			PARAMETER_SPEC_NODE : "ParameterSpecificationNode",
-			TEXT_METADATA_NODE : "TextMetadataNode",
-			HTML_METADATA_NODE : "HTMLMetadataNode",
-			PARAMETER_NODE : "ParameterNode",
-			CONNECTION_NODE : "ConnectionNode",
-			COMPOSITE_NODE : "CompositeNode",
-			DYNAMICS_NODE : "DynamicsSpecificationNode",
-			VISUAL_REFERENCE_NODE : "VisualObjectReferenceNode",
-			VISUAL_GROUP_NODE : "VisualGroupNode",
-			VISUAL_GROUP_ELEMENT_NODE : "VisualGroupElementNode",
-			SKELETON_ANIMATION_NODE: "SkeletonAnimationNode",
-			INPUT_CONNECTION : "FROM",
-			OUTPUT_CONNECTION : "TO"
-		}
-	}
+            UPDATE_FRAME_END: "Ending update frame",
+
+            /**
+             * GEPPETTO.SimulationContentEditor resources
+             */
+            SAMPLES_DROPDOWN_PLACEHOLDER: "Select simulation from list...",
+
+            /**
+             * Global resources
+             */
+            COMMANDS: " commands: \n\n",
+
+            /**
+             * Widget resources
+             */
+            REMOVE_PLOT_WIDGETS: "Plotting widget(s) removed",
+            REMOVE_POPUP_WIDGETS: "Popup widget(s) removed",
+            REMOVE_TREEVISUALISERDAT_WIDGETS: "Tree Visualiser DAT widget(s) removed",
+            REMOVE_TREEVISUALISERD3_WIDGETS: "Tree Visualiser D3 widget(s) removed",
+            REMOTE_VARIABLEVISUALISER_WIDGETS: "Variable Visualiser widget(s) removed",
+            REMOVE_CONNECTIVITY_WIDGETS: "Connectivity widget(s) removed",
+            NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
+
+            /**
+             * Idle messages
+             */
+            IDLE_MESSAGE: "Are you still there?",
+
+            DISCONNECT_MESSAGE: "A prolonged inactivity has been detected and you have been disconnected from Geppetto. Please refresh your browser if you wish to continue",
+
+            /**
+             * Socket Messages
+             */
+            SERVER_CONNECTION_ERROR: "Error communicating with Geppetto. \nReload page if problems persits",
+
+            /**
+             * Node Resources
+             */
+            PROJECT_NODE: "ProjectNode",
+            EXPERIMENT_NODE: "ExperimentNode",
+            SIMULATOR_CONFIGURATION_NODE: "SimulatorConfigurationNode",
+            VISUAL_GROUP_NODE: "VisualGroup",
+            VISUAL_GROUP_ELEMENT_NODE: "VisualGroupElement",
+
+            //TYPES
+            TYPE_NODE: "Type",
+            VISUAL_TYPE_NODE: "VisualType",
+            COMPOSITE_TYPE_NODE: "CompositeType",
+            COMPOSITE_VISUAL_TYPE_NODE: "CompositeVisualType",
+            ARRAY_TYPE_NODE: "ArrayType",
+            PARAMETER_TYPE: "ParameterType",
+            STATE_VARIABLE_TYPE: "StateVariableType",
+            CONNECTION_TYPE: "ConnectionType",
+            POINTER_TYPE: "PointerType",
+            DYNAMICS_TYPE: "DynamicsType",
+            FUNCTION_TYPE: "FunctionType",
+            TEXT_TYPE: "TextType",
+            HTML_TYPE: "HTMLType",
+            //VARIABLES
+            VARIABLE_NODE: "Variable",
+            //VALUES
+            CYLINDER: "Cylinder",
+            SPHERE: "Sphere",
+            COLLADA: "Collada",
+            OBJ: "OBJ",
+            //GEPPETTO MODEL
+            GEPPETTO_MODEL_NODE: "GeppettoModel",
+            LIBRARY_NODE: "Library",
+            //INSTANCES
+            INSTANCE_NODE: "Instance",
+            ARRAY_INSTANCE_NODE: "ArrayInstance",
+            ARRAY_ELEMENT_INSTANCE_NODE: "ArrayElementInstance",
+            //COMMON LIBRARY
+            PARAMETER: "Parameter",
+            STATE_VARIABLE: "StateVariable",
+            CONNECTION: "Connection",
+            DYNAMICS: "Dynamics",
+            FUNCTION: "Function",
+            TEXT: "Text",
+            HTML: "HTML",
+            SKELETON_ANIMATION_NODE: "SkeletonAnimation",
+            // CAPABILITIES
+            VISUAL_CAPABILITY: 'VisualCapability',
+            STATE_VARIABLE_CAPABILITY: 'StateVariableCapability',
+            PARAMETER_CAPABILITY: 'ParameterCapability',
+            CONNECTION_CAPABILITY: 'ConnectionCapability',
+            VISUAL_GROUP_CAPABILITY: 'VisualGroupCapability',
+            // CONNECTION DIRECTION
+            INPUT: 'input',
+            OUTPUT: 'output',
+            INPUT_OUTPUT: 'input_output',
+            DIRECTIONAL: 'DIRECTIONAL',
+            BIDIRECTIONAL: 'BIDIRECTIONAL',
+            // FLOWS
+            SEARCH_FLOW: 'SearchFlow',
+            PLAY_FLOW: 'PlayFlow',
+            RUN_FLOW: 'RunFlow',
+            // COMMMON TYPE PATHS
+            STATE_VARIABLE_TYPE_PATH: 'Model.common.StateVariable',
+            PARAMETER_TYPE_PATH: 'Model.common.Parameter'
+        }
+    }
 });

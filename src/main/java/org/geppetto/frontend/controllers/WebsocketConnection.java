@@ -32,8 +32,6 @@
  *******************************************************************************/
 package org.geppetto.frontend.controllers;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,6 +41,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.logging.Log;
@@ -58,13 +57,19 @@ import org.geppetto.frontend.messaging.DefaultMessageSenderFactory;
 import org.geppetto.frontend.messaging.MessageSender;
 import org.geppetto.frontend.messaging.MessageSenderEvent;
 import org.geppetto.frontend.messaging.MessageSenderListener;
+import org.geppetto.simulation.manager.ExperimentRunManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 /**
  * Class used to process Web Socket Connections. Messages sent from the connecting clients, web socket connections, are received in here.
  * 
+ * @author matteocantarelli
+ *
  */
 public class WebsocketConnection extends MessageInbound implements MessageSenderListener
 {
@@ -299,7 +304,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
 				try
 				{
-					connectionHandler.setWatchedVariables(requestID, receivedObject.variables, receivedObject.experimentId, receivedObject.projectId);
+					connectionHandler.setWatchedVariables(requestID, receivedObject.variables, receivedObject.experimentId, receivedObject.projectId, receivedObject.watch);
 				}
 				catch(GeppettoExecutionException e)
 				{
@@ -312,44 +317,9 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 
 				break;
 			}
-			case CLEAR_WATCHED_VARIABLES:
-			{
-				try
-				{
-					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-					connectionHandler.clearWatchLists(requestID, receivedObject.experimentId, receivedObject.projectId);
-				}
-				catch(GeppettoExecutionException e)
-				{
-					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
-				}
-				break;
-			}
 			case IDLE_USER:
 			{
 				connectionHandler.userBecameIdle(requestID);
-				break;
-			}
-			case GET_MODEL_TREE:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				instancePath = parameters.get("instancePath");
-				connectionHandler.getModelTree(requestID, instancePath, experimentId, projectId);
-				break;
-			}
-			case GET_SIMULATION_TREE:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				instancePath = parameters.get("instancePath");
-				connectionHandler.getSimulationTree(requestID, instancePath, experimentId, projectId);
 				break;
 			}
 			case GET_SUPPORTED_OUTPUTS:
@@ -378,7 +348,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case SET_PARAMETERS:
 			{
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.setParameters(requestID, receivedObject.modelAspectPath, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
+				connectionHandler.setParameters(requestID, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
 				break;
 			}
 			case LINK_DROPBOX:
@@ -477,7 +447,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Long projectId;
 		Long experimentId;
 		List<String> variables;
-		String modelAspectPath;
+		boolean watch;
 		Map<String, String> modelParameters;
 		Map<String, String> properties;
 	}

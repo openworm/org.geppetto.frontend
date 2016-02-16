@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.geppetto.core.beans.PathConfiguration;
+import org.geppetto.core.common.GeppettoAccessException;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
@@ -75,7 +76,7 @@ public class GeppettoProjectController
 
 	@RequestMapping(value = "/geppettoproject/{projectId}/experiments/{experimentId}/downloadResults", produces = "application/zip")
 	@ResponseBody
-	public FileSystemResource downloadExperimentResults(@PathVariable("projectId") int projectId, @PathVariable("experimentId") int experimentId) throws GeppettoExecutionException, IOException
+	public FileSystemResource downloadExperimentResults(@PathVariable("projectId") int projectId, @PathVariable("experimentId") int experimentId) throws GeppettoExecutionException, IOException, GeppettoAccessException
 	{
 		if(geppettoManager.getUser() != null)
 		{
@@ -102,7 +103,7 @@ public class GeppettoProjectController
 						Zipper zipper = new Zipper(PathConfiguration.createExperimentTmpPath(Scope.CONNECTION, projectId, experimentId, null, "results.zip"));
 						for(IAspectConfiguration ac : e.getAspectConfigurations())
 						{
-							URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.RAW, e, e.getParentProject()));
+							URL result = (geppettoManager.downloadResults(ac.getInstance(), ResultsFormat.RAW, e, e.getParentProject()));
 							zipper.addToZip(result);
 						}
 
@@ -121,12 +122,13 @@ public class GeppettoProjectController
 	}
 
 	@RequestMapping(value = "/geppettoproject/delete/{id}")
-	public String deleteGeppettoProject(@PathVariable("id") int id)
+	public String deleteGeppettoProject(@PathVariable("id") int id) throws GeppettoExecutionException, GeppettoAccessException
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
-			dataManager.deleteGeppettoProject(id, geppettoManager.getUser());
+			//TODO Get rid of requestId everywhere
+			geppettoManager.deleteProject(null,dataManager.getGeppettoProjectById(id));
 		}
 		return "redirect:/";
 	}

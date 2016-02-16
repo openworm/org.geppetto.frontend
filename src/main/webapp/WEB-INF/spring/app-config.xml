@@ -57,12 +57,12 @@
 		<property name="isSimulationLoaded" value="false" />
 	</bean>
 	
-
-	
 	<bean id="geppettoManager" scope="session"
-		class="org.geppetto.frontend.controllers.GeppettoManager">
+		class="org.geppetto.simulation.manager.GeppettoManager">
 		<aop:scoped-proxy />
 	</bean>
+	
+
 	
 	<!--
 	 Configuration for the default message sender. queuingEnabled: If true 
@@ -87,11 +87,12 @@
 		<property name="compressionEnabled" value="true" />
 		<property name="minMessageLengthForCompression" value="20000" />
 
-		<property name="queuedMessageTypes">
+		<!-- <property name="queuedMessageTypes">
 			<set>
 				<value type="org.geppetto.frontend.messages.OutboundMessages">EXPERIMENT_UPDATE</value>
 			</set>
 		</property>
+		 -->
 
 	</bean>
 

@@ -36,55 +36,57 @@
  * @author Boris Marin
  * @author Adrian Quintana
  */
-define(function(require) {
+define(function (require) {
 
-	var Scatter3d = require('widgets/scatter3d/Scatter3d');
-	var AWidgetController = require('widgets/AWidgetController');		
+    var Scatter3d = require('widgets/scatter3d/Scatter3d');
+    var AWidgetController = require('widgets/AWidgetController');
 
-	/**
-	 * @exports Widgets/Scatter3d/Scatter3dController
-	 */
-	return AWidgetController.View.extend ({
+    /**
+     * @exports Widgets/Scatter3d/Scatter3dController
+     */
+    return AWidgetController.View.extend({
 
-		initialize: function() {
-			this.widgets = new Array();
-		},
+        initialize: function () {
+            this.widgets = [];
+        },
 
-		/**
-		 * Creates 3d scatterplot widget
-		 *
-		 * @ return {Widget} - Scatter3d widget
-		 */
-		addScatter3dWidget: function() {
-			//look for a name and id for the new widget
-			var id = this.getAvailableWidgetId("Scatter3d", this.widgets);
-			var name = id;
+        /**
+         * Creates 3d scatterplot widget
+         *
+         * @ return {Widget} - Scatter3d widget
+         */
+        addScatter3dWidget: function () {
+            //look for a name and id for the new widget
+            var id = this.getAvailableWidgetId("Scatter3d", this.widgets);
+            var name = id;
 
-			var p = window[name] = new Scatter3d({id:id, name:name,visible:true});
+            var p = window[name] = new Scatter3d({id: id, name: name, visible: true});
 
-			//create help command for scatter3d
-			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+            //create help command for scatter3d
+            p.help = function () {
+                return GEPPETTO.Console.getObjectCommands(id);
+            };
 
-			this.widgets.push(p);
+            this.widgets.push(p);
 
-			GEPPETTO.WidgetsListener.subscribe(this, id);
+            GEPPETTO.WidgetsListener.subscribe(this, id);
 
-			//updates commands for help option
-			GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/scatter3d/Scatter3d.js", p, id);
+            //updates commands for help option
+            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/widgets/scatter3d/Scatter3d.js"));
 
-			//update tags for autocompletion
-			GEPPETTO.Console.updateTags(p.getId(), p);
+            //update tags for autocompletion
+            GEPPETTO.Console.updateTags(p.getId(), p);
 
-			return p;
-		},
+            return p;
+        },
 
-		//receives updates from widget listener class to update scatter3d widget(s)
-		update: function(event) {
-			//delete scatter3d widget(s)
-			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-				this.removeWidgets();
-			}
-			//reset plot's datasets
+        //receives updates from widget listener class to update scatter3d widget(s)
+        update: function (event) {
+            //delete scatter3d widget(s)
+            if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+                this.removeWidgets();
+            }
+            //reset plot's datasets
 //			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
 //			for(var i = 0; i < scatter3ds.length; i++) {
 //			var scatter3d = scatter3ds[i];
@@ -93,17 +95,17 @@ define(function(require) {
 //			}
 //			}
 
-			//update scatter3d widgets
-			else if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
-				//loop through all existing widgets
-				for(var i = 0; i < this.widgets.length; i++) {
-					var scatter3d = this.widgets[i];
+            //update scatter3d widgets
+            else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+                //loop through all existing widgets
+                for (var i = 0; i < this.widgets.length; i++) {
+                    var scatter3d = this.widgets[i];
 
-					//update scatter3d with new data set
-					scatter3d.updateDataSet();
+                    //update scatter3d with new data set
+                    scatter3d.updateDataSet();
 
-				}
-			}
-		}
-	});
+                }
+            }
+        }
+    });
 });

@@ -35,57 +35,59 @@
  *
  * @author Jesus R Martinez (jesus@metacell.us)
  */
-define(function(require) {
-	var Popup = require('widgets/popup/Popup');
-	var AWidgetController = require('widgets/AWidgetController');		
+define(function (require) {
+    var Popup = require('widgets/popup/Popup');
+    var AWidgetController = require('widgets/AWidgetController');
 
-	/**
-	 * @exports Widgets/Popup/PopupsController
-	 */
-	return AWidgetController.View.extend ({
+    /**
+     * @exports Widgets/Popup/PopupsController
+     */
+    return AWidgetController.View.extend({
 
-		initialize: function() {
-			this.widgets = Array();
-		},
-	
-		/**
-		 * Creates popup widget
-		 */
-		addPopupWidget : function(){
-			//look for a name and id for the new widget
-			var id = this.getAvailableWidgetId("Popup", this.widgets);
-			var name = id;
-			
-			//create popup widget
-			var p = window[name] = new Popup({id:id, name:name,visible:true});
+        initialize: function () {
+            this.widgets = Array();
+        },
 
-			//create help command for plot
-			p.help = function(){return GEPPETTO.Console.getObjectCommands(id);};
+        /**
+         * Creates popup widget
+         */
+        addPopupWidget: function () {
+            //look for a name and id for the new widget
+            var id = this.getAvailableWidgetId("Popup", this.widgets);
+            var name = id;
 
-			//store in local stack
-			this.widgets.push(p);
+            //create popup widget
+            var p = window[name] = new Popup({id: id, name: name, visible: true});
+            p.setSize(394,490);
+            //create help command for plot
+            p.help = function () {
+                return GEPPETTO.Console.getObjectCommands(id);
+            };
 
-			GEPPETTO.WidgetsListener.subscribe(this, id);
+            //store in local stack
+            this.widgets.push(p);
 
-			//add commands to console autocomplete and help option
-			GEPPETTO.Console.updateHelpCommand("geppetto/js/widgets/popup/Popup.js", p, id);
+            GEPPETTO.WidgetsListener.subscribe(this, id);
 
-			//update tags for autocompletion
-			GEPPETTO.Console.updateTags(p.getId(), p);
+            //add commands to console autocomplete and help option
+            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/widgets/popup/Popup.js"));
 
-			return p;
-		},
+            //update tags for autocompletion
+            GEPPETTO.Console.updateTags(p.getId(), p);
 
-		/**
-		 * Receives updates from widget listener class to update popup widget(s)
-		 * 
-		 * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
-		 */
-		update: function(event) {
-			//delete popup widget(s)
-			if(event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
-				this.removeWidgets();
-			}
-		}	
-	});
+            return p;
+        },
+
+        /**
+         * Receives updates from widget listener class to update popup widget(s)
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+         */
+        update: function (event) {
+            //delete popup widget(s)
+            if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
+                this.removeWidgets();
+            }
+        }
+    });
 });

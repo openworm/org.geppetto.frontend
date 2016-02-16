@@ -42,8 +42,10 @@ import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.manager.IGeppettoManager;
-import org.geppetto.core.model.geppettomodel.GeppettoModel;
 import org.geppetto.core.utilities.URLReader;
+import org.geppetto.model.GeppettoModel;
+import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.util.GeppettoModelTraversal;
 import org.geppetto.simulation.GeppettoModelReader;
 import org.geppetto.simulation.visitor.PopulateModelReferencesVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +76,7 @@ public class GeppettoProjectsController
 	
 	@RequestMapping(value="/projectswithref", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody
-	Collection<? extends IGeppettoProject> getAllGeppettoProjectsWithReference(@RequestParam String reference) throws GeppettoInitializationException, IOException
+	Collection<? extends IGeppettoProject> getAllGeppettoProjectsWithReference(@RequestParam String reference) throws GeppettoInitializationException, IOException, GeppettoVisitingException
 	{
 		List<IGeppettoProject> projectsFound=new ArrayList<IGeppettoProject>();
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
@@ -85,7 +87,7 @@ public class GeppettoProjectsController
 			{
 				GeppettoModel geppettoModel = GeppettoModelReader.readGeppettoModel(URLReader.getURL(project.getGeppettoModel().getUrl()));
 				PopulateModelReferencesVisitor populateModelReferencesVisitor = new PopulateModelReferencesVisitor();
-				geppettoModel.accept(populateModelReferencesVisitor);
+				GeppettoModelTraversal.apply(geppettoModel, populateModelReferencesVisitor);
 				if(populateModelReferencesVisitor.getModelReferences().contains(reference))
 				{
 					projectsFound.add(project);

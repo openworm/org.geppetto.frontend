@@ -30,528 +30,524 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-define(function(require) {
+define(function (require) {
 
-	/**
-	 * Calls "start()" from QUnit to start qunit tests, closes socket and clears
-	 * handlers. Method is called from each test.
-	 */
-	function launch(){
-		//start qunit tests
-		start();
-		//close socket
-		GEPPETTO.MessageSocket.close();
-		//clear message handlers, all tests within module should have performed by time method it's called
-		GEPPETTO.MessageSocket.clearHandlers();
-		//connect to socket again for next test
-		GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
-	}
-	
-	var run = function() {		
+    /**
+     * Closes socket and clears handlers. Method is called from each test.
+     */
+    function resetConnection() {
+        //close socket
+        GEPPETTO.MessageSocket.close();
+        //clear message handlers, all tests within module should have performed by time method it's called
+        GEPPETTO.MessageSocket.clearHandlers();
+        //connect to socket again for next test
+        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+    }
 
-		module("Test Project 1 - SingleCompononetHH");
-		asyncTest("Test Project 1 - SingleComponentHH", function() {
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						//Simulation has been loaded and model need to be loaded
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-							equal(window.Project.getId(),1, "Project ID checked");
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							equal(window.Project.getActiveExperiment().getId(),1,"Active experiment id of loaded project checked");
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message);
-				            ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message).message;
-							ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = payload.message;
-							ok(false,message);
-							launch();
-							break;
-						}
-					}
-			};
-			GEPPETTO.MessageSocket.clearHandlers();
-			GEPPETTO.MessageSocket.addHandler(handler);
-			window.Project.loadFromID("1", "1");
-			initializationTime = new Date();	
-		});
-		
-		module("Test Play Experiment");
-		asyncTest("Load Project 1 - SingleComponentHH", function() {
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						//Simulation has been loaded and model need to be loaded
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-							//delete hhcell;
-							var time = (new Date() - initializationTime)/1000;
-							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-							equal(window.Project.getId(),1, "Project ID checked");
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							//if experiment isn't completed don't play
-							if (Project.getActiveExperiment().getStatus()!= GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-								ok(false,"Unable to play experiment for project");
-								launch();
-							}else{
-								Project.getActiveExperiment().play({step:1});
-							}
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PLAY_EXPERIMENT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var timeSeries = 
-								hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
-							equal(timeSeries.length,0, "Checking updated time series in variable");
-							GEPPETTO.SimulationHandler.playExperiment(payload);
-							timeSeries = 
-								hhcell.electrical.SimulationTree.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
-							equal(timeSeries.length,6001, "Checking updated time series in variable");
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message);
-				            ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message).message;
-							ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = payload.message;
-							ok(false,message);
-							launch();
-							break;
-						}
-					}
-			};
-			GEPPETTO.MessageSocket.clearHandlers();
-			GEPPETTO.MessageSocket.addHandler(handler);
-			window.Project.loadFromID("1", "1");
-			initializationTime = new Date();	
-		});
+    var run = function () {
 
-		module("Test Muscle cell NEURON simulation");
-		asyncTest("Tests PMuscle cell NEURON simulation", function() {
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
-							equal(window.Project.getId(),4, "Project loaded ID checked");
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							equal(window.Project.getActiveExperiment().getId(),1,
-							"Experiment id of loaded project chekced");
+        QUnit.module("Test Project 1 - SingleCompononetHH");
+        QUnit.test("Test Project 1 - SingleComponentHH", function ( assert ) {
 
+            var done = assert.async();
+            // once off on the first test to establish connection
+            resetConnection();
 
-							var passTimeTest = false;
-							if(time < 10){
-								passTimeTest = true;
-							}
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            assert.equal(window.Project.getId(), 1, "Project ID checked");
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
 
-							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
-							notEqual(net1, null,"Entities checked");
-							equal(net1.getAspects().length, 1, "Aspects checked");
-							equal(net1.getConnections().length, 0, "Connections checked");
-							equal(jQuery.isEmptyObject(net1.neuron_0.electrical.VisualizationTree),false,"Test Visualization at load");
-							equal(net1.neuron_0.electrical.VisualizationTree.getChildren().length, 1, "Test Visual Groups amount")
-							equal(jQuery.isEmptyObject(net1.neuron_0.electrical.ModelTree),false,"Test Model tree at load");
-							equal(jQuery.isEmptyObject(net1.neuron_0.electrical.SimulationTree),false,"Test Simulation tree at load");							
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message);
-				            ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message).message;
-							ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = payload.message;
-							ok(false,message);
-							launch();
-							break;
-						}
-					}
-			};
-			GEPPETTO.MessageSocket.addHandler(handler);
-			window.Project.loadFromID("4","1");
-			initializationTime = new Date();	
-		});
-		
-		module("Test C.elegans PVDR Neuron morphology");
-		asyncTest("Tests C.elegans PVDR Neuron morphology", function() {
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
-							equal(window.Project.getId(),8, "Project loaded ID checked");
-							window.Project.getExperiments()[0].setActive();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							equal(window.Project.getActiveExperiment().getId(),1,
-							"Experiment id of loaded project chekced");
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                      window.Model.getVariables()[0].getId() == 'hhcell' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'hhcell', "1 top level instance as expected");
 
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Active experiment id of loaded project checked");
 
-							var passTimeTest = false;
-							if(time < 10){
-								passTimeTest = true;
-							}
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+                            assert.ok(false, message);
 
-							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
-							notEqual(pvdr, null,"Entities checked");
-							equal(pvdr.getAspects().length, 1, "Aspects checked");
-							equal(pvdr.getConnections().length, 0, "Connections checked");
-							equal(jQuery.isEmptyObject(pvdr.electrical.VisualizationTree),false,"Test Visualization at load");
-							equal(pvdr.electrical.VisualizationTree.getChildren().length, 1, "Test Visual Groups amount")
-							equal(jQuery.isEmptyObject(pvdr.electrical.ModelTree),false,"Test Model tree at load");
-							equal(jQuery.isEmptyObject(pvdr.electrical.SimulationTree),false,"Test Simulation tree at load");							
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message);
-				            ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message).message;
-							ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = payload.message;
-							ok(false,message);
-							launch();
-							break;
-						}
-					}
-			};
-			GEPPETTO.MessageSocket.addHandler(handler);
-			initializationTime = new Date();
-			window.Project.loadFromID("8","1");
-		});
-		
-		module("Test Purkinje Cell");
-		asyncTest("Tests Purkinje cell with Model Tree call and Visual Groups", function() {
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
-							equal(window.Project.getId(),7, "Project loaded ID checked");
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							equal(window.Project.getActiveExperiment().getId(),1,
-							"Experiment id of loaded project chekced");
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+                            assert.ok(false, message);
 
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+                            assert.ok(false, message);
 
-							var passTimeTest = false;
-							if(time < 10){
-								passTimeTest = true;
-							}
+                            done();
+                            resetConnection();
+                            break;
+                    }
+                }
+            };
 
-							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
-							notEqual(purkinje, null,"Entities checked");
-							equal(purkinje.getAspects().length, 1, "Aspects checked");
-							equal(purkinje.getConnections().length, 0, "Connections checked");
-							equal(jQuery.isEmptyObject(purkinje.electrical.VisualizationTree),false,"Test Visualization at load");
-							equal(purkinje.electrical.VisualizationTree.getChildren().length, 2, "Test Visual Groups amount")
-							equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree),false,"Test Model tree at load");
-							equal(jQuery.isEmptyObject(purkinje.electrical.SimulationTree),false,"Test Simulation tree at load");							
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message);
-				            ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message).message;
-							ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = payload.message;
-							ok(false,message);
-							launch();
-							break;
-						}
-					}
-			};
-			GEPPETTO.MessageSocket.addHandler(handler);
-			initializationTime = new Date();	
-			window.Project.loadFromID("7","1");
-		});
-		
-		module("Test Get Model Tree");
-		asyncTest("Tests Get Model Tree call with Purkinje Experiment", function() {
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
-							equal(window.Project.getId(),7, "Project loaded ID checked");
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							equal(window.Project.getActiveExperiment().getId(),1,
-							"Experiment id of loaded project chekced");
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("1", "1");
+        });
 
+        QUnit.module("Test Play Experiment");
+        QUnit.test("Load Project 1 - SingleComponentHH", function ( assert ) {
 
-							var passTimeTest = false;
-							if(time < 10){
-								passTimeTest = true;
-							}
+            var done = assert.async();
 
-							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
-							notEqual(purkinje, null,"Entities checked");
-							equal(purkinje.getAspects().length, 1, "Aspects checked");
-							equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree),false,"Test Model tree at load");
-							purkinje.electrical.getModelTree();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_MODEL_TREE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.getModelTree(payload);
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            equal(window.Project.getId(), 1, "Project ID checked");
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
 
-							equal(jQuery.isEmptyObject(purkinje.electrical.ModelTree),false,"Test Model Tree Command");
-							notEqual(purkinje.electrical.ModelTree.getInstancePath(),null,"Testing Model Tree has Instance Path");
-							equal(window.Project.getActiveExperiment().getId(),1,"Active experiment id  chekced");  	        	
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message);
-				            ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message).message;
-							ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = payload.message;
-							ok(false,message);
-							launch();
-							break;
-						}
-					}
-			};
-			GEPPETTO.MessageSocket.addHandler(handler);
-			initializationTime = new Date();	
-			window.Project.loadFromID("7","1");
-		});
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                window.Model.getVariables()[0].getId() == 'hhcell' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'hhcell', "1 top level instance as expected");
 
-		module("Test C302 Simulation");
-		asyncTest("Test C302 Network", function() {
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
-							equal(window.Project.getId(),6, "Project loaded ID checked");
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							equal(window.Project.getActiveExperiment().getId(),1,
-							"Experiment id of loaded project chekced");
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            // if experiment isn't completed don't play
+                            if (Project.getActiveExperiment().getStatus() != GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                                assert.ok(false, "Unable to play experiment for project");
 
+                                done();
+                                resetConnection();
+                            } else {
+                                Project.getActiveExperiment().play();
+                            }
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PLAY_EXPERIMENT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var timeSeries = hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
+                            assert.equal(timeSeries, null, "Checking that time series is still null in variable");
 
-							var passTimeTest = false;
-							if(time < 10){
-								passTimeTest = true;
-							}
+                            var experimentState = JSON.parse(payload.update);
+                            var experiment = window.Project.getActiveExperiment();
+                            GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);
 
-							equal(passTimeTest,true, "Simulation loaded within time limit: " + time);
-							notEqual(c302,null,"Entities checked");
-							equal(c302.getChildren().length,300, "C302 Children checked");
-							equal(c302.getAspects().length,1, "Aspects checked");
-							equal(jQuery.isEmptyObject(c302.electrical.VisualizationTree),false, "Test Visualization at load");
-							equal(jQuery.isEmptyObject(c302.electrical.ModelTree),false, "Test Model tree at load");
-							equal(jQuery.isEmptyObject(c302.electrical.SimulationTree),false, "Test Simulation tree at load");							
-							equal(c302.ADAL_0.getConnections().length,31, "ADAL_0 connections check");
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message);
-				            ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message).message;
-							ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = payload.message;
-							ok(false,message);
-							launch();
-							break;
-						}
-					}
-			};
-			GEPPETTO.MessageSocket.addHandler(handler);
-			initializationTime = new Date();	
-			window.Project.loadFromID("6", "1");
-		});
+                            timeSeries = hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
+                            assert.equal(timeSeries.length, 6001, "Checking updated time series in variable");
 
-		module("Test Primary Auditory Cortex Network (ACNET2)");
-		asyncTest("Tests Primary Auditory Cortex Network [Medium Net] with Model Tree call and Visual Groups", function() {
-			var initializationTime;
-			var handler = {
-					checkUpdate2 : false,
-					startRequestID : null,
-					onMessage: function(parsedServerMessage) {
-						// Switch based on parsed incoming message type
-						switch(parsedServerMessage.type) {
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-							equal(window.Project.getExperiments().length,1, "Initial amount of experimetns checked");
-							equal(window.Project.getId(),5, "Project loaded ID checked");
-							window.Project.getExperiments()[0].setActive();
-							break;
-						case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-							var time = (new Date() - initializationTime)/1000;
-							var payload = JSON.parse(parsedServerMessage.data);
-							GEPPETTO.SimulationHandler.loadExperiment(payload);
-							equal(window.Project.getActiveExperiment().getId(),1,
-							"Experiment id of loaded project chekced");
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+                            ok(false, message);
 
-							var passTimeTest = false;
-							if(time < 10){
-								passTimeTest = true;
-							}
-							equal(passTimeTest,true,  "Testing Simulation load time: " + time + " ms");
-							notEqual(acnet2, null,"Entities checked");
-							equal(acnet2.getAspects().length, 1, "Aspects checked");
-							equal(acnet2.baskets_12_9.getConnections().length, 60, "Connections checked");
-							equal(jQuery.isEmptyObject(acnet2.electrical.VisualizationTree),false,"Test Visualization at load");
-							equal(acnet2.electrical.VisualizationTree.getChildren().length, 1, "Test Visual Groups amount")
-							equal(jQuery.isEmptyObject(acnet2.electrical.ModelTree),false,"Test Model tree at load");
-							equal(jQuery.isEmptyObject(acnet2.electrical.SimulationTree),false,"Test Simulation tree at load");							
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message);
-				            ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = JSON.parse(payload.message).message;
-							ok(false,message);
-							launch();
-							break;
-						case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-							var payload = JSON.parse(parsedServerMessage.data);
-							var message = payload.message;
-							ok(false,message);
-							launch();
-							break;
-						}
-					}
-			};
-			GEPPETTO.MessageSocket.addHandler(handler);
-			window.Project.loadFromID("5","1");		
-			initializationTime = new Date();	
-		});
-};
-	return {run: run};
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+                            ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+                            ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("1", "1");
+        });
+
+        QUnit.module("Test C.elegans PVDR Neuron morphology");
+        QUnit.test("Tests C.elegans PVDR Neuron morphology", function ( assert ) {
+
+            var done = assert.async();
+
+            var initializationTime;
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            var time = (new Date() - initializationTime) / 1000;
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+
+                            assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experiments checked");
+                            assert.equal(window.Project.getId(), 8, "Project loaded ID checked");
+                            window.Project.getExperiments()[0].setActive();
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                window.Model.getVariables()[0].getId() == 'pvdr' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'pvdr', "1 top level instance as expected");
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                            var time = (new Date() - initializationTime) / 1000;
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1,"Experiment id of loaded project chekced");
+
+                            var passTimeTest = false;
+                            if (time < 10) {
+                                passTimeTest = true;
+                            }
+
+                            assert.equal(passTimeTest, true, "Testing Simulation load time: " + time + " ms");
+                            assert.notEqual(pvdr, null, "Entities checked");
+                            assert.equal(pvdr.getConnections().length, 0, "Connections checked");
+                            assert.equal(pvdr.getVisualGroups().length, 1, "Test number of VisualGroups");
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            initializationTime = new Date();
+            window.Project.loadFromID("8", "1");
+        });
+
+        QUnit.module("Test Primary Auditory Cortex Network (ACNET2)");
+        QUnit.test("Tests Primary Auditory Cortex Network", function ( assert ) {
+
+            var done = assert.async();
+
+            var initializationTime;
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            var time = (new Date() - initializationTime) / 1000;
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+
+                            assert.equal(window.Project.getExperiments().length, 2, "Initial amount of experiments checked");
+                            assert.equal(window.Project.getId(), 5, "Project loaded ID checked");
+
+                            window.Project.getExperiments()[0].setActive();
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                window.Model.getVariables()[0].getId() == 'acnet2' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'acnet2', "1 top level instance as expected");
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                            var time = (new Date() - initializationTime) / 1000;
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
+
+                            var passTimeTest = false;
+                            if (time < 10) {
+                                passTimeTest = true;
+                            }
+
+                            assert.equal(passTimeTest, true, "Testing Simulation load time: " + time + " ms");
+                            assert.ok(acnet2.baskets_12[3] != undefined && acnet2.pyramidals_48[12] != undefined, "Instances exploded as expected");
+                            assert.equal(acnet2.baskets_12[9].getConnections().length, 60, "Connections checked on bask");
+                            assert.equal(acnet2.pyramidals_48[23].getConnections().length, 22, "Connections checked on pyramidal");
+                            assert.equal(acnet2.baskets_12[9].getVisualGroups().length, 3, "Test number of Visual Groups on bask");
+                            assert.equal(acnet2.pyramidals_48[23].getVisualGroups().length, 5, "Test number of Visual Groups on pyramidal");
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("5", "1");
+            initializationTime = new Date();
+        });
+
+        QUnit.module("Test C302 Simulation");
+        QUnit.test("Test C302 Network", function ( assert ) {
+
+            var done = assert.async();
+
+            var initializationTime;
+            var handler = {
+                checkUpdate2: false,
+                startRequestID: null,
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            var time = (new Date() - initializationTime) / 1000;
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+
+                            assert.equal(window.Project.getExperiments().length, 2, "Initial amount of experiments checked");
+                            assert.equal(window.Project.getId(), 6, "Project loaded ID checked");
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                window.Model.getVariables()[0].getId() == 'c302' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'c302', "1 top level instance as expected");
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                            var time = (new Date() - initializationTime) / 1000;
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
+
+                            var passTimeTest = false;
+                            if (time < 18) {
+                                passTimeTest = true;
+                            }
+
+                            assert.equal(passTimeTest, true, "Simulation loaded within time limit: " + time);
+                            assert.notEqual(c302, null, "Top level instance is not null");
+                            assert.equal(c302.getChildren().length, 299, "C302 Children count checked");
+                            assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL connections check");
+                            assert.equal(c302.AVAL[0].getConnections().length, 170, "AVAL connections check");
+                            assert.equal(c302.PVDR[0].getConnections().length, 7, "AVAL connections check");
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            initializationTime = new Date();
+            window.Project.loadFromID("6", "1");
+        });
+
+        QUnit.module("Test Muscle cell NEURON simulation");
+        QUnit.test("Tests PMuscle cell NEURON simulation", function ( assert ) {
+
+            var done = assert.async();
+
+            var initializationTime;
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            var time = (new Date() - initializationTime) / 1000;
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+
+                            assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experimetns checked");
+                            assert.equal(window.Project.getId(), 4, "Project loaded ID checked");
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+
+                            // test that geppetto model high level is as expected
+                            assert.ok(window.Model != undefined, "Model is not undefined");
+                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+                                window.Model.getVariables()[0].getId() == 'net1' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+                            // test that instance tree high level is as expected
+                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'net1', "1 top level instance as expected");
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                            var time = (new Date() - initializationTime) / 1000;
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+
+                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
+
+                            var passTimeTest = false;
+                            if (time < 10) {
+                                passTimeTest = true;
+                            }
+
+                            assert.equal(passTimeTest, true, "Testing Simulation load time: " + time + " ms");
+                            assert.notEqual(net1, null, "Top level entities not null");
+                            assert.equal(net1.getConnections().length, 0, "Connections checked");
+                            assert.equal(net1.getChildren().length, 2, "Children checked");
+                            assert.equal(net1.neuron[0].getVisualType().hasCapability('VisualGroupCapability'), false, "No visual groups");
+                            assert.equal(net1.neuron[0].getVisualType().hasCapability('VisualCapability'), true, "Visual capability on neuron");
+                            assert.equal(net1.muscle[0].getVisualType().hasCapability('VisualCapability'), true, "Visual capability on muscle");
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = payload.message;
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("4", "1");
+            initializationTime = new Date();
+        });
+    };
+    return {run: run};
 });

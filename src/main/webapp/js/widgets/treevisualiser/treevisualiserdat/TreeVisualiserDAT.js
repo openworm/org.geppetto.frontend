@@ -32,295 +32,356 @@
  *******************************************************************************/
 /**
  * Tree Visualiser Widget
- * 
+ *
  * @module Widgets/TreeVisualizerDAT
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 
-define(function(require) {
+define(function (require) {
 
-	var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
-	var $ = require('jquery');
+    var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
+    var $ = require('jquery');
+    
+    // Icons to display on hover
+    var aIcons = $("<a id='tvIcons'><icon class='fa fa-sign-in'/></a>");
+    // div to verify if textfield should be change to textarea
+    var testingSizeElement = $('<div></div>').css({'position': 'absolute','float': 'left','white-space': 'nowrap','visibility': 'hidden'}).appendTo($('body'));
+    
+    return TreeVisualiser.TreeVisualiser.extend({
 
-	return TreeVisualiser.TreeVisualiser.extend({
+        /**
+         * Initializes the TreeVisualiserDAT given a set of options
+         *
+         * @param {Object} options - Object with options for the TreeVisualiserDAT widget
+         */
+        initialize: function (options) {
+            TreeVisualiser.TreeVisualiser.prototype.initialize.call(this, options);
 
-		defaultTreeVisualiserOptions : {
-			width : "auto",
-			autoPlace : false,
-			expandNodes: false
-		},
-		
-		/**
-		 * Initializes the TreeVisualiserDAT given a set of options
-		 * 
-		 * @param {Object} options - Object with options for the TreeVisualiserDAT widget
-		 */
-		initialize : function(options) {
-			TreeVisualiser.TreeVisualiser.prototype.initialize.call(this, options);
+            // Initialise default options
+            this.options = { width: "auto", autoPlace: false, expandNodes: false};
 
-			this.options = this.defaultTreeVisualiserOptions;
+            //This function allows to access a node by its data attribute (this function is required is the data property has been added by jquery)
+            $.fn.filterByData = function (prop, val) {
+                return this.filter(
+                    function () {
+                        return $(this).data(prop) == val;
+                    }
+                );
+            };
+            this.initDATGUI();
+        },
 
-			//This function allows to access a node by its data attribute (this function is required is the data property has been added by jquery) 			
-			$.fn.filterByData = function(prop, val) {
-			    return this.filter(
-			        function() { return $(this).data(prop)==val; }
-			    );
-			}
-			
-			this.initDATGUI();
-		},
-		
-		/**
-		 * Action events associated with this widget
-		 */
-		events : {
-			'contextmenu .title' : 'manageRightClickEvent',
-			'contextmenu .cr.string' : 'manageRightClickEvent'
-		},
+        /**
+         * Action events associated with this widget
+         */
+        events: {
+            'contextmenu .title': 'manageRightClickEvent',
+            'contextmenu .cr.string': 'manageRightClickEvent',
+            'contextmenu .cr.number': 'manageRightClickEvent',
+            'click .title': 'manageLeftClickEvent',
+            'click .cr.string': 'manageLeftClickEvent',
+            'click .cr.number': 'manageLeftClickEvent',
+            'mouseenter .title': 'manageHover',
+            'mouseenter .cr.string': 'manageHover',
+            'mouseenter .cr.number': 'manageHover',
+            'mouseleave .title': 'manageUnhover',
+            'mouseleave .cr.string': 'manageUnhover',
+            'mouseleave .cr.number': 'manageUnhover'
+            	
+        },
 
-		/**
-		 * Register right click event with widget
-		 * 
-		 * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
-		 */
-		manageRightClickEvent : function(event) {
-			var nodeInstancePath = $(event.target).data("instancepath");
-			if (nodeInstancePath == undefined){
-				nodeInstancePath = $(event.target).parents('.cr.string').data("instancepath");
-			}
-			if(nodeInstancePath!=null || undefined){
-				//Read node from instancepath data property attached to dom element
-				this.showContextMenu(event, eval(nodeInstancePath));
-			}
-		},
-		
-		/**
-		 * Sets the data used inside the TreeVisualiserDAT for rendering. 
-		 * 
-		 * @param {Array} state - Array of variables used to display inside TreeVisualiserDAT
-		 * @param {Object} options - Set of options passed to widget to customize it
-		 */
-		setData : function(state, options) {
+        getTriggeredElement: function(event){
+        	if ($(event.target).is('li')){
+        		return $(event.target); 
+        	}
+        	else{
+        		return $(event.target).closest('li');
+        	}
+        },
+        
+        manageHover: function(event){
+        	var liElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = liElement.data("instancepath");
+            if (nodeInstancePath != null || undefined) {
+            	var node = this.dataset.valueDict[nodeInstancePath]["model"];
+            	var that = this;
+            	aIcons.click(function(event){that.showContextMenu(event, node);event.stopPropagation();});
+            	liElement.prepend(aIcons);
+            }
+        },
+        
+        manageUnhover: function(event){
+        	var liElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = liElement.data("instancepath");
+        	aIcons.remove();
+        },
+        
+        /**
+         * Register right click event with widget
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
+         */
+        manageLeftClickEvent: function (event) {
+        	var liElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = liElement.data("instancepath");
+        	
+            if (nodeInstancePath != null || undefined) {
+                //Read node from instancepath data property attached to dom element
+                
+                var node = this.dataset.valueDict[nodeInstancePath]["model"];
+                if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
+                	GEPPETTO.Console.executeCommand("G.addWidget(Widgets.TREEVISUALISERDAT).setData(" + node.getPath() + ")");
+                }
+                else{
+                	this.dataset.isDisplayed = false;
+                	if (node.getChildren().length == 0 && node.getHiddenChildren().length > 0){
+        	            node.set({"children": node.getHiddenChildren()});
+        	            for (var childIndex in node.getChildren()){
+        	            	this.prepareTree(this.dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
+        	            }
+        	        
+        	            this.customiseLayout(this.dataset.valueDict[nodeInstancePath]["folder"].domElement);
+        	        }
+                	this.dataset.isDisplayed = true;
+                }
+                
+            }
+        },
+        
+        /**
+         * Register right click event with widget
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
+         */
+        manageRightClickEvent: function (event) {
+        	var liElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = liElement.data("instancepath");
+            if (nodeInstancePath != null || undefined) {
+            	var node = this.dataset.valueDict[nodeInstancePath]["model"];
+            	
+                //Read node from instancepath data property attached to dom element
+                this.showContextMenu(event, node);
+            }
+        },
 
-			if(state instanceof Array){
-				var that = this;
-				$.each(state, function(d){that.setData(state[d], options)})
-			}
-			dataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
-			
-			dataset.valueDict = {};
-			this.prepareTree(this.gui, dataset.data,0);
-			this.datasets.push(dataset);
-			
-			dataset.isDisplayed = true;
-			//Disable input elements
-			$(this.dialog).find("input").prop('disabled', true);
-			$(this.dialog).find(".parameterspecificationnodetv input").prop('disabled', false);
-			
-			//Change input text to textarea
-			var testingSizeElement = $('<div></div>').css({'position': 'absolute', 'float': 'left', 'white-space': 'nowrap', 'visibility': 'hidden'}).appendTo($('body'));
-			$(this.dialog).find('.textmetadatanodetv').find('div > div > input[type="text"]').each(function(){
-				testingSizeElement.text($(this).val());
-				if (testingSizeElement.width() > $(this).width()){
-					$(this).closest('.textmetadatanodetv').addClass('textarea');
-					var textarea = $(document.createElement('textarea')).attr('readonly', true).attr('rows', 2);
-			        textarea.val($(this).val());
-				    $(this).replaceWith(textarea);
-				}
-			});
+        /**
+         * Sets the data used inside the TreeVisualiserDAT for rendering.
+         *
+         * @param {Array} state - Array of variables used to display inside TreeVisualiserDAT
+         * @param {Object} options - Set of options passed to widget to customise it
+         */
+        setData: function (state, options) {
+        	if (state == undefined){
+        		return "Data can not be added to " + this.name + ". Data does not exist in current experiment.";
+        	}
+            labelsInTV = {};
 
-			//return "Metadata or variables to display added to tree visualiser";
-			return this;
-		},
+            // If data is an array, let's iterate and call setdata
+            if (state instanceof Array) {
+                var that = this;
+                $.each(state, function (d) {
+                    that.setData(state[d], options);
+                });
+            }
+            
+            //Call setData for parent class (TreeVisualiser)
+            var currentDataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
+            
+            //Initialise nodes
+            this.initialiseGUIElements(currentDataset);
 
-		/**
-		 * Prepares the tree for painting it on the widget
-		 * 
-		 * @param {Object} parent - Parent tree to paint
-		 * @param {Array} data - Data to paint
-		 */
-		prepareTree : function(parent, data, step) {
-			if (data._metaType != null){
-				if('labelName' in this.options){
-					label = data[this.options.labelName];
-				}else{
-					//TODO: Remove once all getName are implemented in all nodes
-					if (data.getName() === undefined && data.getName() != ""){label = data.getId();}
-					else{label = data.getName();}
-				}
+            return this;
+        },
+        
+        initialiseGUIElements: function(currentDataset){
+        	//Add to data variable
+        	this.dataset.data.push(currentDataset);
+        	
+        	//Generate DAT nodes
+            this.dataset.isDisplayed = false;
+            this.prepareTree(this.gui, currentDataset, 0);
+            this.dataset.isDisplayed = true;
+            
+            // Customise layout: make text field non-editable, convert text field into text area...
+            this.customiseLayout($(this.dialog));
+            
+        },
+        
+        customiseLayout: function(folder){
+        	//Disable input elements
+            $(folder).find("input").prop('disabled', true);
+            
+            //AQP: What should be editable?
+            //$(folder).find(".parameterspecificationnodetv input").prop('disabled', false);
 
-				if (data._metaType == "VariableNode"  | data._metaType == "DynamicsSpecificationNode" | data._metaType == "ParameterSpecificationNode" |
-						data._metaType == "TextMetadataNode" | data._metaType == "FunctionNode" | data._metaType == "HTMLMetadataNode" |
-						data._metaType == "VisualObjectReferenceNode" | data._metaType == "VisualGroupElementNode") {
-					if (!dataset.isDisplayed) {
-						dataset.valueDict[data.instancePath] = new function(){};
-						dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
-						dataset.valueDict[data.instancePath]["controller"] = parent.add(dataset.valueDict[data.instancePath], label).listen();
-						
-						if(data._metaType=="ParameterSpecificationNode")
-						{
-							$(dataset.valueDict[data.instancePath]["controller"].__li).find('div > div > input[type="text"]').change(function(){
-								GEPPETTO.Console.executeCommand(data.instancePath+".setValue(" + $(this).val().split(" ")[0] + ")");
-							});
-						}
-						
-						//Add class to dom element depending on node metatype
-						$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(data._metaType.toLowerCase() + "tv");
-						//Add instancepath as data attribute. This attribute will be used in the event framework
-						$(dataset.valueDict[data.instancePath]["controller"].__li).data("instancepath", data.getInstancePath());
-						
-						//if no values are presentn for a group element,display theh color
-						if (data._metaType == "VisualGroupElementNode" 
-							&& dataset.valueDict[data.instancePath][label] == "null ") {
-							//set label to empty
-							dataset.valueDict[data.instancePath][label] = "";
-							
-							$(dataset.valueDict[data.instancePath]["controller"].__li).addClass(label);
+            //Change textfield to textarea if it is too big
+            $(folder).find('.texttypetv').find('div > div > input[type="text"]').each(function () {
+                testingSizeElement.text($(this).val());
+                if (testingSizeElement.width() > $(this).width()) {
+                    $(this).closest('.texttypetv').addClass('textarea');
+                    var textarea = $(document.createElement('textarea')).attr('readonly', true).attr('rows', 2);
+                    textarea.val($(this).val());
+                    $(this).replaceWith(textarea);
+                }
+            });
+        },
+        
+        /**
+         * Prepares the tree for painting it on the widget
+         *
+         * @param {Object} parent - Parent tree to paint
+         * @param {Array} data - Data to paint
+         */
+        prepareTree: function (parent, data, step) {
+        	
+            if ('labelName' in this.options) {
+                // We need to verify if this is working
+                label = data.getWrappedObj().get(this.options.labelName);
+            } else {
+                label = data.getName();
+            }
+            
+            var children = data.getChildren();
+            var _children = data.getHiddenChildren();
 
-							//apply color to label by getting unique class and using jquery
-							var color = data.getColor().replace("0X","#");
-							$(this.dialog).find("."+label + " .c").css({"background-color": color, "width": "60%", "height": "95%"});
-						}	
+            if (!this.dataset.isDisplayed) {
+
+            	//Ugly hack: DAT doesn't allow nodes with the same name
+            	var isDuplicated = true;
+            	while (isDuplicated) {
+            		isDuplicated = false;
+            		for (var key in labelsInTV){
+            			if (labelsInTV[key] == label){
+            				label = label + " ";
+            				isDuplicated = true;
+            				break;
+            			}
+            		}
+                }
+            	labelsInTV[data.getPath()] = label;
+            	
+                if (children.length > 0 || _children.length > 0) {
+                	this.dataset.valueDict[data.getPath()] = new function () {};
+                	this.dataset.valueDict[data.getPath()]["folder"] = parent.addFolder(labelsInTV[data.getPath()]);
+                	
+                    //Add class to dom element depending on node metatype
+                    $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").addClass(data.getStyle());
+                    //Add instancepath as data attribute. This attribute will be used in the event framework
+                    $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").data("instancepath", data.getPath());
+
+                    var parentFolderTmp = this.dataset.valueDict[data.getPath()]["folder"];
+                    for (var childIndex in children) {
+                        if (!this.dataset.isDisplayed || (this.dataset.isDisplayed && children[childIndex].name != "ModelTree")) {
+                            this.prepareTree(parentFolderTmp, children[childIndex], step);
+                        }
+                    }
+                    
+                    if (data.getBackgroundColors().length > 0){
+                    	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").append($('<a id="backgroundSections">').css({"z-index":1, "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
+	                    for (var index in data.getBackgroundColors()){
+	                    	 var color = data.getBackgroundColors()[index].replace("0X","#");
+	                    	 $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").find('#backgroundSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "background-color": color, "height": "90%"}).html("&nbsp"));
+	                    }
+                    }
+                    
+                    if (data.getValue().length > 0){
+                    	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").css({"position": "relative"});
+                    	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").append($('<a id="contentSections">').css({"z-index":2, "text-align": "center", "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
+	                    for (var index in data.getValue()){
+	                    	 $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").find('#contentSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "height": "90%"}).html(data.getValue()[index]));
+	                    }
+                    }
+                    
+                }
+                else {
+                	this.dataset.valueDict[data.getPath()] = new function () {};
+                	this.dataset.valueDict[data.getPath()][labelsInTV[data.getPath()]] = data.getValue();
+                	this.dataset.valueDict[data.getPath()]["controller"] = parent.add(this.dataset.valueDict[data.getPath()], labelsInTV[data.getPath()]).listen();
+
+                    //Add class to dom element depending on node metatype
+                    $(this.dataset.valueDict[data.getPath()]["controller"].__li).addClass(data.getStyle());
+                    //Add instancepath as data attribute. This attribute will be used in the event framework
+                    $(this.dataset.valueDict[data.getPath()]["controller"].__li).data("instancepath", data.getPath());
+                    
+                    // Execute set value if it is a parameter specification
+                    if(data.getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE)
+					{
+						$(dataset.valueDict[data.getPath()]["controller"].__li).find('div > div > input[type="text"]').change(function(){
+							GEPPETTO.Console.executeCommand(data.getPath() + ".setValue(" + $(this).val().split(" ")[0] + ")");
+						});
 					}
-					else{
-						var set = dataset.valueDict[data.instancePath]["controller"].__gui;
-						if(!set.__ul.closed){
-							dataset.valueDict[data.instancePath][label] = this.getValueFromData(data,step);
-						}
-					}
+                    
+                    
+                    if (data.getBackgroundColors().length > 0){
+	                    var color = data.getBackgroundColors()[0].replace("0X","#");
+	                    $(this.dataset.valueDict[data.getPath()]["controller"].__li).find(".c").css({"background-color": color, "height": "90%"});
+                    }
+                    
+                    
+                }
+                
+                if (this.options.expandNodes){
+                	parent.open();
 				}
-				else{
-					if (!dataset.isDisplayed) {
-						parentFolder = parent.addFolder(label);
-						//Add class to dom element depending on node metatype
-						$(parentFolder.domElement).find("li").addClass(data._metaType.toLowerCase() + "tv");
-						//Add instancepath as data attribute. This attribute will be used in the event framework
-						$(parentFolder.domElement).find("li").data("instancepath", data.getInstancePath());
-						
-						//if no values are presentn for a group element,display theh color
-						if (data._metaType == "VisualGroupNode") {
-							
-							$(parentFolder.domElement).find("li").addClass(label);
-							
-							$(this.dialog).find("."+label).append($('<a>').attr('class',label+"-mean"));
-							$(this.dialog).find("."+label).css("width", "100%");
-							$(this.dialog).find("."+label+"-mean").css({"float": "right", "width": "60%", "height": "90%", "color": "black"});
-
-							if (data.getMinDensity() != null){
-
-								if(data.getMinDensity() != data.getMaxDensity()){
-	
-									var lowHexColor = rgbToHex(255, Math.floor(255), 0);
-									var highHexColor = rgbToHex(255, Math.floor(255 - (255)), 0);
-									var lowcolor = lowHexColor.replace("0X","#");
-									var highcolor = highHexColor.replace("0X","#");
-
-									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-low").append(data.getMinDensity()));
-									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-high").append(data.getMaxDensity()));
-
-									$(this.dialog).find("."+label+"-low").css({"width": "50%", "height": "90%", "text-align": "center", "float": "left", "background-color": lowcolor});
-									$(this.dialog).find("."+label+"-high").css({"width": "50%", "height": "90%", "text-align": "center", "float": "right", "background-color": highcolor});
-									
-								} else {
-									var hex = rgbToHex(255, Math.floor(255 - (255)), 0);
-									var color = hex.replace("0X","#");
-	
-									$(this.dialog).find("."+label+"-mean").append($('<span>').attr('class', label+"-text").append(data.getMinDensity()));
-									$(this.dialog).find("."+label+"-mean").css({"text-align": "center", "background-color": color});
-									$(this.dialog).find("."+label+"-text").css({"width": "60%", "background-color": color});
-								}
-							}	
-						}
+                this.dataset.valueDict[data.getPath()]["model"] = data;
+            }
+            else {
+                if (children.length > 0 || _children.length > 0) {
+                	for (var childIndex in children){
+						this.prepareTree(parent, children[childIndex],step);
 					}
-					var children = data.getChildren();
-					if (children.length > 0){
-						var parentFolderTmp = parentFolder;
-							for (var childIndex in children){
-								if (!dataset.isDisplayed || (dataset.isDisplayed && children[childIndex].name != "ModelTree")){
-									this.prepareTree(parentFolderTmp, children[childIndex],step);
-								}
-							}
-						if (this.options.expandNodes){
-							parentFolderTmp.open();
-						}
-					}
-				}
-			}	
-		},
-		
-		/**
-		 * Updates the data that the TreeVisualiserDAT is rendering
-		 */
-		updateData : function(step) {
-			for ( var key in this.datasets) {
-				dataset = this.datasets[key];
-				if (dataset.variableToDisplay != null) {
-					this.prepareTree(this.gui, dataset.data,step);
-				}
-			}
-		},
-		
-		/**
-		 * Expands or collapses node folder (and all the parent folder until the root node) in the widgets
-		 * 
-		 * @param {Node} node - Geppetto Node which identifies the folder to be expanded/collapsed.
-		 * @param {Boolean} expandEndNode - If true only final node is expanded/collapsed. Otherwise the whole path is expanded/collapsed
-		 */
-		toggleFolder : function(node, expandEndNode) {
-			var instancePath = node.getInstancePath();
-			if (expandEndNode){
-				this.getFolderByInstancePath(instancePath).trigger('click');
-			}
-			else{
-				var nodePathElements = instancePath.split(".");
-				var parentComponent = "";
-				for (var nodePathElementsIndex in nodePathElements){
-					this.getFolderByInstancePath(parentComponent + nodePathElements[nodePathElementsIndex]).trigger('click');
-					parentComponent += nodePathElements[nodePathElementsIndex] + ".";
-				}	
-			}
-		},
-		
-		/**
-		 * Returns li element which corresponds to the instance path
-		 * 
-		 * @param {String} instancePath - Node instance path
-		 */
-		getFolderByInstancePath : function(instancePath){
-			return $(this.dialog).find('li').filterByData('instancepath', instancePath);
-		},
-		
-		/**
-		 * Clear Widget
-		 */
-		reset : function () {
-			this.datasets = [];
-			$(this.dialog).children().remove();
-			this.initDATGUI();
-		},
-		
-		/**
-		 * Refresh data in tree visualiser
-		 */
-		refresh : function (){
-			var currentDatasets = this.datasets; 
-			
-			this.reset();
-			
-			for (var currentDatasetIndex in currentDatasets){
-				this.setData(currentDatasets[currentDatasetIndex].data);
-			}			
-		},
-		
-		initDATGUI : function () { 
-			this.gui = new dat.GUI({
-				width : this.options.width,
-				autoPlace : this.options.autoPlace
-			});
-			
-			this.dialog.append(this.gui.domElement);
-		}	
-		
+                }
+                else if (data.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE){
+                	var set = this.dataset.valueDict[data.getPath()]["controller"].__gui;
+	                if (!set.__ul.closed) {
+	                	this.dataset.valueDict[data.getPath()][labelsInTV[data.getPath()]] = this.treeVisualiserController.getFormattedValue(data.getWrappedObj(), data.getWrappedObj().get("capabilities")[0], step);
+	                }
+                }
+            }
+            
+        },
 
-	});
+        /**
+         * Updates the data that the TreeVisualiserDAT is rendering
+         */
+        updateData: function (step) {
+        	for (var i = 0; i < this.dataset.data.length; i++){
+        		this.prepareTree(this.gui, this.dataset.data[i], step);
+        	}
+        },
+
+        /**
+         * Clear Widget
+         */
+        reset: function () {
+        	this.dataset = {data: [], isDisplayed: false, valueDict: {}};
+            $(this.dialog).children().remove();
+            this.initDATGUI();
+        },
+
+        /**
+         * Refresh data in tree visualiser
+         */
+        refresh: function () {
+            var currentDatasets = this.dataset.data;
+            this.reset();
+            for (var i = 0; i < currentDatasets.length; i++){
+            	this.initialiseGUIElements(currentDatasets[i]);
+        	}
+        },
+
+        /**
+         * Initialising GUI with default values
+         */
+        initDATGUI: function () {
+            this.gui = new dat.GUI({
+                width: this.options.width,
+                autoPlace: this.options.autoPlace
+            });
+
+            this.dialog.append(this.gui.domElement);
+        }
+
+
+    });
 });

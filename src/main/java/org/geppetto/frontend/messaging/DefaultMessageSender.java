@@ -33,6 +33,7 @@
 package org.geppetto.frontend.messaging;
 
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -45,6 +46,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -232,7 +234,7 @@ public class DefaultMessageSender implements MessageSender
 	@Override
 	public void sendMessage(String requestID, OutboundMessages messageType, String update)
 	{
-
+		long start = System.currentTimeMillis();
 		try
 		{
 
@@ -251,6 +253,11 @@ public class DefaultMessageSender implements MessageSender
 		{
 			logger.warn("Failed to send binary message", e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+		}
+		long length = (System.currentTimeMillis() - start);
+		if(length > 5)
+		{
+			logger.info("Sending message to the client took " + length + "ms");
 		}
 	}
 

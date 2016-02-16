@@ -1,6 +1,6 @@
 /**
  * Popovers used as part of GEPPETTO Components
- * 
+ *
  * @mixin TutorialMixin
  */
 define(function (require) {
@@ -17,7 +17,7 @@ define(function (require) {
             }
         },
 
-        destroyPopover: function() {
+        destroyPopover: function () {
             $(this.getDOMNode()).popover('destroy');
         },
 
@@ -25,7 +25,7 @@ define(function (require) {
          * Show Popover
          * @returns {HTML-Element} Created Popover
          */
-        showPopover: function() {
+        showPopover: function () {
             $(this.getDOMNode()).popover({
                 title: this.props.popoverTitle,
                 content: this.props.popoverContent,
@@ -33,7 +33,7 @@ define(function (require) {
                 template: this.props.template
             }).popover('show');
 
-            $(this.getDOMNode()).on('hidden.bs.popover', (function() {
+            $(this.getDOMNode()).on('hidden.bs.popover', (function () {
                 $(this.getDOMNode()).popover('destroy');
             }).bind(this));
         }

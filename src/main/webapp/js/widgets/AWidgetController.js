@@ -36,101 +36,132 @@
  * @module Widgets/Widget
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-define(function(require) {
+define(function (require) {
 
-	var Backbone = require('backbone');
-	var $ = require('jquery');
-	return {
-		/**
-		 * Creates base view for widget
-		 */
-		View: Backbone.View.extend({
+    var Backbone = require('backbone');
+    var $ = require('jquery');
+    return {
+        /**
+         * Creates base view for widget
+         */
+        View: Backbone.View.extend({
 
-			widgets : new Array(),
-			on : true,
-			registeredEvents : null,
+            widgets: [],
+            on: true,
+            registeredEvents: null,
+            comments: [],
 
-			constructor: function() {
-				// Call the original constructor
-				Backbone.View.apply(this, arguments);
-				registeredEvents = new Array();
-			},
+            constructor: function () {
+                // Call the original constructor
+                Backbone.View.apply(this, arguments);
+                registeredEvents = [];
+            },
 
-			/**
-			 * Returns all plotting widgets objects
-			 * 
-			 * @returns {Array} Array containing all plots
-			 */
-			getWidgets: function() {
-				return this.widgets;
-			},
+            /**
+             * Returns all plotting widgets objects
+             *
+             * @returns {Array} Array containing all plots
+             */
+            getWidgets: function () {
+                return this.widgets;
+            },
 
-			/**
-			 * Toggles variable visualiser widget on and off
-			 */
-			toggle: function() {
-				if (this.widgets.length > 0) {
-					this.on = !this.on;
-					for (var w in this.widgets) {
-						var widget = this.widgets[w];
-						if (!this.on) {
-							widget.hide();
-						} else {
-							widget.show();
-						}
-					}
-				}
-			},
+            /**
+             * Toggles variable visualiser widget on and off
+             */
+            toggle: function () {
+                if (this.widgets.length > 0) {
+                    this.on = !this.on;
+                    for (var w in this.widgets) {
+                        var widget = this.widgets[w];
+                        if (!this.on) {
+                            widget.hide();
+                        } else {
+                            widget.show();
+                        }
+                    }
+                }
+            },
 
-			/**
-			 * Removes existing plotting widgets
-			 */
-			removeWidgets: function() {
-				//remove all existing widgets
-				for(var i = 0; i < this.widgets.length; i++) {
-					var widget = this.widgets[i];
+            /**
+             * Removes existing plotting widgets
+             */
+            removeWidgets: function () {
+                //remove all existing widgets
+                for (var i = 0; i < this.widgets.length; i++) {
+                    var widget = this.widgets[i];
 
-					//remove commands 
-					GEPPETTO.Console.removeCommands(widget.getId());
+                    //remove commands
+                    GEPPETTO.Console.removeCommands(widget.getId());
 
-					widget.destroy();
+                    widget.destroy();
 
-					i--;
-				}
+                    i--;
+                }
 
-				this.widgets = new Array();
-			},
+                this.widgets = [];
+            },
 
-			/**
-			 * Get an available id for an specific widget
-			 * 
-			 * @module WidgetUtility
-			 * @param {String} prefix
-			 * @param {Array} widgetsList
-			 * @returns {String} id - Available id for a widget
-			 */
-			getAvailableWidgetId: function(prefix, widgetsList){
-				var index = 0;
-				var id = "";
-				var available;
+            /**
+             * Get an available id for an specific widget
+             *
+             * @module WidgetUtility
+             * @param {String} prefix
+             * @param {Array} widgetsList
+             * @returns {String} id - Available id for a widget
+             */
+            getAvailableWidgetId: function (prefix, widgetsList) {
+                var index = 0;
+                var id = "";
+                var available;
 
-				do{
-					index++;
-					id = prefix + index;
-					available = true;
+                do {
+                    index++;
+                    id = prefix + index;
+                    available = true;
 
-					for(var p in widgetsList){
-						if(widgetsList[p].getId() == id){
-							available = false;
-							break;
-						}
-					}
-				}
-				while (available == false)	
+                    for (var p in widgetsList) {
+                        if (widgetsList[p].getId() == id) {
+                            available = false;
+                            break;
+                        }
+                    }
+                }
+                while (available == false);
 
-					return id;
-			}
-		})
-	};
+                return id;
+            },
+
+            /**
+             * Get the comments of a given widget file through an Ajax call. This is used to extract the comments on the methods
+             * and visualize them when using the help command.
+             *
+             * @param {String} file
+             */
+            getFileComments: function (file) {
+                if (this.comments.length == 0) {
+                    var fetchedComments = [];
+                    //retrieve the script to get the comments for all the methods
+                    $.ajax({
+                        async: false,
+                        type: 'GET',
+                        url: file,
+                        dataType: "text",
+                        //at success, read the file and extract the comments
+                        success: function (data) {
+                            var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+                            fetchedComments = data.match(STRIP_COMMENTS);
+                        },
+                        error: function () {
+                            console.log('error fetching file with Ajax request');
+                        }
+                    });
+
+                    this.comments = fetchedComments;
+                }
+                return this.comments;
+            }
+        })
+    };
 
 });

@@ -64,7 +64,7 @@ define(function (require) {
             //create tree visualiser widget
             var cnt = window[name] = new Connectivity({id: id, name: name, visible: false, width: 500, height: 500});
 
-            //create help command for tree visualiser d3
+            //create help command for connw
             cnt.help = function () {
                 return GEPPETTO.Utility.getObjectCommands(id);
             };

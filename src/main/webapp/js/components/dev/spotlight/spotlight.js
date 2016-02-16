@@ -120,9 +120,9 @@ define(function (require) {
 
 
             //TODO: To be removed, just a sample of how to add a suggestion
-            this.addSuggestion(this.recordSample, GEPPETTO.Resources.RUN_FLOW);
+            //this.addSuggestion(this.recordSample, GEPPETTO.Resources.RUN_FLOW);
             this.addSuggestion(this.plotSample, GEPPETTO.Resources.PLAY_FLOW);
-            this.addSuggestion(this.lightUpSample, GEPPETTO.Resources.PLAY_FLOW);
+            //this.addSuggestion(this.lightUpSample, GEPPETTO.Resources.PLAY_FLOW);
 
         },
 

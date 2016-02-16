@@ -124,7 +124,7 @@ matrices = {
 
        orderCombo.on("change", function (svg) {
            return function () {
-               x.domain(orders[context.value]);
+               x.domain(orders[this.value]);
 
                var t = svg.transition().duration(2500);
                t.selectAll(".row")

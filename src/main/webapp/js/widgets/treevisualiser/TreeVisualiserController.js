@@ -45,6 +45,7 @@ define(function (require) {
     	
 	    	initialize: function (options) {
 	    		this.expandNodes = options.expandNodes;
+	    		this.filterTypes = options.filterTypes;
 	    	},
 
         	/**
@@ -251,7 +252,10 @@ define(function (require) {
                         }
                 	}
                 	else{
-                		return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: this.getFormattedValue(node, node.getType().getMetaType()), style:this.getStyle(node.getType().getMetaType())});
+                		if(this.filterTypes == undefined || this.filterTypes.indexOf(node.getType().getMetaType()) == -1){
+                			return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: this.getFormattedValue(node, node.getType().getMetaType()), style:this.getStyle(node.getType().getMetaType())});
+                		}
+                		return null;
                 	}
                 }
                 else if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE || node.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
@@ -275,12 +279,24 @@ define(function (require) {
             createTreeVisualiserNodeChildren: function (state) {
                 var children = [];
                 if (state.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || state.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE || state.getMetaType() == GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
-                    for (var i = 0; i < state.getChildren().length; i++) {
+                	var numberCompartments = 0;
+                	for (var i = 0; i < state.getChildren().length; i++) {
                         var child = state.getChildren()[i];
-                        var node = this.convertNodeToTreeVisualiserNode(child);
-                        if (node != undefined)
-                            children.push(node);
+                        if (child.getType() != undefined && child.getType().getId() == 'compartment'){
+                        	numberCompartments++;
+                        }
+                        else{
+                        	var node = this.convertNodeToTreeVisualiserNode(child);
+                            if (node != undefined)
+                                children.push(node);
+                        }
+                        
                     }
+                    if (numberCompartments > 0){
+                    	var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({"name": "Number of Compartments", "id": "numberCompartments", "_metaType": "", "path": state.getPath() + ".numberCompartments"});
+                        children.push(this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: numberCompartments, style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
+                    }
+                    
                     if (state.getVisualType() != null){
                     	children.push(this.createTreeVisualiserNode({wrappedObj: state.getVisualType(), _children: this.createTreeVisualiserNodeChildren(state.getVisualType())}))
                     }
@@ -296,12 +312,7 @@ define(function (require) {
                 }
                 else if (state.getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
                     // Size
-                    var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
-                        "name": "Size",
-                        "id": "size",
-                        "_metaType": "",
-                        "path": state.getPath() + ".size"
-                    });
+                    var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({"name": "Size", "id": "size", "_metaType": "", "path": state.getPath() + ".size"});
                     children.push(this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, formattedValue: state.getSize(), style: this.getStyle(GEPPETTO.Resources.TEXT_TYPE)}));
 
                     //Extracting Cell

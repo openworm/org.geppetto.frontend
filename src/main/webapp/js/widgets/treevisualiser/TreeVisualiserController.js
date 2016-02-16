@@ -154,60 +154,62 @@ define(function (require) {
             createVisualisationSubTree: function (compositeVisualType) {
             	var tagsNode = {};
             	var children = [];
-            	for (var i = 0; i < compositeVisualType.getVisualGroups().length; i++) {
-                    var visualGroup = compositeVisualType.getVisualGroups()[i];
-                    
-                    //Create Visual Group Elements for Visual Group
-                    var nodeChildren = [];
-                    for (var j=0; j < visualGroup.getVisualGroupElements().length; j++){
-                    	var visualGroupElement = visualGroup.getVisualGroupElements()[j];
-                    	
-                    	var nodeChild = this.createTreeVisualiserNode({wrappedObj: visualGroupElement, formattedValue: this.getFormattedValue(visualGroupElement, visualGroupElement.getMetaType()),
-                    		style:this.getStyle(visualGroupElement.getMetaType())});
-                    	
-                    	if (visualGroupElement.getColor() != undefined){
-                    		nodeChild.set({"backgroundColors":[visualGroupElement.getColor()]});
-                    	}
-                    	
-                    	nodeChildren.push(nodeChild);
-                    }
-                    
-                    //Create Visual Group and background colors if needed
-                    var node = this.createTreeVisualiserNode({wrappedObj: visualGroup, _children: nodeChildren, style:this.getStyle(visualGroup.getMetaType()), formattedValue: this.getFormattedValue(visualGroup, visualGroup.getMetaType())});
-                    var backgroundColors = [];
-                	if (visualGroup.getLowSpectrumColor() != undefined){
-                		backgroundColors.push(visualGroup.getLowSpectrumColor());
-                	}
-                    if (visualGroup.getHighSpectrumColor() != undefined && visualGroup.getMaxDensity() != undefined && visualGroup.getMinDensity() != visualGroup.getMaxDensity()){
-                		backgroundColors.push(visualGroup.getHighSpectrumColor());
-                	}
-                    if (backgroundColors.length > 0){
-                    	node.set({"backgroundColors":backgroundColors});
-                    }
-                    
-                    // Add to tags folder
-                    if (visualGroup.getTags().length >0){
-	                    for (var j = 0; j < visualGroup.getTags().length; j++){
-	                    	var tag = visualGroup.getTags()[j];
-	                    	if (!(tag in tagsNode)){
-	                    		var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
-	                                name: tag,
-	                                id: tag,
-	                                _metaType: "",
-	                                path: visualGroup.getPath() + "." + tag
-	                            });
-	                    		//AQP: style?
-	                    		tagsNode[tag] = this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, _children: []});
-	                    		children.push(tagsNode[tag]);
+            	if (compositeVisualType.getVisualGroups() != undefined){
+	            	for (var i = 0; i < compositeVisualType.getVisualGroups().length; i++) {
+	                    var visualGroup = compositeVisualType.getVisualGroups()[i];
+	                    
+	                    //Create Visual Group Elements for Visual Group
+	                    var nodeChildren = [];
+	                    for (var j=0; j < visualGroup.getVisualGroupElements().length; j++){
+	                    	var visualGroupElement = visualGroup.getVisualGroupElements()[j];
+	                    	
+	                    	var nodeChild = this.createTreeVisualiserNode({wrappedObj: visualGroupElement, formattedValue: this.getFormattedValue(visualGroupElement, visualGroupElement.getMetaType()),
+	                    		style:this.getStyle(visualGroupElement.getMetaType())});
+	                    	
+	                    	if (visualGroupElement.getColor() != undefined){
+	                    		nodeChild.set({"backgroundColors":[visualGroupElement.getColor()]});
 	                    	}
-	                    	tagsNode[tag].getHiddenChildren().push(node);
+	                    	
+	                    	nodeChildren.push(nodeChild);
 	                    }
-                    }
-                    else{
-                    	children.push(node);
-                    }
-                    
-                }
+	                    
+	                    //Create Visual Group and background colors if needed
+	                    var node = this.createTreeVisualiserNode({wrappedObj: visualGroup, _children: nodeChildren, style:this.getStyle(visualGroup.getMetaType()), formattedValue: this.getFormattedValue(visualGroup, visualGroup.getMetaType())});
+	                    var backgroundColors = [];
+	                	if (visualGroup.getLowSpectrumColor() != undefined){
+	                		backgroundColors.push(visualGroup.getLowSpectrumColor());
+	                	}
+	                    if (visualGroup.getHighSpectrumColor() != undefined && visualGroup.getMaxDensity() != undefined && visualGroup.getMinDensity() != visualGroup.getMaxDensity()){
+	                		backgroundColors.push(visualGroup.getHighSpectrumColor());
+	                	}
+	                    if (backgroundColors.length > 0){
+	                    	node.set({"backgroundColors":backgroundColors});
+	                    }
+	                    
+	                    // Add to tags folder
+	                    if (visualGroup.getTags().length >0){
+		                    for (var j = 0; j < visualGroup.getTags().length; j++){
+		                    	var tag = visualGroup.getTags()[j];
+		                    	if (!(tag in tagsNode)){
+		                    		var treeVisualiserWrappedObject = new TreeVisualiserWrappedObject({
+		                                name: tag,
+		                                id: tag,
+		                                _metaType: "",
+		                                path: visualGroup.getPath() + "." + tag
+		                            });
+		                    		//AQP: style?
+		                    		tagsNode[tag] = this.createTreeVisualiserNode({wrappedObj: treeVisualiserWrappedObject, _children: []});
+		                    		children.push(tagsNode[tag]);
+		                    	}
+		                    	tagsNode[tag].getHiddenChildren().push(node);
+		                    }
+	                    }
+	                    else{
+	                    	children.push(node);
+	                    }
+	                    
+	                }
+            	}	
             	return children;
             },
             

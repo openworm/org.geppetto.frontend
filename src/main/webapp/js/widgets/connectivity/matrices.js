@@ -181,7 +181,7 @@ matrices = {
                    eval(root.getId() + "." + nodes[d.y].id).showConnectionLines(false);
                })
                .on("mouseover", function (d) {
-                   d3.select(context.parentNode.appendChild(context)).transition().duration(100).style({
+                   d3.select(this.parentNode.appendChild(this)).transition().duration(100).style({
                        'stroke-opacity': 1,
                        'stroke': 'white',
                        'stroke-width': '2'
@@ -190,7 +190,7 @@ matrices = {
                    return tooltip.transition().duration(100).text(nodes[d.y].id + " is connected to " + nodes[d.x].id);
                })
                .on("mouseout", function () {
-                   d3.select(context).transition().duration(100).style({'stroke-opacity': 0, 'stroke': 'white'});
+                   d3.select(this).transition().duration(100).style({'stroke-opacity': 0, 'stroke': 'white'});
                    d3.select("body").style('cursor', 'default');
                    return tooltip.text("");
                });

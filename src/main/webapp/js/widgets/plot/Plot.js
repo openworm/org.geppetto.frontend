@@ -694,7 +694,7 @@ define(function (require) {
                     values.push([i]);
                 }
 
-                var plotTitle = plotMetadata["plotTitle"];
+                var plotTitle = plotMetadata["title"];
                 var XAxisLabel = plotMetadata["xAxisLabel"];
                 var YAxisLabel = plotMetadata["yAxisLabel"];
                 //Generate options from metadata information

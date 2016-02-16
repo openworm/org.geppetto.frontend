@@ -19,6 +19,12 @@ define(function(require) {
 					this.setProps({text: 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited'});
 				}
 			}).bind(this), 20000);
+			
+			setTimeout((function(){
+				if(this.isMounted()){
+					this.setProps({text: GEPPETTO.Resources.SPOTLIGHT_HINT});
+				}
+			}).bind(this), 3000);
 		},
 				
 		render: function () {

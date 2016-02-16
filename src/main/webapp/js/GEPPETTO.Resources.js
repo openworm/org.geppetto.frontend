@@ -144,6 +144,8 @@ define(function (require) {
 
             CREATING_SCENE: "Creating scene",
 
+            SPOTLIGHT_HINT: "Do you know you can rapidly access the data once it gets loaded using Ctrl+Space?",
+            
             LOADING_SIMULATION_SLOW: "Still loading, but things are taking longer than expected, are you on low bandwidth?",
 
             SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",

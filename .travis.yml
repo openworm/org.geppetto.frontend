@@ -4,7 +4,7 @@ before_script:
     - npm install -g bower
 
 install:
-    - git clone https://github.com/openworm/org.geppetto.model.git -b development
+    - git clone https://github.com/openworm/org.geppetto.model.git -b $TRAVIS_BRANCH
     - cd org.geppetto.model
     - mvn install
     - cd ..

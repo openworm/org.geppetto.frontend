@@ -50,7 +50,7 @@ require.config({
         "chords": "widgets/connectivity/chords",
         "hives": "widgets/connectivity/hives",
         "matrices": "widgets/connectivity/matrices",
-        "forces": "widgets/connectivity/forces",
+        "forces": "widgets/connectivity/forces"
     }
 });
 

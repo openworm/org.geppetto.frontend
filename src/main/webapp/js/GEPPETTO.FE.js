@@ -286,7 +286,7 @@ define(function (require) {
                 // create head row with titles of info displayed in new table
                 // used for
                 // showing expandable row
-                var head = $("<thead class='experimentsTableColumn'>" + "<tr><th style='width:215px;'></th>" + "<th>Aspect</th><th>Simulator</th>" + "<th>TimeStep (s)</th><th>Length (s)</th></thead>");
+                var head = $("<thead class='experimentsTableColumn'>" + "<tr><th style='width:215px;'></th>" + "<th>Instance</th><th>Simulator</th>" + "<th>TimeStep (s)</th><th>Length (s)</th></thead>");
                 head.appendTo(expandableTable);
 
                 // populate expandable table with rows for each simulator

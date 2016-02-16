@@ -46,13 +46,16 @@
 require.config({
     paths: {
         "d3": "widgets/connectivity/vendor/d3",
-        "d3.hive": "widgets/connectivity/vendor/d3.hive.v0"
+        "d3.hive": "widgets/connectivity/vendor/d3.hive.v0",
+        "chords": "widgets/connectivity/chords"
     }
 });
 
 var reqs = [];
 reqs.push("d3");
 reqs.push("d3.hive");
+reqs.push("chords");
+
 
 define("d3.global", ["d3"], function (_) {
     d3 = _;
@@ -61,6 +64,7 @@ define("d3.global", ["d3"], function (_) {
 require(reqs, function (d3) {
     window.d3 = d3;
     window.d3.hive = d3.hive;
+    window.chords = chords;
     loadCss("geppetto/js/widgets/connectivity/Connectivity.css");
 
 });

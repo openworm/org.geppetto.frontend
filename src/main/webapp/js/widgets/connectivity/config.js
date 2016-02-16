@@ -48,7 +48,8 @@ require.config({
         "d3": "widgets/connectivity/vendor/d3",
         "d3.hive": "widgets/connectivity/vendor/d3.hive.v0",
         "chords": "widgets/connectivity/chords",
-        "hives": "widgets/connectivity/hives"
+        "hives": "widgets/connectivity/hives",
+        "matrices": "widgets/connectivity/matrices"
     }
 });
 
@@ -57,6 +58,7 @@ reqs.push("d3");
 reqs.push("d3.hive");
 reqs.push("chords");
 reqs.push("hives");
+reqs.push("matrices");
 
 
 define("d3.global", ["d3"], function (_) {
@@ -68,6 +70,7 @@ require(reqs, function (d3) {
     window.d3.hive = d3.hive;
     window.chords = chords;
     window.hives = hives;
+    window.matrices = matrices;
     loadCss("geppetto/js/widgets/connectivity/Connectivity.css");
 
 });

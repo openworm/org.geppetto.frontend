@@ -174,56 +174,6 @@ define(function (require) {
             }
         },
 
-//        generateChordMatrix: function () {
-//            var that = this;
-//            var matrix = [];
-//
-//            var type2type = {};
-//
-//            // {type_i: {postType_j: counts, ...}, ...}
-//            var typesZeros = _.map(this.dataset.nodeTypes, function (type) {
-//                return [type, 0]
-//            });
-//            this.dataset.nodeTypes.forEach(function (type) {
-//                var initCounts = _.object(typesZeros);
-//                var linksFromType = _.filter(that.dataset.links, function (link) {
-//                    return that.dataset.nodes[link.source].type === type
-//                });
-//                type2type[type] = _.extend(initCounts, _.countBy(linksFromType, function (link) {
-//                    return that.dataset.nodes[link.target].type
-//                }));
-//            });
-//
-//            var numNodesOfType = _.countBy(this.dataset.nodes, function (node) {
-//                return node.type
-//            });
-//            //unconnected nodes of all types
-//            var discNodes = _.filter(this.dataset.nodes, function (node) {
-//                return node.degree == 0
-//            });
-//            var numDiscByType = _.countBy(discNodes, function (node) {
-//                return node.type
-//            });
-//
-//            this.dataset.nodeTypes.forEach(function (type, idx, nodeTypes) {
-//                var numConn = [];
-//                nodeTypes.forEach(function (innerType) {
-//                    //normalization should be optional
-//                    //numConn.push[type2type.innerType] / numNodesOfType[type];
-//                    numConn.push(type2type[type][innerType]);
-//                });
-//                numConn.push(numDiscByType[type] ? numDiscByType[type] : 0);
-//                matrix.push(numConn);
-//            });
-//            // row of zeros for unconnected nodes
-//            var zeroes = [];
-//            for (var i = 0; i <= this.dataset.nodeTypes.length; i++) {
-//                zeroes.push(0)
-//            }
-//            matrix.push(zeroes);
-//            return matrix;
-//        },
-
         //TODO: move force, hive, matrix to objects
         createLayout: function () {
             $('#' + this.id + " svg").remove();
@@ -238,7 +188,7 @@ define(function (require) {
 
             switch (this.options.layout) {
                 case 'matrix':
-                    this.createMatrixLayout();
+                    matrices.createMatrixLayout(this);
                     break;
                 case 'force':
                     this.createForceLayout();
@@ -529,6 +479,7 @@ define(function (require) {
                     });
             }
         },
+
 
         createLegend: function (id, colorScale, position, title) {
 

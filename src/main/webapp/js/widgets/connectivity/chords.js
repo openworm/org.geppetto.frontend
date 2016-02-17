@@ -151,13 +151,13 @@ chords = {
         var numNodesOfType = _.countBy(context.dataset.nodes, function (node) {
             return node.type
         });
-        //unconnected nodes of all types
-        var discNodes = _.filter(context.dataset.nodes, function (node) {
-            return node.degree == 0
-        });
-        var numDiscByType = _.countBy(discNodes, function (node) {
-            return node.type
-        });
+//        //unconnected nodes of all types
+//        var discNodes = _.filter(context.dataset.nodes, function (node) {
+//            return node.degree == 0
+//        });
+//        var numDiscByType = _.countBy(discNodes, function (node) {
+//            return node.type
+//        });
 
         context.dataset.nodeTypes.forEach(function (type, idx, nodeTypes) {
             var numConn = [];
@@ -166,15 +166,15 @@ chords = {
                 //numConn.push[type2type.innerType] / numNodesOfType[type];
                 numConn.push(type2type[type][innerType]);
             });
-            numConn.push(numDiscByType[type] ? numDiscByType[type] : 0);
+//            numConn.push(numDiscByType[type] ? numDiscByType[type] : 0);
             matrix.push(numConn);
         });
-        // row of zeros for unconnected nodes
-        var zeroes = [];
-        for (var i = 0; i <= context.dataset.nodeTypes.length; i++) {
-            zeroes.push(0)
-        }
-        matrix.push(zeroes);
+//        // row of zeros for unconnected nodes
+//        var zeroes = [];
+//        for (var i = 0; i <= context.dataset.nodeTypes.length; i++) {
+//            zeroes.push(0)
+//        }
+//        matrix.push(zeroes);
         return matrix;
     },
 

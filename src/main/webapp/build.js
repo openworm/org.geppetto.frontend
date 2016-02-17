@@ -13,6 +13,9 @@
 		react: 'vendor/react',
 		jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
+    	handlebars: "vendor/handlebars",
+    	typeahead: "vendor/typeahead.jquery",
+        bloodhound: "vendor/bloodhound",
         text: 'vendor/text',
         pako:'vendor/pako.min',
         mathjs:'vendor/math.min'

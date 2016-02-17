@@ -4,14 +4,18 @@
 
 
 chords = {
+    settings : {
+        cmap : d3.scale.category20()
+    },
+
     createChordLayout : function (context) {
         var matrix = this.generateChordMatrix(context);
 
         var innerRadius = Math.min(context.options.innerWidth, context.options.innerHeight) * .41,
             outerRadius = innerRadius * 1.05;
 
-        var fill = d3.scale.category20()
-            .domain(d3.range(context.dataset.nodeTypes.length));
+        var fill = this.settings.cmap
+                    .domain(context.dataset.nodeTypes);
 
         var svg = context.svg.append("g")
             .attr("transform", "translate(" + context.options.innerWidth / 2 + "," + context.options.innerHeight / 2 + ")");
@@ -20,15 +24,18 @@ chords = {
             .padding(.05)
             .matrix(matrix);
 
+        chord.groups().forEach(function(g, i){g.id = context.dataset.nodeTypes[i]});
 
-        svg.append("g").selectAll("path")
+        var slice = svg.append("g").selectAll("path")
             .data(chord.groups)
           .enter().append("path")
-            .style("fill", function (d) { return fill(d.index); })
-            .style("stroke", function (d) { return fill(d.index); })
+            .style("fill", function (d) { return fill(d.id); })
+            .style("stroke", function (d) { return fill(d.id); })
             .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
             .on("mouseover", fade_over(.1))
             .on("mouseout", fade_out(1));
+
+        slice.append("title").text(function (d) { return d.id; });
 
         if(context.options.ticks){
             var ticks = svg.append("g").selectAll("g")
@@ -71,8 +78,10 @@ chords = {
             .data(chord.chords)
           .enter().append("path")
             .attr("d", function(d, i){return chords.svg_asymChord().radius(innerRadius)(d, i)})
-            .style("fill", function (d) {return fill(d.target.index);})
+            .style("fill", function (d) {return fill(context.dataset.nodeTypes[d.target.index]);})
             .style("opacity", 1);
+
+        this.createLegend(context);
 
 
         function groupTicks(d) {
@@ -111,6 +120,15 @@ chords = {
 
     },
 
+    createLegend: function(context){
+        var nodeTypeScale = this.settings.cmap
+                                .domain(context.dataset.nodeTypes);
+        var legendPosition = {x: 0.77 * context.options.innerWidth, y: 0};
+
+        //Nodes
+        context.createLegend('legend', nodeTypeScale, legendPosition, 'Populations');
+    },
+
     generateChordMatrix : function (context) {
         var matrix = [];
 
@@ -133,13 +151,13 @@ chords = {
         var numNodesOfType = _.countBy(context.dataset.nodes, function (node) {
             return node.type
         });
-        //unconnected nodes of all types
-        var discNodes = _.filter(context.dataset.nodes, function (node) {
-            return node.degree == 0
-        });
-        var numDiscByType = _.countBy(discNodes, function (node) {
-            return node.type
-        });
+//        //unconnected nodes of all types
+//        var discNodes = _.filter(context.dataset.nodes, function (node) {
+//            return node.degree == 0
+//        });
+//        var numDiscByType = _.countBy(discNodes, function (node) {
+//            return node.type
+//        });
 
         context.dataset.nodeTypes.forEach(function (type, idx, nodeTypes) {
             var numConn = [];
@@ -148,15 +166,15 @@ chords = {
                 //numConn.push[type2type.innerType] / numNodesOfType[type];
                 numConn.push(type2type[type][innerType]);
             });
-            numConn.push(numDiscByType[type] ? numDiscByType[type] : 0);
+//            numConn.push(numDiscByType[type] ? numDiscByType[type] : 0);
             matrix.push(numConn);
         });
-        // row of zeros for unconnected nodes
-        var zeroes = [];
-        for (var i = 0; i <= context.dataset.nodeTypes.length; i++) {
-            zeroes.push(0)
-        }
-        matrix.push(zeroes);
+//        // row of zeros for unconnected nodes
+//        var zeroes = [];
+//        for (var i = 0; i <= context.dataset.nodeTypes.length; i++) {
+//            zeroes.push(0)
+//        }
+//        matrix.push(zeroes);
         return matrix;
     },
 
@@ -270,7 +288,7 @@ chords = {
                 index: di,
                 startAngle: x0,
                 endAngle: x,
-                value: (x - x0) / k
+                value: (x - x0) / k,
               };
             x += padding;
           }

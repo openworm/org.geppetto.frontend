@@ -44,7 +44,17 @@
         'vendor/stats.min': ["jquery"],
         'vendor/Detector': ["jquery"],
         'vendor/jquery.cookie': ["jquery"],
-        'vendor/rAF': ["jquery"]
+        'vendor/rAF': ["jquery"],
+        typeahead: {
+            deps: ['jquery'],
+            init: function ($) {
+                return require.s.contexts._.registry['typeahead.js'].factory($);
+            }
+        },
+        bloodhound: {
+            deps: ['jquery'],
+            exports: 'Bloodhound'
+        }
     },
     name : "main",
     waitSeconds : 200,

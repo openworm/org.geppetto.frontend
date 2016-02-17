@@ -24,15 +24,18 @@ chords = {
             .padding(.05)
             .matrix(matrix);
 
+        chord.groups().forEach(function(g, i){g.id = context.dataset.nodeTypes[i]});
 
-        svg.append("g").selectAll("path")
+        var slice = svg.append("g").selectAll("path")
             .data(chord.groups)
           .enter().append("path")
-            .style("fill", function (d) { return fill(context.dataset.nodeTypes[d.index]); })
-            .style("stroke", function (d) { return fill(context.dataset.nodeTypes[d.index]); })
+            .style("fill", function (d) { return fill(d.id); })
+            .style("stroke", function (d) { return fill(d.id); })
             .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
             .on("mouseover", fade_over(.1))
             .on("mouseout", fade_out(1));
+
+        slice.append("title").text(function (d) { return d.id; });
 
         if(context.options.ticks){
             var ticks = svg.append("g").selectAll("g")
@@ -285,7 +288,7 @@ chords = {
                 index: di,
                 startAngle: x0,
                 endAngle: x,
-                value: (x - x0) / k
+                value: (x - x0) / k,
               };
             x += padding;
           }

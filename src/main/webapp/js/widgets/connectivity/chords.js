@@ -344,7 +344,9 @@ chords = {
         function chord(d, i) {
           var s = subgroup(this, source, d, i), t = subgroup(this, target, d, i);
           //var [s_p0s, s_p1s] = shift_radius(s)
-          var [t_p0s, t_p1s] = shift_radius(t)
+          var shifted = shift_radius(t);
+          var t_p0s = shifted[0];
+          var t_p1s = shifted[1];
 
           return "M" + s.p0
                      + arc(s.r, s.p1, s.a1 - s.a0)

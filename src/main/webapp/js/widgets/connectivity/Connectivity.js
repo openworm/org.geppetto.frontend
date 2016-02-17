@@ -51,11 +51,9 @@ define(function (require) {
             width: 660,
             height: 500,
             layout: "matrix", //[matrix, force, hive, chord]
-            //TODO: Those are not sane defaults.
-            //      Once things have types, we should ideally use sthing like  x.getType()
             nodeType: function (node) {
                 if (node instanceof Instance) {
-                    return node.getId().split('_')[0];
+                    return node.getType().getId();
                 } else {
                     return node.getPath().split('_')[0];
                 }

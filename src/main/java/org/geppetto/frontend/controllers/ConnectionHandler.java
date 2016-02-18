@@ -316,30 +316,38 @@ public class ConnectionHandler
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
 
-		try
+		if(geppettoProject.isVolatile())
 		{
-			geppettoManager.setWatchedVariables(variables, experiment, geppettoProject, watch);
+			info(requestID, Resources.VOLATILE_PROJECT.toString());
+			return;
 		}
-		catch(GeppettoExecutionException | GeppettoAccessException e)
+		else
 		{
-			error(e, "Error setting watched variables");
-		}
-
-		// serialize watch-lists
-		ObjectMapper mapper = new ObjectMapper();
-		String serializedLists;
-
-		try
-		{
-			serializedLists = mapper.writer().writeValueAsString(variables);
-
-			// send to the client the watch lists were added
-			websocketConnection.sendMessage(requestID, OutboundMessages.WATCHED_VARIABLES_SET, serializedLists);
-		}
-		catch(JsonProcessingException e)
-		{
-			error(e, "There was an error serializing the watched lists");
-		}
+			try
+			{
+				geppettoManager.setWatchedVariables(variables, experiment, geppettoProject, watch);
+			}
+			catch(GeppettoExecutionException | GeppettoAccessException e)
+			{
+				error(e, "Error setting watched variables");
+			}
+	
+			// serialize watch-lists
+			ObjectMapper mapper = new ObjectMapper();
+			String serializedLists;
+	
+			try
+			{
+				serializedLists = mapper.writer().writeValueAsString(variables);
+	
+				// send to the client the watch lists were added
+				websocketConnection.sendMessage(requestID, OutboundMessages.WATCHED_VARIABLES_SET, serializedLists);
+			}
+			catch(JsonProcessingException e)
+			{
+				error(e, "There was an error serializing the watched lists");
+			}
+		}	
 
 	}
 

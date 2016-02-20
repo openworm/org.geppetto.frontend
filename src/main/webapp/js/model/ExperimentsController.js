@@ -268,7 +268,6 @@ define(function (require) {
 
 
                 }
-                ;
             }
             ,
 

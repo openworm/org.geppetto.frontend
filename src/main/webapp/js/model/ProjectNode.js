@@ -313,7 +313,7 @@ define(['jquery', 'underscore', 'backbone',
             parameters["format"] = format;
             GEPPETTO.MessageSocket.send("download_model", parameters);
 
-            var formatMessage = (format=="")?"default format":format
+            var formatMessage = (format=="")?"default format":format;
             return GEPPETTO.Resources.DOWNLOADING_MODEL + formatMessage;
         },
 

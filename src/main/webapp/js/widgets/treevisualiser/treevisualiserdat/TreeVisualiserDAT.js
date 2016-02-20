@@ -233,7 +233,6 @@ define(function (require) {
          * @param {Array} data - Data to paint
          */
         prepareTree: function (parent, data, step) {
-
         	
             if ('labelName' in this.options) {
                 // We need to verify if this is working
@@ -339,6 +338,7 @@ define(function (require) {
 	                }
                 }
             }
+            
         },
 
         /**

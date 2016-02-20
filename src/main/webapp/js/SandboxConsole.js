@@ -643,12 +643,12 @@ define(function (require) {
                     else if (message == "commandsSuggestions") {
                         item._class = "commandsSuggestions";
                     }
-
                     history.push(item);
 
                     // Update the history state and save the model
                     this.model.set('history', history);
                     this.model.trigger('update:console');
+                    this.model.save();
                 },
 
                 // Evaluate a command and save it to history

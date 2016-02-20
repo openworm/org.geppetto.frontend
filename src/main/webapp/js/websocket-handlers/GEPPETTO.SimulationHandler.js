@@ -167,27 +167,6 @@ define(function (require) {
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function (payload) {
             GEPPETTO.Console.log("The model parameters were successfully updated.");
 
-            /*Matteo: This is not needed, the value in the nodes is changed right when calling setValue on them.
-             * This would be needed in case setParameter was used directly
-             * var update = JSON.parse(payload.update_model_tree);
-             for (var updateIndex in update){
-             //retrieve aspect path and modeltree
-             var aspectInstancePath = update[updateIndex].aspectInstancePath;
-             var modelTree = update[updateIndex].ModelTree;
-             //get parameters sent for active experiment
-             var parameters = Project.getActiveExperiment().parameters;
-             for(var key in parameters){;
-             //find client node for parameter
-             var node = eval(parameters[key]);
-             //get name of node
-             var name = node.getId();
-             //get new server node from model tree
-             var newNode = eval("modelTree."+name);
-             //apply to client node new value
-             node.setValue(newNode.value);
-             }
-             }*/
-
         };
 
         //received supported outputs from server

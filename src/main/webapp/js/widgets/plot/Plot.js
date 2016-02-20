@@ -450,7 +450,7 @@ define(function (require) {
             if (!this.labelsUpdated) {
                 var unit = this.datasets[key].variable.getUnit();
                 if (unit != null) {
-                    var labelY = this.inhomogeneousUnits ? "Inhomogeneous" : this.getUnitLabel(unit);
+                    var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
                     var labelX = this.getUnitLabel(window.Instances.time.getUnit());
                     this.setAxisLabel(labelY, labelX);
                     this.labelsUpdated = true;
@@ -694,7 +694,7 @@ define(function (require) {
                     values.push([i]);
                 }
 
-                var plotTitle = plotMetadata["plotTitle"];
+                var plotTitle = plotMetadata["title"];
                 var XAxisLabel = plotMetadata["xAxisLabel"];
                 var YAxisLabel = plotMetadata["yAxisLabel"];
                 //Generate options from metadata information

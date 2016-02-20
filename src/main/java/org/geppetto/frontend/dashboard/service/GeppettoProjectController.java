@@ -103,7 +103,7 @@ public class GeppettoProjectController
 						Zipper zipper = new Zipper(PathConfiguration.createExperimentTmpPath(Scope.CONNECTION, projectId, experimentId, null, "results.zip"));
 						for(IAspectConfiguration ac : e.getAspectConfigurations())
 						{
-							URL result = (geppettoManager.downloadResults(ac.getAspect().getInstancePath(), ResultsFormat.RAW, e, e.getParentProject()));
+							URL result = (geppettoManager.downloadResults(ac.getInstance(), ResultsFormat.RAW, e, e.getParentProject()));
 							zipper.addToZip(result);
 						}
 

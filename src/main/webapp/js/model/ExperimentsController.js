@@ -220,6 +220,8 @@ define(function (require) {
 
                 // clean instance tree state
                 GEPPETTO.ModelFactory.cleanupInstanceTreeState();
+
+                this.playExperimentReady = false;
             }
             ,
 

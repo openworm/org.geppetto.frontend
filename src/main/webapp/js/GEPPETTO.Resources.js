@@ -118,7 +118,7 @@ define(function (require) {
 
             PROJECT_LOADED: "Project loaded",
 
-            MMODEL_LOADED: "Model loaded",
+            MODEL_LOADED: "The model for the current project has been loaded",
 
             EXPERIMENT_CREATED: "New experiment created",
 
@@ -128,7 +128,7 @@ define(function (require) {
 
             EXPERIMENT_PAUSED: "Experiment Paused",
 
-            UNABLE_TO_PAUSE_EXPERIMENT: "Simulation not running, must run simulation first",
+            UNABLE_TO_PAUSE_EXPERIMENT: "Simulation is not running. You must run a simulation first",
 
             EXPERIMENT_STOP: "Simulation Stopped",
 
@@ -144,7 +144,9 @@ define(function (require) {
 
             CREATING_SCENE: "Creating scene",
 
-            LOADING_SIMULATION_SLOW: "Still loading, but things are taking longer than expected, are you on low bandwidth?",
+            SPOTLIGHT_HINT: "Did you know you can rapidly access the data once it gets loaded using Ctrl+Space?",
+            
+            LOADING_SIMULATION_SLOW: "Still loading, but things are taking longer than expected. Do you have a low bandwidth connection?",
 
             SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
 
@@ -152,9 +154,9 @@ define(function (require) {
 
             SIMULATION_UNSPECIFIED: "Simulation not specified",
 
-            SIMULATION_ALREADY_STOPPED: "Simulation was already stopped",
+            SIMULATION_ALREADY_STOPPED: "Simulation has already been stopped",
 
-            SIMULATION_ALREADY_STARTED: "Simulation was already started",
+            SIMULATION_ALREADY_STARTED: "Simulation has already been started",
 
             LOADING_FROM_CONTENT: "Outbound Message Sent: Load Simulation from editing console",
 
@@ -166,7 +168,7 @@ define(function (require) {
 
             MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
 
-            MESSAGE_OUTBOUND_SET_WATCHED_VARIABLES: 'Outbund Message Sent: add variables to watch',
+            MESSAGE_OUTBOUND_SET_WATCHED_VARIABLES: 'Outbound Message Sent: add variables to watch',
 
             MESSAGE_OUTBOUND_CLEAR_WATCH: 'Outbund Message Sent: clear watch lists',
 
@@ -296,7 +298,7 @@ define(function (require) {
 
             INCOMING_MESSAGE: "Incoming message...",
 
-            ERROR: "Houston, we have a problem",
+            ERROR: "Houston, we have a problem...",
 
             INVALID_WATCH_LIST: "Invalid Watch List",
 
@@ -321,7 +323,7 @@ define(function (require) {
 
             ALL_COMMANDS_AVAILABLE_MESSAGE: "The following commands are available in the Geppetto console.",
 
-            GEPPETTO_VERSION_HOLDER: "geppetto v$1 is ready",
+            GEPPETTO_VERSION_HOLDER: "Geppetto v$1 is ready",
 
             SIMULATOR_UNAVAILABLE: " is Unavailable",
 
@@ -344,21 +346,21 @@ define(function (require) {
             HIGHLIGHTING: "Highlighting object ",
             NO_REFERENCES_TO_HIGHLIGHT: "Connection has no Visual References to highlight.",
             ENTITY_ALREADY_SELECTED: "Entity already selected",
-            ENTITY_NOT_SELECTED: "Entity not selected, can't uselect what it isn't selected.",
+            ENTITY_NOT_SELECTED: "Entity not selected, can't unselect what it isn't selected.",
             SELECTING_ASPECT: "Selecting aspect ",
             DESELECTING_ASPECT: "Deselecting aspect ",
             SHOW_ASPECT: "Showing aspect ",
             HIDE_ASPECT: "Hiding aspect ",
             ZOOM_TO_ASPECT: "Zooming to aspect ",
             ASPECT_ALREADY_SELECTED: "Aspect already selected",
-            ASPECT_NOT_SELECTED: "Aspect not selected, can't uselect what it isn't selected.",
+            ASPECT_NOT_SELECTED: "Aspect not selected, can't unselect what it isn't selected.",
             SHOWING_VISUAL_GROUPS: "Showing visual group ",
             HIDING_VISUAL_GROUPS: "Hiding visual group ",
             NO_VISUAL_GROUP_ELEMENTS: "No elements inside visual group to show ",
             MISSING_PARAMETER: "Command is missing parameter.",
             BATCH_SELECTION: "Batch selection performed",
             BATCH_DESELECTION: "Batch deselection performed",
-            BATCH_SET_GEOMETRY: "Batch ser geometry performed",
+            BATCH_SET_GEOMETRY: "Batch set geometry performed",
             BATCH_HIGHLIGHT_CONNECTIONS: "Batch highlight connections performed",
             BATCH_SHOW_CONNECTIONS_LINES: "Batch show/hide connection lines performed",
             OPERATION_NOT_SUPPORTED: "Operation not supported: ",
@@ -397,7 +399,7 @@ define(function (require) {
              */
             IDLE_MESSAGE: "Are you still there?",
 
-            DISCONNECT_MESSAGE: "A prolonged inactivity has been detected and you have been disconnected from Geppetto. Please refresh your browser if you wish to continue",
+            DISCONNECT_MESSAGE: "Prolonged inactivity has been detected and you have been disconnected from Geppetto. Please refresh your browser if you wish to continue",
 
             /**
              * Socket Messages

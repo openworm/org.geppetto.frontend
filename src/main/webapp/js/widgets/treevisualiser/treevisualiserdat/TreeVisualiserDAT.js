@@ -183,12 +183,13 @@ define(function (require) {
                     that.setData(state[d], options);
                 });
             }
-            
-            //Call setData for parent class (TreeVisualiser)
-            var currentDataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
-            
-            //Initialise nodes
-            this.initialiseGUIElements(currentDataset);
+            else{
+	            //Call setData for parent class (TreeVisualiser)
+	            var currentDataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
+	            
+	            //Initialise nodes
+	            this.initialiseGUIElements(currentDataset);
+        	}
 
             return this;
         },

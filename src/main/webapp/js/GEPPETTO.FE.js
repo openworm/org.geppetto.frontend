@@ -414,7 +414,7 @@ define(function (require) {
                 // Handle edits to editable fields
                 $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
                     if (e.keyCode == 13) {
-                        e.preventDefault();
+                        e.preventDefault(e);
                         $(this).blur();
 
                         // without this somehow the carriage return makes it

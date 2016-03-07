@@ -41,6 +41,7 @@ import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.DefaultGeppettoDataManager;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IUser;
+import org.geppetto.core.data.model.IUserGroup;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -90,14 +91,19 @@ public class UserResource
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
-	public @ResponseBody IUser addNewUser(@RequestParam String username, @RequestParam String password)
+	public @ResponseBody IUser addNewUser(@RequestParam String username, @RequestParam String password, @RequestParam(required=false) long userGroupId)
 	{
 		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
 
 		IUser user;
 		if(!manager.isDefault())
 		{
-			return manager.getUserByLogin(username);
+			user = manager.getUserByLogin(username);
+			if (user == null){
+				IUserGroup userGroup = manager.getUserGroupById(userGroupId);
+				user = manager.newUser(username, password, true, userGroup);
+			}
+			
 		}
 		else
 		{

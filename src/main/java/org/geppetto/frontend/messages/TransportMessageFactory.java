@@ -85,9 +85,6 @@ public class TransportMessageFactory {
 				break;	
 			case READ_URL_PARAMETERS:
 				break;
-			case SIMULATOR_FULL:
-				params.add(new SimpleEntry<String, String>("message",  (update!=null) ? update : EMPTY_STRING));
-				break;
 			case PROJECT_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
@@ -133,18 +130,12 @@ public class TransportMessageFactory {
 			case WATCHED_VARIABLES_SET:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.WATCHED_VARIABLES_SET.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
-			case GET_MODEL_TREE:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
 			case UPDATE_MODEL_TREE:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.UPDATE_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_SUPPORTED_OUTPUTS:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SUPPORTED_OUTPUTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;				
-			case GET_SIMULATION_TREE:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SIMULATION_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
 				break;

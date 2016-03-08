@@ -58,6 +58,7 @@ import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.ResultsFormat;
+import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.GeppettoSerializer;
@@ -68,6 +69,7 @@ import org.geppetto.frontend.Resources;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.model.ExperimentState;
 import org.geppetto.model.ModelFormat;
+import org.geppetto.model.variables.Variable;
 import org.geppetto.simulation.manager.GeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -303,6 +305,34 @@ public class ConnectionHandler
 	}
 
 	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param experimentId
+	 * @param dataSourceServiceId
+	 * @param variableId
+	 */
+	public void fetchVariable(String requestID, Long projectId, Long experimentId, String dataSourceServiceId, String variableId)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+		try
+		{
+			Variable variable = geppettoManager.fetchVariable(dataSourceServiceId, variableId, experiment, geppettoProject);
+			// TODO How to send the types if they are not anonymous?
+			websocketConnection.sendMessage(requestID, OutboundMessages.VARIABLE_FETCHED, GeppettoSerializer.serializeToJSON(variable));
+		}
+		catch(GeppettoDataSourceException e)
+		{
+			error(e, "Error fetching variable " + variableId);
+		}
+		catch(IOException e)
+		{
+			error(e, "Error fetching variable " + variableId);
+		}
+
+	}
+
+	/**
 	 * Adds watch lists with variables to be watched
 	 * 
 	 * @param requestID
@@ -331,15 +361,15 @@ public class ConnectionHandler
 			{
 				error(e, "Error setting watched variables");
 			}
-	
+
 			// serialize watch-lists
 			ObjectMapper mapper = new ObjectMapper();
 			String serializedLists;
-	
+
 			try
 			{
 				serializedLists = mapper.writer().writeValueAsString(variables);
-	
+
 				// send to the client the watch lists were added
 				websocketConnection.sendMessage(requestID, OutboundMessages.WATCHED_VARIABLES_SET, serializedLists);
 			}
@@ -347,7 +377,7 @@ public class ConnectionHandler
 			{
 				error(e, "There was an error serializing the watched lists");
 			}
-		}	
+		}
 
 	}
 

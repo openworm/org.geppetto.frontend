@@ -91,6 +91,7 @@ require.config({
         'widgets/plot/vendor/jquery.flot.min': ['jquery'],
         'widgets/plot/vendor/jquery.flot.resize.min': ['widgets/plot/vendor/jquery.flot.min'],
         'widgets/plot/vendor/jquery.flot.axislabels.min': ['widgets/plot/vendor/jquery.flot.min'],
+        'geppetto': ['three'],
         'QUnit': {
             exports: 'QUnit',
             deps: ['geppetto'],
@@ -101,19 +102,19 @@ require.config({
         },
         'QUnitPersistenceTests':{
         	exports: 'QUnitPersistenceTests',
-            deps: ['geppetto','three']
+            deps: ['geppetto']
         },
         'QUnitNeuronalTests':{
         	exports: 'QUnitNeuronalTests',
-            deps: ['geppetto','three']
+            deps: ['geppetto']
         },
         'QUnitFluidDynamicsTests':{
         	exports: 'QUnitFluidDynamicsTests',
-            deps: ['geppetto','three']
+            deps: ['geppetto']
         },
         'QUnitGeppettoCoreTests':{
         	exports: 'QUnitGeppettoCoreTests',
-            deps: ['geppetto','three']
+            deps: ['geppetto']
         }
         
 

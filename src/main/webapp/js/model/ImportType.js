@@ -32,19 +32,15 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent top level Geppetto model.
+ * Client class use to represent an array type.
  *
- * @module model/GeppettoModel
+ * @module model/ImportType
  * @author Giovanni Idili
  */
 define(function (require) {
-    var ObjectWrapper = require('model/ObjectWrapper');
+    var Type = require('model/Type');
 
-    return ObjectWrapper.Model.extend({
-        variables: [],
-        libraries: [],
-        dataSources: [],
-        id: '',
+    return Type.extend({
 
         /**
          * Initializes this node with passed attributes
@@ -52,71 +48,47 @@ define(function (require) {
          * @param {Object} options - Object with options attributes to initialize node
          */
         initialize: function (options) {
-            this.set({"variables": (options.variables != undefined) ? options.variables : []});
-            this.set({"libraries": (options.libraries != undefined) ? options.libraries : []});
-            this.set({"dataSources": (options.dataSources != undefined) ? options.dataSources : []});
-            this.set({"id": options.id});
             this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
-            this.set({"_metaType": options._metaType});
+
+            // capability list is for private use
+            this.set({"capabilities": []});
         },
 
         /**
-         * Get the id associated with node
+         * Get type for array type
          *
-         * @command Node.getId()
-         * @returns {String} ID of node
+         * @command ImportType.getUrl()
+         *
+         * @returns {String}
+         *
          */
-        getId: function () {
-            return this.get('id');
+        getUrl: function () {
+            return this.getWrappedObj().url;
         },
 
         /**
-         * Get variables
+         * Get type for array type
          *
-         * @command GeppettoModel.getVariables()
+         * @command ImportType.getReferenceUrl()
          *
-         * @returns {List<Variable>} - List of Variable objects
+         * @returns {String}
          *
          */
-        getVariables: function () {
-            return this.get('variables');
+        getReferenceUrl: function () {
+            return this.getWrappedObj().referenceURL;
         },
 
         /**
-         * Get libraries
+         * Get type for array type
          *
-         * @command GeppettoModel.getLibraries()
+         * @command ImportType.getModelInterpreterId()
          *
-         * @returns {List<Library>} - List of library objects
-         *
-         */
-        getLibraries: function () {
-            return this.get('libraries');
-        },
-
-        /**
-         * Get datasources
-         *
-         * @command GeppettoModel.getDataSources()
-         *
-         * @returns {List<DataSource>} - List of datasource objects
+         * @returns {String}
          *
          */
-        getDataSources: function () {
-            return this.get('dataSources');
-        },
-
-        /**
-         * Get combined list of all children
-         *
-         * @command GeppettoModel.getChildren()
-         *
-         * @returns {List<Object>} - List of children
-         *
-         */
-        getChildren: function () {
-            return this.get("variables").concat(this.get("libraries").concat(this.get("dataSources")));
+        getModelInterpreterId: function () {
+            return this.getWrappedObj().modelInterpreterId;
         },
     });
 });

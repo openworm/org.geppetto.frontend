@@ -32,19 +32,15 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent top level Geppetto model.
+ * Client class use to represent a library that contains a set of types.
  *
- * @module model/GeppettoModel
+ * @module model/Datasource
  * @author Giovanni Idili
  */
 define(function (require) {
     var ObjectWrapper = require('model/ObjectWrapper');
 
     return ObjectWrapper.Model.extend({
-        variables: [],
-        libraries: [],
-        dataSources: [],
-        id: '',
 
         /**
          * Initializes this node with passed attributes
@@ -52,71 +48,108 @@ define(function (require) {
          * @param {Object} options - Object with options attributes to initialize node
          */
         initialize: function (options) {
-            this.set({"variables": (options.variables != undefined) ? options.variables : []});
-            this.set({"libraries": (options.libraries != undefined) ? options.libraries : []});
-            this.set({"dataSources": (options.dataSources != undefined) ? options.dataSources : []});
-            this.set({"id": options.id});
             this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
-            this.set({"_metaType": options._metaType});
+
+            // capability list is for private use
+            this.set({"capabilities": []});
         },
 
-        /**
-         * Get the id associated with node
-         *
-         * @command Node.getId()
-         * @returns {String} ID of node
-         */
-        getId: function () {
-            return this.get('id');
-        },
 
         /**
-         * Get variables
+         * Get url for this datasource
          *
-         * @command GeppettoModel.getVariables()
+         * @command Datasource.getUrl()
          *
-         * @returns {List<Variable>} - List of Variable objects
+         * @returns {String} - datasource url as string
          *
          */
-        getVariables: function () {
-            return this.get('variables');
+        getUrl: function () {
+            return this.getWrappedObj().url;
         },
 
         /**
-         * Get libraries
+         * Get datasource service for this datasource
          *
-         * @command GeppettoModel.getLibraries()
+         * @command Datasource.getDatasourceService()
          *
-         * @returns {List<Library>} - List of library objects
+         * @returns {String} - datasource service id as string
          *
          */
-        getLibraries: function () {
-            return this.get('libraries');
+        getDatasourceService: function () {
+            return this.getWrappedObj().dataSourceService;
         },
 
         /**
-         * Get datasources
+         * Get library configurations for this datasource
          *
-         * @command GeppettoModel.getDataSources()
+         * @command Datasource.getLibraryConfigurations()
          *
-         * @returns {List<DataSource>} - List of datasource objects
+         * @returns {List<Object>} - datasource service id as string
          *
          */
-        getDataSources: function () {
-            return this.get('dataSources');
+        getLibraryConfigurations: function () {
+            return this.getWrappedObj().libraryConfigurations;
         },
 
         /**
-         * Get combined list of all children
+         * Get queries for this datasource
          *
-         * @command GeppettoModel.getChildren()
+         * @command Datasource.getQueries()
+         *
+         * @returns {List<Object>} - datasource service id as string
+         *
+         */
+        getQueries: function () {
+            return this.getWrappedObj().queries;
+        },
+
+        /**
+         * Get dependencies library
+         *
+         * @command Datasource.getDependenciesLibrary()
+         *
+         * @returns {Object} - dependency library object
+         *
+         */
+        getDependenciesLibrary: function () {
+            return this.getWrappedObj().dependenciesLibrary;
+        },
+
+        /**
+         * Get target library
+         *
+         * @command Datasource.getTargetLibrary()
+         *
+         * @returns {Object} - target library object
+         *
+         */
+        getTargetLibrary: function () {
+            return this.getWrappedObj().targetLibrary;
+        },
+
+        /**
+         * Get fetch variable query
+         *
+         * @command Datasource.getFetchVariableQuery()
+         *
+         * @returns {Object} - fetch variable query
+         *
+         */
+        getFetchVariableQuery: function () {
+            return this.getWrappedObj().fetchVariableQuery;
+        },
+
+        /**
+         * Get combined children
+         *
+         * @command Datasource.getChildren()
          *
          * @returns {List<Object>} - List of children
          *
          */
         getChildren: function () {
-            return this.get("variables").concat(this.get("libraries").concat(this.get("dataSources")));
+            return this.getWrappedObj().libraryConfigurations.concat(this.getWrappedObj().queries.concat([this.getWrappedObj().fetchVariableQuery]));
         },
     });
 });

@@ -66,6 +66,23 @@ define(function (require) {
                             To use this feature add the query string paramater <a className="label label-default">load_project_from_id=PROJECT_ID</a>, where
                             <a className="label label-default">PROJECT_ID</a> corresponds to the ID of the project you want to load.
                             </p>
+			    <h4>Colours Coding and Connected Elements</h4>
+                            <p>The following colour chart demonstrates the colour coding of
+                            each of the connected elements.</p>
+                            <h5 style="color:#002266">Something Else Selected</h5>
+                            <p></p>
+                            <h5 style="color:#00ffff">Default Unselected</h5>
+                            <p></p>
+                            <h5 style="color:#ffd700">Selected</h5>
+                            <p></p>
+                            <h5 style="color:#ffffff">Input to Selected</h5>
+                            <p></p>
+                            <h5 style="color:#ff8c00">Output to Selected</h5>
+                            <p></p>
+                            <h5 style="color:#ff0000">Default Highlighted</h5>
+                            <p></p>
+                            <h5 style="color:#00ff00">Input and Output to Selected</h5>
+                            <p></p>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn" data-dismiss="modal" >Close</button>

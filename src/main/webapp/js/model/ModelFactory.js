@@ -43,6 +43,7 @@ define(function (require) {
         var Library = require('model/Library');
         var Type = require('model/Type');
         var Variable = require('model/Variable');
+        var Datasource = require('model/Datasource');
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');
         var ArrayType = require('model/ArrayType');
@@ -85,8 +86,14 @@ define(function (require) {
                 if (jsonModel.eClass == 'GeppettoModel') {
                     geppettoModel = this.createModel(jsonModel);
                     this.geppettoModel = geppettoModel;
+
+                    // TODO: test this uncomment / create datasources
+                    // geppettoModel.set({"datasources": this.createDatasources(jsonModel.dataSources, geppettoModel)});
+
+                    // create variables
                     geppettoModel.set({"variables": this.createVariables(jsonModel.variables, geppettoModel)});
 
+                    // create libraries
                     for (var i = 0; i < jsonModel.libraries.length; i++) {
                         var library = this.createLibrary(jsonModel.libraries[i]);
                         library.set({"parent": geppettoModel});
@@ -273,6 +280,25 @@ define(function (require) {
                 });
 
                 return pointerElement;
+            },
+
+            /**
+             * Creates datasources starting from an array of datasources in the json model format
+             */
+            createDatasources: function (jsonDataSources, parent) {
+                // TODO: test/fix this
+                var dataSources = [];
+
+                if (jsonDataSources != undefined) {
+                    for (var i = 0; i < jsonDataSources.length; i++) {
+                        var ds = this.createDatasource(jsonDataSources[i]);
+                        ds.set({"parent": parent});
+
+                        dataSources.push(variable);
+                    }
+                }
+
+                return dataSources;
             },
 
             /**
@@ -1122,6 +1148,18 @@ define(function (require) {
                 return v;
             },
 
+            /** Creates a datasource */
+            createDatasource: function (node, options) {
+                if (options == null || options == undefined) {
+                    options = {wrappedObj: node};
+                }
+
+                var d = new Datasource(options);
+                // TODO: set datasource specific stuff as needed
+
+                return d;
+            },
+
             /** Creates a type node */
             createType: function (node, options) {
                 if (options == null || options == undefined) {
@@ -1427,21 +1465,6 @@ define(function (require) {
             },
 
             /**
-             * Get all POTENTIAL instances starting with a given string and ending with another string
-             */
-            getAllPotentialInstancesWith: function (startingString,endingString) {
-                var matchingPotentialInstances = [];
-
-                for (var i = 0; i < this.allPaths.length; i++) {
-                    if (this.allPaths[i].path.startsWith(startingString) && this.allPaths[i].path.endsWith(endingString)  && this.allPaths[i].path.indexOf("*") == -1) {
-                        matchingPotentialInstances.push(this.allPaths[i].path);
-                    }
-                }
-
-                return matchingPotentialInstances;
-            },
-
-            /**
              * Get all types of given a meta type (string)
              *
              * @param metaType - metaType String
@@ -1559,15 +1582,13 @@ define(function (require) {
              *
              * @returns {Array}
              */
-            getAllVariablesOfMetaType: function (typesToSearch, metaType, recursive, variables) {
-            	if (variables == undefined)
-            		 variables = [];
-            	// check if array and if not "make it so"
+            getAllVariablesOfMetaType: function (typesToSearch, metaType) {
+                // check if array and if not "make it so"
                 if (!(typesToSearch.constructor === Array)) {
                     typesToSearch = [typesToSearch];
                 }
 
-                
+                var variables = [];
 
                 for (var i = 0; i < typesToSearch.length; i++) {
                     if (typesToSearch[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
@@ -1579,11 +1600,7 @@ define(function (require) {
                                     if (varTypes[x].getMetaType() == metaType) {
                                         variables.push(nestedVariables[j]);
                                     }
-                                    if (recursive){
-                                    	this.getAllVariablesOfMetaType(varTypes[x], metaType, recursive, variables);
-                                    }
                                 }
-                                
                             }
                         } else {
                             variables = variables.concat(nestedVariables);

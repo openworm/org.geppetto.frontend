@@ -43,7 +43,7 @@ define(function (require) {
     return ObjectWrapper.Model.extend({
         variables: [],
         libraries: [],
-        dataSources: [],
+        datasources: [],
         id: '',
 
         /**
@@ -54,7 +54,7 @@ define(function (require) {
         initialize: function (options) {
             this.set({"variables": (options.variables != undefined) ? options.variables : []});
             this.set({"libraries": (options.libraries != undefined) ? options.libraries : []});
-            this.set({"dataSources": (options.dataSources != undefined) ? options.dataSources : []});
+            this.set({"datasources": (options.datasources != undefined) ? options.datasources : []});
             this.set({"id": options.id});
             this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
@@ -98,13 +98,13 @@ define(function (require) {
         /**
          * Get datasources
          *
-         * @command GeppettoModel.getDataSources()
+         * @command GeppettoModel.getDatasources()
          *
-         * @returns {List<DataSource>} - List of datasource objects
+         * @returns {List<Datasource>} - List of datasource objects
          *
          */
-        getDataSources: function () {
-            return this.get('dataSources');
+        getDatasources: function () {
+            return this.get('datasources');
         },
 
         /**
@@ -116,7 +116,7 @@ define(function (require) {
          *
          */
         getChildren: function () {
-            return this.get("variables").concat(this.get("libraries").concat(this.get("dataSources")));
+            return this.get("variables").concat(this.get("libraries").concat(this.get("datasources")));
         },
     });
 });

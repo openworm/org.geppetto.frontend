@@ -59,10 +59,10 @@ define(function (require) {
                 }
             },
             linkWeight: function (conn) {
-                return 1
+                return 1;
             },
             linkType: function (conn) {
-                return 1
+                return 1;
             }
         },
 
@@ -133,7 +133,6 @@ define(function (require) {
 
                         var source = connectionVariable.getA();
                         var target = connectionVariable.getB();
-                        //AQP: Where is the error?
                         var sourceId = source.getElements()[source.getElements().length - 1].getPath();
                         var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
@@ -150,10 +149,10 @@ define(function (require) {
         // this is very rough, we should think about directionality and weights...
         calculateNodeDegrees: function (normalize) {
             var indegrees = _.countBy(this.dataset.links, function (link) {
-                return link.source
+                return link.source;
             });
             var outdegrees = _.countBy(this.dataset.links, function (link) {
-                return link.target
+                return link.target;
             });
             var maxDeg = 1;
             this.dataset.nodes.forEach(function (node, idx) {
@@ -197,7 +196,7 @@ define(function (require) {
                 case 'chord':
                     //TODO: ugly preprocessing here...
                     this.calculateNodeDegrees(false);
-                    chords.createChordLayout(this)
+                    chords.createChordLayout(this);
                     break;
             }
         },

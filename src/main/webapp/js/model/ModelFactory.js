@@ -1175,6 +1175,7 @@ define(function (require) {
                 var t = new ArrayType(options);
                 t.set({"size": node.size});
                 t.set({"type": node.arrayType});
+                t.set({"superType": node.superType});
 
                 return t;
             },
@@ -1520,7 +1521,7 @@ define(function (require) {
              *
              * @returns {Array}
              */
-            getAllVariablesOfType: function (typesToSearch, typeToMatch) {
+            getAllVariablesOfType: function (typesToSearch, typeToMatch, recursive, variables) {
                 // check if array and if not "make it so"
                 if (!(typesToSearch.constructor === Array)) {
                     typesToSearch = [typesToSearch];
@@ -1537,6 +1538,9 @@ define(function (require) {
                                 for (var x = 0; x < varTypes.length; x++) {
                                     if (varTypes[x] == typeToMatch || varTypes[x].getSuperType() == typeToMatch) {
                                         variables.push(nestedVariables[j]);
+                                    }
+                                    if (recursive){
+                                    	this.getAllVariablesOfType(varTypes[x], typeToMatch, recursive, variables);
                                     }
                                 }
                             }

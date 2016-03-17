@@ -149,7 +149,8 @@ define(function (require) {
          *
          */
         getChildren: function () {
-            return this.getWrappedObj().libraryConfigurations.concat(this.getWrappedObj().queries.concat([this.getWrappedObj().fetchVariableQuery]));
+            // TODO: return children once they are model objects
+            //return this.getWrappedObj().libraryConfigurations.concat(this.getWrappedObj().queries.concat([this.getWrappedObj().fetchVariableQuery]));
         },
     });
 });

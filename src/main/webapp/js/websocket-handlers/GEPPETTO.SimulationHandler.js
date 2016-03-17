@@ -298,9 +298,13 @@ define(function (require) {
              * @param datasourceId
              */
             fetchVariable: function(variableId, datasourceId) {
-                // TODO: grab project ID
-                // TODO: grab experiment ID
-                // TODO: send fetchVariable message to socket with parameters
+                var params = {};
+                params["experimentId"] = Project.getActiveExperiment().getId();
+                params["projectId"] = Project.getId();
+                params["variableId"] = variableId;
+                params["dataSourceServiceId"] = datasourceId;
+
+                GEPPETTO.MessageSocket.send("fetch_variable", params);
             },
 
             /**

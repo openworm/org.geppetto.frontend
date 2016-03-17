@@ -152,5 +152,14 @@ define(function (require) {
             // TODO: return children once they are model objects
             //return this.getWrappedObj().libraryConfigurations.concat(this.getWrappedObj().queries.concat([this.getWrappedObj().fetchVariableQuery]));
         },
+
+        /**
+         * Fetch variable and add to Geppetto model given variable id
+         *
+         * @param variableId
+         */
+        fetchVariable: function (variableId){
+            // TODO: implement
+        }
     });
 });

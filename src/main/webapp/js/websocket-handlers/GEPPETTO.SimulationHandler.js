@@ -48,6 +48,7 @@ define(function (require) {
             EXPERIMENT_CREATED: "experiment_created",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
+            VARIABLE_FETCHED: "variable_fetched",
             PLAY_EXPERIMENT: "play_experiment",
             SET_WATCHED_VARIABLES: "set_watched_variables",
             WATCHED_VARIABLES_SET: "watched_variables_set",
@@ -99,6 +100,10 @@ define(function (require) {
             }
         };
 
+        messageHandler[messageTypes.VARIABLE_FETCHED] = function (payload) {
+            GEPPETTO.SimulationHandler.addVariableToModel(payload);
+        };
+
         messageHandler[messageTypes.PLAY_EXPERIMENT] = function (payload) {
 
             var experimentState = JSON.parse(payload.update);
@@ -146,7 +151,6 @@ define(function (require) {
 
         };
 
-
         messageHandler[messageTypes.EXPERIMENT_DELETED] = function (payload) {
             GEPPETTO.SimulationHandler.deleteExperiment(payload);
         };
@@ -155,13 +159,11 @@ define(function (require) {
             GEPPETTO.Console.log("The list of variables to watch was successfully updated.");
         };
 
-
         //handles the case where service doesn't support feature and shows message
         messageHandler[messageTypes.NO_FEATURE] = function () {
             //Updates the simulation controls visibility
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.NO_FEATURE, payload.message);
         };
-
 
         //received model tree from server
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function (payload) {
@@ -174,7 +176,6 @@ define(function (require) {
             var supportedOutputs = JSON.parse(payload.get_supported_outputs);
             GEPPETTO.Console.log(supportedOutputs);
         };
-
 
         messageHandler[messageTypes.PROJECT_PROPS_SAVED] = function (payload) {
             GEPPETTO.Console.log("Project saved succesfully");
@@ -191,15 +192,19 @@ define(function (require) {
         messageHandler[messageTypes.DOWNLOAD_RESULTS] = function (payload) {
             GEPPETTO.Console.log("Results downloaded succesfully");
         };
+
         messageHandler[messageTypes.DOWNLOAD_MODEL] = function (payload) {
             GEPPETTO.Console.log("Model downloaded succesfully");
         };
+
         messageHandler[messageTypes.RESULTS_UPLOADED] = function (payload) {
             GEPPETTO.Console.log("Results uploaded succesfully");
         };
+
         messageHandler[messageTypes.MODEL_UPLOADED] = function (payload) {
             GEPPETTO.Console.log("Model uploaded succesfully");
         };
+
         GEPPETTO.SimulationHandler = {
             onMessage: function (parsedServerMessage) {
                 // parsed message has a type and data fields - data contains the payload of the message
@@ -284,6 +289,29 @@ define(function (require) {
 
                 console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);
                 GEPPETTO.trigger("hide:spinner");
+            },
+
+            /**
+             * Fetch variable
+             *
+             * @param variableId
+             * @param datasourceId
+             */
+            fetchVariable: function(variableId, datasourceId) {
+                // TODO: grab project ID
+                // TODO: grab experiment ID
+                // TODO: send fetchVariable message to socket with parameters
+            },
+
+            /**
+             * Adds fetched variable to model
+             *
+             * @param payload
+             */
+            addVariableToModel: function(payload){
+                // TODO: parse payload
+                // TODO: create variable object
+                // TODO: add variable to model
             },
 
             /**

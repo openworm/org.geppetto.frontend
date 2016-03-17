@@ -87,8 +87,8 @@ define(function (require) {
                     geppettoModel = this.createModel(jsonModel);
                     this.geppettoModel = geppettoModel;
 
-                    // TODO: test this uncomment / create datasources
-                    // geppettoModel.set({"datasources": this.createDatasources(jsonModel.dataSources, geppettoModel)});
+                    // create datasources
+                    geppettoModel.set({"datasources": this.createDatasources(jsonModel.dataSources, geppettoModel)});
 
                     // create variables
                     geppettoModel.set({"variables": this.createVariables(jsonModel.variables, geppettoModel)});
@@ -286,7 +286,6 @@ define(function (require) {
              * Creates datasources starting from an array of datasources in the json model format
              */
             createDatasources: function (jsonDataSources, parent) {
-                // TODO: test/fix this
                 var dataSources = [];
 
                 if (jsonDataSources != undefined) {
@@ -294,7 +293,7 @@ define(function (require) {
                         var ds = this.createDatasource(jsonDataSources[i]);
                         ds.set({"parent": parent});
 
-                        dataSources.push(variable);
+                        dataSources.push(ds);
                     }
                 }
 

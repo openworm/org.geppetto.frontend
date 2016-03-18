@@ -313,6 +313,8 @@ define(function (require) {
              * @param payload
              */
             addVariableToModel: function(payload){
+                var rawVariable = JSON.parse(payload.variable_fetched);
+
                 // TODO: parse payload
                 // TODO: create variable object
                 // TODO: add variable to model

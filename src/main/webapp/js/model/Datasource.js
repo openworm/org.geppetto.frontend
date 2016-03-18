@@ -149,7 +149,7 @@ define(function (require) {
          *
          */
         getChildren: function () {
-            // TODO: return children once they are model objects
+            // TODO: return contained children once they are model objects (lib config / queries)
             //return this.getWrappedObj().libraryConfigurations.concat(this.getWrappedObj().queries.concat([this.getWrappedObj().fetchVariableQuery]));
         },
 
@@ -159,7 +159,7 @@ define(function (require) {
          * @param variableId
          */
         fetchVariable: function (variableId){
-            // TODO: implement
+            GEPPETTO.SimulationHandler.fetchVariable(variableId, this.getDatasourceService());
         }
     });
 });

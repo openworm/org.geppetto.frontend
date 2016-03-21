@@ -48,10 +48,8 @@ define(function (require) {
         //connect to socket again for next test
         GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
        
-//        if (currentTestIndex < 20){
         currentTestIndex++;
-        addQUnitTest(tests[currentTestIndex]);
-//        }
+        addQUnitTest();
     }
     
     function readTextFile(file)
@@ -66,31 +64,21 @@ define(function (require) {
     	            {
     	                var allText = rawFile.responseText;
     	                tests = JSON.parse(allText);
-    	                //for (var i = 0; i<testFile.length; i++){
-    	                //for (var i = 0; i<10; i++){
-    	                	//window.setTimeout(addQUnitTest(testFile[i]),10000);
-    	                //}
-
-    	             // once off on the first test to establish connection
+  
+    	                // once off on the first test to establish connection
     	                resetConnection();
-						addQUnitTest(tests[currentTestIndex]);
+						addQUnitTest();
     	            }
     	        }
     	    };
     	    rawFile.send(null);
-    	    
-    	    
-    	
-       
     }
     
-    function addQUnitTest(simulationFile){
-    	QUnit.module("Test Project 1 - " + simulationFile);
-        QUnit.test("Test Project 1 - " + simulationFile, function ( assert ) {
+    function addQUnitTest(){
+    	QUnit.module("Test Project " + currentTestIndex + " - " + tests[currentTestIndex]);
+        QUnit.test("Test Project " + currentTestIndex + " - " + tests[currentTestIndex], function ( assert ) {
 
             var done = assert.async();
-            
-
             var handler = {
                 onMessage: function (parsedServerMessage) {
                     // Switch based on parsed incoming message type
@@ -151,7 +139,7 @@ define(function (require) {
 
             GEPPETTO.MessageSocket.clearHandlers();
             GEPPETTO.MessageSocket.addHandler(handler);
-            window.Project.loadFromURL(simulationFile);
+            window.Project.loadFromURL(tests[currentTestIndex]);
         });
     }
 

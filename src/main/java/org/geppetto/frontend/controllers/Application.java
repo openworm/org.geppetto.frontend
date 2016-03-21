@@ -1,5 +1,12 @@
 package org.geppetto.frontend.controllers;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,10 +19,15 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DefaultGeppettoDataManager;
 import org.geppetto.core.manager.IGeppettoManager;
+import org.geppetto.core.utilities.URLReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.gson.Gson;
 
 @Controller
 public class Application
@@ -93,10 +105,25 @@ public class Application
 		return "dist/GeppettoNeuronalTests";
 	}
 	
-	@RequestMapping(value = "/GeppettoNeuronalSimulationTests.html", method = RequestMethod.GET)
-	public String testNeuronalSimulation()
+	@RequestMapping(value = "/GeppettoNeuronalCustomTests.html", method = RequestMethod.GET)
+	public String testNeuronalCustom()
 	{
-		return "dist/GeppettoNeuronalSimulationTests";
+		return "dist/GeppettoNeuronalCustomTests";
+	}
+	
+	@RequestMapping(value = "/geppettotestingprojects", method = RequestMethod.GET)
+	public @ResponseBody Collection<String> getTestingProjects(@RequestParam String urlString) throws IOException
+	{
+		URL url = URLReader.getURL(urlString);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+		TestingProjects testingProjects = new Gson().fromJson(reader, TestingProjects.class);
+		return testingProjects.files;
+	}
+
+	static class TestingProjects
+	{
+
+		List<String> files;
 	}
 	
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)

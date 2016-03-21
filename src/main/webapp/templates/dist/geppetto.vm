@@ -22,8 +22,8 @@
     window.BUNDLE_CONTEXT_PATH = path;
     }
     window.USE_SSL = false;
-    window.EMBEDDED = false;
-    window.EMBEDDEDURL = "/";
+    window.EMBEDDED = true;
+    window.EMBEDDEDURL = "http://127.0.0.1:3000/";
     </script>
     
     <script>

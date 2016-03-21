@@ -153,7 +153,7 @@ public class Application
 	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)
 	public String tests()
 	{
-		return "dist/Tests";
+		return "dist/tests";
 	}
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)

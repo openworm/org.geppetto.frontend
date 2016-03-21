@@ -435,7 +435,7 @@ define(function (require) {
             },
 
             /**
-             * Adds variable to Geppetto model
+             * Adds top level variable to Geppetto model
              *
              * @param rawVariable
              */
@@ -443,7 +443,7 @@ define(function (require) {
                 // create variable
                 var variable = this.createVariable(rawVariable, {wrappedObj: rawVariable, "parent": this.geppettoModel});
 
-                // check if variable with given path already exists in model
+                // check if top level variable with given path already exists in model
                 var newVarPath = variable.getPath();
                 var alreadyExists = false;
                 for(var i=0; i<this.geppettoModel.getVariables().length; i++){

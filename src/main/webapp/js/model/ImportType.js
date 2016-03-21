@@ -90,5 +90,14 @@ define(function (require) {
         getModelInterpreterId: function () {
             return this.getWrappedObj().modelInterpreterId;
         },
+
+        /**
+         * Trigger type resolution - will cause this import type to get swapped with an actual type
+         *
+         * @command ImportType.resolve()
+         */
+        resolve: function() {
+            // TODO: call resolve on simulation handler passing parameters
+        }
     });
 });

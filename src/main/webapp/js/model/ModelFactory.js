@@ -440,9 +440,19 @@ define(function (require) {
              * @param rawVariable
              */
             addVariable: function (rawVariable){
-                // TODO: create variable
-                // TODO: add to raw json model
-                // TODO: add to Geppetto model
+                // create variable
+                var variable = this.createVariable(rawVariable, {wrappedObj: rawVariable, "parent": this.geppettoModel});
+
+                // TODO: add to raw json geppetto model
+
+                // add to Geppetto model
+                this.geppettoModel.variables.push(variable);
+
+                // populate shortcuts
+                this.populateChildrenShortcuts(variable);
+
+                // populate type references in variable
+                this.populateTypeReferences(variable, this.geppettoModel);
             },
 
             /**

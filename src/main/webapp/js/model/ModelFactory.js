@@ -342,9 +342,13 @@ define(function (require) {
                             // inject visual capability to all CompositeVisualType
                             type.extendApi(AVisualCapability);
                         }
+                        else if(jsonTypes[i].eClass == 'ImportType') {
+                            type = this.createImportType(jsonTypes[i]);
+                        }
                         else if (jsonTypes[i].eClass == 'ArrayType') {
                             type = this.createArrayType(jsonTypes[i]);
-                        } else {
+                        }
+                        else {
                             type = this.createType(jsonTypes[i]);
                             // inject visual capability if MetaType == VisualType
                             if (type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) {
@@ -1192,7 +1196,7 @@ define(function (require) {
                 return d;
             },
 
-            /** Creates a type node */
+            /** Creates a type */
             createType: function (node, options) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
@@ -1203,6 +1207,17 @@ define(function (require) {
                 t.set({"superType": node.superType});
 
                 return t;
+            },
+
+            /** Creates an import type */
+            createImportType: function (node, options) {
+                if (options == null || options == undefined) {
+                    options = {wrappedObj: node};
+                }
+
+                var it = new Type(options);
+
+                return it;
             },
 
             /** Creates a composite type */

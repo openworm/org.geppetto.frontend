@@ -315,9 +315,9 @@ define(function (require) {
             addVariableToModel: function(payload){
                 var rawVariable = JSON.parse(payload.variable_fetched);
 
-                // TODO: parse payload
-                // TODO: create variable object
-                // TODO: add variable to model
+                GEPPETTO.ModelFactory.addVariable(rawVariable);
+
+                GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ADDED);
             },
 
             /**

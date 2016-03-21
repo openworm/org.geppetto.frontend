@@ -120,11 +120,13 @@ define(function (require) {
 
             MODEL_LOADED: "The model for the current project has been loaded",
 
+            VARIABLE_ADDED: "A variable has been added to the Geppetto model",
+
             EXPERIMENT_CREATED: "New experiment created",
 
             EXPERIMENT_DELETED: "Experiment Deleted",
 
-            UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
+            UNABLE_TO_START_EXPERIMENT: "Experiment can't be started",
 
             EXPERIMENT_PAUSED: "Experiment Paused",
 

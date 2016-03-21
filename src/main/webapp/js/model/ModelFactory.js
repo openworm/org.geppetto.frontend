@@ -435,6 +435,17 @@ define(function (require) {
             },
 
             /**
+             * Adds variable to Geppetto model
+             *
+             * @param rawVariable
+             */
+            addVariable: function (rawVariable){
+                // TODO: create variable
+                // TODO: add to raw json model
+                // TODO: add to Geppetto model
+            },
+
+            /**
              * Adds instances to a list of existing instances. It will expand the instance tree if it partially exists or create it if doesn't.
              * NOTE: instances will only be added if a matching variable can be found in the GeppettoModel
              */

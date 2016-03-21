@@ -443,16 +443,28 @@ define(function (require) {
                 // create variable
                 var variable = this.createVariable(rawVariable, {wrappedObj: rawVariable, "parent": this.geppettoModel});
 
-                // TODO: add to raw json geppetto model
+                // check if variable with given path already exists in model
+                var newVarPath = variable.getPath();
+                var alreadyExists = false;
+                for(var i=0; i<this.geppettoModel.getVariables().length; i++){
+                    if(this.geppettoModel.getVariables()[i].getPath() === newVarPath){
+                        alreadyExists = true;
+                    }
+                }
 
-                // add to Geppetto model
-                this.geppettoModel.variables.push(variable);
+                if(!alreadyExists) {
+                    // add raw variable to raw json geppetto model
+                    this.geppettoModel.getWrappedObj().variables.push(rawVariable);
 
-                // populate shortcuts
-                this.populateChildrenShortcuts(variable);
+                    // add to Geppetto model wrapper
+                    this.geppettoModel.variables.push(variable);
 
-                // populate type references in variable
-                this.populateTypeReferences(variable, this.geppettoModel);
+                    // populate shortcuts
+                    this.populateChildrenShortcuts(variable);
+
+                    // populate type references in variable
+                    this.populateTypeReferences(variable, this.geppettoModel);
+                }
             },
 
             /**

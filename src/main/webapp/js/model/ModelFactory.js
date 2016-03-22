@@ -82,9 +82,13 @@ define(function (require) {
              *
              * @returns {GeppettoModel}
              */
-            createGeppettoModel: function (jsonModel, storeRaw) {
+            createGeppettoModel: function (jsonModel, storeRaw, populateRefs) {
                 if(storeRaw == undefined){
-                    storeRaw = true;
+                    storeRaw = false;
+                }
+
+                if(populateRefs == undefined){
+                    populateRefs = false;
                 }
 
                 var geppettoModel = null;
@@ -112,11 +116,13 @@ define(function (require) {
                         geppettoModel.getLibraries().push(library);
                     }
 
-                    // traverse everything and build shortcuts to children if composite --> containment == true
-                    this.populateChildrenShortcuts(geppettoModel);
+                    if(populateRefs) {
+                        // traverse everything and build shortcuts to children if composite --> containment == true
+                        this.populateChildrenShortcuts(geppettoModel);
 
-                    // traverse everything and populate type references in variables
-                    this.populateTypeReferences(geppettoModel);
+                        // traverse everything and populate type references in variables
+                        this.populateTypeReferences(geppettoModel);
+                    }
                 }
 
                 return geppettoModel;
@@ -456,7 +462,7 @@ define(function (require) {
              */
             mergeModel: function (rawModel){
                 // STEP 1: create new geppetto model to merge into existing one
-                var diffModel = this.createGeppettoModel(rawModel, false);
+                var diffModel = this.createGeppettoModel(rawModel, false, false);
 
                 // STEP 2: add libraries/types if any are different (both to object model and json model)
                 var diffLibs = diffModel.getLibraries();
@@ -491,6 +497,9 @@ define(function (require) {
                                     // add to library in geppetto object model
                                     diffTypes[k].set({'parent': libs[j]});
                                     libs[j].getTypes().push(diffTypes[k]);
+
+                                    // populate references for the new type
+                                    this.populateTypeReferences(diffTypes[k]);
                                 }
                             }
                         }
@@ -528,15 +537,24 @@ define(function (require) {
                         // add variable to geppetto object model
                         diffVars[x].set({'parent': this.geppettoModel});
                         this.geppettoModel.getVariables().push(diffVars[x]);
+
+                        // populate references for new vars
+                        this.populateTypeReferences(diffVars[x]);
                     }
                 }
 
-                // traverse everything and build shortcuts to children if composite --> containment == true
+                // traverse everything again and build shortcuts to children if composite --> containment == true
                 this.populateChildrenShortcuts(this.geppettoModel);
+            },
 
-                // traverse everything and populate type references in variables
-                // TODO: make sure this is NOT EVER wiping type references previously populated
-                this.populateTypeReferences(this.geppettoModel);
+            /**
+             * Swap import type pointed by path with rawType
+             *
+             * @param path
+             * @param rawtype
+             */
+            resolveType: function(path, rawtype){
+                // TODO: implement
             },
 
             /**

@@ -49,6 +49,7 @@ define(function (require) {
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
             VARIABLE_FETCHED: "variable_fetched",
+            IMPORT_TYPE_RESOLVED: "import_type_resolved",
             PLAY_EXPERIMENT: "play_experiment",
             SET_WATCHED_VARIABLES: "set_watched_variables",
             WATCHED_VARIABLES_SET: "watched_variables_set",
@@ -102,6 +103,10 @@ define(function (require) {
 
         messageHandler[messageTypes.VARIABLE_FETCHED] = function (payload) {
             GEPPETTO.SimulationHandler.addVariableToModel(payload);
+        };
+
+        messageHandler[messageTypes.IMPORT_TYPE_RESOLVED] = function (payload) {
+            GEPPETTO.SimulationHandler.swapResolvedType(payload);
         };
 
         messageHandler[messageTypes.PLAY_EXPERIMENT] = function (payload) {
@@ -318,6 +323,33 @@ define(function (require) {
                 GEPPETTO.ModelFactory.addVariable(rawVariable);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ADDED);
+            },
+
+            /**
+             * Resolve import type
+             *
+             * @param typePath
+             */
+            resolveImportType: function(typePath) {
+                var params = {};
+                params["experimentId"] = Project.getActiveExperiment().getId();
+                params["projectId"] = Project.getId();
+                params["path"] = typePath;
+
+                GEPPETTO.MessageSocket.send("resolve_import_type", params);
+            },
+
+            /**
+             * Swap resolved import type with actual type
+             *
+             * @param payload
+             */
+            swapResolvedType: function(payload){
+                var rawType = JSON.parse(payload.import_type_resolved);
+
+                // TODO: GEPPETTO.ModelFactory.swapType(rawType);
+
+                GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },
 
             /**

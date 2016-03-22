@@ -92,12 +92,12 @@ define(function (require) {
         },
 
         /**
-         * Trigger type resolution - will cause this import type to get swapped with an actual type
+         * Trigger import type resolution - will cause this import type to get swapped with an actual type
          *
          * @command ImportType.resolve()
          */
         resolve: function() {
-            // TODO: call resolve on simulation handler passing parameters
+            GEPPETTO.SimulationHandler.resolveImportType(this.getPath());
         }
     });
 });

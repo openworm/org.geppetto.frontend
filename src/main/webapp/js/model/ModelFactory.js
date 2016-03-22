@@ -79,28 +79,37 @@ define(function (require) {
              *
              * @param jsonModel
              * @param storeRaw - store the raw and object models in the model factory
+             * @param populateRefs - populate type references after model creation
              *
              * @returns {GeppettoModel}
              */
-            createGeppettoModel: function (jsonModel, storeRaw, populateRefs) {
-                if(storeRaw == undefined){
-                    storeRaw = false;
+            createGeppettoModel: function (jsonModel, storeModel, populateRefs) {
+                // set defaults for optional flags
+                if(storeModel == undefined){
+                    // default behaviour store model
+                    storeModel = true;
                 }
-
                 if(populateRefs == undefined){
-                    populateRefs = false;
+                    // default behaviour populate type references
+                    populateRefs = true;
                 }
 
                 var geppettoModel = null;
 
-                if(storeRaw) {
-                    // store raw model for easy access during model building operations
-                    this.rawGeppetoModel = jsonModel;
-                    this.geppettoModel = geppettoModel;
-                }
-
                 if (jsonModel.eClass == 'GeppettoModel') {
+                    if(storeModel) {
+                        // store raw model for easy access during model building operations
+                        this.rawGeppetoModel = jsonModel;
+                    }
+
                     geppettoModel = this.createModel(jsonModel);
+
+                    if(storeModel){
+                        // store raw model for easy access during model building operations
+                        this.rawGeppetoModel = jsonModel;
+                        // store object model
+                        this.geppettoModel = geppettoModel;
+                    }
 
                     // create datasources
                     geppettoModel.set({"datasources": this.createDatasources(jsonModel.dataSources, geppettoModel)});

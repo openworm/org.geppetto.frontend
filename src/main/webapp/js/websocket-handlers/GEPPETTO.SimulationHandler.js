@@ -318,9 +318,10 @@ define(function (require) {
              * @param payload
              */
             addVariableToModel: function(payload){
-                var rawVariable = JSON.parse(payload.variable_fetched);
+                var rawModel = JSON.parse(payload.variable_fetched);
 
-                GEPPETTO.ModelFactory.addVariable(rawVariable);
+                // expect a fully formed Geppetto model that needs to be merged into the current one
+                GEPPETTO.ModelFactory.mergeModel(rawModel);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ADDED);
             },

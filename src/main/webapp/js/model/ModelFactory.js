@@ -439,6 +439,21 @@ define(function (require) {
             },
 
             /**
+             * Merge Geppetto model parameter into existing Geppetto model
+             *
+             * @param rawModel
+             */
+            mergeModel: function (rawModel){
+                // TODO: create new geppetto model
+
+                // TODO: add libraries if any are different (both to object model and json model)
+                // TODO: add types if any new ones are found (both to object model and json model)
+                // TODO: add variables if any new ones are found (both to object model and json model)
+
+                // TODO: re-populate shortcuts
+            },
+
+            /**
              * Adds top level variable to Geppetto model
              *
              * @param rawVariable

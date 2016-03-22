@@ -266,7 +266,7 @@ define(function (require) {
                 console.time(GEPPETTO.Resources.CREATING_MODEL);
                 GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.CREATING_MODEL);
                 // build Geppetto model here (once off operation when project is loaded)
-                window.Model = GEPPETTO.ModelFactory.createGeppettoModel(model);
+                window.Model = GEPPETTO.ModelFactory.createGeppettoModel(model, true);
                 console.timeEnd(GEPPETTO.Resources.CREATING_MODEL);
 
                 console.time(GEPPETTO.Resources.CREATING_INSTANCES);

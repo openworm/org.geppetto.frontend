@@ -76,16 +76,27 @@ define(function (require) {
 
             /**
              * Creates and populates Geppetto model
+             *
+             * @param jsonModel
+             * @param storeRaw - store the raw and object models in the model factory
+             *
+             * @returns {GeppettoModel}
              */
-            createGeppettoModel: function (jsonModel) {
-                // store raw model for easy access during model building operations
-                this.rawGeppetoModel = jsonModel;
+            createGeppettoModel: function (jsonModel, storeRaw) {
+                if(storeRaw == undefined){
+                    storeRaw = true;
+                }
 
                 var geppettoModel = null;
 
+                if(storeRaw) {
+                    // store raw model for easy access during model building operations
+                    this.rawGeppetoModel = jsonModel;
+                    this.geppettoModel = geppettoModel;
+                }
+
                 if (jsonModel.eClass == 'GeppettoModel') {
                     geppettoModel = this.createModel(jsonModel);
-                    this.geppettoModel = geppettoModel;
 
                     // create datasources
                     geppettoModel.set({"datasources": this.createDatasources(jsonModel.dataSources, geppettoModel)});
@@ -105,7 +116,7 @@ define(function (require) {
                     this.populateChildrenShortcuts(geppettoModel);
 
                     // traverse everything and populate type references in variables
-                    this.populateTypeReferences(geppettoModel, geppettoModel);
+                    this.populateTypeReferences(geppettoModel);
                 }
 
                 return geppettoModel;
@@ -135,7 +146,7 @@ define(function (require) {
             /**
              * Populate type references
              */
-            populateTypeReferences: function (node, geppettoModel) {
+            populateTypeReferences: function (node) {
 
                 // check if variable, if so populate type references
                 if (node instanceof Variable) {
@@ -236,7 +247,7 @@ define(function (require) {
 
                     if (children != undefined) {
                         for (var i = 0; i < children.length; i++) {
-                            this.populateTypeReferences(children[i], geppettoModel);
+                            this.populateTypeReferences(children[i]);
                         }
                     }
                 }
@@ -444,46 +455,88 @@ define(function (require) {
              * @param rawModel
              */
             mergeModel: function (rawModel){
-                // TODO: create new geppetto model
+                // STEP 1: create new geppetto model to merge into existing one
+                var diffModel = this.createGeppettoModel(rawModel, false);
 
-                // TODO: add libraries if any are different (both to object model and json model)
-                // TODO: add types if any new ones are found (both to object model and json model)
-                // TODO: add variables if any new ones are found (both to object model and json model)
+                // STEP 2: add libraries/types if any are different (both to object model and json model)
+                var diffLibs = diffModel.getLibraries();
+                var libs = this.geppettoModel.getLibraries();
 
-                // TODO: re-populate shortcuts
-            },
+                for(var i=0; i<diffLibs.length; i++){
+                    var libMatch = false;
 
-            /**
-             * Adds top level variable to Geppetto model
-             *
-             * @param rawVariable
-             */
-            addVariable: function (rawVariable){
-                // create variable
-                var variable = this.createVariable(rawVariable, {wrappedObj: rawVariable, "parent": this.geppettoModel});
+                    for(var j=0; j<libs.length; j++){
+                        // if the library exists, go in and check for types diff
+                        if(diffLibs[i].getPath() == libs[j].getPath()){
+                            libMatch = true;
 
-                // check if top level variable with given path already exists in model
-                var newVarPath = variable.getPath();
-                var alreadyExists = false;
-                for(var i=0; i<this.geppettoModel.getVariables().length; i++){
-                    if(this.geppettoModel.getVariables()[i].getPath() === newVarPath){
-                        alreadyExists = true;
+                            var diffTypes = diffLibs[i].getTypes();
+                            var types = libs[j].getTypes();
+
+                            for(var k=0; k<diffTypes.length; k++){
+                                var typeMatch = false;
+
+                                for(var m=0; m<types.length; m++){
+                                    // check if the given diff type already exists
+                                    if(diffTypes[k].getPath() == types[m].getPath()){
+                                        typeMatch = true;
+                                    }
+                                }
+
+                                // if the type doesn't exist, append it to the library
+                                if(!typeMatch){
+                                    // add to list of types on raw library object
+                                    libs[j].getWrappedObj().types.push(diffTypes[k].getWrappedObj());
+
+                                    // add to library in geppetto object model
+                                    diffTypes[k].set({'parent': libs[j]});
+                                    libs[j].getTypes().push(diffTypes[k]);
+                                }
+                            }
+                        }
+                    }
+
+                    // if the library doesn't exist yet, append it to the model with everything that's in it
+                    if(!libMatch){
+                        // add to raw model
+                        this.geppettoModel.getWrappedObj().libraries.push(diffLibs[i].getWrappedObj());
+
+                        // add to geppetto object model
+                        diffLibs[i].set({'parent': this.geppettoModel});
+                        this.geppettoModel.getLibraries().push(diffLibs[i]);
                     }
                 }
 
-                if(!alreadyExists) {
-                    // add raw variable to raw json geppetto model
-                    this.geppettoModel.getWrappedObj().variables.push(rawVariable);
+                // STEP 3: add variables if any new ones are found (both to object model and json model)
+                var diffVars = diffModel.getVariables();
+                var vars = this.geppettoModel.getVariables();
 
-                    // add to Geppetto model wrapper
-                    this.geppettoModel.variables.push(variable);
+                for(var x=0; x<diffVars.length; x++){
+                    var varMatch = false;
 
-                    // populate shortcuts
-                    this.populateChildrenShortcuts(variable);
+                    for(var y=0; y<vars.length; y++){
+                        if(diffVars[x].getPath() == vars[y].getPath()){
+                            varMatch == true;
+                        }
+                    }
 
-                    // populate type references in variable
-                    this.populateTypeReferences(variable, this.geppettoModel);
+                    // if no match, add it, it's actually new
+                    if(!varMatch){
+                        // append variable to raw model
+                        this.geppettoModel.getWrappedObj().variables.push(diffVars[x].getWrappedObj());
+
+                        // add variable to geppetto object model
+                        diffVars[x].set({'parent': this.geppettoModel});
+                        this.geppettoModel.getVariables().push(diffVars[x]);
+                    }
                 }
+
+                // traverse everything and build shortcuts to children if composite --> containment == true
+                this.populateChildrenShortcuts(this.geppettoModel);
+
+                // traverse everything and populate type references in variables
+                // TODO: make sure this is NOT EVER wiping type references previously populated
+                this.populateTypeReferences(this.geppettoModel);
             },
 
             /**

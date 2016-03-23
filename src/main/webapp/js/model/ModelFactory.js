@@ -234,9 +234,19 @@ define(function (require) {
                     // resolve super type
                     var superType = node.getSuperType();
                     if (superType != undefined) {
-                        // replace with reference to actual type
-                        var typeObj = this.resolve(superType.$ref);
-                        node.set({"superType": typeObj});
+                        var typeObjs = [];
+
+                        // convert to array if single element
+                        if(!(superType instanceof Array)){
+                            superType = [superType];
+                        }
+
+                        for(var a=0; a<superType.length; a++){
+                            // replace with reference to actual type
+                            typeObjs.push(this.resolve(superType[a].$ref));
+                        }
+
+                        node.set({"superType": typeObjs});
                     }
                 } else if (node instanceof ArrayType) {
                     // take array type string - looks like this --> '//@libraries.1/@types.5'
@@ -250,9 +260,19 @@ define(function (require) {
                     // resolve super type
                     var superType = node.getSuperType();
                     if (superType != undefined) {
-                        // replace with reference to actual type
-                        var typeObj = this.resolve(superType.$ref);
-                        node.set({"superType": typeObj});
+                        var typeObjs = [];
+
+                        // convert to array if single element
+                        if(!(superType instanceof Array)){
+                            superType = [superType];
+                        }
+
+                        for(var a=0; a<superType.length; a++){
+                            // replace with reference to actual type
+                            typeObjs.push(this.resolve(superType[a].$ref));
+                        }
+
+                        node.set({"superType": typeObjs});
                     }
                 }
 
@@ -1700,8 +1720,23 @@ define(function (require) {
                             for (var j = 0; j < nestedVariables.length; j++) {
                                 var varTypes = nestedVariables[j].getTypes();
                                 for (var x = 0; x < varTypes.length; x++) {
-                                    if (varTypes[x] == typeToMatch || varTypes[x].getSuperType() == typeToMatch) {
+                                    if (varTypes[x] == typeToMatch) {
                                         variables.push(nestedVariables[j]);
+                                    } else if (varTypes[x].getSuperType() != undefined){
+                                        // check list of super types
+                                        var superTypes = varTypes[x].getSuperType();
+
+                                        if(!(superTypes instanceof Array)){
+                                            superTypes = [superTypes];
+                                        }
+
+                                        for(var w=0; w<superTypes.length; w++){
+                                            if(superTypes[w] == typeToMatch){
+                                                variables.push(nestedVariables[j]);
+                                                // sufficient condition met, break the loop
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
                             }

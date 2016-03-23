@@ -71,7 +71,8 @@ public enum InboundMessages {
 	DOWNLOAD_RESULTS("download_results"),
 	
 	//DATASOURCES
-	FETCH_VARIABLE("fetch_variable");
+	FETCH_VARIABLE("fetch_variable"), 
+	RESOLVE_IMPORT_TYPE("resolve_import_type");
 
 	
 	private InboundMessages(final String text) {

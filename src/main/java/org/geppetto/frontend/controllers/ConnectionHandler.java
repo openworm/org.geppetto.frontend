@@ -36,7 +36,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Date;
@@ -68,8 +67,9 @@ import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.model.ExperimentState;
+import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.ModelFormat;
-import org.geppetto.model.variables.Variable;
+import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.simulation.manager.GeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -188,7 +188,7 @@ public class ConnectionHandler
 			setConnectionProject(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, projectJSON);
 
-			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager) geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel());
+			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager) geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel(), true);
 			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_MODEL_LOADED, geppettoModelJSON);
 
 			if(experimentId != -1)
@@ -317,9 +317,9 @@ public class ConnectionHandler
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
-			Variable variable = geppettoManager.fetchVariable(dataSourceServiceId, variableId, experiment, geppettoProject);
-			// TODO How to send the types if they are not anonymous?
-			websocketConnection.sendMessage(requestID, OutboundMessages.VARIABLE_FETCHED, GeppettoSerializer.serializeToJSON(variable));
+			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceServiceId, variableId, experiment, geppettoProject);
+
+			websocketConnection.sendMessage(requestID, OutboundMessages.VARIABLE_FETCHED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
 		}
 		catch(GeppettoDataSourceException e)
 		{
@@ -328,6 +328,37 @@ public class ConnectionHandler
 		catch(IOException e)
 		{
 			error(e, "Error fetching variable " + variableId);
+		}
+		catch(GeppettoModelException e)
+		{
+			error(e, "Error fetching variable " + variableId);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error fetching variable " + variableId);
+		}
+
+	}
+
+	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param experimentId
+	 * @param dataSourceServiceId
+	 * @param variableId
+	 */
+	public void resolveImportType(String requestID, Long projectId, Long experimentId, String typePath)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+		try
+		{
+			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePath, experiment, geppettoProject);
+			websocketConnection.sendMessage(requestID, OutboundMessages.IMPORT_TYPE_RESOLVED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
+		}
+		catch(IOException e)
+		{
+			error(e, "Error fetching variable " + typePath);
 		}
 
 	}
@@ -626,7 +657,7 @@ public class ConnectionHandler
 		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>()
 		{
 			@Override
-			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+			public Date deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 			{
 				return new Date(json.getAsJsonPrimitive().getAsLong());
 			}

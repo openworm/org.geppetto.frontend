@@ -80,7 +80,8 @@ public enum OutboundMessages {
 	UPDATE_MODEL_TREE("update_model_tree"), 
 	EXPERIMENT_CREATED("experiment_created"), 
 	GEPPETTO_MODEL_LOADED("geppetto_model_loaded"), 
-	VARIABLE_FETCHED("variable_fetched");
+	VARIABLE_FETCHED("variable_fetched"),
+	IMPORT_TYPE_RESOLVED("import_type_resolved");
 
 	private OutboundMessages(final String text) {
 		this.text = text;

@@ -346,9 +346,9 @@ define(function (require) {
              * @param payload
              */
             swapResolvedType: function(payload){
-                var rawType = JSON.parse(payload.import_type_resolved);
+                var rawModel = JSON.parse(payload.import_type_resolved);
 
-                GEPPETTO.ModelFactory.resolveType(path, rawType);
+                GEPPETTO.ModelFactory.mergeModel(rawModel, true);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },

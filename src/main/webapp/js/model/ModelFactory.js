@@ -489,7 +489,11 @@ define(function (require) {
              *
              * @param rawModel
              */
-            mergeModel: function (rawModel){
+            mergeModel: function (rawModel, overrideTypes){
+                if(overrideTypes == undefined){
+                    overrideTypes = false;
+                }
+
                 // STEP 1: create new geppetto model to merge into existing one
                 var diffModel = this.createGeppettoModel(rawModel, false, false);
 
@@ -515,6 +519,18 @@ define(function (require) {
                                     // check if the given diff type already exists
                                     if(diffTypes[k].getPath() == types[m].getPath()){
                                         typeMatch = true;
+
+                                        // if(overrideTypes) swap the types[m] with the diffType[k]
+                                        if(overrideTypes){
+                                            // TODO: do this only if it's a fully qualified type (not a placeholder with just id)
+
+                                            // swap type in raw model
+                                            libs[j].getWrappedObj().types[m] = diffTypes[k].getWrappedObj();
+
+                                            // swap in object model
+                                            diffTypes[k].set({'parent': libs[j]});
+                                            types[m] = diffTypes[k];
+                                        }
                                     }
                                 }
 
@@ -582,7 +598,7 @@ define(function (require) {
              * @param path
              * @param rawtype
              */
-            resolveType: function(path, rawtype){
+            resolveType: function(rawModel){
                 // TODO: implement
             },
 

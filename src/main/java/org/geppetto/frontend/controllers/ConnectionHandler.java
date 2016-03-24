@@ -346,8 +346,9 @@ public class ConnectionHandler
 	 * @param experimentId
 	 * @param dataSourceServiceId
 	 * @param variableId
+	 * @throws GeppettoExecutionException 
 	 */
-	public void resolveImportType(String requestID, Long projectId, Long experimentId, String typePath)
+	public void resolveImportType(String requestID, Long projectId, Long experimentId, String typePath) throws GeppettoExecutionException
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);

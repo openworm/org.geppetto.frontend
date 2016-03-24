@@ -307,7 +307,7 @@ define(function (require) {
                 params["experimentId"] = Project.getActiveExperiment().getId();
                 params["projectId"] = Project.getId();
                 params["variableId"] = variableId;
-                params["dataSourceServiceId"] = datasourceId;
+                params["dataSourceId"] = datasourceId;
 
                 GEPPETTO.MessageSocket.send("fetch_variable", params);
             },

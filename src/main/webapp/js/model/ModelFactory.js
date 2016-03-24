@@ -1676,11 +1676,22 @@ define(function (require) {
                         if (libraryTypes[j] == type) {
                             // add if it's a straight match (the type himself)
                             types.push(libraryTypes[j]);
-                        } else if (libraryTypes[j].getSuperType() != undefined &&
-                            libraryTypes[j].getSuperType() != null &&
-                            libraryTypes[j].getSuperType() == type) {
-                            // add if superType matches
-                            types.push(libraryTypes[j]);
+                        } else if (libraryTypes[j].getSuperType() != undefined && libraryTypes[j].getSuperType() != null) {
+                            // check list of super types
+                            var superTypes = libraryTypes[j].getSuperType();
+
+                            if(!(superTypes instanceof Array)){
+                                superTypes = [superTypes];
+                            }
+
+                            for(var w=0; w<superTypes.length; w++){
+                                if(superTypes[w] == type){
+                                    // add if superType matches
+                                    types.push(libraryTypes[j]);
+                                    // sufficient condition met, break the loop
+                                    break;
+                                }
+                            }
                         } else {
                             // TODO: no immediate matches - recurse on super type and see if any matches if any matches add this type
                             /*if(libraryTypes[j].getSuperType() != undefined && libraryTypes[j].getSuperType() != null) {

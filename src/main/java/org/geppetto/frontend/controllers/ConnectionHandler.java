@@ -308,16 +308,16 @@ public class ConnectionHandler
 	 * @param requestID
 	 * @param projectId
 	 * @param experimentId
-	 * @param dataSourceServiceId
+	 * @param dataSourceId
 	 * @param variableId
 	 */
-	public void fetchVariable(String requestID, Long projectId, Long experimentId, String dataSourceServiceId, String variableId)
+	public void fetchVariable(String requestID, Long projectId, Long experimentId, String dataSourceId, String variableId)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
-			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceServiceId, variableId, experiment, geppettoProject);
+			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, experiment, geppettoProject);
 
 			websocketConnection.sendMessage(requestID, OutboundMessages.VARIABLE_FETCHED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
 		}

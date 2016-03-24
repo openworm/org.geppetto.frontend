@@ -412,13 +412,13 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case FETCH_VARIABLE:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.dataSourceServiceId, receivedObject.variableId);
+				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.dataSourceId, receivedObject.variableId);
 				break;
 			}
 			case RESOLVE_IMPORT_TYPE:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.dataSourceServiceId, receivedObject.path);
+				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.dataSourceId, receivedObject.path);
 				break;
 			}
 			default:
@@ -469,7 +469,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	{
 		Long projectId;
 		Long experimentId;
-		String dataSourceServiceId;
+		String dataSourceId;
 		String path;
 		String variableId;
 	}

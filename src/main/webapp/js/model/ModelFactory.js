@@ -502,6 +502,11 @@ define(function (require) {
                 var libs = this.geppettoModel.getLibraries();
 
                 for(var i=0; i<diffLibs.length; i++){
+                    if(diffLibs[i].getWrappedObj().synched == true){
+                        // if synch placeholder lib, skip it
+                        continue;
+                    }
+
                     var libMatch = false;
 
                     for(var j=0; j<libs.length; j++){
@@ -513,6 +518,11 @@ define(function (require) {
                             var types = libs[j].getTypes();
 
                             for(var k=0; k<diffTypes.length; k++){
+                                if(diffTypes[k].getWrappedObj().synched == true){
+                                    // if synch placeholder type, skip it
+                                    continue;
+                                }
+
                                 var typeMatch = false;
 
                                 for(var m=0; m<types.length; m++){
@@ -522,8 +532,6 @@ define(function (require) {
 
                                         // if(overrideTypes) swap the types[m] with the diffType[k]
                                         if(overrideTypes){
-                                            // TODO: do this only if it's a fully qualified type (not a placeholder with just id)
-
                                             // swap type in raw model
                                             libs[j].getWrappedObj().types[m] = diffTypes[k].getWrappedObj();
 
@@ -566,6 +574,11 @@ define(function (require) {
                 var vars = this.geppettoModel.getVariables();
 
                 for(var x=0; x<diffVars.length; x++){
+                    if(diffVars[x].getWrappedObj().synched == true){
+                        // if synch placeholder var, skip it
+                        continue;
+                    }
+
                     var varMatch = false;
 
                     for(var y=0; y<vars.length; y++){

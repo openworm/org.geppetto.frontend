@@ -122,6 +122,8 @@ define(function (require) {
 
             VARIABLE_ADDED: "A variable has been added to the Geppetto model",
 
+            VARIABLE_ALREADY_EXISTS: "Cannot add variable that already exists",
+
             IMPORT_TYPE_RESOLVED: "An import type has been resolved to a full type and swapped into the Geppetto model",
 
             EXPERIMENT_CREATED: "New experiment created",
@@ -147,6 +149,8 @@ define(function (require) {
             CREATING_INSTANCES: "Creating instances",
 
             CREATING_SCENE: "Creating scene",
+
+            ADDING_VARIABLE: "Adding variable",
 
             SPOTLIGHT_HINT: "Did you know you can rapidly access the data once it gets loaded using Ctrl+Space?",
             

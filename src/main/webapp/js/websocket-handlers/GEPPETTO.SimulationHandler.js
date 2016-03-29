@@ -303,13 +303,17 @@ define(function (require) {
              * @param datasourceId
              */
             fetchVariable: function(variableId, datasourceId) {
-                var params = {};
-                params["experimentId"] = Project.getActiveExperiment().getId();
-                params["projectId"] = Project.getId();
-                params["variableId"] = variableId;
-                params["dataSourceId"] = datasourceId;
+                if(!window.Model.hasOwnProperty(variableId)) {
+                    var params = {};
+                    params["experimentId"] = Project.getActiveExperiment().getId();
+                    params["projectId"] = Project.getId();
+                    params["variableId"] = variableId;
+                    params["dataSourceId"] = datasourceId;
 
-                GEPPETTO.MessageSocket.send("fetch_variable", params);
+                    GEPPETTO.MessageSocket.send("fetch_variable", params);
+                } else {
+                    GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ALREADY_EXISTS);
+                }
             },
 
             /**
@@ -320,8 +324,12 @@ define(function (require) {
             addVariableToModel: function(payload){
                 var rawModel = JSON.parse(payload.variable_fetched);
 
+                console.time(GEPPETTO.Resources.ADDING_VARIABLE);
+
                 // expect a fully formed Geppetto model that needs to be merged into the current one
                 GEPPETTO.ModelFactory.mergeModel(rawModel);
+
+                console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ADDED);
             },

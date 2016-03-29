@@ -502,7 +502,7 @@ define(function (require) {
                 var libs = this.geppettoModel.getLibraries();
 
                 for(var i=0; i<diffLibs.length; i++){
-                    if(diffLibs[i].getWrappedObj().synched == "true"){
+                    if(diffLibs[i].getWrappedObj().synched == true){
                         // if synch placeholder lib, skip it
                         continue;
                     }
@@ -518,7 +518,7 @@ define(function (require) {
                             var types = libs[j].getTypes();
 
                             for(var k=0; k<diffTypes.length; k++){
-                                if(diffTypes[k].getWrappedObj().synched == "true"){
+                                if(diffTypes[k].getWrappedObj().synched == true){
                                     // if synch placeholder type, skip it
                                     continue;
                                 }
@@ -582,7 +582,7 @@ define(function (require) {
                 var vars = this.geppettoModel.getVariables();
 
                 for(var x=0; x<diffVars.length; x++){
-                    if(diffVars[x].getWrappedObj().synched == "true"){
+                    if(diffVars[x].getWrappedObj().synched == true){
                         // if synch placeholder var, skip it
                         continue;
                     }

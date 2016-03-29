@@ -91,6 +91,9 @@ public class TransportMessageFactory {
 			case GEPPETTO_MODEL_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GEPPETTO_MODEL_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
+			case VARIABLE_FETCHED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.VARIABLE_FETCHED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
 			case SIMULATION_OVER:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;	

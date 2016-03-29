@@ -318,8 +318,10 @@ public class ConnectionHandler
 		try
 		{
 			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, experiment, geppettoProject);
+			
+			String serializedModel = GeppettoSerializer.serializeToJSON(geppettoModel, true);
 
-			websocketConnection.sendMessage(requestID, OutboundMessages.VARIABLE_FETCHED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
+			websocketConnection.sendMessage(requestID, OutboundMessages.VARIABLE_FETCHED, serializedModel);
 		}
 		catch(GeppettoDataSourceException e)
 		{

@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +18,7 @@ import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DefaultGeppettoDataManager;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.utilities.URLReader;
+import org.geppetto.frontend.tests.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -99,6 +98,14 @@ public class Application
 		return "redirect:http://geppetto.org";
 	}
 
+	@RequestMapping(value = "/geppettotestingprojects", method = RequestMethod.GET)
+	public @ResponseBody Test getTestingProjects(@RequestParam String url) throws IOException
+	{
+		URL resource = URLReader.getURL(url);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream()));
+		return new Gson().fromJson(reader, Test.class);
+	}
+	
 	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
 	public String testNeuronal()
 	{
@@ -109,21 +116,6 @@ public class Application
 	public String testNeuronalCustom()
 	{
 		return "dist/GeppettoNeuronalCustomTests";
-	}
-	
-	@RequestMapping(value = "/geppettotestingprojects", method = RequestMethod.GET)
-	public @ResponseBody Collection<String> getTestingProjects(@RequestParam String urlString) throws IOException
-	{
-		URL url = URLReader.getURL(urlString);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-		TestingProjects testingProjects = new Gson().fromJson(reader, TestingProjects.class);
-		return testingProjects.files;
-	}
-
-	static class TestingProjects
-	{
-
-		List<String> files;
 	}
 	
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)

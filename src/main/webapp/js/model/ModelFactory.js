@@ -545,6 +545,10 @@ define(function (require) {
                                 // if the type doesn't exist, append it to the library
                                 if(!typeMatch){
                                     // add to list of types on raw library object
+                                    if(libs[j].getWrappedObj().types == undefined){
+                                        libs[j].getWrappedObj().types = [];
+                                    }
+
                                     libs[j].getWrappedObj().types.push(diffTypes[k].getWrappedObj());
 
                                     // add to library in geppetto object model
@@ -560,6 +564,10 @@ define(function (require) {
 
                     // if the library doesn't exist yet, append it to the model with everything that's in it
                     if(!libMatch){
+                        if(this.geppettoModel.getWrappedObj().libraries == undefined){
+                            this.geppettoModel.getWrappedObj().libraries = [];
+                        }
+
                         // add to raw model
                         this.geppettoModel.getWrappedObj().libraries.push(diffLibs[i].getWrappedObj());
 
@@ -589,6 +597,10 @@ define(function (require) {
 
                     // if no match, add it, it's actually new
                     if(!varMatch){
+                        if(this.geppettoModel.getWrappedObj().variables == undefined){
+                            this.geppettoModel.getWrappedObj().variables = [];
+                        }
+
                         // append variable to raw model
                         this.geppettoModel.getWrappedObj().variables.push(diffVars[x].getWrappedObj());
 

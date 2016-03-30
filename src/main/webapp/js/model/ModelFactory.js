@@ -443,7 +443,7 @@ define(function (require) {
                 }
 
                 this.allPaths = allPotentialInstancePaths;
-                var varsToInstantiate = varsWithVizTypes;//.concat(varsWithConnTypes);
+                var varsToInstantiate = varsWithVizTypes;
 
                 // based on list, traverse again and build instance objects
                 for (var j = 0; j < varsToInstantiate.length; j++) {
@@ -610,6 +610,11 @@ define(function (require) {
 
                         // populate references for new vars
                         this.populateTypeReferences(diffVars[x]);
+
+                        // find new potential instance paths and add to the list
+                        var potentialInstancePaths = [];
+                        this.fetchAllPotentialInstancePaths(diffVars[x], potentialInstancePaths, '');
+                        this.allPaths = this.allPaths.concat(potentialInstancePaths);
                     }
                 }
 
@@ -1201,12 +1206,22 @@ define(function (require) {
                     return false;
                 }
 
-                var nested = path.length - path.replace(/\./g, '').length;
+                var nested = this.getNestingLevel(path);
                 if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && nested > 4) {
                     return false;
                 }
 
                 return true;
+            },
+
+            /**
+             * Get nesting level given entity path
+             *
+             * @param path
+             * @returns {number}
+             */
+            getNestingLevel: function (path){
+                return path.length - path.replace(/\./g, '').length;
             },
 
             printInstanceStats: function () {
@@ -1229,7 +1244,7 @@ define(function (require) {
                 // build new path
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 
-                // only add if it's not a connection
+                // only add if it's not a connection or nested in a composite type
                 if (this.includePotentialInstance(node, path)) {
                     allPotentialPaths.push({path: path, metaType: node.getType().getMetaType()});
                 }

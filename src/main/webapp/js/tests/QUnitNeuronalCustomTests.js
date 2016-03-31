@@ -34,6 +34,10 @@ define(function (require) {
 	var utils = require('../components/utils');
 	var tests = [];
 	
+	var Features = {
+			HAS_INSTANCE: "HAS_INSTANCE"
+	};
+	
     /**
      * Closes socket and clears handlers. Method is called from each test.
      */
@@ -75,78 +79,83 @@ define(function (require) {
     		
     		var testModels = testModule["testModels"];
     		for (var modelIndex in testModels){
-    			
-    			var testModel = testModels[modelIndex];
-    			
-    			QUnit.test("Test Model " + testModel["name"] + " - " + testModel["url"], function ( assert ) {
-
-    	            var done = assert.async();
-    	            var features = testModel["features"];
-    	            var handler = {
-    	                onMessage: function (parsedServerMessage) {
-    	                    // Switch based on parsed incoming message type
-    	                    switch (parsedServerMessage.type) {
-    	                        //Simulation has been loaded and model need to be loaded
-    	                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-    	                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-    	                            assert.ok(window.Project.getId() != undefined, "Project id is not undefined"); 
-    	                            break;
-    	                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
-    	                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
-
-    	                            // test that geppetto model high level is as expected
-    	                            assert.ok(window.Model != undefined, "Model is not undefined");
-    	                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
-
-    	                            // test that instance tree high level is as expected
-    	                            if (features.indexOf("hasInstance") != -1){
-        	                            assert.ok(window.Instances != undefined && window.Instances.length == 1, "1 top level instance as expected");
-    	                            }
-
-    	                            break;
-    	                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
-    	                            var payload = JSON.parse(parsedServerMessage.data);
-    	                            GEPPETTO.SimulationHandler.loadExperiment(payload);
-    	                            assert.equal(window.Project.getActiveExperiment().getId(), 1, "Active experiment id of loaded project checked");
-
-    	                            done();
-    	                            resetConnection();
-    	                            break;
-    	                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-    	                            var payload = JSON.parse(parsedServerMessage.data);
-    	                            var message = JSON.parse(payload.message);
-    	                            assert.ok(false, message);
-
-    	                            done();
-    	                            resetConnection();
-    	                            break;
-    	                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-    	                            var payload = JSON.parse(parsedServerMessage.data);
-    	                            var message = JSON.parse(payload.message).message;
-    	                            assert.ok(false, message);
-
-    	                            done();
-    	                            resetConnection();
-    	                            break;
-    	                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
-    	                            var payload = JSON.parse(parsedServerMessage.data);
-    	                            var message = payload.message;
-    	                            assert.ok(false, message);
-
-    	                            done();
-    	                            resetConnection();
-    	                            break;
-    	                    }
-    	                }
-    	            };
-
-    	            GEPPETTO.MessageSocket.clearHandlers();
-    	            GEPPETTO.MessageSocket.addHandler(handler);
-    	            window.Project.loadFromURL(testModel["url"]);
-    	        });
+    			addQunitTest(testModels[modelIndex]);
     		}
     	}
     }
+    
+    function addQunitTest( testModel ) {
+    	
+    	QUnit.test("Test Model " + testModel["name"] + " - " + testModel["url"],  function(assert){
+    	
+    		console.log("tag");
+    		console.log(testModel);
+    		
+	        var done = assert.async();
+	        var handler = {
+	            onMessage: function (parsedServerMessage) {
+	                // Switch based on parsed incoming message type
+	                switch (parsedServerMessage.type) {
+	                    //Simulation has been loaded and model need to be loaded
+	                    case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+	                        GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+	                        assert.ok(window.Project.getId() != undefined, "Project id is not undefined"); 
+	                        break;
+	                    case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+	                        GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+	
+	                        // test that geppetto model high level is as expected
+	                        assert.ok(window.Model != undefined, "Model is not undefined");
+	                        assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+	
+	                        // test that instance tree high level is as expected
+	                        if (testModel["features"].indexOf(Features.HAS_INSTANCE) != -1){
+	                            assert.ok(window.Instances != undefined && window.Instances.length == 1, "1 top level instance as expected");
+	                        }
+	
+	                        break;
+	                    case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+	                        var payload = JSON.parse(parsedServerMessage.data);
+	                        GEPPETTO.SimulationHandler.loadExperiment(payload);
+	                        assert.equal(window.Project.getActiveExperiment().getId(), 1, "Active experiment id of loaded project checked");
+	
+	                        done();
+	                        resetConnection();
+	                        break;
+	                    case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+	                        var payload = JSON.parse(parsedServerMessage.data);
+	                        var message = JSON.parse(payload.message);
+	                        assert.ok(false, message);
+	
+	                        done();
+	                        resetConnection();
+	                        break;
+	                    case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+	                        var payload = JSON.parse(parsedServerMessage.data);
+	                        var message = JSON.parse(payload.message).message;
+	                        assert.ok(false, message);
+	
+	                        done();
+	                        resetConnection();
+	                        break;
+	                    case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR_LOADING_PROJECT:
+	                        var payload = JSON.parse(parsedServerMessage.data);
+	                        var message = payload.message;
+	                        assert.ok(false, message);
+	
+	                        done();
+	                        resetConnection();
+	                        break;
+	                }
+	            }
+	        };
+	
+	        GEPPETTO.MessageSocket.clearHandlers();
+	        GEPPETTO.MessageSocket.addHandler(handler);
+	        window.Project.loadFromURL(testModel["url"]);
+    	});
+    }
+    
 
     var run = function () {
     	readTextFile("geppettotestingprojects?url=" + utils.getQueryStringParameter('url'));

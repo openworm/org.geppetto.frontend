@@ -6,7 +6,7 @@ public class TestModel
 {
 	String name;
 	String url;
-	List<String> features;
+	List<TestFeatures> features;
 	
 	public String getName()
 	{
@@ -24,14 +24,13 @@ public class TestModel
 	{
 		this.url = url;
 	}
-	public List<String> getFeatures()
+	public List<TestFeatures> getFeatures()
 	{
 		return features;
 	}
-	public void setFeatures(List<String> features)
+	public void setFeatures(List<TestFeatures> features)
 	{
 		this.features = features;
 	}
-	
 	
 }

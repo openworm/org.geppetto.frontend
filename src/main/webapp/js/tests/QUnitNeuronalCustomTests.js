@@ -33,7 +33,6 @@
 define(function (require) {
 	var utils = require('../components/utils');
 	var tests = [];
-	//http://127.0.0.1:8080/org.geppetto.frontend/GeppettoNeuronalCustomTests.html?urlString=http%3A%2F%2F127.0.0.1%3A3000%2Fgeppetto%2Ftmp%2FtestFile
 	
     /**
      * Closes socket and clears handlers. Method is called from each test.
@@ -45,7 +44,6 @@ define(function (require) {
         GEPPETTO.MessageSocket.clearHandlers();
         //connect to socket again for next test
         GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
-       
     }
     
     function readTextFile(file)
@@ -79,9 +77,11 @@ define(function (require) {
     		for (var modelIndex in testModels){
     			
     			var testModel = testModels[modelIndex];
+    			
     			QUnit.test("Test Model " + testModel["name"] + " - " + testModel["url"], function ( assert ) {
 
     	            var done = assert.async();
+    	            var features = testModel["features"];
     	            var handler = {
     	                onMessage: function (parsedServerMessage) {
     	                    // Switch based on parsed incoming message type
@@ -89,7 +89,6 @@ define(function (require) {
     	                        //Simulation has been loaded and model need to be loaded
     	                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
     	                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-//    	                            assert.equal(window.Project.getId(), 1, "Project ID checked");
     	                            assert.ok(window.Project.getId() != undefined, "Project id is not undefined"); 
     	                            break;
     	                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
@@ -97,11 +96,12 @@ define(function (require) {
 
     	                            // test that geppetto model high level is as expected
     	                            assert.ok(window.Model != undefined, "Model is not undefined");
-//    	                            assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
-//    	                                      window.Model.getVariables()[0].getId() == 'hhcell' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
-//    	                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
-//    	                            // test that instance tree high level is as expected
-//    	                            assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'hhcell', "1 top level instance as expected");
+    	                            assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
+
+    	                            // test that instance tree high level is as expected
+    	                            if (features.indexOf("hasInstance") != -1){
+        	                            assert.ok(window.Instances != undefined && window.Instances.length == 1, "1 top level instance as expected");
+    	                            }
 
     	                            break;
     	                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
@@ -149,10 +149,7 @@ define(function (require) {
     }
 
     var run = function () {
-    	
-    	//"http://127.0.0.1:3000/geppetto/tmp/testFile");
     	readTextFile("geppettotestingprojects?url=" + utils.getQueryStringParameter('url'));
-        
     };
     
     return {run: run};

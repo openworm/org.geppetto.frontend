@@ -34,6 +34,7 @@ define(function (require) {
 	var utils = require('../components/utils');
 	var tests = [];
 	
+	//A feature will lead into new tests/asserts
 	var Features = {
 			HAS_INSTANCE: "HAS_INSTANCE"
 	};
@@ -50,26 +51,7 @@ define(function (require) {
         GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
     }
     
-    function readTextFile(file)
-    {
-    	 var rawFile = new XMLHttpRequest();
-    	    rawFile.open("GET", file, false);
-    	    rawFile.onreadystatechange = function ()
-    	    {
-    	        if(rawFile.readyState === 4)
-    	        {
-    	            if(rawFile.status === 200 || rawFile.status == 0)
-    	            {
-    	                tests  = JSON.parse(rawFile.responseText);
-    	                // once off on the first test to establish connection
-    	                resetConnection();
-    	                addTests();
-    	            }
-    	        }
-    	    };
-    	    rawFile.send(null);
-    }
-    
+    // Create tests and modules 
     function addTests(){
     	var testModules = tests["testModules"];
     	for (var moduleIndex in testModules){
@@ -88,8 +70,6 @@ define(function (require) {
     	
     	QUnit.test("Test Model " + testModel["name"] + " - " + testModel["url"],  function(assert){
     	
-    		console.log("tag");
-    		console.log(testModel);
     		
 	        var done = assert.async();
 	        var handler = {
@@ -156,10 +136,30 @@ define(function (require) {
     	});
     }
     
-
+    //Call Geppetto WS to read input tests file
     var run = function () {
     	readTextFile("geppettotestingprojects?url=" + utils.getQueryStringParameter('url'));
     };
+    
+    function readTextFile(file)
+    {
+    	 var rawFile = new XMLHttpRequest();
+    	    rawFile.open("GET", file, false);
+    	    rawFile.onreadystatechange = function ()
+    	    {
+    	        if(rawFile.readyState === 4)
+    	        {
+    	            if(rawFile.status === 200 || rawFile.status == 0)
+    	            {
+    	                tests  = JSON.parse(rawFile.responseText);
+    	                // once off on the first test to establish connection
+    	                resetConnection();
+    	                addTests();
+    	            }
+    	        }
+    	    };
+    	    rawFile.send(null);
+    }
     
     return {run: run};
 });

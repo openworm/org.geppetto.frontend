@@ -76,8 +76,9 @@
 </div>
 
 <div id="mainContainer">
-     <div id="geppettologo" ></div>
+    <div id="geppettologo" ></div>
     <div id="spotlight" ></div>
+    <div id="controlpanel" ></div>
     <div id="sim"></div>
 
     <div id="footer">

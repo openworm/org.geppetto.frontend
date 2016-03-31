@@ -73,8 +73,9 @@
 </div>
 
 <div id="mainContainer">
-     <div id="geppettologo" class="noSelection" ></div>
-     <div id="spotlight" ></div>
+    <div id="geppettologo" class="noSelection" ></div>
+    <div id="spotlight" ></div>
+    <div id="controlpanel" ></div>
     <div id="sim" class="noSelection"></div>
 
     <div id="footer">

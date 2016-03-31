@@ -1,0 +1,25 @@
+{
+  "name": "controlpanel",
+  "version": "0.0.1",
+  "author": {
+    "name": "Giovanni Idili",
+    "email": "giovanni@openworm.org"
+  },
+  "description": "Control panel for scene entities",
+  "moduleType": [
+    "amd"
+  ],
+  "main": "ControlPanel",
+  "keywords": [
+    "controlpanel"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

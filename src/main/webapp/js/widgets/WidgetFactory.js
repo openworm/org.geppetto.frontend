@@ -37,6 +37,7 @@
 define(function (require) {
 
     PlotsController = require('widgets/plot/controllers/PlotsController');
+    PlotlyController = require('widgets/plotly/controllers/PlotlyController');
     Scatter3dController = require('widgets/scatter3d/controllers/Scatter3dController');
     ConnectivityController = require('widgets/connectivity/controllers/ConnectivityController');
     PopupsController = require('widgets/popup/controllers/PopupController');
@@ -63,7 +64,8 @@ define(function (require) {
             TREEVISUALISERD3: 4,
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
-            BUTTONBAR: 7
+            BUTTONBAR: 7,
+            PLOTLY : 8
         };
 
         /**
@@ -72,6 +74,7 @@ define(function (require) {
         GEPPETTO.WidgetFactory = {
 
             plotsController: null,
+            plotlycontroller: null,
             popupsController: null,
             connectivityController: null,
             scatter3dController: null,
@@ -91,6 +94,10 @@ define(function (require) {
                     //create plotting widget
                     case GEPPETTO.Widgets.PLOT:
                         widget = this.getController(GEPPETTO.Widgets.PLOT).addPlotWidget();
+                        break;
+                      //create button bar
+                    case GEPPETTO.Widgets.PLOTLY:
+                        widget = this.getController(GEPPETTO.Widgets.PLOTLY).addPlotlyWidget();
                         break;
                     //create popup widget
                     case GEPPETTO.Widgets.POPUP:
@@ -138,6 +145,8 @@ define(function (require) {
                 switch (widgetType) {
                     case GEPPETTO.Widgets.PLOT:
                         return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
+                    case GEPPETTO.Widgets.PLOTLY:
+                        return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
                     case GEPPETTO.Widgets.POPUP:
                         return GEPPETTO.Resources.REMOVE_POPUP_WIDGETS;
                     case GEPPETTO.Widgets.SCATTER3D:
@@ -163,6 +172,12 @@ define(function (require) {
                         this.plotsController = new PlotsController();
                     }
                     return this.plotsController;
+                }
+                else if (type == GEPPETTO.Widgets.PLOTLY) {
+                    if (this.plotlyController == null || undefined) {
+                        this.plotlyController = new PlotlyController();
+                    }
+                    return this.plotlyController;
                 }
                 else if (type == GEPPETTO.Widgets.SCATTER3D) {
                     if (this.scatter3dController == null || undefined) {

@@ -1,6 +1,7 @@
 define(function (require) {
 
     var React = require('react'),
+        ReactDOM = require('react-dom'),
         $ = require('jquery'),
         XMLEditor = require('jsx!./XMLEditor'),
         GEPPETTO = require('geppetto');
@@ -66,7 +67,7 @@ define(function (require) {
             }
             
             this.listenTo(GEPPETTO, 'simulation:configloaded', this.setSimulationXML);
-            this.listenTo($(this.getDOMNode()),'shown.bs.modal', function(){
+            this.listenTo($(ReactDOM.findDOMNode(this)),'shown.bs.modal', function(){
                 if(GEPPETTO.tutorialEnabled && !GEPPETTO.tutorialLoadingStep) {
                     $('.select-model').popover({
                         content: 'You can load a sample simulation from the list available. Alternatively, you can enter the URL of your own simulation in the input field above. Open the dropdown list and select the third simulation. Then press continue to go to the next step',

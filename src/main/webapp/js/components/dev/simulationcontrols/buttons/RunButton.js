@@ -8,10 +8,6 @@ define(function (require) {
 
         popoverTitle: 'Run Experiment',
 
-        onClick: function() {
-            GEPPETTO.Flows.onRun("Project.getActiveExperiment().run();");
-        },
-
         componentDidMount: function() {
         },
 
@@ -20,7 +16,7 @@ define(function (require) {
                 label: 'Run',
                 className: 'pull-right',
                 icon: 'fa fa-cogs',
-                onClick: this.onClick
+                onClick: function(){ GEPPETTO.Flows.onRun("Project.getActiveExperiment().run();"); }
             };
         }
 

@@ -7,10 +7,28 @@ define(function (require) {
     document.getElementsByTagName("head")[0].appendChild(link);
 
     var React = require('react'), $ = require('jquery');
+    var ReactDOM = require('react-dom');
+    var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
 
     var ControlPanel = React.createClass({
         displayName: 'ControlPanel',
+
+        getInitialState: function() {
+            return {columns: ['id', 'name']};
+        },
+
+        setColumns: function(cols) {
+            this.setState({columns: cols});
+        },
+
+        setRecords: function(records) {
+            this.setState({data: records});
+        },
+
+        setControls: function(controlsConfig) {
+            this.setState({controls: controlsConfig});
+        },
 
         mixins: [
             require('jsx!mixins/bootstrap/modal')
@@ -20,8 +38,6 @@ define(function (require) {
 
             var escape = 27;
             var pKey = 80;
-
-            var that = this;
 
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == pKey) {
@@ -36,17 +52,38 @@ define(function (require) {
             });
 
             GEPPETTO.ControlPanel = this;
-
-            // TODO: load mock data
         },
 
         render: function () {
-            return (<div id="control-panel-main-container" className="control-panel-main-container">Control panel test</div>);
+            return React.createFactory(Griddle)({tableClassName:'control-panel-table', showFilter: true, results: this.fakeControlPanelData, columns:this.state.columns})
         },
+
+        fakeControlPanelData: [
+            {
+                "id": "TestA",
+                "name": "TestA",
+                "type": ['TypeA', 'TypeB']
+            },
+            {
+                "id": "TestB",
+                "name": "TestB",
+                "type": ['TypeA', 'TypeB']
+            },
+            {
+                "id": "TestC",
+                "name": "TestC",
+                "type": ['TypeA', 'TypeB']
+            },
+            {
+                "id": "TestD",
+                "name": "TestD",
+                "type": ['TypeA', 'TypeB']
+            }
+        ]
     });
 
-    React.renderComponent(
-        <ControlPanel />,
+    ReactDOM.render(
+        React.createFactory(ControlPanel)({className:'control-panel'}),
         document.getElementById("controlpanel")
     );
 });

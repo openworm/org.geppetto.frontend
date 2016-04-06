@@ -61,7 +61,6 @@ define(function (require) {
         require("widgets/connectivity/config");
         //VariableVisualiser widget
         require("widgets/buttonBar/config");
-        require("widgets/plotly/config");
 
         loadCss("geppetto/js/widgets/Widget.css");
     };

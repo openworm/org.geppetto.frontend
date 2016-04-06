@@ -67,6 +67,7 @@ define(function (require) {
             //store in local stack
             this.widgets.push(p);
 
+
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //add commands to console autocomplete and help option

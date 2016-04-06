@@ -128,35 +128,82 @@ define(function (require) {
          * Sets the message that is displayed inside the widget through an instance of type Text
          *
          * @command setText(textInstance)
-         * @param {String} textInstance - An instance of type Text
+         * @param {Object} textInstance - An instance of type Text
          */
-        setText: function(textNode){
-        	return this.setMessage(this.getVariable(textNode).getInitialValues()[0].value.text);
+        setText: function (textNode) {
+            return this.setMessage(this.getVariable(textNode).getInitialValues()[0].value.text);
         },
 
         /**
          * Sets the message that is displayed inside the widget through an instance of type HTML
          *
          * @command setHTML(htmlInstance)
-         * @param {String} htmlInstance - An instance of type HTML
+         * @param {Object} htmlInstance - An instance of type HTML
          */
-        setHTML:function(htmlNode){
+        setHTML: function (htmlNode) {
             return this.setMessage(this.getVariable(htmlNode).getInitialValues()[0].value.html);
         },
-        
+
+
+        /**
+         * Sets the message that is displayed inside the widget through an instance of type HTML
+         *
+         * @command setData(anyInstance)
+         * @param {Object} anyInstance - An instance of any type
+         */
+        setData: function (anyInstance) {
+            this.setMessage(this.getHTML(anyInstance));
+            $("#" + this.getId() + ' .popup-title').click(function (e) {
+                var chevron = $($(e.target).attr("data-target") + "_chevron");
+                if (chevron.hasClass('fa-chevron-circle-down')) {
+                    chevron.removeClass("fa-chevron-circle-down").addClass("fa-chevron-circle-up");
+                }
+                else {
+                    chevron.removeClass("fa-chevron-circle-up").addClass("fa-chevron-circle-down");
+                }
+
+            });
+            return this;
+        },
+
+        /**
+         *
+         * @param anyInstance
+         * @returns {string}
+         */
+        getHTML: function (anyInstance, id) {
+            var type = anyInstance.getType();
+            var html = "";
+            if (type.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                for (var i = 0; i < type.getVariables().length; i++) {
+                    var v = type.getVariables()[i];
+                    var id = this.getId() + "_" + type.getId() + "_el_" + i;
+                    html += "<div class='popup-title' data-toggle='collapse' data-target='#" + id + "'>" + v.getName() + "</div><div id='" + id + "_chevron" + "' class='popup-chevron fa fa-chevron-circle-down '></div>"
+                    html += this.getHTML(v, id);
+                }
+            }
+            else if (type.getMetaType() == GEPPETTO.Resources.HTML_TYPE) {
+                html += "<div id='" + id + "' class='collapse in popup-html'>" + this.getVariable(anyInstance).getInitialValues()[0].value.html + "</div>";
+            }
+            else if (type.getMetaType() == GEPPETTO.Resources.TEXT_TYPE) {
+                html += "<div id='" + id + "' class='collapse in popup-text'>" + this.getVariable(anyInstance).getInitialValues()[0].value.text + "</div>";
+            }
+            return html;
+        },
+
         /**
          * Returns the variable for a node or variable node
          *
          * @command getVariable(node)
          * @param {Object} variable - A variable
          */
-        getVariable:function(node){
-        	if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE){
-        		return node.getVariable();
-        	}
-        	else{
-        		return node;
-        	}
+        getVariable: function (node) {
+            if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
+                return node.getVariable();
+            }
+            else {
+                return node;
+            }
         },
 
         /**

@@ -11,11 +11,40 @@ define(function (require) {
     var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
 
+    var fakeControlPanelData = [
+        {
+            "id": "TestA",
+            "name": "TestA",
+            "type": ['TypeA', 'TypeB']
+        },
+        {
+            "id": "TestB",
+            "name": "TestB",
+            "type": ['TypeA', 'TypeB']
+        },
+        {
+            "id": "TestC",
+            "name": "TestC",
+            "type": ['TypeA', 'TypeB']
+        },
+        {
+            "id": "TestD",
+            "name": "TestD",
+            "type": ['TypeA', 'TypeB']
+        }
+    ];
+
     var ControlPanel = React.createClass({
         displayName: 'ControlPanel',
 
         getInitialState: function() {
-            return {columns: ['id', 'name']};
+            return {columns: ['id', 'name'], data: fakeControlPanelData, controls: []};
+        },
+
+        getDefaultProps: function() {
+            return {
+                tableClassName: 'control-panel-table'
+            };
         },
 
         setColumns: function(cols) {
@@ -55,35 +84,12 @@ define(function (require) {
         },
 
         render: function () {
-            return React.createFactory(Griddle)({tableClassName:'control-panel-table', showFilter: true, results: this.fakeControlPanelData, columns:this.state.columns})
-        },
-
-        fakeControlPanelData: [
-            {
-                "id": "TestA",
-                "name": "TestA",
-                "type": ['TypeA', 'TypeB']
-            },
-            {
-                "id": "TestB",
-                "name": "TestB",
-                "type": ['TypeA', 'TypeB']
-            },
-            {
-                "id": "TestC",
-                "name": "TestC",
-                "type": ['TypeA', 'TypeB']
-            },
-            {
-                "id": "TestD",
-                "name": "TestD",
-                "type": ['TypeA', 'TypeB']
-            }
-        ]
+            return React.createFactory(Griddle)({columns: this.state.columns, results: this.state.data, showFilter: true, showSettings: false});
+        }
     });
 
     ReactDOM.render(
-        React.createFactory(ControlPanel)({className:'control-panel'}),
+        React.createElement(ControlPanel, {}),
         document.getElementById("controlpanel")
     );
 });

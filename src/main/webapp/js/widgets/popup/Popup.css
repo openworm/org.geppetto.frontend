@@ -34,4 +34,35 @@
     font-size: 14px;
     font-weight: 200;
     color: #fc6320;
+    overflow: auto !important;
+}
+
+.popup-title {
+    font-weight: 600;
+    color: #fc6320;
+    cursor: pointer;
+    clear:both;
+    float:left;
+}
+
+.popup-title:hover {
+    color: #fc401a;
+}
+
+.popup-chevron{
+    margin-left: 10px;
+    margin-top: 2px;
+    float:right;
+}
+
+.popup-html {
+    clear:both;
+}
+
+.popup-text {
+    font-size: 14px;
+    font-weight: 200;
+    text-align: justify;
+    color: white;
+    clear:both;
 }

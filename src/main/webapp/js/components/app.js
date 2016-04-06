@@ -4,12 +4,13 @@
 define(function(require) {
 
 	var $ = require('jquery'), GEPPETTO = require('geppetto'), React = require('react'), LoadingSpinner = require('jsx!./loadingspinner/LoadingSpinner'), utils = require('./utils');
+	var ReactDOM = require('react-dom');
 
 	require('./components');
 
-
 	GEPPETTO.on('show_spinner', function(label) {
-		React.renderComponent(LoadingSpinner({
+		var spinnerFactory = React.createFactory(LoadingSpinner);
+		ReactDOM.render(spinnerFactory({
 			show : true,
 			keyboard : false,
 			text: label

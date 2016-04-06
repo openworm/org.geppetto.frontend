@@ -1,6 +1,7 @@
 define(function (require) {
 
     var React = require('react'),
+        ReactDOM = require('react-dom'),
         GEPPETTO = require('geppetto');
 
     var Share = React.createClass({
@@ -31,7 +32,7 @@ define(function (require) {
         }
     });
 
-    React.renderComponent(Share({}), document.getElementById('share-button'));
+    ReactDOM.render(React.createFactory(Share)({}), document.getElementById('share-button'));
 
     var share = $("#share");
 

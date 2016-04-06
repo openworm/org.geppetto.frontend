@@ -59,6 +59,8 @@ require.config({
         'backbone-associations': 'vendor/backbone-associations-min',
         geppetto: 'GEPPETTO',
         react: 'vendor/react',
+        'react-dom': 'vendor/react-dom',
+        griddle: 'vendor/griddle',
         jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',

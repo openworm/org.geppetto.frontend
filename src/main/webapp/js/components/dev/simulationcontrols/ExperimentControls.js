@@ -1,6 +1,7 @@
 define(function (require) {
 
     var React = require('react');
+    var ReactDOM = require('react-dom');
 
     var RunButton = require('./buttons/RunButton');
     var PlayButton = require('./buttons/PlayButton');
@@ -72,16 +73,16 @@ define(function (require) {
 
         render: function () {
             return React.DOM.div({className: 'simulation-controls'},
-                HelpButton({disabled: false}),
-                StopButton({disabled: this.state.disableStop}),
-                PauseButton({disabled: this.state.disablePause}),
-                PlayButton({disabled: this.state.disablePlay}),
-                RunButton({disabled: this.state.disableRun})
+                React.createFactory(HelpButton)({disabled: false}),
+                React.createFactory(StopButton)({disabled: this.state.disableStop}),
+                React.createFactory(PauseButton)({disabled: this.state.disablePause}),
+                React.createFactory(PlayButton)({disabled: this.state.disablePlay}),
+                React.createFactory(RunButton)({disabled: this.state.disableRun})
             );
         }
 
     });
 
-    React.renderComponent(Controls({}, ''), document.getElementById('sim-toolbar'));
+    ReactDOM.render(React.createFactory(Controls)({}, ''), document.getElementById('sim-toolbar'));
 
 });

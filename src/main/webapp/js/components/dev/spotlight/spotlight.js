@@ -12,6 +12,7 @@ define(function (require) {
         bh = require('bloodhound'),
         handlebars = require('handlebars');
 
+    var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
     var Spotlight = React.createClass({
@@ -645,5 +646,5 @@ define(function (require) {
         },
     });
 
-    React.renderComponent(Spotlight({}, ''), document.getElementById("spotlight"));
+    ReactDOM.render(React.createFactory(Spotlight)({},''), document.getElementById("spotlight"));
 });

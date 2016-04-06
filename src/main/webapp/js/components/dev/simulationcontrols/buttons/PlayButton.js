@@ -10,22 +10,6 @@ define(function (require) {
 
         popoverContent: "Once you have loaded a simulation, it's time to see it in action by pressing Start. Click it now to see the simulation in action",
 
-        onClick: function () {
-
-            if (GEPPETTO.ExperimentsController.isPaused()) {
-                GEPPETTO.Console.executeCommand("Project.getActiveExperiment().resume();");
-            }
-            else {
-                if (GEPPETTO.isKeyPressed("shift")) {
-                    GEPPETTO.Flows.onPlay("Project.getActiveExperiment().play();");
-                }
-                else {
-                    GEPPETTO.Flows.onPlay("Project.getActiveExperiment().playAll();");
-                }
-            }
-
-        },
-
         componentDidMount: function () {
             GEPPETTO.on('start:tutorial', (function () {
                 GEPPETTO.once('experiment:loaded', (function () {
@@ -41,7 +25,21 @@ define(function (require) {
                 label: 'Play',
                 className: 'pull-right',
                 icon: 'fa fa-play',
-                onClick: this.onClick
+                onClick: function () {
+
+                    if (GEPPETTO.ExperimentsController.isPaused()) {
+                        GEPPETTO.Console.executeCommand("Project.getActiveExperiment().resume();");
+                    }
+                    else {
+                        if (GEPPETTO.isKeyPressed("shift")) {
+                            GEPPETTO.Flows.onPlay("Project.getActiveExperiment().play();");
+                        }
+                        else {
+                            GEPPETTO.Flows.onPlay("Project.getActiveExperiment().playAll();");
+                        }
+                    }
+
+                }
             };
         }
 

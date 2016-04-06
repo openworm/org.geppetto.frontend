@@ -5,6 +5,7 @@
  */
 define(function (require) {
     var React = require('react'),
+        ReactDOM = require('react-dom'),
         GEPPETTO = require('geppetto'),
         $ = require('jquery');
 
@@ -18,7 +19,7 @@ define(function (require) {
         },
 
         destroyPopover: function () {
-            $(this.getDOMNode()).popover('destroy');
+            $(ReactDOM.findDOMNode(this)).popover('destroy');
         },
 
         /**
@@ -26,15 +27,15 @@ define(function (require) {
          * @returns {HTML-Element} Created Popover
          */
         showPopover: function () {
-            $(this.getDOMNode()).popover({
+            $(ReactDOM.findDOMNode(this)).popover({
                 title: this.props.popoverTitle,
                 content: this.props.popoverContent,
                 placement: 'auto top',
                 template: this.props.template
             }).popover('show');
 
-            $(this.getDOMNode()).on('hidden.bs.popover', (function () {
-                $(this.getDOMNode()).popover('destroy');
+            $(ReactDOM.findDOMNode(this)).on('hidden.bs.popover', (function () {
+                $(ReactDOM.findDOMNode(this)).popover('destroy');
             }).bind(this));
         }
     };

@@ -65,7 +65,7 @@ define(function (require) {
         			 	</div>
         			 	<div className="modal-footer" id="infomodal-footer">
         			 		<button  id="infomodal-btn" className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.onClick} dangerouslySetInnerHTML={{__html: this.props.buttonLabel}}>
-                                                </button>
+                            </button>
         			 	</div>
         			 </div>
               		 </div>

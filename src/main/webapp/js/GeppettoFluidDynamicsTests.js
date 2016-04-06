@@ -58,6 +58,8 @@ require.config({
         'geppetto': "GEPPETTO",
         'QUnit': 'vendor/qunit',
         react: 'vendor/react',
+        'react-dom': 'vendor/react-dom',
+        griddle: 'vendor/griddle',
         jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',

@@ -1,9 +1,8 @@
 define(function(require) {
 
     var React = require('react');
-
+    var ReactDOM = require('react-dom');
     var SaveButton = require('./SaveButton');
-
     var GEPPETTO = require('geppetto');
 
     var Controls = React.createClass({
@@ -32,13 +31,11 @@ define(function(require) {
         },
 
         render: function () {
-            return React.DOM.div({className:'saveButton'},
-                SaveButton({disabled:this.state.disableSave})
-            );
+            return React.DOM.div({className:'saveButton'}, React.createFactory(SaveButton)({disabled:this.state.disableSave}));
         }
 
     });
 
-    React.renderComponent(Controls({},''), document.getElementById("SaveButton"));
+    ReactDOM.render(React.createFactory(Controls)(), document.getElementById("SaveButton"));
 
 });

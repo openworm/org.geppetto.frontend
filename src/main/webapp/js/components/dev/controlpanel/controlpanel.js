@@ -43,7 +43,7 @@ define(function (require) {
 
         getDefaultProps: function() {
             return {
-                tableClassName: 'control-panel-table'
+                "tableClassName": 'control-panel-table'
             };
         },
 
@@ -84,7 +84,7 @@ define(function (require) {
         },
 
         render: function () {
-            return React.createFactory(Griddle)({columns: this.state.columns, results: this.state.data, showFilter: true, showSettings: false});
+            return React.createFactory(Griddle)({columns: this.state.columns, results: this.state.data, showFilter: true, showSettings: false, useGriddleStyles: false});
         }
     });
 

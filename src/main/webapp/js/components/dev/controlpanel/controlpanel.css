@@ -101,3 +101,8 @@
 .griddle .griddle-next{
     text-align:right;
 }
+
+.thumbnail-img{
+    height: 64px;
+    width: 128px;
+}

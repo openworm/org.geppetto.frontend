@@ -11,6 +11,14 @@ define(function (require) {
     var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
 
+    var ImageComponent = React.createClass({
+        render: function(){
+            return (
+                <div><img src={this.props.data} className="thumbnail-img"/></div>
+            )
+        }
+    });
+
     var TypeComponent = React.createClass({
         render: function(){
             return (
@@ -32,22 +40,27 @@ define(function (require) {
         {
             "id": "TestA",
             "name": "TestA",
-            "type": ['Model.common.TypeA', 'Model.common.TypeB']
+            "type": ['Model.common.TypeA', 'Model.common.TypeB'],
+            "image": 'http://i.imgur.com/N5G3Ref.png'
         },
         {
             "id": "TestB",
             "name": "TestB",
-            "type": ['Model.common.TypeX', 'Model.common.TypeY']
+            "type": ['Model.common.TypeX', 'Model.common.TypeY'],
+            "image": 'http://i.imgur.com/N5G3Ref.png'
         },
         {
             "id": "TestC",
             "name": "TestC",
-            "type": ['Model.common.TypeW', 'Model.common.TypeV']
+            "type": ['Model.common.TypeW', 'Model.common.TypeV'],
+            "image": 'http://i.imgur.com/N5G3Ref.png'
+
         },
         {
             "id": "TestD",
             "name": "TestD",
-            "type": ['Model.common.TypeY', 'Model.common.TypeZ']
+            "type": ['Model.common.TypeY', 'Model.common.TypeZ'],
+            "image": 'http://i.imgur.com/N5G3Ref.png'
         }
     ];
 
@@ -74,14 +87,15 @@ define(function (require) {
             "customComponent": TypeComponent,
             "displayName": "Type(s)"
         },
-        /*{
-            "columnName": "thumbnail",
+        {
+            "columnName": "image",
             "order": 4,
             "locked": false,
             "visible": true,
-            "customComponent": ImageComponent
+            "customComponent": ImageComponent,
+            "displayName": "Image"
         },
-        {
+        /*{
             "columnName": "controls",
             "order": 5,
             "locked": false,
@@ -94,7 +108,7 @@ define(function (require) {
         displayName: 'ControlPanel',
 
         getInitialState: function() {
-            return {columns: ['id', 'name', 'type'], data: fakeControlPanelData, controls: []};
+            return {columns: ['id', 'name', 'type', 'image'], data: fakeControlPanelData, controls: []};
         },
 
         getDefaultProps: function() {

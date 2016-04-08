@@ -2,22 +2,24 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>GEPPETTO Tests for the fluid dynamics bundle</title>
+    <title>GEPPETTO Tests for Neuron/LEMS Experiments</title>
     <link rel="stylesheet" href="geppetto/css/qunit.css">
     <link rel="stylesheet" href="geppetto/css/custom-theme/jquery-ui-1.10.0.custom.css" />
 
-    <script>
-        var path = "org.geppetto.frontend";
-        if(path === "") {
-            window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
-        } else if(path === "/") {
-            window.BUNDLE_CONTEXT_PATH = "";
-        } else {
-            window.BUNDLE_CONTEXT_PATH = path;
-        }
+    <!-- build:template
+        <script>
+            var path = "<%= contextPath %>";
+            if(path === "") {
+                window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
+            } else if(path === "/") {
+                window.BUNDLE_CONTEXT_PATH = "";
+            } else {
+                window.BUNDLE_CONTEXT_PATH = path;
+            }
 
-        window.USE_SSL = false;
-    </script>
+            window.USE_SSL = <%= useSsl %>;
+        </script>
+    /build -->
 
     <script type="text/template" id="tplSandbox">
         <pre class="output"></pre>
@@ -41,7 +43,7 @@
     <% } %></script>
 
     <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-    <script data-main="geppetto/js/GeppettoFluidDynamicsTests.js" src="geppetto/js/vendor/require.js"></script>
+    <script data-main="geppetto/js/GeppettoNeuronalCustomTests.js" src="geppetto/js/vendor/require.js"></script>
 
 </head>
 <body>

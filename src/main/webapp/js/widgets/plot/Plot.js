@@ -320,6 +320,33 @@ define(function (require) {
          * @param {Object} dataY - series to plot on Y axis, can be array or an object
          * @param options - options for the plotting widget, if null uses default
          */
+        getXYTimeSeriesData: function (dataX, dataY) {
+            // change to getTimeSeries(), once it is fixed
+        	var timeTimeSeries = dataX.attributes.variable.attributes.wrappedObj.initialValues[0].value.value;
+        	var timeSeries = dataY.attributes.variable.attributes.wrappedObj.initialValues[0].value.value;
+           
+            var timeSeriesData = [];
+
+            if (timeSeries && timeSeries.length > 1) {
+                for (var step = 0; step < timeSeries.length; step++) {
+                    timeSeriesData.push([timeTimeSeries[step], timeSeries[step]]);
+                }
+            }
+
+            var localxmin = Math.min.apply(null, timeTimeSeries);
+            var localymin = Math.min.apply(null, timeSeries);
+            localymin = localymin - Math.abs(localymin * 0.1);
+            var localxmax = Math.max.apply(null, timeTimeSeries);
+            var localymax = Math.max.apply(null, timeSeries);
+            localymax = localymax + Math.abs(localymax * 0.1);
+
+            this.options.xaxis.min = Math.min(this.options.xaxis.min, localxmin);
+            this.options.yaxis.min = Math.min(this.options.yaxis.min, localymin);
+            this.options.xaxis.max = Math.max(this.options.xaxis.max, localxmax);
+            this.options.yaxis.max = Math.max(this.options.yaxis.max, localymax);
+
+            return timeSeriesData;
+        },
         plotXYData: function (dataX, dataY, options) {
 
             // If no options specify by user, use default options
@@ -330,18 +357,13 @@ define(function (require) {
                 }
             }
 
+            timeSeriesData = this.getXYTimeSeriesData(dataX, dataY);
+            
             this.datasets.push({
-                label: dataX.name,
-                data: dataX.data
+                label: dataY.getInstancePath(),
+                variable: dataY,
+                data: timeSeriesData
             });
-
-            if (dataY != undefined) {
-                this.datasets.push({
-                    label: dataY.name,
-                    data: dataY.data
-                });
-            }
-
             var plotHolder = $("#" + this.id);
 
             this.plot = $.plot(plotHolder, this.datasets, this.options);

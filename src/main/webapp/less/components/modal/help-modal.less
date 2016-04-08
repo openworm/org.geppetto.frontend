@@ -1,68 +1,63 @@
-#help-modal{
-	top : 10%;
-	font-family : 'Helvetica Neue';
-	font-weight:200;
-	
-	h4 {
-    	color:@orange;
-	}
+#help-modal {
+  top: 10%;
+  font-family: 'Helvetica Neue';
+  font-weight: 200;
 
-	p {
-	color:white;
-	}
+  h4 {
+    color: @orange;
+  }
 
-	p#darkblue {
-	   display:block;
-	   color:darkblue;
-	}
+  p {
+    color: white;
+  }
 
-	p#lightblue {
-	    display:block;
-	    color:lightblue;
-	}
-	
-	p#yellow {
-	    display:block;
-	    color:yellow;
-	}
+  .circle {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    clear: both;
+    float: left;
+    margin-bottom: 10px;
+  }
 
-	p#mistyrose {
-	    display:block;
-	    color:mistyrose;
-	}
-	
-	p#orange {
-	    display:block;
-	    color:orange;
-	}
-	
-	p#red {
-	    display:block;
-	    color:red;
-	}
-	
-	p#green {
-	    display:block;
-	    color:limegreen;
-	}
-	
-	h4.modal-title {
-	    text-align: center;
-	}
-	
-	.modal-body{
-		overflow-y : auto;
-	}
-		
-	.btn, .label {
-	    margin-left:3px;
-	    margin-right:3px;
-	}
-	
-	
-	.icon-question-sign {
-	    margin-left: 5px;
-	    font-size: 20px;
-	}
-	
+  .circle-description {
+    margin-left: 40px;
+    margin-top: 21px;
+    color: white;
+  }
+
+  .default {
+    background-color: #0199e8;
+  }
+  .selected {
+    background-color: #ffcc00;
+  }
+  .input {
+    background-color: #ffdfc6;
+  }
+  .output {
+    background-color: #ff5a02;
+  }
+  .inputoutput {
+    background-color: #649615;
+  }
+
+  h4.modal-title {
+    text-align: center;
+  }
+
+  .modal-body {
+    overflow-y: auto;
+  }
+
+  .btn, .label {
+    margin-left: 3px;
+    margin-right: 3px;
+  }
+
+  .icon-question-sign {
+    margin-left: 5px;
+    font-size: 20px;
+  }
+
 }

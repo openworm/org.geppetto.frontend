@@ -66,23 +66,14 @@ define(function (require) {
                             To use this feature add the query string paramater <a className="label label-default">load_project_from_id=PROJECT_ID</a>, where
                             <a className="label label-default">PROJECT_ID</a> corresponds to the ID of the project you want to load.
                             </p>
-                            <h4>Colours Coding and Connected Elements</h4>
-                            <p>The following colour chart demonstrates the colour coding of
-                            each of the connected elements.</p>
-                            <p id="darkblue">Code for Something Else Selected.</p>
-                            <b></b>
-                            <p id="lightblue">Code for Default Unselected.</p>
-                            <b></b>
-                            <p id="yellow">Code for Selected.</p>
-                            <b></b>
-                            <p id="mistyrose">Code for Input to Selected.</p>
-                            <b></b>
-                            <p id="orange">Code for Output to Selected.</p>
-                            <b></b>
-                            <p id="red">Code for Default Highlighted.</p>
-                            <b></b>
-                            <p id="green">Code for Input and Output to Selected.</p>
-                            <b></b>
+                            <h4>Colour code for connections and connected elements</h4>
+
+                            <div className="circle default" ></div><div className="circle-description">The element is Unselected</div>
+                            <div className="circle selected" ></div><div className="circle-description">The element is Selected</div>
+                            <div className="circle input" ></div><div className="circle-description">The element is an input to the Selected one.</div>
+                            <div className="circle output" ></div><div className="circle-description">The element is an output to the Selected one.</div>
+                            <div className="circle inputoutput" ></div><div className="circle-description">The element is both an input and an output to the Selected one.</div>
+
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn" data-dismiss="modal" >Close</button>

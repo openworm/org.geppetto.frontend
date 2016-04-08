@@ -68,8 +68,8 @@ define(function (require) {
                             </p>
                             <h4>Colour code for connections and connected elements</h4>
 
-                            <div className="circle default" ></div><div className="circle-description">The element is Unselected</div>
-                            <div className="circle selected" ></div><div className="circle-description">The element is Selected</div>
+                            <div className="circle default" ></div><div className="circle-description">The element is Unselected.</div>
+                            <div className="circle selected" ></div><div className="circle-description">The element is Selected.</div>
                             <div className="circle input" ></div><div className="circle-description">The element is an input to the Selected one.</div>
                             <div className="circle output" ></div><div className="circle-description">The element is an output to the Selected one.</div>
                             <div className="circle inputoutput" ></div><div className="circle-description">The element is both an input and an output to the Selected one.</div>

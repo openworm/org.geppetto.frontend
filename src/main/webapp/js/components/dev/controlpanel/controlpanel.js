@@ -39,8 +39,32 @@ define(function (require) {
 
     var ControlsComponent = React.createClass({
         render: function(){
+            var path = this.props.rowData.path;
+            var config = defaultControlsConfiguration;
+            var ctrlButtons = [];
+
+            // Add common control buttons to list
+            for(var control in config.Common){
+                if($.inArray(control.toString(), config.showControls.Common) != -1){
+                    ctrlButtons.push(config.Common[control]);
+                }
+            }
+
+            // TODO check if instance has visual capability
+            // Add visual capability controls to list
+            for(var control in config.VisualCapability){
+                if($.inArray(control.toString(), config.showControls.VisualCapability) != -1){
+                    ctrlButtons.push(config.VisualCapability[control]);
+                }
+            }
+
             return (
-                <div>TODO</div>
+                <div>
+                    {ctrlButtons.map(function(control, id) {
+                        var classVal = "btn fa " + control.icon;
+                        return <button className={classVal} key={id}></button>
+                    })}
+                </div>
             )
         }
     });
@@ -50,26 +74,30 @@ define(function (require) {
             "path": "path.TestA",
             "name": "TestA",
             "type": ['Model.common.TypeA', 'Model.common.TypeB'],
-            "image": 'http://i.imgur.com/N5G3Ref.png'
+            "image": 'http://i.imgur.com/N5G3Ref.png',
+            "controls": ""
         },
         {
             "path": "path.TestB",
             "name": "TestB",
             "type": ['Model.common.TypeX', 'Model.common.TypeY'],
-            "image": 'http://i.imgur.com/N5G3Ref.png'
+            "image": 'http://i.imgur.com/N5G3Ref.png',
+            "controls": ""
         },
         {
             "path": "path.TestC",
             "name": "TestC",
             "type": ['Model.common.TypeW', 'Model.common.TypeV'],
-            "image": 'http://i.imgur.com/N5G3Ref.png'
+            "image": 'http://i.imgur.com/N5G3Ref.png',
+            "controls": ""
 
         },
         {
             "path": "path.TestD",
             "name": "TestD",
             "type": ['Model.common.TypeY', 'Model.common.TypeZ'],
-            "image": 'http://i.imgur.com/N5G3Ref.png'
+            "image": 'http://i.imgur.com/N5G3Ref.png',
+            "controls": ""
         }
     ];
 
@@ -104,19 +132,20 @@ define(function (require) {
             "customComponent": ImageComponent,
             "displayName": "Image"
         },
-        /*{
+        {
             "columnName": "controls",
             "order": 5,
             "locked": false,
             "visible": true,
-            "customComponent": ControlsComponent
-        },*/
+            "customComponent": ControlsComponent,
+            "displayName": "Controls"
+        },
     ];
 
     var defaultControlsConfiguration = {
-        "controls": {
+        "showControls": {
             "Common": ['info', 'delete'],
-            "VisualCapability": ['visibility', 'colour']
+            "VisualCapability": ['colour']
         },
         "VisualCapability": {
             "visibility": {
@@ -152,9 +181,9 @@ define(function (require) {
                 "actions": [
                     "G.addWidget(3).setData($instance$)"
                 ],
-                "icon": "fa-tint",
-                "label": "Colour",
-                "tooltip": "Colour"
+                "icon": "fa-info-circle",
+                "label": "Info",
+                "tooltip": "Info"
             },
             "delete": {
                 "actions": [
@@ -163,7 +192,7 @@ define(function (require) {
                 "icon": "fa-trash-o",
                 "label": "Colour",
                 "tooltip": "Colour"
-            },
+            }
         }
     };
 
@@ -171,7 +200,7 @@ define(function (require) {
         displayName: 'ControlPanel',
 
         getInitialState: function() {
-            return {columns: ['name', 'type', 'image'], data: fakeControlPanelData, controls: defaultControlsConfiguration};
+            return {columns: ['name', 'type', 'image', 'controls'], data: fakeControlPanelData, controlsConfig: defaultControlsConfiguration};
         },
 
         getDefaultProps: function() {

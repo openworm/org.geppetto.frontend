@@ -39,8 +39,9 @@ define(function (require) {
 
     var ControlsComponent = React.createClass({
         render: function(){
+            // TODO: would be nicer to pass controlsConfig straight from the parent component rather than assume
+            var config = GEPPETTO.ControlPanel.state.controlsConfig;
             var path = this.props.rowData.path;
-            var config = defaultControlsConfiguration;
             var ctrlButtons = [];
 
             // Add common control buttons to list
@@ -158,7 +159,7 @@ define(function (require) {
         },
     ];
 
-    var defaultControlsConfiguration = {
+    var globalControlsConfiguration = {
         "showControls": {
             "Common": ['info', 'delete'],
             "VisualCapability": ['colour']
@@ -188,12 +189,12 @@ define(function (require) {
             "colour": {
                 "id": "colour",
                 "actions": [
-                    ""
+                    "alert('TODO: set colour of ' + $instance$.getName())"
                 ],
                 "icon": "fa-tint",
                 "label": "Colour",
                 "tooltip": "Colour"
-            },
+            }
         },
         "Common": {
             "info": {
@@ -208,7 +209,7 @@ define(function (require) {
             "delete": {
                 "id": "delete",
                 "actions": [
-                    "alert($instance$)"
+                    "alert('TODO: delete ' + $instance$.getName())"
                 ],
                 "icon": "fa-trash-o",
                 "label": "Colour",
@@ -221,7 +222,7 @@ define(function (require) {
         displayName: 'ControlPanel',
 
         getInitialState: function() {
-            return {columns: ['name', 'type', 'image', 'controls'], data: fakeControlPanelData, controlsConfig: defaultControlsConfiguration};
+            return {columns: ['name', 'type', 'image', 'controls'], data: fakeControlPanelData, controlsConfig: globalControlsConfiguration};
         },
 
         getDefaultProps: function() {
@@ -237,16 +238,22 @@ define(function (require) {
 
         setRecords: function(records) {
             // TODO: go from list of instances / variables to simple JSON
+            // set state to refresh grid
             this.setState({data: records});
         },
 
         setControls: function(controlsConfig) {
+            // set state to refresh grid
             this.setState({controlsConfig: controlsConfig});
         },
 
         mixins: [
             require('jsx!mixins/bootstrap/modal')
         ],
+
+        componentWillMount: function() {
+            GEPPETTO.ControlPanel = this;
+        },
 
         componentDidMount: function () {
 
@@ -264,8 +271,6 @@ define(function (require) {
                     $("#controlpanel").hide();
                 }
             });
-
-            GEPPETTO.ControlPanel = this;
         },
 
         render: function () {

@@ -27,6 +27,7 @@ define(function (require) {
                         var displayText = item.split('.')[item.split('.').length - 1];
                         var action = function(e){
                             e.preventDefault();
+                            // TODO: swap the alert with opening the type in a widget
                             alert(item);
                         };
                         return <li key={i}><a href='#' onClick={action}>{displayText}</a></li>;
@@ -36,28 +37,36 @@ define(function (require) {
         }
     });
 
+    var ControlsComponent = React.createClass({
+        render: function(){
+            return (
+                <div>TODO</div>
+            )
+        }
+    });
+
     var fakeControlPanelData = [
         {
-            "id": "TestA",
+            "path": "path.TestA",
             "name": "TestA",
             "type": ['Model.common.TypeA', 'Model.common.TypeB'],
             "image": 'http://i.imgur.com/N5G3Ref.png'
         },
         {
-            "id": "TestB",
+            "path": "path.TestB",
             "name": "TestB",
             "type": ['Model.common.TypeX', 'Model.common.TypeY'],
             "image": 'http://i.imgur.com/N5G3Ref.png'
         },
         {
-            "id": "TestC",
+            "path": "path.TestC",
             "name": "TestC",
             "type": ['Model.common.TypeW', 'Model.common.TypeV'],
             "image": 'http://i.imgur.com/N5G3Ref.png'
 
         },
         {
-            "id": "TestD",
+            "path": "path.TestD",
             "name": "TestD",
             "type": ['Model.common.TypeY', 'Model.common.TypeZ'],
             "image": 'http://i.imgur.com/N5G3Ref.png'
@@ -66,11 +75,11 @@ define(function (require) {
 
     var controlPanelColumnMeta = [
         {
-            "columnName": "id",
+            "columnName": "path",
             "order": 1,
             "locked": false,
             "visible": true,
-            "displayName": "Id"
+            "displayName": "Path"
         },
         {
             "columnName": "name",
@@ -104,11 +113,65 @@ define(function (require) {
         },*/
     ];
 
+    var defaultControlsConfiguration = {
+        "controls": {
+            "Common": ['info', 'delete'],
+            "VisualCapability": ['visibility', 'colour']
+        },
+        "VisualCapability": {
+            "visibility": {
+                "condition": "GEPPETTO.SceneController.isVisible($instance$)",
+                "false": {
+                    "actions": [
+                        "GEPPETTO.SceneController.show($instance$)"
+                    ],
+                    "icon": "fa-eye-slash",
+                    "label": "Hidden",
+                    "tooltip": "Show"
+                },
+                "true": {
+                    "actions": [
+                        "GEPPETTO.SceneController.hide($instance$)"
+                    ],
+                    "icon": "fa-eye",
+                    "label": "Visible",
+                    "tooltip": "Hide"
+                }
+            },
+            "colour": {
+                "actions": [
+                    ""
+                ],
+                "icon": "fa-tint",
+                "label": "Colour",
+                "tooltip": "Colour"
+            },
+        },
+        "Common": {
+            "info": {
+                "actions": [
+                    "G.addWidget(3).setData($instance$)"
+                ],
+                "icon": "fa-tint",
+                "label": "Colour",
+                "tooltip": "Colour"
+            },
+            "delete": {
+                "actions": [
+                    ""
+                ],
+                "icon": "fa-trash-o",
+                "label": "Colour",
+                "tooltip": "Colour"
+            },
+        }
+    };
+
     var ControlPanel = React.createClass({
         displayName: 'ControlPanel',
 
         getInitialState: function() {
-            return {columns: ['id', 'name', 'type', 'image'], data: fakeControlPanelData, controls: []};
+            return {columns: ['name', 'type', 'image'], data: fakeControlPanelData, controls: defaultControlsConfiguration};
         },
 
         getDefaultProps: function() {

@@ -41,22 +41,23 @@
     font-weight: 600;
     color: #fc6320;
     cursor: pointer;
-    clear:both;
-    float:left;
+    clear: both;
+    float: left;
 }
 
 .popup-title:hover {
     color: #fc401a;
 }
 
-.popup-chevron{
+.popup-chevron {
     margin-left: 10px;
     margin-top: 2px;
-    float:right;
+    float: right;
+    color: #8A7F7F;
 }
 
 .popup-html {
-    clear:both;
+    clear: both;
 }
 
 .popup-text {
@@ -64,5 +65,5 @@
     font-weight: 200;
     text-align: justify;
     color: white;
-    clear:both;
+    clear: both;
 }

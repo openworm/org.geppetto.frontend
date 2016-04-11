@@ -70,6 +70,7 @@ define(function (require) {
                 }
 
                 if(!anythingRecorded){
+
                     // if not, bring up spotlight configured for the RUN flow
                     GEPPETTO.Spotlight.open(GEPPETTO.Resources.RUN_FLOW);
 

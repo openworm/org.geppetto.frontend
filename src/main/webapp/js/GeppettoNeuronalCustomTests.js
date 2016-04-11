@@ -45,7 +45,7 @@ require.config({
 
     /*
      * Values in here are for dependencies that more than one module/script requires and/or needs.
-     * E.G. If depenedency it's used more than once, it goes in here.
+     * E.G. If dependency it's used more than once, it goes in here.
      */
     paths: {
         'jquery': "vendor/jquery-1.9.1.min",
@@ -62,11 +62,7 @@ require.config({
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',
         pako: 'vendor/pako.min',
-        mathjs: 'vendor/math.min',
-        'QUnitPersistenceTests': 'tests/QUnitPersistenceTests',
-        'QUnitNeuronalTests': 'tests/QUnitNeuronalTests',
-        'QUnitFluidDynamicsTests': 'tests/QUnitFluidDynamicsTests',
-        'QUnitGeppettoCoreTests': 'tests/QUnitGeppettoCoreTests'	
+        mathjs: 'vendor/math.min'
     },
     /*
      * Notes what dependencies are needed prior to loading each library, values on the right
@@ -77,6 +73,16 @@ require.config({
         'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
+        'vendor/shaders/ConvolutionShader': ['three'],
+        'vendor/shaders/CopyShader': ['three'],
+        'vendor/shaders/FilmShader': ['three'],
+        'vendor/shaders/FocusShader': ['three'],
+        'vendor/postprocessing/EffectComposer': ['three'],
+        'vendor/postprocessing/MaskPass': ['three'],
+        'vendor/postprocessing/RenderPass': ['three'],
+        'vendor/postprocessing/BloomPass': ['three'],
+        'vendor/postprocessing/ShaderPass': ['three'],
+        'vendor/postprocessing/FilmPass': ['three'],
         'vendor/ColladaLoader': ['three'],
         'vendor/OBJLoader': ['three'],
         'vendor/ColorConverter': ["three"],
@@ -91,7 +97,6 @@ require.config({
         'widgets/plot/vendor/jquery.flot.min': ['jquery'],
         'widgets/plot/vendor/jquery.flot.resize.min': ['widgets/plot/vendor/jquery.flot.min'],
         'widgets/plot/vendor/jquery.flot.axislabels.min': ['widgets/plot/vendor/jquery.flot.min'],
-        'geppetto': ['three'],
         'QUnit': {
             exports: 'QUnit',
             deps: ['geppetto'],
@@ -99,25 +104,7 @@ require.config({
                 QUnit.config.autoload = false;
                 QUnit.config.autostart = false;
             }
-        },
-        'QUnitPersistenceTests':{
-        	exports: 'QUnitPersistenceTests',
-            deps: ['geppetto']
-        },
-        'QUnitNeuronalTests':{
-        	exports: 'QUnitNeuronalTests',
-            deps: ['geppetto']
-        },
-        'QUnitFluidDynamicsTests':{
-        	exports: 'QUnitFluidDynamicsTests',
-            deps: ['geppetto']
-        },
-        'QUnitGeppettoCoreTests':{
-        	exports: 'QUnitGeppettoCoreTests',
-            deps: ['geppetto']
         }
-        
-
     }
 });
 
@@ -144,6 +131,7 @@ jqueryLib.push("vendor/Detector");
 jqueryLib.push("vendor/jquery.cookie");
 jqueryLib.push("vendor/rAF");
 jqueryLib.push("pako");
+jqueryLib.push("mathjs");
 
 require(jqueryLib, function ($) {
 
@@ -158,13 +146,9 @@ require(jqueryLib, function ($) {
         window.help = GEPPETTO.Utility.help;
 
         require(
-            ['QUnit', 'QUnitPersistenceTests', 'QUnitNeuronalTests',
-                'QUnitFluidDynamicsTests', 'QUnitGeppettoCoreTests'],
-            function (QUnit, persistenceTests, neuronal, fluid, core) {
-                persistenceTests.run();
-                neuronal.run();
-                fluid.run();
-                core.run();
+            ['QUnit', 'tests/QUnitNeuronalCustomTests'],
+            function (QUnit, neuronalCustomTests) {
+            	neuronalCustomTests.run();
                 // start QUnit.
                 QUnit.load();
                 QUnit.start();

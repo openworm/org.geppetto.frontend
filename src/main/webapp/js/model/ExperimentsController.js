@@ -270,7 +270,6 @@ define(function (require) {
 
 
                 }
-                ;
             }
             ,
 

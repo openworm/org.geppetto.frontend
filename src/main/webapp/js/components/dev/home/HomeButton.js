@@ -7,7 +7,11 @@ define(function (require) {
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
 
         onClick: function() {
-        	var win = window.open("./", '_blank');
+        	var targetWindow = '_blank';
+            if(window.EMBEDDED) {
+            	targetWindow = '_self';
+            }
+            var win = window.open("./", targetWindow);
         	win.focus();
         },
 

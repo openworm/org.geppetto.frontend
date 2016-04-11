@@ -469,8 +469,6 @@ define(function (require) {
                         instances[j].highlightInstances(mode, type);
                     }
                 }
-
-                message = GEPPETTO.Resources.BATCH_HIGHLIGHT_CONNECTIONS;
             }
         },
 
@@ -502,8 +500,6 @@ define(function (require) {
                         instances[j].showConnectionLines(mode);
                     }
                 }
-
-                message = GEPPETTO.Resources.BATCH_SHOW_CONNECTIONS_LINES;
             }
         }
 

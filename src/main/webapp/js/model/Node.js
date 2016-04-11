@@ -125,7 +125,7 @@ define(['jquery', 'underscore', 'backbone',
 
                 if (typeof this.getChildren === "function") {
                     var children = this.getChildren();
-                    for (ci in children) {
+                    for (var ci in children) {
                         this._all.call(children[ci], predicate, matches);
                     }
                 }

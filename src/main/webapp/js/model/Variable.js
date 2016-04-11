@@ -154,7 +154,7 @@ define(function (require) {
             if (values.length == 1) {
                 return values[0];
             } else {
-                values;
+                return values;
             }
         },
 

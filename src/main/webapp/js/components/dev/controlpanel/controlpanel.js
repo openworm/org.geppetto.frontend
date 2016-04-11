@@ -61,8 +61,11 @@ define(function (require) {
             return (
                 <div>
                     {ctrlButtons.map(function(control, id) {
+                        // TODO: check condition
+                        var idVal = path + "_" + control.id + "_ctrlPanel_btn";
                         var classVal = "btn fa " + control.icon;
-                        return <button className={classVal} key={id}></button>
+                        return <button id={idVal} className={classVal} key={id}></button>
+                        // TODO: add click handler
                     })}
                 </div>
             )
@@ -151,6 +154,7 @@ define(function (require) {
             "visibility": {
                 "condition": "GEPPETTO.SceneController.isVisible($instance$)",
                 "false": {
+                    "id": "visibility",
                     "actions": [
                         "GEPPETTO.SceneController.show($instance$)"
                     ],
@@ -159,6 +163,7 @@ define(function (require) {
                     "tooltip": "Show"
                 },
                 "true": {
+                    "id": "visibility",
                     "actions": [
                         "GEPPETTO.SceneController.hide($instance$)"
                     ],
@@ -168,6 +173,7 @@ define(function (require) {
                 }
             },
             "colour": {
+                "id": "colour",
                 "actions": [
                     ""
                 ],
@@ -178,6 +184,7 @@ define(function (require) {
         },
         "Common": {
             "info": {
+                "id": "info",
                 "actions": [
                     "G.addWidget(3).setData($instance$)"
                 ],
@@ -186,6 +193,7 @@ define(function (require) {
                 "tooltip": "Info"
             },
             "delete": {
+                "id": "delete",
                 "actions": [
                     ""
                 ],
@@ -220,7 +228,7 @@ define(function (require) {
         },
 
         setControls: function(controlsConfig) {
-            this.setState({controls: controlsConfig});
+            this.setState({controlsConfig: controlsConfig});
         },
 
         mixins: [

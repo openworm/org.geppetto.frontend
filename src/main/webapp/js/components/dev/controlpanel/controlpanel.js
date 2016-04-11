@@ -61,11 +61,24 @@ define(function (require) {
             return (
                 <div>
                     {ctrlButtons.map(function(control, id) {
-                        // TODO: check condition
+                        // TODO: handle conditions
+
                         var idVal = path + "_" + control.id + "_ctrlPanel_btn";
                         var classVal = "btn fa " + control.icon;
-                        return <button id={idVal} className={classVal} key={id}></button>
-                        // TODO: add click handler
+                        var actionStr = '';
+                        if(control.actions.length > 0){
+                            for(var i=0; i<control.actions.length; i++){
+                                actionStr += ((i!=0)?";":"") + control.actions[i].replace(/\$instance\$/gi, path);
+                            }
+                        }
+
+                        var actionFn = function(){
+                            if(actionStr!='' && actionStr!=undefined){
+                                GEPPETTO.Console.executeCommand(actionStr);
+                            }
+                        };
+
+                        return <button id={idVal} className={classVal} key={id} onClick={actionFn}></button>
                     })}
                 </div>
             )
@@ -195,7 +208,7 @@ define(function (require) {
             "delete": {
                 "id": "delete",
                 "actions": [
-                    ""
+                    "alert($instance$)"
                 ],
                 "icon": "fa-trash-o",
                 "label": "Colour",

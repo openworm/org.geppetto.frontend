@@ -167,7 +167,7 @@ define(function (require) {
                         suggestionFound = true;
                         var actions = found[0].actions;
                         actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommand(action)
+                            GEPPETTO.Console.executeCommandinst(action)
                         });
                         $("#typeahead").typeahead('val', "");
                     }

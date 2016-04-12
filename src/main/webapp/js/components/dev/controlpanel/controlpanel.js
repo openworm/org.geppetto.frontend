@@ -10,6 +10,7 @@ define(function (require) {
     var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
+    var AVisualCapability = require('model/AVisualCapability');
 
     var ImageComponent = React.createClass({
         render: function(){
@@ -27,8 +28,8 @@ define(function (require) {
                         var displayText = item.split('.')[item.split('.').length - 1];
                         var action = function(e){
                             e.preventDefault();
-                            // TODO: swap the alert with opening the type in a widget
-                            alert(item);
+                            var actionStr = "G.addWidget(3).setData(" + item + ").setName('" + displayText + "')";
+                            GEPPETTO.Console.executeCommand(actionStr);
                         };
                         return <li key={i}><a href='#' onClick={action}>{displayText}</a></li>;
                     })}
@@ -39,11 +40,20 @@ define(function (require) {
 
     var ControlsComponent = React.createClass({
         render: function(){
-            // TODO: would be nicer to pass controlsConfig straight from the parent component rather than assume
+            // TODO: would be nicer to pass controls and config straight from the parent component rather than assume
             var showControls = GEPPETTO.ControlPanel.state.controls;
             var config = GEPPETTO.ControlPanel.state.controlsConfig;
             var path = this.props.rowData.path;
             var ctrlButtons = [];
+
+            // retrieve entity/instance
+            var entity = undefined;
+            try{
+                // need to eval because this is a nested path - not simply a global on window
+                entity = eval(path)
+            } catch (e) {
+                throw( "The instance " + path + " does not exist in the current model" );
+            }
 
             // Add common control buttons to list
             for(var control in config.Common){
@@ -52,18 +62,28 @@ define(function (require) {
                 }
             }
 
-            // TODO check if instance has visual capability
-            // Add visual capability controls to list
-            for(var control in config.VisualCapability){
-                if($.inArray(control.toString(), showControls.VisualCapability) != -1){
-                    ctrlButtons.push(config.VisualCapability[control]);
+            if(entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
+                // Add visual capability controls to list
+                for (var control in config.VisualCapability) {
+                    if ($.inArray(control.toString(), showControls.VisualCapability) != -1) {
+                        ctrlButtons.push(config.VisualCapability[control]);
+                    }
                 }
             }
 
             return (
                 <div>
                     {ctrlButtons.map(function(control, id) {
-                        // TODO: handle conditions
+                        // handle conditions
+                        if(control.hasOwnProperty('condition')){
+                            // evaluate condition and reassign control depending on results
+                            var conditionStr = control.condition.replace(/\$instance\$/gi, path);
+                            if(eval(conditionStr)){
+                                control = control.true;
+                            } else {
+                                control = control.false;
+                            }
+                        }
 
                         var idVal = path + "_" + control.id + "_ctrlPanel_btn";
                         var classVal = "btn fa " + control.icon;
@@ -220,9 +240,9 @@ define(function (require) {
 
         getInitialState: function() {
             return {
-                columns: ['name', 'type', 'image', 'controls'],
-                data: fakeControlPanelData,
-                controls: {"Common": ['info', 'delete'], "VisualCapability": ['colour']},
+                columns: ['name', 'type', 'controls'],
+                data: [],
+                controls: {"Common": ['info', 'delete'], "VisualCapability": ['colour', 'visibility']},
                 controlsConfig: defaultControlsConfiguration
             };
         },
@@ -238,10 +258,21 @@ define(function (require) {
             this.setState({columns: cols});
         },
 
-        setRecords: function(records) {
-            // TODO: go from list of instances / variables to simple JSON
+        setData: function(records) {
+            // go from list of instances / variables to simple JSON
+            var gridInput = [];
+            for(var i=0; i < records.length; i++){
+                gridInput.push({
+                    "path": records[i].getPath(),
+                    "name": records[i].getName(),
+                    "type": records[i].getTypes().map(function(t){ return t.getPath() }),
+                    "image": "",
+                    "controls": ""
+                });
+            }
+
             // set state to refresh grid
-            this.setState({data: records});
+            this.setState({data: gridInput});
         },
 
         setControls: function(showControls) {

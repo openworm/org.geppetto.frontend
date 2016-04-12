@@ -40,13 +40,14 @@ define(function (require) {
     var ControlsComponent = React.createClass({
         render: function(){
             // TODO: would be nicer to pass controlsConfig straight from the parent component rather than assume
+            var showControls = GEPPETTO.ControlPanel.state.controls;
             var config = GEPPETTO.ControlPanel.state.controlsConfig;
             var path = this.props.rowData.path;
             var ctrlButtons = [];
 
             // Add common control buttons to list
             for(var control in config.Common){
-                if($.inArray(control.toString(), config.showControls.Common) != -1){
+                if($.inArray(control.toString(), showControls.Common) != -1){
                     ctrlButtons.push(config.Common[control]);
                 }
             }
@@ -54,7 +55,7 @@ define(function (require) {
             // TODO check if instance has visual capability
             // Add visual capability controls to list
             for(var control in config.VisualCapability){
-                if($.inArray(control.toString(), config.showControls.VisualCapability) != -1){
+                if($.inArray(control.toString(), showControls.VisualCapability) != -1){
                     ctrlButtons.push(config.VisualCapability[control]);
                 }
             }
@@ -159,11 +160,7 @@ define(function (require) {
         },
     ];
 
-    var globalControlsConfiguration = {
-        "showControls": {
-            "Common": ['info', 'delete'],
-            "VisualCapability": ['colour']
-        },
+    var defaultControlsConfiguration = {
         "VisualCapability": {
             "visibility": {
                 "condition": "GEPPETTO.SceneController.isVisible($instance$)",
@@ -222,7 +219,12 @@ define(function (require) {
         displayName: 'ControlPanel',
 
         getInitialState: function() {
-            return {columns: ['name', 'type', 'image', 'controls'], data: fakeControlPanelData, controlsConfig: globalControlsConfiguration};
+            return {
+                columns: ['name', 'type', 'image', 'controls'],
+                data: fakeControlPanelData,
+                controls: {"Common": ['info', 'delete'], "VisualCapability": ['colour']},
+                controlsConfig: defaultControlsConfiguration
+            };
         },
 
         getDefaultProps: function() {
@@ -242,7 +244,12 @@ define(function (require) {
             this.setState({data: records});
         },
 
-        setControls: function(controlsConfig) {
+        setControls: function(showControls) {
+            // set state to refresh grid
+            this.setState({controls: showControls});
+        },
+
+        setControlsConfig: function(controlsConfig) {
             // set state to refresh grid
             this.setState({controlsConfig: controlsConfig});
         },

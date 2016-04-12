@@ -107,24 +107,18 @@
     width: 128px;
 }
 
-/* CONTROLS */
-
-.control-visible{
-
+.ctrlpanel-button {
+    height: 25px;
+    width: 55px;
+    margin: 0px;
+    background: none !important;
+    color: #fd6808 !important;
+    font-size: 18px !important;
+    border: 0 !important;
 }
 
-.control-invisible{
-
-}
-
-.control-info{
-
-}
-
-.control-color{
-
-}
-
-.control-delete{
-
+.ctrlpanel-button:hover {
+    font-size: 20px !important;
+    background: none !important;
+    color: darkorange !important;
 }

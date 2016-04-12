@@ -86,7 +86,7 @@ define(function (require) {
                         }
 
                         var idVal = path + "_" + control.id + "_ctrlPanel_btn";
-                        var classVal = "btn fa " + control.icon;
+                        var classVal = "btn ctrlpanel-button fa " + control.icon;
                         var actionStr = '';
                         if(control.actions.length > 0){
                             for(var i=0; i<control.actions.length; i++){

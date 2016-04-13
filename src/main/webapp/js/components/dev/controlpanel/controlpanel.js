@@ -39,6 +39,39 @@ define(function (require) {
     });
 
     var ControlsComponent = React.createClass({
+
+        getActionString: function(control, path){
+            var actionStr = '';
+
+            if(control.actions.length > 0){
+                for(var i=0; i<control.actions.length; i++){
+                    actionStr += ((i!=0)?";":"") + control.actions[i].replace(/\$instance\$/gi, path);
+                }
+            }
+
+            return actionStr;
+        },
+
+        resolveCondition: function(control, path, negateCondition){
+            if(negateCondition == undefined){
+                negateCondition = false;
+            }
+
+            var resolvedConfig = control;
+
+            if(resolvedConfig.hasOwnProperty('condition')) {
+                // evaluate condition and reassign control depending on results
+                var conditionStr = control.condition.replace(/\$instance\$/gi, path);
+                if (eval(conditionStr)) {
+                    resolvedConfig = negateCondition ? resolvedConfig.false: resolvedConfig.true;
+                } else {
+                    resolvedConfig = negateCondition ? resolvedConfig.true: resolvedConfig.false;
+                }
+            }
+
+            return resolvedConfig;
+        },
+
         render: function(){
             // TODO: would be nicer to pass controls and config straight from the parent component rather than assume
             var showControls = GEPPETTO.ControlPanel.state.controls;
@@ -71,32 +104,35 @@ define(function (require) {
                 }
             }
 
+            var that = this;
+
             return (
                 <div>
                     {ctrlButtons.map(function(control, id) {
-                        // handle conditions
-                        if(control.hasOwnProperty('condition')){
-                            // evaluate condition and reassign control depending on results
-                            var conditionStr = control.condition.replace(/\$instance\$/gi, path);
-                            if(eval(conditionStr)){
-                                control = control.true;
-                            } else {
-                                control = control.false;
-                            }
-                        }
+                        // grab attributes to init button attributes
+                        var controlConfig = that.resolveCondition(control, path);
+                        var idVal = path + "_" + controlConfig.id + "_ctrlPanel_btn";
+                        var classVal = "btn ctrlpanel-button fa " + controlConfig.icon;
 
-                        var idVal = path + "_" + control.id + "_ctrlPanel_btn";
-                        var classVal = "btn ctrlpanel-button fa " + control.icon;
-                        var actionStr = '';
-                        if(control.actions.length > 0){
-                            for(var i=0; i<control.actions.length; i++){
-                                actionStr += ((i!=0)?";":"") + control.actions[i].replace(/\$instance\$/gi, path);
-                            }
-                        }
-
+                        // define action function
                         var actionFn = function(){
+                            // NOTE: there is a closure on 'control' so it's always the right one
+                            var controlConfig = that.resolveCondition(control, path, false);
+
+                            // take out action string
+                            var actionStr = that.getActionString(controlConfig, path);
+
+                            // run action
                             if(actionStr!='' && actionStr!=undefined){
                                 GEPPETTO.Console.executeCommand(actionStr);
+                            }
+
+                            // if conditional, swap icon with the other condition outcome
+                            if(control.hasOwnProperty('condition')) {
+                                var otherConfig = that.resolveCondition(control, path, true);
+                                var element = $('#' + idVal);
+                                element.removeClass();
+                                element.addClass("btn ctrlpanel-button fa " + otherConfig.icon);
                             }
                         };
 

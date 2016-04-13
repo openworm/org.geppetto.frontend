@@ -219,11 +219,11 @@ define(function (require) {
     var defaultControlsConfiguration = {
         "VisualCapability": {
             "visibility": {
-                "condition": "GEPPETTO.SceneController.isVisible($instance$)",
+                "condition": "$instance$.isVisible()",
                 "false": {
                     "id": "visibility",
                     "actions": [
-                        "GEPPETTO.SceneController.show($instance$)"
+                        "$instance$.show()"
                     ],
                     "icon": "fa-eye-slash",
                     "label": "Hidden",
@@ -232,7 +232,7 @@ define(function (require) {
                 "true": {
                     "id": "visibility",
                     "actions": [
-                        "GEPPETTO.SceneController.hide($instance$)"
+                        "$instance$.hide()"
                     ],
                     "icon": "fa-eye",
                     "label": "Visible",

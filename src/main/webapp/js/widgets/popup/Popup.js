@@ -146,7 +146,7 @@ define(function (require) {
 
 
         /**
-         * Sets the message that is displayed inside the widget through an instance of type HTML
+         * Sets the message that is displayed inside the widget through an instance of any type.
          *
          * @command setData(anyInstance)
          * @param {Object} anyInstance - An instance of any type
@@ -163,6 +163,7 @@ define(function (require) {
                 }
 
             });
+            $(".slickdiv").slick();
             return this;
         },
 
@@ -183,10 +184,30 @@ define(function (require) {
                 }
             }
             else if (type.getMetaType() == GEPPETTO.Resources.HTML_TYPE) {
-                html += "<div id='" + id + "' class='collapse in popup-html'>" + this.getVariable(anyInstance).getInitialValues()[0].value.html + "</div>";
+                var value = this.getVariable(anyInstance).getInitialValues()[0].value;
+                html += "<div id='" + id + "' class='collapse in popup-html'>" + value.html + "</div>";
             }
             else if (type.getMetaType() == GEPPETTO.Resources.TEXT_TYPE) {
-                html += "<div id='" + id + "' class='collapse in popup-text'>" + this.getVariable(anyInstance).getInitialValues()[0].value.text + "</div>";
+                var value = this.getVariable(anyInstance).getInitialValues()[0].value;
+                html += "<div id='" + id + "' class='collapse in popup-text'>" + value.text + "</div>";
+            }
+            else if (type.getMetaType() == GEPPETTO.Resources.IMAGE_TYPE) {
+                var value = this.getVariable(anyInstance).getInitialValues()[0].value;
+                if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
+                    //if it's an array we use slick to create a carousel
+                    var elements = "";
+                    for (var j = 0; j < value.elements.length; j++) { 
+                        var image = value.elements[j].initialValue;
+                        elements += "<div class='popup-image'>"+image.name+"<a href='' instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
+                    }
+                    html += "<div id='" + id + "' class='slickdiv popup-slick collapse in' data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}' >" + elements + "</div>";
+                }
+                else if (value.eClass == GEPPETTO.Resources.IMAGE) {
+                    //otherwise we just show an image
+                    var image = value;
+                    html += "<div id='" + id + "' class='popup-image collapse in'><a href='' instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
+                }
+
             }
             return html;
         },

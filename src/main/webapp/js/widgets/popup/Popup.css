@@ -37,12 +37,25 @@
     overflow: auto !important;
 }
 
+.popup-image {
+    margin: 0 auto;
+    text-align: center;
+    color:white;
+}
+
+.popup-slick {
+    clear: both;
+    margin-top: 40px;
+}
+
 .popup-title {
     font-weight: 600;
     color: #fc6320;
     cursor: pointer;
     clear: both;
     float: left;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .popup-title:hover {
@@ -51,7 +64,7 @@
 
 .popup-chevron {
     margin-left: 10px;
-    margin-top: 2px;
+    margin-top: 7px;
     float: right;
     color: #8A7F7F;
 }

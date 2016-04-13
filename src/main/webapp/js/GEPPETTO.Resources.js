@@ -436,11 +436,14 @@ define(function (require) {
             DYNAMICS_TYPE: "DynamicsType",
             FUNCTION_TYPE: "FunctionType",
             TEXT_TYPE: "TextType",
+            IMAGE_TYPE: "ImageType",
             HTML_TYPE: "HTMLType",
             //VARIABLES
             VARIABLE_NODE: "Variable",
             //VALUES
             CYLINDER: "Cylinder",
+            ARRAY_VALUE: "ArrayValue",
+            IMAGE: "Image",
             SPHERE: "Sphere",
             COLLADA: "Collada",
             OBJ: "OBJ",

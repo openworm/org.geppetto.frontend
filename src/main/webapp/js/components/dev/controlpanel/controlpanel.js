@@ -9,8 +9,8 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
+    //var ColorPicker = require('color-picker');
     var GEPPETTO = require('geppetto');
-    var AVisualCapability = require('model/AVisualCapability');
 
     var ImageComponent = React.createClass({
         render: function(){
@@ -39,6 +39,12 @@ define(function (require) {
     });
 
     var ControlsComponent = React.createClass({
+
+        getInitialState: function() {
+            return {
+                displayColorPicker: false
+            }
+        },
 
         getActionString: function(control, path){
             var actionStr = '';
@@ -70,6 +76,16 @@ define(function (require) {
             }
 
             return resolvedConfig;
+        },
+
+        handleColorPickerControlClick: function(){
+            // show picker
+            this.setState({ displayColorPicker: !this.state.displayColorPicker });
+        },
+
+        handleColorPickerControlClose: function(){
+            // hide picker
+            this.setState({ displayColorPicker: false });
         },
 
         render: function(){
@@ -115,12 +131,16 @@ define(function (require) {
                         var classVal = "btn ctrlpanel-button fa " + controlConfig.icon;
 
                         // define action function
-                        var actionFn = function(){
+                        var actionFn = function(param){
                             // NOTE: there is a closure on 'control' so it's always the right one
                             var controlConfig = that.resolveCondition(control, path, false);
 
                             // take out action string
                             var actionStr = that.getActionString(controlConfig, path);
+
+                            if(param != undefined){
+                                actionStr = actionStr.replace(/\$param\$/gi, param);
+                            }
 
                             // run action
                             if(actionStr!='' && actionStr!=undefined){
@@ -136,7 +156,29 @@ define(function (require) {
                             }
                         };
 
-                        return <button id={idVal} className={classVal} key={id} onClick={actionFn}></button>
+                        // figure out if we need to include the color picker
+                        var colorPickerControl = undefined;
+                        if(controlConfig.id == "color"){
+                            // create picker control
+                            /*colorPickerControl = React.createElement(ColorPicker, {
+                                display: that.state.displayColorPicker,
+                                onClose: that.handleColorPickerControlClose,
+                                onChange: actionFn,
+                                type: "compact"});*/
+                        }
+
+                        // TODO: add this below once it works --> {colorPickerControl}
+
+                        return (
+                            <span key={id}>
+                                <button id={idVal}
+                                        className={classVal}
+                                        onClick={
+                                            controlConfig.id == "color" ? that.handleColorPickerControlClick : actionFn
+                                        }>
+                                </button>
+                            </span>
+                        )
                     })}
                 </div>
             )
@@ -239,14 +281,14 @@ define(function (require) {
                     "tooltip": "Hide"
                 }
             },
-            "colour": {
-                "id": "colour",
+            "color": {
+                "id": "color",
                 "actions": [
-                    "alert('TODO: set colour of ' + $instance$.getName())"
+                    "$instance$.setColor($param$)"
                 ],
                 "icon": "fa-tint",
-                "label": "Colour",
-                "tooltip": "Colour"
+                "label": "Color",
+                "tooltip": "Color"
             }
         },
         "Common": {
@@ -265,8 +307,8 @@ define(function (require) {
                     "alert('TODO: delete ' + $instance$.getName())"
                 ],
                 "icon": "fa-trash-o",
-                "label": "Colour",
-                "tooltip": "Colour"
+                "label": "Delete",
+                "tooltip": "Delete"
             }
         }
     };
@@ -278,7 +320,7 @@ define(function (require) {
             return {
                 columns: ['name', 'type', 'controls'],
                 data: [],
-                controls: {"Common": ['info', 'delete'], "VisualCapability": ['colour', 'visibility']},
+                controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility']},
                 controlsConfig: defaultControlsConfiguration
             };
         },

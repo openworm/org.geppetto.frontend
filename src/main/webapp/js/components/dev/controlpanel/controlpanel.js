@@ -133,7 +133,7 @@ define(function (require) {
                         // define action function
                         var actionFn = function(param){
                             // NOTE: there is a closure on 'control' so it's always the right one
-                            var controlConfig = that.resolveCondition(control, path, false);
+                            var controlConfig = that.resolveCondition(control, path);
 
                             // take out action string
                             var actionStr = that.getActionString(controlConfig, path);
@@ -149,7 +149,7 @@ define(function (require) {
 
                             // if conditional, swap icon with the other condition outcome
                             if(control.hasOwnProperty('condition')) {
-                                var otherConfig = that.resolveCondition(control, path, true);
+                                var otherConfig = that.resolveCondition(control, path);
                                 var element = $('#' + idVal);
                                 element.removeClass();
                                 element.addClass("btn ctrlpanel-button fa " + otherConfig.icon);

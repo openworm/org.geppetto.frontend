@@ -84,8 +84,6 @@ define(function (require) {
             if(this.colorPickerBtnId != '') {
                 var path = this.props.rowData.path;
 
-
-
                 // TODO: grab color from instance
                 $('#' + this.colorPickerBtnId).colorpicker({ format: "hex" });
 

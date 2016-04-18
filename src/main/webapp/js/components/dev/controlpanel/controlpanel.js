@@ -1,16 +1,21 @@
 define(function (require) {
 
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = "geppetto/js/components/dev/controlpanel/controlpanel.css";
-    document.getElementsByTagName("head")[0].appendChild(link);
+    function loadCss(url) {
+        var link = document.createElement("link");
+        link.type = "text/css";
+        link.rel = "stylesheet";
+        link.href = url;
+        document.getElementsByTagName("head")[0].appendChild(link);
+    }
+
+    loadCss("geppetto/js/components/dev/controlpanel/controlpanel.css");
+    loadCss("geppetto/js/components/dev/controlpanel/vendor/css/bootstrap-colorpicker.min.css");
 
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
-    //var ColorPicker = require('color-picker');
     var GEPPETTO = require('geppetto');
+    var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
 
     var ImageComponent = React.createClass({
         render: function(){
@@ -39,12 +44,8 @@ define(function (require) {
     });
 
     var ControlsComponent = React.createClass({
-
-        getInitialState: function() {
-            return {
-                displayColorPicker: false
-            }
-        },
+        colorPickerBtnId: '',
+        colorPickerActionFn: '',
 
         getActionString: function(control, path){
             var actionStr = '';
@@ -78,14 +79,22 @@ define(function (require) {
             return resolvedConfig;
         },
 
-        handleColorPickerControlClick: function(){
-            // show picker
-            this.setState({ displayColorPicker: !this.state.displayColorPicker });
-        },
+        componentDidMount: function () {
+            // hookup color picker onChange
+            if(this.colorPickerBtnId != '') {
+                var path = this.props.rowData.path;
 
-        handleColorPickerControlClose: function(){
-            // hide picker
-            this.setState({ displayColorPicker: false });
+
+
+                // TODO: grab color from instance
+                $('#' + this.colorPickerBtnId).colorpicker({ format: "hex" });
+
+                // closure on local scope at this point
+                var that = this;
+                $('#' + this.colorPickerBtnId).colorpicker().on('changeColor', function (e) {
+                    that.colorPickerActionFn(e.color.toHex().toString());
+                });
+            }
         },
 
         render: function(){
@@ -156,25 +165,18 @@ define(function (require) {
                             }
                         };
 
-                        // figure out if we need to include the color picker
-                        var colorPickerControl = undefined;
+                        // figure out if we need to include the color picker (hook it up in didMount)
                         if(controlConfig.id == "color"){
-                            // create picker control
-                            /*colorPickerControl = React.createElement(ColorPicker, {
-                                display: that.state.displayColorPicker,
-                                onClose: that.handleColorPickerControlClose,
-                                onChange: actionFn,
-                                type: "compact"});*/
+                            that.colorPickerBtnId = idVal;
+                            that.colorPickerActionFn = actionFn;
                         }
-
-                        // TODO: add this below once it works --> {colorPickerControl}
 
                         return (
                             <span key={id}>
                                 <button id={idVal}
                                         className={classVal}
                                         onClick={
-                                            controlConfig.id == "color" ? that.handleColorPickerControlClick : actionFn
+                                            controlConfig.id == "color" ? function(){} : actionFn
                                         }>
                                 </button>
                             </span>
@@ -284,7 +286,7 @@ define(function (require) {
             "color": {
                 "id": "color",
                 "actions": [
-                    "$instance$.setColor($param$)"
+                    "$instance$.setColor('$param$')"
                 ],
                 "icon": "fa-tint",
                 "label": "Color",

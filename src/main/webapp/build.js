@@ -12,7 +12,6 @@
 		geppetto : 'GEPPETTO',
 		react: 'vendor/react',
         'react-dom': 'vendor/react-dom',
-        'color-picker': 'vendor/color-picker',
         griddle: 'vendor/griddle',
 		jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',

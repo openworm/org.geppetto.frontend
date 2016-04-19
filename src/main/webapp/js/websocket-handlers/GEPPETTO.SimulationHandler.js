@@ -274,8 +274,9 @@ define(function (require) {
                 // build instance tree here (instance tree will be populated with state info for each experiment)
                 window.Instances = GEPPETTO.ModelFactory.createInstances(window.Model);
                 this.augmentInstancesArray(window.Instances);
-
                 console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);
+
+                // TODO: populate control panel with exploded instances
 
                 console.time(GEPPETTO.Resources.CREATING_SCENE);
                 GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.CREATING_SCENE);

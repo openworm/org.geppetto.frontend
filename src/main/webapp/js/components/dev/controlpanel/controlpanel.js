@@ -88,7 +88,7 @@ define(function (require) {
 
                 // grab default color from instance
                 if(entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)){
-                    defColor = entity.getColor;
+                    defColor = entity.getColor();
                 }
 
                 $('#' + this.colorPickerBtnId).colorpicker({ format: "hex", color: defColor });

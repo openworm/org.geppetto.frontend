@@ -481,7 +481,8 @@ define(function (require) {
             RUN_FLOW: 'RunFlow',
             // COMMMON TYPE PATHS
             STATE_VARIABLE_TYPE_PATH: 'Model.common.StateVariable',
-            PARAMETER_TYPE_PATH: 'Model.common.Parameter'
+            PARAMETER_TYPE_PATH: 'Model.common.Parameter',
+            MODEL_PREFIX_CLIENT: 'Model.'
         }
     }
 });

@@ -343,7 +343,8 @@ define(function (require) {
                 var params = {};
                 params["experimentId"] = Project.getActiveExperiment().getId();
                 params["projectId"] = Project.getId();
-                params["path"] = typePath;
+                // replace client naming first occurrence - the server doesn't know about it
+                params["path"] = typePath.replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT, '');
 
                 GEPPETTO.MessageSocket.send("resolve_import_type", params);
             },

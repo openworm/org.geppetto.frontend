@@ -276,10 +276,6 @@ define(function (require) {
                 this.augmentInstancesArray(window.Instances);
                 console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);
 
-                // populate control panel with exploded instances
-                var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
-                GEPPETTO.ControlPanel.setData(visualInstances);
-
                 console.time(GEPPETTO.Resources.CREATING_SCENE);
                 GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.CREATING_SCENE);
                 // build scene here from Geppetto model populating visual objects in the instance tree
@@ -294,6 +290,10 @@ define(function (require) {
                 console.timeEnd(GEPPETTO.Resources.CREATING_SCENE);
                 GEPPETTO.trigger(Events.Model_loaded);
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
+
+                // populate control panel with exploded instances
+                var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
+                GEPPETTO.ControlPanel.setData(visualInstances);
 
                 console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);
                 GEPPETTO.trigger("hide:spinner");

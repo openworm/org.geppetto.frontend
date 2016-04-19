@@ -84,18 +84,20 @@ define(function (require) {
             if(this.colorPickerBtnId != '') {
                 var path = this.props.rowData.path;
                 var entity = eval(path);
-                var defColor = '0xffffff';
+                var defColor = '0Xffffff';
 
                 // grab default color from instance
                 if(entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)){
                     defColor = entity.getColor();
                 }
 
-                $('#' + this.colorPickerBtnId).colorpicker({ format: "hex", color: defColor });
+                // init dat color picker
+                $('#' + this.colorPickerBtnId).colorpicker({ format: 'hex' });
+                $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace("0X", "#"));
 
-                // closure on local scope at this point
+                // closure on local scope at this point - hook on change event
                 var that = this;
-                $('#' + this.colorPickerBtnId).colorpicker().on('changeColor', function (e) {
+                $('#' + this.colorPickerBtnId).on('changeColor', function (e) {
                     that.colorPickerActionFn(e.color.toHex().replace("#","0x"));
                 });
             }
@@ -140,7 +142,7 @@ define(function (require) {
                     {ctrlButtons.map(function(control, id) {
                         // grab attributes to init button attributes
                         var controlConfig = that.resolveCondition(control, path);
-                        var idVal = path + "_" + controlConfig.id + "_ctrlPanel_btn";
+                        var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
                         var classVal = "btn ctrlpanel-button fa " + controlConfig.icon;
 
                         // define action function

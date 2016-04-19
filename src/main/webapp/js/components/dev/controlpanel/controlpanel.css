@@ -14,97 +14,140 @@
     left: 0;
     right: 0;
     width: 75%;
-    top: 25%;
+    top: 20%;
 }
 
-.griddle-container{
-    border:1px solid #DDD;
+.griddle-container {
 }
 
-.griddle .top-section{
-    clear:both;
-    display:table;
-    width:100%;
+.griddle .top-section {
+    clear: both;
+    display: table;
+    width: 100%;
 }
 
-.griddle .griddle-filter{
-    float:left;
-    width:50%;
-    text-align:left;
-    color:#222;
-    min-height:1px;
+.griddle .griddle-filter {
+    float: left;
+    width: 100%;
+    text-align: left;
+    color: #FFFFFF;
+    min-height: 1px;
+    margin-bottom: 10px;
+    background-color: rgba(66, 59, 59, 0.70);
+
 }
 
-.griddle .griddle-settings-toggle{
-    float:left;
-    width:50%;
-    text-align:right;
+.griddle .griddle-filter .form-control {
+    color: #FFFFFF;
+    background-color: rgba(66, 59, 59, 0.70);
+    border: 0px;
+
 }
 
-.griddle .griddle-settings{
-    background-color:#FFF;
-    border:1px solid #DDD;
-    color:#222;
-    padding:10px;
-    margin-bottom:10px;
+.griddle .griddle-filter .form-control::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #FFFFFF;
 }
 
-.griddle .griddle-settings .griddle-columns{
-    clear:both;
-    display:table;
-    width:100%;
-    border-bottom:1px solid #EDEDED;
-    margin-bottom:10px;
+.griddle .griddle-filter .form-control:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #FFFFFF;
+    opacity: 1;
 }
 
-.griddle .griddle-settings .griddle-column-selection{
-    float:left;
-    width:20%;
-}
-.griddle table{
-    width:100%;table-layout:fixed;
+.griddle .griddle-filter .form-control::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #FFFFFF;
+    opacity: 1;
 }
 
-.griddle th{
-    background-color:#EDEDEF;
-    border:0px;
-    border-bottom:1px solid #DDD;
-    color:#222;
-    padding:5px;
+.griddle .griddle-filter .form-control:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #FFFFFF;
 }
 
-.griddle td{
-    padding:5px;
-    background-color:#FFF;
-    border-top-color:#DDD;
-    color:#222;
+.griddle .griddle-settings-toggle {
+    float: left;
+    width: 50%;
+    text-align: right;
 }
 
-.griddle .footer-container{
-    padding:0px;
-    background-color:#EDEDED;
-    border:0px;
-    color:#222;
+.griddle .griddle-settings {
+    background-color: #FFF;
+    border: 1px solid #DDD;
+    color: #222;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
-.griddle .griddle-previous, .griddle .griddle-page, .griddle .griddle-next{
-    float:left;
-    width:33%;
-    min-height:1px;
-    margin-top:5px;
+.griddle .griddle-settings .griddle-columns {
+    clear: both;
+    display: table;
+    width: 100%;
+    border-bottom: 1px solid #EDEDED;
+    margin-bottom: 10px;
 }
 
-.griddle .griddle-page{
-    text-align:center;
+.griddle .griddle-settings .griddle-column-selection {
+    float: left;
+    width: 20%;
 }
 
-.griddle .griddle-next{
-    text-align:right;
+.griddle table {
+    width: 100%;
+    table-layout: fixed;
 }
 
-.thumbnail-img{
+.griddle th {
+    background-color: rgba(66, 59, 59, 0.70);
+    border: 0px;
+    color: #FD6808;
+    padding: 5px;
+    text-align: center;
+}
+
+.griddle td {
+    padding: 5px;
+    background-color: rgba(66, 59, 59, 0.70);
+    color: #FFF;
+    border-bottom: 1px dashed;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.griddle .footer-container {
+    padding: 0px;
+    color: #ffffff;
+    border: 0px;
+}
+
+.griddle .griddle-previous, .griddle .griddle-page, .griddle .griddle-next {
+    float: left;
+    width: 33%;
+    min-height: 1px;
+    margin-top: 5px;
+}
+
+.griddle .griddle-page {
+    text-align: center;
+}
+
+.griddle .griddle-next {
+    text-align: right;
+}
+
+.thumbnail-img {
     height: 64px;
     width: 128px;
+}
+
+.griddle button {
+    backround: transparent;
+    color: #FD6808;
+}
+
+.griddle button:hover {
+    backround: transparent;
+    color: #fc4b19;
 }
 
 .ctrlpanel-button {
@@ -120,5 +163,5 @@
 .ctrlpanel-button:hover {
     font-size: 20px !important;
     background: none !important;
-    color: darkorange !important;
+    color: #fc4b19 !important;
 }

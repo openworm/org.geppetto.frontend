@@ -397,7 +397,7 @@ define(function (require) {
 
         render: function () {
             return React.createFactory(Griddle)({columns: this.state.columns, results: this.state.data,
-                                                 showFilter: true, showSettings: false,
+                                                 showFilter: true, showSettings: false, enableInfiniteScroll:true, bodyHeight:400,
                                                  useGriddleStyles: false, columnMetadata: this.props.columnMetadata});
         }
     });

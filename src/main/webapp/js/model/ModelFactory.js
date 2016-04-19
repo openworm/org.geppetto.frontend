@@ -47,6 +47,7 @@ define(function (require) {
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');
         var ArrayType = require('model/ArrayType');
+        var ImportType = require('model/ImportType');
         var Instance = require('model/Instance');
         var ArrayInstance = require('model/ArrayInstance');
         var ArrayElementInstance = require('model/ArrayElementInstance');
@@ -1386,7 +1387,7 @@ define(function (require) {
                     options = {wrappedObj: node};
                 }
 
-                var it = new Type(options);
+                var it = new ImportType(options);
 
                 return it;
             },

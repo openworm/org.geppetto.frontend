@@ -1586,6 +1586,29 @@ define(function (require) {
             },
 
             /**
+             * Gets all instances with given capability
+             *
+             * @param capabilityId
+             * @returns {Array}
+             */
+            getAllInstancesWithCapability(capabilityId, instances){
+                var matchingInstances = [];
+
+                // traverse everything and populate matching instances
+                for (var i = 0; i < instances.length; i++) {
+                    if (instances[i].hasCapability(capabilityId)) {
+                        matchingInstances.push(instances[i]);
+                    }
+
+                    if (typeof instances[i].getChildren === "function") {
+                        matchingInstances = matchingInstances.concat(this.getAllInstancesWithCapability(capabilityId, instances[i].getChildren()));
+                    }
+                }
+
+                return matchingInstances;
+            },
+
+            /**
              * Get all instance given a type or a variable (path or actual object)
              */
             getAllInstancesOf: function (typeOrVar, instances) {

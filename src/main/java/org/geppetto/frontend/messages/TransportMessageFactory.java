@@ -94,6 +94,9 @@ public class TransportMessageFactory {
 			case VARIABLE_FETCHED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.VARIABLE_FETCHED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
+			case IMPORT_TYPE_RESOLVED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.IMPORT_TYPE_RESOLVED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
 			case SIMULATION_OVER:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;	

@@ -350,7 +350,7 @@ public class ConnectionHandler
 	 * @param variableId
 	 * @throws GeppettoExecutionException 
 	 */
-	public void resolveImportType(String requestID, Long projectId, Long experimentId, String typePath) throws GeppettoExecutionException
+	public void resolveImportType(String requestID, Long projectId, Long experimentId, String typePath)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
@@ -361,7 +361,11 @@ public class ConnectionHandler
 		}
 		catch(IOException e)
 		{
-			error(e, "Error fetching variable " + typePath);
+			error(e, "Error importing type " + typePath);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error importing type " + typePath);
 		}
 
 	}

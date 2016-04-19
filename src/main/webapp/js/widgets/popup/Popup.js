@@ -163,7 +163,7 @@ define(function (require) {
                 }
 
             });
-            $(".slickdiv").slick();
+            $("#" + this.getId() + " .slickdiv").slick();
             return this;
         },
 

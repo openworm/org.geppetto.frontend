@@ -92,7 +92,7 @@ define(function (require) {
                 }
 
                 // init dat color picker
-                $('#' + this.colorPickerBtnId).colorpicker({ format: 'hex' });
+                $('#' + this.colorPickerBtnId).colorpicker({ format: 'hex', customClass: 'controlpanel-colorpicker' });
                 $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace("0X", "#"));
 
                 // closure on local scope at this point - hook on change event

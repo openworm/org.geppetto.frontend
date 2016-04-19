@@ -1591,7 +1591,7 @@ define(function (require) {
              * @param capabilityId
              * @returns {Array}
              */
-            getAllInstancesWithCapability(capabilityId, instances){
+            getAllInstancesWithCapability: function(capabilityId, instances){
                 var matchingInstances = [];
 
                 // traverse everything and populate matching instances

@@ -94,7 +94,7 @@ define(function (require) {
                 // init dat color picker
                 $('#' + this.colorPickerBtnId).colorpicker({ format: 'hex', customClass: 'controlpanel-colorpicker' });
                 $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace("0X", "#"));
-                $('#' + this.colorPickerBtnId).css("color",defColor.replace("0X", "#"));
+                //$('#' + this.colorPickerBtnId).css("color",defColor.replace("0X", "#"));
 
                 // closure on local scope at this point - hook on change event
                 var that = this;
@@ -146,6 +146,7 @@ define(function (require) {
                         var controlConfig = that.resolveCondition(control, path);
                         var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
                         var classVal = "btn ctrlpanel-button fa " + controlConfig.icon;
+                        var styleVal = {};
 
                         // define action function
                         var actionFn = function(param){
@@ -177,12 +178,15 @@ define(function (require) {
                         if(controlConfig.id == "color"){
                             that.colorPickerBtnId = idVal;
                             that.colorPickerActionFn = actionFn;
+                            // set style val to color tint icon
+                            styleVal = { color: String(entity.getColor().replace("0X", "#") + "0000").slice(0,7)};
                         }
 
                         return (
                             <span key={id}>
                                 <button id={idVal}
                                         className={classVal}
+                                        style={styleVal}
                                         onClick={
                                             controlConfig.id == "color" ? function(){} : actionFn
                                         }>

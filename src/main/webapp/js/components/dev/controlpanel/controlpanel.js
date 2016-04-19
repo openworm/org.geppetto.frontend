@@ -83,9 +83,15 @@ define(function (require) {
             // hookup color picker onChange
             if(this.colorPickerBtnId != '') {
                 var path = this.props.rowData.path;
+                var entity = eval(path);
+                var defColor = '0xffffff';
 
-                // TODO: grab color from instance
-                $('#' + this.colorPickerBtnId).colorpicker({ format: "hex" });
+                // grab default color from instance
+                if(entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)){
+                    defColor = entity.getColor;
+                }
+
+                $('#' + this.colorPickerBtnId).colorpicker({ format: "hex", color: defColor });
 
                 // closure on local scope at this point
                 var that = this;

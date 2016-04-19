@@ -44,6 +44,12 @@
     clear: both;
 }
 
+.popup-slick-image {
+    margin: 0 auto;
+    text-align: center;
+    color:white;
+}
+
 .popup-slick {
     clear: both;
     margin-top: 40px;

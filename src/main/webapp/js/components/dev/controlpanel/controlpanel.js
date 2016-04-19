@@ -90,7 +90,7 @@ define(function (require) {
                 // closure on local scope at this point
                 var that = this;
                 $('#' + this.colorPickerBtnId).colorpicker().on('changeColor', function (e) {
-                    that.colorPickerActionFn(e.color.toHex().toString());
+                    that.colorPickerActionFn(e.color.toHex().replace("#","0x"));
                 });
             }
         },

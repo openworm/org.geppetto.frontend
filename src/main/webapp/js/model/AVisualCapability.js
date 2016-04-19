@@ -183,6 +183,15 @@ define(function (require) {
             }
         },
 
+
+        /**
+         *
+         * @returns {*}
+         */
+        getColor: function () {
+            return GEPPETTO.getVARS().meshes[this.getInstancePath()].material.defaultColor;
+        },
+
         /**
          * Change the color of an instance or class of instances
          *

@@ -198,7 +198,7 @@ define(function (require) {
                     var elements = "";
                     for (var j = 0; j < value.elements.length; j++) { 
                         var image = value.elements[j].initialValue;
-                        elements += "<div class='popup-image'>"+image.name+"<a href='' instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
+                        elements += "<div class='popup-slick-image'>"+image.name+"<a href='' instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
                     }
                     html += "<div id='" + id + "' class='slickdiv popup-slick collapse in' data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}' >" + elements + "</div>";
                 }

@@ -121,7 +121,7 @@ define(function (require) {
          *
          */
         getPath: function () {
-            this.getInstancePath();
+            return this.getInstancePath();
         },
 
         /**

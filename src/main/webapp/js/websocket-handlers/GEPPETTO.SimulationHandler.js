@@ -276,7 +276,9 @@ define(function (require) {
                 this.augmentInstancesArray(window.Instances);
                 console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);
 
-                // TODO: populate control panel with exploded instances
+                // populate control panel with exploded instances
+                var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
+                GEPPETTO.ControlPanel.setData(visualInstances);
 
                 console.time(GEPPETTO.Resources.CREATING_SCENE);
                 GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.CREATING_SCENE);

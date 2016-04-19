@@ -348,7 +348,7 @@ define(function (require) {
             for(var i=0; i < records.length; i++){
                 gridInput.push({
                     "path": records[i].getPath(),
-                    "name": records[i].getName(),
+                    "name": records[i].getPath(),
                     "type": records[i].getTypes().map(function(t){ return t.getPath() }),
                     "image": "",
                     "controls": ""

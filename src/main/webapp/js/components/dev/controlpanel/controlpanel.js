@@ -94,11 +94,13 @@ define(function (require) {
                 // init dat color picker
                 $('#' + this.colorPickerBtnId).colorpicker({ format: 'hex' });
                 $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace("0X", "#"));
+                $('#' + this.colorPickerBtnId).css("color",defColor.replace("0X", "#"));
 
                 // closure on local scope at this point - hook on change event
                 var that = this;
                 $('#' + this.colorPickerBtnId).on('changeColor', function (e) {
                     that.colorPickerActionFn(e.color.toHex().replace("#","0x"));
+                    $(this).css("color",e.color.toHex());
                 });
             }
         },

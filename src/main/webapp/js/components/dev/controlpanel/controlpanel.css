@@ -98,6 +98,10 @@
     table-layout: fixed;
 }
 
+.controlpanel-colorpicker{
+	background-color: rgba(66, 59, 59, 0.70);
+}
+
 .griddle th {
     background-color: rgba(66, 59, 59, 0.70);
     border: 0px;
@@ -155,7 +159,7 @@
     width: 55px;
     margin: 0px;
     background: none !important;
-    color: #fd6808 !important;
+    color: #fd6808;
     font-size: 18px !important;
     border: 0 !important;
 }
@@ -163,5 +167,5 @@
 .ctrlpanel-button:hover {
     font-size: 20px !important;
     background: none !important;
-    color: #fc4b19 !important;
+    color: #fc4b19;
 }

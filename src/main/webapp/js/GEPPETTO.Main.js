@@ -148,8 +148,8 @@ define(function (require) {
                             GEPPETTO.Main.idleTime = 0;
                             GEPPETTO.Main.disconnected = true;
                             GEPPETTO.FE.disableSimulationControls();
-                            GEPPETTO.MessageSocket.send("idle_user", null);
-
+                            GEPPETTO.MessageSocket.close();
+                            
                             var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
                             var webWorkersSupported = (typeof(Worker) !== "undefined") ? true : false;
 

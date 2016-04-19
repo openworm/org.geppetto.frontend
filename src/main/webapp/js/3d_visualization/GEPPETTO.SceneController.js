@@ -305,15 +305,16 @@ define(function (require) {
              *            instancePath - Instance path of aspect to make visible
              */
             showInstance: function (instancePath) {
-                // if already visible, return false for unsuccessful
-                // operation
-                if (GEPPETTO.getVARS().meshes[instancePath].visible == true) {
-                    return false;
-                }
-                // make mesh visible
-                else {
-                    GEPPETTO.getVARS().meshes[instancePath].visible = true;
-                    return true;
+                var meshes = this.getRealMeshesForInstancePath(instancePath);
+                if (meshes.length > 0) {
+                    for (var i = 0; i < meshes.length; i++) {
+                        var mesh = meshes[i];
+                        if (mesh) {
+                            mesh.traverse(function (object) {
+                                object.visible = true;
+                            });
+                        }
+                    }
                 }
             }
             ,

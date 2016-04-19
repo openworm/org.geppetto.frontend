@@ -189,7 +189,46 @@ define(function (require) {
          * @returns {*}
          */
         getColor: function () {
-            return GEPPETTO.getVARS().meshes[this.getInstancePath()].material.defaultColor;
+
+            var color = "";
+            if (typeof this.getChildren === "function") {
+                //this is a an array, it will contain children
+                var children = this.getChildren();
+
+                var color = "";
+                for (var i = 0; i < children.length; i++) {
+                    if (typeof children[i].getColor === "function") {
+                        var newColor = children[i].getColor();
+                        if (color == "") {
+                            color = newColor;
+                        }
+                        else if (color != newColor) {
+                            return "";
+                        }
+                    }
+                }
+            }
+
+            var meshes = GEPPETTO.SceneController.getRealMeshesForInstancePath(this.getInstancePath());
+            if (meshes.length > 0) {
+                for (var i = 0; i < meshes.length; i++) {
+                    var mesh = meshes[i];
+                    if (mesh) {
+                        mesh.traverse(function (object) {
+                            if (object.hasOwnProperty("material")) {
+                                if (color == "") {
+                                    color = object.material.defaultColor;
+                                }
+                                else if (color != object.material.defaultColor) {
+                                    return "";
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            return color;
         },
 
         /**
@@ -446,7 +485,7 @@ define(function (require) {
 
                 message = GEPPETTO.Resources.BATCH_SET_GEOMETRY;
             }
-            
+
             return message;
         },
 

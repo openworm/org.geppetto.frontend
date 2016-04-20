@@ -94,7 +94,6 @@ define(function (require) {
                 // init dat color picker
                 $('#' + this.colorPickerBtnId).colorpicker({ format: 'hex', customClass: 'controlpanel-colorpicker' });
                 $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace("0X", "#"));
-                //$('#' + this.colorPickerBtnId).css("color",defColor.replace("0X", "#"));
 
                 // closure on local scope at this point - hook on change event
                 var that = this;
@@ -198,38 +197,6 @@ define(function (require) {
             )
         }
     });
-
-    var fakeControlPanelData = [
-        {
-            "path": "path.TestA",
-            "name": "TestA",
-            "type": ['Model.common.TypeA', 'Model.common.TypeB'],
-            "image": 'http://i.imgur.com/N5G3Ref.png',
-            "controls": ""
-        },
-        {
-            "path": "path.TestB",
-            "name": "TestB",
-            "type": ['Model.common.TypeX', 'Model.common.TypeY'],
-            "image": 'http://i.imgur.com/N5G3Ref.png',
-            "controls": ""
-        },
-        {
-            "path": "path.TestC",
-            "name": "TestC",
-            "type": ['Model.common.TypeW', 'Model.common.TypeV'],
-            "image": 'http://i.imgur.com/N5G3Ref.png',
-            "controls": ""
-
-        },
-        {
-            "path": "path.TestD",
-            "name": "TestD",
-            "type": ['Model.common.TypeY', 'Model.common.TypeZ'],
-            "image": 'http://i.imgur.com/N5G3Ref.png',
-            "controls": ""
-        }
-    ];
 
     var controlPanelColumnMeta = [
         {

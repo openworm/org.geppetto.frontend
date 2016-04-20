@@ -533,6 +533,21 @@ define(function (require) {
 
                                         // if(overrideTypes) swap the types[m] with the diffType[k]
                                         if(overrideTypes){
+                                            // get all types in the current model
+                                            var allTypesInModel = [];
+                                            for(var w=0; w<libs.length; w++){
+                                                allTypesInModel.concat(libs[w].getTypes());
+                                            }
+                                            // fetch variables pointing to the old version of the type
+                                            var variablesPreSwap = this.getAllVariablesOfType(allTypesInModel, types[m]);
+                                            // add top level variables in the model
+                                            variablesPreSwap = variablesPreSwap.concat(this.geppettoModel.getVariables());
+
+                                            // swap type reference in ALL variables that point to it
+                                            for(var x=0; x<variablesPreSwap.length; x++){
+                                                this.swapTypeInVariable(variablesPreSwap[x], types[m], diffTypes[k]);
+                                            }
+
                                             // swap type in raw model
                                             libs[j].getWrappedObj().types[m] = diffTypes[k].getWrappedObj();
 
@@ -624,13 +639,41 @@ define(function (require) {
             },
 
             /**
-             * Swap import type pointed by path with rawType
+             * Given a variable, swap a given type out for another type (recursive on nested types and vars)
              *
-             * @param path
-             * @param rawtype
+             * @param variable
+             * @param typeToSwapOut
+             * @param typeToSwapIn
              */
-            resolveType: function(rawModel){
-                // TODO: implement
+            swapTypeInVariable: function(variable, typeToSwapOut, typeToSwapIn){
+                // ugly but we need the actual arrays stored in the variable as we'll be altering them
+                var types = variable.get('types');
+                var anonTypes = variable.get('anonymousTypes');
+
+                this.swapTypeInTypes(types, typeToSwapOut, typeToSwapIn);
+                this.swapTypeInTypes(anonTypes, typeToSwapOut, typeToSwapIn);
+            },
+
+            /**
+             * Given a set of types, swap a given type out for another type (recursive on nested variables)
+             *
+             * @param types
+             * @param typeToSwapOut
+             * @param typeToSwapIn
+             */
+            swapTypeInTypes: function(types, typeToSwapOut, typeToSwapIn){
+                for(var y=0; y<types.length; y++){
+                    if(types[y].getMetaType() == typeToSwapOut.getMetaType() && types[y].getId() == typeToSwapOut.getId()){
+                        // swap type referenced with the override one
+                        types[y] = typeToSwapIn;
+                    } else if(types[y].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+                        // if composite - recurse for each var
+                        var nestedVars = types[y].getVariables();
+                        for(var x=0; x<nestedVars.length; x++){
+                            this.swapTypeInVariable(nestedVars[x], typeToSwapOut, typeToSwapIn);
+                        }
+                    }
+                }
             },
 
             /**
@@ -1828,6 +1871,9 @@ define(function (require) {
                                                 break;
                                             }
                                         }
+                                    } else if(varTypes[x].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+                                        // check if type is composite and recurse
+                                        variables = variables.concat(this.getAllVariablesOfType([varTypes[x]], typeToMatch));
                                     }
                                 }
                             }

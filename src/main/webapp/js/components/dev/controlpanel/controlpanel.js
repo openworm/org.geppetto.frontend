@@ -179,6 +179,7 @@ define(function (require) {
                             that.colorPickerActionFn = actionFn;
                             // set style val to color tint icon
                             styleVal = { color: String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0,7)};
+                            classVal += " color-picker-button";
                         }
 
                         return (
@@ -375,6 +376,7 @@ define(function (require) {
             $(document).keydown(function (e) {
                 if ($("#controlpanel").is(':visible') && e.keyCode == escape) {
                     $("#controlpanel").hide();
+                    $(".color-picker-button").colorpicker('hide');
                 }
             });
         },

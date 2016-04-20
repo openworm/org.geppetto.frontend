@@ -270,6 +270,15 @@ define(function (require) {
                 "icon": "fa-tint",
                 "label": "Color",
                 "tooltip": "Color"
+            },
+            "zoom": {
+                "id": "zoom",
+                "actions": [
+                    "GEPPETTO.SceneController.zoomTo($instance$)"
+                ],
+                "icon": "fa-search-plus",
+                "label": "Zoom",
+                "tooltip": "Zoom"
             }
         },
         "Common": {
@@ -301,7 +310,7 @@ define(function (require) {
             return {
                 columns: ['name', 'type', 'controls'],
                 data: [],
-                controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility']},
+                controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration
             };
         },

@@ -50,6 +50,12 @@
     color:white;
 }
 
+.popup-icon{
+    color:#7F98FF;
+    margin-left:5px;
+    margin-right:5px;
+}
+
 .popup-slick {
     clear: both;
     margin-top: 40px;

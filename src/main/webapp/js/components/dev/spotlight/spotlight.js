@@ -354,7 +354,7 @@ define(function (require) {
                     else {
                         label = "Multiple instances of " + instance[0].getVariable().getId();
                     }
-                    processed = action.split("$instance$").join("_spotlightInstance");
+                    processed = action.split("$instances$").join("_spotlightInstance");
                     processed = processed.split("$instance0$").join("_spotlightInstance[0]");
                     processed = processed.split("$label$").join(label);
                     processed = processed.split("$value$").join(value);
@@ -363,7 +363,7 @@ define(function (require) {
                     processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
                 }
                 else{
-                    processed = action.split("$instance$").join(instance.getInstancePath());
+                    processed = action.split("$instances$").join(instance.getInstancePath());
                     processed = processed.split("$label$").join(instance.getInstancePath());
                     processed = processed.split("$value$").join(value);
                     processed = processed.split("$type$").join(instance.getType().getPath());
@@ -563,25 +563,25 @@ define(function (require) {
                 },
                 "VisualCapability": {
                     "buttonOne": {
-                        "condition": "GEPPETTO.SceneController.isSelected($instance$)",
+                        "condition": "GEPPETTO.SceneController.isSelected($instances$)",
                         "false": {
-                            "actions": ["GEPPETTO.SceneController.select($instance$)"],
+                            "actions": ["GEPPETTO.SceneController.select($instances$)"],
                             "icon": "fa-hand-stop-o",
                             "label": "Unselected",
                             "tooltip": "Select"
                         },
                         "true": {
-                            "actions": ["GEPPETTO.SceneController.deselect($instance$)"],
+                            "actions": ["GEPPETTO.SceneController.deselect($instances$)"],
                             "icon": "fa-hand-rock-o",
                             "label": "Selected",
                             "tooltip": "Deselect"
                         },
                     },
                     "buttonTwo": {
-                        "condition": "GEPPETTO.SceneController.isVisible($instance$)",
+                        "condition": "GEPPETTO.SceneController.isVisible($instances$)",
                         "false": {
                             "actions": [
-                                "GEPPETTO.SceneController.show($instance$)"
+                                "GEPPETTO.SceneController.show($instances$)"
                             ],
                             "icon": "fa-eye-slash",
                             "label": "Hidden",
@@ -589,7 +589,7 @@ define(function (require) {
                         },
                         "true": {
                             "actions": [
-                                "GEPPETTO.SceneController.hide($instance$)"
+                                "GEPPETTO.SceneController.hide($instances$)"
                             ],
                             "icon": "fa-eye",
                             "label": "Visible",
@@ -599,7 +599,7 @@ define(function (require) {
                     },
                     "buttonThree": {
                         "actions": [
-                            "GEPPETTO.SceneController.zoomTo($instance$)"
+                            "GEPPETTO.SceneController.zoomTo($instances$)"
                         ],
                         "icon": "fa-search-plus",
                         "label": "Zoom",
@@ -608,24 +608,24 @@ define(function (require) {
                 },
                 "ParameterCapability": {
                     "parameterInput": {
-                        "inputValue":"$instance$.getValue()",
-                        "label":"$instance$.getUnit()",
-                        "onChange":"$instance$.setValue($value$);",
+                        "inputValue":"$instances$.getValue()",
+                        "label":"$instances$.getUnit()",
+                        "onChange":"$instances$.setValue($value$);",
                         "tooltip": "Set parameter value",
                         "multipleInstances":false
                     }
                 },
                 "StateVariableCapability": {
                     "watch": {
-                        "condition": "GEPPETTO.ExperimentsController.isWatched($instance$);",
+                        "condition": "GEPPETTO.ExperimentsController.isWatched($instances$);",
                         "false": {
-                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instance$,true);"],
+                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instances$,true);"],
                             "icon": "fa-circle-o",
                             "label": "Not recorded",
                             "tooltip": "Record the state variable"
                         },
                         "true": {
-                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instance$,false);"],
+                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instances$,false);"],
                             "icon": "fa-dot-circle-o",
                             "label": "Recorded",
                             "tooltip": "Stop recording the state variable"
@@ -633,7 +633,7 @@ define(function (require) {
                     },
                     "plot": {
                         "actions": [
-                            "G.addWidget(0).plotData($instance$).setName('$label$')",
+                            "G.addWidget(0).plotData($instances$).setName('$label$')",
                         ],
                         "icon": "fa-area-chart",
                         "label": "Plot",

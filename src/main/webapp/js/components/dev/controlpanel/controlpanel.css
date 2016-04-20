@@ -29,7 +29,7 @@
 
 .griddle .griddle-filter {
 	float: left;
-	width: 100%;
+	width: 99%;
 	text-align: left;
 	color: #FFFFFF;
 	min-height: 1px;
@@ -38,32 +38,13 @@
 }
 
 .griddle .griddle-filter .form-control {
-	color: #FFFFFF;
-	background-color: rgba(66, 59, 59, 0.70);
-	border: 0px;
+	color: #808080;;
+	background-color: rgb(255, 255, 255);
+	font-size: 22px !important;
+	line-height: 30px !important;
+	border: 2px solid #fd6808 !important;
 }
 
-.griddle .griddle-filter .form-control::-webkit-input-placeholder {
-	/* WebKit, Blink, Edge */
-	color: #FFFFFF;
-}
-
-.griddle .griddle-filter .form-control:-moz-placeholder {
-	/* Mozilla Firefox 4 to 18 */
-	color: #FFFFFF;
-	opacity: 1;
-}
-
-.griddle .griddle-filter .form-control::-moz-placeholder {
-	/* Mozilla Firefox 19+ */
-	color: #FFFFFF;
-	opacity: 1;
-}
-
-.griddle .griddle-filter .form-control:-ms-input-placeholder {
-	/* Internet Explorer 10-11 */
-	color: #FFFFFF;
-}
 
 .griddle .griddle-settings-toggle {
 	float: left;

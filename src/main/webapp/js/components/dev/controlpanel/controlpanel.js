@@ -18,7 +18,7 @@ define(function (require) {
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
 
     var ImageComponent = React.createClass({
-        render: function(){
+        render: function () {
             return (
                 <div><img src={this.props.data} className="thumbnail-img"/></div>
             )
@@ -26,12 +26,12 @@ define(function (require) {
     });
 
     var TypeComponent = React.createClass({
-        render: function(){
+        render: function () {
             return (
                 <ul>
-                    {this.props.data.map(function(item, i){
+                    {this.props.data.map(function (item, i) {
                         var displayText = item.split('.')[item.split('.').length - 1];
-                        var action = function(e){
+                        var action = function (e) {
                             e.preventDefault();
                             var actionStr = "G.addWidget(3).setData(" + item + ").setName('" + displayText + "')";
                             GEPPETTO.Console.executeCommand(actionStr);
@@ -47,32 +47,32 @@ define(function (require) {
         colorPickerBtnId: '',
         colorPickerActionFn: '',
 
-        getActionString: function(control, path){
+        getActionString: function (control, path) {
             var actionStr = '';
 
-            if(control.actions.length > 0){
-                for(var i=0; i<control.actions.length; i++){
-                    actionStr += ((i!=0)?";":"") + control.actions[i].replace(/\$instance\$/gi, path);
+            if (control.actions.length > 0) {
+                for (var i = 0; i < control.actions.length; i++) {
+                    actionStr += ((i != 0) ? ";" : "") + control.actions[i].replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
                 }
             }
 
             return actionStr;
         },
 
-        resolveCondition: function(control, path, negateCondition){
-            if(negateCondition == undefined){
+        resolveCondition: function (control, path, negateCondition) {
+            if (negateCondition == undefined) {
                 negateCondition = false;
             }
 
             var resolvedConfig = control;
 
-            if(resolvedConfig.hasOwnProperty('condition')) {
+            if (resolvedConfig.hasOwnProperty('condition')) {
                 // evaluate condition and reassign control depending on results
-                var conditionStr = control.condition.replace(/\$instance\$/gi, path);
+                var conditionStr = control.condition.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
                 if (eval(conditionStr)) {
-                    resolvedConfig = negateCondition ? resolvedConfig.false: resolvedConfig.true;
+                    resolvedConfig = negateCondition ? resolvedConfig.false : resolvedConfig.true;
                 } else {
-                    resolvedConfig = negateCondition ? resolvedConfig.true: resolvedConfig.false;
+                    resolvedConfig = negateCondition ? resolvedConfig.true : resolvedConfig.false;
                 }
             }
 
@@ -81,30 +81,30 @@ define(function (require) {
 
         componentDidMount: function () {
             // hookup color picker onChange
-            if(this.colorPickerBtnId != '') {
+            if (this.colorPickerBtnId != '') {
                 var path = this.props.rowData.path;
                 var entity = eval(path);
                 var defColor = '0Xffffff';
 
                 // grab default color from instance
-                if(entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)){
+                if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                     defColor = entity.getColor();
                 }
 
                 // init dat color picker
-                $('#' + this.colorPickerBtnId).colorpicker({ format: 'hex', customClass: 'controlpanel-colorpicker' });
+                $('#' + this.colorPickerBtnId).colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
                 $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace("0X", "#"));
 
                 // closure on local scope at this point - hook on change event
                 var that = this;
                 $('#' + this.colorPickerBtnId).on('changeColor', function (e) {
-                    that.colorPickerActionFn(e.color.toHex().replace("#","0x"));
-                    $(this).css("color",e.color.toHex());
+                    that.colorPickerActionFn(e.color.toHex().replace("#", "0x"));
+                    $(this).css("color", e.color.toHex());
                 });
             }
         },
 
-        render: function(){
+        render: function () {
             // TODO: would be nicer to pass controls and config straight from the parent component rather than assume
             var showControls = GEPPETTO.ControlPanel.state.controls;
             var config = GEPPETTO.ControlPanel.state.controlsConfig;
@@ -113,7 +113,7 @@ define(function (require) {
 
             // retrieve entity/instance
             var entity = undefined;
-            try{
+            try {
                 // need to eval because this is a nested path - not simply a global on window
                 entity = eval(path)
             } catch (e) {
@@ -121,13 +121,13 @@ define(function (require) {
             }
 
             // Add common control buttons to list
-            for(var control in config.Common){
-                if($.inArray(control.toString(), showControls.Common) != -1){
+            for (var control in config.Common) {
+                if ($.inArray(control.toString(), showControls.Common) != -1) {
                     ctrlButtons.push(config.Common[control]);
                 }
             }
 
-            if(entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
+            if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                 // Add visual capability controls to list
                 for (var control in config.VisualCapability) {
                     if ($.inArray(control.toString(), showControls.VisualCapability) != -1) {
@@ -140,7 +140,7 @@ define(function (require) {
 
             return (
                 <div>
-                    {ctrlButtons.map(function(control, id) {
+                    {ctrlButtons.map(function (control, id) {
                         // grab attributes to init button attributes
                         var controlConfig = that.resolveCondition(control, path);
                         var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
@@ -148,24 +148,24 @@ define(function (require) {
                         var styleVal = {};
 
                         // define action function
-                        var actionFn = function(param){
+                        var actionFn = function (param) {
                             // NOTE: there is a closure on 'control' so it's always the right one
                             var controlConfig = that.resolveCondition(control, path);
 
                             // take out action string
                             var actionStr = that.getActionString(controlConfig, path);
 
-                            if(param != undefined){
+                            if (param != undefined) {
                                 actionStr = actionStr.replace(/\$param\$/gi, param);
                             }
 
                             // run action
-                            if(actionStr!='' && actionStr!=undefined){
+                            if (actionStr != '' && actionStr != undefined) {
                                 GEPPETTO.Console.executeCommand(actionStr);
                             }
 
                             // if conditional, swap icon with the other condition outcome
-                            if(control.hasOwnProperty('condition')) {
+                            if (control.hasOwnProperty('condition')) {
                                 var otherConfig = that.resolveCondition(control, path);
                                 var element = $('#' + idVal);
                                 element.removeClass();
@@ -174,11 +174,11 @@ define(function (require) {
                         };
 
                         // figure out if we need to include the color picker (hook it up in didMount)
-                        if(controlConfig.id == "color"){
+                        if (controlConfig.id == "color") {
                             that.colorPickerBtnId = idVal;
                             that.colorPickerActionFn = actionFn;
                             // set style val to color tint icon
-                            styleVal = { color: String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0,7)};
+                            styleVal = {color: String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0, 7)};
                             classVal += " color-picker-button";
                         }
 
@@ -243,11 +243,11 @@ define(function (require) {
     var defaultControlsConfiguration = {
         "VisualCapability": {
             "visibility": {
-                "condition": "$instance$.isVisible()",
+                "condition": "GEPPETTO.SceneController.isVisible($instances$)",
                 "false": {
                     "id": "visibility",
                     "actions": [
-                        "$instance$.show()"
+                        "GEPPETTO.SceneController.show($instances$)"
                     ],
                     "icon": "fa-eye-slash",
                     "label": "Hidden",
@@ -256,7 +256,7 @@ define(function (require) {
                 "true": {
                     "id": "visibility",
                     "actions": [
-                        "$instance$.hide()"
+                        "GEPPETTO.SceneController.hide($instances$)"
                     ],
                     "icon": "fa-eye",
                     "label": "Visible",
@@ -275,7 +275,7 @@ define(function (require) {
             "zoom": {
                 "id": "zoom",
                 "actions": [
-                    "GEPPETTO.SceneController.zoomTo($instance$)"
+                    "GEPPETTO.SceneController.zoomTo($instances$)"
                 ],
                 "icon": "fa-search-plus",
                 "label": "Zoom",
@@ -286,7 +286,7 @@ define(function (require) {
             "info": {
                 "id": "info",
                 "actions": [
-                    "G.addWidget(3).setData($instance$)"
+                    "G.addWidget(3).setData($instances$)"
                 ],
                 "icon": "fa-info-circle",
                 "label": "Info",
@@ -307,7 +307,7 @@ define(function (require) {
     var ControlPanel = React.createClass({
         displayName: 'ControlPanel',
 
-        getInitialState: function() {
+        getInitialState: function () {
             return {
                 columns: ['name', 'type', 'controls'],
                 data: [],
@@ -316,25 +316,27 @@ define(function (require) {
             };
         },
 
-        getDefaultProps: function() {
+        getDefaultProps: function () {
             return {
                 "tableClassName": 'control-panel-table',
                 "columnMetadata": controlPanelColumnMeta
             };
         },
 
-        setColumns: function(cols) {
+        setColumns: function (cols) {
             this.setState({columns: cols});
         },
 
-        setData: function(records) {
+        setData: function (records) {
             // go from list of instances / variables to simple JSON
             var gridInput = [];
-            for(var i=0; i < records.length; i++){
+            for (var i = 0; i < records.length; i++) {
                 gridInput.push({
                     "path": records[i].getPath(),
                     "name": records[i].getPath(),
-                    "type": records[i].getTypes().map(function(t){ return t.getPath() }),
+                    "type": records[i].getTypes().map(function (t) {
+                        return t.getPath()
+                    }),
                     "image": "",
                     "controls": ""
                 });
@@ -344,12 +346,12 @@ define(function (require) {
             this.setState({data: gridInput});
         },
 
-        setControls: function(showControls) {
+        setControls: function (showControls) {
             // set state to refresh grid
             this.setState({controls: showControls});
         },
 
-        setControlsConfig: function(controlsConfig) {
+        setControlsConfig: function (controlsConfig) {
             // set state to refresh grid
             this.setState({controlsConfig: controlsConfig});
         },
@@ -358,7 +360,7 @@ define(function (require) {
             require('jsx!mixins/bootstrap/modal')
         ],
 
-        componentWillMount: function() {
+        componentWillMount: function () {
             GEPPETTO.ControlPanel = this;
         },
 
@@ -382,9 +384,11 @@ define(function (require) {
         },
 
         render: function () {
-            return React.createFactory(Griddle)({columns: this.state.columns, results: this.state.data,
-                                                 showFilter: true, showSettings: false, enableInfiniteScroll:true, bodyHeight:400,
-                                                 useGriddleStyles: false, columnMetadata: this.props.columnMetadata});
+            return React.createFactory(Griddle)({
+                columns: this.state.columns, results: this.state.data,
+                showFilter: true, showSettings: false, enableInfiniteScroll: true, bodyHeight: 400,
+                useGriddleStyles: false, columnMetadata: this.props.columnMetadata
+            });
         }
     });
 

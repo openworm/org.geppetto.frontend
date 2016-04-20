@@ -515,21 +515,33 @@ define(function (require) {
             zoomTo: function (instances) {
                 GEPPETTO.getVARS().controls.reset();
 
-                var zoomParameters = {};
+                GEPPETTO.SceneController.zoomToParameters(GEPPETTO.SceneController.zoomIterator(instances, {}));
+            },
 
+            /**
+             *
+             * @param instances
+             * @param zoomParameters
+             * @returns {*}
+             */
+            zoomIterator: function (instances, zoomParameters) {
                 for (var i = 0; i < instances.length; i++) {
                     var instancePath = instances[i].getInstancePath();
                     var mesh = GEPPETTO.getVARS().meshes[instancePath];
-                    mesh.traverse(function (object) {
-                        if (object.hasOwnProperty("geometry")) {
-                            GEPPETTO.SceneController.addMeshToZoomParameters(object, zoomParameters);
-                        }
-                    });
-                }
+                    if (mesh) {
+                        mesh.traverse(function (object) {
+                            if (object.hasOwnProperty("geometry")) {
+                                GEPPETTO.SceneController.addMeshToZoomParameters(object, zoomParameters);
+                            }
+                        });
+                    }
+                    else {
+                        zoomParameters = GEPPETTO.SceneController.zoomIterator(instances[i].getChildren(), zoomParameters);
+                    }
 
-                GEPPETTO.SceneController.zoomToParameters(zoomParameters);
-            }
-            ,
+                }
+                return zoomParameters;
+            },
 
             /**
              * Change color for meshes that are connected to other meshes. Color depends on whether that instance is an output, input or both

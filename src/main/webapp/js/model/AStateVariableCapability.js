@@ -51,6 +51,17 @@ define(['jquery'], function (require) {
          * @returns {String} Value of quantity
          */
         getTimeSeries: function () {
+            if (!this.timeSeries) {
+                var timeSeries = undefined;
+                var initialValues = this.getVariable().getWrappedObj().initialValues;
+
+                for (var i = 0; i < initialValues.length; i++) {
+                    if (initialValues[i].value.eClass === 'TimeSeries') {
+                        timeSeries = initialValues[i].value.value
+                    }
+                }
+                return timeSeries;
+            }
             return this.timeSeries;
         },
 
@@ -89,7 +100,7 @@ define(['jquery'], function (require) {
             var initialValues = this.getVariable().getWrappedObj().initialValues;
 
             for (var i = 0; i < initialValues.length; i++) {
-                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                if (initialValues[i].value.eClass === 'PhysicalQuantity' || initialValues[i].value.eClass === 'TimeSeries') {
                     unit = initialValues[i].value.unit.unit
                 }
             }
@@ -114,13 +125,13 @@ define(['jquery'], function (require) {
          * @param {Boolean} watched - Object with options attributes to initialize node
          */
         setWatched: function (isWatched, updateServer) {
-            if(updateServer==undefined){
-                updateServer=true;
+            if (updateServer == undefined) {
+                updateServer = true;
             }
             if (updateServer && isWatched != this.watched) {
                 GEPPETTO.ExperimentsController.watchVariables([this], isWatched);
             }
-            this.watched=isWatched;
+            this.watched = isWatched;
             return this;
         }
 

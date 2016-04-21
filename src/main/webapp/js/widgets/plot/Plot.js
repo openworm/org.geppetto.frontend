@@ -285,7 +285,7 @@ define(function (require) {
         },
 
 
-        getTimeSeriesData: function (instanceX, instanceY) {
+        getTimeSeriesData: function (instanceY, instanceX) {
             var yTimeSeries = instanceY.getTimeSeries();
             var xTimeSeries = instanceX.getTimeSeries();
             var timeSeriesData = [];
@@ -331,7 +331,7 @@ define(function (require) {
             return max;
         },
 
-        plotXYData: function (dataX, dataY, options) {
+        plotXYData: function (dataY, dataX, options) {
 
             // If no options specify by user, use default options
             if (options != null) {
@@ -341,7 +341,7 @@ define(function (require) {
                 }
             }
 
-            var timeSeriesData = this.getTimeSeriesData(dataX, dataY);
+            var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
 
             this.datasets.push({
                 label: dataY.getInstancePath(),

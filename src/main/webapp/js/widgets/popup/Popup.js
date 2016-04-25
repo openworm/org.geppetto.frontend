@@ -73,7 +73,7 @@ define(function (require) {
                         // hookup custom handler
                         $(this).on(ev, function () {
                             // invoke custom handler with instancepath as arg
-                            fun(node);
+                            fun(node, path);
 
                             // stop default event handler of the anchor from doing anything
                             return false;

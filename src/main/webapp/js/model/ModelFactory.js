@@ -73,6 +73,7 @@ define(function (require) {
             geppettoModel: null,
             instances: null,
             allPaths: [],
+            allPathsIndexing: [],
             instanceTags: {},
 
             /**
@@ -435,15 +436,17 @@ define(function (require) {
                 var varsWithConnTypes = [];
                 // we need to fetch all potential instance paths (even for not exploded instances)
                 var allPotentialInstancePaths = [];
+                var allPotentialInstancePathsForIndexing = [];
 
                 // builds list of vars with visual types and connection types - start traversing from top level variables
                 var vars = geppettoModel.getVariables();
                 for (var i = 0; i < vars.length; i++) {
                     this.fetchVarsWithVisualOrConnectionTypes(vars[i], varsWithVizTypes, varsWithConnTypes, '');
-                    this.fetchAllPotentialInstancePaths(vars[i], allPotentialInstancePaths, '');
+                    this.fetchAllPotentialInstancePaths(vars[i], allPotentialInstancePaths, allPotentialInstancePathsForIndexing, '');
                 }
 
                 this.allPaths = allPotentialInstancePaths;
+                this.allPathsIndexing = allPotentialInstancePathsForIndexing;
                 var varsToInstantiate = varsWithVizTypes;
 
                 // based on list, traverse again and build instance objects
@@ -554,6 +557,11 @@ define(function (require) {
                                             // swap in object model
                                             diffTypes[k].set({'parent': libs[j]});
                                             types[m] = diffTypes[k];
+
+                                            // populate references for the swapped type
+                                            this.populateTypeReferences(diffTypes[k]);
+
+                                            // TODO: add potential instance paths
                                         }
                                     }
                                 }
@@ -573,6 +581,8 @@ define(function (require) {
 
                                     // populate references for the new type
                                     this.populateTypeReferences(diffTypes[k]);
+
+                                    // TODO: add potential instance paths
                                 }
                             }
                         }
@@ -629,8 +639,10 @@ define(function (require) {
 
                         // find new potential instance paths and add to the list
                         var potentialInstancePaths = [];
-                        this.fetchAllPotentialInstancePaths(diffVars[x], potentialInstancePaths, '');
+                        var potentialInstancePathsForIndexing = [];
+                        this.fetchAllPotentialInstancePaths(diffVars[x], potentialInstancePaths, potentialInstancePathsForIndexing, '');
                         this.allPaths = this.allPaths.concat(potentialInstancePaths);
+                        this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
                     }
                 }
 
@@ -1284,13 +1296,15 @@ define(function (require) {
             /**
              * Build list of potential instance paths (excluding connection instances)
              */
-            fetchAllPotentialInstancePaths: function (node, allPotentialPaths, parentPath) {
+            fetchAllPotentialInstancePaths: function (node, allPotentialPaths, allPotentialPathsForIndexing, parentPath) {
                 // build new path
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 
-                // only add if it's not a connection or nested in a composite type
+                var entry = {path: path, metaType: node.getType().getMetaType(), type: node.getType().getId()};
+                allPotentialPaths.push(entry);
+                // only add to indexing if it's not a connection or nested in a composite type
                 if (this.includePotentialInstance(node, path)) {
-                    allPotentialPaths.push({path: path, metaType: node.getType().getMetaType()});
+                    allPotentialPathsForIndexing.push(entry);
                 }
 
                 var potentialParentPaths = [];
@@ -1311,7 +1325,10 @@ define(function (require) {
                         if (arrayType.getSize() > 1) {
                             var starPath = path + '[' + '*' + ']';
                             potentialParentPaths.push(starPath);
-                            allPotentialPaths.push({path: starPath, metaType: arrayType.getMetaType()});
+
+                            var starEntry = {path: starPath, metaType: arrayType.getType().getMetaType(), type: arrayType.getType().getId()};
+                            allPotentialPaths.push(starEntry);
+                            allPotentialPathsForIndexing.push(starEntry);
                         }
 
                         // add each array element path
@@ -1319,11 +1336,10 @@ define(function (require) {
                             var arrayElementPath = path + '[' + n + ']';
                             potentialParentPaths.push(arrayElementPath);
 
+                            var arrayElementEntry = {path: arrayElementPath, metaType: arrayType.getType().getMetaType(), type: arrayType.getType().getId()};
+                            allPotentialPaths.push(arrayElementEntry);
                             if (this.includePotentialInstance(node, path)) {
-                                allPotentialPaths.push({
-                                    path: arrayElementPath,
-                                    metaType: arrayType.getType().getMetaType()
-                                });
+                                allPotentialPathsForIndexing.push(arrayElementEntry);
                             }
                         }
                     } else {
@@ -1340,7 +1356,7 @@ define(function (require) {
                             if (vars != undefined && vars != null) {
                                 for (var j = 0; j < vars.length; j++) {
                                     for (var g = 0; g < potentialParentPaths.length; g++) {
-                                        this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, potentialParentPaths[g]);
+                                        this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[g]);
                                     }
                                 }
                             }
@@ -1355,7 +1371,7 @@ define(function (require) {
                                 if (vars != undefined && vars != null) {
                                     for (var l = 0; l < vars.length; l++) {
                                         for (var h = 0; h < potentialParentPaths.length; h++) {
-                                            this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, potentialParentPaths[h]);
+                                            this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[h]);
                                         }
                                     }
                                 }

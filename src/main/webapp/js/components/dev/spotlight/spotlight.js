@@ -70,7 +70,7 @@ define(function (require) {
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
 
-                that.instances.add(GEPPETTO.ModelFactory.allPaths);
+                that.instances.add(GEPPETTO.ModelFactory.allPathsIndexing);
 
             });
 

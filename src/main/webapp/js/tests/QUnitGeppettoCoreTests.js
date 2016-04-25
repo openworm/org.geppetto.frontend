@@ -288,11 +288,13 @@ define(function (require) {
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
                                       'getAllInstanceOf returning instances as expected for Variable and Variable path.');
                             // check AllPotentialInstances
-                            assert.ok(GEPPETTO.ModelFactory.allPaths.length == 10536 &&
-                                      GEPPETTO.ModelFactory.allPaths[0].path == 'acnet2' &&
-                                      GEPPETTO.ModelFactory.allPaths[0].metaType == 'CompositeType' &&
-                                      GEPPETTO.ModelFactory.allPaths[10536 - 1].path == 'time' &&
-                                      GEPPETTO.ModelFactory.allPaths[10536 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                            // check AllPotentialInstances
+                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 11084 &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[0].path == 'acnet2' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[0].metaType == 'CompositeType' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[11084 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[11084 - 1].metaType == 'StateVariableType',
+                                      'All potential instance paths exploded as expected');
                             // check getAllPotentialInstancesEndingWith
                             assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
                                       GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&

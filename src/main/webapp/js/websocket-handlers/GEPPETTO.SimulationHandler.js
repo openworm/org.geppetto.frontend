@@ -292,8 +292,10 @@ define(function (require) {
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 
                 // populate control panel with exploded instances
-                var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
-                GEPPETTO.ControlPanel.setData(visualInstances);
+                if(GEPPETTO.ControlPanel!=undefined) {
+                    var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
+                    GEPPETTO.ControlPanel.setData(visualInstances);
+                }
 
                 console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);
                 GEPPETTO.trigger("hide:spinner");

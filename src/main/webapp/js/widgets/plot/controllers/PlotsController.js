@@ -47,6 +47,7 @@ define(function (require) {
 
         initialize: function () {
             this.widgets = [];
+            var widgets = this.widgets;
         },
 
         /**

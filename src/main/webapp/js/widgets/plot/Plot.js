@@ -42,7 +42,7 @@ define(function (require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 	var math = require('mathjs');
-	var Plot = require('plotly');
+	var Plot;
 
 	return Widget.View.extend({
 		plot: null,
@@ -56,6 +56,7 @@ define(function (require) {
 		labelsUpdated: false,
 		initialized:null,
 		inhomogeneousUnits: false,
+		updateRange : false,
 
 		/**
 		 * Default options for plot widget, used if none specified when plot
@@ -69,6 +70,7 @@ define(function (require) {
 			xaxis: {                  // all "layout.xaxis" attributes: #layout-xaxis
 				showgrid: false,
 				showline: true,
+				showticklabels : false,
 				zeroline : false,
 				mirror : true,
 				ticklen : 0,
@@ -140,14 +142,11 @@ define(function (require) {
 			//Merge passed options into existing defaultOptions object
 			$.extend( this.defaultOptions, options);
 			this.render();
-			this.dialog.append("<div id='" + this.id + "'></div>");
-			this.initialized = true;
-
-			//retrieve element holding plotly
-			var gd = this.getD3Node();
-
-			this.plotDiv = gd;
+			this.dialog.append("<div id='" + this.id + "'></div>");			
+			Plot = require('plotly');
 			
+			this.plotDiv = this.getD3Node();
+			var gd = this.getD3Node();
 			//resizes d3 component of plotly once widget resizes
 			window.onresize = function() {
 				Plot.Plots.resize(gd);
@@ -190,7 +189,7 @@ define(function (require) {
 			var plotable = true;
 			for (var i = 0; i < data.length; i++) {
 				instance = data[i];
-				if (instance != null){                	
+				if (instance != null && instance != undefined){                	
 					for (var key = 0; key < this.datasets.length; key++) {
 						if (instance.getInstancePath() == this.datasets[key].label) {
 							continue;
@@ -201,39 +200,54 @@ define(function (require) {
 					}else{
 						plotable = false;
 					}
+					
+					/*
+					 * Create object with x, y data, and graph information. 
+					 * Object is used to plot on plotly library
+					 */
+					newLine = {
+							x : timeSeriesData["x"],
+							y : timeSeriesData["y"],
+							modes : "lines",
+							type : "scatter",
+							name: instance.getInstancePath(),
+							line: {
+							    dash: 'solid',
+							    width: 2
+							}
+					};
+
+					this.datasets.push(newLine);
+					
+					//We stored the variable objects in its own array, using the instance path
+					//as index. Can't be put on this.datasets since plotly will reject it
+					this.variables[instance.getInstancePath()] = instance;
 				}else{
 					plotable = false;
 				}
 			}
-
+			
 			if(plotable){
-				/*
-				 * Create object with x, y data, and graph information. 
-				 * Object is used to plot on plotly library
-				 */
-				newLine = {
-						x : timeSeriesData["x"],
-						y : timeSeriesData["y"],
-						modes : "lines",
-						type : "scatter",
-						name: instance.getInstancePath(),
-				};
+				if(this.plot==null){
+					//Creates new plot using datasets and default options
+					this.plot = Plot.plot(this.id, this.datasets, this.defaultOptions);
+					this.initialized = true;
+				}else{
+					Plot.newPlot(this.id, this.datasets, this.defaultOptions);					
+				}
+				
+				//Update the axis of the plot 
+				this.updateAxis(instance.getInstancePath());
 
-				this.datasets.push(newLine);
-				//We stored the variable objects in its own array, using the instance path
-				//as index. Can't be put on this.datasets since plotly will reject it
-				this.variables[instance.getInstancePath()] = instance;
-
-				//Creates new plot using datasets and default options
-				this.plot = Plot.newPlot(this.id, this.datasets, this.defaultOptions);
 				//resizes plot right after creation, needed for d3 to resize 
 				//to parent's widht and height
 				Plot.Plots.resize(this.getD3Node());
-
-				//Update the axis of the plot 
-				this.updateAxis(instance.getInstancePath());
 			}
 			return this;
+		},
+		
+		resize : function(){
+			Plot.Plots.resize(this.getD3Node());
 		},
 
 		/**
@@ -262,7 +276,7 @@ define(function (require) {
 
 			this.defaultOptions.xaxis.min = Math.min(this.defaultOptions.xaxis.min, localxmin);
 			this.defaultOptions.yaxis.min = Math.min(this.defaultOptions.yaxis.min, localymin);
-			this.defaultOptions.xaxis.max = Math.max(this.defaultOptions.xaxis.max, localxmax);
+			this.defaultOptions.xaxis.max = Math.max(this.limit, localxmax);
 			this.defaultOptions.yaxis.max = Math.max(this.defaultOptions.yaxis.max, localymax);
 
 			timeSeriesData["x"] = xData;
@@ -304,6 +318,16 @@ define(function (require) {
 		 * Updates the plot widget with new data
 		 */
 		 updateDataSet: function (step, playAll) {
+			 if(!this.defaultOptions.playAll&&!this.updateRange){
+				 var update = {
+						 'xaxis.range' : [0,this.limit],
+				 }
+				 GEPPETTO.Console.log("update limit");
+				 //update the axia labels for the plot
+				 Plot.relayout(this.id, update);
+				 this.updateRange = true;
+			 }
+			 
 			 /*Clears the data of the plot widget if the initialized flag 
 			  *has not be set to true, which means arrays are populated but not yet plot*/
 			 if(!this.initialized){
@@ -315,17 +339,13 @@ define(function (require) {
 			 var oldDataY = [];
 			 var timeSeries = [];
 			 var update = {};
-			 var x = [];
-			 var y = [];
 			 for (var key in this.datasets) {
 				 set = this.datasets[key];
 				 if (this.defaultOptions.playAll) {
 					 //we simply set the whole time series
 					 timeSeries = this.getTimeSeriesData(this.variables[set.name]);
 					 this.datasets[key].x = timeSeries["x"];
-					 x = timeSeries["x"];
 					 this.datasets[key].y = timeSeries["y"];
-					 y = timeSeries["y"];
 				 }
 				 else {
 					 newValue = this.variables[set.name].getTimeSeries()[step];
@@ -363,14 +383,14 @@ define(function (require) {
 						 this.datasets[key].x = oldDataX;
 						 this.datasets[key].y = oldDataY;
 					 }
-
-					 this.plotDiv.data[key].x = this.datasets[key].x;
-					 this.plotDiv.data[key].y = this.datasets[key].y;
 				 }
+
+				 this.plotDiv.data[key].x = this.datasets[key].x;
+				 this.plotDiv.data[key].y = this.datasets[key].y;
 			 }
-
-			 this.updateAxis(set.name);
-
+			 if(set!=null){
+				 this.updateAxis(set.name);
+			 }
 			 Plot.redraw(this.id);
 		 },
 
@@ -390,7 +410,7 @@ define(function (require) {
 							 'xaxis.title' : labelX
 					 }
 					 //update the axia labels for the plot
-					 Plot.relayout(this.id, update);
+					 Plot.relayout(this.plotDiv, update);
 				 }
 			 }            
 		 },
@@ -512,6 +532,7 @@ define(function (require) {
 				 //enables updating the legend on mouse hover, still few bugs
 			 }
 			 this.plot = Plot.newPlot(this.id, this.datasets, this.defaultOptions);
+			 Plot.Plots.resize(this.getD3Node());
 			 this.initialized=true;
 
 		 },

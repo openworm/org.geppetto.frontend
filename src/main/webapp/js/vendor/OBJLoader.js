@@ -170,7 +170,8 @@ THREE.OBJLoader.prototype = {
                 geometry.vertices.push(new THREE.Vector3(vertices[i++], vertices[i++], vertices[i]));
 
             }
-
+            var threeColor = new THREE.Color();
+            threeColor.setHex(color);
 
             var textureLoader = new THREE.TextureLoader();
             var material = new THREE.PointsMaterial(
@@ -180,10 +181,10 @@ THREE.OBJLoader.prototype = {
                     blending: THREE.AdditiveBlending,
                     depthTest: false,
                     transparent: true,
-                    color: color
+                    color: threeColor
                 });
             material.defaultColor = color;
-
+            material.defaultOpacity = 1;
             mesh = new THREE.Points(geometry, material);
 
 
@@ -413,7 +414,7 @@ THREE.OBJLoader.prototype = {
             }
         }
         else {
-            container.add(createMesh(vertices, ('#' + Math.floor(Math.random() * 16777215).toString(16))));
+            container.add(createMesh(vertices, ('0x' + Math.floor(Math.random() * 16777215).toString(16))));
         }
 
         console.timeEnd('OBJLoader');

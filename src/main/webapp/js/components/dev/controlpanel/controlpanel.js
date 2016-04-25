@@ -93,12 +93,12 @@ define(function (require) {
 
                 // init dat color picker
                 $('#' + this.colorPickerBtnId).colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
-                $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace("0X", "#"));
+                $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace(/0X/i, "#"));
 
                 // closure on local scope at this point - hook on change event
                 var that = this;
                 $('#' + this.colorPickerBtnId).on('changeColor', function (e) {
-                    that.colorPickerActionFn(e.color.toHex().replace("#", "0x"));
+                    that.colorPickerActionFn(e.color.toHex().replace(/0X/i, "#"));
                     $(this).css("color", e.color.toHex());
                 });
             }

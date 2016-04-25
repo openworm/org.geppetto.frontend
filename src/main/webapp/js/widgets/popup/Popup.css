@@ -44,6 +44,11 @@
     clear: both;
 }
 
+.invert{
+    -webkit-filter: invert(22%);
+    filter: invert(22%);
+}
+
 .popup-slick-image {
     margin: 0 auto;
     text-align: center;

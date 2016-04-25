@@ -262,6 +262,7 @@ define(function (require) {
                     }
                 }
             }
+            return this;
         },
 
         /**
@@ -445,6 +446,7 @@ define(function (require) {
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
                 GEPPETTO.SceneController.zoomTo(instances);
             }
+            return this;
         },
 
         /**

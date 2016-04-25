@@ -431,9 +431,9 @@ define(function (require) {
                 // pre-populate instance tags for console suggestions
                 this.populateInstanceTags();
 
-                // we need to explode instances for variables with visual and connection types
+                // we need to explode instances for variables with visual types
                 var varsWithVizTypes = [];
-                var varsWithConnTypes = [];
+
                 // we need to fetch all potential instance paths (even for not exploded instances)
                 var allPotentialInstancePaths = [];
                 var allPotentialInstancePathsForIndexing = [];
@@ -441,7 +441,7 @@ define(function (require) {
                 // builds list of vars with visual types and connection types - start traversing from top level variables
                 var vars = geppettoModel.getVariables();
                 for (var i = 0; i < vars.length; i++) {
-                    this.fetchVarsWithVisualOrConnectionTypes(vars[i], varsWithVizTypes, varsWithConnTypes, '');
+                    this.fetchVarsWithVisualTypes(vars[i], varsWithVizTypes, '');
                     this.fetchAllPotentialInstancePaths(vars[i], allPotentialInstancePaths, allPotentialInstancePathsForIndexing, '');
                 }
 
@@ -1184,7 +1184,7 @@ define(function (require) {
             /**
              * Build "list" of variables that have a visual type
              */
-            fetchVarsWithVisualOrConnectionTypes: function (node, varsWithVizTypes, varsWithConnTypes, parentPath) {
+            fetchVarsWithVisualTypes: function (node, varsWithVizTypes, parentPath) {
                 // build "list" of variables that have a visual type (store "path")
                 // check meta type - we are only interested in variables
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
@@ -1214,18 +1214,13 @@ define(function (require) {
                             varsWithVizTypes.push(path);
                         }
 
-                        // check if type is connection
-                        if (allTypes[i].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
-                            varsWithConnTypes.push(path);
-                        }
-
                         // RECURSE on any variables inside composite types
                         if (allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
                             var vars = allTypes[i].getVariables();
 
                             if (vars != undefined && vars != null) {
                                 for (var j = 0; j < vars.length; j++) {
-                                    this.fetchVarsWithVisualOrConnectionTypes(vars[j], varsWithVizTypes, varsWithConnTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+                                    this.fetchVarsWithVisualTypes(vars[j], varsWithVizTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
                                 }
                             }
                         }
@@ -1238,7 +1233,7 @@ define(function (require) {
 
                                 if (vars != undefined && vars != null) {
                                     for (var j = 0; j < vars.length; j++) {
-                                        this.fetchVarsWithVisualOrConnectionTypes(vars[j], varsWithVizTypes, varsWithConnTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+                                        this.fetchVarsWithVisualTypes(vars[j], varsWithVizTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
                                     }
                                 }
                             }

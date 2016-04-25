@@ -1338,7 +1338,7 @@ define(function (require) {
 
                             var arrayElementEntry = {path: arrayElementPath, metaType: arrayType.getType().getMetaType(), type: arrayType.getType().getId()};
                             allPotentialPaths.push(arrayElementEntry);
-                            if (this.includePotentialInstance(node, path)) {
+                            if (this.includePotentialInstance(node, arrayElementPath)) {
                                 allPotentialPathsForIndexing.push(arrayElementEntry);
                             }
                         }

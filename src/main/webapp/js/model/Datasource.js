@@ -158,8 +158,8 @@ define(function (require) {
          *
          * @param variableId
          */
-        fetchVariable: function (variableId){
-            GEPPETTO.SimulationHandler.fetchVariable(variableId, this.getId());
+        fetchVariable: function (variableId, callback){
+            GEPPETTO.SimulationHandler.fetchVariable(variableId, this.getId(), callback);
         }
     });
 });

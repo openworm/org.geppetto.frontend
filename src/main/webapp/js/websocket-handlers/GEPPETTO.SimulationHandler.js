@@ -73,6 +73,7 @@ define(function (require) {
         };
 
         var messageHandler = {};
+        var callbackHandler = {};
 
         messageHandler[messageTypes.PROJECT_LOADED] = function (payload) {
             GEPPETTO.SimulationHandler.loadProject(payload);
@@ -216,6 +217,12 @@ define(function (require) {
                 // Switch based on parsed incoming message type
                 if (messageHandler.hasOwnProperty(parsedServerMessage.type)) {
                     messageHandler[parsedServerMessage.type](JSON.parse(parsedServerMessage.data));
+
+                    // run callback if any
+                    if(callbackHandler[parsedServerMessage.requestId] != undefined) {
+                        callbackHandler[parsedServerMessage.requestId]();
+                        delete callbackHandler[parsedServerMessage.requestId];
+                    }
                 }
             },
 
@@ -307,7 +314,7 @@ define(function (require) {
              * @param variableId
              * @param datasourceId
              */
-            fetchVariable: function(variableId, datasourceId) {
+            fetchVariable: function(variableId, datasourceId, callback) {
                 if(!window.Model.hasOwnProperty(variableId)) {
                     var params = {};
                     params["experimentId"] = Project.getActiveExperiment().getId();
@@ -315,7 +322,12 @@ define(function (require) {
                     params["variableId"] = variableId;
                     params["dataSourceId"] = datasourceId;
 
-                    GEPPETTO.MessageSocket.send("fetch_variable", params);
+                    var requestID = GEPPETTO.MessageSocket.send("fetch_variable", params);
+
+                    // add callback with request id if any
+                    if(callback != undefined) {
+                        callbackHandler[requestID] = callback;
+                    }
                 } else {
                     GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ALREADY_EXISTS);
                 }

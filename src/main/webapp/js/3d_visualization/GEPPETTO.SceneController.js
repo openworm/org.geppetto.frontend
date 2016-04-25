@@ -128,7 +128,7 @@ define(function (require) {
                             if (mesh instanceof THREE.Object3D) {
                                 mesh.ghosted = true;
                                 mesh.traverse(function (object) {
-                                    if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+                                    if (object.hasOwnProperty("material")) {
                                         if (object.visible) {
                                             object.ghosted = true;
                                             object.material.transparent = true;
@@ -145,7 +145,7 @@ define(function (require) {
                             if (mesh instanceof THREE.Object3D) {
                                 mesh.ghosted = false;
                                 mesh.traverse(function (object) {
-                                    if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+                                    if (object.hasOwnProperty("material")){
                                         if (object.visible) {
                                             object.ghosted = false;
                                             object.material.opacity = object.material.defaultOpacity;
@@ -199,7 +199,7 @@ define(function (require) {
                         if (mesh.selected == false) {
                             if (mesh instanceof THREE.Object3D) {
                                 mesh.traverse(function (child) {
-                                    if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
+                                    if (child.hasOwnProperty("material")) {
                                         GEPPETTO.SceneController.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                                         child.material.opacity = Math.max(0.5, child.material.defaultOpacity);
                                     }
@@ -265,7 +265,7 @@ define(function (require) {
                         if (mesh.selected == true) {
                             if (mesh instanceof THREE.Object3D) {
                                 mesh.traverse(function (child) {
-                                    if (child instanceof THREE.Mesh || child instanceof THREE.Line) {
+                                    if (child.hasOwnProperty("material")) {
                                         GEPPETTO.SceneController.setThreeColor(child.material.color, child.material.defaultColor);
                                         child.material.opacity = child.material.defaultOpacity;
                                     }

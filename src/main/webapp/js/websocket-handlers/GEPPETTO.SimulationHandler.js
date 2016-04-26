@@ -344,7 +344,9 @@ define(function (require) {
                 console.time(GEPPETTO.Resources.ADDING_VARIABLE);
 
                 // expect a fully formed Geppetto model that needs to be merged into the current one
-                GEPPETTO.ModelFactory.mergeModel(rawModel);
+                var diffReport = GEPPETTO.ModelFactory.mergeModel(rawModel);
+
+                // TODO: check if we need to instantiate anything new
 
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
@@ -374,7 +376,9 @@ define(function (require) {
             swapResolvedType: function(payload){
                 var rawModel = JSON.parse(payload.import_type_resolved);
 
-                GEPPETTO.ModelFactory.mergeModel(rawModel, true);
+                var diffReport =  GEPPETTO.ModelFactory.mergeModel(rawModel, true);
+
+                // TODO: check if we need to instantiate anything new
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },

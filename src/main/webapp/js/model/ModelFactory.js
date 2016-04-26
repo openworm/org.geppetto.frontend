@@ -491,12 +491,16 @@ define(function (require) {
             /**
              * Merge Geppetto model parameter into existing Geppetto model
              *
-             * @param rawModel
+             * @param rawModel - raw model to be merged, by deault only adds new vars / libs / types
+             * @param overrideTypes - bool, mergeModel overrides type
              */
             mergeModel: function (rawModel, overrideTypes){
                 if(overrideTypes == undefined){
                     overrideTypes = false;
                 }
+
+                // diff object to report back what changed / has been added
+                var diffReport = {variables: [], types: [], libraries: []};
 
                 // STEP 1: create new geppetto model to merge into existing one
                 var diffModel = this.createGeppettoModel(rawModel, false, false);
@@ -562,6 +566,9 @@ define(function (require) {
                                             this.populateTypeReferences(diffTypes[k]);
 
                                             // TODO: add potential instance paths
+
+                                            // add to diff report
+                                            diffReport.types.push(diffTypes[k]);
                                         }
                                     }
                                 }
@@ -583,6 +590,9 @@ define(function (require) {
                                     this.populateTypeReferences(diffTypes[k]);
 
                                     // TODO: add potential instance paths
+
+                                    // add to diff report
+                                    diffReport.types.push(diffTypes[k]);
                                 }
                             }
                         }
@@ -600,6 +610,9 @@ define(function (require) {
                         // add to geppetto object model
                         diffLibs[i].set({'parent': this.geppettoModel});
                         this.geppettoModel.getLibraries().push(diffLibs[i]);
+
+                        // add to diff report
+                        diffReport.libraries.push(diffLibs[i]);
                     }
                 }
 
@@ -643,11 +656,15 @@ define(function (require) {
                         this.fetchAllPotentialInstancePaths(diffVars[x], potentialInstancePaths, potentialInstancePathsForIndexing, '');
                         this.allPaths = this.allPaths.concat(potentialInstancePaths);
                         this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
+
+                        diffReport.variables.push(diffVars[x]);
                     }
                 }
 
                 // traverse everything again and build shortcuts to children if composite --> containment == true
                 this.populateChildrenShortcuts(this.geppettoModel);
+
+                return diffReport;
             },
 
             /**

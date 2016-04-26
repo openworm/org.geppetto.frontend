@@ -904,13 +904,11 @@ define(function (require) {
                             var groupElementsReference = object.getInitialValue().value.groupElements;
                             if (groupElementsReference != undefined){
 	                            for (var i = 0; i < groupElementsReference.length; i++) {
-	                            	if (GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref) != undefined){
-	                            		var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
-		                                if (objectGroup in groupElements) {
-		                                    // true means don't add to mesh with non-groups visual objects
-		                                    added = GEPPETTO.SceneController.addMeshToGeometryGroup(instance, objectGroup, geometryGroups, m)
-		                                }
-	                            	}
+	                                var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
+	                                if (objectGroup in groupElements) {
+	                                    // true means don't add to mesh with non-groups visual objects
+	                                    added = GEPPETTO.SceneController.addMeshToGeometryGroup(instance, objectGroup, geometryGroups, m)
+	                                }
 	                            }
                             }
                         }

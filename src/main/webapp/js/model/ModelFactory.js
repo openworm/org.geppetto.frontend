@@ -467,6 +467,48 @@ define(function (require) {
             },
 
             /**
+             * Checks if new instances need to be created
+             *
+             * @param diffReport - lists variables and types that we need to check instances for
+             */
+            createInstancesFromDiffReport: function(diffReport){
+                // STEP 1: check new variables to see if any new instances are needed
+                var varsWithVizTypes = [];
+                for(var i=0; i<diffReport.variables;i++) {
+                    GEPPETTO.ModelFactory.fetchVarsWithVisualTypes(diffReport.variables[i], varsWithVizTypes, '');
+                }
+
+                // based on list, traverse again and build instance objects
+                var instanceCount = this.getInstanceCount(window.Instances);
+                for (var j = 0; j < varsWithVizTypes.length; j++) {
+                    GEPPETTO.ModelFactory.buildInstanceHierarchy(varsWithVizTypes[j], null, window.Model, window.Instances);
+                }
+
+                // STEP 2: check types and create new instances if need be
+                var types = diffReport.types;
+                for(var l=0; l<types.length; l++){
+                    // check if type is viz type or has viz type inside
+                    if(types[l].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
+                        (types[l].getVisualType() != undefined &&
+                         types[l].getVisualType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE)){
+                        // get potential instances with that type
+                        var potentialInstancesOfType = this.getAllPotentialInstancesOfType(types[l].getPath());
+                        // getInstance foreach potential instance
+                        for(var g=0; g<potentialInstancesOfType.length; g++){
+                            window.Instances.getInstance(potentialInstancesOfType[g]);
+                        }
+                    }
+                }
+
+                // STEP 3: populate shortcuts / populate connection references if anything changed
+                if(this.getInstanceCount(window.Instances) > instanceCount){
+                    for (var k = 0; k < window.Instances.length; k++) {
+                        GEPPETTO.ModelFactory.populateChildrenShortcuts(window.Instances[k]);
+                    }
+                }
+            },
+
+            /**
              * Populate connections
              */
             populateConnections: function (instance) {
@@ -546,13 +588,13 @@ define(function (require) {
                                                 allTypesInModel.concat(libs[w].getTypes());
                                             }
                                             // fetch variables pointing to the old version of the type
-                                            var variablesPreSwap = this.getAllVariablesOfType(allTypesInModel, types[m]);
+                                            var variablesToSwap = this.getAllVariablesOfType(allTypesInModel, types[m]);
                                             // add top level variables in the model
-                                            variablesPreSwap = variablesPreSwap.concat(this.geppettoModel.getVariables());
+                                            variablesToSwap = variablesToSwap.concat(this.geppettoModel.getVariables());
 
                                             // swap type reference in ALL variables that point to it
-                                            for(var x=0; x<variablesPreSwap.length; x++){
-                                                this.swapTypeInVariable(variablesPreSwap[x], types[m], diffTypes[k]);
+                                            for(var x=0; x<variablesToSwap.length; x++){
+                                                this.swapTypeInVariable(variablesToSwap[x], types[m], diffTypes[k]);
                                             }
 
                                             // swap type in raw model
@@ -565,7 +607,8 @@ define(function (require) {
                                             // populate references for the swapped type
                                             this.populateTypeReferences(diffTypes[k]);
 
-                                            // TODO: add potential instance paths
+                                            // add potential instance paths
+                                            this.addPotentialInstancePaths(variablesToSwap);
 
                                             // add to diff report
                                             diffReport.types.push(diffTypes[k]);
@@ -590,6 +633,7 @@ define(function (require) {
                                     this.populateTypeReferences(diffTypes[k]);
 
                                     // TODO: add potential instance paths
+                                    // NOTE: maybe not needed? the path will be added if a variable uses the type
 
                                     // add to diff report
                                     diffReport.types.push(diffTypes[k]);
@@ -651,11 +695,7 @@ define(function (require) {
                         this.populateTypeReferences(diffVars[x]);
 
                         // find new potential instance paths and add to the list
-                        var potentialInstancePaths = [];
-                        var potentialInstancePathsForIndexing = [];
-                        this.fetchAllPotentialInstancePaths(diffVars[x], potentialInstancePaths, potentialInstancePathsForIndexing, '');
-                        this.allPaths = this.allPaths.concat(potentialInstancePaths);
-                        this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
+                        this.addPotentialInstancePaths([diffVars[x]]);
 
                         diffReport.variables.push(diffVars[x]);
                     }
@@ -665,6 +705,24 @@ define(function (require) {
                 this.populateChildrenShortcuts(this.geppettoModel);
 
                 return diffReport;
+            },
+
+            /**
+             * Adds potential instance paths to internal cache
+             *
+             * @param variables
+             */
+            addPotentialInstancePaths: function(variables){
+                var potentialInstancePaths = [];
+                var potentialInstancePathsForIndexing = [];
+
+                for(var i=0; i<variables.length; i++){
+                    this.fetchAllPotentialInstancePaths(variables[i], potentialInstancePaths, potentialInstancePathsForIndexing, '');
+                }
+
+                // TODO: add only if they are not already there to avoid duplicates
+                this.allPaths = this.allPaths.concat(potentialInstancePaths);
+                this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
             },
 
             /**
@@ -1312,7 +1370,7 @@ define(function (require) {
                 // build new path
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 
-                var entry = {path: path, metaType: node.getType().getMetaType(), type: node.getType().getId()};
+                var entry = {path: path, metaType: node.getType().getMetaType(), type: node.getType().getPath()};
                 allPotentialPaths.push(entry);
                 // only add to indexing if it's not a connection or nested in a composite type
                 if (this.includePotentialInstance(node, path)) {
@@ -1338,7 +1396,7 @@ define(function (require) {
                             var starPath = path + '[' + '*' + ']';
                             potentialParentPaths.push(starPath);
 
-                            var starEntry = {path: starPath, metaType: arrayType.getType().getMetaType(), type: arrayType.getType().getId()};
+                            var starEntry = {path: starPath, metaType: arrayType.getType().getMetaType(), type: arrayType.getType().getPath()};
                             allPotentialPaths.push(starEntry);
                             allPotentialPathsForIndexing.push(starEntry);
                         }
@@ -1348,7 +1406,7 @@ define(function (require) {
                             var arrayElementPath = path + '[' + n + ']';
                             potentialParentPaths.push(arrayElementPath);
 
-                            var arrayElementEntry = {path: arrayElementPath, metaType: arrayType.getType().getMetaType(), type: arrayType.getType().getId()};
+                            var arrayElementEntry = {path: arrayElementPath, metaType: arrayType.getType().getMetaType(), type: arrayType.getType().getPath()};
                             allPotentialPaths.push(arrayElementEntry);
                             if (this.includePotentialInstance(node, arrayElementPath)) {
                                 allPotentialPathsForIndexing.push(arrayElementEntry);
@@ -1778,6 +1836,21 @@ define(function (require) {
             },
 
             /**
+             * Get all POTENTIAL instances starting with a given string
+             */
+            getAllPotentialInstancesOfType: function (typePath) {
+                var matchingPotentialInstances = [];
+
+                for (var i = 0; i < this.allPaths.length; i++) {
+                    if (this.allPaths[i].type == typePath) {
+                        matchingPotentialInstances.push(this.allPaths[i].path);
+                    }
+                }
+
+                return matchingPotentialInstances;
+            },
+
+            /**
              * Get all types of given a meta type (string)
              *
              * @param metaType - metaType String
@@ -1951,6 +2024,23 @@ define(function (require) {
                 }
 
                 return variables;
+            },
+
+            /**
+             * Get total count of instances including children
+             *
+             * @param instances
+             */
+            getInstanceCount: function(instances){
+                var count = 0;
+
+                count += instances.length;
+
+                for(var i=0; i<instances.length; i++){
+                    count+= this.getInstanceCount(instances[i].getChildren());
+                }
+
+                return count;
             },
 
             /**

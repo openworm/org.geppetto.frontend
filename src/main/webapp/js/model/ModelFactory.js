@@ -472,35 +472,56 @@ define(function (require) {
              * @param diffReport - lists variables and types that we need to check instances for
              */
             createInstancesFromDiffReport: function(diffReport){
+                // get initial instance count (used to figure out if we added instances at the end)
+                var instanceCount = this.getInstanceCount(window.Instances);
+
+                var newInstancePaths = [];
+
+                // shortcut function to get potential instance paths given a set types
+                // NOTE: defined as a nested function to avoid polluting the visible API of ModelFactory
+                var that = this;
+                var getPotentialInstancePaths = function(types){
+                    var paths = [];
+
+                    for(var l=0; l<types.length; l++) {
+                        if (types[l].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
+                            (types[l].getVisualType() != undefined &&
+                            types[l].getVisualType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE)) {
+                            // get potential instances with that type
+                            paths = paths.concat(that.getAllPotentialInstancesOfType(types[l].getPath()));
+                        }
+                    }
+
+                    return paths;
+                };
+
                 // STEP 1: check new variables to see if any new instances are needed
                 var varsWithVizTypes = [];
                 for(var i=0; i<diffReport.variables;i++) {
                     GEPPETTO.ModelFactory.fetchVarsWithVisualTypes(diffReport.variables[i], varsWithVizTypes, '');
                 }
-
-                // based on list, traverse again and build instance objects
-                var instanceCount = this.getInstanceCount(window.Instances);
+                // for each variable, get types and potential instances of those types
                 for (var j = 0; j < varsWithVizTypes.length; j++) {
-                    GEPPETTO.ModelFactory.buildInstanceHierarchy(varsWithVizTypes[j], null, window.Model, window.Instances);
+                    // var must exist since we just fetched it from the geppettoModel
+                    var variable = eval(varsWithVizTypes[j]);
+                    var varTypes = variable.getTypes();
+                    newInstancePaths = newInstancePaths.concat(getPotentialInstancePaths(varTypes));
                 }
 
                 // STEP 2: check types and create new instances if need be
-                var types = diffReport.types;
-                for(var l=0; l<types.length; l++){
-                    // check if type is viz type or has viz type inside
-                    if(types[l].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
-                        (types[l].getVisualType() != undefined &&
-                         types[l].getVisualType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE)){
-                        // get potential instances with that type
-                        var potentialInstancesOfType = this.getAllPotentialInstancesOfType(types[l].getPath());
-                        // getInstance foreach potential instance
-                        for(var g=0; g<potentialInstancesOfType.length; g++){
-                            window.Instances.getInstance(potentialInstancesOfType[g]);
-                        }
-                    }
+                var diffTypes = diffReport.types;
+                newInstancePaths = newInstancePaths.concat(getPotentialInstancePaths(diffTypes));
+
+                // STEP 3: call getInstance foreach potential instance found + add instance to scene
+                for(var g=0; g<newInstancePaths.length; g++){
+                    // get instance
+                    var instance = window.Instances.getInstance(newInstancePaths[g]);
+                    // add instance to scene
+                    // TODO: would be nice to verify it wasn't already there
+                    GEPPETTO.SceneController.checkVisualInstance(instance);
                 }
 
-                // STEP 3: populate shortcuts / populate connection references if anything changed
+                // STEP 4: IFF instances were added, re-populate shortcuts
                 if(this.getInstanceCount(window.Instances) > instanceCount){
                     for (var k = 0; k < window.Instances.length; k++) {
                         GEPPETTO.ModelFactory.populateChildrenShortcuts(window.Instances[k]);

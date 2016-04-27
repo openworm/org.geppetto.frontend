@@ -352,6 +352,9 @@ define(function (require) {
 
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
+                // STEP: 3 update control panel
+                GEPPETTO.ControlPanel.setData(window.Instances);
+
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ADDED);
@@ -387,6 +390,9 @@ define(function (require) {
                 var newInstances = GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
 
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
+
+                // STEP: 3 update control panel
+                GEPPETTO.ControlPanel.setData(window.Instances);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },

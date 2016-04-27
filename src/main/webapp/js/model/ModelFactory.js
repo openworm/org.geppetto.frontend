@@ -484,9 +484,7 @@ define(function (require) {
                     var paths = [];
 
                     for(var l=0; l<types.length; l++) {
-                        if (types[l].getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE ||
-                            (types[l].getVisualType() != undefined &&
-                            types[l].getVisualType().getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE)) {
+                        if (types[l].hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                             // get potential instances with that type
                             paths = paths.concat(that.getAllPotentialInstancesOfType(types[l].getPath()));
                         }

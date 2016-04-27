@@ -219,7 +219,7 @@ define(function (require) {
                     messageHandler[parsedServerMessage.type](JSON.parse(parsedServerMessage.data));
 
                     // run callback if any
-                    if(callbackHandler[parsedServerMessage.requestId] != undefined) {
+                    if (callbackHandler[parsedServerMessage.requestId] != undefined) {
                         callbackHandler[parsedServerMessage.requestId]();
                         delete callbackHandler[parsedServerMessage.requestId];
                     }
@@ -299,7 +299,7 @@ define(function (require) {
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 
                 // populate control panel with exploded instances
-                if(GEPPETTO.ControlPanel!=undefined) {
+                if (GEPPETTO.ControlPanel != undefined) {
                     var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
                     GEPPETTO.ControlPanel.setData(visualInstances);
                 }
@@ -314,8 +314,8 @@ define(function (require) {
              * @param variableId
              * @param datasourceId
              */
-            fetchVariable: function(variableId, datasourceId, callback) {
-                if(!window.Model.hasOwnProperty(variableId)) {
+            fetchVariable: function (variableId, datasourceId, callback) {
+                if (!window.Model.hasOwnProperty(variableId)) {
                     var params = {};
                     params["experimentId"] = Project.getActiveExperiment().getId();
                     params["projectId"] = Project.getId();
@@ -325,7 +325,7 @@ define(function (require) {
                     var requestID = GEPPETTO.MessageSocket.send("fetch_variable", params);
 
                     // add callback with request id if any
-                    if(callback != undefined) {
+                    if (callback != undefined) {
                         callbackHandler[requestID] = callback;
                     }
                 } else {
@@ -338,7 +338,7 @@ define(function (require) {
              *
              * @param payload
              */
-            addVariableToModel: function(payload){
+            addVariableToModel: function (payload) {
                 var rawModel = JSON.parse(payload.variable_fetched);
 
                 console.time(GEPPETTO.Resources.ADDING_VARIABLE);
@@ -347,7 +347,10 @@ define(function (require) {
                 var diffReport = GEPPETTO.ModelFactory.mergeModel(rawModel);
 
                 // STEP 2: add new instances for new variables if any
-                GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
+                var newInstances = GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
+
+
+                GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
@@ -359,7 +362,7 @@ define(function (require) {
              *
              * @param typePath
              */
-            resolveImportType: function(typePath) {
+            resolveImportType: function (typePath) {
                 var params = {};
                 params["experimentId"] = Project.getActiveExperiment().getId();
                 params["projectId"] = Project.getId();
@@ -374,14 +377,16 @@ define(function (require) {
              *
              * @param payload
              */
-            swapResolvedType: function(payload){
+            swapResolvedType: function (payload) {
                 var rawModel = JSON.parse(payload.import_type_resolved);
 
                 // STEP 1: merge model - expect a fully formed Geppetto model to be merged into current one
-                var diffReport =  GEPPETTO.ModelFactory.mergeModel(rawModel, true);
+                var diffReport = GEPPETTO.ModelFactory.mergeModel(rawModel, true);
 
                 // STEP 2: add new instances for new types if any
-                GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
+                var newInstances = GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
+
+                GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },
@@ -408,22 +413,22 @@ define(function (require) {
                 };
 
                 instances.getInstance = function (instancePath, create) {
-                    if(create == undefined){
+                    if (create == undefined) {
                         create = true;
                     }
 
                     var instances = [];
                     var InstanceVarName = "Instances.";
-                    var arrayParameter=true;
+                    var arrayParameter = true;
 
-                    if(!(instancePath.constructor === Array)){
+                    if (!(instancePath.constructor === Array)) {
                         instancePath = [instancePath];
-                        arrayParameter=false;
+                        arrayParameter = false;
                     }
 
                     // check if we have any [*] for array notation and replace with exploded paths
-                    for(var j=0; j<instancePath.length; j++){
-                        if(instancePath[j].indexOf('[*]') > -1){
+                    for (var j = 0; j < instancePath.length; j++) {
+                        if (instancePath[j].indexOf('[*]') > -1) {
                             var arrayPath = instancePath[j].substring(0, instancePath[j].indexOf('['));
                             var subArrayPath = instancePath[j].substring(instancePath[j].indexOf(']') + 1, instancePath[j].length);
                             var arrayInstance = Instances.getInstance(arrayPath);
@@ -432,24 +437,24 @@ define(function (require) {
                             // remove original * entry
                             instancePath.splice(j, 1);
                             // add exploded elements
-                            for(var x=0; x<arraySize; x++){
+                            for (var x = 0; x < arraySize; x++) {
                                 instancePath.push(arrayPath + '[' + x + ']' + subArrayPath);
                             }
                         }
                     }
 
 
-                    for(var i=0; i<instancePath.length; i++) {
+                    for (var i = 0; i < instancePath.length; i++) {
                         try {
                             instances[i] = eval(InstanceVarName + instancePath[i]);
-                            if(instances[i] == undefined){
-                                if(create) {
+                            if (instances[i] == undefined) {
+                                if (create) {
                                     Instances.addInstances(instancePath[i]);
                                     instances[i] = eval(InstanceVarName + instancePath[i]);
                                 }
                             }
                         } catch (e) {
-                            if(create) {
+                            if (create) {
                                 Instances.addInstances(instancePath[i]);
                                 instances[i] = eval(InstanceVarName + instancePath[i]);
                             }
@@ -459,7 +464,7 @@ define(function (require) {
                         }
                     }
 
-                    if(instances.length == 1 && !arrayParameter) {
+                    if (instances.length == 1 && !arrayParameter) {
                         //if we received an array we want to return an array even if there's only one element
                         return instances[0];
                     } else {

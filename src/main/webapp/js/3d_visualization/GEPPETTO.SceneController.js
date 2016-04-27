@@ -24,7 +24,22 @@ define(function (require) {
             buildScene: function (instances) {
                 GEPPETTO.SceneController.traverseInstances(instances);
                 GEPPETTO.getVARS().scene.updateMatrixWorld(true);
+            },
 
+
+            /**
+             * Add new visual instances to the scene
+             * @param instances
+             */
+            updateSceneWithNewInstances: function (instances) {
+
+                for (var g = 0; g < instances.length; g++) {
+                    // add instance to scene
+                    // TODO: would be nice to verify it wasn't already there
+                    GEPPETTO.SceneController.checkVisualInstance(instances[g]);
+                }
+
+                GEPPETTO.resetCamera();
             },
 
             /**
@@ -145,7 +160,7 @@ define(function (require) {
                             if (mesh instanceof THREE.Object3D) {
                                 mesh.ghosted = false;
                                 mesh.traverse(function (object) {
-                                    if (object.hasOwnProperty("material")){
+                                    if (object.hasOwnProperty("material")) {
                                         if (object.visible) {
                                             object.ghosted = false;
                                             object.material.opacity = object.material.defaultOpacity;

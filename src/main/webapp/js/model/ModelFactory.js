@@ -512,14 +512,8 @@ define(function (require) {
                 var diffTypes = diffReport.types;
                 newInstancePaths = newInstancePaths.concat(getPotentialInstancePaths(diffTypes));
 
-                // STEP 3: call getInstance foreach potential instance found + add instance to scene
-                for(var g=0; g<newInstancePaths.length; g++){
-                    // get instance
-                    var instance = window.Instances.getInstance(newInstancePaths[g]);
-                    // add instance to scene
-                    // TODO: would be nice to verify it wasn't already there
-                    GEPPETTO.SceneController.checkVisualInstance(instance);
-                }
+                // STEP 3: call getInstance to create the instances
+               var newInstances = window.Instances.getInstance(newInstancePaths);
 
                 // STEP 4: IFF instances were added, re-populate shortcuts
                 if(this.getInstanceCount(window.Instances) > instanceCount){
@@ -527,6 +521,8 @@ define(function (require) {
                         GEPPETTO.ModelFactory.populateChildrenShortcuts(window.Instances[k]);
                     }
                 }
+
+                return newInstances;
             },
 
             /**

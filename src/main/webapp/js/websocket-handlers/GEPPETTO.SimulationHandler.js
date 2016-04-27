@@ -349,11 +349,12 @@ define(function (require) {
                 // STEP 2: add new instances for new variables if any
                 var newInstances = GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
 
-
+                // STEP: 3 update scene
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
-                // STEP: 3 update control panel
-                GEPPETTO.ControlPanel.setData(window.Instances);
+                // STEP: 4 update control panel
+                var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
+                GEPPETTO.ControlPanel.setData(visualInstances);
 
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
@@ -389,10 +390,12 @@ define(function (require) {
                 // STEP 2: add new instances for new types if any
                 var newInstances = GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
 
+                // STEP 3: update scene
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
-                // STEP: 3 update control panel
-                GEPPETTO.ControlPanel.setData(window.Instances);
+                // STEP: 4 update control panel
+                var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
+                GEPPETTO.ControlPanel.setData(visualInstances);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },

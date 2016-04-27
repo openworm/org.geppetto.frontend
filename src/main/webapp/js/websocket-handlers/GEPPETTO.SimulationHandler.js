@@ -349,6 +349,9 @@ define(function (require) {
                 // STEP 2: add new instances for new variables if any
                 GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
 
+                // STEP: 3 update control panel
+                GEPPETTO.ControlPanel.setData(window.Instances);
+
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ADDED);
@@ -382,6 +385,9 @@ define(function (require) {
 
                 // STEP 2: add new instances for new types if any
                 GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
+
+                // STEP: 3 update control panel
+                GEPPETTO.ControlPanel.setData(window.Instances);
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },

@@ -603,13 +603,13 @@ define(function (require) {
                                                 allTypesInModel.concat(libs[w].getTypes());
                                             }
                                             // fetch variables pointing to the old version of the type
-                                            var variablesToSwap = this.getAllVariablesOfType(allTypesInModel, types[m]);
+                                            var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, types[m]);
                                             // add top level variables in the model
-                                            variablesToSwap = variablesToSwap.concat(this.geppettoModel.getVariables());
+                                            variablesToUpdate = variablesToUpdate.concat(this.geppettoModel.getVariables());
 
                                             // swap type reference in ALL variables that point to it
-                                            for(var x=0; x<variablesToSwap.length; x++){
-                                                this.swapTypeInVariable(variablesToSwap[x], types[m], diffTypes[k]);
+                                            for(var x=0; x<variablesToUpdate.length; x++){
+                                                this.swapTypeInVariable(variablesToUpdate[x], types[m], diffTypes[k]);
                                             }
 
                                             // swap type in raw model
@@ -623,7 +623,10 @@ define(function (require) {
                                             this.populateTypeReferences(diffTypes[k]);
 
                                             // add potential instance paths
-                                            this.addPotentialInstancePaths(variablesToSwap);
+                                            this.addPotentialInstancePaths(variablesToUpdate);
+
+                                            // update capabilities for variables and instances if any
+                                            this.updateCapabilities(variablesToUpdate);
 
                                             // add to diff report
                                             diffReport.types.push(diffTypes[k]);
@@ -720,6 +723,94 @@ define(function (require) {
                 this.populateChildrenShortcuts(this.geppettoModel);
 
                 return diffReport;
+            },
+
+            /**
+             * Updates capabilities of variables and their instances if any
+             *
+             * @param variables
+             */
+            updateCapabilities: function(variables){
+                // some bit of code encapsulated for private re-use
+                var that = this;
+                var updateInstancesCapabilities = function(instances){
+                    for(var j=0; j<instances.length; j++){
+                        // check if visual type and inject AVisualCapability
+                        var visualType = instances[j].getVisualType();
+                        // check if visual type and inject AVisualCapability
+                        if ((!(visualType instanceof Array) && visualType != null && visualType != undefined) ||
+                            (visualType instanceof Array && visualType.length > 0)) {
+
+                            if(!instances[j].hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)){
+                                instances[j].extendApi(AVisualCapability);
+                                that.propagateCapabilityToParents(AVisualCapability, instances[j]);
+
+                                if (visualType instanceof Array && visualType.length > 1) {
+                                    throw( "Support for more than one visual type is not implemented." );
+                                }
+
+                                // check if it has visual groups - if so add visual group capability
+                                if ((typeof visualType.getVisualGroups === "function") &&
+                                    visualType.getVisualGroups() != null &&
+                                    visualType.getVisualGroups().length > 0) {
+                                    instances[j].extendApi(AVisualGroupCapability);
+                                    instances[j].setVisualGroups(visualType.getVisualGroups());
+                                }
+
+                                // increase scene complexity counter
+                                if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
+                                    GEPPETTO.SceneController.complexity += visualType.getVariables().length;
+                                }
+                            }
+                        }
+
+                        // check if it has connections and inject AConnectionCapability
+                        if (instances[j].getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
+                            if(!instances[j].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY)){
+                                instances[j].extendApi(AConnectionCapability);
+                                that.resolveConnectionValues(instances[j]);
+                            }
+                        }
+
+                        if (instances[j].getType().getMetaType() == GEPPETTO.Resources.STATE_VARIABLE_TYPE) {
+                            if(!instances[j].hasCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY)){
+                                instances[j].extendApi(AStateVariableCapability);
+                            }
+                        }
+
+                        if (instances[j].getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
+                            if(!instances[j].hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)){
+                                instances[j].extendApi(AParameterCapability);
+                            }
+                        }
+
+                        // getChildren of instance and recurse by the power of greyskull!
+                        updateInstancesCapabilities(instances[j].getChildren());
+                    }
+                };
+
+                // update capabilities for variables
+                for(var i=0; i<variables.length; i++){
+                    var resolvedTypes = variables[i].getTypes();
+                    for (var j = 0; j < resolvedTypes.length; j++) {
+                        if (resolvedTypes[j].getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
+                            // if a variable has a Parameter type, add AParameterCapability to the variable
+                            if(!variables[i].hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)){
+                                variables[i].extendApi(AParameterCapability);
+                            }
+                        } else if (resolvedTypes[j].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
+                            // if a variable has a connection type, add connection capability
+                            if(!variables[i].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY)) {
+                                variables[i].extendApi(AConnectionCapability);
+                            }
+                        }
+                    }
+
+                    var varInstances = this.getAllInstancesOf(variables[i]);
+
+                    // update instances capabilities
+                    updateInstancesCapabilities(varInstances);
+                }
             },
 
             /**

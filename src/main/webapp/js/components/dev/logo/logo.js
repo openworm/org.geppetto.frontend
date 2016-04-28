@@ -5,5 +5,5 @@ define(function(require) {
     link.href = "geppetto/js/components/dev/logo/logo.css";
     document.getElementsByTagName("head")[0].appendChild(link);
     
-    $("#geppettologo").append('<i class="gpt-gpt_logo"></i>');
+    $("#geppettologo").append('<div class="gpt-gpt_logo"></div>');
 })

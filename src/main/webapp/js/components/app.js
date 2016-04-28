@@ -17,6 +17,14 @@ define(function(require) {
 		}), $('#modal-region').get(0));
 	});
 
+	GEPPETTO.on('spin_logo', function(label) {
+		$(".gpt-gpt_logo").addClass("fa-spin").attr('title', 'Loading data');
+	});
+
+	GEPPETTO.on('stop_spin_logo', function(label) {
+		$(".gpt-gpt_logo").removeClass("fa-spin").attr('title', '');;
+	});
+
 	var command = "Project.loadFromURL";
 	var simParam = utils.getQueryStringParameter('load_project_from_url');
 	var expParam = utils.getQueryStringParameter('experimentId');

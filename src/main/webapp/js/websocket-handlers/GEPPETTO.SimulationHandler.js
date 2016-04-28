@@ -104,10 +104,12 @@ define(function (require) {
 
         messageHandler[messageTypes.VARIABLE_FETCHED] = function (payload) {
             GEPPETTO.SimulationHandler.addVariableToModel(payload);
+            GEPPETTO.trigger('stop_spin_logo');
         };
 
         messageHandler[messageTypes.IMPORT_TYPE_RESOLVED] = function (payload) {
             GEPPETTO.SimulationHandler.swapResolvedType(payload);
+            GEPPETTO.trigger('stop_spin_logo');
         };
 
         messageHandler[messageTypes.PLAY_EXPERIMENT] = function (payload) {
@@ -324,6 +326,8 @@ define(function (require) {
 
                     var requestID = GEPPETTO.MessageSocket.send("fetch_variable", params);
 
+                    GEPPETTO.trigger('spin_logo');
+
                     // add callback with request id if any
                     if (callback != undefined) {
                         callbackHandler[requestID] = callback;
@@ -374,6 +378,8 @@ define(function (require) {
                 params["path"] = typePath.replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT, '');
 
                 GEPPETTO.MessageSocket.send("resolve_import_type", params);
+
+                GEPPETTO.trigger('spin_logo');
             },
 
             /**

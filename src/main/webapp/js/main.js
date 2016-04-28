@@ -73,7 +73,7 @@ require.config({
      * to that object in here.
      */
     shim: {
-        'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
+        'vendor/jquery-ui.min': ["jquery"],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/shaders/ConvolutionShader': ['three'],
@@ -134,7 +134,7 @@ var jqueryLib = [
     "vendor/postprocessing/FilmPass",
     "vendor/ColladaLoader",
     "vendor/OBJLoader",
-    "vendor/jquery-ui-1.10.3.custom.min",
+    "vendor/jquery-ui.min",
     "vendor/TrackballControls",
     "vendor/ColorConverter",
     "vendor/bootstrap.min",

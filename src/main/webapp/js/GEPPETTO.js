@@ -43,7 +43,7 @@ define(function (require) {
 
     //These two libraries are required here so that Geppetto can work properly in an iframe (as embedded website).
     //Otherwise, sometimes (randomly)  these libraries are not loaded on time and some js commands failed and the web is not loaded properly.
-    require('vendor/jquery-ui-1.10.3.custom.min');
+    require('vendor/jquery-ui.min');
     require('vendor/bootstrap.min');
 
     require('vendor/Detector');

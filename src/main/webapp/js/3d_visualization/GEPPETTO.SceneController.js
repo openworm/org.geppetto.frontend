@@ -35,7 +35,6 @@ define(function (require) {
 
                 for (var g = 0; g < instances.length; g++) {
                     // add instance to scene
-                    // TODO: would be nice to verify it wasn't already there
                     GEPPETTO.SceneController.checkVisualInstance(instances[g]);
                 }
 

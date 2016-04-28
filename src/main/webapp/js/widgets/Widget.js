@@ -151,8 +151,13 @@ define(function (require) {
 
                 this.position.left = left;
                 this.position.top = top;
-                $("#" + this.id).dialog('option', 'position', [this.position.left, this.position.top]);
 
+                $("#" + this.id).dialog(
+                    'option', 'position', {
+                        my: "left+" + this.position.left + " top+" + this.position.top,
+                        at: "left top",
+                        of: $(window)
+                    });
                 return this;
             },
 
@@ -394,7 +399,7 @@ define(function (require) {
                     });
 
                 //remove the jQuery UI icon
-                $("div[aria-describedby=" + this.id + "] .ui-dialog-titlebar-close > span").remove();
+                $("div[aria-describedby=" + this.id + "] .ui-dialog-titlebar-close").html("")
                 $("div[aria-describedby=" + this.id + "] button").append("<i class='fa fa-close'></i>");
                 this.$el = $("#" + this.id);
 

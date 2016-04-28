@@ -72,7 +72,7 @@ require.config({
      * to that object in here.
      */
     shim: {
-        'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
+        'vendor/jquery-ui.min': ["jquery"],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/shaders/ConvolutionShader': ['three'],
@@ -122,7 +122,7 @@ jqueryLib.push("d3");
 jqueryLib.push("vendor/THREEx.KeyboardState");
 jqueryLib.push("vendor/ColladaLoader");
 jqueryLib.push("vendor/OBJLoader");
-jqueryLib.push("vendor/jquery-ui-1.10.3.custom.min");
+jqueryLib.push("vendor/jquery-ui.min");
 jqueryLib.push("vendor/TrackballControls");
 jqueryLib.push("vendor/ColorConverter");
 jqueryLib.push("vendor/bootstrap.min");

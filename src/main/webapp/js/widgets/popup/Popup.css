@@ -76,6 +76,8 @@
     margin-top: 5px;
 }
 
+
+
 .popup-title:hover {
     color: #fc401a;
 }
@@ -85,6 +87,7 @@
     margin-top: 7px;
     float: right;
     color: #8A7F7F;
+    cursor:pointer;
 }
 
 .popup-html {

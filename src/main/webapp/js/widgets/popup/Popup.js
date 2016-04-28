@@ -153,15 +153,19 @@ define(function (require) {
          */
         setData: function (anyInstance) {
             this.setMessage(this.getHTML(anyInstance));
-            $("#" + this.getId() + ' .popup-title').click(function (e) {
-                var chevron = $($(e.target).attr("data-target") + "_chevron");
+            var changeIcon=function(chevron){
                 if (chevron.hasClass('fa-chevron-circle-down')) {
                     chevron.removeClass("fa-chevron-circle-down").addClass("fa-chevron-circle-up");
                 }
                 else {
                     chevron.removeClass("fa-chevron-circle-up").addClass("fa-chevron-circle-down");
                 }
-
+            };
+            $("#" + this.getId() + ' .popup-title').click(function (e) {
+            	changeIcon($($(e.target).attr("data-target") + "_chevron"));
+            });
+            $("#" + this.getId() + " .popup-chevron").click(function (e) {
+            	changeIcon($(e.target));
             });
             $("#" + this.getId() + " .slickdiv").slick();
             return this;
@@ -179,7 +183,7 @@ define(function (require) {
                 for (var i = 0; i < type.getVariables().length; i++) {
                     var v = type.getVariables()[i];
                     var id = this.getId() + "_" + type.getId() + "_el_" + i;
-                    html += "<div class='popup-title' data-toggle='collapse' data-target='#" + id + "'>" + v.getName() + "</div><div id='" + id + "_chevron" + "' class='popup-chevron fa fa-chevron-circle-down '></div>"
+                    html += "<div class='popup-title' data-toggle='collapse' data-target='#" + id + "'>" + v.getName() + "</div><div id='" + id + "_chevron" + "' data-toggle='collapse' data-target='#" + id + "' class='popup-chevron fa fa-chevron-circle-down '></div>"
                     html += this.getHTML(v, id);
                 }
             }

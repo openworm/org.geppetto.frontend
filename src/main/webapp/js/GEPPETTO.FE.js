@@ -364,7 +364,9 @@ define(function (require) {
 
             addListenersToRow: function (row, experiment) {
                 // listenern for active icon button
-                $(row).find(".activeIcon").click(function () {
+                $(row).find(".activeIcon").click(function (e) {
+                    var evt = e || window.event;
+                    
                     var experiment = window.Project.getExperimentById(this.attributes.experimentid.value);
                     var index = window.Project.getExperiments().indexOf(experiment);
                     GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
@@ -375,19 +377,24 @@ define(function (require) {
                     $(".downloadModelsIcon").hide();
                     $(".downloadResultsIcon").hide();
 
-                    window.event.stopPropagation();
+                    evt.stopPropagation();
                 });
 
                 // Handles delete icon button click
-                $(row).find(".deleteIcon").click(function () {
+                $(row).find(".deleteIcon").click(function (e) {
+                    var evt = e || window.event;
+                    
                     var experiment = window.Project.getExperimentById(this.attributes.experimentid.value);
                     var index = window.Project.getExperiments().indexOf(experiment);
                     GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
-                    window.event.stopPropagation();
+                    
+                    evt.stopPropagation();
                 });
 
                 // Handles download models button click
-                $(row).find(".downloadModelsIcon").click(function () {
+                $(row).find(".downloadModelsIcon").click(function (e) {
+                    var evt = e || window.event;
+                    
                     var experiment = window.Project.getExperimentById(this.attributes.experimentid.value);
                     var simulatorConfigurations = experiment.simulatorConfigurations;
                     for (var config in simulatorConfigurations) {
@@ -395,11 +402,13 @@ define(function (require) {
                         GEPPETTO.Console.executeCommand('Project.downloadModel("' + simulatorConfig["aspectInstancePath"] + '");');
                     }
 
-                    window.event.stopPropagation();
+                    evt.stopPropagation();
                 });
 
                 // Handles download results icon
-                $(row).find(".downloadResultsIcon").click(function () {
+                $(row).find(".downloadResultsIcon").click(function (e) {
+                    var evt = e || window.event;
+                    
                     var experiment = window.Project.getExperimentById(this.attributes.experimentid.value);
                     var index = window.Project.getExperiments().indexOf(experiment);
                     var simulatorConfigurations = experiment.simulatorConfigurations;
@@ -408,7 +417,7 @@ define(function (require) {
                         GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].downloadResults('" + simulatorConfig["aspectInstancePath"] + "'," + "'RAW');");
                     }
 
-                    window.event.stopPropagation();
+                    evt.stopPropagation();
                 });
 
                 // Handle edits to editable fields

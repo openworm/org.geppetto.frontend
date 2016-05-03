@@ -43,10 +43,10 @@ define(function (require) {
             // Camera
             var SCREEN_WIDTH = $(GEPPETTO.getVARS().container).width();
             var SCREEN_HEIGHT = $(GEPPETTO.getVARS().container).height();
-            var VIEW_ANGLE = 45;
+            var VIEW_ANGLE = 60;
             var ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
-            var NEAR = 0.1;
-            var FAR = 500000;
+            var NEAR = 10;
+            var FAR = 2000000;
             GEPPETTO.getVARS().camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
             GEPPETTO.getVARS().scene.add(GEPPETTO.getVARS().camera);
             GEPPETTO.getVARS().camera.position.set(GEPPETTO.getVARS().cameraPosition.x, GEPPETTO.getVARS().cameraPosition.y, GEPPETTO.getVARS().cameraPosition.z);

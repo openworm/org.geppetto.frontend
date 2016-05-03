@@ -45,7 +45,6 @@
 	border: 2px solid #fd6808 !important;
 }
 
-
 .griddle .griddle-settings-toggle {
 	float: left;
 	width: 50%;
@@ -78,13 +77,22 @@
 	table-layout: fixed;
 }
 
+.img-column .tooltip-arrow {
+	border-left-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.img-column .tooltip-inner {
+	background-color: rgba(66, 59, 59, 0.70) !important;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 .controlpanel-colorpicker {
 	background-color: rgba(66, 59, 59, 0.70);
 	border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .colorpicker:after {
-	border-bottom: 6px solid rgba(255, 255, 255, 0.27)!important;
+	border-bottom: 6px solid rgba(255, 255, 255, 0.27) !important;
 }
 
 .griddle th {
@@ -127,12 +135,16 @@
 
 .thumbnail-img {
 	width: 40px;
-    display: block;
-    margin: 0 auto;
+	display: block;
+	margin: 0 auto;
+	-webkit-filter: invert(17%);
+	filter: invert(17%);
 }
 
 .thumbnail-img-tooltip {
 	width: 180px;
+	-webkit-filter: invert(17%);
+	filter: invert(17%);
 }
 
 .griddle button {
@@ -162,5 +174,5 @@
 }
 
 .img-column {
-    width: 100px;
+	width: 100px;
 }

@@ -132,6 +132,8 @@ define(function (require) {
                 }
 
                 this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
+                
+                return requestID;
             },
 
             waitForConnection: function (messageTemplate, interval) {

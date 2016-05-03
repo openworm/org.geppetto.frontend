@@ -221,9 +221,11 @@ define(function (require) {
                     messageHandler[parsedServerMessage.type](JSON.parse(parsedServerMessage.data));
 
                     // run callback if any
-                    if (callbackHandler[parsedServerMessage.requestId] != undefined) {
-                        callbackHandler[parsedServerMessage.requestId]();
-                        delete callbackHandler[parsedServerMessage.requestId];
+                    if(parsedServerMessage.requestID != undefined){
+	                    if (callbackHandler[parsedServerMessage.requestID] != undefined) {
+	                        callbackHandler[parsedServerMessage.requestID]();
+	                        delete callbackHandler[parsedServerMessage.requestID];
+	                    }
                     }
                 }
             },

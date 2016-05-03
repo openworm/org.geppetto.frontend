@@ -326,7 +326,7 @@ define(function (require) {
 
         getInitialState: function () {
             return {
-            	columns: ['name', 'type', 'controls', 'image'],
+            	columns: ['name', 'type', 'controls'],
                 data: [],
                 controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration
@@ -355,7 +355,7 @@ define(function (require) {
                         return t.getPath()
                     }),
                     "controls": "",
-                    "image": "http://i.imgur.com/N5G3Ref.png"
+                    "image": ""
                 });
             }
 

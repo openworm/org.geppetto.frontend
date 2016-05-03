@@ -18,9 +18,25 @@ define(function (require) {
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
 
     var ImageComponent = React.createClass({
+        componentDidMount: function(){
+            $('[data-toggle="tooltip"]').tooltip({
+                html: true,
+                animation: true,
+                placement: 'left'
+            });
+        },
+
         render: function () {
+            var imgId = this.props.rowData.path.replace(/\./g,'_') + "_thumbnail";
+            var titleValue = "<img src='" + this.props.data + "' class='thumbnail-img-tooltip'/>";
             return (
-                <div><img src={this.props.data} className="thumbnail-img"/></div>
+                <div>
+                    <img id={imgId}
+                         src={this.props.data}
+                         title={titleValue}
+                         className="thumbnail-img"
+                         data-toggle="tooltip" />
+                </div>
             )
         }
     });
@@ -223,20 +239,21 @@ define(function (require) {
             "displayName": "Type(s)"
         },
         {
-            "columnName": "image",
-            "order": 4,
-            "locked": false,
-            "visible": true,
-            "customComponent": ImageComponent,
-            "displayName": "Image"
-        },
-        {
             "columnName": "controls",
-            "order": 5,
+            "order": 4,
             "locked": false,
             "visible": true,
             "customComponent": ControlsComponent,
             "displayName": "Controls"
+        },
+        {
+            "columnName": "image",
+            "order": 5,
+            "locked": false,
+            "visible": true,
+            "customComponent": ImageComponent,
+            "displayName": "Image",
+            cssClassName: "img-column"
         },
     ];
 
@@ -337,8 +354,8 @@ define(function (require) {
                     "type": records[i].getTypes().map(function (t) {
                         return t.getPath()
                     }),
+                    "controls": "",
                     "image": "",
-                    "controls": ""
                 });
             }
 

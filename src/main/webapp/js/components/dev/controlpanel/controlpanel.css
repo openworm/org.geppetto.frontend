@@ -126,8 +126,13 @@
 }
 
 .thumbnail-img {
-	height: 64px;
-	width: 128px;
+	width: 40px;
+    display: block;
+    margin: 0 auto;
+}
+
+.thumbnail-img-tooltip {
+	width: 180px;
 }
 
 .griddle button {
@@ -154,4 +159,8 @@
 	font-size: 20px !important;
 	background: none !important;
 	color: #fc4b19;
+}
+
+.img-column {
+    width: 100px;
 }

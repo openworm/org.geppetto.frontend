@@ -17,13 +17,21 @@ define(function (require) {
     var GEPPETTO = require('geppetto');
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
 
+    $.widget.bridge('uitooltip', $.ui.tooltip);
+
     var ImageComponent = React.createClass({
-        componentDidMount: function(){
-            $('[data-toggle="tooltip"]').tooltip({
-                html: true,
-                animation: true,
-                placement: 'left'
+        attachTooltip: function(){
+            $('img[rel="tooltip"]').uitooltip({
+                position: { my: "left+15 center", at: "right center" },
+                tooltipClass: "tooltip-container",
+                content: function () {
+                    return this.getAttribute("title");
+                },
             });
+        },
+
+        componentDidMount: function(){
+            this.attachTooltip();
         },
 
         render: function () {
@@ -35,7 +43,7 @@ define(function (require) {
                          src={this.props.data}
                          title={titleValue}
                          className="thumbnail-img"
-                         data-toggle="tooltip" />
+                         rel="tooltip" />
                 </div>
             )
         }
@@ -326,7 +334,7 @@ define(function (require) {
 
         getInitialState: function () {
             return {
-            	columns: ['name', 'type', 'controls'],
+                columns: ['name', 'type', 'controls', 'image'],
                 data: [],
                 controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration
@@ -355,7 +363,7 @@ define(function (require) {
                         return t.getPath()
                     }),
                     "controls": "",
-                    "image": ""
+                    "image": "http://i.imgur.com/N5G3Ref.png",
                 });
             }
 

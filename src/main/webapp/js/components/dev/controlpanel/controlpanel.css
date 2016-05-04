@@ -142,9 +142,16 @@
 }
 
 .thumbnail-img-tooltip {
-	width: 180px;
-	-webkit-filter: invert(17%);
-	filter: invert(17%);
+	width: 160px;
+}
+
+.tooltip-container {
+    padding: 5px;
+    border-width: 0px;
+    border-radius: 10px;
+    border-color: black;
+	opacity: 0.75;
+	background: black;
 }
 
 .griddle button {

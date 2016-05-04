@@ -81,14 +81,10 @@
 	border-left-color: rgba(255, 255, 255, 0.7) !important;
 }
 
-.img-column .tooltip-inner {
-	background-color: rgba(66, 59, 59, 0.70) !important;
-	border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
 .controlpanel-colorpicker {
 	background-color: rgba(66, 59, 59, 0.70);
-	border: 1px solid rgba(255, 255, 255, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.25) !important;
+	border-radius: 0px !important;
 }
 
 .colorpicker:after {
@@ -143,15 +139,17 @@
 
 .thumbnail-img-tooltip {
 	width: 160px;
+	-webkit-filter: invert(19%);
+	filter: invert(19%);
 }
 
 .tooltip-container {
-    padding: 5px;
-    border-width: 0px;
-    border-radius: 10px;
-    border-color: black;
-	opacity: 0.75;
-	background: black;
+	padding: 0px;
+	border-radius: 0; opacity : 1;
+	background-color: rgba(66, 59, 59, 0.70) !important;
+	border: 1px solid rgba(255, 255, 255, 0.25) !important;
+	box-shadow: none;
+	opacity: 1;
 }
 
 .griddle button {

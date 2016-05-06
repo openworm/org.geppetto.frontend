@@ -19,7 +19,7 @@ define(function (require) {
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
-    var ImageComponent = React.createClass({
+    GEPPETTO.ImageComponent = React.createClass({
         attachTooltip: function(){
             $('img[rel="tooltip"]').uitooltip({
                 position: { my: "left+15 center", at: "right center" },
@@ -49,7 +49,7 @@ define(function (require) {
         }
     });
 
-    var ArrayComponent = React.createClass({
+    GEPPETTO.ArrayComponent = React.createClass({
         render: function () {
             return (
                 <ul>
@@ -67,7 +67,7 @@ define(function (require) {
         }
     });
 
-    var ControlsComponent = React.createClass({
+    GEPPETTO.ControlsComponent = React.createClass({
         colorPickerBtnId: '',
         colorPickerActionFn: '',
 
@@ -245,7 +245,7 @@ define(function (require) {
             "order": 3,
             "locked": false,
             "visible": true,
-            "customComponent": ArrayComponent,
+            "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})"
         },
@@ -254,19 +254,9 @@ define(function (require) {
             "order": 4,
             "locked": false,
             "visible": true,
-            "customComponent": ControlsComponent,
+            "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": ""
-        },
-        {
-            "columnName": "image",
-            "order": 5,
-            "locked": false,
-            "visible": true,
-            "customComponent": ImageComponent,
-            "displayName": "Image",
-            cssClassName: "img-column",
-            "source": "$entity$.$entity$_meta.image.data"
         },
     ];
 

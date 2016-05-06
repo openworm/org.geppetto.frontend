@@ -49,7 +49,7 @@ define(function (require) {
         }
     });
 
-    var TypeComponent = React.createClass({
+    var ArrayComponent = React.createClass({
         render: function () {
             return (
                 <ul>
@@ -229,22 +229,25 @@ define(function (require) {
             "order": 1,
             "locked": false,
             "visible": true,
-            "displayName": "Path"
+            "displayName": "Path",
+            "source": "$entity$.getPath()"
         },
         {
             "columnName": "name",
             "order": 2,
             "locked": false,
             "visible": true,
-            "displayName": "Name"
+            "displayName": "Name",
+            "source": "$entity$.getPath()"
         },
         {
             "columnName": "type",
             "order": 3,
             "locked": false,
             "visible": true,
-            "customComponent": TypeComponent,
-            "displayName": "Type(s)"
+            "customComponent": ArrayComponent,
+            "displayName": "Type(s)",
+            "source": "$entity$.getTypes().map(function (t) {return t.getPath()})"
         },
         {
             "columnName": "controls",
@@ -252,7 +255,8 @@ define(function (require) {
             "locked": false,
             "visible": true,
             "customComponent": ControlsComponent,
-            "displayName": "Controls"
+            "displayName": "Controls",
+            "source": ""
         },
         {
             "columnName": "image",
@@ -261,7 +265,8 @@ define(function (require) {
             "visible": true,
             "customComponent": ImageComponent,
             "displayName": "Image",
-            cssClassName: "img-column"
+            cssClassName: "img-column",
+            "source": "$entity$.$entity$_meta.image.data"
         },
     ];
 
@@ -334,37 +339,60 @@ define(function (require) {
 
         getInitialState: function () {
             return {
-                columns: ['name', 'type', 'controls', 'image'],
+                columns: ['name', 'type', 'controls'],
                 data: [],
                 controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility', 'zoom']},
-                controlsConfig: defaultControlsConfiguration
+                controlsConfig: defaultControlsConfiguration,
+                columnMetadata: controlPanelColumnMeta
             };
         },
 
         getDefaultProps: function () {
             return {
-                "tableClassName": 'control-panel-table',
-                "columnMetadata": controlPanelColumnMeta
+                "tableClassName": 'control-panel-table'
             };
         },
 
-        setColumns: function (cols) {
-            this.setState({columns: cols});
+        setColumns: function (cols, meta) {
+            if(meta == undefined){
+                meta = controlPanelColumnMeta;
+            }
+
+            this.setState({columns: cols, columnMetadata: meta});
         },
 
         setData: function (records) {
+            var columnMeta = this.state.columnMetadata;
+
             // go from list of instances / variables to simple JSON
             var gridInput = [];
+
             for (var i = 0; i < records.length; i++) {
-                gridInput.push({
-                    "path": records[i].getPath(),
-                    "name": records[i].getPath(),
-                    "type": records[i].getTypes().map(function (t) {
-                        return t.getPath()
-                    }),
-                    "controls": "",
-                    "image": "http://i.imgur.com/N5G3Ref.png",
-                });
+                var gridRecord = {};
+
+                // loop column meta and grab column names + source
+                for(var j=0; j<columnMeta.length; j++){
+                    var sourceActionStr = columnMeta[j].source;
+
+                    // replace token with path from input entity
+                    var entityPath = records[i].getPath();
+                    sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
+
+                    // eval result - empty string by default so griddle doesn't complain
+                    var result = '';
+
+                    try{
+                        if(sourceActionStr != "") {
+                            result = eval(sourceActionStr);
+                        }
+                    } catch(e){
+                        GEPPETTO.Console.log(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                    }
+
+                    gridRecord[columnMeta[j].columnName] = result;
+                }
+
+                gridInput.push(gridRecord);
             }
 
             // set state to refresh grid
@@ -412,7 +440,7 @@ define(function (require) {
             return React.createFactory(Griddle)({
                 columns: this.state.columns, results: this.state.data,
                 showFilter: true, showSettings: false, enableInfiniteScroll: true, bodyHeight: 400,
-                useGriddleStyles: false, columnMetadata: this.props.columnMetadata
+                useGriddleStyles: false, columnMetadata: this.state.columnMetadata
             });
         }
     });

@@ -37,13 +37,15 @@ define(function (require) {
         render: function () {
             var imgId = this.props.rowData.path.replace(/\./g,'_') + "_thumbnail";
             var titleValue = "<img src='" + this.props.data + "' class='thumbnail-img-tooltip'/>";
+
+            var imgElement = "";
+            if(this.props.data != ""){
+                imgElement = <img id={imgId} src={this.props.data} title={titleValue} className="thumbnail-img" rel="tooltip" />
+            }
+
             return (
                 <div>
-                    <img id={imgId}
-                         src={this.props.data}
-                         title={titleValue}
-                         className="thumbnail-img"
-                         rel="tooltip" />
+                    {imgElement}
                 </div>
             )
         }

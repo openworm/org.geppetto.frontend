@@ -39,7 +39,7 @@ define(function (require) {
             var titleValue = "<img src='" + this.props.data + "' class='thumbnail-img-tooltip'/>";
 
             var imgElement = "";
-            if(this.props.data != ""){
+            if(this.props.data.indexOf("http") > -1){
                 imgElement = <img id={imgId} src={this.props.data} title={titleValue} className="thumbnail-img" rel="tooltip" />
             }
 
@@ -258,6 +258,16 @@ define(function (require) {
             "visible": true,
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
+            "source": ""
+        },
+        {
+            "columnName": "image",
+            "order": 5,
+            "locked": false,
+            "visible": true,
+            "customComponent": GEPPETTO.ImageComponent,
+            "displayName": "Image",
+            "cssClassName": "img-column",
             "source": ""
         },
     ];

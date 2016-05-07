@@ -259,17 +259,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": ""
-        },
-        {
-            "columnName": "image",
-            "order": 5,
-            "locked": false,
-            "visible": true,
-            "customComponent": GEPPETTO.ImageComponent,
-            "displayName": "Image",
-            "cssClassName": "img-column",
-            "source": ""
-        },
+        }
     ];
 
     var defaultControlsConfiguration = {
@@ -345,26 +335,33 @@ define(function (require) {
                 data: [],
                 controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration,
-                columnMetadata: controlPanelColumnMeta
             };
         },
 
         getDefaultProps: function () {
             return {
-                "tableClassName": 'control-panel-table'
+                "tableClassName": 'control-panel-table',
+                "columnMeta": null
             };
         },
 
-        setColumns: function (cols, meta) {
-            if(meta == undefined){
-                meta = controlPanelColumnMeta;
-            }
+        setColumns: function (cols) {
+            this.setState({columns: cols});
+        },
 
-            this.setState({columns: cols, columnMetadata: meta});
+        setColumnMeta: function (colMeta) {
+            // if the user sets meta - NUKE everything and rebuild
+            // NOTE: griddle does not pickup metadata for eventual new columns
+            ReactDOM.unmountComponentAtNode(document.getElementById("controlpanel"));
+            // re-instantiate the control panel in its entirety with the new column meta
+            ReactDOM.render(
+                React.createElement(ControlPanel, {columnMeta: colMeta}),
+                document.getElementById("controlpanel")
+            );
         },
 
         setData: function (records) {
-            var columnMeta = this.state.columnMetadata;
+            var columnMeta = this.props.columnMeta;
 
             // go from list of instances / variables to simple JSON
             var gridInput = [];
@@ -439,16 +436,16 @@ define(function (require) {
         },
 
         render: function () {
-            return React.createFactory(Griddle)({
+            return React.createElement(Griddle, {
                 columns: this.state.columns, results: this.state.data,
                 showFilter: true, showSettings: false, enableInfiniteScroll: true, bodyHeight: 400,
-                useGriddleStyles: false, columnMetadata: this.state.columnMetadata
+                useGriddleStyles: false, columnMetadata: this.props.columnMeta
             });
         }
     });
 
     ReactDOM.render(
-        React.createElement(ControlPanel, {}),
+        React.createElement(ControlPanel, {columnMeta: controlPanelColumnMeta}),
         document.getElementById("controlpanel")
     );
 });

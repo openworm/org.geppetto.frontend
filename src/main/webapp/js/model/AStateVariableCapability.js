@@ -47,7 +47,7 @@ define(['jquery'], function (require) {
         /**
          * Get value of quantity
          *
-         * @command VariableNode.getTimeSeries()
+         * @command Variable.getTimeSeries()
          * @returns {String} Value of quantity
          */
         getTimeSeries: function () {
@@ -58,7 +58,7 @@ define(['jquery'], function (require) {
         /**
          * Set the time series for the state variable
          *
-         * @command VariableNode.setTimeSeries()
+         * @command Variable.setTimeSeries()
          * @returns {Object} The state variable
          */
         setTimeSeries: function (timeSeries) {
@@ -69,7 +69,7 @@ define(['jquery'], function (require) {
         /**
          * Get the initial value for the state variable
          *
-         * @command VariableNode.getInitialValue()
+         * @command Variable.getInitialValue()
          * @returns {Object} The initial value of the state variable
          */
         getInitialValue: function () {
@@ -80,7 +80,7 @@ define(['jquery'], function (require) {
         /**
          * Get the type of tree this is
          *
-         * @command VariableNode.getUnit()
+         * @command Variable.getUnit()
          * @returns {String} Unit for quantity
          */
         getUnit: function () {
@@ -99,7 +99,7 @@ define(['jquery'], function (require) {
         /**
          * Get watched
          *
-         * @command VariableNode.getWatched()
+         * @command Variable.getWatched()
          * @returns {boolean} true if this variable is being watched
          */
         isWatched: function () {
@@ -110,7 +110,7 @@ define(['jquery'], function (require) {
         /**
          * Set watched
          *
-         * @command VariableNode.setWatched()
+         * @command Variable.setWatched()
          * @param {Boolean} watched - Object with options attributes to initialize node
          */
         setWatched: function (isWatched, updateServer) {

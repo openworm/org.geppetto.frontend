@@ -66,9 +66,9 @@ define(function (require) {
         /**
          * Get this entity's aspects
          *
-         * @command CompositeVariableNode.getChildren()
+         * @command CompositeType.getChildren()
          *
-         * @returns {List<Aspect>} - List of aspects
+         * @returns {List<Variable>} - List of variables
          *
          */
         getChildren: function () {

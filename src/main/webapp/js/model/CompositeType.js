@@ -61,7 +61,7 @@ define(function (require) {
         /**
          * Get variables
          *
-         * @command CompositeVariableNode.getChildren()
+         * @command CompositeType.getChildren()
          *
          * @returns {List<Variable>} - List of variables
          *

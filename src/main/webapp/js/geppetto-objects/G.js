@@ -495,7 +495,7 @@ define(function (require) {
             /**
              * Callback to be called whenever a watched node changes
              *
-             * @param {Instance} node - VariableNode to couple callback to
+             * @param {Instance} node - node to couple callback to
              * @param {Function} callback - Callback function to be called whenever _variable_ changes
              */
             addOnNodeUpdatedCallback: function (node, callback) {
@@ -508,7 +508,7 @@ define(function (require) {
             /**
              * Clears callbacks coupled to changes in a node
              *
-             * @param {Instance} node - VariableNode to which callbacks are coupled
+             * @param {Instance} node - node to which callbacks are coupled
              */
             clearOnNodeUpdateCallback: function (node) {
                 this.listeners[node.getInstancePath()] = null;
@@ -635,7 +635,7 @@ define(function (require) {
              *
              * @param {AspectNode} visualAspect - Aspect which contains the VisualizationTree with the entity to be dynamically changed
              * @param {String} visualEntityName - Name of visual entity in the visualAspect VisualizationTree
-             * @param {VariableNode} dynVar - Dynamical variable which will modulate the transformation
+             * @param {Variable} dynVar - Dynamical variable which will modulate the transformation
              * @param {Function} transformation - Transformation to act upon the visualEntity, given the modulation value
              * @param {Function} normalization - Function to be applied to the dynamical variable, normalizing it to a suitable range according to _transformation_
              */

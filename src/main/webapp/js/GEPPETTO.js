@@ -585,7 +585,7 @@ define(function (require) {
     require('GEPPETTO.Main')(GEPPETTO);
     // require('GEPPETTO.Tutorial')(GEPPETTO);
     require("widgets/includeWidget")(GEPPETTO);
-    require('model/NodeFactory')(GEPPETTO);
+    require('model/ProjectFactory')(GEPPETTO);
     require('model/ModelFactory')(GEPPETTO);
     require('model/ExperimentsController')(GEPPETTO);
 

@@ -254,7 +254,7 @@ define(function (require) {
                 GEPPETTO.G.listeners = [];
                 var project = JSON.parse(payload.project_loaded);
 
-                window.Project = GEPPETTO.NodeFactory.createProjectNode(project);
+                window.Project = GEPPETTO.ProjectFactory.createProjectNode(project);
 
                 if (window.location.search.indexOf("load_project_from_url") != -1) {
                     window.Project.persisted = false;
@@ -517,7 +517,7 @@ define(function (require) {
             createExperiment: function (payload) {
                 var experiment = JSON.parse(payload.experiment_created);
 
-                var newExperiment = GEPPETTO.NodeFactory.createExperimentNode(experiment);
+                var newExperiment = GEPPETTO.ProjectFactory.createExperimentNode(experiment);
                 window.Project.getExperiments().push(newExperiment);
                 newExperiment.setParent(window.Project);
                 GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);

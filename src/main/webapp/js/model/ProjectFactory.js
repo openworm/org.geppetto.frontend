@@ -45,7 +45,7 @@ define(function (require) {
         /**
          * @class GEPPETTO.RuntimeTreeFactory
          */
-        GEPPETTO.NodeFactory =
+        GEPPETTO.ProjectFactory =
         {
             /** Creates and populates client project nodes */
             createProjectNode: function (project) {

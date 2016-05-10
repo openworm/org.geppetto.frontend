@@ -47,24 +47,6 @@ define(function (require) {
          */
         GEPPETTO.NodeFactory =
         {
-            /*
-             * Variables for debugging nodes totals
-             */
-            nodes: 0,
-            entities: 0,
-            connections: 0,
-            nodeTags: {},
-
-            /**
-             * Reload local values for this and NodeFactory class after load
-             * event is fired
-             */
-            reload: function () {
-                GEPPETTO.NodeFactory.nodes = 0;
-                GEPPETTO.NodeFactory.connections = 0;
-                GEPPETTO.NodeFactory.entities = 0;
-            },
-
             /** Creates and populates client project nodes */
             createProjectNode: function (project) {
                 var p = new ProjectNode(
@@ -87,7 +69,6 @@ define(function (require) {
 
                 }
 
-                this.nodes++;
                 GEPPETTO.Console.updateTags("Project", p, true);
                 return p;
             },
@@ -126,8 +107,7 @@ define(function (require) {
                     }
                 }
 
-                this.nodes++;
-                GEPPETTO.Console.createTags(e.name, this.nodeTags[GEPPETTO.Resources.EXPERIMENT_NODE]);
+                GEPPETTO.Console.createTags(e.name, GEPPETTO.Utility.extractMethodsFromObject(e, true));
                 return e;
             },
 
@@ -144,7 +124,6 @@ define(function (require) {
                         _metaType: GEPPETTO.Resources.SIMULATOR_CONFIGURATION_NODE
                     });
 
-                this.nodes++;
                 return sC;
             },
         };

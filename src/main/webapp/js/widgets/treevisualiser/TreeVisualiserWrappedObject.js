@@ -35,7 +35,6 @@
  * Client class use to represent a composite variable node, used for simulation
  * tree state variables.
  *
- * @module model/CompositeNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */

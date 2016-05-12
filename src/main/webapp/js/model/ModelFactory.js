@@ -1693,6 +1693,7 @@ define(function (require) {
                 var t = new ArrayType(options);
                 t.set({"size": node.size});
                 t.set({"type": node.arrayType});
+                t.set({"superType": node.superType});
 
                 return t;
             },
@@ -2072,7 +2073,7 @@ define(function (require) {
              *
              * @returns {Array}
              */
-            getAllVariablesOfType: function (typesToSearch, typeToMatch) {
+            getAllVariablesOfType: function (typesToSearch, typeToMatch, recursive, variables) {
                 // check if array and if not "make it so"
                 if (!(typesToSearch.constructor === Array)) {
                     typesToSearch = [typesToSearch];
@@ -2107,6 +2108,9 @@ define(function (require) {
                                     } else if(varTypes[x].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
                                         // check if type is composite and recurse
                                         variables = variables.concat(this.getAllVariablesOfType([varTypes[x]], typeToMatch));
+                                    }
+                                    if (recursive){
+                                    	this.getAllVariablesOfType(varTypes[x], typeToMatch, recursive, variables);
                                     }
                                 }
                             }

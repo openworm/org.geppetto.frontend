@@ -396,5 +396,12 @@ define(function (require) {
         addConnection: function (connection) {
             this.get("connections").push(connection);
         },
+
+        /**
+         * Deletes instance
+         */
+        delete: function(){
+            GEPPETTO.ModelFactory.deleteInstance(this);
+        }
     })
 });

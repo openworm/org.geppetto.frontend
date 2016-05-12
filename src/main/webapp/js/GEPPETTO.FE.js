@@ -625,6 +625,17 @@ define(function(require)
                 // disable keyboard
                 document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
             },
+
+            /**
+             * Refreshes UI components base on current model / instances
+             */
+            refresh: function(){
+                // populate control panel with exploded instances
+                if (GEPPETTO.ControlPanel != undefined) {
+                    var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
+                    GEPPETTO.ControlPanel.setData(visualInstances);
+                }
+            }
         };
 
     };

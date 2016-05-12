@@ -2176,6 +2176,55 @@ define(function (require) {
             },
 
             /**
+             * Delete instance, also removing types and variables
+             *
+             * @param instance
+             */
+            deleteInstance: function(instance){
+
+                var removeMatchingInstanceFromArray = function(instanceArray, instance){
+                    var index = null;
+                    for(var i=0; i<instanceArray.length; i++){
+                        if(instanceArray[i].getPath() == instance.getPath()){
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if(index != null){
+                        instanceArray.splice(index, 1);
+                    }
+                };
+
+                // delete instance
+                var parent = instance.getParent();
+                if(parent == undefined){
+                    // parent is window
+                    // remove from array of children
+                    removeMatchingInstanceFromArray(window.Instances, instance);
+                    // remove reference
+                    delete window[instance.getId()];
+                } else {
+                    // remove from array of children
+                    removeMatchingInstanceFromArray(parent.getChildren(), instance);
+                    // remove reference
+                    delete parent[instance.getId()];
+                }
+
+                // remove from scene
+                GEPPETTO.SceneController.removeFromScene(instance);
+
+                // TODO: IF type is a resolved ImportType
+                    // TODO: swap type back, update referenced variables
+
+                // re-run model shortcuts
+                //this.populateChildrenShortcuts(this.geppettoModel);
+
+                // refresh UI components to reflect updated state of model / instances
+                GEPPETTO.FE.refresh();
+            },
+
+            /**
              * A generic method to resolve a reference
              */
             resolve: function (refStr) {

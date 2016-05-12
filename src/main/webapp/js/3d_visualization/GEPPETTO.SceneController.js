@@ -295,8 +295,7 @@ define(function (require) {
                     return true;
                 }
                 return false;
-            }
-            ,
+            },
 
             show: function (instances) {
                 for (var i = 0; i < instances.length; i++) {
@@ -309,8 +308,7 @@ define(function (require) {
                 for (var i = 0; i < instances.length; i++) {
                     instances[i].hide();
                 }
-            }
-            ,
+            },
 
             /**
              * Show aspect, make it visible.
@@ -330,8 +328,7 @@ define(function (require) {
                         }
                     }
                 }
-            }
-            ,
+            },
 
             /**
              * Hide instance
@@ -351,8 +348,7 @@ define(function (require) {
                     }
                 }
                 return false;
-            }
-            ,
+            },
 
             /**
              * Change the color of a given aspect
@@ -377,8 +373,7 @@ define(function (require) {
                     }
                 }
                 return false;
-            }
-            ,
+            },
 
             setThreeColor: function (threeColor, color) {
                 if (color.indexOf && color.indexOf("rgb") == -1) {
@@ -391,8 +386,7 @@ define(function (require) {
                 } else {
                     threeColor.set(color);
                 }
-            }
-            ,
+            },
 
             /**
              * Change the default opacity for a given aspect. The opacity set with this command API will be persisted across different workflows, e.g. selection.
@@ -425,8 +419,7 @@ define(function (require) {
                     return true;
                 }
                 return false;
-            }
-            ,
+            },
 
             /**
              * Change opacity of a given aspect
@@ -452,8 +445,7 @@ define(function (require) {
                 GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance);
 
                 return true;
-            }
-            ,
+            },
 
 
             /**
@@ -473,8 +465,7 @@ define(function (require) {
 
                 GEPPETTO.SceneController.zoomToParameters(zoomParameters);
 
-            }
-            ,
+            },
 
             /**
              *
@@ -487,8 +478,7 @@ define(function (require) {
                 GEPPETTO.getVARS().sceneCenter.z = (zoomParameters.aabbMax.z + zoomParameters.aabbMin.z) * 0.5;
 
                 GEPPETTO.updateCamera(zoomParameters.aabbMax, zoomParameters.aabbMin)
-            }
-            ,
+            },
 
             /**
              *
@@ -519,8 +509,7 @@ define(function (require) {
                 }
 
                 return zoomParameters;
-            }
-            ,
+            },
 
             /**
              *
@@ -608,9 +597,7 @@ define(function (require) {
                         outputs[otherEndPath] = connection.getInstancePath();
                     }
                 }
-            }
-
-            ,
+            },
 
             /**
              * Restore the original colour of the connected instances
@@ -652,8 +639,7 @@ define(function (require) {
                         mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                     }
                 }
-            }
-            ,
+            },
 
             showConnectionLines: function (instance) {
                 var connections = instance.getConnections();
@@ -758,8 +744,7 @@ define(function (require) {
                     GEPPETTO.getVARS().scene.add(line);
                     GEPPETTO.getVARS().connectionLines[connection.getInstancePath()] = line;
                 }
-            }
-            ,
+            },
 
             /**
              * Removes connection lines, all if nothing is passed in or just the ones passed in.
@@ -789,8 +774,7 @@ define(function (require) {
                     }
                     GEPPETTO.getVARS().connectionLines = [];
                 }
-            }
-            ,
+            },
 
             splitHighlightedMesh: function (targetObjects, aspects) {
                 var groups = {};
@@ -837,8 +821,7 @@ define(function (require) {
                     GEPPETTO.SceneController.createGroupMeshes(a, geometryGroups, newGroups);
                 }
                 return groups;
-            }
-            ,
+            },
 
             /**
              * Highlight part of a mesh
@@ -867,8 +850,7 @@ define(function (require) {
                         GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, splitHighlightedGroups[groupName].color.getHex());
                     }
                 }
-            }
-            ,
+            },
 
             /**
              * Split merged mesh into individual meshes
@@ -958,8 +940,7 @@ define(function (require) {
                 groupElements[instancePath] = {};
                 groupElements[instancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
                 GEPPETTO.SceneController.createGroupMeshes(instancePath, geometryGroups, groupElements);
-            }
-            ,
+            },
 
             /**
              * Add mesh to geometry groups
@@ -987,8 +968,7 @@ define(function (require) {
                     geometry.merge(m.geometry, m.matrix);
                 }
                 return true;
-            }
-            ,
+            },
 
             /**
              * Create group meshes for given groups, retrieves from map if already present
@@ -1035,8 +1015,7 @@ define(function (require) {
                     groupMesh.visible = true;
                     GEPPETTO.getVARS().scene.add(groupMesh);
                 }
-            }
-            ,
+            },
 
             /**
              * Merge mesh that was split before
@@ -1066,8 +1045,7 @@ define(function (require) {
                     mergedMesh.visible = true;
                     GEPPETTO.getVARS().scene.add(mergedMesh);
                 }
-            }
-            ,
+            },
 
             /**
              * Shows a visual group
@@ -1096,8 +1074,7 @@ define(function (require) {
                         }
                     }
                 }
-            }
-            ,
+            },
 
 
             isVisible: function (variables) {
@@ -1109,8 +1086,7 @@ define(function (require) {
                     }
                 }
                 return visible;
-            }
-            ,
+            },
 
             isSelected: function (variables) {
                 var selected = true;
@@ -1121,8 +1097,7 @@ define(function (require) {
                     }
                 }
                 return selected;
-            }
-            ,
+            },
 
             /**
              * Animate simulation
@@ -1143,8 +1118,18 @@ define(function (require) {
                 if (GEPPETTO.getVARS().debugUpdate) {
                     GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
                 }
-            }
-            ,
+            },
+
+            /**
+             * Remove given entity from scene
+             *
+             * @param entity
+             */
+            removeFromScene: function(entity){
+                var path = entity.getPath();
+
+                // TODO: Nonna remove from scene
+            },
         }
     }
 })

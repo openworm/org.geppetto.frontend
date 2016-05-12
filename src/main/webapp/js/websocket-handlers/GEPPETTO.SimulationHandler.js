@@ -303,10 +303,7 @@ define(function (require) {
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 
                 // populate control panel with exploded instances
-                if (GEPPETTO.ControlPanel != undefined) {
-                    var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
-                    GEPPETTO.ControlPanel.setData(visualInstances);
-                }
+                GEPPETTO.FE.refresh();
 
                 console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);
                 GEPPETTO.trigger("hide:spinner");
@@ -359,8 +356,7 @@ define(function (require) {
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
                 // STEP: 4 update control panel
-                var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
-                GEPPETTO.ControlPanel.setData(visualInstances);
+                GEPPETTO.FE.refresh();
 
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
@@ -402,8 +398,7 @@ define(function (require) {
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
                 // STEP: 4 update control panel
-                var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
-                GEPPETTO.ControlPanel.setData(visualInstances);
+                GEPPETTO.FE.refresh();
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },

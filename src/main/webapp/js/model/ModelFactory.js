@@ -600,7 +600,7 @@ define(function (require) {
                                             // get all types in the current model
                                             var allTypesInModel = [];
                                             for(var w=0; w<libs.length; w++){
-                                                allTypesInModel.concat(libs[w].getTypes());
+                                                allTypesInModel = allTypesInModel.concat(libs[w].getTypes());
                                             }
                                             // fetch variables pointing to the old version of the type
                                             var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, types[m]);
@@ -614,6 +614,9 @@ define(function (require) {
 
                                             // swap type in raw model
                                             libs[j].getWrappedObj().types[m] = diffTypes[k].getWrappedObj();
+
+                                            // store overridden type (so that unresolve type can swap it back)
+                                            diffTypes[k].overrideType = types[m];
 
                                             // swap in object model
                                             diffTypes[k].set({'parent': libs[j]});
@@ -2185,7 +2188,6 @@ define(function (require) {
              * @param instance
              */
             deleteInstance: function(instance){
-
                 var removeMatchingInstanceFromArray = function(instanceArray, instance){
                     var index = null;
                     for(var i=0; i<instanceArray.length; i++){
@@ -2218,14 +2220,68 @@ define(function (require) {
                 // remove from scene
                 GEPPETTO.SceneController.removeFromScene(instance);
 
-                // TODO: IF type is a resolved ImportType
-                    // TODO: swap type back, update referenced variables
+                // unresolve type
+                for(var j=0; j<instance.getTypes().length; j++){
+                    this.unresolveType(instance.getTypes()[j]);
+                }
 
                 // re-run model shortcuts
-                //this.populateChildrenShortcuts(this.geppettoModel);
+                this.populateChildrenShortcuts(this.geppettoModel);
 
                 // refresh UI components to reflect updated state of model / instances
                 GEPPETTO.FE.refresh();
+            },
+
+            /**
+             * Unresolve type
+             *
+             * @param type
+             */
+            unresolveType: function(type){
+                var libs = this.geppettoModel.getLibraries();
+                // swap the type with type.overrideType if any is found
+                if(type.overrideType != undefined){
+                    // get all types in the current model
+                    var typeToLibraryMap = [];
+                    var allTypesInModel = [];
+                    for(var w=0; w<libs.length; w++){
+                        allTypesInModel = allTypesInModel.concat(libs[w].getTypes());
+                        for(var v=0; v<libs[w].getTypes().length; v++){
+                            typeToLibraryMap[libs[w].getTypes()[v].getPath()] = libs[w];
+                        }
+                    }
+
+                    // fetch variables pointing to the old version of the type
+                    var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, type);
+                    // add top level variables in the model
+                    variablesToUpdate = variablesToUpdate.concat(this.geppettoModel.getVariables());
+
+                    // swap type reference in ALL variables that point to it
+                    for(var x=0; x<variablesToUpdate.length; x++){
+                        this.swapTypeInVariable(variablesToUpdate[x], type, type.overrideType);
+                    }
+
+                    // find type in library (we need the index)
+                    for(var m=0; m<typeToLibraryMap[type.getPath()].getTypes().length; m++){
+                        if(type.getPath() == typeToLibraryMap[type.getPath()].getTypes()[m].getPath()){
+                            // swap type in raw model
+                            typeToLibraryMap[type.getPath()].getWrappedObj().types[m] = type.overrideType.getWrappedObj();
+
+                            // swap in object model (this line is probably redundant as the parent hasn't changed)
+                            type.overrideType.set({'parent': typeToLibraryMap[type.getPath()]});
+                            typeToLibraryMap[type.getPath()].getTypes()[m] = type.overrideType;
+                        }
+                    }
+
+                    // populate references for the swapped type
+                    this.populateTypeReferences(type.overrideType);
+
+                    // add potential instance paths
+                    this.addPotentialInstancePaths(variablesToUpdate);
+
+                    // update capabilities for variables and instances if any
+                    this.updateCapabilities(variablesToUpdate);
+                }
             },
 
             /**

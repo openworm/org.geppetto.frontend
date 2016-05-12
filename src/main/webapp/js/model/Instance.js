@@ -401,6 +401,11 @@ define(function (require) {
          * Deletes instance
          */
         delete: function(){
+            var children = this.getChildren();
+            for(var c=0; c < children.length; c++){
+                children[c].delete();
+            }
+
             GEPPETTO.ModelFactory.deleteInstance(this);
         }
     })

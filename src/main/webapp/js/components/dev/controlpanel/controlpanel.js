@@ -317,7 +317,7 @@ define(function (require) {
             "delete": {
                 "id": "delete",
                 "actions": [
-                    "alert('TODO: delete ' + $instance$.getName())"
+                    "$instance$.delete()"
                 ],
                 "icon": "fa-trash-o",
                 "label": "Delete",

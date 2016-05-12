@@ -317,11 +317,6 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 
 				break;
 			}
-			case IDLE_USER:
-			{
-				connectionHandler.userBecameIdle(requestID);
-				break;
-			}
 			case GET_SUPPORTED_OUTPUTS:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()

@@ -498,11 +498,6 @@ public class ConnectionHandler
 		}
 	}
 
-	public void userBecameIdle(String requestID)
-	{
-		closeProject();
-	}
-
 	/**
 	 * @param requestID
 	 * @param modelPath

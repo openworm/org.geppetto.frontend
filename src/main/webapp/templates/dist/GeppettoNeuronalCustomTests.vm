@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>GEPPETTO Tests for the fluid dynamics bundle</title>
+    <title>GEPPETTO Tests for Neuron/LEMS Experiments</title>
     <link rel="stylesheet" href="geppetto/css/qunit.css">
     <link rel="stylesheet" href="geppetto/css/custom-theme/jquery-ui-1.10.0.custom.css" />
 
@@ -41,7 +41,7 @@
     <% } %></script>
 
     <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-    <script data-main="geppetto/js/GeppettoFluidDynamicsTests.js" src="geppetto/js/vendor/require.js"></script>
+    <script data-main="geppetto/js/GeppettoNeuronalCustomTests.js" src="geppetto/js/vendor/require.js"></script>
 
 </head>
 <body>

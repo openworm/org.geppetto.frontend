@@ -288,7 +288,7 @@ define(function (require) {
             "color": {
                 "id": "color",
                 "actions": [
-                    "$instance$.setColor('$param$')"
+                    "$instance$.setColor('$param$'); GEPPETTO.ControlPanel.refresh();"
                 ],
                 "icon": "fa-tint",
                 "label": "Color",
@@ -328,6 +328,15 @@ define(function (require) {
 
     var ControlPanel = React.createClass({
         displayName: 'ControlPanel',
+
+        refresh: function() {
+            this.setState({
+                columns: this.state.columns,
+                data: this.state.data,
+                controls: this.state.controls,
+                controlsConfig: this.state.controlsConfig
+            });
+        },
 
         getInitialState: function () {
             return {

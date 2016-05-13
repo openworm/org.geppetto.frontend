@@ -394,7 +394,7 @@ define(function (require) {
                             result = eval(sourceActionStr);
                         }
                     } catch(e){
-                        GEPPETTO.Console.log(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                        GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
                     }
 
                     gridRecord[columnMeta[j].columnName] = result;

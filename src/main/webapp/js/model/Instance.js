@@ -401,7 +401,7 @@ define(function (require) {
          * Deletes instance
          */
         delete: function(){
-            var children = this.getChildren();
+            var children = [].concat(this.getChildren());
             for(var c=0; c < children.length; c++){
                 children[c].delete();
             }

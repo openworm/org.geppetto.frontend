@@ -46,7 +46,7 @@ define(function (require) {
      *
      * NOTE: declared here so that it's private.
      */
-    var hookupCustomHandlers = function (handlers, popup) {
+    var hookupCustomHandlers = function (handlers, popupDOM, popup) {
         for (var i = 0; i < handlers.length; i++) {
             // if not hooked already, then go ahead and hook it
             if (handlers[i].hooked === false) {
@@ -54,7 +54,7 @@ define(function (require) {
                 handlers[i].hooked = true;
 
                 // Find and iterate <a> element with an instancepath attribute
-                popup.find("a[instancepath]").each(function () {
+                popupDOM.find("a[instancepath]").each(function () {
                     var fun = handlers[i].funct;
                     var ev = handlers[i].event;
                     var domainType = handlers[i].domain;
@@ -73,7 +73,7 @@ define(function (require) {
                         // hookup custom handler
                         $(this).on(ev, function () {
                             // invoke custom handler with instancepath as arg
-                            fun(node, path);
+                            fun(node, path, popup);
 
                             // stop default event handler of the anchor from doing anything
                             return false;
@@ -90,9 +90,7 @@ define(function (require) {
          * Initialize the popup widget
          */
         initialize: function (options) {
-            this.id = options.id;
-            this.name = options.name;
-            this.visible = options.visible;
+        	Widget.View.prototype.initialize.call(this, options);
             this.render();
             this.setSize(100, 300);
             this.customHandlers = [];
@@ -117,7 +115,7 @@ define(function (require) {
                 }
 
                 // trigger routine that hooks up handlers
-                hookupCustomHandlers(this.customHandlers, $("#" + this.id));
+                hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
                 GEPPETTO.Console.log("Hooked up custom handlers for " + this.id);
             }
 
@@ -152,6 +150,8 @@ define(function (require) {
          * @param {Object} anyInstance - An instance of any type
          */
         setData: function (anyInstance) {
+        	this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
+
             this.setMessage(this.getHTML(anyInstance));
             var changeIcon=function(chevron){
                 if (chevron.hasClass('fa-chevron-circle-down')) {
@@ -242,7 +242,8 @@ define(function (require) {
             this.customHandlers.push({funct: funct, event: eventType, domain: domainType, hooked: false});
 
             // trigger routine that hooks up handlers
-            hookupCustomHandlers(this.customHandlers, $("#" + this.id));
+            hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
+            return this;
         }
     });
 });

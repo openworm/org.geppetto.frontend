@@ -57,7 +57,7 @@ define(function (require) {
             var name = id;
 
             //create popup widget
-            var p = window[name] = new Popup({id: id, name: name, visible: true});
+            var p = window[name] = new Popup({id: id, name: name, visible: true, controller: this});
             p.setSize(394,490);
             //create help command for plot
             p.help = function () {

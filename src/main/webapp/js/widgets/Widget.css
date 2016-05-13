@@ -30,7 +30,6 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 .ui-dialog {
     border: 0px;
     -webkit-touch-callout: none;
@@ -61,31 +60,18 @@
     border-left: 0 !important;
     border-right: 0 !important;
     border-bottom: 1px solid rgba(66, 59, 59, 0.80) !important;
-
 }
 
-.ui-dialog .ui-dialog-title:before {
-    font-family: FontAwesome;
-    font-weight: normal;
-    font-style: normal;
-    font-size: 10px;
-    text-decoration: inherit;
-    -webkit-font-smoothing: antialiased;
-    /* sprites.less reset */
-    display: inline;
-    width: auto;
-    height: auto;
-    line-height: normal;
-    vertical-align: baseline;
-    background-image: none;
-    background-position: 0% 0%;
-    background-repeat: repeat;
-    content: "\f111";
-    color: #fe4807;
-    margin-left: 2px;
-    margin-right: 4px;
-    margin-bottom: 2px;
+.historyIcon {
+    float: left;
+    margin-right: 5px;
+    font-size: 15px;
+    color: #fc6320;
+    cursor: pointer;
+}
 
+.historyIcon:hover {
+    color: #fc401a;
 }
 
 .ui-dialog .ui-dialog-title {
@@ -133,32 +119,33 @@
     list-style-type: none;
 }
 
-.contextMenuView ul:not(:first-child) {
-    border-top: 1px solid #DDD;
+.contextMenuView ul :not(:first-child) {
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+
 }
 
 .contextMenuView ul:first-child li:first-child {
-    border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
-    border-top: 1px solid #DDD;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .contextMenuView ul:last-child li:last-child {
-    border-bottom-right-radius: 7px;
-    border-bottom-left-radius: 7px;
-    border-bottom: 1px solid #DDD;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .contextMenuView li {
-    padding: 2px 10px 2px 24px;
+    padding: 2px 10px 2px 10px;
     background-color: rgba(66, 59, 59, 0.9);
     position: relative;
     -webkit-user-select: none;
     -moz-user-select: -moz-none;
     -ms-user-select: none;
     user-select: none;
-    border-left: 1px solid #DDD;
-    border-right: 1px solid #DDD;
+    border-left: 1px solid rgba(255, 255, 255, 0.25);
+    border-right: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .contextMenuView li:hover {
@@ -196,22 +183,17 @@
     -ms-transition: left 200ms ease-in;
     transition: left 200ms ease-in;
     min-width: 100%;
-
 }
 
 .contextMenuView > ul > li li {
     /*min-width: 100%;*/
-   white-space: nowrap;
+    white-space: nowrap;
 }
 
 /* SCROLL BAR*/
-
-.ui-widget-content::-webkit-scrollbar,
-.ui-widget-content::-webkit-scrollbar-button,
-.ui-widget-content::-webkit-scrollbar-track,
-.ui-widget-content::-webkit-scrollbar-track-piece,
-.ui-widget-content::-webkit-scrollbar-thumb,
-.ui-widget-content::-webkit-scrollbar-corner,
+.ui-widget-content::-webkit-scrollbar, .ui-widget-content::-webkit-scrollbar-button,
+.ui-widget-content::-webkit-scrollbar-track, .ui-widget-content::-webkit-scrollbar-track-piece,
+.ui-widget-content::-webkit-scrollbar-thumb, .ui-widget-content::-webkit-scrollbar-corner,
 .ui-widget-content::-webkit-resizer {
     background: transparent;
 }

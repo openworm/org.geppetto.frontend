@@ -1130,7 +1130,7 @@ define(function (require) {
                 var mergedMesh = GEPPETTO.getVARS().meshes[path];
                 if (mergedMesh) {
                     GEPPETTO.getVARS().scene.remove(mergedMesh);
-                    delete GEPPETTO.getVARS().mergedMesh[path];
+                    delete GEPPETTO.getVARS().meshes[path];
                 }
                 var splitMesh = GEPPETTO.getVARS().splitMeshes[path];
                 if (splitMesh) {

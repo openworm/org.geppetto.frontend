@@ -442,6 +442,10 @@ define(function (require) {
                     $(".color-picker-button").colorpicker('hide');
                 }
             });
+
+            if(GEPPETTO.ForegroundControls != undefined){
+                GEPPETTO.ForegroundControls.refresh();
+            }
         },
 
         render: function () {

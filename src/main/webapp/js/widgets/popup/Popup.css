@@ -35,6 +35,11 @@
 	font-weight: 200;
 	color: white;
 	overflow: auto !important;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 .popup a {

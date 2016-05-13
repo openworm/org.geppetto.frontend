@@ -68,6 +68,7 @@
     <div id="sim-toolbar" class="row"></div>
 
     <div id="camera-controls"></div>
+    <div id="foreground-toolbar" class="row"></div>
 
     <!-- Used for popovers, otherwise they would be too small to display -->
 

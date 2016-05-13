@@ -1125,10 +1125,20 @@ define(function (require) {
              *
              * @param entity
              */
-            removeFromScene: function(entity){
+            removeFromScene: function (entity) {
                 var path = entity.getPath();
-
-                // TODO: Nonna remove from scene
+                var mergedMesh = GEPPETTO.getVARS().meshes[path];
+                if (mergedMesh) {
+                    GEPPETTO.getVARS().scene.remove(mergedMesh);
+                    delete GEPPETTO.getVARS().mergedMesh[path];
+                }
+                var splitMesh = GEPPETTO.getVARS().splitMeshes[path];
+                if (splitMesh) {
+                    if (path == splitMesh.instancePath) {
+                        GEPPETTO.getVARS().scene.remove(splitMesh);
+                    }
+                    delete GEPPETTO.getVARS().splitMeshes[path];
+                }
             },
         }
     }

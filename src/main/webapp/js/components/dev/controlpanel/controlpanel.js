@@ -447,6 +447,8 @@ define(function (require) {
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == pKey) {
                     $("#controlpanel").show();
+                    // set focus on filter text box
+                    $('#controlpanel .griddle-filter input').focus();
                 }
             });
 

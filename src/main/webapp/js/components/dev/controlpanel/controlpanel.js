@@ -452,8 +452,10 @@ define(function (require) {
 
             $(document).keydown(function (e) {
                 if ($("#controlpanel").is(':visible') && e.keyCode == escape) {
+                    // hide any color picker that is still visible
+                    $(".colorpicker-visible").addClass('colorpicker-hidden').removeClass('colorpicker-visible');
+                    // hide control panel
                     $("#controlpanel").hide();
-                    $(".color-picker-button").colorpicker('hide');
                 }
             });
 

@@ -262,6 +262,10 @@ define(function (require) {
         }
     ];
 
+    var defaultDataFilter = function(entities){
+        return GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, entities);
+    };
+
     var defaultControlsConfiguration = {
         "VisualCapability": {
             "visibility": {
@@ -334,7 +338,8 @@ define(function (require) {
                 columns: this.state.columns,
                 data: this.state.data,
                 controls: this.state.controls,
-                controlsConfig: this.state.controlsConfig
+                controlsConfig: this.state.controlsConfig,
+                dataFilter: this.state.dataFilter
             });
         },
 
@@ -344,6 +349,7 @@ define(function (require) {
                 data: [],
                 controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration,
+                dataFilter: defaultDataFilter,
             };
         },
 
@@ -371,6 +377,9 @@ define(function (require) {
 
         setData: function (records) {
             var columnMeta = this.props.columnMeta;
+
+            // filter records with data filter
+            records = this.state.dataFilter(records);
 
             // go from list of instances / variables to simple JSON
             var gridInput = [];
@@ -415,6 +424,11 @@ define(function (require) {
         setControlsConfig: function (controlsConfig) {
             // set state to refresh grid
             this.setState({controlsConfig: controlsConfig});
+        },
+
+        setDataFilter: function (dataFilter) {
+            // set state to refresh grid
+            this.setState({dataFilter: dataFilter});
         },
 
         mixins: [

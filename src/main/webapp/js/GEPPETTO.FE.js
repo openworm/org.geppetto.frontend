@@ -632,8 +632,7 @@ define(function(require)
             refresh: function(){
                 // populate control panel with exploded instances
                 if (GEPPETTO.ControlPanel != undefined) {
-                    var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
-                    GEPPETTO.ControlPanel.setData(visualInstances);
+                    GEPPETTO.ControlPanel.setData(window.Instances);
                 }
             }
         };

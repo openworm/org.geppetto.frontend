@@ -302,7 +302,7 @@ define(function (require) {
                 GEPPETTO.trigger(Events.Model_loaded);
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 
-                // populate control panel with exploded instances
+                // populate control panel with instances
                 GEPPETTO.FE.refresh();
 
                 console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);

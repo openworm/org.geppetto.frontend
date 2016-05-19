@@ -48,26 +48,26 @@ define(function (require) {
 
         GEPPETTO.Resources = {
 
-            Icon:{
-                "ParameterType":"fa-sign-in",
-                "TextType":"fa-file-text-o",
-                "CompositeType":"fa-align-justify",
-                "ArrayType":"fa-list",
-                "PointerType":"fa-link",
-                "HTMLType":"fa-code",
-                "StateVariableType":"fa-superscript",
-                "DynamicsType":"fa-bolt",
+            Icon: {
+                "ParameterType": "fa-sign-in",
+                "TextType": "fa-file-text-o",
+                "CompositeType": "fa-align-justify",
+                "ArrayType": "fa-list",
+                "PointerType": "fa-link",
+                "HTMLType": "fa-code",
+                "StateVariableType": "fa-superscript",
+                "DynamicsType": "fa-bolt",
             },
 
-            Colour:{
-                "ParameterType":"#0066cc",
-                "TextType":"#10b7bd",
-                "CompositeType":"#2e2a2a",
-                "ArrayType":"#ff5a02",
-                "PointerType":"#10b7bd",
-                "HTMLType":"0xdddddd",
-                "StateVariableType":"#42b6ff",
-                "DynamicsType":"#00cc66",
+            Colour: {
+                "ParameterType": "#0066cc",
+                "TextType": "#10b7bd",
+                "CompositeType": "#2e2a2a",
+                "ArrayType": "#ff5a02",
+                "PointerType": "#10b7bd",
+                "HTMLType": "0xdddddd",
+                "StateVariableType": "#42b6ff",
+                "DynamicsType": "#00cc66",
             },
 
             COLORS: {
@@ -108,6 +108,12 @@ define(function (require) {
                 ERROR: "ERROR",
                 COMPLETED: "COMPLETED",
                 DELETED: "DELETED",
+            },
+
+            GeometryTypes: {
+                LINES: "lines",
+                TUBES: "tubes",
+                CYLINDERS: "cylinders"
             },
 
 
@@ -153,7 +159,7 @@ define(function (require) {
             ADDING_VARIABLE: "Adding variable",
 
             SPOTLIGHT_HINT: "Did you know you can rapidly access the data once it gets loaded using Ctrl+Space?",
-            
+
             LOADING_SIMULATION_SLOW: "Still loading, but things are taking longer than expected. Do you have a low bandwidth connection?",
 
             SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
@@ -170,11 +176,11 @@ define(function (require) {
 
             MESSAGE_OUTBOUND_LOAD: 'Outbound Message Sent: Loading Simulation',
 
-            MESSAGE_OUTBOUND_STOP: 'Outbund Message Sent: Simulation Stopped',
+            MESSAGE_OUTBOUND_STOP: 'Outbound Message Sent: Simulation Stopped',
 
-            MESSAGE_OUTBOUND_PAUSE: 'Outbund Message Sent: Simulation Paused',
+            MESSAGE_OUTBOUND_PAUSE: 'Outbound Message Sent: Simulation Paused',
 
-            MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
+            MESSAGE_OUTBOUND_START: 'Outbound Message Sent: Simulation Started',
 
             MESSAGE_OUTBOUND_SET_WATCHED_VARIABLES: 'Outbound Message Sent: add variables to watch',
 
@@ -448,6 +454,7 @@ define(function (require) {
             SPHERE: "Sphere",
             COLLADA: "Collada",
             OBJ: "OBJ",
+            PARTICLE: "Particle",
             //GEPPETTO MODEL
             GEPPETTO_MODEL_NODE: "GeppettoModel",
             LIBRARY_NODE: "Library",

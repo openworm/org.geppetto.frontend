@@ -62,7 +62,6 @@ define(function(require) {
             idleTime: 0,
             disconnected: false,
             status: 0,
-            simulationFileTemplate: "geppetto/resources/template.xml",
             statusWorker : null,
 
             getVisitorStatus: function() {
@@ -159,24 +158,6 @@ define(function(require) {
                 }
             },
 
-            /**
-             * Add user as an observer to an ongoing simulation. Create
-             * webGL container and notify servlet about new member that is becoming an observer.
-             */
-            observe: function() {
-                //Create canvas for observing visitor
-                var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-
-                //Allow user to observe only if wegbl container was created
-                if(webGLStarted) {
-                    GEPPETTO.animate();
-                    GEPPETTO.MessageSocket.send("observe", null);
-                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.SIMULATION_OBSERVED);
-                }
-
-                //update the UI based on success of webgl
-                GEPPETTO.FE.update(webGLStarted);
-            }
         };
 
 // ============================================================================
@@ -195,7 +176,7 @@ define(function(require) {
                 GEPPETTO.FE.initialEvents();
 
                 //Increment the idle time counter every minute.
-                setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
+                setInterval(GEPPETTO.Main.idleCheck, 240000); // 1 minute
                 var here = $(this);
                 //Zero the idle timer on mouse movement.
                 here.mousemove(function(e) {
@@ -211,9 +192,10 @@ define(function(require) {
 
                 var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
-                //Initialize websocket functionality
+                //Initialize Geppetto
                 GEPPETTO.Main.init();
 
+                //FIXME: This logic has to move elsewhere. Console and Experiment tabs need to be encapsulated into components.
                 var visibleExperiments = false;
                 $('#experimentsButton').click(function (e) {
                     if(!visibleExperiments){

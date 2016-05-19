@@ -386,7 +386,6 @@ define(function (require) {
         render: function () {
             GEPPETTO.getVARS().renderer.clear();
             GEPPETTO.getVARS().composer.render(0.01);
-            //GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene,GEPPETTO.getVARS().camera);
         },
 
         /**

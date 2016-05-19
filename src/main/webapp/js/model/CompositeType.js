@@ -71,6 +71,25 @@ define(function (require) {
         },
 
         /**
+         * Check if the composite contains a given variable
+         *
+         * @param varId
+         * @returns {boolean}
+         */
+        hasVariable: function(varId){
+           var vars = this.getVariables();
+
+            var match = false;
+            for(var i=0; i<vars.length; i++){
+                if(vars[i].getId() == varId){
+                    match = true;
+                }
+            }
+
+            return match;
+        },
+
+        /**
          * Get combined children
          *
          * @command CompositeType.getChildren()

@@ -368,16 +368,21 @@ define(function (require) {
              *
              * @param typePath
              */
-            resolveImportType: function (typePath) {
+            resolveImportType: function (typePath, callback) {
                 var params = {};
                 params["experimentId"] = Project.getActiveExperiment().getId();
                 params["projectId"] = Project.getId();
                 // replace client naming first occurrence - the server doesn't know about it
                 params["path"] = typePath.replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT, '');
 
-                GEPPETTO.MessageSocket.send("resolve_import_type", params);
+                var requestID = GEPPETTO.MessageSocket.send("resolve_import_type", params);
 
                 GEPPETTO.trigger('spin_logo');
+
+                // add callback with request id if any
+                if (callback != undefined) {
+                    callbackHandler[requestID] = callback;
+                }
             },
 
             /**

@@ -438,6 +438,7 @@ define(function (require) {
             TEXT_TYPE: "TextType",
             IMAGE_TYPE: "ImageType",
             HTML_TYPE: "HTMLType",
+            IMPORT_TYPE: "ImportType",
             //VARIABLES
             VARIABLE_NODE: "Variable",
             //VALUES

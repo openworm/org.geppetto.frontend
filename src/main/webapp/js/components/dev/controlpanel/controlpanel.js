@@ -73,12 +73,16 @@ define(function (require) {
         colorPickerBtnId: '',
         colorPickerActionFn: '',
 
+        replaceTokensWithPath: function(inputStr, path){
+            return inputStr.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
+        },
+
         getActionString: function (control, path) {
             var actionStr = '';
 
             if (control.actions.length > 0) {
                 for (var i = 0; i < control.actions.length; i++) {
-                    actionStr += ((i != 0) ? ";" : "") + control.actions[i].replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
+                    actionStr += ((i != 0) ? ";" : "") + this.replaceTokensWithPath(control.actions[i], path);
                 }
             }
 
@@ -94,7 +98,7 @@ define(function (require) {
 
             if (resolvedConfig.hasOwnProperty('condition')) {
                 // evaluate condition and reassign control depending on results
-                var conditionStr = control.condition.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
+                var conditionStr = this.replaceTokensWithPath(control.condition, path);
                 if (eval(conditionStr)) {
                     resolvedConfig = negateCondition ? resolvedConfig.false : resolvedConfig.true;
                 } else {
@@ -149,7 +153,17 @@ define(function (require) {
             // Add common control buttons to list
             for (var control in config.Common) {
                 if ($.inArray(control.toString(), showControls.Common) != -1) {
-                    ctrlButtons.push(config.Common[control]);
+                    var add = true;
+
+                    // check show condition
+                    if(config.Common[control].showCondition != undefined){
+                        var condition = this.replaceTokensWithPath(config.Common[control].showCondition, path);
+                        add = eval(condition);
+                    }
+
+                    if(add) {
+                        ctrlButtons.push(config.Common[control]);
+                    }
                 }
             }
 
@@ -157,7 +171,17 @@ define(function (require) {
                 // Add visual capability controls to list
                 for (var control in config.VisualCapability) {
                     if ($.inArray(control.toString(), showControls.VisualCapability) != -1) {
-                        ctrlButtons.push(config.VisualCapability[control]);
+                        var add = true;
+
+                        // check show condition
+                        if(config.VisualCapability[control].showCondition != undefined){
+                            var condition = this.replaceTokensWithPath(config.VisualCapability[control].showCondition, path);
+                            add = eval(condition);
+                        }
+
+                        if(add) {
+                            ctrlButtons.push(config.VisualCapability[control]);
+                        }
                     }
                 }
             }
@@ -273,7 +297,7 @@ define(function (require) {
                 "false": {
                     "id": "visibility",
                     "actions": [
-                        "GEPPETTO.SceneController.show($instances$)"
+                        "GEPPETTO.SceneController.show($instances$); GEPPETTO.ControlPanel.refresh();"
                     ],
                     "icon": "fa-eye-slash",
                     "label": "Hidden",
@@ -282,7 +306,7 @@ define(function (require) {
                 "true": {
                     "id": "visibility",
                     "actions": [
-                        "GEPPETTO.SceneController.hide($instances$)"
+                        "GEPPETTO.SceneController.hide($instances$); GEPPETTO.ControlPanel.refresh();"
                     ],
                     "icon": "fa-eye",
                     "label": "Visible",
@@ -306,13 +330,13 @@ define(function (require) {
                 "icon": "fa-search-plus",
                 "label": "Zoom",
                 "tooltip": "Zoom"
-            },
+            }
         },
         "Common": {
             "info": {
                 "id": "info",
                 "actions": [
-                    "G.addWidget(3).setData($instances$)"
+                    "G.addWidget(1).setData($instance$)"
                 ],
                 "icon": "fa-info-circle",
                 "label": "Info",

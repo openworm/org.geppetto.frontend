@@ -194,6 +194,7 @@ define(function (require) {
                         // grab attributes to init button attributes
                         var controlConfig = that.resolveCondition(control, path);
                         var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
+                        var tooltip = controlConfig.tooltip;
                         var classVal = "btn ctrlpanel-button fa " + controlConfig.icon;
                         var styleVal = {};
 
@@ -237,6 +238,7 @@ define(function (require) {
                                 <button id={idVal}
                                         className={classVal}
                                         style={styleVal}
+                                        title={tooltip}
                                         onClick={
                                             controlConfig.id == "color" ? function(){} : actionFn
                                         }>

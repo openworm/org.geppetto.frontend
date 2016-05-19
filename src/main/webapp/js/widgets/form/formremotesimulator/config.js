@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *        OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,39 +32,31 @@
  *******************************************************************************/
 
 /**
- * Loads widget scripts
+ * Loads tree visualiser scripts
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 
-//Widget Classes
-define(function (require) {
-    return function (GEPPETTO) {
 
-        require('widgets/WidgetFactory')(GEPPETTO);
-        require('widgets/WidgetsListener')(GEPPETTO);
-        require("widgets/WidgetUtility");
-        require("widgets/ContextMenu")(GEPPETTO);
-        //Plot Widget
-        require("widgets/plot/config")(GEPPETTO);
-        //Popup Widget
-        require("widgets/popup/config");
-        //Scatter3d Widget
-        require("widgets/scatter3d/config");
-        //TreeVisualiser DAT Widget
-        require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-        //TreeVisualiser D3 Widget
-        require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-        //VariableVisualiser widget
-        require("widgets/variablevisualiser/config");
-        //Connectivity Widget
-        require("widgets/connectivity/config");
-        //VariableVisualiser widget
-        require("widgets/buttonBar/config");
-        //Form widget
-        require("widgets/form/formremotesimulator/config")(GEPPETTO);
-        
 
-        loadCss("geppetto/js/widgets/Widget.css");
-    };
+// Libraries used by Tree Visualizer widget
+var reqs = [];
+reqs.push("widgets/form/formremotesimulator/vendor/backbone-forms.min");
+//reqs.push("widgets/form/formremotesimulator/vendor/list.min");
+require(reqs, function(d3) {
+	loadCss("geppetto/js/widgets/form/formremotesimulator/FormRemoteSimulator.css");
+});
+
+define(function(require) {
+	return function(GEPPETTO) {
+		// Register Commands
+        GEPPETTO.MenuManager.registerNewCommandProvider([GEPPETTO.Resources.VARIABLE_NODE,
+                                                         GEPPETTO.Resources.COMPOSITE_TYPE_NODE,
+                                                         GEPPETTO.Resources.ARRAY_TYPE_NODE,
+                                                         GEPPETTO.Resources.INSTANCE_NODE,
+                                                         GEPPETTO.Resources.ARRAY_INSTANCE_NODE,
+                                                         GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE,
+                                                         GEPPETTO.Resources.VISUAL_GROUP_NODE],
+                                                         GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).getCommands);
+	};
 });

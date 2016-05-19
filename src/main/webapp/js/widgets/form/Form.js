@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *        OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,41 +30,42 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Loads widget scripts
+ * Tree Visualiser Widget
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
-
-//Widget Classes
 define(function (require) {
-    return function (GEPPETTO) {
 
-        require('widgets/WidgetFactory')(GEPPETTO);
-        require('widgets/WidgetsListener')(GEPPETTO);
-        require("widgets/WidgetUtility");
-        require("widgets/ContextMenu")(GEPPETTO);
-        //Plot Widget
-        require("widgets/plot/config")(GEPPETTO);
-        //Popup Widget
-        require("widgets/popup/config");
-        //Scatter3d Widget
-        require("widgets/scatter3d/config");
-        //TreeVisualiser DAT Widget
-        require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-        //TreeVisualiser D3 Widget
-        require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-        //VariableVisualiser widget
-        require("widgets/variablevisualiser/config");
-        //Connectivity Widget
-        require("widgets/connectivity/config");
-        //VariableVisualiser widget
-        require("widgets/buttonBar/config");
-        //Form widget
-        require("widgets/form/formremotesimulator/config")(GEPPETTO);
-        
+    var Widget = require('widgets/Widget');
 
-        loadCss("geppetto/js/widgets/Widget.css");
+    return {
+        Form: Widget.View.extend({
+
+            initialize: function (options) {
+                Widget.View.prototype.initialize.call(this, options);
+
+                this.dataset = {data: []};
+                this.visible = options.visible;
+                this.render();
+                this.setSize(options.width, options.height);
+                
+            },
+
+            setData: function (state, options, dataset) {
+                // If no options specify by user, use default options
+                if (options != null) {
+                    $.extend(this.options, options);
+                }
+
+                return null;
+            },
+
+            getDatasets: function () {
+                return this.datasets;
+            }
+
+        })
     };
+
 });

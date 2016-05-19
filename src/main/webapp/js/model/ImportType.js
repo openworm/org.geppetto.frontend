@@ -96,8 +96,8 @@ define(function (require) {
          *
          * @command ImportType.resolve()
          */
-        resolve: function() {
-            GEPPETTO.SimulationHandler.resolveImportType(this.getPath());
+        resolve: function(callback) {
+            GEPPETTO.SimulationHandler.resolveImportType(this.getPath(), callback);
         }
     });
 });

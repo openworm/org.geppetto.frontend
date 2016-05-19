@@ -306,7 +306,7 @@ define(function (require) {
                 "icon": "fa-search-plus",
                 "label": "Zoom",
                 "tooltip": "Zoom"
-            }
+            },
         },
         "Common": {
             "info": {

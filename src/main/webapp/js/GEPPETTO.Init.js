@@ -51,6 +51,7 @@ define(function (require) {
             GEPPETTO.getVARS().scene.add(GEPPETTO.getVARS().camera);
             GEPPETTO.getVARS().camera.position.set(GEPPETTO.getVARS().cameraPosition.x, GEPPETTO.getVARS().cameraPosition.y, GEPPETTO.getVARS().cameraPosition.z);
             GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
+            GEPPETTO.getVARS().camera.direction = new THREE.Vector3(0, 0, 1);
             GEPPETTO.getVARS().camera.lookAt(GEPPETTO.getVARS().sceneCenter);
         };
 
@@ -244,6 +245,10 @@ define(function (require) {
         // Application logic.
         // ============================================================================
         GEPPETTO.Init = {
+
+            /**
+             *
+             */
             initEventListeners: function () {
                 // setup listeners for geppetto events that can be triggered
                 if (!GEPPETTO.Events.listening) {
@@ -251,6 +256,12 @@ define(function (require) {
                     GEPPETTO.Events.listening = true;
                 }
             },
+
+            /**
+             *
+             * @param containerp
+             * @returns {*|Object}
+             */
             initialize: function (containerp) {
                 GEPPETTO.getVARS().container = containerp;
                 createChannel();
@@ -263,8 +274,17 @@ define(function (require) {
                 return GEPPETTO.getVARS();
             },
 
+            /**
+             * Reinitializes the camera with the Y axis flipped
+             */
             flipCameraY: function () {
                 GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, -1, 0);
+                setupControls();
+                GEPPETTO.resetCamera();
+            },
+
+            flipCameraZ: function () {
+                GEPPETTO.getVARS().camera.direction = new THREE.Vector3(0, 0, -1);
                 setupControls();
                 GEPPETTO.resetCamera();
             }

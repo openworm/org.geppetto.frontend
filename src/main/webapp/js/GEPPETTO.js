@@ -225,7 +225,7 @@ define(function (require) {
             // Compute offset needed to move the camera back that much needed to center AABB
             var offset = radius / Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.5);
 
-            var dir = new THREE.Vector3(0, 0, 1);
+            var dir = GEPPETTO.getVARS().camera.direction.clone();
             dir.multiplyScalar(offset);
 
             // Store camera position

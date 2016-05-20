@@ -40,6 +40,7 @@ define(function (require) {
     var Widget = require('widgets/Widget');
     var $ = require('jquery');
     var form; 
+    var submitButton;
 
     return Widget.View.extend({
 
@@ -62,21 +63,15 @@ define(function (require) {
             	if (submitButton == undefined){
             		submitButton =false;
             	}
-            	
-//            	if (structure == undefined){
-//            		structure = {
-//            				experimentName:{type:'Text', title: 'Experiment Name'},
-//            				timeStep:{type:'Number', title: 'Time Step'},
-//            				lenght:{type:'Number', title: 'Length'},
-//            				simulator:{type:'Select', title: 'Simulator', options: ['Neuron', 'jLems', 'Neuron at NSG']},
-//            				numberProcessors:{type:'Number', title: 'Number of Processors'}
-//            		};
-//            	}
 
                 form = new Backbone.Form({
                 	schema: structure,
                     submitButton: submitButton
                 }).render();
+                
+                if (submitButton){
+                	submitButton = form.$('button').addClass('btn');
+                }
                 
                 this.dialog.append(form.el);
                return this;
@@ -87,14 +82,6 @@ define(function (require) {
                 if (options != null) {
                     $.extend(this.options, options);
                 }
-
-//                if (state == undefined){
-//                	state = {'experimentName': Project.getActiveExperiment().getName(),
-//                			timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),
-//            				lenght: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),
-//            				numberProcessors: 1};
-//                }
-            	
             	form.setValue(state);
             	return this;
             },

@@ -30,96 +30,54 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-div[id^='TreeVisualiserDAT'] {
+div[id^='Form'] {
     overflow-y: auto !important;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     font-weight: 200 !important;
 }
 
-.ui-widget-content .dg.main.taller-than-window .close-button {
-    border-top: 1px solid #ddd;
-}
-
-.ui-widget-content .dg.main .close-button {
-    background: rgba(66, 59, 59, 0);
-}
-
-.ui-widget-content .dg.main .close-button:hover {
-    background: rgba(33, 29, 29, 0.4);
-}
-
-.ui-widget-content .dg {
+div[id^='Form'].ui-widget-content {
     color: #e9e9e9;
     text-shadow: none !important;
 }
 
-.ui-widget-content .dg.main::-webkit-scrollbar {
-    background: #fafafa;
+div[id^='Form'] fieldset>div {
+    clear:both;
+    padding-top: 5px;
 }
 
-.ui-widget-content .dg.main::-webkit-scrollbar-thumb {
-    background: #bbb;
+div[id^='Form'] fieldset>div>label {
+    float:left;
+    font-weight: 500 !important;
+    width: 50%;
 }
 
-.ui-widget-content .dg li:not(.folder) {
-    background: rgba(66, 59, 59, 0);
+div[id^='Form'] fieldset>div>div  {
+	width: 50%;
 }
 
-.ui-widget-content .dg li.save-row .button {
-    text-shadow: none !important;
+div[id^='Form'] fieldset>div>div input,
+div[id^='Form'] fieldset>div>div select {
+	background: rgba(33, 29, 29, 0.4);
+	color: white;
+	width: 100%;
+	display: inline-block;
+  	padding: 4px;
+  	font-size: 13px;
+  	line-height: 18px;
+  	border: 1px solid #ccc;
+  	-webkit-border-radius: 3px;
+  	-moz-border-radius: 3px;
+  	border-radius: 3px;
 }
 
-.ui-widget-content .dg li.title {
-    background: rgba(66, 59, 59, 0) url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;
+div[id^='Form'] fieldset>div>div {
+    float:left;
 }
 
-.ui-widget-content .dg .cr.function:hover, .dg .cr.boolean:hover {
-    background: #fff;
+div[id^='Form'] button{
+	background-color: #fc6320 !important;
+	color: white !important;
+	float: right;
+	margin-top: 10px;
 }
-
-.ui-widget-content .dg .c input[type=text],
-.ui-widget-content .dg .c textarea {
-    background: rgba(66, 59, 59, 0);
-    box-shadow: none !important;
-    webkit-box-shadow: none !important;
-}
-
-.ui-widget-content .dg .c input[type=text]:hover,
-.ui-widget-content .dg .c textarea:hover {
-    background: rgba(33, 29, 29, 0.4);
-    cursor: pointer;
-}
-
-.ui-widget-content .dg .c input[type=text]:focus,
-.ui-widget-content .dg .c textarea:focus {
-    background: rgba(33, 29, 29, 0.4);
-    cursor: pointer;
-}
-
-.ui-widget-content .dg .c .slider {
-    background: #e9e9e9;
-}
-
-.ui-widget-content .dg .c .slider:hover {
-    background: #eee;
-}
-
-/*  GENERIC NODE STYLE */
-.ui-widget-content .dg .cr.string {
-    border-left: 3px solid #85ea0e;
-}
-
-.ui-widget-content .dg .cr.string input[type=text],
-.ui-widget-content .dg .cr.string textarea {
-    color: #85ea0e;
-}
-
-.ui-widget-content .dg .cr.string textarea {
-    width: 100%;
-    border: 0px;
-    margin-top: 5px;
-    line-height: 20px;
-    resize: none;
-    height: 60px;
-}
-

@@ -62,7 +62,7 @@ define(function (require) {
         //VariableVisualiser widget
         require("widgets/buttonBar/config");
         //Form widget
-        require("widgets/form/formremotesimulator/config")(GEPPETTO);
+        require("widgets/form/config")(GEPPETTO);
         
 
         loadCss("geppetto/js/widgets/Widget.css");

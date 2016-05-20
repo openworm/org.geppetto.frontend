@@ -41,10 +41,10 @@
 
 // Libraries used by Tree Visualizer widget
 var reqs = [];
-reqs.push("widgets/form/formremotesimulator/vendor/backbone-forms.min");
-//reqs.push("widgets/form/formremotesimulator/vendor/list.min");
+reqs.push("widgets/form/vendor/backbone-forms.min");
+//reqs.push("widgets/form/vendor/list.min");
 require(reqs, function(d3) {
-	loadCss("geppetto/js/widgets/form/formremotesimulator/FormRemoteSimulator.css");
+	loadCss("geppetto/js/widgets/form/Form.css");
 });
 
 define(function(require) {

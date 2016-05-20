@@ -44,7 +44,7 @@ define(function (require) {
     TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
     VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
     ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
-    FormRemoteSimulatorController = require('widgets/form/formremotesimulator/controllers/FormRemoteSimulatorController');
+    FormController = require('widgets/form/controllers/FormController');
 
     return function (GEPPETTO) {
 
@@ -65,7 +65,7 @@ define(function (require) {
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
-            FORMREMOTESIMULATOR: 8
+            FORM: 8
         };
 
         /**
@@ -81,7 +81,7 @@ define(function (require) {
             ButtonBarController: null,
             treeVisDatController: null,
             treeVis3DController: null,
-            formRemoteSimulatorController: null,
+            formController: null,
             
             /**
              * Adds widget to Geppetto
@@ -125,8 +125,8 @@ define(function (require) {
                         widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget();
                         break;
                     //create form remote simulator controller
-                    case GEPPETTO.Widgets.FORMREMOTESIMULATOR:
-                        widget = this.getController(GEPPETTO.Widgets.FORMREMOTESIMULATOR).addFormRemoteSimulatorWidget();
+                    case GEPPETTO.Widgets.FORM:
+                        widget = this.getController(GEPPETTO.Widgets.FORM).addFormWidget();
                         break;
                         
                     default:
@@ -161,8 +161,8 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
                     case GEPPETTO.Widgets.BUTTONBAR:
                         return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
-                    case GEPPETTO.Widgets.FORMREMOTESIMULATOR:
-                        return GEPPETTO.Resources.REMOVE_FORMREMOTESIMULATOR_WIDGETS;
+                    case GEPPETTO.Widgets.FORM:
+                        return GEPPETTO.Resources.REMOVE_FORM_WIDGETS;
                     default:
                         return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
                 }
@@ -217,11 +217,11 @@ define(function (require) {
                     }
                     return this.buttonBarController;
                 }
-                else if (type == GEPPETTO.Widgets.FORMREMOTESIMULATOR) {
-                    if (this.formRemoteSimulatorController == null || undefined) {
-                        this.formRemoteSimulatorController = new FormRemoteSimulatorController();
+                else if (type == GEPPETTO.Widgets.FORM) {
+                    if (this.formController == null || undefined) {
+                        this.formController = new FormController();
                     }
-                    return this.formRemoteSimulatorController;
+                    return this.formController;
                 }
             }
         };

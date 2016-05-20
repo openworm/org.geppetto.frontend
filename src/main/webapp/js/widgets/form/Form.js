@@ -38,18 +38,48 @@
 define(function (require) {
 
     var Widget = require('widgets/Widget');
+    var $ = require('jquery');
+    var form; 
 
-    return {
-        Form: Widget.View.extend({
+    return Widget.View.extend({
 
             initialize: function (options) {
                 Widget.View.prototype.initialize.call(this, options);
 
-                this.dataset = {data: []};
                 this.visible = options.visible;
                 this.render();
                 this.setSize(options.width, options.height);
+             // Initialise default options
+                this.options = { width: "auto", autoPlace: false};
                 
+            },
+            
+            getForm: function(){
+            	return form;
+            },
+            
+            generateForm: function(structure, submitButton){
+            	if (submitButton == undefined){
+            		submitButton =false;
+            	}
+            	
+//            	if (structure == undefined){
+//            		structure = {
+//            				experimentName:{type:'Text', title: 'Experiment Name'},
+//            				timeStep:{type:'Number', title: 'Time Step'},
+//            				lenght:{type:'Number', title: 'Length'},
+//            				simulator:{type:'Select', title: 'Simulator', options: ['Neuron', 'jLems', 'Neuron at NSG']},
+//            				numberProcessors:{type:'Number', title: 'Number of Processors'}
+//            		};
+//            	}
+
+                form = new Backbone.Form({
+                	schema: structure,
+                    submitButton: submitButton
+                }).render();
+                
+                this.dialog.append(form.el);
+               return this;
             },
 
             setData: function (state, options, dataset) {
@@ -58,14 +88,46 @@ define(function (require) {
                     $.extend(this.options, options);
                 }
 
-                return null;
+//                if (state == undefined){
+//                	state = {'experimentName': Project.getActiveExperiment().getName(),
+//                			timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),
+//            				lenght: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),
+//            				numberProcessors: 1};
+//                }
+            	
+            	form.setValue(state);
+            	return this;
+            },
+            
+            /**
+             * Updates the data that the TreeVisualiserDAT is rendering
+             */
+            updateData: function (step) {
+            	for (var i = 0; i < this.dataset.data.length; i++){
+            		this.prepareTree(this.gui, this.dataset.data[i], step);
+            	}
             },
 
-            getDatasets: function () {
-                return this.datasets;
+            /**
+             * Clear Widget
+             */
+            reset: function () {
+            	this.dataset = {data: [], isDisplayed: false, valueDict: {}};
+                $(this.dialog).children().remove();
+                this.initDATGUI();
+            },
+
+            /**
+             * Refresh data in tree visualiser
+             */
+            refresh: function () {
+                var currentDatasets = this.dataset.data;
+                this.reset();
+                for (var i = 0; i < currentDatasets.length; i++){
+                	this.initialiseGUIElements(currentDatasets[i]);
+            	}
             }
 
-        })
-    };
+        });
 
 });

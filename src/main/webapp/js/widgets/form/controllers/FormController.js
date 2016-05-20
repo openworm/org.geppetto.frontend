@@ -40,7 +40,7 @@
  */
 define(function (require) {
     var AWidgetController = require('widgets/AWidgetController');
-    var FormRemoteSimulator = require('widgets/form/formremotesimulator/FormRemoteSimulator');
+    var Form = require('widgets/form/Form');
 
     /**
      * @exports Widgets/Connectivity/TreeVisualiserControllerDATController
@@ -54,13 +54,13 @@ define(function (require) {
         /**
          * Adds a new TreeVisualizerDAT Widget to Geppetto
          */
-        addFormRemoteSimulatorWidget: function () {
+        addFormWidget: function () {
             //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("FormRemoteSimulator", this.widgets);
+            var id = this.getAvailableWidgetId("Form", this.widgets);
             var name = id;
 
             // create tree visualiser widget
-            var frs = window[name] = new FormRemoteSimulator({
+            var formWidget = window[name] = new Form({
                 id: id,
                 name: name,
                 visible: true,
@@ -68,20 +68,20 @@ define(function (require) {
                 height: 350
             });
             // create help command for plot
-            frs.help = function () {
+            formWidget.help = function () {
                 return GEPPETTO.Utility.getObjectCommands(id);
             };
             // store in local stack
-            this.widgets.push(frs);
+            this.widgets.push(formWidget);
 
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             // updates helpc command output
-            GEPPETTO.Console.updateHelpCommand(frs, id, this.getFileComments("geppetto/js/widgets/form/formremotesimulator/FormRemoteSimulator.js"));
+            GEPPETTO.Console.updateHelpCommand(formWidget, id, this.getFileComments("geppetto/js/widgets/form/Form.js"));
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(frs.getId(), frs);
+            GEPPETTO.Console.updateTags(formWidget.getId(), formWidget);
 
-            return frs;
+            return formWidget;
         },
 
         /**
@@ -90,7 +90,7 @@ define(function (require) {
          * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
          */
         update: function (event, parameters) {
-            var formsRemoteSimulator = this.getWidgets();
+            var formWidgets = this.getWidgets();
             // delete treevisualiser widget(s)
             if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
                 this.removeWidgets();
@@ -98,41 +98,41 @@ define(function (require) {
             else if (event == Events.Select) {
                 //loop through all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {
-                    var formRemoteSimulator = this.widgets[i];
+                    var formWidget = this.widgets[i];
 
-                    if (_.find(formRemoteSimulator.registeredEvents, function (el) {
+                    if (_.find(formWidget.registeredEvents, function (el) {
                             return el.id === event;
                         })) {
                         var selected = G.getSelection();
-                        formRemoteSimulator.reset();
+                        formWidget.reset();
                         //update treevisualiser with new data set
-                        formRemoteSimulator.setData(selected[0]);
+                        formWidget.setData(selected[0]);
                     }
                 }
             }
             // update treevisualiser widgets
             else if (event == Events.Experiment_update) {
                 // loop through all existing widgets
-                for (var i = 0; i < formsRemoteSimulator.length; i++) {
-                    var formRemoteSimulator = formsRemoteSimulator[i];
+                for (var i = 0; i < formWidgets.length; i++) {
+                    var formWidget = formWidgets[i];
 
                     // update treevisualiser with new data set
-                    formRemoteSimulator.updateData(parameters.step);
+                    formWidget.updateData(parameters.step);
                 }
             }
             // update treevisualiser widgets
             else if (event == Events.ModelTree_populated || event == Events.SimulationTree_populated) {
                 // loop through all existing widgets
-                for (var i = 0; i < formsRemoteSimulator.length; i++) {
-                    var formRemoteSimulator = formsRemoteSimulator[i];
+                for (var i = 0; i < formWidgets.length; i++) {
+                    var formWidget = formWidgets[i];
 
-                    var ev = _.find(formRemoteSimulator.registeredEvents, function (el) {
+                    var ev = _.find(formWidget.registeredEvents, function (el) {
                         return el.id === event;
                     });
                     if (typeof ev !== 'undefined') {
                         if (typeof ev.callback === 'undefined') {
                             //TODO: We need the event data here so we can decide if we would like to refresh or not
-                        	formRemoteSimulator.refresh();
+                        	formWidget.refresh();
                         }
                         else {
                             ev.callback();

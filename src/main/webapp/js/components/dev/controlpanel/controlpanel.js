@@ -480,9 +480,13 @@ define(function (require) {
             var escape = 27;
             var pKey = 80;
 
+            var that = this;
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == pKey) {
+                    // show control panel
                     $("#controlpanel").show();
+                    // refresh to reflect up to date state of records
+                    that.refresh();
                     // set focus on filter text box
                     $('#controlpanel .griddle-filter input').focus();
                 }

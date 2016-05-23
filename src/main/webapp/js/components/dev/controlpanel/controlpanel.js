@@ -53,13 +53,15 @@ define(function (require) {
 
     GEPPETTO.ArrayComponent = React.createClass({
         render: function () {
+            var that = this;
             return (
                 <ul>
-                    {this.props.data.map(function (item, i) {
+                    {that.props.data.map(function (item, i) {
                         var displayText = item.split('.')[item.split('.').length - 1];
                         var action = function (e) {
                             e.preventDefault();
-                            var actionStr = "G.addWidget(3).setData(" + item + ").setName('" + displayText + "')";
+                            var actionStr = that.props.metadata.action;
+                            actionStr = actionStr.replace(/\$entity\$/gi, item);
                             GEPPETTO.Console.executeCommand(actionStr);
                         };
                         return <li key={i}><a href='#' onClick={action}>{displayText}</a></li>;
@@ -275,7 +277,8 @@ define(function (require) {
             "visible": true,
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
-            "source": "$entity$.getTypes().map(function (t) {return t.getPath()})"
+            "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
+            "action": "G.addWidget(3).setData($entity$).setName('$entity$')"
         },
         {
             "columnName": "controls",

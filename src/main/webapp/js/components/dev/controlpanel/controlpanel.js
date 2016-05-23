@@ -222,6 +222,7 @@ define(function (require) {
                             // run action
                             if (actionStr != '' && actionStr != undefined) {
                                 GEPPETTO.Console.executeCommand(actionStr);
+                                eval(this.props.metadata.action.replace(/\$entity\$/gi, path));
                             }
 
                             // if conditional, swap icon with the other condition outcome
@@ -294,7 +295,8 @@ define(function (require) {
             "visible": true,
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
-            "source": ""
+            "source": "",
+            "action": "GEPPETTO.ControlPanel.refresh();"
         }
     ];
 
@@ -309,7 +311,7 @@ define(function (require) {
                 "false": {
                     "id": "visibility",
                     "actions": [
-                        "GEPPETTO.SceneController.show($instances$); GEPPETTO.ControlPanel.refresh();"
+                        "GEPPETTO.SceneController.show($instances$);"
                     ],
                     "icon": "fa-eye-slash",
                     "label": "Hidden",
@@ -318,7 +320,7 @@ define(function (require) {
                 "true": {
                     "id": "visibility",
                     "actions": [
-                        "GEPPETTO.SceneController.hide($instances$); GEPPETTO.ControlPanel.refresh();"
+                        "GEPPETTO.SceneController.hide($instances$);"
                     ],
                     "icon": "fa-eye",
                     "label": "Visible",
@@ -328,7 +330,7 @@ define(function (require) {
             "color": {
                 "id": "color",
                 "actions": [
-                    "$instance$.setColor('$param$'); GEPPETTO.ControlPanel.refresh();"
+                    "$instance$.setColor('$param$');"
                 ],
                 "icon": "fa-tint",
                 "label": "Color",

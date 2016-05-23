@@ -222,7 +222,7 @@ define(function (require) {
                             // run action
                             if (actionStr != '' && actionStr != undefined) {
                                 GEPPETTO.Console.executeCommand(actionStr);
-                                eval(this.props.metadata.action.replace(/\$entity\$/gi, path));
+                                eval(that.props.metadata.action.replace(/\$entity\$/gi, path));
                             }
 
                             // if conditional, swap icon with the other condition outcome
@@ -488,7 +488,7 @@ define(function (require) {
                     // show control panel
                     $("#controlpanel").show();
                     // refresh to reflect up to date state of records
-                    that.refresh();
+                    GEPPETTO.ControlPanel.refresh();
                     // set focus on filter text box
                     $('#controlpanel .griddle-filter input').focus();
                 }

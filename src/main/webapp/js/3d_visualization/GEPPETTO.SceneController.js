@@ -37,14 +37,17 @@ define(function (require) {
              * @param instances
              */
             updateSceneWithNewInstances: function (instances) {
-
+            	var updateCamera=false;
+            	if(Object.keys(GEPPETTO.getVARS().meshes).length === 0){
+            		updateCamera=true;
+            	}
                 for (var g = 0; g < instances.length; g++) {
                     // add instance to scene
                     GEPPETTO.SceneController.checkVisualInstance(instances[g]);
                 }
-
-                GEPPETTO.getVARS().scene.updateMatrixWorld(true);
-
+                if(updateCamera){
+                	G.resetCamera();
+                }
             },
 
             /**

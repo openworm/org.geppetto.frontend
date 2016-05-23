@@ -79,7 +79,9 @@ define(function (require) {
              */
             generate3DObjects: function (instance, lines, thickness) {
                 var previous3DObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
+                var color = undefined;
                 if (previous3DObject) {
+                    color=previous3DObject.material.defaultColor;
                     // if an object already exists for this aspect we remove it. This could happen in case we are changing how an aspect
                     // is visualized, e.g. lines over tubes representation
                     GEPPETTO.getVARS().scene.remove(previous3DObject);
@@ -94,8 +96,8 @@ define(function (require) {
                 }
                 var materials =
                 {
-                    "mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(),
-                    "line": GEPPETTO.SceneFactory.getLineMaterial(thickness),
+                    "mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(color),
+                    "line": GEPPETTO.SceneFactory.getLineMaterial(thickness,color),
                     "particle": GEPPETTO.SceneFactory.getParticleMaterial()
                 };
                 var instanceObjects = [];
@@ -309,7 +311,7 @@ define(function (require) {
                     scene = collada.scene;
                     scene.traverse(function (child) {
                         if (child instanceof THREE.Mesh) {
-                            child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial(40);
+                            child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
                             child.name = node.instancePath.split(".VisualizationTree")[0];
                             child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                             child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -458,36 +460,39 @@ define(function (require) {
              * @param thickness
              * @returns {THREE.LineBasicMaterial}
              */
-            getLineMaterial: function (thickness) {
+            getLineMaterial: function (thickness, color) {
                 var options = {};
                 if (thickness) {
                     options.linewidth = thickness;
                 }
+                if (color == undefined) {
+                    color = GEPPETTO.Resources.COLORS.DEFAULT;
+                }
                 var material = new THREE.LineBasicMaterial(options);
-                material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-                material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
+                material.color.setHex(color);
+                material.defaultColor = color;
                 material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                 return material;
             },
 
             /**
              *
-             * @param shine
+             * @param color
              * @returns {THREE.MeshPhongMaterial}
              */
-            getMeshPhongMaterial: function (shine) {
-                if (shine == undefined) {
-                    shine = 10;
+            getMeshPhongMaterial: function (color) {
+                if (color == undefined) {
+                    color = GEPPETTO.Resources.COLORS.DEFAULT;
                 }
                 var material = new THREE.MeshPhongMaterial(
                     {
                         opacity: 1,
-                        shininess: shine,
+                        shininess: 10,
                         shading: THREE.SmoothShading
                     });
 
-                material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-                material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
+                material.color.setHex(color);
+                material.defaultColor = color;
                 material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                 return material;
             },

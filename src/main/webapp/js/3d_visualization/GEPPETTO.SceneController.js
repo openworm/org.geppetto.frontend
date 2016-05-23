@@ -18,7 +18,7 @@ define(function (require) {
 
             linesThreshold: 2000,
             aboveLinesThreshold: false,
-            wireframe:false,
+            wireframe: false,
 
             /**
              * Populate the scene with given instances
@@ -43,7 +43,8 @@ define(function (require) {
                     GEPPETTO.SceneController.checkVisualInstance(instances[g]);
                 }
 
-                GEPPETTO.resetCamera();
+                GEPPETTO.getVARS().scene.updateMatrixWorld(true);
+
             },
 
             /**
@@ -329,15 +330,15 @@ define(function (require) {
                 GEPPETTO.SceneController.complexity = 0;
                 GEPPETTO.SceneController.aboveLinesThreshold = false;
             },
-            
+
             /**
              * Sets whether to use wireframe for the materials of the meshes
              */
-            setWireframe:function(wireframe){
-            	GEPPETTO.SceneController.wireframe=wireframe;
-            	GEPPETTO.getVARS().scene.traverse(function (child) {
+            setWireframe: function (wireframe) {
+                GEPPETTO.SceneController.wireframe = wireframe;
+                GEPPETTO.getVARS().scene.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
-                        child.material.wireframe=GEPPETTO.SceneController.wireframe;
+                        child.material.wireframe = GEPPETTO.SceneController.wireframe;
                     }
                 });
             },
@@ -500,10 +501,12 @@ define(function (require) {
             setAllGeometriesType: function (type) {
                 var visualInstances = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, window.Instances);
                 for (var i = 0; i < visualInstances.length; i++) {
-                    var visualType = visualInstances[i].getVisualType();
-                    if (visualType) {
-                        if (visualType.getWrappedObj().eClass == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
-                            GEPPETTO.SceneController.setGeometryType(visualInstances[i], type);
+                    if (GEPPETTO.getVARS().meshes[visualInstances[i].getInstancePath()]) {
+                        var visualType = visualInstances[i].getVisualType();
+                        if (visualType) {
+                            if (visualType.getWrappedObj().eClass == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
+                                GEPPETTO.SceneController.setGeometryType(visualInstances[i], type);
+                            }
                         }
                     }
                 }

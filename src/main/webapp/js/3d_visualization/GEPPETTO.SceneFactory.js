@@ -172,7 +172,6 @@ define(function (require) {
              */
             merge3DObjects: function (objArray, materials) {
                 var mergedMeshesPaths = [];
-                var combined = new THREE.Geometry();
                 var ret = null;
                 var mergedLines;
                 var mergedMeshes;
@@ -314,7 +313,7 @@ define(function (require) {
                             child.name = node.instancePath.split(".VisualizationTree")[0];
                             child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                             child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-                            child.material.wireframe=GEPPETTO.SceneController.wireframe;
+                            child.material.wireframe = GEPPETTO.SceneController.wireframe;
                             child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                             child.geometry.computeVertexNormals();
                         }
@@ -322,7 +321,7 @@ define(function (require) {
                             child.material.skinning = true;
                             child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                             child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-                            child.material.wireframe=GEPPETTO.SceneController.wireframe;
+                            child.material.wireframe = GEPPETTO.SceneController.wireframe;
                             child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                             child.geometry.computeVertexNormals();
                         }
@@ -347,7 +346,7 @@ define(function (require) {
                 scene.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
                         child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-                        child.material.wireframe=GEPPETTO.SceneController.wireframe;
+                        child.material.wireframe = GEPPETTO.SceneController.wireframe;
                         child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                         child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                         child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;

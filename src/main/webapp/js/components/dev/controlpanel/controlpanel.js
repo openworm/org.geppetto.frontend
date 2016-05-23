@@ -55,18 +55,25 @@ define(function (require) {
         render: function () {
             var that = this;
             return (
-                <ul>
-                    {that.props.data.map(function (item, i) {
-                        var displayText = item.split('.')[item.split('.').length - 1];
-                        var action = function (e) {
-                            e.preventDefault();
-                            var actionStr = that.props.metadata.action;
-                            actionStr = actionStr.replace(/\$entity\$/gi, item);
-                            GEPPETTO.Console.executeCommand(actionStr);
-                        };
-                        return <li key={i}><a href='#' onClick={action}>{displayText}</a></li>;
-                    })}
-                </ul>
+                <div>
+                    {
+                        that.props.data.map(function (item, i, originalArray) {
+                            var displayText = item.split('.')[item.split('.').length - 1];
+                            var action = function (e) {
+                                e.preventDefault();
+                                var actionStr = that.props.metadata.action;
+                                actionStr = actionStr.replace(/\$entity\$/gi, item);
+                                GEPPETTO.Console.executeCommand(actionStr);
+                            };
+
+                            var separator = (i < originalArray.length - 1) ? <span>, </span> : <span></span>;
+
+                            return (
+                                <span key={i}><a href='#' onClick={action}>{displayText}</a>{ separator }</span>
+                            );
+                        })
+                    }
+                </div>
             )
         }
     });

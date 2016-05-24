@@ -296,7 +296,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": "",
-            "action": "GEPPETTO.ControlPanel.refresh();"
+            "action": "GEPPETTO.FE.refresh();"
         }
     ];
 

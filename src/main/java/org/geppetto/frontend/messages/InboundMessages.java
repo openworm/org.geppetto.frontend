@@ -38,7 +38,7 @@ package org.geppetto.frontend.messages;
 public enum InboundMessages {
 	
 	GEPPETTO_VERSION("geppetto_version"),
-	IDLE_USER("idle_user"),
+	NOTIFY_USER("notify_user"),
 	GET_SCRIPT("get_script"),
 	
 	//PROJECT MESSAGES

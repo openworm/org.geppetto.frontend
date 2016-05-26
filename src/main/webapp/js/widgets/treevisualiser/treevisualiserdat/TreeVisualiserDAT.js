@@ -137,7 +137,12 @@ define(function (require) {
                 	if (node.getChildren().length == 0 && node.getHiddenChildren().length > 0){
         	            node.set({"children": node.getHiddenChildren()});
         	            for (var childIndex in node.getChildren()){
-        	            	this.prepareTree(this.dataset.valueDict[nodeInstancePath]["folder"], node.getChildren()[childIndex], 0);
+        	            	var nodeChild = node.getChildren()[childIndex];
+        	            	if (nodeChild.getChildren().length > 0){
+        	            		nodeChild.set({"_children": nodeChild.getChildren()});	
+        	            	}
+        	            	nodeChild.set({"children": []});
+        	            	this.prepareTree(this.dataset.valueDict[nodeInstancePath]["folder"], nodeChild, 0);
         	            }
         	        
         	            this.customiseLayout(this.dataset.valueDict[nodeInstancePath]["folder"].domElement);

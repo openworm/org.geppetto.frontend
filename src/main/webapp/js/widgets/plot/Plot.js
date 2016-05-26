@@ -55,7 +55,7 @@ define(function (require) {
         yMax: 0,
         updateLegendTimeout: null,
         latestPosition: null,
-        initialized:null,
+        initialized: null,
         inhomogeneousUnits: false,
 
         /**
@@ -236,26 +236,26 @@ define(function (require) {
             var isPlotable = true;
             for (var i = 0; i < data.length; i++) {
                 var instance = data[i];
-                if (instance != null){
-                	
-                   for (var key = 0; key < this.datasets.length; key++) {
-	                   if (instance.getInstancePath() == this.datasets[key].label) {
-	                       continue;
-	                   }
-                   }
+                if (instance != null) {
 
-                   var timeSeriesData;
-                   if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
-	                   timeSeriesData = this.getTimeSeriesData(instance);
-                   }
-                   else{
-                	   isPlotable = false;
-                   }
-                   this.datasets.push({
-                       label: instance.getInstancePath(),
-                       variable: instance,
-                       data: timeSeriesData
-                   });
+                    for (var key = 0; key < this.datasets.length; key++) {
+                        if (instance.getInstancePath() == this.datasets[key].label) {
+                            continue;
+                        }
+                    }
+
+                    var timeSeriesData;
+                    if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
+                        timeSeriesData = this.getTimeSeriesData(instance, window.time);
+                    }
+                    else {
+                        isPlotable = false;
+                    }
+                    this.datasets.push({
+                        label: instance.getInstancePath(),
+                        variable: instance,
+                        data: timeSeriesData
+                    });
                 }
             }
 
@@ -263,10 +263,10 @@ define(function (require) {
 
                 // check for inhomogeneousUnits and set flag
                 var refUnit = undefined;
-                for(var i=0; i<this.datasets.length; i++){
-                    if(i==0){
+                for (var i = 0; i < this.datasets.length; i++) {
+                    if (i == 0) {
                         refUnit = this.datasets[i].variable.getUnit();
-                    } else if(refUnit != this.datasets[i].variable.getUnit()) {
+                    } else if (refUnit != this.datasets[i].variable.getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
                         break;
@@ -276,31 +276,31 @@ define(function (require) {
                 this.updateAxis(this.datasets.length - 1);
             }
 
-            if (isPlotable){
-            	var plotHolder = $("#" + this.id);
-            	this.plot = $.plot(plotHolder, this.datasets, this.options);
+            if (isPlotable) {
+                var plotHolder = $("#" + this.id);
+                this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
-            	
+
             return this;
         },
 
 
-        getTimeSeriesData: function (instance) {
-            var timeSeries = instance.getTimeSeries();
-            var timeTimeSeries = window.time.getTimeSeries();
+        getTimeSeriesData: function (instanceY, instanceX) {
+            var yTimeSeries = instanceY.getTimeSeries();
+            var xTimeSeries = instanceX.getTimeSeries();
             var timeSeriesData = [];
 
-            if (timeSeries && timeSeries.length > 1) {
-                for (var step = 0; step < timeSeries.length; step++) {
-                    timeSeriesData.push([timeTimeSeries[step], timeSeries[step]]);
+            if (yTimeSeries && yTimeSeries.length > 1) {
+                for (var step = 0; step < yTimeSeries.length; step++) {
+                    timeSeriesData.push([xTimeSeries[step], yTimeSeries[step]]);
                 }
             }
 
-            var localxmin = Math.min.apply(null, timeTimeSeries);
-            var localymin = Math.min.apply(null, timeSeries);
+            var localxmin = this.arrayMin(xTimeSeries);
+            var localymin = this.arrayMin(yTimeSeries);
             localymin = localymin - Math.abs(localymin * 0.1);
-            var localxmax = Math.max.apply(null, timeTimeSeries);
-            var localymax = Math.max.apply(null, timeSeries);
+            var localxmax = this.arrayMax(xTimeSeries);
+            var localymax = this.arrayMax(yTimeSeries);
             localymax = localymax + Math.abs(localymax * 0.1);
 
             this.options.xaxis.min = Math.min(this.options.xaxis.min, localxmin);
@@ -310,17 +310,28 @@ define(function (require) {
 
             return timeSeriesData;
         },
-        /**
-         * Takes two time series and plots one against the other. To plot
-         * array(s) , use it as plotData([[1,2],[2,3]]) To plot an object ,
-         * use it as plotData(objectNameX,objectNameY)
-         *
-         * @command plotData(dataX,dataY, options)
-         * @param {Object} dataX - series to plot on X axis, can be array or an object
-         * @param {Object} dataY - series to plot on Y axis, can be array or an object
-         * @param options - options for the plotting widget, if null uses default
-         */
-        plotXYData: function (dataX, dataY, options) {
+
+        arrayMin: function (arr) {
+            var len = arr.length, min = Infinity;
+            while (len--) {
+                if (arr[len] < min) {
+                    min = arr[len];
+                }
+            }
+            return min;
+        },
+
+        arrayMax: function (arr) {
+            var len = arr.length, max = -Infinity;
+            while (len--) {
+                if (arr[len] > max) {
+                    max = arr[len];
+                }
+            }
+            return max;
+        },
+
+        plotXYData: function (dataY, dataX, options) {
 
             // If no options specify by user, use default options
             if (options != null) {
@@ -330,16 +341,30 @@ define(function (require) {
                 }
             }
 
+            var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
+
             this.datasets.push({
-                label: dataX.name,
-                data: dataX.data
+                label: dataY.getInstancePath(),
+                variable: dataY,
+                data: timeSeriesData
             });
 
-            if (dataY != undefined) {
-                this.datasets.push({
-                    label: dataY.name,
-                    data: dataY.data
-                });
+
+            if (this.datasets.length > 0) {
+
+                // check for inhomogeneousUnits and set flag
+                var refUnit = undefined;
+                for (var i = 0; i < this.datasets.length; i++) {
+                    if (i == 0) {
+                        refUnit = this.datasets[i].variable.getUnit();
+                    } else if (refUnit != this.datasets[i].variable.getUnit()) {
+                        this.inhomogeneousUnits = true;
+                        this.labelsUpdated = false;
+                        break;
+                    }
+                }
+
+                this.updateAxis(this.datasets.length - 1);
             }
 
             var plotHolder = $("#" + this.id);
@@ -348,7 +373,8 @@ define(function (require) {
 
 
             return this;
-        },
+        }
+        ,
         /**
          * Removes the data set from the plot. EX:
          *
@@ -379,13 +405,14 @@ define(function (require) {
                 this.resetPlot();
             }
             return this;
-        },
+        }
+        ,
 
         /**
          * Updates a data set, use for time series
          */
         updateDataSet: function (step, playAll) {
-            if(!this.initialized){
+            if (!this.initialized) {
                 this.clean(playAll);
             }
             var plotHolder = $("#" + this.id);
@@ -444,7 +471,8 @@ define(function (require) {
                 this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
 
-        },
+        }
+        ,
 
         updateAxis: function (key) {
             if (!this.labelsUpdated) {
@@ -456,7 +484,8 @@ define(function (require) {
                     this.labelsUpdated = true;
                 }
             }
-        },
+        }
+        ,
 
         /**
          * Utility function to get unit label given raw unit symbol string
@@ -484,7 +513,8 @@ define(function (require) {
             }
 
             return unitLabel;
-        },
+        }
+        ,
 
         /**
          * Plots a function against a data series
@@ -534,7 +564,8 @@ define(function (require) {
             //Plot values
             this.plotXYData(data);
             return this;
-        },
+        }
+        ,
 
         /**
          * Resets the plot widget, deletes all the data series but does not
@@ -550,7 +581,8 @@ define(function (require) {
                 this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
             return this;
-        },
+        }
+        ,
 
         /**
          *
@@ -567,7 +599,8 @@ define(function (require) {
 
             this.plot = $.plot($("#" + this.id), this.datasets, this.options);
             return this;
-        },
+        }
+        ,
 
         clean: function (playAll) {
             this.options.playAll = playAll;
@@ -591,9 +624,10 @@ define(function (require) {
 
             }
             this.plot = $.plot($("#" + this.id), this.datasets, this.options);
-            this.initialized=true;
+            this.initialized = true;
 
-        },
+        }
+        ,
 
         /**
          * Retrieve the data sets for the plot
@@ -601,7 +635,8 @@ define(function (require) {
          */
         getDataSets: function () {
             return this.datasets;
-        },
+        }
+        ,
 
         /**
          * Resets the datasets for the plot
@@ -611,7 +646,8 @@ define(function (require) {
             for (var key = 0; key < this.datasets.length; key++) {
                 this.datasets[key].data = [[]];
             }
-        },
+        }
+        ,
 
         /**
          * Initialize legend
@@ -624,7 +660,8 @@ define(function (require) {
             //fix conflict between jquery and bootstrap tooltips
             $.widget.bridge('uitooltip', $.ui.tooltip);
 
-        },
+        }
+        ,
 
         /**
          * Sets the legend for a variable
@@ -642,7 +679,8 @@ define(function (require) {
 
             this.labelsMap[instancePath] = legend;
             return this;
-        },
+        }
+        ,
 
         /**
          * Sets a label next to the Y Axis
@@ -660,9 +698,10 @@ define(function (require) {
                 this.options["xaxis"] = {};
             }
             this.options.xaxis.axisLabel = labelX;
-            
+
             return this;
-        },
+        }
+        ,
 
         /**
          * Takes a FunctionNode and plots the expression and set the attributes from the plot metadata information
@@ -719,7 +758,9 @@ define(function (require) {
                 this.setName(plotTitle);
             }
             return this;
-        },
+        }
+        ,
 
     });
-});
+})
+;

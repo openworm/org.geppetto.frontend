@@ -191,7 +191,11 @@ var saveData = (function () {
         a.href = url;
         a.download = fileName;
         a.click();
-        window.URL.revokeObjectURL(url);
+        
+        // add timeout to give firefox time to trigger donwload before removing resource
+        setTimeout(function(){
+            window.URL.revokeObjectURL(url);
+        }, 100);
     };
 }());
 

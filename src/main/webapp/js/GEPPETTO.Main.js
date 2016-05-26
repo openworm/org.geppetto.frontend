@@ -150,9 +150,14 @@ define(function(require) {
                             GEPPETTO.Main.idleTime = 0;
                             GEPPETTO.Main.disconnected = true;
                             GEPPETTO.FE.disableSimulationControls();
-                            GEPPETTO.MessageSocket.send("idle_user", null);
+                            GEPPETTO.MessageSocket.close();
+                            
                             var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-                            GEPPETTO.FE.update(webGLStarted);
+                            var webWorkersSupported = (typeof(Worker) !== "undefined") ? true : false;
+
+                            if (!webGLStarted || !webWorkersSupported) {
+                                GEPPETTO.FE.notifyInitErrors(webGLStarted, webWorkersSupported);
+                            }
                         }
                     }
                 }
@@ -164,55 +169,53 @@ define(function(require) {
 // Application logic.
 // ============================================================================
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             //Create canvas
             var webGLStarted = GEPPETTO.webGLAvailable();
+            var webWorkersSupported = (typeof(Worker) !== "undefined") ? true : false;
 
             //make sure webgl started correctly
-            if(!webGLStarted) {
-                GEPPETTO.FE.update(false);
+            if (!webGLStarted || !webWorkersSupported) {
+                GEPPETTO.FE.notifyInitErrors(webGLStarted, webWorkersSupported);
             }
-            else{
+            else {
                 GEPPETTO.FE.initialEvents();
 
                 //Increment the idle time counter every minute.
                 setInterval(GEPPETTO.Main.idleCheck, 240000); // 1 minute
                 var here = $(this);
                 //Zero the idle timer on mouse movement.
-                here.mousemove(function(e) {
-                    if(GEPPETTO.Main.idleTime > -1){
+                here.mousemove(function (e) {
+                    if (GEPPETTO.Main.idleTime > -1) {
                         GEPPETTO.Main.idleTime = 0;
                     }
                 });
-                here.keypress(function(e) {
-                    if(GEPPETTO.Main.idleTime > -1){
+                here.keypress(function (e) {
+                    if (GEPPETTO.Main.idleTime > -1) {
                         GEPPETTO.Main.idleTime = 0;
                     }
                 });
 
-                var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-
-                //Initialize Geppetto
+                //Initialize websocket functionality
                 GEPPETTO.Main.init();
 
-                //FIXME: This logic has to move elsewhere. Console and Experiment tabs need to be encapsulated into components.
                 var visibleExperiments = false;
                 $('#experimentsButton').click(function (e) {
-                    if(!visibleExperiments){
+                    if (!visibleExperiments) {
                         $('#console').hide();
                         $('#experiments').show();
                         $(this).tab('show');
                         visibleExperiments = true;
-                    }else{
+                    } else {
                         $('#experiments').hide();
-                        visibleExperiments= false;
+                        visibleExperiments = false;
                     }
                 });
 
                 $('#consoleButton').click(function (e) {
-                    $('#console').show()
-                    $('#experiments').hide()
-                    $(this).tab('show')
+                    $('#console').show();
+                    $('#experiments').hide();
+                    $(this).tab('show');
                     visibleExperiments = false;
                 });
 
@@ -221,9 +224,9 @@ define(function(require) {
                     minHeight: 100,
                     autoHide: true,
                     maxHeight: 400,
-                    resize: function(event, ui) {
-                        if(ui.size.height > ($("#footerHeader").height()*.75)){
-                            $("#experiments").height($("#footerHeader").height()*.75);
+                    resize: function (event, ui) {
+                        if (ui.size.height > ($("#footerHeader").height() * .75)) {
+                            $("#experiments").height($("#footerHeader").height() * .75);
                             event.preventDefault();
                         }
                         $('#experiments').resize();

@@ -355,15 +355,6 @@ define(function (require) {
                 "icon": "fa-info-circle",
                 "label": "Info",
                 "tooltip": "Info"
-            },
-            "delete": {
-                "id": "delete",
-                "actions": [
-                    "$instance$.delete()"
-                ],
-                "icon": "fa-trash-o",
-                "label": "Delete",
-                "tooltip": "Delete"
             }
         }
     };

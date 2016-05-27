@@ -35,11 +35,11 @@
 	font-weight: 200;
 	color: white;
 	overflow: auto !important;
-    -webkit-user-select: text;
-    -khtml-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
 }
 
 .popup a {
@@ -77,7 +77,7 @@
 
 .popup-icon-link {
 	color: #9bafff;
-	font-size: 15px; 
+	font-size: 15px;
 	margin-right: 2px;
 	margin-left: 2px;
 }
@@ -97,8 +97,10 @@
 	cursor: pointer;
 	clear: both;
 	float: left;
+	text-transform: capitalize;
 	margin-bottom: 5px;
 	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 .popup-title:hover {

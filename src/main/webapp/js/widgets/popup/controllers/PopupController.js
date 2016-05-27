@@ -46,6 +46,7 @@ define(function (require) {
 
         initialize: function () {
             this.widgets = Array();
+            this.history = [];
         },
 
         /**

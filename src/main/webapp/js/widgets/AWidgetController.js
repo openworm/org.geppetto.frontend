@@ -32,7 +32,7 @@
  *******************************************************************************/
 /**
  *
- * Base Widget Class, all widgets extend this class.
+ * Base widget controller, all widget controllers extend this
  * @module Widgets/Widget
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */

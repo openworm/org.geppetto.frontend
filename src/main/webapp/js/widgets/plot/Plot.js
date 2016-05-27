@@ -44,6 +44,7 @@ define(function (require) {
 
     return Widget.View.extend({
         plot: null,
+        functionNode: false,
         datasets: [],
         limit: 400,
         options: null,
@@ -106,9 +107,7 @@ define(function (require) {
          * @param {Object} options - Object with options for the plot widget
          */
         initialize: function (options) {
-            this.id = options.id;
-            this.name = options.name;
-            this.visible = options.visible;
+        	Widget.View.prototype.initialize.call(this, options);
             this.datasets = [];
             this.options = jQuery.extend(true, {}, this.defaultPlotOptions);
             this.render();
@@ -199,6 +198,8 @@ define(function (require) {
          * @param {Object} options - options for the plotting widget, if null uses default
          */
         plotData: function (data, options) {
+            this.controller.addToHistory("Plot "+data.getInstancePath(),"plotData",[data]);
+
             if (!$.isArray(data)) {
                 data = [data];
             }
@@ -332,6 +333,7 @@ define(function (require) {
         },
 
         plotXYData: function (dataY, dataX, options) {
+            this.controller.addToHistory("Plot "+dataY.getId()+"/"+dataX.getId(),"plotXYData",[dataY,dataX,options]);
 
             // If no options specify by user, use default options
             if (options != null) {
@@ -412,65 +414,65 @@ define(function (require) {
          * Updates a data set, use for time series
          */
         updateDataSet: function (step, playAll) {
-            if (!this.initialized) {
-                this.clean(playAll);
-            }
             var plotHolder = $("#" + this.id);
-
-            for (var key in this.datasets) {
-
-                if (this.options.playAll) {
-                    //we simply set the whole time series
-                    this.datasets[key].data = this.getTimeSeriesData(this.datasets[key].variable);
+            if (!this.functionNode) {
+                if (!this.initialized) {
+                    this.clean(playAll);
                 }
-                else {
-                    var newValue = this.datasets[key].variable.getTimeSeries()[step];
+                for (var key in this.datasets) {
 
-                    var oldData = this.datasets[key].data;
-                    var reIndex = false;
-
-                    if (oldData.length >= this.limit) {
-                        //this happens when we reach the end of the width of the plot
-                        //i.e. when we have already put all the points that it can contain
-                        oldData.splice(0, 1);
-                        reIndex = true;
-                    }
-
-                    oldData.push([oldData.length, newValue]);
-
-                    if (reIndex) {
-                        // re-index data
-                        var indexedData = [];
-                        for (var index = 0, len = oldData.length; index < len; index++) {
-                            var value = oldData[index][1];
-                            indexedData.push([index, value]);
-                        }
-
-                        this.datasets[key].data = indexedData;
+                    if (this.options.playAll) {
+                        //we simply set the whole time series
+                        this.datasets[key].data = this.getTimeSeriesData(this.datasets[key].variable, window.time);
                     }
                     else {
-                        this.datasets[key].data = oldData;
+                        var newValue = this.datasets[key].variable.getTimeSeries()[step];
+
+                        var oldData = this.datasets[key].data;
+                        var reIndex = false;
+
+                        if (oldData.length >= this.limit) {
+                            //this happens when we reach the end of the width of the plot
+                            //i.e. when we have already put all the points that it can contain
+                            oldData.splice(0, 1);
+                            reIndex = true;
+                        }
+
+                        oldData.push([oldData.length, newValue]);
+
+                        if (reIndex) {
+                            // re-index data
+                            var indexedData = [];
+                            for (var index = 0, len = oldData.length; index < len; index++) {
+                                var value = oldData[index][1];
+                                indexedData.push([index, value]);
+                            }
+
+                            this.datasets[key].data = indexedData;
+                        }
+                        else {
+                            this.datasets[key].data = oldData;
+                        }
+                    }
+
+                    this.updateAxis(key);
+                }
+
+
+                if (this.plot != null) {
+                    if (this.plot.getOptions().yaxes[0].max == -9999999) {
+                        //we had no data the first time plotdata was called so we create the plot
+                        this.plot = $.plot(plotHolder, this.datasets, this.options);
+                    }
+                    else {
+                        this.plot.setData(this.datasets);
+                        this.plot.draw();
                     }
                 }
-
-                this.updateAxis(key);
-            }
-
-
-            if (this.plot != null) {
-                if (this.plot.getOptions().yaxes[0].max == -9999999) {
-                    //we had no data the first time plotdata was called so we create the plot
+                else {
                     this.plot = $.plot(plotHolder, this.datasets, this.options);
                 }
-                else {
-                    this.plot.setData(this.datasets);
-                    this.plot.draw();
-                }
             }
-            else {
-                this.plot = $.plot(plotHolder, this.datasets, this.options);
-            }
-
         }
         ,
 
@@ -515,6 +517,198 @@ define(function (require) {
             return unitLabel;
         }
         ,
+
+
+        /**
+         * Resets the plot widget, deletes all the data series but does not
+         * destroy the widget window.
+         *
+         * @command resetPlot()
+         */
+        resetPlot: function () {
+            if (this.plot != null) {
+                this.datasets = [];
+                this.options = jQuery.extend(true, {}, this.defaultPlotOptions);
+                var plotHolder = $("#" + this.id);
+                this.plot = $.plot(plotHolder, this.datasets, this.options);
+            }
+            return this;
+        },
+
+        /**
+         *
+         * Set the options for the plotting widget
+         *
+         * @command setOptions(options)
+         * @param {Object} options - options to modify the plot widget
+         */
+        setOptions: function (options) {
+            jQuery.extend(true, this.options, this.defaultPlotOptions, options);
+            if (options.xaxis && options.xaxis.max) {
+                this.limit = options.xaxis.max;
+            }
+
+            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+            return this;
+        },
+
+        clean: function (playAll) {
+            if (!this.functionNode) {
+                this.options.playAll = playAll;
+                this.cleanDataSets();
+                if (!playAll) {
+                    this.options.xaxis.show = false;
+                    this.options.xaxis.max = this.limit;
+                    this.options.crosshair = {};
+                    if (this.options.grid) {
+                        this.options.grid.hoverable = false;
+                        this.options.grid.autoHighlight = true;
+                    }
+                    $("#" + this.id).addClass("plot-without-xaxis");
+                }
+                else {
+                    this.options.xaxis.show = true;
+                    this.options.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
+                    if (this.options.crosshair) {
+                        this.options.crosshair.mode = "x";
+                    }
+                    if (this.options.grid) {
+                        this.options.grid.hoverable = true;
+                        this.options.grid.autoHighlight = false;
+                    }
+                    $("#" + this.id).removeClass("plot-without-xaxis");
+                    //enables updating the legend on mouse hover, still few bugs
+
+                }
+                this.plot = $.plot($("#" + this.id), this.datasets, this.options);
+            }
+            this.initialized = true;
+        },
+
+        /**
+         * Retrieve the data sets for the plot
+         * @returns {Array}
+         */
+        getDataSets: function () {
+            return this.datasets;
+        },
+
+        /**
+         * Resets the datasets for the plot
+         */
+        cleanDataSets: function () {
+            // update corresponding data set
+            for (var key = 0; key < this.datasets.length; key++) {
+                this.datasets[key].data = [[]];
+            }
+        },
+
+        /**
+         * Initialize legend
+         */
+        initializeLegend: function (labelFormatterFunction) {
+
+            //set label legends to shorter label
+            this.options.legend = {backgroundOpacity: 0, labelFormatter: labelFormatterFunction};
+
+            //fix conflict between jquery and bootstrap tooltips
+            $.widget.bridge('uitooltip', $.ui.tooltip);
+
+        },
+
+        /**
+         * Sets the legend for a variable
+         *
+         * @command setLegend(variable, legend)
+         * @param {Object} instance - variable to change display label in legends
+         * @param {String} legend - new legend name
+         */
+        setLegend: function (instance, legend) {
+            //Check if it is a string or a geppetto object
+            var instancePath = instance;
+            if ((typeof instance) != "string") {
+                instancePath = instance.getInstancePath();
+            }
+
+            this.labelsMap[instancePath] = legend;
+            return this;
+        },
+
+        /**
+         * Sets a label next to the Y Axis
+         *
+         * @command setAxisLabel(labelY, labelX)
+         * @param {String} labelY - Label to use for Y Axis
+         * @param {String} labelX - Label to use for X Axis
+         */
+        setAxisLabel: function (labelY, labelX) {
+            if (this.options.yaxis == undefined) {
+                this.options["yaxis"] = {};
+            }
+            this.options.yaxis.axisLabel = labelY;
+            if (this.options.xaxis == undefined) {
+                this.options["xaxis"] = {};
+            }
+            this.options.xaxis.axisLabel = labelX;
+
+            return this;
+        },
+
+        /**
+         * Takes a FunctionNode and plots the expression and set the attributes from the plot metadata information
+         *
+         * @command plotFunctionNode(functionNode)
+         * @param {Node} functionNode - Function Node to be displayed
+         */
+        plotFunctionNode: function (functionNode) {
+
+            this.functionNode = true;
+
+            //Check there is metada information to plot
+            if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
+
+                //Read the information to plot
+                var expression = functionNode.getInitialValues()[0].value.dynamics.expression.expression;
+                var arguments = functionNode.getInitialValues()[0].value.dynamics.arguments;
+                var plotMetadata = functionNode.getInitialValues()[0].value.dynamics.functionPlot;
+
+                var finalValue = parseFloat(plotMetadata["finalValue"]);
+                var initialValue = parseFloat(plotMetadata["initialValue"]);
+                var stepValue = parseFloat(plotMetadata["stepValue"]);
+
+                //Create data series for plot
+                //TODO: What are we going to do if we have two arguments?
+                var values = [];
+                for (var i = initialValue; i < finalValue; i = i + stepValue) {
+                    values.push([i]);
+                }
+
+                var plotTitle = plotMetadata["title"];
+                var XAxisLabel = plotMetadata["xAxisLabel"];
+                var YAxisLabel = plotMetadata["yAxisLabel"];
+                //Generate options from metadata information
+                var options = {
+                    xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
+                    yaxis: {axisLabel: YAxisLabel},
+                    legendText: plotTitle
+                };
+
+                //Convert from single expresion to parametired expresion (2x -> f(x)=2x)
+                var parameterizedExpression = "f(";
+                for (var argumentIndex in arguments) {
+                    parameterizedExpression += arguments[argumentIndex].argument + ",";
+                }
+                parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
+                parameterizedExpression += ") =" + expression;
+
+                //Plot data function
+                this.plotDataFunction(parameterizedExpression, values, options);
+
+                //Set title to widget
+                this.setName(plotTitle);
+            }
+            return this;
+        },
 
         /**
          * Plots a function against a data series
@@ -562,204 +756,23 @@ define(function (require) {
             }
 
             //Plot values
-            this.plotXYData(data);
-            return this;
-        }
-        ,
-
-        /**
-         * Resets the plot widget, deletes all the data series but does not
-         * destroy the widget window.
-         *
-         * @command resetPlot()
-         */
-        resetPlot: function () {
-            if (this.plot != null) {
-                this.datasets = [];
-                this.options = jQuery.extend(true, {}, this.defaultPlotOptions);
-                var plotHolder = $("#" + this.id);
-                this.plot = $.plot(plotHolder, this.datasets, this.options);
-            }
-            return this;
-        }
-        ,
-
-        /**
-         *
-         * Set the options for the plotting widget
-         *
-         * @command setOptions(options)
-         * @param {Object} options - options to modify the plot widget
-         */
-        setOptions: function (options) {
-            jQuery.extend(true, this.options, this.defaultPlotOptions, options);
-            if (options.xaxis && options.xaxis.max) {
-                this.limit = options.xaxis.max;
-            }
-
-            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
-            return this;
-        }
-        ,
-
-        clean: function (playAll) {
-            this.options.playAll = playAll;
-            this.cleanDataSets();
-            if (!playAll) {
-                this.options.xaxis.show = false;
-                this.options.xaxis.max = this.limit;
-                this.options.crosshair = {};
-                this.options.grid.hoverable = false;
-                this.options.grid.autoHighlight = true;
-                $("#" + this.id).addClass("plot-without-xaxis");
-            }
-            else {
-                this.options.xaxis.show = true;
-                this.options.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
-                this.options.crosshair.mode = "x";
-                this.options.grid.hoverable = true;
-                this.options.grid.autoHighlight = false;
-                $("#" + this.id).removeClass("plot-without-xaxis");
-                //enables updating the legend on mouse hover, still few bugs
-
-            }
-            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
-            this.initialized = true;
-
-        }
-        ,
-
-        /**
-         * Retrieve the data sets for the plot
-         * @returns {Array}
-         */
-        getDataSets: function () {
-            return this.datasets;
-        }
-        ,
-
-        /**
-         * Resets the datasets for the plot
-         */
-        cleanDataSets: function () {
-            // update corresponding data set
-            for (var key = 0; key < this.datasets.length; key++) {
-                this.datasets[key].data = [[]];
-            }
-        }
-        ,
-
-        /**
-         * Initialize legend
-         */
-        initializeLegend: function (labelFormatterFunction) {
-
-            //set label legends to shorter label
-            this.options.legend = {backgroundOpacity: 0, labelFormatter: labelFormatterFunction};
-
-            //fix conflict between jquery and bootstrap tooltips
-            $.widget.bridge('uitooltip', $.ui.tooltip);
-
-        }
-        ,
-
-        /**
-         * Sets the legend for a variable
-         *
-         * @command setLegend(variable, legend)
-         * @param {Object} instance - variable to change display label in legends
-         * @param {String} legend - new legend name
-         */
-        setLegend: function (instance, legend) {
-            //Check if it is a string or a geppetto object
-            var instancePath = instance;
-            if ((typeof instance) != "string") {
-                instancePath = instance.getInstancePath();
-            }
-
-            this.labelsMap[instancePath] = legend;
-            return this;
-        }
-        ,
-
-        /**
-         * Sets a label next to the Y Axis
-         *
-         * @command setAxisLabel(labelY, labelX)
-         * @param {String} labelY - Label to use for Y Axis
-         * @param {String} labelX - Label to use for X Axis
-         */
-        setAxisLabel: function (labelY, labelX) {
-            if (this.options.yaxis == undefined) {
-                this.options["yaxis"] = {};
-            }
-            this.options.yaxis.axisLabel = labelY;
-            if (this.options.xaxis == undefined) {
-                this.options["xaxis"] = {};
-            }
-            this.options.xaxis.axisLabel = labelX;
-
-            return this;
-        }
-        ,
-
-        /**
-         * Takes a FunctionNode and plots the expression and set the attributes from the plot metadata information
-         *
-         * @command plotFunctionNode(functionNode)
-         * @param {Node} functionNode - Function Node to be displayed
-         */
-        plotFunctionNode: function (functionNode) {
-
-//        	node.getInitialValues()[0].value.arguments
-//        	node.getInitialValues()[0].value.expression.expression
-
-            //Check there is metada information to plot
-            if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
-
-                //Read the information to plot
-                var expression = functionNode.getInitialValues()[0].value.dynamics.expression.expression;
-                var arguments = functionNode.getInitialValues()[0].value.dynamics.arguments;
-                var plotMetadata = functionNode.getInitialValues()[0].value.dynamics.functionPlot;
-
-                var finalValue = parseFloat(plotMetadata["finalValue"]);
-                var initialValue = parseFloat(plotMetadata["initialValue"]);
-                var stepValue = parseFloat(plotMetadata["stepValue"]);
-
-                //Create data series for plot
-                //TODO: What are we going to do if we have two arguments?
-                var values = [];
-                for (var i = initialValue; i < finalValue; i = i + stepValue) {
-                    values.push([i]);
+            if (options != null) {
+                this.options = options;
+                if (this.options.xaxis.max > this.limit) {
+                    this.limit = this.options.xaxis.max;
                 }
-
-                var plotTitle = plotMetadata["title"];
-                var XAxisLabel = plotMetadata["xAxisLabel"];
-                var YAxisLabel = plotMetadata["yAxisLabel"];
-                //Generate options from metadata information
-                options = {
-                    xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
-                    yaxis: {axisLabel: YAxisLabel},
-                    legendText: plotTitle
-                };
-
-                //Convert from single expresion to parametired expresion (2x -> f(x)=2x)
-                var parameterizedExpression = "f(";
-                for (var argumentIndex in arguments) {
-                    parameterizedExpression += arguments[argumentIndex].argument + ",";
-                }
-                parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
-                parameterizedExpression += ") =" + expression;
-
-                //Plot data function
-                this.plotDataFunction(parameterizedExpression, values, options);
-
-                //Set title to widget
-                this.setName(plotTitle);
             }
+
+            this.datasets.push({
+                label: data.name,
+                data: data.data
+            });
+
+            var plotHolder = $("#" + this.id);
+
+            this.plot = $.plot(plotHolder, this.datasets, this.options);
             return this;
         }
-        ,
 
     });
 })

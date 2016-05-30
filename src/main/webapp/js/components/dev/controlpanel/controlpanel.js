@@ -467,6 +467,13 @@ define(function (require) {
         componentWillMount: function () {
             GEPPETTO.ControlPanel = this;
         },
+        
+        close: function () {
+            // hide any color picker that is still visible
+            $(".colorpicker-visible").addClass('colorpicker-hidden').removeClass('colorpicker-visible');
+            // hide control panel
+            $("#controlpanel").hide();
+        },
 
         componentDidMount: function () {
 
@@ -474,6 +481,14 @@ define(function (require) {
             var pKey = 80;
 
             var that = this;
+            
+            $("#controlpanel").click(function(e){
+            	if (e.target==e.delegateTarget){
+            		//we want this only to happen if we clicked on the div directly and not on anything therein contained
+            		that.close();
+            	}
+            });
+            
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == pKey) {
                     // show control panel
@@ -487,10 +502,7 @@ define(function (require) {
 
             $(document).keydown(function (e) {
                 if ($("#controlpanel").is(':visible') && e.keyCode == escape) {
-                    // hide any color picker that is still visible
-                    $(".colorpicker-visible").addClass('colorpicker-hidden').removeClass('colorpicker-visible');
-                    // hide control panel
-                    $("#controlpanel").hide();
+                	that.close();
                 }
             });
 

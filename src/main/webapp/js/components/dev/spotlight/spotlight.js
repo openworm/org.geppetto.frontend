@@ -23,6 +23,11 @@ define(function (require) {
         potentialSuggestions: {},
         suggestions: null,
         instances: null,
+        
+        close : function () {
+            $("#spotlight").hide();
+            GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
+        },
 
         componentDidMount: function () {
 
@@ -31,6 +36,13 @@ define(function (require) {
 
             var that = this;
 
+            $("#spotlight").click(function(e){
+            	if (e.target==e.delegateTarget){
+            		//we want this only to happen if we clicked on the div directly and not on anything therein contained
+            		that.close();
+            	}
+            });
+            
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == space) {
                     that.open(GEPPETTO.Resources.SEARCH_FLOW, true);
@@ -39,8 +51,7 @@ define(function (require) {
 
             $(document).keydown(function (e) {
                 if ($("#spotlight").is(':visible') && e.keyCode == escape) {
-                    $("#spotlight").hide();
-                    GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
+                	that.close();
                 }
             });
 

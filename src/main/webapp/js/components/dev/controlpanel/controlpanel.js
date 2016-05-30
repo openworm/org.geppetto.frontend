@@ -483,7 +483,7 @@ define(function (require) {
             var that = this;
             
             $("#controlpanel").click(function(e){
-            	if (e.target==e.delegateTarget){
+            	if (e.target==e.delegateTarget || e.target==$(".griddle-body").children(":first")[0]){
             		//we want this only to happen if we clicked on the div directly and not on anything therein contained
             		that.close();
             	}

@@ -637,6 +637,10 @@ define(function(require)
                 if (GEPPETTO.ControlPanel != undefined) {
                     GEPPETTO.ControlPanel.setData(window.Instances);
                 }
+                // populate spotligh with exploded instances
+                if (GEPPETTO.Spotlight != undefined) {
+                    GEPPETTO.Spotlight.updateData();
+                }
             }
         };
 

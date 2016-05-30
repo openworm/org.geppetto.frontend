@@ -28,6 +28,10 @@ define(function (require) {
             $("#spotlight").hide();
             GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
         },
+        
+        updateData : function() {
+            this.instances.add(GEPPETTO.ModelFactory.allPathsIndexing);
+        },
 
         componentDidMount: function () {
 
@@ -77,12 +81,10 @@ define(function (require) {
                     that.confirmed(datum.label);
                 }
             });
-
+           
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
-
-                that.instances.add(GEPPETTO.ModelFactory.allPathsIndexing);
-
+            	that.updateData();
             });
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions

@@ -433,7 +433,6 @@
 						<sourceFile>src/main/webapp/js/GEPPETTO.Main.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.MenuManager.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.ScriptRunner.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.Share.js</sourceFile>
 					</sourceFiles>
 					<outputDirectory>${basedir}/src/main/webapp/jsdocs</outputDirectory>
 				</configuration>

@@ -575,7 +575,6 @@ define(function (require) {
     require('GEPPETTO.JSEditor')(GEPPETTO);
     require('GEPPETTO.Console')(GEPPETTO);
     require('GEPPETTO.Utility')(GEPPETTO);
-    require('GEPPETTO.Share')(GEPPETTO);
     require('GEPPETTO.MenuManager')(GEPPETTO);
     require('websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
     require('websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);

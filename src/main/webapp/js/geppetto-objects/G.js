@@ -242,45 +242,7 @@ define(function (require) {
                 return returnMessage;
             },
 
-            /**
-             * Show or hide share bar
-             *
-             * @command G.showShareBar(mode)
-             * @param {boolean} mode - "true" to show, "false" to hide.
-             */
-            showShareBar: function (mode) {
-                var returnMessage;
-
-                if (mode) {
-                    returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;
-
-                    //show share bar
-                    if (!GEPPETTO.Share.isVisible()) {
-                        $("#geppetto-share").toggleClass("clicked");
-                        $("#geppetto-share").slideToggle();
-                        GEPPETTO.Share.setVisible(mode);
-                    }
-                    //share bar is already visible, nothing to see here
-                    else {
-                        returnMessage = GEPPETTO.Resources.SHAREBAR_ALREADY_VISIBLE;
-                    }
-                }
-                else {
-                    returnMessage = GEPPETTO.Resources.SHOW_SHAREBAR;
-                    //hide share bar
-                    if (GEPPETTO.Share.isVisible()) {
-                        $("#geppetto-share").toggleClass("clicked");
-                        $("#geppetto-share").slideToggle();
-                        GEPPETTO.Share.setVisible(mode);
-                    }
-                    //share bar already hidden
-                    else {
-                        returnMessage = GEPPETTO.Resources.SHAREBAR_ALREADY_HIDDEN;
-                    }
-                }
-
-                return returnMessage;
-            },
+            
 
             /**
              * Show or hide help window using command
@@ -309,51 +271,6 @@ define(function (require) {
                     }
                 }
                 return returnMessage;
-            },
-
-            /**
-             * Opens window to share geppetto on twitter
-             * @command G.shareOnTwitter()
-             */
-            shareOnTwitter: function () {
-                var shareURL = 'http://geppetto.org';
-
-                //TODO: How to share experiment on twitter? Used to be Sim URL
-                //shareURL = "http://live.geppeto.org//?sim=" + GEPPETTO.Simulation.simulationURL;
-
-                GEPPETTO.Share.twitter(shareURL, 'Check out Geppetto, the opensource simulation platform powering OpenWorm!');
-
-                return GEPPETTO.Resources.SHARE_ON_TWITTER;
-            },
-
-            /**
-             * Opens window to share facebook on twitter
-             *
-             * @command - G.shareOnFacebook()
-             */
-            shareOnFacebook: function () {
-                var shareURL = 'http://geppetto.org';
-
-                //TODO: How to share experiment url in FB, used to be simulation URL
-                //shareURL = "http://live.geppeto.org/?sim=" + GEPPETTO.Simulation.simulationURL;
-
-                GEPPETTO.Share.facebook(shareURL, 'Check out Geppetto, the opensource simulation platform powering OpenWorm!', 'http://www.geppetto.org/images/sph9.png', '');
-
-                return GEPPETTO.Resources.SHARE_ON_FACEBOOK;
-            },
-
-            /**
-             * Shows a popup widget, used to display a message.
-             *
-             * @param {Integer} x - x coordinate of popup widget position
-             * @param {Integer} y - y coordinate of popup widget position
-             * @param {Strin} message - Message to display inside widget
-             */
-            showPopup: function (x, y, message) {
-                var newWidget = GEPPETTO.WidgetFactory.addWidget(GEPPETTO.Widgets.POPUP);
-                newWidget.setPosition(x, y);
-                newWidget.setMessage(message);
-                newWidget.show();
             },
 
             /**

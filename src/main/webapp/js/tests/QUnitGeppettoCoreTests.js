@@ -225,13 +225,6 @@ define(function (require) {
 
             equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
 
-            G.showShareBar(true);
-
-            equal(GEPPETTO.Share.isVisible(), true, "ShareBar Visible");
-
-            G.showShareBar(false);
-
-            equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
         });
 
         QUnit.module("Test Model Factory");

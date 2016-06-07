@@ -72,7 +72,7 @@ define(function (require) {
          * Get parameters for this Simulator Configuration
          *
          * @command SimulatorConfig.getParameters()
-         * @returns {Array} Array of ParameterNodes
+         * @returns {Array} Array of parameters
          */
         getParameters: function () {
             return this.parameters;
@@ -82,7 +82,7 @@ define(function (require) {
          * Get parameter for this Simulator Configuration
          *
          * @command SimulatorConfig.getSimulatorParameter()
-         * @returns {Array} Array of ParameterNodes
+         * @returns {Array} Array of parameters
          */
         getSimulatorParameter: function (parameter) {
             return this.parameters[parameter];

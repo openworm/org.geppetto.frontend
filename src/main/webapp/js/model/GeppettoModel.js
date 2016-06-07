@@ -43,6 +43,7 @@ define(function (require) {
     return ObjectWrapper.Model.extend({
         variables: [],
         libraries: [],
+        datasources: [],
         id: '',
 
         /**
@@ -53,6 +54,7 @@ define(function (require) {
         initialize: function (options) {
             this.set({"variables": (options.variables != undefined) ? options.variables : []});
             this.set({"libraries": (options.libraries != undefined) ? options.libraries : []});
+            this.set({"datasources": (options.datasources != undefined) ? options.datasources : []});
             this.set({"id": options.id});
             this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
@@ -94,7 +96,19 @@ define(function (require) {
         },
 
         /**
-         * Get combined children
+         * Get datasources
+         *
+         * @command GeppettoModel.getDatasources()
+         *
+         * @returns {List<Datasource>} - List of datasource objects
+         *
+         */
+        getDatasources: function () {
+            return this.get('datasources');
+        },
+
+        /**
+         * Get combined list of all children
          *
          * @command GeppettoModel.getChildren()
          *
@@ -102,7 +116,7 @@ define(function (require) {
          *
          */
         getChildren: function () {
-            return this.get("variables").concat(this.get("libraries"));
+            return this.get("variables").concat(this.get("libraries").concat(this.get("datasources")));
         },
     });
 });

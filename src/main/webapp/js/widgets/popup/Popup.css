@@ -31,7 +31,98 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 .popup {
-    font-size: 14px;
-    font-weight: 200;
-    color: #fc6320;
+	font-size: 14px;
+	font-weight: 200;
+	color: white;
+	overflow: auto !important;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+.popup a {
+	color: #fc6320;
+}
+
+.popup a:hover {
+	color: #fc401a;
+	text-decoration: none;
+}
+
+.popup-image {
+	margin: 0 auto;
+	text-align: center;
+	color: white;
+	clear: both;
+}
+
+.invert {
+	-webkit-filter: invert(22%);
+	filter: invert(22%);
+}
+
+.popup-slick-image {
+	margin: 0 auto;
+	text-align: center;
+	color: white;
+}
+
+.popup-icon {
+	color: #7F98FF;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.popup-icon-link {
+	color: #9bafff;
+	font-size: 15px;
+	margin-right: 2px;
+	margin-left: 2px;
+}
+
+.popup-icon-link:hover {
+	color: #8098f9;
+}
+
+.popup-slick {
+	clear: both;
+	margin-top: 40px;
+}
+
+.popup-title {
+	font-weight: 600;
+	color: #fc6320;
+	cursor: pointer;
+	clear: both;
+	float: left;
+	text-transform: capitalize;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.popup-title:hover {
+	color: #fc401a;
+}
+
+.popup-chevron {
+	margin-left: 10px;
+	margin-top: 7px;
+	float: right;
+	color: #8A7F7F;
+	cursor: pointer;
+}
+
+.popup-html {
+	clear: both;
+}
+
+.popup-text {
+	font-size: 14px;
+	font-weight: 200;
+	text-align: justify;
+	color: white;
+	clear: both;
 }

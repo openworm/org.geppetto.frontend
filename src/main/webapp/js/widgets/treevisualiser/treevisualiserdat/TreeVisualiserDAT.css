@@ -225,22 +225,4 @@ div[id^='TreeVisualiserDAT'] {
 
 #tvIcons:hover {
 	color: #FF6700;
-}	
-
-
-/*
-.dg .cr.string.visualobjectreferencenodetv {
-    border-left: 3px solid #a462ff;
 }
-
-.dg .cr.string.visualobjectreferencenodetv input[type=text] {
-    color: #a462ff;
-}
-
-.dg .cr.string.visualgroupelementnodetv {
-    border-left: 3px solid #a462ff;
-}
-
-.dg .cr.string.visualgroupelementnodetv input[type=text] {
-    color: #a462ff;
-}*/

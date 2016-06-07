@@ -51,7 +51,7 @@ define(function (require) {
         /**
          * Get the type of tree this is
          *
-         * @command ParameterSpecificationNode.getUnit()
+         * @command Parameter.getUnit()
          * @returns {String} Unit for quantity
          */
         getUnit: function () {
@@ -76,7 +76,7 @@ define(function (require) {
         /**
          * Get value of quantity
          *
-         * @command ParameterSpecificationNode.getValue()
+         * @command Parameter.getValue()
          * @returns {String} Value of quantity
          */
         getValue: function () {
@@ -112,7 +112,7 @@ define(function (require) {
         /**
          * Get scaling factor
          *
-         * @command ParameterSpecificationNode.getScalingFactor()
+         * @command Parameter.getScalingFactor()
          * @returns {String} Scaling Factor for value and unit
          */
         getScalingFactor: function () {

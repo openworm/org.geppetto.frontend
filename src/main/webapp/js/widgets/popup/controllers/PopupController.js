@@ -46,6 +46,7 @@ define(function (require) {
 
         initialize: function () {
             this.widgets = Array();
+            this.history = [];
         },
 
         /**
@@ -57,7 +58,7 @@ define(function (require) {
             var name = id;
 
             //create popup widget
-            var p = window[name] = new Popup({id: id, name: name, visible: true});
+            var p = window[name] = new Popup({id: id, name: name, visible: true, controller: this});
             p.setSize(394,490);
             //create help command for plot
             p.help = function () {
@@ -66,6 +67,7 @@ define(function (require) {
 
             //store in local stack
             this.widgets.push(p);
+
 
             GEPPETTO.WidgetsListener.subscribe(this, id);
 

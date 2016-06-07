@@ -37,4 +37,21 @@
  * @author Jesus Martinez (jesus@metacell.us)
  */
 //Load PopupsController and other classes using GEPPETTO
-loadCss("geppetto/js/widgets/popup/Popup.css");
+
+require.config({
+    paths: {
+        "slick": "widgets/popup/vendor/slick.min"
+    }
+});
+
+var reqs = [];
+reqs.push("slick");
+
+
+require(reqs, function () {
+	loadCss("geppetto/js/widgets/popup/Popup.css");
+	loadCss("geppetto/js/widgets/popup/vendor/slick.css");
+	loadCss("geppetto/js/widgets/popup/vendor/slick-theme.css");
+
+});
+

@@ -62,7 +62,7 @@ define(function (require) {
         /**
          * Get variables
          *
-         * @command CompositeVariableNode.getChildren()
+         * @command CompositeVisualType.getChildren()
          *
          * @returns {List<Variable>} - List of variables
          *
@@ -74,7 +74,7 @@ define(function (require) {
         /**
          * Get the visual groups
          *
-         * @command CompositeVariableNode.getVisualGroups()
+         * @command CompositeVisualType.getVisualGroups()
          *
          * @returns {List<VisualGroup>} - List of variables
          *

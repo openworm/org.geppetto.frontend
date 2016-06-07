@@ -47,10 +47,21 @@ define(['jquery'], function (require) {
         /**
          * Get value of quantity
          *
-         * @command VariableNode.getTimeSeries()
+         * @command Variable.getTimeSeries()
          * @returns {String} Value of quantity
          */
         getTimeSeries: function () {
+            if (!this.timeSeries) {
+                var timeSeries = undefined;
+                var initialValues = this.getVariable().getWrappedObj().initialValues;
+
+                for (var i = 0; i < initialValues.length; i++) {
+                    if (initialValues[i].value.eClass === 'TimeSeries') {
+                        timeSeries = initialValues[i].value.value
+                    }
+                }
+                return timeSeries;
+            }
             return this.timeSeries;
         },
 
@@ -58,7 +69,7 @@ define(['jquery'], function (require) {
         /**
          * Set the time series for the state variable
          *
-         * @command VariableNode.setTimeSeries()
+         * @command Variable.setTimeSeries()
          * @returns {Object} The state variable
          */
         setTimeSeries: function (timeSeries) {
@@ -69,7 +80,7 @@ define(['jquery'], function (require) {
         /**
          * Get the initial value for the state variable
          *
-         * @command VariableNode.getInitialValue()
+         * @command Variable.getInitialValue()
          * @returns {Object} The initial value of the state variable
          */
         getInitialValue: function () {
@@ -80,7 +91,7 @@ define(['jquery'], function (require) {
         /**
          * Get the type of tree this is
          *
-         * @command VariableNode.getUnit()
+         * @command Variable.getUnit()
          * @returns {String} Unit for quantity
          */
         getUnit: function () {
@@ -89,7 +100,7 @@ define(['jquery'], function (require) {
             var initialValues = this.getVariable().getWrappedObj().initialValues;
 
             for (var i = 0; i < initialValues.length; i++) {
-                if (initialValues[i].value.eClass === 'PhysicalQuantity') {
+                if (initialValues[i].value.eClass === 'PhysicalQuantity' || initialValues[i].value.eClass === 'TimeSeries') {
                     unit = initialValues[i].value.unit.unit
                 }
             }
@@ -99,7 +110,7 @@ define(['jquery'], function (require) {
         /**
          * Get watched
          *
-         * @command VariableNode.getWatched()
+         * @command Variable.getWatched()
          * @returns {boolean} true if this variable is being watched
          */
         isWatched: function () {
@@ -110,17 +121,17 @@ define(['jquery'], function (require) {
         /**
          * Set watched
          *
-         * @command VariableNode.setWatched()
+         * @command Variable.setWatched()
          * @param {Boolean} watched - Object with options attributes to initialize node
          */
         setWatched: function (isWatched, updateServer) {
-            if(updateServer==undefined){
-                updateServer=true;
+            if (updateServer == undefined) {
+                updateServer = true;
             }
             if (updateServer && isWatched != this.watched) {
                 GEPPETTO.ExperimentsController.watchVariables([this], isWatched);
             }
-            this.watched=isWatched;
+            this.watched = isWatched;
             return this;
         }
 

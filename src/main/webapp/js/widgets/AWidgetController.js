@@ -32,7 +32,7 @@
  *******************************************************************************/
 /**
  *
- * Base Widget Class, all widgets extend this class.
+ * Base widget controller, all widget controllers extend this
  * @module Widgets/Widget
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
@@ -50,6 +50,7 @@ define(function (require) {
             on: true,
             registeredEvents: null,
             comments: [],
+            history: [],
 
             constructor: function () {
                 // Call the original constructor
@@ -64,6 +65,25 @@ define(function (require) {
              */
             getWidgets: function () {
                 return this.widgets;
+            },
+
+            addToHistory: function (label, method, arguments) {
+                var elementPresentInHistory = false;
+                for (var i = 0; i < this.history.length; i++) {
+                    if (this.history[i].label == label && this.history[i].method == method) {
+                        elementPresentInHistory = true;
+                        //moves it to the first position
+                        this.history.splice(0, 0, this.history.splice(i, 1)[0]);
+                        break;
+                    }
+                }
+                if (!elementPresentInHistory) {
+                    this.history.push({
+                        "label": label,
+                        "method": method,
+                        "arguments": arguments,
+                    });
+                }
             },
 
             /**

@@ -58,10 +58,17 @@ require.config({
         'geppetto': "GEPPETTO",
         'QUnit': 'vendor/qunit',
         react: 'vendor/react',
+        'react-dom': 'vendor/react-dom',
+        griddle: 'vendor/griddle',
         jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',
-        pako: 'vendor/pako.min'
+        pako: 'vendor/pako.min',
+        mathjs: 'vendor/math.min',
+        'QUnitPersistenceTests': 'tests/QUnitPersistenceTests',
+        'QUnitNeuronalTests': 'tests/QUnitNeuronalTests',
+        'QUnitFluidDynamicsTests': 'tests/QUnitFluidDynamicsTests',
+        'QUnitGeppettoCoreTests': 'tests/QUnitGeppettoCoreTests'	
     },
     /*
      * Notes what dependencies are needed prior to loading each library, values on the right
@@ -69,7 +76,7 @@ require.config({
      * to that object in here.
      */
     shim: {
-        'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
+        'vendor/jquery-ui.min': ["jquery"],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/ColladaLoader': ['three'],
@@ -86,6 +93,7 @@ require.config({
         'widgets/plot/vendor/jquery.flot.min': ['jquery'],
         'widgets/plot/vendor/jquery.flot.resize.min': ['widgets/plot/vendor/jquery.flot.min'],
         'widgets/plot/vendor/jquery.flot.axislabels.min': ['widgets/plot/vendor/jquery.flot.min'],
+        'geppetto': ['three'],
         'QUnit': {
             exports: 'QUnit',
             deps: ['geppetto'],
@@ -93,7 +101,24 @@ require.config({
                 QUnit.config.autoload = false;
                 QUnit.config.autostart = false;
             }
+        },
+        'QUnitPersistenceTests':{
+        	exports: 'QUnitPersistenceTests',
+            deps: ['geppetto']
+        },
+        'QUnitNeuronalTests':{
+        	exports: 'QUnitNeuronalTests',
+            deps: ['geppetto']
+        },
+        'QUnitFluidDynamicsTests':{
+        	exports: 'QUnitFluidDynamicsTests',
+            deps: ['geppetto']
+        },
+        'QUnitGeppettoCoreTests':{
+        	exports: 'QUnitGeppettoCoreTests',
+            deps: ['geppetto']
         }
+        
 
     }
 });
@@ -109,7 +134,7 @@ jqueryLib.push("d3");
 jqueryLib.push("vendor/THREEx.KeyboardState");
 jqueryLib.push("vendor/ColladaLoader");
 jqueryLib.push("vendor/OBJLoader");
-jqueryLib.push("vendor/jquery-ui-1.10.3.custom.min");
+jqueryLib.push("vendor/jquery-ui.min");
 jqueryLib.push("vendor/TrackballControls");
 jqueryLib.push("vendor/ColorConverter");
 jqueryLib.push("vendor/bootstrap.min");
@@ -135,12 +160,11 @@ require(jqueryLib, function ($) {
         window.help = GEPPETTO.Utility.help;
 
         require(
-            ['QUnit', 'tests/QUnitPersistenceTests', 'tests/QUnitNeuronalTests', 'tests/QUnitNeuronalSimulationTests',
-                'tests/QUnitFluidDynamicsTests', 'tests/QUnitGeppettoCoreTests'],
-            function (QUnit, persistenceTests, neuronal, neuronalSimulation, fluid, core) {
+            ['QUnit', 'QUnitPersistenceTests', 'QUnitNeuronalTests',
+                'QUnitFluidDynamicsTests', 'QUnitGeppettoCoreTests'],
+            function (QUnit, persistenceTests, neuronal, fluid, core) {
                 persistenceTests.run();
                 neuronal.run();
-                neuronalSimulation.run();
                 fluid.run();
                 core.run();
                 // start QUnit.

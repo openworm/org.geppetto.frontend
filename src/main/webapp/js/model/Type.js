@@ -42,7 +42,7 @@ define(function (require) {
 
     return ObjectWrapper.Model.extend({
         visualType: null,
-        superType: null,
+        superType: [],
         capabilities: [],
 
         /**
@@ -53,7 +53,7 @@ define(function (require) {
         initialize: function (options) {
             this.set({"wrappedObj": options.wrappedObj});
             this.set({"visualType": options.visualType});
-            this.set({"superType": options.superType});
+            this.set({"superType": (options.superType != 'undefined') ? options.superType : []});
             this.set({"parent": options.parent});
 
             // capability list is for private use
@@ -69,7 +69,6 @@ define(function (require) {
          *
          */
         getDefaultValue: function () {
-            // TODO: fetch from the right place
             return this.get('wrappedObj').defaultValue;
         },
 
@@ -78,12 +77,17 @@ define(function (require) {
          *
          * @command Type.getSuperType()
          *
-         * @returns {Type} - Super type
+         * @returns {List<Type>} - Super type
          *
          */
         getSuperType: function () {
-            // TODO: fetch from the right place
-            return this.get('superType');
+            var superType = this.get('superType');
+
+            if(superType != undefined && this.get('superType').length == 1){
+                superType = superType[0];
+            }
+
+            return superType;
         },
 
         /**
@@ -95,7 +99,6 @@ define(function (require) {
          *
          */
         isAbstract: function () {
-            // TODO: fetch from the right place
             return this.get('wrappedObj').abstract;
         },
 

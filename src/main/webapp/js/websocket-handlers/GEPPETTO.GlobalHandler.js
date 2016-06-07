@@ -51,7 +51,6 @@ define(function (require) {
             ERROR: "generic_error",
             INFO_MESSAGE: "info_message",
             GEPPETTO_VERSION: "geppetto_version",
-            OBSERVER_MODE: "observer_mode_alert",
             READ_URL_PARAMS: "read_url_parameters",
             SCRIPT_FETCHED: "script_fetched",
             SERVER_AVAILABLE: "server_available",
@@ -120,11 +119,6 @@ define(function (require) {
             var version = payload.geppetto_version;
             var geppettoVersion = GEPPETTO.Resources.GEPPETTO_VERSION_HOLDER.replace("$1", version);
             GEPPETTO.Console.log(geppettoVersion);
-        };
-
-        // Notify user with alert they are now in Observer mode
-        messageHandler[messageTypes.OBSERVER_MODE] = function (payload) {
-            GEPPETTO.FE.observersAlert(GEPPETTO.Resources.OBSERVING_MODE, payload.alertMessage, payload.popoverMessage);
         };
 
         messageHandler[messageTypes.SCRIPT_FETCHED] = function (payload) {

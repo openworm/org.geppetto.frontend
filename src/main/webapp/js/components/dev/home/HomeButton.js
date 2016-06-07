@@ -6,15 +6,6 @@ define(function (require) {
     return React.createClass({
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
 
-        onClick: function() {
-        	var targetWindow = '_blank';
-            if(window.EMBEDDED) {
-            	targetWindow = '_self';
-            }
-            var win = window.open("./", targetWindow);
-        	win.focus();
-        },
-
         componentDidMount: function() {
         },
 
@@ -23,7 +14,14 @@ define(function (require) {
             	label : '',
                 className: 'HomeButton pull-right',
                 icon: 'fa fa-home',
-                onClick: this.onClick
+                onClick: function() {
+                    var targetWindow = '_blank';
+                    if(window.EMBEDDED) {
+                        targetWindow = '_self';
+                    }
+                    var win = window.open("./", targetWindow);
+                    win.focus();
+                }
             };
         }
 

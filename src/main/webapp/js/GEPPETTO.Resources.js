@@ -48,26 +48,26 @@ define(function (require) {
 
         GEPPETTO.Resources = {
 
-            Icon:{
-                "ParameterType":"fa-sign-in",
-                "TextType":"fa-file-text-o",
-                "CompositeType":"fa-align-justify",
-                "ArrayType":"fa-list",
-                "PointerType":"fa-link",
-                "HTMLType":"fa-code",
-                "StateVariableType":"fa-superscript",
-                "DynamicsType":"fa-bolt",
+            Icon: {
+                "ParameterType": "fa-sign-in",
+                "TextType": "fa-file-text-o",
+                "CompositeType": "fa-align-justify",
+                "ArrayType": "fa-list",
+                "PointerType": "fa-link",
+                "HTMLType": "fa-code",
+                "StateVariableType": "fa-superscript",
+                "DynamicsType": "fa-bolt",
             },
 
-            Colour:{
-                "ParameterType":"#0066cc",
-                "TextType":"#10b7bd",
-                "CompositeType":"#2e2a2a",
-                "ArrayType":"#ff5a02",
-                "PointerType":"#10b7bd",
-                "HTMLType":"0xdddddd",
-                "StateVariableType":"#42b6ff",
-                "DynamicsType":"#00cc66",
+            Colour: {
+                "ParameterType": "#0066cc",
+                "TextType": "#10b7bd",
+                "CompositeType": "#2e2a2a",
+                "ArrayType": "#ff5a02",
+                "PointerType": "#10b7bd",
+                "HTMLType": "0xdddddd",
+                "StateVariableType": "#42b6ff",
+                "DynamicsType": "#00cc66",
             },
 
             COLORS: {
@@ -110,6 +110,12 @@ define(function (require) {
                 DELETED: "DELETED",
             },
 
+            GeometryTypes: {
+                LINES: "lines",
+                TUBES: "tubes",
+                CYLINDERS: "cylinders"
+            },
+
 
             OPACITY: {
                 DEFAULT: 1,
@@ -120,11 +126,17 @@ define(function (require) {
 
             MODEL_LOADED: "The model for the current project has been loaded",
 
+            VARIABLE_ADDED: "A variable has been added to the Geppetto model",
+
+            VARIABLE_ALREADY_EXISTS: "Cannot add variable that already exists",
+
+            IMPORT_TYPE_RESOLVED: "An import type has been resolved to a full type and swapped into the Geppetto model",
+
             EXPERIMENT_CREATED: "New experiment created",
 
             EXPERIMENT_DELETED: "Experiment Deleted",
 
-            UNABLE_TO_START_EXPERIMENT: "Experiment can't be started.",
+            UNABLE_TO_START_EXPERIMENT: "Experiment can't be started",
 
             EXPERIMENT_PAUSED: "Experiment Paused",
 
@@ -144,8 +156,10 @@ define(function (require) {
 
             CREATING_SCENE: "Creating scene",
 
+            ADDING_VARIABLE: "Adding variable",
+
             SPOTLIGHT_HINT: "Did you know you can rapidly access the data once it gets loaded using Ctrl+Space?",
-            
+
             LOADING_SIMULATION_SLOW: "Still loading, but things are taking longer than expected. Do you have a low bandwidth connection?",
 
             SIMULATION_NOT_RUNNING: "Unable to stop simulation, loaded but not running",
@@ -162,11 +176,11 @@ define(function (require) {
 
             MESSAGE_OUTBOUND_LOAD: 'Outbound Message Sent: Loading Simulation',
 
-            MESSAGE_OUTBOUND_STOP: 'Outbund Message Sent: Simulation Stopped',
+            MESSAGE_OUTBOUND_STOP: 'Outbound Message Sent: Simulation Stopped',
 
-            MESSAGE_OUTBOUND_PAUSE: 'Outbund Message Sent: Simulation Paused',
+            MESSAGE_OUTBOUND_PAUSE: 'Outbound Message Sent: Simulation Paused',
 
-            MESSAGE_OUTBOUND_START: 'Outbund Message Sent: Simulation Started',
+            MESSAGE_OUTBOUND_START: 'Outbound Message Sent: Simulation Started',
 
             MESSAGE_OUTBOUND_SET_WATCHED_VARIABLES: 'Outbound Message Sent: add variables to watch',
 
@@ -428,14 +442,19 @@ define(function (require) {
             DYNAMICS_TYPE: "DynamicsType",
             FUNCTION_TYPE: "FunctionType",
             TEXT_TYPE: "TextType",
+            IMAGE_TYPE: "ImageType",
             HTML_TYPE: "HTMLType",
+            IMPORT_TYPE: "ImportType",
             //VARIABLES
             VARIABLE_NODE: "Variable",
             //VALUES
             CYLINDER: "Cylinder",
+            ARRAY_VALUE: "ArrayValue",
+            IMAGE: "Image",
             SPHERE: "Sphere",
             COLLADA: "Collada",
             OBJ: "OBJ",
+            PARTICLE: "Particle",
             //GEPPETTO MODEL
             GEPPETTO_MODEL_NODE: "GeppettoModel",
             LIBRARY_NODE: "Library",
@@ -470,7 +489,10 @@ define(function (require) {
             RUN_FLOW: 'RunFlow',
             // COMMMON TYPE PATHS
             STATE_VARIABLE_TYPE_PATH: 'Model.common.StateVariable',
-            PARAMETER_TYPE_PATH: 'Model.common.Parameter'
+            PARAMETER_TYPE_PATH: 'Model.common.Parameter',
+            MODEL_PREFIX_CLIENT: 'Model.',
+            // CONTROL PANEL
+            CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:'
         }
     }
 });

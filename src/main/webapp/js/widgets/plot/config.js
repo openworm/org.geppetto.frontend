@@ -46,15 +46,31 @@ require.config({
      * E.G. If depenedency it's used more than once, it goes in here.
      */
     paths: {
-        'plotly': "widgets/plot/vendor/plotly-latest.min",
+        'flot': "widgets/plot/vendor/jquery.flot.min",
     },
+    /*
+     * Notes what dependencies are needed prior to loading each library, values on the right
+     * of colon are dependencies. If dependency was declared in path above, then add it's dependencies
+     * to that object in here.
+     */
+    shim: {
+        "widgets/plot/vendor/jquery.flot.resize.min": ["flot"],
+        "widgets/plot/vendor/jquery.flot.axislabels.min": ["flot"],
+        "widgets/plot/vendor/jquery.flot.downsample": ["flot"],
+        "widgets/plot/vendor/jquery.flot.crosshair": ["flot"]
+    }
 });
 
 /*
  * Libraries used by plot widget
  */
 var libraries = [];
-libraries.push("plotly");
+libraries.push("flot");
+libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
+libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
+libraries.push("widgets/plot/vendor/jquery.flot.crosshair");
+libraries.push("widgets/plot/vendor/jquery.flot.downsample");
+
 define("math.global", ["mathjs"], function (_) {
     math = _;
 });
@@ -76,4 +92,3 @@ define(function(require) {
 				GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getCommands);
 	};
 });
-

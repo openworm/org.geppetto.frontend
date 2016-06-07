@@ -37,7 +37,6 @@ package org.geppetto.frontend.messages;
  */
 public enum OutboundMessages {
 	
-	OBSERVER_MODE("observer_mode_alert"), 
 	LOAD_PROJECT("load_project"), 
 	READ_URL_PARAMETERS("read_url_parameters"), 
 	PROJECT_LOADED("project_loaded"), 
@@ -58,13 +57,10 @@ public enum OutboundMessages {
 	SCRIPT_FETCHED("script_fetched"),
 	GET_SCRIPTS("get_scripts"),
 	WATCHED_VARIABLES_SET("watched_variables_set"),
-	SIMULATOR_FULL("simulator_full"),
 	CLEAR_WATCH("clear_watch"),
 	CLIENT_ID("client_id"), 
 	FIRE_SIM_SCRIPTS("fire_sim_scripts"),
 	SIMULATION_OVER("simulation_over"),
-	GET_MODEL_TREE("get_model_tree"),
-	GET_SIMULATION_TREE("get_simulation_tree"),
 	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
 	DOWNLOAD_MODEL("download_model"),
 	SET_PARAMETERS("set_parameters"),
@@ -83,7 +79,9 @@ public enum OutboundMessages {
 	DOWNLOAD_RESULTS("download_results"),
 	UPDATE_MODEL_TREE("update_model_tree"), 
 	EXPERIMENT_CREATED("experiment_created"), 
-	GEPPETTO_MODEL_LOADED("geppetto_model_loaded");
+	GEPPETTO_MODEL_LOADED("geppetto_model_loaded"), 
+	VARIABLE_FETCHED("variable_fetched"),
+	IMPORT_TYPE_RESOLVED("import_type_resolved");
 
 	private OutboundMessages(final String text) {
 		this.text = text;

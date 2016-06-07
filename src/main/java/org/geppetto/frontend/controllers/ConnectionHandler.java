@@ -371,6 +371,32 @@ public class ConnectionHandler
 	}
 
 	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param experimentId
+	 * @param path
+	 */
+	public void resolveImportValue(String requestID, Long projectId, Long experimentId, String path)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+		try
+		{
+			GeppettoModel geppettoModel = geppettoManager.resolveImportValue(path, experiment, geppettoProject);
+			websocketConnection.sendMessage(requestID, OutboundMessages.IMPORT_VALUE_RESOLVED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
+		}
+		catch(IOException e)
+		{
+			error(e, "Error importing value " + path);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error importing value " + path);
+		}
+		
+	}
+	
+	/**
 	 * Adds watch lists with variables to be watched
 	 * 
 	 * @param requestID
@@ -1160,5 +1186,7 @@ public class ConnectionHandler
 		}
 		this.geppettoProject = geppettoProject;
 	}
+
+
 
 }

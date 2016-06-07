@@ -416,6 +416,12 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.path);
 				break;
 			}
+			case RESOLVE_IMPORT_VALUE:
+			{
+				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+				connectionHandler.resolveImportValue(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.path);
+				break;
+			}
 			default:
 			{
 				// NOTE: no other messages expected for now

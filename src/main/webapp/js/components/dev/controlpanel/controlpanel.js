@@ -51,6 +51,32 @@ define(function (require) {
         }
     });
 
+    GEPPETTO.LinkComponent = React.createClass({
+        render: function () {
+            var that = this;
+            return (
+                <div>
+                    {
+                    	function(){
+                            var displayText = that.props.data;
+                            var action = function (e) {
+                                e.preventDefault();
+                                var actionStr = that.props.metadata.action;
+                                actionStr = actionStr.replace(/\$entity\$/gi, item);
+                                GEPPETTO.Console.executeCommand(actionStr);
+                            };
+
+
+                            return (
+                                <span><a href='#' onClick={action}>{displayText}</a></span>
+                            );
+                    	}
+                    }
+                </div>
+            )
+        }
+    });
+
     GEPPETTO.ArrayComponent = React.createClass({
         render: function () {
             var that = this;
@@ -306,7 +332,21 @@ define(function (require) {
 
     var defaultControlsConfiguration = {
         "VisualCapability": {
-            "visibility": {
+            "select": {
+                "condition": "GEPPETTO.SceneController.isSelected($instances$)",
+                "false": {
+                    "actions": ["GEPPETTO.SceneController.select($instances$)"],
+                    "icon": "fa-hand-stop-o",
+                    "label": "Unselected",
+                    "tooltip": "Select"
+                },
+                "true": {
+                    "actions": ["GEPPETTO.SceneController.deselect($instances$)"],
+                    "icon": "fa-hand-rock-o",
+                    "label": "Selected",
+                    "tooltip": "Deselect"
+                },
+            },"visibility": {
                 "condition": "GEPPETTO.SceneController.isVisible($instances$)",
                 "false": {
                     "id": "visibility",

@@ -44,6 +44,7 @@ define(function (require) {
     TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
     VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
     ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
+    PlotlyController = require('widgets/plotly/controllers/PlotlyController');
 
     return function (GEPPETTO) {
 
@@ -64,6 +65,7 @@ define(function (require) {
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
+            PLOTLY : 8,
         };
 
         /**
@@ -79,6 +81,7 @@ define(function (require) {
             ButtonBarController: null,
             treeVisDatController: null,
             treeVis3DController: null,
+            plotlyController : null,
             /**
              * Adds widget to Geppetto
              *
@@ -120,6 +123,10 @@ define(function (require) {
                     case GEPPETTO.Widgets.BUTTONBAR:
                         widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget();
                         break;
+                      //create plotting widget
+                    case GEPPETTO.Widgets.PLOTLY:
+                        widget = this.getController(GEPPETTO.Widgets.PLOTLY).addPlotlyWidget();
+                        break;
                     default:
                         break;
                 }
@@ -152,6 +159,8 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
                     case GEPPETTO.Widgets.BUTTONBAR:
                         return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
+                    case GEPPETTO.Widgets.PLOTLY:
+                        return GEPPETTO.Resources.REMOVE_PLOTLY_WIDGETS;
                     default:
                         return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
                 }
@@ -205,6 +214,12 @@ define(function (require) {
                         this.buttonBarController = new ButtonBarController();
                     }
                     return this.buttonBarController;
+                }
+                else if (type == GEPPETTO.Widgets.PLOTLY) {
+                    if (this.plotlyController == null || undefined) {
+                        this.plotlyController = new PlotlyController();
+                    }
+                    return this.plotlyController;
                 }
 
             }

@@ -90,7 +90,7 @@ define(function (require) {
             },
 
             /**
-             *
+             *ff
              * Hides the widget
              *
              * @command hide()

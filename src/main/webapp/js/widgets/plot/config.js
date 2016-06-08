@@ -92,3 +92,4 @@ define(function(require) {
 				GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getCommands);
 	};
 });
+

@@ -44,6 +44,7 @@ define(function (require) {
 
     return Widget.View.extend({
         plot: null,
+        functionNode: false,
         datasets: [],
         limit: 400,
         options: null,
@@ -55,7 +56,7 @@ define(function (require) {
         yMax: 0,
         updateLegendTimeout: null,
         latestPosition: null,
-        initialized:null,
+        initialized: null,
         inhomogeneousUnits: false,
 
         /**
@@ -106,9 +107,7 @@ define(function (require) {
          * @param {Object} options - Object with options for the plot widget
          */
         initialize: function (options) {
-            this.id = options.id;
-            this.name = options.name;
-            this.visible = options.visible;
+        	Widget.View.prototype.initialize.call(this, options);
             this.datasets = [];
             this.options = jQuery.extend(true, {}, this.defaultPlotOptions);
             this.render();
@@ -199,6 +198,8 @@ define(function (require) {
          * @param {Object} options - options for the plotting widget, if null uses default
          */
         plotData: function (data, options) {
+            this.controller.addToHistory("Plot "+data.getInstancePath(),"plotData",[data]);
+
             if (!$.isArray(data)) {
                 data = [data];
             }
@@ -236,26 +237,26 @@ define(function (require) {
             var isPlotable = true;
             for (var i = 0; i < data.length; i++) {
                 var instance = data[i];
-                if (instance != null){
-                	
-                   for (var key = 0; key < this.datasets.length; key++) {
-	                   if (instance.getInstancePath() == this.datasets[key].label) {
-	                       continue;
-	                   }
-                   }
+                if (instance != null) {
 
-                   var timeSeriesData;
-                   if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
-	                   timeSeriesData = this.getTimeSeriesData(instance);
-                   }
-                   else{
-                	   isPlotable = false;
-                   }
-                   this.datasets.push({
-                       label: instance.getInstancePath(),
-                       variable: instance,
-                       data: timeSeriesData
-                   });
+                    for (var key = 0; key < this.datasets.length; key++) {
+                        if (instance.getInstancePath() == this.datasets[key].label) {
+                            continue;
+                        }
+                    }
+
+                    var timeSeriesData;
+                    if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
+                        timeSeriesData = this.getTimeSeriesData(instance, window.time);
+                    }
+                    else {
+                        isPlotable = false;
+                    }
+                    this.datasets.push({
+                        label: instance.getInstancePath(),
+                        variable: instance,
+                        data: timeSeriesData
+                    });
                 }
             }
 
@@ -263,10 +264,10 @@ define(function (require) {
 
                 // check for inhomogeneousUnits and set flag
                 var refUnit = undefined;
-                for(var i=0; i<this.datasets.length; i++){
-                    if(i==0){
+                for (var i = 0; i < this.datasets.length; i++) {
+                    if (i == 0) {
                         refUnit = this.datasets[i].variable.getUnit();
-                    } else if(refUnit != this.datasets[i].variable.getUnit()) {
+                    } else if (refUnit != this.datasets[i].variable.getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
                         break;
@@ -276,31 +277,31 @@ define(function (require) {
                 this.updateAxis(this.datasets.length - 1);
             }
 
-            if (isPlotable){
-            	var plotHolder = $("#" + this.id);
-            	this.plot = $.plot(plotHolder, this.datasets, this.options);
+            if (isPlotable) {
+                var plotHolder = $("#" + this.id);
+                this.plot = $.plot(plotHolder, this.datasets, this.options);
             }
-            	
+
             return this;
         },
 
 
-        getTimeSeriesData: function (instance) {
-            var timeSeries = instance.getTimeSeries();
-            var timeTimeSeries = window.time.getTimeSeries();
+        getTimeSeriesData: function (instanceY, instanceX) {
+            var yTimeSeries = instanceY.getTimeSeries();
+            var xTimeSeries = instanceX.getTimeSeries();
             var timeSeriesData = [];
 
-            if (timeSeries && timeSeries.length > 1) {
-                for (var step = 0; step < timeSeries.length; step++) {
-                    timeSeriesData.push([timeTimeSeries[step], timeSeries[step]]);
+            if (yTimeSeries && yTimeSeries.length > 1) {
+                for (var step = 0; step < yTimeSeries.length; step++) {
+                    timeSeriesData.push([xTimeSeries[step], yTimeSeries[step]]);
                 }
             }
 
-            var localxmin = Math.min.apply(null, timeTimeSeries);
-            var localymin = Math.min.apply(null, timeSeries);
+            var localxmin = this.arrayMin(xTimeSeries);
+            var localymin = this.arrayMin(yTimeSeries);
             localymin = localymin - Math.abs(localymin * 0.1);
-            var localxmax = Math.max.apply(null, timeTimeSeries);
-            var localymax = Math.max.apply(null, timeSeries);
+            var localxmax = this.arrayMax(xTimeSeries);
+            var localymax = this.arrayMax(yTimeSeries);
             localymax = localymax + Math.abs(localymax * 0.1);
 
             this.options.xaxis.min = Math.min(this.options.xaxis.min, localxmin);
@@ -310,17 +311,29 @@ define(function (require) {
 
             return timeSeriesData;
         },
-        /**
-         * Takes two time series and plots one against the other. To plot
-         * array(s) , use it as plotData([[1,2],[2,3]]) To plot an object ,
-         * use it as plotData(objectNameX,objectNameY)
-         *
-         * @command plotData(dataX,dataY, options)
-         * @param {Object} dataX - series to plot on X axis, can be array or an object
-         * @param {Object} dataY - series to plot on Y axis, can be array or an object
-         * @param options - options for the plotting widget, if null uses default
-         */
-        plotXYData: function (dataX, dataY, options) {
+
+        arrayMin: function (arr) {
+            var len = arr.length, min = Infinity;
+            while (len--) {
+                if (arr[len] < min) {
+                    min = arr[len];
+                }
+            }
+            return min;
+        },
+
+        arrayMax: function (arr) {
+            var len = arr.length, max = -Infinity;
+            while (len--) {
+                if (arr[len] > max) {
+                    max = arr[len];
+                }
+            }
+            return max;
+        },
+
+        plotXYData: function (dataY, dataX, options) {
+            this.controller.addToHistory("Plot "+dataY.getId()+"/"+dataX.getId(),"plotXYData",[dataY,dataX,options]);
 
             // If no options specify by user, use default options
             if (options != null) {
@@ -330,16 +343,30 @@ define(function (require) {
                 }
             }
 
+            var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
+
             this.datasets.push({
-                label: dataX.name,
-                data: dataX.data
+                label: dataY.getInstancePath(),
+                variable: dataY,
+                data: timeSeriesData
             });
 
-            if (dataY != undefined) {
-                this.datasets.push({
-                    label: dataY.name,
-                    data: dataY.data
-                });
+
+            if (this.datasets.length > 0) {
+
+                // check for inhomogeneousUnits and set flag
+                var refUnit = undefined;
+                for (var i = 0; i < this.datasets.length; i++) {
+                    if (i == 0) {
+                        refUnit = this.datasets[i].variable.getUnit();
+                    } else if (refUnit != this.datasets[i].variable.getUnit()) {
+                        this.inhomogeneousUnits = true;
+                        this.labelsUpdated = false;
+                        break;
+                    }
+                }
+
+                this.updateAxis(this.datasets.length - 1);
             }
 
             var plotHolder = $("#" + this.id);
@@ -348,7 +375,8 @@ define(function (require) {
 
 
             return this;
-        },
+        }
+        ,
         /**
          * Removes the data set from the plot. EX:
          *
@@ -379,72 +407,74 @@ define(function (require) {
                 this.resetPlot();
             }
             return this;
-        },
+        }
+        ,
 
         /**
          * Updates a data set, use for time series
          */
         updateDataSet: function (step, playAll) {
-            if(!this.initialized){
-                this.clean(playAll);
-            }
             var plotHolder = $("#" + this.id);
-
-            for (var key in this.datasets) {
-
-                if (this.options.playAll) {
-                    //we simply set the whole time series
-                    this.datasets[key].data = this.getTimeSeriesData(this.datasets[key].variable);
+            if (!this.functionNode) {
+                if (!this.initialized) {
+                    this.clean(playAll);
                 }
-                else {
-                    var newValue = this.datasets[key].variable.getTimeSeries()[step];
+                for (var key in this.datasets) {
 
-                    var oldData = this.datasets[key].data;
-                    var reIndex = false;
-
-                    if (oldData.length >= this.limit) {
-                        //this happens when we reach the end of the width of the plot
-                        //i.e. when we have already put all the points that it can contain
-                        oldData.splice(0, 1);
-                        reIndex = true;
-                    }
-
-                    oldData.push([oldData.length, newValue]);
-
-                    if (reIndex) {
-                        // re-index data
-                        var indexedData = [];
-                        for (var index = 0, len = oldData.length; index < len; index++) {
-                            var value = oldData[index][1];
-                            indexedData.push([index, value]);
-                        }
-
-                        this.datasets[key].data = indexedData;
+                    if (this.options.playAll) {
+                        //we simply set the whole time series
+                        this.datasets[key].data = this.getTimeSeriesData(this.datasets[key].variable, window.time);
                     }
                     else {
-                        this.datasets[key].data = oldData;
+                        var newValue = this.datasets[key].variable.getTimeSeries()[step];
+
+                        var oldData = this.datasets[key].data;
+                        var reIndex = false;
+
+                        if (oldData.length >= this.limit) {
+                            //this happens when we reach the end of the width of the plot
+                            //i.e. when we have already put all the points that it can contain
+                            oldData.splice(0, 1);
+                            reIndex = true;
+                        }
+
+                        oldData.push([oldData.length, newValue]);
+
+                        if (reIndex) {
+                            // re-index data
+                            var indexedData = [];
+                            for (var index = 0, len = oldData.length; index < len; index++) {
+                                var value = oldData[index][1];
+                                indexedData.push([index, value]);
+                            }
+
+                            this.datasets[key].data = indexedData;
+                        }
+                        else {
+                            this.datasets[key].data = oldData;
+                        }
+                    }
+
+                    this.updateAxis(key);
+                }
+
+
+                if (this.plot != null) {
+                    if (this.plot.getOptions().yaxes[0].max == -9999999) {
+                        //we had no data the first time plotdata was called so we create the plot
+                        this.plot = $.plot(plotHolder, this.datasets, this.options);
+                    }
+                    else {
+                        this.plot.setData(this.datasets);
+                        this.plot.draw();
                     }
                 }
-
-                this.updateAxis(key);
-            }
-
-
-            if (this.plot != null) {
-                if (this.plot.getOptions().yaxes[0].max == -9999999) {
-                    //we had no data the first time plotdata was called so we create the plot
+                else {
                     this.plot = $.plot(plotHolder, this.datasets, this.options);
                 }
-                else {
-                    this.plot.setData(this.datasets);
-                    this.plot.draw();
-                }
             }
-            else {
-                this.plot = $.plot(plotHolder, this.datasets, this.options);
-            }
-
-        },
+        }
+        ,
 
         updateAxis: function (key) {
             if (!this.labelsUpdated) {
@@ -456,7 +486,8 @@ define(function (require) {
                     this.labelsUpdated = true;
                 }
             }
-        },
+        }
+        ,
 
         /**
          * Utility function to get unit label given raw unit symbol string
@@ -484,57 +515,9 @@ define(function (require) {
             }
 
             return unitLabel;
-        },
+        }
+        ,
 
-        /**
-         * Plots a function against a data series
-         *
-         * @command dataFunction(func, data, options)
-         * @param func - function to plot vs data
-         * @param data - data series to plot against function
-         * @param options - options for plotting widget
-         */
-        plotDataFunction: function (func, data_x, options) {
-            // If no options specify by user, use default options
-            if (options != null) {
-                this.options = options;
-                if (this.options.xaxis.max > this.limit) {
-                    this.limit = this.options.xaxis.max;
-                }
-            }
-
-            var labelsMap = this.labelsMap;
-            this.initializeLegend(function (label, series) {
-                var shortLabel = label;
-                //FIXME: Adhoc solution for org.neuroml.export
-                var split = label.split(/-(.+)?/);
-                if (split.length > 1) shortLabel = split[1];
-                labelsMap[label] = shortLabel;
-                return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
-            });
-
-            //Parse func as a mathjs object
-            var parser = math.parser();
-            var mathFunc = parser.eval(func);
-            var data = [];
-            data.name = options.legendText;
-            data.data = [];
-            for (var data_xIndex in data_x) {
-                var dataElementString = data_x[data_xIndex].valueOf();
-                data_y = mathFunc(dataElementString);
-                //TODO: Understand why sometimes it returns an array and not a value
-                if (typeof value == 'object') {
-                    data.data.push([data_x[data_xIndex][0], data_y[0]]);
-                }
-                else {
-                    data.data.push([data_x[data_xIndex][0], data_y]);
-                }
-            }
-
-            //Plot values
-            this.plotXYData(data);
-            return this;
-        },
 
         /**
          * Resets the plot widget, deletes all the data series but does not
@@ -570,29 +553,36 @@ define(function (require) {
         },
 
         clean: function (playAll) {
-            this.options.playAll = playAll;
-            this.cleanDataSets();
-            if (!playAll) {
-                this.options.xaxis.show = false;
-                this.options.xaxis.max = this.limit;
-                this.options.crosshair = {};
-                this.options.grid.hoverable = false;
-                this.options.grid.autoHighlight = true;
-                $("#" + this.id).addClass("plot-without-xaxis");
-            }
-            else {
-                this.options.xaxis.show = true;
-                this.options.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
-                this.options.crosshair.mode = "x";
-                this.options.grid.hoverable = true;
-                this.options.grid.autoHighlight = false;
-                $("#" + this.id).removeClass("plot-without-xaxis");
-                //enables updating the legend on mouse hover, still few bugs
+            if (!this.functionNode) {
+                this.options.playAll = playAll;
+                this.cleanDataSets();
+                if (!playAll) {
+                    this.options.xaxis.show = false;
+                    this.options.xaxis.max = this.limit;
+                    this.options.crosshair = {};
+                    if (this.options.grid) {
+                        this.options.grid.hoverable = false;
+                        this.options.grid.autoHighlight = true;
+                    }
+                    $("#" + this.id).addClass("plot-without-xaxis");
+                }
+                else {
+                    this.options.xaxis.show = true;
+                    this.options.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
+                    if (this.options.crosshair) {
+                        this.options.crosshair.mode = "x";
+                    }
+                    if (this.options.grid) {
+                        this.options.grid.hoverable = true;
+                        this.options.grid.autoHighlight = false;
+                    }
+                    $("#" + this.id).removeClass("plot-without-xaxis");
+                    //enables updating the legend on mouse hover, still few bugs
 
+                }
+                this.plot = $.plot($("#" + this.id), this.datasets, this.options);
             }
-            this.plot = $.plot($("#" + this.id), this.datasets, this.options);
-            this.initialized=true;
-
+            this.initialized = true;
         },
 
         /**
@@ -660,7 +650,7 @@ define(function (require) {
                 this.options["xaxis"] = {};
             }
             this.options.xaxis.axisLabel = labelX;
-            
+
             return this;
         },
 
@@ -672,8 +662,7 @@ define(function (require) {
          */
         plotFunctionNode: function (functionNode) {
 
-//        	node.getInitialValues()[0].value.arguments
-//        	node.getInitialValues()[0].value.expression.expression
+            this.functionNode = true;
 
             //Check there is metada information to plot
             if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
@@ -698,7 +687,7 @@ define(function (require) {
                 var XAxisLabel = plotMetadata["xAxisLabel"];
                 var YAxisLabel = plotMetadata["yAxisLabel"];
                 //Generate options from metadata information
-                options = {
+                var options = {
                     xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
                     yaxis: {axisLabel: YAxisLabel},
                     legendText: plotTitle
@@ -721,5 +710,70 @@ define(function (require) {
             return this;
         },
 
+        /**
+         * Plots a function against a data series
+         *
+         * @command dataFunction(func, data, options)
+         * @param func - function to plot vs data
+         * @param data - data series to plot against function
+         * @param options - options for plotting widget
+         */
+        plotDataFunction: function (func, data_x, options) {
+            // If no options specify by user, use default options
+            if (options != null) {
+                this.options = options;
+                if (this.options.xaxis.max > this.limit) {
+                    this.limit = this.options.xaxis.max;
+                }
+            }
+
+            var labelsMap = this.labelsMap;
+            this.initializeLegend(function (label, series) {
+                var shortLabel = label;
+                //FIXME: Adhoc solution for org.neuroml.export
+                var split = label.split(/-(.+)?/);
+                if (split.length > 1) shortLabel = split[1];
+                labelsMap[label] = shortLabel;
+                return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
+            });
+
+            //Parse func as a mathjs object
+            var parser = math.parser();
+            var mathFunc = parser.eval(func);
+            var data = [];
+            data.name = options.legendText;
+            data.data = [];
+            for (var data_xIndex in data_x) {
+                var dataElementString = data_x[data_xIndex].valueOf();
+                data_y = mathFunc(dataElementString);
+                //TODO: Understand why sometimes it returns an array and not a value
+                if (typeof value == 'object') {
+                    data.data.push([data_x[data_xIndex][0], data_y[0]]);
+                }
+                else {
+                    data.data.push([data_x[data_xIndex][0], data_y]);
+                }
+            }
+
+            //Plot values
+            if (options != null) {
+                this.options = options;
+                if (this.options.xaxis.max > this.limit) {
+                    this.limit = this.options.xaxis.max;
+                }
+            }
+
+            this.datasets.push({
+                label: data.name,
+                data: data.data
+            });
+
+            var plotHolder = $("#" + this.id);
+
+            this.plot = $.plot(plotHolder, this.datasets, this.options);
+            return this;
+        }
+
     });
-});
+})
+;

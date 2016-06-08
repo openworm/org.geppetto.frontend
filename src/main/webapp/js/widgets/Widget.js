@@ -70,8 +70,10 @@ define(function (require) {
             initialize: function (options) {
                 this.id = options.id;
                 this.name = options.name;
+                this.controller = options.controller;
                 this.visible = options.visible;
                 this.contextMenu = new GEPPETTO.ContextMenuView();
+                this.historyMenu = new GEPPETTO.ContextMenuView();
                 this.registeredEvents = [];
             },
 
@@ -151,8 +153,13 @@ define(function (require) {
 
                 this.position.left = left;
                 this.position.top = top;
-                $("#" + this.id).dialog('option', 'position', [this.position.left, this.position.top]);
 
+                $("#" + this.id).dialog(
+                    'option', 'position', {
+                        my: "left+" + this.position.left + " top+" + this.position.top,
+                        at: "left top",
+                        of: $(window)
+                    });
                 return this;
             },
 
@@ -301,6 +308,38 @@ define(function (require) {
                 return current;
             },
 
+            getHistoryItems: function () {
+                var data = [];
+                for (var i = 0; i < this.controller.history.length; i++) {
+                    var action = this.getId() + "[" + this.getId() + ".controller.history[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + ".controller.history[" + i + "].arguments)";
+                    data.push({
+                        "label": this.controller.history[i].label,
+                        "action": [action],
+                        "icon": "fa-history",
+                        "position": i
+                    })
+                }
+                return data;
+            },
+
+            showHistoryMenu: function (event) {
+                var that = this;
+                if (this.controller.history.length > 0) {
+
+                    this.historyMenu.show({
+                        top: event.pageY,
+                        left: event.pageX + 1,
+                        groups: that.getHistoryItems(),
+                        data: that
+                    });
+                }
+
+                if (event != null) {
+                    event.preventDefault();
+                }
+                return false;
+            },
+
             showContextMenu: function (event, data) {
                 var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor(data.getMetaType());
 
@@ -335,7 +374,8 @@ define(function (require) {
                 } else {
                     $("#" + this.id).parent().find(".ui-dialog-titlebar").hide();
                 }
-            },
+            }
+            ,
 
             /**
              * hides / shows the exit button
@@ -360,23 +400,21 @@ define(function (require) {
                     $("#" + this.id).parent().draggable({disabled: true});
                     this.setClass('noStyleDisableDrag');
                 }
-            },
+            }
+            ,
 
             /**
              * Inject CSS for custom behaviour
              */
             setClass: function (className) {
                 $("#" + this.id).dialog({dialogClass: className});
-            },
+            }
+            ,
 
             /**
              * Renders the widget dialog window
              */
             render: function () {
-
-                var $dialogContainer = $('#' + this.id);
-                var $detachedChildren = $dialogContainer.children().detach();
-
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -393,15 +431,27 @@ define(function (require) {
                         }
                     });
 
-                //remove the jQuery UI icon
-                $("div[aria-describedby=" + this.id + "] .ui-dialog-titlebar-close > span").remove();
-                $("div[aria-describedby=" + this.id + "] button").append("<i class='fa fa-close'></i>");
                 this.$el = $("#" + this.id);
+                var dialogParent = this.$el.parent();
+                var that = this;
+
+                //add history
+                dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='fa fa-history historyIcon'></div>");
+                dialogParent.find("div.historyIcon").click(function (event) {
+                    that.showHistoryMenu(event);
+                    event.stopPropagation();
+                });
+
+                //remove the jQuery UI icon
+                dialogParent.find("button.ui-dialog-titlebar-close").html("")
+                dialogParent.find("button").append("<i class='fa fa-close'></i>");
+
 
                 //Take focus away from close button
-                $("div[aria-describedby=" + this.id + "] .ui-dialog-titlebar-close").blur();
+                dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
-            },
+            }
+            ,
 
             /**
              * Register event with widget
@@ -410,7 +460,8 @@ define(function (require) {
              */
             registerEvent: function (event, callback) {
                 this.registeredEvents.push({id: event, callback: callback});
-            },
+            }
+            ,
 
             /**
              * Unregister event with widget
@@ -421,8 +472,11 @@ define(function (require) {
                 this.registeredEvents = _.reject(this.registeredEvents, function (el) {
                     return el.id === event
                 });
-            },
+            }
+            ,
         })
-    };
+    }
+        ;
 
-});
+})
+;

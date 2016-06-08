@@ -43,13 +43,15 @@ define(function (require) {
             // Camera
             var SCREEN_WIDTH = $(GEPPETTO.getVARS().container).width();
             var SCREEN_HEIGHT = $(GEPPETTO.getVARS().container).height();
-            var VIEW_ANGLE = 45;
+            var VIEW_ANGLE = 60;
             var ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
-            var NEAR = 0.1;
-            var FAR = 500000;
+            var NEAR = 10;
+            var FAR = 2000000;
             GEPPETTO.getVARS().camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
             GEPPETTO.getVARS().scene.add(GEPPETTO.getVARS().camera);
             GEPPETTO.getVARS().camera.position.set(GEPPETTO.getVARS().cameraPosition.x, GEPPETTO.getVARS().cameraPosition.y, GEPPETTO.getVARS().cameraPosition.z);
+            GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, 1, 0);
+            GEPPETTO.getVARS().camera.direction = new THREE.Vector3(0, 0, 1);
             GEPPETTO.getVARS().camera.lookAt(GEPPETTO.getVARS().sceneCenter);
         };
 
@@ -58,8 +60,7 @@ define(function (require) {
          */
         var setupRenderer = function () {
             // Reuse a single WebGL renderer.
-            // NOTE: Recreating the renderer causes camera displacement on
-            // Chrome OSX.
+            // NOTE: Recreating the renderer causes camera displacement on Chrome OSX.
             if (!GEPPETTO.getVARS().canvasCreated) {
                 GEPPETTO.getVARS().renderer = new THREE.WebGLRenderer({
                     antialias: true
@@ -68,11 +69,11 @@ define(function (require) {
             }
 
             configureRenderer();
-
             GEPPETTO.getVARS().canvasCreated = true;
         };
 
         var configureRenderer = function () {
+
             var color = new THREE.Color(GEPPETTO.getVARS().backgroundColor);
             GEPPETTO.getVARS().renderer.setClearColor(color, 1);
             var width = $(GEPPETTO.getVARS().container).width();
@@ -229,7 +230,6 @@ define(function (require) {
                         var container = $(GEPPETTO.getVARS().container), width = container.width(), height = container.height();
 
                         GEPPETTO.getVARS().camera.aspect = (width) / (height);
-
                         GEPPETTO.getVARS().camera.updateProjectionMatrix();
                         GEPPETTO.getVARS().renderer.setSize(width, height);
                         GEPPETTO.getVARS().composer.setSize(width, height);
@@ -245,6 +245,10 @@ define(function (require) {
         // Application logic.
         // ============================================================================
         GEPPETTO.Init = {
+
+            /**
+             *
+             */
             initEventListeners: function () {
                 // setup listeners for geppetto events that can be triggered
                 if (!GEPPETTO.Events.listening) {
@@ -252,6 +256,12 @@ define(function (require) {
                     GEPPETTO.Events.listening = true;
                 }
             },
+
+            /**
+             *
+             * @param containerp
+             * @returns {*|Object}
+             */
             initialize: function (containerp) {
                 GEPPETTO.getVARS().container = containerp;
                 createChannel();
@@ -262,6 +272,21 @@ define(function (require) {
                 setupControls();
                 setupListeners();
                 return GEPPETTO.getVARS();
+            },
+
+            /**
+             * Reinitializes the camera with the Y axis flipped
+             */
+            flipCameraY: function () {
+                GEPPETTO.getVARS().camera.up = new THREE.Vector3(0, -1, 0);
+                setupControls();
+                GEPPETTO.resetCamera();
+            },
+
+            flipCameraZ: function () {
+                GEPPETTO.getVARS().camera.direction = new THREE.Vector3(0, 0, -1);
+                setupControls();
+                GEPPETTO.resetCamera();
             }
         };
     };

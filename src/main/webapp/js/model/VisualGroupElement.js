@@ -35,7 +35,7 @@
  * Client class use to represent a VisualGroupElement Node, used for visualization tree
  * properties.
  *
- * @module model/VisualGroupElementNode
+ * @module model/VisualGroupElement
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Giovanni Idili
  */
@@ -60,7 +60,7 @@ define(function (require) {
         /**
          * Get value of quantity
          *
-         * @command VisualGroupElementNode.getValue()
+         * @command VisualGroupElement.getValue()
          * @returns {String} Value of quantity
          */
         getValue: function () {
@@ -76,7 +76,7 @@ define(function (require) {
         /**
          * Get unit of quantity
          *
-         * @command VisualGroupElementNode.getUnit()
+         * @command VisualGroupElement.getUnit()
          * @returns {String} Unit of quantity
          */
         getUnit: function () {
@@ -92,7 +92,7 @@ define(function (require) {
         /**
          * Get scaling factor
          *
-         * @command VisualGroupElementNode.getScalingFactor()
+         * @command VisualGroupElement.getScalingFactor()
          * @returns {String} Scaling Factor for value and unit
          */
         getScalingFactor: function () {
@@ -108,8 +108,8 @@ define(function (require) {
         /**
          * Get color of element
          *
-         * @command VisualGroupElementNode.getValue()
-         * @returns {String} Color of VisualGroupElementNode
+         * @command VisualGroupElement.getValue()
+         * @returns {String} Color of VisualGroupElement
          */
         getColor: function () {
             return this.get("wrappedObj").defaultColor;

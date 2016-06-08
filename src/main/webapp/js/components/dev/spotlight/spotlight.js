@@ -12,6 +12,7 @@ define(function (require) {
         bh = require('bloodhound'),
         handlebars = require('handlebars');
 
+    var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
     var Spotlight = React.createClass({
@@ -22,6 +23,15 @@ define(function (require) {
         potentialSuggestions: {},
         suggestions: null,
         instances: null,
+        
+        close : function () {
+            $("#spotlight").hide();
+            GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
+        },
+        
+        updateData : function() {
+            this.instances.add(GEPPETTO.ModelFactory.allPathsIndexing);
+        },
 
         componentDidMount: function () {
 
@@ -30,6 +40,13 @@ define(function (require) {
 
             var that = this;
 
+            $("#spotlight").click(function(e){
+            	if (e.target==e.delegateTarget){
+            		//we want this only to happen if we clicked on the div directly and not on anything therein contained
+            		that.close();
+            	}
+            });
+            
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == space) {
                     that.open(GEPPETTO.Resources.SEARCH_FLOW, true);
@@ -38,8 +55,7 @@ define(function (require) {
 
             $(document).keydown(function (e) {
                 if ($("#spotlight").is(':visible') && e.keyCode == escape) {
-                    $("#spotlight").hide();
-                    GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
+                	that.close();
                 }
             });
 
@@ -65,12 +81,10 @@ define(function (require) {
                     that.confirmed(datum.label);
                 }
             });
-
+           
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
-
-                that.instances.add(GEPPETTO.ModelFactory.allPaths);
-
+            	that.updateData();
             });
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions
@@ -118,12 +132,14 @@ define(function (require) {
 
             GEPPETTO.Spotlight = this;
 
-
             //TODO: To be removed, just a sample of how to add a suggestion
             //this.addSuggestion(this.recordSample, GEPPETTO.Resources.RUN_FLOW);
-            this.addSuggestion(this.plotSample, GEPPETTO.Resources.PLAY_FLOW);
             //this.addSuggestion(this.lightUpSample, GEPPETTO.Resources.PLAY_FLOW);
+            this.addSuggestion(this.plotSample, GEPPETTO.Resources.PLAY_FLOW);
 
+            if(GEPPETTO.ForegroundControls != undefined){
+                GEPPETTO.ForegroundControls.refresh();
+            }
         },
 
         recordSample: {
@@ -166,7 +182,7 @@ define(function (require) {
                         suggestionFound = true;
                         var actions = found[0].actions;
                         actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommand(action)
+                            GEPPETTO.Console.executeCommandinst(action)
                         });
                         $("#typeahead").typeahead('val', "");
                     }
@@ -353,7 +369,7 @@ define(function (require) {
                     else {
                         label = "Multiple instances of " + instance[0].getVariable().getId();
                     }
-                    processed = action.split("$instance$").join("_spotlightInstance");
+                    processed = action.split("$instances$").join("_spotlightInstance");
                     processed = processed.split("$instance0$").join("_spotlightInstance[0]");
                     processed = processed.split("$label$").join(label);
                     processed = processed.split("$value$").join(value);
@@ -362,7 +378,7 @@ define(function (require) {
                     processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
                 }
                 else{
-                    processed = action.split("$instance$").join(instance.getInstancePath());
+                    processed = action.split("$instances$").join(instance.getInstancePath());
                     processed = processed.split("$label$").join(instance.getInstancePath());
                     processed = processed.split("$value$").join(value);
                     processed = processed.split("$type$").join(instance.getType().getPath());
@@ -562,25 +578,25 @@ define(function (require) {
                 },
                 "VisualCapability": {
                     "buttonOne": {
-                        "condition": "GEPPETTO.SceneController.isSelected($instance$)",
+                        "condition": "GEPPETTO.SceneController.isSelected($instances$)",
                         "false": {
-                            "actions": ["GEPPETTO.SceneController.select($instance$)"],
+                            "actions": ["GEPPETTO.SceneController.select($instances$)"],
                             "icon": "fa-hand-stop-o",
                             "label": "Unselected",
                             "tooltip": "Select"
                         },
                         "true": {
-                            "actions": ["GEPPETTO.SceneController.deselect($instance$)"],
+                            "actions": ["GEPPETTO.SceneController.deselect($instances$)"],
                             "icon": "fa-hand-rock-o",
                             "label": "Selected",
                             "tooltip": "Deselect"
                         },
                     },
                     "buttonTwo": {
-                        "condition": "GEPPETTO.SceneController.isVisible($instance$)",
+                        "condition": "GEPPETTO.SceneController.isVisible($instances$)",
                         "false": {
                             "actions": [
-                                "GEPPETTO.SceneController.show($instance$)"
+                                "GEPPETTO.SceneController.show($instances$)"
                             ],
                             "icon": "fa-eye-slash",
                             "label": "Hidden",
@@ -588,7 +604,7 @@ define(function (require) {
                         },
                         "true": {
                             "actions": [
-                                "GEPPETTO.SceneController.hide($instance$)"
+                                "GEPPETTO.SceneController.hide($instances$)"
                             ],
                             "icon": "fa-eye",
                             "label": "Visible",
@@ -598,7 +614,7 @@ define(function (require) {
                     },
                     "buttonThree": {
                         "actions": [
-                            "GEPPETTO.SceneController.zoomTo($instance$)"
+                            "GEPPETTO.SceneController.zoomTo($instances$)"
                         ],
                         "icon": "fa-search-plus",
                         "label": "Zoom",
@@ -607,24 +623,24 @@ define(function (require) {
                 },
                 "ParameterCapability": {
                     "parameterInput": {
-                        "inputValue":"$instance$.getValue()",
-                        "label":"$instance$.getUnit()",
-                        "onChange":"$instance$.setValue($value$);",
+                        "inputValue":"$instances$.getValue()",
+                        "label":"$instances$.getUnit()",
+                        "onChange":"$instances$.setValue($value$);",
                         "tooltip": "Set parameter value",
                         "multipleInstances":false
                     }
                 },
                 "StateVariableCapability": {
                     "watch": {
-                        "condition": "GEPPETTO.ExperimentsController.isWatched($instance$);",
+                        "condition": "GEPPETTO.ExperimentsController.isWatched($instances$);",
                         "false": {
-                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instance$,true);"],
+                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instances$,true);"],
                             "icon": "fa-circle-o",
                             "label": "Not recorded",
                             "tooltip": "Record the state variable"
                         },
                         "true": {
-                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instance$,false);"],
+                            "actions": ["GEPPETTO.ExperimentsController.watchVariables($instances$,false);"],
                             "icon": "fa-dot-circle-o",
                             "label": "Recorded",
                             "tooltip": "Stop recording the state variable"
@@ -632,7 +648,7 @@ define(function (require) {
                     },
                     "plot": {
                         "actions": [
-                            "G.addWidget(0).plotData($instance$).setName('$label$')",
+                            "G.addWidget(0).plotData($instances$).setName('$label$')",
                         ],
                         "icon": "fa-area-chart",
                         "label": "Plot",
@@ -645,5 +661,5 @@ define(function (require) {
         },
     });
 
-    React.renderComponent(Spotlight({}, ''), document.getElementById("spotlight"));
+    ReactDOM.render(React.createFactory(Spotlight)({},''), document.getElementById("spotlight"));
 });

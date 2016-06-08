@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.2.9</version>
+	<version>0.3.0</version> 
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
@@ -433,7 +433,6 @@
 						<sourceFile>src/main/webapp/js/GEPPETTO.Main.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.MenuManager.js</sourceFile>
 						<sourceFile>src/main/webapp/js/GEPPETTO.ScriptRunner.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.Share.js</sourceFile>
 					</sourceFiles>
 					<outputDirectory>${basedir}/src/main/webapp/jsdocs</outputDirectory>
 				</configuration>

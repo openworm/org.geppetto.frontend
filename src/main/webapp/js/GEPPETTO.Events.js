@@ -40,6 +40,7 @@
  */
 var Events = {
     Select: "experiment:selection_changed",
+    Focus_changed: "experiment:focus_changed",
     Experiment_over: "experiment:over",
     Project_loaded: "project:loaded",
     Model_loaded: "model:loaded",
@@ -73,6 +74,9 @@ define(function (require) {
                 GEPPETTO.on(Events.Select, function () {
                     //notify widgets that selection has changed in scene
                     GEPPETTO.WidgetsListener.update(Events.Select);
+
+                    //trigger focus change event
+                    GEPPETTO.trigger(Events.Focus_changed);
                 });
                 GEPPETTO.on(Events.Project_loaded, function () {
                     GEPPETTO.FE.populateExperimentsTable();

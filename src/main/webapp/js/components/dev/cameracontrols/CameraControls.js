@@ -1,6 +1,7 @@
 define(function(require) {
 
     var React = require('react');
+    var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
     var Controls = React.createClass({
@@ -96,6 +97,7 @@ define(function(require) {
 
     });
 
-    React.renderComponent(Controls({},''), document.getElementById('camera-controls'));
+    var controlsFactory = React.createFactory(Controls);
+    ReactDOM.render(controlsFactory({},''), document.getElementById('camera-controls'));
 
 });

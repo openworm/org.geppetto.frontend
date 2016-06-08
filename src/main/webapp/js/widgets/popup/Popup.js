@@ -46,7 +46,7 @@ define(function (require) {
      *
      * NOTE: declared here so that it's private.
      */
-    var hookupCustomHandlers = function (handlers, popup) {
+    var hookupCustomHandlers = function (handlers, popupDOM, popup) {
         for (var i = 0; i < handlers.length; i++) {
             // if not hooked already, then go ahead and hook it
             if (handlers[i].hooked === false) {
@@ -54,7 +54,7 @@ define(function (require) {
                 handlers[i].hooked = true;
 
                 // Find and iterate <a> element with an instancepath attribute
-                popup.find("a[instancepath]").each(function () {
+                popupDOM.find("a[instancepath]").each(function () {
                     var fun = handlers[i].funct;
                     var ev = handlers[i].event;
                     var domainType = handlers[i].domain;
@@ -73,7 +73,7 @@ define(function (require) {
                         // hookup custom handler
                         $(this).on(ev, function () {
                             // invoke custom handler with instancepath as arg
-                            fun(node);
+                            fun(node, path, popup);
 
                             // stop default event handler of the anchor from doing anything
                             return false;
@@ -90,9 +90,7 @@ define(function (require) {
          * Initialize the popup widget
          */
         initialize: function (options) {
-            this.id = options.id;
-            this.name = options.name;
-            this.visible = options.visible;
+        	Widget.View.prototype.initialize.call(this, options);
             this.render();
             this.setSize(100, 300);
             this.customHandlers = [];
@@ -117,7 +115,7 @@ define(function (require) {
                 }
 
                 // trigger routine that hooks up handlers
-                hookupCustomHandlers(this.customHandlers, $("#" + this.id));
+                hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
                 GEPPETTO.Console.log("Hooked up custom handlers for " + this.id);
             }
 
@@ -128,35 +126,109 @@ define(function (require) {
          * Sets the message that is displayed inside the widget through an instance of type Text
          *
          * @command setText(textInstance)
-         * @param {String} textInstance - An instance of type Text
+         * @param {Object} textInstance - An instance of type Text
          */
-        setText: function(textNode){
-        	return this.setMessage(this.getVariable(textNode).getInitialValues()[0].value.text);
+        setText: function (textNode) {
+            return this.setMessage(this.getVariable(textNode).getInitialValues()[0].value.text);
         },
 
         /**
          * Sets the message that is displayed inside the widget through an instance of type HTML
          *
          * @command setHTML(htmlInstance)
-         * @param {String} htmlInstance - An instance of type HTML
+         * @param {Object} htmlInstance - An instance of type HTML
          */
-        setHTML:function(htmlNode){
+        setHTML: function (htmlNode) {
             return this.setMessage(this.getVariable(htmlNode).getInitialValues()[0].value.html);
         },
-        
+
+
+        /**
+         * Sets the message that is displayed inside the widget through an instance of any type.
+         *
+         * @command setData(anyInstance)
+         * @param {Object} anyInstance - An instance of any type
+         */
+        setData: function (anyInstance) {
+        	this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
+
+            this.setMessage(this.getHTML(anyInstance));
+            var changeIcon=function(chevron){
+                if (chevron.hasClass('fa-chevron-circle-down')) {
+                    chevron.removeClass("fa-chevron-circle-down").addClass("fa-chevron-circle-up");
+                }
+                else {
+                    chevron.removeClass("fa-chevron-circle-up").addClass("fa-chevron-circle-down");
+                }
+            };
+            $("#" + this.getId() + ' .popup-title').click(function (e) {
+            	changeIcon($($(e.target).attr("data-target") + "_chevron"));
+            });
+            $("#" + this.getId() + " .popup-chevron").click(function (e) {
+            	changeIcon($(e.target));
+            });
+            $("#" + this.getId() + " .slickdiv").slick();
+            return this;
+        },
+
+        /**
+         *
+         * @param anyInstance
+         * @returns {string}
+         */
+        getHTML: function (anyInstance, id) {
+            var type = anyInstance.getType();
+            var html = "";
+            if (type.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                for (var i = 0; i < type.getVariables().length; i++) {
+                    var v = type.getVariables()[i];
+                    var id = this.getId() + "_" + type.getId() + "_el_" + i;
+                    html += "<div class='popup-title' data-toggle='collapse' data-target='#" + id + "'>" + v.getName() + "</div><div id='" + id + "_chevron" + "' data-toggle='collapse' data-target='#" + id + "' class='popup-chevron fa fa-chevron-circle-down '></div>"
+                    html += this.getHTML(v, id);
+                }
+            }
+            else if (type.getMetaType() == GEPPETTO.Resources.HTML_TYPE) {
+                var value = this.getVariable(anyInstance).getInitialValues()[0].value;
+                html += "<div id='" + id + "' class='collapse in popup-html'>" + value.html + "</div>";
+            }
+            else if (type.getMetaType() == GEPPETTO.Resources.TEXT_TYPE) {
+                var value = this.getVariable(anyInstance).getInitialValues()[0].value;
+                html += "<div id='" + id + "' class='collapse in popup-text'>" + value.text + "</div>";
+            }
+            else if (type.getMetaType() == GEPPETTO.Resources.IMAGE_TYPE) {
+                var value = this.getVariable(anyInstance).getInitialValues()[0].value;
+                if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
+                    //if it's an array we use slick to create a carousel
+                    var elements = "";
+                    for (var j = 0; j < value.elements.length; j++) { 
+                        var image = value.elements[j].initialValue;
+                        elements += "<div class='popup-slick-image'>"+image.name+"<a href='' instancepath='" + image.reference + "'><img  class='popup-image invert' src='" + image.data + "'/></a></div>";
+                    }
+                    html += "<div id='" + id + "' class='slickdiv popup-slick collapse in' data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}' >" + elements + "</div>";
+                }
+                else if (value.eClass == GEPPETTO.Resources.IMAGE) {
+                    //otherwise we just show an image
+                    var image = value;
+                    html += "<div id='" + id + "' class='popup-image collapse in'><a href='' instancepath='" + image.reference + "'><img  class='popup-image invert' src='" + image.data + "'/></a></div>";
+                }
+
+            }
+            return html;
+        },
+
         /**
          * Returns the variable for a node or variable node
          *
          * @command getVariable(node)
          * @param {Object} variable - A variable
          */
-        getVariable:function(node){
-        	if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE){
-        		return node.getVariable();
-        	}
-        	else{
-        		return node;
-        	}
+        getVariable: function (node) {
+            if (node.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
+                return node.getVariable();
+            }
+            else {
+                return node;
+            }
         },
 
         /**
@@ -170,7 +242,8 @@ define(function (require) {
             this.customHandlers.push({funct: funct, event: eventType, domain: domainType, hooked: false});
 
             // trigger routine that hooks up handlers
-            hookupCustomHandlers(this.customHandlers, $("#" + this.id));
+            hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
+            return this;
         }
     });
 });

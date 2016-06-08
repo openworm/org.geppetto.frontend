@@ -1,6 +1,7 @@
 define(function (require) {
 
     var React = require('react'),
+        ReactDOM = require('react-dom'),
         $ = require('jquery'),
         Button = require('mixins/bootstrap/button'),
         GEPPETTO = require('geppetto');
@@ -56,7 +57,7 @@ define(function (require) {
     });
 
     if(!$.cookie('geppetto_hideWelcomeMessage')){
-        React.renderComponent(Modal({show:true}), document.getElementById('modal-region'));
+        ReactDOM.render(React.createFactory(Modal)({show:true}), document.getElementById('modal-region'));
     }
 
 });

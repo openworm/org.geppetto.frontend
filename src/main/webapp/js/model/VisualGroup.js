@@ -35,7 +35,7 @@
  * Client class use to represent a VisualGroup Node, used for visualization tree
  * properties.
  *
- * @module nodes/VisualGroupNode
+ * @module nodes/VisualGroup
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Giovanni Idili
  */
@@ -67,7 +67,7 @@ define(function (require) {
         /**
          * Get type of Visual Group Node
          *
-         * @command VisualGroupNode.getType()
+         * @command VisualGroup.getType()
          * @returns {String} Type of Visual Group
          */
         getType: function () {
@@ -77,7 +77,7 @@ define(function (require) {
         /**
          * Get low spectrum color
          *
-         * @command VisualGroupNode.getLowSpectrumColor()
+         * @command VisualGroup.getLowSpectrumColor()
          * @returns {String} Low Spectrum Color
          */
         getLowSpectrumColor: function () {
@@ -87,7 +87,7 @@ define(function (require) {
         /**
          * Get high spectrum color of visual group
          *
-         * @command VisualGroupNode.getHighSpectrumColor()
+         * @command VisualGroup.getHighSpectrumColor()
          * @returns {String} High Spectrum color of visual gorup
          */
         getHighSpectrumColor: function () {
@@ -97,7 +97,7 @@ define(function (require) {
         /**
          * Get this visual group children
          *
-         * @command VisualGroupNode.getTags()
+         * @command VisualGroup.getTags()
          * @returns {List<String>} All tags for this visual group
          */
         getTags: function () {
@@ -107,7 +107,7 @@ define(function (require) {
         /**
          * Get this visual group children
          *
-         * @command VisualGroupNode.getVisualGroupElements()
+         * @command VisualGroup.getVisualGroupElements()
          * @returns {List<Object>} All children e.g. Visual Group Element Nodes
          */
         getVisualGroupElements: function () {

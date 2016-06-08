@@ -59,6 +59,8 @@ require.config({
         'backbone-associations': 'vendor/backbone-associations-min',
         geppetto: 'GEPPETTO',
         react: 'vendor/react',
+        'react-dom': 'vendor/react-dom',
+        griddle: 'vendor/griddle',
         jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',
@@ -71,7 +73,7 @@ require.config({
      * to that object in here.
      */
     shim: {
-        'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
+        'vendor/jquery-ui.min': ["jquery"],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/shaders/ConvolutionShader': ['three'],
@@ -132,7 +134,7 @@ var jqueryLib = [
     "vendor/postprocessing/FilmPass",
     "vendor/ColladaLoader",
     "vendor/OBJLoader",
-    "vendor/jquery-ui-1.10.3.custom.min",
+    "vendor/jquery-ui.min",
     "vendor/TrackballControls",
     "vendor/ColorConverter",
     "vendor/bootstrap.min",
@@ -170,9 +172,4 @@ require(jqueryLib, function ($, geppetto) {
 
     });
 });
-
-
-//TODO: why isn't plot doing the same, in tune with
-//  http://docs.geppetto.org/en/latest/widgets.html#using-a-widget-inside-geppetto
-//require("widgets/scatter3d/config.js", function($) {});
 

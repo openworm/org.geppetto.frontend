@@ -34,6 +34,7 @@
  * Loads all scripts needed for Geppetto
  *
  * @author Jesus Martinez (jesus@metacell.us)
+ * @author Giovanni Idili (giovanni@metacell.us)
  */
 
 define(function (require) {
@@ -225,13 +226,6 @@ define(function (require) {
 
             equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
 
-            G.showShareBar(true);
-
-            equal(GEPPETTO.Share.isVisible(), true, "ShareBar Visible");
-
-            G.showShareBar(false);
-
-            equal(GEPPETTO.Share.isVisible(), false, "ShareBar hidden");
         });
 
         QUnit.module("Test Model Factory");
@@ -274,8 +268,8 @@ define(function (require) {
                             // check visual groups are created
                             assert.ok(acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups().length == 3 &&
                                       acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[0].getId() == 'Cell_Regions' &&
-                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Na_bask_soma_group' &&
-                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask_soma_group', 'Visual groups created as expected');
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Na_bask' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask', 'Visual groups created as expected');
                             // test that ModelFactory.getInstanceOf gives expected results
                             assert.ok(GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType()).length == 12 &&
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType().getPath()).length == 12 &&
@@ -288,11 +282,11 @@ define(function (require) {
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
                                       'getAllInstanceOf returning instances as expected for Variable and Variable path.');
                             // check AllPotentialInstances
-                            assert.ok(GEPPETTO.ModelFactory.allPaths.length == 11084 &&
-                                      GEPPETTO.ModelFactory.allPaths[0].path == 'acnet2' &&
-                                      GEPPETTO.ModelFactory.allPaths[0].metaType == 'CompositeType' &&
-                                      GEPPETTO.ModelFactory.allPaths[11084 - 1].path == 'time' &&
-                                      GEPPETTO.ModelFactory.allPaths[11084 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 11084 &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[0].path == 'acnet2' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[0].metaType == 'CompositeType' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[11084 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[11084 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
                             // check getAllPotentialInstancesEndingWith
                             assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
                                       GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&

@@ -1,6 +1,7 @@
 define(function(require) {
 
 	var React = require('react'),
+		ReactDOM = require('react-dom'),
 		GEPPETTO = require('geppetto');
 	
 	return React.createClass({		
@@ -16,13 +17,19 @@ define(function(require) {
 			GEPPETTO.once('hide:spinner', this.hide);
 			setTimeout((function(){
 				if(this.isMounted()){
-					this.setProps({text: 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited'});
+					this.props.text = 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited';
+					this.forceUpdate();
+
+					// this.setProps({text: 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited'});
 				}
 			}).bind(this), 20000);
 			
 			setTimeout((function(){
 				if(this.isMounted()){
-					this.setProps({text: GEPPETTO.Resources.SPOTLIGHT_HINT});
+					this.props.text = GEPPETTO.Resources.SPOTLIGHT_HINT;
+					this.forceUpdate();
+
+					// this.setProps({text: GEPPETTO.Resources.SPOTLIGHT_HINT});
 				}
 			}).bind(this), 3000);
 		},

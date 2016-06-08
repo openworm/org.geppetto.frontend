@@ -8,10 +8,6 @@ define(function (require) {
         
         popoverTitle: 'Persist project',
 
-        onClick: function() {
-            GEPPETTO.Console.executeCommand("Project.persist();");
-        },
-
         componentDidMount: function() {
 
         },
@@ -21,7 +17,9 @@ define(function (require) {
             	label : '',
                 className: 'SaveButton pull-right',
                 icon: 'fa fa-star',
-                onClick: this.onClick
+                onClick: function() {
+                    GEPPETTO.Console.executeCommand("Project.persist();");
+                }
             };
         }
 

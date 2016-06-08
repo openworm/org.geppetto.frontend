@@ -5,6 +5,8 @@
 
 THREE.BokehPass = function ( scene, camera, params ) {
 
+	THREE.Pass.call( this );
+
 	this.scene = scene;
 	this.camera = camera;
 
@@ -33,7 +35,9 @@ THREE.BokehPass = function ( scene, camera, params ) {
 	// bokeh material
 
 	if ( THREE.BokehShader === undefined ) {
+
 		console.error( "THREE.BokehPass relies on THREE.BokehShader" );
+
 	}
 	
 	var bokehShader = THREE.BokehShader;
@@ -46,19 +50,16 @@ THREE.BokehPass = function ( scene, camera, params ) {
 	bokehUniforms[ "aperture" ].value = aperture;
 	bokehUniforms[ "maxblur" ].value = maxblur;
 
-	this.materialBokeh = new THREE.ShaderMaterial({
+	this.materialBokeh = new THREE.ShaderMaterial( {
 		uniforms: bokehUniforms,
 		vertexShader: bokehShader.vertexShader,
 		fragmentShader: bokehShader.fragmentShader
-	});
+	} );
 
 	this.uniforms = bokehUniforms;
-	this.enabled = true;
 	this.needsSwap = false;
-	this.renderToScreen = false;
-	this.clear = false;
 
-	this.camera2 = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+	this.camera2 = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 	this.scene2  = new THREE.Scene();
 
 	this.quad2 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), null );
@@ -66,7 +67,11 @@ THREE.BokehPass = function ( scene, camera, params ) {
 
 };
 
+THREE.BokehPass.prototype = Object.create( THREE.Pass.prototype );
+
 THREE.BokehPass.prototype = {
+
+	constructor: THREE.BokehPass,
 
 	render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
 
@@ -97,4 +102,3 @@ THREE.BokehPass.prototype = {
 	}
 
 };
-

@@ -43,7 +43,7 @@ define(function (require) {
 
     //These two libraries are required here so that Geppetto can work properly in an iframe (as embedded website).
     //Otherwise, sometimes (randomly)  these libraries are not loaded on time and some js commands failed and the web is not loaded properly.
-    require('vendor/jquery-ui-1.10.3.custom.min');
+    require('vendor/jquery-ui.min');
     require('vendor/bootstrap.min');
 
     require('vendor/Detector');
@@ -225,7 +225,7 @@ define(function (require) {
             // Compute offset needed to move the camera back that much needed to center AABB
             var offset = radius / Math.sin(Math.PI / 180.0 * GEPPETTO.getVARS().camera.fov * 0.5);
 
-            var dir = new THREE.Vector3(0, 0, 1);
+            var dir = GEPPETTO.getVARS().camera.direction.clone();
             dir.multiplyScalar(offset);
 
             // Store camera position
@@ -386,7 +386,6 @@ define(function (require) {
         render: function () {
             GEPPETTO.getVARS().renderer.clear();
             GEPPETTO.getVARS().composer.render(0.01);
-            //GEPPETTO.getVARS().renderer.render(GEPPETTO.getVARS().scene,GEPPETTO.getVARS().camera);
         },
 
         /**
@@ -576,7 +575,6 @@ define(function (require) {
     require('GEPPETTO.JSEditor')(GEPPETTO);
     require('GEPPETTO.Console')(GEPPETTO);
     require('GEPPETTO.Utility')(GEPPETTO);
-    require('GEPPETTO.Share')(GEPPETTO);
     require('GEPPETTO.MenuManager')(GEPPETTO);
     require('websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
     require('websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
@@ -585,7 +583,7 @@ define(function (require) {
     require('GEPPETTO.Main')(GEPPETTO);
     // require('GEPPETTO.Tutorial')(GEPPETTO);
     require("widgets/includeWidget")(GEPPETTO);
-    require('model/NodeFactory')(GEPPETTO);
+    require('model/ProjectFactory')(GEPPETTO);
     require('model/ModelFactory')(GEPPETTO);
     require('model/ExperimentsController')(GEPPETTO);
 

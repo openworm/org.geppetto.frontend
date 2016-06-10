@@ -38,7 +38,6 @@
  */
 define(function (require) {
 
-    var ParameterNode = require('model/ParameterNode');
     return Backbone.Model.extend(
         {
 

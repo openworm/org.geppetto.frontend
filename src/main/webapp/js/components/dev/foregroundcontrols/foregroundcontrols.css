@@ -1,0 +1,13 @@
+#foreground-toolbar {
+    position: fixed;
+    left: 52px;
+    top: 320px;
+}
+
+.foreground-controls button {
+    border: none;
+    width: 24px;
+    height: 24px;
+    padding: 1px;
+    margin-bottom: 4px;
+}

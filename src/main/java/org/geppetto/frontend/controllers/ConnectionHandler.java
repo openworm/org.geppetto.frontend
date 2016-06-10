@@ -36,7 +36,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Date;
@@ -58,6 +57,7 @@ import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.ResultsFormat;
+import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.GeppettoSerializer;
@@ -67,7 +67,9 @@ import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.model.ExperimentState;
+import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.ModelFormat;
+import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.simulation.manager.GeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -186,7 +188,7 @@ public class ConnectionHandler
 			setConnectionProject(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, projectJSON);
 
-			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager) geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel());
+			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager) geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel(), true);
 			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_MODEL_LOADED, geppettoModelJSON);
 
 			if(experimentId != -1)
@@ -303,6 +305,72 @@ public class ConnectionHandler
 	}
 
 	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param experimentId
+	 * @param dataSourceId
+	 * @param variableId
+	 */
+	public void fetchVariable(String requestID, Long projectId, Long experimentId, String dataSourceId, String variableId)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+		try
+		{
+			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, experiment, geppettoProject);
+			
+			String serializedModel = GeppettoSerializer.serializeToJSON(geppettoModel, true);
+
+			websocketConnection.sendMessage(requestID, OutboundMessages.VARIABLE_FETCHED, serializedModel);
+		}
+		catch(GeppettoDataSourceException e)
+		{
+			error(e, "Error fetching variable " + variableId);
+		}
+		catch(IOException e)
+		{
+			error(e, "Error fetching variable " + variableId);
+		}
+		catch(GeppettoModelException e)
+		{
+			error(e, "Error fetching variable " + variableId);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error fetching variable " + variableId);
+		}
+
+	}
+
+	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param experimentId
+	 * @param dataSourceServiceId
+	 * @param variableId
+	 * @throws GeppettoExecutionException 
+	 */
+	public void resolveImportType(String requestID, Long projectId, Long experimentId, String typePath)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
+		try
+		{
+			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePath, experiment, geppettoProject);
+			websocketConnection.sendMessage(requestID, OutboundMessages.IMPORT_TYPE_RESOLVED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
+		}
+		catch(IOException e)
+		{
+			error(e, "Error importing type " + typePath);
+		}
+		catch(GeppettoExecutionException e)
+		{
+			error(e, "Error importing type " + typePath);
+		}
+
+	}
+
+	/**
 	 * Adds watch lists with variables to be watched
 	 * 
 	 * @param requestID
@@ -331,15 +399,15 @@ public class ConnectionHandler
 			{
 				error(e, "Error setting watched variables");
 			}
-	
+
 			// serialize watch-lists
 			ObjectMapper mapper = new ObjectMapper();
 			String serializedLists;
-	
+
 			try
 			{
 				serializedLists = mapper.writer().writeValueAsString(variables);
-	
+
 				// send to the client the watch lists were added
 				websocketConnection.sendMessage(requestID, OutboundMessages.WATCHED_VARIABLES_SET, serializedLists);
 			}
@@ -347,7 +415,7 @@ public class ConnectionHandler
 			{
 				error(e, "There was an error serializing the watched lists");
 			}
-		}	
+		}
 
 	}
 
@@ -591,7 +659,7 @@ public class ConnectionHandler
 		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>()
 		{
 			@Override
-			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+			public Date deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 			{
 				return new Date(json.getAsJsonPrimitive().getAsLong());
 			}

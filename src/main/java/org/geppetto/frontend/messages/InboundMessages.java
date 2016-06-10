@@ -37,38 +37,42 @@ package org.geppetto.frontend.messages;
  */
 public enum InboundMessages {
 	
-	RUN_EXPERIMENT("run_experiment"), 
-	PAUSE("pause"), 
-	STOP("stop"), 
-	OBSERVE("observe"), 
-	NEW_EXPERIMENT("new_experiment"),
+	GEPPETTO_VERSION("geppetto_version"),
+	NOTIFY_USER("notify_user"),
+	GET_SCRIPT("get_script"),
+	
+	//PROJECT MESSAGES
 	LOAD_PROJECT_FROM_URL("load_project_from_url"), 
 	LOAD_PROJECT_FROM_ID("load_project_from_id"), 
 	LOAD_PROJECT_FROM_CONTENT("load_project_from_content"),
+	SAVE_PROJECT_PROPERTIES("save_project_properties"),
+	PERSIST_PROJECT("persist_project"),
+
+	//EXPERIMENT MESSAGES
+	NEW_EXPERIMENT("new_experiment"),
 	LOAD_EXPERIMENT("load_experiment"),
-	SIM("sim"),
-	GEPPETTO_VERSION("geppetto_version"),
-	GET_SCRIPT("get_script"),
+	SAVE_EXPERIMENT_PROPERTIES("save_experiment_properties"),
+	DELETE_EXPERIMENT("delete_experiment"),
+	PLAY_EXPERIMENT("play_experiment"),
+	EXPERIMENT_STATUS("experiment_status"), 
+	RUN_EXPERIMENT("run_experiment"), 
+	
 	SET_WATCHED_VARIABLES("set_watched_variables"),
 	GET_WATCH("get_watch"),
 	CLEAR_WATCHED_VARIABLES("clear_watch"),
-	NOTIFY_USER("notify_user"),
-	GET_MODEL_TREE("get_model_tree"),
-	GET_SIMULATION_TREE("get_simulation_tree"),
-	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
-	DOWNLOAD_MODEL("download_model"),
 	SET_PARAMETERS("set_parameters"),
-	EXPERIMENT_STATUS("experiment_status"), 
-	PLAY_EXPERIMENT("play_experiment"),
-	DELETE_EXPERIMENT("delete_experiment"),
-	PERSIST_PROJECT("persist_project"),
-	SAVE_PROJECT_PROPERTIES("save_project_properties"),
-	SAVE_EXPERIMENT_PROPERTIES("save_experiment_properties"),
+	
 	LINK_DROPBOX("link_dropbox"),
 	UNLINK_DROPBOX("unlink_drobpox"),
 	UPLOAD_MODEL("upload_model"),
 	UPLOAD_RESULTS("upload_results"),
-	DOWNLOAD_RESULTS("download_results"), GEPPETTO_PERSISTENCE("geppetto_persistence");
+	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),
+	DOWNLOAD_MODEL("download_model"),
+	DOWNLOAD_RESULTS("download_results"),
+	
+	//DATASOURCES
+	FETCH_VARIABLE("fetch_variable"), 
+	RESOLVE_IMPORT_TYPE("resolve_import_type");
 
 	
 	private InboundMessages(final String text) {

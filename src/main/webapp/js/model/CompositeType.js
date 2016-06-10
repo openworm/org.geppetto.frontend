@@ -61,13 +61,32 @@ define(function (require) {
         /**
          * Get variables
          *
-         * @command CompositeVariableNode.getChildren()
+         * @command CompositeType.getChildren()
          *
          * @returns {List<Variable>} - List of variables
          *
          */
         getVariables: function () {
             return this.get("variables");
+        },
+
+        /**
+         * Check if the composite contains a given variable
+         *
+         * @param varId
+         * @returns {boolean}
+         */
+        hasVariable: function(varId){
+           var vars = this.getVariables();
+
+            var match = false;
+            for(var i=0; i<vars.length; i++){
+                if(vars[i].getId() == varId){
+                    match = true;
+                }
+            }
+
+            return match;
         },
 
         /**

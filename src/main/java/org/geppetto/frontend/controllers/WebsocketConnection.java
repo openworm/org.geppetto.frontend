@@ -90,7 +90,6 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
-
 	public WebsocketConnection()
 	{
 		super();
@@ -401,8 +400,22 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				break;
 			}
 			case EXPERIMENT_STATUS:
+			{
 				connectionHandler.checkExperimentStatus(requestID, gmsg.data);
 				break;
+			}
+			case FETCH_VARIABLE:
+			{
+				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.dataSourceId, receivedObject.variableId);
+				break;
+			}
+			case RESOLVE_IMPORT_TYPE:
+			{
+				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.path);
+				break;
+			}
 			default:
 			{
 				// NOTE: no other messages expected for now
@@ -447,5 +460,13 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Map<String, String> properties;
 	}
 
+	class GeppettoModelAPIParameters
+	{
+		Long projectId;
+		Long experimentId;
+		String dataSourceId;
+		String path;
+		String variableId;
+	}
 
 }

@@ -39,12 +39,14 @@
  * @author giovanni@openworm.org (Giovanni Idili)
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-define(function (require) {
-    return function (GEPPETTO) {
+define(function(require) {
+    return function(GEPPETTO) {
+
         var $ = require('jquery'),
             React = require('react'),
-            InfoModal = require('jsx!components/popups/InfoModal');
-        var ProjectNode = require('model/ProjectNode');
+            InfoModal = require('jsx!components/popups/InfoModal'),
+            ProjectNode = require('model/ProjectNode'),
+            ReactDOM = require('react-dom');
 
         /**
          * @class GEPPETTO.Main
@@ -60,18 +62,17 @@ define(function (require) {
             idleTime: 0,
             disconnected: false,
             status: 0,
-            simulationFileTemplate: "geppetto/resources/template.xml",
-            statusWorker: null,
+            statusWorker : null,
 
-            getVisitorStatus: function () {
+            getVisitorStatus: function() {
                 return this.status;
             },
 
-            getStatusWorker: function () {
+            getStatusWorker : function(){
                 return this.statusWorker;
             },
 
-            startStatusWorker: function () {
+            startStatusWorker : function(){
                 //create web worker for checking status
                 this.statusWorker = new Worker("geppetto/js/PullStatusWorker.js");
 
@@ -79,18 +80,18 @@ define(function (require) {
 
                 //receives message from web worker
                 this.statusWorker.onmessage = function (event) {
-                    if (window.Project != null || undefined) {
+                    if(window.Project!=null || undefined){
                         var experiments = window.Project.getExperiments();
                         var pull = false;
-                        for (var i = 0; i < experiments.length; i++) {
+                        for(var i=0; i < experiments.length; i++){
                             var status = experiments[i].getStatus();
-                            if (status !== "COMPLETED") {
+                            if(status !== "COMPLETED"){
                                 pull = true;
                                 break;
                             }
                         }
 
-                        if (pull && window.Project.persisted && window.Project.getId() != -1) {
+                        if(pull && window.Project.persisted && window.Project.getId()!=-1){
                             GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_STATUS, window.Project.id);
                         }
                     }
@@ -100,31 +101,30 @@ define(function (require) {
             /**
              * Initialize web socket communication
              */
-            init: function () {
-                GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+            init: function() {
+                GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/'+ window.BUNDLE_CONTEXT_PATH +'/GeppettoServlet');
                 GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);
             },
 
             /**
              * Idle check
              */
-            idleCheck: function () {
-                if (GEPPETTO.Main.idleTime > -1) {
+            idleCheck : function(){
+                if(GEPPETTO.Main.idleTime>-1){
                     var allowedTime = 2, timeOut = 4;
-                    if (!GEPPETTO.Main.disconnected) {
+                    if(!GEPPETTO.Main.disconnected) {
                         GEPPETTO.Main.idleTime = GEPPETTO.Main.idleTime + 1;
                         //first time check, asks if user is still there
-                        if (GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
+                        if(GEPPETTO.Main.idleTime > allowedTime) { // 5 minutes
 
-                            React.renderComponent(InfoModal({
-                                show: true,
-                                keyboard: false
-                            }), document.getElementById('modal-region'));
+                            var infoFactory = React.createFactory(InfoModal);
+                            ReactDOM.render(infoFactory({show:true, keyboard:false}), document.getElementById('modal-region'));
+
                             $('#infomodal-title').html("Zzz");
                             $('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
                             $('#infomodal-btn').html("Yes");
 
-                            $('#infomodal-btn').html("Yes").click(function () {
+                            $('#infomodal-btn').html("Yes").click(function() {
                                 $('#infomodal').modal('hide');
                                 GEPPETTO.Main.idleTime = 0;
 
@@ -134,8 +134,10 @@ define(function (require) {
                         }
 
                         //second check, user isn't there or didn't click yes, disconnect
-                        if (GEPPETTO.Main.idleTime > timeOut) {
-                            React.renderComponent(InfoModal({
+                        if(GEPPETTO.Main.idleTime > timeOut) {
+
+                            var infoFactory = React.createFactory(InfoModal);
+                            ReactDOM.render(infoFactory({
                                 show: true,
                                 keyboard: false,
                                 title: "",
@@ -180,7 +182,7 @@ define(function (require) {
                 GEPPETTO.FE.initialEvents();
 
                 //Increment the idle time counter every minute.
-                setInterval(GEPPETTO.Main.idleCheck, 60000); // 1 minute
+                setInterval(GEPPETTO.Main.idleCheck, 240000); // 1 minute
                 var here = $(this);
                 //Zero the idle timer on mouse movement.
                 here.mousemove(function (e) {

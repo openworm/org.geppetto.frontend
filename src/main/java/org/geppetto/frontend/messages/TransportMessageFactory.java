@@ -85,14 +85,17 @@ public class TransportMessageFactory {
 				break;	
 			case READ_URL_PARAMETERS:
 				break;
-			case SIMULATOR_FULL:
-				params.add(new SimpleEntry<String, String>("message",  (update!=null) ? update : EMPTY_STRING));
-				break;
 			case PROJECT_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GEPPETTO_MODEL_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GEPPETTO_MODEL_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case VARIABLE_FETCHED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.VARIABLE_FETCHED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case IMPORT_TYPE_RESOLVED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.IMPORT_TYPE_RESOLVED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case SIMULATION_OVER:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
@@ -133,18 +136,12 @@ public class TransportMessageFactory {
 			case WATCHED_VARIABLES_SET:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.WATCHED_VARIABLES_SET.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
-			case GET_MODEL_TREE:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
 			case UPDATE_MODEL_TREE:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.UPDATE_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_SUPPORTED_OUTPUTS:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SUPPORTED_OUTPUTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;				
-			case GET_SIMULATION_TREE:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SIMULATION_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
 				break;

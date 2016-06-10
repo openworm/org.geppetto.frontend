@@ -32,53 +32,72 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent a text metadata node, used for model
- * tree properties.
+ * Client class use to represent an array type.
  *
- * @module model/TextMetadataNode
- * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
- * @author Jesus R. Martinez (jesus@metacell.us)
+ * @module model/ImportType
+ * @author Giovanni Idili
  */
 define(function (require) {
+    var Type = require('model/Type');
 
-    var Node = require('model/Node');
-
-    return Node.Model.extend({
-        value: "",
+    return Type.extend({
 
         /**
          * Initializes this node with passed attributes
          *
-         * @param {Object} options - Object with options attributes to initialize
-         *                           node
+         * @param {Object} options - Object with options attributes to initialize node
          */
         initialize: function (options) {
-            this.name = options.name;
-            this.id = options.id;
-            this.instancePath = options.instancePath;
-            this.aspectNode = options.aspectNode;
-            this.value = options.value;
-            this._metaType = options._metaType;
-            this.domainType = options.domainType;
+            this.set({"parent": options.parent});
+            this.set({"wrappedObj": options.wrappedObj});
+
+            // capability list is for private use
+            this.set({"capabilities": []});
         },
 
         /**
-         * Get value of quantity
+         * Get type for array type
          *
-         * @command TextMetadataNode.getText()
-         * @returns {String} Value of quantity
+         * @command ImportType.getUrl()
+         *
+         * @returns {String}
+         *
          */
-        getValue: function () {
-            return this.value;
+        getUrl: function () {
+            return this.getWrappedObj().url;
         },
 
         /**
-         * Print out formatted node
+         * Get type for array type
+         *
+         * @command ImportType.getReferenceUrl()
+         *
+         * @returns {String}
+         *
          */
-        print: function () {
-            return "ID : " + this.name + "\n"
-                + "    Name : " + this.name + "\n"
-                + "    value : " + this.text + "\n";
+        getReferenceUrl: function () {
+            return this.getWrappedObj().referenceURL;
+        },
+
+        /**
+         * Get type for array type
+         *
+         * @command ImportType.getModelInterpreterId()
+         *
+         * @returns {String}
+         *
+         */
+        getModelInterpreterId: function () {
+            return this.getWrappedObj().modelInterpreterId;
+        },
+
+        /**
+         * Trigger import type resolution - will cause this import type to get swapped with an actual type
+         *
+         * @command ImportType.resolve()
+         */
+        resolve: function(callback) {
+            GEPPETTO.SimulationHandler.resolveImportType(this.getPath(), callback);
         }
     });
 });

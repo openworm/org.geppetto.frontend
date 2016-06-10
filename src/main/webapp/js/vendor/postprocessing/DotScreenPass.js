@@ -4,6 +4,8 @@
 
 THREE.DotScreenPass = function ( center, angle, scale ) {
 
+	THREE.Pass.call( this );
+
 	if ( THREE.DotScreenShader === undefined )
 		console.error( "THREE.DotScreenPass relies on THREE.DotScreenShader" );
 
@@ -12,8 +14,8 @@ THREE.DotScreenPass = function ( center, angle, scale ) {
 	this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
 
 	if ( center !== undefined ) this.uniforms[ "center" ].value.copy( center );
-	if ( angle !== undefined ) this.uniforms[ "angle"].value = angle;
-	if ( scale !== undefined ) this.uniforms[ "scale"].value = scale;
+	if ( angle !== undefined ) this.uniforms[ "angle" ].value = angle;
+	if ( scale !== undefined ) this.uniforms[ "scale" ].value = scale;
 
 	this.material = new THREE.ShaderMaterial( {
 
@@ -23,12 +25,7 @@ THREE.DotScreenPass = function ( center, angle, scale ) {
 
 	} );
 
-	this.enabled = true;
-	this.renderToScreen = false;
-	this.needsSwap = true;
-
-
-	this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+	this.camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 	this.scene  = new THREE.Scene();
 
 	this.quad = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), null );
@@ -36,9 +33,13 @@ THREE.DotScreenPass = function ( center, angle, scale ) {
 
 };
 
+THREE.DotScreenPass.prototype = Object.create( THREE.Pass.prototype );
+
 THREE.DotScreenPass.prototype = {
 
-	render: function ( renderer, writeBuffer, readBuffer, delta ) {
+	constructor: THREE.DotScreenPass,
+
+	render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
 
 		this.uniforms[ "tDiffuse" ].value = readBuffer;
 		this.uniforms[ "tSize" ].value.set( readBuffer.width, readBuffer.height );
@@ -51,7 +52,7 @@ THREE.DotScreenPass.prototype = {
 
 		} else {
 
-			renderer.render( this.scene, this.camera, writeBuffer, false );
+			renderer.render( this.scene, this.camera, writeBuffer, this.clear );
 
 		}
 

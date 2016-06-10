@@ -1,0 +1,26 @@
+{
+  "name": "foregroundcontrols",
+  "version": "0.0.1",
+  "author": {
+    "name":"Giovanni Idili",
+    "email":"giovanni@metacell.us"
+  }
+,
+  "description": "Foreground controls component (spotlight, control panel)",
+  "moduleType": [
+    "amd"
+  ],
+  "main": "ForegroundControls",
+  "keywords": [
+    "foregroundcontrols"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

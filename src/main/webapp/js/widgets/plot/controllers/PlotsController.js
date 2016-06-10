@@ -47,6 +47,7 @@ define(function (require) {
 
         initialize: function () {
             this.widgets = [];
+            this.history = [];
         },
 
         /**
@@ -59,7 +60,7 @@ define(function (require) {
             var name = id;
 
             //create plotting widget
-            var p = window[name] = new Plot({id: id, name: name, visible: true});
+            var p = window[name] = new Plot({id: id, name: name, visible: true, controller: this});
 
             //create help command for plot
             p.help = function () {

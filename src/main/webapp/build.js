@@ -11,6 +11,8 @@
 		'backbone-associations' : 'vendor/backbone-associations-min',
 		geppetto : 'GEPPETTO',
 		react: 'vendor/react',
+        'react-dom': 'vendor/react-dom',
+        griddle: 'vendor/griddle',
 		jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
     	handlebars: "vendor/handlebars",
@@ -21,7 +23,7 @@
         mathjs:'vendor/math.min'
     },
     shim: {
-        'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
+        'vendor/jquery-ui': ["jquery"],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/shaders/ConvolutionShader': ['three'],

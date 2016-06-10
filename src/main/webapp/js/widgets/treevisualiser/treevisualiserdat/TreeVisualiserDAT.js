@@ -216,9 +216,6 @@ define(function (require) {
         customiseLayout: function(folder){
         	//Disable input elements
             $(folder).find("input").prop('disabled', true);
-            
-            //AQP: What should be editable?
-            //$(folder).find(".parameterspecificationnodetv input").prop('disabled', false);
 
             //Change textfield to textarea if it is too big
             $(folder).find('.texttypetv').find('div > div > input[type="text"]').each(function () {

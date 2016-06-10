@@ -6,10 +6,6 @@ define(function (require) {
     return React.createClass({
         mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
 
-        onClick: function() {
-            GEPPETTO.Console.executeCommand("Project.getActiveExperiment().pause()");
-        },
-
         componentDidMount: function() {
             if(GEPPETTO.tutorialEnabled) {
                 GEPPETTO.once('simulation:started', this.showPopover);
@@ -21,7 +17,7 @@ define(function (require) {
                 label: 'Pause',
                 className: 'pull-right',
                 icon: 'fa fa-pause',
-                onClick: this.onClick
+                onClick: function(){ GEPPETTO.Console.executeCommand("Project.getActiveExperiment().pause()"); }
             }
         }
 

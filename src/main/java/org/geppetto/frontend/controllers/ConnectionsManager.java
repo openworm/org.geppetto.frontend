@@ -2,8 +2,10 @@ package org.geppetto.frontend.controllers;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,25 +20,25 @@ public class ConnectionsManager
 {
 
 	private static Log _logger = LogFactory.getLog(ConnectionsManager.class);
-	
+
 	private static ConnectionsManager connectionsManager;
-	
-	private final AtomicInteger connectionsCounter = new AtomicInteger(0);		
-	
-	
+
+	private final AtomicInteger connectionsCounter = new AtomicInteger(0);
+
 	private final ConcurrentHashMap<String, WebsocketConnection> _connections = new ConcurrentHashMap<String, WebsocketConnection>();
+
 	/**
 	 * @return
 	 */
 	public static ConnectionsManager getInstance()
 	{
-		if(connectionsManager==null)
+		if(connectionsManager == null)
 		{
-			connectionsManager=new ConnectionsManager();
+			connectionsManager = new ConnectionsManager();
 		}
 		return connectionsManager;
 	}
-	
+
 	/**
 	 * Add new connection to list of current ones
 	 * 
@@ -45,14 +47,14 @@ public class ConnectionsManager
 	 */
 	public String addConnection(WebsocketConnection websocketConnection)
 	{
-		String id=getNewConnectionId();
-		
+		String id = getNewConnectionId();
+
 		_connections.put(id, websocketConnection);
 
 		purgeLostConnections();
-		
+
 		_logger.info("New websocket connection " + websocketConnection.getConnectionID());
-		
+
 		return id;
 	}
 
@@ -61,6 +63,7 @@ public class ConnectionsManager
 	 */
 	private void purgeLostConnections()
 	{
+		List<WebsocketConnection> toBeRemoved = new ArrayList<WebsocketConnection>();
 		for(WebsocketConnection client : this.getConnections())
 		{
 			CharBuffer buffer = CharBuffer.wrap("ping");
@@ -71,8 +74,12 @@ public class ConnectionsManager
 			catch(IOException e)
 			{
 				_logger.error("Unable to communicate with client " + e.getMessage() + ". Removing connection.");
-				this.removeConnection(client);
+				toBeRemoved.add(client);
 			}
+		}
+		for(WebsocketConnection client : toBeRemoved)
+		{
+			this.removeConnection(client);
 		}
 	}
 
@@ -106,6 +113,6 @@ public class ConnectionsManager
 	 */
 	private String getNewConnectionId()
 	{
-		return "Connection"+connectionsCounter.incrementAndGet();
+		return "Connection" + connectionsCounter.incrementAndGet();
 	}
 }

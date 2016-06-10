@@ -43,9 +43,11 @@ define(function (require) {
         var Library = require('model/Library');
         var Type = require('model/Type');
         var Variable = require('model/Variable');
+        var Datasource = require('model/Datasource');
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');
         var ArrayType = require('model/ArrayType');
+        var ImportType = require('model/ImportType');
         var Instance = require('model/Instance');
         var ArrayInstance = require('model/ArrayInstance');
         var ArrayElementInstance = require('model/ArrayElementInstance');
@@ -71,22 +73,53 @@ define(function (require) {
             geppettoModel: null,
             instances: null,
             allPaths: [],
+            allPathsIndexing: [],
             instanceTags: {},
 
             /**
              * Creates and populates Geppetto model
+             *
+             * @param jsonModel
+             * @param storeRaw - store the raw and object models in the model factory
+             * @param populateRefs - populate type references after model creation
+             *
+             * @returns {GeppettoModel}
              */
-            createGeppettoModel: function (jsonModel) {
-                // store raw model for easy access during model building operations
-                this.rawGeppetoModel = jsonModel;
+            createGeppettoModel: function (jsonModel, storeModel, populateRefs) {
+                // set defaults for optional flags
+                if (storeModel == undefined) {
+                    // default behaviour store model
+                    storeModel = true;
+                }
+                if (populateRefs == undefined) {
+                    // default behaviour populate type references
+                    populateRefs = true;
+                }
 
                 var geppettoModel = null;
 
                 if (jsonModel.eClass == 'GeppettoModel') {
+                    if (storeModel) {
+                        // store raw model for easy access during model building operations
+                        this.rawGeppetoModel = jsonModel;
+                    }
+
                     geppettoModel = this.createModel(jsonModel);
-                    this.geppettoModel = geppettoModel;
+
+                    if (storeModel) {
+                        // store raw model for easy access during model building operations
+                        this.rawGeppetoModel = jsonModel;
+                        // store object model
+                        this.geppettoModel = geppettoModel;
+                    }
+
+                    // create datasources
+                    geppettoModel.set({"datasources": this.createDatasources(jsonModel.dataSources, geppettoModel)});
+
+                    // create variables
                     geppettoModel.set({"variables": this.createVariables(jsonModel.variables, geppettoModel)});
 
+                    // create libraries
                     for (var i = 0; i < jsonModel.libraries.length; i++) {
                         var library = this.createLibrary(jsonModel.libraries[i]);
                         library.set({"parent": geppettoModel});
@@ -94,11 +127,13 @@ define(function (require) {
                         geppettoModel.getLibraries().push(library);
                     }
 
-                    // traverse everything and build shortcuts to children if composite --> containment == true
-                    this.populateChildrenShortcuts(geppettoModel);
+                    if (populateRefs) {
+                        // traverse everything and build shortcuts to children if composite --> containment == true
+                        this.populateChildrenShortcuts(geppettoModel);
 
-                    // traverse everything and populate type references in variables
-                    this.populateTypeReferences(geppettoModel, geppettoModel);
+                        // traverse everything and populate type references in variables
+                        this.populateTypeReferences(geppettoModel);
+                    }
                 }
 
                 return geppettoModel;
@@ -128,7 +163,7 @@ define(function (require) {
             /**
              * Populate type references
              */
-            populateTypeReferences: function (node, geppettoModel) {
+            populateTypeReferences: function (node) {
 
                 // check if variable, if so populate type references
                 if (node instanceof Variable) {
@@ -201,9 +236,19 @@ define(function (require) {
                     // resolve super type
                     var superType = node.getSuperType();
                     if (superType != undefined) {
-                        // replace with reference to actual type
-                        var typeObj = this.resolve(superType.$ref);
-                        node.set({"superType": typeObj});
+                        var typeObjs = [];
+
+                        // convert to array if single element
+                        if (!(superType instanceof Array)) {
+                            superType = [superType];
+                        }
+
+                        for (var a = 0; a < superType.length; a++) {
+                            // replace with reference to actual type
+                            typeObjs.push(this.resolve(superType[a].$ref));
+                        }
+
+                        node.set({"superType": typeObjs});
                     }
                 } else if (node instanceof ArrayType) {
                     // take array type string - looks like this --> '//@libraries.1/@types.5'
@@ -217,9 +262,19 @@ define(function (require) {
                     // resolve super type
                     var superType = node.getSuperType();
                     if (superType != undefined) {
-                        // replace with reference to actual type
-                        var typeObj = this.resolve(superType.$ref);
-                        node.set({"superType": typeObj});
+                        var typeObjs = [];
+
+                        // convert to array if single element
+                        if (!(superType instanceof Array)) {
+                            superType = [superType];
+                        }
+
+                        for (var a = 0; a < superType.length; a++) {
+                            // replace with reference to actual type
+                            typeObjs.push(this.resolve(superType[a].$ref));
+                        }
+
+                        node.set({"superType": typeObjs});
                     }
                 }
 
@@ -229,7 +284,7 @@ define(function (require) {
 
                     if (children != undefined) {
                         for (var i = 0; i < children.length; i++) {
-                            this.populateTypeReferences(children[i], geppettoModel);
+                            this.populateTypeReferences(children[i]);
                         }
                     }
                 }
@@ -276,6 +331,24 @@ define(function (require) {
             },
 
             /**
+             * Creates datasources starting from an array of datasources in the json model format
+             */
+            createDatasources: function (jsonDataSources, parent) {
+                var dataSources = [];
+
+                if (jsonDataSources != undefined) {
+                    for (var i = 0; i < jsonDataSources.length; i++) {
+                        var ds = this.createDatasource(jsonDataSources[i]);
+                        ds.set({"parent": parent});
+
+                        dataSources.push(ds);
+                    }
+                }
+
+                return dataSources;
+            },
+
+            /**
              * Creates variables starting from an array of variables in the json model format
              */
             createVariables: function (jsonVariables, parent) {
@@ -317,9 +390,13 @@ define(function (require) {
                             // inject visual capability to all CompositeVisualType
                             type.extendApi(AVisualCapability);
                         }
+                        else if (jsonTypes[i].eClass == 'ImportType') {
+                            type = this.createImportType(jsonTypes[i]);
+                        }
                         else if (jsonTypes[i].eClass == 'ArrayType') {
                             type = this.createArrayType(jsonTypes[i]);
-                        } else {
+                        }
+                        else {
                             type = this.createType(jsonTypes[i]);
                             // inject visual capability if MetaType == VisualType
                             if (type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) {
@@ -347,28 +424,30 @@ define(function (require) {
              */
             createInstances: function (geppettoModel) {
                 // reset scene complexity index
-                GEPPETTO.SceneController.complexity = 0;
+                GEPPETTO.SceneController.reset();
 
                 var instances = [];
 
                 // pre-populate instance tags for console suggestions
                 this.populateInstanceTags();
 
-                // we need to explode instances for variables with visual and connection types
+                // we need to explode instances for variables with visual types
                 var varsWithVizTypes = [];
-                var varsWithConnTypes = [];
+
                 // we need to fetch all potential instance paths (even for not exploded instances)
                 var allPotentialInstancePaths = [];
+                var allPotentialInstancePathsForIndexing = [];
 
                 // builds list of vars with visual types and connection types - start traversing from top level variables
                 var vars = geppettoModel.getVariables();
                 for (var i = 0; i < vars.length; i++) {
-                    this.fetchVarsWithVisualOrConnectionTypes(vars[i], varsWithVizTypes, varsWithConnTypes, '');
-                    this.fetchAllPotentialInstancePaths(vars[i], allPotentialInstancePaths, '');
+                    this.fetchVarsWithVisualTypes(vars[i], varsWithVizTypes, '');
+                    this.fetchAllPotentialInstancePaths(vars[i], allPotentialInstancePaths, allPotentialInstancePathsForIndexing, '');
                 }
 
                 this.allPaths = allPotentialInstancePaths;
-                var varsToInstantiate = varsWithVizTypes;//.concat(varsWithConnTypes);
+                this.allPathsIndexing = allPotentialInstancePathsForIndexing;
+                var varsToInstantiate = varsWithVizTypes;
 
                 // based on list, traverse again and build instance objects
                 for (var j = 0; j < varsToInstantiate.length; j++) {
@@ -388,6 +467,63 @@ define(function (require) {
             },
 
             /**
+             * Checks if new instances need to be created
+             *
+             * @param diffReport - lists variables and types that we need to check instances for
+             */
+            createInstancesFromDiffReport: function (diffReport) {
+                // get initial instance count (used to figure out if we added instances at the end)
+                var instanceCount = this.getInstanceCount(window.Instances);
+
+                var newInstancePaths = [];
+
+                // shortcut function to get potential instance paths given a set types
+                // NOTE: defined as a nested function to avoid polluting the visible API of ModelFactory
+                var that = this;
+                var getPotentialInstancePaths = function (types) {
+                    var paths = [];
+
+                    for (var l = 0; l < types.length; l++) {
+                        if (types[l].hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
+                            // get potential instances with that type
+                            paths = paths.concat(that.getAllPotentialInstancesOfType(types[l].getPath()));
+                        }
+                    }
+
+                    return paths;
+                };
+
+                // STEP 1: check new variables to see if any new instances are needed
+                var varsWithVizTypes = [];
+                for (var i = 0; i < diffReport.variables; i++) {
+                    GEPPETTO.ModelFactory.fetchVarsWithVisualTypes(diffReport.variables[i], varsWithVizTypes, '');
+                }
+                // for each variable, get types and potential instances of those types
+                for (var j = 0; j < varsWithVizTypes.length; j++) {
+                    // var must exist since we just fetched it from the geppettoModel
+                    var variable = eval(varsWithVizTypes[j]);
+                    var varTypes = variable.getTypes();
+                    newInstancePaths = newInstancePaths.concat(getPotentialInstancePaths(varTypes));
+                }
+
+                // STEP 2: check types and create new instances if need be
+                var diffTypes = diffReport.types;
+                newInstancePaths = newInstancePaths.concat(getPotentialInstancePaths(diffTypes));
+
+                // STEP 3: call getInstance to create the instances
+                var newInstances = window.Instances.getInstance(newInstancePaths);
+
+                // STEP 4: IFF instances were added, re-populate shortcuts
+                if (this.getInstanceCount(window.Instances) > instanceCount) {
+                    for (var k = 0; k < window.Instances.length; k++) {
+                        GEPPETTO.ModelFactory.populateChildrenShortcuts(window.Instances[k]);
+                    }
+                }
+
+                return newInstances;
+            },
+
+            /**
              * Populate connections
              */
             populateConnections: function (instance) {
@@ -404,6 +540,359 @@ define(function (require) {
                         for (var i = 0; i < children.length; i++) {
                             // recurse like no tomorrow
                             this.populateConnections(children[i]);
+                        }
+                    }
+                }
+            },
+
+            /**
+             * Merge Geppetto model parameter into existing Geppetto model
+             *
+             * @param rawModel - raw model to be merged, by deault only adds new vars / libs / types
+             * @param overrideTypes - bool, mergeModel overrides type
+             */
+            mergeModel: function (rawModel, overrideTypes) {
+                if (overrideTypes == undefined) {
+                    overrideTypes = false;
+                }
+
+                // diff object to report back what changed / has been added
+                var diffReport = {variables: [], types: [], libraries: []};
+
+                // STEP 1: create new geppetto model to merge into existing one
+                var diffModel = this.createGeppettoModel(rawModel, false, false);
+
+                // STEP 2: add libraries/types if any are different (both to object model and json model)
+                var diffLibs = diffModel.getLibraries();
+                var libs = this.geppettoModel.getLibraries();
+
+                for (var i = 0; i < diffLibs.length; i++) {
+                    if (diffLibs[i].getWrappedObj().synched == true) {
+                        // if synch placeholder lib, skip it
+                        continue;
+                    }
+
+                    var libMatch = false;
+
+                    for (var j = 0; j < libs.length; j++) {
+                        // if the library exists, go in and check for types diff
+                        if (diffLibs[i].getPath() == libs[j].getPath()) {
+                            libMatch = true;
+
+                            var diffTypes = diffLibs[i].getTypes();
+                            var types = libs[j].getTypes();
+
+                            for (var k = 0; k < diffTypes.length; k++) {
+                                if (diffTypes[k].getWrappedObj().synched == true) {
+                                    // if synch placeholder type, skip it
+                                    continue;
+                                }
+
+                                var typeMatch = false;
+
+                                for (var m = 0; m < types.length; m++) {
+                                    // check if the given diff type already exists
+                                    if (diffTypes[k].getPath() == types[m].getPath()) {
+                                        typeMatch = true;
+
+                                        // if(overrideTypes) swap the types[m] with the diffType[k]
+                                        if (overrideTypes) {
+                                            // get all types in the current model
+                                            var allTypesInModel = [];
+                                            for (var w = 0; w < libs.length; w++) {
+                                                allTypesInModel = allTypesInModel.concat(libs[w].getTypes());
+                                            }
+                                            // fetch variables pointing to the old version of the type
+                                            var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, types[m]);
+                                            // add top level variables in the model
+                                            variablesToUpdate = variablesToUpdate.concat(this.geppettoModel.getVariables());
+
+                                            // swap type reference in ALL variables that point to it
+                                            for (var x = 0; x < variablesToUpdate.length; x++) {
+                                                this.swapTypeInVariable(variablesToUpdate[x], types[m], diffTypes[k]);
+                                            }
+
+                                            // swap type in raw model
+                                            libs[j].getWrappedObj().types[m] = diffTypes[k].getWrappedObj();
+
+                                            // store overridden type (so that unresolve type can swap it back)
+                                            diffTypes[k].overrideType = types[m];
+
+                                            // swap in object model
+                                            diffTypes[k].set({'parent': libs[j]});
+                                            types[m] = diffTypes[k];
+
+                                            // populate references for the swapped type
+                                            this.populateTypeReferences(diffTypes[k]);
+
+                                            // add potential instance paths
+                                            this.addPotentialInstancePaths(variablesToUpdate);
+
+                                            // update capabilities for variables and instances if any
+                                            this.updateCapabilities(variablesToUpdate);
+
+                                            // add to diff report
+                                            diffReport.types.push(diffTypes[k]);
+                                        }
+                                    }
+                                }
+
+                                // if the type doesn't exist, append it to the library
+                                if (!typeMatch) {
+                                    // add to list of types on raw library object
+                                    if (libs[j].getWrappedObj().types == undefined) {
+                                        libs[j].getWrappedObj().types = [];
+                                    }
+
+                                    libs[j].getWrappedObj().types.push(diffTypes[k].getWrappedObj());
+
+                                    // add to library in geppetto object model
+                                    diffTypes[k].set({'parent': libs[j]});
+                                    libs[j].getTypes().push(diffTypes[k]);
+
+                                    // populate references for the new type
+                                    this.populateTypeReferences(diffTypes[k]);
+
+                                    // TODO: add potential instance paths
+                                    // NOTE: maybe not needed? the path will be added if a variable uses the type
+
+                                    // add to diff report
+                                    diffReport.types.push(diffTypes[k]);
+                                }
+                            }
+                        }
+                    }
+
+                    // if the library doesn't exist yet, append it to the model with everything that's in it
+                    if (!libMatch) {
+                        if (this.geppettoModel.getWrappedObj().libraries == undefined) {
+                            this.geppettoModel.getWrappedObj().libraries = [];
+                        }
+
+                        // add to raw model
+                        this.geppettoModel.getWrappedObj().libraries.push(diffLibs[i].getWrappedObj());
+
+                        // add to geppetto object model
+                        diffLibs[i].set({'parent': this.geppettoModel});
+                        this.geppettoModel.getLibraries().push(diffLibs[i]);
+
+                        // add to diff report
+                        diffReport.libraries.push(diffLibs[i]);
+                    }
+                }
+
+                // STEP 3: add variables if any new ones are found (both to object model and json model)
+                var diffVars = diffModel.getVariables();
+                var vars = this.geppettoModel.getVariables();
+
+                for (var x = 0; x < diffVars.length; x++) {
+                    if (diffVars[x].getWrappedObj().synched == true) {
+                        // if synch placeholder var, skip it
+                        continue;
+                    }
+
+                    var varMatch = false;
+
+                    for (var y = 0; y < vars.length; y++) {
+                        if (diffVars[x].getPath() == vars[y].getPath()) {
+                            varMatch == true;
+                        }
+                    }
+
+                    // if no match, add it, it's actually new
+                    if (!varMatch) {
+                        if (this.geppettoModel.getWrappedObj().variables == undefined) {
+                            this.geppettoModel.getWrappedObj().variables = [];
+                        }
+
+                        // append variable to raw model
+                        this.geppettoModel.getWrappedObj().variables.push(diffVars[x].getWrappedObj());
+
+                        // add variable to geppetto object model
+                        diffVars[x].set({'parent': this.geppettoModel});
+                        this.geppettoModel.getVariables().push(diffVars[x]);
+
+                        // populate references for new vars
+                        this.populateTypeReferences(diffVars[x]);
+
+                        // find new potential instance paths and add to the list
+                        this.addPotentialInstancePaths([diffVars[x]]);
+
+                        diffReport.variables.push(diffVars[x]);
+                    }
+                }
+
+                // traverse everything again and build shortcuts to children if composite --> containment == true
+                this.populateChildrenShortcuts(this.geppettoModel);
+
+                return diffReport;
+            },
+
+            /**
+             * Updates capabilities of variables and their instances if any
+             *
+             * @param variables
+             */
+            updateCapabilities: function (variables) {
+                // some bit of code encapsulated for private re-use
+                var that = this;
+                var updateInstancesCapabilities = function (instances) {
+                    for (var j = 0; j < instances.length; j++) {
+                        // check if visual type and inject AVisualCapability
+                        var visualType = instances[j].getVisualType();
+                        // check if visual type and inject AVisualCapability
+                        if ((!(visualType instanceof Array) && visualType != null && visualType != undefined) ||
+                            (visualType instanceof Array && visualType.length > 0)) {
+
+                            if (!instances[j].hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
+                                instances[j].extendApi(AVisualCapability);
+                                that.propagateCapabilityToParents(AVisualCapability, instances[j]);
+
+                                if (visualType instanceof Array && visualType.length > 1) {
+                                    throw( "Support for more than one visual type is not implemented." );
+                                }
+
+                                // check if it has visual groups - if so add visual group capability
+                                if ((typeof visualType.getVisualGroups === "function") &&
+                                    visualType.getVisualGroups() != null &&
+                                    visualType.getVisualGroups().length > 0) {
+                                    instances[j].extendApi(AVisualGroupCapability);
+                                    instances[j].setVisualGroups(visualType.getVisualGroups());
+                                }
+
+                                // increase scene complexity counter
+                                if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
+                                    GEPPETTO.SceneController.complexity += visualType.getVariables().length;
+                                }
+                            }
+                        }
+
+                        // check if it has connections and inject AConnectionCapability
+                        if (instances[j].getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
+                            if (!instances[j].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY)) {
+                                instances[j].extendApi(AConnectionCapability);
+                                that.resolveConnectionValues(instances[j]);
+                            }
+                        }
+
+                        if (instances[j].getType().getMetaType() == GEPPETTO.Resources.STATE_VARIABLE_TYPE) {
+                            if (!instances[j].hasCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY)) {
+                                instances[j].extendApi(AStateVariableCapability);
+                            }
+                        }
+
+                        if (instances[j].getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
+                            if (!instances[j].hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)) {
+                                instances[j].extendApi(AParameterCapability);
+                            }
+                        }
+
+                        // getChildren of instance and recurse by the power of greyskull!
+                        updateInstancesCapabilities(instances[j].getChildren());
+                    }
+                };
+
+                // update capabilities for variables
+                for (var i = 0; i < variables.length; i++) {
+                    var resolvedTypes = variables[i].getTypes();
+                    for (var j = 0; j < resolvedTypes.length; j++) {
+                        if (resolvedTypes[j].getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
+                            // if a variable has a Parameter type, add AParameterCapability to the variable
+                            if (!variables[i].hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)) {
+                                variables[i].extendApi(AParameterCapability);
+                            }
+                        } else if (resolvedTypes[j].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
+                            // if a variable has a connection type, add connection capability
+                            if (!variables[i].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY)) {
+                                variables[i].extendApi(AConnectionCapability);
+                            }
+                        }
+                    }
+
+                    var varInstances = this.getAllInstancesOf(variables[i]);
+
+                    // update instances capabilities
+                    updateInstancesCapabilities(varInstances);
+                }
+            },
+
+            /**
+             * Adds potential instance paths to internal cache
+             *
+             * @param variables
+             */
+            addPotentialInstancePaths: function (variables) {
+                var potentialInstancePaths = [];
+                var potentialInstancePathsForIndexing = [];
+
+                var addNewItemsToArray = function (sourceArray, augmentArray, overrideMatching) {
+                    if (overrideMatching == undefined) {
+                        overrideMatching = false;
+                    }
+
+                    // add to allPaths
+                    for (var j = 0; j < augmentArray.length; j++) {
+                        var match = false;
+
+                        for (var k = 0; k < sourceArray.length; k++) {
+                            if (sourceArray[k].path == augmentArray[j].path) {
+                                // swap
+                                if (overrideMatching) {
+                                    sourceArray[k] = augmentArray[j];
+                                }
+
+                                match = true;
+                            }
+                        }
+
+                        if (!match) {
+                            sourceArray.push(augmentArray[j]);
+                        }
+                    }
+                };
+
+                for (var i = 0; i < variables.length; i++) {
+                    this.fetchAllPotentialInstancePaths(variables[i], potentialInstancePaths, potentialInstancePathsForIndexing, '');
+                }
+
+                // add to allPaths and to allPathsIndexing
+                addNewItemsToArray(this.allPaths, potentialInstancePaths, true);
+                addNewItemsToArray(this.allPathsIndexing, potentialInstancePathsForIndexing, true);
+            },
+
+            /**
+             * Given a variable, swap a given type out for another type (recursive on nested types and vars)
+             *
+             * @param variable
+             * @param typeToSwapOut
+             * @param typeToSwapIn
+             */
+            swapTypeInVariable: function (variable, typeToSwapOut, typeToSwapIn) {
+                // ugly but we need the actual arrays stored in the variable as we'll be altering them
+                var types = variable.get('types');
+                var anonTypes = variable.get('anonymousTypes');
+
+                this.swapTypeInTypes(types, typeToSwapOut, typeToSwapIn);
+                this.swapTypeInTypes(anonTypes, typeToSwapOut, typeToSwapIn);
+            },
+
+            /**
+             * Given a set of types, swap a given type out for another type (recursive on nested variables)
+             *
+             * @param types
+             * @param typeToSwapOut
+             * @param typeToSwapIn
+             */
+            swapTypeInTypes: function (types, typeToSwapOut, typeToSwapIn) {
+                for (var y = 0; y < types.length; y++) {
+                    if (types[y].getMetaType() == typeToSwapOut.getMetaType() && types[y].getId() == typeToSwapOut.getId()) {
+                        // swap type referenced with the override one
+                        types[y] = typeToSwapIn;
+                    } else if (types[y].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                        // if composite - recurse for each var
+                        var nestedVars = types[y].getVariables();
+                        for (var x = 0; x < nestedVars.length; x++) {
+                            this.swapTypeInVariable(nestedVars[x], typeToSwapOut, typeToSwapIn);
                         }
                     }
                 }
@@ -905,7 +1394,7 @@ define(function (require) {
             /**
              * Build "list" of variables that have a visual type
              */
-            fetchVarsWithVisualOrConnectionTypes: function (node, varsWithVizTypes, varsWithConnTypes, parentPath) {
+            fetchVarsWithVisualTypes: function (node, varsWithVizTypes, parentPath) {
                 // build "list" of variables that have a visual type (store "path")
                 // check meta type - we are only interested in variables
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
@@ -935,18 +1424,13 @@ define(function (require) {
                             varsWithVizTypes.push(path);
                         }
 
-                        // check if type is connection
-                        if (allTypes[i].getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
-                            varsWithConnTypes.push(path);
-                        }
-
                         // RECURSE on any variables inside composite types
                         if (allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
                             var vars = allTypes[i].getVariables();
 
                             if (vars != undefined && vars != null) {
                                 for (var j = 0; j < vars.length; j++) {
-                                    this.fetchVarsWithVisualOrConnectionTypes(vars[j], varsWithVizTypes, varsWithConnTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+                                    this.fetchVarsWithVisualTypes(vars[j], varsWithVizTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
                                 }
                             }
                         }
@@ -959,7 +1443,7 @@ define(function (require) {
 
                                 if (vars != undefined && vars != null) {
                                     for (var j = 0; j < vars.length; j++) {
-                                        this.fetchVarsWithVisualOrConnectionTypes(vars[j], varsWithVizTypes, varsWithConnTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
+                                        this.fetchVarsWithVisualTypes(vars[j], varsWithVizTypes, (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId()));
                                     }
                                 }
                             }
@@ -983,12 +1467,22 @@ define(function (require) {
                     return false;
                 }
 
-                var nested = path.length - path.replace(/\./g, '').length;
+                var nested = this.getNestingLevel(path);
                 if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && nested > 4) {
                     return false;
                 }
 
                 return true;
+            },
+
+            /**
+             * Get nesting level given entity path
+             *
+             * @param path
+             * @returns {number}
+             */
+            getNestingLevel: function (path) {
+                return path.length - path.replace(/\./g, '').length;
             },
 
             printInstanceStats: function () {
@@ -1007,13 +1501,15 @@ define(function (require) {
             /**
              * Build list of potential instance paths (excluding connection instances)
              */
-            fetchAllPotentialInstancePaths: function (node, allPotentialPaths, parentPath) {
+            fetchAllPotentialInstancePaths: function (node, allPotentialPaths, allPotentialPathsForIndexing, parentPath) {
                 // build new path
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 
-                // only add if it's not a connection
+                var entry = {path: path, metaType: node.getType().getMetaType(), type: node.getType().getPath()};
+                allPotentialPaths.push(entry);
+                // only add to indexing if it's not a connection or nested in a composite type
                 if (this.includePotentialInstance(node, path)) {
-                    allPotentialPaths.push({path: path, metaType: node.getType().getMetaType()});
+                    allPotentialPathsForIndexing.push(entry);
                 }
 
                 var potentialParentPaths = [];
@@ -1034,7 +1530,14 @@ define(function (require) {
                         if (arrayType.getSize() > 1) {
                             var starPath = path + '[' + '*' + ']';
                             potentialParentPaths.push(starPath);
-                            allPotentialPaths.push({path: starPath, metaType: arrayType.getMetaType()});
+
+                            var starEntry = {
+                                path: starPath,
+                                metaType: arrayType.getType().getMetaType(),
+                                type: arrayType.getType().getPath()
+                            };
+                            allPotentialPaths.push(starEntry);
+                            allPotentialPathsForIndexing.push(starEntry);
                         }
 
                         // add each array element path
@@ -1042,11 +1545,14 @@ define(function (require) {
                             var arrayElementPath = path + '[' + n + ']';
                             potentialParentPaths.push(arrayElementPath);
 
-                            if (this.includePotentialInstance(node, path)) {
-                                allPotentialPaths.push({
-                                    path: arrayElementPath,
-                                    metaType: arrayType.getType().getMetaType()
-                                });
+                            var arrayElementEntry = {
+                                path: arrayElementPath,
+                                metaType: arrayType.getType().getMetaType(),
+                                type: arrayType.getType().getPath()
+                            };
+                            allPotentialPaths.push(arrayElementEntry);
+                            if (this.includePotentialInstance(node, arrayElementPath)) {
+                                allPotentialPathsForIndexing.push(arrayElementEntry);
                             }
                         }
                     } else {
@@ -1063,7 +1569,7 @@ define(function (require) {
                             if (vars != undefined && vars != null) {
                                 for (var j = 0; j < vars.length; j++) {
                                     for (var g = 0; g < potentialParentPaths.length; g++) {
-                                        this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, potentialParentPaths[g]);
+                                        this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[g]);
                                     }
                                 }
                             }
@@ -1078,7 +1584,7 @@ define(function (require) {
                                 if (vars != undefined && vars != null) {
                                     for (var l = 0; l < vars.length; l++) {
                                         for (var h = 0; h < potentialParentPaths.length; h++) {
-                                            this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, potentialParentPaths[h]);
+                                            this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[h]);
                                         }
                                     }
                                 }
@@ -1122,7 +1628,19 @@ define(function (require) {
                 return v;
             },
 
-            /** Creates a type node */
+            /** Creates a datasource */
+            createDatasource: function (node, options) {
+                if (options == null || options == undefined) {
+                    options = {wrappedObj: node};
+                }
+
+                var d = new Datasource(options);
+                // TODO: set datasource specific stuff as needed
+
+                return d;
+            },
+
+            /** Creates a type */
             createType: function (node, options) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
@@ -1133,6 +1651,17 @@ define(function (require) {
                 t.set({"superType": node.superType});
 
                 return t;
+            },
+
+            /** Creates an import type */
+            createImportType: function (node, options) {
+                if (options == null || options == undefined) {
+                    options = {wrappedObj: node};
+                }
+
+                var it = new ImportType(options);
+
+                return it;
             },
 
             /** Creates a composite type */
@@ -1330,6 +1859,29 @@ define(function (require) {
             },
 
             /**
+             * Gets all instances with given capability
+             *
+             * @param capabilityId
+             * @returns {Array}
+             */
+            getAllInstancesWithCapability: function (capabilityId, instances) {
+                var matchingInstances = [];
+
+                // traverse everything and populate matching instances
+                for (var i = 0; i < instances.length; i++) {
+                    if (instances[i].hasCapability(capabilityId)) {
+                        matchingInstances.push(instances[i]);
+                    }
+
+                    if (typeof instances[i].getChildren === "function") {
+                        matchingInstances = matchingInstances.concat(this.getAllInstancesWithCapability(capabilityId, instances[i].getChildren()));
+                    }
+                }
+
+                return matchingInstances;
+            },
+
+            /**
              * Get all instance given a type or a variable (path or actual object)
              */
             getAllInstancesOf: function (typeOrVar, instances) {
@@ -1428,13 +1980,13 @@ define(function (require) {
             },
 
             /**
-             * Get all POTENTIAL instances starting with a given string and ending with another string
+             * Get all POTENTIAL instances starting with a given string
              */
-            getAllPotentialInstancesWith: function (startingString,endingString) {
+            getAllPotentialInstancesOfType: function (typePath) {
                 var matchingPotentialInstances = [];
 
                 for (var i = 0; i < this.allPaths.length; i++) {
-                    if (this.allPaths[i].path.startsWith(startingString) && this.allPaths[i].path.endsWith(endingString)  && this.allPaths[i].path.indexOf("*") == -1) {
+                    if (this.allPaths[i].type == typePath) {
                         matchingPotentialInstances.push(this.allPaths[i].path);
                     }
                 }
@@ -1492,11 +2044,22 @@ define(function (require) {
                         if (libraryTypes[j] == type) {
                             // add if it's a straight match (the type himself)
                             types.push(libraryTypes[j]);
-                        } else if (libraryTypes[j].getSuperType() != undefined &&
-                            libraryTypes[j].getSuperType() != null &&
-                            libraryTypes[j].getSuperType() == type) {
-                            // add if superType matches
-                            types.push(libraryTypes[j]);
+                        } else if (libraryTypes[j].getSuperType() != undefined && libraryTypes[j].getSuperType() != null) {
+                            // check list of super types
+                            var superTypes = libraryTypes[j].getSuperType();
+
+                            if (!(superTypes instanceof Array)) {
+                                superTypes = [superTypes];
+                            }
+
+                            for (var w = 0; w < superTypes.length; w++) {
+                                if (superTypes[w] == type) {
+                                    // add if superType matches
+                                    types.push(libraryTypes[j]);
+                                    // sufficient condition met, break the loop
+                                    break;
+                                }
+                            }
                         } else {
                             // TODO: no immediate matches - recurse on super type and see if any matches if any matches add this type
                             /*if(libraryTypes[j].getSuperType() != undefined && libraryTypes[j].getSuperType() != null) {
@@ -1536,11 +2099,29 @@ define(function (require) {
                             for (var j = 0; j < nestedVariables.length; j++) {
                                 var varTypes = nestedVariables[j].getTypes();
                                 for (var x = 0; x < varTypes.length; x++) {
-                                    if (varTypes[x] == typeToMatch || varTypes[x].getSuperType() == typeToMatch) {
+                                    if (varTypes[x] == typeToMatch) {
                                         variables.push(nestedVariables[j]);
+                                    } else if (varTypes[x].getSuperType() != undefined) {
+                                        // check list of super types
+                                        var superTypes = varTypes[x].getSuperType();
+
+                                        if (!(superTypes instanceof Array)) {
+                                            superTypes = [superTypes];
+                                        }
+
+                                        for (var w = 0; w < superTypes.length; w++) {
+                                            if (superTypes[w] == typeToMatch) {
+                                                variables.push(nestedVariables[j]);
+                                                // sufficient condition met, break the loop
+                                                break;
+                                            }
+                                        }
+                                    } else if (varTypes[x].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                                        // check if type is composite and recurse
+                                        variables = variables.concat(this.getAllVariablesOfType([varTypes[x]], typeToMatch));
                                     }
-                                    if (recursive){
-                                    	this.getAllVariablesOfType(varTypes[x], typeToMatch, recursive, variables);
+                                    if (recursive) {
+                                        this.getAllVariablesOfType(varTypes[x], typeToMatch, recursive, variables);
                                     }
                                 }
                             }
@@ -1563,15 +2144,13 @@ define(function (require) {
              *
              * @returns {Array}
              */
-            getAllVariablesOfMetaType: function (typesToSearch, metaType, recursive, variables) {
-            	if (variables == undefined)
-            		 variables = [];
-            	// check if array and if not "make it so"
+            getAllVariablesOfMetaType: function (typesToSearch, metaType) {
+                // check if array and if not "make it so"
                 if (!(typesToSearch.constructor === Array)) {
                     typesToSearch = [typesToSearch];
                 }
 
-                
+                var variables = [];
 
                 for (var i = 0; i < typesToSearch.length; i++) {
                     if (typesToSearch[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
@@ -1583,11 +2162,7 @@ define(function (require) {
                                     if (varTypes[x].getMetaType() == metaType) {
                                         variables.push(nestedVariables[j]);
                                     }
-                                    if (recursive){
-                                    	this.getAllVariablesOfMetaType(varTypes[x], metaType, recursive, variables);
-                                    }
                                 }
-                                
                             }
                         } else {
                             variables = variables.concat(nestedVariables);
@@ -1596,6 +2171,125 @@ define(function (require) {
                 }
 
                 return variables;
+            },
+
+            /**
+             * Get total count of instances including children
+             *
+             * @param instances
+             */
+            getInstanceCount: function (instances) {
+                var count = 0;
+
+                count += instances.length;
+
+                for (var i = 0; i < instances.length; i++) {
+                    count += this.getInstanceCount(instances[i].getChildren());
+                }
+
+                return count;
+            },
+
+            /**
+             * Delete instance, also removing types and variables
+             *
+             * @param instance
+             */
+            deleteInstance: function (instance) {
+                var removeMatchingInstanceFromArray = function (instanceArray, instance) {
+                    var index = null;
+                    for (var i = 0; i < instanceArray.length; i++) {
+                        if (instanceArray[i].getPath() == instance.getPath()) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index != null) {
+                        instanceArray.splice(index, 1);
+                    }
+                };
+
+                // delete instance
+                var parent = instance.getParent();
+                if (parent == undefined) {
+                    // parent is window
+                    // remove from array of children
+                    removeMatchingInstanceFromArray(window.Instances, instance);
+                    // remove reference
+                    delete window[instance.getId()];
+                } else {
+                    // remove from array of children
+                    removeMatchingInstanceFromArray(parent.getChildren(), instance);
+                    // remove reference
+                    delete parent[instance.getId()];
+                }
+
+                // remove from scene
+                GEPPETTO.SceneController.removeFromScene(instance);
+
+                // unresolve type
+                for (var j = 0; j < instance.getTypes().length; j++) {
+                    this.unresolveType(instance.getTypes()[j]);
+                }
+
+                // re-run model shortcuts
+                this.populateChildrenShortcuts(this.geppettoModel);
+
+                // refresh UI components to reflect updated state of model / instances
+                GEPPETTO.FE.refresh();
+            },
+
+            /**
+             * Unresolve type
+             *
+             * @param type
+             */
+            unresolveType: function (type) {
+                var libs = this.geppettoModel.getLibraries();
+                // swap the type with type.overrideType if any is found
+                if (type.overrideType != undefined) {
+                    // get all types in the current model
+                    var typeToLibraryMap = [];
+                    var allTypesInModel = [];
+                    for (var w = 0; w < libs.length; w++) {
+                        allTypesInModel = allTypesInModel.concat(libs[w].getTypes());
+                        for (var v = 0; v < libs[w].getTypes().length; v++) {
+                            typeToLibraryMap[libs[w].getTypes()[v].getPath()] = libs[w];
+                        }
+                    }
+
+                    // fetch variables pointing to the old version of the type
+                    var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, type);
+                    // add top level variables in the model
+                    variablesToUpdate = variablesToUpdate.concat(this.geppettoModel.getVariables());
+
+                    // swap type reference in ALL variables that point to it
+                    for (var x = 0; x < variablesToUpdate.length; x++) {
+                        this.swapTypeInVariable(variablesToUpdate[x], type, type.overrideType);
+                    }
+
+                    // find type in library (we need the index)
+                    for (var m = 0; m < typeToLibraryMap[type.getPath()].getTypes().length; m++) {
+                        if (type.getPath() == typeToLibraryMap[type.getPath()].getTypes()[m].getPath()) {
+                            // swap type in raw model
+                            typeToLibraryMap[type.getPath()].getWrappedObj().types[m] = type.overrideType.getWrappedObj();
+
+                            // swap in object model (this line is probably redundant as the parent hasn't changed)
+                            type.overrideType.set({'parent': typeToLibraryMap[type.getPath()]});
+                            typeToLibraryMap[type.getPath()].getTypes()[m] = type.overrideType;
+                        }
+                    }
+
+                    // populate references for the swapped type
+                    this.populateTypeReferences(type.overrideType);
+
+                    // add potential instance paths
+                    this.addPotentialInstancePaths(variablesToUpdate);
+
+                    // update capabilities for variables and instances if any
+                    this.updateCapabilities(variablesToUpdate);
+                }
             },
 
             /**

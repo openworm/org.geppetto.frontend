@@ -34,11 +34,15 @@
  * Front end, user interface, methods for handling updates to the UI
  *
  */
-define(function (require) {
+define(function(require)
+{
 
-    return function (GEPPETTO) {
+    return function(GEPPETTO)
+    {
 
         var React = require('react'), $ = require('jquery'), InfoModal = require('jsx!components/popups/InfoModal'), ErrorModal = require('jsx!components/popups/ErrorModal');
+        var ReactDOM = require('react-dom');
+
         /**
          * Create the container for holding the canvas
          *
@@ -50,13 +54,14 @@ define(function (require) {
             // variable to keep track of experiments rendered, used for giving
             // alternate routes
             // different css backgrounds
-            nth: 1,
+            nth : 1,
 
             /*
              * Handles events that are executed as soon as page is finished
              * loading
              */
-            initialEvents: function () {
+            initialEvents : function()
+            {
 
                 GEPPETTO.Console.createConsole();
 
@@ -67,16 +72,19 @@ define(function (require) {
                  * time. This line allows multiple modals to be open
                  * simultaneously without going in an infinite loop.
                  */
-                $.fn.modal.Constructor.prototype.enforceFocus = function () {
+                $.fn.modal.Constructor.prototype.enforceFocus = function()
+                {
                 };
             },
             /**
              * Enables controls after connection is established
              */
-            postSocketConnection: function () {
+            postSocketConnection : function()
+            {
                 GEPPETTO.Vanilla.enableKeyboard(true);
             },
-            createContainer: function () {
+            createContainer : function()
+            {
                 $("#sim canvas").remove();
                 return $("#sim").get(0);
             },
@@ -85,7 +93,8 @@ define(function (require) {
              * Handles updates for experiments table once user has set the
              * active experiment
              */
-            setActiveExperimentStatus: function () {
+            setActiveExperimentStatus : function()
+            {
                 var experiment = window.Project.getActiveExperiment();
 
                 $(".activeIcon").show();
@@ -93,31 +102,37 @@ define(function (require) {
                 $(".downloadModelsIcon").hide();
                 $(".downloadResultsIcon").hide();
 
-                $("#activeIcon-" + experiment.getId()).hide();
-                $("#downloadModelsIcon-" + experiment.getId()).show();
-                if (experiment.getStatus() == "COMPLETED") {
-                    $("#downloadResultsIcon-" + experiment.getId()).show();
+                $("#activeIcon-"+experiment.getId()).hide();
+                $("#downloadModelsIcon-"+experiment.getId()).show();
+                if (experiment.getStatus() == "COMPLETED")
+                {
+                    $("#downloadResultsIcon-"+experiment.getId()).show();
                 }
 
                 /* Add active label on top of screen */
                 // Active label already exists, replace with new name of new
                 // active experiment
-                if ($('#activeLabel').length) {
+                if ($('#activeLabel').length)
+                {
                     // active
                     $('#activeLabel').text(experiment.getName());
-                } else {
+                } else
+                {
                     // Add label to top of screen as it doesn't exist
                     var activeExperimentLabel = $("<div class='activeExpLabel' id='activeLabel'>" + experiment.getName() + "</div>");
                     activeExperimentLabel.appendTo($("#sim-toolbar"));
                 }
 
                 // loop through each row of experiments table
-                $('#experimentsTable tbody tr').each(function () {
+                $('#experimentsTable tbody tr').each(function()
+                {
                     // id of row matches that of active experiment
-                    if (this.id == ("#" + experiment.getId())) {
+                    if (this.id == ("#" + experiment.getId()))
+                    {
                         // add class to make it clear it's active
                         $(this).addClass("activeExperiment");
-                    } else {
+                    } else
+                    {
                         // remove class from active experiment
                         $(this).removeClass("activeExperiment");
                     }
@@ -127,10 +142,12 @@ define(function (require) {
             /**
              * Populates the experiments table
              */
-            populateExperimentsTable: function () {
+            populateExperimentsTable : function()
+            {
                 var experiments = window.Project.getExperiments();
 
-                for (var key in experiments) {
+                for ( var key in experiments)
+                {
                     var experiment = experiments[key];
                     // retrieve experiments table html component
                     var experimentsTable = document.getElementById("experimentsTable");
@@ -147,31 +164,37 @@ define(function (require) {
                     this.nth++;
                 }
 
-                $('#console').bind('resize', function () {
+                $('#console').bind('resize', function()
+                {
                     var consoleHeight = $(this).height();
                     // var experiments =
                     // $("#experiments").height(consoleHeight+40);
                 });
 
                 // Handles new experiment button click
-                $("#new_experiment").click(function () {
+                $("#new_experiment").click(function()
+                {
                     GEPPETTO.Console.executeCommand("Project.newExperiment();");
                 });
 
                 GEPPETTO.Main.startStatusWorker();
             },
 
-            deleteExperimentFromTable: function (experimentID) {
+            deleteExperimentFromTable : function(experimentID)
+            {
                 // loop through each row of experiments table
-                $('#experimentsTable tbody tr').each(function () {
+                $('#experimentsTable tbody tr').each(function()
+                {
                     // id of row matches that of active experiment
-                    if (this.id == ("#" + experimentID)) {
+                    if (this.id == ("#" + experimentID))
+                    {
                         $(this).remove();
                     }
                 });
             },
 
-            createExperimentRow: function (experiment) {
+            createExperimentRow : function(experiment)
+            {
                 // create one row to add experiment information (status, name,
                 // last modified)
                 var tr = $('<tr rowType="main" data-toggle="collapse" class="experimentsTableColumn accordion-toggle">');
@@ -180,7 +203,8 @@ define(function (require) {
                 tr.attr("id", "#" + experiment.getId());
 
                 // adds class with different background every now and then
-                if (this.nth % 2 == 1) {
+                if (this.nth % 2 == 1)
+                {
                     tr.addClass("nthTr");
                 }
 
@@ -188,20 +212,27 @@ define(function (require) {
                 var tdStatus;
                 // keep track if status is in design
                 var design = false;
-                if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED)
+                {
                     tdStatus = $('<td><div class="circle COMPLETED center-block" title="COMPLETED"></div></td>');
-                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
+                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED)
+                {
                     tdStatus = $('<td><div class="circle DELETED center-block" title="DELETED"></div></td>');
-                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
+                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING)
+                {
                     tdStatus = $('<td><div class="circle RUNNING center-block" title="RUNNING"></div></td>');
-                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN)
+                {
                     tdStatus = $('<td><div class="circle DESIGN center-block" title="DESIGN"></div></td>');
                     design = true;
-                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
+                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED)
+                {
                     tdStatus = $('<td><div class="circle QUEUED center-block" title="QUEUED"></div></td>');
-                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
+                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED)
+                {
                     tdStatus = $('<td><div class="circle CANCELED center-block" title="CANCELED"></div></td>');
-                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR)
+                {
                     tdStatus = $('<td><div class="circle ERROR center-block" title="ERROR"></div></td>');
                 }
                 tdStatus.attr("id", "statusIcon");
@@ -214,7 +245,8 @@ define(function (require) {
 
                 // if experiment in design status, make name and last modified
                 // elements editable
-                if (design) {
+                if (design)
+                {
                     tdName.attr("contentEditable", "true");
                 }
 
@@ -249,9 +281,12 @@ define(function (require) {
                 downloadModelsIcon.hide();
                 downloadResultsIcon.hide();
                 // show download icons only for completed active experiment
-                if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                    if (window.Project.getActiveExperiment() != null || undefined) {
-                        if (window.Project.getActiveExperiment().getId() == experiment.getId()) {
+                if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED)
+                {
+                    if (window.Project.getActiveExperiment() != null || undefined)
+                    {
+                        if (window.Project.getActiveExperiment().getId() == experiment.getId())
+                        {
                             downloadModelsIcon.show();
                             downloadResultsIcon.show();
                         }
@@ -259,23 +294,27 @@ define(function (require) {
                 }
 
                 // handle hovering over each row
-                $(tr).hover(function () {
+                $(tr).hover(function()
+                {
                     $(this).find(".iconsDiv").show();
-                }, function () {
+                }, function()
+                {
                     $(this).find(".iconsDiv").hide();
                 });
 
                 return tr;
             },
 
-            createExpandableRow: function (experiment) {
-                var expandableTR = $("<tr class='nested-experiment-info'></tr>");
+            createExpandableRow : function(experiment)
+            {
+                var expandableTR = $("<tr class='nested-experiment-info'></tr>")
                 expandableTR.attr("id", "#" + experiment.getId());
-                if (this.nth % 2 == 1) {
+                if (this.nth % 2 == 1)
+                {
                     expandableTR.addClass("nthTr");
                 }
                 // created other properties for expandable row
-                var expandableTD = $("<td colspan='12' class='hiddenRow'></td>");
+                var expandableTD = $("<td colspan='12' class='hiddenRow'></td>")
                 var expandableDIV = $("<div class='accordian-body collapse'></div>");
                 var expandableTable = $("<table class='table-condensed expandableTable'></table>");
                 expandableDIV.attr("id", experiment.getId());
@@ -286,18 +325,20 @@ define(function (require) {
                 // create head row with titles of info displayed in new table
                 // used for
                 // showing expandable row
-                var head = $("<thead class='experimentsTableColumn'>" + "<tr><th style='width:215px;'></th>" + "<th>Instance</th><th>Simulator</th>" + "<th>TimeStep (s)</th><th>Length (s)</th></thead>");
+                var head = $("<thead class='experimentsTableColumn'>" + "<tr><th style='width:215px;'></th>" + "<th>Aspect</th><th>Simulator</th>" + "<th>TimeStep (s)</th><th>Length (s)</th></thead>");
                 head.appendTo(expandableTable);
 
                 // populate expandable table with rows for each simulator
                 // configuration
                 var simulatorConfigurations = experiment.simulatorConfigurations;
-                for (var config in simulatorConfigurations) {
+                for ( var config in simulatorConfigurations)
+                {
                     var simulatorConfig = simulatorConfigurations[config];
                     var configuration = $("<tr><td></td><td field='aspect'>" + simulatorConfig["aspectInstancePath"] + "</td><td field='simulatorId'>" + simulatorConfig["simulatorId"]
                         + "</td><td field='timeStep'>" + simulatorConfig["timeStep"] + "</td><td field='length'>" + simulatorConfig["length"] + "</td></tr>");
 
-                    if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                    if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN)
+                    {
                         configuration.find('td[field="simulatorId"]').attr("contentEditable", "true");
                         configuration.find('td[field="timeStep"]').attr("contentEditable", "true");
                         configuration.find('td[field="length"]').attr("contentEditable", "true");
@@ -309,37 +350,47 @@ define(function (require) {
                 return expandableTR;
             },
 
-            updateExperimentsTableStatus: function () {
+            updateExperimentsTableStatus : function()
+            {
                 // loop through each row of experiments table
-                $('#experimentsTable tbody tr').each(function () {
+                $('#experimentsTable tbody tr').each(function()
+                {
                     var experiments = window.Project.getExperiments();
-                    for (var e in experiments) {
+                    for ( var e in experiments)
+                    {
                         var experiment = experiments[e];
-                        if (this.id == ("#" + experiment.getId())) {
+                        if (this.id == ("#" + experiment.getId()))
+                        {
                             var tdStatus = $(this).find(".circle");
                             var tdStatusTitle = tdStatus.attr("title");
                             // keep track if status is in design
-                            if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                            if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED)
+                            {
                                 tdStatus.removeClass(tdStatusTitle);
                                 tdStatus.addClass("COMPLETED");
                                 tdStatus.attr("title", "COMPLETED");
-                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
+                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED)
+                            {
                                 tdStatus.removeClass(tdStatusTitle);
                                 tdStatus.addClass("DELETED");
                                 tdStatus.attr("title", "DELETED");
-                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
+                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING)
+                            {
                                 tdStatus.removeClass(tdStatusTitle);
                                 tdStatus.addClass("RUNNING");
                                 tdStatus.attr("title", "RUNNING");
-                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN)
+                            {
                                 tdStatus.removeClass(tdStatusTitle);
                                 tdStatus.addClass("DESIGN");
                                 tdStatus.attr("title", "DESIGN");
-                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
+                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED)
+                            {
                                 tdStatus.removeClass(tdStatusTitle);
                                 tdStatus.addClass("QUEUED");
                                 tdStatus.attr("title", "QUEUED");
-                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
+                            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED)
+                            {
                                 tdStatus.removeClass(tdStatusTitle);
                                 tdStatus.addClass("CANCELED");
                                 tdStatus.attr("title", "CANCELED");
@@ -349,7 +400,8 @@ define(function (require) {
                 });
             },
 
-            newExperiment: function (experiment) {
+            newExperiment : function(experiment)
+            {
                 var experimentsTable = document.getElementById("experimentsTable");
 
                 var expandableRow = GEPPETTO.FE.createExpandableRow(experiment);
@@ -362,7 +414,7 @@ define(function (require) {
                 this.nth++;
             },
 
-            addListenersToRow: function (row, experiment) {
+			addListenersToRow: function (row, experiment) {
                 // listenern for active icon button
                 $(row).find(".activeIcon").click(function (e) {
                     var evt = e || window.event;
@@ -421,9 +473,11 @@ define(function (require) {
                 });
 
                 // Handle edits to editable fields
-                $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
-                    if (e.keyCode == 13) {
-                        e.preventDefault(e);
+                $(row).parent().find("td[contenteditable='true']").keydown(function(e)
+                {
+                    if (e.keyCode == 13)
+                    {
+                        e.preventDefault();
                         $(this).blur();
 
                         // without this somehow the carriage return makes it
@@ -432,36 +486,41 @@ define(function (require) {
                     }
                 });
 
-                $(row).parent().find("td[contenteditable='true']").blur(function (e) {
+                $(row).parent().find("td[contenteditable='true']").blur(function(e)
+                {
                     // get experiment ID for the edited field
                     var val = $(this).html();
                     var field = $(this).attr("field");
 
                     var setterStr = "";
 
-                    switch (field) {
+                    switch (field)
+                    {
                         case "name":
-                            setterStr = "setName";
+                            setterStr = "setName"
                             break;
                         case "simulatorId":
-                            setterStr = "setSimulator";
+                            setterStr = "setSimulator"
                             break;
                         case "timeStep":
-                            setterStr = "setTimeStep";
+                            setterStr = "setTimeStep"
                             break;
                         case "length":
-                            setterStr = "setLength";
+                            setterStr = "setLength"
                             break;
                         case "conversionId":
-                            setterStr = "setConversionService";
+                            setterStr = "setConversionService"
                             break;
                     }
 
-                    if (setterStr != "") {
-                        if (field == "name") {
+                    if (setterStr != "")
+                    {
+                        if (field == "name")
+                        {
                             var expID = $(this).parent().attr("data-target").replace('#', '');
                             GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
-                        } else {
+                        } else
+                        {
                             var expID = $(this).parents().closest("tr.nested-experiment-info").attr("id").replace('#', '');
                             // get aspect instance path
                             var aspect = $(this).parent().find("td[field='aspect']").html();
@@ -475,33 +534,26 @@ define(function (require) {
             /**
              * Update the ID in the experiment UI of a preexisting row
              */
-            updateExperimentId: function (oldExperimentId, newExperimentId) {
+            updateExperimentId:function(oldExperimentId,newExperimentId)
+            {
                 //update the id of the active experiment in the experiment table
-                $("tr[data-target='#" + oldExperimentId + "']").attr("data-target", "#" + newExperimentId);
-                $("tr[id='#" + oldExperimentId + "']").attr("id", "#" + newExperimentId);
-                $(".accordian-body[id='" + oldExperimentId + "']").attr("id", newExperimentId);
+                $("tr[data-target='#"+oldExperimentId+"']").attr("data-target","#"+newExperimentId);
+                $("tr[id='#"+oldExperimentId+"']").attr("id","#"+newExperimentId);
+                $(".accordian-body[id='"+oldExperimentId+"']").attr("id",newExperimentId);
             },
 
             /**
              * Show error message if webgl failed to start
              */
-            notifyInitErrors: function (webGLStarted, workersSupported) {
-                if (!webGLStarted) {
+            update : function(webGLStarted)
+            {
+                if (!webGLStarted)
+                {
                     GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
                     GEPPETTO.FE.disableSimulationControls();
                     GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBGL_FAILED, GEPPETTO.Resources.WEBGL_MESSAGE);
                 }
-
-                if (!workersSupported) {
-                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED);
-                    GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED, GEPPETTO.Resources.WORKERS_NOT_SUPPORTED_MESSAGE);
-                }
-
-                if (!webGLStarted || !workersSupported) {
-                    GEPPETTO.FE.disableSimulationControls();
-                }
             },
-
             /**
              * Basic Dialog box with message to display.
              *
@@ -512,14 +564,21 @@ define(function (require) {
              * @param msg -
              *            Message to display
              */
-            infoDialog: function (title, msg) {
-                React.renderComponent(InfoModal(
-                    {
-                        show: true,
-                        keyboard: false,
-                        title: title,
-                        text: msg,
-                    }), document.getElementById('modal-region'));
+            infoDialog : function(title, msg)
+            {
+                var infoFactory = React.createFactory(InfoModal);
+
+                ReactDOM.render(
+                    infoFactory(
+                        {
+                            show : true,
+                            keyboard : false,
+                            title : title,
+                            text : msg,
+                        }),
+
+                    document.getElementById('modal-region')
+                );
             },
             /**
              * Dialog box to display error messages.
@@ -537,22 +596,29 @@ define(function (require) {
              * @param exception -
              *            Exception to display
              */
-            errorDialog: function (title, message, code, exception) {
-                React.renderComponent(ErrorModal(
-                    {
-                        show: true,
-                        keyboard: false,
-                        title: title,
-                        message: message,
-                        code: code,
-                        exception: exception
-                    }), document.getElementById('modal-region'));
+            errorDialog : function(title, message, code, exception)
+            {
+                var errorModalFactory = React.createFactory(ErrorModal);
+
+                ReactDOM.render(
+                    errorModalFactory(
+                        {
+                            show : true,
+                            keyboard : false,
+                            title : title,
+                            message : message,
+                            code : code,
+                            exception : exception
+                        }),
+                    document.getElementById('modal-region')
+                );
             },
             /**
              * If simulation is being controlled by another user, hide the
              * control and load buttons. Show "Observe" button only.
              */
-            disableSimulationControls: function () {
+            disableSimulationControls : function()
+            {
                 GEPPETTO.trigger('simulation:disable_all');
 
                 // disable console buttons
@@ -562,6 +628,20 @@ define(function (require) {
                 // disable keyboard
                 document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
             },
+
+            /**
+             * Refreshes UI components base on current model / instances
+             */
+            refresh: function(){
+                // populate control panel with exploded instances
+                if (GEPPETTO.ControlPanel != undefined) {
+                    GEPPETTO.ControlPanel.setData(window.Instances);
+                }
+                // populate spotligh with exploded instances
+                if (GEPPETTO.Spotlight != undefined) {
+                    GEPPETTO.Spotlight.updateData();
+                }
+            }
         };
 
     };

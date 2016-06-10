@@ -4,16 +4,25 @@
 define(function(require) {
 
 	var $ = require('jquery'), GEPPETTO = require('geppetto'), React = require('react'), LoadingSpinner = require('jsx!./loadingspinner/LoadingSpinner'), utils = require('./utils');
+	var ReactDOM = require('react-dom');
 
 	require('./components');
 
-
 	GEPPETTO.on('show_spinner', function(label) {
-		React.renderComponent(LoadingSpinner({
+		var spinnerFactory = React.createFactory(LoadingSpinner);
+		ReactDOM.render(spinnerFactory({
 			show : true,
 			keyboard : false,
 			text: label
 		}), $('#modal-region').get(0));
+	});
+
+	GEPPETTO.on('spin_logo', function(label) {
+		$(".gpt-gpt_logo").addClass("fa-spin").attr('title', 'Loading data');
+	});
+
+	GEPPETTO.on('stop_spin_logo', function(label) {
+		$(".gpt-gpt_logo").removeClass("fa-spin").attr('title', '');;
 	});
 
 	var command = "Project.loadFromURL";

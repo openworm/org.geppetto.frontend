@@ -487,7 +487,7 @@ define(function (require) {
 
             GEPPETTO.MessageSocket.clearHandlers();
             GEPPETTO.MessageSocket.addHandler(handler);
-            Project.loadFromURL("https://raw.githubusercontent.com/gidili/geppetto-samples/master/SingleComponentHH/GEPPETTO.json");
+            Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json");
         });
 
         QUnit.test("Test Save Project Properties", function ( assert ) {

@@ -59,7 +59,7 @@ define(function (require) {
         require("widgets/variablevisualiser/config");
         //Connectivity Widget
         require("widgets/connectivity/config");
-        //VariableVisualiser widget
+        //Buttonbar widget
         require("widgets/buttonBar/config");
         //Form widget
         require("widgets/form/config")(GEPPETTO);

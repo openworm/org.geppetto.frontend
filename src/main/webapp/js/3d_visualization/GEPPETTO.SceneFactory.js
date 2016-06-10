@@ -15,6 +15,7 @@ define(function (require) {
         GEPPETTO.SceneFactory =
         {
 
+
             buildVisualInstance: function (instance) {
                 var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance);
                 GEPPETTO.SceneFactory.init3DObject(meshes, instance);
@@ -51,27 +52,36 @@ define(function (require) {
                     GEPPETTO.getVARS().meshes[instancePath].selected = false;
                     GEPPETTO.getVARS().meshes[instancePath].input = false;
                     GEPPETTO.getVARS().meshes[instancePath].output = false;
-                    
+
                     //Split anything that was splitted before
-                    if (instancePath in GEPPETTO.getVARS().splitMeshes){
-	                    var splitMeshes = GEPPETTO.getVARS().splitMeshes;
-	                    var elements = {};
-	                    for (var splitMesh in splitMeshes){
-	                    	if (splitMeshes[splitMesh].instancePath == instancePath && splitMesh != instancePath){
-	                    		visualObject = splitMesh.substring(instancePath.length + 1);
-	                    		elements[visualObject] = "";
-	                    	}
-	                    }
-	                    if (Object.keys(elements).length > 0){
-	                    	GEPPETTO.SceneController.splitGroups(instance, elements);
-	                    }
+                    if (instancePath in GEPPETTO.getVARS().splitMeshes) {
+                        var splitMeshes = GEPPETTO.getVARS().splitMeshes;
+                        var elements = {};
+                        for (var splitMesh in splitMeshes) {
+                            if (splitMeshes[splitMesh].instancePath == instancePath && splitMesh != instancePath) {
+                                visualObject = splitMesh.substring(instancePath.length + 1);
+                                elements[visualObject] = "";
+                            }
+                        }
+                        if (Object.keys(elements).length > 0) {
+                            GEPPETTO.SceneController.splitGroups(instance, elements);
+                        }
                     }
                 }
             },
 
+            /**
+             *
+             * @param instance
+             * @param lines
+             * @param thickness
+             * @returns {Array}
+             */
             generate3DObjects: function (instance, lines, thickness) {
                 var previous3DObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
+                var color = undefined;
                 if (previous3DObject) {
+                    color=previous3DObject.material.defaultColor;
                     // if an object already exists for this aspect we remove it. This could happen in case we are changing how an aspect
                     // is visualized, e.g. lines over tubes representation
                     GEPPETTO.getVARS().scene.remove(previous3DObject);
@@ -86,8 +96,8 @@ define(function (require) {
                 }
                 var materials =
                 {
-                    "mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(),
-                    "line": GEPPETTO.SceneFactory.getLineMaterial(thickness),
+                    "mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(color),
+                    "line": GEPPETTO.SceneFactory.getLineMaterial(thickness,color),
                     "particle": GEPPETTO.SceneFactory.getParticleMaterial()
                 };
                 var instanceObjects = [];
@@ -116,6 +126,13 @@ define(function (require) {
                 return instanceObjects;
             },
 
+            /**
+             *
+             * @param instance
+             * @param materials
+             * @param lines
+             * @returns {Array}
+             */
             walkVisTreeGen3DObjs: function (instance, materials, lines) {
                 var threeDeeObj = null;
                 var threeDeeObjList = [];
@@ -148,9 +165,15 @@ define(function (require) {
                 return threeDeeObjList;
             },
 
+
+            /**
+             *
+             * @param objArray
+             * @param materials
+             * @returns {*}
+             */
             merge3DObjects: function (objArray, materials) {
                 var mergedMeshesPaths = [];
-                var combined = new THREE.Geometry();
                 var ret = null;
                 var mergedLines;
                 var mergedMeshes;
@@ -192,7 +215,7 @@ define(function (require) {
                     ret = new THREE.LineSegments(mergedLines, materials["line"]);
                     if (mergedMeshes != undefined) {
                         // we merge into a single mesh both types of geometries (from lines and 3D objects)
-                        tempmesh = new THREE.Mesh(mergedMeshes, materials["mesh"]);
+                        var tempmesh = new THREE.Mesh(mergedMeshes, materials["mesh"]);
                         ret.geometry.merge(tempmesh.geometry, tempmesh.matrix);
                     }
                 }
@@ -205,12 +228,34 @@ define(function (require) {
 
             },
 
+
+            /**
+             *
+             * @param instance
+             * @param node
+             * @param id
+             * @param materials
+             * @param lines
+             * @returns {*}
+             */
             visualizationTreeNodeTo3DObj: function (instance, node, id, materials, lines) {
                 var threeObject = null;
+
                 if (lines === undefined) {
                     // Unless it's being forced we use a threshold to decide whether to use lines or cylinders
-                    lines = GEPPETTO.SceneController.complexity > 2000;
+                    if (!GEPPETTO.SceneController.aboveLinesThreshold) {
+                        //Unless we are already above the threshold...
+                        GEPPETTO.SceneController.aboveLinesThreshold = GEPPETTO.SceneController.complexity > GEPPETTO.SceneController.linesThreshold;
+                        if (GEPPETTO.SceneController.aboveLinesThreshold) {
+                            //we are over the threshold, we use lines for everything
+                            GEPPETTO.SceneController.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
+                        }
+                    }
+                    lines = GEPPETTO.SceneController.aboveLinesThreshold;
                 }
+
+                var material = lines ? materials["line"] : materials["mesh"];
+
                 switch (node.eClass) {
                     case GEPPETTO.Resources.PARTICLE:
                         threeObject = GEPPETTO.SceneFactory.createParticle(node);
@@ -218,17 +263,17 @@ define(function (require) {
 
                     case GEPPETTO.Resources.CYLINDER:
                         if (lines) {
-                            threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
+                            threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, material);
                         } else {
-                            threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, materials["mesh"]);
+                            threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, material);
                         }
                         break;
 
                     case GEPPETTO.Resources.SPHERE:
                         if (lines) {
-                            threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, materials["line"]);
+                            threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, material);
                         } else {
-                            threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, materials["mesh"]);
+                            threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, material);
                         }
                         break;
                     case GEPPETTO.Resources.COLLADA:
@@ -251,6 +296,11 @@ define(function (require) {
                 return threeObject;
             },
 
+            /**
+             *
+             * @param node
+             * @returns {*}
+             */
             loadColladaModelFromNode: function (node) {
                 var loader = new THREE.ColladaLoader();
                 loader.options.convertUpAxis = true;
@@ -261,10 +311,11 @@ define(function (require) {
                     scene = collada.scene;
                     scene.traverse(function (child) {
                         if (child instanceof THREE.Mesh) {
-                            child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial(40);
+                            child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
                             child.name = node.instancePath.split(".VisualizationTree")[0];
                             child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                             child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+                            child.material.wireframe = GEPPETTO.SceneController.wireframe;
                             child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                             child.geometry.computeVertexNormals();
                         }
@@ -272,6 +323,7 @@ define(function (require) {
                             child.material.skinning = true;
                             child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                             child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+                            child.material.wireframe = GEPPETTO.SceneController.wireframe;
                             child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                             child.geometry.computeVertexNormals();
                         }
@@ -280,6 +332,11 @@ define(function (require) {
                 return scene;
             },
 
+            /**
+             *
+             * @param node
+             * @returns {*}
+             */
             loadThreeOBJModelFromNode: function (node) {
                 var manager = new THREE.LoadingManager();
                 manager.onProgress = function (item, loaded, total) {
@@ -291,6 +348,7 @@ define(function (require) {
                 scene.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
                         child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+                        child.material.wireframe = GEPPETTO.SceneController.wireframe;
                         child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                         child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                         child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -301,6 +359,11 @@ define(function (require) {
                 return scene;
             },
 
+            /**
+             *
+             * @param node
+             * @returns {THREE.Vector3|*}
+             */
             createParticle: function (node) {
                 threeObject = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
                 threeObject.visible = true;
@@ -314,18 +377,15 @@ define(function (require) {
             },
 
             /**
-             * Creates and positions a ThreeJS line object from a Geppetto Cylinder node
              *
-             * @param {VisualObjectNode}
-             *            cylNode - a Geppetto Cylinder Node
-             * @param {ThreeJSMaterial}
-             *            material - Material to be used for the Mesh
-             * @returns a ThreeJS line correctly positioned w.r.t the global frame of reference
+             * @param node
+             * @param material
+             * @returns {THREE.Line}
              */
             create3DLineFromNode: function (node, material) {
                 if (node.eClass == GEPPETTO.Resources.CYLINDER) {
-                    bottomBasePos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
-                    topBasePos = new THREE.Vector3(node.distal.x, node.distal.y, node.distal.z);
+                    var bottomBasePos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
+                    var topBasePos = new THREE.Vector3(node.distal.x, node.distal.y, node.distal.z);
 
                     var axis = new THREE.Vector3();
                     axis.subVectors(topBasePos, bottomBasePos);
@@ -351,18 +411,15 @@ define(function (require) {
             },
 
             /**
-             * Creates and positions a ThreeJS cylinder object from a Geppetto Cylinder node
              *
-             * @param {VisualObjectNode}
-             *            cylNode - a Geppetto Cylinder Node
-             * @param {ThreeJSMaterial}
-             *            material - Material to be used for the Mesh
-             * @returns a ThreeJS Cylinder correctly positioned w.r.t the global frame of reference
+             * @param cylNode
+             * @param material
+             * @returns {THREE.Mesh}
              */
             create3DCylinderFromNode: function (cylNode, material) {
 
-                bottomBasePos = new THREE.Vector3(cylNode.position.x, cylNode.position.y, cylNode.position.z);
-                topBasePos = new THREE.Vector3(cylNode.distal.x, cylNode.distal.y, cylNode.distal.z);
+                var bottomBasePos = new THREE.Vector3(cylNode.position.x, cylNode.position.y, cylNode.position.z);
+                var topBasePos = new THREE.Vector3(cylNode.distal.x, cylNode.distal.y, cylNode.distal.z);
 
                 var axis = new THREE.Vector3();
                 axis.subVectors(topBasePos, bottomBasePos);
@@ -380,56 +437,70 @@ define(function (require) {
                 return threeObject;
             },
 
+
             /**
-             * Creates and positions a ThreeJS sphere object
              *
-             * @param {VisualObjectNode}
-             *            sphereNode - a Geppetto Sphere Node
-             * @param {ThreeJSMaterial}
-             *            material - Material to be used for the Mesh
-             * @returns a ThreeJS sphere correctly positioned w.r.t the global frame of reference
+             * @param sphereNode
+             * @param material
+             * @returns {THREE.Mesh|*}
              */
             create3DSphereFromNode: function (sphereNode, material) {
 
                 var sphere = new THREE.SphereGeometry(sphereNode.radius, 20, 20);
                 // sphere.applyMatrix(new THREE.Matrix4().makeScale(-1,1,1));
-                threeObject = new THREE.Mesh(sphere, material);
+                var threeObject = new THREE.Mesh(sphere, material);
                 threeObject.position.set(sphereNode.position.x, sphereNode.position.y, sphereNode.position.z);
 
                 threeObject.geometry.verticesNeedUpdate = true;
                 return threeObject;
             },
 
-            getLineMaterial: function (thickness) {
-                var options =
-                {};
+            /**
+             *
+             * @param thickness
+             * @returns {THREE.LineBasicMaterial}
+             */
+            getLineMaterial: function (thickness, color) {
+                var options = {};
                 if (thickness) {
                     options.linewidth = thickness;
                 }
+                if (color == undefined) {
+                    color = GEPPETTO.Resources.COLORS.DEFAULT;
+                }
                 var material = new THREE.LineBasicMaterial(options);
-                material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-                material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
+                material.color.setHex(color);
+                material.defaultColor = color;
                 material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                 return material;
             },
 
-            getMeshPhongMaterial: function (shine) {
-                if (shine == undefined) {
-                    shine = 10;
+            /**
+             *
+             * @param color
+             * @returns {THREE.MeshPhongMaterial}
+             */
+            getMeshPhongMaterial: function (color) {
+                if (color == undefined) {
+                    color = GEPPETTO.Resources.COLORS.DEFAULT;
                 }
                 var material = new THREE.MeshPhongMaterial(
                     {
                         opacity: 1,
-                        shininess: shine,
+                        shininess: 10,
                         shading: THREE.SmoothShading
                     });
 
-                material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
-                material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
+                material.color.setHex(color);
+                material.defaultColor = color;
                 material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                 return material;
             },
 
+            /**
+             *
+             * @returns {THREE.PointsMaterial}
+             */
             getParticleMaterial: function () {
                 var textureLoader = new THREE.TextureLoader();
                 var pMaterial = new THREE.PointsMaterial(

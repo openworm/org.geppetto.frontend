@@ -222,7 +222,11 @@ define(function (require) {
                             // run action
                             if (actionStr != '' && actionStr != undefined) {
                                 GEPPETTO.Console.executeCommand(actionStr);
-                                eval(that.props.metadata.action.replace(/\$entity\$/gi, path));
+                                // check custom action to run after configured command
+                                if(that.props.metadata.action != '' && that.props.metadata.action != undefined) {
+                                    // straight up eval as we don't want this to show on the geppetto console
+                                    eval(that.props.metadata.action.replace(/\$entity\$/gi, path));
+                                }
                             }
 
                             // if conditional, swap icon with the other condition outcome

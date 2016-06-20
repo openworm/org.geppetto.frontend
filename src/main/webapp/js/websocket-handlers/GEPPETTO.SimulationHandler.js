@@ -85,7 +85,6 @@ define(function (require) {
 
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function (payload) {
             var newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
-            GEPPETTO.FE.newExperiment(newExperiment);
         };
 
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function (payload) {
@@ -239,8 +238,9 @@ define(function (require) {
                 var oldActiveExperiment = window.Project.getActiveExperiment().id;
                 window.Project.getActiveExperiment().id = parseInt(activeExperimentID);
                 window.Project.persisted = true;
-
-                GEPPETTO.FE.updateExperimentId(oldActiveExperiment, window.Project.getActiveExperiment().id);
+                
+                //TODO: Why replace id?
+                //GEPPETTO.FE.updateExperimentId(oldActiveExperiment, window.Project.getActiveExperiment().id);
 
                 GEPPETTO.trigger(Events.Project_persisted);
                 GEPPETTO.Console.log("The project has been persisted  [id=" + projectID + "].");

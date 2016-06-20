@@ -348,7 +348,16 @@ define(function (require) {
 		},
 
 		newExperiment : function(experiment){
-			this.state.experiments.push(experiment);
+			var experiments = this.state.experiments;
+			var rows = [];
+			rows[0] = experiment;
+			var index = 1;
+			for ( var key in experiments)
+			{
+				rows[index] = experiments[key];
+				index++;
+			}
+			this.setState({ experiments: rows });			
             this.state.counter++;
 		},
 		
@@ -410,7 +419,7 @@ define(function (require) {
                 for ( var e in experiments)
                 {
                     var experiment = experiments[e];
-                    if (this.id == (experiment.getId()))
+                    if (this.id == ("#"+experiment.getId())||this.id == (experiment.getId()))
                     {
                         var tdStatus = $(this).find(".circle");
                         var tdStatusTitle = tdStatus.attr("title");

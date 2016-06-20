@@ -521,23 +521,24 @@ define(function (require) {
                 window.Project.getExperiments().push(newExperiment);
                 newExperiment.setParent(window.Project);
                 GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
+                
+                GEPPETTO.trigger(Events.Experiment_created, newExperiment);
 
                 return newExperiment;
             },
 
             deleteExperiment: function (payload) {
                 var data = JSON.parse(payload.update);
-
+                var experiment = null;
                 var experiments = window.Project.getExperiments();
                 for (var e in experiments) {
-                    var experiment = experiments[e];
-                    if (experiment.getId() == data.id) {
+                    if (experiments[e].getId() == data.id) {
+                    	experiment = experiments[e];
                         var index = window.Project.getExperiments().indexOf(experiment);
                         window.Project.getExperiments().splice(index, 1);
                     }
                 }
-                var parameters = {name: data.name, id: data.id};
-                GEPPETTO.trigger(Events.Experiment_deleted, parameters);
+                GEPPETTO.trigger(Events.Experiment_deleted, experiment);
             }
         };
 

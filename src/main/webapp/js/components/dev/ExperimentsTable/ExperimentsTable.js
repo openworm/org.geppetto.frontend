@@ -136,18 +136,79 @@ define(function (require) {
 	 * Creates table row for displaying an experiment's simulator configurations
 	 */
 	var SimulatorRow = React.createClass({
+		componentDidMount : function(){
+			var row = "#simulatorRowId-"+this.props.experiment.getId();
+			// Handle edits to editable fields
+            $(row).parent().find("td[contenteditable='true']").keydown(function(e)
+            {
+                if (e.keyCode == 13)
+                {
+                    e.preventDefault();
+                    $(this).blur();
+
+                    // without this somehow the carriage return makes it
+                    // into the field
+                    window.getSelection().removeAllRanges();
+                }
+            });
+
+            $(row).parent().find("td[contenteditable='true']").blur(function(e)
+            {
+                // get experiment ID for the edited field
+                var val = $(this).html();
+                var field = $(this).attr("field");
+
+                var setterStr = "";
+
+                switch (field)
+                {
+                    case "name":
+                        setterStr = "setName"
+                        break;
+                    case "simulatorId":
+                        setterStr = "setSimulator"
+                        break;
+                    case "timeStep":
+                        setterStr = "setTimeStep"
+                        break;
+                    case "length":
+                        setterStr = "setLength"
+                        break;
+                    case "conversionId":
+                        setterStr = "setConversionService"
+                        break;
+                }
+
+                if (setterStr != "")
+                {
+                    if (field == "name")
+                    {
+                        var expID = $(this).parent().attr("data-target").replace('#', '');
+                        GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
+                    } else
+                    {
+                        var expID = $(this).parents().closest("tr.nested-experiment-info").attr("id").replace('#', '');
+                        // get aspect instance path
+                        var aspect = $(this).parent().find("td[field='aspect']").html();
+                        GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ").simulatorConfigurations['" + aspect + "']." + setterStr + "('" + val + "')");
+                    }
+                }
+            })
+		},
 		render: function() {
 			var editable = false;
             if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN){
             	editable = true;
             }
+            
+            var simulatorRowId = "simulatorRowId-"+this.props.experiment.getId();
 
 			return (
-					<tr><td></td>
-						<td field='aspect' contentEditable={editable}>{this.props.simulator["aspectInstancePath"]}</td>
-						<td field='simulatorId' contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
-						<td field='timeStep' contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
-						<td field='length' contentEditable={editable}>{this.props.simulator["length"]}</td>
+					<tr id={simulatorRowId}><td></td>
+						<td field='aspect' contentEditable={editable} onchange={this.onChange}>{this.props.simulator["aspectInstancePath"]}</td>
+						<td field='simulatorId' contentEditable={editable} onchange={this.onChange}>{this.props.simulator["simulatorId"]}</td>
+						<td field='timeStep' contentEditable={editable} onchange={this.onChange}>{this.props.simulator["timeStep"]}</td>
+						<td field='length' contentEditable={editable} onchange={this.onChange}>{this.props.simulator["length"]}</td>
 					</tr>
 			);
 		}
@@ -250,11 +311,11 @@ define(function (require) {
 			var deleteIconId = "deleteIcon-" +this.props.experiment.getId();
 			var downloadResultsIconId = "downloadResultsIcon-" +this.props.experiment.getId();
 			var downloadModelsIconId = "downloadModelsIcon-" +this.props.experiment.getId();
-
+    
 			var style  = {
-					paddingRight:"10px"
+					paddingRight:"10px",
 			};
-
+			
 			return (
 					<div  onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
 						<a className='activeIcon' onClick={this.activeIconClick} experimentId={this.props.experiment.getId()} id={activeIconId}>
@@ -316,7 +377,15 @@ define(function (require) {
 		deleteExperiment : function(experiment){
 			this.state.experiments.pop(experiment);
             this.state.counter++;
-            this.forceUpdate();
+            // loop through each row of experiments table
+            $('#experimentsTable tbody tr').each(function()
+            {
+                // id of row matches that of active experiment
+                if (this.id == ("#" + experiment.getId())||this.id == ("#collapsable-" + experiment.getId()))
+                {
+                    $(this).remove();
+                }
+            });
 		},
 		
 		updateExperimentStatus : function(){
@@ -369,11 +438,11 @@ define(function (require) {
 			return {experiments: tabledata, counter : 1};
 		},
 		onClick : function(rowID, e){
-			var className = "."+rowID;
-			if( $(className).is(':visible')){
-				$(className).hide();
+			var targetRowId = "."+rowID;
+			if( $(targetRowId).is(':visible')){
+				$(targetRowId).hide();
 			}else{
-				$(className).show();
+				$(targetRowId).show();
 			}
 		},
 		render: function() {

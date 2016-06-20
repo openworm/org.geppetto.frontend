@@ -88,6 +88,9 @@ define(function (require) {
                 GEPPETTO.on(Events.Experiment_loaded, function () {
                     GEPPETTO.trigger("hide:spinner");
                 });
+                GEPPETTO.on(Events.Project_loaded, function () {
+                	GEPPETTO.Main.startStatusWorker();
+                });
                 GEPPETTO.on(Events.Experiment_over, function (e) {
                     var name = e.name;
                     var id = e.id;

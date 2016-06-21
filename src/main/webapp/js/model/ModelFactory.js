@@ -1188,8 +1188,8 @@ define(function (require) {
                 // get pointer A and pointer B
                 var connectionValue = initialValues[0].value;
                 // resolve A and B to Pointer Objects
-                var pointerA = this.createPointer(connectionValue.a[0]);
-                var pointerB = this.createPointer(connectionValue.b[0]);
+                var pointerA = this.createPointer(connectionValue.a);
+                var pointerB = this.createPointer(connectionValue.b);
 
                 if (connectionInstanceOrVariable instanceof Instance) {
                     this.augmentPointer(pointerA, connectionInstanceOrVariable);
@@ -1720,8 +1720,8 @@ define(function (require) {
 
                     var connectionValue = initialValues[0].value;
                     // resolve A and B to Pointer Objects
-                    var pointerA = this.createPointer(connectionValue.a[0]);
-                    var pointerB = this.createPointer(connectionValue.b[0]);
+                    var pointerA = this.createPointer(connectionValue.a);
+                    var pointerB = this.createPointer(connectionValue.b);
                     if (pointerA.getPath() == instance.getId() || pointerB.getPath() == instance.getId()) {
                         //TODO if there is more than one instance of the same projection this code will break
                         var parentInstance = this.instances.getInstance(this.getAllPotentialInstancesEndingWith(variable.getParent().getId())[0]);

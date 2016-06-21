@@ -13,7 +13,7 @@ install:
 #- git clone https://github.com/openworm/org.geppetto.simulation.git -b $TRAVIS_BRANCH
 #- cd org.geppetto.simulation
 #- mvn install
-- cd ..
+- cd .
 env:
   global:
     secure: EvqtUrZj3GsqzAkjZIVf2ZIze6ec72G8Dnkc0J3lKxwDTK6+KgIYgRWUWWO6tzL5Mn3Y+kkiHvyAkrHNPb2QZVBAdOdE3O308WRi64FF71nurd46zE43K/sSxcX/zCoBtxsz49oRcluPWl+nGDi/iKEysgcnQCvz23VWEYHAsOk=

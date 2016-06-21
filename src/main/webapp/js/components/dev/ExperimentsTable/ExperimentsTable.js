@@ -88,9 +88,6 @@ define(function (require) {
 			if(rowNumber%2==1){
 				rowClasses += " nthTr";
 			}
-			var style  = {
-				width:"215px"
-			};
 			var rows = [];
 			var simulatorConfigurations = [];
 			var index =0;
@@ -116,7 +113,7 @@ define(function (require) {
 							<div className={collapseClass}>
 								<table className='table-condensed expandableTable'>
 									<thead className='experimentsTableColumn'>
-										<tr><th style={style}></th>
+										<tr><th className="nameHeader"></th>
 										<th>Aspect</th><th>Simulator</th><th>TimeStep (s)</th><th>Length (s)</th></tr>
 									</thead>
 									<tbody>{rows}</tbody>
@@ -289,15 +286,11 @@ define(function (require) {
 			var deleteIconId = "deleteIcon-" +this.props.experiment.getId();
 			var downloadResultsIconId = "downloadResultsIcon-" +this.props.experiment.getId();
 			var downloadModelsIconId = "downloadModelsIcon-" +this.props.experiment.getId();
-    
-			var style  = {
-					paddingRight:"10px",
-			};
 			
 			return (
 					<div  onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
 						<a className='activeIcon' onClick={this.activeIconClick} experimentId={this.props.experiment.getId()} id={activeIconId}>
-							<i className='fa fa-check-circle fa-lg' style={style} rel='tooltip' title='Active Icon'></i>
+							<i className='fa fa-check-circle fa-lg' rel='tooltip' title='Active Icon'></i>
 						</a>
 						<a className='deleteIcon' onClick={this.deleteIconClick} experimentId={this.props.experiment.getId()} id={deleteIconId}>
 							<i className='fa fa-remove fa-lg' rel='tooltip' title='Delete Experiment'></i>
@@ -487,9 +480,6 @@ define(function (require) {
 			}
 		},
 		render: function() {
-			var style  = {
-					width:"30%"
-			};
 			var rows = [];
 			this.state.experiments.forEach(function(experiment) {
 				if(experiment!=null){
@@ -504,10 +494,10 @@ define(function (require) {
 							<div className="col-lg-6 experimentsResults panel-body experimentsResultsOutput" id="experimentsOutput">
 								<table id="experimentsTable" className="table table-condensed experimentsTable" style={{borderCollapse:"collapse"}}>
 									<thead className="experimentsTableColumn">
-									<tr><th style={{width:"10%",textAlign:"center"}}>Status</th>
-									<th style={style}>Name</th>
-									<th style={style}>Date</th>
-									<th style={style}>
+									<tr><th className="statusHeader">Status</th>
+									<th className="tableHeader">Name</th>
+									<th className="tableHeader">Date</th>
+									<th className="tableHeader">
 										<div className="new_experiment" id="new_experiment" tile="New experiment">
 											<i className='new_experiment_icon fa fa-plus fa-lg'></i>
 										</div>

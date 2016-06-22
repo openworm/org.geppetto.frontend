@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *        OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,41 +30,54 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Loads widget scripts
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @module Widgets/WIDGETNAME
+ * @author yourname
  */
-
-//Widget Classes
 define(function (require) {
-    return function (GEPPETTO) {
 
-        require('widgets/WidgetFactory')(GEPPETTO);
-        require('widgets/WidgetsListener')(GEPPETTO);
-        require("widgets/WidgetUtility");
-        require("widgets/ContextMenu")(GEPPETTO);
-        //Plot Widget
-        require("widgets/plot/config")(GEPPETTO);
-        //Popup Widget
-        require("widgets/popup/config");
-        //Scatter3d Widget
-        require("widgets/scatter3d/config");
-        //TreeVisualiser DAT Widget
-        require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-        //TreeVisualiser D3 Widget
-        require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-        //VariableVisualiser widget
-        require("widgets/variablevisualiser/config");
-        //Connectivity Widget
-        require("widgets/connectivity/config");
-        //Buttonbar widget
-        require("widgets/buttonBar/config");
+    var Widget = require('widgets/Widget');
+    var $ = require('jquery');
 
-        //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
-        //require("widgets/template/config");
+    return Widget.View
+        .extend({
+            variable: null,
+            options: null,
 
-        loadCss("geppetto/js/widgets/Widget.css");
-    };
+            /**
+             * Initialises button bar
+             *
+             * @param {Object}
+             *            options - Object with options for the widget
+             */
+            /**
+             * Initialize the popup widget
+             */
+            initialize: function (options) {
+                Widget.View.prototype.initialize.call(this, options);
+                this.render();
+                this.setSize(100, 300);
+                this.customHandlers = [];
+
+                //in case you need some styling add it to the CSS $("#" + this.id).addClass("yourStyle");
+
+            },
+
+
+            /**
+             * Sets the content of this widget
+             * This is a sample method of the widget's API, in this case the user would use the widget by passing an instance to a setData method
+             * Customise/remove/add more depending on what widget you are creating
+             *
+             * @command setData(anyInstance)
+             * @param {Object} anyInstance - An instance of any type
+             */
+            setData: function (anyInstance) {
+                this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
+
+                return this;
+            },
+
+        });
 });

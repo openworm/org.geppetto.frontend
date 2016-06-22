@@ -582,6 +582,7 @@ define(function (require) {
                             var diffTypes = diffLibs[i].getTypes();
                             var types = libs[j].getTypes();
 
+                            // first loop on types - add new ones
                             for (var k = 0; k < diffTypes.length; k++) {
                                 if (diffTypes[k].getWrappedObj().synched == true) {
                                     // if synch placeholder type, skip it
@@ -594,46 +595,6 @@ define(function (require) {
                                     // check if the given diff type already exists
                                     if (diffTypes[k].getPath() == types[m].getPath()) {
                                         typeMatch = true;
-
-                                        // if(overrideTypes) swap the types[m] with the diffType[k]
-                                        if (overrideTypes) {
-                                            // get all types in the current model
-                                            var allTypesInModel = [];
-                                            for (var w = 0; w < libs.length; w++) {
-                                                allTypesInModel = allTypesInModel.concat(libs[w].getTypes());
-                                            }
-                                            // fetch variables pointing to the old version of the type
-                                            var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, types[m]);
-                                            // add top level variables in the model
-                                            variablesToUpdate = variablesToUpdate.concat(this.geppettoModel.getVariables());
-
-                                            // swap type reference in ALL variables that point to it
-                                            for (var x = 0; x < variablesToUpdate.length; x++) {
-                                                this.swapTypeInVariable(variablesToUpdate[x], types[m], diffTypes[k]);
-                                            }
-
-                                            // swap type in raw model
-                                            libs[j].getWrappedObj().types[m] = diffTypes[k].getWrappedObj();
-
-                                            // store overridden type (so that unresolve type can swap it back)
-                                            diffTypes[k].overrideType = types[m];
-
-                                            // swap in object model
-                                            diffTypes[k].set({'parent': libs[j]});
-                                            types[m] = diffTypes[k];
-
-                                            // populate references for the swapped type
-                                            this.populateTypeReferences(diffTypes[k]);
-
-                                            // add potential instance paths
-                                            this.addPotentialInstancePaths(variablesToUpdate);
-
-                                            // update capabilities for variables and instances if any
-                                            this.updateCapabilities(variablesToUpdate);
-
-                                            // add to diff report
-                                            diffReport.types.push(diffTypes[k]);
-                                        }
                                     }
                                 }
 
@@ -658,6 +619,61 @@ define(function (require) {
 
                                     // add to diff report
                                     diffReport.types.push(diffTypes[k]);
+                                }
+                            }
+
+                            // second loop on types - override (if flag is set)
+                            if (overrideTypes) {
+                                for (var k = 0; k < diffTypes.length; k++) {
+
+                                    if (diffTypes[k].getWrappedObj().synched == true) {
+                                        // if synch placeholder type, skip it
+                                        continue;
+                                    }
+                                    
+                                    for (var m = 0; m < types.length; m++) {
+                                        // check if the given diff type already exists
+                                        if (diffTypes[k].getPath() == types[m].getPath()) {
+                                            // It does exist - swap the types[m] with the diffType[k]
+
+                                            // get all types in the current model
+                                            var allTypesInModel = [];
+                                            for (var w = 0; w < libs.length; w++) {
+                                                allTypesInModel = allTypesInModel.concat(libs[w].getTypes());
+                                            }
+                                            // fetch variables pointing to the old version of the type
+                                            var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, types[m]);
+                                            // add top level variables in the model
+                                            variablesToUpdate = variablesToUpdate.concat(this.geppettoModel.getVariables());
+
+                                            // populate references for the swapped type
+                                            this.populateTypeReferences(diffTypes[k]);
+
+                                            // swap type reference in ALL variables that point to it
+                                            for (var x = 0; x < variablesToUpdate.length; x++) {
+                                                this.swapTypeInVariable(variablesToUpdate[x], types[m], diffTypes[k]);
+                                            }
+
+                                            // swap type in raw model
+                                            libs[j].getWrappedObj().types[m] = diffTypes[k].getWrappedObj();
+
+                                            // store overridden type (so that unresolve type can swap it back)
+                                            diffTypes[k].overrideType = types[m];
+
+                                            // swap in object model
+                                            diffTypes[k].set({'parent': libs[j]});
+                                            types[m] = diffTypes[k];
+
+                                            // add potential instance paths
+                                            this.addPotentialInstancePaths(variablesToUpdate);
+
+                                            // update capabilities for variables and instances if any
+                                            this.updateCapabilities(variablesToUpdate);
+
+                                            // add to diff report
+                                            diffReport.types.push(diffTypes[k]);
+                                        }
+                                    }
                                 }
                             }
                         }

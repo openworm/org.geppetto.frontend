@@ -1,449 +1,460 @@
 /**
  * React component for displaying a Project's experiments in a table.
- * 
+ *
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function (require) {
 
-	var React = require('react'), $ = require('jquery');
-	var ReactDOM = require('react-dom');
-	var GEPPETTO = require('geppetto');
+    var React = require('react'), $ = require('jquery');
+    var ReactDOM = require('react-dom');
+    var GEPPETTO = require('geppetto');
 
-	/**
-	 * Creates a table row html element <tr>, used to display an Experiment's
-	 * information (name, lastModified) and controls.
-	 */
-	var ExperimentRow = React.createClass({
-		//Requests element with control icons to become visible
-		mouseOver: function () {
-			this.refs.icons.show();
-		},
-		//Requests element with control icons to become invisible
-		mouseOut: function () {
-		   this.refs.icons.hide();
-		},
-		componentDidMount : function(){
-			var row = "#"+this.props.experiment.getId();
-			
-			// Handle edits to editable name field
-            $(row).find("td[contenteditable='true']").keydown(function(e)
-            {
-            	//save if user hits enter key
-                if (e.keyCode == 13)
-                {
+    /**
+     * Creates a table row html element <tr>, used to display an Experiment's
+     * information (name, lastModified) and controls.
+     */
+    var ExperimentRow = React.createClass({
+        //Requests element with control icons to become visible
+        mouseOver: function () {
+            this.refs.icons.show();
+        },
+
+        //Requests element with control icons to become invisible
+        mouseOut: function () {
+            this.refs.icons.hide();
+        },
+
+        componentDidMount: function () {
+            var row = "#" + this.props.experiment.getId();
+
+            // Handle edits to editable name field
+            $(row).find("td[contenteditable='true']").keydown(function (e) {
+                //save if user hits enter key
+                if (e.keyCode == 13) {
                     e.preventDefault();
                     // get experiment ID for the edited field
-    				var val = $(this).html();
-    				var field = $(this).attr("name");
+                    var val = $(this).html();
+                    var field = $(this).attr("name");
 
-    				var setterStr = "setName";
+                    var setterStr = "setName";
 
-    				if (field == "name")
-    				{
-    					var expID = $(this).parent().attr("id").replace('#', '');
-    					GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
-    				}
+                    if (field == "name") {
+                        var expID = $(this).parent().attr("id").replace('#', '');
+                        GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
+                    }
 
                     // without this somehow the carriage return makes it
                     // into the field
                     window.getSelection().removeAllRanges();
                 }
             });
-		},
-		render: function() {
-			var rowNumber = this.props.rowNumber;
-			var rowClasses = "experimentsTableColumn accordion-toggle row-"+this.props.experiment.getId();;
-			//add different background to every even row
-			if(rowNumber%2==1){
-				rowClasses += " nthTr";
-			}
-			//set editable name field if experiment in design ode
-			var editable = false;
-            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN){
-            	editable = true;
+        },
+        render: function () {
+            var rowNumber = this.props.rowNumber;
+            var rowClasses = "experimentsTableColumn accordion-toggle row-" + this.props.experiment.getId();
+
+            //add different background to every even row
+            if (rowNumber % 2 == 1) {
+                rowClasses += " nthTr";
             }
-			
-			return (
-					<tr rowType="main"  onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} 
-						className={rowClasses} id={this.props.experiment.getId()}>
-						<StatusElement experiment={this.props.experiment} key={this.props.experiment.name}/>
-						<td name="name" contentEditable={editable}>{this.props.experiment.getName()}</td>
-						<td>{this.props.experiment.getLastModified()}</td>
-						<td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name}/></td>
-					</tr>
-			);
-		}
-	});
-	
-	/**
-	 * Creates a table row html element, <tr>, which can be collapsed.
-	 * Used to display an experiment's simulator configurations
-	 */
-	var ExperimentExpandableRow = React.createClass({
-		render: function() {
-			var id = "collapsable-"+this.props.experiment.getId();
-			var rowNumber = this.props.rowNumber;
-			var rowClasses = "nested-experiment-info"
-			//add different background to every even row
-			if(rowNumber%2==1){
-				rowClasses += " nthTr";
-			}
-			var rows = [];
-			var simulatorConfigurations = [];
-			var index =0;
-			
-			//make simulator configurations to array
-			for(var key in this.props.experiment.simulatorConfigurations){
-				simulatorConfigurations[index] = this.props.experiment.simulatorConfigurations[key];
-				index++;
-			}
-			
-			//create array of table row elements of type SimulatorRow
-			simulatorConfigurations.forEach(function(simulator) {
-				if(simulator!=null){
-					rows.push(<SimulatorRow simulator={simulator} experiment={this.props.experiment} 
-											key={this.props.experiment.name}/>);
-				}
-			}.bind(this));
-					
-			var collapseClass = "collapse accordian-body collapsable-"+this.props.experiment.getId();;
-			return (
-					<tr className={rowClasses} id={id}>
-						<td colSpan='12' className='hiddenRow'>
-							<div className={collapseClass}>
-								<table className='table-condensed expandableTable'>
-									<thead className='experimentsTableColumn'>
-										<tr><th className="nameHeader"></th>
-										<th>Aspect</th><th>Simulator</th><th>TimeStep (s)</th><th>Length (s)</th></tr>
-									</thead>
-									<tbody>{rows}</tbody>
-								</table>
-							</div>
-						</td>
-					</tr>
-			);
-		}
-	});
-	
-	/**
-	 * Creates table row for displaying an experiment's simulator configurations
-	 */
-	var SimulatorRow = React.createClass({
-		componentDidMount : function(){
-			var row = "#simulatorRowId-"+this.props.experiment.getId();
-			// Handle edits to editable fields
-            $(row).parent().find("td[contenteditable='true']").keydown(function(e)
-            {
-                if (e.keyCode == 13)
-                {
+
+            //set editable name field if experiment in design ode
+            var editable = false;
+            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                editable = true;
+            }
+
+            return (
+                <tr rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
+                    className={rowClasses} id={this.props.experiment.getId()}>
+                    <StatusElement experiment={this.props.experiment} key={this.props.experiment.name}/>
+                    <td name="name" contentEditable={editable}>{this.props.experiment.getName()}</td>
+                    <td>{this.props.experiment.getLastModified()}</td>
+                    <td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name}/>
+                    </td>
+                </tr>
+            );
+        }
+    });
+
+    /**
+     * Creates a table row html element, <tr>, which can be collapsed.
+     * Used to display an experiment's simulator configurations
+     */
+    var ExperimentExpandableRow = React.createClass({
+        render: function () {
+            var id = "collapsable-" + this.props.experiment.getId();
+            var rowNumber = this.props.rowNumber;
+            var rowClasses = "nested-experiment-info";
+
+            //add different background to every even row
+            if (rowNumber % 2 == 1) {
+                rowClasses += " nthTr";
+            }
+            var rows = [];
+            var simulatorConfigurations = [];
+            var index = 0;
+
+            //make simulator configurations to array
+            for (var key in this.props.experiment.simulatorConfigurations) {
+                simulatorConfigurations[index] = this.props.experiment.simulatorConfigurations[key];
+                index++;
+            }
+
+            //create array of table row elements of type SimulatorRow
+            simulatorConfigurations.forEach(function (simulator) {
+                if (simulator != null) {
+                    rows.push(<SimulatorRow simulator={simulator} experiment={this.props.experiment}
+                                            key={this.props.experiment.name}/>);
+                }
+            }.bind(this));
+
+            var collapseClass = "collapse accordian-body collapsable-" + this.props.experiment.getId();
+
+            return (
+                <tr className={rowClasses} id={id}>
+                    <td colSpan='12' className='hiddenRow'>
+                        <div className={collapseClass}>
+                            <table className='table-condensed expandableTable'>
+                                <thead className='experimentsTableColumn'>
+                                <tr>
+                                    <th className="nameHeader"></th>
+                                    <th>Aspect</th>
+                                    <th>Simulator</th>
+                                    <th>TimeStep (s)</th>
+                                    <th>Length (s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>{rows}</tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            );
+        }
+    });
+
+    /**
+     * Creates table row for displaying an experiment's simulator configurations
+     */
+    var SimulatorRow = React.createClass({
+        componentDidMount: function () {
+            var row = "#simulatorRowId-" + this.props.experiment.getId();
+
+            // Handle edits to editable fields
+            $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
+                if (e.keyCode == 13) {
                     e.preventDefault();
-                 // get experiment ID for the edited field
+                    // get experiment ID for the edited field
                     var val = $(this).html();
                     var field = $(this).attr("name");
 
                     var setterStr = "";
 
-                    switch (field)
-                    {
+                    switch (field) {
                         case "simulatorId":
-                            setterStr = "setSimulator"
+                            setterStr = "setSimulator";
                             break;
                         case "timeStep":
-                            setterStr = "setTimeStep"
+                            setterStr = "setTimeStep";
                             break;
                         case "length":
-                            setterStr = "setLength"
+                            setterStr = "setLength";
                             break;
                         case "conversionId":
-                            setterStr = "setConversionService"
+                            setterStr = "setConversionService";
                             break;
                     }
 
-                    if (setterStr != "")
-                    {
+                    if (setterStr != "") {
                         var expID = $(this).parents().closest("tr.nested-experiment-info").attr("id").replace('collapsable-', '');
+
                         // get aspect instance path
                         var aspect = $(this).parent().find("td[name='aspect']").html();
                         GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ").simulatorConfigurations['" + aspect + "']." + setterStr + "('" + val + "')");
                     }
 
-                    // without this somehow the carriage return makes it
-                    // into the field
+                    // without this somehow the carriage return makes it into the field
                     window.getSelection().removeAllRanges();
                 }
             });
-		},
-		render: function() {
-			var editable = false;
-            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN){
-            	editable = true;
+        },
+        render: function () {
+            var editable = false;
+            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                editable = true;
             }
-            
-            var simulatorRowId = "simulatorRowId-"+this.props.experiment.getId();
-			return (
-					<tr id={simulatorRowId}><td></td>
-						<td name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
-						<td name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
-						<td name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
-						<td name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
-					</tr>
-			);
-		}
-	});
-	
-	/**
-	 * Creates <td> element to display the status of an experiment
-	 */
-	var StatusElement = React.createClass({
-		render: function() {
-			var experiment = this.props.experiment;
-			// create element in row for showing status
-			var tdStatus;
-			// keep track if status is in design
-			var design = false;
-			if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED)
-			{
-				tdStatus = <td id="statusIcon"><div className="circle COMPLETED center-block" title="COMPLETED"></div></td>;
-			} else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED)
-			{
-				tdStatus = <td id="statusIcon"><div className="circle DELETED center-block" title="DELETED"></div></td>;
-			} else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING)
-			{
-				tdStatus = <td id="statusIcon"><div className="circle RUNNING center-block" title="RUNNING"></div></td>;
-			} else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN)
-			{
-				tdStatus = <td id="statusIcon"><div className="circle DESIGN center-block" title="DESIGN"></div></td>;
-				design = true;
-			} else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED)
-			{
-				tdStatus = <td id="statusIcon"><div className="circle QUEUED center-block" title="QUEUED"></div></td>;
-			} else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED)
-			{
-				tdStatus = <td id="statusIcon"><div className="circle CANCELED center-block" title="CANCELED"></div></td>;
-			} else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR)
-			{
-				tdStatus =<td id="statusIcon"><div className="circle ERROR center-block" title="ERROR"></div></td>;
-			}
 
-			return (tdStatus);
-		}
-	});
-	
-	/**
-	 * Creates html element holding set of icons used for experiment controls within table
-	 */
-	var IconsElement = React.createClass({
-		getInitialState: function() {
-			return {visible: false};
-		},
-		show : function(){
-	        this.setState({ visible: true });
-		},
-		hide : function(){
-	        this.setState({ visible: false });
-		},
-		componentDidMount : function(){
-			var experiment = this.props.experiment;
-			
-			var activeIconId = "#activeIcon-" +experiment.getId();
-			var downloadResultsIconId = "#downloadResultsIcon-" +experiment.getId();
-			var downloadModelsIconId = "#downloadModelsIcon-"+ experiment.getId();
-			var deleteIconId = "#deleteIcon-" +experiment.getId();
-			
-			$(activeIconId).click(function(e) {
-				 var index = window.Project.getExperiments().indexOf(experiment);
-		         GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
-		         GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
-		         e.stopPropagation();
-			})
-			$(deleteIconId).click(function(e) {
-				var index = window.Project.getExperiments().indexOf(experiment);
-	            GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
-				e.stopPropagation();
-			})
-			$(downloadModelsIconId).click(function(e) {
-				var simulatorConfigurations = experiment.simulatorConfigurations;
-	            for (var config in simulatorConfigurations) {
-	                var simulatorConfig = simulatorConfigurations[config];
-	                GEPPETTO.Console.executeCommand('Project.downloadModel("' + simulatorConfig["aspectInstancePath"] + '");');
-	            }
-				e.stopPropagation();
-			})
-			$(downloadResultsIconId).click(function(e) {
-				 var index = window.Project.getExperiments().indexOf(experiment);
-	             var simulatorConfigurations = experiment.simulatorConfigurations;
-	             for (var config in simulatorConfigurations) {
-	                 var simulatorConfig = simulatorConfigurations[config];
-	                 GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].downloadResults('" + simulatorConfig["aspectInstancePath"] + "'," + "'RAW');");
-	             }
-				e.stopPropagation();
-			})
-		},
-		render: function() {
-			var experiment = this.props.experiment;
-			//Create IDs for icons
-			var activeIconId = "activeIcon-" +this.props.experiment.getId();
-			var deleteIconId = "deleteIcon-" +this.props.experiment.getId();
-			var downloadResultsIconId = "downloadResultsIcon-" +this.props.experiment.getId();
-			var downloadModelsIconId = "downloadModelsIcon-" +this.props.experiment.getId();
-			
-			return (
-					<div  onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
-						<a className='activeIcon' onClick={this.activeIconClick} experimentId={this.props.experiment.getId()} id={activeIconId}>
-							<i className='fa fa-check-circle fa-lg' rel='tooltip' title='Active Icon'></i>
-						</a>
-						<a className='deleteIcon' onClick={this.deleteIconClick} experimentId={this.props.experiment.getId()} id={deleteIconId}>
-							<i className='fa fa-remove fa-lg' rel='tooltip' title='Delete Experiment'></i>
-						</a>
-						<a className='downloadResultsIcon' onClick={this.downloadResultsIconClick} experimentId={this.props.experiment.getId()} id={downloadResultsIconId}>
-							<i className='fa fa-download fa-lg' rel='tooltip' title='Download Results'></i>
-						</a>
-						<a className='downloadModelsIcon' onClick={this.downloadModelIconClick} experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
-							<i className='fa fa-cloud-download fa-lg' rel='tooltip' title='Download Models'></i>
-						</a>
-					</div>);
-		}
-	});
+            var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
+            return (
+                <tr id={simulatorRowId}>
+                    <td></td>
+                    <td name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
+                    <td name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
+                    <td name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
+                    <td name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
+                </tr>
+            );
+        }
+    });
 
-	/**
-	 * Creates a table html component used to dipslay the experiments
-	 */
-	var ExperimentsTable = React.createClass({
+    /**
+     * Creates <td> element to display the status of an experiment
+     */
+    var StatusElement = React.createClass({
+        render: function () {
+            var experiment = this.props.experiment;
+            // create element in row for showing status
+            var tdStatus;
+            // keep track if status is in design
+            var design = false;
 
-		componentDidMount: function () {
+            if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                tdStatus = <td id="statusIcon">
+                    <div className="circle COMPLETED center-block" title="COMPLETED"></div>
+                </td>;
+            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
+                tdStatus = <td id="statusIcon">
+                    <div className="circle DELETED center-block" title="DELETED"></div>
+                </td>;
+            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
+                tdStatus = <td id="statusIcon">
+                    <div className="circle RUNNING center-block" title="RUNNING"></div>
+                </td>;
+            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                tdStatus = <td id="statusIcon">
+                    <div className="circle DESIGN center-block" title="DESIGN"></div>
+                </td>;
+                design = true;
+            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
+                tdStatus = <td id="statusIcon">
+                    <div className="circle QUEUED center-block" title="QUEUED"></div>
+                </td>;
+            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
+                tdStatus = <td id="statusIcon">
+                    <div className="circle CANCELED center-block" title="CANCELED"></div>
+                </td>;
+            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                tdStatus = <td id="statusIcon">
+                    <div className="circle ERROR center-block" title="ERROR"></div>
+                </td>;
+            }
 
-			var self = this;
+            return (tdStatus);
+        }
+    });
 
-			// Handles new experiment button click
-            $("#new_experiment").click(function()
-            {
+    /**
+     * Creates html element holding set of icons used for experiment controls within table
+     */
+    var IconsElement = React.createClass({
+        getInitialState: function () {
+            return {visible: false};
+        },
+
+        show: function () {
+            this.setState({visible: true});
+        },
+
+        hide: function () {
+            this.setState({visible: false});
+        },
+
+        componentDidMount: function () {
+            var experiment = this.props.experiment;
+
+            var activeIconId = "#activeIcon-" + experiment.getId();
+            var downloadResultsIconId = "#downloadResultsIcon-" + experiment.getId();
+            var downloadModelsIconId = "#downloadModelsIcon-" + experiment.getId();
+            var deleteIconId = "#deleteIcon-" + experiment.getId();
+
+            $(activeIconId).click(function (e) {
+                var index = window.Project.getExperiments().indexOf(experiment);
+                GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+                GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
+                e.stopPropagation();
+            });
+
+            $(deleteIconId).click(function (e) {
+                var index = window.Project.getExperiments().indexOf(experiment);
+                GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
+                e.stopPropagation();
+            });
+
+            $(downloadModelsIconId).click(function (e) {
+                var simulatorConfigurations = experiment.simulatorConfigurations;
+                for (var config in simulatorConfigurations) {
+                    var simulatorConfig = simulatorConfigurations[config];
+                    GEPPETTO.Console.executeCommand('Project.downloadModel("' + simulatorConfig["aspectInstancePath"] + '");');
+                }
+                e.stopPropagation();
+            });
+
+            $(downloadResultsIconId).click(function (e) {
+                var index = window.Project.getExperiments().indexOf(experiment);
+                var simulatorConfigurations = experiment.simulatorConfigurations;
+                for (var config in simulatorConfigurations) {
+                    var simulatorConfig = simulatorConfigurations[config];
+                    GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].downloadResults('" + simulatorConfig["aspectInstancePath"] + "'," + "'RAW');");
+                }
+                e.stopPropagation();
+            });
+        },
+        render: function () {
+            var experiment = this.props.experiment;
+            //Create IDs for icons
+            var activeIconId = "activeIcon-" + this.props.experiment.getId();
+            var deleteIconId = "deleteIcon-" + this.props.experiment.getId();
+            var downloadResultsIconId = "downloadResultsIcon-" + this.props.experiment.getId();
+            var downloadModelsIconId = "downloadModelsIcon-" + this.props.experiment.getId();
+
+            return (
+                <div onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
+                    <a className='activeIcon' onClick={this.activeIconClick}
+                       experimentId={this.props.experiment.getId()} id={activeIconId}>
+                        <i className='fa fa-check-circle fa-lg' rel='tooltip' title='Active Icon'></i>
+                    </a>
+                    <a className='deleteIcon' onClick={this.deleteIconClick}
+                       experimentId={this.props.experiment.getId()} id={deleteIconId}>
+                        <i className='fa fa-remove fa-lg' rel='tooltip' title='Delete Experiment'></i>
+                    </a>
+                    <a className='downloadResultsIcon' onClick={this.downloadResultsIconClick}
+                       experimentId={this.props.experiment.getId()} id={downloadResultsIconId}>
+                        <i className='fa fa-download fa-lg' rel='tooltip' title='Download Results'></i>
+                    </a>
+                    <a className='downloadModelsIcon' onClick={this.downloadModelIconClick}
+                       experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
+                        <i className='fa fa-cloud-download fa-lg' rel='tooltip' title='Download Models'></i>
+                    </a>
+                </div>);
+        }
+    });
+
+    /**
+     * Creates a table html component used to dipslay the experiments
+     */
+    var ExperimentsTable = React.createClass({
+
+        componentDidMount: function () {
+            var self = this;
+
+            // Handles new experiment button click
+            $("#new_experiment").click(function () {
                 GEPPETTO.Console.executeCommand("Project.newExperiment();");
             });
-            
-			GEPPETTO.on(Events.Project_loaded, function () {
-				self.populate();
-			});
 
-			GEPPETTO.on(Events.Experiment_status_check, function () {
-				self.updateExperimentsTableStatus();
-			});
-			GEPPETTO.on(Events.Experiment_loaded, function () {
-				self.updateExperimentStatus();
-			});
-			GEPPETTO.on(Events.Experiment_created, function (experiment) {
-				self.newExperiment(experiment);
-			});
-			GEPPETTO.on(Events.Experiment_deleted, function (experiment) {
-				self.deleteExperiment(experiment);
+            GEPPETTO.on(Events.Project_loaded, function () {
+                self.populate();
+            });
 
-				GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
-			});
-		},
+            GEPPETTO.on(Events.Experiment_status_check, function () {
+                self.updateExperimentsTableStatus();
+            });
 
-		newExperiment : function(experiment){
-			var experiments = this.state.experiments;
-			var rows = [];
-			rows[0] = experiment;
-			var index = 1;
-			for ( var key in experiments)
-			{
-				rows[index] = experiments[key];
-				index++;
-			}
-			this.setState({ experiments: rows });			
+            GEPPETTO.on(Events.Experiment_loaded, function () {
+                self.updateExperimentStatus();
+            });
+
+            GEPPETTO.on(Events.Experiment_created, function (experiment) {
+                self.newExperiment(experiment);
+            });
+
+            GEPPETTO.on(Events.Experiment_deleted, function (experiment) {
+                self.deleteExperiment(experiment);
+                GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
+            });
+        },
+
+        newExperiment: function (experiment) {
+            var experiments = this.state.experiments;
+            var rows = [];
+            rows[0] = experiment;
+
+            var index = 1;
+            for (var key in experiments) {
+                rows[index] = experiments[key];
+                index++;
+            }
+
+            this.setState({experiments: rows});
             this.state.counter++;
-		},
-		
-		deleteExperiment : function(experiment){
-			this.state.experiments.pop(experiment);
+        },
+
+        deleteExperiment: function (experiment) {
+            this.state.experiments.pop(experiment);
             this.state.counter++;
+
             // loop through each row of experiments table and remove
-            $('#experimentsTable tbody tr').each(function()
-            {
+            $('#experimentsTable tbody tr').each(function () {
                 // id of row that matches experiment to be deleted
-                if (this.id == experiment.getId() || this.id == ("collapsable-" + experiment.getId())||
-                	this.id == ("#"+experiment.getId()) || this.id == ("#collapsable-" + experiment.getId()))
-                {
+                if (this.id == experiment.getId() || this.id == ("collapsable-" + experiment.getId()) ||
+                    this.id == ("#" + experiment.getId()) || this.id == ("#collapsable-" + experiment.getId())) {
                     $(this).remove();
                 }
             });
-		},
-		
-		updateExperimentStatus : function(){
-			var experiment = window.Project.getActiveExperiment();
+        },
+
+        updateExperimentStatus: function () {
+            var experiment = window.Project.getActiveExperiment();
 
             $(".activeIcon").show();
             // hide download icons for non active experiments
             $(".downloadModelsIcon").hide();
             $(".downloadResultsIcon").hide();
 
-            $("#activeIcon-"+experiment.getId()).hide();
-            $("#downloadModelsIcon-"+experiment.getId()).show();
-            if (experiment.getStatus() == "COMPLETED")
-            {
-                $("#downloadResultsIcon-"+experiment.getId()).show();
+            $("#activeIcon-" + experiment.getId()).hide();
+            $("#downloadModelsIcon-" + experiment.getId()).show();
+            if (experiment.getStatus() == "COMPLETED") {
+                $("#downloadResultsIcon-" + experiment.getId()).show();
             }
-            
+
             // loop through each row of experiments table
-            $('#experimentsTable tbody tr').each(function()
-            {
+            $('#experimentsTable tbody tr').each(function () {
                 // id of row matches that of active experiment
-                if (this.id == (experiment.getId())||this.id == ("collapsable-" + experiment.getId()))
-                {
+                if (this.id == (experiment.getId()) || this.id == ("collapsable-" + experiment.getId())) {
                     // add class to make it clear it's active
                     $(this).addClass("activeExperiment");
-                } else
-                {
+                } else {
                     // remove class from active experiment
                     $(this).removeClass("activeExperiment");
                 }
             });
-		},
-		
-		/**
-		 * Update experiment status of those in table
-		 */
-		updateExperimentsTableStatus : function()
-        {
+        },
+
+        /**
+         * Update experiment status of those in table
+         */
+        updateExperimentsTableStatus: function () {
             // loop through each row of experiments table
-            $('#experimentsTable tbody tr').each(function()
-            {
+            $('#experimentsTable tbody tr').each(function () {
                 var experiments = window.Project.getExperiments();
-                for ( var e in experiments)
-                {
+                for (var e in experiments) {
                     var experiment = experiments[e];
-                    if (this.id == ("#"+experiment.getId())||this.id == (experiment.getId()))
-                    {
+                    if (this.id == ("#" + experiment.getId()) || this.id == (experiment.getId())) {
                         var tdStatus = $(this).find(".circle");
                         var tdStatusTitle = tdStatus.attr("title");
                         // keep track if status is in design
-                        if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED)
-                        {
+                        if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("COMPLETED");
                             tdStatus.attr("title", "COMPLETED");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED)
-                        {
+                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("DELETED");
                             tdStatus.attr("title", "DELETED");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING)
-                        {
+                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("RUNNING");
                             tdStatus.attr("title", "RUNNING");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN)
-                        {
+                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("DESIGN");
                             tdStatus.attr("title", "DESIGN");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED)
-                        {
+                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("QUEUED");
                             tdStatus.attr("title", "QUEUED");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED)
-                        {
+                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("CANCELED");
                             tdStatus.attr("title", "CANCELED");
@@ -452,63 +463,71 @@ define(function (require) {
                 }
             });
         },
-        
-		populate : function(){
-			var experiments = window.Project.getExperiments();
-			var rows = [];
-			var index = 0;
-			for ( var key in experiments)
-			{
-				var experiment = experiments[key];
-				rows[index] = experiment;
-				index++;
-			}
-			this.setState({ experiments: rows });
-		},
 
-		getInitialState: function() {
-			var tabledata = [];
+        populate: function () {
+            var experiments = window.Project.getExperiments();
+            var rows = [];
 
-			return {experiments: tabledata, counter : 1};
-		},
-		onClick : function(rowID, e){
-			var targetRowId = "."+rowID;
-			if( $(targetRowId).is(':visible')){
-				$(targetRowId).hide();
-			}else{
-				$(targetRowId).show();
-			}
-		},
-		render: function() {
-			var rows = [];
-			this.state.experiments.forEach(function(experiment) {
-				if(experiment!=null){
-					var expandableRowId = "collapsable-" +experiment.getId();
-					rows.push(<ExperimentRow experiment={experiment} rowNumber={this.state.counter} key={experiment.name} fnClick={this.onClick.bind(this,expandableRowId)}/>);
-					rows.push(<ExperimentExpandableRow experiment={experiment} rowNumber={this.state.counter} key={expandableRowId}/>);
-					this.state.counter++;
-				}
-			}.bind(this));
+            var index = 0;
+            for (var key in experiments) {
+                var experiment = experiments[key];
+                rows[index] = experiment;
+                index++;
+            }
 
-					return (
-							<div className="col-lg-6 experimentsResults panel-body experimentsResultsOutput" id="experimentsOutput">
-								<table id="experimentsTable" className="table table-condensed experimentsTable" style={{borderCollapse:"collapse"}}>
-									<thead className="experimentsTableColumn">
-									<tr><th className="statusHeader">Status</th>
-									<th className="tableHeader">Name</th>
-									<th className="tableHeader">Date</th>
-									<th className="tableHeader">
-										<div className="new_experiment" id="new_experiment" tile="New experiment">
-											<i className='new_experiment_icon fa fa-plus fa-lg'></i>
-										</div>
-									</th></tr></thead>
+            this.setState({experiments: rows});
+        },
 
-									<tbody>{rows}</tbody>
-								</table>
-							</div>
-					);
-		}
-	});
+        getInitialState: function () {
+            var tabledata = [];
+            return {experiments: tabledata, counter: 1};
+        },
 
-	ReactDOM.render(React.createFactory(ExperimentsTable)({}, ''), document.getElementById("experiments"));
+        onClick: function (rowID, e) {
+            var targetRowId = "." + rowID;
+            if ($(targetRowId).is(':visible')) {
+                $(targetRowId).hide();
+            } else {
+                $(targetRowId).show();
+            }
+        },
+
+        render: function () {
+            var rows = [];
+            this.state.experiments.forEach(function (experiment) {
+                if (experiment != null) {
+                    var expandableRowId = "collapsable-" + experiment.getId();
+                    rows.push(<ExperimentRow experiment={experiment} rowNumber={this.state.counter}
+                                             key={experiment.name} fnClick={this.onClick.bind(this,expandableRowId)}/>);
+                    rows.push(<ExperimentExpandableRow experiment={experiment} rowNumber={this.state.counter}
+                                                       key={expandableRowId}/>);
+                    this.state.counter++;
+                }
+            }.bind(this));
+
+            return (
+                <div className="col-lg-6 experimentsResults panel-body experimentsResultsOutput" id="experimentsOutput">
+                    <table id="experimentsTable" className="table table-condensed experimentsTable"
+                           style={{borderCollapse:"collapse"}}>
+                        <thead className="experimentsTableColumn">
+                        <tr>
+                            <th className="statusHeader">Status</th>
+                            <th className="tableHeader">Name</th>
+                            <th className="tableHeader">Date</th>
+                            <th className="tableHeader">
+                                <div className="new_experiment" id="new_experiment" tile="New experiment">
+                                    <i className='new_experiment_icon fa fa-plus fa-lg'></i>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <tbody>{rows}</tbody>
+                    </table>
+                </div>
+            );
+        }
+    });
+
+    ReactDOM.render(React.createFactory(ExperimentsTable)({}, ''), document.getElementById("experiments"));
 });

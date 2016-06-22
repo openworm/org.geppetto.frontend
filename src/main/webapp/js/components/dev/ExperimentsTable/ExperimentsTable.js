@@ -27,11 +27,19 @@ define(function (require) {
         componentDidMount: function () {
             var row = "#" + this.props.experiment.getId();
 
-            // Handle edits to editable name field
-            $(row).find("td[contenteditable='true']").keydown(function (e) {
-                //save if user hits enter key
-                if (e.keyCode == 13) {
+            $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
+            	if (e.keyCode == 13) {
                     e.preventDefault();
+                    $(this).blur();
+
+                    // without this somehow the carriage return makes it into the field
+                    window.getSelection().removeAllRanges();
+                }
+            });
+            
+            // Handle edits to editable name field
+            $(row).find("td[contenteditable='true']").blur(function (e) {
+                //save if user hits enter key
                     // get experiment ID for the edited field
                     var val = $(this).html();
                     var field = $(this).attr("name");
@@ -42,11 +50,6 @@ define(function (require) {
                         var expID = $(this).parent().attr("id").replace('#', '');
                         GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
                     }
-
-                    // without this somehow the carriage return makes it
-                    // into the field
-                    window.getSelection().removeAllRanges();
-                }
             });
         },
         render: function () {
@@ -140,42 +143,47 @@ define(function (require) {
     var SimulatorRow = React.createClass({
         componentDidMount: function () {
             var row = "#simulatorRowId-" + this.props.experiment.getId();
-
+            
             // Handle edits to editable fields
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
-                if (e.keyCode == 13) {
+            	if (e.keyCode == 13) {
                     e.preventDefault();
-                    // get experiment ID for the edited field
-                    var val = $(this).html();
-                    var field = $(this).attr("name");
-
-                    var setterStr = "";
-
-                    switch (field) {
-                        case "simulatorId":
-                            setterStr = "setSimulator";
-                            break;
-                        case "timeStep":
-                            setterStr = "setTimeStep";
-                            break;
-                        case "length":
-                            setterStr = "setLength";
-                            break;
-                        case "conversionId":
-                            setterStr = "setConversionService";
-                            break;
-                    }
-
-                    if (setterStr != "") {
-                        var expID = $(this).parents().closest("tr.nested-experiment-info").attr("id").replace('collapsable-', '');
-
-                        // get aspect instance path
-                        var aspect = $(this).parent().find("td[name='aspect']").html();
-                        GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ").simulatorConfigurations['" + aspect + "']." + setterStr + "('" + val + "')");
-                    }
+                    $(this).blur();
 
                     // without this somehow the carriage return makes it into the field
                     window.getSelection().removeAllRanges();
+                }
+            });
+            
+            $(row).parent().find("td[contenteditable='true']").blur(function(e)
+            {
+            	// get experiment ID for the edited field
+                var val = $(this).html();
+                var field = $(this).attr("name");
+
+                var setterStr = "";
+
+                switch (field) {
+                    case "simulatorId":
+                        setterStr = "setSimulator";
+                        break;
+                    case "timeStep":
+                        setterStr = "setTimeStep";
+                        break;
+                    case "length":
+                        setterStr = "setLength";
+                        break;
+                    case "conversionId":
+                        setterStr = "setConversionService";
+                        break;
+                }
+
+                if (setterStr != "") {
+                    var expID = $(this).parents().closest("tr.nested-experiment-info").attr("id").replace('collapsable-', '');
+
+                    // get aspect instance path
+                    var aspect = $(this).parent().find("td[name='aspect']").html();
+                    GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ").simulatorConfigurations['" + aspect + "']." + setterStr + "('" + val + "')");
                 }
             });
         },
@@ -362,6 +370,21 @@ define(function (require) {
             GEPPETTO.on(Events.Experiment_deleted, function (experiment) {
                 self.deleteExperiment(experiment);
                 GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
+            });
+            
+            $("#experiments").resizable({
+                handles: 'n',
+                minHeight: 100,
+                autoHide: true,
+                maxHeight: 400,
+                resize: function (event, ui) {
+                    if (ui.size.height > ($("#footerHeader").height() * .75)) {
+                        $("#experiments").height($("#footerHeader").height() * .75);
+                        event.preventDefault();
+                    }
+                    $('#experiments').resize();
+                    $("#experiments").get(0).style.top = "0px";
+                }.bind(this)
             });
         },
 

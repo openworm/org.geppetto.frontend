@@ -391,6 +391,7 @@ define(function (require) {
              * @param payload
              */
             swapResolvedType: function (payload) {
+            	console.time(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
                 var rawModel = JSON.parse(payload.import_type_resolved);
 
                 // STEP 1: merge model - expect a fully formed Geppetto model to be merged into current one
@@ -405,6 +406,7 @@ define(function (require) {
                 // STEP: 4 update control panel
                 GEPPETTO.FE.refresh();
 
+                console.timeEnd(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },
 

@@ -170,11 +170,17 @@ define(function (require) {
                     var types = node.getTypes();
                     var referencedTypes = [];
                     var hasPointerType = false;
-
+                    var swapTypes = true;
+                    
                     if (types != undefined) {
                         for (var i = 0; i < types.length; i++) {
+                        	// check if references are already populated
+                        	if(types[i] instanceof Type){
+                        		swapTypes = false;
+                        		break;
+                        	}
+                        	
                             // get reference string - looks like this --> '//@libraries.1/@types.5';
-
                             var refStr = types[i].$ref;
 
                             //if it's anonymous there's no reference
@@ -191,9 +197,11 @@ define(function (require) {
                                 referencedTypes.push(typeObj);
                             }
                         }
-
-                        // set types to actual object references using backbone setter
-                        node.set({"types": referencedTypes});
+                        
+                        if(swapTypes){
+                            // set types to actual object references using backbone setter
+                            node.set({"types": referencedTypes});                        	
+                        }
                     }
 
                     // check if pointer type
@@ -513,11 +521,15 @@ define(function (require) {
                 // STEP 3: call getInstance to create the instances
                 var newInstances = window.Instances.getInstance(newInstancePaths);
 
-                // STEP 4: IFF instances were added, re-populate shortcuts
+                // STEP 4: If instances were added, re-populate shortcuts
                 if (this.getInstanceCount(window.Instances) > instanceCount) {
                     for (var k = 0; k < window.Instances.length; k++) {
                         GEPPETTO.ModelFactory.populateChildrenShortcuts(window.Instances[k]);
                     }
+                }
+                
+                for (var k = 0; k < window.Instances.length; k++) {
+                	GEPPETTO.ModelFactory.populateConnections(window.Instances[k]);
                 }
 
                 return newInstances;
@@ -630,7 +642,7 @@ define(function (require) {
                                         // if synch placeholder type, skip it
                                         continue;
                                     }
-                                    
+
                                     for (var m = 0; m < types.length; m++) {
                                         // check if the given diff type already exists
                                         if (diffTypes[k].getPath() == types[m].getPath()) {
@@ -666,6 +678,10 @@ define(function (require) {
 
                                             // add potential instance paths
                                             this.addPotentialInstancePaths(variablesToUpdate);
+
+                                            //Get all paths from TheAddedType -> returns an array [.a,.a.b,.c] = A
+                                            //GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(TheAddedType) returns an array = B
+                                            //Loop B inside Loop A, create newPath=B[j]+A[k]
 
                                             // update capabilities for variables and instances if any
                                             this.updateCapabilities(variablesToUpdate);
@@ -733,6 +749,9 @@ define(function (require) {
 
                         // find new potential instance paths and add to the list
                         this.addPotentialInstancePaths([diffVars[x]]);
+
+                        //Get all paths for the type of TheAddedVar -> returns an array [.a,.a.b,.c] = A
+                        //Loop A, create newPath=addedVar.getId()+A[k]
 
                         diffReport.variables.push(diffVars[x]);
                     }
@@ -888,8 +907,12 @@ define(function (require) {
                 var types = variable.get('types');
                 var anonTypes = variable.get('anonymousTypes');
 
-                this.swapTypeInTypes(types, typeToSwapOut, typeToSwapIn);
-                this.swapTypeInTypes(anonTypes, typeToSwapOut, typeToSwapIn);
+                if(types && types.length>0){
+                	this.swapTypeInTypes(types, typeToSwapOut, typeToSwapIn);	
+                }
+                if(anonTypes && anonTypes.length>0){
+                	this.swapTypeInTypes(anonTypes, typeToSwapOut, typeToSwapIn);
+                }
             },
 
             /**

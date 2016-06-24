@@ -746,9 +746,6 @@ define(function (require) {
                         // find new potential instance paths and add to the list
                         this.addPotentialInstancePaths([diffVars[x]]);
 
-                        // TODO: Get all paths for the added variable
-                        // TODO: add the paths
-
                         diffReport.variables.push(diffVars[x]);
                     }
                 }
@@ -856,39 +853,13 @@ define(function (require) {
                 var potentialInstancePaths = [];
                 var potentialInstancePathsForIndexing = [];
 
-                var addNewItemsToArray = function (sourceArray, augmentArray, overrideMatching) {
-                    if (overrideMatching == undefined) {
-                        overrideMatching = false;
-                    }
-
-                    // add to allPaths
-                    for (var j = 0; j < augmentArray.length; j++) {
-                        var match = false;
-
-                        for (var k = 0; k < sourceArray.length; k++) {
-                            if (sourceArray[k].path == augmentArray[j].path) {
-                                // swap
-                                if (overrideMatching) {
-                                    sourceArray[k] = augmentArray[j];
-                                }
-
-                                match = true;
-                            }
-                        }
-
-                        if (!match) {
-                            sourceArray.push(augmentArray[j]);
-                        }
-                    }
-                };
-
                 for (var i = 0; i < variables.length; i++) {
                     this.fetchAllPotentialInstancePaths(variables[i], potentialInstancePaths, potentialInstancePathsForIndexing, '');
                 }
 
-                // add to allPaths and to allPathsIndexing
-                addNewItemsToArray(this.allPaths, potentialInstancePaths, true);
-                addNewItemsToArray(this.allPathsIndexing, potentialInstancePathsForIndexing, true);
+                // add to allPaths and to allPathsIndexing (assumes they are new paths)
+                this.allPaths = this.allPaths.concat(potentialInstancePaths);
+                this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
             },
 
             /**

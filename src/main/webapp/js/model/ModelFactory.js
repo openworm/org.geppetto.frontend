@@ -758,9 +758,6 @@ define(function (require) {
                         // find new potential instance paths and add to the list
                         this.addPotentialInstancePaths([diffVars[x]]);
 
-                        // TODO: Get all paths for the added variable
-                        // TODO: add the paths
-
                         diffReport.variables.push(diffVars[x]);
                     }
                 }
@@ -868,39 +865,13 @@ define(function (require) {
                 var potentialInstancePaths = [];
                 var potentialInstancePathsForIndexing = [];
 
-                var addNewItemsToArray = function (sourceArray, augmentArray, overrideMatching) {
-                    if (overrideMatching == undefined) {
-                        overrideMatching = false;
-                    }
-
-                    // add to allPaths
-                    for (var j = 0; j < augmentArray.length; j++) {
-                        var match = false;
-
-                        for (var k = 0; k < sourceArray.length; k++) {
-                            if (sourceArray[k].path == augmentArray[j].path) {
-                                // swap
-                                if (overrideMatching) {
-                                    sourceArray[k] = augmentArray[j];
-                                }
-
-                                match = true;
-                            }
-                        }
-
-                        if (!match) {
-                            sourceArray.push(augmentArray[j]);
-                        }
-                    }
-                };
-
                 for (var i = 0; i < variables.length; i++) {
                     this.fetchAllPotentialInstancePaths(variables[i], potentialInstancePaths, potentialInstancePathsForIndexing, '');
                 }
 
-                // add to allPaths and to allPathsIndexing
-                addNewItemsToArray(this.allPaths, potentialInstancePaths, true);
-                addNewItemsToArray(this.allPathsIndexing, potentialInstancePathsForIndexing, true);
+                // add to allPaths and to allPathsIndexing (assumes they are new paths)
+                this.allPaths = this.allPaths.concat(potentialInstancePaths);
+                this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
             },
 
             /**
@@ -929,7 +900,7 @@ define(function (require) {
                         this.allPaths.push(entry);
                     }
                 }
-
+                // same as above for indexing paths
                 for(var i=0; i<potentialInstancesForNewtypeIndexing.length; i++){
                     for(var j=0; j<partialPathsForNewTypeIndexing.length; j++){
                         var entry = {
@@ -938,6 +909,19 @@ define(function (require) {
                             type: partialPathsForNewType[j].type
                         };
                         this.allPathsIndexing.push(entry);
+                    }
+                }
+
+                // look for import type references and amend type
+                for(var i=0; i<this.allPaths.length; i++){
+                    if(this.allPaths[i].type == type.getPath()){
+                        this.allPaths[i].metaType = type.getMetaType();
+                    }
+                }
+                // same as above for indexing paths
+                for(var i=0; i<this.allPathsIndexing.length; i++){
+                    if(this.allPathsIndexing[i].type == type.getPath()){
+                        this.allPathsIndexing[i].metaType = type.getMetaType();
                     }
                 }
             },

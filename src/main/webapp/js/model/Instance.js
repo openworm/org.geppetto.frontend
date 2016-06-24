@@ -49,7 +49,6 @@ define(function (require) {
         children: [],
         capabilities: [],
         connections: [],
-        connectionsLoaded: false,
 
 
         /**
@@ -69,7 +68,6 @@ define(function (require) {
             this.set({"capabilities": []});
             // connections are set after creation
             this.set({"connections": []});
-            this.set({"connectionsLoaded": false});
         },
 
         /**
@@ -355,9 +353,7 @@ define(function (require) {
          *
          */
         getConnections: function (direction) {
-            if (!this.get('connectionsLoaded')) {
-                GEPPETTO.ModelFactory.createConnectionInstances(this);
-            }
+            GEPPETTO.ModelFactory.updateConnectionInstances(this);
             var connections = this.get('connections');
 
             if (direction === GEPPETTO.Resources.INPUT || direction === GEPPETTO.Resources.OUTPUT || direction === GEPPETTO.Resources.INPUT_OUTPUT) {

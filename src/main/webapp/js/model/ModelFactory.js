@@ -171,15 +171,15 @@ define(function (require) {
                     var referencedTypes = [];
                     var hasPointerType = false;
                     var swapTypes = true;
-                    
+
                     if (types != undefined) {
                         for (var i = 0; i < types.length; i++) {
-                        	// check if references are already populated
-                        	if(types[i] instanceof Type){
-                        		swapTypes = false;
-                        		break;
-                        	}
-                        	
+                            // check if references are already populated
+                            if (types[i] instanceof Type) {
+                                swapTypes = false;
+                                break;
+                            }
+
                             // get reference string - looks like this --> '//@libraries.1/@types.5';
                             var refStr = types[i].$ref;
 
@@ -197,10 +197,10 @@ define(function (require) {
                                 referencedTypes.push(typeObj);
                             }
                         }
-                        
-                        if(swapTypes){
+
+                        if (swapTypes) {
                             // set types to actual object references using backbone setter
-                            node.set({"types": referencedTypes});                        	
+                            node.set({"types": referencedTypes});
                         }
                     }
 
@@ -527,9 +527,9 @@ define(function (require) {
                         GEPPETTO.ModelFactory.populateChildrenShortcuts(window.Instances[k]);
                     }
                 }
-                
+
                 for (var k = 0; k < window.Instances.length; k++) {
-                	GEPPETTO.ModelFactory.populateConnections(window.Instances[k]);
+                    GEPPETTO.ModelFactory.populateConnections(window.Instances[k]);
                 }
 
                 return newInstances;
@@ -907,11 +907,11 @@ define(function (require) {
                 var types = variable.get('types');
                 var anonTypes = variable.get('anonymousTypes');
 
-                if(types && types.length>0){
-                	this.swapTypeInTypes(types, typeToSwapOut, typeToSwapIn);	
+                if (types && types.length > 0) {
+                    this.swapTypeInTypes(types, typeToSwapOut, typeToSwapIn);
                 }
-                if(anonTypes && anonTypes.length>0){
-                	this.swapTypeInTypes(anonTypes, typeToSwapOut, typeToSwapIn);
+                if (anonTypes && anonTypes.length > 0) {
+                    this.swapTypeInTypes(anonTypes, typeToSwapOut, typeToSwapIn);
                 }
             },
 
@@ -1748,45 +1748,61 @@ define(function (require) {
                 return t;
             },
 
-            createConnectionInstances: function (instance) {
+            updateConnectionInstances: function (instance) {
                 var typesToSearch = this.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE);
                 var connectionVariables = this.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
                 var connectionInstances = [];
 
                 for (var x = 0; x < connectionVariables.length; x++) {
                     var variable = connectionVariables[x];
-                    var initialValues = variable.getWrappedObj().initialValues;
+                    var present = false;
+                    if (instance.get('connections')) {
+                        //if there's already connections we haave to check if there is already one for this variable
+                        for (var y = 0; y < instance.get('connections').length; y++) {
+                            if (instance.get('connections')[y].getVariable() == variable) {
+                                present = true;
+                                break;
+                            }
+                        }
 
-                    var connectionValue = initialValues[0].value;
-                    // resolve A and B to Pointer Objects
-                    var pointerA = this.createPointer(connectionValue.a);
-                    var pointerB = this.createPointer(connectionValue.b);
-                    if (pointerA.getPath() == instance.getId() || pointerB.getPath() == instance.getId()) {
-                        //TODO if there is more than one instance of the same projection this code will break
-                        var parentInstance = this.instances.getInstance(this.getAllPotentialInstancesEndingWith(variable.getParent().getId())[0]);
-                        var options = {
-                            id: variable.getId(),
-                            name: variable.getId(),
-                            _metaType: GEPPETTO.Resources.INSTANCE_NODE,
-                            variable: variable,
-                            children: [],
-                            parent: parentInstance
-                        };
-                        var connectionInstance = this.createInstance(options);
-                        connectionInstance.extendApi(AConnectionCapability);
-                        this.augmentPointer(pointerA, connectionInstance);
-                        this.augmentPointer(pointerB, connectionInstance);
+                    }
+                    if (!present) {
+                        var initialValues = variable.getWrappedObj().initialValues;
 
-                        // set A and B on connection
-                        connectionInstance.setA(pointerA);
-                        connectionInstance.setB(pointerB);
+                        var connectionValue = initialValues[0].value;
+                        // resolve A and B to Pointer Objects
+                        var pointerA = this.createPointer(connectionValue.a);
+                        var pointerB = this.createPointer(connectionValue.b);
+                        if (pointerA.getPath() == instance.getId() || pointerB.getPath() == instance.getId()) {
+                            //TODO if there is more than one instance of the same projection this code will break
+                            var parentInstance = this.instances.getInstance(this.getAllPotentialInstancesEndingWith(variable.getParent().getId())[0]);
+                            var options = {
+                                id: variable.getId(),
+                                name: variable.getId(),
+                                _metaType: GEPPETTO.Resources.INSTANCE_NODE,
+                                variable: variable,
+                                children: [],
+                                parent: parentInstance
+                            };
+                            var connectionInstance = this.createInstance(options);
+                            connectionInstance.extendApi(AConnectionCapability);
+                            this.augmentPointer(pointerA, connectionInstance);
+                            this.augmentPointer(pointerB, connectionInstance);
 
-                        connectionInstances.push(connectionInstance);
+                            // set A and B on connection
+                            connectionInstance.setA(pointerA);
+                            connectionInstance.setB(pointerB);
+
+                            connectionInstances.push(connectionInstance);
+                        }
                     }
                 }
 
-                instance.set({'connections': connectionInstances});
-                instance.set({'connectionsLoaded': true});
+                if (instance.get('connections')) {
+                    instance.get('connections').concat(connectionInstances);
+                } else {
+                    instance.set({'connections': connectionInstances});
+                }
             },
 
             /** Creates an instance */

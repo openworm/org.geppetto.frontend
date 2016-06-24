@@ -677,11 +677,7 @@ define(function (require) {
                                             types[m] = diffTypes[k];
 
                                             // add potential instance paths
-                                            this.addPotentialInstancePaths(variablesToUpdate);
-
-                                            //Get all paths from TheAddedType -> returns an array [.a,.a.b,.c] = A
-                                            //GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(TheAddedType) returns an array = B
-                                            //Loop B inside Loop A, create newPath=B[j]+A[k]
+                                            this.addPotentialInstancePathsForTypeSwap(diffTypes[k]);
 
                                             // update capabilities for variables and instances if any
                                             this.updateCapabilities(variablesToUpdate);
@@ -750,8 +746,8 @@ define(function (require) {
                         // find new potential instance paths and add to the list
                         this.addPotentialInstancePaths([diffVars[x]]);
 
-                        //Get all paths for the type of TheAddedVar -> returns an array [.a,.a.b,.c] = A
-                        //Loop A, create newPath=addedVar.getId()+A[k]
+                        // TODO: Get all paths for the added variable
+                        // TODO: add the paths
 
                         diffReport.variables.push(diffVars[x]);
                     }
@@ -893,6 +889,45 @@ define(function (require) {
                 // add to allPaths and to allPathsIndexing
                 addNewItemsToArray(this.allPaths, potentialInstancePaths, true);
                 addNewItemsToArray(this.allPathsIndexing, potentialInstancePathsForIndexing, true);
+            },
+
+            /**
+             * Add potential instance paths to internal cache given a new type
+             *
+             * @param type
+             */
+            addPotentialInstancePathsForTypeSwap: function (type) {
+                // Get all paths for the new type
+                var partialPathsForNewType = [];
+                var partialPathsForNewTypeIndexing = [];
+                this.fetchAllPotentialInstancePathsForType(type, partialPathsForNewType, partialPathsForNewTypeIndexing, []);
+
+                // Get all potential instances for the type we are swapping
+                var potentialInstancesForNewtype = GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(type.getPath());
+                var potentialInstancesForNewtypeIndexing = GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(type.getPath(), this.allPathsIndexing);
+
+                // Generate new paths and add
+                for(var i=0; i<potentialInstancesForNewtype.length; i++){
+                    for(var j=0; j<partialPathsForNewType.length; j++){
+                        var entry = {
+                            path: potentialInstancesForNewtype[i] + '.' + partialPathsForNewType[j].path,
+                            metaType: partialPathsForNewType[j].metaType,
+                            type: partialPathsForNewType[j].type
+                        };
+                        this.allPaths.push(entry);
+                    }
+                }
+
+                for(var i=0; i<potentialInstancesForNewtypeIndexing.length; i++){
+                    for(var j=0; j<partialPathsForNewTypeIndexing.length; j++){
+                        var entry = {
+                            path: potentialInstancesForNewtypeIndexing[i] + '.' + partialPathsForNewTypeIndexing[j].path,
+                            metaType: partialPathsForNewType[j].metaType,
+                            type: partialPathsForNewType[j].type
+                        };
+                        this.allPathsIndexing.push(entry);
+                    }
+                }
             },
 
             /**
@@ -1602,30 +1637,47 @@ define(function (require) {
                     var allTypes = node.getTypes();
                     for (var i = 0; i < allTypes.length; i++) {
                         // RECURSE on any variables inside composite types
-                        if (allTypes[i].getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
-                            var vars = allTypes[i].getVariables();
+                        this.fetchAllPotentialInstancePathsForType(allTypes[i], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths);
+                    }
+                }
+            },
 
-                            if (vars != undefined && vars != null) {
-                                for (var j = 0; j < vars.length; j++) {
-                                    for (var g = 0; g < potentialParentPaths.length; g++) {
-                                        this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[g]);
-                                    }
+            /**
+             * Build list of partial instance types starting from a type
+             */
+            fetchAllPotentialInstancePathsForType(type, allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths){
+                if (type.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                    var vars = type.getVariables();
+
+                    if (vars != undefined && vars != null) {
+                        for (var j = 0; j < vars.length; j++) {
+                            if(potentialParentPaths.length > 0) {
+                                for (var g = 0; g < potentialParentPaths.length; g++) {
+                                    this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[g]);
                                 }
+                            } else {
+                                // used for partial instance path generation
+                                this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, allPotentialPathsForIndexing, '');
                             }
                         }
-                        else if (allTypes[i].getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
-                            var arrayType = allTypes[i].getType();
+                    }
+                }
+                else if (type.getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE) {
+                    var arrayType = type.getType();
 
-                            // check if the array is of composite type and if so recurse too on contained variables
-                            if (arrayType.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
-                                var vars = arrayType.getVariables();
+                    // check if the array is of composite type and if so recurse too on contained variables
+                    if (arrayType.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+                        var vars = arrayType.getVariables();
 
-                                if (vars != undefined && vars != null) {
-                                    for (var l = 0; l < vars.length; l++) {
-                                        for (var h = 0; h < potentialParentPaths.length; h++) {
-                                            this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[h]);
-                                        }
+                        if (vars != undefined && vars != null) {
+                            for (var l = 0; l < vars.length; l++) {
+                                if(potentialParentPaths.length > 0) {
+                                    for (var h = 0; h < potentialParentPaths.length; h++) {
+                                        this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[h]);
                                     }
+                                } else {
+                                    // used for partial instance path generation
+                                    this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, allPotentialPathsForIndexing, '');
                                 }
                             }
                         }
@@ -2019,14 +2071,37 @@ define(function (require) {
             },
 
             /**
-             * Get all POTENTIAL instances starting with a given string
+             * Get all POTENTIAL instances of a given type
              */
-            getAllPotentialInstancesOfType: function (typePath) {
+            getAllPotentialInstancesOfType: function (typePath, paths) {
+                if(paths == undefined){
+                    paths = this.allPaths;
+                }
+
                 var matchingPotentialInstances = [];
 
-                for (var i = 0; i < this.allPaths.length; i++) {
-                    if (this.allPaths[i].type == typePath) {
-                        matchingPotentialInstances.push(this.allPaths[i].path);
+                for (var i = 0; i < paths.length; i++) {
+                    if (paths[i].type == typePath) {
+                        matchingPotentialInstances.push(paths[i].path);
+                    }
+                }
+
+                return matchingPotentialInstances;
+            },
+
+            /**
+             * Get all POTENTIAL instances of a given meta type
+             */
+            getAllPotentialInstancesOfMetaType: function (metaType, paths) {
+                if(paths == undefined){
+                    paths = this.allPaths;
+                }
+
+                var matchingPotentialInstances = [];
+
+                for (var i = 0; i < paths.length; i++) {
+                    if (paths[i].metaType == metaType) {
+                        matchingPotentialInstances.push(paths[i].path);
                     }
                 }
 

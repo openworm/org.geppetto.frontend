@@ -252,8 +252,14 @@ define(function (require) {
                         }
 
                         for (var a = 0; a < superType.length; a++) {
-                            // replace with reference to actual type
-                            typeObjs.push(this.resolve(superType[a].$ref));
+                        	if(superType[a].$ref){
+                                // replace with reference to actual type
+                                typeObjs.push(this.resolve(superType[a].$ref));
+                        	}
+                        	else{
+                                // replace with reference to actual type
+                                typeObjs.push(superType[a]);
+                        	}
                         }
 
                         node.set({"superType": typeObjs});
@@ -278,8 +284,14 @@ define(function (require) {
                         }
 
                         for (var a = 0; a < superType.length; a++) {
-                            // replace with reference to actual type
-                            typeObjs.push(this.resolve(superType[a].$ref));
+                        	if(superType[a].$ref){
+                                // replace with reference to actual type
+                                typeObjs.push(this.resolve(superType[a].$ref));
+                        	}
+                        	else{
+                                // replace with reference to actual type
+                                typeObjs.push(superType[a]);
+                        	}
                         }
 
                         node.set({"superType": typeObjs});

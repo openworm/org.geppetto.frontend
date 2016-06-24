@@ -917,7 +917,7 @@ define(function (require) {
                         this.allPaths.push(entry);
                     }
                 }
-
+                // same as above for indexing paths
                 for(var i=0; i<potentialInstancesForNewtypeIndexing.length; i++){
                     for(var j=0; j<partialPathsForNewTypeIndexing.length; j++){
                         var entry = {
@@ -926,6 +926,19 @@ define(function (require) {
                             type: partialPathsForNewType[j].type
                         };
                         this.allPathsIndexing.push(entry);
+                    }
+                }
+
+                // look for import type references and amend type
+                for(var i=0; this.allPaths.length; i++){
+                    if(this.allPaths[i].type == type.getPath()){
+                        this.allPaths[i].metaType == type.getMetaType();
+                    }
+                }
+                // same as above for indexing paths
+                for(var i=0; this.allPathsIndexing.length; i++){
+                    if(this.allPathsIndexing[i].type == type.getPath()){
+                        this.allPathsIndexing[i].metaType == type.getMetaType();
                     }
                 }
             },

@@ -930,13 +930,13 @@ define(function (require) {
                 }
 
                 // look for import type references and amend type
-                for(var i=0; this.allPaths.length; i++){
+                for(var i=0; i<this.allPaths.length; i++){
                     if(this.allPaths[i].type == type.getPath()){
                         this.allPaths[i].metaType == type.getMetaType();
                     }
                 }
                 // same as above for indexing paths
-                for(var i=0; this.allPathsIndexing.length; i++){
+                for(var i=0; i<this.allPathsIndexing.length; i++){
                     if(this.allPathsIndexing[i].type == type.getPath()){
                         this.allPathsIndexing[i].metaType == type.getMetaType();
                     }

@@ -597,7 +597,7 @@ define(function (require) {
                     }
 
                     var libMatch = false;
-
+                    
                     for (var j = 0; j < libs.length; j++) {
                         // if the library exists, go in and check for types diff
                         if (diffLibs[i].getPath() == libs[j].getPath()) {
@@ -607,6 +607,8 @@ define(function (require) {
                             var types = libs[j].getTypes();
 
                             // first loop on types - add new ones
+                            var addedTypes = [];
+                            
                             for (var k = 0; k < diffTypes.length; k++) {
                                 if (diffTypes[k].getWrappedObj().synched == true) {
                                     // if synch placeholder type, skip it
@@ -634,9 +636,10 @@ define(function (require) {
                                     // add to library in geppetto object model
                                     diffTypes[k].set({'parent': libs[j]});
                                     libs[j].getTypes().push(diffTypes[k]);
+                                    
+                                    addedTypes.push(diffTypes[k]);
 
-                                    // populate references for the new type
-                                    this.populateTypeReferences(diffTypes[k]);
+
 
                                     // TODO: add potential instance paths
                                     // NOTE: maybe not needed? the path will be added if a variable uses the type
@@ -645,7 +648,13 @@ define(function (require) {
                                     diffReport.types.push(diffTypes[k]);
                                 }
                             }
-
+                            
+                            for (var k = 0; k < addedTypes.length; k++) {
+                            	
+                                // populate references for the new type
+                                this.populateTypeReferences(addedTypes[k]);
+                            }
+                            
                             // second loop on types - override (if flag is set)
                             if (overrideTypes) {
                                 for (var k = 0; k < diffTypes.length; k++) {

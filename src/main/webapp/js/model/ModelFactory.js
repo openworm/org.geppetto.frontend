@@ -1756,6 +1756,7 @@ define(function (require) {
                 }
 
                 var it = new ImportType(options);
+                it.set({"superType": node.superType});
 
                 return it;
             },

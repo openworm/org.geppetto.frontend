@@ -305,7 +305,12 @@ define(function (require) {
 
         },
 
-
+        setInputText : function(text){
+        	$('#typeahead').val(text);
+        	//trigger enter key event after setting text
+        	$('#typeahead').trigger(jQuery.Event('keypress', {which: 13}));
+        },
+        
         addSuggestion: function (suggestion, flow) {
             if (flow == undefined) {
                 flow = GEPPETTO.Resources.SEARCH_FLOW;

@@ -97,6 +97,13 @@ define(function (require) {
             //set class pop up
             $("#" + this.id).addClass("popup");
         },
+        
+        /**
+         * Action events associated with this widget
+         */
+        events: {
+            'click a': 'manageLeftClickEvent',
+        },
 
         /**
          * Sets the message that is displayed inside the widget
@@ -139,7 +146,12 @@ define(function (require) {
          * @param {Object} htmlInstance - An instance of type HTML
          */
         setHTML: function (htmlNode) {
-            return this.setMessage(this.getVariable(htmlNode).getInitialValues()[0].value.html);
+        	var html = "";
+        	for(var i in htmlNode){
+        		var values = htmlNode[i].getInitialValues();
+        		html += values[0].value.html;
+        	}
+        	this.setMessage(html);
         },
 
 
@@ -228,6 +240,30 @@ define(function (require) {
             }
             else {
                 return node;
+            }
+        },
+        
+        getTriggeredElement: function(event){
+        	if ($(event.target).is('a')){
+        		return $(event.target); 
+        	}
+        	else{
+        		return $(event.target).closest('a');
+        	}
+        },
+        
+        /**
+         * Register right click event with widget
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
+         */
+        manageLeftClickEvent: function (event) {
+        	var aElement = this.getTriggeredElement(event);
+        	var nodeInstancePath = aElement[0].getAttribute("instancepath");
+        	$("#spotlight").show();
+
+            if (nodeInstancePath != null || undefined) {
+            	GEPPETTO.Spotlight.setInputText(nodeInstancePath);
             }
         },
 

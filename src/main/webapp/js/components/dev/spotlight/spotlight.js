@@ -182,7 +182,7 @@ define(function (require) {
                         suggestionFound = true;
                         var actions = found[0].actions;
                         actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommandinst(action)
+                            GEPPETTO.Console.executeCommand(action);
                         });
                         $("#typeahead").typeahead('val', "");
                     }
@@ -307,6 +307,7 @@ define(function (require) {
 
         setInputText : function(text){
         	$('#typeahead').val(text);
+        	$("#typeahead").focus();
         	//trigger enter key event after setting text
         	$('#typeahead').trigger(jQuery.Event('keypress', {which: 13}));
         },

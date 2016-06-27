@@ -263,6 +263,12 @@ define(function (require) {
         	$("#spotlight").show();
 
             if (nodeInstancePath != null || undefined) {
+            	var sampleSuggestion = {
+            	        "label": nodeInstancePath,
+            	        "actions": [""],
+            	        "icon": "fa-eye"
+            	    };
+            	GEPPETTO.Spotlight.addSuggestion(sampleSuggestion);
             	GEPPETTO.Spotlight.setInputText(nodeInstancePath);
             }
         },

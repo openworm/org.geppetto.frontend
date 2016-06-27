@@ -29,3 +29,18 @@ src/main/webapp/css/main.css
 /.externalToolBuilders/
 /.settings/
 .classpath
+
+#WormSim specific stuff
+*.css-e
+*.less-e
+src/main/webapp/js/components/dev/customrenderer/
+src/main/webapp/js/components/dev/wormsimbuttonbar/
+src/main/webapp/js/components/dev/wormsimlogo/
+src/main/webapp/js/components/dev/wormsimsimulationcontrols/
+src/main/webapp/js/components/dev/wormsimtutorialhandler/
+src/main/webapp/js/components/wormsim.*
+
+#other local directories that may get installed
+org.geppetto.core/
+org.geppetto.model/
+org.geppetto.simulation/

@@ -146,12 +146,7 @@ define(function (require) {
          * @param {Object} htmlInstance - An instance of type HTML
          */
         setHTML: function (htmlNode) {
-        	var html = "";
-        	for(var i in htmlNode){
-        		var values = htmlNode[i].getInitialValues();
-        		html += values[0].value.html;
-        	}
-        	this.setMessage(html);
+            return this.setMessage(this.getVariable(htmlNode).getInitialValues()[0].value.html);
         },
 
 
@@ -260,16 +255,20 @@ define(function (require) {
         manageLeftClickEvent: function (event) {
         	var aElement = this.getTriggeredElement(event);
         	var nodeInstancePath = aElement[0].getAttribute("instancepath");
-        	$("#spotlight").show();
 
             if (nodeInstancePath != null || undefined) {
-            	var sampleSuggestion = {
-            	        "label": nodeInstancePath,
-            	        "actions": [""],
-            	        "icon": "fa-eye"
-            	    };
-            	GEPPETTO.Spotlight.addSuggestion(sampleSuggestion);
-            	GEPPETTO.Spotlight.setInputText(nodeInstancePath);
+            	var id = nodeInstancePath.replace("Model.neuroml.","");
+            	//FIXME: Where in the model to look for HTML Types?
+            	var model = 
+            		(typeof(window[id]) === 'undefined') ? GEPPETTO.ModelFactory.geppettoModel: window[id].getType();
+            	var variable = 
+            		GEPPETTO.ModelFactory.getHTMLVariable(model, GEPPETTO.Resources.HTML_TYPE, id);
+            	var mdPopup = G.addWidget(1).setName('Cell Information for ' +  id);
+            	if(variable!==null && variable != undefined){
+            	    mdPopup.setHTML(variable);
+            	}else{
+            		mdPopup.setMessage("No HTML for element " + nodeInstancePath);
+            	}
             }
         },
 

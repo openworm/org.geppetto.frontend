@@ -389,10 +389,10 @@ public class ConnectionHandler
 		{
 			error(e, "Error importing value " + path);
 		}
-		catch(GeppettoExecutionException e)
-		{
-			error(e, "Error importing value " + path);
-		}
+//		catch(GeppettoExecutionException e)
+//		{
+//			error(e, "Error importing value " + path);
+//		}
 		
 	}
 	

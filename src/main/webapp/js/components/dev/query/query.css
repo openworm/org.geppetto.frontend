@@ -1,0 +1,8 @@
+#querybuilder {
+    position: absolute !important;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    z-index: 99;
+    height: 100%;
+    width: 100%;
+}

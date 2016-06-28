@@ -92,6 +92,13 @@ define(function (require) {
                     that.close();
                 }
             });
+
+            $("#querybuilder").click(function(e){
+                if (e.target==e.delegateTarget){
+                    //we want this only to happen if we clicked on the div directly and not on anything therein contained
+                    that.close();
+                }
+            });
         },
 
         render: function () {
@@ -101,7 +108,6 @@ define(function (require) {
 
     ReactDOM.render(
         <QueryBuilder></QueryBuilder>,
-        //React.createElement(QueryBuilder, {}),
         document.getElementById("querybuilder")
     );
 

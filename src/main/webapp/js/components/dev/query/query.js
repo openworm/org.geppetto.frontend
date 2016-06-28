@@ -31,6 +31,7 @@
  *******************************************************************************/
 
 define(function (require) {
+
     function loadCss(url) {
         var link = document.createElement("link");
         link.type = "text/css";
@@ -39,49 +40,69 @@ define(function (require) {
         document.getElementsByTagName("head")[0].appendChild(link);
     }
 
-    loadCss("geppetto/js/components/dev/foregroundcontrols/foregroundcontrols.css");
+    loadCss("geppetto/js/components/dev/query/query.css");
 
-    var React = require('react');
+    var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
-
-    var SpotlightButton = require('./buttons/SpotlightButton');
-    var ControlPanelButton = require('./buttons/ControlPanelButton');
-    var QueryBuilderButton = require('./buttons/QueryBuilderButton');
-
+    var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
 
-    var ForegroundControls = React.createClass({
+    var QueryBuilder = React.createClass({
+        displayName: 'QueryBuilder',
 
-        componentDidMount: function () {
+        mixins: [
+            require('jsx!mixins/bootstrap/modal')
+        ],
 
+        getInitialState: function () {
+            // TODO
+            return { };
+        },
+
+        getDefaultProps: function () {
+            // TODO
+            return { };
         },
 
         componentWillMount: function () {
-            GEPPETTO.ForegroundControls = this;
+            GEPPETTO.QueryBuilder = this;
         },
 
-        refresh: function(){
-            this.forceUpdate();
+        close: function () {
+            // hide query builder
+            $("#querybuilder").hide();
+        },
+
+        componentDidMount: function () {
+
+            var escape = 27;
+            var qKey = 81;
+
+            var that = this;
+
+            $(document).keydown(function (e) {
+                if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == qKey) {
+                    // show query builder
+                    $("#querybuilder").show();
+                }
+            });
+
+            $(document).keydown(function (e) {
+                if ($("#querybuilder").is(':visible') && e.keyCode == escape) {
+                    that.close();
+                }
+            });
         },
 
         render: function () {
-            var spotlightBtn = GEPPETTO.Spotlight != undefined ? React.createFactory(SpotlightButton)({}) : '';
-            var controlPanelBtn = GEPPETTO.ControlPanel != undefined ? React.createFactory(ControlPanelButton)({}) : '';
-            var queryBuilderlBtn = GEPPETTO.QueryBuilder != undefined ? React.createFactory(QueryBuilderButton)({}) : '';
-
-            return <div className={'foreground-controls'}>
-                {controlPanelBtn}
-                <br/>
-                {spotlightBtn}
-                <br />
-                {queryBuilderlBtn}
-            </div>
+            return <div>QUERY BUILDER PLACEHOLDER</div>;
         }
     });
 
     ReactDOM.render(
-        React.createFactory(ForegroundControls)({}, ''),
-        document.getElementById('foreground-toolbar')
+        <QueryBuilder></QueryBuilder>,
+        //React.createElement(QueryBuilder, {}),
+        document.getElementById("querybuilder")
     );
 
 });

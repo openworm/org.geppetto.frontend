@@ -224,5 +224,24 @@ define(function (require) {
 
             return hasCapability;
         },
+
+        // Overriding set
+        set: function(attributes, options) {
+
+            Backbone.Model.prototype.set.call(this, attributes, options);
+
+            // we add a double link
+            if (attributes.hasOwnProperty("types")) {
+            	if(attributes.types){
+	                for(var i=0;i<attributes.types.length;i++){
+	                	if(attributes.types[i].addVariableReference!=undefined){
+	                		attributes.types[i].addVariableReference(this);
+	                	}
+	                }
+            	}
+            }
+
+            return this;
+        }
     });
 });

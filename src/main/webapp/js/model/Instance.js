@@ -353,7 +353,9 @@ define(function (require) {
          *
          */
         getConnections: function (direction) {
+        	GEPPETTO.trigger('spin_logo');
             GEPPETTO.ModelFactory.updateConnectionInstances(this);
+            
             var connections = this.get('connections');
 
             if (direction === GEPPETTO.Resources.INPUT || direction === GEPPETTO.Resources.OUTPUT || direction === GEPPETTO.Resources.INPUT_OUTPUT) {
@@ -381,6 +383,7 @@ define(function (require) {
                 connections = filteredConnections;
             }
 
+            GEPPETTO.trigger('stop_spin_logo');
             return connections;
         },
 

@@ -39,9 +39,11 @@
  */
 define(function (require) {
     var ObjectWrapper = require('model/ObjectWrapper');
+    var ImportType = require('model/ImportType');
 
     return ObjectWrapper.Model.extend({
         types: [],
+        importTypes: [],
 
         /**
          * Initializes this node with passed attributes
@@ -52,6 +54,7 @@ define(function (require) {
             this.set({"types": (options.types != 'undefined') ? options.types : []});
             this.set({"parent": options.parent});
             this.set({"wrappedObj": options.wrappedObj});
+            this.set({"importTypes": []});
         },
 
 
@@ -78,5 +81,32 @@ define(function (require) {
         getChildren: function () {
             return this.get('types');
         },
+        
+        addImportType: function(importType){
+        	this.get('importTypes').push(importType);
+        },
+        
+        removeImportType: function(importType){
+        	this.get('importTypes').remove(importType);
+        },
+        
+        // Overriding set
+        set: function(attributes, options) {
+
+            Backbone.Model.prototype.set.call(this, attributes, options);
+
+            // we add a double link
+            if (attributes.hasOwnProperty("types")) {
+            	if(attributes.types){
+	                for(var i=0;i<attributes.types.length;i++){
+	                	if(attributes.types[i] instanceof ImportType){
+	                		this.addImportType(attributes.types[i]);
+	                	}
+	                }
+            	}
+            }
+
+            return this;
+        }
     });
 });

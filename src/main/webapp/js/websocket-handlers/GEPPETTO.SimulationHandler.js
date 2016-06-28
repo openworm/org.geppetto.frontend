@@ -103,11 +103,13 @@ define(function (require) {
         };
 
         messageHandler[messageTypes.VARIABLE_FETCHED] = function (payload) {
+        	GEPPETTO.trigger('spin_logo');
             GEPPETTO.SimulationHandler.addVariableToModel(payload);
             GEPPETTO.trigger('stop_spin_logo');
         };
 
         messageHandler[messageTypes.IMPORT_TYPE_RESOLVED] = function (payload) {
+        	GEPPETTO.trigger('spin_logo');
             GEPPETTO.SimulationHandler.swapResolvedType(payload);
             GEPPETTO.trigger('stop_spin_logo');
         };
@@ -303,7 +305,7 @@ define(function (require) {
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 
                 // populate control panel with instances
-                GEPPETTO.FE.refresh();
+                GEPPETTO.FE.refresh(window.Instances);
 
                 console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);
                 GEPPETTO.trigger("hide:spinner");
@@ -355,8 +357,8 @@ define(function (require) {
                 // STEP: 3 update scene
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
-                // STEP: 4 update control panel
-                GEPPETTO.FE.refresh();
+                // STEP: 4 update components
+                GEPPETTO.FE.refresh(newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
@@ -403,8 +405,8 @@ define(function (require) {
                 // STEP 3: update scene
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
-                // STEP: 4 update control panel
-                GEPPETTO.FE.refresh();
+                // STEP: 4 update components
+                GEPPETTO.FE.refresh(newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);

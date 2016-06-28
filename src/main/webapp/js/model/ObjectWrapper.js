@@ -109,16 +109,13 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
              *
              */
             getPath: function () {
-                var parent = this.get("parent");
-                var parentPath = "";
-
-                if (parent != null && parent != undefined) {
-                    parentPath = parent.getPath();
+                if (this.get("parent")){
+                    return this.get("parent").getPath() + "." + this.getId();
+                }
+                else{
+                	return this.getId();
                 }
 
-                var path = parentPath + "." + this.getId();
-
-                return (parentPath != "") ? path : this.getId();
             }
         })
     };

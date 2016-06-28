@@ -74,6 +74,7 @@ define(function (require) {
             instances: null,
             allPaths: [],
             allPathsIndexing: [],
+            newPathsIndexing: [],
             instanceTags: {},
 
             /**
@@ -121,10 +122,12 @@ define(function (require) {
 
                     // create libraries
                     for (var i = 0; i < jsonModel.libraries.length; i++) {
-                        var library = this.createLibrary(jsonModel.libraries[i]);
-                        library.set({"parent": geppettoModel});
-                        library.set({"types": this.createTypes(jsonModel.libraries[i].types, library)});
-                        geppettoModel.getLibraries().push(library);
+                    	if(!jsonModel.libraries[i].synched){
+	                        var library = this.createLibrary(jsonModel.libraries[i]);
+	                        library.set({"parent": geppettoModel});
+	                        library.set({"types": this.createTypes(jsonModel.libraries[i].types, library)});
+	                        geppettoModel.getLibraries().push(library);
+                    	}
                     }
 
                     if (populateRefs) {
@@ -252,14 +255,14 @@ define(function (require) {
                         }
 
                         for (var a = 0; a < superType.length; a++) {
-                        	if(superType[a].$ref){
+                            if (superType[a].$ref) {
                                 // replace with reference to actual type
                                 typeObjs.push(this.resolve(superType[a].$ref));
-                        	}
-                        	else{
+                            }
+                            else {
                                 // replace with reference to actual type
                                 typeObjs.push(superType[a]);
-                        	}
+                            }
                         }
 
                         node.set({"superType": typeObjs});
@@ -284,14 +287,14 @@ define(function (require) {
                         }
 
                         for (var a = 0; a < superType.length; a++) {
-                        	if(superType[a].$ref){
+                            if (superType[a].$ref) {
                                 // replace with reference to actual type
                                 typeObjs.push(this.resolve(superType[a].$ref));
-                        	}
-                        	else{
+                            }
+                            else {
                                 // replace with reference to actual type
                                 typeObjs.push(superType[a]);
-                        	}
+                            }
                         }
 
                         node.set({"superType": typeObjs});
@@ -376,15 +379,17 @@ define(function (require) {
 
                 if (jsonVariables != undefined) {
                     for (var i = 0; i < jsonVariables.length; i++) {
-                        var variable = this.createVariable(jsonVariables[i]);
-                        variable.set({"parent": parent});
-
-                        // check if it has an anonymous type
-                        if (jsonVariables[i].anonymousTypes != undefined) {
-                            variable.set({"anonymousTypes": this.createTypes(jsonVariables[i].anonymousTypes, variable)});
-                        }
-
-                        variables.push(variable);
+                    	if(!jsonVariables[i].synched){
+	                        var variable = this.createVariable(jsonVariables[i]);
+	                        variable.set({"parent": parent});
+	
+	                        // check if it has an anonymous type
+	                        if (jsonVariables[i].anonymousTypes != undefined) {
+	                            variable.set({"anonymousTypes": this.createTypes(jsonVariables[i].anonymousTypes, variable)});
+	                        }
+	
+	                        variables.push(variable);
+                    	}
                     }
                 }
 
@@ -399,40 +404,44 @@ define(function (require) {
 
                 if (jsonTypes != undefined) {
                     for (var i = 0; i < jsonTypes.length; i++) {
-                        var type = null;
-
-                        // check if it's composite type, visual type, array type or simple type
-                        if (jsonTypes[i].eClass == 'CompositeType' || jsonTypes[i].eClass == 'ConnectionType') {
-                            type = this.createCompositeType(jsonTypes[i]);
-                        }
-                        else if (jsonTypes[i].eClass == 'CompositeVisualType') {
-                            type = this.createCompositeVisualType(jsonTypes[i]);
-                            // inject visual capability to all CompositeVisualType
-                            type.extendApi(AVisualCapability);
-                        }
-                        else if (jsonTypes[i].eClass == 'ImportType') {
-                            type = this.createImportType(jsonTypes[i]);
-                        }
-                        else if (jsonTypes[i].eClass == 'ArrayType') {
-                            type = this.createArrayType(jsonTypes[i]);
-                        }
-                        else {
-                            type = this.createType(jsonTypes[i]);
-                            // inject visual capability if MetaType == VisualType
-                            if (type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) {
-                                type.extendApi(AVisualCapability);
-                            }
-                        }
-
-                        // if getVisualType != null also inject visual capability
-                        if (type.getVisualType() != undefined) {
-                            type.extendApi(AVisualCapability);
-                        }
-
-                        // set parent
-                        type.set({"parent": parent});
-
-                        types.push(type);
+                    	if(!jsonTypes[i].synched){
+	                        var type = null;
+	
+	                        // check if it's composite type, visual type, array type or simple type
+	                        if (jsonTypes[i].eClass == 'CompositeType' || jsonTypes[i].eClass == 'ConnectionType') {
+	                            type = this.createCompositeType(jsonTypes[i]);
+	                        }
+	                        else if (jsonTypes[i].eClass == 'CompositeVisualType') {
+	                            type = this.createCompositeVisualType(jsonTypes[i]);
+	                            // inject visual capability to all CompositeVisualType
+	                            type.extendApi(AVisualCapability);
+	                        }
+	                        else if (jsonTypes[i].eClass == 'ImportType') {
+	                            type = this.createImportType(jsonTypes[i],null);
+	                            //we store the index of the importType to speed up swapping procedures
+	                            type._index=i;
+	                        }
+	                        else if (jsonTypes[i].eClass == 'ArrayType') {
+	                            type = this.createArrayType(jsonTypes[i]);
+	                        }
+	                        else {
+	                            type = this.createType(jsonTypes[i]);
+	                            // inject visual capability if MetaType == VisualType
+	                            if (type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) {
+	                                type.extendApi(AVisualCapability);
+	                            }
+	                        }
+	
+	                        // if getVisualType != null also inject visual capability
+	                        if (type.getVisualType() != undefined) {
+	                            type.extendApi(AVisualCapability);
+	                        }
+	
+	                        // set parent
+	                        type.set({"parent": parent});
+	
+	                        types.push(type);
+                    	}
                     }
                 }
 
@@ -534,11 +543,10 @@ define(function (require) {
                 var newInstances = window.Instances.getInstance(newInstancePaths);
 
                 // STEP 4: If instances were added, re-populate shortcuts
-                if (this.getInstanceCount(window.Instances) > instanceCount) {
-                    for (var k = 0; k < window.Instances.length; k++) {
-                        GEPPETTO.ModelFactory.populateChildrenShortcuts(window.Instances[k]);
-                    }
+                for (var k = 0; k < newInstances.length; k++) {
+                    GEPPETTO.ModelFactory.populateChildrenShortcuts(newInstances[k]);
                 }
+
 
                 for (var k = 0; k < window.Instances.length; k++) {
                     GEPPETTO.ModelFactory.populateConnections(window.Instances[k]);
@@ -580,6 +588,8 @@ define(function (require) {
                     overrideTypes = false;
                 }
 
+                this.newPathsIndexing = [];
+
                 // diff object to report back what changed / has been added
                 var diffReport = {variables: [], types: [], libraries: []};
 
@@ -597,30 +607,38 @@ define(function (require) {
                     }
 
                     var libMatch = false;
-                    
+
                     for (var j = 0; j < libs.length; j++) {
                         // if the library exists, go in and check for types diff
                         if (diffLibs[i].getPath() == libs[j].getPath()) {
                             libMatch = true;
 
                             var diffTypes = diffLibs[i].getTypes();
-                            var types = libs[j].getTypes();
+                            var existingImportTypes = libs[j].get('importTypes');
 
                             // first loop on types - add new ones
                             var addedTypes = [];
-                            
+
+                            //the types that need to be swapped in in the first array, the ImportTypes that need to be swapped out in the second one
+                            //these two arrays are synched by their index
+                            var typeMatched = [];
+                            var importTypeMatched = [];
+
                             for (var k = 0; k < diffTypes.length; k++) {
                                 if (diffTypes[k].getWrappedObj().synched == true) {
                                     // if synch placeholder type, skip it
                                     continue;
                                 }
 
-                                var typeMatch = false;
+                                var typeMatch=false;
 
-                                for (var m = 0; m < types.length; m++) {
+                                for (var m = 0; m < existingImportTypes.length; m++) {
                                     // check if the given diff type already exists
-                                    if (diffTypes[k].getPath() == types[m].getPath()) {
-                                        typeMatch = true;
+                                    if (diffTypes[k].getPath() == existingImportTypes[m].getPath()) {
+                                        typeMatch=true;
+                                        typeMatched.push(diffTypes[k]);
+                                        importTypeMatched.push(existingImportTypes[m]);
+                                        break;
                                     }
                                 }
 
@@ -636,9 +654,8 @@ define(function (require) {
                                     // add to library in geppetto object model
                                     diffTypes[k].set({'parent': libs[j]});
                                     libs[j].getTypes().push(diffTypes[k]);
-                                    
-                                    addedTypes.push(diffTypes[k]);
 
+                                    addedTypes.push(diffTypes[k]);
 
 
                                     // TODO: add potential instance paths
@@ -646,67 +663,59 @@ define(function (require) {
 
                                     // add to diff report
                                     diffReport.types.push(diffTypes[k]);
+
+                                    //populate the shortcuts for the added type
+                                    this.populateChildrenShortcuts(diffTypes[k]);
+                                    //let's populate the shortcut in the parent of the type, this might not exist if it was a fetch
+                                    diffTypes[k].getParent()[diffTypes[k].getId()] = diffTypes[k];
                                 }
+
                             }
-                            
+
                             for (var k = 0; k < addedTypes.length; k++) {
-                            	
                                 // populate references for the new type
                                 this.populateTypeReferences(addedTypes[k]);
                             }
-                            
+
                             // second loop on types - override (if flag is set)
                             if (overrideTypes) {
-                                for (var k = 0; k < diffTypes.length; k++) {
+                                for (var k = 0; k < typeMatched.length; k++) {
 
-                                    if (diffTypes[k].getWrappedObj().synched == true) {
-                                        // if synch placeholder type, skip it
-                                        continue;
+                                    // populate references for the swapped type
+                                    this.populateTypeReferences(typeMatched[k]);
+                                    var index= importTypeMatched[k]._index;
+
+                                    var variablesToUpdate = importTypeMatched[k].getVariableReferences();
+                                    // swap type reference in ALL variables that point to it
+                                    for (var x = 0; x < variablesToUpdate.length; x++) {
+                                        this.swapTypeInVariable(variablesToUpdate[x], importTypeMatched[k], typeMatched[k]);
                                     }
 
-                                    for (var m = 0; m < types.length; m++) {
-                                        // check if the given diff type already exists
-                                        if (diffTypes[k].getPath() == types[m].getPath()) {
-                                            // It does exist - swap the types[m] with the diffType[k]
+                                    // swap type in raw model
+                                    libs[j].getWrappedObj().types[index] = typeMatched[k].getWrappedObj();
 
-                                            // get all types in the current model
-                                            var allTypesInModel = [];
-                                            for (var w = 0; w < libs.length; w++) {
-                                                allTypesInModel = allTypesInModel.concat(libs[w].getTypes());
-                                            }
-                                            // fetch variables pointing to the old version of the type
-                                            var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, types[m]);
-                                            // add top level variables in the model
-                                            variablesToUpdate = variablesToUpdate.concat(this.geppettoModel.getVariables());
+                                    // store overridden type (so that unresolve type can swap it back)
+                                    typeMatched[k].overrideType = importTypeMatched[k];
 
-                                            // populate references for the swapped type
-                                            this.populateTypeReferences(diffTypes[k]);
+                                    // swap in object model
+                                    typeMatched[k].set({'parent': libs[j]});
+                                    libs[j].getTypes()[index] = typeMatched[k];
+                                    //libs[j].removeImportType(importTypeMatched[k]);
 
-                                            // swap type reference in ALL variables that point to it
-                                            for (var x = 0; x < variablesToUpdate.length; x++) {
-                                                this.swapTypeInVariable(variablesToUpdate[x], types[m], diffTypes[k]);
-                                            }
+                                    // add potential instance paths
+                                    this.addPotentialInstancePathsForTypeSwap(typeMatched[k]);
 
-                                            // swap type in raw model
-                                            libs[j].getWrappedObj().types[m] = diffTypes[k].getWrappedObj();
+                                    // update capabilities for variables and instances if any
+                                    this.updateCapabilities(variablesToUpdate);
 
-                                            // store overridden type (so that unresolve type can swap it back)
-                                            diffTypes[k].overrideType = types[m];
+                                    // add to diff report
+                                    diffReport.types.push(typeMatched[k]);
 
-                                            // swap in object model
-                                            diffTypes[k].set({'parent': libs[j]});
-                                            types[m] = diffTypes[k];
+                                    //populate the shortcuts for the swapped type
+                                    this.populateChildrenShortcuts(typeMatched[k]);
+                                    //let's populate the shortcut in the parent of the type, this might not exist if it was a fetch
+                                    typeMatched[k].getParent()[typeMatched[k].getId()] = typeMatched[k];
 
-                                            // add potential instance paths
-                                            this.addPotentialInstancePathsForTypeSwap(diffTypes[k]);
-
-                                            // update capabilities for variables and instances if any
-                                            this.updateCapabilities(variablesToUpdate);
-
-                                            // add to diff report
-                                            diffReport.types.push(diffTypes[k]);
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -727,6 +736,11 @@ define(function (require) {
 
                         // add to diff report
                         diffReport.libraries.push(diffLibs[i]);
+
+                        //populate the shortcuts for the added library
+                        this.populateChildrenShortcuts(diffLibs[i]);
+                        //let's populate the shortcut in the parent of the library, this might not exist if it was a fetch
+                        diffLibs[i].getParent()[diffLibs[i].getId()] = diffLibs[i];
                     }
                 }
 
@@ -768,11 +782,13 @@ define(function (require) {
                         this.addPotentialInstancePaths([diffVars[x]]);
 
                         diffReport.variables.push(diffVars[x]);
+
+                        //populate the shortcuts for the added variable
+                        this.populateChildrenShortcuts(diffVars[x]);
+                        //let's populate the shortcut in the parent of the variable, this might not exist if it was a fetch
+                        diffVars[x].getParent()[diffVars[x].getId()] = diffVars[x];
                     }
                 }
-
-                // traverse everything again and build shortcuts to children if composite --> containment == true
-                this.populateChildrenShortcuts(this.geppettoModel);
 
                 return diffReport;
             },
@@ -881,6 +897,7 @@ define(function (require) {
                 // add to allPaths and to allPathsIndexing (assumes they are new paths)
                 this.allPaths = this.allPaths.concat(potentialInstancePaths);
                 this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
+                this.newPathsIndexing.concat(potentialInstancePathsForIndexing);
             },
 
             /**
@@ -889,18 +906,20 @@ define(function (require) {
              * @param type
              */
             addPotentialInstancePathsForTypeSwap: function (type) {
+
+                var typePath = type.getPath();
                 // Get all paths for the new type
                 var partialPathsForNewType = [];
                 var partialPathsForNewTypeIndexing = [];
                 this.fetchAllPotentialInstancePathsForType(type, partialPathsForNewType, partialPathsForNewTypeIndexing, []);
 
                 // Get all potential instances for the type we are swapping
-                var potentialInstancesForNewtype = GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(type.getPath());
-                var potentialInstancesForNewtypeIndexing = GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(type.getPath(), this.allPathsIndexing);
+                var potentialInstancesForNewtype = GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(typePath);
+                var potentialInstancesForNewtypeIndexing = GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(typePath, this.allPathsIndexing);
 
                 // Generate new paths and add
-                for(var i=0; i<potentialInstancesForNewtype.length; i++){
-                    for(var j=0; j<partialPathsForNewType.length; j++){
+                for (var i = 0; i < potentialInstancesForNewtype.length; i++) {
+                    for (var j = 0; j < partialPathsForNewType.length; j++) {
                         var entry = {
                             path: potentialInstancesForNewtype[i] + '.' + partialPathsForNewType[j].path,
                             metaType: partialPathsForNewType[j].metaType,
@@ -910,26 +929,27 @@ define(function (require) {
                     }
                 }
                 // same as above for indexing paths
-                for(var i=0; i<potentialInstancesForNewtypeIndexing.length; i++){
-                    for(var j=0; j<partialPathsForNewTypeIndexing.length; j++){
+                for (var i = 0; i < potentialInstancesForNewtypeIndexing.length; i++) {
+                    for (var j = 0; j < partialPathsForNewTypeIndexing.length; j++) {
                         var entry = {
                             path: potentialInstancesForNewtypeIndexing[i] + '.' + partialPathsForNewTypeIndexing[j].path,
                             metaType: partialPathsForNewType[j].metaType,
                             type: partialPathsForNewType[j].type
                         };
                         this.allPathsIndexing.push(entry);
+                        this.newPathsIndexing.push(entry);
                     }
                 }
 
                 // look for import type references and amend type
-                for(var i=0; i<this.allPaths.length; i++){
-                    if(this.allPaths[i].type == type.getPath()){
+                for (var i = 0; i < this.allPaths.length; i++) {
+                    if (this.allPaths[i].type == typePath) {
                         this.allPaths[i].metaType = type.getMetaType();
                     }
                 }
                 // same as above for indexing paths
-                for(var i=0; i<this.allPathsIndexing.length; i++){
-                    if(this.allPathsIndexing[i].type == type.getPath()){
+                for (var i = 0; i < this.allPathsIndexing.length; i++) {
+                    if (this.allPathsIndexing[i].type == typePath) {
                         this.allPathsIndexing[i].metaType = type.getMetaType();
                     }
                 }
@@ -1605,6 +1625,8 @@ define(function (require) {
 
                     // STEP 1: build list of potential parent paths
                     if (arrayType != undefined) {
+                        var arrayPath = arrayType.getType().getPath();
+                        var arrayMetaType = arrayType.getType().getMetaType();
                         // add the [*] entry
                         if (arrayType.getSize() > 1) {
                             var starPath = path + '[' + '*' + ']';
@@ -1612,8 +1634,8 @@ define(function (require) {
 
                             var starEntry = {
                                 path: starPath,
-                                metaType: arrayType.getType().getMetaType(),
-                                type: arrayType.getType().getPath()
+                                metaType: arrayMetaType,
+                                type: arrayPath
                             };
                             allPotentialPaths.push(starEntry);
                             allPotentialPathsForIndexing.push(starEntry);
@@ -1626,8 +1648,8 @@ define(function (require) {
 
                             var arrayElementEntry = {
                                 path: arrayElementPath,
-                                metaType: arrayType.getType().getMetaType(),
-                                type: arrayType.getType().getPath()
+                                metaType: arrayMetaType,
+                                type: arrayPath
                             };
                             allPotentialPaths.push(arrayElementEntry);
                             if (this.includePotentialInstance(node, arrayElementPath)) {
@@ -1650,13 +1672,13 @@ define(function (require) {
             /**
              * Build list of partial instance types starting from a type
              */
-            fetchAllPotentialInstancePathsForType(type, allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths){
+                fetchAllPotentialInstancePathsForType(type, allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths){
                 if (type.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
                     var vars = type.getVariables();
 
                     if (vars != undefined && vars != null) {
                         for (var j = 0; j < vars.length; j++) {
-                            if(potentialParentPaths.length > 0) {
+                            if (potentialParentPaths.length > 0) {
                                 for (var g = 0; g < potentialParentPaths.length; g++) {
                                     this.fetchAllPotentialInstancePaths(vars[j], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[g]);
                                 }
@@ -1676,7 +1698,7 @@ define(function (require) {
 
                         if (vars != undefined && vars != null) {
                             for (var l = 0; l < vars.length; l++) {
-                                if(potentialParentPaths.length > 0) {
+                                if (potentialParentPaths.length > 0) {
                                     for (var h = 0; h < potentialParentPaths.length; h++) {
                                         this.fetchAllPotentialInstancePaths(vars[l], allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths[h]);
                                     }
@@ -1736,40 +1758,30 @@ define(function (require) {
                 return d;
             },
 
+            getTypeOptions: function (node, options) {
+                if (options == null || options == undefined) {
+                    return {wrappedObj: node, superType: node.superType, visualType: node.visualType};
+                }
+                else {
+                    return options;
+                }
+            },
+
             /** Creates a type */
             createType: function (node, options) {
-                if (options == null || options == undefined) {
-                    options = {wrappedObj: node};
-                }
-
-                var t = new Type(options);
-                t.set({"visualType": node.visualType});
-                t.set({"superType": node.superType});
-
+                var t = new Type(this.getTypeOptions(node, options));
                 return t;
             },
 
             /** Creates an import type */
             createImportType: function (node, options) {
-                if (options == null || options == undefined) {
-                    options = {wrappedObj: node};
-                }
-
-                var it = new ImportType(options);
-                it.set({"superType": node.superType});
-
+                var it = new ImportType(this.getTypeOptions(node, options));
                 return it;
             },
 
             /** Creates a composite type */
             createCompositeType: function (node, options) {
-                if (options == null || options == undefined) {
-                    options = {wrappedObj: node};
-                }
-
-                var t = new CompositeType(options);
-                t.set({"visualType": node.visualType});
-                t.set({"superType": node.superType});
+                var t = new CompositeType(this.getTypeOptions(node, options));
                 t.set({"variables": this.createVariables(node.variables, t)});
 
                 return t;
@@ -1777,13 +1789,7 @@ define(function (require) {
 
             /** Creates a composite visual type */
             createCompositeVisualType: function (node, options) {
-                if (options == null || options == undefined) {
-                    options = {wrappedObj: node};
-                }
-
-                var t = new CompositeVisualType(options);
-                t.set({"visualType": node.visualType});
-                t.set({"superType": node.superType});
+                var t = new CompositeVisualType(this.getTypeOptions(node, options));
                 t.set({"variables": this.createVariables(node.variables, t)});
                 if (node.visualGroups != undefined) {
                     t.set({"visualGroups": this.createVisualGroups(node.visualGroups, t)});
@@ -1794,14 +1800,9 @@ define(function (require) {
 
             /** Creates a composite type */
             createArrayType: function (node, options) {
-                if (options == null || options == undefined) {
-                    options = {wrappedObj: node};
-                }
-
-                var t = new ArrayType(options);
+                var t = new ArrayType(this.getTypeOptions(node, options));
                 t.set({"size": node.size});
                 t.set({"type": node.arrayType});
-                t.set({"superType": node.superType});
 
                 return t;
             },
@@ -2096,7 +2097,7 @@ define(function (require) {
              * Get all POTENTIAL instances of a given type
              */
             getAllPotentialInstancesOfType: function (typePath, paths) {
-                if(paths == undefined){
+                if (paths == undefined) {
                     paths = this.allPaths;
                 }
 
@@ -2115,7 +2116,7 @@ define(function (require) {
              * Get all POTENTIAL instances of a given meta type
              */
             getAllPotentialInstancesOfMetaType: function (metaType, paths) {
-                if(paths == undefined){
+                if (paths == undefined) {
                     paths = this.allPaths;
                 }
 
@@ -2222,7 +2223,7 @@ define(function (require) {
              */
             getAllVariablesOfType: function (typesToSearch, typeToMatch, recursive, variables) {
                 // check if array and if not "make it so"
-                if (!(typesToSearch.constructor === Array)) {
+                if (!(typesToSearch instanceof Array)) {
                     typesToSearch = [typesToSearch];
                 }
 
@@ -2383,6 +2384,7 @@ define(function (require) {
              */
             unresolveType: function (type) {
                 var libs = this.geppettoModel.getLibraries();
+                var typePath = type.getPath();
                 // swap the type with type.overrideType if any is found
                 if (type.overrideType != undefined) {
                     // get all types in the current model
@@ -2396,9 +2398,7 @@ define(function (require) {
                     }
 
                     // fetch variables pointing to the old version of the type
-                    var variablesToUpdate = this.getAllVariablesOfType(allTypesInModel, type);
-                    // add top level variables in the model
-                    variablesToUpdate = variablesToUpdate.concat(this.geppettoModel.getVariables());
+                    var variablesToUpdate = type.getVariableReferences();
 
                     // swap type reference in ALL variables that point to it
                     for (var x = 0; x < variablesToUpdate.length; x++) {
@@ -2406,14 +2406,14 @@ define(function (require) {
                     }
 
                     // find type in library (we need the index)
-                    for (var m = 0; m < typeToLibraryMap[type.getPath()].getTypes().length; m++) {
-                        if (type.getPath() == typeToLibraryMap[type.getPath()].getTypes()[m].getPath()) {
+                    for (var m = 0; m < typeToLibraryMap[typePath].getTypes().length; m++) {
+                        if (type.getPath() == typeToLibraryMap[typePath].getTypes()[m].getPath()) {
                             // swap type in raw model
-                            typeToLibraryMap[type.getPath()].getWrappedObj().types[m] = type.overrideType.getWrappedObj();
+                            typeToLibraryMap[typePath].getWrappedObj().types[m] = type.overrideType.getWrappedObj();
 
                             // swap in object model (this line is probably redundant as the parent hasn't changed)
-                            type.overrideType.set({'parent': typeToLibraryMap[type.getPath()]});
-                            typeToLibraryMap[type.getPath()].getTypes()[m] = type.overrideType;
+                            type.overrideType.set({'parent': typeToLibraryMap[typePath]});
+                            typeToLibraryMap[typePath].getTypes()[m] = type.overrideType;
                         }
                     }
 

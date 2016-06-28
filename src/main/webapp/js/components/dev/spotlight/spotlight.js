@@ -29,8 +29,8 @@ define(function (require) {
             GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
         },
         
-        updateData : function() {
-            this.instances.add(GEPPETTO.ModelFactory.allPathsIndexing);
+        addData : function(instances) {
+            this.instances.add(instances);
         },
 
         componentDidMount: function () {
@@ -84,7 +84,7 @@ define(function (require) {
            
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
-            	that.updateData();
+            	that.addData(GEPPETTO.ModelFactory.allPathsIndexing);
             });
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions

@@ -44,6 +44,7 @@ define(function (require) {
         visualType: null,
         superType: [],
         capabilities: [],
+        variableReferences: [],
 
         /**
          * Initializes this node with passed attributes
@@ -58,6 +59,7 @@ define(function (require) {
 
             // capability list is for private use
             this.set({"capabilities": []});
+            this.set({"variableReferences": []});
         },
 
         /**
@@ -157,5 +159,21 @@ define(function (require) {
 
             return hasCapability;
         },
+
+        /**
+         *
+         * @param v
+         */
+        addVariableReference: function(v){
+            this.get('variableReferences').push(v);
+        },
+
+        /**
+         *
+         * @returns {Array}
+         */
+        getVariableReferences: function(){
+            return this.get('variableReferences');
+        }
     });
 });

@@ -50,13 +50,10 @@ define(function (require) {
          * @param {Object} options - Object with options attributes to initialize node
          */
         initialize: function (options) {
-            this.set({"type": options.type});
+        	Type.prototype.initialize.call(this, options);
+        	this.set({"type": options.type});
             this.set({"size": options.elements});
-            this.set({"parent": options.parent});
-            this.set({"wrappedObj": options.wrappedObj});
-
-            // capability list is for private use
-            this.set({"capabilities": []});
+            
         },
 
         /**

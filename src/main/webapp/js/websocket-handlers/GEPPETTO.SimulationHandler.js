@@ -50,7 +50,7 @@ define(function (require) {
             EXPERIMENT_LOADED: "experiment_loaded",
             VARIABLE_FETCHED: "variable_fetched",
             IMPORT_TYPE_RESOLVED: "import_type_resolved",
-            IMPORT_VALUE_RESOLVED: "import_value_resolved"
+            IMPORT_VALUE_RESOLVED: "import_value_resolved",
             PLAY_EXPERIMENT: "play_experiment",
             SET_WATCHED_VARIABLES: "set_watched_variables",
             WATCHED_VARIABLES_SET: "watched_variables_set",
@@ -109,7 +109,8 @@ define(function (require) {
         };
 
         messageHandler[messageTypes.IMPORT_TYPE_RESOLVED] = function (payload) {
-            GEPPETTO.SimulationHandler.swapResolvedType(payload);
+            console.log("message: Import_Type_Resolved");
+        	GEPPETTO.SimulationHandler.swapResolvedType(payload);
             GEPPETTO.trigger('stop_spin_logo');
         };
         
@@ -432,7 +433,7 @@ define(function (require) {
             },
 
             /**
-             * Swap resolved import type with actual type
+             * Swap resolved import value with actual type
              *
              * @param payload
              */

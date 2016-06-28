@@ -94,7 +94,7 @@ define(function (require) {
         /**
          * Trigger import type resolution - will cause this import type to get swapped with an actual type
          *
-         * @command ImportType.resolve()
+         * @command ImportValue.resolve()
          */
         resolve: function(callback) {
             GEPPETTO.SimulationHandler.resolveImportValue(this.getPath(), callback);

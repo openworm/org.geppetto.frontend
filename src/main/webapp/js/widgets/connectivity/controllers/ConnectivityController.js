@@ -42,6 +42,7 @@
 define(function (require) {
     var AWidgetController = require('widgets/AWidgetController');
     var Connectivity = require('widgets/connectivity/Connectivity');
+    
 
     /**
      * @exports Widgets/Connectivity/ConnectivityController
@@ -52,6 +53,16 @@ define(function (require) {
             this.widgets = [];
         },
 
+        
+        configureConnectivityWidget: function () {
+        	var formOptions = G.addWidget(8);
+        	formOptions.generateForm(Connectivity.prototype.borisOptions, 'Execute');
+//        	formWidget.setData({'experimentName': Project.getActiveExperiment().getName(),timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),lenght: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),simulator:Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator(), numberProcessors: 1}); 
+        	
+        	var innerForm = formOptions.getForm();
+        	innerForm.on('submit', function(event) {event.preventDefault();console.log('TakaSubmit');G.addWidget(8); formWidget.destroy();});
+        },
+        
         /**
          * Adds a new TreeVisualizer3D Widget to Geppetto
          */

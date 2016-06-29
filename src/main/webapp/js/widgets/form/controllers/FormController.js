@@ -41,6 +41,7 @@
 define(function (require) {
     var AWidgetController = require('widgets/AWidgetController');
     var Form = require('widgets/form/Form');
+    var Button = require('widgets/form/vendor/editors/Button');
 
     /**
      * @exports Widgets/Connectivity/TreeVisualiserControllerDATController

@@ -45,6 +45,8 @@ define(function (require) {
     VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
     ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
     FormController = require('widgets/form/controllers/FormController');
+    //Use as template for new widgets
+    //WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
 
     return function (GEPPETTO) {
 
@@ -66,6 +68,7 @@ define(function (require) {
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
             FORM: 8
+            //WIDGETNAME: N
         };
 
         /**
@@ -83,6 +86,8 @@ define(function (require) {
             treeVis3DController: null,
             formController: null,
             
+            //WIDGETNAMEController: null
+
             /**
              * Adds widget to Geppetto
              *
@@ -129,6 +134,11 @@ define(function (require) {
                         widget = this.getController(GEPPETTO.Widgets.FORM).addFormWidget();
                         break;
                         
+                    //Use as template for new widgets
+                    //create WIDGETNAME
+                    //case GEPPETTO.Widgets.WIDGETNAME:
+                    //    widget = this.getController(GEPPETTO.Widgets.WIDGETNAME).addWIDGETNAMEWidget();
+                    //    break;
                     default:
                         break;
                 }
@@ -144,6 +154,7 @@ define(function (require) {
              */
             removeWidget: function (widgetType) {
                 this.getController(widgetType).removeWidgets();
+                //TODO Matteo: refactor this a complete custom string doesn't seem to be necessary
                 switch (widgetType) {
                     case GEPPETTO.Widgets.PLOT:
                         return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
@@ -163,6 +174,9 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
                     case GEPPETTO.Widgets.FORM:
                         return GEPPETTO.Resources.REMOVE_FORM_WIDGETS;
+                    //Use as template for new widgets
+                    //case GEPPETTO.Widgets.WIDGETNAME:
+                    //    return GEPPETTO.Resources.REMOVE_WIDGETNAME_WIDGETS;
                     default:
                         return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
                 }
@@ -223,6 +237,14 @@ define(function (require) {
                     }
                     return this.formController;
                 }
+                //Use as template for new widgets
+                //else if (type == GEPPETTO.Widgets.WIDGETNAME) {
+                //    if (this.WIDGETNAMEController == null || undefined) {
+                //        this.WIDGETNAMEController = new WIDGETNAMEController();
+                //    }
+                //    return this.WIDGETNAMEController;
+                //}
+
             }
         };
     };

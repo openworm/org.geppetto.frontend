@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2016 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -29,55 +30,54 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
+/**
+ *
+ * @module Widgets/WIDGETNAME
+ * @author yourname
+ */
 define(function (require) {
-    function loadCss(url) {
-        var link = document.createElement("link");
-        link.type = "text/css";
-        link.rel = "stylesheet";
-        link.href = url;
-        document.getElementsByTagName("head")[0].appendChild(link);
-    }
 
-    loadCss("geppetto/js/components/dev/foregroundcontrols/foregroundcontrols.css");
+    var Widget = require('widgets/Widget');
+    var $ = require('jquery');
 
-    var React = require('react');
-    var ReactDOM = require('react-dom');
+    return Widget.View
+        .extend({
+            variable: null,
+            options: null,
 
-    var SpotlightButton = require('./buttons/SpotlightButton');
-    var ControlPanelButton = require('./buttons/ControlPanelButton');
+            /**
+             * Initialises button bar
+             *
+             * @param {Object}
+             *            options - Object with options for the widget
+             */
+            /**
+             * Initialize the popup widget
+             */
+            initialize: function (options) {
+                Widget.View.prototype.initialize.call(this, options);
+                this.render();
+                this.setSize(100, 300);
+                this.customHandlers = [];
 
-    var GEPPETTO = require('geppetto');
+                //in case you need some styling add it to the CSS $("#" + this.id).addClass("yourStyle");
 
-    var ForegroundControls = React.createClass({
+            },
 
-        componentDidMount: function () {
 
-        },
+            /**
+             * Sets the content of this widget
+             * This is a sample method of the widget's API, in this case the user would use the widget by passing an instance to a setData method
+             * Customise/remove/add more depending on what widget you are creating
+             *
+             * @command setData(anyInstance)
+             * @param {Object} anyInstance - An instance of any type
+             */
+            setData: function (anyInstance) {
+                this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
 
-        componentWillMount: function () {
-            GEPPETTO.ForegroundControls = this;
-        },
+                return this;
+            },
 
-        refresh: function(){
-            this.forceUpdate();
-        },
-
-        render: function () {
-            var spotlightBtn = GEPPETTO.Spotlight != undefined ? React.createFactory(SpotlightButton)({}) : '';
-            var controlPanelBtn = GEPPETTO.ControlPanel != undefined ? React.createFactory(ControlPanelButton)({}) : '';
-
-            return <div className={'foreground-controls'}>
-                {controlPanelBtn}
-                <br/>
-                {spotlightBtn}
-            </div>
-        }
-    });
-
-    ReactDOM.render(
-        React.createFactory(ForegroundControls)({}, ''),
-        document.getElementById('foreground-toolbar')
-    );
-
+        });
 });

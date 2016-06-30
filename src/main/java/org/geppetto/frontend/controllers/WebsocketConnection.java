@@ -194,6 +194,16 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.newExperiment(requestID, projectId);
 				break;
 			}
+			case CLONE_EXPERIMENT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				connectionHandler.cloneExperiment(requestID, projectId,experimentId);
+				break;
+			}
 			case LOAD_PROJECT_FROM_URL:
 			{
 				connectionHandler.loadProjectFromURL(requestID, gmsg.data);

@@ -78,7 +78,8 @@ public enum OutboundMessages {
 	MODEL_UPLOADED("model_uploaded"),
 	DOWNLOAD_RESULTS("download_results"),
 	UPDATE_MODEL_TREE("update_model_tree"), 
-	EXPERIMENT_CREATED("experiment_created"), 
+	EXPERIMENT_CREATED("experiment_created"),
+	EXPERIMENT_CLONED("experiment_cloned"),
 	GEPPETTO_MODEL_LOADED("geppetto_model_loaded"), 
 	VARIABLE_FETCHED("variable_fetched"),
 	IMPORT_TYPE_RESOLVED("import_type_resolved");

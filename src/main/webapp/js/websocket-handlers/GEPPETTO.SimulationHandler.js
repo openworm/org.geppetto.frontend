@@ -46,6 +46,7 @@ define(function (require) {
             MODEL_LOADED: "geppetto_model_loaded",
             PROJECT_PROPS_SAVED: "project_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
+            EXPERIMENT_CLONED: "experiment_cloned",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
             VARIABLE_FETCHED: "variable_fetched",
@@ -86,7 +87,6 @@ define(function (require) {
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function (payload) {
             var newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
         };
-
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function (payload) {
             GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
         };
@@ -520,6 +520,7 @@ define(function (require) {
                 var newExperiment = GEPPETTO.ProjectFactory.createExperimentNode(experiment);
                 window.Project.getExperiments().push(newExperiment);
                 newExperiment.setParent(window.Project);
+                newExperiment.setActive();
                 GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
                 
                 GEPPETTO.trigger(Events.Experiment_created, newExperiment);

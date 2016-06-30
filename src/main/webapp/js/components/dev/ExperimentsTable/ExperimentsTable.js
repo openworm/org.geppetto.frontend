@@ -275,6 +275,7 @@ define(function (require) {
             var downloadResultsIconId = "#downloadResultsIcon-" + experiment.getId();
             var downloadModelsIconId = "#downloadModelsIcon-" + experiment.getId();
             var deleteIconId = "#deleteIcon-" + experiment.getId();
+            var cloneIconId = "#cloneIcon-" + experiment.getId();
 
             $(activeIconId).click(function (e) {
                 var index = window.Project.getExperiments().indexOf(experiment);
@@ -287,6 +288,11 @@ define(function (require) {
                 var index = window.Project.getExperiments().indexOf(experiment);
                 GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
                 e.stopPropagation();
+            });
+            
+            $(cloneIconId).click(function (e) {
+            	GEPPETTO.Console.executeCommand("Project.cloneExperiment('" + experiment.getId() + "');");
+            	 e.stopPropagation();
             });
 
             $(downloadModelsIconId).click(function (e) {
@@ -315,6 +321,7 @@ define(function (require) {
             var deleteIconId = "deleteIcon-" + this.props.experiment.getId();
             var downloadResultsIconId = "downloadResultsIcon-" + this.props.experiment.getId();
             var downloadModelsIconId = "downloadModelsIcon-" + this.props.experiment.getId();
+            var cloneIconId = "cloneIcon-" + this.props.experiment.getId();
 
             return (
                 <div onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
@@ -326,14 +333,15 @@ define(function (require) {
                        experimentId={this.props.experiment.getId()} id={deleteIconId}>
                         <i className='fa fa-remove fa-lg' rel='tooltip' title='Delete Experiment'></i>
                     </a>
-                    <a className='downloadResultsIcon' onClick={this.downloadResultsIconClick}
-                       experimentId={this.props.experiment.getId()} id={downloadResultsIconId}>
+                    <a className='downloadResultsIcon' experimentId={this.props.experiment.getId()} id={downloadResultsIconId}>
                         <i className='fa fa-download fa-lg' rel='tooltip' title='Download Results'></i>
                     </a>
-                    <a className='downloadModelsIcon' onClick={this.downloadModelIconClick}
-                       experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
+                    <a className='downloadModelsIcon' experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
                         <i className='fa fa-cloud-download fa-lg' rel='tooltip' title='Download Models'></i>
                     </a>
+                    <a className='cloneIcon' experimentId={this.props.experiment.getId()} id={cloneIconId}>
+                     <i className='fa fa-plus fa-lg' rel='tooltip' title='Icon Experiment'></i>
+                 </a>
                 </div>);
         }
     });
@@ -348,7 +356,15 @@ define(function (require) {
 
             // Handles new experiment button click
             $("#new_experiment").click(function () {
-                GEPPETTO.Console.executeCommand("Project.newExperiment();");
+            	//retrieve last created experimet and used it to clone new one
+            	var id =window.Project.getActiveExperiment().getId();
+            	var experiments = window.Project.getExperiments();
+            	for(var e in experiments){
+            		if(experiments[e].getId()>id){
+            			id = experiments[e].getId();
+            		}
+            	}
+            	GEPPETTO.Console.executeCommand("Project.cloneExperiment('" + id + "');");
             });
 
             GEPPETTO.on(Events.Project_loaded, function () {

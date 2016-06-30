@@ -184,6 +184,19 @@ define(['jquery', 'underscore', 'backbone',
             parameters["projectId"] = this.id;
             GEPPETTO.MessageSocket.send("new_experiment", parameters);
         },
+        
+        /**
+         * Clones and experiment
+         *
+         * @command ProjectNode.newExperiment()
+         * @returns {ExperimentNode} Creates a new ExperimentNode
+         */
+        cloneExperiment: function (expId) {
+            var parameters = {};
+            parameters["projectId"] = this.id;
+            parameters["experimentId"] = expId;
+            GEPPETTO.MessageSocket.send("clone_experiment", parameters);
+        },
 
         /**
          * Loads a project from content.

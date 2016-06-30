@@ -337,7 +337,33 @@ define(function (require) {
 
         },
 
-
+        addDataSource : function(sources){
+        	try {
+        		for (var key in sources) {
+        			  if (sources.hasOwnProperty(key)) {
+        			    var obj = sources[key];
+        			    this.configuration.SpotlightBar.DataSources[key] = obj;
+        			    GEPPETTO.Console.executeCommand("G.getDataSourceResults('" + key + "','" +obj.type.url + "')");
+        			  }
+        		}
+        	}
+        	catch (err) {
+        		return "Error parsing data sources " + err;
+        	}
+        },
+        
+        updateDataSourceResults : function(data_source_name,results){
+        	var responses = results.response.docs;
+        	for(var key in responses){
+        		var response = responses[key];
+        		var obj = {};
+        		obj["label"] = response.label;
+        		obj["actions"] = this.configuration.SpotlightBar.DataSources[data_source_name].type.actions;
+        		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type.icon;
+        		this.addSuggestion(obj);
+        	}
+        },
+        
         addSuggestion: function (suggestion, flow) {
             if (flow == undefined) {
                 flow = GEPPETTO.Resources.SEARCH_FLOW;
@@ -578,6 +604,9 @@ define(function (require) {
 
         configuration: {
             "SpotlightBar": {
+            	"DataSources" : {
+            		
+            	},
                 "CompositeType": {
                     "type": {
                         "actions": [

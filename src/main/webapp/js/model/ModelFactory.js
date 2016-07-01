@@ -1567,7 +1567,7 @@ define(function (require) {
                 }
 
                 var nested = this.getNestingLevel(path);
-                if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && nested > 4) {
+                if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && nested > 2) {
                     return false;
                 }
 

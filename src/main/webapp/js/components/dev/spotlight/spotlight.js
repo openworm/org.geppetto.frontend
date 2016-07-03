@@ -200,8 +200,6 @@ define(function (require) {
             "icon": "fa-lightbulb-o"
         },
 
-
-
         confirmed: function (item) {
             //check suggestions
 
@@ -214,7 +212,7 @@ define(function (require) {
                         suggestionFound = true;
                         var actions = found[0].actions;
                         actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommandinst(action)
+                            GEPPETTO.Console.executeCommand(action)
                         });
                         $("#typeahead").typeahead('val', "");
                     }
@@ -337,13 +335,17 @@ define(function (require) {
 
         },
 
+        /**
+         * Requests external data sources. 
+         */
         addDataSource : function(sources){
         	try {
         		for (var key in sources) {
         			  if (sources.hasOwnProperty(key)) {
         			    var obj = sources[key];
+        			    var key = this.generateDataSourceKey(key, 0);
         			    this.configuration.SpotlightBar.DataSources[key] = obj;
-        			    GEPPETTO.Console.executeCommand("G.getDataSourceResults('" + key + "','" +obj.type.url + "')");
+        			    this.getDataSourceResults(key, obj.type.url, JSON.parse(obj.type.crossDomain));
         			  }
         		}
         	}
@@ -352,12 +354,57 @@ define(function (require) {
         	}
         },
         
+        /**
+         * Figure out if data source of same name is already in there. If it is, 
+         * create a new key for it.
+         */
+        generateDataSourceKey : function(key, index){
+        	var dataSource = this.configuration.SpotlightBar.DataSources[key]
+		    if(dataSource!=null || dataSource !=undefined){
+		    	key = key.concat(index);
+		    	this.generateDataSourceKey(key, index++);
+		    }
+        	
+        	return key;
+        },
+        
+        /**
+         * Request data source for results
+         */
+        getDataSourceResults : function(data_source_name, data_source_url, crossDomain){
+        	//not cross domain, get results via java servlet code
+        	if(!crossDomain){
+        		var parameters = {};
+        		parameters["data_source_name"] = data_source_name;
+        		parameters["url"] = data_source_url;
+        		GEPPETTO.MessageSocket.send("get_data_source_results", parameters);
+        	}else{
+        		//cross domain, do ajax query for results
+        		$.ajax({
+        			type: 'GET',
+        			dataType: 'text',
+        			url: data_source_url,
+        			success: function (responseData, textStatus, jqXHR) {
+        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name,JSON.parse(responseData));
+        			},
+        			error: function (responseData, textStatus, errorThrown) {
+        				alert(textStatus);
+        			}
+        		});
+        	}
+
+        	return GEPPETTO.Resources.RUNNING_SCRIPT;
+        },
+        
+        /**
+         * Update the suggestions with results that come back
+         */
         updateDataSourceResults : function(data_source_name,results){
         	var responses = results.response.docs;
         	for(var key in responses){
         		var response = responses[key];
         		var obj = {};
-        		obj["label"] = response.label;
+        		obj["label"] = response[this.configuration.SpotlightBar.DataSources[data_source_name].type.label];
         		obj["actions"] = this.configuration.SpotlightBar.DataSources[data_source_name].type.actions;
         		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type.icon;
         		this.addSuggestion(obj);

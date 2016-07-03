@@ -220,21 +220,6 @@ define(function (require) {
 
                 return GEPPETTO.Resources.RUNNING_SCRIPT;
             },
-
-            /**
-             * Takes the URL corresponding to a data source, executes
-             * commands inside the script.
-             *
-             * @param {URL} scriptURL - URL of script to execute
-             */
-            getDataSourceResults: function (sourceName, scriptURL) {
-            	var parameters = {};
-            	parameters["data_source_name"] = sourceName;
-            	parameters["url"] = scriptURL;
-            	GEPPETTO.MessageSocket.send("get_data_source_results", parameters);
-
-            	return GEPPETTO.Resources.RUNNING_SCRIPT;
-            },
             
             /**
              * Show or hide console using command

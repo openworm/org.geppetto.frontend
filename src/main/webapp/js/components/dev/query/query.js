@@ -47,6 +47,82 @@ define(function (require) {
     var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
 
+    // TODO: remove this mock data - it's just for development
+    var mockSourceData = [
+        {
+            term: 'saddle',
+            options: [
+                'Neurons with some part here',
+                'Neurons with synaptic terminal here',
+                'Neurons with pre-synaptic terminal here',
+                'Neurons with post-synaptic terminal here',
+                'Images of neurons with some part here (clustered by shape)',
+                'Images of neurons with some part here (unclustered',
+                'Tracts/nerves innervating saddle',
+                'Lineage clones with some part here',
+                'Transgenes exporessed here',
+                'Genes expressed here',
+                'Phenotypes here'
+            ]
+        },
+        {
+            term: 'medulla',
+            options: [
+                'Neurons with some part here',
+                'Neurons with synaptic terminal here',
+                'Neurons with pre-synaptic terminal here',
+                'Neurons with post-synaptic terminal here',
+                'Images of neurons with some part here (clustered by shape)',
+                'Images of neurons with some part here (unclustered',
+                'Tracts/nerves innervating medulla',
+                'Lineage clones with some part here',
+                'Transgenes exporessed here',
+                'Genes expressed here',
+                'Phenotypes here'
+            ]
+        },
+        {
+            term: 'betulla',
+            options: [
+                'Neurons with some part here',
+                'Neurons with synaptic terminal here',
+                'Neurons with pre-synaptic terminal here',
+                'Neurons with post-synaptic terminal here',
+                'Images of neurons with some part here (clustered by shape)',
+                'Images of neurons with some part here (unclustered',
+                'Tracts/nerves innervating betulla',
+                'Lineage clones with some part here',
+                'Transgenes exporessed here',
+                'Genes expressed here',
+                'Phenotypes here'
+            ]
+        }
+    ];
+
+    var QueryFooter = React.createClass({
+        displayName: 'QueryFooter',
+
+        getDefaultProps: function () {
+            return {
+                "count": 0
+            };
+        },
+
+        render: function () {
+            var runQuery = function(){
+                // TODO: implement runQuery
+                alert('Run Query: implement me!');
+            };
+
+            return (
+                <div id="querybuilder-footer">
+                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={runQuery}></button>
+                    <div>{this.props.count.toString()} results</div>
+                </div>
+            );
+        }
+    });
+
     var QueryBuilder = React.createClass({
         displayName: 'QueryBuilder',
 
@@ -106,7 +182,12 @@ define(function (require) {
         },
 
         render: function () {
-            return <div>QUERY BUILDER PLACEHOLDER</div>;
+            return (
+                <div>
+                    <div>BUILDER PLACEHOLDER</div>
+                    <QueryFooter count={0}></QueryFooter>
+                </div>
+            );
         }
     });
 

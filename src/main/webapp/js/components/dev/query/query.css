@@ -6,3 +6,13 @@
     height: 100%;
     width: 100%;
 }
+
+.querybuilder-button {
+    height: 50px;
+    width: 66px;
+    margin: 0px;
+    background: none !important;
+    color: #fd6808;
+    font-size: 45px !important;
+    border: 0 !important;
+}

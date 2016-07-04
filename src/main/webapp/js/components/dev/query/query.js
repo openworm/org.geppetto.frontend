@@ -99,6 +99,10 @@ define(function (require) {
                     that.close();
                 }
             });
+
+            if(GEPPETTO.ForegroundControls != undefined){
+                GEPPETTO.ForegroundControls.refresh();
+            }
         },
 
         render: function () {

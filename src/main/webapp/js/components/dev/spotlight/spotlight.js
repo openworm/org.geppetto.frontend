@@ -345,7 +345,7 @@ define(function (require) {
         			    var obj = sources[key];
         			    var key = this.generateDataSourceKey(key, 0);
         			    this.configuration.SpotlightBar.DataSources[key] = obj;
-        			    this.getDataSourceResults(key, obj.type.url, JSON.parse(obj.type.crossDomain));
+        			    this.getDataSourceResults(key, obj.url, JSON.parse(obj.crossDomain));
         			  }
         		}
         	}
@@ -388,7 +388,6 @@ define(function (require) {
         				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name,JSON.parse(responseData));
         			},
         			error: function (responseData, textStatus, errorThrown) {
-        				alert(textStatus);
         			}
         		});
         	}
@@ -403,10 +402,11 @@ define(function (require) {
         	var responses = results.response.docs;
         	for(var key in responses){
         		var response = responses[key];
+        		var typeName = response.type;
         		var obj = {};
-        		obj["label"] = response[this.configuration.SpotlightBar.DataSources[data_source_name].type.label];
-        		obj["actions"] = this.configuration.SpotlightBar.DataSources[data_source_name].type.actions;
-        		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type.icon;
+        		obj["label"] = response[this.configuration.SpotlightBar.DataSources[data_source_name].label];
+        		obj["actions"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+        		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
         		this.addSuggestion(obj);
         	}
         },

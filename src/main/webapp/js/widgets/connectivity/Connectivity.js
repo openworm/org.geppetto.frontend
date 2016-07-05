@@ -154,6 +154,20 @@ define(function (require) {
             this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
         },
 
+        configViaGUI : function() {
+            var formOptions = G.addWidget(8);
+            formOptions.generateForm(this.guiOptions, 'Execute');
+//        	formWidget.setData({'experimentName': Project.getActiveExperiment().getName(),timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),lenght: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),simulator:Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator(), numberProcessors: 1});
+            function onSubmit (event) {
+                event.preventDefault();
+                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
+                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
+                G.addWidget(6).setData(netInstances[0]);
+                formOptions.destroy();
+            }
+            var innerForm = formOptions.getForm();
+            innerForm.on('submit', onSubmit);
+        },
 
         //TODO: move graph utils to module, maybe consider jsnetworkx?
         // this is very rough, we should think about directionality and weights...

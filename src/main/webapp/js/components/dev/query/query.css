@@ -1,11 +1,4 @@
-#querybuilder {
-    position: absolute !important;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: none;
-    z-index: 99;
-    height: 100%;
-    width: 100%;
-}
+/*Classes*/
 
 .querybuilder-button {
     height: 50px;
@@ -15,4 +8,132 @@
     color: #fd6808;
     font-size: 45px !important;
     border: 0 !important;
+}
+
+/*IDs*/
+
+#querybuilder {
+    position: absolute !important;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    z-index: 99;
+    height: 100%;
+    width: 100%;
+}
+
+#query-builder-container {
+    position: absolute !important;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 600px;
+    top: 30%;
+}
+
+#add-query-btn {
+    float: left;
+}
+
+#query-typeahead {
+    float: right;
+    width: 500px;
+    height: 40px;
+}
+
+#querybuilder-footer {
+    clear: both;
+    position: absolute !important;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 80px;
+    left: 0;
+    right: 0;
+    width: 80px;
+}
+
+#query-results-label {
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    color: #fd6808;
+}
+
+/*Search box*/
+
+#querybuilder .typeahead,
+#querybuilder .tt-query,
+#querybuilder .tt-hint {
+    width: 500px !important;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    font-size: 22px !important;
+    line-height: 30px !important;
+    border: 2px solid #fd6808 !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    outline: none;
+    float: right;
+}
+
+#querybuilder .twitter-typeahead {
+    float: right;
+}
+
+#querybuilder .typeahead {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+#querybuilder .typeahead:focus {
+    border: 2px solid #fd6808;
+}
+
+#querybuilder .tt-query {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+#querybuilder .tt-hint {
+    color: #999
+}
+
+#querybuilder .tt-menu {
+    width: 500px;
+    margin: 12px 0;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+#querybuilder .tt-suggestion {
+    padding: 3px 20px;
+    font-size: 13px;
+    line-height: 24px;
+}
+
+#querybuilder .tt-suggestion:hover {
+    cursor: pointer;
+    color: #fff;
+    background-color: #aaaaaa;
+}
+
+#querybuilder .tt-suggestion.tt-cursor {
+    color: #fff;
+    background-color: #aaaaaa;
+
+}
+
+#querybuilder .tt-suggestion p {
+    margin: 0;
 }

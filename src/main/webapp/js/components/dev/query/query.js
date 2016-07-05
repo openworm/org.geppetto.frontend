@@ -45,9 +45,19 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
+    var typeahead = require('typeahead');
+    var bh = require('bloodhound');
     var GEPPETTO = require('geppetto');
 
     // TODO: remove this mock data - it's just for development
+    var mockTermsData = ['saddle', 'medulla', 'betulla', 'test'];
+
+    var mockTerms = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            local: mockTermsData
+        });
+
     var mockSourceData = [
         {
             term: 'saddle',
@@ -96,6 +106,22 @@ define(function (require) {
                 'Genes expressed here',
                 'Phenotypes here'
             ]
+        },
+        {
+            term: 'test',
+            options: [
+                'Neurons with some part here',
+                'Neurons with synaptic terminal here',
+                'Neurons with pre-synaptic terminal here',
+                'Neurons with post-synaptic terminal here',
+                'Images of neurons with some part here (clustered by shape)',
+                'Images of neurons with some part here (unclustered',
+                'Tracts/nerves innervating test',
+                'Lineage clones with some part here',
+                'Transgenes exporessed here',
+                'Genes expressed here',
+                'Phenotypes here'
+            ]
         }
     ];
 
@@ -117,7 +143,7 @@ define(function (require) {
             return (
                 <div id="querybuilder-footer">
                     <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={runQuery}></button>
-                    <div>{this.props.count.toString()} results</div>
+                    <div id="query-results-label">{this.props.count.toString()} results</div>
                 </div>
             );
         }
@@ -149,6 +175,19 @@ define(function (require) {
             $("#querybuilder").hide();
         },
 
+        initTypeahead: function () {
+            $('#query-typeahead').typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 1
+                },
+                {
+                    name: 'terms',
+                    source: mockTerms
+                }
+            );
+        },
+
         componentDidMount: function () {
 
             var escape = 27;
@@ -176,15 +215,27 @@ define(function (require) {
                 }
             });
 
+            this.initTypeahead();
+
             if(GEPPETTO.ForegroundControls != undefined){
                 GEPPETTO.ForegroundControls.refresh();
             }
         },
 
         render: function () {
+
+            var addQuery = function(){
+                // TODO: implement add query
+                alert('Add query: Implement me!');
+            };
+
             return (
-                <div>
-                    <div>BUILDER PLACEHOLDER</div>
+                <div id="query-builder-container">
+                    <div id="query-builder-items-container">BUILDER PLACEHOLDER</div>
+                    <div id="add-new-query-container">
+                        <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={addQuery}></button>
+                        <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
+                    </div>
                     <QueryFooter count={0}></QueryFooter>
                 </div>
             );

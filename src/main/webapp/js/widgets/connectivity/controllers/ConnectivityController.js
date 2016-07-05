@@ -58,13 +58,19 @@ define(function (require) {
             var formOptions = G.addWidget(8);
             formOptions.generateForm(Connectivity.prototype.guiOptions, 'Execute');
 //        	formWidget.setData({'experimentName': Project.getActiveExperiment().getName(),timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),lenght: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),simulator:Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator(), numberProcessors: 1});
-
+            function onSubmit (event) {
+                event.preventDefault();
+                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
+                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
+                G.addWidget(6).setData(netInstances[0]);
+                formOptions.destroy();
+            }
             var innerForm = formOptions.getForm();
-            innerForm.on('submit', function(event) {event.preventDefault();console.log('TakaSubmit');G.addWidget(8); formWidget.destroy();});
+            innerForm.on('submit', onSubmit);
         },
 
         /**
-         * Adds a new TreeVisualizer3D Widget to Geppetto
+         * Adds a new Connectivity Widget to Geppetto
          */
         addConnectivityWidget: function () {
             //look for a name and id for the new widget

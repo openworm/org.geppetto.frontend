@@ -49,6 +49,60 @@ define(function (require) {
     var bh = require('bloodhound');
     var GEPPETTO = require('geppetto');
 
+    // query model object to represent component state and trigger view updates
+    var queryBuilderModel = {
+        onChangeHandlers: [],
+
+        subscribe: function (callback) {
+            this.onChangeHandlers.push(callback);
+        },
+
+        notifyChange: function () {
+            this.onChangeHandlers.forEach(function (cb) {
+                cb();
+            });
+        },
+
+        selectionChanged: function (item, selection) {
+            for (var i = 0; i < this.items.length; i++) {
+                if (item.term == this.items[i].term) {
+                    this.items[i].selection = selection;
+                }
+            }
+
+            this.notifyChange();
+        },
+
+        delete: function (item) {
+            for (var i = 0; i < this.items.length; i++) {
+                if (item.term == this.items[i].term) {
+                    this.items.splice(i, 1);
+                }
+            }
+
+            this.notifyChange();
+        },
+
+        items: [{
+            id: "medulla",
+            term: "medulla",
+            options: [
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating medulla', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
+            ],
+            selection: -1
+        }]
+    };
+
     // TODO: remove this mock data - it's just for development
     var mockTermsData = ['saddle', 'medulla', 'betulla', 'test'];
 
@@ -125,24 +179,63 @@ define(function (require) {
         }
     ];
 
+    var QueryItem = React.createClass({
+        displayName: 'QueryItem',
+
+        getDefaultProps: function () {
+            return {
+                "item": null,
+                "options": [],
+                onSelectOption: undefined,
+                onDeleteItem: undefined,
+            };
+        },
+
+        getInitialState: function () {
+            return {
+                value: ''
+            };
+        },
+
+        render: function () {
+            var createItem = function (item, key) {
+                return <option key={key} value={item.value}>{item.name}</option>;
+            };
+
+            var onSelection = function(e){
+                var val = e.target.value;
+                this.props.onSelectOption(this.props.item, val);
+            };
+
+            var containerId = "queryitem-" + this.props.item.id;
+
+            return (
+                <div id={containerId}>
+                    <div id="query-results-label">{this.props.item.term}</div>
+                    <select onChange={onSelection} value={this.state.value}>
+                        {this.props.item.options.map(createItem)}
+                    </select>
+                    <button className="fa fa-bin queryitem-button" title="delete item" onClick={this.props.onDeleteItem}></button>
+                </div>
+            );
+        }
+    });
+
     var QueryFooter = React.createClass({
         displayName: 'QueryFooter',
 
         getDefaultProps: function () {
             return {
-                "count": 0
+                "count": 0,
+                "onRun": undefined
             };
         },
 
         render: function () {
-            var runQuery = function(){
-                // TODO: implement runQuery
-                alert('Run Query: implement me!');
-            };
-
             return (
                 <div id="querybuilder-footer">
-                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={runQuery}></button>
+                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={this.props.onRun}></button>
+                    <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                     <div id="query-results-label">{this.props.count.toString()} results</div>
                 </div>
             );
@@ -157,13 +250,14 @@ define(function (require) {
         ],
 
         getInitialState: function () {
-            // TODO
+            // TODO IF ANY
             return { };
         },
 
         getDefaultProps: function () {
-            // TODO
-            return { };
+            return {
+                model: null
+            };
         },
 
         componentWillMount: function () {
@@ -222,6 +316,25 @@ define(function (require) {
             }
         },
 
+        queryOptionSelected: function(item){
+            // Option has been selected
+            this.props.model.selectionChanged(item);
+        },
+
+        queryItemDeleted: function(item){
+            this.props.model.delete(item);
+        },
+
+        getTotalResultsCount: function(){
+            // TODO: build + run the query and get results count
+            return 0;
+        },
+
+        runQuery: function(){
+            // TODO: run query, change state to switch to results view
+            alert('Run query: implement me!');
+        },
+
         render: function () {
 
             var addQuery = function(){
@@ -229,22 +342,42 @@ define(function (require) {
                 alert('Add query: Implement me!');
             };
 
+            // TODO: build QueryItem list
+            var queryItems = this.props.model.items.map(function (item) {
+                return (
+                    <QueryItem
+                        key={item.id}
+                        item={item}
+                        onSelectOption={this.queryOptionSelected.bind(this, item)}
+                        onDeleteItem={this.queryItemDeleted.bind(this, item)}
+                    />
+                );
+            }, this);
+
+            var resultsCount = this.getTotalResultsCount();
+
             return (
                 <div id="query-builder-container">
-                    <div id="query-builder-items-container">BUILDER PLACEHOLDER</div>
+                    <div id="query-builder-items-container">
+                        {queryItems}
+                    </div>
                     <div id="add-new-query-container">
                         <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={addQuery}></button>
                         <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                     </div>
-                    <QueryFooter count={0}></QueryFooter>
+                    <QueryFooter count={resultsCount} onRun={this.runQuery.bind(this)}></QueryFooter>
                 </div>
             );
         }
     });
 
-    ReactDOM.render(
-        <QueryBuilder></QueryBuilder>,
-        document.getElementById("querybuilder")
-    );
+    var renderQueryComponent = function(){
+        ReactDOM.render(
+            <QueryBuilder model={queryBuilderModel}></QueryBuilder>,
+            document.getElementById("querybuilder")
+        );
+    };
 
+    queryBuilderModel.subscribe(renderQueryComponent);
+    renderQueryComponent();
 });

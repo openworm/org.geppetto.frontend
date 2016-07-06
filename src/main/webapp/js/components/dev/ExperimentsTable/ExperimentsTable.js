@@ -268,52 +268,54 @@ define(function (require) {
             this.setState({visible: false});
         },
 
-        componentDidMount: function () {
-            var experiment = this.props.experiment;
-
-            var activeIconId = "#activeIcon-" + experiment.getId();
-            var downloadResultsIconId = "#downloadResultsIcon-" + experiment.getId();
-            var downloadModelsIconId = "#downloadModelsIcon-" + experiment.getId();
-            var deleteIconId = "#deleteIcon-" + experiment.getId();
-            var cloneIconId = "#cloneIcon-" + experiment.getId();
-
-            $(activeIconId).click(function (e) {
-                var index = window.Project.getExperiments().indexOf(experiment);
-                GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
-                GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
-                e.stopPropagation();
-            });
-
-            $(deleteIconId).click(function (e) {
-                var index = window.Project.getExperiments().indexOf(experiment);
-                GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
-                e.stopPropagation();
-            });
-            
-            $(cloneIconId).click(function (e) {
-            	GEPPETTO.Console.executeCommand("Project.cloneExperiment('" + experiment.getId() + "');");
-            	 e.stopPropagation();
-            });
-
-            $(downloadModelsIconId).click(function (e) {
-                var simulatorConfigurations = experiment.simulatorConfigurations;
-                for (var config in simulatorConfigurations) {
-                    var simulatorConfig = simulatorConfigurations[config];
-                    GEPPETTO.Console.executeCommand('Project.downloadModel("' + simulatorConfig["aspectInstancePath"] + '");');
-                }
-                e.stopPropagation();
-            });
-
-            $(downloadResultsIconId).click(function (e) {
-                var index = window.Project.getExperiments().indexOf(experiment);
-                var simulatorConfigurations = experiment.simulatorConfigurations;
-                for (var config in simulatorConfigurations) {
-                    var simulatorConfig = simulatorConfigurations[config];
-                    GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].downloadResults('" + simulatorConfig["aspectInstancePath"] + "'," + "'RAW');");
-                }
-                e.stopPropagation();
-            });
+        activeExperiment : function(e){
+        	var experiment = this.props.experiment;
+        	var index = window.Project.getExperiments().indexOf(experiment);
+            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+            GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
         },
+        
+        deleteExperiment : function(e){
+        	var experiment = this.props.experiment;
+        	var index = window.Project.getExperiments().indexOf(experiment);
+            GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
+        },
+        
+        cloneExperiment : function(e){
+        	var experiment = this.props.experiment;
+        	var index = window.Project.getExperiments().indexOf(experiment);
+        	GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].clone();");
+       	 	e.stopPropagation();
+       	 	e.nativeEvent.stopImmediatePropagation();
+        },
+        downloadModels : function(e){
+        	var experiment = this.props.experiment;
+
+        	var simulatorConfigurations = experiment.simulatorConfigurations;
+        	for (var config in simulatorConfigurations) {
+        		var simulatorConfig = simulatorConfigurations[config];
+        		GEPPETTO.Console.executeCommand('Project.downloadModel("' + simulatorConfig["aspectInstancePath"] + '");');
+        	}
+        	e.stopPropagation();
+        	e.nativeEvent.stopImmediatePropagation();
+        },
+        
+        downloadResults : function(e){
+        	var experiment = this.props.experiment;
+        	var index = window.Project.getExperiments().indexOf(experiment);
+            var simulatorConfigurations = experiment.simulatorConfigurations;
+            for (var config in simulatorConfigurations) {
+                var simulatorConfig = simulatorConfigurations[config];
+                GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].downloadResults('" + simulatorConfig["aspectInstancePath"] + "'," + "'RAW');");
+            }
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
+        },
+
         render: function () {
             var experiment = this.props.experiment;
             //Create IDs for icons
@@ -325,21 +327,21 @@ define(function (require) {
 
             return (
                 <div onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
-                    <a className='activeIcon' onClick={this.activeIconClick}
+                    <a className='activeIcon' onClick={this.activeExperiment}
                        experimentId={this.props.experiment.getId()} id={activeIconId}>
                         <i className='fa fa-check-circle fa-lg' rel='tooltip' title='Active Icon'></i>
                     </a>
-                    <a className='deleteIcon' onClick={this.deleteIconClick}
+                    <a className='deleteIcon' onClick={this.deleteExperiment}
                        experimentId={this.props.experiment.getId()} id={deleteIconId}>
                         <i className='fa fa-remove fa-lg' rel='tooltip' title='Delete Experiment'></i>
                     </a>
-                    <a className='downloadResultsIcon' experimentId={this.props.experiment.getId()} id={downloadResultsIconId}>
+                    <a className='downloadResultsIcon' onClick={this.downloadResults} experimentId={this.props.experiment.getId()} id={downloadResultsIconId}>
                         <i className='fa fa-download fa-lg' rel='tooltip' title='Download Results'></i>
                     </a>
-                    <a className='downloadModelsIcon' experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
+                    <a className='downloadModelsIcon' onClick={this.downloadModels} experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
                         <i className='fa fa-cloud-download fa-lg' rel='tooltip' title='Download Models'></i>
                     </a>
-                    <a className='cloneIcon' experimentId={this.props.experiment.getId()} id={cloneIconId}>
+                    <a className='cloneIcon' onClick={this.cloneExperiment} experimentId={this.props.experiment.getId()} id={cloneIconId}>
                      <i className='fa fa-plus fa-lg' rel='tooltip' title='Icon Experiment'></i>
                  </a>
                 </div>);
@@ -357,14 +359,15 @@ define(function (require) {
             // Handles new experiment button click
             $("#new_experiment").click(function () {
             	//retrieve last created experimet and used it to clone new one
-            	var id =window.Project.getActiveExperiment().getId();
             	var experiments = window.Project.getExperiments();
+            	var experiment = window.Project.getActiveExperiment();
             	for(var e in experiments){
-            		if(experiments[e].getId()>id){
-            			id = experiments[e].getId();
+            		if(experiments[e].getId()>experiment.getId()){
+            			experiment = experiments[e];
             		}
             	}
-            	GEPPETTO.Console.executeCommand("Project.cloneExperiment('" + id + "');");
+            	var index = window.Project.getExperiments().indexOf(experiment);
+            	GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].clone();");
             });
 
             GEPPETTO.on(Events.Project_loaded, function () {

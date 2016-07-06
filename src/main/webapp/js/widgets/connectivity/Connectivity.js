@@ -66,15 +66,6 @@ define(function (require) {
             }
         },
 
-        guiOptions: {
-             height: { type: 'Number', validators: [{
-                  type: 'range',
-                  min: 10,
-                  max: 50,
-                  message: 'A number between 10 and 50'
-                }] },
-             layout: { type: 'Button', options: {matrix:{icon:'gpt-make-group',label:'this is a matrix',tooltip:''}, force:{icon:'gpt-geneontology',label:'this is a force',tooltip:''}, hive:{icon:'gpt-fly',label:'this is a hive',tooltip:''}, chord:{icon:'gpt-osb',label:'this is a chord',tooltip:''}} }
-        },
 
         initialize: function (options) {
             this.options = options;
@@ -155,17 +146,25 @@ define(function (require) {
         },
 
         configViaGUI : function() {
-            var formOptions = G.addWidget(8);
-            formOptions.generateForm(this.guiOptions, 'Execute');
-//        	formWidget.setData({'experimentName': Project.getActiveExperiment().getName(),timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),lenght: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),simulator:Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator(), numberProcessors: 1});
+            var guiContents = {
+                //height: { type: 'Number', validators: [{ type: 'range', min: 10, max: 50, message: 'A number between 10 and 50' }] },
+                layout: { type: 'Button', options: {
+                    matrix: { icon:'gpt-make-group', label:'this is a matrix', tooltip:''},
+                    force: { icon:'gpt-geneontology', label:'this is a force', tooltip:''},
+                    hive: { icon:'gpt-fly', label:'this is a hive', tooltip:''},
+                    chord:{icon:'gpt-osb',label:'this is a chord', tooltip:''}}
+                }
+            };
+            var formWidget = G.addWidget(8);
+            formWidget.generateForm(guiContents, 'Execute');
+            var innerForm = formWidget.getForm();
             function onSubmit (event) {
                 event.preventDefault();
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
                 G.addWidget(6).setData(netInstances[0]);
-                formOptions.destroy();
+                formWidget.destroy();
             }
-            var innerForm = formOptions.getForm();
             innerForm.on('submit', onSubmit);
         },
 

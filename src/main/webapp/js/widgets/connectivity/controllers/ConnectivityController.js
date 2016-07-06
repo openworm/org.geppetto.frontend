@@ -53,10 +53,10 @@ define(function (require) {
             this.widgets = [];
         },
 
-
         configureConnectivityWidget: function () {
             Connectivity.prototype.configViaGUI();
         },
+
         /**
          * Adds a new Connectivity Widget to Geppetto
          */

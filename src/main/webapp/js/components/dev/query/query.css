@@ -10,6 +10,48 @@
     border: 0 !important;
 }
 
+.query-item-label {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    color: #fd6808;
+    float: left;
+    margin-right: 25px;
+}
+
+.query-item-option {
+    width: 450px !important;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    font-size: 22px !important;
+    line-height: 30px !important;
+    border: 2px solid #fd6808 !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    outline: none;
+    float: left;
+}
+
+.query-item-button {
+    height: 20px;
+    width: 30px;
+    margin: 0px;
+    background: none !important;
+    color: #fd6808;
+    font-size: 35px !important;
+    border: 0 !important;
+    float: right;
+}
+
+.query-item {
+    margin-bottom: 25px;
+}
+
+.clearer {
+    clear: both;
+}
+
 /*IDs*/
 
 #querybuilder {
@@ -41,12 +83,16 @@
     height: 40px;
 }
 
+#add-new-query-container {
+    height: 40px;
+}
+
 #querybuilder-footer {
     clear: both;
     position: absolute !important;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 80px;
+    margin-top: 25px;
     left: 0;
     right: 0;
     width: 80px;

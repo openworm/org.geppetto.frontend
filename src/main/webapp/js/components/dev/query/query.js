@@ -186,14 +186,14 @@ define(function (require) {
             return {
                 "item": null,
                 "options": [],
-                onSelectOption: undefined,
-                onDeleteItem: undefined,
+                "onSelectOption": undefined,
+                "onDeleteItem": undefined,
             };
         },
 
         getInitialState: function () {
             return {
-                value: ''
+                // TODO: add if any
             };
         },
 
@@ -202,20 +202,22 @@ define(function (require) {
                 return <option key={key} value={item.value}>{item.name}</option>;
             };
 
+            var that = this;
             var onSelection = function(e){
                 var val = e.target.value;
-                this.props.onSelectOption(this.props.item, val);
+                that.props.onSelectOption(that.props.item, val);
             };
 
             var containerId = "queryitem-" + this.props.item.id;
 
             return (
-                <div id={containerId}>
-                    <div id="query-results-label">{this.props.item.term}</div>
-                    <select onChange={onSelection} value={this.state.value}>
+                <div id={containerId} className="query-item">
+                    <div className="query-item-label">{this.props.item.term}</div>
+                    <select className="query-item-option" onChange={onSelection} value={this.props.item.value}>
                         {this.props.item.options.map(createItem)}
                     </select>
-                    <button className="fa fa-bin queryitem-button" title="delete item" onClick={this.props.onDeleteItem}></button>
+                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem}></button>
+                    <div className="clearer" />
                 </div>
             );
         }
@@ -235,7 +237,6 @@ define(function (require) {
             return (
                 <div id="querybuilder-footer">
                     <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={this.props.onRun}></button>
-                    <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                     <div id="query-results-label">{this.props.count.toString()} results</div>
                 </div>
             );
@@ -348,8 +349,8 @@ define(function (require) {
                     <QueryItem
                         key={item.id}
                         item={item}
-                        onSelectOption={this.queryOptionSelected.bind(this, item)}
-                        onDeleteItem={this.queryItemDeleted.bind(this, item)}
+                        onSelectOption={this.queryOptionSelected.bind(null, item)}
+                        onDeleteItem={this.queryItemDeleted.bind(null, item)}
                     />
                 );
             }, this);

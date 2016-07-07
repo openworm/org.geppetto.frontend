@@ -482,6 +482,7 @@ define(function (require) {
             // loop through each row of experiments table
             $('#experimentsTable tbody tr').each(function () {
                 var experiments = window.Project.getExperiments();
+                var active = window.Project.getActiveExperiment();
                 for (var e in experiments) {
                     var experiment = experiments[e];
                     if (this.id == ("#" + experiment.getId()) || this.id == (experiment.getId())) {
@@ -492,7 +493,11 @@ define(function (require) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("COMPLETED");
                             tdStatus.attr("title", "COMPLETED");
-                            $("#downloadResultsIcon-" + experiment.getId()).show();
+                            if(active!=null){
+                            	if(active.getId() == experiment.getId()){
+                            		$("#downloadResultsIcon-" + experiment.getId()).show();
+                            	}
+                            }
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("DELETED");

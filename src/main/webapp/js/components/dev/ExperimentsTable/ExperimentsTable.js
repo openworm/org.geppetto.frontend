@@ -203,10 +203,10 @@ define(function (require) {
             return (
                 <tr id={simulatorRowId}>
                     <td></td>
-                    <td name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
-                    <td name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
-                    <td name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
-                    <td name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
+                    <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
+                    <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
+                    <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
+                    <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
                 </tr>
             );
         }

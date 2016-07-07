@@ -104,7 +104,7 @@ define(function (require) {
     };
 
     // TODO: remove this mock data - it's just for development
-    var mockTermsData = ['saddle', 'medulla', 'betulla', 'test'];
+    var mockTermsData = ['saddle', 'medulla', 'betulla', 'test', 'nonna', 'leg', 'arm', 'bug', 'longino'];
 
     var mockTerms = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
@@ -116,65 +116,145 @@ define(function (require) {
         {
             term: 'saddle',
             options: [
-                'Neurons with some part here',
-                'Neurons with synaptic terminal here',
-                'Neurons with pre-synaptic terminal here',
-                'Neurons with post-synaptic terminal here',
-                'Images of neurons with some part here (clustered by shape)',
-                'Images of neurons with some part here (unclustered',
-                'Tracts/nerves innervating saddle',
-                'Lineage clones with some part here',
-                'Transgenes exporessed here',
-                'Genes expressed here',
-                'Phenotypes here'
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating saddle', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
             ]
         },
         {
             term: 'medulla',
             options: [
-                'Neurons with some part here',
-                'Neurons with synaptic terminal here',
-                'Neurons with pre-synaptic terminal here',
-                'Neurons with post-synaptic terminal here',
-                'Images of neurons with some part here (clustered by shape)',
-                'Images of neurons with some part here (unclustered',
-                'Tracts/nerves innervating medulla',
-                'Lineage clones with some part here',
-                'Transgenes exporessed here',
-                'Genes expressed here',
-                'Phenotypes here'
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating medulla', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
             ]
         },
         {
             term: 'betulla',
             options: [
-                'Neurons with some part here',
-                'Neurons with synaptic terminal here',
-                'Neurons with pre-synaptic terminal here',
-                'Neurons with post-synaptic terminal here',
-                'Images of neurons with some part here (clustered by shape)',
-                'Images of neurons with some part here (unclustered',
-                'Tracts/nerves innervating betulla',
-                'Lineage clones with some part here',
-                'Transgenes exporessed here',
-                'Genes expressed here',
-                'Phenotypes here'
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating betulla', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
             ]
         },
         {
             term: 'test',
             options: [
-                'Neurons with some part here',
-                'Neurons with synaptic terminal here',
-                'Neurons with pre-synaptic terminal here',
-                'Neurons with post-synaptic terminal here',
-                'Images of neurons with some part here (clustered by shape)',
-                'Images of neurons with some part here (unclustered',
-                'Tracts/nerves innervating test',
-                'Lineage clones with some part here',
-                'Transgenes exporessed here',
-                'Genes expressed here',
-                'Phenotypes here'
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating test', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
+            ]
+        },
+        {
+            term: 'nonna',
+            options: [
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating nonna', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
+            ]
+        },
+        {
+            term: 'arm',
+            options: [
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating arm', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
+            ]
+        },
+        {
+            term: 'leg',
+            options: [
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating leg', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
+            ]
+        },
+        {
+            term: 'bug',
+            options: [
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating bug', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
+            ],
+        },
+        {
+            term: 'longino',
+            options: [
+                {name: 'Neurons with some part here', value: 0},
+                {name: 'Neurons with synaptic terminal here', value: 1},
+                {name: 'Neurons with pre-synaptic terminal here', value: 2},
+                {name: 'Neurons with post-synaptic terminal here', value: 3},
+                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
+                {name: 'Images of neurons with some part here (unclustered)', value: 5},
+                {name: 'Tracts/nerves innervating longino', value: 6},
+                {name: 'Lineage clones with some part here', value: 7},
+                {name: 'Transgenes exporessed here', value: 8},
+                {name: 'Genes expressed here', value: 9},
+                {name: 'Phenotypes here', value: 10},
             ]
         }
     ];

@@ -44,6 +44,9 @@ define(function (require) {
                     var val = $(this).html();
                     var field = $(this).attr("name");
 
+                    //remove empty spaces
+                    val = val.replace(/&nbsp;/g,'').replace(/<br>/g,'').replace(/<br\/>/g,'').trim();
+
                     var setterStr = "setName";
 
                     if (field == "name") {
@@ -160,7 +163,10 @@ define(function (require) {
             	// get experiment ID for the edited field
                 var val = $(this).html();
                 var field = $(this).attr("name");
-
+                
+                //remove empty spaces
+                val = val.replace(/&nbsp;/g,'').replace(/<br>/g,'').replace(/<br\/>/g,'').trim();
+                
                 var setterStr = "";
 
                 switch (field) {
@@ -316,6 +322,12 @@ define(function (require) {
             e.nativeEvent.stopImmediatePropagation();
         },
 
+        componentDidMount: function () {
+        	//hide download icons 
+        	$(".downloadModelsIcon").hide();
+            $(".downloadResultsIcon").hide();
+        },
+        
         render: function () {
             var experiment = this.props.experiment;
             //Create IDs for icons
@@ -480,6 +492,7 @@ define(function (require) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("COMPLETED");
                             tdStatus.attr("title", "COMPLETED");
+                            $("#downloadResultsIcon-" + experiment.getId()).show();
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("DELETED");

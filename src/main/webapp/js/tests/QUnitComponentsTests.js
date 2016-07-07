@@ -30,8 +30,8 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/** @jsx React.DOM */
 define(function (require) {
-    
     /**
      * Closes socket and clears handlers. Method is called from each test.
      */
@@ -43,19 +43,17 @@ define(function (require) {
         //connect to socket again for next test
         GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
     }
-
     var run = function () {
-    	
-        var reactaddons = require('react-with-addons');
+        var React = require('../vendor/react-with-addons');
         var ReactDOM = require('react-dom');
-        var ReactTestUtils =  reactaddons.addons.TestUtils;
-        var ExperimentsTable = require(['jsx!./../components/dev/ExperimentsTable/ExperimentsTable']);
-        
+        var ReactTestUtils =  React.addons.TestUtils;
+        var ExperimentsTable = require('jsx!./../components/dev/ExperimentsTable/ExperimentsTable');
+       
         QUnit.test("Test Experiments Table", function () {
-            notEqual(ExperimentsTable, null, "ExperimentsTable is available, passed.");
-            var experiments =
-            	ReactTestUtils.renderIntoDocument(reactaddons.createElement(ExperimentsTable));
-            notEqual(t, null, "EsperimentsTable is available, passed.");
+            var element = document.getElementById('experiments');
+            var renderedComp = ReactDOM.render(React.createElement(ExperimentsTable),element); 
+            notEqual(renderedComp, null, "ExperimentsTable is available, passed.");
+
         });
     };
     return {run: run};

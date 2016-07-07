@@ -328,7 +328,8 @@ define(function (require) {
 
         getTotalResultsCount: function(){
             // TODO: build + run the query and get results count
-            return 0;
+            // mock number of results to check if it's updating the UI
+            return Math.floor(Math.random() * (200 + 1));
         },
 
         runQuery: function(){
@@ -343,7 +344,7 @@ define(function (require) {
                 alert('Add query: Implement me!');
             };
 
-            // TODO: build QueryItem list
+            // build QueryItem list
             var queryItems = this.props.model.items.map(function (item) {
                 return (
                     <QueryItem
@@ -366,7 +367,7 @@ define(function (require) {
                         <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={addQuery}></button>
                         <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                     </div>
-                    <QueryFooter count={resultsCount} onRun={this.runQuery.bind(this)}></QueryFooter>
+                    <QueryFooter count={resultsCount} onRun={this.runQuery}></QueryFooter>
                 </div>
             );
         }

@@ -832,6 +832,89 @@ define(function (require) {
             GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("1");
         });
+        
+        QUnit.test("Test Cloning and Delete multiple experiments", function ( assert ) {
+
+        	var done = assert.async();
+
+            var handler = {
+            	runTimes : 0,
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+
+                            assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
+                            window.Project.getExperiments()[0].clone();
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_CREATED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var newLength = window.Project.getExperiments().length;
+
+                            GEPPETTO.SimulationHandler.createExperiment(payload);
+
+                            // increase length
+                            newLength++;
+
+                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
+
+                            var length = window.Project.getExperiments().length - 1;
+                            window.Project.getExperiments()[length].deleteExperiment();
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_DELETED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var newLength = window.Project.getExperiments().length;
+
+                            GEPPETTO.SimulationHandler.deleteExperiment(payload);
+
+                            // reduce length
+                            newLength--;
+
+                            assert.equal(window.Project.getExperiments().length, newLength, "Experiment deleted succesfully");
+
+                            this.runTimes++;
+                            if(this.runTimes>5){
+                            	done();
+                            	resetConnection();
+                            }else{
+                            	window.Project.getExperiments()[0].clone();
+                            }
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+
+                            // make it fail
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).msg;
+
+                            // make it fail
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("1");
+        });
     };
     return {run: run};
 });

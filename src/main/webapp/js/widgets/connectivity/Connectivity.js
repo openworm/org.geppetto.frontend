@@ -173,7 +173,7 @@ define(function (require) {
                 event.preventDefault();
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
-                console.log(innerForm.getValue());
+                //console.log(innerForm.getValue());
                 G.addWidget(6).setData(netInstances[0], innerForm.getValue()); //TODO: add option to select what to plot if #netInstance>1?
                 formWidget.destroy();
             }
@@ -332,6 +332,8 @@ define(function (require) {
                     options.linkType = strToFunc(options.linkType);
                 if(typeof options.nodeType === 'string')
                     options.nodeType = strToFunc(options.nodeType);
+                if(typeof options.linkWeight === 'string')
+                    options.linkWeight = strToFunc(options.linkWeight);
                 $.extend(this.options, options);
             }
         },

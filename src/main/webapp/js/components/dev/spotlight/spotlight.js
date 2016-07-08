@@ -55,6 +55,7 @@ define(function (require) {
         potentialSuggestions: {},
         suggestions: null,
         instances: null,
+        dataSourceResults : {},
         
         close : function () {
             $("#spotlight").hide();
@@ -133,11 +134,19 @@ define(function (require) {
             });
 
             this.suggestions = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
-                identify: function (obj) {
-                    return obj.label;
-                }
+            	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
+            	queryTokenizer: Bloodhound.tokenizers.whitespace,
+            	identify: function (obj) {
+            		return obj.label;
+            	}
+            });
+
+            this.dataSourceResults = new Bloodhound({
+            	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
+            	queryTokenizer: Bloodhound.tokenizers.whitespace,
+            	identify: function (obj) {
+            		return obj.label;
+            	}
             });
 
             Handlebars.registerHelper('geticonFromMetaType', function (metaType) {
@@ -218,6 +227,18 @@ define(function (require) {
                     }
                 }
 
+                if (this.dataSourceResults.get(item)) {
+                    var found = this.dataSourceResults.get(item);
+                    if (found.length == 1) {
+                        suggestionFound = true;
+                        var actions = found[0].actions;
+                        actions.forEach(function (action) {
+                            GEPPETTO.Console.executeCommand(action)
+                        });
+                        $("#typeahead").typeahead('val', "");
+                    }
+                }
+                
                 //check the instances
                 if (!suggestionFound) {
                     window._spotlightInstance = Instances.getInstance([item]);
@@ -233,7 +254,6 @@ define(function (require) {
                         $(".spotlight-input").eq(0).focus();
                     }
                 }
-
             }
         },
 
@@ -243,6 +263,15 @@ define(function (require) {
             }
             else {
                 this.suggestions.search(q, sync);
+            }
+        },
+        
+        defaultDataSources: function (q, sync) {
+            if (q === '') {
+                sync(this.dataSourceResults.index.all());
+            }
+            else {
+                this.dataSourceResults.search(q, sync);
             }
         },
 
@@ -282,6 +311,15 @@ define(function (require) {
                     display: 'path',
                     templates: {
                         suggestion: Handlebars.compile('<div>{{geticonFromMetaType metaType}} {{path}}</div>')
+                    }
+                },
+                {
+                    name: 'dataSourceResults',
+                    source: this.defaultDataSources,
+                    limit: 50,
+                    display: 'label',
+                    templates: {
+                        suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
                     }
                 });
             $('.twitter-typeahead').addClass("typeaheadWrapper");
@@ -345,12 +383,12 @@ define(function (require) {
         			    var obj = sources[key];
         			    var key = this.generateDataSourceKey(key, 0);
         			    this.configuration.SpotlightBar.DataSources[key] = obj;
-        			    this.getDataSourceResults(key, obj.url, JSON.parse(obj.crossDomain));
+        			    this.getDataSourceResults(key, obj.url,obj.crossDomain);
         			  }
         		}
         	}
         	catch (err) {
-        		return "Error parsing data sources " + err;
+        		throw ("Error parsing data sources " + err);
         	}
         },
         
@@ -388,6 +426,8 @@ define(function (require) {
         				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name,JSON.parse(responseData));
         			},
         			error: function (responseData, textStatus, errorThrown) {
+                		throw ("Error retrieving data sources " + data_source_name +
+                				"  from " + data_source_url);
         			}
         		});
         	}
@@ -400,15 +440,14 @@ define(function (require) {
          */
         updateDataSourceResults : function(data_source_name,results){
         	var responses = results.response.docs;
-        	for(var key in responses){
-        		var response = responses[key];
+    		responses.forEach(function(response) {
         		var typeName = response.type;
         		var obj = {};
-        		obj["label"] = response[this.configuration.SpotlightBar.DataSources[data_source_name].label];
-        		obj["actions"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
-        		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
-        		this.addSuggestion(obj);
-        	}
+        		obj["label"] = response[GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].label];
+        		obj["actions"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+        		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
+        		GEPPETTO.Spotlight.dataSourceResults.add(obj);
+        	});
         },
         
         addSuggestion: function (suggestion, flow) {

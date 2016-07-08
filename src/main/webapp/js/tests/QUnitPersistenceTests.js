@@ -51,8 +51,6 @@ define(function (require) {
         QUnit.test("Test switching active experiment", function ( assert ) {
 
             var done = assert.async();
-            // once off on the first test to establish connection
-            resetConnection();
 
             var handler = {
                 switchExperiment: false,

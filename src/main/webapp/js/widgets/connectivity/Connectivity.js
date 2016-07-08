@@ -149,16 +149,23 @@ define(function (require) {
             var guiContents = {
                 layout: {
                     editorClass: 'connectivity-layout',
-                    type: Backbone.Form.editors.Radio, //will extend to get large icons instead of radio
-                    options:
-                        [
-                         {val: "matrix", label:'adjacency matrix'},
-                         {val: "force", label:'force-directed layout'},
-                         {val: "hive",  label:'hive plot'},
-                         {val: "chord", label:'chord diagram'}
+                    type: Backbone.Form.editors.Radio, //TODO: will extend to get large icons instead of radio
+                    options: [
+                              {val: "matrix", label:'adjacency matrix'}, //probably add icon field
+                              {val: "force", label:'force-directed layout'},
+                              {val: "hive",  label:'hive plot'},
+                              {val: "chord", label:'chord diagram'}
                     ]
                 },
-                height: { type: 'Number', editorClass: 'connectivity-height', validators: [{ type: 'range', min: 10, max: 50, message: 'A number between 10 and 50' }] },
+                linkType: {
+                    title: "Link colouring",
+                    type: 'Select', //TODO: think about GUI for building callback
+                    options: [
+                              {label: 'Synapse type', val: "GEPPETTO.ModelFactory.getAllVariablesOfType(x.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId()"},
+                              {label: 'None', val: "1"}
+                    ]
+                }
+                //height: { type: 'Number', editorClass: 'connectivity-height', validators: [{ type: 'range', min: 10, max: 50, message: 'A number between 10 and 50' }] },
             };
             var formWidget = G.addWidget(8).generateForm(guiContents, 'Go!').setData(this.defaultConnectivityOptions);
             var innerForm = formWidget.getForm();
@@ -167,7 +174,7 @@ define(function (require) {
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
                 console.log(innerForm.getValue());
-                G.addWidget(6).setData(netInstances[0], innerForm.getValue());
+                G.addWidget(6).setData(netInstances[0], innerForm.getValue()); //TODO: add option to select what to plot if #netInstance>1?
                 formWidget.destroy();
             }
             innerForm.on('submit', onSubmit);
@@ -317,7 +324,14 @@ define(function (require) {
          * @param {Object} options - options to modify the plot widget
          */
         setOptions: function (options) {
+            function strToFunc(body){
+                return new Function('x', 'return ' + body + ';');
+            }
             if (options != null) {
+                if(typeof options.linkType === 'string')
+                    options.linkType = strToFunc(options.linkType);
+                if(typeof options.nodeType === 'string')
+                    options.nodeType = strToFunc(options.nodeType);
                 $.extend(this.options, options);
             }
         },

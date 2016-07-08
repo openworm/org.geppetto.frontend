@@ -165,6 +165,7 @@ define(function (require) {
                               {label: 'None', val: "1"}
                     ]
                 }
+                //TODO: contextual options (eg hive requires nodeType, while matrix does not...)
                 //height: { type: 'Number', editorClass: 'connectivity-height', validators: [{ type: 'range', min: 10, max: 50, message: 'A number between 10 and 50' }] },
             };
             var formWidget = G.addWidget(8).generateForm(guiContents, 'Go!').setData(this.defaultConnectivityOptions);

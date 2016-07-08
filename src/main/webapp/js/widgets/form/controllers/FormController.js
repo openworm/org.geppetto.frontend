@@ -41,7 +41,6 @@
 define(function (require) {
     var AWidgetController = require('widgets/AWidgetController');
     var Form = require('widgets/form/Form');
-    var Button = require('widgets/form/vendor/editors/Button');
 
     /**
      * @exports Widgets/Connectivity/TreeVisualiserControllerDATController
@@ -133,7 +132,7 @@ define(function (require) {
                     if (typeof ev !== 'undefined') {
                         if (typeof ev.callback === 'undefined') {
                             //TODO: We need the event data here so we can decide if we would like to refresh or not
-                        	formWidget.refresh();
+                            formWidget.refresh();
                         }
                         else {
                             ev.callback();

@@ -147,22 +147,27 @@ define(function (require) {
 
         configViaGUI : function() {
             var guiContents = {
-                //height: { type: 'Number', validators: [{ type: 'range', min: 10, max: 50, message: 'A number between 10 and 50' }] },
-                layout: { type: 'Button', options: {
-                    matrix: { icon:'gpt-make-group', label:'this is a matrix', tooltip:''},
-                    force: { icon:'gpt-geneontology', label:'this is a force', tooltip:''},
-                    hive: { icon:'gpt-fly', label:'this is a hive', tooltip:''},
-                    chord:{icon:'gpt-osb',label:'this is a chord', tooltip:''}}
-                }
+                layout: {
+                    editorClass: 'connectivity-layout',
+                    type: Backbone.Form.editors.Radio, //will extend to get large icons instead of radio
+                    options:
+                        [
+                         {val: "matrix", label:'adjacency matrix'},
+                         {val: "force", label:'force-directed layout'},
+                         {val: "hive",  label:'hive plot'},
+                         {val: "chord", label:'chord diagram'}
+                    ]
+                },
+                height: { type: 'Number', editorClass: 'connectivity-height', validators: [{ type: 'range', min: 10, max: 50, message: 'A number between 10 and 50' }] },
             };
-            var formWidget = G.addWidget(8);
-            formWidget.generateForm(guiContents, 'Execute');
+            var formWidget = G.addWidget(8).generateForm(guiContents, 'Go!').setData(this.defaultConnectivityOptions);
             var innerForm = formWidget.getForm();
             function onSubmit (event) {
                 event.preventDefault();
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
-                G.addWidget(6).setData(netInstances[0]);
+                console.log(innerForm.getValue());
+                G.addWidget(6).setData(netInstances[0], innerForm.getValue());
                 formWidget.destroy();
             }
             innerForm.on('submit', onSubmit);

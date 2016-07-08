@@ -444,10 +444,10 @@ define(function (require) {
                         {queryItems}
                     </div>
                     <div id="add-new-query-container">
-                        <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={addQuery}></button>
+                        <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={addQuery} />
                         <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                     </div>
-                    <QueryFooter count={resultsCount} onRun={this.runQuery}></QueryFooter>
+                    <QueryFooter count={resultsCount} onRun={this.runQuery} />
                 </div>
             );
         }
@@ -455,7 +455,7 @@ define(function (require) {
 
     var renderQueryComponent = function(){
         ReactDOM.render(
-            <QueryBuilder model={queryBuilderModel}></QueryBuilder>,
+            <QueryBuilder model={queryBuilderModel} />,
             document.getElementById("querybuilder")
         );
     };

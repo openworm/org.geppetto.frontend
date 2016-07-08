@@ -161,7 +161,7 @@ require(jqueryLib, function ($) {
         window.help = GEPPETTO.Utility.help;
 
         require(
-            ['QUnit', 'QunitPersistenceTests', 'QUnitNeuronalTests',
+            ['QUnit', 'QUnitPersistenceTests', 'QUnitNeuronalTests',
                 'QUnitFluidDynamicsTests', 'QUnitGeppettoCoreTests'],
             function (QUnit, persistenceTests, neuronal, fluid, core) {
                 persistenceTests.run();

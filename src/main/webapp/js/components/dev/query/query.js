@@ -73,6 +73,10 @@ define(function (require) {
             this.notifyChange();
         },
 
+        add: function(){
+          // TODO: implement
+        },
+
         delete: function (item) {
             for (var i = 0; i < this.items.length; i++) {
                 if (item.term == this.items[i].term) {
@@ -417,13 +421,13 @@ define(function (require) {
             alert('Run query: implement me!');
         },
 
+        addQuery: function(){
+            // TODO: retrieve options given term
+            // TODO: add query item to model (with unique ID)
+            alert('Add query: Implement me!');
+        },
+
         render: function () {
-
-            var addQuery = function(){
-                // TODO: implement add query
-                alert('Add query: Implement me!');
-            };
-
             // build QueryItem list
             var queryItems = this.props.model.items.map(function (item) {
                 return (
@@ -444,7 +448,7 @@ define(function (require) {
                         {queryItems}
                     </div>
                     <div id="add-new-query-container">
-                        <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={addQuery} />
+                        <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={this.addQuery} />
                         <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                     </div>
                     <QueryFooter count={resultsCount} onRun={this.runQuery} />

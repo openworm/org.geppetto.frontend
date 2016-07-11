@@ -73,7 +73,7 @@ define(function (require) {
             this.notifyChange();
         },
 
-        add: function(){
+        add: function(item){
             this.items.push(item);
             this.notifyChange();
         },
@@ -88,24 +88,7 @@ define(function (require) {
             this.notifyChange();
         },
 
-        items: [{
-            id: "medulla_0",
-            term: "medulla",
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating medulla', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ],
-            selection: -1
-        }]
+        items: []
     };
 
     // TODO: remove this mock data - it's just for development
@@ -418,7 +401,8 @@ define(function (require) {
         },
 
         runQuery: function(){
-            // TODO: run query, change state to switch to results view
+            // TODO: run query
+            // TODO: change state to switch to results view
             alert('Run query: implement me!');
         },
 
@@ -431,7 +415,12 @@ define(function (require) {
             var item = null;
             for(var i=0; i<mockSourceData.length; i++){
                 if(mockSourceData[i].term == term){
-                    item = mockSourceData[i];
+                    // create new item
+                    item = {
+                        term: mockSourceData[i].term,
+                        // use slice to clone options - don't wanna use a reference to the same object!
+                        options: mockSourceData[i].options.slice(0)
+                    };
                 }
             }
 
@@ -446,6 +435,9 @@ define(function (require) {
             if(item!=null){
                 // generate a unique id for the query item and add it to the model
                 item.id = term + '_' + termCount.toString();
+                item.selection = -1;
+                item.options.splice(0, 0, {name: 'Please select an option', value: -1});
+
                 this.props.model.add(item);
             } else{
                 // TODO: throw

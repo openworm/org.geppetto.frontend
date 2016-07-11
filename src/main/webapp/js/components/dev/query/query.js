@@ -74,12 +74,13 @@ define(function (require) {
         },
 
         add: function(){
-          // TODO: implement
+            this.items.push(item);
+            this.notifyChange();
         },
 
         delete: function (item) {
             for (var i = 0; i < this.items.length; i++) {
-                if (item.term == this.items[i].term) {
+                if (item.id == this.items[i].id) {
                     this.items.splice(i, 1);
                 }
             }
@@ -88,7 +89,7 @@ define(function (require) {
         },
 
         items: [{
-            id: "medulla",
+            id: "medulla_0",
             term: "medulla",
             options: [
                 {name: 'Neurons with some part here', value: 0},
@@ -422,9 +423,33 @@ define(function (require) {
         },
 
         addQuery: function(){
-            // TODO: retrieve options given term
-            // TODO: add query item to model (with unique ID)
-            alert('Add query: Implement me!');
+            // retrieve term
+            var term = $('#query-typeahead').val();
+
+            // TODO: plug real source of data instead mock data
+            // retrieve options given term
+            var item = null;
+            for(var i=0; i<mockSourceData.length; i++){
+                if(mockSourceData[i].term == term){
+                    item = mockSourceData[i];
+                }
+            }
+
+            // count how many occurrences of term we have in the model
+            var termCount = 0;
+            for(var i=0; i<this.props.model.items.length; i++){
+                if(this.props.model.items[i].term == term){
+                    termCount++;
+                }
+            }
+
+            if(item!=null){
+                // generate a unique id for the query item and add it to the model
+                item.id = term + '_' + termCount.toString();
+                this.props.model.add(item);
+            } else{
+                // TODO: throw
+            }
         },
 
         render: function () {

@@ -145,15 +145,29 @@ define(function (require) {
             this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
         },
 
+
         configViaGUI : function() {
+            var buttonPicker = Backbone.Form.editors.Radio.extend({
+                tagName: "div"}, { template: _.template('\
+                        <% _.each(items, function(item) { %>\
+                          <div class="col-md-3">\
+                              <img class="card-img-top" src="geppetto/js/widgets/connectivity/images/<%= item.value %>.svg" alt="Card image cap">\
+                              <div class="card-block">\
+                                <input type="radio" name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" />\
+                                <label  for="<%= item.id %>"><% if (item.labelHTML){ %><%= item.labelHTML %><% }else{ %><%- item.label %><% } %></label>\
+                              </div>\
+                          </div>\
+                        <% }); %>\
+                      ', null, Backbone.Form.templateSettings)
+            });
             var guiContents = {
                 layout: {
-                    editorClass: 'connectivity-layout',
-                    type: Backbone.Form.editors.Radio, //TODO: will extend to get large icons instead of radio
+                    editorClass: 'connectivity-layout row',
+                    type: buttonPicker,
                     options: [
-                              {val: "matrix", label:'adjacency matrix'}, //probably add icon field
-                              {val: "force", label:'force-directed layout'},
-                              {val: "hive",  label:'hive plot'},
+                              {val: "matrix", label: 'adjacency matrix'}, //probably add icon field
+                              {val: "force", label: 'force-directed layout'},
+                              {val: "hive",  label: 'hive plot'},
                               {val: "chord", label:'chord diagram'}
                     ]
                 },

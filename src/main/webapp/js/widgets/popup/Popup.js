@@ -291,6 +291,15 @@ define(function (require) {
 				}else{
 					mdPopup.setMessage("No HTML for element " + nodeInstancePath);
 				}
+				
+				//generate randm position in screen for popup to avoid them showing up in same place
+				var max = screen.height - this.size.height;
+				var min = this.size.height;
+				var x =  Math.floor(Math.random() * (max - min)) + min;
+				max = screen.width - this.size.width;
+				min = this.size.width;
+				var y = Math.floor(Math.random() * (max - min)) + min;
+	            mdPopup.setPosition(y,x);
 			}
 		},
 

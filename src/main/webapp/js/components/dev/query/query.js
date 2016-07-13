@@ -52,6 +52,8 @@ define(function (require) {
     // query model object to represent component state and trigger view updates
     var queryBuilderModel = {
         onChangeHandlers: [],
+        items: [],
+        results: [],
 
         subscribe: function (callback) {
             this.onChangeHandlers.push(callback);
@@ -63,7 +65,7 @@ define(function (require) {
             });
         },
 
-        selectionChanged: function (item, selection) {
+        itemSelectionChanged: function (item, selection) {
             for (var i = 0; i < this.items.length; i++) {
                 if (item.term == this.items[i].term) {
                     this.items[i].selection = selection;
@@ -73,12 +75,12 @@ define(function (require) {
             this.notifyChange();
         },
 
-        add: function(item){
+        addItem: function(item){
             this.items.push(item);
             this.notifyChange();
         },
 
-        delete: function (item) {
+        deleteItem: function (item) {
             for (var i = 0; i < this.items.length; i++) {
                 if (item.id == this.items[i].id) {
                     this.items.splice(i, 1);
@@ -88,7 +90,20 @@ define(function (require) {
             this.notifyChange();
         },
 
-        items: []
+        addResults: function(results){
+            this.results.push(results);
+            this.notifyChange();
+        },
+
+        deleteResults: function (results) {
+            for (var i = 0; i < this.results.length; i++) {
+                if (results.id == this.results[i].id) {
+                    this.results.splice(i, 1);
+                }
+            }
+
+            this.notifyChange();
+        }
     };
 
     // TODO: remove this mock data - it's just for development
@@ -319,8 +334,9 @@ define(function (require) {
         ],
 
         getInitialState: function () {
-            // TODO IF ANY
-            return { };
+            return {
+                resultsView: false
+            };
         },
 
         getDefaultProps: function () {
@@ -331,6 +347,10 @@ define(function (require) {
 
         componentWillMount: function () {
             GEPPETTO.QueryBuilder = this;
+        },
+
+        switchView(resultsView) {
+            this.setState({ resultsView: resultsView});
         },
 
         close: function () {
@@ -387,11 +407,11 @@ define(function (require) {
 
         queryOptionSelected: function(item){
             // Option has been selected
-            this.props.model.selectionChanged(item);
+            this.props.model.itemSelectionChanged(item);
         },
 
         queryItemDeleted: function(item){
-            this.props.model.delete(item);
+            this.props.model.deleteItem(item);
         },
 
         getTotalResultsCount: function(){
@@ -402,11 +422,15 @@ define(function (require) {
 
         runQuery: function(){
             // TODO: run query
-            // TODO: change state to switch to results view
+            // TODO: store results in the model
+
+            // change state to switch to results view
+            // this.switchView(true);
+
             alert('Run query: implement me!');
         },
 
-        addQuery: function(){
+        addQueryItem: function(){
             // retrieve term
             var term = $('#query-typeahead').val();
 
@@ -438,39 +462,50 @@ define(function (require) {
                 item.selection = -1;
                 item.options.splice(0, 0, {name: 'Please select an option', value: -1});
 
-                this.props.model.add(item);
+                this.props.model.addItem(item);
             } else{
                 // TODO: throw
             }
         },
 
         render: function () {
-            // build QueryItem list
-            var queryItems = this.props.model.items.map(function (item) {
-                return (
-                    <QueryItem
-                        key={item.id}
-                        item={item}
-                        onSelectOption={this.queryOptionSelected.bind(null, item)}
-                        onDeleteItem={this.queryItemDeleted.bind(null, item)}
-                    />
+            var markup = null;
+
+            // figure out if we are in results view or query builder view
+            if(this.state.resultsView){
+
+                // TODO: if results view, build results markup based on results in the model
+
+            } else {
+                // build QueryItem list
+                var queryItems = this.props.model.items.map(function (item) {
+                    return (
+                        <QueryItem
+                            key={item.id}
+                            item={item}
+                            onSelectOption={this.queryOptionSelected.bind(null, item)}
+                            onDeleteItem={this.queryItemDeleted.bind(null, item)}
+                        />
+                    );
+                }, this);
+
+                var resultsCount = this.getTotalResultsCount();
+
+                markup = (
+                    <div id="query-builder-container">
+                        <div id="query-builder-items-container">
+                            {queryItems}
+                        </div>
+                        <div id="add-new-query-container">
+                            <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={this.addQueryItem} />
+                            <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
+                        </div>
+                        <QueryFooter count={resultsCount} onRun={this.runQuery} />
+                    </div>
                 );
-            }, this);
+            }
 
-            var resultsCount = this.getTotalResultsCount();
-
-            return (
-                <div id="query-builder-container">
-                    <div id="query-builder-items-container">
-                        {queryItems}
-                    </div>
-                    <div id="add-new-query-container">
-                        <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={this.addQuery} />
-                        <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
-                    </div>
-                    <QueryFooter count={resultsCount} onRun={this.runQuery} />
-                </div>
-            );
+            return markup;
         }
     });
 

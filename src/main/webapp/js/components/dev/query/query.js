@@ -422,9 +422,10 @@ define(function (require) {
 
         runQuery: function(){
             // TODO: run query
-            // TODO: store results in the model
 
-            // change state to switch to results view
+            // NOTE: the stuff below will probably happen in the form of a callback once the results are fetched
+            // TODO: store results in the model
+            // TODO: change state to switch to results view
             // this.switchView(true);
 
             alert('Run query: implement me!');

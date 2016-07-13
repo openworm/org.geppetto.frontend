@@ -73,10 +73,10 @@ define(function (require) {
             return (
                 <tr rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
                     className={rowClasses} id={this.props.experiment.getId()}>
-                    <StatusElement experiment={this.props.experiment} key={this.props.experiment.name}/>
+                    <StatusElement experiment={this.props.experiment} key={this.props.experiment.name+"-statusElement"}/>
                     <td name="name" contentEditable={editable}>{this.props.experiment.getName()}</td>
                     <td>{this.props.experiment.getLastModified()}</td>
-                    <td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name}/>
+                    <td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name+"-iconsRow"}/>
                     </td>
                 </tr>
             );
@@ -110,8 +110,10 @@ define(function (require) {
             //create array of table row elements of type SimulatorRow
             simulatorConfigurations.forEach(function (simulator) {
                 if (simulator != null) {
+                	var index = 1;
                     rows.push(<SimulatorRow simulator={simulator} experiment={this.props.experiment}
-                                            key={this.props.experiment.name}/>);
+                                            key={"simulatorRow"+index+"-"+simulator.aspectInstancePath}/>);
+                    index++;
                 }
             }.bind(this));
 
@@ -431,13 +433,32 @@ define(function (require) {
             }
 
             this.setState({experiments: rows});
+//            this.setState({
+//            	  experiments: rows.filter((_, i) => i !== index);
+//            	});
             this.state.counter++;
         },
 
         deleteExperiment: function (experiment) {
-            this.state.experiments.pop(experiment);
-            this.state.counter++;
+            //this.state.experiments.pop(experiment);
+            
+        	var experiments = this.state.experiments;
+            var rows = [];
 
+            var index = 0;
+            for (var key in experiments) {
+            	if(experiment.getId()!=experiments[key].getId()){
+            		rows[index] = experiments[key];
+                	index++;
+            	}
+            }
+            
+        	this.state.counter--;
+
+            this.setState({
+          	  experiments:rows
+          	});
+            
             // loop through each row of experiments table and remove
             $('#experimentsTable tbody tr').each(function () {
                 // id of row that matches experiment to be deleted
@@ -534,6 +555,8 @@ define(function (require) {
                 rows[index] = experiment;
                 index++;
             }
+            
+            this.state.counter = rows.length;
 
             this.setState({experiments: rows});
         },
@@ -554,14 +577,15 @@ define(function (require) {
 
         render: function () {
             var rows = [];
+            var rownumber = 1;
             this.state.experiments.forEach(function (experiment) {
                 if (experiment != null) {
                     var expandableRowId = "collapsable-" + experiment.getId();
-                    rows.push(<ExperimentRow experiment={experiment} rowNumber={this.state.counter}
+                    rows.push(<ExperimentRow experiment={experiment} rowNumber={rownumber}
                                              key={experiment.name} fnClick={this.onClick.bind(this,expandableRowId)}/>);
-                    rows.push(<ExperimentExpandableRow experiment={experiment} rowNumber={this.state.counter}
+                    rows.push(<ExperimentExpandableRow experiment={experiment} rowNumber={rownumber}
                                                        key={expandableRowId}/>);
-                    this.state.counter++;
+                    rownumber++;
                 }
             }.bind(this));
 

@@ -65,16 +65,6 @@ define(function (require) {
                 return 1;
             }
         },
-        
-        borisOptions: {
-        	 height: { type: 'Number', validators: [{
-        	      type: 'range',
-        	      min: 10,
-        	      max: 50,
-        	      message: 'A number between 10 and 50'
-        	    }] },
-             layout: { type: 'Button', options: {matrix:{icon:'gpt-make-group',label:'this is a matrix',tooltip:''}, force:{icon:'gpt-geneontology',label:'this is a force',tooltip:''}, hive:{icon:'gpt-fly',label:'this is a hive',tooltip:''}, chord:{icon:'gpt-osb',label:'this is a chord',tooltip:''}} }
-        },
 
         initialize: function (options) {
             this.options = options;

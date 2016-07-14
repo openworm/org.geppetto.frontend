@@ -88,17 +88,6 @@ define(function (require) {
             
             //WIDGETNAMEController: null
 
-            
-            configureWidget: function (widgetType) {
-                var widget = null;
-                switch (widgetType) {
-                	//create connectivity widget
-                	case GEPPETTO.Widgets.CONNECTIVITY:
-                		widget = this.getController(GEPPETTO.Widgets.CONNECTIVITY).configureConnectivityWidget();
-                		break;
-                }
-            },
-            
             /**
              * Adds widget to Geppetto
              *

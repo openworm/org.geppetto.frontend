@@ -75,7 +75,7 @@ div[id^='Form'] fieldset>div>div {
     float:left;
 }
 
-div[id^='Form'] button[type="submit"]{
+div[id^='Form'] button{
 	background-color: #fc6320 !important;
 	color: white !important;
 	float: right;

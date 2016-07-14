@@ -64,12 +64,6 @@ define(function (require) {
                 return newWidget;
             },
 
-            configureWidget: function (type) {
-                var newWidget = GEPPETTO.WidgetFactory.configureWidget(type);
-                return newWidget;
-            },
-
-            
             /**
              * Gets list of available widgets
              *

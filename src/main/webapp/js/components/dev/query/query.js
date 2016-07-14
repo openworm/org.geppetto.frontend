@@ -115,6 +115,17 @@ define(function (require) {
             local: mockTermsData
         });
 
+    var mockResults = [
+        { name: 'JFRC2_template', description: 'Test description'},
+        { name: 'VGlut-F-000176', description: 'Test description'},
+        { name: 'DM5 Clone of Yu 2013', description: 'Test description a bit longer'},
+        { name: 'Gad1-F-200114', description: 'Test description a bit longer even more indeed'},
+        { name: 'VGlut-F-800176', description: 'Test description a bit longer even more indeed'},
+        { name: 'DL1 Clone of Nonna 007', description: 'Test description'},
+        { name: 'VFB-123-123-123', description: 'Test description'},
+        { name: 'VGlut-000-000', description: 'Test description blah blah'}
+    ];
+
     var mockSourceData = [
         {
             term: 'saddle',
@@ -474,8 +485,10 @@ define(function (require) {
 
             // figure out if we are in results view or query builder view
             if(this.state.resultsView){
-
                 // TODO: if results view, build results markup based on results in the model
+                // TODO: 1) build tab component with focus on most recent tab added
+                // TODO: 2) for each tab put a Griddle configured with appropriate column meta
+                // TODO: 3) set data for each tab based on results from the model
 
             } else {
                 // build QueryItem list

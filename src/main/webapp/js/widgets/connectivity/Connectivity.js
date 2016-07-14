@@ -152,10 +152,10 @@ define(function (require) {
             };
 
             var layoutOptions = [
-                {id: "matrix", label: 'adjacency matrix', description:"nononono", img: imgPath('matrix.svg')},
-                {id: "force", label: 'force-directed layout', description:"nononono", img: imgPath('force.svg')},
-                {id: "hive",  label: 'hive plot', description:"nononono", img: imgPath('hive.svg')},
-                {id: "chord", label:'chord diagram', description:"nononono", img: imgPath('chord.svg')}
+                {id: "matrix", label: 'adjacency matrix', description:"Simple and clear.", img: imgPath('matrix.svg')},
+                {id: "force", label: 'force-directed layout', description:"Throw away all spatial info...", img: imgPath('force.svg')},
+                {id: "hive",  label: 'hive plot', description:"Not sure if this one helps", img: imgPath('hive.svg')},
+                {id: "chord", label:'chord diagram', description:"Looks nice, but is it useful?", img: imgPath('chord.svg')}
             ];
             var container = $('<div>').addClass('card-deck-wrapper');
             var deck = $('<div>').addClass('card-deck').appendTo(container);
@@ -185,6 +185,7 @@ define(function (require) {
 
         configViaGUI : function() {
             var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setSize(422.8,667.8);
+            popup.showTitleBar(false);
             popup.$('.card').on('click', function(event) {
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));

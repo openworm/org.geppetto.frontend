@@ -69,8 +69,9 @@ define(function (require) {
 
         itemSelectionChanged: function (item, selection) {
             for (var i = 0; i < this.items.length; i++) {
-                if (item.term == this.items[i].term) {
+                if (item.id == this.items[i].id) {
                     this.items[i].selection = selection;
+                    break;
                 }
             }
 
@@ -300,7 +301,7 @@ define(function (require) {
 
             var that = this;
             var onSelection = function(e){
-                var val = e.target.value;
+                var val = parseInt(e.target.value);
                 that.props.onSelectOption(that.props.item, val);
             };
 
@@ -309,11 +310,11 @@ define(function (require) {
             return (
                 <div id={containerId} className="query-item">
                     <div className="query-item-label">{this.props.item.term}</div>
-                    <select className="query-item-option" onChange={onSelection} value={this.props.item.value}>
+                    <select className="query-item-option" onChange={onSelection} value={this.props.item.selection}>
                         {this.props.item.options.map(createItem)}
                     </select>
-                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem}></button>
-                    <div className="clearer" />
+                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem} />
+                    <div className="clearer"></div>
                 </div>
             );
         }
@@ -418,9 +419,16 @@ define(function (require) {
             }
         },
 
-        queryOptionSelected: function(item){
+        componentDidUpdate: function(){
+            if(!this.state.resultsView){
+                // re-init the search box on query builder
+                this.initTypeahead();
+            }
+        },
+
+        queryOptionSelected: function(item, value){
             // Option has been selected
-            this.props.model.itemSelectionChanged(item);
+            this.props.model.itemSelectionChanged(item, value);
         },
 
         queryItemDeleted: function(item){
@@ -440,8 +448,6 @@ define(function (require) {
             // TODO: store results in the model
             // TODO: change state to switch to results view
             this.switchView(true);
-
-            alert('Run query: implement me!');
         },
 
         addQueryItem: function(){
@@ -493,7 +499,7 @@ define(function (require) {
                 // TODO: 3) set data for each tab based on results from the model
 
                 markup = (
-                    <div id="query-builder-container">
+                    <div id="query-builder-container" className="center-content">
                         <Tabs>
                             <Tabs.Panel title='Tab #1'>
                                 <h2>Content #1 here</h2>
@@ -505,6 +511,10 @@ define(function (require) {
                                 <h2>Content #3 here</h2>
                             </Tabs.Panel>
                         </Tabs>
+                        <button id="switch-view-btn"
+                                className="fa fa-hand-o-left querybuilder-button"
+                                title="back to query" onClick={this.switchView.bind(null, false)}>
+                        </button>
                     </div>
                 );
 
@@ -515,7 +525,7 @@ define(function (require) {
                         <QueryItem
                             key={item.id}
                             item={item}
-                            onSelectOption={this.queryOptionSelected.bind(null, item)}
+                            onSelectOption={this.queryOptionSelected}
                             onDeleteItem={this.queryItemDeleted.bind(null, item)}
                         />
                     );

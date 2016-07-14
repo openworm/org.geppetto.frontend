@@ -53,6 +53,10 @@
     clear: both;
 }
 
+.center-content{
+    text-align: center;
+}
+
 /*IDs*/
 
 #querybuilder {

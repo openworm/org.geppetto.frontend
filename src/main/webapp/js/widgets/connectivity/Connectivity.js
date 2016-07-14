@@ -145,54 +145,52 @@ define(function (require) {
             this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
         },
 
+        createLayoutSelector: function() {
+
+            function imgPath(path){
+                return 'geppetto/js/widgets/connectivity/images/' + path;
+            };
+
+            var layoutOptions = [
+                {id: "matrix", label: 'adjacency matrix', description:"nononono", img: imgPath('matrix.svg')},
+                {id: "force", label: 'force-directed layout', description:"nononono", img: imgPath('force.svg')},
+                {id: "hive",  label: 'hive plot', description:"nononono", img: imgPath('hive.svg')},
+                {id: "chord", label:'chord diagram', description:"nononono", img: imgPath('chord.svg')}
+            ];
+            var container = $('<div>').addClass('card-deck-wrapper');
+            var deck = $('<div>').addClass('card-deck').appendTo(container);
+
+            function createCard(cardData){
+                return $('<div>', {class: 'card', id: cardData.id})
+                        .append($('<img>', {
+                            class: 'card-img-top center-block',
+                            src: cardData.img,
+                        }))
+                        .append($('<h4>', {
+                            class: 'card-title',
+                            text: cardData.label
+                        }))
+                        .append($('<p>', {
+                            class: 'card-text',
+                            text: cardData.description
+                        }));
+            }
+
+            for(let layout of layoutOptions){
+                deck.append(createCard(layout));
+            }
+
+            return container;
+        },
 
         configViaGUI : function() {
-            var buttonPicker = Backbone.Form.editors.Radio.extend({
-                tagName: "div"}, { template: _.template('\
-                        <% _.each(items, function(item) { %>\
-                          <div class="col-md-3">\
-                              <img class="card-img-top" src="geppetto/js/widgets/connectivity/images/<%= item.value %>.svg" alt="Card image cap">\
-                              <div class="card-block">\
-                                <input type="radio" name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" />\
-                                <label  for="<%= item.id %>"><% if (item.labelHTML){ %><%= item.labelHTML %><% }else{ %><%- item.label %><% } %></label>\
-                              </div>\
-                          </div>\
-                        <% }); %>\
-                      ', null, Backbone.Form.templateSettings)
-            });
-            var guiContents = {
-                layout: {
-                    editorClass: 'connectivity-layout row',
-                    type: buttonPicker,
-                    options: [
-                              {val: "matrix", label: 'adjacency matrix'}, //probably add icon field
-                              {val: "force", label: 'force-directed layout'},
-                              {val: "hive",  label: 'hive plot'},
-                              {val: "chord", label:'chord diagram'}
-                    ]
-                },
-                linkType: {
-                    title: "Link colouring",
-                    type: 'Select', //TODO: think about GUI for building callback
-                    options: [
-                              {label: 'Synapse type', val: "GEPPETTO.ModelFactory.getAllVariablesOfType(x.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId()"},
-                              {label: 'None', val: "1"}
-                    ]
-                }
-                //TODO: contextual options (eg hive requires nodeType, while matrix does not...)
-                //height: { type: 'Number', editorClass: 'connectivity-height', validators: [{ type: 'range', min: 10, max: 50, message: 'A number between 10 and 50' }] },
-            };
-            var formWidget = G.addWidget(8).generateForm(guiContents, 'Go!').setData(this.defaultConnectivityOptions);
-            var innerForm = formWidget.getForm();
-            function onSubmit (event) {
-                event.preventDefault();
+            var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setSize(422.8,667.8);
+            popup.$('.card').on('click', function(event) {
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
-                //console.log(innerForm.getValue());
-                G.addWidget(6).setData(netInstances[0], innerForm.getValue()); //TODO: add option to select what to plot if #netInstance>1?
-                formWidget.destroy();
-            }
-            innerForm.on('submit', onSubmit);
+                G.addWidget(6).setData(netInstances[0], event.target.id); //TODO: add option to select what to plot if #netInstance>1?
+                popup.destroy();
+            });
         },
 
         //TODO: move graph utils to module, maybe consider jsnetworkx?

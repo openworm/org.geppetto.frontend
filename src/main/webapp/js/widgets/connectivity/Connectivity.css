@@ -109,3 +109,11 @@
     stroke: none;
     text-rendering: optimizeLegibility;
 }
+
+.connectivity-layout-editor {
+   width: 100%;
+}
+
+.connectivity-layout {
+
+}

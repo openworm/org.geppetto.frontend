@@ -188,7 +188,7 @@ define(function (require) {
             popup.$('.card').on('click', function(event) {
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
-                G.addWidget(6).setData(netInstances[0], event.target.id); //TODO: add option to select what to plot if #netInstance>1?
+                G.addWidget(6).setData(netInstances[0], {layout: this.id}); //TODO: add option to select what to plot if #netInstance>1?
                 popup.destroy();
             });
         },

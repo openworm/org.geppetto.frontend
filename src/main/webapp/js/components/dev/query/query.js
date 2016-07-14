@@ -41,10 +41,12 @@ define(function (require) {
     }
 
     loadCss("geppetto/js/components/dev/query/query.css");
+    loadCss("geppetto/js/components/dev/query/vendor/css/react-simpletabs.css");
 
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
+    var Tabs = require('geppetto/js/components/dev/query/vendor/js/react-simpletabs.js');
     var typeahead = require('typeahead');
     var bh = require('bloodhound');
     var GEPPETTO = require('geppetto');
@@ -437,7 +439,7 @@ define(function (require) {
             // NOTE: the stuff below will probably happen in the form of a callback once the results are fetched
             // TODO: store results in the model
             // TODO: change state to switch to results view
-            // this.switchView(true);
+            this.switchView(true);
 
             alert('Run query: implement me!');
         },
@@ -489,6 +491,20 @@ define(function (require) {
                 // TODO: 1) build tab component with focus on most recent tab added
                 // TODO: 2) for each tab put a Griddle configured with appropriate column meta
                 // TODO: 3) set data for each tab based on results from the model
+
+                markup = (
+                    <Tabs>
+                        <Tabs.Panel title='Tab #1'>
+                            <h2>Content #1 here</h2>
+                        </Tabs.Panel>
+                        <Tabs.Panel title='Tab #2'>
+                            <h2>Content #2 here</h2>
+                        </Tabs.Panel>
+                        <Tabs.Panel title='Tab #3'>
+                            <h2>Content #3 here</h2>
+                        </Tabs.Panel>
+                    </Tabs>
+                );
 
             } else {
                 // build QueryItem list

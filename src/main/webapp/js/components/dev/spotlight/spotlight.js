@@ -56,6 +56,7 @@ define(function (require) {
         suggestions: null,
         instances: null,
         dataSourceResults : {},
+        searchTimeOut : null,
         
         close : function () {
             $("#spotlight").hide();
@@ -100,8 +101,21 @@ define(function (require) {
 
             $('#typeahead').keypress(this, function (e) {
                 if (e.which == 13 || e.keyCode == 13) {
-                    that.confirmed($('#typeahead').val());
+                    that.confirmed($('#typeahead').val()); 
                 }
+                if (this.searchTimeOut !== null) {
+                    clearTimeout(this.searchTimeOut);
+                }
+                this.searchTimeOut = setTimeout(function () {
+                	for (var key in GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources) {
+                	    if (GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources.hasOwnProperty(key)) {
+                	    	var dataSource =
+                	    		GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[key];
+                	    	dataSource.searchQuery = $('#typeahead').val();
+                	    	GEPPETTO.Spotlight.requestDataSourceResults(key,dataSource.url,dataSource.crossDomain, true);
+                	    }
+                	}
+                }, 500);
             });
 
             $('#typeahead').bind('typeahead:selected', function (obj, datum, name) {
@@ -241,18 +255,23 @@ define(function (require) {
                 
                 //check the instances
                 if (!suggestionFound) {
-                    window._spotlightInstance = Instances.getInstance([item]);
-                    if (window._spotlightInstance) {
-                        this.loadToolbarFor(window._spotlightInstance);
+                	try{
+                		window._spotlightInstance = Instances.getInstance([item]);
+                		if (window._spotlightInstance) {
+                			this.loadToolbarFor(window._spotlightInstance);
 
-                        if ($(".spotlight-toolbar").length == 0) {
-                            this.loadToolbarFor(window._spotlightInstance);
-                        }
+                			if ($(".spotlight-toolbar").length == 0) {
+                				this.loadToolbarFor(window._spotlightInstance);
+                			}
 
-                        $(".tt-menu").hide();
-                        $(".spotlight-button").eq(0).focus();
-                        $(".spotlight-input").eq(0).focus();
-                    }
+                			$(".tt-menu").hide();
+                			$(".spotlight-button").eq(0).focus();
+                			$(".spotlight-input").eq(0).focus();
+                		}
+                	}catch (e){
+                		//TODO: Simulation Handler throws error when not finding an instance, should probably
+                		//be handled different for Spotlight
+                	}
                 }
             }
         },
@@ -375,6 +394,7 @@ define(function (require) {
 
         /**
          * Requests external data sources. 
+         * 
          */
         addDataSource : function(sources){
         	try {
@@ -383,7 +403,7 @@ define(function (require) {
         			    var obj = sources[key];
         			    var key = this.generateDataSourceKey(key, 0);
         			    this.configuration.SpotlightBar.DataSources[key] = obj;
-        			    this.getDataSourceResults(key, obj.url,obj.crossDomain);
+        			    this.requestDataSourceResults(key, obj.url,obj.crossDomain, false);
         			  }
         		}
         	}
@@ -407,9 +427,14 @@ define(function (require) {
         },
         
         /**
-         * Request data source for results
+         * Requests results for an external data source 
+         * 
+         * @param data_source_name : Name of the Data Source to request results from
+         * @param data_source_url : URL used to request data source results
+         * @param crossDomain : URL allows cross domain
+         * @param update : False if request for data source is the first time, true for update
          */
-        getDataSourceResults : function(data_source_name, data_source_url, crossDomain){
+        requestDataSourceResults : function(data_source_name, data_source_url, crossDomain, update){
         	//not cross domain, get results via java servlet code
         	if(!crossDomain){
         		var parameters = {};
@@ -423,7 +448,7 @@ define(function (require) {
         			dataType: 'text',
         			url: data_source_url,
         			success: function (responseData, textStatus, jqXHR) {
-        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name,JSON.parse(responseData));
+        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name,JSON.parse(responseData),update);
         			},
         			error: function (responseData, textStatus, errorThrown) {
                 		throw ("Error retrieving data sources " + data_source_name +
@@ -437,8 +462,9 @@ define(function (require) {
         
         /**
          * Update the suggestions with results that come back
+         * @param update : False if request for data source is the first time, true for update
          */
-        updateDataSourceResults : function(data_source_name,results){
+        updateDataSourceResults : function(data_source_name,results, update){
         	var responses = results.response.docs;
     		responses.forEach(function(response) {
         		var typeName = response.type;
@@ -448,6 +474,12 @@ define(function (require) {
         		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
         		GEPPETTO.Spotlight.dataSourceResults.add(obj);
         	});
+    		
+			//If it's an update request to show the drop down menu, this for it to show 
+			//updated results
+			if(update){
+				$(".tt-menu").show();
+			}
         },
         
         addSuggestion: function (suggestion, flow) {

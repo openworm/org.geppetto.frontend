@@ -493,17 +493,19 @@ define(function (require) {
                 // TODO: 3) set data for each tab based on results from the model
 
                 markup = (
-                    <Tabs>
-                        <Tabs.Panel title='Tab #1'>
-                            <h2>Content #1 here</h2>
-                        </Tabs.Panel>
-                        <Tabs.Panel title='Tab #2'>
-                            <h2>Content #2 here</h2>
-                        </Tabs.Panel>
-                        <Tabs.Panel title='Tab #3'>
-                            <h2>Content #3 here</h2>
-                        </Tabs.Panel>
-                    </Tabs>
+                    <div id="query-builder-container">
+                        <Tabs>
+                            <Tabs.Panel title='Tab #1'>
+                                <h2>Content #1 here</h2>
+                            </Tabs.Panel>
+                            <Tabs.Panel title='Tab #2'>
+                                <h2>Content #2 here</h2>
+                            </Tabs.Panel>
+                            <Tabs.Panel title='Tab #3'>
+                                <h2>Content #3 here</h2>
+                            </Tabs.Panel>
+                        </Tabs>
+                    </div>
                 );
 
             } else {

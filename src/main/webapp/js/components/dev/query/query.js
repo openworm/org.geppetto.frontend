@@ -94,6 +94,11 @@ define(function (require) {
         },
 
         addResults: function(results){
+            // loop results and unselect all
+            for(var i=0; i<this.results.length; i++){
+                this.results.selected = false;
+            }
+
             this.results.push(results);
             this.notifyChange();
         },
@@ -441,13 +446,80 @@ define(function (require) {
             return Math.floor(Math.random() * (200 + 1));
         },
 
-        runQuery: function(){
-            // TODO: run query
+        // TODO: remove mock query execution - this will probably end up in the datasource
+        executeQuery: function(query, callback){
+            callback();
+        },
 
-            // NOTE: the stuff below will probably happen in the form of a callback once the results are fetched
-            // TODO: store results in the model
-            // TODO: change state to switch to results view
-            this.switchView(true);
+        getCompoundQueryId: function(queryItems){
+            var id = ""
+
+            for(var i=0; i<queryItems.length; i++){
+                id+=queryItems[i].term + queryItems[i].selection;
+            }
+
+            return id;
+        },
+
+        runQuery: function(){
+            if(this.props.model.items.length > 0) {
+
+                // TODO: check if we already have results for th given compound query
+                var compoundId = this.getCompoundQueryId(this.props.model.items);
+                var match = false;
+
+                for(var i=0; i<this.props.model.results.length; i++){
+                    if(this.props.model.results[i].id == compoundId){
+                        match = true;
+                    }
+                }
+
+                if(!match) {
+                    // TODO: if we already have results for the an identical query switch to results and select the right tab
+                    // TODO: build query client object (same as other model objects)
+                    var query = {
+                        items: this.props.model.items.slice(0)
+                    };
+
+                    var that = this;
+                    var queryDoneCallback = function () {
+                        // TODO: store actual results in the model
+                        // store mock results in the model
+                        var queryLabel = "";
+                        for (var i = 0; i < that.props.model.items.length; i++) {
+                            queryLabel += ((i != 0) ? "/" : "") + that.props.model.items[i].term;
+                        }
+
+                        that.props.model.addResults({
+                            id: compoundId,
+                            label: queryLabel,
+                            records: mockResults,
+                            selected: true
+                        });
+
+                        // change state to switch to results view
+                        that.switchView(true);
+                    };
+
+                    // TODO: run query - probably on datasource client object
+                    this.executeQuery(query, queryDoneCallback);
+                } else {
+                    // set the right results item as the selected tab
+                    for(var i=0; i<this.props.model.results.length; i++){
+                        if(this.props.model.results[i].id == compoundId){
+                            this.props.model.results[i].selected = true;
+                        }else {
+                            this.props.model.results[i].selected = false;
+                        }
+                    }
+
+                    // trigger refresh
+                    this.props.model.notifyChange();
+
+                    // change state to switch to results view
+                    this.switchView(true);
+                }
+            }
         },
 
         addQueryItem: function(){
@@ -484,7 +556,7 @@ define(function (require) {
 
                 this.props.model.addItem(item);
             } else{
-                // TODO: throw
+                // TODO: throw massive error
             }
         },
 
@@ -493,23 +565,29 @@ define(function (require) {
 
             // figure out if we are in results view or query builder view
             if(this.state.resultsView){
-                // TODO: if results view, build results markup based on results in the model
-                // TODO: 1) build tab component with focus on most recent tab added
-                // TODO: 2) for each tab put a Griddle configured with appropriate column meta
-                // TODO: 3) set data for each tab based on results from the model
+                // if results view, build results markup based on results in the model
+                // figure out focus tab index (1 based index)
+                var focusTabIndex = 1;
+                for(var i=0; i<this.props.model.results.length; i++){
+                    if(this.props.model.results[i].selected){
+                        focusTabIndex = i + 1;
+                    }
+                }
+
+                // set data for each tab based on results from the model
+                // TODO: for each tab put a Griddle configured with appropriate column meta
+                var tabs = this.props.model.results.map(function (resultsItem) {
+                    return (
+                        <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
+                            <h2>Content here</h2>
+                        </Tabs.Panel>
+                    );
+                }, this);
 
                 markup = (
                     <div id="query-builder-container" className="center-content">
-                        <Tabs>
-                            <Tabs.Panel title='Tab #1'>
-                                <h2>Content #1 here</h2>
-                            </Tabs.Panel>
-                            <Tabs.Panel title='Tab #2'>
-                                <h2>Content #2 here</h2>
-                            </Tabs.Panel>
-                            <Tabs.Panel title='Tab #3'>
-                                <h2>Content #3 here</h2>
-                            </Tabs.Panel>
+                        <Tabs tabActive={focusTabIndex}>
+                            {tabs}
                         </Tabs>
                         <button id="switch-view-btn"
                                 className="fa fa-hand-o-left querybuilder-button"

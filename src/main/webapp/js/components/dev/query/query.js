@@ -333,7 +333,7 @@ define(function (require) {
         render: function () {
             return (
                 <div id="querybuilder-footer">
-                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={this.props.onRun}></button>
+                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={this.props.onRun} />
                     <div id="query-results-label">{this.props.count.toString()} results</div>
                 </div>
             );

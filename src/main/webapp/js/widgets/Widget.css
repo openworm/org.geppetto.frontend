@@ -53,6 +53,18 @@
     color: white;
 }
 
+.ui-dialog .ui-dialog-titlebar-help {
+    float: left;
+    margin-right: 5px;
+    font-size: 15px;
+    color: #fc6320;
+    cursor: pointer;
+}
+
+.ui-dialog .ui-dialog-titlebar-close:hover {
+    color: white;
+}
+
 .ui-dialog .ui-dialog-titlebar {
     margin-left: 5px;
     padding: 0 !important;

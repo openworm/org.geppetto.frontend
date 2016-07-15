@@ -366,7 +366,7 @@ define(function (require) {
             },
 
             /**
-             * hides / shows the exit button
+             * hides / shows the title bar
              */
             showTitleBar: function (show) {
                 if (show) {
@@ -374,8 +374,7 @@ define(function (require) {
                 } else {
                     $("#" + this.id).parent().find(".ui-dialog-titlebar").hide();
                 }
-            }
-            ,
+            },
 
             /**
              * hides / shows the exit button
@@ -386,6 +385,14 @@ define(function (require) {
                 } else {
                     $("#" + this.id).parent().find(".ui-dialog-titlebar-close").hide();
                 }
+            },
+
+            addHelpButton: function (helpCallback) {
+                var parent = $("#" + this.id).parent();
+                parent.find(".historyIcon").before("<div class='fa fa-question ui-dialog-titlebar-help'></div>");
+                parent.find("div.ui-dialog-titlebar-help").click(function () {
+                    helpCallback();
+                });
             },
 
             /**

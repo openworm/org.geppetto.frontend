@@ -57,6 +57,7 @@ define(function (require) {
         instances: null,
         dataSourceResults : {},
         searchTimeOut : null,
+        updateResults : false,
         
         close : function () {
             $("#spotlight").hide();
@@ -112,7 +113,8 @@ define(function (require) {
                 	    	var dataSource =
                 	    		GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[key];
                 	    	dataSource.searchQuery = $('#typeahead').val();
-                	    	GEPPETTO.Spotlight.requestDataSourceResults(key,dataSource.url,dataSource.crossDomain, true);
+                	    	GEPPETTO.Spotlight.updateResults = true;
+                	    	GEPPETTO.Spotlight.requestDataSourceResults(key,dataSource.url,dataSource.crossDomain);
                 	    }
                 	}
                 }, 500);
@@ -434,7 +436,7 @@ define(function (require) {
          * @param crossDomain : URL allows cross domain
          * @param update : False if request for data source is the first time, true for update
          */
-        requestDataSourceResults : function(data_source_name, data_source_url, crossDomain, update){
+        requestDataSourceResults : function(data_source_name, data_source_url, crossDomain){
         	//not cross domain, get results via java servlet code
         	if(!crossDomain){
         		var parameters = {};
@@ -448,7 +450,7 @@ define(function (require) {
         			dataType: 'text',
         			url: data_source_url,
         			success: function (responseData, textStatus, jqXHR) {
-        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name,JSON.parse(responseData),update);
+        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name,JSON.parse(responseData));
         			},
         			error: function (responseData, textStatus, errorThrown) {
                 		throw ("Error retrieving data sources " + data_source_name +
@@ -464,7 +466,7 @@ define(function (require) {
          * Update the suggestions with results that come back
          * @param update : False if request for data source is the first time, true for update
          */
-        updateDataSourceResults : function(data_source_name,results, update){
+        updateDataSourceResults : function(data_source_name,results){
         	var responses = results.response.docs;
     		responses.forEach(function(response) {
         		var typeName = response.type;
@@ -477,8 +479,10 @@ define(function (require) {
     		
 			//If it's an update request to show the drop down menu, this for it to show 
 			//updated results
-			if(update){
-				$(".tt-menu").show();
+			if(this.updateResults){
+				var value = $("#typeahead").val();
+				$("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+                $("#typeahead").typeahead('val', value);
 			}
         },
         

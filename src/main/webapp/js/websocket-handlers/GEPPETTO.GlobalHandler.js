@@ -128,7 +128,7 @@ define(function (require) {
         
         messageHandler[messageTypes.DATASOURCE_FETCHED] = function (payload) {
         	var message = JSON.parse(payload.data_source_results_fetched)
-        	GEPPETTO.Spotlight.updateDataSourceResults(message.data_source_name,JSON.parse(message.results),true);
+        	GEPPETTO.Spotlight.updateDataSourceResults(message.data_source_name,JSON.parse(message.results));
         };
 
         // Simulation server became available

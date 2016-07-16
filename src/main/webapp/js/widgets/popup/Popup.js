@@ -189,9 +189,13 @@ define(function (require) {
         		}
     		};
       	
+//        	componentFactory.getComponent('FORM',
+//        			{schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler},
+//        			document.getElementById(this.id));
+
         	componentFactory.getComponent('FORM',
-        			{schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler},
-        			document.getElementById(this.id));
+        			{id: "taka", name:"paka", schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler});
+    		
         },
 
         /**

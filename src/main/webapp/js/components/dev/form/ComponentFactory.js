@@ -35,11 +35,58 @@ define(function (require) {
 	var React = require('react');
 	var ReactDOM = require('react-dom');
 	var formComp = require('jsx!components/dev/form/Form');
+	var panelComp = require('jsx!components/dev/panel/Panel');
 	
     var componentFactory = {
 		getComponent: function(component, properties, container){
+			//Let's create a dialog
+			if (container == undefined){
+				var containerId = properties.id + "_container";
+				var containerName = properties.name + " Widget";
+				
+				//create the dialog window for the widget
+                var dialog = $("<div id=" + containerId + " class='dialog' title='" + properties.name + "'></div>").dialog(
+                    {
+                        resizable: true,
+                        draggable: true,
+                        top: 10,
+                        height: 300,
+                        width: 350,
+                        close: function (event, ui) {
+                            if (event.originalEvent &&
+                                $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
+                                $("#" + this.id).remove();
+                            }
+                        }
+                    });
+
+                var dialogParent = dialog.parent();
+                var that = this;
+
+                //add history
+                dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='fa fa-history historyIcon'></div>");
+                dialogParent.find("div.historyIcon").click(function (event) {
+                    that.showHistoryMenu(event);
+                    event.stopPropagation();
+                });
+
+                //remove the jQuery UI icon
+                dialogParent.find("button.ui-dialog-titlebar-close").html("");
+                dialogParent.find("button").append("<i class='fa fa-close'></i>");
+
+
+                //Take focus away from close button
+                dialogParent.find("button.ui-dialog-titlebar-close").blur();	
+                
+                container = dialog.get(0);
+			}
+			
 			if (component == 'FORM'){
     	      	ReactDOM.render(React.createFactory(formComp)(properties), container);
+			}
+			else if (component == 'PANEL'){
+    	      	//ReactDOM.render(React.createFactory(panelComp)(properties), container);
+				ReactDOM.render(React.createElement(panelComp, properties), container);
 			}
 		}
     };

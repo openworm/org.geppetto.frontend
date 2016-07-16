@@ -406,7 +406,6 @@ define(function (require) {
             REMOVE_TREEVISUALISERD3_WIDGETS: "Tree Visualiser D3 widget(s) removed",
             REMOTE_VARIABLEVISUALISER_WIDGETS: "Variable Visualiser widget(s) removed",
             REMOVE_CONNECTIVITY_WIDGETS: "Connectivity widget(s) removed",
-            REMOVE_FORM_WIDGETS: "Form widget(s) removed",
             NON_EXISTENT_WIDGETS: "Unable to remove widgets, type doesn't exist",
 
             /**

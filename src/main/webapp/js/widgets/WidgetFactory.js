@@ -65,7 +65,7 @@ define(function (require) {
             TREEVISUALISERD3: 4,
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
-            BUTTONBAR: 7
+            BUTTONBAR: 7,
             //WIDGETNAME: N
         };
 
@@ -82,7 +82,6 @@ define(function (require) {
             ButtonBarController: null,
             treeVisDatController: null,
             treeVis3DController: null,
-            
             //WIDGETNAMEController: null
 
             /**
@@ -126,7 +125,6 @@ define(function (require) {
                     case GEPPETTO.Widgets.BUTTONBAR:
                         widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget();
                         break;
-                        
                     //Use as template for new widgets
                     //create WIDGETNAME
                     //case GEPPETTO.Widgets.WIDGETNAME:

@@ -7,6 +7,7 @@ define(function(require) {
 	var ReactDOM = require('react-dom');
 
 	require('./components');
+	require('./ComponentsInitialization')(GEPPETTO);
 
 	GEPPETTO.on('show_spinner', function(label) {
 		var spinnerFactory = React.createFactory(LoadingSpinner);

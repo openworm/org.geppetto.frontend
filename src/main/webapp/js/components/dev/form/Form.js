@@ -50,20 +50,19 @@ define(function (require) {
 	var uiSchema ={};
 	
 	var formComponent = React.createClass({
-		         render: function(){
-		             return (
-		            		 <Form id={this.props.id} 
-		            		 	className="geppettoForm"
-		            		 	schema={this.props.schema}
-		            		    formData={this.props.formData}
-		            		 	uiSchema={uiSchema}
-		            		 	onChange={this.props.changeHandler}
-		            		    onSubmit={this.props.submitHandler}
-		            		    onError={this.props.errorHandler} />
-		             		);
-		         }
-		     });
+		render: function(){
+		     return (
+		    		 <Form id={this.props.id} 
+		    		 	className="geppettoForm"
+		    		 	schema={this.props.schema}
+		    		    formData={this.props.formData}
+		    		 	uiSchema={uiSchema}
+		    		 	onChange={this.props.changeHandler}
+		    		    onSubmit={this.props.submitHandler}
+		    		    onError={this.props.errorHandler} />
+		     		);
+		 	}
+		});
 	
 	return formComponent;
-	
 });

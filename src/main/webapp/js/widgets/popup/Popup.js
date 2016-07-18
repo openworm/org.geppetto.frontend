@@ -42,6 +42,8 @@ define(function (require) {
     var $ = require('jquery');
     
     var componentFactory = require('components/dev/form/ComponentFactory');
+    
+    var React = require('react');
 
     /**
      * Private function to hookup custom event handlers
@@ -193,9 +195,18 @@ define(function (require) {
 //        			{schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler},
 //        			document.getElementById(this.id));
 
-        	componentFactory.getComponent('FORM',
-        			{id: "taka", name:"paka", schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler});
+//        	componentFactory.addComponent('FORM',
+//        			{id: "takaForm", name:"paka", schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler});
+        	
     		
+        	var panelChildren = [];
+        	panelChildren.push(componentFactory.getComponent('DIVFEO',{id:"pp", text:'xaka'}));
+        	panelChildren.push(componentFactory.getComponent('FORM',{id: "pp2", name:"mm", schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler}));
+        	
+        	var panelComponent = componentFactory.addComponent('PANEL',	{id: "kklr", name:"pl"});
+        	panelComponent.addChildren(panelChildren);
+        	console.log(panelComponent);
+        	
         },
 
         /**

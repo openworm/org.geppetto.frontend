@@ -36,16 +36,36 @@ define(function (require) {
 	var ReactDOM = require('react-dom');
 	var formComp = require('jsx!components/dev/form/Form');
 	var panelComp = require('jsx!components/dev/panel/Panel');
+	var divfeoComp = require('jsx!components/dev/divfeo/Divfeo');
 	
     var componentFactory = {
-		getComponent: function(component, properties, container){
+		getComponent: function(component, properties){
+			
+			if (component == 'FORM'){
+    	      	return React.createFactory(formComp)(properties);
+			}
+			else if (component == 'PANEL'){
+				return React.createFactory(panelComp)(properties);
+//    	      	ReactDOM.render(React.createFactory(panelComp)(properties), container);
+//				ReactDOM.render(React.createElement(panelComp, properties, panelChildren), container);
+			}
+			else if (component == 'DIVFEO'){
+				return React.createFactory(divfeoComp)(properties);
+			}
+		},
+		
+		addComponent: function(component, properties, container){
+			return this.renderComponent(this.getComponent(component, properties), container);
+		},
+		
+		renderComponent: function(component, container){
 			//Let's create a dialog
 			if (container == undefined){
-				var containerId = properties.id + "_container";
-				var containerName = properties.name + " Widget";
+				var containerId = component.props.id + "_container";
+				var containerName = component.props.name + " Widget";
 				
 				//create the dialog window for the widget
-                var dialog = $("<div id=" + containerId + " class='dialog' title='" + properties.name + "'></div>").dialog(
+                var dialog = $("<div id=" + containerId + " class='dialog' title='" + containerName + "'></div>").dialog(
                     {
                         resizable: true,
                         draggable: true,
@@ -81,13 +101,7 @@ define(function (require) {
                 container = dialog.get(0);
 			}
 			
-			if (component == 'FORM'){
-    	      	ReactDOM.render(React.createFactory(formComp)(properties), container);
-			}
-			else if (component == 'PANEL'){
-    	      	//ReactDOM.render(React.createFactory(panelComp)(properties), container);
-				ReactDOM.render(React.createElement(panelComp, properties), container);
-			}
+			return ReactDOM.render(component, container);
 		}
     };
 	

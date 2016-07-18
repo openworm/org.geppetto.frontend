@@ -615,7 +615,7 @@ define(function (require) {
                 }, this);
 
                 markup = (
-                    <div id="query-builder-container" className="center-content">
+                    <div id="query-results-container" className="center-content">
                         <Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>

@@ -78,6 +78,16 @@
     top: 30%;
 }
 
+#query-results-container {
+    position: absolute !important;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 800px;
+    top: 20%;
+}
+
 #add-query-btn {
     float: left;
 }

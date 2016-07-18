@@ -23,13 +23,16 @@
   cursor: pointer;
   display: block;
   color: #A9A9A9;
+  font-weight: bold;
+  font-size: 20px;
 }
 
 .tabs-menu-item:not(.is-active) a:hover,
 .tabs-menu-item.is-active a {
-  color: #3498DB;
+  color: #fd6808;
 }
 
 .tab-panel {
-  padding: 10px 50px;
+  padding: 10px 10px;
+  height: 475px;
 }

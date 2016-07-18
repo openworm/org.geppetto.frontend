@@ -114,6 +114,24 @@ define(function (require) {
         }
     };
 
+    // column metadata for display of query results
+    var queryResultsColumnMeta = [
+        {
+            "columnName": "name",
+            "order": 1,
+            "locked": false,
+            "visible": true,
+            "displayName": "Name"
+        },
+        {
+            "columnName": "description",
+            "order": 2,
+            "locked": false,
+            "visible": true,
+            "displayName": "Description"
+        }
+    ];
+
     // TODO: remove this mock data - it's just for development
     var mockTermsData = ['saddle', 'medulla', 'betulla', 'test', 'nonna', 'leg', 'arm', 'bug', 'longino'];
 
@@ -131,7 +149,15 @@ define(function (require) {
         { name: 'VGlut-F-800176', description: 'Test description a bit longer even more indeed'},
         { name: 'DL1 Clone of Nonna 007', description: 'Test description'},
         { name: 'VFB-123-123-123', description: 'Test description'},
-        { name: 'VGlut-000-000', description: 'Test description blah blah'}
+        { name: 'VGlut-000-000', description: 'Test description blah blah'},
+        { name: 'JFRC2_test', description: 'Test description'},
+        { name: 'VGlut-F-000345', description: 'Test description'},
+        { name: 'DM5 Clone of Yu 2014', description: 'Test description a bit longer'},
+        { name: 'Gad1-F-200234', description: 'Test description a bit longer even more indeed'},
+        { name: 'VGlut-F-800133', description: 'Test description a bit longer even more indeed'},
+        { name: 'DL2 Clone of Nonna 008', description: 'Test description'},
+        { name: 'VFB-123-123-666', description: 'Test description'},
+        { name: 'VGlut-000-123', description: 'Test description blah blah'}
     ];
 
     var mockSourceData = [
@@ -360,7 +386,9 @@ define(function (require) {
 
         getDefaultProps: function () {
             return {
-                model: null
+                model: {},
+                resultsColumns: ['name', 'description'],
+                resultsColumnMeta: {}
             };
         },
 
@@ -575,11 +603,13 @@ define(function (require) {
                 }
 
                 // set data for each tab based on results from the model
-                // TODO: for each tab put a Griddle configured with appropriate column meta
+                // for each tab put a Griddle configured with appropriate column meta
                 var tabs = this.props.model.results.map(function (resultsItem) {
                     return (
                         <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
-                            <h2>Content here</h2>
+                            <Griddle columns={this.props.resultsColumns} results={this.props.model.results[focusTabIndex - 1].records}
+                            showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={400}
+                            useGriddleStyles={false} columnMetadata={this.props.resultsColumnMeta} />
                         </Tabs.Panel>
                     );
                 }, this);
@@ -631,7 +661,7 @@ define(function (require) {
 
     var renderQueryComponent = function(){
         ReactDOM.render(
-            <QueryBuilder model={queryBuilderModel} />,
+            <QueryBuilder model={queryBuilderModel} resultsColumnMeta={queryResultsColumnMeta} />,
             document.getElementById("querybuilder")
         );
     };

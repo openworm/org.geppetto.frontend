@@ -272,6 +272,29 @@ define(function (require) {
                 }
                 return returnMessage;
             },
+            
+            showTutorial : function(mode) {
+            	 var returnMessage;
+
+                 if (mode) {
+                     GEPPETTO.trigger('show:tutorial');
+                     returnMessage = GEPPETTO.Resources.SHOW_HELP_WINDOW;
+                 }
+                 else {
+                     var modalVisible = $('#help-modal').hasClass('in');
+                     //don't try to hide already hidden help window
+                     if (!modalVisible) {
+                         returnMessage = GEPPETTO.Resources.HELP_ALREADY_HIDDEN;
+                     }
+                     //hide help window
+                     else {
+                         GEPPETTO.trigger('simulation:hide_helpwindow');
+                         returnMessage = GEPPETTO.Resources.HIDE_HELP_WINDOW;
+                         $('#help-modal').modal('hide');
+                     }
+                 }
+                 return returnMessage;
+            },
 
             /**
              *

@@ -1,0 +1,22 @@
+{
+  "name": "tutorial",
+  "version": "0.0.1",
+  "authors": [
+    "Matt Olson <mattlolson@gmail.com>"
+  ],
+  "description": "geppetto tutorial components",
+  "moduleType": [
+    "amd"
+  ],
+  "main":"IntroModal",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    ".",
+    "test",
+    "tests"
+  ]
+}

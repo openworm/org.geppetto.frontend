@@ -110,11 +110,10 @@ define(function (require) {
                 this.searchTimeOut = setTimeout(function () {
                 	for (var key in GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources) {
                 	    if (GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources.hasOwnProperty(key)) {
-                	    	var dataSource =
-                	    		GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[key];
+                	    	var dataSource = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[key];
                 	    	dataSource.searchQuery = $('#typeahead').val();
                 	    	GEPPETTO.Spotlight.updateResults = true;
-                	    	GEPPETTO.Spotlight.requestDataSourceResults(key,dataSource.url,dataSource.crossDomain);
+                	    	GEPPETTO.Spotlight.requestDataSourceResults(key, dataSource.url, dataSource.crossDomain);
                 	    }
                 	}
                 }, 500);
@@ -405,7 +404,7 @@ define(function (require) {
         			    var obj = sources[key];
         			    var key = this.generateDataSourceKey(key, 0);
         			    this.configuration.SpotlightBar.DataSources[key] = obj;
-        			    this.requestDataSourceResults(key, obj.url,obj.crossDomain, false);
+        			    this.requestDataSourceResults(key, obj.url,obj.crossDomain);
         			  }
         		}
         	}
@@ -450,16 +449,13 @@ define(function (require) {
         			dataType: 'text',
         			url: data_source_url,
         			success: function (responseData, textStatus, jqXHR) {
-        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name,JSON.parse(responseData));
+        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name, JSON.parse(responseData));
         			},
         			error: function (responseData, textStatus, errorThrown) {
-                		throw ("Error retrieving data sources " + data_source_name +
-                				"  from " + data_source_url);
+                		throw ("Error retrieving data sources " + data_source_name + "  from " + data_source_url);
         			}
         		});
         	}
-
-        	return GEPPETTO.Resources.RUNNING_SCRIPT;
         },
         
         /**

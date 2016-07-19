@@ -264,32 +264,45 @@ define(function (require) {
 		manageLeftClickEvent: function (event) {
 			var aElement = this.getTriggeredElement(event);
 			var nodeInstancePath = aElement[0].getAttribute("instancepath");
-
+			var type = aElement[0].getAttribute("type");
+			var widget;
+			
 			if (nodeInstancePath != null || undefined) {
-				//remove first part of instance path
-				var id = nodeInstancePath.replace("Model.neuroml.","");
-				var model;
-				var variable;
-				try {
-					//attempt to find variable from id 
-					model = eval(id);
-					model = model.getType();
-					//use found model type to find all HTML variables within
-					variable = 
-						GEPPETTO.ModelFactory.getAllVariablesOfMetaType(model, GEPPETTO.Resources.HTML_TYPE);
-				}
-				catch (e) {
-					//No instance found, look for all HTML Types at root and 
-					//look for unique identifier
-					model = Model.neuroml.getTypes();
-					variable = 
-						GEPPETTO.ModelFactory.getHTMLVariable(model, GEPPETTO.Resources.HTML_TYPE,id);
-				}
-				var mdPopup = G.addWidget(1).setName('Information for ' +  id);
-				if(variable!==null && variable != undefined){
-					mdPopup.setHTML(variable);
+				//Type attribute to determine if HTML link is of visual or variable type
+				if(type!=null || undefined){
+					if(type=="variable"){
+						var obj = eval(nodeInstancePath);
+						widget = G.addWidget(Widgets.PLOT).plotFunctionNode(obj);
+					}
+					else if(type=="visual"){
+	                    GEPPETTO.Console.executeCommand(nodeInstancePath+".show(true);");
+					}
 				}else{
-					mdPopup.setMessage("No HTML for element " + nodeInstancePath);
+					//remove first part of instance path
+					var id = nodeInstancePath.replace("Model.neuroml.","");
+					var model;
+					var variable;
+					try {
+						//attempt to find variable from id 
+						model = eval(id);
+						model = model.getType();
+						//use found model type to find all HTML variables within
+						variable = 
+							GEPPETTO.ModelFactory.getAllVariablesOfMetaType(model, GEPPETTO.Resources.HTML_TYPE);
+					}
+					catch (e) {
+						//No instance found, look for all HTML Types at root and 
+						//look for unique identifier
+						model = Model.neuroml.getTypes();
+						variable = 
+							GEPPETTO.ModelFactory.getHTMLVariable(model, GEPPETTO.Resources.HTML_TYPE,id);
+					}
+					widget = G.addWidget(1).setName('Information for ' +  id);
+					if(variable!==null && variable != undefined){
+						widget.setHTML(variable);
+					}else{
+						widget.setMessage("No HTML for element " + nodeInstancePath);
+					}
 				}
 				
 				//generate randm position in screen for popup to avoid them showing up in same place
@@ -299,7 +312,7 @@ define(function (require) {
 				max = screen.width - this.size.width;
 				min = this.size.width;
 				var y = Math.floor(Math.random() * (max - min)) + min;
-	            mdPopup.setPosition(y,x);
+				widget.setPosition(y,x);
 			}
 		},
 

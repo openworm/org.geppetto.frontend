@@ -61,9 +61,6 @@ define(function (require) {
         require("widgets/connectivity/config");
         //Buttonbar widget
         require("widgets/buttonBar/config");
-        //Form widget
-        require("widgets/form/config")(GEPPETTO);
-        
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");

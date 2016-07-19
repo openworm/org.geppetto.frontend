@@ -38,7 +38,7 @@ define(function (require) {
         Button = require('mixins/bootstrap/button'),
         GEPPETTO = require('geppetto');
 
-    var Modal = React.createClass({
+    return React.createClass({
         mixins: [
             require('jsx!mixins/bootstrap/modal')
         ],
@@ -46,11 +46,13 @@ define(function (require) {
         dontShowNextTime: function(val){
             console.log(val);
         },
+        
+        populateTutorial : function(configuration){
+        	
+        },
 
         startTutorial: function(){
             GEPPETTO.tutorialEnabled = true;
-            GEPPETTO.trigger('start:tutorial');
-            this.hide();
         },
 
         skipTutorial: function() {
@@ -58,8 +60,12 @@ define(function (require) {
             this.hide();
         },
 
+        componentDidMount:function(){
+        	
+        },
+        
         render: function () {
-            return <div className="modal fade lead pagination-centered welcome-modal" data-backdrop="static" data-keyboard="false">
+            return <div className="modal fade lead pagination-centered welcome-modal" data-backdrop="static" data-keyboard="false" id="tutorial">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-body container">
@@ -75,8 +81,8 @@ define(function (require) {
                                 In fact, we reckon this only represents about 20% of what you can expect in the end. We hope you'll enjoy it.
                                 </div>
 
-                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="fa-comment" onClick={this.startTutorial}>Start Tutorial</Button>
-                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="fa-step-forward" onClick={this.skipTutorial}>Skip Tutorial</Button>
+                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="fa fa-comment" onClick={this.startTutorial}>Start Tutorial</Button>
+                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="fa fa-step-forward" onClick={this.skipTutorial}>Skip Tutorial</Button>
 
                                 <div className="row disable-welcome">
                                     <span><input id="welcomeMsgCookie" type="checkbox" onChange={this.dontShowNextTime}/> Don't show next time I visit Geppetto</span>
@@ -89,6 +95,4 @@ define(function (require) {
             </div>
         }
     });
-
-    ReactDOM.render(React.createFactory(Modal)({show:true}), document.getElementById('modal-region'));
 });

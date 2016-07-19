@@ -61,7 +61,8 @@ var Events = {
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
     Spotlight_closed : "spotlight:closed",
-    Geppetto_loaded : "geppetto:loaded"
+    Show_Tutorial : "geppetto:show_tutorial",
+    Hide_Tutorial : "geppetto:hide_tutorial"
 };
 define(function (require) {
     return function (GEPPETTO) {
@@ -88,6 +89,7 @@ define(function (require) {
                 });
                 GEPPETTO.on(Events.Experiment_loaded, function () {
                     GEPPETTO.trigger("hide:spinner");
+                    GEPPETTO.trigger(Events.Show_Tutorial);
                 });
                 GEPPETTO.on(Events.Project_loaded, function () {
                 	GEPPETTO.Main.startStatusWorker();

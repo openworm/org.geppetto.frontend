@@ -11,12 +11,8 @@ define(function (require) {
         
         componentDidMount: function() {
         	
-        	GEPPETTO.on("show:tutorial",function(){
-        		ReactDOM.render(React.createFactory(TutorialModal)({show:true}), document.getElementById('modal-region'));
-//
-//				$("#help-modal").css("margin-right", "-20px");
-//				$('#help-modal').css('max-height', $(window).height() * 0.7);
-//				$('#help-modal .modal-body').css('max-height', $(window).height() * 0.5);
+        	GEPPETTO.on(Events.Show_Tutorial,function(){
+        		ReactDOM.render(React.createFactory(TutorialModal)({show:true, tutorial : {"name":"hello"}}), document.getElementById('modal-region'));
             });
         },
 

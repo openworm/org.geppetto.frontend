@@ -111,12 +111,13 @@ define(function (require) {
                 	for (var key in GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources) {
                 	    if (GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources.hasOwnProperty(key)) {
                 	    	var dataSource = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[key];
-                	    	dataSource.searchQuery = $('#typeahead').val();
+                	    	var searchQuery = $('#typeahead').val();
+                	    	var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
                 	    	GEPPETTO.Spotlight.updateResults = true;
-                	    	GEPPETTO.Spotlight.requestDataSourceResults(key, dataSource.url, dataSource.crossDomain);
+                	    	GEPPETTO.Spotlight.requestDataSourceResults(key, url, dataSource.crossDomain);
                 	    }
                 	}
-                }, 500);
+                }, 150);
             });
 
             $('#typeahead').bind('typeahead:selected', function (obj, datum, name) {
@@ -404,7 +405,6 @@ define(function (require) {
         			    var obj = sources[key];
         			    var key = this.generateDataSourceKey(key, 0);
         			    this.configuration.SpotlightBar.DataSources[key] = obj;
-        			    this.requestDataSourceResults(key, obj.url,obj.crossDomain);
         			  }
         		}
         	}
@@ -468,7 +468,14 @@ define(function (require) {
         		var typeName = response.type;
         		var obj = {};
         		obj["label"] = response[GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].label];
-        		obj["actions"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+        		obj["id"] = response[GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].id];
+        		//replace $ID$ with one returned from server for actions
+        		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+        		var newActions = actions.slice(0);
+        		for(var i=0; i < actions.length; i++) {
+        			 newActions[i] = newActions[i].replace('$ID$', obj["id"]);
+        		}
+        		obj["actions"] = newActions;
         		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
         		GEPPETTO.Spotlight.dataSourceResults.add(obj);
         	});

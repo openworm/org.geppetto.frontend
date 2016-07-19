@@ -44,7 +44,6 @@ define(function (require) {
     TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
     VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
     ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
-    FormController = require('widgets/form/controllers/FormController');
     //Use as template for new widgets
     //WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
 
@@ -67,7 +66,6 @@ define(function (require) {
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
-            FORM: 8
             //WIDGETNAME: N
         };
 
@@ -84,8 +82,6 @@ define(function (require) {
             ButtonBarController: null,
             treeVisDatController: null,
             treeVis3DController: null,
-            formController: null,
-            
             //WIDGETNAMEController: null
 
             
@@ -140,11 +136,6 @@ define(function (require) {
                     case GEPPETTO.Widgets.BUTTONBAR:
                         widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget();
                         break;
-                    //create form remote simulator controller
-                    case GEPPETTO.Widgets.FORM:
-                        widget = this.getController(GEPPETTO.Widgets.FORM).addFormWidget();
-                        break;
-                        
                     //Use as template for new widgets
                     //create WIDGETNAME
                     //case GEPPETTO.Widgets.WIDGETNAME:
@@ -183,8 +174,6 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
                     case GEPPETTO.Widgets.BUTTONBAR:
                         return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
-                    case GEPPETTO.Widgets.FORM:
-                        return GEPPETTO.Resources.REMOVE_FORM_WIDGETS;
                     //Use as template for new widgets
                     //case GEPPETTO.Widgets.WIDGETNAME:
                     //    return GEPPETTO.Resources.REMOVE_WIDGETNAME_WIDGETS;
@@ -241,12 +230,6 @@ define(function (require) {
                         this.buttonBarController = new ButtonBarController();
                     }
                     return this.buttonBarController;
-                }
-                else if (type == GEPPETTO.Widgets.FORM) {
-                    if (this.formController == null || undefined) {
-                        this.formController = new FormController();
-                    }
-                    return this.formController;
                 }
                 //Use as template for new widgets
                 //else if (type == GEPPETTO.Widgets.WIDGETNAME) {

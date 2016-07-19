@@ -38,7 +38,8 @@ define(function (require) {
 		var ReactDOM = require('react-dom');
 		var formComp = require('jsx!components/dev/form/Form');
 		var panelComp = require('jsx!components/dev/panel/Panel');
-		var divfeoComp = require('jsx!components/dev/divfeo/Divfeo');
+		var logoComp = require('jsx!components/dev/logo/Logo');
+		var loadingSpinner = require('jsx!./loadingspinner/LoadingSpinner');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -49,8 +50,11 @@ define(function (require) {
 				else if (component == 'PANEL'){
 					return React.createFactory(panelComp)(properties);
 				}
-				else if (component == 'DIVFEO'){
-					return React.createFactory(divfeoComp)(properties);
+				else if (component == 'LOGO'){
+					return React.createFactory(logoComp)(properties);
+				}
+				else if (component == 'LOADINGSPINNER'){
+					return React.createFactory(loadingSpinner)(properties);
 				}
 			},
 			

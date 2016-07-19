@@ -64,14 +64,23 @@ define(function(require) {
 					// this.setProps({text: GEPPETTO.Resources.SPOTLIGHT_HINT});
 				}
 			}).bind(this), 3000);
+			
+			GEPPETTO.on('spin_logo', function(label) {
+				$("." + this.props.logo).addClass("fa-spin").attr('title', 'Loading data');
+			});
+
+			GEPPETTO.on('stop_spin_logo', function(label) {
+				$("." + this.props.logo).removeClass("fa-spin").attr('title', '');;
+			});
 		},
 				
 		render: function () {
+			
             return (
             	<div className="modal fade" id="loading-spinner">
             		<div className="spinner-backdrop">
 	            		<div className="spinner-container">
-	            			<div className="gpt-gpt_logo fa-spin"></div>
+	            			<div className={this.props.logo + " fa-spin"}></div>
 	            			<p id="loadingmodaltext" className="orange">{this.props.text}</p>
 	            		</div>
             		</div>

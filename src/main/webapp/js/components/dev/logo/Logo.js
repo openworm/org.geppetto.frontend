@@ -37,5 +37,15 @@ define(function(require) {
     link.href = "geppetto/js/components/dev/logo/logo.css";
     document.getElementsByTagName("head")[0].appendChild(link);
     
-    $("#geppettologo").append('<div class="gpt-gpt_logo"></div>');
-})
+    var React = require('react');
+	
+	var logoDiv = React.createClass({
+         render: function(){
+             return (
+            		 <div className={this.props.logo}></div>
+             		);
+         }
+     });
+	
+	return logoDiv;
+});

@@ -40,12 +40,10 @@ define(function (require) {
     link.href = "geppetto/js/components/dev/form/Form.css";
     document.getElementsByTagName("head")[0].appendChild(link);
 	
-	//https://github.com/mozilla-services/react-jsonschema-form
 	var React = require('react');
 	var reactJsonSchemaForm = require('./react-jsonschema-form');
 	
 	var Form = reactJsonSchemaForm.default;
-	
 
 	var uiSchema ={};
 	

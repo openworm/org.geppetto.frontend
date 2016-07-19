@@ -45,35 +45,6 @@ define(function (require) {
 	//http://blog.krawaller.se/posts/a-react-app-demonstrating-css3-flexbox/
 	//http://jaketrent.com/post/send-props-to-children-react/
 	
-	//http://roylee0704.github.io/react-flexbox-grid/
-	//https://github.com/STRML/react-grid-layout
-	//https://github.com/byronmwong/react-flexbox-layout
-	
-//	var parentoptions = {
-//			  flexDirection: ["row","row-reverse","column","column-reverse"],
-//			  justifyContent: ["flex-start","flex-end","center","space-between","space-around"],
-//			  alignItems: ["flex-start","flex-end","center","stretch","baseline"],
-//			  flexWrap: ["nowrap","wrap","wrap-reverse"],
-//			  alignContent: ["flex-start","flex-end","center","stretch","space-between","space-around"]
-//			};
-//	
-//	var childoptions = {
-//			  alignSelf: ["auto","flex-start","flex-end","center","baseline","stretch"],
-//			  flexGrow: _.range(0,6),
-//			  order: _.range(-10,11)
-//			};
-	
-//	var ItemComponent = React.createClass({
-//	    render: function() {
-//	        return (
-//	            <div className="pakito">
-//	               
-//	            </div>
-//	        );
-//	    }
-//	});
-	
-	
 	var defaultParentStyle = {'flexDirection':'column','justifyContent':'flex-start','alignItems':'flex-start','flexWrap':'nowrap','alignContent':'flex-start'};
 	var defaultChildStyle = {'alignSelf': 'auto', 'flexGrow': 0, 'order': 0, 'display': 'inline-block'};
 	
@@ -106,13 +77,12 @@ define(function (require) {
          render: function(){
         	 var itemComponents = this.state.items.map(function (item) {		            			 
     			 return (<div key={item.props.id} style={defaultChildStyle}>{item}</div>);
-        		 //return (<ItemComponent >);
     		 });
         	 
              return (
-            		 <div className="panelContainer" style={this.props.parentStyle}>
-            		 	{itemComponents}
-            		 </div>
+        		 <div className="panelContainer" style={this.props.parentStyle}>
+        		 	{itemComponents}
+        		 </div>
              );
          }
      });

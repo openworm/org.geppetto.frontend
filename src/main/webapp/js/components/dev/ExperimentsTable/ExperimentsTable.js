@@ -356,7 +356,7 @@ define(function (require) {
                         <i className='fa fa-cloud-download fa-lg' rel='tooltip' title='Download Models'></i>
                     </a>
                     <a className='cloneIcon' onClick={this.cloneExperiment} experimentId={this.props.experiment.getId()} id={cloneIconId}>
-                     <i className='fa fa-plus fa-lg' rel='tooltip' title='Clone Experiment'></i>
+                     <i className='fa fa-clone fa-lg' rel='tooltip' title='Clone Experiment'></i>
                  </a>
                 </div>);
         }

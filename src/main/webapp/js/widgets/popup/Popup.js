@@ -40,8 +40,6 @@ define(function (require) {
 
     var Widget = require('widgets/Widget');
     var $ = require('jquery');
-    
-    var React = require('react');
 
     /**
      * Private function to hookup custom event handlers
@@ -120,10 +118,8 @@ define(function (require) {
                 hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
                 GEPPETTO.Console.log("Hooked up custom handlers for " + this.id);
             }
-            
             return this;
         },
-        
         /**
          * Sets the message that is displayed inside the widget through an instance of type Text
          *

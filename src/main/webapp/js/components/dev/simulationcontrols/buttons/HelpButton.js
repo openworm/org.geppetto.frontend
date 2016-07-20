@@ -52,7 +52,7 @@ define(function (require) {
             });
         	
             GEPPETTO.on('simulation:hide_helpwindow',function(){
-            	//GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
+            	GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
             });
         },
 

@@ -43,11 +43,13 @@ define(function (require) {
         var Library = require('model/Library');
         var Type = require('model/Type');
         var Variable = require('model/Variable');
+        var Value = require('model/Value');
         var Datasource = require('model/Datasource');
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');
         var ArrayType = require('model/ArrayType');
         var ImportType = require('model/ImportType');
+        var ImportValue = require('model/ImportValue');
         var Instance = require('model/Instance');
         var ArrayInstance = require('model/ArrayInstance');
         var ArrayElementInstance = require('model/ArrayElementInstance');
@@ -60,7 +62,7 @@ define(function (require) {
         var AConnectionCapability = require('model/AConnectionCapability');
         var AParameterCapability = require('model/AParameterCapability');
         var AStateVariableCapability = require('model/AStateVariableCapability');
-
+       
         /**
          * @class GEPPETTO.ModelFactory
          */
@@ -1023,6 +1025,8 @@ define(function (require) {
                         };
                         var arrayInstance = this.createArrayInstance(arrayOptions);
 
+                        
+                   
                         for (var i = 0; i < size; i++) {
                             // create simple instance for this variable
                             var options = {
@@ -1624,10 +1628,40 @@ define(function (require) {
 
                 var v = new Variable(options);
                 v.set({"types": node.types});
-
+                v.set({"values": this.createValues(node.initialValues, v) });
                 return v;
             },
 
+            createValues(initialValuesObject, variable){
+            	var values = [];
+            	var options;
+            	if (initialValuesObject != undefined){
+            		for (var i=0; i< initialValuesObject.length; i++){
+            			var value = this.createValue(initialValuesObject[i], options);
+            			value.set({"parent" : variable});
+            			values.push(value);
+            		}
+            	}
+            	return values;
+            }, 
+            
+            createValue(valueNode, options){
+            	 if (options == null || options == undefined) {
+                     options = {wrappedObj: valueNode};   
+            	 }
+            	 var value;
+            	 if (valueNode.value.eClass == "ImportValue"){
+            		 // getID() was returning undefined, hence hack - ask about this.
+            		 // if I dont do this then path is "Model.nwbLibrary.responseType_10.recording_10.undefined"
+            		 options.wrappedObj.id = "ImportValue";
+            		 value = new ImportValue(options);
+            	 }else{
+            		 value = new Value(options);
+            	 }
+            	 
+            	 return value;
+            },
+            
             /** Creates a datasource */
             createDatasource: function (node, options) {
                 if (options == null || options == undefined) {
@@ -1669,7 +1703,7 @@ define(function (require) {
                 if (options == null || options == undefined) {
                     options = {wrappedObj: node};
                 }
-
+                
                 var t = new CompositeType(options);
                 t.set({"visualType": node.visualType});
                 t.set({"superType": node.superType});

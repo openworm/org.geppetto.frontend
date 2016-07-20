@@ -32,72 +32,30 @@
  *******************************************************************************/
 
 /**
- * Client class use to represent an array type.
+ * Client class use to represent a variable.
  *
- * @module model/ImportType
- * @author Nitesh Thali
+ * @module model/Value
+ * @author nitesh thali
  */
 define(function (require) {
-    var Type = require('model/Type');
+    var ObjectWrapper = require('model/ObjectWrapper');
 
-    return Type.extend({
-
+    return ObjectWrapper.Model.extend({
+        //types: [],
+        pointerValue: null,
+        capabilities: [],
         /**
          * Initializes this node with passed attributes
          *
          * @param {Object} options - Object with options attributes to initialize node
          */
         initialize: function (options) {
-            this.set({"parent": options.parent});
+            //this.set({"types": (options.types != undefined) ? options.types : []});
+            this.set({"pointerValue": options.pointerValue});
             this.set({"wrappedObj": options.wrappedObj});
-
+            //this.set({"parent": options.parent});
             // capability list is for private use
             this.set({"capabilities": []});
-        },
-
-        /**
-         * Get type for array type
-         *
-         * @command ImportType.getUrl()
-         *
-         * @returns {String}
-         *
-         */
-        getUrl: function () {
-            return this.getWrappedObj().url;
-        },
-
-        /**
-         * Get type for array type
-         *
-         * @command ImportType.getReferenceUrl()
-         *
-         * @returns {String}
-         *
-         */
-        getReferenceUrl: function () {
-            return this.getWrappedObj().referenceURL;
-        },
-
-        /**
-         * Get type for array type
-         *
-         * @command ImportType.getModelInterpreterId()
-         *
-         * @returns {String}
-         *
-         */
-        getModelInterpreterId: function () {
-            return this.getWrappedObj().modelInterpreterId;
-        },
-
-        /**
-         * Trigger import type resolution - will cause this import type to get swapped with an actual type
-         *
-         * @command ImportValue.resolve()
-         */
-        resolve: function(callback) {
-            GEPPETTO.SimulationHandler.resolveImportValue(this.getPath(), callback);
         }
     });
 });

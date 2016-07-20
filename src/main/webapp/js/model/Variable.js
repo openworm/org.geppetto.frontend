@@ -77,6 +77,12 @@ define(function (require) {
             return allTypes;
         },
 
+        getValues: function () {
+            var values = (this.get('values') != undefined) ? this.get('values') : [];
+            return values;
+        },
+	
+        
         /**
          * Get the list of the anonymous types for this variable
          *
@@ -104,7 +110,14 @@ define(function (require) {
             }
             else return types;
         },
-
+        
+        getValue: function () {
+            var values = this.getValues();
+            if (values.length == 1) {
+                return values[0];
+            }
+            else return values;
+        },
 
         /**
          * Get the list of values for this variable

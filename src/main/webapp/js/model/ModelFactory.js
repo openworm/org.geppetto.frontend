@@ -1632,7 +1632,7 @@ define(function (require) {
                 return v;
             },
 
-            createValues(initialValuesObject, variable){
+            createValues: function (initialValuesObject, variable){
             	var values = [];
             	var options;
             	if (initialValuesObject != undefined){
@@ -1645,7 +1645,7 @@ define(function (require) {
             	return values;
             }, 
             
-            createValue(valueNode, options){
+            createValue: function(valueNode, options){
             	 if (options == null || options == undefined) {
                      options = {wrappedObj: valueNode};   
             	 }

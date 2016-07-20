@@ -103,11 +103,13 @@ define(function (require) {
         };
 
         messageHandler[messageTypes.VARIABLE_FETCHED] = function (payload) {
+        	GEPPETTO.trigger('spin_logo');
             GEPPETTO.SimulationHandler.addVariableToModel(payload);
             GEPPETTO.trigger('stop_spin_logo');
         };
 
         messageHandler[messageTypes.IMPORT_TYPE_RESOLVED] = function (payload) {
+        	GEPPETTO.trigger('spin_logo');
             GEPPETTO.SimulationHandler.swapResolvedType(payload);
             GEPPETTO.trigger('stop_spin_logo');
         };
@@ -331,11 +333,9 @@ define(function (require) {
                     if (callback != undefined) {
                         callbackHandler[requestID] = callback;
                     }
-                    
                 } else {
                     GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ALREADY_EXISTS);
                 }
-                
             },
 
             /**
@@ -417,8 +417,6 @@ define(function (require) {
 
                 console.timeEnd(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
-                
-                GEPPETTO.trigger('stop_spin_logo');
             },
 
             /**

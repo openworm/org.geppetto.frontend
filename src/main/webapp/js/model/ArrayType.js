@@ -36,48 +36,43 @@
  *
  * @module model/ArrayType
  * @author Giovanni Idili
+ * @author Matteo Cantarelli
  */
 define(function (require) {
     var Type = require('model/Type');
 
-    return Type.extend({
-        type: null,
-        size: null,
+    function ArrayType(options) {
+        Type.prototype.constructor.call(this, options);
+        this.type = options.type;
+        this.size = options.elements;
+    };
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-        	Type.prototype.initialize.call(this, options);
-        	this.set({"type": options.type});
-            this.set({"size": options.elements});
-            
-        },
+    ArrayType.prototype = Object.create(Type.prototype);
+    ArrayType.prototype.constructor = ArrayType;
 
-        /**
-         * Get type for array type
-         *
-         * @command ArrayType.getType()
-         *
-         * @returns {Type} - type
-         *
-         */
-        getType: function () {
-            return this.get('type');
-        },
+    /**
+     * Get type for array type
+     *
+     * @command ArrayType.getType()
+     *
+     * @returns {Type} - type
+     *
+     */
+    ArrayType.prototype.getType = function () {
+        return this.type;
+    };
 
-        /**
-         * Get array size
-         *
-         * @command ArrayType.getSize()
-         *
-         * @returns {int} - size of the array
-         *
-         */
-        getSize: function () {
-            return this.get('size');
-        },
-    });
+    /**
+     * Get array size
+     *
+     * @command ArrayType.getSize()
+     *
+     * @returns {int} - size of the array
+     *
+     */
+    ArrayType.prototype.getSize = function () {
+        return this.size;
+    };
+
+    return ArrayType;
 });

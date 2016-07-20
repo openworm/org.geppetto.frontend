@@ -36,35 +36,25 @@
  *
  * @module model/ArrayInstance
  * @author Giovanni Idili
+ * @author Matteo Cantarelli
  */
 
-define(function (require) {
-    return Backbone.Model.extend({
-        id: "",
-        name: "",
-        _metaType: "",
-        variable: null,
-        parent: null,
-        size: 0,
-        capabilities: [],
+define(function () {
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize instance
-         */
-        initialize: function (options) {
-            this.set({"variable": options.variable});
-            this.set({"parent": options.parent});
-            this.set({"size": options.size});
-            this.length = options.size; //we want this object to be used like an array
-            this.set({"id": options.id});
-            this.set({"name": options.name});
-            this.set({"_metaType": options._metaType});
+    function ArrayInstance(options) {
+        this.id = options.id;
+        this.name = options.name;
+        this._metaType = options._metaType;
+        this.variable = options.variable;
+        this.parent = options.parent;
+        this.size = options.size;
+        this.length = options.size;
+        this.children = (options.children != undefined) ? options.children : [];
+        this.capabilities = []
 
-            // capability list is for private use
-            this.set({"capabilities": []});
-        },
+    }
+
+    ArrayInstance.prototype = {
 
         /**
          * Get id
@@ -75,8 +65,9 @@ define(function (require) {
          *
          */
         getId: function () {
-            return this.get("id");
-        },
+            return this.id;
+        }
+        ,
 
         /**
          * Get name
@@ -89,7 +80,8 @@ define(function (require) {
         getConnections: function () {
             //We don't currently support connections for arrays
             return [];
-        },
+        }
+        ,
 
         /**
          * Get name
@@ -100,8 +92,9 @@ define(function (require) {
          *
          */
         getName: function () {
-            return this.get("name");
-        },
+            return this.name;
+        }
+        ,
 
         /**
          * Get meta type
@@ -112,8 +105,9 @@ define(function (require) {
          *
          */
         getMetaType: function () {
-            return this.get("_metaType");
-        },
+            return this._metaType;
+        }
+        ,
 
         /**
          * Get parent
@@ -124,8 +118,9 @@ define(function (require) {
          *
          */
         getParent: function () {
-            return this.get("parent");
-        },
+            return this.parent;
+        }
+        ,
 
         /**
          *
@@ -133,7 +128,8 @@ define(function (require) {
          */
         getPosition: function () {
             return this.getVariable().getPosition();
-        },
+        }
+        ,
 
         /**
          * Get the type for this instance
@@ -145,7 +141,8 @@ define(function (require) {
          */
         getTypes: function () {
             return this.getVariable().getTypes();
-        },
+        }
+        ,
 
         /**
          * Get the type of this instance, return a list if it has more than one
@@ -156,12 +153,13 @@ define(function (require) {
          *
          */
         getType: function () {
-            var types = this.get("variable").getTypes();
+            var types = this.variable.getTypes();
             if (types.length == 1) {
                 return types[0];
             }
             else return types;
-        },
+        }
+        ,
 
         /**
          * Get the children for the array instance
@@ -177,7 +175,8 @@ define(function (require) {
                 children.push(this[i]);
             }
             return children;
-        },
+        }
+        ,
 
         /**
          * Checks if this instance has a visual type
@@ -206,7 +205,8 @@ define(function (require) {
             }
 
             return hasVisual;
-        },
+        }
+        ,
 
         /**
          * Gets visual types for the instance if any
@@ -239,7 +239,8 @@ define(function (require) {
             } else {
                 return visualTypes;
             }
-        },
+        }
+        ,
 
         /**
          * Get the variable for this instance
@@ -250,8 +251,9 @@ define(function (require) {
          *
          */
         getVariable: function () {
-            return this.get("variable");
-        },
+            return this.variable;
+        }
+        ,
 
         /**
          * Get instance path
@@ -262,7 +264,7 @@ define(function (require) {
          *
          */
         getInstancePath: function () {
-            var parent = this.get("parent");
+            var parent = this.parent;
             var parentPath = "";
 
             if (parent != null && parent != undefined) {
@@ -270,7 +272,8 @@ define(function (require) {
             }
 
             return (parentPath != "") ? (parentPath + "." + this.getId()) : this.getId();
-        },
+        }
+        ,
 
         /**
          * Synonym of get instance path
@@ -282,7 +285,8 @@ define(function (require) {
          */
         getPath: function () {
             return this.getInstancePath();
-        },
+        }
+        ,
 
         /**
          * Get raw instance path (without array shortening)
@@ -294,7 +298,8 @@ define(function (require) {
          */
         getRawInstancePath: function () {
             return this.getInstancePath();
-        },
+        }
+        ,
 
         /**
          * Get the size of the array instance
@@ -305,8 +310,9 @@ define(function (require) {
          *
          */
         getSize: function () {
-            return this.get("size");
-        },
+            return this.size;
+        }
+        ,
 
         /**
          * Extends with methods from another object
@@ -315,8 +321,9 @@ define(function (require) {
          */
         extendApi: function (extensionObj) {
             $.extend(this, extensionObj);
-            this.get("capabilities").push(extensionObj.capabilityId);
-        },
+            this.capabilities.push(extensionObj.capabilityId);
+        }
+        ,
 
         /**
          * Checks if the instance has a given capability
@@ -327,7 +334,7 @@ define(function (require) {
          */
         hasCapability: function (capabilityId) {
             var hasCapability = false;
-            var capabilities = this.get('capabilities');
+            var capabilities = this.capabilities;
 
             for (var i = 0; i < capabilities.length; i++) {
                 if (capabilities[i] === capabilityId) {
@@ -336,18 +343,23 @@ define(function (require) {
             }
 
             return hasCapability;
-        },
+        }
+        ,
 
         /**
          * Deletes instance
          */
-        delete: function(){
+        delete: function () {
             var children = [].concat(this.getChildren());
-            for(var c=0; c < children.length; c++){
+            for (var c = 0; c < children.length; c++) {
                 children[c].delete();
             }
 
             GEPPETTO.ModelFactory.deleteInstance(this);
         }
-    })
+    };
+
+    return ArrayInstance;
+
 });
+

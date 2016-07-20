@@ -41,72 +41,61 @@ define(function (require) {
     var ObjectWrapper = require('model/ObjectWrapper');
     var ImportType = require('model/ImportType');
 
-    return ObjectWrapper.Model.extend({
-        types: [],
-        importTypes: [],
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"types": (options.types != 'undefined') ? options.types : []});
-            this.set({"parent": options.parent});
-            this.set({"wrappedObj": options.wrappedObj});
-            this.set({"importTypes": []});
-        },
+    function Library(options) {
+        ObjectWrapper.prototype.constructor.call(this, options);
+        this.types = (options.types != 'undefined') ? options.types : [];
+        this.importTypes = [];
+    };
+
+    Library.prototype = Object.create(ObjectWrapper.prototype);
+    Library.prototype.constructor = Library;
 
 
-        /**
-         * Get types for this library
-         *
-         * @command Library.getTypes()
-         *
-         * @returns {List<Type>} - list of Type objects
-         *
-         */
-        getTypes: function () {
-            return this.get('types');
-        },
+    /**
+     * Get types for this library
+     *
+     * @command Library.getTypes()
+     *
+     * @returns {List<Type>} - list of Type objects
+     *
+     */
+    Library.prototype.getTypes = function () {
+        return this.types;
+    };
 
-        /**
-         * Get combined children
-         *
-         * @command Library.getChildren()
-         *
-         * @returns {List<Object>} - List of children
-         *
-         */
-        getChildren: function () {
-            return this.get('types');
-        },
-        
-        addImportType: function(importType){
-        	this.get('importTypes').push(importType);
-        },
-        
-        removeImportType: function(importType){
-        	this.get('importTypes').remove(importType);
-        },
-        
-        // Overriding set
-        set: function(attributes, options) {
+    /**
+     * Get combined children
+     *
+     * @command Library.getChildren()
+     *
+     * @returns {List<Object>} - List of children
+     *
+     */
+    Library.prototype.getChildren = function () {
+        return this.types;
+    };
 
-            Backbone.Model.prototype.set.call(this, attributes, options);
+    Library.prototype.addImportType = function (importType) {
+        this.importTypes.push(importType);
+    };
 
-            // we add a double link
-            if (attributes.hasOwnProperty("types")) {
-            	if(attributes.types){
-	                for(var i=0;i<attributes.types.length;i++){
-	                	if(attributes.types[i] instanceof ImportType){
-	                		this.addImportType(attributes.types[i]);
-	                	}
-	                }
-            	}
+    Library.prototype.removeImportType = function (importType) {
+        this.importTypes.remove(importType);
+    };
+
+    // Overriding set
+    Library.prototype.setTypes = function (types) {
+
+        for (var i = 0; i < attributes.types.length; i++) {
+            if (attributes.types[i] instanceof ImportType) {
+                this.addImportType(attributes.types[i]);
             }
-
-            return this;
         }
-    });
-});
+
+        return this;
+    }
+
+    return Library;
+})
+;

@@ -38,65 +38,46 @@
  * @author Giovanni Idili
  */
 define(function (require) {
-    var Type = require('model/Type');
+    var CompositeType = require('model/CompositeType');
 
-    return Type.extend({
-        variables: [],
-        visualGroups: [],
+    function CompositeVisualType(options) {
+        CompositeType.prototype.constructor.call(this, options);
+        this.visualGroups = (options.visualGroups != 'undefined') ? options.visualGroups : [];
+    };
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-        	Type.prototype.initialize.call(this, options);
-        	
-        	this.set({"variables": (options.variables != 'undefined') ? options.variables : []});
-            this.set({"visualGroups": (options.visualGroups != 'undefined') ? options.visualGroups : []});
-        },
+    CompositeVisualType.prototype = Object.create(CompositeType.prototype);
+    CompositeVisualType.prototype.constructor = CompositeVisualType;
 
-        /**
-         * Get variables
-         *
-         * @command CompositeVisualType.getChildren()
-         *
-         * @returns {List<Variable>} - List of variables
-         *
-         */
-        getVariables: function () {
-            return this.get("variables");
-        },
+    /**
+     * Get the visual groups
+     *
+     * @command CompositeVisualType.getVisualGroups()
+     *
+     * @returns {List<VisualGroup>} - List of variables
+     *
+     */
+    CompositeVisualType.prototype.getVisualGroups = function () {
+        return this.visualGroups;
+    };
 
-        /**
-         * Get the visual groups
-         *
-         * @command CompositeVisualType.getVisualGroups()
-         *
-         * @returns {List<VisualGroup>} - List of variables
-         *
-         */
-        getVisualGroups: function () {
-            return this.get("visualGroups");
-        },
+    /**
+     * Get combined children
+     *
+     * @command CompositeType.getChildren()
+     *
+     * @returns {List<Object>} - List of children
+     *
+     */
+    CompositeVisualType.prototype.getChildren = function () {
+        var vg = this.visualGroups;
+        if (vg) {
+            return this.variables.concat(vg);
+        }
+        else {
+            return this.variables;
+        }
 
-        /**
-         * Get combined children
-         *
-         * @command CompositeType.getChildren()
-         *
-         * @returns {List<Object>} - List of children
-         *
-         */
-        getChildren: function () {
-            var vg=this.get("visualGroups");
-            if(vg){
-                return this.get("variables").concat(vg);
-            }
-            else{
-                return this.get("variables");
-            }
+    };
 
-        },
-    });
+    return CompositeVisualType;
 });

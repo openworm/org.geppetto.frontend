@@ -109,19 +109,6 @@ define(function (require) {
 
 
     /**
-     * Gets the list of referenced variables
-     *
-     * @command Type.getReferencedVariables()
-     *
-     * @returns {List<Variables>} - list of referenced variables
-     *
-     */
-    Type.prototype.getReferencedVariables = function () {
-        // TODO= fetch from the right place
-        return this.wrappedObj.referencedVariables;
-    };
-
-    /**
      * Extends with methods from another object
      *
      * @command Type.extendApi(extensionObj)

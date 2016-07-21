@@ -87,12 +87,14 @@ define(function (require) {
     // Overriding set
     Library.prototype.setTypes = function (types) {
 
-        for (var i = 0; i < attributes.types.length; i++) {
-            if (attributes.types[i] instanceof ImportType) {
-                this.addImportType(attributes.types[i]);
+    	this.types=types;
+    	
+        for (var i = 0; i < types.length; i++) {
+            if (types[i] instanceof ImportType) {
+                this.addImportType(types[i]);
             }
         }
-
+        
         return this;
     }
 

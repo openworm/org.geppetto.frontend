@@ -37,7 +37,7 @@
  * @module model/ArrayElementInstance
  * @author Giovanni Idili
  */
-define(function () {
+define(function (require) {
 
     var Instance = require('model/Instance');
 

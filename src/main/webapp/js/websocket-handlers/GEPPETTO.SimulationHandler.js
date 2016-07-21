@@ -380,7 +380,7 @@ define(function (require) {
                 // replace client naming first occurrence - the server doesn't know about it
                 var paths=[];
                 for(var i=0;i<typePaths.length;i++){
-                    paths.push(typePaths[i].replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT, ''));
+                    paths.push(typePaths[i].replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".", ''));
                 }
                 params["paths"] = paths;
 

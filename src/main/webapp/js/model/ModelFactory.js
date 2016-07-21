@@ -125,7 +125,7 @@ define(function (require) {
                     	if(!jsonModel.libraries[i].synched){
 	                        var library = this.createLibrary(jsonModel.libraries[i]);
 	                        library.parent= geppettoModel;
-	                        library.types= this.createTypes(jsonModel.libraries[i].types, library);
+	                        library.setTypes(this.createTypes(jsonModel.libraries[i].types, library));
 	                        geppettoModel.getLibraries().push(library);
                     	}
                     }
@@ -1715,7 +1715,7 @@ define(function (require) {
             /** Creates a simple composite */
             createModel: function (node, options) {
                 if (options == null || options == undefined) {
-                    options = {wrappedObj: node, id: 'Model', parent: undefined};
+                    options = {wrappedObj: node, parent: undefined};
                 }
 
                 var n = new GeppettoModel(options);

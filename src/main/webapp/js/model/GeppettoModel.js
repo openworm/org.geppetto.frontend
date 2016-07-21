@@ -62,6 +62,18 @@ define(function (require) {
     GeppettoModel.prototype.getVariables = function () {
         return this.variables;
     };
+    
+    /**
+     * Get the id
+     *
+     * @command GeppettoModel.getId()
+     *
+     * @returns {String} - The id of the model, a constant
+     *
+     */
+    GeppettoModel.prototype.getId = function () {
+        return GEPPETTO.Resources.MODEL_PREFIX_CLIENT;
+    };
 
     /**
      * Get libraries

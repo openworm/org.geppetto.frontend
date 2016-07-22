@@ -375,13 +375,20 @@ define(function (require) {
             	//retrieve last created experimet and used it to clone new one
             	var experiments = window.Project.getExperiments();
             	var experiment = window.Project.getActiveExperiment();
-            	for(var e in experiments){
-            		if(experiments[e].getId()>experiment.getId()){
-            			experiment = experiments[e];
+            	if(experiments.length==0){
+            		GEPPETTO.Console.executeCommand("Project.newExperiment();");
+            	}else{
+            		var index =0;
+            		if(experiment!=null || undefined){
+            			for(var e in experiments){
+            				if(experiments[e].getId()>experiment.getId()){
+            					experiment = experiments[e];
+            				}
+            			}
+            			index = window.Project.getExperiments().indexOf(experiment);
             		}
+            		GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].clone();");
             	}
-            	var index = window.Project.getExperiments().indexOf(experiment);
-            	GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].clone();");
             });
 
             GEPPETTO.on(Events.Project_loaded, function () {

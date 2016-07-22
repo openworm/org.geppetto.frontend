@@ -117,15 +117,22 @@ define(function (require) {
     // column metadata for display of query results
     var queryResultsColumnMeta = [
         {
-            "columnName": "name",
+            "columnName": "id",
             "order": 1,
+            "locked": false,
+            "visible": true,
+            "displayName": "ID",
+        },
+        {
+            "columnName": "name",
+            "order": 2,
             "locked": false,
             "visible": true,
             "displayName": "Name"
         },
         {
             "columnName": "description",
-            "order": 2,
+            "order": 3,
             "locked": false,
             "visible": true,
             "displayName": "Description"
@@ -142,22 +149,22 @@ define(function (require) {
         });
 
     var mockResults = [
-        { name: 'JFRC2_template', description: 'Test description'},
-        { name: 'VGlut-F-000176', description: 'Test description'},
-        { name: 'DM5 Clone of Yu 2013', description: 'Test description a bit longer'},
-        { name: 'Gad1-F-200114', description: 'Test description a bit longer even more indeed'},
-        { name: 'VGlut-F-800176', description: 'Test description a bit longer even more indeed'},
-        { name: 'DL1 Clone of Nonna 007', description: 'Test description'},
-        { name: 'VFB-123-123-123', description: 'Test description'},
-        { name: 'VGlut-000-000', description: 'Test description blah blah'},
-        { name: 'JFRC2_test', description: 'Test description'},
-        { name: 'VGlut-F-000345', description: 'Test description'},
-        { name: 'DM5 Clone of Yu 2014', description: 'Test description a bit longer'},
-        { name: 'Gad1-F-200234', description: 'Test description a bit longer even more indeed'},
-        { name: 'VGlut-F-800133', description: 'Test description a bit longer even more indeed'},
-        { name: 'DL2 Clone of Nonna 008', description: 'Test description'},
-        { name: 'VFB-123-123-666', description: 'Test description'},
-        { name: 'VGlut-000-123', description: 'Test description blah blah'}
+        { id: 'VFB_1', name: 'JFRC2_template', description: 'Test description'},
+        { id: 'VFB_2', name: 'VGlut-F-000176', description: 'Test description'},
+        { id: 'VFB_3', name: 'DM5 Clone of Yu 2013', description: 'Test description a bit longer'},
+        { id: 'VFB_4', name: 'Gad1-F-200114', description: 'Test description a bit longer even more indeed'},
+        { id: 'VFB_5', name: 'VGlut-F-800176', description: 'Test description a bit longer even more indeed'},
+        { id: 'VFB_6', name: 'DL1 Clone of Nonna 007', description: 'Test description'},
+        { id: 'VFB_7', name: 'VFB-123-123-123', description: 'Test description'},
+        { id: 'VFB_8', name: 'VGlut-000-000', description: 'Test description blah blah'},
+        { id: 'VFB_9', name: 'JFRC2_test', description: 'Test description'},
+        { id: 'VFB_10', name: 'VGlut-F-000345', description: 'Test description'},
+        { id: 'VFB_11', name: 'DM5 Clone of Yu 2014', description: 'Test description a bit longer'},
+        { id: 'VFB_12', name: 'Gad1-F-200234', description: 'Test description a bit longer even more indeed'},
+        { id: 'VFB_13', name: 'VGlut-F-800133', description: 'Test description a bit longer even more indeed'},
+        { id: 'VFB_14', name: 'DL2 Clone of Nonna 008', description: 'Test description'},
+        { id: 'VFB_15', name: 'VFB-123-123-666', description: 'Test description'},
+        { id: 'VFB_16', name: 'VGlut-000-123', description: 'Test description blah blah'}
     ];
 
     var mockSourceData = [

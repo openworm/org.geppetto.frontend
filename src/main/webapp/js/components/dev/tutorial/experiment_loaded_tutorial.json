@@ -1,8 +1,0 @@
-{"tutorial": {
-  "name": "Geppetto Tutorial",
-    "steps": [
-    	{"label": "Title 1", "message": "First step", "action": "alert("step1");"},
-     	{"label": "Title 2", "message": "Second Step", "action": "alert("step3");"},
-      	{"label": "Title 3", "message": "Third Step", "action": "alert("step3");"}
-    ]
-}}

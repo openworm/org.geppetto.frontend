@@ -60,7 +60,7 @@
 	<div id="SaveButton" class="row"></div>
 	<div id="HomeButton" class="row"></div>
     <div id="sim-toolbar" class="row"></div>
-
+    <div id="tutorial"></div>
     <div id="camera-controls"></div>
     <div id="foreground-toolbar" class="row"></div>
 
@@ -75,7 +75,6 @@
     <div id="geppettologo" class="noSelection" ></div>
     <div id="spotlight" ></div>
     <div id="controlpanel" ></div>
-    <div id="tutorial" ></div>
     <div id="sim" class="noSelection"></div>
 
     <div id="footer">

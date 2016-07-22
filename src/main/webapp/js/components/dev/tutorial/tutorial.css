@@ -1,0 +1,30 @@
+.tutorial{
+	position: fixed; 
+	height: auto; 
+	width: 300px; 
+	top: 60px;
+	right: 20px;
+	display: 'block';
+	left : inherit;
+}
+
+.tutorial-message{
+	display: block;
+	width: auto;
+	minHeight: 0px;
+	maxHeight: none;
+	height: 167px;
+	color: #fc6320;
+}
+
+.tutorial-buttons{
+	padding-left : 40px;
+}
+
+.prevBtn{
+	border-color: #fc6320;
+}
+
+.nextBtn{
+	border-color: #fc6320;
+}

@@ -273,25 +273,17 @@ define(function (require) {
                 return returnMessage;
             },
             
-            showTutorial : function(mode) {
+            toggleTutorial : function() {
             	 var returnMessage;
-
-                 if (mode) {
-                     GEPPETTO.trigger(Events.Show_Tutorial);
-                     returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
+            	 var modalVisible = $('#tutorial').is(':visible');
+            	 
+                 if (modalVisible) {
+                	 GEPPETTO.trigger(Events.Hide_Tutorial);
+                     returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
                  }
                  else {
-                     var modalVisible = $('#tutorial').hasClass('in');
-                     //don't try to hide already hidden tutorial window
-                     if (!modalVisible) {
-                         returnMessage = GEPPETTO.Resources.TUTORIAL_ALREADY_HIDDEN;
-                     }
-                     //hide tutorial window
-                     else {
-                         GEPPETTO.trigger(Events.Hide_Tutorial);
-                         returnMessage = GEPPETTO.Resources.TUTORIAL_HELP_WINDOW;
-                         $('#tutorial').modal('hide');
-                     }
+                	 GEPPETTO.trigger(Events.Show_Default_Tutorial);
+                     returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
                  }
                  return returnMessage;
             },

@@ -29,70 +29,154 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
+/**
+ * React component for Tutorial
+ *
+ * @author Jesus R. Martinez (jesus@metacell.us)
+ */
 define(function (require) {
 
-    var React = require('react'),
-        ReactDOM = require('react-dom'),
-        $ = require('jquery'),
-        Button = require('mixins/bootstrap/button'),
-        GEPPETTO = require('geppetto');
+	var link = document.createElement("link");
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	link.href = "geppetto/js/components/dev/tutorial/tutorial.css";
+	document.getElementsByTagName("head")[0].appendChild(link);
 
-    return React.createClass({
-        mixins: [
-            require('jsx!mixins/bootstrap/modal')
-        ],
+	var React = require('react'),
+	ReactDOM = require('react-dom'),
+	$ = require('jquery'),
+	Button = require('mixins/bootstrap/button'),
+	GEPPETTO = require('geppetto');
 
-        dontShowNextTime: function(val){
-            console.log(val);
-        },
-        
-        populateTutorial : function(configuration){
+	var Tutorial = React.createClass({
+		stepIndex : 0,
+		totalSteps : 0,
+		dontShowAgain : false,
+		
+		dontShowNextTime: function(val){
+		},
+
+		start : function(){
+			this.stepIndex = 0;
+			var title = this.state.props.steps[this.stepIndex].title;
+			var message = this.state.props.steps[this.stepIndex].message;
+			var action = this.state.props.steps[this.stepIndex].action;
+
+			this.updateTutorialWindow(title,message,action);			
+			this.open();
+		},
+		
+		updateTutorialWindow : function(title, message, action){
+			$("#title").html(title);
+			$("#message").html(message);
+			if(action!=null || undefined){
+				if(action!=""){
+					GEPPETTO.Console.executeCommand(action);
+				}
+			}
+		},
+		
+		nextStep: function(){
+			this.stepIndex++;
+			if(this.stepIndex <= this.totalSteps){
+				var title = this.state.props.steps[this.stepIndex].title;
+				var message = this.state.props.steps[this.stepIndex].message;
+				var action = this.state.props.steps[this.stepIndex].action;
+
+				this.updateTutorialWindow(title,message,action);
+			}else{
+				this.close();
+			}
+		},
+
+		prevStep: function() {
+			if(this.stepIndex ==0){
+				this.close();
+			}else if(this.stepIndex > this.totalSteps){
+				this.stepIndex = this.totalSteps;
+			}else{
+				this.stepIndex--;
+				GEPPETTO.tutorialEnabled = false;
+				var title = this.state.props.steps[this.stepIndex].title;
+				var message = this.state.props.steps[this.stepIndex].message;
+				var action = this.state.props.steps[this.stepIndex].action;
+
+				this.updateTutorialWindow(title,message,action);
+			}
+		},
+
+		close : function(){
+			$('#tutorial').hide();
+		},
+		
+		open : function(){
+			$('#tutorial').show();
+		},
+		
+		tutorialData : function(configurationURL){
+			var self = this;
+			
+			$.ajax({
+    			type: 'GET',
+    			dataType: 'json',
+    			url: configurationURL,
+    			success: function (responseData, textStatus, jqXHR) {
+    				self.setState({ props: responseData });
+    				self.totalSteps = self.state.props.steps.length-1;
+    				self.start();
+    			},
+    			error: function (responseData, textStatus, errorThrown) {
+            		throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
+    			}
+    		});
+		},
+		
+		componentDidMount:function(){
+			this.close();
+        	var self = this;
+           	GEPPETTO.on(Events.Show_Experiment_Loaded_Tutorial,function(){
+           		if(!this.dontShowAgain){
+           			self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
+           			this.dontShowAgain = true;
+           		}
+           	});
         	
-        },
-
-        startTutorial: function(){
-            GEPPETTO.tutorialEnabled = true;
-        },
-
-        skipTutorial: function() {
-            GEPPETTO.tutorialEnabled = false;
-            this.hide();
-        },
-
-        componentDidMount:function(){
+        	GEPPETTO.on(Events.Show_Default_Tutorial,function(){
+           		self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
+            });
         	
-        },
-        
-        render: function () {
-            return <div className="modal fade lead pagination-centered welcome-modal" data-backdrop="static" data-keyboard="false" id="tutorial">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-body container">
-                            <div className="message-container row">
-                                <strong>Welcome to geppetto! </strong>
+        	GEPPETTO.on(Events.Show_Project_Loaded_Tutorial,function(){
+           		self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
+            });
+        	
+        	GEPPETTO.on(Events.Show_Login_Tutorial,function(){
+           		self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
+            });
+        	
+        	GEPPETTO.on(Events.Hide_Tutorial,function(){
+        		self.close();
+            });
+		},
 
-                            geppetto is an open-source platform built by engineers, scientists, and other hackers to
-                            simulate complex biological systems and their surrounding environment.
-                            This is an <strong>early access</strong> development release.
-                                <br/>
-                                <div className="small-text">
-                                We worked hard to bring you the best possible alpha release but geppetto is still very much a platform under development.
-                                In fact, we reckon this only represents about 20% of what you can expect in the end. We hope you'll enjoy it.
-                                </div>
-
-                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="fa fa-comment" onClick={this.startTutorial}>Start Tutorial</Button>
-                                <Button className="btn btn-success welcomeButton" data-dismiss="modal" icon="fa fa-step-forward" onClick={this.skipTutorial}>Skip Tutorial</Button>
-
-                                <div className="row disable-welcome">
-                                    <span><input id="welcomeMsgCookie" type="checkbox" onChange={this.dontShowNextTime}/> Don't show next time I visit Geppetto</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        }
-    });
+		render: function () {
+			return  <div className="tutorial ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-draggable-disabled ui-state-disabled noStyleDisableDrag">
+			<div className="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+				<span id="ui-id-5" className="ui-dialog-title" id="title"></span>
+					<button className="ui-dialog-titlebar-close" onClick={this.close}><i className="fa fa-close" /></button>
+			</div>
+			<div id="message" className="tutorial-message dialog ui-dialog-content ui-widget-content popup">
+			</div>
+			<div className="btn-group tutorial-buttons" role="group">
+				<button className="prevBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.prevStep}>
+					<span> &lt;-- PREV</span>
+				</button>
+				<button className="nextBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.nextStep}>
+					<span> NEXT --&gt;</span>
+				</button>
+			</div>
+			</div>
+		}
+	});
+	
+	ReactDOM.render(React.createFactory(Tutorial)({},''), document.getElementById("tutorial"));
 });

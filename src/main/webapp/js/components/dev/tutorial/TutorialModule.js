@@ -71,7 +71,7 @@ define(function (require) {
 			$("#message").html(message);
 			if(action!=null || undefined){
 				if(action!=""){
-					GEPPETTO.Console.executeCommand(action);
+					GEPPETTO.ComponentsController.executeAction(action);
 				}
 			}
 		},

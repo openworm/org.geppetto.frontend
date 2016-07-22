@@ -267,9 +267,31 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				URL url = null;
 				try
 				{
+
 					url = URLReader.getURL(urlString);
 
 					connectionHandler.sendScriptData(requestID, url, this);
+
+				}
+				catch(MalformedURLException e)
+				{
+					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
+				}
+				break;
+			}
+			case GET_DATA_SOURCE_RESULTS:
+			{
+				URL url = null;
+				String dataSourceName;
+				try
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+							{
+							}.getType());
+					url = URLReader.getURL(parameters.get("url"));
+					dataSourceName = parameters.get("data_source_name");
+
+					connectionHandler.sendDataSourceResults(requestID,dataSourceName, url, this);
 
 				}
 				catch(MalformedURLException e)

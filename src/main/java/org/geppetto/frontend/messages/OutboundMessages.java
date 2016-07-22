@@ -55,6 +55,7 @@ public enum OutboundMessages {
 	ERROR_DOWNLOADING_RESULTS("error_downloading_results"),
 	GEPPETTO_VERSION("geppetto_version"),
 	SCRIPT_FETCHED("script_fetched"),
+	DATASOURCE_RESULTS_FETCHED("data_source_results_fetched"),
 	GET_SCRIPTS("get_scripts"),
 	WATCHED_VARIABLES_SET("watched_variables_set"),
 	CLEAR_WATCH("clear_watch"),

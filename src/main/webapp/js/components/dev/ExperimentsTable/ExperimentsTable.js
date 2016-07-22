@@ -74,7 +74,7 @@ define(function (require) {
                 <tr rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
                     className={rowClasses} id={this.props.experiment.getId()}>
                     <StatusElement experiment={this.props.experiment} key={this.props.experiment.name+"-statusElement"}/>
-                    <td name="name" contentEditable={editable}>{this.props.experiment.getName()}</td>
+                    <td className="configurationTD" name="name" contentEditable={editable}>{this.props.experiment.getName()}</td>
                     <td>{this.props.experiment.getLastModified()}</td>
                     <td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name+"-iconsRow"}/>
                     </td>
@@ -526,6 +526,12 @@ define(function (require) {
                             		$("#downloadResultsIcon-" + experiment.getId()).show();
                             	}
                             }
+                            var editableFields = $(this).find(".configurationTD");
+                            for(var i =0; i<editableFields.length; i++){
+                           	 if(editableFields[i].getAttribute("contentEditable") != "false"){
+                           		 var td = editableFields[i].setAttribute("contentEditable", false);
+                           	 }
+                            }
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("DELETED");
@@ -547,6 +553,16 @@ define(function (require) {
                             tdStatus.addClass("CANCELED");
                             tdStatus.attr("title", "CANCELED");
                         }
+                    }
+                    if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-"+ experiment.getId())) {
+                    	 if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                             var editableFields = $(this).find(".configurationTD");
+                             for(var i =0; i<editableFields.length; i++){
+                            	 if(editableFields[i].getAttribute("contentEditable") != "false"){
+                            		 var td = editableFields[i].setAttribute("contentEditable", false);
+                            	 }
+                             }
+                         } 
                     }
                 }
             });

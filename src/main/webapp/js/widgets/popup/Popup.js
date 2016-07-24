@@ -265,7 +265,7 @@ define(function (require) {
 			var aElement = this.getTriggeredElement(event);
 			var nodeInstancePath = aElement[0].getAttribute("instancepath");
 			var type = aElement[0].getAttribute("type");
-			var widget;
+			var widget = null;
 			
 			if (nodeInstancePath != null || undefined) {
 				//Type attribute to determine if HTML link is of visual or variable type
@@ -305,14 +305,16 @@ define(function (require) {
 					}
 				}
 				
-				//generate randm position in screen for popup to avoid them showing up in same place
-				var max = screen.height - this.size.height;
-				var min = this.size.height;
-				var x =  Math.floor(Math.random() * (max - min)) + min;
-				max = screen.width - this.size.width;
-				min = this.size.width;
-				var y = Math.floor(Math.random() * (max - min)) + min;
-				widget.setPosition(y,x);
+				if(widget!=null || undefined){
+					//generate randm position in screen for popup to avoid them showing up in same place
+					var max = screen.height - this.size.height;
+					var min = this.size.height;
+					var x =  Math.floor(Math.random() * (max - min)) + min;
+					max = screen.width - this.size.width;
+					min = this.size.width;
+					var y = Math.floor(Math.random() * (max - min)) + min;
+					widget.setPosition(y,x);
+				}
 			}
 		},
 

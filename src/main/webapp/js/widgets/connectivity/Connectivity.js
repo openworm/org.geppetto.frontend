@@ -125,6 +125,7 @@ define(function (require) {
                     }
                 }
 
+                //TODO: typesToSearch should be domain agnostic (i.e. no mention to neuroml)
                 var typesToSearch=GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.projection);
                 var connectionVariables = GEPPETTO.ModelFactory.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
 
@@ -293,5 +294,16 @@ define(function (require) {
                 $.extend(this.options, options);
             }
         },
+
+        getHelp: function(){
+            var help = {
+                'matrix':'<h3>Adjacency matrix</h3>',
+                'chord': '<h3>Chord Diagram</h3><p>Hover over populations ("slices") to highlight incoming / outgoing connections.</p> <p></ul><li>Control-hover: outgoing connections</li><li>Shift-hover: incoming connections</li></p>',
+                'hive':'<h3>Hive Plot</h3>',
+                'force':'<h3>Force Directed Graph Drawing</h3>',
+            }
+
+            return '<h2>Connectivity Widget</h2><p>' + help[this.options.layout] + '</p>';
+        }
     });
 });

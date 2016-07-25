@@ -56,19 +56,35 @@ define(function (require) {
 		dontShowNextTime: function(val){
 		},
 
+		getInitialState: function() {
+		    return {
+		        props: {},
+		        tutorialTitle : "",
+		        tutorialMessage : "",
+		        iconClass: ""
+		      };
+		  },
+		  
 		start : function(){
 			this.stepIndex = 0;
 			var title = this.state.props.steps[this.stepIndex].title;
 			var message = this.state.props.steps[this.stepIndex].message;
 			var action = this.state.props.steps[this.stepIndex].action;
-
-			this.updateTutorialWindow(title,message,action);			
+			var icon = this.state.props.steps[this.stepIndex].icon;
+			
+			this.updateTutorialWindow(title,message,action,icon);			
 			this.open();
 		},
 		
-		updateTutorialWindow : function(title, message, action){
-			$("#title").html(title);
-			$("#message").html(message);
+		updateTutorialWindow : function(title, message, action,icon){
+			var newIconClass = "";
+			if(icon!=null || undefined){
+				if(icon!=""){
+					newIconClass = icon+" fa-2x"; 
+				}
+			}
+			
+			this.setState({tutorialTitle: title, iconClass: newIconClass, tutorialMessage : message});
 			if(action!=null || undefined){
 				if(action!=""){
 					GEPPETTO.ComponentsController.executeAction(action);
@@ -82,8 +98,9 @@ define(function (require) {
 				var title = this.state.props.steps[this.stepIndex].title;
 				var message = this.state.props.steps[this.stepIndex].message;
 				var action = this.state.props.steps[this.stepIndex].action;
+				var icon = this.state.props.steps[this.stepIndex].icon;
 
-				this.updateTutorialWindow(title,message,action);
+				this.updateTutorialWindow(title,message,action,icon);
 			}else{
 				this.close();
 			}
@@ -100,8 +117,9 @@ define(function (require) {
 				var title = this.state.props.steps[this.stepIndex].title;
 				var message = this.state.props.steps[this.stepIndex].message;
 				var action = this.state.props.steps[this.stepIndex].action;
+				var icon = this.state.props.steps[this.stepIndex].icon;
 
-				this.updateTutorialWindow(title,message,action);
+				this.updateTutorialWindow(title,message,action,icon);
 			}
 		},
 
@@ -158,13 +176,19 @@ define(function (require) {
             });
 		},
 
+		createTutorialMessage : function(){
+			return {__html: this.state.tutorialMessage}; 
+		},
+		
 		render: function () {
 			return  <div className="tutorial ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-draggable-disabled ui-state-disabled noStyleDisableDrag">
 			<div className="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-				<span id="ui-id-5" className="ui-dialog-title" id="title"></span>
+				<span id="ui-id-5" className="tutorialTitle">{this.state.tutorialTitle}</span>
 					<button className="ui-dialog-titlebar-close" onClick={this.close}><i className="fa fa-close" /></button>
 			</div>
-			<div id="message" className="tutorial-message dialog ui-dialog-content ui-widget-content popup">
+			<div className="tutorial-message dialog ui-dialog-content ui-widget-content popup">
+			 <i id="tutorialIcon" className={this.state.iconClass}></i>
+			 <span id="message" dangerouslySetInnerHTML={this.createTutorialMessage()}></span>
 			</div>
 			<div className="btn-group tutorial-buttons" role="group">
 				<button className="prevBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.prevStep}>

@@ -9,7 +9,7 @@
 }
 
 .tutorial-message{
-	display: block;
+	display: inline-block;
 	width: auto;
 	minHeight: 0px;
 	maxHeight: none;
@@ -27,4 +27,26 @@
 
 .nextBtn{
 	border-color: #fc6320;
+}
+
+.prevBtn:focus{
+	border-color: #fc6320;
+}
+
+.nextBtn:focus{
+	border-color: #fc6320;
+}
+
+
+#tutorialIcon{
+	padding-right: 20px;
+}
+
+.tutorialTitle{
+	font-size : 16px;
+	padding: 0 !important;
+    margin: 0 !important;
+    font-weight: bold;
+    color: #fd6808;
+    margin-left: 5px;
 }

@@ -543,90 +543,90 @@ define(function (require) {
             GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("1");
         });
-//        
-//        QUnit.test("Test Save Experiment Properties", function ( assert ) {
-//
-//            var done = assert.async();
-//
-//            var handler = {
-//            	newExperiment : null,
-//                onMessage: function (parsedServerMessage) {
-//                    // Switch based on parsed incoming message type
-//                    switch (parsedServerMessage.type) {
-//                        //Simulation has been loaded and model need to be loaded
-//                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-//                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-//
-//                            assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
-//                            window.Project.newExperiment();
-//                            break;
-//                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PROPS_SAVED:
-//                            var payload = JSON.parse(parsedServerMessage.data);
-//                            assert.ok(true, "Experiment saved");
-//                            newExperiment.deleteExperiment();
-//
-//                            break;
-//                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_CREATED:
-//                            var payload = JSON.parse(parsedServerMessage.data);
-//                            var newLength = window.Project.getExperiments().length;
-//
-//                            this.newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
-//
-//                            // increase length
-//                            newLength++;
-//
-//                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
-//                            var properties = {"name": "New Name for Experiment",
-//                            				  "conversionServiceId" : "testService",
-//                            				  "simulatorId" : "testSimulator",
-//                            				  "length" : "2",
-//                            				  "timeStep" : "3",
-//                            				  "aspectInstancePath" : "hhcell(net1)"};
-//                            this.newExperiment.saveExperimentProperties(properties);
-//                            break;
-//                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_DELETED:
-//                            var payload = JSON.parse(parsedServerMessage.data);
-//                            var newLength = window.Project.getExperiments().length;
-//
-//                            GEPPETTO.SimulationHandler.deleteExperiment(payload);
-//
-//                            // reduce length
-//                            newLength--;
-//
-//                            assert.equal(window.Project.getExperiments().length, newLength, "Experiment deleted succesfully");
-//                            done();
-//                            resetConnection();
-//                            break;
-//                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-//                            var payload = JSON.parse(parsedServerMessage.data);
-//                            var message = JSON.parse(payload.message);
-//
-//                            // make it fail
-//                            assert.ok(false, message);
-//
-//                            done();
-//                            resetConnection();
-//
-//                            break;
-//                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-//                            var payload = JSON.parse(parsedServerMessage.data);
-//                            var message = JSON.parse(payload.message).message;
-//
-//                            // make it fail
-//                            assert.ok(false, message);
-//
-//                            done();
-//                            resetConnection();
-//
-//                            break;
-//                    }
-//                }
-//            };
-//
-//            GEPPETTO.MessageSocket.clearHandlers();
-//            GEPPETTO.MessageSocket.addHandler(handler);
-//            window.Project.loadFromID("1");
-//        });
+        
+        QUnit.test("Test Save Experiment Properties", function ( assert ) {
+
+            var done = assert.async();
+
+            var handler = {
+            	newExperiment : null,
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+
+                            assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
+                            window.Project.newExperiment();
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_PROPS_SAVED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            assert.ok(true, "Experiment saved");
+                            this.newExperiment.deleteExperiment();
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_CREATED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var newLength = window.Project.getExperiments().length;
+
+                            this.newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
+
+                            // increase length
+                            newLength++;
+
+                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
+                            var properties = {"name": "New Name for Experiment",
+                            				  "conversionServiceId" : "testService",
+                            				  "simulatorId" : "testSimulator",
+                            				  "length" : "2",
+                            				  "timeStep" : "3",
+                            				  "aspectInstancePath" : "hhcell(net1)"};
+                            this.newExperiment.saveExperimentProperties(properties);
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_DELETED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var newLength = window.Project.getExperiments().length;
+
+                            GEPPETTO.SimulationHandler.deleteExperiment(payload);
+
+                            // reduce length
+                            newLength--;
+
+                            assert.equal(window.Project.getExperiments().length, newLength, "Experiment deleted succesfully");
+                            done();
+                            resetConnection();
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+
+                            // make it fail
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+
+                            // make it fail
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("1");
+        });
 
         QUnit.test("Test Delete experiment", function ( assert ) {
 

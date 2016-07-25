@@ -1152,6 +1152,7 @@ public class ConnectionHandler
 					}
 				}
 			}
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, "");
 		}
 	}
 

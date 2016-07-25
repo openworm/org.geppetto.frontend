@@ -45,6 +45,7 @@ define(function (require) {
             PROJECT_LOADED: "project_loaded",
             MODEL_LOADED: "geppetto_model_loaded",
             PROJECT_PROPS_SAVED: "project_props_saved",
+            EXPERIMENT_PROPS_SAVED: "experiment_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
@@ -185,6 +186,10 @@ define(function (require) {
 
         messageHandler[messageTypes.PROJECT_PROPS_SAVED] = function (payload) {
             GEPPETTO.Console.log("Project saved succesfully");
+        };
+        
+        messageHandler[messageTypes.EXPERIMENT_PROPS_SAVED] = function (payload) {
+            GEPPETTO.Console.log("Experiment saved succesfully");
         };
 
         messageHandler[messageTypes.DROPBOX_LINKED] = function (payload) {

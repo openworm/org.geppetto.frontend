@@ -17,8 +17,20 @@
 	color: #fc6320;
 }
 
+#ignoreTutorial {
+	width: auto;
+	minHeight: 0px;
+	maxHeight: none;
+	color: #fc6320;
+}
+
 .tutorial-buttons{
 	padding-left : 40px;
+	padding-bottom : 15px;
+}
+
+.cookieTutorial {
+	padding-left: 50px;
 }
 
 .prevBtn{

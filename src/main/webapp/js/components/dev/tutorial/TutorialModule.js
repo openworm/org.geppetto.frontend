@@ -51,31 +51,39 @@ define(function (require) {
 	var Tutorial = React.createClass({
 		stepIndex : 0,
 		totalSteps : 0,
-		dontShowAgain : false,
-		
-		dontShowNextTime: function(val){
+		dontShowTutorial : false,
+
+		/**
+		 * Stores cookie to avoid showing tutorial next time at startup
+		 */
+		dontShowAtStartup: function(val){
+			$.cookie('ignore_tutorial', true);
 		},
 
 		getInitialState: function() {
-		    return {
-		        props: {},
-		        tutorialTitle : "",
-		        tutorialMessage : "",
-		        iconClass: ""
-		      };
-		  },
-		  
+			return {
+				props: {},
+				tutorialTitle : "",
+				tutorialMessage : "",
+				iconClass: "",
+				cookieClass : "checkbox-inline cookieTutorial"
+			};
+		},
+
+		/**
+		 * Initial message at launch of tutorial
+		 */
 		start : function(){
 			this.stepIndex = 0;
 			var title = this.state.props.steps[this.stepIndex].title;
 			var message = this.state.props.steps[this.stepIndex].message;
 			var action = this.state.props.steps[this.stepIndex].action;
 			var icon = this.state.props.steps[this.stepIndex].icon;
-			
+
 			this.updateTutorialWindow(title,message,action,icon);			
 			this.open();
 		},
-		
+
 		updateTutorialWindow : function(title, message, action,icon){
 			var newIconClass = "";
 			if(icon!=null || undefined){
@@ -84,14 +92,23 @@ define(function (require) {
 				}
 			}
 			
-			this.setState({tutorialTitle: title, iconClass: newIconClass, tutorialMessage : message});
+			//Hides checkbox after initial welcome window
+			var newCookieClass = this.state.cookieClass;
+			if(this.stepIndex==1){
+				newCookieClass = "hide";
+			}
+
+
+			this.setState({tutorialTitle: title, iconClass: newIconClass, tutorialMessage : message, cookieClass : newCookieClass});
+
+			//execute action associated with message
 			if(action!=null || undefined){
 				if(action!=""){
 					GEPPETTO.ComponentsController.executeAction(action);
 				}
 			}
 		},
-		
+
 		nextStep: function(){
 			this.stepIndex++;
 			if(this.stepIndex <= this.totalSteps){
@@ -126,56 +143,80 @@ define(function (require) {
 		close : function(){
 			$('#tutorial').hide();
 		},
-		
+
 		open : function(){
 			$('#tutorial').show();
 		},
-		
+
+		/**
+		 * Extracts tutorial data for given configuration
+		 */
 		tutorialData : function(configurationURL){
 			var self = this;
-			
+
 			$.ajax({
-    			type: 'GET',
-    			dataType: 'json',
-    			url: configurationURL,
-    			success: function (responseData, textStatus, jqXHR) {
-    				self.setState({ props: responseData });
-    				self.totalSteps = self.state.props.steps.length-1;
-    				self.start();
-    			},
-    			error: function (responseData, textStatus, errorThrown) {
-            		throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
-    			}
-    		});
-		},
-		
-		componentDidMount:function(){
-			this.close();
-        	var self = this;
-           	GEPPETTO.on(Events.Show_Experiment_Loaded_Tutorial,function(){
-           		if(!this.dontShowAgain){
-           			self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
-           			this.dontShowAgain = true;
-           		}
-           	});
-        	
-        	GEPPETTO.on(Events.Show_Default_Tutorial,function(){
-           		self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
-            });
-        	
-        	GEPPETTO.on(Events.Show_Project_Loaded_Tutorial,function(){
-           		self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
-            });
-        	
-        	GEPPETTO.on(Events.Show_Login_Tutorial,function(){
-           		self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
-            });
-        	
-        	GEPPETTO.on(Events.Hide_Tutorial,function(){
-        		self.close();
-            });
+				type: 'GET',
+				dataType: 'json',
+				url: configurationURL,
+				success: function (responseData, textStatus, jqXHR) {
+					self.setState({ props: responseData });
+					self.totalSteps = self.state.props.steps.length-1;
+					self.start();
+				},
+				error: function (responseData, textStatus, errorThrown) {
+					throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
+				}
+			});
 		},
 
+		componentDidMount:function(){
+			this.close();
+			var self = this;
+
+			//launches specific tutorial is experiment is loaded
+			GEPPETTO.on(Events.Show_Experiment_Loaded_Tutorial,function(){
+				if(!this.dontShowTutorial){
+					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
+					this.dontShowTutorial = true;
+				}
+			});
+
+			//launches specific tutorial if project is loaded
+			GEPPETTO.on(Events.Show_Project_Loaded_Tutorial,function(){
+				if(!this.dontShowTutorial){
+					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/project_loaded_tutorial.json");
+					this.dontShowTutorial = true;
+				}
+			});
+
+			//Launches specific tutorial is user is login
+			GEPPETTO.on(Events.Show_Login_Tutorial,function(){
+				if(!this.dontShowTutorial){
+					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/login_tutorial.json");
+					this.dontShowTutorial = true;
+				}
+			});
+
+			//Launches tutorial from button 
+			GEPPETTO.on(Events.Show_Default_Tutorial,function(){
+				self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
+				var storedCookie = $.cookie('ignore_tutorial');
+				if(storedCookie!=null||undefined){
+					if(storedCookie){
+						this.setState({cookieClass:"hide"});
+					}
+				}
+			});
+			
+			//Hides tutorial
+			GEPPETTO.on(Events.Hide_Tutorial,function(){
+				self.close();
+			});
+		},
+
+		/**
+		 * Allows for using HTML tags as part of messages defined in .json configuration
+		 */
 		createTutorialMessage : function(){
 			return {__html: this.state.tutorialMessage}; 
 		},
@@ -190,13 +231,16 @@ define(function (require) {
 			 <i id="tutorialIcon" className={this.state.iconClass}></i>
 			 <span id="message" dangerouslySetInnerHTML={this.createTutorialMessage()}></span>
 			</div>
-			<div className="btn-group tutorial-buttons" role="group">
-				<button className="prevBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.prevStep}>
-					<span> &lt;-- PREV</span>
-				</button>
-				<button className="nextBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.nextStep}>
-					<span> NEXT --&gt;</span>
-				</button>
+			<div className="btn-group" role="group">
+				<div className="tutorial-buttons">
+					<button className="prevBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.prevStep}>
+						<span> &lt;-- PREV</span>
+					</button>
+					<button className="nextBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.nextStep}>
+						<span> NEXT --&gt;</span>
+					</button>
+				</div>
+				<label className={this.state.cookieClass} id="ignoreTutorial"><input type="checkbox" value="" onClick={this.dontShowAtStartup}>Don't show Tutorial at Startup Again.</input></label>
 			</div>
 			</div>
 		}

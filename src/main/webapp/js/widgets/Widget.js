@@ -387,11 +387,12 @@ define(function (require) {
                 }
             },
 
-            addHelpButton: function (helpCallback) {
+            addHelpButton: function () {
+                var that = this;
                 var parent = $("#" + this.id).parent();
                 parent.find(".historyIcon").before("<div class='fa fa-question ui-dialog-titlebar-help'></div>");
                 parent.find("div.ui-dialog-titlebar-help").click(function () {
-                    helpCallback();
+                    GEPPETTO.G.addWidget(1).setMessage(that.getHelp()).showTitleBar(false);
                 });
             },
 
@@ -407,16 +408,14 @@ define(function (require) {
                     $("#" + this.id).parent().draggable({disabled: true});
                     this.setClass('noStyleDisableDrag');
                 }
-            }
-            ,
+            },
 
             /**
              * Inject CSS for custom behaviour
              */
             setClass: function (className) {
                 $("#" + this.id).dialog({dialogClass: className});
-            }
-            ,
+            },
 
             /**
              * Renders the widget dialog window
@@ -457,8 +456,7 @@ define(function (require) {
                 //Take focus away from close button
                 dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
-            }
-            ,
+            },
 
             /**
              * Register event with widget
@@ -467,8 +465,7 @@ define(function (require) {
              */
             registerEvent: function (event, callback) {
                 this.registeredEvents.push({id: event, callback: callback});
-            }
-            ,
+            },
 
             /**
              * Unregister event with widget
@@ -479,8 +476,12 @@ define(function (require) {
                 this.registeredEvents = _.reject(this.registeredEvents, function (el) {
                     return el.id === event
                 });
+            },
+
+            getHelp: function(){
+                return 'Inline help not available for this widget. \n\
+                Try the <a href="http://docs.geppetto.org/en/latest/">online documentation</a> instead.';
             }
-            ,
         })
     }
         ;

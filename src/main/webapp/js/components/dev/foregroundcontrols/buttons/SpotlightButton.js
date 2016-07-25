@@ -16,7 +16,7 @@ define(function (require) {
                 className: 'squareB',
                 icon: 'fa fa-search',
                 onClick: function () {
-                    $("#spotlight").show();
+                    GEPPETTO.Spotlight.open();
                 }
             };
         }

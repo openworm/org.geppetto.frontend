@@ -16,7 +16,7 @@ define(function (require) {
                 className: 'squareB',
                 icon: 'fa fa-cogs',
                 onClick: function () {
-                    $("#querybuilder").show();
+                    GEPPETTO.QueryBuilder.open();
                 }
             };
         }

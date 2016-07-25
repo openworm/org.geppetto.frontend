@@ -503,6 +503,11 @@ define(function (require) {
         componentWillMount: function () {
             GEPPETTO.ControlPanel = this;
         },
+
+        open: function () {
+            // hide control panel
+            $("#controlpanel").show();
+        },
         
         close: function () {
             // hide any color picker that is still visible

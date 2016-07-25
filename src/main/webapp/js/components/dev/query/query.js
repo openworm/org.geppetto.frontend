@@ -550,6 +550,11 @@ define(function (require) {
             this.setState({ resultsView: resultsView});
         },
 
+        open: function () {
+            // show query builder
+            $("#querybuilder").show();
+        },
+
         close: function () {
             // hide query builder
             $("#querybuilder").hide();

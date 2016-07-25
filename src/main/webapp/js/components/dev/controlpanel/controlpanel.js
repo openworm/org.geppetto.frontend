@@ -431,7 +431,7 @@ define(function (require) {
 
         setColumnMeta: function (colMeta) {
             // if the user sets meta - NUKE everything and rebuild
-            // NOTE: griddle does not pickup metadata for eventual new columns
+            // NOTE: griddle does not pickup metadata for eventual new columns (fixed in newer versions)
             ReactDOM.unmountComponentAtNode(document.getElementById("controlpanel"));
             // re-instantiate the control panel in its entirety with the new column meta
             ReactDOM.render(

@@ -114,6 +114,124 @@ define(function (require) {
         }
     };
 
+    GEPPETTO.QueryResultsControlsComponent = React.createClass({
+
+        replaceTokensWithPath: function(inputStr, path){
+            return inputStr.replace(/\$ID\$/gi, path);
+        },
+
+        getActionString: function (control, path) {
+            var actionStr = '';
+
+            if (control.actions.length > 0) {
+                for (var i = 0; i < control.actions.length; i++) {
+                    actionStr += ((i != 0) ? ";" : "") + this.replaceTokensWithPath(control.actions[i], path);
+                }
+            }
+
+            return actionStr;
+        },
+
+        resolveCondition: function (control, path, negateCondition) {
+            if (negateCondition == undefined) {
+                negateCondition = false;
+            }
+
+            var resolvedConfig = control;
+
+            if (resolvedConfig.hasOwnProperty('condition')) {
+                // evaluate condition and reassign control depending on results
+                var conditionStr = this.replaceTokensWithPath(control.condition, path);
+                if (eval(conditionStr)) {
+                    resolvedConfig = negateCondition ? resolvedConfig.false : resolvedConfig.true;
+                } else {
+                    resolvedConfig = negateCondition ? resolvedConfig.true : resolvedConfig.false;
+                }
+            }
+
+            return resolvedConfig;
+        },
+
+        render: function () {
+            // TODO: would be nicer to pass controls and config straight from the parent component rather than assume
+            var config = GEPPETTO.QueryBuilder.props.resultsControlsConfig;
+            var resultItemId = this.props.rowData.id;
+            var ctrlButtons = [];
+
+            // Add common control buttons to list
+            for (var control in config.Common) {
+                var add = true;
+
+                // check show condition
+                if(config.Common[control].showCondition != undefined){
+                    var condition = this.replaceTokensWithPath(config.Common[control].showCondition, resultItemId);
+                    add = eval(condition);
+                }
+
+                if(add) {
+                    ctrlButtons.push(config.Common[control]);
+                }
+            }
+
+            var that = this;
+
+            return (
+                <div>
+                    {ctrlButtons.map(function (control, id) {
+                        // grab attributes to init button attributes
+                        var controlConfig = that.resolveCondition(control, resultItemId);
+                        var idVal = resultItemId.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_queryResults_btn";
+                        var tooltip = controlConfig.tooltip;
+                        var classVal = "btn queryresults-button fa " + controlConfig.icon;
+                        var styleVal = {};
+
+                        // define action function
+                        var actionFn = function (param) {
+                            // NOTE: there is a closure on 'control' so it's always the right one
+                            var controlConfig = that.resolveCondition(control, resultItemId);
+
+                            // take out action string
+                            var actionStr = that.getActionString(controlConfig, resultItemId);
+
+                            if (param != undefined) {
+                                actionStr = actionStr.replace(/\$param\$/gi, param);
+                            }
+
+                            // run action
+                            if (actionStr != '' && actionStr != undefined) {
+                                GEPPETTO.Console.executeCommand(actionStr);
+                                // check custom action to run after configured command
+                                if(that.props.metadata.action != '' && that.props.metadata.action != undefined) {
+                                    // straight up eval as we don't want this to show on the geppetto console
+                                    eval(that.props.metadata.action.replace(/\$ID\$/gi, resultItemId));
+                                }
+                            }
+
+                            // if conditional, swap icon with the other condition outcome
+                            if (control.hasOwnProperty('condition')) {
+                                var otherConfig = that.resolveCondition(control, path);
+                                var element = $('#' + idVal);
+                                element.removeClass();
+                                element.addClass("btn queryresults-button fa " + otherConfig.icon);
+                            }
+                        };
+
+                        return (
+                            <span key={id}>
+                                <button id={idVal}
+                                        className={classVal}
+                                        style={styleVal}
+                                        title={tooltip}
+                                        onClick={actionFn}>
+                                </button>
+                            </span>
+                        )
+                    })}
+                </div>
+            )
+        }
+    });
+
     // column metadata for display of query results
     var queryResultsColumnMeta = [
         {
@@ -136,8 +254,32 @@ define(function (require) {
             "locked": false,
             "visible": true,
             "displayName": "Description"
+        },
+        {
+            "columnName": "controls",
+            "order": 4,
+            "locked": false,
+            "visible": true,
+            "customComponent": GEPPETTO.QueryResultsControlsComponent,
+            "displayName": "Controls",
+            "action": ""
         }
     ];
+
+    // control configuration for query results action
+    var queryResultsControlConfig = {
+        "Common": {
+            "info": {
+                "id": "info",
+                "actions": [
+                    "GEPPETTO.Console.log('Result ID: $ID$');"
+                ],
+                "icon": "fa-info-circle",
+                "label": "Info",
+                "tooltip": "Info"
+            }
+        }
+    };
 
     // TODO: remove this mock data - it's just for development
     var mockTermsData = ['saddle', 'medulla', 'betulla', 'test', 'nonna', 'leg', 'arm', 'bug', 'longino'];
@@ -149,22 +291,22 @@ define(function (require) {
         });
 
     var mockResults = [
-        { id: 'VFB_1', name: 'JFRC2_template', description: 'Test description'},
-        { id: 'VFB_2', name: 'VGlut-F-000176', description: 'Test description'},
-        { id: 'VFB_3', name: 'DM5 Clone of Yu 2013', description: 'Test description a bit longer'},
-        { id: 'VFB_4', name: 'Gad1-F-200114', description: 'Test description a bit longer even more indeed'},
-        { id: 'VFB_5', name: 'VGlut-F-800176', description: 'Test description a bit longer even more indeed'},
-        { id: 'VFB_6', name: 'DL1 Clone of Nonna 007', description: 'Test description'},
-        { id: 'VFB_7', name: 'VFB-123-123-123', description: 'Test description'},
-        { id: 'VFB_8', name: 'VGlut-000-000', description: 'Test description blah blah'},
-        { id: 'VFB_9', name: 'JFRC2_test', description: 'Test description'},
-        { id: 'VFB_10', name: 'VGlut-F-000345', description: 'Test description'},
-        { id: 'VFB_11', name: 'DM5 Clone of Yu 2014', description: 'Test description a bit longer'},
-        { id: 'VFB_12', name: 'Gad1-F-200234', description: 'Test description a bit longer even more indeed'},
-        { id: 'VFB_13', name: 'VGlut-F-800133', description: 'Test description a bit longer even more indeed'},
-        { id: 'VFB_14', name: 'DL2 Clone of Nonna 008', description: 'Test description'},
-        { id: 'VFB_15', name: 'VFB-123-123-666', description: 'Test description'},
-        { id: 'VFB_16', name: 'VGlut-000-123', description: 'Test description blah blah'}
+        { id: 'VFB_1', name: 'JFRC2_template', description: 'Test description', controls: ''},
+        { id: 'VFB_2', name: 'VGlut-F-000176', description: 'Test description', controls: ''},
+        { id: 'VFB_3', name: 'DM5 Clone of Yu 2013', description: 'Test description a bit longer', controls: ''},
+        { id: 'VFB_4', name: 'Gad1-F-200114', description: 'Test description a bit longer even more indeed', controls: ''},
+        { id: 'VFB_5', name: 'VGlut-F-800176', description: 'Test description a bit longer even more indeed', controls: ''},
+        { id: 'VFB_6', name: 'DL1 Clone of Nonna 007', description: 'Test description', controls: ''},
+        { id: 'VFB_7', name: 'VFB-123-123-123', description: 'Test description', controls: ''},
+        { id: 'VFB_8', name: 'VGlut-000-000', description: 'Test description blah blah', controls: ''},
+        { id: 'VFB_9', name: 'JFRC2_test', description: 'Test description', controls: ''},
+        { id: 'VFB_10', name: 'VGlut-F-000345', description: 'Test description', controls: ''},
+        { id: 'VFB_11', name: 'DM5 Clone of Yu 2014', description: 'Test description a bit longer', controls: ''},
+        { id: 'VFB_12', name: 'Gad1-F-200234', description: 'Test description a bit longer even more indeed', controls: ''},
+        { id: 'VFB_13', name: 'VGlut-F-800133', description: 'Test description a bit longer even more indeed', controls: ''},
+        { id: 'VFB_14', name: 'DL2 Clone of Nonna 008', description: 'Test description', controls: ''},
+        { id: 'VFB_15', name: 'VFB-123-123-666', description: 'Test description', controls: ''},
+        { id: 'VFB_16', name: 'VGlut-000-123', description: 'Test description blah blah', controls: ''}
     ];
 
     var mockSourceData = [
@@ -394,8 +536,9 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 model: {},
-                resultsColumns: ['name', 'description'],
-                resultsColumnMeta: {}
+                resultsColumns: ['name', 'description', 'controls'],
+                resultsColumnMeta: {},
+                resultsControlsConfig: {},
             };
         },
 
@@ -668,7 +811,9 @@ define(function (require) {
 
     var renderQueryComponent = function(){
         ReactDOM.render(
-            <QueryBuilder model={queryBuilderModel} resultsColumnMeta={queryResultsColumnMeta} />,
+            <QueryBuilder model={queryBuilderModel}
+                          resultsColumnMeta={queryResultsColumnMeta}
+                          resultsControlsConfig={queryResultsControlConfig} />,
             document.getElementById("querybuilder")
         );
     };

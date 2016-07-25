@@ -1,6 +1,16 @@
 /*Classes*/
 
-.querybuilder-button {
+#querybuilder .queryresults-button {
+    height: 25px;
+    width: 33px;
+    margin: 0px;
+    background: none !important;
+    color: #fd6808;
+    font-size: 18px !important;
+    border: 0 !important;
+}
+
+#querybuilder .querybuilder-button {
     height: 50px;
     width: 66px;
     margin: 0px;
@@ -10,7 +20,7 @@
     border: 0 !important;
 }
 
-.query-item-label {
+#querybuilder .query-item-label {
     font-weight: bold;
     font-size: 20px;
     text-align: center;
@@ -20,7 +30,7 @@
     width: 75px;
 }
 
-.query-item-option {
+#querybuilder .query-item-option {
     width: 450px !important;
     height: 40px !important;
     padding: 8px 12px !important;
@@ -34,7 +44,7 @@
     float: left;
 }
 
-.query-item-button {
+#querybuilder .query-item-button {
     height: 20px;
     width: 30px;
     margin: 0px;
@@ -45,15 +55,15 @@
     float: right;
 }
 
-.query-item {
+#querybuilder .query-item {
     margin-bottom: 25px;
 }
 
-.clearer {
+#querybuilder .clearer {
     clear: both;
 }
 
-.center-content{
+#querybuilder .center-content{
     text-align: center;
 }
 

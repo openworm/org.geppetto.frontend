@@ -115,19 +115,19 @@ define(function (require) {
                     }
 
                     // create datasources
-                    geppettoModel.datasources= this.createDatasources(jsonModel.dataSources, geppettoModel);
+                    geppettoModel.datasources = this.createDatasources(jsonModel.dataSources, geppettoModel);
 
                     // create variables
-                    geppettoModel.variables= this.createVariables(jsonModel.variables, geppettoModel);
+                    geppettoModel.variables = this.createVariables(jsonModel.variables, geppettoModel);
 
                     // create libraries
                     for (var i = 0; i < jsonModel.libraries.length; i++) {
-                    	if(!jsonModel.libraries[i].synched){
-	                        var library = this.createLibrary(jsonModel.libraries[i]);
-	                        library.parent= geppettoModel;
-	                        library.setTypes(this.createTypes(jsonModel.libraries[i].types, library));
-	                        geppettoModel.getLibraries().push(library);
-                    	}
+                        if (!jsonModel.libraries[i].synched) {
+                            var library = this.createLibrary(jsonModel.libraries[i]);
+                            library.parent = geppettoModel;
+                            library.setTypes(this.createTypes(jsonModel.libraries[i].types, library));
+                            geppettoModel.getLibraries().push(library);
+                        }
                     }
 
                     if (populateRefs) {
@@ -241,7 +241,7 @@ define(function (require) {
                     if (vizType != undefined) {
                         // replace with reference to actual type
                         var typeObj = this.resolve(vizType.$ref);
-                        node.visualType= typeObj;
+                        node.visualType = typeObj;
                     }
 
                     // resolve super type
@@ -265,7 +265,7 @@ define(function (require) {
                             }
                         }
 
-                        node.superType= typeObjs;
+                        node.superType = typeObjs;
                     }
                 } else if (node instanceof ArrayType) {
                     // take array type string - looks like this --> '//@libraries.1/@types.5'
@@ -273,7 +273,7 @@ define(function (require) {
 
                     if (arrayType != undefined) {
                         var typeObj = this.resolve(arrayType.$ref);
-                        node.type= typeObj;
+                        node.type = typeObj;
                     }
 
                     // resolve super type
@@ -297,7 +297,7 @@ define(function (require) {
                             }
                         }
 
-                        node.superType= typeObjs;
+                        node.superType = typeObjs;
                     }
                 }
 
@@ -362,7 +362,7 @@ define(function (require) {
                 if (jsonDataSources != undefined) {
                     for (var i = 0; i < jsonDataSources.length; i++) {
                         var ds = this.createDatasource(jsonDataSources[i]);
-                        ds.parent= parent;
+                        ds.parent = parent;
 
                         dataSources.push(ds);
                     }
@@ -379,17 +379,17 @@ define(function (require) {
 
                 if (jsonVariables != undefined) {
                     for (var i = 0; i < jsonVariables.length; i++) {
-                    	if(!jsonVariables[i].synched){
-	                        var variable = this.createVariable(jsonVariables[i]);
-	                        variable.parent = parent;
-	
-	                        // check if it has an anonymous type
-	                        if (jsonVariables[i].anonymousTypes != undefined) {
-	                            variable.anonymousTypes= this.createTypes(jsonVariables[i].anonymousTypes, variable);
-	                        }
-	
-	                        variables.push(variable);
-                    	}
+                        if (!jsonVariables[i].synched) {
+                            var variable = this.createVariable(jsonVariables[i]);
+                            variable.parent = parent;
+
+                            // check if it has an anonymous type
+                            if (jsonVariables[i].anonymousTypes != undefined) {
+                                variable.anonymousTypes = this.createTypes(jsonVariables[i].anonymousTypes, variable);
+                            }
+
+                            variables.push(variable);
+                        }
                     }
                 }
 
@@ -404,44 +404,44 @@ define(function (require) {
 
                 if (jsonTypes != undefined) {
                     for (var i = 0; i < jsonTypes.length; i++) {
-                    	if(!jsonTypes[i].synched){
-	                        var type = null;
-	
-	                        // check if it's composite type, visual type, array type or simple type
-	                        if (jsonTypes[i].eClass == 'CompositeType' || jsonTypes[i].eClass == 'ConnectionType') {
-	                            type = this.createCompositeType(jsonTypes[i]);
-	                        }
-	                        else if (jsonTypes[i].eClass == 'CompositeVisualType') {
-	                            type = this.createCompositeVisualType(jsonTypes[i]);
-	                            // inject visual capability to all CompositeVisualType
-	                            type.extendApi(AVisualCapability);
-	                        }
-	                        else if (jsonTypes[i].eClass == 'ImportType') {
-	                            type = this.createImportType(jsonTypes[i],null);
-	                            //we store the index of the importType to speed up swapping procedures
-	                            type._index=i;
-	                        }
-	                        else if (jsonTypes[i].eClass == 'ArrayType') {
-	                            type = this.createArrayType(jsonTypes[i]);
-	                        }
-	                        else {
-	                            type = this.createType(jsonTypes[i]);
-	                            // inject visual capability if MetaType == VisualType
-	                            if (type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) {
-	                                type.extendApi(AVisualCapability);
-	                            }
-	                        }
-	
-	                        // if getVisualType != null also inject visual capability
-	                        if (type.getVisualType() != undefined) {
-	                            type.extendApi(AVisualCapability);
-	                        }
-	
-	                        // set parent
-	                        type.parent = parent;
-	
-	                        types.push(type);
-                    	}
+                        if (!jsonTypes[i].synched) {
+                            var type = null;
+
+                            // check if it's composite type, visual type, array type or simple type
+                            if (jsonTypes[i].eClass == 'CompositeType' || jsonTypes[i].eClass == 'ConnectionType') {
+                                type = this.createCompositeType(jsonTypes[i]);
+                            }
+                            else if (jsonTypes[i].eClass == 'CompositeVisualType') {
+                                type = this.createCompositeVisualType(jsonTypes[i]);
+                                // inject visual capability to all CompositeVisualType
+                                type.extendApi(AVisualCapability);
+                            }
+                            else if (jsonTypes[i].eClass == 'ImportType') {
+                                type = this.createImportType(jsonTypes[i], null);
+                                //we store the index of the importType to speed up swapping procedures
+                                type._index = i;
+                            }
+                            else if (jsonTypes[i].eClass == 'ArrayType') {
+                                type = this.createArrayType(jsonTypes[i]);
+                            }
+                            else {
+                                type = this.createType(jsonTypes[i]);
+                                // inject visual capability if MetaType == VisualType
+                                if (type.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE) {
+                                    type.extendApi(AVisualCapability);
+                                }
+                            }
+
+                            // if getVisualType != null also inject visual capability
+                            if (type.getVisualType() != undefined) {
+                                type.extendApi(AVisualCapability);
+                            }
+
+                            // set parent
+                            type.parent = parent;
+
+                            types.push(type);
+                        }
                     }
                 }
 
@@ -630,12 +630,12 @@ define(function (require) {
                                     continue;
                                 }
 
-                                var typeMatch=false;
+                                var typeMatch = false;
 
                                 for (var m = 0; m < existingImportTypes.length; m++) {
                                     // check if the given diff type already exists
                                     if (diffTypes[k].getPath() == existingImportTypes[m].getPath()) {
-                                        typeMatch=true;
+                                        typeMatch = true;
                                         typeMatched.push(diffTypes[k]);
                                         importTypeMatched.push(existingImportTypes[m]);
                                         break;
@@ -652,7 +652,7 @@ define(function (require) {
                                     libs[j].getWrappedObj().types.push(diffTypes[k].getWrappedObj());
 
                                     // add to library in geppetto object model
-                                    diffTypes[k].parent= libs[j];
+                                    diffTypes[k].parent = libs[j];
                                     libs[j].getTypes().push(diffTypes[k]);
 
                                     addedTypes.push(diffTypes[k]);
@@ -683,7 +683,7 @@ define(function (require) {
 
                                     // populate references for the swapped type
                                     this.populateTypeReferences(typeMatched[k]);
-                                    var index= importTypeMatched[k]._index;
+                                    var index = importTypeMatched[k]._index;
 
                                     var variablesToUpdate = importTypeMatched[k].getVariableReferences();
                                     // swap type reference in ALL variables that point to it
@@ -698,7 +698,7 @@ define(function (require) {
                                     typeMatched[k].overrideType = importTypeMatched[k];
 
                                     // swap in object model
-                                    typeMatched[k].parent= libs[j];
+                                    typeMatched[k].parent = libs[j];
                                     libs[j].getTypes()[index] = typeMatched[k];
                                     //libs[j].removeImportType(importTypeMatched[k]);
 
@@ -731,7 +731,7 @@ define(function (require) {
                         this.geppettoModel.getWrappedObj().libraries.push(diffLibs[i].getWrappedObj());
 
                         // add to geppetto object model
-                        diffLibs[i].parent= this.geppettoModel;
+                        diffLibs[i].parent = this.geppettoModel;
                         this.geppettoModel.getLibraries().push(diffLibs[i]);
 
                         // add to diff report
@@ -772,7 +772,7 @@ define(function (require) {
                         this.geppettoModel.getWrappedObj().variables.push(diffVars[x].getWrappedObj());
 
                         // add variable to geppetto object model
-                        diffVars[x].parent= this.geppettoModel;
+                        diffVars[x].parent = this.geppettoModel;
                         this.geppettoModel.getVariables().push(diffVars[x]);
 
                         // populate references for new vars
@@ -1320,7 +1320,7 @@ define(function (require) {
                 this.buildPointerElementsChain(matchingInstance.getRawInstancePath(), rootInstance, pointerElements, originalElement);
 
                 // horribly override elements with newly created ones
-                pointer.elements=pointerElements;
+                pointer.elements = pointerElements;
 
                 // add connection instance reference to matching instance for easy retrieval
                 if (pointedIndex > -1) {
@@ -1672,7 +1672,7 @@ define(function (require) {
             /**
              * Build list of partial instance types starting from a type
              */
-                fetchAllPotentialInstancePathsForType(type, allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths){
+            fetchAllPotentialInstancePathsForType: function (type, allPotentialPaths, allPotentialPathsForIndexing, potentialParentPaths) {
                 if (type.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
                     var vars = type.getVariables();
 
@@ -1737,7 +1737,7 @@ define(function (require) {
             /** Creates a variable */
             createVariable: function (node, options) {
                 if (options == null || options == undefined) {
-                    options = {wrappedObj: node, types:node.types};
+                    options = {wrappedObj: node, types: node.types};
                 }
 
                 return new Variable(options);
@@ -1779,7 +1779,7 @@ define(function (require) {
             /** Creates a composite type */
             createCompositeType: function (node, options) {
                 var t = new CompositeType(this.getTypeOptions(node, options));
-                t.variables= this.createVariables(node.variables, t);
+                t.variables = this.createVariables(node.variables, t);
 
                 return t;
             },
@@ -1787,9 +1787,9 @@ define(function (require) {
             /** Creates a composite visual type */
             createCompositeVisualType: function (node, options) {
                 var t = new CompositeVisualType(this.getTypeOptions(node, options));
-                t.variables= this.createVariables(node.variables, t);
+                t.variables = this.createVariables(node.variables, t);
                 if (node.visualGroups != undefined) {
-                    t.visualGroups= this.createVisualGroups(node.visualGroups, t);
+                    t.visualGroups = this.createVisualGroups(node.visualGroups, t);
                 }
 
                 return t;
@@ -1798,8 +1798,8 @@ define(function (require) {
             /** Creates a composite type */
             createArrayType: function (node, options) {
                 var t = new ArrayType(this.getTypeOptions(node, options));
-                t.size= node.size;
-                t.type= node.arrayType;
+                t.size = node.size;
+                t.type = node.arrayType;
 
                 return t;
             },
@@ -1857,7 +1857,7 @@ define(function (require) {
                 if (instance.connections) {
                     instance.connections.concat(connectionInstances);
                 } else {
-                    instance.connections= connectionInstances;
+                    instance.connections = connectionInstances;
                 }
             },
 
@@ -1926,8 +1926,8 @@ define(function (require) {
                         }
 
                         var vg = new VisualGroup(options);
-                        vg.parent= parent;
-                        vg.visualGroupElements= this.createVisualGroupElements(nodes[i].visualGroupElements, vg);
+                        vg.parent = parent;
+                        vg.visualGroupElements = this.createVisualGroupElements(nodes[i].visualGroupElements, vg);
 
                         visualGroups.push(vg);
                     }
@@ -2409,7 +2409,7 @@ define(function (require) {
                             typeToLibraryMap[typePath].getWrappedObj().types[m] = type.overrideType.getWrappedObj();
 
                             // swap in object model (this line is probably redundant as the parent hasn't changed)
-                            type.overrideType.parent= typeToLibraryMap[typePath];
+                            type.overrideType.parent = typeToLibraryMap[typePath];
                             typeToLibraryMap[typePath].getTypes()[m] = type.overrideType;
                         }
                     }

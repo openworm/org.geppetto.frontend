@@ -318,7 +318,7 @@ public class ConnectionHandler
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
-			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, experiment, geppettoProject);
+			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, geppettoProject);
 			
 			String serializedModel = GeppettoSerializer.serializeToJSON(geppettoModel, true);
 
@@ -351,22 +351,22 @@ public class ConnectionHandler
 	 * @param variableId
 	 * @throws GeppettoExecutionException 
 	 */
-	public void resolveImportType(String requestID, Long projectId, Long experimentId, String typePath)
+	public void resolveImportType(String requestID, Long projectId, Long experimentId, List<String> typePaths)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
-			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePath, experiment, geppettoProject);
+			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePaths, geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.IMPORT_TYPE_RESOLVED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
 		}
 		catch(IOException e)
 		{
-			error(e, "Error importing type " + typePath);
+			error(e, "Error importing type " + typePaths);
 		}
 		catch(GeppettoExecutionException e)
 		{
-			error(e, "Error importing type " + typePath);
+			error(e, "Error importing type " + typePaths);
 		}
 
 	}

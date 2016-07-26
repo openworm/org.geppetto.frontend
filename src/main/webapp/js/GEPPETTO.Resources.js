@@ -490,7 +490,7 @@ define(function (require) {
             // COMMMON TYPE PATHS
             STATE_VARIABLE_TYPE_PATH: 'Model.common.StateVariable',
             PARAMETER_TYPE_PATH: 'Model.common.Parameter',
-            MODEL_PREFIX_CLIENT: 'Model.',
+            MODEL_PREFIX_CLIENT: 'Model',
             // CONTROL PANEL
             CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:'
         }

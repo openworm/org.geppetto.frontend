@@ -36,68 +36,68 @@
  *
  * @module model/ImportType
  * @author Giovanni Idili
+ * @author Matteo Cantarelli
  */
 define(function (require) {
     var Type = require('model/Type');
 
-    return Type.extend({
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"parent": options.parent});
-            this.set({"wrappedObj": options.wrappedObj});
+    function ImportType(options) {
+        Type.prototype.constructor.call(this, options);
+        this.visualType = options.visualType;
+        this.superType = (options.superType != 'undefined') ? options.superType : [];
+        this.capabilities = [];
+        this.variableReferences = [];
+    };
 
-            // capability list is for private use
-            this.set({"capabilities": []});
-        },
+    ImportType.prototype = Object.create(Type.prototype);
+    ImportType.prototype.constructor = ImportType;
 
-        /**
-         * Get type for array type
-         *
-         * @command ImportType.getUrl()
-         *
-         * @returns {String}
-         *
-         */
-        getUrl: function () {
-            return this.getWrappedObj().url;
-        },
 
-        /**
-         * Get type for array type
-         *
-         * @command ImportType.getReferenceUrl()
-         *
-         * @returns {String}
-         *
-         */
-        getReferenceUrl: function () {
-            return this.getWrappedObj().referenceURL;
-        },
+    /**
+     * Get type for array type
+     *
+     * @command ImportType.getUrl()
+     *
+     * @returns {String}
+     *
+     */
+    ImportType.prototype.getUrl = function () {
+        return this.getWrappedObj().url;
+    };
 
-        /**
-         * Get type for array type
-         *
-         * @command ImportType.getModelInterpreterId()
-         *
-         * @returns {String}
-         *
-         */
-        getModelInterpreterId: function () {
-            return this.getWrappedObj().modelInterpreterId;
-        },
+    /**
+     * Get type for array type
+     *
+     * @command ImportType.getReferenceUrl()
+     *
+     * @returns {String}
+     *
+     */
+    ImportType.prototype.getReferenceUrl = function () {
+        return this.getWrappedObj().referenceURL;
+    };
 
-        /**
-         * Trigger import type resolution - will cause this import type to get swapped with an actual type
-         *
-         * @command ImportType.resolve()
-         */
-        resolve: function(callback) {
-            GEPPETTO.SimulationHandler.resolveImportType(this.getPath(), callback);
-        }
-    });
+    /**
+     * Get type for array type
+     *
+     * @command ImportType.getModelInterpreterId()
+     *
+     * @returns {String}
+     *
+     */
+    ImportType.prototype.getModelInterpreterId = function () {
+        return this.getWrappedObj().modelInterpreterId;
+    };
+
+    /**
+     * Trigger import type resolution - will cause this import type to get swapped with an actual type
+     *
+     * @command ImportType.resolve()
+     */
+    ImportType.prototype.resolve = function (callback) {
+        GEPPETTO.SimulationHandler.resolveImportType(this.getPath(), callback);
+    };
+
+    return ImportType;
 });

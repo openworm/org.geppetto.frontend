@@ -333,8 +333,11 @@ define(function (require) {
 
                             assert.equal(passTimeTest, true, "Testing Simulation load time: " + time + " ms");
                             assert.ok(acnet2.baskets_12[3] != undefined && acnet2.pyramidals_48[12] != undefined, "Instances exploded as expected");
-                            assert.equal(acnet2.baskets_12[9].getConnections().length, 60, "Connections checked on bask");
-                            assert.equal(acnet2.pyramidals_48[23].getConnections().length, 22, "Connections checked on pyramidal");
+                            var check = function(){
+                                assert.equal(acnet2.baskets_12[9].getConnections().length, 60, "Connections checked on bask");
+                                assert.equal(acnet2.pyramidals_48[23].getConnections().length, 22, "Connections checked on pyramidal");	
+                            };
+                            Model.neuroml.resolveAllImportTypes(check);                            
                             assert.equal(acnet2.baskets_12[9].getVisualGroups().length, 3, "Test number of Visual Groups on bask");
                             assert.equal(acnet2.pyramidals_48[23].getVisualGroups().length, 5, "Test number of Visual Groups on pyramidal");
 
@@ -422,10 +425,15 @@ define(function (require) {
                             assert.equal(passTimeTest, true, "Simulation loaded within time limit: " + time);
                             assert.notEqual(c302, null, "Top level instance is not null");
                             assert.equal(c302.getChildren().length, 299, "C302 Children count checked");
-                            assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL connections check");
-                            assert.equal(c302.AVAL[0].getConnections().length, 170, "AVAL connections check");
-                            assert.equal(c302.PVDR[0].getConnections().length, 7, "AVAL connections check");
-
+                            
+                            var check = function(){
+                            	assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL connections check");
+                                assert.equal(c302.AVAL[0].getConnections().length, 170, "AVAL connections check");
+                                assert.equal(c302.PVDR[0].getConnections().length, 7, "AVAL connections check");
+                            };
+                            
+                            Model.neuroml.resolveAllImportTypes(check);
+                            
                             done();
                             resetConnection();
                             break;

@@ -257,9 +257,31 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				URL url = null;
 				try
 				{
+
 					url = URLReader.getURL(urlString);
 
 					connectionHandler.sendScriptData(requestID, url, this);
+
+				}
+				catch(MalformedURLException e)
+				{
+					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
+				}
+				break;
+			}
+			case GET_DATA_SOURCE_RESULTS:
+			{
+				URL url = null;
+				String dataSourceName;
+				try
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+							{
+							}.getType());
+					url = URLReader.getURL(parameters.get("url"));
+					dataSourceName = parameters.get("data_source_name");
+
+					connectionHandler.sendDataSourceResults(requestID,dataSourceName, url, this);
 
 				}
 				catch(MalformedURLException e)
@@ -413,7 +435,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case RESOLVE_IMPORT_TYPE:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.path);
+				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.paths);
 				break;
 			}
 			default:
@@ -465,7 +487,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Long projectId;
 		Long experimentId;
 		String dataSourceId;
-		String path;
+		List<String> paths;
 		String variableId;
 	}
 

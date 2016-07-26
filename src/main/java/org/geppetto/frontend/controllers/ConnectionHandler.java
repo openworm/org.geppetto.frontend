@@ -81,6 +81,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 /**
@@ -317,7 +318,7 @@ public class ConnectionHandler
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
-			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, experiment, geppettoProject);
+			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, geppettoProject);
 			
 			String serializedModel = GeppettoSerializer.serializeToJSON(geppettoModel, true);
 
@@ -350,22 +351,22 @@ public class ConnectionHandler
 	 * @param variableId
 	 * @throws GeppettoExecutionException 
 	 */
-	public void resolveImportType(String requestID, Long projectId, Long experimentId, String typePath)
+	public void resolveImportType(String requestID, Long projectId, Long experimentId, List<String> typePaths)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
-			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePath, experiment, geppettoProject);
+			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePaths, geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.IMPORT_TYPE_RESOLVED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
 		}
 		catch(IOException e)
 		{
-			error(e, "Error importing type " + typePath);
+			error(e, "Error importing type " + typePaths);
 		}
 		catch(GeppettoExecutionException e)
 		{
-			error(e, "Error importing type " + typePath);
+			error(e, "Error importing type " + typePaths);
 		}
 
 	}
@@ -559,6 +560,41 @@ public class ConnectionHandler
 			String script = sb.toString();
 
 			websocketConnection.sendMessage(requestID, OutboundMessages.SCRIPT_FETCHED, script);
+		}
+		catch(IOException e)
+		{
+			error(e, "Error while reading the script at " + url);
+		}
+	}
+	
+	/**
+	 * @param requestID
+	 * @param url
+	 * @param visitor
+	 */
+	public void sendDataSourceResults(String requestID, String dataSourceName, URL url,WebsocketConnection visitor)
+	{
+		try
+		{
+			String line = null;
+			StringBuilder sb = new StringBuilder();
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+
+			while((line = br.readLine()) != null)
+			{
+				sb.append(line + "\n");
+			}
+			String script = sb.toString();
+
+
+			JsonObject obj = new JsonObject();
+			obj.addProperty("data_source_name", dataSourceName);
+			obj.addProperty("results", script);
+			
+			String message = obj.toString();
+
+			websocketConnection.sendMessage(requestID, OutboundMessages.DATASOURCE_RESULTS_FETCHED, message);
 		}
 		catch(IOException e)
 		{

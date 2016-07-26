@@ -133,6 +133,9 @@ public class TransportMessageFactory {
 			case SCRIPT_FETCHED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.SCRIPT_FETCHED.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
+			case DATASOURCE_RESULTS_FETCHED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.DATASOURCE_RESULTS_FETCHED.toString(), (update!=null) ? update : EMPTY_STRING));
+				break;
 			case WATCHED_VARIABLES_SET:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.WATCHED_VARIABLES_SET.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;

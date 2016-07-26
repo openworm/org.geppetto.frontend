@@ -346,6 +346,12 @@ define(function (require) {
             $('.twitter-typeahead').addClass("typeaheadWrapper");
         },
 
+        openToInstance: function (instance) {
+            $("#spotlight").show();
+            $("#typeahead").focus();
+            $(".typeahead").typeahead('val', instance.getInstancePath());
+            $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
+        },
 
         open: function (flowFilter, useSelection) {
             if (useSelection == undefined) {
@@ -373,25 +379,19 @@ define(function (require) {
                     that.suggestions.add(value);
                 });
             }
-            $("#spotlight").show();
-            $("#typeahead").focus();
+
             if (useSelection) {
                 var selection = GEPPETTO.G.getSelection();
                 if (selection.length > 0) {
-                    var instance = selection[selection.length - 1];
-                    $(".typeahead").typeahead('val', instance.getInstancePath());
-                    $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
+                    this.openToInstance(selection[selection.length - 1]);
+                    return;
                 }
-                else {
-                    $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
-                    $("#typeahead").typeahead('val', "");
-                }
-            }
-            else {
-                $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
-                $("#typeahead").typeahead('val', "");
             }
 
+            $("#spotlight").show();
+            $("#typeahead").focus();
+            $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+            $("#typeahead").typeahead('val', "");
         },
 
         /**
@@ -473,7 +473,7 @@ define(function (require) {
         		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
         		var newActions = actions.slice(0);
         		for(var i=0; i < actions.length; i++) {
-        			 newActions[i] = newActions[i].replace('$ID$', obj["id"]);
+        			 newActions[i] = newActions[i].replace(/\$ID\$/gi, obj["id"]);
         		}
         		obj["actions"] = newActions;
         		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;

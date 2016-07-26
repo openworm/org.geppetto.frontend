@@ -632,14 +632,14 @@ define(function(require)
             /**
              * Refreshes UI components base on current model / instances
              */
-            refresh: function(){
+            refresh: function(newInstances){
                 // populate control panel with exploded instances
                 if (GEPPETTO.ControlPanel != undefined) {
-                    GEPPETTO.ControlPanel.setData(window.Instances);
+                    GEPPETTO.ControlPanel.addData(newInstances);
                 }
                 // populate spotligh with exploded instances
                 if (GEPPETTO.Spotlight != undefined) {
-                    GEPPETTO.Spotlight.updateData();
+                    GEPPETTO.Spotlight.addData(GEPPETTO.ModelFactory.newPathsIndexing);
                 }
             }
         };

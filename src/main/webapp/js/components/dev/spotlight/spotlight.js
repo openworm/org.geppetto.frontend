@@ -23,14 +23,16 @@ define(function (require) {
         potentialSuggestions: {},
         suggestions: null,
         instances: null,
+        initialised:false,
         
         close : function () {
             $("#spotlight").hide();
             GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
         },
         
-        updateData : function() {
-            this.instances.add(GEPPETTO.ModelFactory.allPathsIndexing);
+        addData : function(instances) {
+            this.instances.add(instances);
+            this.initialised=true;
         },
 
         componentDidMount: function () {
@@ -84,7 +86,10 @@ define(function (require) {
            
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
-            	that.updateData();
+            	if(that.initialised){
+            		that.initialised=false;
+            		that.instances.initialize(true);
+            	}
             });
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions
@@ -263,6 +268,9 @@ define(function (require) {
                 useSelection = false;
             }
             this.suggestions.initialize(true);
+            if(!this.initialised){
+            	this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
+            }
             var that = this;
             if (flowFilter) {
                 if ($.isArray(flowFilter)) {
@@ -524,7 +532,7 @@ define(function (require) {
                     instanceToCheck = instance[0];
                 }
                 $.each(buttonGroups, function (groupName, groupDef) {
-                    if ((instanceToCheck.get("capabilities").indexOf(groupName) != -1) ||
+                    if ((instanceToCheck.getCapabilities().indexOf(groupName) != -1) ||
                         (instanceToCheck.getType().getMetaType() == groupName)) {
                         tbar.append(that.createButtonGroup(groupName, groupDef, instance));
                     }

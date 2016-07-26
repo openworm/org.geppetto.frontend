@@ -317,7 +317,7 @@ public class ConnectionHandler
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
-			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, experiment, geppettoProject);
+			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, geppettoProject);
 			
 			String serializedModel = GeppettoSerializer.serializeToJSON(geppettoModel, true);
 
@@ -356,7 +356,7 @@ public class ConnectionHandler
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
-			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePaths, experiment, geppettoProject);
+			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePaths, geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.IMPORT_TYPE_RESOLVED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
 		}
 		catch(IOException e)

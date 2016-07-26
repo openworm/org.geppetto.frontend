@@ -39,7 +39,7 @@
  * @author Matteo Cantarelli
  */
 
-define(function () {
+define(function (require) {
 
     function Instance(options) {
 

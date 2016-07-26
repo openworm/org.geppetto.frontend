@@ -83,6 +83,18 @@ define(function (require) {
     Library.prototype.removeImportType = function (importType) {
         this.importTypes.remove(importType);
     };
+    
+    Library.prototype.resolveAllImportTypes = function (callback) {
+    	var b=[];
+    	const BATCH = 50;
+    	for(var i=0;i<this.importTypes.length;i++){
+			b.push(this.importTypes[i].getPath());
+		} 
+    	while(b.length>BATCH){
+    		GEPPETTO.SimulationHandler.resolveImportType(b.splice(0,BATCH));
+		}
+    	GEPPETTO.SimulationHandler.resolveImportType(b, callback);
+    };
 
     // Overriding set
     Library.prototype.setTypes = function (types) {

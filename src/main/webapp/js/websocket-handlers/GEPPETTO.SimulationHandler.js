@@ -320,7 +320,6 @@ define(function (require) {
             fetchVariable: function (variableId, datasourceId, callback) {
                 if (!window.Model.hasOwnProperty(variableId)) {
                     var params = {};
-                    params["experimentId"] = Project.getActiveExperiment().getId();
                     params["projectId"] = Project.getId();
                     params["variableId"] = variableId;
                     params["dataSourceId"] = datasourceId;
@@ -375,7 +374,6 @@ define(function (require) {
                     typePaths=[typePaths];
                 }
                 var params = {};
-                params["experimentId"] = Project.getActiveExperiment().getId();
                 params["projectId"] = Project.getId();
                 // replace client naming first occurrence - the server doesn't know about it
                 var paths=[];

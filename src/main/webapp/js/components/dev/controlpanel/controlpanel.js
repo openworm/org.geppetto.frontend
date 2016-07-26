@@ -300,7 +300,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": "",
-            "action": "GEPPETTO.FE.refresh();"
+            "action": "GEPPETTO.ControlPanel.refresh();"
         }
     ];
 

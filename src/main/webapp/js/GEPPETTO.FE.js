@@ -188,7 +188,31 @@ define(function(require)
                 if (GEPPETTO.Spotlight != undefined) {
                     GEPPETTO.Spotlight.updateData();
                 }
-            }
+            },
+            
+            /**
+			 * Show error message if webgl failed to start
+			 */
+			notifyInitErrors : function(webGLStarted, workersSupported)
+			{
+				if (!webGLStarted)
+				{
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
+					GEPPETTO.FE.disableSimulationControls();
+					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBGL_FAILED, GEPPETTO.Resources.WEBGL_MESSAGE);
+				}
+				
+				if (!workersSupported)
+				{
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED);
+					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED, GEPPETTO.Resources.WORKERS_NOT_SUPPORTED_MESSAGE);
+				}
+				
+				if(!webGLStarted || !workersSupported){
+					GEPPETTO.FE.disableSimulationControls();
+				}
+			},
+			
         };
 
     };

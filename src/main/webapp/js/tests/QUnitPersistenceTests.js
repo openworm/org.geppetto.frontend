@@ -502,7 +502,8 @@ define(function (require) {
                             GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
 
                             assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
-                            window.Project.saveProjectProperties();
+                            var properties = {"name": "New Project Name"};
+                            window.Project.saveProjectProperties(properties);
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PROPS_SAVED:
@@ -575,7 +576,7 @@ define(function (require) {
                             // increase length
                             newLength++;
 
-                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
+                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment created checked");
                             var properties = {"name": "New Name for Experiment",
                             				  "conversionServiceId" : "testService",
                             				  "simulatorId" : "testSimulator",
@@ -633,6 +634,7 @@ define(function (require) {
             var done = assert.async();
 
             var handler = {
+            	newExperiment : null,
                 onMessage: function (parsedServerMessage) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
@@ -643,8 +645,19 @@ define(function (require) {
                             assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
 
                             var length = window.Project.getExperiments().length - 1;
-                            window.Project.getExperiments()[length].deleteExperiment();
+                            window.Project.newExperiment();
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_CREATED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var newLength = window.Project.getExperiments().length;
 
+                            this.newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
+
+                            // increase length
+                            newLength++;
+
+                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment created checked");
+                            this.newExperiment.deleteExperiment();
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_DELETED:
                             var payload = JSON.parse(parsedServerMessage.data);
@@ -859,7 +872,7 @@ define(function (require) {
                             // increase length
                             newLength++;
 
-                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
+                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment created checked");
 
                             var length = window.Project.getExperiments().length - 1;
                             window.Project.getExperiments()[length].deleteExperiment();
@@ -942,7 +955,7 @@ define(function (require) {
                             // increase length
                             newLength++;
 
-                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment ID checked");
+                            assert.equal(window.Project.getExperiments().length, newLength, "New experiment created checked");
 
                             var length = window.Project.getExperiments().length - 1;
                             window.Project.getExperiments()[length].deleteExperiment();

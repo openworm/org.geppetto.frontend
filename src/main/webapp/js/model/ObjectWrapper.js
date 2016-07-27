@@ -38,88 +38,93 @@
  * @author Giovanni Idili
  */
 
-define(['jquery', 'underscore', 'backbone'], function (require) {
-    return {
-        Model: Backbone.Model.extend({
-            _metaType: "",
-            wrappedObj: null,
-            parent: null,
+define(['jquery', 'underscore', 'backbone'], function () {
 
-            /**
-             * Gets the name of the node
-             *
-             * @command Node.getName()
-             * @returns {String} Name of the node
-             *
-             */
-            getName: function () {
-                return this.get('wrappedObj').name;
-            },
 
-            /**
-             * Get the id associated with node
-             *
-             * @command Node.getId()
-             * @returns {String} ID of node
-             */
-            getId: function () {
-                return this.get('wrappedObj').id;
-            },
+    function ObjectWrapper(options) {
 
-            /**
-             * Get the wrapped obj
-             *
-             * @command Node.getWrappedObj()
-             * @returns {Object} - Wrapped object
-             */
-            getWrappedObj: function () {
-                return this.get('wrappedObj');
-            },
+        this.wrappedObj = options.wrappedObj;
+        this.parent = null;
+    }
 
-            /**
-             * Get meta type
-             *
-             * @command Instance.getMetaType()
-             *
-             * @returns {String} - meta type
-             *
-             */
-            getMetaType: function () {
-                return this.get('wrappedObj').eClass;
-            },
+    ObjectWrapper.prototype = {
 
-            /**
-             * Get parent
-             *
-             * @command Type.getParent()
-             *
-             * @returns {Object} - Parent object
-             *
-             */
-            getParent: function () {
-                return this.get("parent");
-            },
+        constructor: ObjectWrapper,
 
-            /**
-             * Get path
-             *
-             * @command Type.getPath()
-             *
-             * @returns {String} - path
-             *
-             */
-            getPath: function () {
-                var parent = this.get("parent");
-                var parentPath = "";
 
-                if (parent != null && parent != undefined) {
-                    parentPath = parent.getPath();
-                }
+        /**
+         * Gets the name of the node
+         *
+         * @command Node.getName()
+         * @returns {String} Name of the node
+         *
+         */
+        getName: function () {
+            return this.wrappedObj.name;
+        },
 
-                var path = parentPath + "." + this.getId();
+        /**
+         * Get the id associated with node
+         *
+         * @command Node.getId()
+         * @returns {String} ID of node
+         */
+        getId: function () {
+            return this.wrappedObj.id;
+        },
 
-                return (parentPath != "") ? path : this.getId();
+        /**
+         * Get the wrapped obj
+         *
+         * @command Node.getWrappedObj()
+         * @returns {Object} - Wrapped object
+         */
+        getWrappedObj: function () {
+            return this.wrappedObj;
+        },
+
+        /**
+         * Get meta type
+         *
+         * @command Instance.getMetaType()
+         *
+         * @returns {String} - meta type
+         *
+         */
+        getMetaType: function () {
+            return this.wrappedObj.eClass;
+        },
+
+        /**
+         * Get parent
+         *
+         * @command Type.getParent()
+         *
+         * @returns {Object} - Parent object
+         *
+         */
+        getParent: function () {
+            return this.parent;
+        },
+
+        /**
+         * Get path
+         *
+         * @command Type.getPath()
+         *
+         * @returns {String} - path
+         *
+         */
+        getPath: function () {
+            if (this.parent) {
+                return this.parent.getPath() + "." + this.getId();
             }
-        })
+            else {
+                return this.getId();
+            }
+
+        }
     };
+
+    return ObjectWrapper;
 });

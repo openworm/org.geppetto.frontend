@@ -55,14 +55,19 @@ define(function (require) {
         potentialSuggestions: {},
         suggestions: null,
         instances: null,
+        dataSourceResults : {},
+        searchTimeOut : null,
+        updateResults : false,
+        initialised:false,
         
         close : function () {
             $("#spotlight").hide();
             GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
         },
         
-        updateData : function() {
-            this.instances.add(GEPPETTO.ModelFactory.allPathsIndexing);
+        addData : function(instances) {
+            this.instances.add(instances);
+            this.initialised=true;
         },
 
         componentDidMount: function () {
@@ -99,8 +104,22 @@ define(function (require) {
 
             $('#typeahead').keypress(this, function (e) {
                 if (e.which == 13 || e.keyCode == 13) {
-                    that.confirmed($('#typeahead').val());
+                    that.confirmed($('#typeahead').val()); 
                 }
+                if (this.searchTimeOut !== null) {
+                    clearTimeout(this.searchTimeOut);
+                }
+                this.searchTimeOut = setTimeout(function () {
+                	for (var key in GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources) {
+                	    if (GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources.hasOwnProperty(key)) {
+                	    	var dataSource = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[key];
+                	    	var searchQuery = $('#typeahead').val();
+                	    	var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
+                	    	GEPPETTO.Spotlight.updateResults = true;
+                	    	GEPPETTO.Spotlight.requestDataSourceResults(key, url, dataSource.crossDomain);
+                	    }
+                	}
+                }, 150);
             });
 
             $('#typeahead').bind('typeahead:selected', function (obj, datum, name) {
@@ -116,7 +135,10 @@ define(function (require) {
            
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
-            	that.updateData();
+            	if(that.initialised){
+            		that.initialised=false;
+            		that.instances.initialize(true);
+            	}
             });
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions
@@ -133,11 +155,19 @@ define(function (require) {
             });
 
             this.suggestions = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
-                identify: function (obj) {
-                    return obj.label;
-                }
+            	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
+            	queryTokenizer: Bloodhound.tokenizers.whitespace,
+            	identify: function (obj) {
+            		return obj.label;
+            	}
+            });
+
+            this.dataSourceResults = new Bloodhound({
+            	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
+            	queryTokenizer: Bloodhound.tokenizers.whitespace,
+            	identify: function (obj) {
+            		return obj.label;
+            	}
             });
 
             Handlebars.registerHelper('geticonFromMetaType', function (metaType) {
@@ -200,8 +230,6 @@ define(function (require) {
             "icon": "fa-lightbulb-o"
         },
 
-
-
         confirmed: function (item) {
             //check suggestions
 
@@ -214,28 +242,44 @@ define(function (require) {
                         suggestionFound = true;
                         var actions = found[0].actions;
                         actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommandinst(action)
+                            GEPPETTO.Console.executeCommand(action)
                         });
                         $("#typeahead").typeahead('val', "");
                     }
                 }
 
-                //check the instances
-                if (!suggestionFound) {
-                    window._spotlightInstance = Instances.getInstance([item]);
-                    if (window._spotlightInstance) {
-                        this.loadToolbarFor(window._spotlightInstance);
-
-                        if ($(".spotlight-toolbar").length == 0) {
-                            this.loadToolbarFor(window._spotlightInstance);
-                        }
-
-                        $(".tt-menu").hide();
-                        $(".spotlight-button").eq(0).focus();
-                        $(".spotlight-input").eq(0).focus();
+                if (this.dataSourceResults.get(item)) {
+                    var found = this.dataSourceResults.get(item);
+                    if (found.length == 1) {
+                        suggestionFound = true;
+                        var actions = found[0].actions;
+                        actions.forEach(function (action) {
+                            GEPPETTO.Console.executeCommand(action)
+                        });
+                        $("#typeahead").typeahead('val', "");
                     }
                 }
+                
+                //check the instances
+                if (!suggestionFound) {
+                	try{
+                		window._spotlightInstance = Instances.getInstance([item]);
+                		if (window._spotlightInstance) {
+                			this.loadToolbarFor(window._spotlightInstance);
 
+                			if ($(".spotlight-toolbar").length == 0) {
+                				this.loadToolbarFor(window._spotlightInstance);
+                			}
+
+                			$(".tt-menu").hide();
+                			$(".spotlight-button").eq(0).focus();
+                			$(".spotlight-input").eq(0).focus();
+                		}
+                	}catch (e){
+                		//TODO: Simulation Handler throws error when not finding an instance, should probably
+                		//be handled different for Spotlight
+                	}
+                }
             }
         },
 
@@ -245,6 +289,15 @@ define(function (require) {
             }
             else {
                 this.suggestions.search(q, sync);
+            }
+        },
+        
+        defaultDataSources: function (q, sync) {
+            if (q === '') {
+                sync(this.dataSourceResults.index.all());
+            }
+            else {
+                this.dataSourceResults.search(q, sync);
             }
         },
 
@@ -285,6 +338,15 @@ define(function (require) {
                     templates: {
                         suggestion: Handlebars.compile('<div>{{geticonFromMetaType metaType}} {{path}}</div>')
                     }
+                },
+                {
+                    name: 'dataSourceResults',
+                    source: this.defaultDataSources,
+                    limit: 50,
+                    display: 'label',
+                    templates: {
+                        suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
+                    }
                 });
             $('.twitter-typeahead').addClass("typeaheadWrapper");
         },
@@ -295,6 +357,9 @@ define(function (require) {
                 useSelection = false;
             }
             this.suggestions.initialize(true);
+            if(!this.initialised){
+            	this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
+            }
             var that = this;
             if (flowFilter) {
                 if ($.isArray(flowFilter)) {
@@ -337,7 +402,101 @@ define(function (require) {
 
         },
 
-
+        /**
+         * Requests external data sources. 
+         * 
+         */
+        addDataSource : function(sources){
+        	try {
+        		for (var key in sources) {
+        			  if (sources.hasOwnProperty(key)) {
+        			    var obj = sources[key];
+        			    var key = this.generateDataSourceKey(key, 0);
+        			    this.configuration.SpotlightBar.DataSources[key] = obj;
+        			  }
+        		}
+        	}
+        	catch (err) {
+        		throw ("Error parsing data sources " + err);
+        	}
+        },
+        
+        /**
+         * Figure out if data source of same name is already in there. If it is, 
+         * create a new key for it.
+         */
+        generateDataSourceKey : function(key, index){
+        	var dataSource = this.configuration.SpotlightBar.DataSources[key]
+		    if(dataSource!=null || dataSource !=undefined){
+		    	key = key.concat(index);
+		    	this.generateDataSourceKey(key, index++);
+		    }
+        	
+        	return key;
+        },
+        
+        /**
+         * Requests results for an external data source 
+         * 
+         * @param data_source_name : Name of the Data Source to request results from
+         * @param data_source_url : URL used to request data source results
+         * @param crossDomain : URL allows cross domain
+         * @param update : False if request for data source is the first time, true for update
+         */
+        requestDataSourceResults : function(data_source_name, data_source_url, crossDomain){
+        	//not cross domain, get results via java servlet code
+        	if(!crossDomain){
+        		var parameters = {};
+        		parameters["data_source_name"] = data_source_name;
+        		parameters["url"] = data_source_url;
+        		GEPPETTO.MessageSocket.send("get_data_source_results", parameters);
+        	}else{
+        		//cross domain, do ajax query for results
+        		$.ajax({
+        			type: 'GET',
+        			dataType: 'text',
+        			url: data_source_url,
+        			success: function (responseData, textStatus, jqXHR) {
+        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name, JSON.parse(responseData));
+        			},
+        			error: function (responseData, textStatus, errorThrown) {
+                		throw ("Error retrieving data sources " + data_source_name + "  from " + data_source_url);
+        			}
+        		});
+        	}
+        },
+        
+        /**
+         * Update the suggestions with results that come back
+         * @param update : False if request for data source is the first time, true for update
+         */
+        updateDataSourceResults : function(data_source_name,results){
+        	var responses = results.response.docs;
+    		responses.forEach(function(response) {
+        		var typeName = response.type;
+        		var obj = {};
+        		obj["label"] = response[GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].label];
+        		obj["id"] = response[GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].id];
+        		//replace $ID$ with one returned from server for actions
+        		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+        		var newActions = actions.slice(0);
+        		for(var i=0; i < actions.length; i++) {
+        			 newActions[i] = newActions[i].replace('$ID$', obj["id"]);
+        		}
+        		obj["actions"] = newActions;
+        		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
+        		GEPPETTO.Spotlight.dataSourceResults.add(obj);
+        	});
+    		
+			//If it's an update request to show the drop down menu, this for it to show 
+			//updated results
+			if(this.updateResults){
+				var value = $("#typeahead").val();
+				$("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+                $("#typeahead").typeahead('val', value);
+			}
+        },
+        
         addSuggestion: function (suggestion, flow) {
             if (flow == undefined) {
                 flow = GEPPETTO.Resources.SEARCH_FLOW;
@@ -556,7 +715,7 @@ define(function (require) {
                     instanceToCheck = instance[0];
                 }
                 $.each(buttonGroups, function (groupName, groupDef) {
-                    if ((instanceToCheck.get("capabilities").indexOf(groupName) != -1) ||
+                    if ((instanceToCheck.getCapabilities().indexOf(groupName) != -1) ||
                         (instanceToCheck.getType().getMetaType() == groupName)) {
                         tbar.append(that.createButtonGroup(groupName, groupDef, instance));
                     }
@@ -578,6 +737,9 @@ define(function (require) {
 
         configuration: {
             "SpotlightBar": {
+            	"DataSources" : {
+            		
+            	},
                 "CompositeType": {
                     "type": {
                         "actions": [

@@ -36,26 +36,21 @@
  *
  * @module model/PointerElement
  * @author Giovanni Idili
+ * @author Matteo Cantarelli
  */
-define(function (require) {
-    var ObjectWrapper = require('model/ObjectWrapper');
+define(function () {
 
-    return ObjectWrapper.Model.extend({
-        variable: null,
-        type: null,
-        index: null,
+    function PointerElement(options) {
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"wrappedObj": options.wrappedObj});
-            this.set({"variable": options.variable});
-            this.set({"type": options.type});
-            this.set({"index": options.index});
-        },
+        this.wrappedObj = options.wrappedObj;
+        this.variable = options.variable;
+        this.type = options.type;
+        this.index = options.index;
+    }
+
+    PointerElement.prototype = {
+
+        constructor: PointerElement,
 
         /**
          * Gets the variable
@@ -66,8 +61,10 @@ define(function (require) {
          *
          */
         getVariable: function () {
-            return this.get('variable');
-        },
+            return this.variable;
+        }
+
+        ,
 
         /**
          * Gets the type
@@ -78,8 +75,20 @@ define(function (require) {
          *
          */
         getType: function () {
-            return this.get('type');
-        },
+            return this.type;
+        }
+        ,
+
+        /**
+         * Get the wrapped obj
+         *
+         * @command Node.getWrappedObj()
+         * @returns {Object} - Wrapped object
+         */
+        getWrappedObj: function () {
+            return this.wrappedObj;
+        }
+        ,
 
         /**
          * Gets the index if it's pointing to an array element
@@ -90,8 +99,9 @@ define(function (require) {
          *
          */
         getIndex: function () {
-            return this.get('index');
-        },
+            return this.index;
+        }
+        ,
 
         /**
          * Get the path for this pointer element
@@ -109,7 +119,7 @@ define(function (require) {
 
             var element = this;
             var resolvedVar = element.getVariable();
-            var resolvedType =  element.getType();
+            var resolvedType = element.getType();
             path += resolvedVar.getId();
             if (types) {
                 path += "(" + resolvedType.getId() + ")";
@@ -120,5 +130,7 @@ define(function (require) {
 
             return path;
         }
-    });
+    };
+
+    return PointerElement;
 });

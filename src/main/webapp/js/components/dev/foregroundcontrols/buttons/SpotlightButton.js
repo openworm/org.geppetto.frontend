@@ -16,7 +16,11 @@ define(function (require) {
                 className: 'squareB',
                 icon: 'fa fa-search',
                 onClick: function () {
-                    $("#spotlight").show();
+                	if(GEPPETTO.Spotlight!=undefined){
+                    	GEPPETTO.trigger('spin_logo');
+                		GEPPETTO.Spotlight.open();
+                        GEPPETTO.trigger('stop_spin_logo');
+                	}
                 }
             };
         }

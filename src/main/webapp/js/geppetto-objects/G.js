@@ -220,7 +220,7 @@ define(function (require) {
 
                 return GEPPETTO.Resources.RUNNING_SCRIPT;
             },
-
+            
             /**
              * Show or hide console using command
              *

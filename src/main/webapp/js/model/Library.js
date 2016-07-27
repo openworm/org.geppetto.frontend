@@ -39,44 +39,77 @@
  */
 define(function (require) {
     var ObjectWrapper = require('model/ObjectWrapper');
-
-    return ObjectWrapper.Model.extend({
-        types: [],
-
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"types": (options.types != 'undefined') ? options.types : []});
-            this.set({"parent": options.parent});
-            this.set({"wrappedObj": options.wrappedObj});
-        },
+    var ImportType = require('model/ImportType');
 
 
-        /**
-         * Get types for this library
-         *
-         * @command Library.getTypes()
-         *
-         * @returns {List<Type>} - list of Type objects
-         *
-         */
-        getTypes: function () {
-            return this.get('types');
-        },
+    function Library(options) {
+        ObjectWrapper.prototype.constructor.call(this, options);
+        this.types = (options.types != 'undefined') ? options.types : [];
+        this.importTypes = [];
+    };
 
-        /**
-         * Get combined children
-         *
-         * @command Library.getChildren()
-         *
-         * @returns {List<Object>} - List of children
-         *
-         */
-        getChildren: function () {
-            return this.get('types');
-        },
-    });
-});
+    Library.prototype = Object.create(ObjectWrapper.prototype);
+    Library.prototype.constructor = Library;
+
+
+    /**
+     * Get types for this library
+     *
+     * @command Library.getTypes()
+     *
+     * @returns {List<Type>} - list of Type objects
+     *
+     */
+    Library.prototype.getTypes = function () {
+        return this.types;
+    };
+
+    /**
+     * Get combined children
+     *
+     * @command Library.getChildren()
+     *
+     * @returns {List<Object>} - List of children
+     *
+     */
+    Library.prototype.getChildren = function () {
+        return this.types;
+    };
+
+    Library.prototype.addImportType = function (importType) {
+        this.importTypes.push(importType);
+    };
+
+    Library.prototype.removeImportType = function (importType) {
+        this.importTypes.remove(importType);
+    };
+    
+    Library.prototype.resolveAllImportTypes = function (callback) {
+    	var b=[];
+    	const BATCH = 50;
+    	for(var i=0;i<this.importTypes.length;i++){
+			b.push(this.importTypes[i].getPath());
+		} 
+    	while(b.length>BATCH){
+    		GEPPETTO.SimulationHandler.resolveImportType(b.splice(0,BATCH));
+		}
+    	GEPPETTO.SimulationHandler.resolveImportType(b, callback);
+    };
+
+    // Overriding set
+    Library.prototype.setTypes = function (types) {
+
+    	this.types=types;
+    	
+        for (var i = 0; i < types.length; i++) {
+            if (types[i] instanceof ImportType) {
+                this.addImportType(types[i]);
+            }
+        }
+        
+        return this;
+    }
+
+    return Library;
+})
+;

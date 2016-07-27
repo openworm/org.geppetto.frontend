@@ -40,126 +40,118 @@
 define(function (require) {
     var ObjectWrapper = require('model/ObjectWrapper');
 
-    return ObjectWrapper.Model.extend({
+    function Datasource(options) {
+        ObjectWrapper.prototype.constructor.call(this, options);
+    };
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"parent": options.parent});
-            this.set({"wrappedObj": options.wrappedObj});
-
-            // capability list is for private use
-            this.set({"capabilities": []});
-        },
+    Datasource.prototype = Object.create(ObjectWrapper.prototype);
+    Datasource.prototype.constructor = Datasource;
 
 
-        /**
-         * Get url for this datasource
-         *
-         * @command Datasource.getUrl()
-         *
-         * @returns {String} - datasource url as string
-         *
-         */
-        getUrl: function () {
-            return this.getWrappedObj().url;
-        },
+    /**
+     * Get url for this datasource
+     *
+     * @command Datasource.getUrl()
+     *
+     * @returns {String} - datasource url as string
+     *
+     */
+    Datasource.prototype.getUrl = function () {
+        return this.getWrappedObj().url;
+    };
 
-        /**
-         * Get datasource service for this datasource
-         *
-         * @command Datasource.getDatasourceService()
-         *
-         * @returns {String} - datasource service id as string
-         *
-         */
-        getDatasourceService: function () {
-            return this.getWrappedObj().dataSourceService;
-        },
+    /**
+     * Get datasource service for this datasource
+     *
+     * @command Datasource.getDatasourceService()
+     *
+     * @returns {String} - datasource service id as string
+     *
+     */
+    Datasource.prototype.getDatasourceService = function () {
+        return this.getWrappedObj().dataSourceService;
+    };
 
-        /**
-         * Get library configurations for this datasource
-         *
-         * @command Datasource.getLibraryConfigurations()
-         *
-         * @returns {List<Object>} - datasource service id as string
-         *
-         */
-        getLibraryConfigurations: function () {
-            return this.getWrappedObj().libraryConfigurations;
-        },
+    /**
+     * Get library configurations for this datasource
+     *
+     * @command Datasource.getLibraryConfigurations()
+     *
+     * @returns {List<Object>} - datasource service id as string
+     *
+     */
+    Datasource.prototype.getLibraryConfigurations = function () {
+        return this.getWrappedObj().libraryConfigurations;
+    };
 
-        /**
-         * Get queries for this datasource
-         *
-         * @command Datasource.getQueries()
-         *
-         * @returns {List<Object>} - datasource service id as string
-         *
-         */
-        getQueries: function () {
-            return this.getWrappedObj().queries;
-        },
+    /**
+     * Get queries for this datasource
+     *
+     * @command Datasource.getQueries()
+     *
+     * @returns {List<Object>} - datasource service id as string
+     *
+     */
+    Datasource.prototype.getQueries = function () {
+        return this.getWrappedObj().queries;
+    };
 
-        /**
-         * Get dependencies library
-         *
-         * @command Datasource.getDependenciesLibrary()
-         *
-         * @returns {Object} - dependency library object
-         *
-         */
-        getDependenciesLibrary: function () {
-            return this.getWrappedObj().dependenciesLibrary;
-        },
+    /**
+     * Get dependencies library
+     *
+     * @command Datasource.getDependenciesLibrary()
+     *
+     * @returns {Object} - dependency library object
+     *
+     */
+    Datasource.prototype.getDependenciesLibrary = function () {
+        return this.getWrappedObj().dependenciesLibrary;
+    };
 
-        /**
-         * Get target library
-         *
-         * @command Datasource.getTargetLibrary()
-         *
-         * @returns {Object} - target library object
-         *
-         */
-        getTargetLibrary: function () {
-            return this.getWrappedObj().targetLibrary;
-        },
+    /**
+     * Get target library
+     *
+     * @command Datasource.getTargetLibrary()
+     *
+     * @returns {Object} - target library object
+     *
+     */
+    Datasource.prototype.getTargetLibrary = function () {
+        return this.getWrappedObj().targetLibrary;
+    };
 
-        /**
-         * Get fetch variable query
-         *
-         * @command Datasource.getFetchVariableQuery()
-         *
-         * @returns {Object} - fetch variable query
-         *
-         */
-        getFetchVariableQuery: function () {
-            return this.getWrappedObj().fetchVariableQuery;
-        },
+    /**
+     * Get fetch variable query
+     *
+     * @command Datasource.getFetchVariableQuery()
+     *
+     * @returns {Object} - fetch variable query
+     *
+     */
+    Datasource.prototype.getFetchVariableQuery = function () {
+        return this.getWrappedObj().fetchVariableQuery;
+    };
 
-        /**
-         * Get combined children
-         *
-         * @command Datasource.getChildren()
-         *
-         * @returns {List<Object>} - List of children
-         *
-         */
-        getChildren: function () {
-            // TODO: return contained children once they are model objects (lib config / queries)
-            //return this.getWrappedObj().libraryConfigurations.concat(this.getWrappedObj().queries.concat([this.getWrappedObj().fetchVariableQuery]));
-        },
+    /**
+     * Get combined children
+     *
+     * @command Datasource.getChildren()
+     *
+     * @returns {List<Object>} - List of children
+     *
+     */
+    Datasource.prototype.getChildren = function () {
+        // TODO: return contained children once they are model objects (lib config / queries)
+        //return this.getWrappedObj().libraryConfigurations.concat(this.getWrappedObj().queries.concat([this.getWrappedObj().fetchVariableQuery]));
+    };
 
-        /**
-         * Fetch variable and add to Geppetto model given variable id
-         *
-         * @param variableId
-         */
-        fetchVariable: function (variableId, callback){
-            GEPPETTO.SimulationHandler.fetchVariable(variableId, this.getId(), callback);
-        }
-    });
+    /**
+     * Fetch variable and add to Geppetto model given variable id
+     *
+     * @param variableId
+     */
+    Datasource.prototype.fetchVariable = function (variableId, callback) {
+        GEPPETTO.SimulationHandler.fetchVariable(variableId, this.getId(), callback);
+    }
+    return Datasource;
 });

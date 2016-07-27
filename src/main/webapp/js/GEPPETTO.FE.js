@@ -632,16 +632,40 @@ define(function(require)
             /**
              * Refreshes UI components base on current model / instances
              */
-            refresh: function(){
+            refresh: function(newInstances){
                 // populate control panel with exploded instances
                 if (GEPPETTO.ControlPanel != undefined) {
-                    GEPPETTO.ControlPanel.setData(window.Instances);
+                    GEPPETTO.ControlPanel.addData(newInstances);
                 }
                 // populate spotligh with exploded instances
                 if (GEPPETTO.Spotlight != undefined) {
-                    GEPPETTO.Spotlight.updateData();
+                    GEPPETTO.Spotlight.addData(GEPPETTO.ModelFactory.newPathsIndexing);
                 }
-            }
+            },
+            
+            /**
+			 * Show error message if webgl failed to start
+			 */
+			notifyInitErrors : function(webGLStarted, workersSupported)
+			{
+				if (!webGLStarted)
+				{
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED)
+					GEPPETTO.Main.disconnected = true;;
+					GEPPETTO.FE.disableSimulationControls();
+					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBGL_FAILED, GEPPETTO.Resources.WEBGL_MESSAGE);
+				}
+				
+				if (!workersSupported)
+				{
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED);
+					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED, GEPPETTO.Resources.WORKERS_NOT_SUPPORTED_MESSAGE);
+				}
+				
+				if(!webGLStarted || !workersSupported){
+					GEPPETTO.FE.disableSimulationControls();
+				}
+			}
         };
 
     };

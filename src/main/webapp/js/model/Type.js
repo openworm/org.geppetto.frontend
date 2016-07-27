@@ -36,126 +36,124 @@
  *
  * @module model/Type
  * @author Giovanni Idili
+ * @author Matteo Cantarelli
  */
 define(function (require) {
     var ObjectWrapper = require('model/ObjectWrapper');
 
-    return ObjectWrapper.Model.extend({
-        visualType: null,
-        superType: [],
-        capabilities: [],
+    function Type(options) {
+        ObjectWrapper.prototype.constructor.call(this, options);
+        this.visualType = options.visualType;
+        this.superType = (options.superType != 'undefined') ? options.superType : [];
+        this.capabilities = [];
+        this.variableReferences = [];
+    };
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"wrappedObj": options.wrappedObj});
-            this.set({"visualType": options.visualType});
-            this.set({"superType": (options.superType != 'undefined') ? options.superType : []});
-            this.set({"parent": options.parent});
+    Type.prototype = Object.create(ObjectWrapper.prototype);
+    Type.prototype.constructor = Type;
 
-            // capability list is for private use
-            this.set({"capabilities": []});
-        },
 
-        /**
-         * Gets the default value for this type
-         *
-         * @command Type.getDefaultValue()
-         *
-         * @returns {Object} - Default value
-         *
-         */
-        getDefaultValue: function () {
-            return this.get('wrappedObj').defaultValue;
-        },
+    /**
+     * Gets the default value for this type
+     *
+     * @command Type.getDefaultValue()
+     *
+     * @returns {Object} - Default value
+     *
+     */
+    Type.prototype.getDefaultValue = function () {
+        return this.wrappedObj.defaultValue;
+    };
 
-        /**
-         * Gets the super type for this type
-         *
-         * @command Type.getSuperType()
-         *
-         * @returns {List<Type>} - Super type
-         *
-         */
-        getSuperType: function () {
-            var superType = this.get('superType');
+    /**
+     * Gets the super type for this type
+     *
+     * @command Type.getSuperType()
+     *
+     * @returns {List<Type>} - Super type
+     *
+     */
+    Type.prototype.getSuperType = function () {
+        var superType = this.superType;
 
-            if(superType != undefined && this.get('superType').length == 1){
-                superType = superType[0];
+        if (superType != undefined && this.superType.length == 1) {
+            superType = superType[0];
+        }
+
+        return superType;
+    };
+
+    /**
+     * Check if the type is abstract
+     *
+     * @command Type.isAbstract()
+     *
+     * @returns {Boolean} - Boolean indicating if the type is abstract
+     *
+     */
+    Type.prototype.isAbstract = function () {
+        return this.wrappedObj.abstract;
+    };
+
+    /**
+     * Gets the visual type for this type if any
+     *
+     * @command Type.getVisualType()
+     *
+     * @returns {Type} - Super type
+     *
+     */
+    Type.prototype.getVisualType = function () {
+        return this.visualType;
+    };
+
+
+    /**
+     * Extends with methods from another object
+     *
+     * @command Type.extendApi(extensionObj)
+     */
+    Type.prototype.extendApi = function (extensionObj) {
+        $.extend(this, extensionObj);
+        this.capabilities.push(extensionObj.capabilityId);
+    };
+
+    /**
+     * Checks if the instance has a given capability
+     *
+     * @command Type.hasCapability(capabilityId)
+     *
+     * @returns {Boolean}
+     */
+    Type.prototype.hasCapability = function (capabilityId) {
+        var hasCapability = false;
+        var capabilities = this.capabilities;
+
+        for (var i = 0; i < capabilities.length; i++) {
+            if (capabilities[i] === capabilityId) {
+                hasCapability = true;
             }
+        }
 
-            return superType;
-        },
+        return hasCapability;
+    };
 
-        /**
-         * Check if the type is abstract
-         *
-         * @command Type.isAbstract()
-         *
-         * @returns {Boolean} - Boolean indicating if the type is abstract
-         *
-         */
-        isAbstract: function () {
-            return this.get('wrappedObj').abstract;
-        },
+    /**
+     *
+     * @param v
+     */
+    Type.prototype.addVariableReference = function (v) {
+        this.variableReferences.push(v);
+    };
 
-        /**
-         * Gets the visual type for this type if any
-         *
-         * @command Type.getVisualType()
-         *
-         * @returns {Type} - Super type
-         *
-         */
-        getVisualType: function () {
-            return this.get('visualType');
-        },
+    /**
+     *
+     * @returns {Array}
+     */
+    Type.prototype.getVariableReferences = function () {
+        return this.variableReferences;
+    };
 
-
-        /**
-         * Gets the list of referenced variables
-         *
-         * @command Type.getReferencedVariables()
-         *
-         * @returns {List<Variables>} - list of referenced variables
-         *
-         */
-        getReferencedVariables: function () {
-            // TODO: fetch from the right place
-            return this.get('wrappedObj').referencedVariables;
-        },
-
-        /**
-         * Extends with methods from another object
-         *
-         * @command Type.extendApi(extensionObj)
-         */
-        extendApi: function (extensionObj) {
-            $.extend(this, extensionObj);
-            this.get("capabilities").push(extensionObj.capabilityId);
-        },
-
-        /**
-         * Checks if the instance has a given capability
-         *
-         * @command Type.hasCapability(capabilityId)
-         *
-         * @returns {Boolean}
-         */
-        hasCapability: function (capabilityId) {
-            var hasCapability = false;
-            var capabilities = this.get('capabilities');
-
-            for (var i = 0; i < capabilities.length; i++) {
-                if (capabilities[i] === capabilityId) {
-                    hasCapability = true;
-                }
-            }
-
-            return hasCapability;
-        },
-    });
-});
+    return Type;
+})
+;

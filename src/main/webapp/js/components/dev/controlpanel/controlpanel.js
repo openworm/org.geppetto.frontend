@@ -1,3 +1,35 @@
+/*******************************************************************************
+ *
+ * Copyright (c) 2011, 2016 OpenWorm.
+ * http://openworm.org
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *      OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
+
 define(function (require) {
 
     function loadCss(url) {
@@ -300,7 +332,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": "",
-            "action": "GEPPETTO.FE.refresh();"
+            "action": "GEPPETTO.ControlPanel.refresh();"
         }
     ];
 
@@ -406,6 +438,50 @@ define(function (require) {
                 React.createElement(ControlPanel, {columnMeta: colMeta}),
                 document.getElementById("controlpanel")
             );
+        },
+
+        addData: function(instances){
+        	if(instances.length>0){
+        		
+	            var columnMeta = this.props.columnMeta;
+	
+	            // filter records with data filter
+	            var records = this.state.dataFilter(instances);
+	
+	            // go from list of instances / variables to simple JSON
+	            var gridInput = this.state.data;
+	
+	            for (var i = 0; i < records.length; i++) {
+	                var gridRecord = {};
+	
+	                // loop column meta and grab column names + source
+	                for(var j=0; j<columnMeta.length; j++){
+	                    var sourceActionStr = columnMeta[j].source;
+	
+	                    // replace token with path from input entity
+	                    var entityPath = records[i].getPath();
+	                    sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
+	
+	                    // eval result - empty string by default so griddle doesn't complain
+	                    var result = '';
+	
+	                    try{
+	                        if(sourceActionStr != "") {
+	                            result = eval(sourceActionStr);
+	                        }
+	                    } catch(e){
+	                        GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+	                    }
+	
+	                    gridRecord[columnMeta[j].columnName] = result;
+	                }
+	
+	                gridInput.push(gridRecord);
+	            }
+	
+	            // set state to refresh grid
+	            this.setState({data: gridInput});
+        	}
         },
 
         setData: function (records) {

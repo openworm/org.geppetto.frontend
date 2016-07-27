@@ -43,103 +43,46 @@ define(function (require) {
 
     var ObjectWrapper = require('model/ObjectWrapper');
 
-    return ObjectWrapper.Model.extend({
+    function VisualGroupElement(options) {
+        ObjectWrapper.prototype.constructor.call(this, options);
+    };
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize
-         *                           node
-         */
-        initialize: function (options) {
-            // object wrapper
-            this.set({"wrappedObj": options.wrappedObj});
-            this.set({"parent": options.parent});
-        },
+    VisualGroupElement.prototype = Object.create(ObjectWrapper.prototype);
+    VisualGroupElement.prototype.constructor = VisualGroupElement;
 
-        /**
-         * Get value of quantity
-         *
-         * @command VisualGroupElement.getValue()
-         * @returns {String} Value of quantity
-         */
-        getValue: function () {
-            var param = this.get("wrappedObj").parameter;
+    /**
+     * Get value of quantity
+     *
+     * @command VisualGroupElement.getValue()
+     * @returns {String} Value of quantity
+     */
+    VisualGroupElement.prototype.getValue = function () {
+        var param = this.get("wrappedObj").parameter;
 
-            if (param == "" || param == undefined) {
-                return null;
-            }
-
-            return param.value;
-        },
-
-        /**
-         * Get unit of quantity
-         *
-         * @command VisualGroupElement.getUnit()
-         * @returns {String} Unit of quantity
-         */
-        getUnit: function () {
-            var param = this.get("wrappedObj").parameter;
-
-            if (param == "" || param == undefined) {
-                return null;
-            }
-
-            return param.unit.unit;
-        },
-
-        /**
-         * Get scaling factor
-         *
-         * @command VisualGroupElement.getScalingFactor()
-         * @returns {String} Scaling Factor for value and unit
-         */
-        getScalingFactor: function () {
-            var param = this.get("wrappedObj").parameter;
-
-            if (param == "" || param == undefined) {
-                return null;
-            }
-
-            return param.scalingFactor;
-        },
-
-        /**
-         * Get color of element
-         *
-         * @command VisualGroupElement.getValue()
-         * @returns {String} Color of VisualGroupElement
-         */
-        getColor: function () {
-            return this.get("wrappedObj").defaultColor;
-        },
-
-        show: function (mode) {
-            /*var visualizationTree = this.getParent().getParent();
-
-             var findVisTree = false;
-             while(!findVisTree){
-             if(visualizationTree._metaType!= GEPPETTO.Resources.ASPECT_SUBTREE_NODE){
-             visualizationTree = visualizationTree.getParent();
-             }
-             else{
-             findVisTree = true;
-             }
-             }
-
-             var group = {};
-             group[this.getId()] = {};
-             group[this.getId()].color = this.getColor();
-
-             GEPPETTO.SceneController.showVisualGroups(visualizationTree, group,mode);*/
-        },
-
-        /**
-         * Print out formatted node
-         */
-        print: function () {
-            return "Name : " + this.getName() + "\n" + "    Id: " + this.getId() + "\n";
+        if (param == "" || param == undefined) {
+            return null;
         }
-    });
+
+        return param.value;
+    };
+
+    /**
+     * Get color of element
+     *
+     * @command VisualGroupElement.getValue()
+     * @returns {String} Color of VisualGroupElement
+     */
+    VisualGroupElement.prototype.getColor = function () {
+        return this.get("wrappedObj").defaultColor;
+    };
+
+
+    /**
+     * Print out formatted node
+     */
+    VisualGroupElement.prototype.print = function () {
+        return "Name : " + this.getName() + "\n" + "    Id: " + this.getId() + "\n";
+    };
+    return VisualGroupElement;
+
 });

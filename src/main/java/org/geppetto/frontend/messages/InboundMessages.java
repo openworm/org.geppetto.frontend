@@ -40,6 +40,7 @@ public enum InboundMessages {
 	GEPPETTO_VERSION("geppetto_version"),
 	NOTIFY_USER("notify_user"),
 	GET_SCRIPT("get_script"),
+	GET_DATA_SOURCE_RESULTS("get_data_source_results"),
 	
 	//PROJECT MESSAGES
 	LOAD_PROJECT_FROM_URL("load_project_from_url"), 

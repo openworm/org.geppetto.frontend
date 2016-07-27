@@ -1,0 +1,241 @@
+#experimentsButton {
+    margin: 0 auto;
+    margin-bottom:26px;
+    position: relative;
+    color: @orange;
+    border-color: #2e2828;
+    border-width: 0;
+    box-shadow:none;
+    cursor : pointer;
+    text-shadow: none;
+    width: 140px;
+    height: 35px;
+    z-index : 3;
+    bottom : 1px;
+}
+
+#experimentsButton > a::-moz-focus-inner {
+  border: 0;
+}
+
+.experimentsResults {
+	background:transparent;
+	color: #ccc;
+	width: 100%;
+	max-height:90%;
+	height: 87%;
+	border:0;
+	padding:0!important;
+	padding-top:2px!important;
+}
+
+.experimentsResultsOutput {
+	background:transparent;
+	color: #ccc;
+	height: 100%;
+	width: 100%;
+	max-height: 100%;
+	border:0;
+	padding:0!important;
+	padding-top:2px!important;
+	overflow-y: auto;
+}
+
+#experiments {
+	background:rgba(66,59,59,0.80);
+	color: #ccc;
+	height: 250px;
+	width: 100%;
+	max-height: 100%;
+	top : 0px;
+	padding: 0px;
+  	border:0;
+	top : 0px;
+	z-index : 1;
+	margin-bottom : 0px;
+	cursor : pointer;
+	border-radius: 0;
+}
+
+#experiments th {
+	cursor : default;
+}
+
+.experimentsTable{
+	font-weight:100;
+}
+
+.expandableTable {
+	margin-bottom:7px;
+	width : 100%;
+}
+
+.expandableTable td{
+	border:0;
+}
+.expandableTable th{
+	border:0;
+	font-weight:200!important;
+}
+
+.configurationTD {
+	width : 300px;
+}
+
+#experimentsTable td{
+	border:0;
+	padding-bottom: 0px;
+}
+#experimentsTable th{
+	border:0;
+	color:@orange;
+	font-weight:200!important;
+}
+
+.nthTr {
+	background:rgba(71,58,51,0.80);
+}
+
+.experimentsTableColumn{
+	color : white;
+	
+}
+
+#experimentsButton .glyphicon {
+	font-size : 50px;
+}
+
+.activeExpLabel {
+	color: #30BDBD;
+    font-weight: 200;
+    font-size:15px;
+    text-align: right;
+    text-transform: capitalize;
+    position: absolute;
+    right: 500px;
+    top: 3px;
+    width: 350px;
+    display:none;
+}
+
+.activeExperiment {
+	background-color:rgba(0,0,0,0.50) !important;
+}
+
+.newExperimentFocus {
+	background : lightslategrey !important;
+}
+
+.white {
+	color:white;
+}
+
+.circle {
+	position: relative;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: @orange;
+	margin-top: 2px;
+}
+
+.QUEUED {
+	background: #0CB0DA;
+}
+
+.RUNNING {
+	background: #ffd800;
+}
+
+.ERROR {
+	background: red;
+}
+
+.COMPLETED {
+	background: #7EC113;
+}
+
+
+
+.iconsDiv {
+	display : none;
+	float : right;
+	padding-right : 12px;
+}
+
+.visible {
+	display : block;
+}
+
+
+.iconsDiv > a > i:hover {
+	color : white;
+}
+
+.iconsDiv > a > i {
+	padding-right : 10px;
+	padding-top : 5px;
+	color : #FF6700;
+	padding-left : 10px;
+	margin-bottom : -3px;
+	cursor : pointer;
+}
+
+#deleteRow {
+	float : right;
+	padding-right : 20px;
+	color : #FF6700;
+	padding-left : 10px;
+}
+
+#deleteRow:hover {
+	color : white;
+}
+
+.new_experiment_icon{
+margin-top: -3px;
+}
+
+.new_experiment {
+	width:40px;
+	cursor:pointer;
+	position:absolute;
+	right:0px;
+	top:5px;
+	height:22px;
+	padding-top: 8px;
+	text-decoration: none!important;
+}
+
+.new_experiment:hover {
+color:white;
+}
+
+.new_experiment > i{
+	padding-right : 10px;
+}
+
+.collapse {
+	display : none;
+}
+
+.extend {
+	display : block;
+}
+
+.statusHeader {
+	text-align : center;
+	width :  10%;
+}
+
+.tableHeader {
+	width : 30%;
+}
+
+.nameHeader {
+	width : 215px;
+}
+
+.activeIcon > i{
+	padding-right : 10px;
+}	

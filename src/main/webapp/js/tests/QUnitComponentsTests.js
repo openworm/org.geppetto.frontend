@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2016 OpenWorm.
+ * Copyright (c) 2011, 2013 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -29,40 +30,33 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
+/** @jsx React.DOM */
 define(function (require) {
+    /**
+     * Closes socket and clears handlers. Method is called from each test.
+     */
+    function resetConnection() {
+        //close socket
+        GEPPETTO.MessageSocket.close();
+        //clear message handlers, all tests within module should have performed by time method it's called
+        GEPPETTO.MessageSocket.clearHandlers();
+        //connect to socket again for next test
+        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+    }
+    var run = function () {
+        var React = require('../vendor/react-with-addons');
+        var ReactDOM = require('react-dom');
+        var ReactTestUtils =  React.addons.TestUtils;
+        var ExperimentsTable = require('jsx!./../components/dev/ExperimentsTable/ExperimentsTable');
+       
+        QUnit.test("Test Experiments Table", function () {
+            var element = document.getElementById('experiments');
+            var renderedComp = ReactDOM.render(React.createElement(ExperimentsTable),element); 
+            notEqual(renderedComp, null, "ExperimentsTable is available, passed.");
 
-    var React = require('react'),
-        ReactDOM = require('react-dom'),
-    	GEPPETTO = require('geppetto');
-    	$ = require('jquery'),
-        HelpModal = require('jsx!../../help/HelpModal');
+        });
+    };
+    return {run: run};
 
-    return React.createClass({
-        mixins: [require('mixins/Button')],
-        
-        componentDidMount: function() {
-        	
-        	GEPPETTO.on('simulation:show_helpwindow',function(){
-        		ReactDOM.render(React.createFactory(HelpModal)({show:true}), document.getElementById('modal-region'));
-
-				$("#help-modal").css("margin-right", "-20px");
-				$('#help-modal').css('max-height', $(window).height() * 0.7);
-				$('#help-modal .modal-body').css('max-height', $(window).height() * 0.5);
-            });
-        	
-            GEPPETTO.on('simulation:hide_helpwindow',function(){
-            	GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
-            });
-        },
-
-        getDefaultProps: function() {
-            return {
-                label: 'Help',
-                className: 'pull-right help-button',
-                icon:'fa fa-info-circle',
-                onClick: function(){ GEPPETTO.Console.executeCommand("G.showHelpWindow(true)"); }
-            }
-        }
-    });
 });
+

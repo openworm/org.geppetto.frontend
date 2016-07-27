@@ -45,6 +45,7 @@ define(function (require) {
             PROJECT_LOADED: "project_loaded",
             MODEL_LOADED: "geppetto_model_loaded",
             PROJECT_PROPS_SAVED: "project_props_saved",
+            EXPERIMENT_PROPS_SAVED: "experiment_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
@@ -85,9 +86,7 @@ define(function (require) {
 
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function (payload) {
             var newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
-            GEPPETTO.FE.newExperiment(newExperiment);
         };
-
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function (payload) {
             GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
         };
@@ -190,6 +189,10 @@ define(function (require) {
         messageHandler[messageTypes.PROJECT_PROPS_SAVED] = function (payload) {
             GEPPETTO.Console.log("Project saved succesfully");
         };
+        
+        messageHandler[messageTypes.EXPERIMENT_PROPS_SAVED] = function (payload) {
+            GEPPETTO.Console.log("Experiment saved succesfully");
+        };
 
         messageHandler[messageTypes.DROPBOX_LINKED] = function (payload) {
             GEPPETTO.Console.log("Dropbox linked successfully");
@@ -241,8 +244,9 @@ define(function (require) {
                 var oldActiveExperiment = window.Project.getActiveExperiment().id;
                 window.Project.getActiveExperiment().id = parseInt(activeExperimentID);
                 window.Project.persisted = true;
-
-                GEPPETTO.FE.updateExperimentId(oldActiveExperiment, window.Project.getActiveExperiment().id);
+                
+                //TODO: Why replace id?
+                //GEPPETTO.FE.updateExperimentId(oldActiveExperiment, window.Project.getActiveExperiment().id);
 
                 GEPPETTO.trigger(Events.Project_persisted);
                 GEPPETTO.Console.log("The project has been persisted  [id=" + projectID + "].");
@@ -529,24 +533,26 @@ define(function (require) {
                 var newExperiment = GEPPETTO.ProjectFactory.createExperimentNode(experiment);
                 window.Project.getExperiments().push(newExperiment);
                 newExperiment.setParent(window.Project);
+                newExperiment.setActive();
                 GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
+                
+                GEPPETTO.trigger(Events.Experiment_created, newExperiment);
 
                 return newExperiment;
             },
 
             deleteExperiment: function (payload) {
                 var data = JSON.parse(payload.update);
-
+                var experiment = null;
                 var experiments = window.Project.getExperiments();
                 for (var e in experiments) {
-                    var experiment = experiments[e];
-                    if (experiment.getId() == data.id) {
+                    if (experiments[e].getId() == data.id) {
+                    	experiment = experiments[e];
                         var index = window.Project.getExperiments().indexOf(experiment);
                         window.Project.getExperiments().splice(index, 1);
                     }
                 }
-                var parameters = {name: data.name, id: data.id};
-                GEPPETTO.trigger(Events.Experiment_deleted, parameters);
+                GEPPETTO.trigger(Events.Experiment_deleted, experiment);
             }
         };
 

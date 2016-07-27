@@ -331,6 +331,19 @@ define(function (require) {
                 }
             },
 
+            /**
+             * Clones and experiment
+             *
+             * @command ExperimentNode.clone()
+             * @returns {ExperimentNode} Creates a new ExperimentNode
+             */
+            clone: function () {
+                var parameters = {};
+                parameters["projectId"] = this.getParent().getId();
+                parameters["experimentId"] = this.id;
+                GEPPETTO.MessageSocket.send("clone_experiment", parameters);
+            },
+            
             deleteExperiment: function () {
                 var parameters =
                 {};

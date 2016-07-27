@@ -19,6 +19,10 @@
 	<p>
 		<h3><a href=".\GeppettoCoreTests.html">Core Tests</a></h3>
 	</p>
+	<i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend</i>
+	<p>
+		<h3><a href=".\GeppettoComponentsTests.html">Components Tests</a></h3>
+	</p>
     <i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend, org.geppetto.model.neuroml</i><br/>
     <i>NOTE: tests core samples - fails if persistence bundle is deployed</i>
     <p>

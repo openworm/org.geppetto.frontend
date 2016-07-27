@@ -58,8 +58,7 @@ define(['jquery', 'underscore', 'backbone',
          */
         initialize: function (options) {
             for (var experiment in this.experiments) {
-                GEPPETTO.ExperimentsController.terminateWorker();
-                GEPPETTO.FE.deleteExperimentFromTable(this.experiments[experiment].id);
+                GEPPETTO.ExperimentsController.terminateWorker();               
                 delete this.experiments[experiment];
             }
             for (var entity in this.runTimeTree) {

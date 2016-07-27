@@ -3,27 +3,14 @@
  */
 define(function(require) {
 
-	var $ = require('jquery'), GEPPETTO = require('geppetto'), React = require('react'), LoadingSpinner = require('jsx!./loadingspinner/LoadingSpinner'), utils = require('./utils');
+	var $ = require('jquery'), GEPPETTO = require('geppetto'), React = require('react'), utils = require('./utils');
 	var ReactDOM = require('react-dom');
 
 	require('./components');
-
-	GEPPETTO.on('show_spinner', function(label) {
-		var spinnerFactory = React.createFactory(LoadingSpinner);
-		ReactDOM.render(spinnerFactory({
-			show : true,
-			keyboard : false,
-			text: label
-		}), $('#modal-region').get(0));
-	});
-
-	GEPPETTO.on('spin_logo', function(label) {
-		$(".gpt-gpt_logo").addClass("fa-spin").attr('title', 'Loading data');
-	});
-
-	GEPPETTO.on('stop_spin_logo', function(label) {
-		$(".gpt-gpt_logo").removeClass("fa-spin").attr('title', '');;
-	});
+	
+	require('./ComponentFactory')(GEPPETTO);
+	//require('./ComponentsInitialization_OSB')(GEPPETTO);
+	require('./ComponentsInitialization')(GEPPETTO);
 
 	var command = "Project.loadFromURL";
 	var simParam = utils.getQueryStringParameter('load_project_from_url');
@@ -40,14 +27,14 @@ define(function(require) {
 
 	if (simParam) {
 		$(document).ready(
-				function() {
-					if (expParam) {
-						GEPPETTO.Console.executeCommand(command + '("'
-								+ simParam + '", "'+expParam+'")');
-					} else {
-						GEPPETTO.Console.executeCommand(command + '("'
-								+ simParam + '")');
-					}
-				});
+			function() {
+				if (expParam) {
+					GEPPETTO.Console.executeCommand(command + '("'
+							+ simParam + '", "'+expParam+'")');
+				} else {
+					GEPPETTO.Console.executeCommand(command + '("'
+							+ simParam + '")');
+				}
+			});
 	}
 });

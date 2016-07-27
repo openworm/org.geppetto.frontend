@@ -30,39 +30,22 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-define(function (require) {
-
-    var React = require('react'),
-        ReactDOM = require('react-dom'),
-    	GEPPETTO = require('geppetto');
-    	$ = require('jquery'),
-        HelpModal = require('jsx!../../help/HelpModal');
-
-    return React.createClass({
-        mixins: [require('mixins/Button')],
-        
-        componentDidMount: function() {
-        	
-        	GEPPETTO.on('simulation:show_helpwindow',function(){
-        		ReactDOM.render(React.createFactory(HelpModal)({show:true}), document.getElementById('modal-region'));
-
-				$("#help-modal").css("margin-right", "-20px");
-				$('#help-modal').css('max-height', $(window).height() * 0.7);
-				$('#help-modal .modal-body').css('max-height', $(window).height() * 0.5);
-            });
-        	
-            GEPPETTO.on('simulation:hide_helpwindow',function(){
-            	GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
-            });
-        },
-
-        getDefaultProps: function() {
-            return {
-                label: 'Help',
-                className: 'pull-right help-button',
-                icon:'fa fa-info-circle',
-                onClick: function(){ GEPPETTO.Console.executeCommand("G.showHelpWindow(true)"); }
-            }
-        }
-    });
+define(function(require) {
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = "geppetto/js/components/dev/logo/logo.css";
+    document.getElementsByTagName("head")[0].appendChild(link);
+    
+    var React = require('react');
+	
+	var logoDiv = React.createClass({
+         render: function(){
+             return (
+            		 <div className={this.props.logo}></div>
+             		);
+         }
+     });
+	
+	return logoDiv;
 });

@@ -66,12 +66,12 @@ define(function(require) {
 			}).bind(this), 3000);
 			
 			GEPPETTO.on('spin_logo', function(label) {
-				$("." + this.props.logo).addClass("fa-spin").attr('title', 'Loading data');
-			});
+				this.addClass("fa-spin").attr('title', 'Loading data');
+			}.bind($("." + this.props.logo)));
 
 			GEPPETTO.on('stop_spin_logo', function(label) {
-				$("." + this.props.logo).removeClass("fa-spin").attr('title', '');;
-			});
+				this.removeClass("fa-spin").attr('title', '');;
+			}.bind($("." + this.props.logo)));
 		},
 				
 		render: function () {

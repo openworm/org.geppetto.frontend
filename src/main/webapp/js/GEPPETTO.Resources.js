@@ -249,14 +249,6 @@ define(function (require) {
 
             HELP_ALREADY_HIDDEN: "Help Window is already hidden",
 
-            SHOW_TUTORIAL: "Showing Tutorial",
-
-            HIDE_TUTORIAL: "Hiding Tutorial",
-
-            TUTORIAL_ALREADY_VISIBLE: "Tutorial is already visible",
-
-            TUTORIAL_ALREADY_HIDDEN: "Tutorial is already hidden",
-            
             CAMERA_PAN_INCREMENT: "Panning increment",
 
             CAMERA_ROTATE_INCREMENT: "Rotation increment",

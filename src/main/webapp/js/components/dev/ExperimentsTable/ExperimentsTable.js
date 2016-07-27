@@ -74,7 +74,7 @@ define(function (require) {
                 <tr rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
                     className={rowClasses} id={this.props.experiment.getId()}>
                     <StatusElement experiment={this.props.experiment} key={this.props.experiment.name+"-statusElement"}/>
-                    <td name="name" contentEditable={editable}>{this.props.experiment.getName()}</td>
+                    <td className="configurationTD" name="name" contentEditable={editable}>{this.props.experiment.getName()}</td>
                     <td>{this.props.experiment.getLastModified()}</td>
                     <td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name+"-iconsRow"}/>
                     </td>
@@ -356,7 +356,7 @@ define(function (require) {
                         <i className='fa fa-cloud-download fa-lg' rel='tooltip' title='Download Models'></i>
                     </a>
                     <a className='cloneIcon' onClick={this.cloneExperiment} experimentId={this.props.experiment.getId()} id={cloneIconId}>
-                     <i className='fa fa-plus fa-lg' rel='tooltip' title='Clone Experiment'></i>
+                     <i className='fa fa-clone fa-lg' rel='tooltip' title='Clone Experiment'></i>
                  </a>
                 </div>);
         }
@@ -375,13 +375,20 @@ define(function (require) {
             	//retrieve last created experimet and used it to clone new one
             	var experiments = window.Project.getExperiments();
             	var experiment = window.Project.getActiveExperiment();
-            	for(var e in experiments){
-            		if(experiments[e].getId()>experiment.getId()){
-            			experiment = experiments[e];
+            	if(experiments.length==0){
+            		GEPPETTO.Console.executeCommand("Project.newExperiment();");
+            	}else{
+            		var index =0;
+            		if(experiment!=null || undefined){
+            			for(var e in experiments){
+            				if(experiments[e].getId()>experiment.getId()){
+            					experiment = experiments[e];
+            				}
+            			}
+            			index = window.Project.getExperiments().indexOf(experiment);
             		}
+            		GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].clone();");
             	}
-            	var index = window.Project.getExperiments().indexOf(experiment);
-            	GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].clone();");
             });
 
             GEPPETTO.on(Events.Project_loaded, function () {
@@ -519,6 +526,12 @@ define(function (require) {
                             		$("#downloadResultsIcon-" + experiment.getId()).show();
                             	}
                             }
+                            var editableFields = $(this).find(".configurationTD");
+                            for(var i =0; i<editableFields.length; i++){
+                           	 if(editableFields[i].getAttribute("contentEditable") != "false"){
+                           		 var td = editableFields[i].setAttribute("contentEditable", false);
+                           	 }
+                            }
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("DELETED");
@@ -540,6 +553,16 @@ define(function (require) {
                             tdStatus.addClass("CANCELED");
                             tdStatus.attr("title", "CANCELED");
                         }
+                    }
+                    if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-"+ experiment.getId())) {
+                    	 if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                             var editableFields = $(this).find(".configurationTD");
+                             for(var i =0; i<editableFields.length; i++){
+                            	 if(editableFields[i].getAttribute("contentEditable") != "false"){
+                            		 var td = editableFields[i].setAttribute("contentEditable", false);
+                            	 }
+                             }
+                         } 
                     }
                 }
             });

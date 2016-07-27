@@ -2,18 +2,7 @@ language: java
 before_script:
 - npm install -g bower
 install:
-- git clone https://github.com/openworm/org.geppetto.model.git -b $TRAVIS_BRANCH
-- cd org.geppetto.model
-- mvn install
-- cd ..
-- git clone https://github.com/openworm/org.geppetto.core.git -b $TRAVIS_BRANCH
-- cd org.geppetto.core
-- mvn install
-- cd ..
-- git clone https://github.com/openworm/org.geppetto.simulation.git -b $TRAVIS_BRANCH
-- cd org.geppetto.simulation
-- mvn install
-- cd ..
+- travis-install.sh
 env:
   global:
     secure: EvqtUrZj3GsqzAkjZIVf2ZIze6ec72G8Dnkc0J3lKxwDTK6+KgIYgRWUWWO6tzL5Mn3Y+kkiHvyAkrHNPb2QZVBAdOdE3O308WRi64FF71nurd46zE43K/sSxcX/zCoBtxsz49oRcluPWl+nGDi/iKEysgcnQCvz23VWEYHAsOk=

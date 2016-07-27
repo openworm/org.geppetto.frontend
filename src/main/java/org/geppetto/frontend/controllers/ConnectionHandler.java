@@ -231,6 +231,31 @@ public class ConnectionHandler
 		}
 
 	}
+	
+	/**
+	 * @param projectId
+	 */
+	public void cloneExperiment(String requestID, long projectId,  long experimentID)
+	{
+
+		IGeppettoProject project = retrieveGeppettoProject(projectId);
+
+		try
+		{
+			IExperiment originalExperiment = retrieveExperiment(experimentID, project);
+			IExperiment cloneExperiment = geppettoManager.cloneExperiment(requestID, project, originalExperiment);
+
+			Gson gson = new Gson();
+			String json = gson.toJson(cloneExperiment);
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CREATED, json);
+
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error creating a new experiment");
+		}
+
+	}
 
 	/**
 	 * @param requestID
@@ -1163,6 +1188,7 @@ public class ConnectionHandler
 					}
 				}
 			}
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, "");
 		}
 	}
 

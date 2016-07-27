@@ -57,6 +57,7 @@ var Events = {
     Experiment_update: "experiment:update",
     Experiment_deleted: "experiment_deleted",
     Experiment_active: "experiment_active",
+    Experiment_created:"experiment:created",
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
     Spotlight_closed : "spotlight:closed"
@@ -78,29 +79,17 @@ define(function (require) {
                     //trigger focus change event
                     GEPPETTO.trigger(Events.Focus_changed);
                 });
-                GEPPETTO.on(Events.Project_loaded, function () {
-                    GEPPETTO.FE.populateExperimentsTable();
-                });
                 GEPPETTO.on(Events.Model_loaded, function () {
                     G.resetCamera();
-                });
-                GEPPETTO.on(Events.Experiment_status_check, function () {
-                    GEPPETTO.FE.updateExperimentsTableStatus();
                 });
                 GEPPETTO.on(Events.Experiment_active, function () {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });
                 GEPPETTO.on(Events.Experiment_loaded, function () {
                     GEPPETTO.trigger("hide:spinner");
-                    GEPPETTO.FE.setActiveExperimentStatus();
                 });
-                GEPPETTO.on(Events.Experiment_deleted, function (e) {
-                    var name = e.name;
-                    var id = e.id;
-
-                    GEPPETTO.FE.deleteExperimentFromTable(id);
-
-                    GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + name + " with id " + id + " was deleted successfully");
+                GEPPETTO.on(Events.Project_loaded, function () {
+                	GEPPETTO.Main.startStatusWorker();
                 });
                 GEPPETTO.on(Events.Experiment_over, function (e) {
                     var name = e.name;

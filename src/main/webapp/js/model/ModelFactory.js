@@ -2311,7 +2311,7 @@ define(function (require) {
             	var variables = this.getAllVariablesOfMetaType(typesToSearch, metaType);
             	for(var i in variables){
             		if(identifier != null && identifier != undefined){
-            			if(variables[i].attributes.wrappedObj.id==identifier){
+            			if(variables[i].getId()==identifier){
             				return variables[i];
             			}
             		}

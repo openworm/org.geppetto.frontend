@@ -552,7 +552,11 @@ define(function (require) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("CANCELED");
                             tdStatus.attr("title", "CANCELED");
-                        }
+                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.addClass("ERROR");
+                            tdStatus.attr("title", "ERROR");
+                        } 
                     }
                     if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-"+ experiment.getId())) {
                     	 if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {

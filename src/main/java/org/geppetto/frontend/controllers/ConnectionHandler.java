@@ -337,10 +337,9 @@ public class ConnectionHandler
 	 * @param dataSourceId
 	 * @param variableId
 	 */
-	public void fetchVariable(String requestID, Long projectId, Long experimentId, String dataSourceId, String variableId)
+	public void fetchVariable(String requestID, Long projectId, String dataSourceId, String variableId)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
 			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, geppettoProject);
@@ -376,10 +375,9 @@ public class ConnectionHandler
 	 * @param variableId
 	 * @throws GeppettoExecutionException 
 	 */
-	public void resolveImportType(String requestID, Long projectId, Long experimentId, List<String> typePaths)
+	public void resolveImportType(String requestID, Long projectId, List<String> typePaths)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
 			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePaths, geppettoProject);

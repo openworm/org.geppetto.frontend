@@ -1965,7 +1965,7 @@ define(function (require) {
                 // get parameters - clean out values
                 var parameterInstances = this.getAllInstancesOf(GEPPETTO.Resources.PARAMETER_TYPE_PATH);
                 for (var j = 0; j < parameterInstances.length; j++) {
-                    parameterInstances[j].setValue(null);
+                    parameterInstances[j].setValue(null,false);
                 }
             },
 

@@ -393,7 +393,7 @@ define(function (require) {
                 parent.find(".historyIcon").before("<div class='fa fa-question ui-dialog-titlebar-help'></div>");
                 parent.find("div.ui-dialog-titlebar-help").click(function () {
                     //GEPPETTO.G.addWidget(1).setMessage(that.getHelp()).showTitleBar(false);
-                    GEPPETTO.ComponentFactory.addComponent('INFOMODAL', {title: 'tiki', text: 'taka'}, document.getElementById("modal-region"));
+                    GEPPETTO.ComponentFactory.addComponent('INFOMODAL', {show : true, title: 'tiki', text: 'taka'}, document.getElementById("modal-region"));
                 });
             },
 

@@ -39,7 +39,8 @@ define(function (require) {
 		var formComp = require('jsx!components/dev/form/Form');
 		var panelComp = require('jsx!components/dev/panel/Panel');
 		var logoComp = require('jsx!components/dev/logo/Logo');
-		var loadingSpinner = require('jsx!./loadingspinner/LoadingSpinner');
+		var loadingSpinnerComp = require('jsx!./loadingspinner/LoadingSpinner');
+		var saveControlComp = require('jsx!components/dev/save/SaveControl');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -54,7 +55,10 @@ define(function (require) {
 					return React.createFactory(logoComp)(properties);
 				}
 				else if (component == 'LOADINGSPINNER'){
-					return React.createFactory(loadingSpinner)(properties);
+					return React.createFactory(loadingSpinnerComp)(properties);
+				}
+				else if (component == 'SAVECONTROL'){
+					return React.createFactory(saveControlComp)(properties);
 				}
 			},
 			

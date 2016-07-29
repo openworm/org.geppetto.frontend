@@ -392,8 +392,11 @@ define(function (require) {
                 var parent = $("#" + this.id).parent();
                 parent.find(".historyIcon").before("<div class='fa fa-question ui-dialog-titlebar-help'></div>");
                 parent.find("div.ui-dialog-titlebar-help").click(function () {
-                    //GEPPETTO.G.addWidget(1).setMessage(that.getHelp()).showTitleBar(false);
-                    GEPPETTO.ComponentFactory.addComponent('INFOMODAL', {title: 'tiki', text: 'taka'}, document.getElementById("modal-region"));
+                    GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
+                        title: that.id.slice(0,-1) + ' help',
+                        content: that.getHelp(),
+                        show: true
+                    }, document.getElementById("modal-region"));
                 });
             },
 
@@ -457,6 +460,9 @@ define(function (require) {
                 //Take focus away from close button
                 dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
+                //add help button
+                this.addHelpButton();
+
             },
 
             /**
@@ -480,8 +486,8 @@ define(function (require) {
             },
 
             getHelp: function(){
-                return 'Inline help not available for this widget. \n\
-                Try the <a href="http://docs.geppetto.org/en/latest/">online documentation</a> instead.';
+                return '### Inline help not yet available for this widget! \n\n' +
+                'Try the [online documentation](http://docs.geppetto.org/en/latest/) instead.';
             }
         })
     }

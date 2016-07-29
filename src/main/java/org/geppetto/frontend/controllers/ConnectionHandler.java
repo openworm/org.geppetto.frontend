@@ -42,6 +42,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -62,6 +64,7 @@ import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ServicesRegistry;
+import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
@@ -91,7 +94,7 @@ import com.google.gson.JsonParseException;
  * @author matteocantarelli
  * 
  */
-public class ConnectionHandler
+public class ConnectionHandler implements IGeppettoManagerCallbackListener
 {
 
 	private static Log logger = LogFactory.getLog(ConnectionHandler.class);
@@ -116,7 +119,7 @@ public class ConnectionHandler
 		// FIXME This is extremely ugly, a session based geppetto manager is autowired in the websocketconnection
 		// but a session bean cannot travel outside a conenction thread so a new one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
-
+		geppettoManager.setISimulationListener(this);
 	}
 
 	/**
@@ -1219,6 +1222,11 @@ public class ConnectionHandler
 			geppettoManager.closeProject(null, this.geppettoProject);
 		}
 		this.geppettoProject = geppettoProject;
+	}
+
+	@Override
+	public void simulationError(String errorMessage, Exception exception) {
+		this.error(exception, errorMessage);
 	}
 
 }

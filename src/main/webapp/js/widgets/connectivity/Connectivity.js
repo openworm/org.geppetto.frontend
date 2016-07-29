@@ -296,14 +296,44 @@ define(function (require) {
         },
 
         getHelp: function(){
+            function dedent(callSite, ...args) {
+                function format(str) {
+                    let size = -1;
+                    return str.replace(/\n(\s+)/g, (m, m1) => {
+                        if (size < 0)
+                            size = m1.replace(/\t/g, "    ").length;
+                        return "\n" + m1.slice(Math.min(m1.length, size));
+                    });
+                }
+                if (typeof callSite === "string")
+                    return format(callSite);
+                if (typeof callSite === "function")
+                    return (...args) => format(callSite(...args));
+                let output = callSite
+                    .slice(0, args.length + 1)
+                    .map((text, i) => (i === 0 ? "" : args[i - 1]) + text)
+                    .join("");
+                return format(output);
+            }
             var help = {
-                'matrix':'<h3>Adjacency matrix</h3>',
-                'chord': '<h3>Chord Diagram</h3><p>Hover over populations ("slices") to highlight incoming / outgoing connections.</p> <p></ul><li>Control-hover: outgoing connections</li><li>Shift-hover: incoming connections</li></p>',
-                'hive':'<h3>Hive Plot</h3>',
-                'force':'<h3>Force Directed Graph Drawing</h3>',
+                'matrix':dedent(`
+                    ### Adjacency matrix
+                `),
+                'chord': dedent(`
+                    ### Chord Diagram
+                    Hover over populations ("slices") to highlight incoming / outgoing connections.
+                    - Control-hover: outgoing connections
+                    - Shift-hover: incoming connections
+                `),
+                'hive':dedent(`
+                        ### Hive Plot
+                `),
+                'force':dedent(`
+                        ### Force Directed Graph Drawing
+                `),
             }
 
-            return '<h2>Connectivity Widget</h2><p>' + help[this.options.layout] + '</p>';
+            return '## Connectivity Widget\n' + help[this.options.layout];
         }
     });
 });

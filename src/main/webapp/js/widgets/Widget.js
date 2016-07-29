@@ -392,7 +392,8 @@ define(function (require) {
                 var parent = $("#" + this.id).parent();
                 parent.find(".historyIcon").before("<div class='fa fa-question ui-dialog-titlebar-help'></div>");
                 parent.find("div.ui-dialog-titlebar-help").click(function () {
-                    GEPPETTO.G.addWidget(1).setMessage(that.getHelp()).showTitleBar(false);
+                    //GEPPETTO.G.addWidget(1).setMessage(that.getHelp()).showTitleBar(false);
+                    GEPPETTO.ComponentFactory.addComponent('INFOMODAL', {title: 'tiki', text: 'taka'}, document.getElementById("modal-region"));
                 });
             },
 

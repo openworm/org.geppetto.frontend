@@ -40,6 +40,7 @@ define(function (require) {
         var panelComp = require('jsx!components/dev/panel/Panel');
         var logoComp = require('jsx!components/dev/logo/Logo');
         var infoModalComp = require('jsx!components/popups/InfoModal');
+        var mdModalComp = require('jsx!components/popups/MarkDownModal');
         var loadingSpinner = require('jsx!./loadingspinner/LoadingSpinner');
 
         GEPPETTO.ComponentFactory = {
@@ -59,6 +60,9 @@ define(function (require) {
                 }
                 else if (component == 'INFOMODAL'){
                     return React.createFactory(infoModalComp)(properties);
+                }
+                else if (component == 'MDMODAL'){
+                    return React.createFactory(mdModalComp)(properties);
                 }
             },
 

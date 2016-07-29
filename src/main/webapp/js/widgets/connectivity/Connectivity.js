@@ -125,6 +125,7 @@ define(function (require) {
                     }
                 }
 
+                //TODO: typesToSearch should be domain agnostic (i.e. no mention to neuroml)
                 var typesToSearch=GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.projection);
                 var connectionVariables = GEPPETTO.ModelFactory.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
 
@@ -293,5 +294,46 @@ define(function (require) {
                 $.extend(this.options, options);
             }
         },
+
+        getHelp: function(){
+            function dedent(callSite, ...args) {
+                function format(str) {
+                    let size = -1;
+                    return str.replace(/\n(\s+)/g, (m, m1) => {
+                        if (size < 0)
+                            size = m1.replace(/\t/g, "    ").length;
+                        return "\n" + m1.slice(Math.min(m1.length, size));
+                    });
+                }
+                if (typeof callSite === "string")
+                    return format(callSite);
+                if (typeof callSite === "function")
+                    return (...args) => format(callSite(...args));
+                let output = callSite
+                    .slice(0, args.length + 1)
+                    .map((text, i) => (i === 0 ? "" : args[i - 1]) + text)
+                    .join("");
+                return format(output);
+            }
+            var help = {
+                'matrix':dedent(`
+                    ### Adjacency matrix
+                `),
+                'chord': dedent(`
+                    ### Chord Diagram
+                    Hover over populations ("slices") to highlight incoming / outgoing connections.
+                    - Control-hover: outgoing connections
+                    - Shift-hover: incoming connections
+                `),
+                'hive':dedent(`
+                        ### Hive Plot
+                `),
+                'force':dedent(`
+                        ### Force Directed Graph Drawing
+                `),
+            }
+
+            return '## Connectivity Widget\n' + help[this.options.layout];
+        }
     });
 });

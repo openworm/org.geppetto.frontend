@@ -133,6 +133,8 @@ define(function (require) {
             IMPORT_TYPE_RESOLVED: "An import type has been resolved to a full type and swapped into the Geppetto model",
 
             EXPERIMENT_CREATED: "New experiment created",
+            
+            EXPERIMENT_CLONED: "Experiment cloned",
 
             EXPERIMENT_DELETED: "Experiment Deleted",
 
@@ -490,7 +492,7 @@ define(function (require) {
             // COMMMON TYPE PATHS
             STATE_VARIABLE_TYPE_PATH: 'Model.common.StateVariable',
             PARAMETER_TYPE_PATH: 'Model.common.Parameter',
-            MODEL_PREFIX_CLIENT: 'Model.',
+            MODEL_PREFIX_CLIENT: 'Model',
             // CONTROL PANEL
             CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:'
         }

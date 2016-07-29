@@ -51,6 +51,7 @@ public enum InboundMessages {
 
 	//EXPERIMENT MESSAGES
 	NEW_EXPERIMENT("new_experiment"),
+	CLONE_EXPERIMENT("clone_experiment"),
 	LOAD_EXPERIMENT("load_experiment"),
 	SAVE_EXPERIMENT_PROPERTIES("save_experiment_properties"),
 	DELETE_EXPERIMENT("delete_experiment"),

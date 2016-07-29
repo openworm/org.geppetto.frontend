@@ -52,7 +52,7 @@ define(function (require) {
             });
         	
             GEPPETTO.on('simulation:hide_helpwindow',function(){
-            	ReactDOM.render(React.createFactory(LoadingSpinner)({show:true, keyboard:false}), $('#modal-region').get(0));
+            	GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
             });
         },
 

@@ -449,7 +449,7 @@ define(function (require) {
                 });
 
                 //remove the jQuery UI icon
-                dialogParent.find("button.ui-dialog-titlebar-close").html("")
+                dialogParent.find("button.ui-dialog-titlebar-close").html("");
                 dialogParent.find("button").append("<i class='fa fa-close'></i>");
 
 

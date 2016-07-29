@@ -1,0 +1,25 @@
+{
+  "name": "Experiments Table",
+  "version": "0.0.1",
+  "author": {
+    "name": "Jesus Martinez",
+    "email": "jesus@metacell.us"
+  },
+  "description": "Component to display a Project's Experiments in a table.",
+  "moduleType": [
+    "amd"
+  ],
+  "main": "ExperimentsTable",
+  "keywords": [
+    "experimentstable"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

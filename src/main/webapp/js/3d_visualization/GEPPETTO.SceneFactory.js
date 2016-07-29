@@ -104,7 +104,7 @@ define(function (require) {
                 var threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, materials, lines);
 
                 // only merge if there are more than one object
-                if (threeDeeObjList.length > 1) {
+                if (threeDeeObjList.length > 0) {
                     var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
                     // investigate need to obj.dispose for obj in threeDeeObjList
                     if (mergedObjs != null) {
@@ -116,11 +116,6 @@ define(function (require) {
                             instanceObjects.push(threeDeeObjList[obj]);
                         }
                     }
-                } else if (threeDeeObjList.length == 1) {
-                    // only one object in list, add it to local array and set
-                    // instance path from aspect
-                    instanceObjects.push(threeDeeObjList[0]);
-                    instanceObjects[0].instancePath = instance.getInstancePath();
                 }
 
                 return instanceObjects;

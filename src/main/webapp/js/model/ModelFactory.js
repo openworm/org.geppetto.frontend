@@ -2293,9 +2293,9 @@ define(function (require) {
                             for (var j = 0; j < nestedVariables.length; j++) {
                                 var varTypes = nestedVariables[j].getTypes();
                                 for (var x = 0; x < varTypes.length; x++) {
-                                    if (varTypes[x].getMetaType() == metaType) {
-                                        variables.push(nestedVariables[j]);
-                                    }
+                                	if (varTypes[x].getMetaType() == metaType) {
+                                		variables.push(nestedVariables[j]);
+                                	}
                                 }
                             }
                         } else {
@@ -2305,6 +2305,19 @@ define(function (require) {
                 }
 
                 return variables;
+            },
+            
+            getHTMLVariable : function(typesToSearch, metaType, identifier){
+            	var variables = this.getAllVariablesOfMetaType(typesToSearch, metaType);
+            	for(var i in variables){
+            		if(identifier != null && identifier != undefined){
+            			if(variables[i].getId()==identifier){
+            				return variables[i];
+            			}
+            		}
+            	}
+            	
+            	return null;
             },
 
             /**

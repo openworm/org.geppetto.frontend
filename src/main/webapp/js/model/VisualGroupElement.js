@@ -57,7 +57,7 @@ define(function (require) {
      * @returns {String} Value of quantity
      */
     VisualGroupElement.prototype.getValue = function () {
-        var param = this.get("wrappedObj").parameter;
+        var param = this.wrappedObj.parameter;
 
         if (param == "" || param == undefined) {
             return null;
@@ -73,7 +73,7 @@ define(function (require) {
      * @returns {String} Color of VisualGroupElement
      */
     VisualGroupElement.prototype.getColor = function () {
-        return this.get("wrappedObj").defaultColor;
+        return this.wrappedObj.defaultColor;
     };
 
 

@@ -119,7 +119,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// FIXME This is extremely ugly, a session based geppetto manager is autowired in the websocketconnection
 		// but a session bean cannot travel outside a conenction thread so a new one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
-		geppettoManager.setISimulationListener(this);
+		this.geppettoManager.setISimulationListener(this);
 	}
 
 	/**

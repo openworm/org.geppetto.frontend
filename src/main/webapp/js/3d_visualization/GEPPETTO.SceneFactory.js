@@ -119,7 +119,9 @@ define(function (require) {
                 }
                 else if(threeDeeObjList.length==1)
                 {
+                	// only one object in list, add it to local array and set
                 	instanceObjects.push(threeDeeObjList[0]);
+                	instanceObjects[0].instancePath = instance.getInstancePath();
                 }
 
                 return instanceObjects;

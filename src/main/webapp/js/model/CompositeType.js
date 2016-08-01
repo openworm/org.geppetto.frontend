@@ -40,86 +40,78 @@
 define(function (require) {
     var Type = require('model/Type');
 
-    return Type.extend({
-        variables: [],
+    function CompositeType(options) {
+        Type.prototype.constructor.call(this, options);
+        this.variables = (options.variables != 'undefined') ? options.variables : [];
+    };
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object}
-         *            options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"variables": (options.variables != 'undefined') ? options.variables : []});
-            this.set({"parent": options.parent});
-            this.set({"wrappedObj": options.wrappedObj});
+    CompositeType.prototype = Object.create(Type.prototype);
+    CompositeType.prototype.constructor = CompositeType;
 
-            // capability list is for private use
-            this.set({"capabilities": []});
-        },
 
-        /**
-         * Get variables
-         *
-         * @command CompositeType.getChildren()
-         *
-         * @returns {List<Variable>} - List of variables
-         *
-         */
-        getVariables: function () {
-            return this.get("variables");
-        },
+    /**
+     * Get variables
+     *
+     * @command CompositeType.getChildren()
+     *
+     * @returns {List<Variable>} - List of variables
+     *
+     */
+    CompositeType.prototype.getVariables = function () {
+        return this.variables;
+    };
 
-        /**
-         * Check if the composite contains a given variable
-         *
-         * @param varId
-         * @returns {boolean}
-         */
-        hasVariable: function(varId){
-           var vars = this.getVariables();
+    /**
+     * Check if the composite contains a given variable
+     *
+     * @param varId
+     * @returns {boolean}
+     */
+    CompositeType.prototype.hasVariable = function (varId) {
+        var vars = this.getVariables();
 
-            var match = false;
-            for(var i=0; i<vars.length; i++){
-                if(vars[i].getId() == varId){
-                    match = true;
-                }
+        var match = false;
+        for (var i = 0; i < vars.length; i++) {
+            if (vars[i].getId() == varId) {
+                match = true;
             }
+        }
 
-            return match;
-        },
+        return match;
+    };
 
-        /**
-         * Get combined children
-         *
-         * @command CompositeType.getChildren()
-         *
-         * @returns {List<Object>} - List of children
-         *
-         */
-        getChildren: function () {
-            return this.get("variables");
-        },
+    /**
+     * Get combined children
+     *
+     * @command CompositeType.getChildren()
+     *
+     * @returns {List<Object>} - List of children
+     *
+     */
+    CompositeType.prototype.getChildren = function () {
+        return this.variables;
+    };
 
-        /**
-         * Return connections
-         *
-         * @command CompositeType.getConnections()
-         *
-         * @returns {Boolean}
-         *
-         */
-        getConnections: function () {
-            var connectionVariables = [];
+    /**
+     * Return connections
+     *
+     * @command CompositeType.getConnections()
+     *
+     * @returns {Boolean}
+     *
+     */
+    CompositeType.prototype.getConnections = function () {
+        var connectionVariables = [];
 
-            for (var v in this.getVariables()) {
-                var variable = this.getVariables()[v];
-                if (variable.getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
-                    connectionVariables.push(variable);
-                }
+        for (var v in this.getVariables()) {
+            var variable = this.getVariables()[v];
+            if (variable.getType().getMetaType() == GEPPETTO.Resources.CONNECTION_TYPE) {
+                connectionVariables.push(variable);
             }
+        }
 
-            return connectionVariables;
-        },
-    });
+        return connectionVariables;
+    };
+
+    return CompositeType;
 });

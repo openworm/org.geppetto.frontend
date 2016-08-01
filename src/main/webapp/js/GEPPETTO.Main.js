@@ -157,6 +157,7 @@ define(function(require) {
 
                             if (!webGLStarted || !webWorkersSupported) {
                                 GEPPETTO.FE.notifyInitErrors(webGLStarted, webWorkersSupported);
+                                GEPPETTO.MessageSocket.close();
                             }
                         }
                     }

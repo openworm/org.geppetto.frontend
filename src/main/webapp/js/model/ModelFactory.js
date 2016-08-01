@@ -652,8 +652,7 @@ define(function (require) {
                                     libs[j].getWrappedObj().types.push(diffTypes[k].getWrappedObj());
 
                                     // add to library in geppetto object model
-                                    diffTypes[k].parent = libs[j];
-                                    libs[j].getTypes().push(diffTypes[k]);
+                                    libs[j].addType(diffTypes[k]);
 
                                     addedTypes.push(diffTypes[k]);
 

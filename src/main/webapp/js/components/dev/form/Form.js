@@ -1,7 +1,6 @@
 /*******************************************************************************
- * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2016 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,58 +30,37 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-/**
- * Client class use to represent a VisualGroupElement Node, used for visualization tree
- * properties.
- *
- * @module model/VisualGroupElement
- * @author Jesus R. Martinez (jesus@metacell.us)
- * @author Giovanni Idili
- */
+
+
 define(function (require) {
 
-    var ObjectWrapper = require('model/ObjectWrapper');
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = "geppetto/js/components/dev/form/Form.css";
+    document.getElementsByTagName("head")[0].appendChild(link);
+	
+	var React = require('react');
+	var reactJsonSchemaForm = require('./react-jsonschema-form');
+	
+	var Form = reactJsonSchemaForm.default;
 
-    function VisualGroupElement(options) {
-        ObjectWrapper.prototype.constructor.call(this, options);
-    };
-
-    VisualGroupElement.prototype = Object.create(ObjectWrapper.prototype);
-    VisualGroupElement.prototype.constructor = VisualGroupElement;
-
-    /**
-     * Get value of quantity
-     *
-     * @command VisualGroupElement.getValue()
-     * @returns {String} Value of quantity
-     */
-    VisualGroupElement.prototype.getValue = function () {
-        var param = this.wrappedObj.parameter;
-
-        if (param == "" || param == undefined) {
-            return null;
-        }
-
-        return param.value;
-    };
-
-    /**
-     * Get color of element
-     *
-     * @command VisualGroupElement.getValue()
-     * @returns {String} Color of VisualGroupElement
-     */
-    VisualGroupElement.prototype.getColor = function () {
-        return this.wrappedObj.defaultColor;
-    };
-
-
-    /**
-     * Print out formatted node
-     */
-    VisualGroupElement.prototype.print = function () {
-        return "Name : " + this.getName() + "\n" + "    Id: " + this.getId() + "\n";
-    };
-    return VisualGroupElement;
-
+	var uiSchema ={};
+	
+	var formComponent = React.createClass({
+		render: function(){
+		     return (
+		    		 <Form id={this.props.id} 
+		    		 	className="geppettoForm"
+		    		 	schema={this.props.schema}
+		    		    formData={this.props.formData}
+		    		 	uiSchema={uiSchema}
+		    		 	onChange={this.props.changeHandler}
+		    		    onSubmit={this.props.submitHandler}
+		    		    onError={this.props.errorHandler} />
+		     		);
+		 	}
+		});
+	
+	return formComponent;
 });

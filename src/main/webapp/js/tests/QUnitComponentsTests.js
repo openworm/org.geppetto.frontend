@@ -30,59 +30,33 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
-/**
- * Client class use to represent a VisualGroupElement Node, used for visualization tree
- * properties.
- *
- * @module model/VisualGroupElement
- * @author Jesus R. Martinez (jesus@metacell.us)
- * @author Giovanni Idili
- */
+/** @jsx React.DOM */
 define(function (require) {
-
-    var ObjectWrapper = require('model/ObjectWrapper');
-
-    function VisualGroupElement(options) {
-        ObjectWrapper.prototype.constructor.call(this, options);
-    };
-
-    VisualGroupElement.prototype = Object.create(ObjectWrapper.prototype);
-    VisualGroupElement.prototype.constructor = VisualGroupElement;
-
     /**
-     * Get value of quantity
-     *
-     * @command VisualGroupElement.getValue()
-     * @returns {String} Value of quantity
+     * Closes socket and clears handlers. Method is called from each test.
      */
-    VisualGroupElement.prototype.getValue = function () {
-        var param = this.wrappedObj.parameter;
+    function resetConnection() {
+        //close socket
+        GEPPETTO.MessageSocket.close();
+        //clear message handlers, all tests within module should have performed by time method it's called
+        GEPPETTO.MessageSocket.clearHandlers();
+        //connect to socket again for next test
+        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+    }
+    var run = function () {
+        var React = require('../vendor/react-with-addons');
+        var ReactDOM = require('react-dom');
+        var ReactTestUtils =  React.addons.TestUtils;
+        var ExperimentsTable = require('jsx!./../components/dev/ExperimentsTable/ExperimentsTable');
+       
+        QUnit.test("Test Experiments Table", function () {
+            var element = document.getElementById('experiments');
+            var renderedComp = ReactDOM.render(React.createElement(ExperimentsTable),element); 
+            notEqual(renderedComp, null, "ExperimentsTable is available, passed.");
 
-        if (param == "" || param == undefined) {
-            return null;
-        }
-
-        return param.value;
+        });
     };
-
-    /**
-     * Get color of element
-     *
-     * @command VisualGroupElement.getValue()
-     * @returns {String} Color of VisualGroupElement
-     */
-    VisualGroupElement.prototype.getColor = function () {
-        return this.wrappedObj.defaultColor;
-    };
-
-
-    /**
-     * Print out formatted node
-     */
-    VisualGroupElement.prototype.print = function () {
-        return "Name : " + this.getName() + "\n" + "    Id: " + this.getId() + "\n";
-    };
-    return VisualGroupElement;
+    return {run: run};
 
 });
+

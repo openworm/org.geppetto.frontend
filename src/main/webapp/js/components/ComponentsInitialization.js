@@ -1,7 +1,6 @@
 /*******************************************************************************
- * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2016 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,58 +30,17 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-/**
- * Client class use to represent a VisualGroupElement Node, used for visualization tree
- * properties.
- *
- * @module model/VisualGroupElement
- * @author Jesus R. Martinez (jesus@metacell.us)
- * @author Giovanni Idili
- */
+
+
 define(function (require) {
-
-    var ObjectWrapper = require('model/ObjectWrapper');
-
-    function VisualGroupElement(options) {
-        ObjectWrapper.prototype.constructor.call(this, options);
-    };
-
-    VisualGroupElement.prototype = Object.create(ObjectWrapper.prototype);
-    VisualGroupElement.prototype.constructor = VisualGroupElement;
-
-    /**
-     * Get value of quantity
-     *
-     * @command VisualGroupElement.getValue()
-     * @returns {String} Value of quantity
-     */
-    VisualGroupElement.prototype.getValue = function () {
-        var param = this.wrappedObj.parameter;
-
-        if (param == "" || param == undefined) {
-            return null;
-        }
-
-        return param.value;
-    };
-
-    /**
-     * Get color of element
-     *
-     * @command VisualGroupElement.getValue()
-     * @returns {String} Color of VisualGroupElement
-     */
-    VisualGroupElement.prototype.getColor = function () {
-        return this.wrappedObj.defaultColor;
-    };
-
-
-    /**
-     * Print out formatted node
-     */
-    VisualGroupElement.prototype.print = function () {
-        return "Name : " + this.getName() + "\n" + "    Id: " + this.getId() + "\n";
-    };
-    return VisualGroupElement;
-
+	return function (GEPPETTO) {
+		//Logo initialization 
+		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
+		
+		//Loading spinner initialization
+		GEPPETTO.on('show_spinner', function(label) {
+			GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, text: label, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));	
+		});
+		
+	};
 });

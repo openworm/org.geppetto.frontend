@@ -118,6 +118,12 @@ public class Application
 		return "dist/GeppettoNeuronalCustomTests";
 	}
 	
+	@RequestMapping(value = "/GeppettoComponentsTests.html", method = RequestMethod.GET)
+	public String testComponents()
+	{
+		return "dist/GeppettoComponentsTests";
+	}
+	
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
 	public String testCore()
 	{

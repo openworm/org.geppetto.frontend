@@ -231,6 +231,31 @@ public class ConnectionHandler
 		}
 
 	}
+	
+	/**
+	 * @param projectId
+	 */
+	public void cloneExperiment(String requestID, long projectId,  long experimentID)
+	{
+
+		IGeppettoProject project = retrieveGeppettoProject(projectId);
+
+		try
+		{
+			IExperiment originalExperiment = retrieveExperiment(experimentID, project);
+			IExperiment cloneExperiment = geppettoManager.cloneExperiment(requestID, project, originalExperiment);
+
+			Gson gson = new Gson();
+			String json = gson.toJson(cloneExperiment);
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CREATED, json);
+
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error creating a new experiment");
+		}
+
+	}
 
 	/**
 	 * @param requestID
@@ -312,10 +337,9 @@ public class ConnectionHandler
 	 * @param dataSourceId
 	 * @param variableId
 	 */
-	public void fetchVariable(String requestID, Long projectId, Long experimentId, String dataSourceId, String variableId)
+	public void fetchVariable(String requestID, Long projectId, String dataSourceId, String variableId)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
 			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, geppettoProject);
@@ -351,10 +375,9 @@ public class ConnectionHandler
 	 * @param variableId
 	 * @throws GeppettoExecutionException 
 	 */
-	public void resolveImportType(String requestID, Long projectId, Long experimentId, List<String> typePaths)
+	public void resolveImportType(String requestID, Long projectId, List<String> typePaths)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
 		try
 		{
 			GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePaths, geppettoProject);
@@ -1163,6 +1186,7 @@ public class ConnectionHandler
 					}
 				}
 			}
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, "");
 		}
 	}
 

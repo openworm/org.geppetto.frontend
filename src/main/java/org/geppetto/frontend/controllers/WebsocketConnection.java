@@ -194,6 +194,16 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.newExperiment(requestID, projectId);
 				break;
 			}
+			case CLONE_EXPERIMENT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				connectionHandler.cloneExperiment(requestID, projectId,experimentId);
+				break;
+			}
 			case LOAD_PROJECT_FROM_URL:
 			{
 				connectionHandler.loadProjectFromURL(requestID, gmsg.data);
@@ -429,13 +439,13 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case FETCH_VARIABLE:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.dataSourceId, receivedObject.variableId);
+				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.dataSourceId, receivedObject.variableId);
 				break;
 			}
 			case RESOLVE_IMPORT_TYPE:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.paths);
+				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.paths);
 				break;
 			}
 			default:

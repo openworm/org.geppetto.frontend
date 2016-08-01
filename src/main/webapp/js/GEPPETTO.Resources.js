@@ -134,6 +134,8 @@ define(function (require) {
 
             EXPERIMENT_CREATED: "New experiment created",
 
+            EXPERIMENT_CLONED: "Experiment cloned",
+
             EXPERIMENT_DELETED: "Experiment Deleted",
 
             UNABLE_TO_START_EXPERIMENT: "Experiment can't be started",

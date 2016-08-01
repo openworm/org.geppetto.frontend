@@ -441,42 +441,52 @@ define(function (require) {
         },
 
         addData: function(instances){
-        	if(instances.length>0){
+        	if(instances!= undefined && instances.length>0){
         		
 	            var columnMeta = this.props.columnMeta;
 	
-	            // filter records with data filter
+	            // filter new records with data filter
 	            var records = this.state.dataFilter(instances);
 	
-	            // go from list of instances / variables to simple JSON
+	            // grab existing input
 	            var gridInput = this.state.data;
 	
 	            for (var i = 0; i < records.length; i++) {
 	                var gridRecord = {};
-	
-	                // loop column meta and grab column names + source
-	                for(var j=0; j<columnMeta.length; j++){
-	                    var sourceActionStr = columnMeta[j].source;
-	
-	                    // replace token with path from input entity
-	                    var entityPath = records[i].getPath();
-	                    sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
-	
-	                    // eval result - empty string by default so griddle doesn't complain
-	                    var result = '';
-	
-	                    try{
-	                        if(sourceActionStr != "") {
-	                            result = eval(sourceActionStr);
-	                        }
-	                    } catch(e){
-	                        GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
-	                    }
-	
-	                    gridRecord[columnMeta[j].columnName] = result;
-	                }
-	
-	                gridInput.push(gridRecord);
+                    var entityPath = records[i].getPath();
+
+                    // check for duplicates
+                    var isDuplicate = false;
+                    for(var k=0; k<gridInput.length; k++){
+                        if(gridInput[k].path == entityPath){
+                            isDuplicate = true;
+                        }
+                    }
+
+                    if(!isDuplicate) {
+                        // loop column meta and grab column names + source
+                        for (var j = 0; j < columnMeta.length; j++) {
+                            var sourceActionStr = columnMeta[j].source;
+
+                            // replace token with path from input entity
+                            sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
+
+                            // eval result - empty string by default so griddle doesn't complain
+                            var result = '';
+
+                            try {
+                                if (sourceActionStr != "") {
+                                    result = eval(sourceActionStr);
+                                }
+                            } catch (e) {
+                                GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                            }
+
+                            gridRecord[columnMeta[j].columnName] = result;
+                        }
+
+                        gridInput.push(gridRecord);
+                    }
 	            }
 	
 	            // set state to refresh grid

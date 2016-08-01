@@ -141,6 +141,9 @@ define(function (require) {
                                         status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                                         GEPPETTO.trigger(Events.Experiment_completed);
                                     }
+                                    if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                                            GEPPETTO.trigger(Events.Experiment_failed, experimentID);
+                                     }
                                 }
                             }
                             experiments[e].setStatus(status);
@@ -192,6 +195,14 @@ define(function (require) {
         
         messageHandler[messageTypes.EXPERIMENT_PROPS_SAVED] = function (payload) {
             GEPPETTO.Console.log("Experiment saved succesfully");
+            var data = JSON.parse(payload.update);
+            var experiment = window.Project.getExperimentById(data.id);
+            
+            //Updates status. Used for when experiment failed, and user modified the parameters 
+            //right after, the status changes back to DESIGN from ERROR
+            if(experiment.getStatus() != data.status){
+                experiment.setStatus(data.status);
+            }
         };
 
         messageHandler[messageTypes.DROPBOX_LINKED] = function (payload) {

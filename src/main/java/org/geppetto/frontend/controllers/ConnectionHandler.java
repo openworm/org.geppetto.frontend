@@ -55,6 +55,7 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
@@ -119,7 +120,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// FIXME This is extremely ugly, a session based geppetto manager is autowired in the websocketconnection
 		// but a session bean cannot travel outside a conenction thread so a new one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
-		this.geppettoManager.setISimulationListener(this);
+		this.geppettoManager.setSimulationListener(this);
 	}
 
 	/**
@@ -318,6 +319,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				// run the matched experiment
 				if(experiment != null)
 				{
+					//TODO: If experiment is in ERROR state, user won't be able to run again. 
+					//We reset it to DESIGN to allow user to run it for second time
+					if(experiment.getStatus()==ExperimentStatus.ERROR){
+						experiment.setStatus(ExperimentStatus.DESIGN);
+					}
 					geppettoManager.runExperiment(requestID, experiment);
 				}
 				else
@@ -1189,7 +1195,14 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 					}
 				}
 			}
-			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, "");
+			//send back id of experiment saved, and if the experiment modified was in ERROR state change
+			//it back to DESIGN to allow re-running
+			ExperimentStatus status = experiment.getStatus();
+			if(status == ExperimentStatus.ERROR){
+				experiment.setStatus(ExperimentStatus.DESIGN);
+			}
+			String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"status\":" + '"' + experiment.getStatus() + '"' + "}";
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, update);
 		}
 	}
 

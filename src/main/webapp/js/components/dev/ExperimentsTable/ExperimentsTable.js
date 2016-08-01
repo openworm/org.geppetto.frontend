@@ -343,7 +343,7 @@ define(function (require) {
                 <div onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
                     <a className='activeIcon' onClick={this.activeExperiment}
                        experimentId={this.props.experiment.getId()} id={activeIconId}>
-                        <i className='fa fa-check-circle fa-lg' rel='tooltip' title='Active Icon'></i>
+                        <i className='fa fa-check-circle fa-lg' rel='tooltip' title='Activate experiment'></i>
                     </a>
                     <a className='deleteIcon' onClick={this.deleteExperiment}
                        experimentId={this.props.experiment.getId()} id={deleteIconId}>

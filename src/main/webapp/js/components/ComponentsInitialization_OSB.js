@@ -89,19 +89,19 @@ define(function (require) {
 				for (var key in formObject.formData) {
 					if (formObject.formData[key] != this.formData[key]){
 						if (key == 'experimentName'){
-							$("#experimentsOutput").find(".activeExperiment").find("td[field='name']").html(formObject.formData[key]).blur();
+							$("#experimentsOutput").find(".activeExperiment").find("td[name='name']").html(formObject.formData[key]).blur();
 						}
 						else if (key == 'timeStep'){
-							$("#experimentsOutput").find(".activeExperiment").find("td[field='timeStep']").html(formObject.formData[key]).blur();
+							$("#experimentsOutput").find(".activeExperiment").find("td[name='timeStep']").html(formObject.formData[key]).blur();
 						}
 						else if (key == 'length'){
-							$("#experimentsOutput").find(".activeExperiment").find("td[field='length']").html(formObject.formData[key]).blur();					
-						}
-						else if (key == 'simulator'){
-							Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].setSimulatorParameter('numberProcessors', formObject.formData[key]).blur();
+							$("#experimentsOutput").find(".activeExperiment").find("td[name='length']").html(formObject.formData[key]).blur();				
 						}
 						else if (key == 'numberProcessors'){
-							$("#experimentsOutput").find(".activeExperiment").find("td[field='simulatorId']").html(formObject.formData[key]).blur();
+							Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].setSimulatorParameter('numberProcessors', formObject.formData[key]);
+						}
+						else if (key == 'simulator'){
+							$("#experimentsOutput").find(".activeExperiment").find("td[name='simulatorId']").html(formObject.formData[key]).blur();
 						}
 						this.formData[key] = formObject.formData[key];
 					}
@@ -111,79 +111,7 @@ define(function (require) {
 			var formWidget = GEPPETTO.ComponentFactory.addComponent('FORM',
 					{id: formId, name:formName, schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler});
 		};
-	
-		//Function to illustrate how panel component works
-		GEPPETTO.showingPanelConcept = function(){
-			var formId = "gptForm";
-			
-			var formName = "Simulation Form";
-			
-			var schema = {
-				  type: "object",
-				  required: ["experimentName", "timeStep", "length", "simulator", "numberProcessors"],
-				  properties: {
-					experimentName: {type: "string", title: "Experiment Name"},
-					timeStep:{type:'number', title: 'Time Step (s)'},
-					length:{type:'number', title: 'Length (s)'},
-					simulator:{
-					      type: "string",
-					      title: "Simulator",
-					      enum: ["neuronSimulator", "lemsSimulator", "neuronNSGSimulator"],
-					      enumNames: ["Neuron", "jLems", "Neuron on NSG"]
-					},
-	
-					numberProcessors:{type:'number', title: 'Number of Processors'}
-				  }
-				};
-	
-			var formData= {
-					experimentName: Project.getActiveExperiment().getName(),
-					timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),
-					length: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),
-					simulator:Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator(),
-					numberProcessors: 1
-			};
-			
-			var submitHandler = function(){
-				GEPPETTO.Flows.showSpotlightForRun(formCallback);
-				$("#" + formWidget.props.id + "_container").remove();
-			};
-			
-			var errorHandler = function(){
-				
-			};
-			
-			var changeHandler = function(formObject){
-				for (var key in formObject.formData) {
-					if (formObject.formData[key] != this.formData[key]){
-						if (key == 'experimentName'){
-							$("#experimentsOutput").find(".activeExperiment").find("td[field='name']").html(formObject.formData[key]).blur();
-						}
-						else if (key == 'timeStep'){
-							$("#experimentsOutput").find(".activeExperiment").find("td[field='timeStep']").html(formObject.formData[key]).blur();
-						}
-						else if (key == 'length'){
-							$("#experimentsOutput").find(".activeExperiment").find("td[field='length']").html(formObject.formData[key]).blur();					
-						}
-						else if (key == 'simulator'){
-							Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].setSimulatorParameter('numberProcessors', formObject.formData[key]).blur();
-						}
-						else if (key == 'numberProcessors'){
-							$("#experimentsOutput").find(".activeExperiment").find("td[field='simulatorId']").html(formObject.formData[key]).blur();
-						}
-						this.formData[key] = formObject.formData[key];
-					}
-				}
-			};
-			
-			var panelChildren = [];
-			panelChildren.push(GEPPETTO.ComponentFactory.getComponent('LOGO',{}));
-			panelChildren.push(GEPPETTO.ComponentFactory.getComponent('FORM',{id: "pp2", name:"mm", schema:schema, formData:formData, submitHandler:submitHandler, errorHandler:errorHandler, changeHandler:changeHandler}));
-			
-			var panelComponent = GEPPETTO.ComponentFactory.addComponent('PANEL', {id: "kklr", name:"pl"});
-			panelComponent.addChildren(panelChildren);
-		};
-	
+
 		//Function to add a dialog when run button is pressed
 		GEPPETTO.Flows.addCompulsoryAction('GEPPETTO.showExecutionDialog', GEPPETTO.Resources.RUN_FLOW);
 		

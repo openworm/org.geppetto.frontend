@@ -109,6 +109,21 @@ define(function (require) {
         
         return this;
     }
+    
+    // Overriding set
+    Library.prototype.addType = function (type) {
+
+    	type.setParent(this);
+    	
+    	// add to library in geppetto object model
+    	this.types.push(type);
+    	
+        if (type instanceof ImportType) {
+            this.addImportType(type);
+        }
+        
+        return this;
+    }
 
     return Library;
 })

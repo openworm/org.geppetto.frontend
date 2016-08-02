@@ -421,7 +421,7 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 "tableClassName": 'control-panel-table',
-                "columnMeta": null
+                "columnMeta": controlPanelColumnMeta
             };
         },
 
@@ -615,8 +615,5 @@ define(function (require) {
         }
     });
 
-    ReactDOM.render(
-        React.createElement(ControlPanel, {columnMeta: controlPanelColumnMeta}),
-        document.getElementById("controlpanel")
-    );
+    return ControlPanel;
 });

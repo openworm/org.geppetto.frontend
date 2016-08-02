@@ -36,6 +36,9 @@ define(function (require) {
 	return function (GEPPETTO) {
 		//Logo initialization 
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
+
+		//Control panel initialization
+		GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"));
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

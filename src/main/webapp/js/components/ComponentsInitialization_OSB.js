@@ -137,5 +137,8 @@ define(function (require) {
 
 		//Spotlight initialization
 		GEPPETTO.ComponentFactory.addComponent('EXPERIMENTSTABLE', {}, document.getElementById("experiments"));
+
+		//Spotlight initialization
+		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
 	};
 });

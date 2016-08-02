@@ -33,10 +33,9 @@
 define(function(require) {
 
     var React = require('react');
-    var ReactDOM = require('react-dom');
     var HomeButton = require('./HomeButton');
 
-    var Controls = React.createClass({
+    var HomeControls = React.createClass({
 
         render: function () {
             return React.DOM.div({className:'homeButton'},
@@ -46,6 +45,5 @@ define(function(require) {
 
     });
 
-    ReactDOM.render(React.createFactory(Controls)(), document.getElementById("HomeButton"));
-
+    return HomeControls;
 });

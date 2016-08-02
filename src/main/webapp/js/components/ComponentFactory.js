@@ -43,6 +43,7 @@ define(function (require) {
 		var saveControlComp = require('jsx!components/dev/save/SaveControl');
 		var controlPanelComp = require('jsx!components/dev/controlpanel/controlpanel');
 		var spotlightComp = require('jsx!components/dev/spotlight/spotlight');
+		var foregroundControlsComp = require('jsx!components/dev/foregroundcontrols/ForegroundControls');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -67,6 +68,9 @@ define(function (require) {
 				}
 				else if (component == 'SPOTLIGHT'){
 					return React.createFactory(spotlightComp)(properties);
+				}
+				else if (component == 'FOREGROUND'){
+					return React.createFactory(foregroundControlsComp)(properties);
 				}
 			},
 			

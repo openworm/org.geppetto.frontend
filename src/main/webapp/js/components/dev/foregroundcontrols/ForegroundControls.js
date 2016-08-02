@@ -42,7 +42,6 @@ define(function (require) {
     loadCss("geppetto/js/components/dev/foregroundcontrols/foregroundcontrols.css");
 
     var React = require('react');
-    var ReactDOM = require('react-dom');
 
     var SpotlightButton = require('./buttons/SpotlightButton');
     var ControlPanelButton = require('./buttons/ControlPanelButton');
@@ -75,9 +74,5 @@ define(function (require) {
         }
     });
 
-    ReactDOM.render(
-        React.createFactory(ForegroundControls)({}, ''),
-        document.getElementById('foreground-toolbar')
-    );
-
+    return ForegroundControls;
 });

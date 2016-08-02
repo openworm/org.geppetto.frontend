@@ -42,6 +42,9 @@ define(function (require) {
 
 		//Spotlight initialization
 		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
+
+		//Spotlight initialization
+		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {}, document.getElementById("foreground-toolbar"));
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

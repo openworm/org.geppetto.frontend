@@ -14,7 +14,7 @@
 	<link rel="stylesheet" href="./geppetto/css/font-awesome.min.css" />
 
     <script>
-    window.EMBEDDED = false;
+    window.EMBEDDED = true;
     window.EMBEDDEDURL = "/";
     </script>
 

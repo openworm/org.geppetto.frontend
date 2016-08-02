@@ -125,5 +125,14 @@ define(function (require) {
 		
 		//Save initialization 
 		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));
+
+		//Control panel initialization
+		GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"));
+
+		//Spotlight initialization
+		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
+
+		//Spotlight initialization
+		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {}, document.getElementById("foreground-toolbar"));
 	};
 });

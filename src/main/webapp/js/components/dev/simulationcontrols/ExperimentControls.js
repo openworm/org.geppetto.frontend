@@ -33,7 +33,6 @@
 define(function (require) {
 
     var React = require('react');
-    var ReactDOM = require('react-dom');
 
     var RunButton = require('./buttons/RunButton');
     var PlayButton = require('./buttons/PlayButton');
@@ -43,7 +42,7 @@ define(function (require) {
 
     var GEPPETTO = require('geppetto');
 
-    var Controls = React.createClass({
+    var SimulationControls = React.createClass({
 
         getInitialState: function () {
             return {
@@ -115,6 +114,5 @@ define(function (require) {
 
     });
 
-    ReactDOM.render(React.createFactory(Controls)({}, ''), document.getElementById('sim-toolbar'));
-
+    return SimulationControls;
 });

@@ -46,6 +46,7 @@ define(function (require) {
 		var foregroundControlsComp = require('jsx!components/dev/foregroundcontrols/ForegroundControls');
 		var experimentTableComp = require('jsx!components/dev/ExperimentsTable/ExperimentsTable');
 		var homeControlsComp = require('jsx!components/dev/home/HomeControl');
+		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -79,6 +80,9 @@ define(function (require) {
 				}
 				else if (component == 'HOME'){
 					return React.createFactory(homeControlsComp)(properties);
+				}
+				else if (component == 'SIMULATIONCONTROLS'){
+					return React.createFactory(simControlsComp)(properties);
 				}
 			},
 			

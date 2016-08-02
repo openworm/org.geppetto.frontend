@@ -54,6 +54,9 @@ define(function (require) {
 
 		//Simulation controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SIMULATIONCONTROLS', {}, document.getElementById("sim-toolbar"));
+
+		//Camera controls initialization
+		GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

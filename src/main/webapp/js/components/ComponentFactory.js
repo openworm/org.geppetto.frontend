@@ -44,6 +44,7 @@ define(function (require) {
 		var controlPanelComp = require('jsx!components/dev/controlpanel/controlpanel');
 		var spotlightComp = require('jsx!components/dev/spotlight/spotlight');
 		var foregroundControlsComp = require('jsx!components/dev/foregroundcontrols/ForegroundControls');
+		var experimentTableComp = require('jsx!components/dev/ExperimentsTable/ExperimentsTable');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -71,6 +72,9 @@ define(function (require) {
 				}
 				else if (component == 'FOREGROUND'){
 					return React.createFactory(foregroundControlsComp)(properties);
+				}
+				else if (component == 'EXPERIMENTSTABLE'){
+					return React.createFactory(experimentTableComp)(properties);
 				}
 			},
 			

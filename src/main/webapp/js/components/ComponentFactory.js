@@ -42,6 +42,7 @@ define(function (require) {
 		var loadingSpinnerComp = require('jsx!./loadingspinner/LoadingSpinner');
 		var saveControlComp = require('jsx!components/dev/save/SaveControl');
 		var controlPanelComp = require('jsx!components/dev/controlpanel/controlpanel');
+		var spotlightComp = require('jsx!components/dev/spotlight/spotlight');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -63,6 +64,9 @@ define(function (require) {
 				}
 				else if (component == 'CONTROLPANEL'){
 					return React.createFactory(controlPanelComp)(properties);
+				}
+				else if (component == 'SPOTLIGHT'){
+					return React.createFactory(spotlightComp)(properties);
 				}
 			},
 			

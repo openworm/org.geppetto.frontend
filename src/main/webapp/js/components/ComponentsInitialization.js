@@ -39,6 +39,9 @@ define(function (require) {
 
 		//Control panel initialization
 		GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"));
+
+		//Spotlight initialization
+		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

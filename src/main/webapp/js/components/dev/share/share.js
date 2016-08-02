@@ -31,15 +31,11 @@
  *******************************************************************************/
 
 define(function (require) {
-
     var React = require('react'),
-        ReactDOM = require('react-dom'),
         GEPPETTO = require('geppetto');
-
 
     var Share = React.createClass({
 
- 	 	
         visible: false,
         /**
          * Shares Geppetto on Facebook
@@ -166,8 +162,5 @@ define(function (require) {
         }
     });
 
-    ReactDOM.render(React.createFactory(Share)({}), document.getElementById('share-button'));
-
-
-
+    return Share;
 });

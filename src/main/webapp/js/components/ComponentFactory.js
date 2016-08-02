@@ -48,6 +48,7 @@ define(function (require) {
 		var homeControlsComp = require('jsx!components/dev/home/HomeControl');
 		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
 		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
+		var shareComp = require('jsx!./dev/share/share');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -87,6 +88,9 @@ define(function (require) {
 				}
 				else if (component == 'CAMERACONTROLS'){
 					return React.createFactory(cameraControlsComp)(properties);
+				}
+				else if (component == 'SHARE'){
+					return React.createFactory(shareComp)(properties);
 				}
 			},
 			

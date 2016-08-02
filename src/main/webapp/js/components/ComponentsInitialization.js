@@ -57,6 +57,9 @@ define(function (require) {
 
 		//Camera controls initialization
 		GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
+
+		//Camera controls initialization
+		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

@@ -58,8 +58,11 @@ define(function (require) {
 		//Camera controls initialization
 		GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
 
-		//Camera controls initialization
+		//Share controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));
+
+		//Query control initialization
+		GEPPETTO.ComponentFactory.addComponent('QUERY', {}, document.getElementById("querybuilder"));
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

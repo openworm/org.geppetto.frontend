@@ -535,10 +535,10 @@ define(function (require) {
 
         getDefaultProps: function () {
             return {
-                model: {},
+                model: queryBuilderModel,
                 resultsColumns: ['name', 'description', 'controls'],
-                resultsColumnMeta: {},
-                resultsControlsConfig: {},
+                resultsColumnMeta: queryResultsColumnMeta,
+                resultsControlsConfig: queryResultsControlConfig,
             };
         },
 
@@ -824,5 +824,6 @@ define(function (require) {
     };
 
     queryBuilderModel.subscribe(renderQueryComponent);
-    renderQueryComponent();
+
+    return QueryBuilder;
 });

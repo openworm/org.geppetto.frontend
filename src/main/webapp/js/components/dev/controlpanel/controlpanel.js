@@ -615,8 +615,5 @@ define(function (require) {
         }
     });
 
-    ReactDOM.render(
-        React.createElement(ControlPanel, {columnMeta: controlPanelColumnMeta}),
-        document.getElementById("controlpanel")
-    );
+    return ControlPanel;
 });

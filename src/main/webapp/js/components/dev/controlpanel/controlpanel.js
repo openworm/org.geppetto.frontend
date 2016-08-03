@@ -421,7 +421,7 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 "tableClassName": 'control-panel-table',
-                "columnMeta": null
+                "columnMeta": controlPanelColumnMeta
             };
         },
 

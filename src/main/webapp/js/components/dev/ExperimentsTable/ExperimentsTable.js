@@ -6,7 +6,6 @@
 define(function (require) {
 
     var React = require('react'), $ = require('jquery');
-    var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
     /**
@@ -640,5 +639,5 @@ define(function (require) {
         }
     });
 
-    ReactDOM.render(React.createFactory(ExperimentsTable)({}, ''), document.getElementById("experiments"));
+    return ExperimentsTable;
 });

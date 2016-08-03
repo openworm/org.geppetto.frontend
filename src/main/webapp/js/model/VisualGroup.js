@@ -132,10 +132,10 @@ define(function (require) {
         var total = 0;
 
 
-        for (var el in elements) {
-            if (elements[el].getValue() != null) {
-                total = total + parseFloat(elements[el].getValue());
-                allElements.push(elements[el].getValue());
+        for (var i=0; i<elements.length; i++) {
+            if (elements[i].getValue() != null) {
+                total = total + parseFloat(elements[i].getValue());
+                allElements.push(elements[i].getValue());
             }
         }
 
@@ -143,18 +143,18 @@ define(function (require) {
         this.maxDensity = Math.max.apply(null, allElements);
 
         //highlight all reference nodes
-        for (var el in elements) {
-            groups[elements[el].getId()] = {};
-            var color = elements[el].getColor();
-            if (elements[el].getValue() != null) {
+        for (var j=0; j<elements.length; j++) {
+            groups[elements[j].getId()] = {};
+            var color = elements[j].getColor();
+            if (elements[j].getValue() != null) {
                 var intensity = 1;
                 if (this.maxDensity != this.minDensity) {
-                    intensity = (elements[el].getValue() - this.minDensity) / (this.maxDensity - this.minDensity);
+                    intensity = (elements[j].getValue() - this.minDensity) / (this.maxDensity - this.minDensity);
                 }
 
                 color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
             }
-            groups[elements[el].getId()].color = color;
+            groups[elements[j].getId()].color = color;
         }
 
         GEPPETTO.SceneController.showVisualGroups(groups, mode, instances);
@@ -167,9 +167,9 @@ define(function (require) {
         var elements = this.getVisualGroupElements();
 
         //calculate mean;
-        for (var el in elements) {
-            if (elements[el].getValue() != null) {
-                allElements.push(elements[el].getValue());
+        for (var i=0; i<elements.length; i++) {
+            if (elements[i].getValue() != null) {
+                allElements.push(elements[i].getValue());
             }
         }
 
@@ -182,9 +182,9 @@ define(function (require) {
         var elements = this.getVisualGroupElements();
 
         //calculate mean;
-        for (var el in elements) {
-            if (elements[el].getValue() != null) {
-                allElements.push(elements[el].getValue());
+        for (var i=0; i<elements.length; i++) {
+            if (elements[i].getValue() != null) {
+                allElements.push(elements[i].getValue());
             }
         }
 

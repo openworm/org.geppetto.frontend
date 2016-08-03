@@ -3,10 +3,9 @@
  */
 define(function(require) {
 
-	var $ = require('jquery'), GEPPETTO = require('geppetto'), React = require('react'), utils = require('./utils');
-	var ReactDOM = require('react-dom');
-
-	require('./components');
+	var $ = require('jquery'),
+		GEPPETTO = require('geppetto'),
+		utils = require('./utils');
 	
 	require('./ComponentFactory')(GEPPETTO);
 	//require('./ComponentsInitialization_OSB')(GEPPETTO);

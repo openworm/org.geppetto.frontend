@@ -39,7 +39,16 @@ define(function (require) {
 		var formComp = require('jsx!components/dev/form/Form');
 		var panelComp = require('jsx!components/dev/panel/Panel');
 		var logoComp = require('jsx!components/dev/logo/Logo');
-		var loadingSpinner = require('jsx!./loadingspinner/LoadingSpinner');
+		var loadingSpinnerComp = require('jsx!./loadingspinner/LoadingSpinner');
+		var saveControlComp = require('jsx!components/dev/save/SaveControl');
+		var controlPanelComp = require('jsx!components/dev/controlpanel/controlpanel');
+		var spotlightComp = require('jsx!components/dev/spotlight/spotlight');
+		var foregroundControlsComp = require('jsx!components/dev/foregroundcontrols/ForegroundControls');
+		var experimentTableComp = require('jsx!components/dev/ExperimentsTable/ExperimentsTable');
+		var homeControlsComp = require('jsx!components/dev/home/HomeControl');
+		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
+		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
+		var shareComp = require('jsx!./dev/share/share');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -54,7 +63,34 @@ define(function (require) {
 					return React.createFactory(logoComp)(properties);
 				}
 				else if (component == 'LOADINGSPINNER'){
-					return React.createFactory(loadingSpinner)(properties);
+					return React.createFactory(loadingSpinnerComp)(properties);
+				}
+				else if (component == 'SAVECONTROL'){
+					return React.createFactory(saveControlComp)(properties);
+				}
+				else if (component == 'CONTROLPANEL'){
+					return React.createFactory(controlPanelComp)(properties);
+				}
+				else if (component == 'SPOTLIGHT'){
+					return React.createFactory(spotlightComp)(properties);
+				}
+				else if (component == 'FOREGROUND'){
+					return React.createFactory(foregroundControlsComp)(properties);
+				}
+				else if (component == 'EXPERIMENTSTABLE'){
+					return React.createFactory(experimentTableComp)(properties);
+				}
+				else if (component == 'HOME'){
+					return React.createFactory(homeControlsComp)(properties);
+				}
+				else if (component == 'SIMULATIONCONTROLS'){
+					return React.createFactory(simControlsComp)(properties);
+				}
+				else if (component == 'CAMERACONTROLS'){
+					return React.createFactory(cameraControlsComp)(properties);
+				}
+				else if (component == 'SHARE'){
+					return React.createFactory(shareComp)(properties);
 				}
 			},
 			

@@ -64,12 +64,6 @@ define(function (require) {
                 return newWidget;
             },
 
-            configureWidget: function (type) {
-                var newWidget = GEPPETTO.WidgetFactory.configureWidget(type);
-                return newWidget;
-            },
-
-            
             /**
              * Gets list of available widgets
              *
@@ -226,7 +220,7 @@ define(function (require) {
 
                 return GEPPETTO.Resources.RUNNING_SCRIPT;
             },
-
+            
             /**
              * Show or hide console using command
              *
@@ -684,12 +678,14 @@ define(function (require) {
              */
             traverseSelection: function (instances) {
                 var selection = [];
-                for (var e = 0; e < instances.length; e++) {
-                    var instance = instances[e];
-                    if (instance.selected) {
-                        selection.push(instance);
-                    }
-                    selection = selection.concat(this.traverseSelection(instance.getChildren()));
+                if(instances!=null || undefined){
+                	for (var e = 0; e < instances.length; e++) {
+                		var instance = instances[e];
+                		if (instance.selected) {
+                			selection.push(instance);
+                		}
+                		selection = selection.concat(this.traverseSelection(instance.getChildren()));
+                	}
                 }
 
                 return selection;

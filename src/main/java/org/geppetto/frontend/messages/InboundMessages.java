@@ -40,6 +40,7 @@ public enum InboundMessages {
 	GEPPETTO_VERSION("geppetto_version"),
 	NOTIFY_USER("notify_user"),
 	GET_SCRIPT("get_script"),
+	GET_DATA_SOURCE_RESULTS("get_data_source_results"),
 	
 	//PROJECT MESSAGES
 	LOAD_PROJECT_FROM_URL("load_project_from_url"), 
@@ -50,6 +51,7 @@ public enum InboundMessages {
 
 	//EXPERIMENT MESSAGES
 	NEW_EXPERIMENT("new_experiment"),
+	CLONE_EXPERIMENT("clone_experiment"),
 	LOAD_EXPERIMENT("load_experiment"),
 	SAVE_EXPERIMENT_PROPERTIES("save_experiment_properties"),
 	DELETE_EXPERIMENT("delete_experiment"),

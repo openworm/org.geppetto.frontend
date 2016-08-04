@@ -42,7 +42,7 @@
 define(function (require) {
     var AWidgetController = require('widgets/AWidgetController');
     var Connectivity = require('widgets/connectivity/Connectivity');
-
+    
 
     /**
      * @exports Widgets/Connectivity/ConnectivityController

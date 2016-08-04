@@ -116,11 +116,12 @@ define(function (require) {
                             instanceObjects.push(threeDeeObjList[obj]);
                         }
                     }
-                } else if (threeDeeObjList.length == 1) {
-                    // only one object in list, add it to local array and set
-                    // instance path from aspect
-                    instanceObjects.push(threeDeeObjList[0]);
-                    instanceObjects[0].instancePath = instance.getInstancePath();
+                }
+                else if(threeDeeObjList.length==1)
+                {
+                	// only one object in list, add it to local array and set
+                	instanceObjects.push(threeDeeObjList[0]);
+                	instanceObjects[0].instancePath = instance.getInstancePath();
                 }
 
                 return instanceObjects;

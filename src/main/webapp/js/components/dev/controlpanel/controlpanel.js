@@ -332,7 +332,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": "",
-            "action": "GEPPETTO.FE.refresh();"
+            "action": "GEPPETTO.ControlPanel.refresh();"
         }
     ];
 
@@ -421,7 +421,7 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 "tableClassName": 'control-panel-table',
-                "columnMeta": null
+                "columnMeta": controlPanelColumnMeta
             };
         },
 
@@ -431,13 +431,67 @@ define(function (require) {
 
         setColumnMeta: function (colMeta) {
             // if the user sets meta - NUKE everything and rebuild
-            // NOTE: griddle does not pickup metadata for eventual new columns
+            // NOTE: griddle does not pickup metadata for eventual new columns (fixed in newer versions)
             ReactDOM.unmountComponentAtNode(document.getElementById("controlpanel"));
             // re-instantiate the control panel in its entirety with the new column meta
             ReactDOM.render(
                 React.createElement(ControlPanel, {columnMeta: colMeta}),
                 document.getElementById("controlpanel")
             );
+        },
+
+        addData: function(instances){
+        	if(instances!= undefined && instances.length>0){
+        		
+	            var columnMeta = this.props.columnMeta;
+	
+	            // filter new records with data filter
+	            var records = this.state.dataFilter(instances);
+	
+	            // grab existing input
+	            var gridInput = this.state.data;
+	
+	            for (var i = 0; i < records.length; i++) {
+	                var gridRecord = {};
+                    var entityPath = records[i].getPath();
+
+                    // check for duplicates
+                    var isDuplicate = false;
+                    for(var k=0; k<gridInput.length; k++){
+                        if(gridInput[k].path == entityPath){
+                            isDuplicate = true;
+                        }
+                    }
+
+                    if(!isDuplicate) {
+                        // loop column meta and grab column names + source
+                        for (var j = 0; j < columnMeta.length; j++) {
+                            var sourceActionStr = columnMeta[j].source;
+
+                            // replace token with path from input entity
+                            sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
+
+                            // eval result - empty string by default so griddle doesn't complain
+                            var result = '';
+
+                            try {
+                                if (sourceActionStr != "") {
+                                    result = eval(sourceActionStr);
+                                }
+                            } catch (e) {
+                                GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                            }
+
+                            gridRecord[columnMeta[j].columnName] = result;
+                        }
+
+                        gridInput.push(gridRecord);
+                    }
+	            }
+	
+	            // set state to refresh grid
+	            this.setState({data: gridInput});
+        	}
         },
 
         setData: function (records) {
@@ -503,6 +557,11 @@ define(function (require) {
         componentWillMount: function () {
             GEPPETTO.ControlPanel = this;
         },
+
+        open: function () {
+            // hide control panel
+            $("#controlpanel").show();
+        },
         
         close: function () {
             // hide any color picker that is still visible
@@ -556,8 +615,5 @@ define(function (require) {
         }
     });
 
-    ReactDOM.render(
-        React.createElement(ControlPanel, {columnMeta: controlPanelColumnMeta}),
-        document.getElementById("controlpanel")
-    );
+    return ControlPanel;
 });

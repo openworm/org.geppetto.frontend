@@ -177,7 +177,7 @@ define(function (require) {
             }
 
             for(layout in layoutOptions){
-                deck.append(createCard(layout));
+                deck.append(createCard(layoutOptions[layout]));
             }
 
             return container;

@@ -37,7 +37,7 @@ define(function(require) {
     var SaveButton = require('./SaveButton');
     var GEPPETTO = require('geppetto');
 
-    var Controls = React.createClass({
+    var saveControlComp = React.createClass({
 
     	 onClick: function() {
              GEPPETTO.Console.executeCommand("Project.persist();");
@@ -46,7 +46,7 @@ define(function(require) {
     	getInitialState: function() {
             return {
             	disableSave : true,
-            }
+            };
         },
         
         componentDidMount: function() {
@@ -67,7 +67,7 @@ define(function(require) {
         }
 
     });
-
-    ReactDOM.render(React.createFactory(Controls)(), document.getElementById("SaveButton"));
+    
+    return saveControlComp;
 
 });

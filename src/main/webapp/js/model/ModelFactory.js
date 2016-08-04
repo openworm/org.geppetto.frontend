@@ -1778,6 +1778,7 @@ define(function (require) {
                 for(var i=0; i<matchingCriteriaRefs.length; i++){
                     // get type ref
                     var typeRefs = matchingCriteriaRefs[i].type;
+                    var typesCriteria = [];
                     for(var j=0; j<typeRefs.length; j++)
                     {
                         // resolve type ref
@@ -1786,9 +1787,11 @@ define(function (require) {
 
                         // push to q.matchingCriteria
                         if(type instanceof Type) {
-                            q.matchingCriteria.push(type);
+                            typesCriteria.push(type);
                         }
                     }
+
+                    q.matchingCriteria.push(typesCriteria);
                 }
 
                 return q;

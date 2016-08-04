@@ -74,11 +74,25 @@ define(function (require) {
     };
 
     /**
+     * Gets matching criteria (types) for this query
      *
      * @returns {Array}
      */
     Query.prototype.getMatchingCriteria = function () {
         return this.matchingCriteria;
+    };
+
+    /**
+     * Checks if query matches given criteria (type)
+     * @param type
+     * @returns {boolean}
+     */
+    Query.prototype.matchesCriteria = function (type) {
+        var match = false;
+
+        // TODO: check if any of criteria matches this type
+
+        return match;
     };
 
     return Query;

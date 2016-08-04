@@ -42,6 +42,7 @@ define(function (require) {
 
     function Datasource(options) {
         ObjectWrapper.prototype.constructor.call(this, options);
+        this.queries = (options.queries != undefined) ? options.queries : [];
     };
 
     Datasource.prototype = Object.create(ObjectWrapper.prototype);
@@ -93,7 +94,7 @@ define(function (require) {
      *
      */
     Datasource.prototype.getQueries = function () {
-        return this.getWrappedObj().queries;
+        return this.queries;
     };
 
     /**

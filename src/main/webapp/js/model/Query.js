@@ -34,23 +34,20 @@
 /**
  * Client class use to represent a simple type.
  *
- * @module model/Type
+ * @module model/Query
  * @author Giovanni Idili
  * @author Matteo Cantarelli
  */
 define(function (require) {
     var ObjectWrapper = require('model/ObjectWrapper');
 
-    function Type(options) {
+    function Query(options) {
         ObjectWrapper.prototype.constructor.call(this, options);
-        this.visualType = options.visualType;
-        this.superType = (options.superType != undefined) ? options.superType : [];
-        this.capabilities = [];
-        this.variableReferences = [];
+        this.matchingCriteria = (options.matchingCriteria != undefined) ? options.matchingCriteria : [];
     };
 
-    Type.prototype = Object.create(ObjectWrapper.prototype);
-    Type.prototype.constructor = Type;
+    Query.prototype = Object.create(ObjectWrapper.prototype);
+    Query.prototype.constructor = Query;
 
     /**
      * Gets the default value for this type
@@ -60,8 +57,8 @@ define(function (require) {
      * @returns {Object} - Default value
      *
      */
-    Type.prototype.getDefaultValue = function () {
-        return this.wrappedObj.defaultValue;
+    Query.prototype.getLabel = function () {
+        return this.wrappedObj.label;
     };
 
     /**
@@ -72,87 +69,17 @@ define(function (require) {
      * @returns {List<Type>} - Super type
      *
      */
-    Type.prototype.getSuperType = function () {
-        var superType = this.superType;
-
-        if (superType != undefined && this.superType.length == 1) {
-            superType = superType[0];
-        }
-
-        return superType;
-    };
-
-    /**
-     * Check if the type is abstract
-     *
-     * @command Type.isAbstract()
-     *
-     * @returns {Boolean} - Boolean indicating if the type is abstract
-     *
-     */
-    Type.prototype.isAbstract = function () {
-        return this.wrappedObj.abstract;
-    };
-
-    /**
-     * Gets the visual type for this type if any
-     *
-     * @command Type.getVisualType()
-     *
-     * @returns {Type} - Super type
-     *
-     */
-    Type.prototype.getVisualType = function () {
-        return this.visualType;
-    };
-
-
-    /**
-     * Extends with methods from another object
-     *
-     * @command Type.extendApi(extensionObj)
-     */
-    Type.prototype.extendApi = function (extensionObj) {
-        $.extend(this, extensionObj);
-        this.capabilities.push(extensionObj.capabilityId);
-    };
-
-    /**
-     * Checks if the instance has a given capability
-     *
-     * @command Type.hasCapability(capabilityId)
-     *
-     * @returns {Boolean}
-     */
-    Type.prototype.hasCapability = function (capabilityId) {
-        var hasCapability = false;
-        var capabilities = this.capabilities;
-
-        for (var i = 0; i < capabilities.length; i++) {
-            if (capabilities[i] === capabilityId) {
-                hasCapability = true;
-            }
-        }
-
-        return hasCapability;
-    };
-
-    /**
-     *
-     * @param v
-     */
-    Type.prototype.addVariableReference = function (v) {
-        this.variableReferences.push(v);
+    Query.prototype.getDescription = function () {
+        return this.wrappedObj.description;
     };
 
     /**
      *
      * @returns {Array}
      */
-    Type.prototype.getVariableReferences = function () {
-        return this.variableReferences;
+    Query.prototype.getMatchingCriteria = function () {
+        return this.matchingCriteria;
     };
 
-    return Type;
-})
-;
+    return Query;
+});

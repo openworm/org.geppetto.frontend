@@ -44,6 +44,7 @@ define(function (require) {
         var Type = require('model/Type');
         var Variable = require('model/Variable');
         var Datasource = require('model/Datasource');
+        var Query = require('model/Query');
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');
         var ArrayType = require('model/ArrayType');
@@ -114,9 +115,6 @@ define(function (require) {
                         this.geppettoModel = geppettoModel;
                     }
 
-                    // create datasources
-                    geppettoModel.datasources = this.createDatasources(jsonModel.dataSources, geppettoModel);
-
                     // create variables
                     geppettoModel.variables = this.createVariables(jsonModel.variables, geppettoModel);
 
@@ -129,6 +127,9 @@ define(function (require) {
                             geppettoModel.getLibraries().push(library);
                         }
                     }
+
+                    // create datasources
+                    geppettoModel.datasources = this.createDatasources(jsonModel.dataSources, geppettoModel);
 
                     if (populateRefs) {
                         // traverse everything and build shortcuts to children if composite --> containment == true
@@ -1749,9 +1750,48 @@ define(function (require) {
                 }
 
                 var d = new Datasource(options);
-                // TODO: set datasource specific stuff as needed
+
+                // set queries
+                var rawQueries = node.queries;
+                if(rawQueries!=undefined) {
+                    for (var i = 0; i < rawQueries.length; i++) {
+                        var q = this.createQuery(rawQueries[i]);
+                        // set datasource as parent
+                        q.parent = d;
+                        // push query to queries array
+                        d.queries.push(q);
+                    }
+                }
 
                 return d;
+            },
+
+            createQuery: function(node, options) {
+                if (options == null || options == undefined) {
+                    options = {wrappedObj: node};
+                }
+
+                var q = new Query(options);
+
+                // set matching criteria
+                var matchingCriteriaRefs = node.matchingCriteria;
+                for(var i=0; i<matchingCriteriaRefs.length; i++){
+                    // get type ref
+                    var typeRefs = matchingCriteriaRefs[i].type;
+                    for(var j=0; j<typeRefs.length; j++)
+                    {
+                        // resolve type ref
+                        var ref = typeRefs[j].$ref;
+                        var type = this.resolve(ref);
+
+                        // push to q.matchingCriteria
+                        if(type instanceof Type) {
+                            q.matchingCriteria.push(type);
+                        }
+                    }
+                }
+
+                return q;
             },
 
             getTypeOptions: function (node, options) {

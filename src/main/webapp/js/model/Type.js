@@ -153,6 +153,27 @@ define(function (require) {
         return this.variableReferences;
     };
 
+    Type.prototype.typeOf = function (type){
+        var match = false;
+
+        if(type.getPath() == this.getPath()){
+            // check if it's the same type
+            match = true;
+        } else {
+            // recurse on parents and figure out if there is a type in the inheritance chain
+            var superTypes = this.superType;
+
+            for(var i=0; i<superTypes.length; i++) {
+                match = superTypes[i].typeOf(type);
+                if(match){
+                    break;
+                }
+            }
+        }
+
+        return match;
+    };
+
     return Type;
 })
 ;

@@ -90,7 +90,26 @@ define(function (require) {
     Query.prototype.matchesCriteria = function (type) {
         var match = false;
 
-        // TODO: check if any of criteria matches this type
+        // loop criteria
+        for(var i=0; i<this.matchingCriteria.length; i++){
+
+            var criteriaMatch = false;
+            for(var j=0; j<this.matchingCriteria[i].length; j++){
+                // all types must match to satisfy a criteria
+                criteriaMatch = this.matchingCriteria[i][j].typeOf(type);
+
+                if(!criteriaMatch){
+                    // if one element of the criteria doesn't match skip out
+                    break;
+                }
+            }
+
+            // satisfying one criteria is enough - if it matches skip out
+            if(criteriaMatch){
+                match = true;
+                break;
+            }
+        }
 
         return match;
     };

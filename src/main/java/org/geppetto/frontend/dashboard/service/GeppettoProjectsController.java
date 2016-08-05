@@ -35,7 +35,9 @@ package org.geppetto.frontend.dashboard.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
@@ -69,7 +71,34 @@ public class GeppettoProjectsController
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
-			return dataManager.getAllGeppettoProjects();
+			return dataManager.getGeppettoProjectsForUser(geppettoManager.getUser().getLogin());
+		}
+		return null;
+	}
+	
+	@RequestMapping(value="/geppettoProjectsReferences", method = {RequestMethod.GET, RequestMethod.POST})
+	public @ResponseBody
+	List<Map<String,String>> getAllGeppettoProjectsWithReferences() throws GeppettoInitializationException, IOException, GeppettoVisitingException
+	{
+		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+		if(dataManager != null)
+		{
+			List<Map<String,String>> allProjectsWithReferences = new ArrayList<Map<String,String>>();
+			Collection<? extends IGeppettoProject> projects = dataManager.getAllGeppettoProjects();
+			for(IGeppettoProject project:projects)
+			{
+				GeppettoModel geppettoModel = GeppettoModelReader.readGeppettoModel(URLReader.getURL(project.getGeppettoModel().getUrl()));
+				PopulateModelReferencesVisitor populateModelReferencesVisitor = new PopulateModelReferencesVisitor();
+				GeppettoModelTraversal.apply(geppettoModel, populateModelReferencesVisitor);
+				List<String> references = populateModelReferencesVisitor.getModelReferences();
+				Map<String,String> projectMap=new HashMap<String,String>();
+				projectMap.put("id", Long.toString(project.getId()));
+				projectMap.put("name", project.getName());
+				projectMap.put("references", references.toString());
+				allProjectsWithReferences.add(projectMap);
+			}
+			return allProjectsWithReferences;
+			
 		}
 		return null;
 	}

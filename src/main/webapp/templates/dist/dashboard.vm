@@ -15,7 +15,7 @@
 
     <script>
     window.EMBEDDED = true;
-    window.EMBEDDEDURL = "/";
+    window.EMBEDDEDURL = "http://0.0.0.0:3000/";
     </script>
 
     <script data-main="js/main" src="js/libs/require/require.js"></script>

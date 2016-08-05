@@ -25,6 +25,19 @@ define([ 'jquery', 'underscore', 'backbone',
 					'appendProjects', 'onError', 'filter', 'showProject',
 					'openProject'); 
 			this.subviews = [];
+			
+            // Change link from blank to self for embedded environments
+            if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
+            	handleRequest = function(e) {
+            	  if(window.EMBEDDEDURL.indexOf(e.origin) != -1) {
+            		  // This is where we have to create the API
+            		  eval(e.data.command);
+            	  };
+            	};
+            	// we have to listen for 'message'
+            	window.addEventListener('message', handleRequest, false);
+            	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+            }
 		},
 
 		render : function() {

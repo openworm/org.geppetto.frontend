@@ -50,6 +50,7 @@ define([
                 }
             };
             require(['DashboardView'], this.showPage);
+            
         },
 
 

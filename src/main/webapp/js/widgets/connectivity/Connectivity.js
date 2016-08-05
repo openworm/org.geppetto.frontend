@@ -145,58 +145,6 @@ define(function (require) {
             this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
         },
 
-        createLayoutSelector: function() {
-
-            function imgPath(path){
-                return 'geppetto/js/widgets/connectivity/images/' + path;
-            };
-
-            var layoutOptions = [
-                {id: "matrix", label: 'adjacency matrix', description:"Simple and clear.", img: imgPath('matrix.svg')},
-                {id: "force", label: 'force-directed layout', description:"Throw away all spatial info...", img: imgPath('force.svg')},
-                {id: "hive",  label: 'hive plot', description:"Not sure if this one helps", img: imgPath('hive.svg')},
-                {id: "chord", label:'chord diagram', description:"Looks nice, but is it useful?", img: imgPath('chord.svg')}
-            ];
-            var container = $('<div>').addClass('card-deck-wrapper');
-            var deck = $('<div>').addClass('card-deck').appendTo(container);
-
-            function createCard(cardData){
-                return $('<div>', {class: 'card', id: cardData.id})
-                        .append($('<img>', {
-                            class: 'card-img-top center-block',
-                            src: cardData.img,
-                        }))
-                        .append($('<h4>', {
-                            class: 'card-title',
-                            text: cardData.label
-                        }))
-                        .append($('<p>', {
-                            class: 'card-text',
-                            text: cardData.description
-                        }));
-            }
-
-            for(layout in layoutOptions){
-                deck.append(createCard(layoutOptions[layout]));
-            }
-
-            return container;
-        },
-
-        configViaGUI : function() {
-            var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setSize(422.8,667.8);
-            popup.showTitleBar(false);
-            popup.$('.card').on('click', function(event) {
-                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
-                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
-                function synapseFromConnection(conn) {
-                    return GEPPETTO.ModelFactory.getAllVariablesOfType(
-                            conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId();
-                }
-                G.addWidget(6).setData(netInstances[0], {layout: this.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
-                popup.destroy();
-            });
-        },
 
         //TODO: move graph utils to module, maybe consider jsnetworkx?
         // this is very rough, we should think about directionality and weights...
@@ -312,7 +260,7 @@ define(function (require) {
 
 
         createNode: function (id, type) {
-            if (!(id in this.mapping)) {
+           if (!(id in this.mapping)) {
                 var nodeItem = {
                     id: id,
                     type: type,
@@ -355,5 +303,58 @@ define(function (require) {
                 $.extend(this.options, options);
             }
         },
+
+        createLayoutSelector: function() {
+
+            function imgPath(path){
+                return 'geppetto/js/widgets/connectivity/images/' + path;
+            };
+
+            var layoutOptions = [
+                {id: "matrix", label: 'adjacency matrix', description:"Simple and clear.", img: imgPath('matrix.svg')},
+                {id: "force", label: 'force-directed layout', description:"Throw away all spatial info...", img: imgPath('force.svg')},
+                {id: "hive",  label: 'hive plot', description:"Not sure if this one helps", img: imgPath('hive.svg')},
+                {id: "chord", label:'chord diagram', description:"Looks nice, but is it useful?", img: imgPath('chord.svg')}
+            ];
+            var container = $('<div>').addClass('card-deck-wrapper');
+            var deck = $('<div>').addClass('card-deck').appendTo(container);
+
+            function createCard(cardData){
+                return $('<div>', {class: 'card', id: cardData.id})
+                        .append($('<img>', {
+                            class: 'card-img-top center-block',
+                            src: cardData.img,
+                        }))
+                        .append($('<h4>', {
+                            class: 'card-title',
+                            text: cardData.label
+                        }))
+                        .append($('<p>', {
+                            class: 'card-text',
+                            text: cardData.description
+                        }));
+            }
+
+            for(layout in layoutOptions){
+                deck.append(createCard(layoutOptions[layout]));
+            }
+
+            return container;
+        },
+
+        configViaGUI : function() {
+            var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setSize(422.8,667.8);
+            popup.showTitleBar(false);
+            popup.$('.card').on('click', function(event) {
+                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
+                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
+                function synapseFromConnection(conn) {
+                    return GEPPETTO.ModelFactory.getAllVariablesOfType(
+                            conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId();
+                }
+                G.addWidget(6).setData(netInstances[0], {layout: this.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
+                popup.destroy();
+            });
+        }
     });
 });

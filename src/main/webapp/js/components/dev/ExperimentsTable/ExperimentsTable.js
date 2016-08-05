@@ -6,7 +6,6 @@
 define(function (require) {
 
     var React = require('react'), $ = require('jquery');
-    var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
     /**
@@ -343,7 +342,7 @@ define(function (require) {
                 <div onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
                     <a className='activeIcon' onClick={this.activeExperiment}
                        experimentId={this.props.experiment.getId()} id={activeIconId}>
-                        <i className='fa fa-check-circle fa-lg' rel='tooltip' title='Active Icon'></i>
+                        <i className='fa fa-check-circle fa-lg' rel='tooltip' title='Activate experiment'></i>
                     </a>
                     <a className='deleteIcon' onClick={this.deleteExperiment}
                        experimentId={this.props.experiment.getId()} id={deleteIconId}>
@@ -552,7 +551,11 @@ define(function (require) {
                             tdStatus.removeClass(tdStatusTitle);
                             tdStatus.addClass("CANCELED");
                             tdStatus.attr("title", "CANCELED");
-                        }
+                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.addClass("ERROR");
+                            tdStatus.attr("title", "ERROR");
+                        } 
                     }
                     if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-"+ experiment.getId())) {
                     	 if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
@@ -636,5 +639,5 @@ define(function (require) {
         }
     });
 
-    ReactDOM.render(React.createFactory(ExperimentsTable)({}, ''), document.getElementById("experiments"));
+    return ExperimentsTable;
 });

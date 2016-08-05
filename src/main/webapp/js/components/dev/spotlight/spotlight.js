@@ -42,10 +42,8 @@ define(function (require) {
         $ = require('jquery'),
         typeahead = require('typeahead'),
         bh = require('bloodhound'),
-        handlebars = require('handlebars');
-
-    var ReactDOM = require('react-dom');
-    var GEPPETTO = require('geppetto');
+        handlebars = require('handlebars'),
+        GEPPETTO = require('geppetto');
 
     var Spotlight = React.createClass({
         mixins: [
@@ -855,5 +853,5 @@ define(function (require) {
         },
     });
 
-    ReactDOM.render(React.createFactory(Spotlight)({},''), document.getElementById("spotlight"));
+    return Spotlight;
 });

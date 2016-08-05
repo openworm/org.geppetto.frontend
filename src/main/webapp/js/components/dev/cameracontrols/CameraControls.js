@@ -33,10 +33,9 @@
 define(function(require) {
 
     var React = require('react');
-    var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
-    var Controls = React.createClass({
+    var CameraControls = React.createClass({
 
         mixins:[require('mixins/TutorialMixin')],
 
@@ -129,7 +128,5 @@ define(function(require) {
 
     });
 
-    var controlsFactory = React.createFactory(Controls);
-    ReactDOM.render(controlsFactory({},''), document.getElementById('camera-controls'));
-
+    return CameraControls;
 });

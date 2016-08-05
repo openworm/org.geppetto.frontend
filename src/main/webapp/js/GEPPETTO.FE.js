@@ -197,7 +197,8 @@ define(function(require)
 			{
 				if (!webGLStarted)
 				{
-					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED);
+					GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBGL_FAILED)
+					GEPPETTO.Main.disconnected = true;;
 					GEPPETTO.FE.disableSimulationControls();
 					GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBGL_FAILED, GEPPETTO.Resources.WEBGL_MESSAGE);
 				}
@@ -211,8 +212,7 @@ define(function(require)
 				if(!webGLStarted || !workersSupported){
 					GEPPETTO.FE.disableSimulationControls();
 				}
-			},
-			
+			}
         };
 
     };

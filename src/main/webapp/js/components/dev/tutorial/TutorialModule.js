@@ -246,5 +246,5 @@ define(function (require) {
 		}
 	});
 	
-	ReactDOM.render(React.createFactory(Tutorial)({},''), document.getElementById("tutorial"));
+	return Tutorial;
 });

@@ -106,6 +106,19 @@ define(['jquery', 'underscore', 'backbone'], function () {
         getParent: function () {
             return this.parent;
         },
+        
+        /**
+         * Set parent
+         *
+         * @command Type.setParent()
+         *
+         * @returns {Object} - Current object
+         *
+         */
+        setParent: function (parent) {
+            this.parent=parent;
+            return this;
+        },
 
         /**
          * Get path

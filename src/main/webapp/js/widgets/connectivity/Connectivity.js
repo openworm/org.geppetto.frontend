@@ -311,10 +311,25 @@ define(function (require) {
             };
 
             var layoutOptions = [
-                {id: "matrix", label: 'adjacency matrix', description:"Simple and clear.", img: imgPath('matrix.svg')},
-                {id: "force", label: 'force-directed layout', description:"Throw away all spatial info...", img: imgPath('force.svg')},
-                {id: "hive",  label: 'hive plot', description:"Not sure if this one helps", img: imgPath('hive.svg')},
-                {id: "chord", label:'chord diagram', description:"Looks nice, but is it useful?", img: imgPath('chord.svg')}
+                {id: "matrix", label: 'adjacency matrix', description:
+                    "A coloured square at row 𝒊, column 𝒋 represents a " +
+                    "directed connection from node 𝒋 to node 𝒊.",
+                    img: imgPath('matrix.svg')},
+                {id: "force", label: 'force-directed layout', description:
+                    "Draw circles for nodes, lines for connections, disregarding " +
+                    "spatial information.",
+                    img: imgPath('force.svg')},
+                {id: "hive",  label: 'hive plot', description:
+                    "Axes correspond to node categories, arcs to connections." +
+                    "The position of each node along an axis is determined by " +
+                    "the total number of connections it makes.",
+                    img: imgPath('hive.svg')},
+                {id: "chord", label:'chord diagram', description:
+                    "Circular slices correspond to node categories, chords to " +
+                    "connections. A gap between slice and chord indicate an " +
+                    "incoming connection. Use ctrl(shift) + mouse hover to " +
+                    "hide incoming(outgoing) connections from a population.",
+                    img: imgPath('chord.svg')}
             ];
             var container = $('<div>').addClass('card-deck-wrapper');
             var deck = $('<div>').addClass('card-deck').appendTo(container);
@@ -344,7 +359,7 @@ define(function (require) {
 
         configViaGUI : function() {
             var that = this;
-            var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setSize(422.8,667.8);
+            var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setAutoHeight().setAutoWidth();
             popup.showTitleBar(false);
             popup.$('.card').on('click', function(event) {
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)

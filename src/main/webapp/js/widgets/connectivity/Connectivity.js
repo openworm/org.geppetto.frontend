@@ -343,6 +343,7 @@ define(function (require) {
         },
 
         configViaGUI : function() {
+            var that = this;
             var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setSize(422.8,667.8);
             popup.showTitleBar(false);
             popup.$('.card').on('click', function(event) {
@@ -352,7 +353,7 @@ define(function (require) {
                     return GEPPETTO.ModelFactory.getAllVariablesOfType(
                             conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId();
                 }
-                G.addWidget(6).setData(netInstances[0], {layout: this.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
+                that.setData(netInstances[0], {layout: this.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
                 popup.destroy();
             });
         }

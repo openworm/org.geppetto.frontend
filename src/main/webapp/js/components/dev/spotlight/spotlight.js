@@ -463,12 +463,14 @@ define(function (require) {
         		});
         	}
         },
-        
+
         /**
-         * Update the suggestions with results that come back
-         * @param update : False if request for data source is the first time, true for update
+         * Update the datasource results with results that come back
+         *
+         * @param data_source_name
+         * @param results
          */
-        updateDataSourceResults : function(data_source_name,results){
+        updateDataSourceResults : function(data_source_name, results){
         	var responses = results.response.docs;
     		responses.forEach(function(response) {
         		var typeName = response.type;

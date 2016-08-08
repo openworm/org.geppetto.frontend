@@ -86,7 +86,7 @@ public enum OutboundMessages {
 	VARIABLE_FETCHED("variable_fetched"),
 	IMPORT_TYPE_RESOLVED("import_type_resolved"),
 	USER_PRIVILEGES("user_privileges"),
-	CHECK_PROJECT_PERSISTENCE("check_project_persistence");
+	PROJECT_PERSISTENCE_STATE("project_persistence_state");
 
 	private OutboundMessages(final String text) {
 		this.text = text;

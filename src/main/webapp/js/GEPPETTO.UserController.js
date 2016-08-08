@@ -46,7 +46,7 @@ define(function(require)
             
             setUserPrivileges : function(userPrivileges){
             	this.userName = userPrivileges.userName;
-            	this.privileges = userPrivileges.privileges;            	
+            	this.privileges = userPrivileges.privileges;
             },
             
             getUserPriviliges : function(){

@@ -64,7 +64,7 @@ define(function (require) {
             GET_SUPPORTED_OUTPUTS: "get_supported_outputs",
             EXPERIMENT_DELETED: "experiment_deleted",
             PROJECT_PERSISTED: "project_persisted",
-            CHECK_PROJECT_PERSISTED: "check_project_persistence",
+            PROJECT_PERSISTENCE_STATE: "project_persistence_state",
             DROPBOX_LINKED: "dropbox_linked",
             DROPBOX_UNLINKED: "dropbox_unlinked",
             RESULTS_UPLOADED: "results_uploaded",
@@ -142,6 +142,9 @@ define(function (require) {
                                         status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                                         GEPPETTO.trigger(Events.Experiment_completed);
                                     }
+                                    if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                                            GEPPETTO.trigger(Events.Experiment_failed, experimentID);
+                                     }
                                 }
                             }
                             experiments[e].setStatus(status);
@@ -156,8 +159,14 @@ define(function (require) {
             GEPPETTO.SimulationHandler.persistProject(payload);
         };
         
-        messageHandler[messageTypes.CHECK_PROJECT_PERSISTED] = function (payload) {
-            
+        messageHandler[messageTypes.PROJECT_PERSISTENCE_STATE] = function (payload) {
+        	var project_persistence_state = JSON.parse(payload.project_persistence_state);
+        	var persisted =project_persistence_state.persisted;
+        	var projectId =project_persistence_state.projectId;
+        	
+        	if(window.Project.getId()==projectId){
+        		window.Project.persisted=persisted;
+        	}
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function (payload) {
@@ -197,6 +206,14 @@ define(function (require) {
         
         messageHandler[messageTypes.EXPERIMENT_PROPS_SAVED] = function (payload) {
             GEPPETTO.Console.log("Experiment saved succesfully");
+            var data = JSON.parse(payload.update);
+            var experiment = window.Project.getExperimentById(data.id);
+            
+            //Updates status. Used for when experiment failed, and user modified the parameters 
+            //right after, the status changes back to DESIGN from ERROR
+            if(experiment.getStatus() != data.status){
+                experiment.setStatus(data.status);
+            }
         };
 
         messageHandler[messageTypes.DROPBOX_LINKED] = function (payload) {
@@ -263,11 +280,7 @@ define(function (require) {
                 var project = JSON.parse(payload.project_loaded);
 
                 window.Project = GEPPETTO.ProjectFactory.createProjectNode(project);
-
-                if (window.location.search.indexOf("load_project_from_url") != -1) {
-                    window.Project.persisted = false;
-                }
-
+                
                 GEPPETTO.Init.initEventListeners();
                 GEPPETTO.trigger(Events.Project_loaded);
                 GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);

@@ -88,8 +88,8 @@ public class TransportMessageFactory {
 			case USER_PRIVILEGES:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.USER_PRIVILEGES.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
-			case CHECK_PROJECT_PERSISTENCE:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.CHECK_PROJECT_PERSISTENCE.toString(),  (update!=null) ? update : EMPTY_STRING));
+			case PROJECT_PERSISTENCE_STATE:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_PERSISTENCE_STATE.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 			case PROJECT_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
@@ -164,6 +164,9 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case PROJECT_PROPS_SAVED:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case EXPERIMENT_PROPS_SAVED:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case DROPBOX_LINKED:

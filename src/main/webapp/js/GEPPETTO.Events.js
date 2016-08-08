@@ -54,6 +54,7 @@ var Events = {
     Experiment_running: "experiment:running",
     Experiment_stop: "experiment:stop",
     Experiment_completed: "experiment:completed",
+    Experiment_failed: "experiment:failed",
     Experiment_update: "experiment:update",
     Experiment_deleted: "experiment_deleted",
     Experiment_active: "experiment_active",
@@ -61,7 +62,8 @@ var Events = {
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
     Spotlight_closed : "spotlight:closed",
-    Check_user_privileges : "user:privileges"
+    Check_user_privileges : "user:privileges",
+    Check_project_persisted : "project:persisted_state"
 };
 define(function (require) {
     return function (GEPPETTO) {
@@ -86,6 +88,11 @@ define(function (require) {
                 GEPPETTO.on(Events.Check_user_privileges, function () {
                 	GEPPETTO.MessageSocket.send("user_privileges");
                 });
+                GEPPETTO.on(Events.Check_project_persisted, function (id) {
+                	var parameters = {};
+                    parameters["projectId"] = id;
+                	GEPPETTO.MessageSocket.send("project_persistence_state", parameters);
+                });
                 GEPPETTO.on(Events.Experiment_active, function () {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });
@@ -94,6 +101,10 @@ define(function (require) {
                 });
                 GEPPETTO.on(Events.Project_loaded, function () {
                     GEPPETTO.trigger(Events.Check_user_privileges);
+                    
+                    var projectID = window.Project.getId();
+                    GEPPETTO.trigger(Events.Check_project_persisted,projectID);
+                    
                 	GEPPETTO.Main.startStatusWorker();
                 });
                 GEPPETTO.on(Events.Experiment_over, function (e) {

@@ -25,7 +25,7 @@ define(function (require) {
 
         componentDidMount: function () {
             var row = "#" + this.props.experiment.getId();
-
+            
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
             	if (e.keyCode == 13) {
                     e.preventDefault();
@@ -65,7 +65,8 @@ define(function (require) {
 
             //set editable name field if experiment in design ode
             var editable = false;
-            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
+            		this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
                 editable = true;
             }
 
@@ -196,7 +197,8 @@ define(function (require) {
         },
         render: function () {
             var editable = false;
-            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
+            		this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
                 editable = true;
             }
 

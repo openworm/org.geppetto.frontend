@@ -193,7 +193,19 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             run: function () {
-                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                if(!writePermission){
+                	return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + " User doesn't have write permission.";
+                }
+                
+                if(!this.getParent().persisted){
+                	var message = "Project not persisted, to do so run command Project.persist()" +
+                			" or click on the Save Button with star icon above. "
+                	GEPPETTO.FE.infoDialog(GEPPETTO.Resources.OPERATION_NOT_SUPPORTED,message);
+                }
+                
+                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
+                		this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
                     GEPPETTO.trigger(Events.Experiment_running);
                     var parameters =
                     {};

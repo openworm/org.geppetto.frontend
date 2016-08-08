@@ -190,7 +190,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.getUserPriviledges(requestID);
 				break;
 			}
-			case CHECK_PROJECT_PERSISTENCE:
+			case PROJECT_PERSISTENCE_STATE:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 						{

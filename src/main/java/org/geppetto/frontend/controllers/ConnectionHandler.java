@@ -42,6 +42,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -53,6 +55,7 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
@@ -62,6 +65,7 @@ import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ServicesRegistry;
+import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
@@ -91,7 +95,7 @@ import com.google.gson.JsonParseException;
  * @author matteocantarelli
  * 
  */
-public class ConnectionHandler
+public class ConnectionHandler implements IGeppettoManagerCallbackListener
 {
 
 	private static Log logger = LogFactory.getLog(ConnectionHandler.class);
@@ -116,7 +120,7 @@ public class ConnectionHandler
 		// FIXME This is extremely ugly, a session based geppetto manager is autowired in the websocketconnection
 		// but a session bean cannot travel outside a conenction thread so a new one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
-
+		this.geppettoManager.setSimulationListener(this);
 	}
 
 	/**
@@ -315,6 +319,11 @@ public class ConnectionHandler
 				// run the matched experiment
 				if(experiment != null)
 				{
+					//TODO: If experiment is in ERROR state, user won't be able to run again. 
+					//We reset it to DESIGN to allow user to run it for second time
+					if(experiment.getStatus()==ExperimentStatus.ERROR){
+						experiment.setStatus(ExperimentStatus.DESIGN);
+					}
 					geppettoManager.runExperiment(requestID, experiment);
 				}
 				else
@@ -1186,7 +1195,14 @@ public class ConnectionHandler
 					}
 				}
 			}
-			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, "");
+			//send back id of experiment saved, and if the experiment modified was in ERROR state change
+			//it back to DESIGN to allow re-running
+			ExperimentStatus status = experiment.getStatus();
+			if(status == ExperimentStatus.ERROR){
+				experiment.setStatus(ExperimentStatus.DESIGN);
+			}
+			String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"status\":" + '"' + experiment.getStatus() + '"' + "}";
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, update);
 		}
 	}
 
@@ -1219,6 +1235,11 @@ public class ConnectionHandler
 			geppettoManager.closeProject(null, this.geppettoProject);
 		}
 		this.geppettoProject = geppettoProject;
+	}
+
+	@Override
+	public void simulationError(String errorMessage, Exception exception) {
+		this.error(exception, errorMessage);
 	}
 
 }

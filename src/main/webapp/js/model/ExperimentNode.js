@@ -193,7 +193,8 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             run: function () {
-                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
+                		this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
                     GEPPETTO.trigger(Events.Experiment_running);
                     var parameters =
                     {};

@@ -481,7 +481,8 @@ define(function (require) {
         		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
         		var newActions = actions.slice(0);
         		for(var i=0; i < actions.length; i++) {
-        			 newActions[i] = newActions[i].replace(/\$ID\$/gi, obj["id"]);
+                    newActions[i] = newActions[i].replace(/\$ID\$/gi, obj["id"]);
+                    newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
         		}
         		obj["actions"] = newActions;
         		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;

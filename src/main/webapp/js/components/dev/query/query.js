@@ -887,7 +887,10 @@ define(function (require) {
             // retrieve term
             var term = queryItem.term;
 
-            // TODO: plug real source of data instead mock data
+            // TODO: retrieve variable from queryItem.id
+            // TODO: fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
+            // TODO: build item in model-friendly format
+
             // retrieve options given term
             var item = null;
             for(var i=0; i<mockSourceData.length; i++){

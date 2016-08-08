@@ -60,7 +60,8 @@ var Events = {
     Experiment_created:"experiment:created",
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
-    Spotlight_closed : "spotlight:closed"
+    Spotlight_closed : "spotlight:closed",
+    Check_user_privileges : "user:privileges"
 };
 define(function (require) {
     return function (GEPPETTO) {
@@ -82,6 +83,9 @@ define(function (require) {
                 GEPPETTO.on(Events.Model_loaded, function () {
                     G.resetCamera();
                 });
+                GEPPETTO.on(Events.Check_user_privileges, function () {
+                	GEPPETTO.MessageSocket.send("user_privileges");
+                });
                 GEPPETTO.on(Events.Experiment_active, function () {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });
@@ -89,6 +93,7 @@ define(function (require) {
                     GEPPETTO.trigger("hide:spinner");
                 });
                 GEPPETTO.on(Events.Project_loaded, function () {
+                    GEPPETTO.trigger(Events.Check_user_privileges);
                 	GEPPETTO.Main.startStatusWorker();
                 });
                 GEPPETTO.on(Events.Experiment_over, function (e) {

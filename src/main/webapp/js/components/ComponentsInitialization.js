@@ -52,6 +52,9 @@ define(function (require) {
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
 
+		//Save initialization 
+		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));
+		
 		//Simulation controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SIMULATIONCONTROLS', {}, document.getElementById("sim-toolbar"));
 

@@ -79,7 +79,7 @@ define(function (require) {
 
                     //attach the handlers once socket is opened
                     messageHandlers.push(GEPPETTO.SimulationHandler);
-                    messageHandlers.push(GEPPETTO.GlobalHandler);
+                    messageHandlers.push(GEPPETTO.GlobalHandler);                    
                 };
 
                 GEPPETTO.MessageSocket.socket.onclose = function () {

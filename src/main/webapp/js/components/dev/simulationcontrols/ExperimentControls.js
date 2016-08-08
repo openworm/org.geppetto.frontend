@@ -59,8 +59,9 @@ define(function (require) {
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
                 var experiment = window.Project.getActiveExperiment();
+                var runFlag = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
                 if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                    self.setState({disablePlay: false, disablePause: true, disableStop: true});
+                    self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
                 }
                 else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                     self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});

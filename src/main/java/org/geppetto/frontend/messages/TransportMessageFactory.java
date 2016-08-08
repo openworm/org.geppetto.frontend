@@ -85,6 +85,12 @@ public class TransportMessageFactory {
 				break;	
 			case READ_URL_PARAMETERS:
 				break;
+			case USER_PRIVILEGES:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.USER_PRIVILEGES.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case CHECK_PROJECT_PERSISTENCE:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.CHECK_PROJECT_PERSISTENCE.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
 			case PROJECT_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;

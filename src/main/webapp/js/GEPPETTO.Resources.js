@@ -494,7 +494,14 @@ define(function (require) {
             PARAMETER_TYPE_PATH: 'Model.common.Parameter',
             MODEL_PREFIX_CLIENT: 'Model',
             // CONTROL PANEL
-            CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:'
+            CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:',
+            
+            //USER PRIVILEGES
+            WRITE_PROJECT : "WRITE_PROJECT",
+            READ_PROJECT : "READ_PROJECT",
+            DOWNLOAD : "DOWNLOAD",
+            DROPBOX_INTEGRATION : "DROPBOX_INTEGRATION",
+            RUN_EXPERIMENT : "RUN_EXPERIMENT"
         }
     }
 });

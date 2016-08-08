@@ -50,8 +50,16 @@ define(function (require) {
 
     var ForegroundControls = React.createClass({
 
+    	getInitialState: function () {
+            return {
+                disableSpotlight: true
+            }
+        },
+        
         componentDidMount: function () {
-
+        	GEPPETTO.on(Events.Experiment_loaded, function () {
+        		self.setState({disableSpotlight: false});
+            });
         },
 
         componentWillMount: function () {
@@ -63,7 +71,7 @@ define(function (require) {
         },
 
         render: function () {
-            var spotlightBtn = GEPPETTO.Spotlight != undefined ? React.createFactory(SpotlightButton)({}) : '';
+            var spotlightBtn = GEPPETTO.Spotlight != undefined ? React.createFactory(SpotlightButton)({disabled: this.state.disableSpotlight}) : '';
             var controlPanelBtn = GEPPETTO.ControlPanel != undefined ? React.createFactory(ControlPanelButton)({}) : '';
 
             return <div className={'foreground-controls'}>

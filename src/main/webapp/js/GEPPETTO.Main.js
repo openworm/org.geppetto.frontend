@@ -220,21 +220,6 @@ define(function(require) {
                     visibleExperiments = false;
                 });
 
-                $("#experiments").resizable({
-                    handles: 'n',
-                    minHeight: 100,
-                    autoHide: true,
-                    maxHeight: 400,
-                    resize: function (event, ui) {
-                        if (ui.size.height > ($("#footerHeader").height() * .75)) {
-                            $("#experiments").height($("#footerHeader").height() * .75);
-                            event.preventDefault();
-                        }
-                        $('#experiments').resize();
-                        $("#experiments").get(0).style.top = "0px";
-                    }.bind(this)
-                });
-
                 $('.nav-tabs li.active').removeClass('active');
 
             }

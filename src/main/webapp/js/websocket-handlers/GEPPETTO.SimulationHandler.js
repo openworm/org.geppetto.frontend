@@ -64,6 +64,7 @@ define(function (require) {
             GET_SUPPORTED_OUTPUTS: "get_supported_outputs",
             EXPERIMENT_DELETED: "experiment_deleted",
             PROJECT_PERSISTED: "project_persisted",
+            CHECK_PROJECT_PERSISTED: "check_project_persistence",
             DROPBOX_LINKED: "dropbox_linked",
             DROPBOX_UNLINKED: "dropbox_unlinked",
             RESULTS_UPLOADED: "results_uploaded",
@@ -153,6 +154,10 @@ define(function (require) {
 
         messageHandler[messageTypes.PROJECT_PERSISTED] = function (payload) {
             GEPPETTO.SimulationHandler.persistProject(payload);
+        };
+        
+        messageHandler[messageTypes.CHECK_PROJECT_PERSISTED] = function (payload) {
+            
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function (payload) {
@@ -244,9 +249,6 @@ define(function (require) {
                 var oldActiveExperiment = window.Project.getActiveExperiment().id;
                 window.Project.getActiveExperiment().id = parseInt(activeExperimentID);
                 window.Project.persisted = true;
-                
-                //TODO: Why replace id?
-                //GEPPETTO.FE.updateExperimentId(oldActiveExperiment, window.Project.getActiveExperiment().id);
 
                 GEPPETTO.trigger(Events.Project_persisted);
                 GEPPETTO.Console.log("The project has been persisted  [id=" + projectID + "].");

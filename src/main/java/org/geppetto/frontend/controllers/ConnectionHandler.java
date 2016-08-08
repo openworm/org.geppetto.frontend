@@ -57,6 +57,7 @@ import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.ResultsFormat;
+import org.geppetto.core.data.model.UserPrivileges;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
@@ -116,7 +117,6 @@ public class ConnectionHandler
 		// FIXME This is extremely ugly, a session based geppetto manager is autowired in the websocketconnection
 		// but a session bean cannot travel outside a conenction thread so a new one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
-
 	}
 
 	/**
@@ -843,7 +843,29 @@ public class ConnectionHandler
 		}
 
 	}
+	/**
+	 * @param requestID
+	 * @param projectId
+	 */
+	public void isPersisted(String requestID, long projectId)
+	{
 
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+
+		if(geppettoProject != null)
+		{
+			boolean persisted = geppettoProject.isPersisted();
+			String update = "{\"persisted\":" + persisted +"}";
+			websocketConnection.sendMessage(requestID, OutboundMessages.CHECK_PROJECT_PERSISTENCE, update);
+		
+		}
+		else
+		{
+			error(null, "Error checking project persistence: Project doesn't exist  " + projectId + ".");
+		}
+
+	}
+	
 	/**
 	 * @param requestID
 	 * @param projectId
@@ -1221,4 +1243,21 @@ public class ConnectionHandler
 		this.geppettoProject = geppettoProject;
 	}
 
+	/**
+	 * Sends back the client login user privileges
+	 * @param requestID
+	 */
+	public void getUserPriviledges(String requestID){
+		String userName = this.geppettoManager.getUser().getLogin();
+		String update = "{\"userName\":" + '"' + userName + '"' + ",\"privileges\":[";
+		List<UserPrivileges> privileges = this.geppettoManager.getUser().getUserGroup().getPrivileges();
+		for(UserPrivileges up : privileges){
+			update = update.concat('"'+up.toString()+'"'+",");
+		}
+		
+		update = update.substring(0, update.length()-1);
+		update = update.concat("]}");
+		
+		websocketConnection.sendMessage(requestID, OutboundMessages.USER_PRIVILEGES, update);
+	}
 }

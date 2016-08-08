@@ -185,6 +185,20 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.getVersionNumber(requestID);
 				break;
 			}
+			case USER_PRIVILEGES:
+			{
+				connectionHandler.getUserPriviledges(requestID);
+				break;
+			}
+			case CHECK_PROJECT_PERSISTENCE:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+						{
+						}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.isPersisted(requestID,projectId);
+				break;
+			}
 			case NEW_EXPERIMENT:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()

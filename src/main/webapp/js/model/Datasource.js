@@ -156,27 +156,6 @@ define(function (require) {
     };
     
 
-    /**
-     *
-     * * Run a set of queries on this datasource
-     *
-     * @param queries
-     * @param callback
-     */
-    Datasource.prototype.runQueries = function (queries, callback) {
-        GEPPETTO.SimulationHandler.runQueries(queries, this.getId(), callback);
-    };
-
-
-    /**
-     * Get the count for a set of queries on this datasource
-     *
-     * @param queries
-     * @param callback
-     */
-    Datasource.prototype.getQueriesCount = function (queries, callback) {
-        GEPPETTO.SimulationHandler.getQueriesCount(queries, this.getId(), callback);
-    };
     
     return Datasource;
 });

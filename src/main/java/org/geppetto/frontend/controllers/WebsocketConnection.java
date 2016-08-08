@@ -448,6 +448,18 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.paths);
 				break;
 			}
+			case RUN_QUERY:
+			{
+				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+				connectionHandler.runQuery(requestID, receivedObject.projectId, receivedObject.runnableQueries);
+				break;
+			}
+			case RUN_QUERY_COUNT:
+			{
+				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+				connectionHandler.runQueryCount(requestID, receivedObject.projectId, receivedObject.runnableQueries);
+				break;
+			}
 			default:
 			{
 				// NOTE: no other messages expected for now
@@ -498,6 +510,13 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Long experimentId;
 		String dataSourceId;
 		List<String> paths;
+		String variableId;
+		List<RunnableQueryParameters> runnableQueries;
+	}
+	
+	class RunnableQueryParameters
+	{
+		String queryId;
 		String variableId;
 	}
 

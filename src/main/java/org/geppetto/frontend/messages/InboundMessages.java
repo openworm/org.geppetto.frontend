@@ -74,7 +74,12 @@ public enum InboundMessages {
 	
 	//DATASOURCES
 	FETCH_VARIABLE("fetch_variable"), 
-	RESOLVE_IMPORT_TYPE("resolve_import_type");
+	RESOLVE_IMPORT_TYPE("resolve_import_type"), 
+	
+	//QUERIES
+	RUN_QUERY("run_query"),
+	RUN_QUERY_COUNT("run_query_count"),
+	;
 
 	
 	private InboundMessages(final String text) {

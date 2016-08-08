@@ -463,12 +463,14 @@ define(function (require) {
         		});
         	}
         },
-        
+
         /**
-         * Update the suggestions with results that come back
-         * @param update : False if request for data source is the first time, true for update
+         * Update the datasource results with results that come back
+         *
+         * @param data_source_name
+         * @param results
          */
-        updateDataSourceResults : function(data_source_name,results){
+        updateDataSourceResults : function(data_source_name, results){
         	var responses = results.response.docs;
     		responses.forEach(function(response) {
         		var typeName = response.type;
@@ -479,7 +481,8 @@ define(function (require) {
         		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
         		var newActions = actions.slice(0);
         		for(var i=0; i < actions.length; i++) {
-        			 newActions[i] = newActions[i].replace(/\$ID\$/gi, obj["id"]);
+                    newActions[i] = newActions[i].replace(/\$ID\$/gi, obj["id"]);
+                    newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
         		}
         		obj["actions"] = newActions;
         		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;

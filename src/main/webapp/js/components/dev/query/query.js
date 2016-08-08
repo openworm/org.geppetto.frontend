@@ -49,6 +49,7 @@ define(function (require) {
     var Tabs = require('geppetto/js/components/dev/query/vendor/js/react-simpletabs.js');
     var typeahead = require('typeahead');
     var bh = require('bloodhound');
+    var handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
 
     // query model object to represent component state and trigger view updates
@@ -522,10 +523,21 @@ define(function (require) {
 
     var QueryBuilder = React.createClass({
         displayName: 'QueryBuilder',
-
+        dataSourceResults: {},
+        updateResults : false,
+        configuration: { DataSources: {} },
         mixins: [
             require('jsx!mixins/bootstrap/modal')
         ],
+
+        defaultDataSources: function (q, sync) {
+            if (q === '') {
+                sync(this.dataSourceResults.index.all());
+            }
+            else {
+                this.dataSourceResults.search(q, sync);
+            }
+        },
 
         getInitialState: function () {
             return {
@@ -567,8 +579,13 @@ define(function (require) {
                     minLength: 1
                 },
                 {
-                    name: 'terms',
-                    source: mockTerms
+                    name: 'dataSourceResults',
+                    source: this.defaultDataSources,
+                    limit: 50,
+                    display: 'label',
+                    templates: {
+                        suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
+                    }
                 }
             );
         },
@@ -600,6 +617,55 @@ define(function (require) {
                 }
             });
 
+            $("#query-typeahead").keydown(this, function (e) {
+                if (e.which == 9 || e.keyCode == 9) {
+                    e.preventDefault();
+                }
+            });
+
+            $("#query-typeahead").keypress(this, function (e) {
+                if (e.which == 13 || e.keyCode == 13) {
+                    that.confirmed($("#query-typeahead").val());
+                }
+                if (this.searchTimeOut !== null) {
+                    clearTimeout(this.searchTimeOut);
+                }
+                this.searchTimeOut = setTimeout(function () {
+                    for (var key in GEPPETTO.QueryBuilder.configuration.DataSources) {
+                        if (GEPPETTO.QueryBuilder.configuration.DataSources.hasOwnProperty(key)) {
+                            var dataSource = GEPPETTO.QueryBuilder.configuration.DataSources[key];
+                            var searchQuery = $("#query-typeahead").val();
+                            var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
+                            GEPPETTO.QueryBuilder.updateResults = true;
+                            GEPPETTO.QueryBuilder.requestDataSourceResults(key, url, dataSource.crossDomain);
+                        }
+                    }
+                }, 150);
+            });
+
+            $("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {
+                if (datum.hasOwnProperty("label")) {
+                    that.confirmed(datum.label);
+                }
+            });
+
+            this.dataSourceResults = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                identify: function (obj) {
+                    return obj.label;
+                }
+            });
+
+            Handlebars.registerHelper('geticon', function (icon) {
+                if (icon) {
+                    return new Handlebars.SafeString("<icon class='fa " + icon + "' style='margin-right:5px;'/>");
+                } else {
+                    return;
+                }
+
+            });
+
             this.initTypeahead();
 
             if(GEPPETTO.ForegroundControls != undefined){
@@ -611,6 +677,118 @@ define(function (require) {
             if(!this.state.resultsView){
                 // re-init the search box on query builder
                 this.initTypeahead();
+            }
+        },
+
+        /**
+         * Requests external data sources.
+         *
+         */
+        addDataSource : function(sources){
+            try {
+                for (var key in sources) {
+                    if (sources.hasOwnProperty(key)) {
+                        var obj = sources[key];
+                        var key = this.generateDataSourceKey(key, 0);
+                        this.configuration.DataSources[key] = obj;
+                    }
+                }
+            }
+            catch (err) {
+                throw ("Error parsing data sources " + err);
+            }
+        },
+
+        /**
+         * Figure out if data source of same name is already in there. If it is,
+         * create a new key for it.
+         */
+        generateDataSourceKey : function(key, index){
+            var dataSource = this.configuration.DataSources[key]
+            if(dataSource!=null || dataSource !=undefined){
+                key = key.concat(index);
+                this.generateDataSourceKey(key, index++);
+            }
+
+            return key;
+        },
+
+        /**
+         * Requests results for an external data source
+         *
+         * @param data_source_name : Name of the Data Source to request results from
+         * @param data_source_url : URL used to request data source results
+         * @param crossDomain : URL allows cross domain
+         */
+        requestDataSourceResults : function(data_source_name, data_source_url, crossDomain){
+            //not cross domain, get results via java servlet code
+            if(!crossDomain){
+                var parameters = {};
+                parameters["data_source_name"] = data_source_name;
+                parameters["url"] = data_source_url;
+                GEPPETTO.MessageSocket.send("get_data_source_results", parameters);
+            }else{
+                //cross domain, do ajax query for results
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'text',
+                    url: data_source_url,
+                    success: function (responseData, textStatus, jqXHR) {
+                        GEPPETTO.QueryBuilder.updateDataSourceResults(data_source_name, JSON.parse(responseData));
+                    },
+                    error: function (responseData, textStatus, errorThrown) {
+                        throw ("Error retrieving data sources " + data_source_name + "  from " + data_source_url);
+                    }
+                });
+            }
+        },
+
+        /**
+         * Update the datasource results with results that come back
+         *
+         * @param data_source_name
+         * @param results
+         */
+        updateDataSourceResults : function(data_source_name, results){
+            var responses = results.response.docs;
+            responses.forEach(function(response) {
+                var typeName = response.type;
+                var obj = {};
+                obj["label"] = response[GEPPETTO.QueryBuilder.configuration.DataSources[data_source_name].label];
+                obj["id"] = response[GEPPETTO.QueryBuilder.configuration.DataSources[data_source_name].id];
+                //replace $ID$ with one returned from server for actions
+                var actions = GEPPETTO.QueryBuilder.configuration.DataSources[data_source_name].type[typeName].actions;
+                var newActions = actions.slice(0);
+                for(var i=0; i < actions.length; i++) {
+                    newActions[i] = newActions[i].replace(/\$ID\$/gi, obj["id"]);
+                    newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
+                }
+                obj["actions"] = newActions;
+                obj["icon"] = GEPPETTO.QueryBuilder.configuration.DataSources[data_source_name].type[typeName].icon;
+                GEPPETTO.QueryBuilder.dataSourceResults.add(obj);
+            });
+
+            //If it's an update request to show the drop down menu, this for it to show
+            //updated results
+            if(this.updateResults){
+                var value = $("#query-typeahead").val();
+                $("#query-typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+                $("#query-typeahead").typeahead('val', value);
+            }
+        },
+
+        confirmed: function (item) {
+            if (item && item != "") {
+                if (this.dataSourceResults.get(item)) {
+                    var found = this.dataSourceResults.get(item);
+                    if (found.length == 1) {
+                        var actions = found[0].actions;
+                        actions.forEach(function (action) {
+                            GEPPETTO.Console.executeCommand(action)
+                        });
+                        $("#query-typeahead").typeahead('val', "");
+                    }
+                }
             }
         },
 
@@ -635,7 +813,7 @@ define(function (require) {
         },
 
         getCompoundQueryId: function(queryItems){
-            var id = ""
+            var id = "";
 
             for(var i=0; i<queryItems.length; i++){
                 id+=queryItems[i].term + queryItems[i].selection;
@@ -705,11 +883,14 @@ define(function (require) {
             }
         },
 
-        addQueryItem: function(){
+        addQueryItem: function(queryItem){
             // retrieve term
-            var term = $('#query-typeahead').val();
+            var term = queryItem.term;
 
-            // TODO: plug real source of data instead mock data
+            // TODO: retrieve variable from queryItem.id
+            // TODO: fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
+            // TODO: build item in model-friendly format
+
             // retrieve options given term
             var item = null;
             for(var i=0; i<mockSourceData.length; i++){

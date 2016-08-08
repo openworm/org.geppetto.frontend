@@ -53,10 +53,14 @@ define(function (require) {
                         else if (e.data.command == 'removeWidgets') {
                             GEPPETTO.Console.executeCommand('G.removeWidget()');
                         }
+                        else {
+                        	eval(e.data.command); 
+                        }
                     }
                 };
                 // we have to listen for 'message'
                 window.addEventListener('message', handleRequest, false);
+                window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
             }
         };
 

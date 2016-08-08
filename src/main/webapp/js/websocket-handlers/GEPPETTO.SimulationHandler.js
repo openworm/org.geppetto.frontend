@@ -338,6 +338,8 @@ define(function (require) {
                     }
                 } else {
                     GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ALREADY_EXISTS);
+                    // the variable already exists, run the callback
+                    callback();
                 }
             },
 

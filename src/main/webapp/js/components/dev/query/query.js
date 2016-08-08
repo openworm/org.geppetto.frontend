@@ -983,7 +983,7 @@ define(function (require) {
                             {queryItems}
                         </div>
                         <div id="add-new-query-container">
-                            <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" onClick={this.addQueryItem} />
+                            <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" />
                             <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                         </div>
                         <QueryFooter count={resultsCount} onRun={this.runQuery} />

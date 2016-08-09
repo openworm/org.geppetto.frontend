@@ -90,8 +90,16 @@ define(['jquery', 'underscore', 'backbone',
          *
          */
         setName: function (newname) {
-            this.saveProjectProperties({"name": newname});
-            this.name = newname;
+        	var login = GEPPETTO.UserController.isLogin();
+        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+        	var projectPersisted = this.getParent().persisted;
+
+        	if(writePermission && projectPersisted && login){
+                this.saveProjectProperties({"name": newname});
+                this.name = newname;
+        	}else{
+        		return persistedAndWriteMessage(projectPersisted, writePermission, login);
+        	}
         },
 
         /**
@@ -140,7 +148,13 @@ define(['jquery', 'underscore', 'backbone',
          * @param {ExperimentNode} experiment - Active Experiment
          */
         setActiveExperiment: function (experiment) {
-            this.activeExperiment = experiment;
+        	var login = GEPPETTO.UserController.isLogin();
+
+            if(login){
+                this.activeExperiment = experiment;
+            }else{
+    			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+            }
         },
 
         /**
@@ -180,9 +194,17 @@ define(['jquery', 'underscore', 'backbone',
          * @returns {ExperimentNode} Creates a new ExperimentNode
          */
         newExperiment: function () {
-            var parameters = {};
-            parameters["projectId"] = this.id;
-            GEPPETTO.MessageSocket.send("new_experiment", parameters);
+        	var login = GEPPETTO.UserController.isLogin();
+        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+        	var projectPersisted = this.getParent().persisted;
+
+        	if(writePermission && projectPersisted && login){
+                var parameters = {};
+                parameters["projectId"] = this.id;
+                GEPPETTO.MessageSocket.send("new_experiment", parameters);
+        	}else{
+        		return persistedAndWriteMessage(projectPersisted, writePermission, login);
+        	}
         },
 
         /**
@@ -286,16 +308,31 @@ define(['jquery', 'underscore', 'backbone',
         },
 
         saveProjectProperties: function (properties) {
-            var parameters = {};
-            parameters["projectId"] = this.getId();
-            parameters["properties"] = properties;
-            GEPPETTO.MessageSocket.send("save_project_properties", parameters);
+        	var login = GEPPETTO.UserController.isLogin();
+        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+        	var projectPersisted = this.getParent().persisted;
+
+        	if(writePermission && projectPersisted && login){
+        		var parameters = {};
+        		parameters["projectId"] = this.getId();
+        		parameters["properties"] = properties;
+        		GEPPETTO.MessageSocket.send("save_project_properties", parameters);
+        	}else{
+        		return persistedAndWriteMessage(projectPersisted, writePermission, login);
+        	}
         },
 
         persist: function () {
-            var parameters = {};
-            parameters["projectId"] = this.id;
-            GEPPETTO.MessageSocket.send("persist_project", parameters);
+        	var login = GEPPETTO.UserController.isLogin();
+        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+
+        	if(writePermission && login){
+        		var parameters = {};
+        		parameters["projectId"] = this.id;
+        		GEPPETTO.MessageSocket.send("persist_project", parameters);
+        	}else{
+        		return persistedAndWriteMessage(projectPersisted, writePermission, login);
+        	}
         },
 
         /**
@@ -325,4 +362,22 @@ define(['jquery', 'underscore', 'backbone',
                 + "    Properties : " + this.experiments + "\n";
         }
     });
+    
+	function persistedAndWriteMessage(projectPersisted, writePermission, login){
+		var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+		if(!login){
+			return message;
+		}else{
+			if(!projectPersisted && writePermission){
+				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + PROJECT_NOT_PERSISTED;
+			}else if(projectPersisted && !writePermission){
+				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + WRITE_PRIVILEGES_NOT_SUPPORTED;
+			}else if(!projectPersisted && !writePermission){
+				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + 
+						  PROJECT_NOT_PERSISTED + " and " + WRITE_PRIVILEGES_NOT_SUPPORTED;
+			}
+		}
+    	
+    	return message;
+	} 
 });

@@ -57,6 +57,7 @@ define(function (require) {
         },
         
         componentDidMount: function () {
+        	var self = this;
         	GEPPETTO.on(Events.Project_loaded, function () {
         		self.setState({disableSpotlight: false});
             });

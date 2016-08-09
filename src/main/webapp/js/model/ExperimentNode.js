@@ -87,11 +87,19 @@ define(function (require) {
              *
              */
             setDescription: function (newdescription) {
-                this.saveExperimentProperties(
-                    {
-                        "description": newdescription
-                    });
-                this.description = newdescription;
+                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                var projectPersisted = this.getParent().persisted;
+                var login = GEPPETTO.UserController.isLogin();
+                
+            	if(writePermission && projectPersisted && login){
+            		this.saveExperimentProperties(
+                            {
+                                "description": newdescription
+                            });
+                        this.description = newdescription;
+            	}else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
+            	}
             },
 
             /**
@@ -134,11 +142,19 @@ define(function (require) {
              *
              */
             setScript: function (script) {
-                this.saveExperimentProperties(
-                    {
-                        "script": script
-                    });
-                this.script = script;
+                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                var projectPersisted = this.getParent().persisted;
+                var login = GEPPETTO.UserController.isLogin();
+                
+                if(writePermission && projectPersisted && login){
+            		this.saveExperimentProperties(
+                            {
+                                "script": script
+                            });
+                     this.script = script;
+            	}else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
+            	}
             },
 
             /**
@@ -148,11 +164,19 @@ define(function (require) {
              *
              */
             setName: function (newname) {
-                this.saveExperimentProperties(
-                    {
-                        "name": newname
-                    });
-                this.name = newname;
+            	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                var projectPersisted = this.getParent().persisted;
+                var login = GEPPETTO.UserController.isLogin();
+
+            	if(writePermission && projectPersisted && login){
+            		this.saveExperimentProperties(
+            				{
+            					"name": newname
+            				});
+            		this.name = newname;
+            	}else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
+            	}
             },
 
             /**
@@ -194,24 +218,24 @@ define(function (require) {
              */
             run: function () {
                 var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-                if(!writePermission){
-                	return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + " User doesn't have write permission.";
-                }
-                
-                if(!this.getParent().persisted){
-                	var message = "Project not persisted, to do so run command Project.persist()" +
-                			" or click on the Save Button with star icon above. "
-                	GEPPETTO.FE.infoDialog(GEPPETTO.Resources.OPERATION_NOT_SUPPORTED,message);
-                }
-                
-                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
-                		this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                    GEPPETTO.trigger(Events.Experiment_running);
-                    var parameters =
-                    {};
-                    parameters["experimentId"] = this.id;
-                    parameters["projectId"] = this.getParent().getId();
-                    GEPPETTO.MessageSocket.send("run_experiment", parameters);
+                var projectPersisted = this.getParent().persisted;
+                var activeExperimentId = window.Project.getActiveExperiment().getId();
+                var login = GEPPETTO.UserController.isLogin();
+
+                if(writePermission && projectPersisted && login){
+                	if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
+                		    this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) 
+                		    && activeExperimentId == this.id){
+	                    
+                		GEPPETTO.trigger(Events.Experiment_running);
+	                    var parameters =
+	                    {};
+	                    parameters["experimentId"] = this.id;
+	                    parameters["projectId"] = this.getParent().getId();
+	                    GEPPETTO.MessageSocket.send("run_experiment", parameters);
+                	}
+                }else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
                 }
             },
 
@@ -221,13 +245,19 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             setActive: function () {
-                G.unSelectAll();
-                GEPPETTO.ExperimentsController.closeCurrentExperiment();
-                var parameters = {};
-                parameters["experimentId"] = this.id;
-                parameters["projectId"] = this.getParent().getId();
-                GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                GEPPETTO.trigger(Events.Experiment_active);
+                var login = GEPPETTO.UserController.isLogin();
+
+                if(login){
+                	G.unSelectAll();
+                	GEPPETTO.ExperimentsController.closeCurrentExperiment();
+                	var parameters = {};
+                	parameters["experimentId"] = this.id;
+                	parameters["projectId"] = this.getParent().getId();
+                	GEPPETTO.MessageSocket.send("load_experiment", parameters);
+                	GEPPETTO.trigger(Events.Experiment_active);
+                }else{
+        			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+                }
             },
 
             /**
@@ -238,41 +268,83 @@ define(function (require) {
              * @command ExperimentNode.play()
              */
             play: function (options) {
-
-                GEPPETTO.ExperimentsController.play(this, options);
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+                        GEPPETTO.ExperimentsController.play(this, options);
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't play experiment that isn't active";
+            		}
+            	}
 
             },
 
             playAll: function () {
-                this.play(
-                    {
-                        playAll: true
-                    });
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+                        this.play(
+                         {
+                              playAll: true
+                         });
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't play experiment that isn't active";
+            		}
+            	}
             },
 
             pause: function () {
-                GEPPETTO.ExperimentsController.pause();
-                return this;
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+            			GEPPETTO.ExperimentsController.pause();
+            			return this;
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't pause experiment that isn't active";
+            		}
+            	}
             },
 
             stop: function () {
-                GEPPETTO.ExperimentsController.stop();
-                return this;
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+                        GEPPETTO.ExperimentsController.stop();
+                        return this;
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't stop experiment that isn't active";
+            		}
+            	}
             },
 
             resume: function () {
-                GEPPETTO.ExperimentsController.resume();
-                return this;
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+                        GEPPETTO.ExperimentsController.resume();
+                        return this;
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't resume experiment that isn't active";
+            		}
+            	}
             },
 
 
             saveExperimentProperties: function (properties) {
-                var parameters =
-                {};
-                parameters["experimentId"] = this.id;
-                parameters["projectId"] = this.getParent().getId();
-                parameters["properties"] = properties;
-                GEPPETTO.MessageSocket.send("save_experiment_properties", parameters);
+                var login = GEPPETTO.UserController.isLogin();
+            	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            	var projectPersisted = this.getParent().persisted;
+            	
+                if(writePermission && projectPersisted && login){
+                	var parameters =
+                    {};
+                    parameters["experimentId"] = this.id;
+                    parameters["projectId"] = this.getParent().getId();
+                    parameters["properties"] = properties;
+                    GEPPETTO.MessageSocket.send("save_experiment_properties", parameters);
+                }else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
+                }
             },
 
 
@@ -350,59 +422,91 @@ define(function (require) {
              * @returns {ExperimentNode} Creates a new ExperimentNode
              */
             clone: function () {
-                var parameters = {};
-                parameters["projectId"] = this.getParent().getId();
-                parameters["experimentId"] = this.id;
-                GEPPETTO.MessageSocket.send("clone_experiment", parameters);
+            	var login = GEPPETTO.UserController.isLogin();
+                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            	var projectPersisted = this.getParent().persisted;
+            	
+                if(writePermission && projectPersisted && login){
+                    var parameters = {};
+                    parameters["projectId"] = this.getParent().getId();
+                    parameters["experimentId"] = this.id;
+                    GEPPETTO.MessageSocket.send("clone_experiment", parameters);
+                }else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
+                }
             },
             
             deleteExperiment: function () {
-                var parameters =
-                {};
-                parameters["experimentId"] = this.id;
-                parameters["projectId"] = this.getParent().getId();
-                GEPPETTO.MessageSocket.send("delete_experiment", parameters);
+                var login = GEPPETTO.UserController.isLogin();
+                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            	var projectPersisted = this.getParent().persisted;
+            	
+                if(writePermission && projectPersisted && login){
+                    var parameters =
+                    {};
+                    parameters["experimentId"] = this.id;
+                    parameters["projectId"] = this.getParent().getId();
+                    GEPPETTO.MessageSocket.send("delete_experiment", parameters);
 
-                return this;
+                    return this;
+                }else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
+                }
             },
 
             uploadModel: function (aspectPath, format) {
-                if (this == window.Project.getActiveExperiment()) {
-                    if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
-                        parameters["format"] = format;
-                        parameters["aspectPath"] = aspectPath;
-                        parameters["experimentId"] = this.id;
-                        parameters["projectId"] = this.getParent().getId();
-                        GEPPETTO.MessageSocket.send("upload_model", parameters);
+                var login = GEPPETTO.UserController.isLogin();
+            	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            	var projectPersisted = this.getParent().persisted;
+            	
+            	if(writePermission && projectPersisted && login){
+            		if (this == window.Project.getActiveExperiment()) {
+            			if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+            				var parameters =
+            				{};
+            				parameters["format"] = format;
+            				parameters["aspectPath"] = aspectPath;
+            				parameters["experimentId"] = this.id;
+            				parameters["projectId"] = this.getParent().getId();
+            				GEPPETTO.MessageSocket.send("upload_model", parameters);
 
-                        return "Sending request to upload results.";
-                    } else {
-                        return "Unable to upload model for an experimet that hasn't been completed";
-                    }
-                } else {
-                    return "Experiment isn't active, make it active before continuing upload";
+            				return "Sending request to upload results.";
+            			} else {
+            				return "Unable to upload model for an experimet that hasn't been completed";
+            			}
+            		} else {
+            			return "Experiment isn't active, make it active before continuing upload";
+            		}
+            	}else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
                 }
             },
 
             uploadResults: function (aspectPath, format) {
-                if (this == window.Project.getActiveExperiment()) {
-                    if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
-                        parameters["format"] = format;
-                        parameters["aspectPath"] = aspectPath;
-                        parameters["experimentId"] = this.id;
-                        parameters["projectId"] = this.getParent().getId();
-                        GEPPETTO.MessageSocket.send("upload_results", parameters);
+                var login = GEPPETTO.UserController.isLogin();
+            	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            	var projectPersisted = this.getParent().persisted;
+            	
+                if(writePermission && projectPersisted && login){
+                	if (this == window.Project.getActiveExperiment()) {
+                		if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                			var parameters =
+                			{};
+                			parameters["format"] = format;
+                			parameters["aspectPath"] = aspectPath;
+                			parameters["experimentId"] = this.id;
+                			parameters["projectId"] = this.getParent().getId();
+                			GEPPETTO.MessageSocket.send("upload_results", parameters);
 
-                        return "Sending request to upload results.";
-                    } else {
-                        return GEPPETTO.Resources.EXPERIMENT_NOT_COMPLETED_UPLOAD;
-                    }
-                } else {
-                    return GEPPETTO.Resources.UNACTIVE_EXPERIMENT_UPLOAD;
+                			return "Sending request to upload results.";
+                		} else {
+                			return GEPPETTO.Resources.EXPERIMENT_NOT_COMPLETED_UPLOAD;
+                		}
+                	} else {
+                		return GEPPETTO.Resources.UNACTIVE_EXPERIMENT_UPLOAD;
+                	}
+                }else{
+                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
                 }
             },
 
@@ -418,4 +522,22 @@ define(function (require) {
             }
 
         });
+    
+    	function persistedAndWriteMessage(projectPersisted, writePermission, login){
+    		var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+    		if(!login){
+    			return message;
+    		}else{
+    			if(!projectPersisted && writePermission){
+    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + PROJECT_NOT_PERSISTED;
+    			}else if(projectPersisted && !writePermission){
+    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + WRITE_PRIVILEGES_NOT_SUPPORTED;
+    			}else if(!projectPersisted && !writePermission){
+    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + 
+    						  PROJECT_NOT_PERSISTED + " and " + WRITE_PRIVILEGES_NOT_SUPPORTED;
+    			}
+    		}
+        	
+        	return message;
+    	} 
 });

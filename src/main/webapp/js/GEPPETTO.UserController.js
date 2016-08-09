@@ -43,10 +43,13 @@ define(function(require)
         {
         	userName : null,
             privileges : null,
+            login : false,
             
             setUserPrivileges : function(userPrivileges){
             	this.userName = userPrivileges.userName;
             	this.privileges = userPrivileges.privileges;
+            	this.login = userPrivileges.login;
+            	GEPPETTO.Console.log("Login " + this.login + " username " + this.userName+ " privileges: " + this.privileges);
             },
             
             getUserPriviliges : function(){
@@ -55,6 +58,10 @@ define(function(require)
             
             getUserName : function(){
             	return this.userName;
+            },
+            
+            isLogin : function(){
+            	return this.login;
             },
             
             hasPermission : function(privilege){

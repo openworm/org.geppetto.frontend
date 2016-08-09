@@ -60,25 +60,29 @@ define(function (require) {
             GEPPETTO.on(Events.Experiment_loaded, function () {
                 var experiment = window.Project.getActiveExperiment();
                 var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                var projectPersisted = this.getParent().persisted;
+                var login = GEPPETTO.UserController.isLogin();
                 
-                if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                    self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
-                }
-                else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                    self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
-                }
-                else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                	if(writePermission){
-                		self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});
-                	}else{
+                if(experiment!=null || undefined){
+                	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                		self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
+                	}
+                	else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
                 		self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
                 	}
-                }
-                else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                	if(writePermission){
-                		self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});
-                	}else{
-                		self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
+                	else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                		if(writePermission && projectPersisted && login){
+                			self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});
+                		}else{
+                			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
+                		}
+                	}
+                	else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                		if(writePermission && projectPersisted && login){
+                			self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});
+                		}else{
+                			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
+                		}
                 	}
                 }
             });

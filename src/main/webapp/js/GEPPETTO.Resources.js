@@ -380,7 +380,9 @@ define(function (require) {
             BATCH_HIGHLIGHT_CONNECTIONS: "Batch highlight connections performed",
             BATCH_SHOW_CONNECTIONS_LINES: "Batch show/hide connection lines performed",
             OPERATION_NOT_SUPPORTED: "Operation not supported: ",
-
+            WRITE_PRIVILEGES_NOT_SUPPORTED : "User doesn't have WRITE privileges",
+            PROJECT_NOT_PERSISTED : "Project not persisted, run command Project.persist() or use Save button on top right corner.",
+            USER_NOT_LOGIN : "User not logged in.",
 
             /**
              * GEPPETTO resources

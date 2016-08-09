@@ -1266,7 +1266,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 */
 	public void getUserPriviledges(String requestID){
 		String userName = this.geppettoManager.getUser().getLogin();
-		String update = "{\"userName\":" + '"' + userName + '"' + ",\"privileges\":[";
+		String update = "{\"userName\":" + '"' + userName + '"' +
+						",\"login\":" + this.geppettoManager.isLogin() + ",\"privileges\":[";
 		List<UserPrivileges> privileges = this.geppettoManager.getUser().getUserGroup().getPrivileges();
 		for(UserPrivileges up : privileges){
 			update = update.concat('"'+up.toString()+'"'+",");

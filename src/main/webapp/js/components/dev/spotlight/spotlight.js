@@ -471,19 +471,7 @@ define(function (require) {
         updateDataSourceResults : function(data_source_name,results){
         	var responses = results.response.docs;
     		responses.forEach(function(response) {
-        		var typeName = response.type;
-        		var obj = {};
-        		obj["label"] = response[GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].label];
-        		obj["id"] = response[GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].id];
-        		//replace $ID$ with one returned from server for actions
-        		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
-        		var newActions = actions.slice(0);
-        		for(var i=0; i < actions.length; i++) {
-        			 newActions[i] = newActions[i].replace('$ID$', obj["id"]);
-        		}
-        		obj["actions"] = newActions;
-        		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
-        		GEPPETTO.Spotlight.dataSourceResults.add(obj);
+        		GEPPETTO.Spotlight.formatDataSourceResult(data_source_name,response);
         	});
     		
 			//If it's an update request to show the drop down menu, this for it to show 
@@ -493,6 +481,68 @@ define(function (require) {
 				$("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
                 $("#typeahead").typeahead('val', value);
 			}
+        },
+        
+        /**
+         * Format incoming data source results into specified format in configuration script
+         */
+        formatDataSourceResult : function(data_source_name,response){
+        	var currentInput = $('#typeahead').val();
+        	
+        	//create searchable result for main label
+    		var labelTerm = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].label.field;
+    		var idTerm = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].id;
+    		var mainLabel = response[labelTerm];
+    		var id = response[idTerm];
+    		var labelFormatting = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].label.formatting;
+    		var formattedLabel = labelFormatting.replace('$VALUE$', mainLabel);
+    		formattedLabel = formattedLabel.replace('$ID$', id);
+    		
+    		GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    		
+    		//create searchable result using id as label
+    		var idsTerm = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_ids.field;    		
+    		var idLabel = response[idsTerm];
+    		labelFormatting = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_ids.formatting;
+    		formattedLabel = labelFormatting.replace('$VALUE$', idLabel);
+    		formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
+    		
+    		GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+
+    		//create searchable results using synonyms as labels
+    		var synonymsTerm = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_synonyms.field;    		
+    		var synonyms = response[synonymsTerm];
+    		if(synonyms!=null || undefined){
+    			for(var i =0; i<synonyms.length; i++){
+    				var synonym = synonyms[i];
+    				labelFormatting = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_synonyms.formatting;
+    				formattedLabel = labelFormatting.replace('$VALUE$', synonym);
+    				formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
+    				formattedLabel = formattedLabel.replace('$ID$', id);
+
+    				GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    			}
+    		}
+        },
+        
+        /**
+         * Creates a searchable result from external data source response
+         */
+        createDataSourceResult : function(data_source_name, response, formattedLabel, id){
+        	var typeName = response.type;
+
+    		var obj = {};
+    		obj["label"] = formattedLabel;
+    		obj["id"] = id;
+    		//replace $ID$ with one returned from server for actions
+    		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+    		var newActions = actions.slice(0);
+    		for(var i=0; i < actions.length; i++) {
+    			 newActions[i] = newActions[i].replace('$ID$', obj["id"]);
+    		}
+    		obj["actions"] = newActions;
+    		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
+    		GEPPETTO.Spotlight.dataSourceResults.add(obj);
         },
         
         addSuggestion: function (suggestion, flow) {

@@ -47,9 +47,11 @@ define(function(require)
             
             setUserPrivileges : function(userPrivileges){
             	this.userName = userPrivileges.userName;
-            	this.privileges = userPrivileges.privileges;
             	this.login = userPrivileges.login;
-            	GEPPETTO.Console.log("Login " + this.login + " username " + this.userName+ " privileges: " + this.privileges);
+            	
+            	this.privileges = $.map(userPrivileges.privileges, function(value, index) {
+            	    return [value];
+            	});
             },
             
             getUserPriviliges : function(){

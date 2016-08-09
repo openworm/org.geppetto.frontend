@@ -280,10 +280,17 @@ define(function (require) {
         activeExperiment : function(e){
         	var experiment = this.props.experiment;
         	var index = window.Project.getExperiments().indexOf(experiment);
-            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
             GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();
+            
+            var login = GEPPETTO.UserController.isLogin();
+            if(login){
+                GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+            }else{
+        		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, 
+        				GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN);
+            }
         },
         
         deleteExperiment : function(e){

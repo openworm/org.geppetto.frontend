@@ -378,6 +378,7 @@ define(['jquery', 'underscore', 'backbone',
 			}
 		}
     	
+		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, message);
     	return message;
 	} 
 });

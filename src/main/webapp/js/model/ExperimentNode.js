@@ -538,6 +538,8 @@ define(function (require) {
     			}
     		}
         	
+    		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, message);
+    		
         	return message;
     	} 
 });

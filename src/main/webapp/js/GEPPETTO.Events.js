@@ -97,7 +97,10 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });
                 GEPPETTO.on(Events.Experiment_loaded, function () {
-                    GEPPETTO.trigger("hide:spinner");
+                    var login = GEPPETTO.UserController.isLogin();
+                    if(login){
+                    	GEPPETTO.trigger("hide:spinner");
+                    }
                 });
                 GEPPETTO.on(Events.Project_loaded, function () {
                     GEPPETTO.trigger(Events.Check_user_privileges);

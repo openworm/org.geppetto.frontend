@@ -73,11 +73,10 @@ define([
 
             this.mainView = new this.mainContent(this.mainContentOptions);
 
-            this.footerView = new this.footerContent(this.footerContentOptions);
 
             this.headerView.render();
             this.mainView.render();
-            this.footerView.render();
+
             return this;
         }
 

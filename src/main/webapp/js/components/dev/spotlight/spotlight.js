@@ -500,27 +500,34 @@ define(function (require) {
     		
     		GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
     		
-    		//create searchable result using id as label
-    		var idsTerm = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_ids.field;    		
-    		var idLabel = response[idsTerm];
-    		labelFormatting = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_ids.formatting;
-    		formattedLabel = labelFormatting.replace('$VALUE$', idLabel);
-    		formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
-    		
-    		GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    		var explodeFields = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_fields;
+    		for(var i =0; i<explodeFields.length; i++){
+    			//create searchable result using id as label
+    			var idsTerm = explodeFields[i].field;    		
+    			var idLabel = response[idsTerm];
+    			labelFormatting = explodeFields[i].formatting;
+    			formattedLabel = labelFormatting.replace('$VALUE$', idLabel);
+    			formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
 
-    		//create searchable results using synonyms as labels
-    		var synonymsTerm = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_synonyms.field;    		
-    		var synonyms = response[synonymsTerm];
-    		if(synonyms!=null || undefined){
-    			for(var i =0; i<synonyms.length; i++){
-    				var synonym = synonyms[i];
-    				labelFormatting = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_synonyms.formatting;
-    				formattedLabel = labelFormatting.replace('$VALUE$', synonym);
-    				formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
-    				formattedLabel = formattedLabel.replace('$ID$', id);
+    			GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    		}
 
-    				GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    		var explodeArrays = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_arrays;
+
+    		for(var i =0; i<explodeArrays.length; i++){
+    			labelFormatting = explodeArrays[i].formatting;
+    			//create searchable results using synonyms as labels
+    			var searchTerm = explodeArrays[i].field;    		
+    			var results = response[searchTerm];
+    			if(results!=null || undefined){
+    				for(var i =0; i<results.length; i++){
+    					var result = results[i];
+    					formattedLabel = labelFormatting.replace('$VALUE$', result);
+    					formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
+    					formattedLabel = formattedLabel.replace('$ID$', id);
+
+    					GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    				}
     			}
     		}
         },
@@ -538,7 +545,7 @@ define(function (require) {
     		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
     		var newActions = actions.slice(0);
     		for(var i=0; i < actions.length; i++) {
-    			 newActions[i] = newActions[i].replace('$ID$', obj["id"]);
+    			 newActions[i] = newActions[i].replace(/\$\ID\$/g, obj["id"]);
     		}
     		obj["actions"] = newActions;
     		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;

@@ -60,7 +60,7 @@ define(function (require) {
             GEPPETTO.on(Events.Experiment_loaded, function () {
                 var experiment = window.Project.getActiveExperiment();
                 var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-                var projectPersisted = this.getParent().persisted;
+                var projectPersisted = experiment.getParent().persisted;
                 var login = GEPPETTO.UserController.isLogin();
                 
                 if(experiment!=null || undefined){
@@ -118,6 +118,13 @@ define(function (require) {
 
             GEPPETTO.on(Events.Experiment_stop, function () {
                 self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
+            });
+            
+            GEPPETTO.on(Events.Experiment_deleted, function () {
+            	var experiment = window.Project.getActiveExperiment();
+            	if(experiment ==null || undefined){
+            		self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
+            	}
             });
 
             GEPPETTO.on('disable_all', function () {

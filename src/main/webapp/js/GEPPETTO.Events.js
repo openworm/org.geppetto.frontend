@@ -85,13 +85,19 @@ define(function (require) {
                 GEPPETTO.on(Events.Model_loaded, function () {
                     G.resetCamera();
                 });
-                GEPPETTO.on(Events.Check_user_privileges, function () {
-                	GEPPETTO.MessageSocket.send("user_privileges");
-                });
                 GEPPETTO.on(Events.Check_project_persisted, function (id) {
                 	var parameters = {};
                     parameters["projectId"] = id;
                 	GEPPETTO.MessageSocket.send("project_persistence_state", parameters);
+                });
+                GEPPETTO.on(Events.Experiment_deleted, function (experiment) {
+                	//reset active experiment if it was the one that was deleted
+                	var activeExperiment = window.Project.getActiveExperiment();
+                	if(activeExperiment!=null || undefined){
+                		if(activeExperiment.getId()==experiment.getId()){
+                			window.Project.activeExperiment = null;
+                		}
+                	}
                 });
                 GEPPETTO.on(Events.Experiment_active, function () {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
@@ -102,9 +108,7 @@ define(function (require) {
                     	GEPPETTO.trigger("hide:spinner");
                     }
                 });
-                GEPPETTO.on(Events.Project_loaded, function () {
-                    GEPPETTO.trigger(Events.Check_user_privileges);
-                    
+                GEPPETTO.on(Events.Project_loaded, function () {                    
                     var projectID = window.Project.getId();
                     GEPPETTO.trigger(Events.Check_project_persisted,projectID);
                     

@@ -529,12 +529,15 @@ define(function (require) {
     			return message;
     		}else{
     			if(!projectPersisted && writePermission){
-    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + PROJECT_NOT_PERSISTED;
+    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
+    							+ GEPPETTO.Resources.PROJECT_NOT_PERSISTED;
     			}else if(projectPersisted && !writePermission){
-    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + WRITE_PRIVILEGES_NOT_SUPPORTED;
+    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
+    							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
     			}else if(!projectPersisted && !writePermission){
     				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + 
-    						  PROJECT_NOT_PERSISTED + " and " + WRITE_PRIVILEGES_NOT_SUPPORTED;
+    							GEPPETTO.Resources.PROJECT_NOT_PERSISTED + " and " 
+    							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
     			}
     		}
         	

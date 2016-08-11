@@ -63,11 +63,17 @@ define(function (require) {
                 rowClasses += " nthTr";
             }
 
-            //set editable name field if experiment in design ode
-            var editable = false;
-            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
-            		this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                editable = true;
+            var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            var projectPersisted = this.props.experiment.getParent().persisted;
+            var login = GEPPETTO.UserController.isLogin();
+            
+            if(!writePermission || !projectPersisted || !login){
+            	editable = false;
+            }else{
+            	if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
+                		this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                    editable = true;
+                }
             }
 
             return (
@@ -197,9 +203,18 @@ define(function (require) {
         },
         render: function () {
             var editable = false;
-            if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
-            		this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                editable = true;
+            
+            var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            var projectPersisted = this.props.experiment.getParent().persisted;
+            var login = GEPPETTO.UserController.isLogin();
+            
+            if(!writePermission || !projectPersisted || !login){
+            	editable = false;
+            }else{
+            	if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
+            			this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+            		editable = true;
+            	}
             }
 
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
@@ -266,15 +281,20 @@ define(function (require) {
      */
     var IconsElement = React.createClass({
         getInitialState: function () {
-            return {visible: false};
+            return {
+            	rowVisible: false,
+            	cloneIconVisible : true,
+            	deleteIconVisible: true,
+            	activeIconVisible : true
+            };
         },
 
         show: function () {
-            this.setState({visible: true});
+            this.setState({rowVisible: true});
         },
 
         hide: function () {
-            this.setState({visible: false});
+            this.setState({rowVisible: false});
         },
 
         activeExperiment : function(e){
@@ -336,6 +356,22 @@ define(function (require) {
         	//hide download icons 
         	$(".downloadModelsIcon").hide();
             $(".downloadResultsIcon").hide();
+        	var self = this;
+
+        	var experiment = self.props.experiment;  
+        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+        	var projectPersisted = experiment.getParent().persisted;
+        	var login = GEPPETTO.UserController.isLogin();
+
+        	var deleteVisible = true;
+        	var cloneVisible = true;
+
+        	if(!writePermission || !projectPersisted){
+        		deleteVisible = false;
+        		cloneVisible = false;
+        	}
+
+        	self.setState({activeIconVisible:login, deleteIconVisible : deleteVisible, cloneIconVisible: cloneVisible});
         },
         
         render: function () {
@@ -348,12 +384,12 @@ define(function (require) {
             var cloneIconId = "cloneIcon-" + this.props.experiment.getId();
 
             return (
-                <div onlick="event.cancelBubble=true;" className={(this.state.visible ? "visible " : "")+'iconsDiv'}>
-                    <a className='activeIcon' onClick={this.activeExperiment}
+                <div onlick="event.cancelBubble=true;" className={(this.state.rowVisible ? "visible " : "")+'iconsDiv'}>
+                    <a className={(this.state.activeIconVisible ? "enabled " : "hide ")+'activeIcon'} onClick={this.activeExperiment}
                        experimentId={this.props.experiment.getId()} id={activeIconId}>
                         <i className='fa fa-check-circle fa-lg' rel='tooltip' title='Activate experiment'></i>
                     </a>
-                    <a className='deleteIcon' onClick={this.deleteExperiment}
+                    <a className={(this.state.deleteIconVisible ? "enabled " : "hide ")+'deleteIcon'} onClick={this.deleteExperiment}
                        experimentId={this.props.experiment.getId()} id={deleteIconId}>
                         <i className='fa fa-remove fa-lg' rel='tooltip' title='Delete Experiment'></i>
                     </a>
@@ -363,7 +399,8 @@ define(function (require) {
                     <a className='downloadModelsIcon' onClick={this.downloadModels} experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
                         <i className='fa fa-cloud-download fa-lg' rel='tooltip' title='Download Models'></i>
                     </a>
-                    <a className='cloneIcon' onClick={this.cloneExperiment} experimentId={this.props.experiment.getId()} id={cloneIconId}>
+                    <a className={(this.state.cloneIconVisible ? "enabled " : "hide ")+'cloneIcon'} onClick={this.cloneExperiment} 
+                    	experimentId={this.props.experiment.getId()} id={cloneIconId}>
                      <i className='fa fa-clone fa-lg' rel='tooltip' title='Clone Experiment'></i>
                  </a>
                 </div>);
@@ -373,12 +410,10 @@ define(function (require) {
     /**
      * Creates a table html component used to dipslay the experiments
      */
-    var ExperimentsTable = React.createClass({
-
+    var ExperimentsTable = React.createClass({        
         componentDidMount: function () {
-            var self = this;
-
-            // Handles new experiment button click
+        	var self = this;
+        	// Handles new experiment button click
             $("#new_experiment").click(function () {
             	//retrieve last created experimet and used it to clone new one
             	var experiments = window.Project.getExperiments();
@@ -581,6 +616,7 @@ define(function (require) {
         },
 
         populate: function () {
+        	var self = this;
             var experiments = window.Project.getExperiments();
             var rows = [];
 
@@ -591,14 +627,28 @@ define(function (require) {
                 index++;
             }
             
-            this.state.counter = rows.length;
+            self.state.counter = rows.length;
 
-            this.setState({experiments: rows});
+            self.setState({experiments: rows});
+
+        	var experiment = experiments[0];
+    		var projectPersisted = false;
+
+    		var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+    		var login = GEPPETTO.UserController.isLogin();
+
+    		if(experiment!=null || undefined){
+    			projectPersisted = experiment.getParent().persisted;
+    		}
+
+    		if(!writePermission || !projectPersisted || !login){
+    			self.setState({newExperimentIconVisible: false});
+    		}
         },
 
         getInitialState: function () {
             var tabledata = [];
-            return {experiments: tabledata, counter: 1};
+            return {experiments: tabledata, counter: 1,newExperimentIconVisible: true};
         },
 
         onClick: function (rowID, e) {
@@ -634,7 +684,7 @@ define(function (require) {
                             <th className="tableHeader">Name</th>
                             <th className="tableHeader">Date</th>
                             <th className="tableHeader">
-                                <div className="new_experiment" id="new_experiment" tile="New experiment">
+                                <div className={(this.state.newExperimentIconVisible ? "visible " : "hide ")+"new_experiment"} id="new_experiment" tile="New experiment">
                                     <i className='new_experiment_icon fa fa-plus fa-lg'></i>
                                 </div>
                             </th>

@@ -121,6 +121,9 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		messageSender = messageSenderFactory.getMessageSender(getWsOutbound(), this);
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
+		
+		//User permissions are sent when socket is open
+		this.connectionHandler.checkUserPriviledges(null);
 	}
 
 	@Override
@@ -187,7 +190,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			}
 			case USER_PRIVILEGES:
 			{
-				connectionHandler.getUserPriviledges(requestID);
+				connectionHandler.checkUserPriviledges(requestID);
 				break;
 			}
 			case PROJECT_PERSISTENCE_STATE:

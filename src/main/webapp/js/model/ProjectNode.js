@@ -92,7 +92,7 @@ define(['jquery', 'underscore', 'backbone',
         setName: function (newname) {
         	var login = GEPPETTO.UserController.isLogin();
         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-        	var projectPersisted = this.getParent().persisted;
+        	var projectPersisted = this.persisted;
 
         	if(writePermission && projectPersisted && login){
                 this.saveProjectProperties({"name": newname});
@@ -196,7 +196,7 @@ define(['jquery', 'underscore', 'backbone',
         newExperiment: function () {
         	var login = GEPPETTO.UserController.isLogin();
         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-        	var projectPersisted = this.getParent().persisted;
+        	var projectPersisted = this.persisted;
 
         	if(writePermission && projectPersisted && login){
                 var parameters = {};
@@ -310,7 +310,7 @@ define(['jquery', 'underscore', 'backbone',
         saveProjectProperties: function (properties) {
         	var login = GEPPETTO.UserController.isLogin();
         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-        	var projectPersisted = this.getParent().persisted;
+        	var projectPersisted = this.persisted;
 
         	if(writePermission && projectPersisted && login){
         		var parameters = {};
@@ -369,12 +369,15 @@ define(['jquery', 'underscore', 'backbone',
 			return message;
 		}else{
 			if(!projectPersisted && writePermission){
-				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + PROJECT_NOT_PERSISTED;
+				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
+							+ GEPPETTO.Resources.PROJECT_NOT_PERSISTED;
 			}else if(projectPersisted && !writePermission){
-				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + WRITE_PRIVILEGES_NOT_SUPPORTED;
+				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
+							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
 			}else if(!projectPersisted && !writePermission){
 				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + 
-						  PROJECT_NOT_PERSISTED + " and " + WRITE_PRIVILEGES_NOT_SUPPORTED;
+							GEPPETTO.Resources.PROJECT_NOT_PERSISTED + " and " 
+							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
 			}
 		}
     	

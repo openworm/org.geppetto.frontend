@@ -42,8 +42,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -1261,10 +1259,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	}
 
 	/**
-	 * Sends back the client login user privileges
+	 * Sends to the client login user privileges
 	 * @param requestID
 	 */
-	public void getUserPriviledges(String requestID){
+	public void checkUserPriviledges(String requestID){
 		String userName = this.geppettoManager.getUser().getLogin();
 		String update = "{\"userName\":" + '"' + userName + '"' +
 						",\"login\":" + this.geppettoManager.isLogin() + ",\"privileges\":[";

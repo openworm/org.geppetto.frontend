@@ -70,6 +70,7 @@ define(function (require) {
         messageHandler[messageTypes.USER_PRIVILEGES] = function (payload) {
         	var user_privileges = JSON.parse(payload.user_privileges);
         	GEPPETTO.UserController.setUserPrivileges(user_privileges);
+        	//GEPPETTO.trigger(Events.Check_user_privileges);
         };
 
         // clear canvas, used when loading a new model or re-loading previous

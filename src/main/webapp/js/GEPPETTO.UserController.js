@@ -68,7 +68,7 @@ define(function(require)
             
             hasPermission : function(privilege){
             	if(this.privileges!=null || undefined){
-            		if(this.privileges.contains(privilege)){
+            		if(this.privileges.indexOf(privilege)>-1){
             			return true;
             		}
             	}

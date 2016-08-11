@@ -66,6 +66,7 @@ define(function (require) {
             }
         },
 
+
         initialize: function (options) {
             this.options = options;
 
@@ -259,7 +260,7 @@ define(function (require) {
 
 
         createNode: function (id, type) {
-            if (!(id in this.mapping)) {
+           if (!(id in this.mapping)) {
                 var nodeItem = {
                     id: id,
                     type: type,
@@ -289,9 +290,87 @@ define(function (require) {
          * @param {Object} options - options to modify the plot widget
          */
         setOptions: function (options) {
+            function strToFunc(body){
+                return new Function('x', 'return ' + body + ';');
+            }
             if (options != null) {
+                if(typeof options.linkType === 'string')
+                    options.linkType = strToFunc(options.linkType);
+                if(typeof options.nodeType === 'string')
+                    options.nodeType = strToFunc(options.nodeType);
+                if(typeof options.linkWeight === 'string')
+                    options.linkWeight = strToFunc(options.linkWeight);
                 $.extend(this.options, options);
             }
         },
+
+        createLayoutSelector: function() {
+
+            function imgPath(path){
+                return 'geppetto/js/widgets/connectivity/images/' + path;
+            };
+
+            var layoutOptions = [
+                {id: "matrix", label: 'adjacency matrix', description:
+                    "A coloured square at row 𝒊, column 𝒋 represents a " +
+                    "directed connection from node 𝒋 to node 𝒊.",
+                    img: imgPath('matrix.svg')},
+                {id: "force", label: 'force-directed layout', description:
+                    "Draw circles for nodes, lines for connections, disregarding " +
+                    "spatial information.",
+                    img: imgPath('force.svg')},
+                {id: "hive",  label: 'hive plot', description:
+                    "Axes correspond to node categories, arcs to connections." +
+                    "The position of each node along an axis is determined by " +
+                    "the total number of connections it makes.",
+                    img: imgPath('hive.svg')},
+                {id: "chord", label:'chord diagram', description:
+                    "Circular slices correspond to node categories, chords to " +
+                    "connections. A gap between slice and chord indicate an " +
+                    "incoming connection. Use ctrl(shift) + mouse hover to " +
+                    "hide incoming(outgoing) connections from a population.",
+                    img: imgPath('chord.svg')}
+            ];
+            var container = $('<div>').addClass('card-deck-wrapper');
+            var deck = $('<div>').addClass('card-deck').appendTo(container);
+
+            function createCard(cardData){
+                return $('<div>', {class: 'card', id: cardData.id})
+                        .append($('<img>', {
+                            class: 'card-img-top center-block',
+                            src: cardData.img,
+                        }))
+                        .append($('<h4>', {
+                            class: 'card-title',
+                            text: cardData.label
+                        }))
+                        .append($('<p>', {
+                            class: 'card-text',
+                            text: cardData.description
+                        }));
+            }
+
+            for(layout in layoutOptions){
+                deck.append(createCard(layoutOptions[layout]));
+            }
+
+            return container;
+        },
+
+        configViaGUI : function() {
+            var that = this;
+            var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setAutoHeight().setAutoWidth();
+            popup.showTitleBar(false);
+            popup.$('.card').on('click', function(event) {
+                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
+                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
+                function synapseFromConnection(conn) {
+                    return GEPPETTO.ModelFactory.getAllVariablesOfType(
+                            conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId();
+                }
+                that.setData(netInstances[0], {layout: this.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
+                popup.destroy();
+            });
+        }
     });
 });

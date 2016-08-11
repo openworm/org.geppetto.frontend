@@ -342,15 +342,31 @@ define(['jquery', 'underscore', 'backbone',
          * * @param {String} name - File format to download
          */
         downloadModel : function(path, format) {
-            var parameters = {};
-            parameters["experimentId"] = this.getActiveExperiment().getId();
-            parameters["projectId"] = this.getId();
-            parameters["instancePath"] = path;
-            parameters["format"] = format;
-            GEPPETTO.MessageSocket.send("download_model", parameters);
+            var login = GEPPETTO.UserController.isLogin();
+            var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
+            
+            if(downloadPermission && login){
+                var parameters = {};
+                parameters["experimentId"] = this.getActiveExperiment().getId();
+                parameters["projectId"] = this.getId();
+                parameters["instancePath"] = path;
+                parameters["format"] = format;
+                GEPPETTO.MessageSocket.send("download_model", parameters);
 
-            var formatMessage = (format=="")?"default format":format;
-            return GEPPETTO.Resources.DOWNLOADING_MODEL + formatMessage;
+                var formatMessage = (format=="")?"default format":format;
+                return GEPPETTO.Resources.DOWNLOADING_MODEL + formatMessage;
+            }else{
+            	var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+        		if(!login){
+        			return message;
+        		}else{
+        			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.DOWNLOAD_PRIVILEGES_NOT_SUPPORTED;
+        		}
+            	
+        		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, message);
+        		
+            	return message;
+            }
         },
 
         /**
@@ -364,9 +380,9 @@ define(['jquery', 'underscore', 'backbone',
     });
     
 	function persistedAndWriteMessage(projectPersisted, writePermission, login){
-		var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+		var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
 		if(!login){
-			return message;
+			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
 		}else{
 			if(!projectPersisted && writePermission){
 				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
@@ -380,8 +396,7 @@ define(['jquery', 'underscore', 'backbone',
 							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
 			}
 		}
-    	
-		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, message);
+    	    		
     	return message;
 	} 
 });

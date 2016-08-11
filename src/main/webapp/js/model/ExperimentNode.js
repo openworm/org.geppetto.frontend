@@ -221,8 +221,9 @@ define(function (require) {
                 var projectPersisted = this.getParent().persisted;
                 var activeExperimentId = window.Project.getActiveExperiment().getId();
                 var login = GEPPETTO.UserController.isLogin();
+                var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
 
-                if(writePermission && projectPersisted && login){
+                if(writePermission && projectPersisted && login && runPermission){
                 	if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
                 		    this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) 
                 		    && activeExperimentId == this.id){
@@ -235,7 +236,11 @@ define(function (require) {
 	                    GEPPETTO.MessageSocket.send("run_experiment", parameters);
                 	}
                 }else{
-                	return persistedAndWriteMessage(projectPersisted, writePermission, login);
+                	var message = persistedAndWriteMessage(projectPersisted, writePermission, login);
+                	if(!runPermission){
+                		message = message + " and " + GEPPETTO.Resources.RUN_PRIVILEGES_NOT_SUPPORTED;
+                	}
+                	return message;
                 }
             },
 
@@ -396,22 +401,36 @@ define(function (require) {
              * @command ExperimentNode.downloadResults(recording)
              */
             downloadResults: function (aspectPath, format) {
-                if (this == window.Project.getActiveExperiment()) {
-                    if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
-                        parameters["format"] = format;
-                        parameters["aspectPath"] = aspectPath;
-                        parameters["experimentId"] = this.id;
-                        parameters["projectId"] = this.getParent().getId();
-                        GEPPETTO.MessageSocket.send("download_results", parameters);
+            	var login = GEPPETTO.UserController.isLogin();
+                var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
+                
+                if(downloadPermission && login){
+                	 if (this == window.Project.getActiveExperiment()) {
+                         if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                             var parameters =
+                             {};
+                             parameters["format"] = format;
+                             parameters["aspectPath"] = aspectPath;
+                             parameters["experimentId"] = this.id;
+                             parameters["projectId"] = this.getParent().getId();
+                             GEPPETTO.MessageSocket.send("download_results", parameters);
 
-                        return "Sending request to download results.";
-                    } else {
-                        return "Experiment must be completed before attempting to download results";
-                    }
-                } else {
-                    return "Experiment must be set to active before requesting results";
+                             return "Sending request to download results.";
+                         } else {
+                             return "Experiment must be completed before attempting to download results";
+                         }
+                     } else {
+                         return "Experiment must be set to active before requesting results";
+                     }
+                }else{
+                	var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+            		if(!login){
+            			return message;
+            		}else{
+            			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.DOWNLOAD_PRIVILEGES_NOT_SUPPORTED;
+            		}
+                	            		
+                	return message;
                 }
             },
 
@@ -524,9 +543,9 @@ define(function (require) {
         });
     
     	function persistedAndWriteMessage(projectPersisted, writePermission, login){
-    		var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+    		var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
     		if(!login){
-    			return message;
+    			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
     		}else{
     			if(!projectPersisted && writePermission){
     				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
@@ -540,9 +559,7 @@ define(function (require) {
     							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
     			}
     		}
-        	
-    		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, message);
-    		
+        	    		
         	return message;
     	} 
 });

@@ -567,6 +567,12 @@ define(function (require) {
                         window.Project.getExperiments().splice(index, 1);
                     }
                 }
+                var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==experiment.getId()){
+            			window.Project.activeExperiment = null;
+            		}
+            	}
                 GEPPETTO.trigger(Events.Experiment_deleted, experiment);
             }
         };

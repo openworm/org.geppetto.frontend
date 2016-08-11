@@ -90,15 +90,6 @@ define(function (require) {
                     parameters["projectId"] = id;
                 	GEPPETTO.MessageSocket.send("project_persistence_state", parameters);
                 });
-                GEPPETTO.on(Events.Experiment_deleted, function (experiment) {
-                	//reset active experiment if it was the one that was deleted
-                	var activeExperiment = window.Project.getActiveExperiment();
-                	if(activeExperiment!=null || undefined){
-                		if(activeExperiment.getId()==experiment.getId()){
-                			window.Project.activeExperiment = null;
-                		}
-                	}
-                });
                 GEPPETTO.on(Events.Experiment_active, function () {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });

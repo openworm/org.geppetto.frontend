@@ -381,6 +381,9 @@ define(function (require) {
             BATCH_SHOW_CONNECTIONS_LINES: "Batch show/hide connection lines performed",
             OPERATION_NOT_SUPPORTED: "Operation not supported: ",
             WRITE_PRIVILEGES_NOT_SUPPORTED : "User doesn't have WRITE privileges",
+            DOWNLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have DOWNLOAD privileges",
+            RUN_PRIVILEGES_NOT_SUPPORTED : "User doesn't have RUN_EXPERIMENT privileges",
+            UPLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have UPLOAD privileges",
             PROJECT_NOT_PERSISTED : "Project not persisted, run command Project.persist() or use Save button on top right corner.",
             USER_NOT_LOGIN : "User not logged in.",
 

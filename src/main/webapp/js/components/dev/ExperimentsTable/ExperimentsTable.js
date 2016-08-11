@@ -527,10 +527,15 @@ define(function (require) {
             $(".downloadModelsIcon").hide();
             $(".downloadResultsIcon").hide();
 
-            $("#activeIcon-" + experiment.getId()).hide();
-            $("#downloadModelsIcon-" + experiment.getId()).show();
-            if (experiment.getStatus() == "COMPLETED") {
-                $("#downloadResultsIcon-" + experiment.getId()).show();
+            $("#activeIcon-" + experiment.getId()).hide();        	
+            
+            var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
+            
+            if(downloadPermission){
+            	$("#downloadModelsIcon-" + experiment.getId()).show();
+            	if (experiment.getStatus() == "COMPLETED") {
+            		$("#downloadResultsIcon-" + experiment.getId()).show();
+            	}
             }
 
             // loop through each row of experiments table
@@ -566,7 +571,10 @@ define(function (require) {
                             tdStatus.attr("title", "COMPLETED");
                             if(active!=null){
                             	if(active.getId() == experiment.getId()){
-                            		$("#downloadResultsIcon-" + experiment.getId()).show();
+                                    var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
+                            		if(downloadPermission){
+                                		$("#downloadResultsIcon-" + experiment.getId()).show();
+                                    }
                             	}
                             }
                             var editableFields = $(this).find(".configurationTD");

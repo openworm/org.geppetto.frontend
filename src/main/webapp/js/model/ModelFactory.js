@@ -2387,6 +2387,7 @@ define(function (require) {
              * @param instance
              */
             deleteInstance: function (instance) {
+                var instancePath = instance.getPath();
                 var removeMatchingInstanceFromArray = function (instanceArray, instance) {
                     var index = null;
                     for (var i = 0; i < instanceArray.length; i++) {
@@ -2429,6 +2430,8 @@ define(function (require) {
 
                 // refresh UI components to reflect updated state of model / instances
                 GEPPETTO.FE.refresh();
+
+                GEPPETTO.trigger(Events.Instance_deleted, instancePath);
             },
 
             /**

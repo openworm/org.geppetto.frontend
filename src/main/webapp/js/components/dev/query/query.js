@@ -959,7 +959,7 @@ define(function (require) {
                 for (var i = 0; i < matchingQueries.length; i++) {
                     queryItem.options.push({
                             id: matchingQueries[i].getId(),
-                            name: matchingQueries[i].getName(),
+                            name: matchingQueries[i].getLabel(),
                             datasource: matchingQueries[i].getParent().getId(),
                             value: i
                         }

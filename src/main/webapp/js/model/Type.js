@@ -161,10 +161,10 @@ define(function (require) {
             match = true;
         } else {
             // recurse on parents and figure out if there is a type in the inheritance chain
-            var superTypes = this.superType;
+            var superTypes = type.superType;
 
             for(var i=0; i<superTypes.length; i++) {
-                match = superTypes[i].typeOf(type);
+                match = this.typeOf(superTypes[i]);
                 if(match){
                     break;
                 }
@@ -173,7 +173,7 @@ define(function (require) {
 
         return match;
     };
-
+    
     return Type;
 })
 ;

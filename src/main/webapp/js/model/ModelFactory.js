@@ -1775,23 +1775,25 @@ define(function (require) {
 
                 // set matching criteria
                 var matchingCriteriaRefs = node.matchingCriteria;
-                for(var i=0; i<matchingCriteriaRefs.length; i++){
-                    // get type ref
-                    var typeRefs = matchingCriteriaRefs[i].type;
-                    var typesCriteria = [];
-                    for(var j=0; j<typeRefs.length; j++)
-                    {
-                        // resolve type ref
-                        var ref = typeRefs[j].$ref;
-                        var type = this.resolve(ref);
-
-                        // push to q.matchingCriteria
-                        if(type instanceof Type) {
-                            typesCriteria.push(type);
-                        }
-                    }
-
-                    q.matchingCriteria.push(typesCriteria);
+                if(node.matchingCriteria!=undefined){
+	                for(var i=0; i<matchingCriteriaRefs.length; i++){
+	                    // get type ref
+	                    var typeRefs = matchingCriteriaRefs[i].type;
+	                    var typesCriteria = [];
+	                    for(var j=0; j<typeRefs.length; j++)
+	                    {
+	                        // resolve type ref
+	                        var ref = typeRefs[j].$ref;
+	                        var type = this.resolve(ref);
+	
+	                        // push to q.matchingCriteria
+	                        if(type instanceof Type) {
+	                            typesCriteria.push(type);
+	                        }
+	                    }
+	
+	                    q.matchingCriteria.push(typesCriteria);
+	                }
                 }
 
                 return q;

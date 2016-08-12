@@ -631,13 +631,13 @@ define(function (require) {
                     clearTimeout(this.searchTimeOut);
                 }
                 this.searchTimeOut = setTimeout(function () {
-                    for (var key in GEPPETTO.QueryBuilder.configuration.DataSources) {
-                        if (GEPPETTO.QueryBuilder.configuration.DataSources.hasOwnProperty(key)) {
-                            var dataSource = GEPPETTO.QueryBuilder.configuration.DataSources[key];
+                    for (var key in this.configuration.DataSources) {
+                        if (this.configuration.DataSources.hasOwnProperty(key)) {
+                            var dataSource = this.configuration.DataSources[key];
                             var searchQuery = $("#query-typeahead").val();
                             var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
-                            GEPPETTO.QueryBuilder.updateResults = true;
-                            GEPPETTO.QueryBuilder.requestDataSourceResults(key, url, dataSource.crossDomain);
+                            this.updateResults = true;
+                            this.requestDataSourceResults(key, url, dataSource.crossDomain);
                         }
                     }
                 }, 150);
@@ -734,7 +734,7 @@ define(function (require) {
                     dataType: 'text',
                     url: data_source_url,
                     success: function (responseData, textStatus, jqXHR) {
-                        GEPPETTO.QueryBuilder.updateDataSourceResults(data_source_name, JSON.parse(responseData));
+                        this.updateDataSourceResults(data_source_name, JSON.parse(responseData));
                     },
                     error: function (responseData, textStatus, errorThrown) {
                         throw ("Error retrieving data sources " + data_source_name + "  from " + data_source_url);
@@ -754,18 +754,18 @@ define(function (require) {
             responses.forEach(function(response) {
                 var typeName = response.type;
                 var obj = {};
-                obj["label"] = response[GEPPETTO.QueryBuilder.configuration.DataSources[data_source_name].label];
-                obj["id"] = response[GEPPETTO.QueryBuilder.configuration.DataSources[data_source_name].id];
+                obj["label"] = response[this.configuration.DataSources[data_source_name].label];
+                obj["id"] = response[this.configuration.DataSources[data_source_name].id];
                 //replace $ID$ with one returned from server for actions
-                var actions = GEPPETTO.QueryBuilder.configuration.DataSources[data_source_name].type[typeName].actions;
+                var actions = this.configuration.DataSources[data_source_name].type[typeName].actions;
                 var newActions = actions.slice(0);
                 for(var i=0; i < actions.length; i++) {
                     newActions[i] = newActions[i].replace(/\$ID\$/gi, obj["id"]);
                     newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
                 }
                 obj["actions"] = newActions;
-                obj["icon"] = GEPPETTO.QueryBuilder.configuration.DataSources[data_source_name].type[typeName].icon;
-                GEPPETTO.QueryBuilder.dataSourceResults.add(obj);
+                obj["icon"] = this.configuration.DataSources[data_source_name].type[typeName].icon;
+                this.dataSourceResults.add(obj);
             });
 
             //If it's an update request to show the drop down menu, this for it to show
@@ -775,6 +775,75 @@ define(function (require) {
                 $("#query-typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
                 $("#query-typeahead").typeahead('val', value);
             }
+        },
+
+        /**
+         * Format incoming data source results into specified format in configuration script
+         */
+        formatDataSourceResult : function(data_source_name,response){
+            var currentInput = $('#query-typeahead').val();
+
+            //create searchable result for main label
+            var labelTerm = this.configuration.DataSources[data_source_name].label.field;
+            var idTerm = this.configuration.DataSources[data_source_name].id;
+            var mainLabel = response[labelTerm];
+            var id = response[idTerm];
+            var labelFormatting = this.configuration.DataSources[data_source_name].label.formatting;
+            var formattedLabel = labelFormatting.replace('$VALUE$', mainLabel);
+            formattedLabel = formattedLabel.replace('$ID$', id);
+
+            thisr.createDataSourceResult(data_source_name, response, formattedLabel, id);
+
+            var explodeFields = this.configuration.DataSources[data_source_name].explode_fields;
+            for(var i =0; i<explodeFields.length; i++){
+                //create searchable result using id as label
+                var idsTerm = explodeFields[i].field;
+                var idLabel = response[idsTerm];
+                labelFormatting = explodeFields[i].formatting;
+                formattedLabel = labelFormatting.replace('$VALUE$', idLabel);
+                formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
+
+                this.createDataSourceResult(data_source_name, response, formattedLabel, id);
+            }
+
+            var explodeArrays = this.configuration.DataSources[data_source_name].explode_arrays;
+            for(var i =0; i<explodeArrays.length; i++){
+                labelFormatting = explodeArrays[i].formatting;
+                //create searchable results using synonyms as labels
+                var searchTerm = explodeArrays[i].field;
+                var results = response[searchTerm];
+                if(results!=null || undefined){
+                    for(var i =0; i<results.length; i++){
+                        var result = results[i];
+                        formattedLabel = labelFormatting.replace('$VALUE$', result);
+                        formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
+                        formattedLabel = formattedLabel.replace('$ID$', id);
+
+                        this.createDataSourceResult(data_source_name, response, formattedLabel, id);
+                    }
+                }
+            }
+        },
+
+        /**
+         * Creates a searchable result from external data source response
+         */
+        createDataSourceResult : function(data_source_name, response, formattedLabel, id){
+            var typeName = response.type;
+
+            var obj = {};
+            obj["label"] = formattedLabel;
+            obj["id"] = id;
+            //replace $ID$ with one returned from server for actions
+            var actions = this.configuration.DataSources[data_source_name].type[typeName].actions;
+            var newActions = actions.slice(0);
+            for(var i=0; i < actions.length; i++) {
+                newActions[i] = newActions[i].replace(/\$ID\$/g, obj["id"]);
+                newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
+            }
+            obj["actions"] = newActions;
+            obj["icon"] = this.configuration.DataSources[data_source_name].type[typeName].icon;
+            this.dataSourceResults.add(obj);
         },
 
         confirmed: function (item) {

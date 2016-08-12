@@ -247,7 +247,7 @@ define(function (require) {
             // run callback if any
             if(parsedServerMessage.requestID != undefined){
                 if (callbackHandler[parsedServerMessage.requestID] != undefined) {
-                    callbackHandler[parsedServerMessage.requestID]();
+                    callbackHandler[parsedServerMessage.requestID](parsedServerMessage.data);
                     delete callbackHandler[parsedServerMessage.requestID];
                 }
             }

@@ -88,8 +88,13 @@ define(function (require) {
                 parameters["projectId"] = Project.getId();
                 parameters["query"] = compoundQuery;
 
-
-                GEPPETTO.MessageSocket.send("run_query_count", parameters);
+                var c=callback;
+                GEPPETTO.MessageSocket.send("run_query_count", parameters, function(data){
+                	var count=JSON.parse(data)["return_query_count"];
+                	if(c!=undefined){
+                		c(count);
+                	}
+                });
             }
         }
     }

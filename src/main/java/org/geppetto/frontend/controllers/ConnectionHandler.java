@@ -403,12 +403,25 @@ public class ConnectionHandler
 
 	}
 
+	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param runnableQueries
+	 */
 	public void runQueryCount(String requestID, Long projectId, List<RunnableQueryParameters> runnableQueries)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-		// GeppettoModel geppettoModel = geppettoManager.runQuery(typePaths, geppettoProject);
-		// websocketConnection.sendMessage(requestID, OutboundMessages.QUERY_RESULT, GeppettoSerializer.serializeToJSON(geppettoModel, true));
-
+		int count;
+		try
+		{
+			count = geppettoManager.runQueryCount(null, geppettoProject);
+			// websocketConnection.sendMessage(requestID, OutboundMessages.QUERY_RESULT, GeppettoSerializer.serializeToJSON(geppettoModel, true));
+			websocketConnection.sendMessage(requestID, OutboundMessages.RETURN_QUERY_COUNT, Integer.toString(count));
+		}
+		catch(GeppettoDataSourceException | GeppettoModelException | GeppettoExecutionException e)
+		{
+			error(e, "Error running query count");
+		}
 	}
 
 	/**

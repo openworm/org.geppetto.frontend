@@ -935,11 +935,14 @@ define(function (require) {
         },
 
         addQueryItem: function(queryItem){
-            // retrieve term
-            var term = queryItem.term;
+            // retrieve variable from queryItem.id
+            var variable = GEPPETTO.ModelFactory.getTopLevelVariablesById([queryItem.id])[0];
+            var term = variable.getName();
 
-            // TODO: retrieve variable from queryItem.id
+            // TODO: iterate datasources
+
             // TODO: fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
+
             // TODO: build item in model-friendly format
 
             // retrieve options given term

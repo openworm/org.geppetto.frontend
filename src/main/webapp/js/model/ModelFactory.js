@@ -2350,6 +2350,18 @@ define(function (require) {
 
                 return variables;
             },
+
+            getTopLevelVariablesById(variableIds){
+                var variables = [];
+
+                for(var i=0; i<variableIds.length; i++){
+                  if(window.Model[variableIds[i]]!= undefined){
+                      variables.push(window.Model[variableIds[i]]);
+                  }
+                }
+
+                return variables;
+            },
             
             getHTMLVariable : function(typesToSearch, metaType, identifier){
             	var variables = this.getAllVariablesOfMetaType(typesToSearch, metaType);

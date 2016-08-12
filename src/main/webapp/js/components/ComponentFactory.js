@@ -39,6 +39,8 @@ define(function (require) {
 		var formComp = require('jsx!components/dev/form/Form');
 		var panelComp = require('jsx!components/dev/panel/Panel');
 		var logoComp = require('jsx!components/dev/logo/Logo');
+		var infoModalComp = require('jsx!components/popups/InfoModal');
+        var mdModalComp = require('jsx!components/popups/MarkDownModal');
 		var loadingSpinnerComp = require('jsx!./loadingspinner/LoadingSpinner');
 		var saveControlComp = require('jsx!components/dev/save/SaveControl');
 		var controlPanelComp = require('jsx!components/dev/controlpanel/controlpanel');
@@ -93,6 +95,12 @@ define(function (require) {
 				else if (component == 'SHARE'){
 					return React.createFactory(shareComp)(properties);
 				}
+				else if (component == 'INFOMODAL'){
+                    return React.createFactory(infoModalComp)(properties);
+                }
+                else if (component == 'MDMODAL'){
+                    return React.createFactory(mdModalComp)(properties);
+                }
 				else if (component == 'QUERY'){
 					return React.createFactory(queryComp)(properties);
 				}

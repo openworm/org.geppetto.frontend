@@ -36,16 +36,16 @@ define(function(require) {
     link.rel = "stylesheet";
     link.href = "geppetto/js/components/dev/logo/logo.css";
     document.getElementsByTagName("head")[0].appendChild(link);
-    
+
     var React = require('react');
-	
-	var logoDiv = React.createClass({
+
+    var logoDiv = React.createClass({
          render: function(){
              return (
-            		 <div className={this.props.logo}></div>
-             		);
+                     <div className={this.props.logo}></div>
+                     );
          }
      });
-	
-	return logoDiv;
+
+    return logoDiv;
 });

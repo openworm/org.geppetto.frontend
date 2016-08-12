@@ -52,8 +52,12 @@ define(function (require) {
             this.widgets = [];
         },
 
+        configureConnectivityWidget: function () {
+            Connectivity.prototype.configViaGUI();
+        },
+
         /**
-         * Adds a new TreeVisualizer3D Widget to Geppetto
+         * Adds a new Connectivity Widget to Geppetto
          */
         addConnectivityWidget: function () {
             //look for a name and id for the new widget

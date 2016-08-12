@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2016 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *        OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,42 +29,47 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
-/**
- * Loads widget scripts
+ ******************************************************************************
+ */
+ /**
+ * Modal used to render markdown
  *
- * @author Jesus Martinez (jesus@metacell.us)
  */
 
-//Widget Classes
 define(function (require) {
-    return function (GEPPETTO) {
 
-        require('widgets/WidgetFactory')(GEPPETTO);
-        require('widgets/WidgetsListener')(GEPPETTO);
-        require("widgets/WidgetUtility");
-        require("widgets/ContextMenu")(GEPPETTO);
-        //Plot Widget
-        require("widgets/plot/config")(GEPPETTO);
-        //Popup Widget
-        require("widgets/popup/config");
-        //Scatter3d Widget
-        require("widgets/scatter3d/config");
-        //TreeVisualiser DAT Widget
-        require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
-        //TreeVisualiser D3 Widget
-        require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
-        //VariableVisualiser widget
-        require("widgets/variablevisualiser/config");
-        //Connectivity Widget
-        require("widgets/connectivity/config");
-        //Buttonbar widget
-        require("widgets/buttonBar/config");
+    var React = require('react');
+    var Remarkable = require('vendor/remarkable.min');
 
-        //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
-        //require("widgets/template/config");
+    return React.createClass({
+        mixins: [
+            require('jsx!mixins/bootstrap/modal')
+        ],
 
-        loadCss("geppetto/js/widgets/Widget.css");
-    };
+        getDefaultProps: function() {
+            return {
+                title: '',
+                content: '',
+            }
+        },
+
+        rawMarkup: function() {
+            var md = new Remarkable({html: true});
+            return { __html: md.render(this.props.content)};
+        },
+
+        render: function (){
+            return <div className="modal fade" id="infomodal">
+                    <div className="modal-dialog">
+                     <div className="modal-content">
+                      <div
+                          className="content"
+                          dangerouslySetInnerHTML={this.rawMarkup()}
+                      />
+                     </div>
+                      </div>
+                  </div>
+        }
+    });
+
 });

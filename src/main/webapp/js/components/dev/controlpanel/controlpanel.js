@@ -494,6 +494,26 @@ define(function (require) {
         	}
         },
 
+        deleteData: function(instancePaths){
+            if(instancePaths!= undefined && instancePaths.length>0){
+                // grab existing input
+                var gridInput = this.state.data;
+                var newGridInput = [];
+
+                // remove unwanted instances from grid input
+                for(var i=0; i<instancePaths.length; i++){
+                    for(var j=0; j<gridInput.length; j++){
+                        if(instancePaths[i] != gridInput[j].path){
+                            newGridInput.push(gridInput[j]);
+                        }
+                    }
+                }
+
+                // set state to refresh grid
+                this.setState({data: newGridInput});
+            }
+        },
+
         setData: function (records) {
             var columnMeta = this.props.columnMeta;
 

@@ -2350,6 +2350,18 @@ define(function (require) {
 
                 return variables;
             },
+
+            getTopLevelVariablesById(variableIds){
+                var variables = [];
+
+                for(var i=0; i<variableIds.length; i++){
+                  if(window.Model[variableIds[i]]!= undefined){
+                      variables.push(window.Model[variableIds[i]]);
+                  }
+                }
+
+                return variables;
+            },
             
             getHTMLVariable : function(typesToSearch, metaType, identifier){
             	var variables = this.getAllVariablesOfMetaType(typesToSearch, metaType);
@@ -2387,6 +2399,7 @@ define(function (require) {
              * @param instance
              */
             deleteInstance: function (instance) {
+                var instancePath = instance.getPath();
                 var removeMatchingInstanceFromArray = function (instanceArray, instance) {
                     var index = null;
                     for (var i = 0; i < instanceArray.length; i++) {
@@ -2429,6 +2442,8 @@ define(function (require) {
 
                 // refresh UI components to reflect updated state of model / instances
                 GEPPETTO.FE.refresh();
+
+                GEPPETTO.trigger(Events.Instance_deleted, instancePath);
             },
 
             /**

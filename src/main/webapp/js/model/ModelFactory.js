@@ -2351,7 +2351,13 @@ define(function (require) {
                 return variables;
             },
 
-            getTopLevelVariablesById(variableIds){
+            /**
+             * Get top level variables by id
+             *
+             * @param variableIds
+             * @returns {Array}
+             */
+            getTopLevelVariablesById: function(variableIds){
                 var variables = [];
 
                 for(var i=0; i<variableIds.length; i++){
@@ -2362,8 +2368,31 @@ define(function (require) {
 
                 return variables;
             },
+
+            /**
+             * Get matching queries given a type
+             *
+             * @param type
+             */
+            getMatchingQueries : function(type){
+                var datasources = window.Model.getDatasources();
+                var matchingQueries = [];
+
+                // iterate datasources
+                for(var i=0; i<datasources.length; i++){
+                    // fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
+                    var queries = datasources[i].getQueries();
+                    for(var j=0; j<queries.length; j++){
+                        if(queries[j].matchesCriteria(type)){
+                            matchingQueries.push(queries[j]);
+                        }
+                    }
+                }
+
+                return matchingQueries;
+            },
             
-            getHTMLVariable : function(typesToSearch, metaType, identifier){
+            getHTMLVariable: function(typesToSearch, metaType, identifier){
             	var variables = this.getAllVariablesOfMetaType(typesToSearch, metaType);
             	for(var i in variables){
             		if(identifier != null && identifier != undefined){

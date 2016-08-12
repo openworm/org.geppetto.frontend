@@ -934,47 +934,57 @@ define(function (require) {
             }
         },
 
-        addQueryItem: function(queryItem){
+        /**
+         * Add a query item
+         *
+         * @param queryItem - Object with term and variable id properties
+         */
+        addQueryItem: function(queryItemParam){
             // retrieve variable from queryItem.id
-            var variable = GEPPETTO.ModelFactory.getTopLevelVariablesById([queryItem.id])[0];
+            var label = queryItemParam.term;
+            var variable = GEPPETTO.ModelFactory.getTopLevelVariablesById([queryItemParam.id])[0];
             var term = variable.getName();
 
-            // TODO: iterate datasources
+            // retrieve matching queries for variable type
+            var matchingQueries = GEPPETTO.ModelFactory.getMatchingQueries(variable.getType());
 
-            // TODO: fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
+            if(matchingQueries.length > 0) {
+                // build item in model-friendly format
+                var queryItem = {
+                    term: term,
+                    options: []
+                };
 
-            // TODO: build item in model-friendly format
-
-            // retrieve options given term
-            var item = null;
-            for(var i=0; i<mockSourceData.length; i++){
-                if(mockSourceData[i].term == term){
-                    // create new item
-                    item = {
-                        term: mockSourceData[i].term,
-                        // use slice to clone options - don't wanna use a reference to the same object!
-                        options: mockSourceData[i].options.slice(0)
-                    };
+                // fill out options from matching queries
+                for (var i = 0; i < matchingQueries.length; i++) {
+                    queryItem.options.push({
+                            id: matchingQueries[i].getId(),
+                            name: matchingQueries[i].getName(),
+                            datasource: matchingQueries[i].getParent().getId(),
+                            value: i
+                        }
+                    );
                 }
-            }
 
-            // count how many occurrences of term we have in the model
-            var termCount = 0;
-            for(var i=0; i<this.props.model.items.length; i++){
-                if(this.props.model.items[i].term == term){
-                    termCount++;
+                // count how many occurrences of term we have in the model
+                var termCount = 0;
+                for (var i = 0; i < this.props.model.items.length; i++) {
+                    if (this.props.model.items[i].term == term) {
+                        termCount++;
+                    }
                 }
-            }
 
-            if(item!=null){
-                // generate a unique id for the query item and add it to the model
-                item.id = term + '_' + termCount.toString();
-                item.selection = -1;
-                item.options.splice(0, 0, {name: 'Please select an option', value: -1});
-
-                this.props.model.addItem(item);
-            } else{
-                // TODO: throw massive error
+                // generate a unique id for the query item
+                queryItem.id = term + '_' + termCount.toString();
+                // add default selection
+                queryItem.selection = -1;
+                // add default option
+                queryItem.options.splice(0, 0, {name: 'Please select an option', value: -1});
+                // add query item to model
+                this.props.model.addItem(queryItem);
+            } else {
+                // TODO: notify no queries available for the selected term
+                alert("No queries available for the selected term.");
             }
         },
 

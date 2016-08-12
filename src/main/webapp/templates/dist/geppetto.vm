@@ -82,7 +82,7 @@
             <div id="consoleButtonContainer">
 	            <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
     				<li role="presentation" class="active" id="consoleButton"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i>  Console</a></li>
-    				<li role="presentation" id="experimentsButton"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>  Experiments</a></li>
+    				<li role="presentation" id="experimentsButton" style="display:none"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>  Experiments</a></li>
 				</ul>
 
 				 <div class="tab-content">

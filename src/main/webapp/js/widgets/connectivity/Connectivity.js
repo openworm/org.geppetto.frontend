@@ -313,6 +313,7 @@ define(function (require) {
             }
         },
 
+        /* TODO: Replace spread until jsdocs supports it
         getHelp: function(){
             function dedent(callSite, ...args) {
                 function format(str) {
@@ -353,7 +354,8 @@ define(function (require) {
 
             return '## Connectivity Widget\n' + help[this.options.layout];
         },
-
+        */
+        
         createLayoutSelector: function() {
 
             function imgPath(path){

@@ -624,13 +624,13 @@ define(function (require) {
                     clearTimeout(this.searchTimeOut);
                 }
                 this.searchTimeOut = setTimeout(function () {
-                    for (var key in this.configuration.DataSources) {
-                        if (this.configuration.DataSources.hasOwnProperty(key)) {
-                            var dataSource = this.configuration.DataSources[key];
+                    for (var key in that.configuration.DataSources) {
+                        if (that.configuration.DataSources.hasOwnProperty(key)) {
+                            var dataSource = that.configuration.DataSources[key];
                             var searchQuery = $("#query-typeahead").val();
                             var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
-                            this.updateResults = true;
-                            this.requestDataSourceResults(key, url, dataSource.crossDomain);
+                            that.updateResults = true;
+                            that.requestDataSourceResults(key, url, dataSource.crossDomain);
                         }
                     }
                 }, 150);
@@ -714,6 +714,7 @@ define(function (require) {
          * @param crossDomain : URL allows cross domain
          */
         requestDataSourceResults : function(data_source_name, data_source_url, crossDomain){
+            var that = this;
             //not cross domain, get results via java servlet code
             if(!crossDomain){
                 var parameters = {};
@@ -727,7 +728,7 @@ define(function (require) {
                     dataType: 'text',
                     url: data_source_url,
                     success: function (responseData, textStatus, jqXHR) {
-                        this.updateDataSourceResults(data_source_name, JSON.parse(responseData));
+                        that.updateDataSourceResults(data_source_name, JSON.parse(responseData));
                     },
                     error: function (responseData, textStatus, errorThrown) {
                         throw ("Error retrieving data sources " + data_source_name + "  from " + data_source_url);
@@ -743,22 +744,10 @@ define(function (require) {
          * @param results
          */
         updateDataSourceResults : function(data_source_name, results){
+            var that = this;
             var responses = results.response.docs;
             responses.forEach(function(response) {
-                var typeName = response.type;
-                var obj = {};
-                obj["label"] = response[this.configuration.DataSources[data_source_name].label];
-                obj["id"] = response[this.configuration.DataSources[data_source_name].id];
-                //replace $ID$ with one returned from server for actions
-                var actions = this.configuration.DataSources[data_source_name].type[typeName].actions;
-                var newActions = actions.slice(0);
-                for(var i=0; i < actions.length; i++) {
-                    newActions[i] = newActions[i].replace(/\$ID\$/gi, obj["id"]);
-                    newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
-                }
-                obj["actions"] = newActions;
-                obj["icon"] = this.configuration.DataSources[data_source_name].type[typeName].icon;
-                this.dataSourceResults.add(obj);
+                that.formatDataSourceResult(data_source_name, response);
             });
 
             //If it's an update request to show the drop down menu, this for it to show
@@ -785,7 +774,7 @@ define(function (require) {
             var formattedLabel = labelFormatting.replace('$VALUE$', mainLabel);
             formattedLabel = formattedLabel.replace('$ID$', id);
 
-            thisr.createDataSourceResult(data_source_name, response, formattedLabel, id);
+            this.createDataSourceResult(data_source_name, response, formattedLabel, id);
 
             var explodeFields = this.configuration.DataSources[data_source_name].explode_fields;
             for(var i =0; i<explodeFields.length; i++){

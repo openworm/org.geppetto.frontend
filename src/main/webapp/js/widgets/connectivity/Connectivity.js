@@ -78,12 +78,12 @@ define(function (require) {
             this.setSize(options.height, options.width);
 
             this.connectivityContainer = $("#" + this.id);
-            
+
             var that=this;
             this.addButtonToTitleBar($("<div class='fa fa-gear'></div>").on('click', function(event) {
-            	that.configViaGUI();
+                that.configViaGUI();
             }));
-            
+
         },
 
         setSize: function (h, w) {
@@ -182,7 +182,7 @@ define(function (require) {
         createLayout: function () {
             $('#' + this.id + " svg").remove();
             $('#' + this.id + " #matrix-sorter").remove();
-            
+
             this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
             this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
 
@@ -353,7 +353,7 @@ define(function (require) {
 
             return '## Connectivity Widget\n' + help[this.options.layout];
         },
-        
+
         createLayoutSelector: function() {
 
             function imgPath(path){
@@ -410,18 +410,31 @@ define(function (require) {
 
         configViaGUI : function() {
             var that = this;
-            var modalContent=$('<div class="modal fade" id="connectivity-config-modal"></div>').append(this.createLayoutSelector()[0].outerHTML).modal();
-            modalContent.find('.card').on('click', function(event) {
-            	//TODO: Hardcoded NeuroML stuff
+            var timer;
+            var modalContent=$('<div class="modal fade" id="connectivity-config-modal"></div>')
+                                .append(this.createLayoutSelector()[0].outerHTML).modal();
+            function singleClick(event) {
+                //TODO: Hardcoded NeuroML stuff
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
                 function synapseFromConnection(conn) {
                     return GEPPETTO.ModelFactory.getAllVariablesOfType(
-                    		//TODO hardcoded NeuroML stuff
+                            //TODO hardcoded NeuroML stuff
                             conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId();
                 }
-                that.setData(netInstances[0], {layout: this.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
-            });
+                that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
+                timer = null;
+            }
+            function clickHandler(event) {
+                if (timer){
+                    clearTimeout(timer);
+                    singleClick(event);
+                    modalContent.modal('hide');
+                }
+                timer = setTimeout(function() { singleClick(event) }, 250);
+            }
+
+            modalContent.find('.card').on('click', clickHandler);
         }
     });
 });

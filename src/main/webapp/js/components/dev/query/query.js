@@ -282,15 +282,7 @@ define(function (require) {
         }
     };
 
-    // TODO: remove this mock data - it's just for development
-    var mockTermsData = ['saddle', 'medulla', 'betulla', 'test', 'nonna', 'leg', 'arm', 'bug', 'longino'];
-
-    var mockTerms = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.whitespace,
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            local: mockTermsData
-        });
-
+    // TODO: remove mock results
     var mockResults = [
         { id: 'VFB_1', name: 'JFRC2_template', description: 'Test description', controls: ''},
         { id: 'VFB_2', name: 'VGlut-F-000176', description: 'Test description', controls: ''},
@@ -310,6 +302,7 @@ define(function (require) {
         { id: 'VFB_16', name: 'VGlut-000-123', description: 'Test description blah blah', controls: ''}
     ];
 
+    // TODO: remove mock source data
     var mockSourceData = [
         {
             term: 'saddle',

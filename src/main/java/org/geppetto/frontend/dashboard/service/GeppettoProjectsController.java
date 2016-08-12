@@ -63,10 +63,9 @@ public class GeppettoProjectsController
 
 	@Autowired
 	private IGeppettoManager geppettoManager;
-	
+
 	@RequestMapping("/geppettoprojects")
-	public @ResponseBody
-	Collection<? extends IGeppettoProject> getAllGeppettoProjects()
+	public @ResponseBody Collection<? extends IGeppettoProject> getAllGeppettoProjects()
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
@@ -75,44 +74,49 @@ public class GeppettoProjectsController
 		}
 		return null;
 	}
-	
-	@RequestMapping(value="/geppettoProjectsReferences", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody
-	List<Map<String,String>> getAllGeppettoProjectsWithReferences() throws GeppettoInitializationException, IOException, GeppettoVisitingException
+
+	@RequestMapping(value = "/geppettoProjectsCompact", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody List<Map<String, String>> getAllGeppettoProjectsCompact() throws GeppettoInitializationException, IOException, GeppettoVisitingException
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
-			List<Map<String,String>> allProjectsWithReferences = new ArrayList<Map<String,String>>();
-			Collection<? extends IGeppettoProject> projects = dataManager.getAllGeppettoProjects();
-			for(IGeppettoProject project:projects)
+			List<Map<String, String>> allProjectsCompact = new ArrayList<Map<String, String>>();
+			if(geppettoManager.getUser() != null)
 			{
-				GeppettoModel geppettoModel = GeppettoModelReader.readGeppettoModel(URLReader.getURL(project.getGeppettoModel().getUrl()));
-				PopulateModelReferencesVisitor populateModelReferencesVisitor = new PopulateModelReferencesVisitor();
-				GeppettoModelTraversal.apply(geppettoModel, populateModelReferencesVisitor);
-				List<String> references = populateModelReferencesVisitor.getModelReferences();
-				Map<String,String> projectMap=new HashMap<String,String>();
-				projectMap.put("id", Long.toString(project.getId()));
-				projectMap.put("name", project.getName());
-				projectMap.put("references", references.toString());
-				allProjectsWithReferences.add(projectMap);
+
+				Collection<? extends IGeppettoProject> projects = dataManager.getGeppettoProjectsForUser(geppettoManager.getUser().getLogin());
+				for(IGeppettoProject project : projects)
+				{
+					Map<String, String> projectMap = new HashMap<String, String>();
+					projectMap.put("id", Long.toString(project.getId()));
+					projectMap.put("name", project.getName());
+					allProjectsCompact.add(projectMap);
+				}
+
 			}
-			return allProjectsWithReferences;
-			
+			else
+			{
+				Map<String, String> projectMap = new HashMap<String, String>();
+				projectMap.put("name", "No user logged in " + geppettoManager.toString());
+				allProjectsCompact.add(projectMap);
+			}
+			return allProjectsCompact;
+
 		}
 		return null;
 	}
-	
-	@RequestMapping(value="/projectswithref", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody
-	Collection<? extends IGeppettoProject> getAllGeppettoProjectsWithReference(@RequestParam String reference) throws GeppettoInitializationException, IOException, GeppettoVisitingException
+
+	@RequestMapping(value = "/projectswithref", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody Collection<? extends IGeppettoProject> getAllGeppettoProjectsWithReference(@RequestParam String reference) throws GeppettoInitializationException, IOException,
+			GeppettoVisitingException
 	{
-		List<IGeppettoProject> projectsFound=new ArrayList<IGeppettoProject>();
+		List<IGeppettoProject> projectsFound = new ArrayList<IGeppettoProject>();
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		if(dataManager != null)
 		{
 			Collection<? extends IGeppettoProject> projects = dataManager.getGeppettoProjectsForUser(geppettoManager.getUser().getLogin());
-			for(IGeppettoProject project:projects)
+			for(IGeppettoProject project : projects)
 			{
 				GeppettoModel geppettoModel = GeppettoModelReader.readGeppettoModel(URLReader.getURL(project.getGeppettoModel().getUrl()));
 				PopulateModelReferencesVisitor populateModelReferencesVisitor = new PopulateModelReferencesVisitor();

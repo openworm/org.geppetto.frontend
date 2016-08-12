@@ -42,6 +42,7 @@ define(function (require) {
     var Widget = require('widgets/Widget');
     var $ = require('jquery');
     var Instance = require('model/Instance');
+    require('jsx!mixins/bootstrap/modal')
 
     return Widget.View.extend({
 
@@ -77,6 +78,12 @@ define(function (require) {
             this.setSize(options.height, options.width);
 
             this.connectivityContainer = $("#" + this.id);
+            
+            var that=this;
+            this.addButtonToTitleBar($("<div class='fa fa-gear'></div>").on('click', function(event) {
+            	that.configViaGUI();
+            }));
+            
         },
 
         setSize: function (h, w) {
@@ -126,6 +133,7 @@ define(function (require) {
                     }
                 }
 
+                //TODO: Hardcoded NeuroML stuff
                 var typesToSearch=GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.projection);
                 var connectionVariables = GEPPETTO.ModelFactory.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
 
@@ -173,7 +181,8 @@ define(function (require) {
 
         createLayout: function () {
             $('#' + this.id + " svg").remove();
-
+            $('#' + this.id + " #matrix-sorter").remove();
+            
             this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
             this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
 
@@ -304,6 +313,47 @@ define(function (require) {
             }
         },
 
+        getHelp: function(){
+            function dedent(callSite, ...args) {
+                function format(str) {
+                    let size = -1;
+                    return str.replace(/\n(\s+)/g, (m, m1) => {
+                        if (size < 0)
+                            size = m1.replace(/\t/g, "    ").length;
+                        return "\n" + m1.slice(Math.min(m1.length, size));
+                    });
+                }
+                if (typeof callSite === "string")
+                    return format(callSite);
+                if (typeof callSite === "function")
+                    return (...args) => format(callSite(...args));
+                let output = callSite
+                    .slice(0, args.length + 1)
+                    .map((text, i) => (i === 0 ? "" : args[i - 1]) + text)
+                    .join("");
+                return format(output);
+            }
+            var help = {
+                'matrix':dedent(`
+                    ### Adjacency matrix
+                `),
+                'chord': dedent(`
+                    ### Chord Diagram
+                    Hover over populations ("slices") to highlight incoming / outgoing connections.
+                    - Control-hover: outgoing connections
+                    - Shift-hover: incoming connections
+                `),
+                'hive':dedent(`
+                        ### Hive Plot
+                `),
+                'force':dedent(`
+                        ### Force Directed Graph Drawing
+                `),
+            }
+
+            return '## Connectivity Widget\n' + help[this.options.layout];
+        },
+        
         createLayoutSelector: function() {
 
             function imgPath(path){
@@ -311,20 +361,20 @@ define(function (require) {
             };
 
             var layoutOptions = [
-                {id: "matrix", label: 'adjacency matrix', description:
+                {id: "matrix", label: 'Adjacency matrix', description:
                     "A coloured square at row 𝒊, column 𝒋 represents a " +
                     "directed connection from node 𝒋 to node 𝒊.",
                     img: imgPath('matrix.svg')},
-                {id: "force", label: 'force-directed layout', description:
+                {id: "force", label: 'Force-directed layout', description:
                     "Draw circles for nodes, lines for connections, disregarding " +
                     "spatial information.",
                     img: imgPath('force.svg')},
-                {id: "hive",  label: 'hive plot', description:
+                {id: "hive",  label: 'Hive plot', description:
                     "Axes correspond to node categories, arcs to connections." +
                     "The position of each node along an axis is determined by " +
                     "the total number of connections it makes.",
                     img: imgPath('hive.svg')},
-                {id: "chord", label:'chord diagram', description:
+                {id: "chord", label:'Chord diagram', description:
                     "Circular slices correspond to node categories, chords to " +
                     "connections. A gap between slice and chord indicate an " +
                     "incoming connection. Use ctrl(shift) + mouse hover to " +
@@ -332,6 +382,7 @@ define(function (require) {
                     img: imgPath('chord.svg')}
             ];
             var container = $('<div>').addClass('card-deck-wrapper');
+            $('<p class="card-wrapper-title">How would you like to represent your network?</p>').appendTo(container);
             var deck = $('<div>').addClass('card-deck').appendTo(container);
 
             function createCard(cardData){
@@ -359,17 +410,17 @@ define(function (require) {
 
         configViaGUI : function() {
             var that = this;
-            var popup = G.addWidget(1).setMessage(this.createLayoutSelector()[0].outerHTML).setAutoHeight().setAutoWidth();
-            popup.showTitleBar(false);
-            popup.$('.card').on('click', function(event) {
+            var modalContent=$('<div class="modal fade" id="connectivity-config-modal"></div>').append(this.createLayoutSelector()[0].outerHTML).modal();
+            modalContent.find('.card').on('click', function(event) {
+            	//TODO: Hardcoded NeuroML stuff
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
                 function synapseFromConnection(conn) {
                     return GEPPETTO.ModelFactory.getAllVariablesOfType(
+                    		//TODO hardcoded NeuroML stuff
                             conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId();
                 }
                 that.setData(netInstances[0], {layout: this.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
-                popup.destroy();
             });
         }
     });

@@ -52,7 +52,9 @@ define(function (require) {
 		stepIndex : 0,
 		totalSteps : 0,
 		dontShowTutorial : false,
-
+		started : false,
+		tutorialLoaded : false,
+		
 		/**
 		 * Stores cookie to avoid showing tutorial next time at startup
 		 */
@@ -62,11 +64,14 @@ define(function (require) {
 
 		getInitialState: function() {
 			return {
-				props: {},
+				tutorialData: {},
 				tutorialTitle : "",
 				tutorialMessage : "",
 				iconClass: "",
-				cookieClass : "checkbox-inline cookieTutorial"
+				cookieClass : "checkbox-inline cookieTutorial",
+				prevBtnDisabled : true,
+				nextBtnLast : false,
+				nextBtnLabel : "NEXT"
 			};
 		},
 
@@ -75,13 +80,14 @@ define(function (require) {
 		 */
 		start : function(){
 			this.stepIndex = 0;
-			var title = this.state.props.steps[this.stepIndex].title;
-			var message = this.state.props.steps[this.stepIndex].message;
-			var action = this.state.props.steps[this.stepIndex].action;
-			var icon = this.state.props.steps[this.stepIndex].icon;
+			var title = this.state.tutorialData.steps[this.stepIndex].title;
+			var message = this.state.tutorialData.steps[this.stepIndex].message;
+			var action = this.state.tutorialData.steps[this.stepIndex].action;
+			var icon = this.state.tutorialData.steps[this.stepIndex].icon;
 
 			this.updateTutorialWindow(title,message,action,icon);			
 			this.open();
+			this.started = true;
 		},
 
 		updateTutorialWindow : function(title, message, action,icon){
@@ -98,8 +104,21 @@ define(function (require) {
 				newCookieClass = "hide";
 			}
 
-
-			this.setState({tutorialTitle: title, iconClass: newIconClass, tutorialMessage : message, cookieClass : newCookieClass});
+			var prevDisabled = true;
+			var lastStep = false;
+			var lastStepLabel = "NEXT";
+			
+			if(this.stepIndex ==this.totalSteps){
+				lastStep = true;
+				lastStepLabel = "Restart";
+				prevDisabled = false;
+			}else if(this.stepIndex  >= 1){
+				prevDisabled = false;
+			}else if(this.stepIndex <=0){
+				prevDisabled = true;
+			}
+			
+			this.setState({nextBtnLast : lastStep, nextBtnLabel : lastStepLabel, prevBtnDisabled : prevDisabled, tutorialTitle: title, iconClass: newIconClass, tutorialMessage : message, cookieClass : newCookieClass});
 
 			//execute action associated with message
 			if(action!=null || undefined){
@@ -112,14 +131,17 @@ define(function (require) {
 		nextStep: function(){
 			this.stepIndex++;
 			if(this.stepIndex <= this.totalSteps){
-				var title = this.state.props.steps[this.stepIndex].title;
-				var message = this.state.props.steps[this.stepIndex].message;
-				var action = this.state.props.steps[this.stepIndex].action;
-				var icon = this.state.props.steps[this.stepIndex].icon;
+				var title = this.state.tutorialData.steps[this.stepIndex].title;
+				var message = this.state.tutorialData.steps[this.stepIndex].message;
+				var action = this.state.tutorialData.steps[this.stepIndex].action;
+				var icon = this.state.tutorialData.steps[this.stepIndex].icon;
 
 				this.updateTutorialWindow(title,message,action,icon);
+			}else if(this.stepIndex>this.totalSteps){
+				this.start();
 			}else{
 				this.close();
+				this.started = false;
 			}
 		},
 
@@ -131,10 +153,10 @@ define(function (require) {
 			}else{
 				this.stepIndex--;
 				GEPPETTO.tutorialEnabled = false;
-				var title = this.state.props.steps[this.stepIndex].title;
-				var message = this.state.props.steps[this.stepIndex].message;
-				var action = this.state.props.steps[this.stepIndex].action;
-				var icon = this.state.props.steps[this.stepIndex].icon;
+				var title = this.state.tutorialData.steps[this.stepIndex].title;
+				var message = this.state.tutorialData.steps[this.stepIndex].message;
+				var action = this.state.tutorialData.steps[this.stepIndex].action;
+				var icon = this.state.tutorialData.steps[this.stepIndex].icon;
 
 				this.updateTutorialWindow(title,message,action,icon);
 			}
@@ -146,6 +168,10 @@ define(function (require) {
 
 		open : function(){
 			$('#tutorial').show();
+		},
+		
+		addTutorial : function(event, configurationURL){
+			self.tutorialData(configurationURL);
 		},
 
 		/**
@@ -159,9 +185,10 @@ define(function (require) {
 				dataType: 'json',
 				url: configurationURL,
 				success: function (responseData, textStatus, jqXHR) {
-					self.setState({ props: responseData });
-					self.totalSteps = self.state.props.steps.length-1;
+					self.setState({ tutorialData: responseData });
+					self.totalSteps = self.state.tutorialData.steps.length-1;
 					self.start();
+					self.tutorialLoaded = true;
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
@@ -174,7 +201,7 @@ define(function (require) {
 			var self = this;
 
 			//launches specific tutorial is experiment is loaded
-			GEPPETTO.on(Events.Show_Experiment_Loaded_Tutorial,function(){
+			GEPPETTO.on(TutorialEvents.Show_Experiment_Loaded_Tutorial,function(){
 				if(!this.dontShowTutorial){
 					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
 					this.dontShowTutorial = true;
@@ -182,7 +209,7 @@ define(function (require) {
 			});
 
 			//launches specific tutorial if project is loaded
-			GEPPETTO.on(Events.Show_Project_Loaded_Tutorial,function(){
+			GEPPETTO.on(TutorialEvents.Show_Project_Loaded_Tutorial,function(){
 				if(!this.dontShowTutorial){
 					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/project_loaded_tutorial.json");
 					this.dontShowTutorial = true;
@@ -190,7 +217,7 @@ define(function (require) {
 			});
 
 			//Launches specific tutorial is user is login
-			GEPPETTO.on(Events.Show_Login_Tutorial,function(){
+			GEPPETTO.on(TutorialEvents.Show_Login_Tutorial,function(){
 				if(!this.dontShowTutorial){
 					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/login_tutorial.json");
 					this.dontShowTutorial = true;
@@ -198,18 +225,22 @@ define(function (require) {
 			});
 
 			//Launches tutorial from button 
-			GEPPETTO.on(Events.Show_Default_Tutorial,function(){
-				self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
-				var storedCookie = $.cookie('ignore_tutorial');
-				if(storedCookie!=null||undefined){
-					if(storedCookie){
-						this.setState({cookieClass:"hide"});
+			GEPPETTO.on(TutorialEvents.Show_Tutorial,function(){
+				if(self.started){
+					self.open();
+				}else{
+					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
+					var storedCookie = $.cookie('ignore_tutorial');
+					if(storedCookie!=null||undefined){
+						if(storedCookie){
+							this.setState({cookieClass:"hide"});
+						}
 					}
 				}
 			});
 			
 			//Hides tutorial
-			GEPPETTO.on(Events.Hide_Tutorial,function(){
+			GEPPETTO.on(TutorialEvents.Hide_Tutorial,function(){
 				self.close();
 			});
 		},
@@ -233,11 +264,11 @@ define(function (require) {
 			</div>
 			<div className="btn-group" role="group">
 				<div className="tutorial-buttons">
-					<button className="prevBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.prevStep}>
-						<span> &lt;-- PREV</span>
+					<button className="prevBtn btn btn-default btn-lg" disabled={this.state.prevBtnDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.prevStep}>
+						<span><i className="fa fa-arrow-left" aria-hidden="true"></i>   PREV</span>
 					</button>
 					<button className="nextBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.nextStep}>
-						<span> NEXT --&gt;</span>
+						<span>{this.state.nextBtnLabel}   <i className={this.state.nextBtnLast ? "fa fa-undo" : "fa fa-arrow-right"} aria-hidden="true"></i></span>
 					</button>
 				</div>
 				<label className={this.state.cookieClass} id="ignoreTutorial"><input type="checkbox" value="" onClick={this.dontShowAtStartup}>Don't show Tutorial at Startup Again.</input></label>

@@ -278,11 +278,11 @@ define(function (require) {
             	 var modalVisible = $('#tutorial').is(':visible');
             	 
                  if (modalVisible) {
-                	 GEPPETTO.trigger(Events.Hide_Tutorial);
+                	 GEPPETTO.trigger(TutorialEvents.Hide_Tutorial);
                      returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
                  }
                  else {
-                	 GEPPETTO.trigger(Events.Show_Default_Tutorial);
+                	 GEPPETTO.trigger(TutorialEvents.Show_Tutorial);
                      returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
                  }
                  return returnMessage;

@@ -433,7 +433,7 @@ define(function (require) {
                     singleClick(event);
                     modalContent.modal('hide');
                 }
-                timer = setTimeout(function() { singleClick(event) }, 250);
+                timer = setTimeout(function() { singleClick(event) }, 200);
             }
 
             modalContent.find('.card').on('click', clickHandler);

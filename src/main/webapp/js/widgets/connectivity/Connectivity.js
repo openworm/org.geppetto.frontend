@@ -412,10 +412,10 @@ define(function (require) {
 
         configViaGUI : function() {
             var that = this;
-            var timer;
+            var firstClick=false;
             var modalContent=$('<div class="modal fade" id="connectivity-config-modal"></div>')
                                 .append(this.createLayoutSelector()[0].outerHTML).modal();
-            function singleClick(event) {
+            function handleFirstClick(event) {
                 //TODO: Hardcoded NeuroML stuff
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
@@ -425,16 +425,20 @@ define(function (require) {
                             conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId();
                 }
                 that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
-                timer = null;
+                firstClick=true;
             }
+            
             function clickHandler(event) {
-                if (timer){
-                    clearTimeout(timer);
-                    singleClick(event);
-                    modalContent.modal('hide');
-                }
-                timer = setTimeout(function() { singleClick(event) }, 200);
+            	if(!firstClick){
+            		handleFirstClick(event);
+            		setTimeout(function() { firstClick=false;}, 200); //closes the window to click again (dbclick)
+            	}
+            	else{
+            		modalContent.modal('hide');
+            		firstClick=false;
+            	}
             }
+
 
             modalContent.find('.card').on('click', clickHandler);
         }

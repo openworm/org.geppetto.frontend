@@ -39,65 +39,18 @@
  */
 define(function (require) {
     var Value = require('model/Value');
+    
 
-    return Value.extend({
-
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            //this.set({"parent": options.parent});
-            this.set({"wrappedObj": options.wrappedObj});
-            
-            // capability list is for private use
-            this.set({"capabilities": []});
-        },
-
-        /**
-         * Get type for array type
-         *
-         * @command ImportType.getUrl()
-         *
-         * @returns {String}
-         *
-         */
-//        getUrl: function () {
-//            return this.getWrappedObj().url;
-//        },
-//
-//        /**
-//         * Get type for array type
-//         *
-//         * @command ImportType.getReferenceUrl()
-//         *
-//         * @returns {String}
-//         *
-//         */
-//        getReferenceUrl: function () {
-//            return this.getWrappedObj().referenceURL;
-//        },
-//
-//        /**
-//         * Get type for array type
-//         *
-//         * @command ImportType.getModelInterpreterId()
-//         *
-//         * @returns {String}
-//         *
-//         */
-//        getModelInterpreterId: function () {
-//            return this.getWrappedObj().modelInterpreterId;
-//        },
-//
-//        /**
-//         * Trigger import type resolution - will cause this import type to get swapped with an actual type
-//         *
-//         * @command ImportValue.resolve()
-//         */
-        resolve: function(callback) {
+    function ImportValue(options) {
+        Value.prototype.constructor.call(this, options);
+    }
+    
+    ImportValue.prototype = Object.create(Value.prototype);
+    ImportValue.prototype.constructor = ImportValue;
+    
+    ImportValue.prototype.resolve = function(callback) {
             GEPPETTO.SimulationHandler.resolveImportValue(this.getPath(), callback);
-        }
-    });
+    };
+    
+    return ImportValue;
 });

@@ -1119,29 +1119,51 @@ define(function (require) {
              * Shows a visual group
              */
             showVisualGroups: function (visualGroups, mode, instances) {
-                for (var i = 0; i < instances.length; i++) {
-                    var instance = instances[i];
-                    var instancePath = instance.getInstancePath();
-                    GEPPETTO.SceneController.merge(instancePath);
-                    if (mode) {
-                        GEPPETTO.SceneController.splitGroups(instance, visualGroups);
-                        for (g in visualGroups) {
-                            // retrieve visual group object
-                            var visualGroup = visualGroups[g];
+            	for (var i = 0; i < instances.length; i++) {
+            		var instance = instances[i];
+            		var instancePath = instance.getInstancePath();            				
+            		GEPPETTO.SceneController.merge(instancePath);
+            		if (mode) {
+            			var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
+            			var map = mergedMesh.mergedMeshesPaths;
+            			//no mergedMeshesPaths means object hasn't been merged, single object
+            			if(map!=undefined||null){
+            				GEPPETTO.SceneController.splitGroups(instance, visualGroups);
+            				for (g in visualGroups) {
+            					// retrieve visual group object
+            					var visualGroup = visualGroups[g];
 
-                            // get full group name to access group mesh
-                            var groupName = g;
-                            if (groupName.indexOf(instancePath) <= -1) {
-                                groupName = instancePath + "." + g;
-                            }
+            					// get full group name to access group mesh
+            					var groupName = g;
+            					if (groupName.indexOf(instancePath) <= -1) {
+            						groupName = instancePath + "." + g;
+            					}
 
-                            // get group mesh
-                            var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
-                            groupMesh.visible = true;
-                            GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
-                        }
-                    }
-                }
+            					// get group mesh
+            					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
+            					groupMesh.visible = true;
+            					GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
+            				}
+            			}else{
+            				for (g in visualGroups) {
+            					// retrieve visual group object
+            					var visualGroup = visualGroups[g];
+
+            					// get full group name to access group mesh
+            					var groupName = g;
+            					if (groupName.indexOf(instancePath) <= -1) {
+            						groupName = instancePath + "." + g;
+            					}
+
+            					// get original mesh and apply group color
+            					var mesh = GEPPETTO.getVARS().meshes[instancePath];
+            					mesh.visible = true;
+            					GEPPETTO.SceneController.setThreeColor(mesh.material.color, visualGroup.color);
+            				}        
+            			}
+
+            		}
+            	}
             },
 
 

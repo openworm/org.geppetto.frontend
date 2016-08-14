@@ -264,9 +264,9 @@ define(function (require) {
                 	var formattedValue = undefined;
                 	var style = this.getStyle(node.getMetaType());
                 	//AQP: Do we want to do sth with every single capability?
-                	if (node.get("capabilities") != undefined && node.get("capabilities").length > 0 ){
-                		formattedValue = this.getFormattedValue(node, node.get("capabilities")[0], 0);
-                		style = this.getStyle(node.get("capabilities")[0]);
+                	if (node.capabilities != undefined && node.capabilities.length > 0 ){
+                		formattedValue = this.getFormattedValue(node, node.capabilities[0], 0);
+                		style = this.getStyle(node.capabilities[0]);
                 	}
                     return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, _children: this.createTreeVisualiserNodeChildren(node)});
                 }

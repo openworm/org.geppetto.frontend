@@ -84,7 +84,7 @@ define([ 'jquery', 'underscore', 'backbone',
 
 		renderProjects : function(collection) {
 			// $("#spinner").hide();
-			this.$el.find("#projects").empty();
+			this.$el.find(".project-preview").remove();
 			collection.each(this.appendProjects);
 			this.delegateEvents();
 			return this;

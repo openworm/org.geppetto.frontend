@@ -49,8 +49,10 @@ define(function (require) {
     return AWidgetController.View.extend({
 
         initialize: function () {
-            this.widgets = [];
+            this.widgets = Array();
+            this.history = [];
         },
+
 
         configureConnectivityWidget: function () {
             Connectivity.prototype.configViaGUI();
@@ -66,7 +68,7 @@ define(function (require) {
 
 
             //create tree visualiser widget
-            var cnt = window[name] = new Connectivity({id: id, name: name, visible: false, width: 500, height: 500});
+            var cnt = window[name] = new Connectivity({id: id, name: name, visible: false, width: 500, height: 500, controller: this});
 
             //create help command for connw
             cnt.help = function () {

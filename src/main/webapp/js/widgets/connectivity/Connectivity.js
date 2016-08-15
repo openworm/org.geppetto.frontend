@@ -373,26 +373,26 @@ define(function (require) {
             };
 
             var layoutOptions = [
-                {id: "matrix", label: 'Adjacency matrix', description:
-                    "A coloured square at row ����, column ���� represents a " +
-                    "directed connection from node ���� to node ����.",
-                    img: imgPath('matrix.svg')},
-                {id: "force", label: 'Force-directed layout', description:
-                    "Draw circles for nodes, lines for connections, disregarding " +
-                    "spatial information.",
-                    img: imgPath('force.svg')},
-                {id: "hive",  label: 'Hive plot', description:
-                    "Axes correspond to node categories, arcs to connections." +
-                    "The position of each node along an axis is determined by " +
-                    "the total number of connections it makes.",
-                    img: imgPath('hive.svg')},
-                {id: "chord", label:'Chord diagram', description:
-                    "Circular slices correspond to node categories, chords to " +
-                    "connections. A gap between slice and chord indicate an " +
-                    "incoming connection. Use ctrl(shift) + mouse hover to " +
-                    "hide incoming(outgoing) connections from a population.",
-                    img: imgPath('chord.svg')}
-            ];
+                 {id: "matrix", label: 'Adjacency matrix', description:
+                     "A coloured square at row 𝒊, column 𝒋 represents a " +
+                     "directed connection from node 𝒋 to node 𝒊.",
+                     img: imgPath('matrix.svg')},
+                 {id: "force", label: 'Force-directed layout', description:
+                     "Draw circles for nodes, lines for connections, disregarding " +
+                     "spatial information.",
+                     img: imgPath('force.svg')},
+                 {id: "hive",  label: 'Hive plot', description:
+                     "Axes correspond to node categories, arcs to connections." +
+                     "The position of each node along an axis is determined by " +
+                     "the total number of connections it makes.",
+                     img: imgPath('hive.svg')},
+                 {id: "chord", label:'Chord diagram', description:
+                     "Circular slices correspond to node categories, chords to " +
+                     "connections. A gap between slice and chord indicate an " +
+                     "incoming connection. Use ctrl(shift) + mouse hover to " +
+                     "hide incoming(outgoing) connections from a population.",
+                     img: imgPath('chord.svg')}
+             ];
             var container = $('<div>').addClass('card-deck-wrapper');
             $('<p class="card-wrapper-title">How would you like to represent your network?</p>').appendTo(container);
             var deck = $('<div>').addClass('card-deck').appendTo(container);

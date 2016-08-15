@@ -53,7 +53,7 @@ define(function (require) {
              */
             runQuery: function (queries, callback) {
                 var compoundQuery=[];
-                for (var i=0;queries.length;i++) {
+                for (var i=0;i<queries.length;i++) {
                     var id=queries[i].id;
                     var queryObject=queries[i].query;
                 }
@@ -74,7 +74,7 @@ define(function (require) {
              */
             getQueriesCount: function (queries, callback) {
                 var compoundQuery=[];
-                for (var i=0;queries.length;i++) {
+                for (var i=0;i<queries.length;i++) {
                     var id=queries[i].id;
                     var queryObject=queries[i].query;
                 }

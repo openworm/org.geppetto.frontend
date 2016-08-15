@@ -54,9 +54,14 @@ define(function (require) {
 
     // query model object to represent component state and trigger view updates
     var queryBuilderModel = {
+        // list of change handlers called on change
         onChangeHandlers: [],
+        // query items present in the query builder
         items: [],
+        // fetched results
         results: [],
+        // result count for the current query items
+        count: 0,
 
         subscribe: function (callback) {
             this.onChangeHandlers.push(callback);
@@ -76,12 +81,15 @@ define(function (require) {
                 }
             }
 
-            this.notifyChange();
+            // get count triggers notify change once results are fetched
+            this.getCount();
         },
 
         addItem: function(item){
             this.items.push(item);
-            this.notifyChange();
+
+            // get count triggers notify change once results are fetched
+            this.getCount();
         },
 
         deleteItem: function (item) {
@@ -91,6 +99,31 @@ define(function (require) {
                 }
             }
 
+            if(this.items.length >0) {
+                // get count triggers notify change once results are fetched
+                this.getCount();
+            } else {
+                // set count triggers notify change
+                this.setCount(0);
+            }
+        },
+
+        /**
+         * Asynchronous call to the server to get the results count for the given query items
+         *
+         * @param callback
+         */
+        getCount: function(callback){
+            GEPPETTO.QueriesController.getQueriesCount( this.items.map(function(item) {
+                return {
+                    id: item.id,
+                    query: item.queryObj
+                };
+            }), this.setCount);
+        },
+
+        setCount(count){
+            this.count = count;
             this.notifyChange();
         },
 
@@ -300,154 +333,6 @@ define(function (require) {
         { id: 'VFB_14', name: 'DL2 Clone of Nonna 008', description: 'Test description', controls: ''},
         { id: 'VFB_15', name: 'VFB-123-123-666', description: 'Test description', controls: ''},
         { id: 'VFB_16', name: 'VGlut-000-123', description: 'Test description blah blah', controls: ''}
-    ];
-
-    // TODO: remove mock source data
-    var mockSourceData = [
-        {
-            term: 'saddle',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating saddle', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ]
-        },
-        {
-            term: 'medulla',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating medulla', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ]
-        },
-        {
-            term: 'betulla',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating betulla', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ]
-        },
-        {
-            term: 'test',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating test', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ]
-        },
-        {
-            term: 'nonna',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating nonna', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ]
-        },
-        {
-            term: 'arm',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating arm', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ]
-        },
-        {
-            term: 'leg',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating leg', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ]
-        },
-        {
-            term: 'bug',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating bug', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ],
-        },
-        {
-            term: 'longino',
-            options: [
-                {name: 'Neurons with some part here', value: 0},
-                {name: 'Neurons with synaptic terminal here', value: 1},
-                {name: 'Neurons with pre-synaptic terminal here', value: 2},
-                {name: 'Neurons with post-synaptic terminal here', value: 3},
-                {name: 'Images of neurons with some part here (clustered by shape)', value: 4},
-                {name: 'Images of neurons with some part here (unclustered)', value: 5},
-                {name: 'Tracts/nerves innervating longino', value: 6},
-                {name: 'Lineage clones with some part here', value: 7},
-                {name: 'Transgenes exporessed here', value: 8},
-                {name: 'Genes expressed here', value: 9},
-                {name: 'Phenotypes here', value: 10},
-            ]
-        }
     ];
 
     var QueryItem = React.createClass({
@@ -763,8 +648,6 @@ define(function (require) {
          * Format incoming data source results into specified format in configuration script
          */
         formatDataSourceResult : function(data_source_name,response){
-            var currentInput = $('#query-typeahead').val();
-
             //create searchable result for main label
             var labelTerm = this.configuration.DataSources[data_source_name].label.field;
             var idTerm = this.configuration.DataSources[data_source_name].id;
@@ -850,12 +733,6 @@ define(function (require) {
 
         queryItemDeleted: function(item){
             this.props.model.deleteItem(item);
-        },
-
-        getTotalResultsCount: function(){
-            // TODO: build + run the query and get results count
-            // mock number of results to check if it's updating the UI
-            return Math.floor(Math.random() * (200 + 1));
         },
 
         // TODO: remove mock query execution - this will probably end up in the datasource
@@ -959,9 +836,10 @@ define(function (require) {
                 for (var i = 0; i < matchingQueries.length; i++) {
                     queryItem.options.push({
                             id: matchingQueries[i].getId(),
-                            name: matchingQueries[i].getLabel(),
+                            name: matchingQueries[i].getDescription(),
                             datasource: matchingQueries[i].getParent().getId(),
-                            value: i
+                            value: i,
+                            queryObj: matchingQueries[i]
                         }
                     );
                 }
@@ -1039,8 +917,6 @@ define(function (require) {
                     );
                 }, this);
 
-                var resultsCount = this.getTotalResultsCount();
-
                 markup = (
                     <div id="query-builder-container">
                         <div id="query-builder-items-container">
@@ -1050,7 +926,7 @@ define(function (require) {
                             <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" />
                             <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                         </div>
-                        <QueryFooter count={resultsCount} onRun={this.runQuery} />
+                        <QueryFooter count={this.props.model.count} onRun={this.runQuery} />
                     </div>
                 );
             }

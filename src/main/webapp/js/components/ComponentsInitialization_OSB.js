@@ -151,7 +151,7 @@ define(function (require) {
 		GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
 		
 		window.loadConnections = function(){
-			javascript:Model.neuroml.resolveAllImportTypes(function(){ $(".osb-notification-text").html(Model.neuroml.importTypes.length+" projections and "+Model.neuroml.connection.getVariableReferences().length+ " connections were successfully loaded.");});
+			Model.neuroml.resolveAllImportTypes(function(){ $(".osb-notification-text").html(Model.neuroml.importTypes.length+" projections and "+Model.neuroml.connection.getVariableReferences().length+ " connections were successfully loaded.");});
 		};
 		
         GEPPETTO.on(Events.Model_loaded, function () {

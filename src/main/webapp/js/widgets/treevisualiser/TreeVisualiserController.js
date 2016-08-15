@@ -96,6 +96,10 @@ define(function (require) {
             		case GEPPETTO.Resources.CONNECTION_CAPABILITY:
             			formattedValue = "";
             			break;
+            		case GEPPETTO.Resources.IMPORT_TYPE:
+                    	//AQP: Add sth! A button?
+            			formattedValue = "> Type not yet resolved";
+            			break;
             		default:
                     	throw "Unknown type";
             	}

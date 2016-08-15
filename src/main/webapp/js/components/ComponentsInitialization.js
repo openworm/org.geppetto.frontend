@@ -65,5 +65,6 @@ define(function (require) {
 		GEPPETTO.on('show_spinner', function(label) {
 			GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, text: label, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));	
 		});
+		
 	};
 });

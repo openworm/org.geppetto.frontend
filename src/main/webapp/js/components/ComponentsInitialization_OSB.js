@@ -42,6 +42,9 @@ define(function (require) {
 	    link.href = "geppetto/js/components/OSB.css";
 	    document.getElementsByTagName("head")[0].appendChild(link);
 		
+	    //Change this to prompt the user to switch to lines or not
+	    GEPPETTO.SceneFactory.setLinesUserInput(false);
+	    
 		//This function will be called when the run button is clicked
 		GEPPETTO.showExecutionDialog = function(callback){
 			var formCallback = callback;

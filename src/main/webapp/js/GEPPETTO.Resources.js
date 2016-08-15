@@ -149,6 +149,8 @@ define(function (require) {
             LOADING_PROJECT: "Loading Project",
 
             LOADING_EXPERIMENT: "Loading Experiment",
+            
+            RESOLVING_TYPES: "Resolving types",
 
             PARSING_MODEL: "Parsing model",
 

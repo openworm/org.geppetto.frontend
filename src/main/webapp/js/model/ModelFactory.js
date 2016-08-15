@@ -1854,7 +1854,7 @@ define(function (require) {
                 }
 
                 if (instance.connections) {
-                    instance.connections.concat(connectionInstances);
+                	instance.connections = instance.connections.concat(connectionInstances);
                 } else {
                     instance.connections = connectionInstances;
                 }

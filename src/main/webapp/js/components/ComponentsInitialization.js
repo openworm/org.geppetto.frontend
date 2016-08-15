@@ -37,6 +37,9 @@ define(function (require) {
 		//Logo initialization 
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
 
+		//Tutorial component initialization
+		GEPPETTO.ComponentFactory.addComponent('TUTORIAL', {}, document.getElementById("tutorial"));
+		
 		//Control panel initialization
 		GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"));
 
@@ -60,9 +63,6 @@ define(function (require) {
 
 		//Share button initialization
 		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));
-		
-		//Tutorial component initialization
-		GEPPETTO.ComponentFactory.addComponent('TUTORIAL', {}, document.getElementById("tutorial"));
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

@@ -60,16 +60,10 @@ var Events = {
     Experiment_created:"experiment:created",
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
-    Spotlight_closed : "spotlight:closed"
+    Spotlight_closed : "spotlight:closed",
+    Show_Tutorial : "show_tutorial",
+	Hide_Tutorial : "hide_tutorial"
 };
-
-var TutorialEvents = {
-	Show_Tutorial : "show_tutorial",
-	Hide_Tutorial : "hide_tutorial",
-	Show_Project_Loaded_Tutorial : "show_project_loaded_tutorial",
-	Show_Experiment_Loaded_Tutorial : "show_experiment_loaded_tutorial",
-	Show_Login_Tutorial : "show_login_tutorial"
-}; 
 
 define(function (require) {
     return function (GEPPETTO) {

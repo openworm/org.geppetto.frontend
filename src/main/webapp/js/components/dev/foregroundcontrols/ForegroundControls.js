@@ -66,7 +66,7 @@ define(function (require) {
         render: function () {
             var spotlightBtn = GEPPETTO.Spotlight != undefined ? React.createFactory(SpotlightButton)({}) : '';
             var controlPanelBtn = GEPPETTO.ControlPanel != undefined ? React.createFactory(ControlPanelButton)({}) : '';
-            var tutorialBtn = React.createFactory(TutorialButton)({});
+            var tutorialBtn = GEPPETTO.Tutorial != undefined ? React.createFactory(TutorialButton)({}) : '';
 
             return <div className={'foreground-controls'}>
                 {controlPanelBtn}

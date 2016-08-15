@@ -54,6 +54,7 @@ define(function (require) {
 		dontShowTutorial : false,
 		started : false,
 		tutorialLoaded : false,
+		tutorialMap : {},
 		
 		/**
 		 * Stores cookie to avoid showing tutorial next time at startup
@@ -170,8 +171,8 @@ define(function (require) {
 			$('#tutorial').show();
 		},
 		
-		addTutorial : function(event, configurationURL){
-			self.tutorialData(configurationURL);
+		setTutorial : function(event, configurationURL){
+			this.tutorialMap[event] = configurationURL;			
 		},
 
 		/**
@@ -201,48 +202,40 @@ define(function (require) {
 			var self = this;
 
 			//launches specific tutorial is experiment is loaded
-			GEPPETTO.on(TutorialEvents.Show_Experiment_Loaded_Tutorial,function(){
+			GEPPETTO.on(Events.Experiment_loaded,function(){
 				if(!this.dontShowTutorial){
-					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
-					this.dontShowTutorial = true;
-				}
-			});
-
-			//launches specific tutorial if project is loaded
-			GEPPETTO.on(TutorialEvents.Show_Project_Loaded_Tutorial,function(){
-				if(!this.dontShowTutorial){
-					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/project_loaded_tutorial.json");
-					this.dontShowTutorial = true;
-				}
-			});
-
-			//Launches specific tutorial is user is login
-			GEPPETTO.on(TutorialEvents.Show_Login_Tutorial,function(){
-				if(!this.dontShowTutorial){
-					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/login_tutorial.json");
+					//default tutorial when user doesn't specify one for this event
+					var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json";
+					if(self.tutorialMap[Events.Experiment_loaded]!=null || undefined){
+						tutorialURL = self.tutorialMap[Events.Experiment_loaded];
+					}
+					
+					self.tutorialData(tutorialURL);
 					this.dontShowTutorial = true;
 				}
 			});
 
 			//Launches tutorial from button 
-			GEPPETTO.on(TutorialEvents.Show_Tutorial,function(){
+			GEPPETTO.on(Events.Show_Tutorial,function(){
 				if(self.started){
 					self.open();
 				}else{
-					self.tutorialData("/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json");
-					var storedCookie = $.cookie('ignore_tutorial');
-					if(storedCookie!=null||undefined){
-						if(storedCookie){
-							this.setState({cookieClass:"hide"});
-						}
+					//default tutorial when user doesn't specify one for this event
+					var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json";
+					if(self.tutorialMap[Events.Show_Tutorial]!=null || undefined){
+						tutorialURL = self.tutorialMap[Events.Show_Tutorial];
 					}
+					
+					self.tutorialData(tutorialURL);
 				}
 			});
 			
 			//Hides tutorial
-			GEPPETTO.on(TutorialEvents.Hide_Tutorial,function(){
+			GEPPETTO.on(Events.Hide_Tutorial,function(){
 				self.close();
 			});
+			
+			GEPPETTO.Tutorial = this;
 		},
 
 		/**

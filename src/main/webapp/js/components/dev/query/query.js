@@ -122,7 +122,7 @@ define(function (require) {
                     var queryDTO = {
                         id: this.items[i].options[selection+1].id,
                         queryObj: this.items[i].options[selection+1].queryObj
-                    }
+                    };
 
                     queryDTOs.push(queryDTO);
                 }

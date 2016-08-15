@@ -235,7 +235,7 @@ define(function (require) {
             	
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getType().getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
                 	if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || node.getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
-                		if (node.getType().getSuperType() != undefined && node.getType().getSuperType().getId() == 'projection') {
+                		if (node.getType().getSuperType() != undefined && !(node.getType().getSuperType() instanceof Array) && node.getType().getSuperType().getId() == 'projection') {
                             var projectionChildren = node.getType().getChildren();
                             var numConnections = 0;
                             var projectionsChildrenNode = [];

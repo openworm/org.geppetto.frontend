@@ -44,7 +44,6 @@
 		</script>
         <link rel="stylesheet/less" type="text/css" href="geppetto/less/main.less" />
         <script src="geppetto/js/vendor/less.min.js" type="text/javascript"></script>
-        <script src="geppetto/js/vendor/babel.min.js" charset="utf-8"></script>
         <script data-main="geppetto/js/main.js" src="geppetto/js/vendor/require.js"></script>
     /build -->
 
@@ -81,6 +80,7 @@
     <div id="geppettologo" ></div>
     <div id="spotlight" ></div>
     <div id="controlpanel" ></div>
+    <div id="querybuilder" ></div>
     <div id="sim"></div>
 
     <div id="footer">

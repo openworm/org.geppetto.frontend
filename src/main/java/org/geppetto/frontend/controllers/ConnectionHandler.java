@@ -65,6 +65,7 @@ import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
+import org.geppetto.frontend.controllers.WebsocketConnection.RunnableQueryParameters;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.model.ExperimentState;
 import org.geppetto.model.GeppettoModel;
@@ -231,11 +232,11 @@ public class ConnectionHandler
 		}
 
 	}
-	
+
 	/**
 	 * @param projectId
 	 */
-	public void cloneExperiment(String requestID, long projectId,  long experimentID)
+	public void cloneExperiment(String requestID, long projectId, long experimentID)
 	{
 
 		IGeppettoProject project = retrieveGeppettoProject(projectId);
@@ -343,7 +344,7 @@ public class ConnectionHandler
 		try
 		{
 			GeppettoModel geppettoModel = geppettoManager.fetchVariable(dataSourceId, variableId, geppettoProject);
-			
+
 			String serializedModel = GeppettoSerializer.serializeToJSON(geppettoModel, true);
 
 			websocketConnection.sendMessage(requestID, OutboundMessages.VARIABLE_FETCHED, serializedModel);
@@ -373,7 +374,7 @@ public class ConnectionHandler
 	 * @param experimentId
 	 * @param dataSourceServiceId
 	 * @param variableId
-	 * @throws GeppettoExecutionException 
+	 * @throws GeppettoExecutionException
 	 */
 	public void resolveImportType(String requestID, Long projectId, List<String> typePaths)
 	{
@@ -392,6 +393,35 @@ public class ConnectionHandler
 			error(e, "Error importing type " + typePaths);
 		}
 
+	}
+
+	public void runQuery(String requestID, Long projectId, List<RunnableQueryParameters> runnableQueries)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		// GeppettoModel geppettoModel = geppettoManager.runQuery(typePaths, geppettoProject);
+		// websocketConnection.sendMessage(requestID, OutboundMessages.QUERY_RESULT, GeppettoSerializer.serializeToJSON(geppettoModel, true));
+
+	}
+
+	/**
+	 * @param requestID
+	 * @param projectId
+	 * @param runnableQueries
+	 */
+	public void runQueryCount(String requestID, Long projectId, List<RunnableQueryParameters> runnableQueries)
+	{
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		int count;
+		try
+		{
+			count = geppettoManager.runQueryCount(null, geppettoProject);
+			// websocketConnection.sendMessage(requestID, OutboundMessages.QUERY_RESULT, GeppettoSerializer.serializeToJSON(geppettoModel, true));
+			websocketConnection.sendMessage(requestID, OutboundMessages.RETURN_QUERY_COUNT, Integer.toString(count));
+		}
+		catch(GeppettoDataSourceException | GeppettoModelException | GeppettoExecutionException e)
+		{
+			error(e, "Error running query count");
+		}
 	}
 
 	/**
@@ -589,13 +619,13 @@ public class ConnectionHandler
 			error(e, "Error while reading the script at " + url);
 		}
 	}
-	
+
 	/**
 	 * @param requestID
 	 * @param url
 	 * @param visitor
 	 */
-	public void sendDataSourceResults(String requestID, String dataSourceName, URL url,WebsocketConnection visitor)
+	public void sendDataSourceResults(String requestID, String dataSourceName, URL url, WebsocketConnection visitor)
 	{
 		try
 		{
@@ -610,11 +640,10 @@ public class ConnectionHandler
 			}
 			String script = sb.toString();
 
-
 			JsonObject obj = new JsonObject();
 			obj.addProperty("data_source_name", dataSourceName);
 			obj.addProperty("results", script);
-			
+
 			String message = obj.toString();
 
 			websocketConnection.sendMessage(requestID, OutboundMessages.DATASOURCE_RESULTS_FETCHED, message);

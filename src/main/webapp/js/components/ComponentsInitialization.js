@@ -60,9 +60,6 @@ define(function (require) {
 
 		//Share controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));
-
-		//Query control initialization
-		GEPPETTO.ComponentFactory.addComponent('QUERY', {}, document.getElementById("querybuilder"));
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

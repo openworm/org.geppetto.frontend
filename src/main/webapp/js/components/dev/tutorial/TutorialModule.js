@@ -236,6 +236,10 @@ define(function (require) {
 			});
 			
 			GEPPETTO.Tutorial = this;
+			
+			if(GEPPETTO.ForegroundControls != undefined){
+                GEPPETTO.ForegroundControls.refresh();
+            }
 		},
 
 		/**

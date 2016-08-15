@@ -874,6 +874,9 @@ define(function (require) {
                 // TODO: notify no queries available for the selected term
                 alert("No queries available for the selected term.");
             }
+
+            // init datasource results to avoid duplicates
+            this.dataSourceResults.initialize(true);
         },
 
         render: function () {

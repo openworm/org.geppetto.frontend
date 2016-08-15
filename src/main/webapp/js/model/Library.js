@@ -94,7 +94,12 @@ define(function (require) {
     	while(b.length>BATCH){
     		GEPPETTO.SimulationHandler.resolveImportType(b.splice(0,BATCH));
 		}
-    	GEPPETTO.SimulationHandler.resolveImportType(b, function(){callback(); GEPPETTO.trigger("hide:spinner");});
+    	GEPPETTO.SimulationHandler.resolveImportType(b, function(){
+    		if(callback!=undefined){
+    			callback();
+    		} 
+    		GEPPETTO.trigger("hide:spinner");
+    	});
     };
 
     // Overriding set

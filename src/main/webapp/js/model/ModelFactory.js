@@ -897,7 +897,7 @@ define(function (require) {
                 // add to allPaths and to allPathsIndexing (assumes they are new paths)
                 this.allPaths = this.allPaths.concat(potentialInstancePaths);
                 this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
-                this.newPathsIndexing.concat(potentialInstancePathsForIndexing);
+                this.newPathsIndexing = this.newPathsIndexing.concat(potentialInstancePathsForIndexing);
             },
 
             /**

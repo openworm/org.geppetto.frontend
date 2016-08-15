@@ -154,8 +154,6 @@ define(function (require) {
     Datasource.prototype.fetchVariable = function (variableId, callback) {
         GEPPETTO.SimulationHandler.fetchVariable(variableId, this.getId(), callback);
     };
-    
 
-    
     return Datasource;
 });

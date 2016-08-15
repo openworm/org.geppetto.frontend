@@ -114,12 +114,22 @@ define(function (require) {
          * @param callback
          */
         getCount: function(callback){
-            GEPPETTO.QueriesController.getQueriesCount( this.items.map(function(item) {
-                return {
-                    id: item.id,
-                    query: item.queryObj
-                };
-            }), this.setCount);
+            var queryDTOs = [];
+
+            for(var i=0; i<this.items.length; i++){
+                var selection = this.items[i].selection;
+                if(selection != -1){
+                    var queryDTO = {
+                        id: this.items[i].options[selection+1].id,
+                        queryObj: this.items[i].options[selection+1].queryObj
+                    }
+
+                    queryDTOs.push(queryDTO);
+                }
+            }
+
+            var that = this;
+            GEPPETTO.QueriesController.getQueriesCount(queryDTOs, that.setCount.bind(that));
         },
 
         setCount(count){

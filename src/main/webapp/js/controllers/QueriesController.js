@@ -52,7 +52,6 @@ define(function (require) {
              * @param callback
              */
             runQuery: function (queries, callback) {
-
                 var compoundQuery=[];
                 for (var i=0;queries.length;i++) {
                     var id=queries[i].id;
@@ -63,10 +62,7 @@ define(function (require) {
                 parameters["projectId"] = Project.getId();
                 parameters["query"] = compoundQuery;
 
-
                 GEPPETTO.MessageSocket.send("run_query", parameters);
-
-
             },
 
 
@@ -77,7 +73,6 @@ define(function (require) {
              * @param callback
              */
             getQueriesCount: function (queries, callback) {
-            	
                 var compoundQuery=[];
                 for (var i=0;queries.length;i++) {
                     var id=queries[i].id;
@@ -99,5 +94,4 @@ define(function (require) {
         }
     }
 
-})
-;
+});

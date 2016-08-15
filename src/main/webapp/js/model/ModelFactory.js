@@ -2469,9 +2469,6 @@ define(function (require) {
                 // re-run model shortcuts
                 this.populateChildrenShortcuts(this.geppettoModel);
 
-                // refresh UI components to reflect updated state of model / instances
-                GEPPETTO.FE.refresh();
-
                 GEPPETTO.trigger(Events.Instance_deleted, instancePath);
             },
 

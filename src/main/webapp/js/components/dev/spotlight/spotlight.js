@@ -488,8 +488,6 @@ define(function (require) {
          * Format incoming data source results into specified format in configuration script
          */
         formatDataSourceResult : function(data_source_name,response){
-        	var currentInput = $('#typeahead').val();
-        	
         	//create searchable result for main label
     		var labelTerm = this.configuration.SpotlightBar.DataSources[data_source_name].label.field;
     		var idTerm = this.configuration.SpotlightBar.DataSources[data_source_name].id;

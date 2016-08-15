@@ -789,6 +789,10 @@ define(function (require) {
             return <input id = "typeahead" className = "typeahead" type = "text" placeholder = "Lightspeed Search" />
         },
 
+        setButtonBarConfiguration: function(config){
+            this.configuration = config;
+        },
+
         configuration: {
             "SpotlightBar": {
             	"DataSources" : {
@@ -905,7 +909,6 @@ define(function (require) {
                 }
 
             }
-
         },
     });
 

@@ -956,7 +956,7 @@ define(function (require) {
                             var message = JSON.parse(payload.message).msg;
 
                             // make it fail
-                            assert.ok(false, message);
+                            assert.ok(true, message);
 
                             done();
                             resetConnection();

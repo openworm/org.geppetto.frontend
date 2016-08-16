@@ -52,5 +52,24 @@ define(function (require) {
             GEPPETTO.SimulationHandler.resolveImportValue(this.getPath(), callback);
     };
     
+    
+    /**
+     * Get path
+     *
+     * @command Type.getPath()
+     *
+     * @returns {String} - path
+     *
+     */
+    ImportValue.prototype.getPath = function () {
+        if (this.parent) {
+            return this.parent.getPath();
+        }
+        else {
+            throw "A value should always have a parent!";
+        }
+
+    };
+    
     return ImportValue;
 });

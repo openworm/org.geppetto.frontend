@@ -1773,7 +1773,6 @@ define(function (require) {
             	 if (valueNode.value.eClass == "ImportValue"){
             		 // getID() was returning undefined, hence hack - ask about this.
             		 // if I dont do this then path is "Model.nwbLibrary.responseType_10.recording_10.undefined"
-            		 options.wrappedObj.id = "ImportValue";
             		 value = new ImportValue(options);
             	 }else{
             		 value = new Value(options);

@@ -62,10 +62,11 @@ var Events = {
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
     Check_user_privileges : "user:privileges",
-    Check_project_persisted : "project:persisted_state"
+    Check_project_persisted : "project:persisted_state",
     Spotlight_closed: "spotlight:closed",
     Instance_deleted: "instance: deleted"
 };
+
 define(function (require) {
     return function (GEPPETTO) {
         /**

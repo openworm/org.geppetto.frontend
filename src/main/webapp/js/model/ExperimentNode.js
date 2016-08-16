@@ -209,13 +209,7 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             setActive: function () {
-                G.unSelectAll();
-                GEPPETTO.ExperimentsController.closeCurrentExperiment();
-                var parameters = {};
-                parameters["experimentId"] = this.id;
-                parameters["projectId"] = this.getParent().getId();
-                GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                GEPPETTO.trigger(Events.Experiment_active);
+            	GEPPETTO.ExperimentsController.setActive(this);
             },
 
             /**

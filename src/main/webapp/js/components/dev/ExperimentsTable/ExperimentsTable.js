@@ -24,6 +24,7 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+        	$("#experimentsButton").show();
             var row = "#" + this.props.experiment.getId();
 
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
@@ -278,7 +279,6 @@ define(function (require) {
         activeExperiment : function(e){
         	var experiment = this.props.experiment;
         	var index = window.Project.getExperiments().indexOf(experiment);
-            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
             GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();

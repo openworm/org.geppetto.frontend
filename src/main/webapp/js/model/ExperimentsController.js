@@ -32,7 +32,7 @@
  *******************************************************************************/
 /**
  * Controller responsible to manage the experiments
- *
+ * TODO: Move to controllers folder
  * @author Matteo Cantarelli
  */
 define(function (require) {
@@ -86,6 +86,44 @@ define(function (require) {
                     //to update themselves
                     this.triggerPlayExperiment(experiment);
                 }
+            },
+            
+            setActive:function(experiment){
+                G.unSelectAll();
+                GEPPETTO.ExperimentsController.closeCurrentExperiment();
+                var parameters = {};
+                parameters["experimentId"] = experiment.id;
+                parameters["projectId"] = experiment.getParent().getId();
+                
+                /* ATTEMPT TO NOT REMOVE THE WIDGETS OPTIONALLY WHEN SWTICHING EXPERIMENT
+                 * To work we need to mark the old widget as inactive so that we don't try to update them 
+                if($("div.ui-widget").length>0){
+                	GEPPETTO.FE.inputDialog(
+                			"Do you want to remove the existing widgets?", 
+                			"You are loading a different experiment, do you want to retain the existing widgets? Note that the underlining data will cease existing as you are switching to a different experiment.", 
+                			"Remove widgets", 
+                			function(){
+                	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+                				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+                				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+                			}, 
+                			"Keep widgets", 
+                			function(){
+                	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+                				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+                			}
+        			);
+                }
+                else{
+    	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+    				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+    				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+                }*/
+                
+	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+
             },
 
             /**

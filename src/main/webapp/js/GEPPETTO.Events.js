@@ -60,7 +60,8 @@ var Events = {
     Experiment_created:"experiment:created",
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
-    Spotlight_closed : "spotlight:closed"
+    Spotlight_closed: "spotlight:closed",
+    Instance_deleted: "instance: deleted"
 };
 define(function (require) {
     return function (GEPPETTO) {
@@ -124,6 +125,11 @@ define(function (require) {
                 GEPPETTO.on(Events.Experiment_stop, function (parameters) {
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
+                });
+                GEPPETTO.on(Events.Instance_deleted, function (parameters) {
+                    if(GEPPETTO.ControlPanel != undefined){
+                        GEPPETTO.ControlPanel.deleteData([parameters]);
+                    }
                 });
             },
         };

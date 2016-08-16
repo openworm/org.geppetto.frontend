@@ -64,14 +64,7 @@ define(function(require) {
 					// this.setProps({text: GEPPETTO.Resources.SPOTLIGHT_HINT});
 				}
 			}).bind(this), 3000);
-			
-			GEPPETTO.on('spin_logo', function(label) {
-				this.addClass("fa-spin").attr('title', 'Loading data');
-			}.bind($("." + this.props.logo)));
 
-			GEPPETTO.on('stop_spin_logo', function(label) {
-				this.removeClass("fa-spin").attr('title', '');;
-			}.bind($("." + this.props.logo)));
 		},
 				
 		render: function () {

@@ -107,50 +107,60 @@ define(function (require) {
             this.dataset["root"] = root;
             this.widgetMargin = 20;
 
-            this.createDataFromConnections();
+            if(this.createDataFromConnections()){
+            	this.createLayout();	
+            }
 
-            this.createLayout();
 
             return this;
         },
 
         createDataFromConnections: function () {
+        	
+            //TODO: Hardcoded NeuroML stuff
+            if(Model.neuroml.connection){
+            	
+            	var connectionVariables = Model.neuroml.connection.getVariableReferences();
+            	if(connectionVariables.length>0) {
 
-            if (this.dataset["root"].getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
-                var subInstances = this.dataset["root"].getChildren();
-                this.dataset["nodes"] = [];
-                this.dataset["links"] = [];
+		            if (this.dataset["root"].getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
+		                var subInstances = this.dataset["root"].getChildren();
+		                this.dataset["nodes"] = [];
+		                this.dataset["links"] = [];
+		
+		                for (var k = 0; k < subInstances.length; k++) {
+		                    var subInstance = subInstances[k];
+		                    if (subInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
+		                        var populationChildren = subInstance.getChildren();
+		                        for (var l = 0; l < populationChildren.length; l++) {
+		                            var populationChild = populationChildren[l];
+		                            this.createNode(populationChild.getId(), this.options.nodeType(populationChild));
+		                        }
+		
+		                    }
+		                }
 
-                for (var k = 0; k < subInstances.length; k++) {
-                    var subInstance = subInstances[k];
-                    if (subInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                        var populationChildren = subInstance.getChildren();
-                        for (var l = 0; l < populationChildren.length; l++) {
-                            var populationChild = populationChildren[l];
-                            this.createNode(populationChild.getId(), this.options.nodeType(populationChild));
-                        }
-
-                    }
+		                for(var x=0; x<connectionVariables.length; x++){
+	                        var connectionVariable = connectionVariables[x];
+	
+	                        var source = connectionVariable.getA();
+	                        var target = connectionVariable.getB();
+	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
+	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
+	
+	                        this.createLink(sourceId, targetId, this.options.linkType(connectionVariable), this.options.linkWeight(connectionVariable));
+		                }
+		            }
+                	
+		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
+		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
+		            return true;
                 }
-
-                //TODO: Hardcoded NeuroML stuff
-                var typesToSearch=GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.projection);
-                var connectionVariables = GEPPETTO.ModelFactory.getAllVariablesOfMetaType(typesToSearch, GEPPETTO.Resources.CONNECTION_TYPE);
-
-                for(var x=0; x<connectionVariables.length; x++){
-                        var connectionVariable = connectionVariables[x];
-
-                        var source = connectionVariable.getA();
-                        var target = connectionVariable.getB();
-                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
-                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
-
-                        this.createLink(sourceId, targetId, this.options.linkType(connectionVariable), this.options.linkWeight(connectionVariable));
-                }
-
+            
             }
-            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
-            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
+            
+            return false;
+
         },
 
 
@@ -363,26 +373,26 @@ define(function (require) {
             };
 
             var layoutOptions = [
-                {id: "matrix", label: 'Adjacency matrix', description:
-                    "A coloured square at row 𝒊, column 𝒋 represents a " +
-                    "directed connection from node 𝒋 to node 𝒊.",
-                    img: imgPath('matrix.svg')},
-                {id: "force", label: 'Force-directed layout', description:
-                    "Draw circles for nodes, lines for connections, disregarding " +
-                    "spatial information.",
-                    img: imgPath('force.svg')},
-                {id: "hive",  label: 'Hive plot', description:
-                    "Axes correspond to node categories, arcs to connections." +
-                    "The position of each node along an axis is determined by " +
-                    "the total number of connections it makes.",
-                    img: imgPath('hive.svg')},
-                {id: "chord", label:'Chord diagram', description:
-                    "Circular slices correspond to node categories, chords to " +
-                    "connections. A gap between slice and chord indicate an " +
-                    "incoming connection. Use ctrl(shift) + mouse hover to " +
-                    "hide incoming(outgoing) connections from a population.",
-                    img: imgPath('chord.svg')}
-            ];
+                 {id: "matrix", label: 'Adjacency matrix', description:
+                     "A coloured square at row 𝒊, column 𝒋 represents a " +
+                     "directed connection from node 𝒋 to node 𝒊.",
+                     img: imgPath('matrix.svg')},
+                 {id: "force", label: 'Force-directed layout', description:
+                     "Draw circles for nodes, lines for connections, disregarding " +
+                     "spatial information.",
+                     img: imgPath('force.svg')},
+                 {id: "hive",  label: 'Hive plot', description:
+                     "Axes correspond to node categories, arcs to connections." +
+                     "The position of each node along an axis is determined by " +
+                     "the total number of connections it makes.",
+                     img: imgPath('hive.svg')},
+                 {id: "chord", label:'Chord diagram', description:
+                     "Circular slices correspond to node categories, chords to " +
+                     "connections. A gap between slice and chord indicate an " +
+                     "incoming connection. Use ctrl(shift) + mouse hover to " +
+                     "hide incoming(outgoing) connections from a population.",
+                     img: imgPath('chord.svg')}
+             ];
             var container = $('<div>').addClass('card-deck-wrapper');
             $('<p class="card-wrapper-title">How would you like to represent your network?</p>').appendTo(container);
             var deck = $('<div>').addClass('card-deck').appendTo(container);
@@ -420,10 +430,15 @@ define(function (require) {
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
                 function synapseFromConnection(conn) {
-                    return GEPPETTO.ModelFactory.getAllVariablesOfType(
-                            //TODO hardcoded NeuroML stuff
-                            conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse)[0].getId();
-                }
+                	
+                	var synapses=GEPPETTO.ModelFactory.getAllVariablesOfType(conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse);
+                	if(synapses.length>0){
+                		return synapses[0].getId();
+                	}
+                	else{
+                		return "Gap junction";
+                	}
+                };
                 that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
                 firstClick=true;
             }

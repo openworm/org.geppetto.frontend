@@ -14,9 +14,9 @@ define(function (require) {
             return {
                 label: '',
                 className: 'squareB',
-                icon: 'fa fa-list',
+                icon: 'fa fa-cogs',
                 onClick: function () {
-                    GEPPETTO.ControlPanel.open();
+                    GEPPETTO.QueryBuilder.open();
                 }
             };
         }

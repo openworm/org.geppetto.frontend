@@ -1,4 +1,5 @@
 /*******************************************************************************
+ * The MIT License (MIT)
  *
  * Copyright (c) 2011, 2016 OpenWorm.
  * http://openworm.org
@@ -28,55 +29,50 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
+ ******************************************************************************
+ */
+ /**
+ * Modal used to display info messages received from server
+ *
+ */
 define(function (require) {
-    function loadCss(url) {
-        var link = document.createElement("link");
-        link.type = "text/css";
-        link.rel = "stylesheet";
-        link.href = url;
-        document.getElementsByTagName("head")[0].appendChild(link);
-    }
-
-    loadCss("geppetto/js/components/dev/foregroundcontrols/foregroundcontrols.css");
 
     var React = require('react');
 
-    var SpotlightButton = require('./buttons/SpotlightButton');
-    var ControlPanelButton = require('./buttons/ControlPanelButton');
-    var QueryBuilderButton = require('./buttons/QueryBuilderButton');
-
-    var GEPPETTO = require('geppetto');
-
-    var ForegroundControls = React.createClass({
-
-        componentDidMount: function () {
-
+    return React.createClass({
+        mixins: [
+            require('jsx!mixins/bootstrap/modal')
+        ],
+        
+        getDefaultProps: function() {
+            return {
+                title: 'Message',
+                text: '',
+                aLabel: 'Yes', 
+                aClick: function(){},
+                bLabel: 'No', 
+                bClick: function(){},
+            }
         },
-
-        componentWillMount: function () {
-            GEPPETTO.ForegroundControls = this;
-        },
-
-        refresh: function(){
-            this.forceUpdate();
-        },
-
-        render: function () {
-            var spotlightBtn = GEPPETTO.Spotlight != undefined ? React.createFactory(SpotlightButton)({}) : '';
-            var controlPanelBtn = GEPPETTO.ControlPanel != undefined ? React.createFactory(ControlPanelButton)({}) : '';
-            var queryBuilderlBtn = GEPPETTO.QueryBuilder != undefined ? React.createFactory(QueryBuilderButton)({}) : '';
-
-            return <div className={'foreground-controls'}>
-                {controlPanelBtn}
-                <br/>
-                {spotlightBtn}
-                <br />
-                {queryBuilderlBtn}
-            </div>
+        
+        render: function (){
+        	return <div className="modal fade" id="infomodal">
+        			<div className="modal-dialog">
+        			<div className="modal-content">
+        				<div className="modal-header" id="infomodal-header">
+        					<h3 id="infomodal-title" className="text-center">{this.props.title}</h3>
+        				</div>
+        				<div className="modal-body">
+        			 		<p id="infomodal-text">{this.props.text}</p>
+        			 	</div>
+        			 	<div className="modal-footer" id="infomodal-footer">
+        			 		<button  className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.aClick} dangerouslySetInnerHTML={{__html: this.props.aLabel}}></button>
+        			 		<button  className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.bClick} dangerouslySetInnerHTML={{__html: this.props.bLabel}}></button>
+        			 	</div>
+        			 </div>
+              		 </div>
+        		  </div>
         }
     });
 
-    return ForegroundControls;
 });

@@ -42,6 +42,7 @@ define(function (require) {
 
     function Datasource(options) {
         ObjectWrapper.prototype.constructor.call(this, options);
+        this.queries = (options.queries != undefined) ? options.queries : [];
     };
 
     Datasource.prototype = Object.create(ObjectWrapper.prototype);
@@ -93,7 +94,7 @@ define(function (require) {
      *
      */
     Datasource.prototype.getQueries = function () {
-        return this.getWrappedObj().queries;
+        return this.queries;
     };
 
     /**
@@ -153,29 +154,6 @@ define(function (require) {
     Datasource.prototype.fetchVariable = function (variableId, callback) {
         GEPPETTO.SimulationHandler.fetchVariable(variableId, this.getId(), callback);
     };
-    
 
-    /**
-     *
-     * * Run a set of queries on this datasource
-     *
-     * @param queries
-     * @param callback
-     */
-    Datasource.prototype.runQueries = function (queries, callback) {
-        GEPPETTO.SimulationHandler.runQueries(queries, this.getId(), callback);
-    };
-
-
-    /**
-     * Get the count for a set of queries on this datasource
-     *
-     * @param queries
-     * @param callback
-     */
-    Datasource.prototype.getQueriesCount = function (queries, callback) {
-        GEPPETTO.SimulationHandler.getQueriesCount(queries, this.getId(), callback);
-    };
-    
     return Datasource;
 });

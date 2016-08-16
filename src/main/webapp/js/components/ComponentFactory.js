@@ -51,6 +51,7 @@ define(function (require) {
 		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
 		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
 		var shareComp = require('jsx!./dev/share/share');
+		var queryComp = require('jsx!./dev/query/query');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -100,6 +101,9 @@ define(function (require) {
                 else if (component == 'MDMODAL'){
                     return React.createFactory(mdModalComp)(properties);
                 }
+				else if (component == 'QUERY'){
+					return React.createFactory(queryComp)(properties);
+				}
 			},
 			
 			addComponent: function(component, properties, container){

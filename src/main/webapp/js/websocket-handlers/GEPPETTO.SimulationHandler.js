@@ -429,7 +429,7 @@ define(function (require) {
              * @param payload
              */
             swapResolvedValue: function (payload) {
-                var rawModel = JSON.parse(payload.import_type_resolved);
+                var rawModel = JSON.parse(payload.import_value_resolved);
 
                 // STEP 1: merge model - expect a fully formed Geppetto model to be merged into current one
                 var diffReport = GEPPETTO.ModelFactory.mergeModel(rawModel, true);
@@ -605,9 +605,9 @@ define(function (require) {
 
                 // print node
                 var arrayPart = (size != null) ? "[" + size + "]" : "";
-                var indentation = "   ���������";
+                var indentation = "   ���������������������������";
                 for (var j = 0; j < indent; j++) {
-                    indentation = indentation.replace("���������", " ") + "   ��������� ";
+                    indentation = indentation.replace("���������������������������", " ") + "   ��������������������������� ";
                 }
                 formattedNode = indentation + name + arrayPart;
 

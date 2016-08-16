@@ -1748,7 +1748,7 @@ define(function (require) {
                 }
 
                 var v =  new Variable(options);
-                var wrappedValues=this.createValues(node.initialValues, v);
+                v.values=this.createValues(node.initialValues, v);
                 return v;
             },
 

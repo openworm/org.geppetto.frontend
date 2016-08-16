@@ -162,8 +162,19 @@ define(function (require) {
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 2, "Active experiment id of loaded project checked");
 
-                            window.Project.getActiveExperiment().uploadResults("hhcell", "GEPPETTO_RECORDING");
 
+                            var login = GEPPETTO.UserController.isLogin();
+                        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                        	var projectPersisted = window.Project.persisted;
+                        	if(writePermission && projectPersisted && login){
+                                window.Project.getActiveExperiment().uploadResults("hhcell", "GEPPETTO_RECORDING");
+                        	}else{
+                        		assert.ok(false, "Results Not Downloaded Okay due to Permission restrictions!");
+
+                                done();
+                                resetConnection();
+                            }
+                        	
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.RESULTS_UPLOADED:
                             assert.ok("Results Uploaded", "Results Uploaded Okay!");
@@ -234,11 +245,21 @@ define(function (require) {
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 2, "Active experiment id of loaded project checked");
 
-                            window.Project.getActiveExperiment().uploadModel('hhcell');
+                            var login = GEPPETTO.UserController.isLogin();
+                        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                        	var projectPersisted = window.Project.persisted;
+                        	if(writePermission && projectPersisted && login){
+                                window.Project.getActiveExperiment().uploadModel('hhcell');
+                        	}else{
+                        		assert.ok(false, "Results Not Downloaded Okay due to Permission restrictions!");
 
+                                done();
+                                resetConnection();
+                            }
+                        	
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_UPLOADED:
-                            assert.ok("Model Uploaded", "Model Uploaded Okay!");
+                            assert.ok(false, "Model Uploaded Okay!");
 
                             done();
                             resetConnection();
@@ -308,8 +329,17 @@ define(function (require) {
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 2, "Active experiment id of loaded project checked");
 
-                            window.Project.getActiveExperiment().downloadResults('hhcell', 'GEPPETTO_RECORDING');
+                            var login = GEPPETTO.UserController.isLogin();
+                        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                        	var projectPersisted = window.Project.persisted;
+                        	if(writePermission && projectPersisted && login){
+                        		window.Project.getActiveExperiment().downloadResults('hhcell', 'GEPPETTO_RECORDING');
+                        	}else{
+                        		assert.ok(false, "Results Not Downloaded Okay due to Permission restrictions!");
 
+                                done();
+                                resetConnection();
+                            }
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.ERROR_DOWNLOADING_RESULTS:
                             assert.ok("Model Not Downloaded", "Results Not Downloaded Okay!");
@@ -395,7 +425,18 @@ define(function (require) {
                             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Active experiment id of loaded project checked");
-                            window.Project.downloadModel('hhcell');
+                            
+                            var login = GEPPETTO.UserController.isLogin();
+                        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                        	var projectPersisted = window.Project.persisted;
+                        	if(writePermission && projectPersisted && login){
+                        		window.Project.downloadModel('hhcell');
+                        	}else{
+                        		assert.ok(false, "Results Not Downloaded Okay due to Permission restrictions!");
+
+                                done();
+                                resetConnection();
+                            }
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.DOWNLOAD_MODEL:
@@ -437,59 +478,7 @@ define(function (require) {
         });
 
         
-        QUnit.test("Test Persist Project (requires aws.credentials)", function ( assert ) {
-
-            var done = assert.async();
-
-            var handler = {
-                onMessage: function (parsedServerMessage) {
-                    // Switch based on parsed incoming message type
-                    switch (parsedServerMessage.type) {
-                        //Simulation has been loaded and model need to be loaded
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-                            window.Project.persist();
-
-                            break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PERSISTED:
-                            assert.ok(true, "Project persisted");
-
-                            done();
-                            resetConnection();
-
-                            break;
-                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-                            var payload = JSON.parse(parsedServerMessage.data);
-                            var message = JSON.parse(payload.message);
-
-                            // make it fail
-                            assert.ok(false, message);
-
-                            done();
-                            resetConnection();
-
-                            break;
-                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-                            var payload = JSON.parse(parsedServerMessage.data);
-                            var message = JSON.parse(payload.message).message;
-
-                            // make it fail
-                            assert.ok(false, message);
-
-                            done();
-                            resetConnection();
-
-                            break;
-                    }
-                }
-            };
-
-            GEPPETTO.MessageSocket.clearHandlers();
-            GEPPETTO.MessageSocket.addHandler(handler);
-            Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json");
-        });
-
-//        QUnit.test("Test Save Project Properties", function ( assert ) {
+//        QUnit.test("Test Persist Project (requires aws.credentials)", function ( assert ) {
 //
 //            var done = assert.async();
 //
@@ -500,15 +489,11 @@ define(function (require) {
 //                        //Simulation has been loaded and model need to be loaded
 //                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
 //                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-//
-//                            assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
-//                            var properties = {"name": "New Project Name"};
-//                            window.Project.saveProjectProperties(properties);
+//                            window.Project.persist();
 //
 //                            break;
-//                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PROPS_SAVED:
-//                            var payload = JSON.parse(parsedServerMessage.data);
-//                            assert.ok(true, "Project saved");
+//                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PERSISTED:
+//                            assert.ok(true, "Project persisted");
 //
 //                            done();
 //                            resetConnection();
@@ -542,8 +527,64 @@ define(function (require) {
 //
 //            GEPPETTO.MessageSocket.clearHandlers();
 //            GEPPETTO.MessageSocket.addHandler(handler);
-//            window.Project.loadFromID("1");
+//            Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json");
 //        });
+
+        QUnit.test("Test Save Project Properties", function ( assert ) {
+
+            var done = assert.async();
+
+            var handler = {
+                onMessage: function (parsedServerMessage) {
+                    // Switch based on parsed incoming message type
+                    switch (parsedServerMessage.type) {
+                        //Simulation has been loaded and model need to be loaded
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+
+                            assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
+                            var properties = {"name": "New Project Name"};
+                            window.Project.saveProjectProperties(properties);
+
+                            break;
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PROPS_SAVED:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            assert.ok(true, "Project saved");
+
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message);
+
+                            // make it fail
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+
+                            break;
+                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+                            var payload = JSON.parse(parsedServerMessage.data);
+                            var message = JSON.parse(payload.message).message;
+
+                            // make it fail
+                            assert.ok(false, message);
+
+                            done();
+                            resetConnection();
+
+                            break;
+                    }
+                }
+            };
+
+            GEPPETTO.MessageSocket.clearHandlers();
+            GEPPETTO.MessageSocket.addHandler(handler);
+            window.Project.loadFromID("1");
+        });
         
         QUnit.test("Test Save Experiment Properties", function ( assert ) {
 

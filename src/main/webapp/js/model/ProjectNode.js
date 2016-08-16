@@ -325,7 +325,8 @@ define(['jquery', 'underscore', 'backbone',
         persist: function () {
         	var login = GEPPETTO.UserController.isLogin();
         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-
+        	var projectPersisted = this.persisted;
+        	
         	if(writePermission && login){
         		var parameters = {};
         		parameters["projectId"] = this.id;

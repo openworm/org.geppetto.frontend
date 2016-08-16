@@ -259,7 +259,7 @@ define(function (require) {
                         	
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_UPLOADED:
-                            assert.ok(false, "Model Uploaded Okay!");
+                            assert.ok(true, "Model Uploaded Okay!");
 
                             done();
                             resetConnection();
@@ -494,6 +494,7 @@ define(function (require) {
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PERSISTED:
                             assert.ok(true, "Project persisted");
+                            GEPPETTO.SimulationHandler.persistProject(JSON.parse(parsedServerMessage.data));
 
                             done();
                             resetConnection();
@@ -527,7 +528,7 @@ define(function (require) {
 
             GEPPETTO.MessageSocket.clearHandlers();
             GEPPETTO.MessageSocket.addHandler(handler);
-            window.Project.loadFromID("1");
+            Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json");
         });
 
         QUnit.test("Test Save Project Properties", function ( assert ) {

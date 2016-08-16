@@ -254,8 +254,10 @@ define(function (require) {
                 var activeExperimentID = message.activeExperimentID;
 
                 window.Project.id = parseInt(projectID);
-                var oldActiveExperiment = window.Project.getActiveExperiment().id;
-                window.Project.getActiveExperiment().id = parseInt(activeExperimentID);
+                if(window.Project.getActiveExperiment()!=null || undefined){
+                	var oldActiveExperiment = window.Project.getActiveExperiment().id;
+                	window.Project.getActiveExperiment().id = parseInt(activeExperimentID);
+                }
                 window.Project.persisted = true;
 
                 GEPPETTO.trigger(Events.Project_persisted);

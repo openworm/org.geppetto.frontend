@@ -68,6 +68,8 @@ define(function (require) {
             var projectPersisted = this.props.experiment.getParent().persisted;
             var login = GEPPETTO.UserController.isLogin();
             
+            var editable = false;
+            
             if(!writePermission || !projectPersisted || !login){
             	editable = false;
             }else{

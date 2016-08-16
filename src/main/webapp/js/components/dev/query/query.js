@@ -461,6 +461,43 @@ define(function (require) {
         },
 
         initTypeahead: function () {
+            var that = this;
+
+            $("#query-typeahead").unbind('keydown');
+            $("#query-typeahead").keydown(this, function (e) {
+                if (e.which == 9 || e.keyCode == 9) {
+                    e.preventDefault();
+                }
+            });
+
+            $("#query-typeahead").unbind('keypress');
+            $("#query-typeahead").keypress(this, function (e) {
+                if (e.which == 13 || e.keyCode == 13) {
+                    that.confirmed($("#query-typeahead").val());
+                }
+                if (this.searchTimeOut !== null) {
+                    clearTimeout(this.searchTimeOut);
+                }
+                this.searchTimeOut = setTimeout(function () {
+                    for (var key in that.configuration.DataSources) {
+                        if (that.configuration.DataSources.hasOwnProperty(key)) {
+                            var dataSource = that.configuration.DataSources[key];
+                            var searchQuery = $("#query-typeahead").val();
+                            var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
+                            that.updateResults = true;
+                            that.requestDataSourceResults(key, url, dataSource.crossDomain);
+                        }
+                    }
+                }, 150);
+            });
+
+            $("#query-typeahead").unbind('typeahead:selected');
+            $("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {
+                if (datum.hasOwnProperty("label")) {
+                    that.confirmed(datum.label);
+                }
+            });
+
             $('#query-typeahead').typeahead({
                     hint: true,
                     highlight: true,
@@ -505,54 +542,15 @@ define(function (require) {
                 }
             });
 
-            $("#query-typeahead").keydown(this, function (e) {
-                if (e.which == 9 || e.keyCode == 9) {
-                    e.preventDefault();
-                }
-            });
-
-            $("#query-typeahead").keypress(this, function (e) {
-                if (e.which == 13 || e.keyCode == 13) {
-                    that.confirmed($("#query-typeahead").val());
-                }
-                if (this.searchTimeOut !== null) {
-                    clearTimeout(this.searchTimeOut);
-                }
-                this.searchTimeOut = setTimeout(function () {
-                    for (var key in that.configuration.DataSources) {
-                        if (that.configuration.DataSources.hasOwnProperty(key)) {
-                            var dataSource = that.configuration.DataSources[key];
-                            var searchQuery = $("#query-typeahead").val();
-                            var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
-                            that.updateResults = true;
-                            that.requestDataSourceResults(key, url, dataSource.crossDomain);
-                        }
-                    }
-                }, 150);
-            });
-
-            $("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {
-                if (datum.hasOwnProperty("label")) {
-                    that.confirmed(datum.label);
-                }
-            });
-
-            this.dataSourceResults = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
-                identify: function (obj) {
-                    return obj.label;
-                }
-            });
-
             Handlebars.registerHelper('geticon', function (icon) {
                 if (icon) {
                     return new Handlebars.SafeString("<icon class='fa " + icon + "' style='margin-right:5px;'/>");
                 } else {
                     return;
                 }
-
             });
+
+            this.initDataSourceResults();
 
             this.initTypeahead();
 
@@ -566,6 +564,16 @@ define(function (require) {
                 // re-init the search box on query builder
                 this.initTypeahead();
             }
+        },
+
+        initDataSourceResults: function(){
+            this.dataSourceResults = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                identify: function (obj) {
+                    return obj.label;
+                }
+            });
         },
 
         /**
@@ -588,8 +596,7 @@ define(function (require) {
         },
 
         /**
-         * Figure out if data source of same name is already in there. If it is,
-         * create a new key for it.
+         * Figure out if data source of same name is already in there. If it is create a new key for it.
          */
         generateDataSourceKey : function(key, index){
             var dataSource = this.configuration.DataSources[key]
@@ -876,7 +883,7 @@ define(function (require) {
             }
 
             // init datasource results to avoid duplicates
-            this.dataSourceResults.initialize(true);
+            this.dataSourceResults.clear();
         },
 
         render: function () {

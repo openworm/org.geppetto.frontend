@@ -96,18 +96,25 @@ define(function (require) {
 
             /**
              *
-             * Different status an experiment can be on
+             * Different status an experiment can be on and descriptions
              *
              * @enum
              */
             ExperimentStatus: {
                 DESIGN: "DESIGN",
+                DESIGN_DESCRIPTION: "The experiment is in <b>DESIGN</b> status. Parameters can be set and state variables can be watched before running the experiment.",
                 CANCELED: "CANCELED",
+                CANCELED_DESCRIPTION: "The experiment has been <b>CANCELED</b>.",
                 QUEUED: "QUEUED",
+                QUEUED_DESCRIPTION: "The experiment is <b>QUEUED</b> for running.",
                 RUNNING: "RUNNING",
+                RUNNING_DESCRIPTION: "The experiment is currently <b>RUNNING</b>.",
                 ERROR: "ERROR",
+                ERROR_DESCRIPTION: "The experiment caused an <b>ERROR</b> while running.",
                 COMPLETED: "COMPLETED",
+                COMPLETED_DESCRIPTION: "The experiment is <b>COMPLETED</b>. State variables can now be plotted if recorded.",
                 DELETED: "DELETED",
+                DELETED_DESCRIPTION: "The experiment is <b>DELETED</b>... and you shouldn't be seeing this message!"
             },
 
             GeometryTypes: {

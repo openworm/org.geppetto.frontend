@@ -8,6 +8,8 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var GEPPETTO = require('geppetto');
 
+    $.widget.bridge('uitooltip', $.ui.tooltip);
+
     /**
      * Creates a table row html element <tr>, used to display an Experiment's
      * information (name, lastModified) and controls.
@@ -218,41 +220,62 @@ define(function (require) {
      * Creates <td> element to display the status of an experiment
      */
     var StatusElement = React.createClass({
+        attachTooltip: function(){
+            $('div[rel="tooltip"]').uitooltip({
+                position: { my: "left+15 center", at: "right center" },
+                tooltipClass: "tooltip-container-status",
+                show: {
+                    effect: "slide",
+                    direction: "left",
+                    delay: 200
+                },
+                hide: {
+                    effect: "slide",
+                    direction: "left",
+                    delay: 200
+                },
+                content: function () {
+                    return this.getAttribute("title");
+                },
+            });
+        },
+
+        componentDidMount: function(){
+            this.attachTooltip();
+        },
+
         render: function () {
             var experiment = this.props.experiment;
             // create element in row for showing status
             var tdStatus;
-            // keep track if status is in design
-            var design = false;
 
             if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle COMPLETED center-block" title="COMPLETED"></div>
+                tdStatus = <td className="statusIcon">
+                    <div className="circle COMPLETED center-block" data-status="COMPLETED" title={GEPPETTO.Resources.ExperimentStatus.COMPLETED_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle DELETED center-block" title="DELETED"></div>
+                tdStatus = <td className="statusIcon">
+                    <div className="circle DELETED center-block" data-status="DELETED" title={GEPPETTO.Resources.ExperimentStatus.DELETED_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle RUNNING center-block" title="RUNNING"></div>
+                tdStatus = <td className="statusIcon">
+                    <div className="circle RUNNING center-block" data-status="RUNNING" title={GEPPETTO.Resources.ExperimentStatus.RUNNING_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle DESIGN center-block" title="DESIGN"></div>
+                tdStatus = <td className="statusIcon">
+                    <div className="circle DESIGN center-block" data-status="DESIGN" title={GEPPETTO.Resources.ExperimentStatus.DESIGN_DESCRIPTION} rel="tooltip"></div>
                 </td>;
-                design = true;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle QUEUED center-block" title="QUEUED"></div>
+                tdStatus = <td className="statusIcon">
+                    <div className="circle QUEUED center-block" data-status="QUEUED" title={GEPPETTO.Resources.ExperimentStatus.QUEUED} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle CANCELED center-block" title="CANCELED"></div>
+                tdStatus = <td className="statusIcon">
+                    <div className="circle CANCELED center-block" data-status="CANCELED" title={GEPPETTO.Resources.ExperimentStatus.CANCELED_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle ERROR center-block" title="ERROR"></div>
+                tdStatus = <td className="statusIcon">
+                    <div className="circle ERROR center-block" data-status="ERROR" title={GEPPETTO.Resources.ExperimentStatus.ERROR_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             }
 
@@ -515,12 +538,13 @@ define(function (require) {
                     var experiment = experiments[e];
                     if (this.id == ("#" + experiment.getId()) || this.id == (experiment.getId())) {
                         var tdStatus = $(this).find(".circle");
-                        var tdStatusTitle = tdStatus.attr("title");
+                        var tdStatusId = tdStatus.attr("data-status");
                         // keep track if status is in design
                         if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("COMPLETED");
-                            tdStatus.attr("title", "COMPLETED");
+                            tdStatus.attr("data-status", "COMPLETED");
+                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.COMPLETED_DESCRIPTION);
                             if(active!=null){
                             	if(active.getId() == experiment.getId()){
                             		$("#downloadResultsIcon-" + experiment.getId()).show();
@@ -533,29 +557,35 @@ define(function (require) {
                            	 }
                             }
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
-                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("DELETED");
-                            tdStatus.attr("title", "DELETED");
+                            tdStatus.attr("data-status", "DELETED");
+                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.DELETED_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("RUNNING");
-                            tdStatus.attr("title", "RUNNING");
+                            tdStatus.attr("data-status", "RUNNING");
+                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.RUNNING_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("DESIGN");
-                            tdStatus.attr("title", "DESIGN");
+                            tdStatus.attr("data-status", "DESIGN");
+                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.DESIGN_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
-                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("QUEUED");
-                            tdStatus.attr("title", "QUEUED");
+                            tdStatus.attr("data-status", "QUEUED");
+                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.QUEUED_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
-                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("CANCELED");
-                            tdStatus.attr("title", "CANCELED");
+                            tdStatus.attr("data-status", "CANCELED");
+                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.CANCELED_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                            tdStatus.removeClass(tdStatusTitle);
+                            tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("ERROR");
-                            tdStatus.attr("title", "ERROR");
+                            tdStatus.attr("data-status", "ERROR");
+                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.ERROR_DESCRIPTION);
                         } 
                     }
                     if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-"+ experiment.getId())) {

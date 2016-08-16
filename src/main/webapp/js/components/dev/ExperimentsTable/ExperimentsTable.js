@@ -279,7 +279,6 @@ define(function (require) {
         activeExperiment : function(e){
         	var experiment = this.props.experiment;
         	var index = window.Project.getExperiments().indexOf(experiment);
-            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
             GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();

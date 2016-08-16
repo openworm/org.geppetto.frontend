@@ -66,8 +66,8 @@ define(function (require) {
         			 		<p id="infomodal-text">{this.props.text}</p>
         			 	</div>
         			 	<div className="modal-footer" id="infomodal-footer">
-        			 		<button  id="infomodal-btn" className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.aClick} dangerouslySetInnerHTML={{__html: this.props.aLabel}}></button>
-        			 		<button  id="infomodal-btn" className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.nClick} dangerouslySetInnerHTML={{__html: this.props.bLabel}}></button>
+        			 		<button  className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.aClick} dangerouslySetInnerHTML={{__html: this.props.aLabel}}></button>
+        			 		<button  className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.bClick} dangerouslySetInnerHTML={{__html: this.props.bLabel}}></button>
         			 	</div>
         			 </div>
               		 </div>

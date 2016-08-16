@@ -489,61 +489,61 @@ define(function (require) {
             Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json");
         });
 
-        QUnit.test("Test Save Project Properties", function ( assert ) {
-
-            var done = assert.async();
-
-            var handler = {
-                onMessage: function (parsedServerMessage) {
-                    // Switch based on parsed incoming message type
-                    switch (parsedServerMessage.type) {
-                        //Simulation has been loaded and model need to be loaded
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-
-                            assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
-                            var properties = {"name": "New Project Name"};
-                            window.Project.saveProjectProperties(properties);
-
-                            break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PROPS_SAVED:
-                            var payload = JSON.parse(parsedServerMessage.data);
-                            assert.ok(true, "Project saved");
-
-                            done();
-                            resetConnection();
-
-                            break;
-                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
-                            var payload = JSON.parse(parsedServerMessage.data);
-                            var message = JSON.parse(payload.message);
-
-                            // make it fail
-                            assert.ok(false, message);
-
-                            done();
-                            resetConnection();
-
-                            break;
-                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
-                            var payload = JSON.parse(parsedServerMessage.data);
-                            var message = JSON.parse(payload.message).message;
-
-                            // make it fail
-                            assert.ok(false, message);
-
-                            done();
-                            resetConnection();
-
-                            break;
-                    }
-                }
-            };
-
-            GEPPETTO.MessageSocket.clearHandlers();
-            GEPPETTO.MessageSocket.addHandler(handler);
-            window.Project.loadFromID("1");
-        });
+//        QUnit.test("Test Save Project Properties", function ( assert ) {
+//
+//            var done = assert.async();
+//
+//            var handler = {
+//                onMessage: function (parsedServerMessage) {
+//                    // Switch based on parsed incoming message type
+//                    switch (parsedServerMessage.type) {
+//                        //Simulation has been loaded and model need to be loaded
+//                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+//                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+//
+//                            assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
+//                            var properties = {"name": "New Project Name"};
+//                            window.Project.saveProjectProperties(properties);
+//
+//                            break;
+//                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_PROPS_SAVED:
+//                            var payload = JSON.parse(parsedServerMessage.data);
+//                            assert.ok(true, "Project saved");
+//
+//                            done();
+//                            resetConnection();
+//
+//                            break;
+//                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:
+//                            var payload = JSON.parse(parsedServerMessage.data);
+//                            var message = JSON.parse(payload.message);
+//
+//                            // make it fail
+//                            assert.ok(false, message);
+//
+//                            done();
+//                            resetConnection();
+//
+//                            break;
+//                        case GEPPETTO.GlobalHandler.MESSAGE_TYPE.ERROR:
+//                            var payload = JSON.parse(parsedServerMessage.data);
+//                            var message = JSON.parse(payload.message).message;
+//
+//                            // make it fail
+//                            assert.ok(false, message);
+//
+//                            done();
+//                            resetConnection();
+//
+//                            break;
+//                    }
+//                }
+//            };
+//
+//            GEPPETTO.MessageSocket.clearHandlers();
+//            GEPPETTO.MessageSocket.addHandler(handler);
+//            window.Project.loadFromID("1");
+//        });
         
         QUnit.test("Test Save Experiment Properties", function ( assert ) {
 

@@ -93,7 +93,27 @@ public class ConnectionsManager
 	{
 		if(_connections.contains(websocketConnection))
 		{
-			_connections.remove(websocketConnection.getConnectionID());
+			if(websocketConnection.getConnectionID() != null)
+			{
+				_connections.remove(websocketConnection.getConnectionID());
+			}
+			else
+			{
+				//TODO Sometimes for some reason the websocketConnection has null as ID, need to investigate more
+				String toRemove = null;
+				for(String key : _connections.keySet())
+				{
+					if(_connections.get(key).equals(websocketConnection))
+					{
+						toRemove = key;
+						break;
+					}
+				}
+				if(toRemove != null)
+				{
+					_connections.remove(toRemove);
+				}
+			}
 			_logger.info("Websocket connection removed " + websocketConnection.getConnectionID());
 		}
 	}

@@ -250,19 +250,7 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             setActive: function () {
-                var login = GEPPETTO.UserController.isLogin();
-
-                if(login){
-                	G.unSelectAll();
-                	GEPPETTO.ExperimentsController.closeCurrentExperiment();
-                	var parameters = {};
-                	parameters["experimentId"] = this.id;
-                	parameters["projectId"] = this.getParent().getId();
-                	GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                	GEPPETTO.trigger(Events.Experiment_active);
-                }else{
-        			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
-                }
+            	GEPPETTO.ExperimentsController.setActive(this);
             },
 
             /**

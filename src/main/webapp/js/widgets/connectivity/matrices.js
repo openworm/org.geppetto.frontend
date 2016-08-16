@@ -118,6 +118,7 @@ matrices = {
            $('<option/>', {value: k, text: v}).appendTo(orderCombo);
        });
        orderContainer.append($('<span/>', {
+    	   id: 'matrix-sorter',
            class: 'connectivity-ordering-label',
            text: 'Order by:'
        }).append(orderCombo));

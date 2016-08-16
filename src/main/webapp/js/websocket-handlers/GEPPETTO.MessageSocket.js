@@ -45,6 +45,8 @@ define(function (require) {
         var nextID = 0;
         var connectionInterval = 300;
         var pako = require("pako");
+        
+        var callbackHandler = {};
 
         /**
          * Web socket creation and communication
@@ -123,7 +125,7 @@ define(function (require) {
             /**
              * Sends messages to the server
              */
-            send: function (command, parameter) {
+            send: function (command, parameter, callback) {
                 var requestID = this.createRequestID();
 
                 //if there's a script running let it know the requestID it's using to send one of it's commands
@@ -132,6 +134,11 @@ define(function (require) {
                 }
 
                 this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
+                
+                // add callback with request id if any
+                if (callback != undefined) {
+                    callbackHandler[requestID] = callback;
+                }
                 
                 return requestID;
             },
@@ -236,6 +243,15 @@ define(function (require) {
                     handler.onMessage(parsedServerMessage);
                 }
             }
+            
+            // run callback if any
+            if(parsedServerMessage.requestID != undefined){
+                if (callbackHandler[parsedServerMessage.requestID] != undefined) {
+                    callbackHandler[parsedServerMessage.requestID](parsedServerMessage.data);
+                    delete callbackHandler[parsedServerMessage.requestID];
+                }
+            }
+            
         }
 
         function processBinaryMessage(message) {

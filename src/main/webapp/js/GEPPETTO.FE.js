@@ -41,6 +41,7 @@ define(function(require)
     {
 
         var React = require('react'), $ = require('jquery'), InfoModal = require('jsx!components/popups/InfoModal'), ErrorModal = require('jsx!components/popups/ErrorModal');
+        var InputModal = require('jsx!components/popups/InputModal');
         var ReactDOM = require('react-dom');
 
         /**
@@ -127,6 +128,38 @@ define(function(require)
                     document.getElementById('modal-region')
                 );
             },
+            
+            /**
+             * Basic Dialog box with message to display.
+             *
+             * @method
+             *
+             * @param title -
+             *            Title of message
+             * @param msg -
+             *            Message to display
+             */
+            inputDialog : function(title, msg, aLabel, aClick, bLabel, bClick)
+            {
+                var infoFactory = React.createFactory(InputModal);
+
+                ReactDOM.render(
+                    infoFactory(
+                        {
+                            show : true,
+                            keyboard : false,
+                            title : title,
+                            text : msg,
+                            aLabel:aLabel,
+                            aClick:aClick,
+                            bLabel:bLabel,
+                            bClick:bClick
+                        }),
+
+                    document.getElementById('modal-region')
+                );
+            },
+            	
             /**
              * Dialog box to display error messages.
              *

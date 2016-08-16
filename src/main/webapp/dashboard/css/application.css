@@ -10,6 +10,10 @@ body {
 	background-color: #f5f5f5;
 }
 
+.dashboardAlert{
+    margin-top: 10px;
+    margin-bottom:0px;
+}
 .footer {
 	background-color: #f5f5f5;
 	bottom: 0;

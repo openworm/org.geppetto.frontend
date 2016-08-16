@@ -149,12 +149,12 @@ define(function (require) {
 			if($.isArray(htmlNode)){
 				var html = "";
 				for(var i in htmlNode){
-					var values = htmlNode[i].getInitialValues();
+					var values = htmlNode[i].getVariable(htmlNode).getInitialValues();
 					html += values[0].value.html;
 				}
 				this.setMessage(html);
 			}else{
-				this.setMessage(htmlNode.getInitialValues()[0].value.html);
+				this.setMessage(htmlNode.getVariable(htmlNode).getInitialValues()[0].value.html);
 			}
 		},
 

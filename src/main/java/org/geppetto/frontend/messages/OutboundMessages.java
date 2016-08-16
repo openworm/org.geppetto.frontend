@@ -84,9 +84,11 @@ public enum OutboundMessages {
 	EXPERIMENT_CLONED("experiment_cloned"),
 	GEPPETTO_MODEL_LOADED("geppetto_model_loaded"), 
 	VARIABLE_FETCHED("variable_fetched"),
-	IMPORT_TYPE_RESOLVED("import_type_resolved"),
 	USER_PRIVILEGES("user_privileges"),
-	PROJECT_PERSISTENCE_STATE("project_persistence_state");
+	PROJECT_PERSISTENCE_STATE("project_persistence_state"),
+	IMPORT_TYPE_RESOLVED("import_type_resolved"), 
+	RETURN_QUERY("return_query"),
+	RETURN_QUERY_COUNT("return_query_count");
 
 	private OutboundMessages(final String text) {
 		this.text = text;

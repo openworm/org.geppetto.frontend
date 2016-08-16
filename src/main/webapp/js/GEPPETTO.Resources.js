@@ -149,7 +149,9 @@ define(function (require) {
             LOADING_PROJECT: "Loading Project",
 
             LOADING_EXPERIMENT: "Loading Experiment",
-
+            
+            RESOLVING_TYPES: "Resolving types",
+                        
             PARSING_MODEL: "Parsing model",
 
             CREATING_MODEL: "Creating model",
@@ -380,12 +382,7 @@ define(function (require) {
             BATCH_HIGHLIGHT_CONNECTIONS: "Batch highlight connections performed",
             BATCH_SHOW_CONNECTIONS_LINES: "Batch show/hide connection lines performed",
             OPERATION_NOT_SUPPORTED: "Operation not supported: ",
-            WRITE_PRIVILEGES_NOT_SUPPORTED : "User doesn't have WRITE privileges",
-            DOWNLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have DOWNLOAD privileges",
-            RUN_PRIVILEGES_NOT_SUPPORTED : "User doesn't have RUN_EXPERIMENT privileges",
-            UPLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have UPLOAD privileges",
-            PROJECT_NOT_PERSISTED : "Project not persisted, run command Project.persist() or use Save button on top right corner.",
-            USER_NOT_LOGIN : "User not logged in.",
+
 
             /**
              * GEPPETTO resources
@@ -499,14 +496,7 @@ define(function (require) {
             PARAMETER_TYPE_PATH: 'Model.common.Parameter',
             MODEL_PREFIX_CLIENT: 'Model',
             // CONTROL PANEL
-            CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:',
-            
-            //USER PRIVILEGES
-            WRITE_PROJECT : "WRITE_PROJECT",
-            READ_PROJECT : "READ_PROJECT",
-            DOWNLOAD : "DOWNLOAD",
-            DROPBOX_INTEGRATION : "DROPBOX_INTEGRATION",
-            RUN_EXPERIMENT : "RUN_EXPERIMENT"
+            CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:'
         }
     }
 });

@@ -24,6 +24,7 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+        	$("#experimentsButton").show();
             var row = "#" + this.props.experiment.getId();
             
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {

@@ -75,7 +75,6 @@ define(function (require) {
         };
 
         var messageHandler = {};
-        var callbackHandler = {};
 
         messageHandler[messageTypes.PROJECT_LOADED] = function (payload) {
             GEPPETTO.SimulationHandler.loadProject(payload);
@@ -246,14 +245,6 @@ define(function (require) {
                 // Switch based on parsed incoming message type
                 if (messageHandler.hasOwnProperty(parsedServerMessage.type)) {
                     messageHandler[parsedServerMessage.type](JSON.parse(parsedServerMessage.data));
-
-                    // run callback if any
-                    if(parsedServerMessage.requestID != undefined){
-	                    if (callbackHandler[parsedServerMessage.requestID] != undefined) {
-	                        callbackHandler[parsedServerMessage.requestID]();
-	                        delete callbackHandler[parsedServerMessage.requestID];
-	                    }
-                    }
                 }
             },
 
@@ -343,16 +334,14 @@ define(function (require) {
                     params["variableId"] = variableId;
                     params["dataSourceId"] = datasourceId;
 
-                    var requestID = GEPPETTO.MessageSocket.send("fetch_variable", params);
+                    var requestID = GEPPETTO.MessageSocket.send("fetch_variable", params, callback);
 
                     GEPPETTO.trigger('spin_logo');
 
-                    // add callback with request id if any
-                    if (callback != undefined) {
-                        callbackHandler[requestID] = callback;
-                    }
                 } else {
                     GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ALREADY_EXISTS);
+                    // the variable already exists, run the callback
+                    callback();
                 }
             },
 
@@ -401,14 +390,9 @@ define(function (require) {
                 }
                 params["paths"] = paths;
 
-                var requestID = GEPPETTO.MessageSocket.send("resolve_import_type", params);
+                var requestID = GEPPETTO.MessageSocket.send("resolve_import_type", params, callback);
 
                 GEPPETTO.trigger('spin_logo');
-
-                // add callback with request id if any
-                if (callback != undefined) {
-                    callbackHandler[requestID] = callback;
-                }
             },
 
             /**
@@ -602,9 +586,9 @@ define(function (require) {
 
                 // print node
                 var arrayPart = (size != null) ? "[" + size + "]" : "";
-                var indentation = "   ���";
+                var indentation = "   ���������";
                 for (var j = 0; j < indent; j++) {
-                    indentation = indentation.replace("���", " ") + "   ��� ";
+                    indentation = indentation.replace("���������", " ") + "   ��������� ";
                 }
                 formattedNode = indentation + name + arrayPart;
 

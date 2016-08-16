@@ -32,7 +32,7 @@
  *******************************************************************************/
 /**
  * Controller responsible to manage the experiments
- *
+ * TODO: Move to controllers folder
  * @author Matteo Cantarelli
  */
 define(function (require) {

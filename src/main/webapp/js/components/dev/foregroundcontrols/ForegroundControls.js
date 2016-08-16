@@ -45,6 +45,7 @@ define(function (require) {
 
     var SpotlightButton = require('./buttons/SpotlightButton');
     var ControlPanelButton = require('./buttons/ControlPanelButton');
+    var QueryBuilderButton = require('./buttons/QueryBuilderButton');
 
     var GEPPETTO = require('geppetto');
 
@@ -78,11 +79,14 @@ define(function (require) {
         render: function () {
             var spotlightBtn = GEPPETTO.Spotlight != undefined ? React.createFactory(SpotlightButton)({disabled: this.state.disableSpotlight}) : '';
             var controlPanelBtn = GEPPETTO.ControlPanel != undefined ? React.createFactory(ControlPanelButton)({}) : '';
+            var queryBuilderlBtn = GEPPETTO.QueryBuilder != undefined ? React.createFactory(QueryBuilderButton)({}) : '';
 
             return <div className={'foreground-controls'}>
                 {controlPanelBtn}
                 <br/>
                 {spotlightBtn}
+                <br />
+                {queryBuilderlBtn}
             </div>
         }
     });

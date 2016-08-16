@@ -62,7 +62,17 @@
     border-bottom: 1px solid rgba(66, 59, 59, 0.80) !important;
 }
 
-.historyIcon {
+.ui-dialog .ui-dialog-titlebar {
+    margin-left: 5px;
+    padding: 0 !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(66, 59, 59, 0.80) !important;
+}
+
+
+.widget-title-bar-button {
     float: left;
     margin-right: 5px;
     font-size: 15px;
@@ -70,7 +80,7 @@
     cursor: pointer;
 }
 
-.historyIcon:hover {
+.widget-title-bar-button:hover {
     color: #fc401a;
 }
 

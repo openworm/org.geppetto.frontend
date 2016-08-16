@@ -40,7 +40,6 @@
 	</script>
     <link rel="stylesheet/less" type="text/css" href="geppetto/less/main.less" />
     <script src="geppetto/js/vendor/less.min.js" type="text/javascript"></script>
-    <script src="geppetto/js/vendor/babel.min.js" charset="utf-8"></script>
 
     <script data-main="geppetto/js/main.js" src="geppetto/js/vendor/require.js"></script>
 
@@ -75,6 +74,7 @@
     <div id="geppettologo" class="noSelection" ></div>
     <div id="spotlight" ></div>
     <div id="controlpanel" ></div>
+    <div id="querybuilder" ></div>
     <div id="sim" class="noSelection"></div>
 
     <div id="footer">
@@ -82,7 +82,7 @@
             <div id="consoleButtonContainer">
 	            <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
     				<li role="presentation" class="active" id="consoleButton"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i>  Console</a></li>
-    				<li role="presentation" id="experimentsButton"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>  Experiments</a></li>
+    				<li role="presentation" id="experimentsButton" style="display:none"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>  Experiments</a></li>
 				</ul>
 
 				 <div class="tab-content">

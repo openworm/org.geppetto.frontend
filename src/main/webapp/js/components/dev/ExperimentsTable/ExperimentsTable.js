@@ -235,7 +235,7 @@ define(function (require) {
                     delay: 200
                 },
                 content: function () {
-                    return this.getAttribute("title");
+                    return $(this).attr("data-custom-title");
                 },
             });
         },
@@ -251,31 +251,31 @@ define(function (require) {
 
             if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                 tdStatus = <td className="statusIcon">
-                    <div className="circle COMPLETED center-block" data-status="COMPLETED" title={GEPPETTO.Resources.ExperimentStatus.COMPLETED_DESCRIPTION} rel="tooltip"></div>
+                    <div className="circle COMPLETED center-block" data-status="COMPLETED" title="" data-custom-title={GEPPETTO.Resources.ExperimentStatus.COMPLETED_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
                 tdStatus = <td className="statusIcon">
-                    <div className="circle DELETED center-block" data-status="DELETED" title={GEPPETTO.Resources.ExperimentStatus.DELETED_DESCRIPTION} rel="tooltip"></div>
+                    <div className="circle DELETED center-block" data-status="DELETED" title="" data-custom-title={GEPPETTO.Resources.ExperimentStatus.DELETED_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
                 tdStatus = <td className="statusIcon">
-                    <div className="circle RUNNING center-block" data-status="RUNNING" title={GEPPETTO.Resources.ExperimentStatus.RUNNING_DESCRIPTION} rel="tooltip"></div>
+                    <div className="circle RUNNING center-block" data-status="RUNNING" title="" data-custom-title={GEPPETTO.Resources.ExperimentStatus.RUNNING_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                 tdStatus = <td className="statusIcon">
-                    <div className="circle DESIGN center-block" data-status="DESIGN" title={GEPPETTO.Resources.ExperimentStatus.DESIGN_DESCRIPTION} rel="tooltip"></div>
+                    <div className="circle DESIGN center-block" data-status="DESIGN" title="" data-custom-title={GEPPETTO.Resources.ExperimentStatus.DESIGN_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
                 tdStatus = <td className="statusIcon">
-                    <div className="circle QUEUED center-block" data-status="QUEUED" title={GEPPETTO.Resources.ExperimentStatus.QUEUED} rel="tooltip"></div>
+                    <div className="circle QUEUED center-block" data-status="QUEUED" title="" data-custom-title={GEPPETTO.Resources.ExperimentStatus.QUEUED} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
                 tdStatus = <td className="statusIcon">
-                    <div className="circle CANCELED center-block" data-status="CANCELED" title={GEPPETTO.Resources.ExperimentStatus.CANCELED_DESCRIPTION} rel="tooltip"></div>
+                    <div className="circle CANCELED center-block" data-status="CANCELED" title="" data-custom-title={GEPPETTO.Resources.ExperimentStatus.CANCELED_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
                 tdStatus = <td className="statusIcon">
-                    <div className="circle ERROR center-block" data-status="ERROR" title={GEPPETTO.Resources.ExperimentStatus.ERROR_DESCRIPTION} rel="tooltip"></div>
+                    <div className="circle ERROR center-block" data-status="ERROR" title="" data-custom-title={GEPPETTO.Resources.ExperimentStatus.ERROR_DESCRIPTION} rel="tooltip"></div>
                 </td>;
             }
 
@@ -544,7 +544,7 @@ define(function (require) {
                             tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("COMPLETED");
                             tdStatus.attr("data-status", "COMPLETED");
-                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.COMPLETED_DESCRIPTION);
+                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.COMPLETED_DESCRIPTION);
                             if(active!=null){
                             	if(active.getId() == experiment.getId()){
                             		$("#downloadResultsIcon-" + experiment.getId()).show();
@@ -560,32 +560,32 @@ define(function (require) {
                             tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("DELETED");
                             tdStatus.attr("data-status", "DELETED");
-                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.DELETED_DESCRIPTION);
+                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.DELETED_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
                             tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("RUNNING");
                             tdStatus.attr("data-status", "RUNNING");
-                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.RUNNING_DESCRIPTION);
+                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.RUNNING_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                             tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("DESIGN");
                             tdStatus.attr("data-status", "DESIGN");
-                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.DESIGN_DESCRIPTION);
+                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.DESIGN_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
                             tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("QUEUED");
                             tdStatus.attr("data-status", "QUEUED");
-                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.QUEUED_DESCRIPTION);
+                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.QUEUED_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
                             tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("CANCELED");
                             tdStatus.attr("data-status", "CANCELED");
-                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.CANCELED_DESCRIPTION);
+                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.CANCELED_DESCRIPTION);
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
                             tdStatus.removeClass(tdStatusId);
                             tdStatus.addClass("ERROR");
                             tdStatus.attr("data-status", "ERROR");
-                            tdStatus.attr("title", GEPPETTO.Resources.ExperimentStatus.ERROR_DESCRIPTION);
+                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.ERROR_DESCRIPTION);
                         } 
                     }
                     if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-"+ experiment.getId())) {

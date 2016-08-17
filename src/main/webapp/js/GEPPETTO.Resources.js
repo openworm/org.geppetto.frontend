@@ -102,19 +102,21 @@ define(function (require) {
              */
             ExperimentStatus: {
                 DESIGN: "DESIGN",
-                DESIGN_DESCRIPTION: "The experiment is in <b>DESIGN</b> status. Parameters can be set and state variables can be recorded before running the experiment.",
                 CANCELED: "CANCELED",
-                CANCELED_DESCRIPTION: "The experiment has been <b>CANCELED</b>.",
                 QUEUED: "QUEUED",
-                QUEUED_DESCRIPTION: "The experiment is <b>QUEUED</b> for running.",
                 RUNNING: "RUNNING",
-                RUNNING_DESCRIPTION: "The experiment is currently <b>RUNNING</b>.",
                 ERROR: "ERROR",
-                ERROR_DESCRIPTION: "The experiment caused an <b>ERROR</b> while running.",
                 COMPLETED: "COMPLETED",
-                COMPLETED_DESCRIPTION: "The experiment is <b>COMPLETED</b>. The state variables that were recorded can now be plotted.",
                 DELETED: "DELETED",
-                DELETED_DESCRIPTION: "The experiment is <b>DELETED</b>... and you shouldn't be seeing this message!"
+                Descriptions: {
+                    DESIGN: "The experiment is in <b>DESIGN</b> status. Parameters can be set and state variables can be recorded before running the experiment.",
+                    CANCELED: "The experiment has been <b>CANCELED</b>.",
+                    QUEUED: "The experiment is <b>QUEUED</b> for running.",
+                    RUNNING: "The experiment is currently <b>RUNNING</b>.",
+                    ERROR: "The experiment caused an <b>ERROR</b> while running.",
+                    COMPLETED: "The experiment is <b>COMPLETED</b>. The state variables that were recorded can now be plotted.",
+                    DELETED: "The experiment is <b>DELETED</b>... and you shouldn't be seeing this message!"
+                }
             },
 
             GeometryTypes: {

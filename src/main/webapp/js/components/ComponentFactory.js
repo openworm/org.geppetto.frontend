@@ -135,13 +135,6 @@ define(function (require) {
 	                var dialogParent = dialog.parent();
 	                var that = this;
 	
-	                //add history
-	                dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='fa fa-history historyIcon'></div>");
-	                dialogParent.find("div.historyIcon").click(function (event) {
-	                    that.showHistoryMenu(event);
-	                    event.stopPropagation();
-	                });
-	
 	                //remove the jQuery UI icon
 	                dialogParent.find("button.ui-dialog-titlebar-close").html("");
 	                dialogParent.find("button").append("<i class='fa fa-close'></i>");

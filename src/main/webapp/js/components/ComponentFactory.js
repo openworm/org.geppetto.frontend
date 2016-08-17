@@ -51,7 +51,7 @@ define(function (require) {
 		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
 		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
 		var shareComp = require('jsx!./dev/share/share');
-		var queryComp = require('jsx!./dev/query/query');
+		//var queryComp = require('jsx!./dev/query/query');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){

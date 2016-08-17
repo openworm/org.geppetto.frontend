@@ -88,6 +88,24 @@ define(function (require) {
                 }
             });
 
+            GEPPETTO.on(Events.Project_persisted, function () {
+                var experiment = window.Project.getActiveExperiment();
+                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
+                var projectPersisted = experiment.getParent().persisted;
+                var login = GEPPETTO.UserController.isLogin();
+                
+                if(experiment!=null || undefined){
+                	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                		if(writePermission && projectPersisted && login && runPermission){
+                			self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});
+                		}else{
+                			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
+                		}
+                	}
+                }
+            });
+
             GEPPETTO.on(Events.Experiment_running, function () {
                 self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
             });
@@ -128,6 +146,7 @@ define(function (require) {
             	}
             });
 
+            
             GEPPETTO.on('disable_all', function () {
                 self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
             });

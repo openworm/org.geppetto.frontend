@@ -441,6 +441,10 @@ define(function (require) {
                 self.populate();
             });
 
+            GEPPETTO.on(Events.Project_persisted, function () {
+                self.populate();
+            });
+            
             GEPPETTO.on(Events.Experiment_status_check, function () {
                 self.updateExperimentsTableStatus();
             });
